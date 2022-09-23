@@ -64,6 +64,8 @@ interface LimitPropsIF {
     openGlobalModal: (content: React.ReactNode) => void;
 
     closeGlobalModal: () => void;
+    setLimitRate: React.Dispatch<React.SetStateAction<string>>;
+    limitRate: string;
 
     pendingTransactions: string[];
 }
@@ -95,6 +97,8 @@ export default function Limit(props: LimitPropsIF) {
         indicateActiveTokenListsChanged,
         openModalWallet,
         pendingTransactions,
+        setLimitRate,
+        limitRate,
     } = props;
 
     const { tradeData, navigationMenu } = useTradeData();
@@ -146,7 +150,6 @@ export default function Limit(props: LimitPropsIF) {
 
     const slippageTolerancePercentage = tradeData.slippageTolerance;
 
-    const [limitRate, setLimitRate] = useState<string>(tradeData.limitPrice);
     const [limitTick, setLimitTick] = useState<number>(0);
     const [insideTickDisplayPrice, setInsideTickDisplayPrice] = useState<number>(0);
     const [orderGasPriceInDollars, setOrderGasPriceInDollars] = useState<string | undefined>();

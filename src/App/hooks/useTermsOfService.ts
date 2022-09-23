@@ -8,11 +8,11 @@ export const useTermsOfService = (): {
     rejectToS: () => void;
 } => {
     // user data object from local storage
-    const [ userData, setUserData ] = useState(JSON.parse(localStorage.getItem('user') as string));
+    const [userData, setUserData] = useState(JSON.parse(localStorage.getItem('user') as string));
     // boolean agreement status whether user has accepted ToS
-    const [ agreement, setAgreement ] = useState(userData?.termsOfService?.agreed);
+    const [agreement, setAgreement] = useState(userData?.termsOfService?.agreed);
     // ISO date string representing when the user accepted or rejected ToS
-    const [ agreementDate, setAgreementDate ] = useState(userData?.termsOfService?.date);
+    const [agreementDate, setAgreementDate] = useState(userData?.termsOfService?.date);
     // recursive function to query local storage until current user agreement is returned
     useEffect(() => {
         function getUserData() {
@@ -41,8 +41,8 @@ export const useTermsOfService = (): {
         // data conformed to shape used in local storage
         const details = {
             agreed: didUserAgree,
-            date: new Date().toISOString()
-        }
+            date: new Date().toISOString(),
+        };
         // update agreement status in local state
         setAgreement(details.agreed);
         // update agreement date in local state
@@ -53,7 +53,6 @@ export const useTermsOfService = (): {
         newUserData.termsOfService = details;
         // send updated user data to local storage
         localStorage.setItem('user', JSON.stringify(newUserData));
-        
     }
 
     return {
@@ -61,6 +60,6 @@ export const useTermsOfService = (): {
         agreement,
         agreementDate,
         acceptToS,
-        rejectToS
+        rejectToS,
     };
-}
+};

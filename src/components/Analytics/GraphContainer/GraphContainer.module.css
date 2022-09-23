@@ -69,12 +69,17 @@
 .info_content {
     display: flex;
     flex-direction: column;
+    justify-content: center;
     align-items: center;
-    background: var(--dark2);
-    color: var(--text-grey-white);
-    gap: 0.5rem;
+    padding: 16px;
+    gap: 8px;
+    width: 349.33px;
+    height: 100px;
+    background: #0d1117;
     border-radius: 4px;
-    padding: 8px 0;
+    flex: none;
+    order: 0;
+    flex-grow: 1;
 }
 
 .info_content .info_title {
@@ -97,12 +102,9 @@
         justify-content: space-between;
         align-items: center;
         gap: 3rem;
-        width: 80%;
         margin: 0 auto;
     }
     .info_content {
-        background: transparent;
-
         padding: 0;
     }
 }

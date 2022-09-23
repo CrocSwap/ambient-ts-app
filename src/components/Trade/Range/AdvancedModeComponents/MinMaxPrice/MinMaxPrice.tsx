@@ -1,9 +1,15 @@
-import { ChangeEvent, Dispatch, SetStateAction } from 'react';
+import { ChangeEvent, Dispatch, SetStateAction, useEffect } from 'react';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import styles from './MinMaxPrice.module.css';
 import PriceInput from '../PriceInput/PriceInput';
+
 import { useAppDispatch } from '../../../../../utils/hooks/reduxToolkit';
-import { setAdvancedHighTick, setAdvancedLowTick } from '../../../../../utils/state/tradeDataSlice';
+import {
+    setAdvancedHighTick,
+    setAdvancedLowTick,
+    setTargetData,
+    targetData,
+} from '../../../../../utils/state/tradeDataSlice';
 
 interface MinMaxPriceIF {
     minPricePercentage: number;
@@ -21,6 +27,7 @@ interface MinMaxPriceIF {
     setRangeLowTick: Dispatch<SetStateAction<number>>;
     setRangeHighTick: Dispatch<SetStateAction<number>>;
     chainId: string;
+    targetData: targetData[];
 }
 
 export default function MinMaxPrice(props: MinMaxPriceIF) {
@@ -38,6 +45,7 @@ export default function MinMaxPrice(props: MinMaxPriceIF) {
         setRangeLowTick,
         setRangeHighTick,
         chainId,
+        targetData,
     } = props;
 
     const dispatch = useAppDispatch();
@@ -46,6 +54,18 @@ export default function MinMaxPrice(props: MinMaxPriceIF) {
         if (evt) {
             const minPriceInput = evt.target.value;
             setMinPriceInputString(minPriceInput);
+
+            const newTargetData: targetData[] = [
+                { name: !isDenomBase ? 'Max' : 'Min', value: parseFloat(minPriceInput) },
+                {
+                    name: !isDenomBase ? 'Min' : 'Max',
+                    value: targetData.filter(
+                        (target) => target.name === (!isDenomBase ? 'Min' : 'Max'),
+                    )[0].value,
+                },
+            ];
+
+            dispatch(setTargetData(newTargetData));
         } else {
             console.log('no event');
         }
@@ -55,6 +75,18 @@ export default function MinMaxPrice(props: MinMaxPriceIF) {
         if (evt) {
             const maxPriceInput = evt.target.value;
             setMaxPriceInputString(maxPriceInput);
+
+            const newTargetData: targetData[] = [
+                { name: !isDenomBase ? 'Min' : 'Max', value: parseFloat(maxPriceInput) },
+                {
+                    name: !isDenomBase ? 'Max' : 'Min',
+                    value: targetData.filter(
+                        (target) => target.name === (!isDenomBase ? 'Max' : 'Min'),
+                    )[0].value,
+                },
+            ];
+
+            dispatch(setTargetData(newTargetData));
         } else {
             console.log('no event');
         }
@@ -65,6 +97,23 @@ export default function MinMaxPrice(props: MinMaxPriceIF) {
             Invalid range selected. The min price must be lower than the max price.
         </div>
     );
+
+    useEffect(() => {
+        if (targetData !== undefined) {
+            const high = targetData.filter((data) => {
+                return data.name === 'Max';
+            })[0].value;
+            const low = targetData.filter((data) => {
+                return data.name === 'Min';
+            })[0].value;
+
+            setMaxPriceInputString(high !== undefined ? high.toString() : '0.0');
+            setMinPriceInputString(low !== undefined ? low.toString() : '0.0');
+
+            lowBoundOnBlur();
+            highBoundOnBlur();
+        }
+    }, [targetData]);
 
     const tickSize = lookupChain(chainId).gridSize;
 

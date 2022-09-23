@@ -213,7 +213,7 @@ outline: 1px solid var(--text-grey-dark);
         align-items: stretch;
         display: flex;
         flex-flow: column;
-        gap: 16px;
+        gap: 40px;
         height: 100%;
         justify-content: flex-start;
         position: relative;

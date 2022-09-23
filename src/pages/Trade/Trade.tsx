@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // START: Import React and Dongles
 import { Dispatch, SetStateAction, useState } from 'react';
 import { Outlet, useOutletContext, NavLink } from 'react-router-dom';
@@ -12,15 +13,17 @@ import TradeTabs2 from '../../components/Trade/TradeTabs/TradeTabs2';
 import styles from './Trade.module.css';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { tradeData as TradeDataIF } from '../../utils/state/tradeDataSlice';
-import { CandleData } from '../../utils/state/graphDataSlice';
+import { CandleData, CandlesByPoolAndDuration } from '../../utils/state/graphDataSlice';
 import { PoolIF, TokenIF, TokenPairIF } from '../../utils/interfaces/exports';
 import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
+import { SketchPicker } from 'react-color';
 
 // interface for React functional component props
 interface TradePropsIF {
     isUserLoggedIn: boolean;
     crocEnv: CrocEnv | undefined;
     provider: ethers.providers.Provider | undefined;
+    candleData: CandlesByPoolAndDuration | undefined;
     baseTokenAddress: string;
     quoteTokenAddress: string;
     baseTokenBalance: string;
@@ -43,6 +46,8 @@ interface TradePropsIF {
     setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
     expandTradeTable: boolean;
     setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
+    setLimitRate: React.Dispatch<React.SetStateAction<string>>;
+    limitRate: string;
     favePools: PoolIF[];
     addPoolToFaves: (tokenA: TokenIF, tokenB: TokenIF, chainId: string, poolId: number) => void;
     removePoolFromFaves: (
@@ -62,6 +67,7 @@ interface TradePropsIF {
     openGlobalModal: (content: React.ReactNode) => void;
 
     closeGlobalModal: () => void;
+    poolPriceNonDisplay: number | undefined;
 }
 
 // React functional component
@@ -69,6 +75,7 @@ export default function Trade(props: TradePropsIF) {
     const {
         isUserLoggedIn,
         crocEnv,
+        candleData,
         chainId,
         chainData,
         tokenMap,
@@ -76,7 +83,7 @@ export default function Trade(props: TradePropsIF) {
         provider,
         lastBlockNumber,
         baseTokenAddress,
-        quoteTokenAddress,
+        // quoteTokenAddress,
         baseTokenBalance,
         quoteTokenBalance,
         baseTokenDexBalance,
@@ -110,23 +117,33 @@ export default function Trade(props: TradePropsIF) {
 
     const graphData = useAppSelector((state) => state.graphData);
 
-    const activePoolDefinition = JSON.stringify({
-        baseAddress: baseTokenAddress,
-        quoteAddress: quoteTokenAddress,
-        poolIdx: 36000,
-        network: chainId,
-    }).toLowerCase();
+    // const activePoolDefinition = JSON.stringify({
+    //     baseAddress: baseTokenAddress,
+    //     quoteAddress: quoteTokenAddress,
+    //     poolIdx: 36000,
+    //     network: chainId,
+    // }).toLowerCase();
 
-    const indexOfActivePool = graphData.candlesForAllPools.pools
-        .map((item) => JSON.stringify(item.pool).toLowerCase())
-        .findIndex((pool) => pool === activePoolDefinition);
+    // const indexOfActivePool = graphData.candlesForAllPools.pools
+    //     .map((item) => JSON.stringify(item.pool).toLowerCase())
+    //     .findIndex((pool) => pool === activePoolDefinition);
 
-    const activePoolCandleData = graphData?.candlesForAllPools?.pools[indexOfActivePool];
-    const candleData = activePoolCandleData?.candlesByPoolAndDuration.find((data) => {
-        return data.duration === tradeData.activeChartPeriod;
-    });
+    // const activePoolCandleData = graphData?.candlesForAllPools?.pools[indexOfActivePool];
+    // const candleData = activePoolCandleData?.candlesByPoolAndDuration.find((data) => {
+    //     return data.duration === tradeData.activeChartPeriod;
+    // });
 
+    const activePoolLiquidityData = graphData?.liquidityForAllPools?.pools[0];
+    const liquidityData = activePoolLiquidityData?.liquidityData;
     const denomInBase = tradeData.isDenomBase;
+    const targetData = tradeData.targetData;
+    const limitPrice = tradeData.limitPrice;
+
+    const isAdvancedModeActive = tradeData.advancedMode;
+    const simpleRangeWidth = tradeData.simpleRangeWidth;
+    const pinnedMaxPriceDisplayTruncated = tradeData.pinnedMaxPriceDisplayTruncated;
+    const pinnedMinPriceDisplayTruncated = tradeData.pinnedMinPriceDisplayTruncated;
+    const spotPriceDisplay = tradeData.spotPriceDisplay;
 
     const poolPriceDisplayWithDenom = poolPriceDisplay
         ? denomInBase
@@ -156,6 +173,29 @@ export default function Trade(props: TradePropsIF) {
         setIsCandleSelected(isOpen);
         props.setIsShowAllEnabled(!isOpen);
         setTransactionFilter(candleData);
+    };
+
+    const [upBodyColorPicker, setUpBodyColorPicker] = useState<boolean>(false);
+    const [upBorderColorPicker, setUpBorderColorPicker] = useState<boolean>(false);
+    const [downBodyColorPicker, setDownBodyColorPicker] = useState<boolean>(false);
+    const [downBorderColorPicker, setDownBorderColorPicker] = useState<boolean>(false);
+
+    const [upBodyColor, setUpBodyColor] = useState<string>('#7371FC');
+    const [upBorderColor, setUpBorderColor] = useState<string>('#7371FC');
+    const [downBodyColor, setDownBodyColor] = useState<string>('#CDC1FF');
+    const [downBorderColor, setDownBorderColor] = useState<string>('#CDC1FF');
+
+    const handleBodyColorPickerChange = (color: any) => {
+        setUpBodyColor(color.hex);
+    };
+    const handleBorderColorPickerChange = (color: any) => {
+        setUpBorderColor(color.hex);
+    };
+    const handleDownBodyColorPickerChange = (color: any) => {
+        setDownBodyColor(color.hex);
+    };
+    const handleDownBorderColorPickerChange = (color: any) => {
+        setDownBorderColor(color.hex);
     };
 
     const [showChartAndNotTab, setShowChartAndNotTab] = useState(false);
@@ -190,6 +230,167 @@ export default function Trade(props: TradePropsIF) {
                 <div className={styles.middle_col}>
                     {mobileDataToggle}
                     <div className={` ${expandGraphStyle} ${fullScreenStyle}`}>
+                        <div style={{ textAlign: 'center', display: 'flex' }}>
+                            <label style={{ padding: '0px' }}>Up</label>
+                            <div style={{ marginLeft: '4px' }}>
+                                <div
+                                    style={{
+                                        padding: '2px',
+                                        borderRadius: '1px',
+                                        boxShadow: '0 0 0 1px rgba(0,0,0,.1)',
+                                        display: 'inline-block',
+                                        cursor: 'pointer',
+                                    }}
+                                    onClick={() => setUpBodyColorPicker(true)}
+                                >
+                                    <div
+                                        style={{
+                                            width: '36px',
+                                            height: '14px',
+                                            borderRadius: '2px',
+                                            background: upBodyColor,
+                                        }}
+                                    />
+                                    <label style={{ padding: '0px' }}>Body</label>
+                                </div>
+                                {upBodyColorPicker ? (
+                                    <div style={{ position: 'absolute', zIndex: '2' }}>
+                                        <div
+                                            style={{
+                                                position: 'fixed',
+                                                top: '0px',
+                                                right: '0px',
+                                                bottom: '0px',
+                                                left: '0px',
+                                            }}
+                                            onClick={() => setUpBodyColorPicker(false)}
+                                        />
+                                        <SketchPicker
+                                            color={upBodyColor}
+                                            onChangeComplete={handleBodyColorPickerChange}
+                                        />
+                                    </div>
+                                ) : null}
+                                <div
+                                    style={{
+                                        padding: '2px',
+                                        borderRadius: '1px',
+                                        boxShadow: '0 0 0 1px rgba(0,0,0,.1)',
+                                        display: 'inline-block',
+                                        cursor: 'pointer',
+                                    }}
+                                    onClick={() => setUpBorderColorPicker(true)}
+                                >
+                                    <div
+                                        style={{
+                                            width: '36px',
+                                            height: '14px',
+                                            borderRadius: '2px',
+                                            background: upBorderColor,
+                                        }}
+                                    />
+                                    <label style={{ padding: '0px' }}>Border</label>
+                                </div>
+                                {upBorderColorPicker ? (
+                                    <div style={{ position: 'absolute', zIndex: '2' }}>
+                                        <div
+                                            style={{
+                                                position: 'fixed',
+                                                top: '0px',
+                                                right: '0px',
+                                                bottom: '0px',
+                                                left: '0px',
+                                            }}
+                                            onClick={() => setUpBorderColorPicker(false)}
+                                        />
+                                        <SketchPicker
+                                            color={upBorderColor}
+                                            onChangeComplete={handleBorderColorPickerChange}
+                                        />
+                                    </div>
+                                ) : null}
+                            </div>
+                            <label style={{ padding: '0px' }}>Down</label>
+                            <div style={{ marginLeft: '4px' }}>
+                                <div
+                                    style={{
+                                        padding: '2px',
+                                        borderRadius: '1px',
+                                        boxShadow: '0 0 0 1px rgba(0,0,0,.1)',
+                                        display: 'inline-block',
+                                        cursor: 'pointer',
+                                    }}
+                                    onClick={() => setDownBodyColorPicker(true)}
+                                >
+                                    <div
+                                        style={{
+                                            width: '36px',
+                                            height: '14px',
+                                            borderRadius: '2px',
+                                            background: downBodyColor,
+                                        }}
+                                    />
+                                    <label style={{ padding: '0px' }}>Body</label>
+                                </div>
+                                {downBodyColorPicker ? (
+                                    <div style={{ position: 'absolute', zIndex: '2' }}>
+                                        <div
+                                            style={{
+                                                position: 'fixed',
+                                                top: '0px',
+                                                right: '0px',
+                                                bottom: '0px',
+                                                left: '0px',
+                                            }}
+                                            onClick={() => setDownBodyColorPicker(false)}
+                                        />
+                                        <SketchPicker
+                                            color={downBodyColor}
+                                            onChangeComplete={handleDownBodyColorPickerChange}
+                                        />
+                                    </div>
+                                ) : null}
+                                <div
+                                    style={{
+                                        padding: '2px',
+                                        borderRadius: '1px',
+                                        boxShadow: '0 0 0 1px rgba(0,0,0,.1)',
+                                        display: 'inline-block',
+                                        cursor: 'pointer',
+                                    }}
+                                    onClick={() => setDownBorderColorPicker(true)}
+                                >
+                                    <div
+                                        style={{
+                                            width: '36px',
+                                            height: '14px',
+                                            borderRadius: '2px',
+                                            background: downBorderColor,
+                                        }}
+                                    />
+                                    <label style={{ padding: '0px' }}>Border</label>
+                                </div>
+                                {downBorderColorPicker ? (
+                                    <div style={{ position: 'absolute', zIndex: '2' }}>
+                                        <div
+                                            style={{
+                                                position: 'fixed',
+                                                top: '0px',
+                                                right: '0px',
+                                                bottom: '0px',
+                                                left: '0px',
+                                            }}
+                                            onClick={() => setDownBorderColorPicker(false)}
+                                        />
+                                        <SketchPicker
+                                            color={downBorderColor}
+                                            onChangeComplete={handleDownBorderColorPickerChange}
+                                        />
+                                    </div>
+                                ) : null}
+                            </div>
+                        </div>
+
                         <motion.div
                             initial={{ opacity: 0, scale: 0.5 }}
                             animate={{ opacity: 1, scale: 1 }}
@@ -211,11 +412,27 @@ export default function Trade(props: TradePropsIF) {
                                 setFullScreenChart={setFullScreenChart}
                                 changeState={changeState}
                                 candleData={candleData}
+                                liquidityData={liquidityData}
+                                targetData={targetData}
                                 lastBlockNumber={lastBlockNumber}
                                 chainId={chainId}
+                                limitPrice={limitPrice}
+                                setLimitRate={props.setLimitRate}
+                                limitRate={props.limitRate}
                                 favePools={favePools}
                                 addPoolToFaves={addPoolToFaves}
                                 removePoolFromFaves={removePoolFromFaves}
+                                isAdvancedModeActive={isAdvancedModeActive}
+                                simpleRangeWidth={simpleRangeWidth}
+                                pinnedMinPriceDisplayTruncated={pinnedMinPriceDisplayTruncated}
+                                pinnedMaxPriceDisplayTruncated={pinnedMaxPriceDisplayTruncated}
+                                spotPriceDisplay={spotPriceDisplay}
+                                upBodyColor={upBodyColor}
+                                upBorderColor={upBorderColor}
+                                downBodyColor={downBodyColor}
+                                downBorderColor={downBorderColor}
+                                baseTokenAddress={baseTokenAddress}
+                                poolPriceNonDisplay={props.poolPriceNonDisplay}
                             />
                         </motion.div>
                     </div>

@@ -257,14 +257,16 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                     <CurrencyQuantity fieldId={fieldId} handleChangeEvent={handleChangeEvent} />
                 </div>
                 <div className={styles.token_select} onClick={openModal}>
-                    {thisToken.logoURI
-                    ? <img
-                        className={styles.token_list_img}
-                        src={thisToken.logoURI}
-                        alt={thisToken.name}
-                        width='30px'
-                    />
-                    : <FaRegTimesCircle />}
+                    {thisToken.logoURI ? (
+                        <img
+                            className={styles.token_list_img}
+                            src={thisToken.logoURI}
+                            alt={thisToken.name}
+                            width='30px'
+                        />
+                    ) : (
+                        <FaRegTimesCircle />
+                    )}
                     <div className={styles.token_list_text}>{thisToken.symbol}</div>
                     <RiArrowDownSLine size={27} />
                 </div>

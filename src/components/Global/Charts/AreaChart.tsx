@@ -40,7 +40,7 @@ export default function AreaChart(props: AreaChartProps) {
 
         const data = {
             series: chartValue,
-            crosshair: [{ x: 0, y: -15 }],
+            crosshair: [{ x: 0, y: 0, yAxis: 0 }],
         };
 
         const xScale = d3.scaleTime();
@@ -80,12 +80,26 @@ export default function AreaChart(props: AreaChartProps) {
                 selection.attr('stroke-width', '3');
             });
 
+        const crosshairVertical = d3fc
+            .annotationSvgLine()
+            .value((d: any) => d.yAxis)
+            .xScale(xScale)
+            .yScale(yScale);
+
+        crosshairVertical.decorate((selection: any) => {
+            selection.enter().attr('stroke-dasharray', '6 6').style('pointer-events', 'all');
+            selection.enter().select('g.left-handle').remove();
+            selection.enter().select('g.right-handle').remove();
+        });
+
         const multi = d3fc
             .seriesSvgMulti()
-            .series([lineSeries, areaSeries, crossHair])
+            .series([lineSeries, areaSeries, crossHair, crosshairVertical])
             .mapping((data: any, index: number, series: any) => {
                 switch (series[index]) {
                     case crossHair:
+                        return data.crosshair;
+                    case crosshairVertical:
                         return data.crosshair;
                     default:
                         return data.series;
@@ -152,6 +166,7 @@ export default function AreaChart(props: AreaChartProps) {
                 {
                     x: xScale(value),
                     y: yScale(nearest.value),
+                    yAxis: yScale.invert(point.y),
                 },
             ];
         };
