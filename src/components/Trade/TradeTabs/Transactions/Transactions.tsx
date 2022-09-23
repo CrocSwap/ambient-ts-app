@@ -212,7 +212,9 @@ export default function Transactions(props: TransactionsProps) {
             // share:  true,
             onOpen: () => {
                 console.log('pool recent changes subscription opened');
-                setTimeout(() => {
+
+                // repeat fetch with the interval of 30 seconds
+                const timerId = setInterval(() => {
                     fetchPoolRecentChanges({
                         base: baseTokenAddress,
                         quote: quoteTokenAddress,
@@ -236,10 +238,14 @@ export default function Transactions(props: TransactionsProps) {
                             }
                         })
                         .catch(console.log);
-                }, 60000);
+                }, 30000);
+
+                // after 90 seconds stop
+                setTimeout(() => {
+                    clearInterval(timerId);
+                }, 90000);
             },
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            onClose: (event: any) => console.log({ event }),
+            onClose: (event: CloseEvent) => console.log({ event }),
             // onClose: () => console.log('allPositions websocket connection closed'),
             // Will attempt to reconnect on all close events, such as server shutting down
             shouldReconnect: () => true,
