@@ -1,4 +1,4 @@
-import styles from './WithdrawAs.module.css';
+import styles from './WithdrawTo.module.css';
 import { useState } from 'react';
 import { motion, Variants } from 'framer-motion';
 import { BsCheckCircle } from 'react-icons/bs';
@@ -35,28 +35,25 @@ const mainVariant: Variants = {
     },
 };
 
-interface WithdrawAsPropsIF {
+interface WithdrawToPropsIF {
     isSelected: boolean;
-    name: string;
+    option: string;
     onClick: () => void;
 }
 
-const tokenChoices = [
+const withdrawChoices = [
     {
-        name: 'ETH/USDC',
+        option: 'Wallet',
     },
     {
-        name: 'ETH',
-    },
-    {
-        name: 'USDC',
+        option: 'Exchange',
     },
 ];
-export default function WithdrawAs() {
+export default function WithdrawTo() {
     // const menuRef = useRef<HTMLUListElement>(null);
 
     const [isOpen, setIsOpen] = useState(false);
-    const [selected, setSelected] = useState(tokenChoices[0]);
+    const [selected, setSelected] = useState(withdrawChoices[0]);
     // const clickOutsideHandler = () => {
     //     setIsOpen(false);
     // };
@@ -77,8 +74,8 @@ export default function WithdrawAs() {
         </motion.div>
     );
 
-    function TokenItem(props: WithdrawAsPropsIF) {
-        const { isSelected, onClick, name } = props;
+    function OptionItem(props: WithdrawToPropsIF) {
+        const { isSelected, onClick, option } = props;
 
         return (
             <motion.li
@@ -86,7 +83,7 @@ export default function WithdrawAs() {
                 onClick={onClick}
                 // variants={itemVariants}
             >
-                {name}
+                {option}
                 {isSelected ? (
                     <BsCheckCircle size={24} color='#CDC1FF' />
                 ) : (
@@ -96,13 +93,13 @@ export default function WithdrawAs() {
         );
     }
 
-    const handleItemClick = (name: { name: string }) => {
-        setSelected(name);
+    const handleItemClick = (option: { option: string }) => {
+        setSelected(option);
         setIsOpen(false);
     };
     return (
         <div className={styles.dropdown_row}>
-            <p>Withdraw as</p>
+            <p>Withdraw to</p>
             <motion.div
                 initial={false}
                 animate={isOpen ? 'open' : 'closed'}
@@ -113,7 +110,7 @@ export default function WithdrawAs() {
                     onClick={() => setIsOpen(!isOpen)}
                     className={styles.main_button}
                 >
-                    {selected.name}
+                    {selected.option}
                     {dropdownMenuArrow}
                 </motion.button>
 
@@ -123,12 +120,12 @@ export default function WithdrawAs() {
                     className={styles.main_container}
                     // ref={menuRef}
                 >
-                    {tokenChoices.map((token, idx) => (
-                        <TokenItem
-                            name={token.name}
+                    {withdrawChoices.map((option, idx) => (
+                        <OptionItem
+                            option={option.option}
                             key={idx}
-                            isSelected={selected.name === token.name}
-                            onClick={() => handleItemClick(token)}
+                            isSelected={selected.option === option.option}
+                            onClick={() => handleItemClick(option)}
                         />
                     ))}
                 </motion.ul>

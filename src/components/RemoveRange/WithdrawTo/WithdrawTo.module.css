@@ -4,7 +4,6 @@
     align-items: center;
     justify-content: space-between;
     margin: 4px 0;
-    
 }
 
 .dropdown_row p{
@@ -15,13 +14,12 @@ line-height: 22px;
 }
 
 .menu{
-   
+  
     position: relative;
     font-weight: 200;
     font-size: 14px;
     line-height: 18px;
     color: var(--text-grey-white);
-    z-index: 2;
    
 }
 
@@ -38,6 +36,7 @@ line-height: 22px;
   flex-direction: column;
   gap: 10px;
   background: var(--dark3);
+  z-index: 2;
 
 }
 .main_container{
@@ -83,22 +82,24 @@ line-height: 22px;
   }
 
   .withdraw_item_container{
-      /* padding: 10px 1.3rem; */
-      cursor: pointer;
-      padding: 10px 0;
-      width: 100%;
-      
-      display: flex;
-      justify-content: flex-end;
-      flex-direction: row;
-      align-items: center;
-      gap: 1rem;
-      background: var(--dark3);
-      font-weight: 200;
-      font-size: 14px;
-      line-height: 18px;
-      color: var(--text-grey-white);
-      z-index: 9999;
+   background: var(--dark3);
+  
+   z-index: 100;
+    /* padding: 10px 1.3rem; */
+    cursor: pointer;
+    padding: 10px 0;
+    width: 100%;
+
+    display: flex;
+    justify-content: flex-end;
+    flex-direction: row;
+    align-items: center;
+    gap: 1rem;
+    /* background: darkblue; */
+    font-weight: 200;
+    font-size: 14px;
+    line-height: 18px;
+    color: var(--text-grey-white)
 
 }
 

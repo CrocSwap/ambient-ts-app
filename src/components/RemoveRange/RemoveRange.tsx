@@ -31,6 +31,7 @@ import {
     TransactionError,
 } from '../../utils/TransactionError';
 import WithdrawAs from './WithdrawAs/WithdrawAs';
+import WithdrawTo from './WithdrawTo/WithdrawTo';
 interface IRemoveRangeProps {
     provider: ethers.providers.Provider;
     chainData: ChainSpec;
@@ -501,6 +502,7 @@ export default function RemoveRange(props: IRemoveRangeProps) {
                     quoteRemovalNum={quoteRemovalNum}
                 />
                 <WithdrawAs />
+                <WithdrawTo />
                 <ExtraControls
                     isSaveAsDexSurplusChecked={isSaveAsDexSurplusChecked}
                     setIsSaveAsDexSurplusChecked={setIsSaveAsDexSurplusChecked}
