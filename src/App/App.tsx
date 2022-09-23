@@ -105,6 +105,7 @@ import { useTokenUniverse } from './hooks/useTokenUniverse';
 import { getPositionData } from './functions/getPositionData';
 import { getLimitOrderData } from './functions/getLimitOrderData';
 import { getTransactionData } from './functions/getTransactionData';
+import { fetchPoolRecentChanges } from './functions/fetchPoolRecentChanges';
 
 const cachedFetchAddress = memoizeFetchAddress();
 const cachedFetchNativeTokenBalance = memoizeFetchNativeTokenBalance();
@@ -814,47 +815,31 @@ export default function App() {
                 }
 
                 // retrieve pool recent changes
-                try {
-                    if (httpGraphCacheServerDomain) {
-                        console.log('fetching pool recent changes');
+                console.log('fetching pool recent changes');
 
-                        const poolRecentChangesCacheEndpoint =
-                            httpGraphCacheServerDomain + '/pool_recent_changes?';
-
-                        fetch(
-                            poolRecentChangesCacheEndpoint +
-                                new URLSearchParams({
-                                    base: sortedTokens[0].toLowerCase(),
-                                    quote: sortedTokens[1].toLowerCase(),
-                                    poolIdx: chainData.poolIndex.toString(),
-                                    chainId: chainData.chainId,
-                                    addValue: 'true',
-                                    simpleCalc: 'true',
-                                    annotateMEV: 'true',
-                                    annotate: 'true',
-                                    ensResolution: 'true',
-                                    n: '100', // positive integer	(Optional.) If n and page are provided, query returns a page of results with at most n entries.
-                                    // page: 0 // nonnegative integer	(Optional.) If n and page are provided, query returns the page-th page of results. Page numbers are 0-indexed.
+                fetchPoolRecentChanges({
+                    base: sortedTokens[0],
+                    quote: sortedTokens[1],
+                    poolIdx: chainData.poolIndex,
+                    chainId: chainData.chainId,
+                    annotate: true,
+                    addValue: true,
+                    simpleCalc: true,
+                    annotateMEV: true,
+                    ensResolution: true,
+                    n: 100,
+                })
+                    .then((poolChangesJsonData) => {
+                        if (poolChangesJsonData) {
+                            dispatch(
+                                setChangesByPool({
+                                    dataReceived: true,
+                                    changes: poolChangesJsonData,
                                 }),
-                        )
-                            .then((response) => response?.json())
-                            .then((json) => {
-                                const poolChanges = json?.data;
-
-                                if (poolChanges) {
-                                    dispatch(
-                                        setChangesByPool({
-                                            dataReceived: true,
-                                            changes: poolChanges,
-                                        }),
-                                    );
-                                }
-                            })
-                            .catch(console.log);
-                    }
-                } catch (error) {
-                    console.log;
-                }
+                            );
+                        }
+                    })
+                    .catch(console.log);
 
                 // retrieve pool limit order states
                 try {
