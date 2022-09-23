@@ -225,13 +225,13 @@ export default function TradeTabs2(props: ITabsProps) {
 
     // data for headings of each of the three tabs
     const tradeTabData = [
-        { label: 'Ranges', content: <Ranges {...rangesProps} />, icon: rangePositionsImage },
-        { label: 'Limit Orders', content: <Orders {...ordersProps} />, icon: openOrdersImage },
         {
             label: 'Transactions',
             content: <Transactions {...transactionsProps} />,
             icon: recentTransactionsImage,
         },
+        { label: 'Limit Orders', content: <Orders {...ordersProps} />, icon: openOrdersImage },
+        { label: 'Ranges', content: <Ranges {...rangesProps} />, icon: rangePositionsImage },
     ];
 
     // -------------------------------END OF DATA-----------------------------------------
