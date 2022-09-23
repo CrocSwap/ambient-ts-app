@@ -1,5 +1,5 @@
 .menu{
-    z-index: 999;
+   
     position: relative;
     font-weight: 200;
     font-size: 18px;
@@ -28,6 +28,7 @@
     width: 222px;
     top: 45px;
     right: 0;
+    z-index: 999;
     
 }
 
@@ -65,7 +66,7 @@
     fill: var(--text-grey-white);
   }
 
-  .theme_item_container{
+  .skin_item_container{
     
     /* padding: 10px 1.3rem; */
     cursor: pointer;
@@ -85,7 +86,7 @@
 
 }
 
-.theme_color{
+.skin_color{
     width: 10px;
     height: 10px;
     border-radius: 50%;

@@ -1,9 +1,8 @@
-import styles from './ProfileSettingsTheme.module.css';
+import styles from './ProfileSettingsSkin.module.css';
 import { useState } from 'react';
 import { motion, Variants } from 'framer-motion';
 import { BsCheckCircle } from 'react-icons/bs';
 import { FiCircle } from 'react-icons/fi';
-// import UseOnClickOutside from '../../../../utils/hooks/useOnClickOutside';
 
 // const itemVariants: Variants = {
 //     open: {
@@ -35,35 +34,33 @@ const mainVariant: Variants = {
     },
 };
 
-interface ProfileSettingItemPropsIF {
+interface ProfileSettingSkinItemPropsIF {
     isSelected: boolean;
     name: string;
     onClick: () => void;
 }
 
-const themeItems = [
+const skinItems = [
     {
         name: 'default',
         color: '#ff0055',
     },
     {
-        name: 'Light',
+        name: 'win95',
         color: 'White',
     },
     {
-        name: 'Dark',
+        name: 'runescape',
         color: '#22cc88',
     },
+    {
+        name: '80s',
+        color: '#22ccd88',
+    },
 ];
-export default function ProfileSettingsTheme() {
-    // const menuRef = useRef<HTMLUListElement>(null);
-
+export default function ProfileSettingsSkin() {
     const [isOpen, setIsOpen] = useState(false);
-    const [selected, setSelected] = useState(themeItems[0]);
-    // const clickOutsideHandler = () => {
-    //     setIsOpen(false);
-    // };
-    // UseOnClickOutside(menuRef, clickOutsideHandler);
+    const [selected, setSelected] = useState(skinItems[0]);
 
     const dropdownMenuArrow = (
         <motion.div
@@ -80,12 +77,12 @@ export default function ProfileSettingsTheme() {
         </motion.div>
     );
 
-    function ThemeItem(props: ProfileSettingItemPropsIF) {
+    function SkinItem(props: ProfileSettingSkinItemPropsIF) {
         const { isSelected, onClick, name } = props;
 
         return (
             <motion.li
-                className={styles.theme_item_container}
+                className={styles.skin_item_container}
                 onClick={onClick}
                 // variants={itemVariants}
             >
@@ -98,11 +95,11 @@ export default function ProfileSettingsTheme() {
             </motion.li>
         );
     }
-
-    const handleItemClick = (theme: { name: string; color: string }) => {
-        setSelected(theme);
+    const handleItemClick = (skin: { name: string; color: string }) => {
+        setSelected(skin);
         setIsOpen(false);
     };
+
     return (
         <motion.div initial={false} animate={isOpen ? 'open' : 'closed'} className={styles.menu}>
             <motion.button
@@ -118,14 +115,13 @@ export default function ProfileSettingsTheme() {
                 variants={mainVariant}
                 style={{ pointerEvents: isOpen ? 'auto' : 'none' }}
                 className={styles.main_container}
-                // ref={menuRef}
             >
-                {themeItems.map((theme, idx) => (
-                    <ThemeItem
-                        name={theme.name}
+                {skinItems.map((skin, idx) => (
+                    <SkinItem
+                        name={skin.name}
                         key={idx}
-                        isSelected={selected.color === theme.color}
-                        onClick={() => handleItemClick(theme)}
+                        isSelected={selected.color === skin.color}
+                        onClick={() => handleItemClick(skin)}
                     />
                 ))}
             </motion.ul>

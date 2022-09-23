@@ -40,6 +40,7 @@ interface PortfolioPropsIF {
     outsideControl: boolean;
     setOutsideControl: Dispatch<SetStateAction<boolean>>;
     userAccount?: boolean;
+    openGlobalModal: (content: React.ReactNode, title?: string) => void;
 }
 
 // const cachedFetchAddress = memoizePromiseFn(fetchAddress);
@@ -60,6 +61,8 @@ export default function Portfolio(props: PortfolioPropsIF) {
         connectedAccount,
         chainId,
         tokenMap,
+        openGlobalModal,
+        userAccount,
     } = props;
 
     const { address } = useParams();
@@ -212,10 +215,13 @@ export default function Portfolio(props: PortfolioPropsIF) {
 
     return (
         <main data-testid={'portfolio'} className={styles.portfolio_container}>
-            {showProfileSettings && (
+            {userAccount && showProfileSettings && (
                 <ProfileSettings
                     showProfileSettings={showProfileSettings}
                     setShowProfileSettings={setShowProfileSettings}
+                    ensName={address ? secondaryensName : ensName}
+                    imageData={connectedAccountActive ? userImageData : secondaryImageData}
+                    openGlobalModal={openGlobalModal}
                 />
             )}
             <PortfolioBanner
