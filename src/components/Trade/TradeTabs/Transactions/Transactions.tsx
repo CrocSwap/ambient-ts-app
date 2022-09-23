@@ -1,19 +1,21 @@
 import styles from './Transactions.module.css';
 import TransactionCard from './TransactionCard';
 import TransactionCardHeader from './TransactionCardHeader';
-import { CandleData, graphData } from '../../../../utils/state/graphDataSlice';
+import { addChangesByPool, CandleData, graphData } from '../../../../utils/state/graphDataSlice';
 import { TokenIF } from '../../../../utils/interfaces/TokenIF';
-import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
-import { Dispatch, SetStateAction, useState, useEffect } from 'react';
+import { useAppDispatch, useAppSelector } from '../../../../utils/hooks/reduxToolkit';
+import { Dispatch, SetStateAction, useState, useEffect, useMemo } from 'react';
 import TransactionsSkeletons from './TransactionsSkeletons/TransactionsSkeletons';
 import Pagination from '../../../Global/Pagination/Pagination';
+import { ChainSpec } from '@crocswap-libs/sdk';
+import useWebSocket from 'react-use-websocket';
 
 interface TransactionsProps {
     isShowAllEnabled: boolean;
     portfolio?: boolean;
     tokenMap: Map<string, TokenIF>;
     graphData: graphData;
-    chainId: string;
+    chainData: ChainSpec;
     blockExplorer?: string;
     currentTxActiveInTransactions: string;
     setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
@@ -32,7 +34,7 @@ export default function Transactions(props: TransactionsProps) {
         account,
         graphData,
         tokenMap,
-        chainId,
+        chainData,
         blockExplorer,
         currentTxActiveInTransactions,
         setCurrentTxActiveInTransactions,
@@ -104,6 +106,8 @@ export default function Transactions(props: TransactionsProps) {
     const tokenAAddress = tradeData.tokenA.address;
     const tokenBAddress = tradeData.tokenB.address;
 
+    const baseTokenAddress = tradeData.baseToken.address;
+    const quoteTokenAddress = tradeData.quoteToken.address;
     // console.log(changesByPool);
 
     // const [transactions] = useState(transactionData);
@@ -135,6 +139,54 @@ export default function Transactions(props: TransactionsProps) {
     const usePaginateDataOrNull = expandTradeTable ? currentTransactions : transactionData;
 
     // console.log({ transactionData });
+    const wssGraphCacheServerDomain = 'wss://809821320828123.de:5000';
+
+    const poolRecentChangesCacheSubscriptionEndpoint = useMemo(
+        () =>
+            wssGraphCacheServerDomain +
+            '/subscribe_pool_recent_changes?' +
+            new URLSearchParams({
+                base: baseTokenAddress.toLowerCase(),
+                quote: quoteTokenAddress.toLowerCase(),
+                poolIdx: chainData.poolIndex.toString(),
+                chainId: chainData.chainId,
+                ensResolution: 'true',
+                annotate: 'true',
+                //  addCachedAPY: 'true',
+                //  omitKnockout: 'true',
+                addValue: 'true',
+            }),
+        [baseTokenAddress, quoteTokenAddress, chainData.chainId, chainData.poolIndex],
+    );
+
+    const {
+        //  sendMessage,
+        lastMessage: lastPoolChangeMessage,
+        //  readyState
+    } = useWebSocket(
+        poolRecentChangesCacheSubscriptionEndpoint,
+        {
+            // share:  true,
+            onOpen: () => console.log('pool liqChange subscription opened'),
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            onClose: (event: any) => console.log({ event }),
+            // onClose: () => console.log('allPositions websocket connection closed'),
+            // Will attempt to reconnect on all close events, such as server shutting down
+            shouldReconnect: () => true,
+        },
+        // only connect if base/quote token addresses are available
+        baseTokenAddress !== '' && quoteTokenAddress !== '',
+    );
+
+    const dispatch = useAppDispatch();
+
+    useEffect(() => {
+        if (lastPoolChangeMessage !== null) {
+            const lastMessageData = JSON.parse(lastPoolChangeMessage.data).data;
+            // console.log({ lastMessageData });
+            if (lastMessageData) dispatch(addChangesByPool(lastMessageData));
+        }
+    }, [lastPoolChangeMessage]);
 
     const TransactionsDisplay = usePaginateDataOrNull?.map((tx, idx) => (
         //   />
@@ -142,7 +194,7 @@ export default function Transactions(props: TransactionsProps) {
             key={idx}
             tx={tx}
             tokenMap={tokenMap}
-            chainId={chainId}
+            chainId={chainData.chainId}
             blockExplorer={blockExplorer}
             tokenAAddress={tokenAAddress}
             tokenBAddress={tokenBAddress}

@@ -194,7 +194,7 @@ export default function TradeTabs2(props: ITabsProps) {
         isShowAllEnabled: isShowAllEnabled,
         tokenMap: tokenMap,
         graphData: graphData,
-        chainId: chainId,
+        chainData: chainData,
         blockExplorer: chainData.blockExplorer || undefined,
         currentTxActiveInTransactions: currentTxActiveInTransactions,
         account: account,
