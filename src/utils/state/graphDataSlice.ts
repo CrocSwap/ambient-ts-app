@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { PositionIF } from '../interfaces/PositionIF';
 export interface graphData {
+    lastBlock: number;
     positionsByUser: PositionsByUser;
     positionsByPool: PositionsByPool;
     changesByUser: ChangesByUser;
@@ -299,6 +300,7 @@ export interface ChangesByPool {
 }
 
 const initialState: graphData = {
+    lastBlock: 0,
     positionsByUser: { dataReceived: false, positions: [] },
     positionsByPool: { dataReceived: false, positions: [] },
     changesByUser: { dataReceived: false, changes: [] },
@@ -315,6 +317,9 @@ export const graphDataSlice = createSlice({
     name: 'graphData',
     initialState,
     reducers: {
+        setLastBlock: (state, action: PayloadAction<number>) => {
+            state.lastBlock = action.payload;
+        },
         setPositionsByUser: (state, action: PayloadAction<PositionsByUser>) => {
             state.positionsByUser = action.payload;
         },
@@ -585,6 +590,7 @@ export const graphDataSlice = createSlice({
 
 // action creators are generated for each case reducer function
 export const {
+    setLastBlock,
     setPositionsByUser,
     addPositionsByUser,
     setPositionsByPool,
