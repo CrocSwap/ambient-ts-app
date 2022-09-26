@@ -69,7 +69,6 @@ export default function RoomDropdown(props: RoomProps) {
     function handleRoomClick(event: any) {
         props.setRoom(event.target.dataset.value);
         handleDropdownMenu();
-        console.log(event.target.dataset.value);
     }
 
     function handleShowRooms(room: string) {
