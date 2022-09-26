@@ -21,7 +21,7 @@ import {
     CircleLoader,
     CircleLoaderFailed,
 } from '../Global/LoadingAnimations/CircleLoader/CircleLoader';
-import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
+import { ambientPosSlot, ChainSpec, concPosSlot, CrocEnv } from '@crocswap-libs/sdk';
 import HarvestPositionHeader from './HarvestPositionHeader/HarvestPositionHeader';
 import HarvestExtraControls from './HarvestExtraControls/HarvestExtraControls';
 import {
@@ -29,8 +29,14 @@ import {
     isTransactionReplacedError,
     TransactionError,
 } from '../../utils/TransactionError';
-import { useAppDispatch } from '../../utils/hooks/reduxToolkit';
-import { addPendingTx, addReceipt, removePendingTx } from '../../utils/state/receiptDataSlice';
+import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
+import {
+    addPendingTx,
+    addPositionPendingUpdate,
+    addReceipt,
+    removePendingTx,
+    removePositionPendingUpdate,
+} from '../../utils/state/receiptDataSlice';
 
 interface IHarvestPositionProps {
     crocEnv: CrocEnv | undefined;
@@ -115,6 +121,11 @@ export default function HarvestPosition(props: IHarvestPositionProps) {
 
     const positionStatsCacheEndpoint = 'https://809821320828123.de:5000/position_stats?';
     const dispatch = useAppDispatch();
+
+    const positionsPendingUpdate = useAppSelector(
+        (state) => state.receiptData,
+    ).positionsPendingUpdate;
+
     useEffect(() => {
         if (
             position.chainId &&
@@ -150,8 +161,23 @@ export default function HarvestPosition(props: IHarvestPositionProps) {
 
     const liquiditySlippageTolerance = 1;
 
+    const posHash =
+        position.positionType === 'ambient'
+            ? ambientPosSlot(position.user, position.base, position.quote, chainData.poolIndex)
+            : concPosSlot(
+                  position.user,
+                  position.base,
+                  position.quote,
+                  position.bidTick,
+                  position.askTick,
+                  chainData.poolIndex,
+              );
+
+    const isPositionPendingUpdate = positionsPendingUpdate.indexOf(posHash as string) > -1;
+
     const harvestFn = async () => {
         console.log('100% of fees to be removed.');
+        dispatch(addPositionPendingUpdate(posHash as string));
         setShowConfirmation(true);
         if (!crocEnv) return;
         const env = crocEnv;
@@ -245,6 +271,7 @@ export default function HarvestPosition(props: IHarvestPositionProps) {
             console.log({ receipt });
             dispatch(addReceipt(JSON.stringify(receipt)));
             dispatch(removePendingTx(receipt.transactionHash));
+            dispatch(removePositionPendingUpdate(posHash as string));
         }
     };
 
@@ -253,12 +280,17 @@ export default function HarvestPosition(props: IHarvestPositionProps) {
     const feesGreaterThanZero =
         (feeLiqBaseDecimalCorrected || 0) + (feeLiqQuoteDecimalCorrected || 0) > 0;
 
-    const harvestButtonOrNull =
-        positionType === 'concentrated' && feesGreaterThanZero && !showSettings ? (
-            <HarvestPositionButton harvestFn={harvestFn} title={'Harvest Fees'} />
-        ) : (
-            <HarvestPositionButton disabled={true} harvestFn={harvestFn} title={'…'} />
-        );
+    const harvestButtonOrNull = isPositionPendingUpdate ? (
+        <HarvestPositionButton
+            disabled={true}
+            harvestFn={harvestFn}
+            title={'Position Update Pending…'}
+        />
+    ) : positionType === 'concentrated' && feesGreaterThanZero && !showSettings ? (
+        <HarvestPositionButton harvestFn={harvestFn} title={'Harvest Fees'} />
+    ) : (
+        <HarvestPositionButton disabled={true} harvestFn={harvestFn} title={'…'} />
+    );
 
     const removalPercentage = 100;
 

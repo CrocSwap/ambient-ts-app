@@ -13,7 +13,7 @@ import { RiListSettingsLine } from 'react-icons/ri';
 import { BsArrowLeft } from 'react-icons/bs';
 import { PositionIF } from '../../utils/interfaces/PositionIF';
 import { ethers } from 'ethers';
-import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
+import { ambientPosSlot, ChainSpec, concPosSlot, CrocEnv } from '@crocswap-libs/sdk';
 import Button from '../Global/Button/Button';
 
 import RemoveRangeSettings from './RemoveRangeSettings/RemoveRangeSettings';
@@ -23,8 +23,14 @@ import {
 } from '../Global/LoadingAnimations/CircleLoader/CircleLoader';
 import RemoveRangeHeader from './RemoveRangeHeader/RemoveRangeHeader';
 import ExtraControls from './ExtraControls/ExtraControls';
-import { addPendingTx, addReceipt, removePendingTx } from '../../utils/state/receiptDataSlice';
-import { useAppDispatch } from '../../utils/hooks/reduxToolkit';
+import {
+    addPendingTx,
+    addPositionPendingUpdate,
+    addReceipt,
+    removePendingTx,
+    removePositionPendingUpdate,
+} from '../../utils/state/receiptDataSlice';
+import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
 import {
     isTransactionFailedError,
     isTransactionReplacedError,
@@ -101,6 +107,10 @@ export default function RemoveRange(props: IRemoveRangeProps) {
 
     const dispatch = useAppDispatch();
 
+    const positionsPendingUpdate = useAppSelector(
+        (state) => state.receiptData,
+    ).positionsPendingUpdate;
+
     useEffect(() => {
         if (
             position.chainId &&
@@ -164,7 +174,23 @@ export default function RemoveRange(props: IRemoveRangeProps) {
 
     const liquiditySlippageTolerance = 1;
 
+    const posHash =
+        position.positionType === 'ambient'
+            ? ambientPosSlot(position.user, position.base, position.quote, chainData.poolIndex)
+            : concPosSlot(
+                  position.user,
+                  position.base,
+                  position.quote,
+                  position.bidTick,
+                  position.askTick,
+                  chainData.poolIndex,
+              );
+
+    const isPositionPendingUpdate = positionsPendingUpdate.indexOf(posHash as string) > -1;
+
     const removeFn = async () => {
+        dispatch(addPositionPendingUpdate(posHash as string));
+
         setShowConfirmation(true);
         console.log(`${removalPercentage}% to be removed.`);
 
@@ -358,6 +384,7 @@ export default function RemoveRange(props: IRemoveRangeProps) {
             console.log({ receipt });
             dispatch(addReceipt(JSON.stringify(receipt)));
             dispatch(removePendingTx(receipt.transactionHash));
+            dispatch(removePositionPendingUpdate(posHash as string));
         }
     };
 
@@ -453,6 +480,12 @@ export default function RemoveRange(props: IRemoveRangeProps) {
         <div style={{ padding: '0 1rem' }}>
             {showSettings ? (
                 <Button title='Confirm' action={() => setShowSettings(false)} />
+            ) : isPositionPendingUpdate ? (
+                <RemoveRangeButton
+                    removeFn={removeFn}
+                    disabled={true}
+                    title='Position Update Pending…'
+                />
             ) : positionHasLiquidity ? (
                 <RemoveRangeButton
                     removeFn={removeFn}
