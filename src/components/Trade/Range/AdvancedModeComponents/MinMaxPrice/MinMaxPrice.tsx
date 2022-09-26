@@ -110,8 +110,8 @@ export default function MinMaxPrice(props: MinMaxPriceIF) {
             setMaxPriceInputString(high !== undefined ? high.toString() : '0.0');
             setMinPriceInputString(low !== undefined ? low.toString() : '0.0');
 
-            lowBoundOnBlur();
-            highBoundOnBlur();
+            // lowBoundOnBlur();
+            // highBoundOnBlur();
         }
     }, [targetData]);
 
