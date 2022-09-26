@@ -59,7 +59,7 @@ interface IRemoveRangeProps {
     baseTokenLogoURI: string;
     quoteTokenLogoURI: string;
     isDenomBase: boolean;
-    lastBlockNumber: number;
+    // lastBlockNumber: number;
     position: PositionIF;
 
     openGlobalModal: (content: React.ReactNode) => void;
@@ -84,9 +84,11 @@ export default function RemoveRange(props: IRemoveRangeProps) {
         closeGlobalModal,
         chainData,
         provider,
-        lastBlockNumber,
+        // lastBlockNumber,
         position,
     } = props;
+
+    const lastBlockNumber = useAppSelector((state) => state.graphData).lastBlock;
 
     const [removalPercentage, setRemovalPercentage] = useState(100);
 
@@ -137,6 +139,7 @@ export default function RemoveRange(props: IRemoveRangeProps) {
                 )
                     .then((response) => response.json())
                     .then((json) => {
+                        console.log({ json });
                         setPosLiqBaseDecimalCorrected(json?.data?.positionLiqBaseDecimalCorrected);
                         setPosLiqQuoteDecimalCorrected(
                             json?.data?.positionLiqQuoteDecimalCorrected,
@@ -196,8 +199,6 @@ export default function RemoveRange(props: IRemoveRangeProps) {
     const isPositionPendingUpdate = positionsPendingUpdate.indexOf(posHash as string) > -1;
 
     const removeFn = async () => {
-        dispatch(addPositionPendingUpdate(posHash as string));
-
         setShowConfirmation(true);
 
         console.log(`${removalPercentage}% to be removed.`);
@@ -210,6 +211,8 @@ export default function RemoveRange(props: IRemoveRangeProps) {
         const highLimit = spotPrice * (1 + liquiditySlippageTolerance / 100);
         // console.log({ position });
 
+        dispatch(addPositionPendingUpdate(posHash as string));
+
         let tx;
         if (position.positionType === 'ambient') {
             if (removalPercentage === 100) {
@@ -220,6 +223,7 @@ export default function RemoveRange(props: IRemoveRangeProps) {
                     console.log(tx?.hash);
                     setNewRemovalTransactionHash(tx?.hash);
                 } catch (error) {
+                    dispatch(removePositionPendingUpdate(posHash as string));
                     setTxErrorCode(error?.code);
                     setTxErrorMessage(error?.message);
                 }
@@ -235,6 +239,7 @@ export default function RemoveRange(props: IRemoveRangeProps) {
                     console.log(tx?.hash);
                     setNewRemovalTransactionHash(tx?.hash);
                 } catch (error) {
+                    dispatch(removePositionPendingUpdate(posHash as string));
                     setTxErrorCode(error?.code);
                     setTxErrorMessage(error?.message);
                 }
@@ -268,6 +273,7 @@ export default function RemoveRange(props: IRemoveRangeProps) {
                 dispatch(removePositionPendingUpdate(posHash as string));
                 setTxErrorCode(error?.code);
                 setTxErrorMessage(error?.message);
+                dispatch(removePositionPendingUpdate(posHash as string));
             }
         } else {
             console.log('unsupported position type for removal');

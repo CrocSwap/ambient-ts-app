@@ -167,6 +167,8 @@ export default function RangeCard(props: RangeCardProps) {
             ? `position-${position.positionStorageSlot}`
             : '';
 
+    // console.log(rangeDetailsProps.lastBlockNumber);
+
     function scrollToDiv() {
         const element = document.getElementById(positionDomId);
         element?.scrollIntoView({ behavior: 'smooth', block: 'end', inline: 'nearest' });
