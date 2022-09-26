@@ -25,6 +25,7 @@ export interface LimitOrdersByPool {
 
 export interface ILimitOrderState {
     id: string;
+    tx: string;
     positionId: string;
     network: string;
     block: number;
@@ -415,6 +416,22 @@ export const graphDataSlice = createSlice({
                 }
             }
         },
+        addLimitOrderChangesByUser: (state, action: PayloadAction<Array<ILimitOrderState>>) => {
+            for (let index = 0; index < action.payload.length; index++) {
+                const updatedTx = action.payload[index];
+                const txToFind = updatedTx.tx.toLowerCase();
+                const indexOfTxInState = state.changesByUser.changes
+                    .map((item) => item.tx.toLowerCase())
+                    .findIndex((tx) => tx === txToFind);
+                if (indexOfTxInState === -1) {
+                    state.limitOrdersByUser.limitOrders = action.payload.concat(
+                        state.limitOrdersByUser.limitOrders,
+                    );
+                } else {
+                    state.limitOrdersByUser.limitOrders[indexOfTxInState] = action.payload[index];
+                }
+            }
+        },
         setChangesByPool: (state, action: PayloadAction<ChangesByPool>) => {
             state.changesByPool = action.payload;
         },
@@ -604,6 +621,7 @@ export const {
     setLimitOrdersByPool,
     setChangesByUser,
     addChangesByUser,
+    addLimitOrderChangesByUser,
     addChangesByPool,
     setChangesByPool,
     resetGraphData,

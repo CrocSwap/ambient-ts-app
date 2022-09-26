@@ -74,8 +74,8 @@ export default function OrderCard(props: OrderCardProps) {
     const liqBaseNum = limitOrder.positionLiqBaseDecimalCorrected;
     const liqQuoteNum = limitOrder.positionLiqQuoteDecimalCorrected;
 
-    const baseQtyTruncated =
-        liqBaseNum === 0
+    const baseQtyTruncated = liqBaseNum
+        ? liqBaseNum === 0
             ? '0'
             : liqBaseNum < 0.0001
             ? liqBaseNum.toExponential(2)
@@ -87,9 +87,10 @@ export default function OrderCard(props: OrderCardProps) {
               liqBaseNum.toLocaleString(undefined, {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
-              });
-    const quoteQtyTruncated =
-        liqQuoteNum === 0
+              })
+        : '...';
+    const quoteQtyTruncated = liqQuoteNum
+        ? liqQuoteNum === 0
             ? '0'
             : liqQuoteNum < 0.0001
             ? liqQuoteNum.toExponential(2)
@@ -101,7 +102,8 @@ export default function OrderCard(props: OrderCardProps) {
               liqQuoteNum.toLocaleString(undefined, {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
-              });
+              })
+        : '...';
 
     const usdValueNum = limitOrder.positionLiqTotalUSD;
     const usdValueTruncated = !usdValueNum

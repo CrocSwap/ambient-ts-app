@@ -26,6 +26,7 @@ import {
     // ITransaction,
     addChangesByUser,
     setLastBlock,
+    addLimitOrderChangesByUser,
     // ChangesByUser,
 } from '../utils/state/graphDataSlice';
 import { ethers } from 'ethers';
@@ -1232,6 +1233,41 @@ export default function App() {
             if (lastMessageData) dispatch(addChangesByUser(lastMessageData));
         }
     }, [lastUserRecentChangesMessage]);
+
+    const userLimitOrderChangesCacheSubscriptionEndpoint = useMemo(
+        () =>
+            wssGraphCacheServerDomain +
+            '/subscribe_user_limit_order_changes?' +
+            new URLSearchParams({
+                user: account || '',
+                chainId: chainData.chainId,
+                addValue: 'true',
+                ensResolution: 'true',
+            }),
+        [account, chainData.chainId],
+    );
+
+    const { lastMessage: lastUserLimitOrderChangesMessage } = useWebSocket(
+        userLimitOrderChangesCacheSubscriptionEndpoint,
+        {
+            // share: true,
+            onOpen: () => console.log('user limit order changes subscription opened'),
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            onClose: (event: any) => console.log({ event }),
+            // Will attempt to reconnect on all close events, such as server shutting down
+            shouldReconnect: () => shouldNonCandleSubscriptionsReconnect,
+        },
+        // only connect is account is available
+        account !== null && account !== '',
+    );
+
+    useEffect(() => {
+        if (lastUserLimitOrderChangesMessage !== null) {
+            const lastMessageData = JSON.parse(lastUserLimitOrderChangesMessage.data).data;
+
+            if (lastMessageData) dispatch(addLimitOrderChangesByUser(lastMessageData));
+        }
+    }, [lastUserLimitOrderChangesMessage]);
 
     const [baseTokenBalance, setBaseTokenBalance] = useState<string>('');
     const [quoteTokenBalance, setQuoteTokenBalance] = useState<string>('');
