@@ -25,6 +25,7 @@ import {
     ILimitOrderState,
     // ITransaction,
     addChangesByUser,
+    setLastBlock,
     // ChangesByUser,
 } from '../utils/state/graphDataSlice';
 import { ethers } from 'ethers';
@@ -323,6 +324,7 @@ export default function App() {
             .then((json) => {
                 if (lastBlockNumber !== parseInt(json?.result)) {
                     setLastBlockNumber(parseInt(json?.result));
+                    dispatch(setLastBlock(parseInt(json?.result)));
                 }
             })
             .catch(console.log);
@@ -351,6 +353,7 @@ export default function App() {
                     const lastBlockNumberHex = lastMessageData.params?.result?.number;
                     if (lastBlockNumberHex && lastBlockNumber !== parseInt(lastBlockNumberHex)) {
                         setLastBlockNumber(parseInt(lastBlockNumberHex));
+                        dispatch(setLastBlock(parseInt(lastBlockNumberHex)));
                     }
                 }
             }
