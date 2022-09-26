@@ -9,18 +9,14 @@ interface NotificationCenterPropsIF {
     showNotificationTable: boolean;
     setShowNotificationTable: Dispatch<SetStateAction<boolean>>;
     lastBlockNumber: number;
-    pendingTransactions: string[];
 }
 
 const NotificationCenter = (props: NotificationCenterPropsIF) => {
-    const {
-        showNotificationTable,
-        setShowNotificationTable,
-        pendingTransactions,
-        lastBlockNumber,
-    } = props;
+    const { showNotificationTable, setShowNotificationTable, lastBlockNumber } = props;
 
     const receiptData = useAppSelector((state) => state.receiptData);
+
+    const pendingTransactions = receiptData.pendingTransactions;
 
     const sessionReceipts = receiptData.sessionReceipts;
 

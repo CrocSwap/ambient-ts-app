@@ -23,7 +23,9 @@ import {
     CandlesByPoolAndDuration,
     CandleData,
     ILimitOrderState,
-    ITransaction,
+    // ITransaction,
+    addChangesByUser,
+    // ChangesByUser,
 } from '../utils/state/graphDataSlice';
 import { ethers } from 'ethers';
 import { useMoralis } from 'react-moralis';
@@ -107,7 +109,9 @@ import ChatPanel from '../components/Chat/ChatPanel';
 import { useTokenUniverse } from './hooks/useTokenUniverse';
 import { getPositionData } from './functions/getPositionData';
 import { getLimitOrderData } from './functions/getLimitOrderData';
-import { getTransactionData } from './functions/getTransactionData';
+// import { getTransactionData } from './functions/getTransactionData';
+import { fetchPoolRecentChanges } from './functions/fetchPoolRecentChanges';
+import { fetchUserRecentChanges } from './functions/fetchUserRecentChanges';
 
 const cachedFetchAddress = memoizeFetchAddress();
 const cachedFetchNativeTokenBalance = memoizeFetchNativeTokenBalance();
@@ -245,9 +249,10 @@ export default function App() {
                 }
             } else if (!provider || !onChain) {
                 const chainSpec = lookupChain(chainData.chainId);
-                const url = chainSpec.wsUrl ? chainSpec.wsUrl : chainSpec.nodeUrl;
+                const url = chainSpec.nodeUrl;
+                // const url = chainSpec.wsUrl ? chainSpec.wsUrl : chainSpec.nodeUrl;
                 // console.log('Chain URL ' + url);
-                setProvider(new ethers.providers.WebSocketProvider(url));
+                setProvider(new ethers.providers.JsonRpcProvider(url));
             }
         } catch (error) {
             console.log(error);
@@ -301,7 +306,7 @@ export default function App() {
     }, [tokenListsReceived]);
 
     useEffect(() => {
-        fetch('https://goerli.infura.io/v3/25e7e0ec71de48bfa9c4d2431fbb3c4a', {
+        fetch(chainData.nodeUrl, {
             method: 'POST',
             headers: {
                 Accept: 'application/json',
@@ -319,13 +324,12 @@ export default function App() {
                 if (lastBlockNumber !== parseInt(json?.result)) {
                     setLastBlockNumber(parseInt(json?.result));
                 }
-            });
+            })
+            .catch(console.log);
     }, []);
 
-    const goerliWssInfuraEndpoint = 'wss://goerli.infura.io/ws/v3/25e7e0ec71de48bfa9c4d2431fbb3c4a';
-
     const { sendMessage: send, lastMessage: lastNewHeadMessage } = useWebSocket(
-        goerliWssInfuraEndpoint,
+        chainData.wsUrl || '',
         {
             onOpen: () => {
                 console.log('infura newHeads subscription opened');
@@ -412,12 +416,18 @@ export default function App() {
             ? JSON.parse(receiptData.sessionReceipts[receiptData.sessionReceipts.length - 1])
             : null;
 
-    const isLastReceiptSuccess = lastReceipt?.confirmations >= 1;
+    const isLastReceiptSuccess = lastReceipt?.status === 1;
 
-    let snackMessage = '';
-    if (lastReceipt) {
-        snackMessage = `Transaction ${lastReceipt.transactionHash} successfully completed`;
-    }
+    // let snackMessage = '';
+    // if (lastReceipt) {
+
+    //     snackMessage = `Transaction ${lastReceipt.transactionHash} successfully completed`;
+    // }
+    const snackMessage = lastReceipt
+        ? isLastReceiptSuccess
+            ? `Transaction ${lastReceipt.transactionHash} successfully completed`
+            : `Transaction ${lastReceipt.transactionHash} failed`
+        : '';
 
     const snackbarContent = (
         <SnackbarComponent
@@ -820,47 +830,29 @@ export default function App() {
                 }
 
                 // retrieve pool recent changes
-                try {
-                    if (httpGraphCacheServerDomain) {
-                        console.log('fetching pool recent changes');
-
-                        const poolRecentChangesCacheEndpoint =
-                            httpGraphCacheServerDomain + '/pool_recent_changes?';
-
-                        fetch(
-                            poolRecentChangesCacheEndpoint +
-                                new URLSearchParams({
-                                    base: sortedTokens[0].toLowerCase(),
-                                    quote: sortedTokens[1].toLowerCase(),
-                                    poolIdx: chainData.poolIndex.toString(),
-                                    chainId: chainData.chainId,
-                                    addValue: 'true',
-                                    simpleCalc: 'true',
-                                    annotateMEV: 'true',
-                                    annotate: 'true',
-                                    ensResolution: 'true',
-                                    n: '100', // positive integer	(Optional.) If n and page are provided, query returns a page of results with at most n entries.
-                                    // page: 0 // nonnegative integer	(Optional.) If n and page are provided, query returns the page-th page of results. Page numbers are 0-indexed.
+                fetchPoolRecentChanges({
+                    base: sortedTokens[0],
+                    quote: sortedTokens[1],
+                    poolIdx: chainData.poolIndex,
+                    chainId: chainData.chainId,
+                    annotate: true,
+                    addValue: true,
+                    simpleCalc: true,
+                    annotateMEV: false,
+                    ensResolution: true,
+                    n: 100,
+                })
+                    .then((poolChangesJsonData) => {
+                        if (poolChangesJsonData) {
+                            dispatch(
+                                setChangesByPool({
+                                    dataReceived: true,
+                                    changes: poolChangesJsonData,
                                 }),
-                        )
-                            .then((response) => response?.json())
-                            .then((json) => {
-                                const poolChanges = json?.data;
-
-                                if (poolChanges) {
-                                    dispatch(
-                                        setChangesByPool({
-                                            dataReceived: true,
-                                            changes: poolChanges,
-                                        }),
-                                    );
-                                }
-                            })
-                            .catch(console.log);
-                    }
-                } catch (error) {
-                    console.log;
-                }
+                            );
+                        }
+                    })
+                    .catch(console.log);
 
                 // retrieve pool limit order states
                 try {
@@ -905,6 +897,11 @@ export default function App() {
     }, [tokenPairStringified, chainData.chainId, provider]);
 
     const activePeriod = tradeData.activeChartPeriod;
+
+    useEffect(() => {
+        setCandleData(undefined);
+        fetchCandles();
+    }, [mainnetBaseTokenAddress, mainnetQuoteTokenAddress, activePeriod]);
 
     const fetchCandles = () => {
         if (
@@ -1141,49 +1138,6 @@ export default function App() {
         }
     }, [candlesMessage]);
 
-    // const poolSwapsCacheSubscriptionEndpoint = useMemo(
-    //     () =>
-    //         wssGraphCacheServerDomain +
-    //         '/subscribe_pool_swaps?' +
-    //         new URLSearchParams({
-    //             base: baseTokenAddress.toLowerCase(),
-    //             quote: quoteTokenAddress.toLowerCase(),
-    //             poolIdx: chainData.poolIndex.toString(),
-    //             chainId: chainData.chainId,
-    //             addValue: 'true',
-    //             ensResolution: 'true',
-    //         }),
-    //     [baseTokenAddress, quoteTokenAddress, chainData.chainId],
-    // );
-
-    // const {
-    //     //  sendMessage,
-    //     lastMessage: lastPoolSwapsMessage,
-    //     //  readyState
-    // } = useWebSocket(
-    //     poolSwapsCacheSubscriptionEndpoint,
-    //     {
-    //         // share:  true,
-    //         onOpen: () => console.log('poolSwaps subscription opened'),
-    //         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    //         onClose: (event: any) => console.log({ event }),
-    //         // Will attempt to reconnect on all close events, such as server shutting down
-    //         shouldReconnect: () => shouldNonCandleSubscriptionsReconnect,
-    //     },
-    //     // only connect if base/quote token addresses are available
-    //     baseTokenAddress !== '' && quoteTokenAddress !== '',
-    // );
-
-    // useEffect(() => {
-    //     if (lastPoolSwapsMessage !== null) {
-    //         const lastMessageData = JSON.parse(lastPoolSwapsMessage.data).data;
-
-    //         if (lastMessageData) {
-    //             dispatch(addSwapsByPool(lastMessageData));
-    //         }
-    //     }
-    // }, [lastPoolSwapsMessage]);
-
     const userLiqChangesCacheSubscriptionEndpoint = useMemo(
         () =>
             wssGraphCacheServerDomain +
@@ -1241,42 +1195,40 @@ export default function App() {
         }
     }, [lastUserPositionsMessage]);
 
-    // const userSwapsCacheSubscriptionEndpoint = useMemo(
-    //     () =>
-    //         wssGraphCacheServerDomain +
-    //         '/subscribe_user_swaps?' +
-    //         new URLSearchParams({
-    //             user: account || '',
-    //             chainId: chainData.chainId,
-    //             addValue: 'true',
-    //             ensResolution: 'true',
-    //         }),
-    //     [account, chainData.chainId],
-    // );
+    const userRecentChangesCacheSubscriptionEndpoint = useMemo(
+        () =>
+            wssGraphCacheServerDomain +
+            '/subscribe_user_recent_changes?' +
+            new URLSearchParams({
+                user: account || '',
+                chainId: chainData.chainId,
+                addValue: 'true',
+                ensResolution: 'true',
+            }),
+        [account, chainData.chainId],
+    );
 
-    // const { lastMessage: lastUserSwapsMessage } = useWebSocket(
-    //     userSwapsCacheSubscriptionEndpoint,
-    //     {
-    //         // share: true,
-    //         onOpen: () => console.log('user swaps subscription opened'),
-    //         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    //         onClose: (event: any) => console.log({ event }),
-    //         // onClose: () => console.log('userSwaps websocket connection closed'),
-    //         // Will attempt to reconnect on all close events, such as server shutting down
-    //         shouldReconnect: () => shouldNonCandleSubscriptionsReconnect,
-    //     },
-    //     // only connect if account is available
-    //     account !== null && account !== '',
-    // );
+    const { lastMessage: lastUserRecentChangesMessage } = useWebSocket(
+        userRecentChangesCacheSubscriptionEndpoint,
+        {
+            // share: true,
+            onOpen: () => console.log('user recent changes subscription opened'),
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            onClose: (event: any) => console.log({ event }),
+            // Will attempt to reconnect on all close events, such as server shutting down
+            shouldReconnect: () => shouldNonCandleSubscriptionsReconnect,
+        },
+        // only connect is account is available
+        account !== null && account !== '',
+    );
 
-    // useEffect(() => {
-    //     if (lastUserSwapsMessage !== null) {
-    //         const lastMessageData = JSON.parse(lastUserSwapsMessage.data).data;
-    //         if (lastMessageData) {
-    //             dispatch(addSwapsByUser(lastMessageData));
-    //         }
-    //     }
-    // }, [lastUserSwapsMessage]);
+    useEffect(() => {
+        if (lastUserRecentChangesMessage !== null) {
+            const lastMessageData = JSON.parse(lastUserRecentChangesMessage.data).data;
+
+            if (lastMessageData) dispatch(addChangesByUser(lastMessageData));
+        }
+    }, [lastUserRecentChangesMessage]);
 
     const [baseTokenBalance, setBaseTokenBalance] = useState<string>('');
     const [quoteTokenBalance, setQuoteTokenBalance] = useState<string>('');
@@ -1521,39 +1473,25 @@ export default function App() {
             }
 
             try {
-                const userRecentChangesCacheEndpoint =
-                    httpGraphCacheServerDomain + '/user_recent_changes?';
-                console.log('fetching user recent changes');
-                fetch(
-                    userRecentChangesCacheEndpoint +
-                        new URLSearchParams({
-                            user: account,
-                            chainId: chainData.chainId,
-                            addValue: 'true',
-                            simpleCalc: 'true',
-                            annotateMEV: 'true',
-                            annotate: 'true',
-                            ensResolution: 'true',
-                            n: '200',
-                        }),
-                )
-                    .then((response) => response?.json())
-                    .then((json) => {
-                        const userTransactions = json?.data;
-
-                        if (userTransactions) {
-                            Promise.all(
-                                userTransactions.map((tx: ITransaction) => {
-                                    return getTransactionData(tx, importedTokens);
+                fetchUserRecentChanges({
+                    importedTokens: importedTokens,
+                    user: account,
+                    chainId: chainData.chainId,
+                    annotate: true,
+                    addValue: true,
+                    simpleCalc: true,
+                    annotateMEV: false,
+                    ensResolution: true,
+                    n: 100,
+                })
+                    .then((updatedTransactions) => {
+                        if (updatedTransactions) {
+                            dispatch(
+                                setChangesByUser({
+                                    dataReceived: true,
+                                    changes: updatedTransactions,
                                 }),
-                            ).then((updatedTransactions) => {
-                                dispatch(
-                                    setChangesByUser({
-                                        dataReceived: true,
-                                        changes: updatedTransactions,
-                                    }),
-                                );
-                            });
+                            );
                         }
                     })
                     .catch(console.log);
@@ -1654,7 +1592,6 @@ export default function App() {
     const [isGlobalModalOpen, openGlobalModal, closeGlobalModal, currentContent, title] =
         useGlobalModal();
 
-    const [pendingTransactions, setPendingTransactions] = useState([]);
     const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
     // props for <PageHeader/> React element
@@ -1670,7 +1607,6 @@ export default function App() {
         switchChain: switchChain,
         switchNetworkInMoralis: switchNetworkInMoralis,
         openModalWallet: openModalWallet,
-        pendingTransactions: pendingTransactions,
         lastBlockNumber: lastBlockNumber,
         isMobileSidebarOpen: isMobileSidebarOpen,
         setIsMobileSidebarOpen: setIsMobileSidebarOpen,
@@ -1708,8 +1644,6 @@ export default function App() {
         indicateActiveTokenListsChanged: indicateActiveTokenListsChanged,
         openModalWallet: openModalWallet,
         isInitialized: isInitialized,
-        pendingTransactions: pendingTransactions,
-        setPendingTransactions: setPendingTransactions,
     };
 
     // props for <Swap/> React element on trade route
@@ -1742,8 +1676,6 @@ export default function App() {
         indicateActiveTokenListsChanged: indicateActiveTokenListsChanged,
         openModalWallet: openModalWallet,
         isInitialized: isInitialized,
-        pendingTransactions: pendingTransactions,
-        setPendingTransactions: setPendingTransactions,
     };
 
     // props for <Limit/> React element on trade route
@@ -1779,7 +1711,6 @@ export default function App() {
         openGlobalModal: openGlobalModal,
         closeGlobalModal: closeGlobalModal,
 
-        pendingTransactions: pendingTransactions,
         limitRate: limitRate,
         setLimitRate: setLimitRate,
     };
@@ -1814,7 +1745,7 @@ export default function App() {
         openModalWallet: openModalWallet,
         ambientApy: ambientApy,
 
-        pendingTransactions: pendingTransactions,
+        openGlobalModal: openGlobalModal,
     };
 
     function toggleSidebar() {
@@ -1825,9 +1756,9 @@ export default function App() {
     function handleTabChangedBasedOnRoute() {
         const onTradeRoute = location.pathname.includes('trade');
 
-        const marketTabBasedOnRoute = onTradeRoute ? 2 : 0;
+        const marketTabBasedOnRoute = onTradeRoute ? 0 : 0;
         const orderTabBasedOnRoute = onTradeRoute ? 1 : 0;
-        const rangeTabBasedOnRoute = onTradeRoute ? 0 : 0;
+        const rangeTabBasedOnRoute = onTradeRoute ? 2 : 0;
         setOutsideControl(true);
         if (location.pathname === '/trade/market') {
             setSelectedOutsideTab(marketTabBasedOnRoute);
@@ -1990,6 +1921,7 @@ export default function App() {
                             path='trade'
                             element={
                                 <Trade
+                                    isUserLoggedIn={isUserLoggedIn}
                                     crocEnv={crocEnv}
                                     provider={provider}
                                     candleData={candleData}
@@ -2030,7 +1962,6 @@ export default function App() {
                                     setCurrentPositionActive={setCurrentPositionActive}
                                     openGlobalModal={openGlobalModal}
                                     closeGlobalModal={closeGlobalModal}
-                                    pendingTransactions={pendingTransactions}
                                     poolPriceNonDisplay={undefined}
                                 />
                             }
@@ -2078,6 +2009,7 @@ export default function App() {
                                     outsideControl={outsideControl}
                                     setOutsideControl={setOutsideControl}
                                     userAccount={true}
+                                    openGlobalModal={openGlobalModal}
                                 />
                             }
                         />
@@ -2102,6 +2034,7 @@ export default function App() {
                                     outsideControl={outsideControl}
                                     setOutsideControl={setOutsideControl}
                                     userAccount={false}
+                                    openGlobalModal={openGlobalModal}
                                 />
                             }
                         />
@@ -2135,6 +2068,7 @@ export default function App() {
                                     outsideControl={outsideControl}
                                     setOutsideControl={setOutsideControl}
                                     userAccount={false}
+                                    openGlobalModal={openGlobalModal}
                                 />
                             }
                         />
