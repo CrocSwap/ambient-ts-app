@@ -1899,7 +1899,7 @@ export default function App() {
 
     const defaultUrlParams = {
         swap: '/swap/chain=0x5&tokenA=0x0000000000000000000000000000000000000000&tokenB=0xD87Ba7A50B2E7E660f678A895E4B72E7CB4CCd9C',
-        trade: '/swap/chain=0x5&tokenA=0x0000000000000000000000000000000000000000&tokenB=0xD87Ba7A50B2E7E660f678A895E4B72E7CB4CCd9C',
+        market: '/trade/market/chain=0x5&tokenA=0x0000000000000000000000000000000000000000&tokenB=0xD87Ba7A50B2E7E660f678A895E4B72E7CB4CCd9C',
     }
 
     return (
@@ -1973,7 +1973,8 @@ export default function App() {
                             }
                         >
                             <Route path='' element={<Navigate to='/trade/market' replace />} />
-                            <Route path='market' element={<Swap {...swapPropsTrade} />} />
+                            <Route path='market' element={<Navigate to={defaultUrlParams.market} replace />} />
+                            <Route path='market/:params' element={<Swap {...swapPropsTrade} />} />
                             <Route path='limit' element={<Limit {...limitPropsTrade} />} />
                             <Route path='range' element={<Range {...rangeProps} />} />
                             <Route path='edit/:positionHash' element={<Edit />} />
