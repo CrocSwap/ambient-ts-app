@@ -13,7 +13,7 @@ import { RiListSettingsLine } from 'react-icons/ri';
 import { BsArrowLeft } from 'react-icons/bs';
 import { PositionIF } from '../../utils/interfaces/PositionIF';
 import { ethers } from 'ethers';
-import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
+import { ambientPosSlot, ChainSpec, concPosSlot, CrocEnv } from '@crocswap-libs/sdk';
 import Button from '../Global/Button/Button';
 
 import RemoveRangeSettings from './RemoveRangeSettings/RemoveRangeSettings';
@@ -23,8 +23,14 @@ import {
 } from '../Global/LoadingAnimations/CircleLoader/CircleLoader';
 import RemoveRangeHeader from './RemoveRangeHeader/RemoveRangeHeader';
 import ExtraControls from './ExtraControls/ExtraControls';
-import { addReceipt } from '../../utils/state/receiptDataSlice';
-import { useAppDispatch } from '../../utils/hooks/reduxToolkit';
+import {
+    addPendingTx,
+    addPositionPendingUpdate,
+    addReceipt,
+    removePendingTx,
+    removePositionPendingUpdate,
+} from '../../utils/state/receiptDataSlice';
+import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
 import {
     isTransactionFailedError,
     isTransactionReplacedError,
@@ -55,7 +61,6 @@ interface IRemoveRangeProps {
     isDenomBase: boolean;
     lastBlockNumber: number;
     position: PositionIF;
-    pendingTransactions: string[];
 
     openGlobalModal: (content: React.ReactNode) => void;
 
@@ -81,7 +86,6 @@ export default function RemoveRange(props: IRemoveRangeProps) {
         provider,
         lastBlockNumber,
         position,
-        pendingTransactions,
     } = props;
 
     const [removalPercentage, setRemovalPercentage] = useState(100);
@@ -102,6 +106,10 @@ export default function RemoveRange(props: IRemoveRangeProps) {
     const positionStatsCacheEndpoint = 'https://809821320828123.de:5000/position_stats?';
 
     const dispatch = useAppDispatch();
+
+    const positionsPendingUpdate = useAppSelector(
+        (state) => state.receiptData,
+    ).positionsPendingUpdate;
 
     useEffect(() => {
         if (
@@ -166,7 +174,23 @@ export default function RemoveRange(props: IRemoveRangeProps) {
 
     const liquiditySlippageTolerance = 1;
 
+    const posHash =
+        position.positionType === 'ambient'
+            ? ambientPosSlot(position.user, position.base, position.quote, chainData.poolIndex)
+            : concPosSlot(
+                  position.user,
+                  position.base,
+                  position.quote,
+                  position.bidTick,
+                  position.askTick,
+                  chainData.poolIndex,
+              );
+
+    const isPositionPendingUpdate = positionsPendingUpdate.indexOf(posHash as string) > -1;
+
     const removeFn = async () => {
+        dispatch(addPositionPendingUpdate(posHash as string));
+
         setShowConfirmation(true);
         console.log(`${removalPercentage}% to be removed.`);
 
@@ -230,7 +254,7 @@ export default function RemoveRange(props: IRemoveRangeProps) {
                     { surplus: isSaveAsDexSurplusChecked },
                 );
                 console.log(tx?.hash);
-                if (tx?.hash) pendingTransactions.unshift(tx?.hash);
+                dispatch(addPendingTx(tx?.hash));
                 setNewRemovalTransactionHash(tx?.hash);
             } catch (error) {
                 setTxErrorCode(error?.code);
@@ -298,8 +322,10 @@ export default function RemoveRange(props: IRemoveRangeProps) {
             // in their client, but we now have the updated info
             if (isTransactionReplacedError(error)) {
                 console.log('repriced');
+                dispatch(removePendingTx(error.hash));
                 const newTransactionHash = error.replacement.hash;
                 setNewRemovalTransactionHash(newTransactionHash);
+                dispatch(addPendingTx(newTransactionHash));
                 console.log({ newTransactionHash });
                 receipt = error.receipt;
 
@@ -357,6 +383,8 @@ export default function RemoveRange(props: IRemoveRangeProps) {
             console.log('dispatching receipt');
             console.log({ receipt });
             dispatch(addReceipt(JSON.stringify(receipt)));
+            dispatch(removePendingTx(receipt.transactionHash));
+            dispatch(removePositionPendingUpdate(posHash as string));
         }
     };
 
@@ -394,10 +422,7 @@ export default function RemoveRange(props: IRemoveRangeProps) {
     const removalPending = (
         <div className={styles.removal_pending}>
             <CircleLoader size='5rem' borderColor='#171d27' />
-            <p>
-                Check the Metamask extension in your browser for notifications. Make sure your
-                browser is not blocking pop-up windows.
-            </p>
+            <p>Check the Metamask extension in your browser for notifications.</p>
         </div>
     );
 
@@ -455,6 +480,12 @@ export default function RemoveRange(props: IRemoveRangeProps) {
         <div style={{ padding: '0 1rem' }}>
             {showSettings ? (
                 <Button title='Confirm' action={() => setShowSettings(false)} />
+            ) : isPositionPendingUpdate ? (
+                <RemoveRangeButton
+                    removeFn={removeFn}
+                    disabled={true}
+                    title='Position Update Pending…'
+                />
             ) : positionHasLiquidity ? (
                 <RemoveRangeButton
                     removeFn={removeFn}

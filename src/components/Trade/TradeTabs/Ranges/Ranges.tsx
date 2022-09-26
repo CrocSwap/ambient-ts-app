@@ -34,7 +34,6 @@ interface RangesPropsIF {
     currentPositionActive: string;
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
     portfolio?: boolean;
-    pendingTransactions: string[];
 
     openGlobalModal: (content: React.ReactNode) => void;
     closeGlobalModal: () => void;
@@ -62,7 +61,6 @@ export default function Ranges(props: RangesPropsIF) {
         currentPositionActive,
         setCurrentPositionActive,
         portfolio,
-        pendingTransactions,
     } = props;
 
     const tradeData = useAppSelector((state) => state.tradeData);
@@ -130,7 +128,6 @@ export default function Ranges(props: RangesPropsIF) {
                         setCurrentPositionActive={setCurrentPositionActive}
                         openGlobalModal={props.openGlobalModal}
                         closeGlobalModal={props.closeGlobalModal}
-                        pendingTransactions={pendingTransactions}
                     />
                 ))}
             </ol>

@@ -62,7 +62,6 @@ interface TradePropsIF {
     setOutsideControl: Dispatch<SetStateAction<boolean>>;
     currentPositionActive: string;
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
-    pendingTransactions: string[];
 
     openGlobalModal: (content: React.ReactNode) => void;
 
@@ -91,7 +90,6 @@ export default function Trade(props: TradePropsIF) {
         favePools,
         addPoolToFaves,
         removePoolFromFaves,
-        pendingTransactions,
     } = props;
 
     const [isCandleSelected, setIsCandleSelected] = useState<boolean | undefined>();
@@ -483,7 +481,6 @@ export default function Trade(props: TradePropsIF) {
                                 setCurrentPositionActive={props.setCurrentPositionActive}
                                 openGlobalModal={props.openGlobalModal}
                                 closeGlobalModal={props.closeGlobalModal}
-                                pendingTransactions={pendingTransactions}
                             />
                         </div>
                     </motion.div>

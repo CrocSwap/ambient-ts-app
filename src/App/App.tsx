@@ -1587,7 +1587,6 @@ export default function App() {
     const [isGlobalModalOpen, openGlobalModal, closeGlobalModal, currentContent, title] =
         useGlobalModal();
 
-    const [pendingTransactions, setPendingTransactions] = useState([]);
     const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
     // props for <PageHeader/> React element
@@ -1603,7 +1602,6 @@ export default function App() {
         switchChain: switchChain,
         switchNetworkInMoralis: switchNetworkInMoralis,
         openModalWallet: openModalWallet,
-        pendingTransactions: pendingTransactions,
         lastBlockNumber: lastBlockNumber,
         isMobileSidebarOpen: isMobileSidebarOpen,
         setIsMobileSidebarOpen: setIsMobileSidebarOpen,
@@ -1641,8 +1639,6 @@ export default function App() {
         indicateActiveTokenListsChanged: indicateActiveTokenListsChanged,
         openModalWallet: openModalWallet,
         isInitialized: isInitialized,
-        pendingTransactions: pendingTransactions,
-        setPendingTransactions: setPendingTransactions,
     };
 
     // props for <Swap/> React element on trade route
@@ -1675,8 +1671,6 @@ export default function App() {
         indicateActiveTokenListsChanged: indicateActiveTokenListsChanged,
         openModalWallet: openModalWallet,
         isInitialized: isInitialized,
-        pendingTransactions: pendingTransactions,
-        setPendingTransactions: setPendingTransactions,
     };
 
     // props for <Limit/> React element on trade route
@@ -1712,7 +1706,6 @@ export default function App() {
         openGlobalModal: openGlobalModal,
         closeGlobalModal: closeGlobalModal,
 
-        pendingTransactions: pendingTransactions,
         limitRate: limitRate,
         setLimitRate: setLimitRate,
     };
@@ -1747,7 +1740,6 @@ export default function App() {
         openModalWallet: openModalWallet,
         ambientApy: ambientApy,
 
-        pendingTransactions: pendingTransactions,
         openGlobalModal: openGlobalModal,
     };
 
@@ -1965,7 +1957,6 @@ export default function App() {
                                     setCurrentPositionActive={setCurrentPositionActive}
                                     openGlobalModal={openGlobalModal}
                                     closeGlobalModal={closeGlobalModal}
-                                    pendingTransactions={pendingTransactions}
                                     poolPriceNonDisplay={undefined}
                                 />
                             }
