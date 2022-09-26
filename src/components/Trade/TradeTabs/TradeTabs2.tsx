@@ -22,6 +22,7 @@ import { CandleData } from '../../../utils/state/graphDataSlice';
 import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
 
 interface ITabsProps {
+    isUserLoggedIn: boolean;
     crocEnv: CrocEnv | undefined;
     provider: ethers.providers.Provider | undefined;
     account: string;
@@ -59,6 +60,7 @@ interface ITabsProps {
 
 export default function TradeTabs2(props: ITabsProps) {
     const {
+        isUserLoggedIn,
         crocEnv,
         chainId,
         chainData,
@@ -91,48 +93,105 @@ export default function TradeTabs2(props: ITabsProps) {
     } = props;
 
     const graphData = useAppSelector((state) => state?.graphData);
+    const tradeData = useAppSelector((state) => state?.tradeData);
+    // const userData = useAppSelector((state) => state?.userData);
 
-    const userPositions = graphData?.positionsByUser?.positions;
     const userChanges = graphData?.changesByUser?.changes;
+    const userLimitOrders = graphData?.limitOrdersByUser?.limitOrders;
+    const userPositions = graphData?.positionsByUser?.positions;
     // const poolPositions = graphData?.positionsByPool?.positions;
 
     const [hasInitialized, setHasInitialized] = useState(false);
 
+    const selectedBase = tradeData.baseToken.address;
+    const selectedQuote = tradeData.quoteToken.address;
+
+    const userChangesMatchingTokenSelection = userChanges.filter((userChange) => {
+        return (
+            userChange.base.toLowerCase() === selectedBase.toLowerCase() &&
+            userChange.quote.toLowerCase() === selectedQuote.toLowerCase()
+        );
+    });
+
+    const userLimitOrdersMatchingTokenSelection = userLimitOrders.filter((userLimitOrder) => {
+        return (
+            userLimitOrder.base.toLowerCase() === selectedBase.toLowerCase() &&
+            userLimitOrder.quote.toLowerCase() === selectedQuote.toLowerCase()
+        );
+    });
+
+    const userPositionsMatchingTokenSelection = userPositions.filter((userPosition) => {
+        return (
+            userPosition.base.toLowerCase() === selectedBase.toLowerCase() &&
+            userPosition.quote.toLowerCase() === selectedQuote.toLowerCase()
+        );
+    });
+
+    const matchingUserChangesLength = userChangesMatchingTokenSelection.length;
+    const matchingUserPositionsLength = userLimitOrdersMatchingTokenSelection.length;
+    const matchingUserLimitOrdersLength = userPositionsMatchingTokenSelection.length;
+
     useEffect(() => {
         setHasInitialized(false);
-    }, [account, isAuthenticated]);
+    }, [
+        account,
+        isUserLoggedIn,
+        // userData.isLoggedIn,
+        matchingUserChangesLength,
+        matchingUserLimitOrdersLength,
+        matchingUserPositionsLength,
+        selectedOutsideTab,
+        selectedBase,
+        selectedQuote,
+    ]);
 
     useEffect(() => {
         // console.log({ hasInitialized });
-        // console.log({ isShowAllEnabled });
+        // console.log({ userChangesLength });
         // console.log({ userPositions });
         // console.log({ selectedOutsideTab });
         if (!hasInitialized) {
-            if (selectedOutsideTab === 2) {
-                if (!isCandleSelected && !isShowAllEnabled && userPositions.length < 1) {
+            if (selectedOutsideTab === 0) {
+                if (!isCandleSelected && !isShowAllEnabled && matchingUserChangesLength < 1) {
                     setIsShowAllEnabled(true);
-                } else if (userPositions.length < 1) {
+                } else if (matchingUserChangesLength < 1) {
                     return;
-                } else if (isShowAllEnabled && userPositions.length >= 1) {
+                } else if (isShowAllEnabled && matchingUserChangesLength >= 1) {
                     setIsShowAllEnabled(false);
                 }
-            } else if (selectedOutsideTab === 0) {
-                if (!isCandleSelected && !isShowAllEnabled && userChanges.length < 1) {
+            } else if (selectedOutsideTab === 1) {
+                if (!isCandleSelected && !isShowAllEnabled && matchingUserLimitOrdersLength < 1) {
                     setIsShowAllEnabled(true);
-                } else if (userChanges.length < 1) {
+                } else if (matchingUserLimitOrdersLength < 1) {
                     return;
-                } else if (isShowAllEnabled && userChanges.length >= 1) {
+                } else if (isShowAllEnabled && matchingUserLimitOrdersLength >= 1) {
                     setIsShowAllEnabled(false);
                 }
+            } else if (selectedOutsideTab === 2) {
+                if (!isCandleSelected && !isShowAllEnabled && matchingUserPositionsLength < 1) {
+                    setIsShowAllEnabled(true);
+                } else if (matchingUserPositionsLength < 1) {
+                    return;
+                } else if (isShowAllEnabled && matchingUserPositionsLength >= 1) {
+                    setIsShowAllEnabled(false);
+                }
+                setHasInitialized(true);
             }
-            setHasInitialized(true);
         }
-    }, [hasInitialized, isShowAllEnabled, JSON.stringify(userPositions)]);
+    }, [
+        hasInitialized,
+        selectedOutsideTab,
+        isShowAllEnabled,
+        matchingUserPositionsLength,
+        matchingUserChangesLength,
+        matchingUserLimitOrdersLength,
+    ]);
 
     // -------------------------------DATA-----------------------------------------
 
     // Props for <Ranges/> React Element
     const rangesProps = {
+        isUserLoggedIn: isUserLoggedIn,
         crocEnv: crocEnv,
         chainData: chainData,
         baseTokenBalance: baseTokenBalance,
@@ -151,7 +210,6 @@ export default function TradeTabs2(props: ITabsProps) {
         expandTradeTable: expandTradeTable,
         currentPositionActive: currentPositionActive,
         setCurrentPositionActive: setCurrentPositionActive,
-
         openGlobalModal: props.openGlobalModal,
 
         closeGlobalModal: props.closeGlobalModal,
@@ -161,7 +219,7 @@ export default function TradeTabs2(props: ITabsProps) {
         isShowAllEnabled: isShowAllEnabled,
         tokenMap: tokenMap,
         graphData: graphData,
-        chainId: chainId,
+        chainData: chainData,
         blockExplorer: chainData.blockExplorer || undefined,
         currentTxActiveInTransactions: currentTxActiveInTransactions,
         account: account,

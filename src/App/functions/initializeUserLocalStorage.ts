@@ -70,8 +70,8 @@ export default function initializeUserLocalStorage() {
     if (!user.termsOfService) {
         user.termsOfService = {
             agreed: false,
-            date: null
-        }
+            date: null,
+        };
         userUpdated = true;
     }
 

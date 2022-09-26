@@ -148,6 +148,7 @@ export function useFetchSearchResults(value: string): {
 
     // fetch data based on search input
     useEffect(() => {
+        console.log('fetching search results');
         async function fetch() {
             try {
                 const tokens = await client.query<TokenRes>({

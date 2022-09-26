@@ -234,14 +234,14 @@ export const fetchErc20TokenBalances = async (
     // if (updatedTokens.length > 0) return updatedTokens;
 };
 
-type Erc20TokenBalanceFn = (
+export type Erc20TokenBalanceFn = (
     token: string,
     chain: string,
     lastBlock: number,
     crocEnv: CrocEnv | undefined,
 ) => Promise<TokenIF[]>;
 
-type nativeTokenBalanceFn = (
+export type nativeTokenBalanceFn = (
     token: string,
     chain: string,
     lastBlock: number,

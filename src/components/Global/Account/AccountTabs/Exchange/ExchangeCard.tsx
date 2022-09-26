@@ -1,18 +1,22 @@
 import styles from './ExchangeCard.module.css';
 import { testTokenMap } from '../../../../../utils/data/testTokenMap';
-import { fetchTokenPrice } from '../../../../../App/functions/fetchTokenPrice';
+// import { fetchTokenPrice } from '../../../../../App/functions/fetchTokenPrice';
 import { TokenIF } from '../../../../../utils/interfaces/TokenIF';
 import { useEffect, useState } from 'react';
+import { ZERO_ADDRESS } from '../../../../../constants';
+import { TokenPriceFn } from '../../../../../App/functions/fetchTokenPrice';
 // import { formatAmount } from '../../../../../utils/numbers';
 interface ExchangeCardPropsIF {
+    cachedFetchTokenPrice: TokenPriceFn;
     token?: TokenIF;
     chainId: string;
     tokenMap: Map<string, TokenIF>;
 }
 
 export default function ExchangeCard(props: ExchangeCardPropsIF) {
-    const { token, chainId, tokenMap } = props;
-    if (token?.dexBalanceDisplayTruncated === undefined) return <></>;
+    const { token, chainId, tokenMap, cachedFetchTokenPrice } = props;
+    if (token?.address !== ZERO_ADDRESS && token?.dexBalanceDisplayTruncated === undefined)
+        return <></>;
 
     // const tokenMap = useTokenMap();
 
@@ -39,7 +43,7 @@ export default function ExchangeCard(props: ExchangeCardPropsIF) {
             try {
                 const mainnetAddress = testTokenMap.get(tokenAddress)?.split('_')[0];
                 if (mainnetAddress) {
-                    const price = await fetchTokenPrice(mainnetAddress, '0x1');
+                    const price = await cachedFetchTokenPrice(mainnetAddress, '0x1');
                     if (price) setTokenPrice(price);
                 }
             } catch (err) {
@@ -51,7 +55,8 @@ export default function ExchangeCard(props: ExchangeCardPropsIF) {
     const tokenUsdPrice = tokenPrice?.usdPrice ?? 0;
 
     const exchangeBalanceNum = token.dexBalanceDisplay ? parseFloat(token.dexBalanceDisplay) : 0;
-    const exchangeBalanceTruncated = token && token.dexBalanceDisplayTruncated;
+    const exchangeBalanceTruncated =
+        exchangeBalanceNum === 0 ? '0' : token?.dexBalanceDisplayTruncated;
 
     // const tokenBalanceNum =
     //     token && token.combinedBalanceDisplay ? parseFloat(token.combinedBalanceDisplay) : 0;

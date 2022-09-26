@@ -1,7 +1,6 @@
 import styles from './AnalyticsTabs.module.css';
-import { useMemo, useState, SetStateAction, Dispatch } from 'react';
+import { useMemo, SetStateAction, Dispatch, useState } from 'react';
 // import Positions from '../../Trade/TradeTabs/Positions/Positions';
-import { BiSearch } from 'react-icons/bi';
 import TopTokens from '../../TopTokens/TopTokens';
 import Pools from '../../Pools/Pools';
 import TopRanges from '../../TopRanges/TopRanges';
@@ -11,11 +10,22 @@ import { useAllPoolData } from '../../../state/pools/hooks';
 import { TokenData } from '../../../state/tokens/models';
 import { PoolData } from '../../../state/pools/models';
 import TabComponent from '../../Global/TabComponent/TabComponent';
+import { PoolIF } from '../../../utils/interfaces/PoolIF';
+import { TokenIF } from '../../../utils/interfaces/TokenIF';
+import { BiSearch } from 'react-icons/bi';
 // import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 
 interface AnalyticsProps {
     setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
     setOutsideControl: Dispatch<SetStateAction<boolean>>;
+    favePools: PoolIF[];
+    addPoolToFaves: (tokenA: TokenIF, tokenB: TokenIF, chainId: string, poolId: number) => void;
+    removePoolFromFaves: (
+        tokenA: TokenIF,
+        tokenB: TokenIF,
+        chainId: string,
+        poolId: number,
+    ) => void;
 }
 export default function AnalyticsTabs(props: AnalyticsProps) {
     const allTokens = useAllTokenData();
@@ -25,35 +35,6 @@ export default function AnalyticsTabs(props: AnalyticsProps) {
     const [pools, setPools] = useState<PoolData[]>([]);
     const [searchWord, setSearchWord] = useState('');
 
-    const tokensResult = useMemo(() => {
-        return Object.values(allTokens)
-            .map((t) => t.data)
-            .filter(notEmpty);
-    }, [allTokens]);
-
-    const poolsResult = useMemo(() => {
-        return Object.values(allPoolData)
-            .map((p) => p.data)
-            .filter(notEmpty);
-    }, [allPoolData]);
-
-    const search = (value: string) => {
-        setSearchWord(value);
-        if (value.length > 0) {
-            setTokens(
-                tokensResult.filter((item) =>
-                    item.name.toLowerCase().includes(value.toLowerCase()),
-                ),
-            );
-            setPools(
-                poolsResult.filter(
-                    (item) =>
-                        item.token0.name.toLowerCase().includes(value.toLowerCase()) ||
-                        item.token1.name.toLowerCase().includes(value.toLowerCase()),
-                ),
-            );
-        }
-    };
     const searchContainer = (
         <div className={styles.search_container}>
             <div className={styles.search_icon}>
@@ -71,6 +52,43 @@ export default function AnalyticsTabs(props: AnalyticsProps) {
         </div>
     );
 
+    const tokensResult = useMemo(() => {
+        return Object.values(allTokens)
+            .map((t) => t.data)
+            .filter(notEmpty);
+    }, [allTokens]);
+
+    const poolsResult = useMemo(() => {
+        return Object.values(allPoolData)
+            .map((p) => p.data)
+            .filter(notEmpty);
+    }, [allPoolData]);
+
+    const search = (value: string) => {
+        setSearchWord(value);
+        if (value.length > 0) {
+            setTokens(
+                tokensResult.filter(
+                    (item) =>
+                        item.name.toLowerCase().includes(value.toLowerCase()) ||
+                        item.symbol.toLowerCase().includes(value.toLowerCase()) ||
+                        item.address.toLowerCase().includes(value.toLowerCase()),
+                ),
+            );
+            setPools(
+                poolsResult.filter(
+                    (item) =>
+                        item.token0.name.toLowerCase().includes(value.toLowerCase()) ||
+                        item.token1.name.toLowerCase().includes(value.toLowerCase()) ||
+                        item.token0.symbol.toLowerCase().includes(value.toLowerCase()) ||
+                        item.token1.symbol.toLowerCase().includes(value.toLowerCase()) ||
+                        item.token0.address.toLowerCase().includes(value.toLowerCase()) ||
+                        item.token1.address.toLowerCase().includes(value.toLowerCase()),
+                ),
+            );
+        }
+    };
+
     const analyticTabData = [
         {
             label: 'Top Tokens',
@@ -78,22 +96,36 @@ export default function AnalyticsTabs(props: AnalyticsProps) {
         },
         {
             label: 'Top Pools',
-            content: <Pools poolType='top' pools={searchWord.length > 0 ? pools : poolsResult} />,
+            content: (
+                <Pools
+                    poolType='top'
+                    pools={searchWord.length > 0 ? pools : poolsResult}
+                    favePools={props.favePools}
+                    removePoolFromFaves={props.removePoolFromFaves}
+                    addPoolToFaves={props.addPoolToFaves}
+                />
+            ),
         },
         {
             label: 'Trending Pools',
-            content: <Pools poolType='trend' pools={searchWord.length > 0 ? pools : poolsResult} />,
+            content: (
+                <Pools
+                    poolType='trend'
+                    pools={searchWord.length > 0 ? pools : poolsResult}
+                    favePools={props.favePools}
+                    removePoolFromFaves={props.removePoolFromFaves}
+                    addPoolToFaves={props.addPoolToFaves}
+                />
+            ),
         },
         { label: 'Top Ranges', content: <TopRanges /> },
     ];
 
     return (
         <div className={styles.tabs_container}>
-            <div className={styles.option_toggles}>{searchContainer}</div>
-
             <TabComponent
                 data={analyticTabData}
-                rightTabOptions={false}
+                rightTabOptions={searchContainer}
                 selectedOutsideTab={0}
                 outsideControl={false}
                 setOutsideControl={props.setOutsideControl}

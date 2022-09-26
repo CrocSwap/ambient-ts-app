@@ -15,6 +15,7 @@ import Value from '../../../Global/Tabs/Value/Value';
 import { formatAmount } from '../../../../utils/numbers';
 
 interface RangeCardProps {
+    isUserLoggedIn: boolean;
     crocEnv: CrocEnv | undefined;
     chainData: ChainSpec;
     provider: ethers.providers.Provider | undefined;
@@ -35,13 +36,13 @@ interface RangeCardProps {
     lastBlockNumber: number;
     currentPositionActive: string;
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
-
     openGlobalModal: (content: React.ReactNode) => void;
     closeGlobalModal: () => void;
 }
 
 export default function RangeCard(props: RangeCardProps) {
     const {
+        // isUserLoggedIn,
         crocEnv,
         chainData,
         provider,
@@ -165,6 +166,8 @@ export default function RangeCard(props: RangeCardProps) {
         position.positionStorageSlot === currentPositionActive
             ? `position-${position.positionStorageSlot}`
             : '';
+
+    // console.log(rangeDetailsProps.lastBlockNumber);
 
     function scrollToDiv() {
         const element = document.getElementById(positionDomId);

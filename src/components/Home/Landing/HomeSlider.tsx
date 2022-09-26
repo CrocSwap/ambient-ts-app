@@ -9,7 +9,7 @@ import Landing3 from './Landing3';
 import Landing4 from './Landing4';
 import Landing5 from './Landing5';
 import Landing6 from './Landing6';
-import Landing from './Landing';
+// import Landing from './Landing';
 // import 'swiper/css/effect-fade'
 // import 'swiper/css/navigation'
 export default function HomeSlider() {
@@ -28,9 +28,9 @@ export default function HomeSlider() {
                 pagination={{ clickable: true }}
                 className={styles.myswiper}
             >
-                <SwiperSlide className={styles.swiperslide} style={{ background: 'url()' }}>
+                {/* <SwiperSlide className={styles.swiperslide} style={{ background: 'url()' }}>
                     <Landing />
-                </SwiperSlide>
+                </SwiperSlide> */}
                 <SwiperSlide className={styles.swiperslide} style={{ background: 'url()' }}>
                     <Landing1 />
                 </SwiperSlide>

@@ -1,7 +1,7 @@
 // START: Import React and Dongles
 import { useState, ReactNode } from 'react';
 import { Link } from 'react-router-dom';
-import { FiMoreHorizontal } from 'react-icons/fi';
+import { FiExternalLink, FiMoreHorizontal } from 'react-icons/fi';
 
 // START: Import JSX Functional Components
 import Modal from '../../../../Global/Modal/Modal';
@@ -112,6 +112,7 @@ export default function TransactionsMenu(props: TransactionMenuIF) {
     const explorerButton = (
         <button className={styles.option_button} onClick={handleOpenExplorer}>
             Explorer
+            <FiExternalLink size={15} color='white' style={{ marginLeft: '.5rem' }} />
         </button>
     );
     // const detailsButton = (

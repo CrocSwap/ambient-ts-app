@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { PositionIF } from '../interfaces/PositionIF';
 export interface graphData {
+    lastBlock: number;
     positionsByUser: PositionsByUser;
     positionsByPool: PositionsByPool;
     changesByUser: ChangesByUser;
@@ -56,6 +57,7 @@ export interface ILimitOrderState {
     baseTokenLogoURI: string;
     quoteSymbol: string;
     quoteDecimals: number;
+    limitOrderIdentifier: string;
     quoteTokenLogoURI: string;
     limitPrice: number;
     invLimitPrice: number;
@@ -182,7 +184,18 @@ export interface CandlesByPoolAndDuration {
     candles: Array<CandleData>;
 }
 
+export interface TvlData {
+    interpBadness: number;
+    interpDistHigher: number;
+    interpDistLower: number;
+    method: string;
+    time: number;
+    tvl: number;
+}
+
 export interface CandleData {
+    tvlData: TvlData;
+    volumeUSD: number;
     time: number;
     poolHash: string;
     firstBlock: number;
@@ -243,6 +256,7 @@ export interface ITransaction {
     baseDecimals: number;
     baseFlow: string;
     baseSymbol: string;
+    baseTokenLogoURI: string;
     block: number;
     chainId: string;
     network: string;
@@ -258,6 +272,7 @@ export interface ITransaction {
     quoteDecimals: number;
     quoteFlow: string;
     quoteSymbol: string;
+    quoteTokenLogoURI: string;
     source: string;
     entityType: string;
     changeType: string;
@@ -285,6 +300,7 @@ export interface ChangesByPool {
 }
 
 const initialState: graphData = {
+    lastBlock: 0,
     positionsByUser: { dataReceived: false, positions: [] },
     positionsByPool: { dataReceived: false, positions: [] },
     changesByUser: { dataReceived: false, changes: [] },
@@ -301,6 +317,9 @@ export const graphDataSlice = createSlice({
     name: 'graphData',
     initialState,
     reducers: {
+        setLastBlock: (state, action: PayloadAction<number>) => {
+            state.lastBlock = action.payload;
+        },
         setPositionsByUser: (state, action: PayloadAction<PositionsByUser>) => {
             state.positionsByUser = action.payload;
         },
@@ -381,28 +400,38 @@ export const graphDataSlice = createSlice({
             state.changesByUser = action.payload;
         },
         addChangesByUser: (state, action: PayloadAction<Array<ITransaction>>) => {
-            const swapTxToFind = action.payload[0].tx.toLowerCase();
-            const indexOfTx = state.changesByUser.changes
-                .map((item) => item.tx.toLowerCase())
-                .findIndex((tx) => tx === swapTxToFind);
-            if (indexOfTx === -1) {
-                state.changesByUser.changes = action.payload.concat(state.changesByUser.changes);
-            } else {
-                state.changesByUser.changes[indexOfTx] = action.payload[0];
+            for (let index = 0; index < action.payload.length; index++) {
+                const updatedTx = action.payload[index];
+                const txToFind = updatedTx.tx.toLowerCase();
+                const indexOfTxInState = state.changesByUser.changes
+                    .map((item) => item.tx.toLowerCase())
+                    .findIndex((tx) => tx === txToFind);
+                if (indexOfTxInState === -1) {
+                    state.changesByUser.changes = action.payload.concat(
+                        state.changesByUser.changes,
+                    );
+                } else {
+                    state.changesByUser.changes[indexOfTxInState] = action.payload[index];
+                }
             }
         },
         setChangesByPool: (state, action: PayloadAction<ChangesByPool>) => {
             state.changesByPool = action.payload;
         },
         addChangesByPool: (state, action: PayloadAction<Array<ITransaction>>) => {
-            const swapTxToFind = action.payload[0].tx.toLowerCase();
-            const indexOfTx = state.changesByPool.changes
-                .map((item) => item.tx.toLowerCase())
-                .findIndex((tx) => tx === swapTxToFind);
-            if (indexOfTx === -1) {
-                state.changesByPool.changes = action.payload.concat(state.changesByPool.changes);
-            } else {
-                state.changesByPool.changes[indexOfTx] = action.payload[0];
+            for (let index = 0; index < action.payload.length; index++) {
+                const updatedTx = action.payload[index];
+                const txToFind = updatedTx.tx.toLowerCase();
+                const indexOfTxInState = state.changesByPool.changes
+                    .map((item) => item.tx.toLowerCase())
+                    .findIndex((tx) => tx === txToFind);
+                if (indexOfTxInState === -1) {
+                    state.changesByPool.changes = action.payload.concat(
+                        state.changesByPool.changes,
+                    );
+                } else {
+                    state.changesByPool.changes[indexOfTxInState] = action.payload[index];
+                }
             }
         },
         setLiquidity: (state, action: PayloadAction<LiquidityByPool>) => {
@@ -561,6 +590,7 @@ export const graphDataSlice = createSlice({
 
 // action creators are generated for each case reducer function
 export const {
+    setLastBlock,
     setPositionsByUser,
     addPositionsByUser,
     setPositionsByPool,

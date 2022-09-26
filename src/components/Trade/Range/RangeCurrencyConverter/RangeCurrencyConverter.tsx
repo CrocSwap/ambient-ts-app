@@ -598,6 +598,8 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
         // tradeData.isTokenAPrimaryRange,
         tokenABalance,
         tokenBBalance,
+        tokenADexBalance,
+        tokenBDexBalance,
         // JSON.stringify(tokenPair),
     ]);
 

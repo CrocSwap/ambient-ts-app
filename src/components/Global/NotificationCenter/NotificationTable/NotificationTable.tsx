@@ -16,42 +16,31 @@ const NotificationTable = (props: NotificationTableProps) => {
 
     const parsedReceipts = receiptData.sessionReceipts.map((receipt) => JSON.parse(receipt));
 
-    const successfulTransactions = parsedReceipts.filter((receipt) => receipt?.confirmations >= 1);
+    const successfulTransactions = parsedReceipts.filter((receipt) => receipt?.status === 1);
 
-    const failedTransactions = parsedReceipts.filter((receipt) => receipt?.confirmations <= 0);
+    const failedTransactions = parsedReceipts.filter((receipt) => receipt?.status === 0);
 
-    const successfulTransactionsDisplay = successfulTransactions
-        ?.reverse()
-        .map((tx, idx) => (
-            <ReceiptDisplay
-                key={idx}
-                status='successful'
-                hash={tx?.transactionHash}
-                txBlockNumber={tx.blockNumber}
-                lastBlockNumber={lastBlockNumber}
-            />
-        ));
-    const failedTransactionsDisplay = failedTransactions
-        ?.reverse()
-        .map((tx, idx) => (
-            <ReceiptDisplay
-                key={idx}
-                status='failed'
-                hash={tx?.transactionHash}
-                txBlockNumber={tx.blockNumber}
-                lastBlockNumber={lastBlockNumber}
-            />
-        ));
-    const pendingTransactionsDisplay = pendingTransactions
-        ?.reverse()
-        .map((tx, idx) => (
-            <ReceiptDisplay
-                key={idx}
-                status='pending'
-                hash={tx}
-                lastBlockNumber={lastBlockNumber}
-            />
-        ));
+    const successfulTransactionsDisplay = successfulTransactions.map((tx, idx) => (
+        <ReceiptDisplay
+            key={idx}
+            status='successful'
+            hash={tx?.transactionHash}
+            txBlockNumber={tx.blockNumber}
+            lastBlockNumber={lastBlockNumber}
+        />
+    ));
+    const failedTransactionsDisplay = failedTransactions.map((tx, idx) => (
+        <ReceiptDisplay
+            key={idx}
+            status='failed'
+            hash={tx?.transactionHash}
+            txBlockNumber={tx.blockNumber}
+            lastBlockNumber={lastBlockNumber}
+        />
+    ));
+    const pendingTransactionsDisplay = pendingTransactions.map((tx, idx) => (
+        <ReceiptDisplay key={idx} status='pending' hash={tx} lastBlockNumber={lastBlockNumber} />
+    ));
 
     if (!showNotificationTable) return null;
     return (

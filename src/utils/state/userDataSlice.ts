@@ -8,14 +8,14 @@ export interface userData {
 
 export interface tokenData {
     nativeToken: TokenIF | undefined;
-    erc20Tokens: TokenIF[];
+    erc20Tokens: TokenIF[] | undefined;
 }
 
 const initialState: userData = {
     isLoggedIn: false,
     tokens: {
         nativeToken: undefined,
-        erc20Tokens: [],
+        erc20Tokens: undefined,
     },
 };
 

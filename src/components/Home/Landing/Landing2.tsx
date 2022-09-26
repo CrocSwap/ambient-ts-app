@@ -13,7 +13,8 @@ export default function Landing2() {
                 </div>
                 <div className={styles.ambient}>ambient</div>
                 <div className={styles.architecture}>
-                    Our <div className={styles.highlight_text}> unique architecture</div> provides
+                    {/* <div className={styles.highlight_text_mobile}>Our unique architecture</div> */}
+                    Our <span className={styles.highlight_text}> unique architecture</span> provides
                     low fee transactions, greater liquidity rewards, and a fairer trading
                     experience.
                 </div>

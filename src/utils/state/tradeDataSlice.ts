@@ -3,6 +3,11 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { goerliETH, goerliUSDC } from '../data/defaultTokens';
 import { TokenIF } from '../interfaces/TokenIF';
 
+export interface targetData {
+    name: string;
+    value: number | undefined;
+}
+
 export interface tradeData {
     tokenA: TokenIF;
     tokenB: TokenIF;
@@ -21,6 +26,10 @@ export interface tradeData {
     simpleRangeWidth: number;
     slippageTolerance: number;
     activeChartPeriod: number;
+    targetData: targetData[];
+    pinnedMaxPriceDisplayTruncated: number;
+    pinnedMinPriceDisplayTruncated: number;
+    spotPriceDisplay: string;
 }
 
 const initialState: tradeData = {
@@ -41,6 +50,13 @@ const initialState: tradeData = {
     simpleRangeWidth: 100,
     slippageTolerance: 0.05,
     activeChartPeriod: 300,
+    targetData: [
+        { name: 'Max', value: 0 },
+        { name: 'Min', value: 0 },
+    ],
+    pinnedMaxPriceDisplayTruncated: 0,
+    pinnedMinPriceDisplayTruncated: 0,
+    spotPriceDisplay: '0',
 };
 
 export const tradeDataSlice = createSlice({
@@ -126,11 +142,23 @@ export const tradeDataSlice = createSlice({
         setActiveChartPeriod: (state, action: PayloadAction<number>) => {
             state.activeChartPeriod = action.payload;
         },
+        setTargetData: (state, action: PayloadAction<targetData[]>) => {
+            state.targetData = action.payload;
+        },
         resetTokens: (state, action: PayloadAction<string>) => {
             if (action.payload === '0x5') {
                 state.tokenA = initialState.tokenA;
                 state.tokenB = initialState.tokenB;
             }
+        },
+        setPinnedMaxPrice: (state, action: PayloadAction<number>) => {
+            state.pinnedMaxPriceDisplayTruncated = action.payload;
+        },
+        setPinnedMinPrice: (state, action: PayloadAction<number>) => {
+            state.pinnedMinPriceDisplayTruncated = action.payload;
+        },
+        setSpotPriceDisplay: (state, action: PayloadAction<string>) => {
+            state.spotPriceDisplay = action.payload;
         },
 
         resetTradeData: () => initialState,
@@ -158,8 +186,12 @@ export const {
     setSimpleRangeWidth,
     setSlippageTolerance,
     setActiveChartPeriod,
+    setTargetData,
     resetTradeData,
     resetTokens,
+    setPinnedMaxPrice,
+    setPinnedMinPrice,
+    setSpotPriceDisplay,
 } = tradeDataSlice.actions;
 
 export default tradeDataSlice.reducer;

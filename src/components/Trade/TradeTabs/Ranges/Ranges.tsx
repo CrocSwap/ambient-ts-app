@@ -15,6 +15,7 @@ import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
 
 // interface for props
 interface RangesPropsIF {
+    isUserLoggedIn: boolean;
     crocEnv: CrocEnv | undefined;
     chainData: ChainSpec;
     provider: ethers.providers.Provider | undefined;
@@ -41,6 +42,7 @@ interface RangesPropsIF {
 // react functional component
 export default function Ranges(props: RangesPropsIF) {
     const {
+        isUserLoggedIn,
         crocEnv,
         chainData,
         provider,
@@ -64,16 +66,16 @@ export default function Ranges(props: RangesPropsIF) {
     const tradeData = useAppSelector((state) => state.tradeData);
 
     const columnHeaders = [
-        { name: 'ID', sortable: false },
-        { name: 'Wallet', sortable: true },
-        // { name: 'Range', sortable: false },
-        { name: 'Range Min', sortable: false },
-        { name: 'Range Max', sortable: false },
-        { name: 'Value', sortable: true },
-        { name: tradeData.baseToken.symbol, sortable: false },
-        { name: tradeData.quoteToken.symbol, sortable: false },
-        { name: 'APY', sortable: true },
-        { name: 'Status', sortable: false },
+        { name: 'ID', sortable: false, className: '' },
+        { name: 'Wallet', sortable: true, className: 'wallet' },
+        { name: 'Range', sortable: false, className: 'Range' },
+        { name: ' Min', sortable: false, className: 'range_sing' },
+        { name: 'Max', sortable: false, className: 'range_sing' },
+        // { name: 'Value', sortable: true },
+        { name: tradeData.baseToken.symbol, sortable: false, className: 'token' },
+        { name: tradeData.quoteToken.symbol, sortable: false, className: 'token' },
+        { name: 'APY', sortable: true, className: '' },
+        { name: 'Status', sortable: false, className: '' },
     ];
 
     const [sortBy, setSortBy, reverseSort, setReverseSort, sortedPositions] = useSortedPositions(
@@ -84,7 +86,7 @@ export default function Ranges(props: RangesPropsIF) {
 
     return (
         <div className={styles.container}>
-            <header className={styles.row_container}>
+            {/* <header className={styles.row_container}>
                 {columnHeaders.map((header) => (
                     <RangeCardHeader
                         key={`rangeDataHeaderField${header.name}`}
@@ -93,15 +95,24 @@ export default function Ranges(props: RangesPropsIF) {
                         setSortBy={setSortBy}
                         reverseSort={reverseSort}
                         setReverseSort={setReverseSort}
+                        columnHeaders={columnHeaders}
                     />
                 ))}
-            </header>
+            </header> */}
+            <RangeCardHeader
+                sortBy={sortBy}
+                setSortBy={setSortBy}
+                reverseSort={reverseSort}
+                setReverseSort={setReverseSort}
+                columnHeaders={columnHeaders}
+            />
             <ol
                 className={styles.positions_list}
                 style={{ height: expandTradeTable ? '100%' : '220px' }}
             >
                 {sortedPositions.map((position, idx) => (
                     <RangeCard
+                        isUserLoggedIn={isUserLoggedIn}
                         crocEnv={crocEnv}
                         chainData={chainData}
                         provider={provider}

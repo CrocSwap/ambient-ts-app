@@ -6,9 +6,10 @@ import TransactionDenied from '../../Global/TransactionDenied/TransactionDenied'
 import Button from '../../Global/Button/Button';
 import { TokenPairIF } from '../../../utils/interfaces/exports';
 import { CrocImpact } from '@crocswap-libs/sdk';
-import { Dispatch, SetStateAction, useEffect } from 'react';
+import { Dispatch, SetStateAction } from 'react';
 import TokensArrow from '../../Global/TokensArrow/TokensArrow';
 import DenominationSwitch from '../DenominationSwitch/DenominationSwitch';
+import ConfirmationModalControl from '../../Global/ConfirmationModalControl/ConfirmationModalControl';
 
 interface ConfirmSwapModalProps {
     initiateSwapMethod: () => void;
@@ -25,7 +26,6 @@ interface ConfirmSwapModalProps {
     showConfirmation: boolean;
     setShowConfirmation: Dispatch<SetStateAction<boolean>>;
     resetConfirmation: () => void;
-    pendingTransactions: string[];
 }
 
 export default function ConfirmSwapModal(props: ConfirmSwapModalProps) {
@@ -44,7 +44,6 @@ export default function ConfirmSwapModal(props: ConfirmSwapModalProps) {
         resetConfirmation,
         showConfirmation,
         setShowConfirmation,
-        pendingTransactions,
     } = props;
 
     const transactionApproved = newSwapTransactionHash !== '';
@@ -59,14 +58,6 @@ export default function ConfirmSwapModal(props: ConfirmSwapModalProps) {
     const sellTokenData = tokenPair.dataTokenA;
 
     const buyTokenData = tokenPair.dataTokenB;
-
-    useEffect(() => {
-        if (newSwapTransactionHash && newSwapTransactionHash !== '') {
-            pendingTransactions.push(newSwapTransactionHash);
-        }
-    }, [newSwapTransactionHash]);
-
-    console.log(pendingTransactions);
 
     const explanationText =
         primarySwapInput === 'sell' ? (
@@ -179,8 +170,10 @@ export default function ConfirmSwapModal(props: ConfirmSwapModalProps) {
                 {buyCurrencyRow}
             </section>
             <DenominationSwitch />
+
             {extraInfoData}
             {explanationText}
+            <ConfirmationModalControl />
         </div>
     );
 

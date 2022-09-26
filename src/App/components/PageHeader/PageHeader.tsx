@@ -21,7 +21,8 @@ import MobileSidebar from '../../../components/Global/MobileSidebar/MobileSideba
 import NotificationCenter from '../../../components/Global/NotificationCenter/NotificationCenter';
 
 interface HeaderPropsIF {
-    nativeBalance: string;
+    isUserLoggedIn: boolean;
+    nativeBalance: string | undefined;
     clickLogout: () => void;
     metamaskLocked: boolean;
     ensName: string;
@@ -31,7 +32,6 @@ interface HeaderPropsIF {
     switchChain: Dispatch<SetStateAction<string>>;
     switchNetworkInMoralis: (providedChainId: string) => Promise<void>;
     openModalWallet: () => void;
-    pendingTransactions: string[];
 
     isMobileSidebarOpen: boolean;
     setIsMobileSidebarOpen: Dispatch<SetStateAction<boolean>>;
@@ -44,6 +44,7 @@ interface HeaderPropsIF {
 
 export default function PageHeader(props: HeaderPropsIF) {
     const {
+        isUserLoggedIn,
         ensName,
         nativeBalance,
         clickLogout,
@@ -54,7 +55,6 @@ export default function PageHeader(props: HeaderPropsIF) {
         switchChain,
         switchNetworkInMoralis,
         openModalWallet,
-        pendingTransactions,
         lastBlockNumber,
         isMobileSidebarOpen,
         setIsMobileSidebarOpen,
@@ -112,8 +112,7 @@ export default function PageHeader(props: HeaderPropsIF) {
         accountAddress: accountAddress,
         accountAddressFull: isAuthenticated && account ? account : '',
         ensName: ensName,
-        isAuthenticated: isAuthenticated,
-        isWeb3Enabled: isWeb3Enabled,
+        isUserLoggedIn: isUserLoggedIn,
         clickLogout: clickLogout,
         openModal: openModal,
         chainId: chainId,
@@ -153,6 +152,7 @@ export default function PageHeader(props: HeaderPropsIF) {
     ];
 
     // Most of this functionality can be achieve by using the NavLink instead of Link and accessing the isActive prop on the Navlink. Access to this is needed outside of the link itself for animation purposes, which is why it is being done in this way.
+    console.log(pathname);
 
     const routeDisplay = (
         <AnimateSharedLayout>
@@ -210,23 +210,23 @@ export default function PageHeader(props: HeaderPropsIF) {
             </div> */}
 
             {routeDisplay}
-            <MobileSidebar
-                lastBlockNumber={lastBlockNumber}
-                chainId={chainId}
-                isMobileSidebarOpen={isMobileSidebarOpen}
-                setIsMobileSidebarOpen={setIsMobileSidebarOpen}
-            />
-
-            <div className={styles.account}>
-                <NetworkSelector chainId={chainId} switchChain={switchChain} />
-                {(!isAuthenticated || !isWeb3Enabled) && metamaskButton}
-                <Account {...accountProps} />
-                <NotificationCenter
-                    showNotificationTable={showNotificationTable}
-                    setShowNotificationTable={setShowNotificationTable}
-                    pendingTransactions={pendingTransactions}
+            <div>
+                <MobileSidebar
                     lastBlockNumber={lastBlockNumber}
+                    chainId={chainId}
+                    isMobileSidebarOpen={isMobileSidebarOpen}
+                    setIsMobileSidebarOpen={setIsMobileSidebarOpen}
                 />
+                <div className={styles.account}>
+                    <NetworkSelector chainId={chainId} switchChain={switchChain} />
+                    {(!isAuthenticated || !isWeb3Enabled) && metamaskButton}
+                    <Account {...accountProps} />
+                    <NotificationCenter
+                        showNotificationTable={showNotificationTable}
+                        setShowNotificationTable={setShowNotificationTable}
+                        lastBlockNumber={lastBlockNumber}
+                    />
+                </div>
             </div>
             {isChainSupported || <SwitchNetwork switchNetworkInMoralis={switchNetworkInMoralis} />}
             {modalOrNull}
