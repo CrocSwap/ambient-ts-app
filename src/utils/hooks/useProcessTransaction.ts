@@ -1,6 +1,6 @@
 import { ITransaction } from '../../utils/state/graphDataSlice';
 import { useMoralis } from 'react-moralis';
-import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
+import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { useState, useEffect } from 'react';
 import getUnicodeCharacter from '../../utils/functions/getUnicodeCharacter';
 import { toDisplayQty } from '@crocswap-libs/sdk';
@@ -8,7 +8,7 @@ import { formatAmount } from '../../utils/numbers';
 import { useAppChain } from '../../App/hooks/useAppChain';
 
 export const useProcessTransaction = (tx: ITransaction) => {
-    const [chainData, isChainSupported, switchChain, switchNetworkInMoralis] = useAppChain('0x5');
+    const [chainData] = useAppChain('0x5');
 
     const tradeData = useAppSelector((state) => state.tradeData);
     const blockExplorer = chainData?.blockExplorer;
@@ -23,9 +23,6 @@ export const useProcessTransaction = (tx: ITransaction) => {
 
     const tokenAAddress = tradeData.tokenA.address;
     const tokenBAddress = tradeData.tokenB.address;
-
-    // const baseTokenAddress = tradeData.baseToken.address;
-    // const quoteTokenAddress = tradeData.quoteToken.address;
 
     const transactionBaseAddressLowerCase = tx.base.toLowerCase();
     const transactionQuoteAddressLowerCase = tx.quote.toLowerCase();
@@ -89,10 +86,6 @@ export const useProcessTransaction = (tx: ITransaction) => {
             const truncatedDisplayPrice = isDenomBase
                 ? quoteTokenCharacter + invertedPriceTruncated
                 : baseTokenCharacter + nonInvertedPriceTruncated;
-
-            // const truncatedDisplayPrice = isDenomBase
-            //     ? quoteTokenCharacter + invPriceDecimalCorrected?.toPrecision(3)
-            //     : baseTokenCharacter + priceDecimalCorrected?.toPrecision(3);
 
             setTruncatedDisplayPrice(truncatedDisplayPrice);
         } else {
@@ -184,8 +177,8 @@ export const useProcessTransaction = (tx: ITransaction) => {
           });
 
     const usdValue = usdValueTruncated ? '$' + usdValueTruncated : '…';
-
-    return [
+    if (!tx) return null;
+    return {
         // wallet and id data
         ownerId,
         txHash,
@@ -213,5 +206,5 @@ export const useProcessTransaction = (tx: ITransaction) => {
 
         // transaction matches select token data
         transactionMatchesSelectedTokens,
-    ] as const;
+    } as const;
 };
