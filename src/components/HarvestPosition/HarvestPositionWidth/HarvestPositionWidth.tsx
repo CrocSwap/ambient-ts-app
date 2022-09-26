@@ -73,7 +73,7 @@ export default function HarvestPositionWidth(props: HarvestPositionWidthPropsIF)
                         min='1'
                         max='100'
                         step='1'
-                        defaultValue={100}
+                        defaultValue={removalPercentage}
                         type='range'
                         className={styles.percentage_input}
                         onChange={(e) => handlePercentageUpdate(parseInt(e.target.value))}
