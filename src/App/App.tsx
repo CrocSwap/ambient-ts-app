@@ -249,9 +249,10 @@ export default function App() {
                 }
             } else if (!provider || !onChain) {
                 const chainSpec = lookupChain(chainData.chainId);
-                const url = chainSpec.wsUrl ? chainSpec.wsUrl : chainSpec.nodeUrl;
+                const url = chainSpec.nodeUrl;
+                // const url = chainSpec.wsUrl ? chainSpec.wsUrl : chainSpec.nodeUrl;
                 // console.log('Chain URL ' + url);
-                setProvider(new ethers.providers.WebSocketProvider(url));
+                setProvider(new ethers.providers.JsonRpcProvider(url));
             }
         } catch (error) {
             console.log(error);
@@ -305,7 +306,7 @@ export default function App() {
     }, [tokenListsReceived]);
 
     useEffect(() => {
-        fetch('https://goerli.infura.io/v3/25e7e0ec71de48bfa9c4d2431fbb3c4a', {
+        fetch(chainData.nodeUrl, {
             method: 'POST',
             headers: {
                 Accept: 'application/json',
@@ -323,13 +324,12 @@ export default function App() {
                 if (lastBlockNumber !== parseInt(json?.result)) {
                     setLastBlockNumber(parseInt(json?.result));
                 }
-            });
+            })
+            .catch(console.log);
     }, []);
 
-    const goerliWssInfuraEndpoint = 'wss://goerli.infura.io/ws/v3/25e7e0ec71de48bfa9c4d2431fbb3c4a';
-
     const { sendMessage: send, lastMessage: lastNewHeadMessage } = useWebSocket(
-        goerliWssInfuraEndpoint,
+        chainData.wsUrl || '',
         {
             onOpen: () => {
                 console.log('infura newHeads subscription opened');
