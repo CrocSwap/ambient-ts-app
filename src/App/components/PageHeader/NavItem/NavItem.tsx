@@ -1,11 +1,4 @@
-import {
-    useState,
-    useRef,
-    Children,
-    ReactNode,
-    ReactElement,
-    cloneElement
-} from 'react';
+import { useState, useRef, Children, ReactNode, ReactElement, cloneElement } from 'react';
 import styles from './NavItem.module.css';
 import UseOnClickOutside from '../../../../utils/hooks/useOnClickOutside';
 

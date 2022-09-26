@@ -20,13 +20,6 @@
     stroke-opacity: 0.1;
 }
 
-.annotation-line > .redline {
-    stroke: rgba(204, 204, 204, 0.452);
-    stroke-width: 3;
-    stroke-dasharray: 6 6;
-    stroke-opacity: 0.6;
-}
-
 .candlestick .down {
     background-color: #7371fc;
 }
@@ -35,14 +28,32 @@ hr {
     display: block;
     height: 0.5px;
     border: 0;
-    border-top: 0.5px solid rgba(204, 204, 204, 0.452);
-    margin: 1 0;
-    padding: 0;
+    border-top: 0.5px solid #242F3F;
 }
 
-label {
-    color: rgba(204, 204, 204, 0.63);
-    padding-top: 3px;
-    padding-left: 7px;
-    font-size: 14px;
+.animatedImg {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    -webkit-animation: spin 3s linear infinite;
+    -moz-animation: spin 4s linear infinite;
+    animation: spin 4s linear infinite;
+    height: 100%;
+}
+
+@-moz-keyframes spin {
+    100% {
+        -moz-transform: rotate(360deg);
+    }
+}
+@-webkit-keyframes spin {
+    100% {
+        -webkit-transform: rotate(360deg);
+    }
+}
+@keyframes spin {
+    100% {
+        -webkit-transform: rotate(360deg);
+        transform: rotate(360deg);
+    }
 }

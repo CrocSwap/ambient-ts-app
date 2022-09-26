@@ -15,6 +15,7 @@ import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
 
 // interface for props
 interface RangesPropsIF {
+    isUserLoggedIn: boolean;
     crocEnv: CrocEnv | undefined;
     chainData: ChainSpec;
     provider: ethers.providers.Provider | undefined;
@@ -33,7 +34,6 @@ interface RangesPropsIF {
     currentPositionActive: string;
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
     portfolio?: boolean;
-    pendingTransactions: string[];
 
     openGlobalModal: (content: React.ReactNode) => void;
     closeGlobalModal: () => void;
@@ -42,6 +42,7 @@ interface RangesPropsIF {
 // react functional component
 export default function Ranges(props: RangesPropsIF) {
     const {
+        isUserLoggedIn,
         crocEnv,
         chainData,
         provider,
@@ -60,7 +61,6 @@ export default function Ranges(props: RangesPropsIF) {
         currentPositionActive,
         setCurrentPositionActive,
         portfolio,
-        pendingTransactions,
     } = props;
 
     const tradeData = useAppSelector((state) => state.tradeData);
@@ -112,6 +112,7 @@ export default function Ranges(props: RangesPropsIF) {
             >
                 {sortedPositions.map((position, idx) => (
                     <RangeCard
+                        isUserLoggedIn={isUserLoggedIn}
                         crocEnv={crocEnv}
                         chainData={chainData}
                         provider={provider}
@@ -135,7 +136,6 @@ export default function Ranges(props: RangesPropsIF) {
                         setCurrentPositionActive={setCurrentPositionActive}
                         openGlobalModal={props.openGlobalModal}
                         closeGlobalModal={props.closeGlobalModal}
-                        pendingTransactions={pendingTransactions}
                     />
                 ))}
             </ol>

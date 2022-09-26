@@ -13,9 +13,7 @@ export default function Accordion(props: AccordionProps) {
 
     return (
         <>
-            <motion.div onClick={() => setIsOpen((prev) => !prev)}>
-                {children}
-            </motion.div>
+            <motion.div onClick={() => setIsOpen((prev) => !prev)}>{children}</motion.div>
             <AnimatePresence>
                 {isOpen && (
                     <motion.div

@@ -26,7 +26,6 @@ interface ConfirmLimitModalProps {
     showConfirmation: boolean;
     setShowConfirmation: Dispatch<SetStateAction<boolean>>;
     resetConfirmation: () => void;
-    pendingTransactions: string[];
 }
 
 export default function ConfirmLimitModal(props: ConfirmLimitModalProps) {
@@ -43,8 +42,6 @@ export default function ConfirmLimitModal(props: ConfirmLimitModalProps) {
         resetConfirmation,
         showConfirmation,
         setShowConfirmation,
-
-        // pendingTransactions,
     } = props;
     // const [confirmDetails, setConfirmDetails] = useState<boolean>(true);
     const [transactionApproved, setTransactionApproved] = useState<boolean>(false);
@@ -52,9 +49,6 @@ export default function ConfirmLimitModal(props: ConfirmLimitModalProps) {
     useEffect(() => {
         if (newLimitOrderTransactionHash) {
             setTransactionApproved(true);
-            // if (newLimitOrderTransactionHash !== '') {
-            //     pendingTransactions.push(newLimitOrderTransactionHash);
-            // }
         }
     }, [newLimitOrderTransactionHash]);
 

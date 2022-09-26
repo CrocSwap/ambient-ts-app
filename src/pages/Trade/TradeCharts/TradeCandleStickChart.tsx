@@ -1,10 +1,19 @@
-import * as d3 from 'd3';
-import * as d3fc from 'd3fc';
-import { DetailedHTMLProps, HTMLAttributes, useEffect, useState } from 'react';
-import { formatDollarAmountAxis } from '../../../utils/numbers';
+import { DetailedHTMLProps, HTMLAttributes, useEffect, useMemo, useState } from 'react';
 import { CandleData, CandlesByPoolAndDuration } from '../../../utils/state/graphDataSlice';
+import { targetData } from '../../../utils/state/tradeDataSlice';
 import Chart from '../../Chart/Chart';
 import './TradeCandleStickChart.css';
+import logo from '../../../assets/images/logos/ambient_logo.svg';
+import {
+    CandleChartData,
+    LiqSnap,
+    LiquidityData,
+    TvlChartData,
+    VolumeChartData,
+} from './TradeCharts';
+import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
+import { getPinnedPriceValuesFromDisplayPrices } from '../Range/rangeFunctions';
+import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -19,6 +28,7 @@ declare global {
 }
 
 interface ChartData {
+    expandTradeTable: boolean;
     tvlData: any[];
     volumeData: any[];
     feeData: any[];
@@ -26,7 +36,32 @@ interface ChartData {
     changeState: (isOpen: boolean | undefined, candleData: CandleData | undefined) => void;
     chartItemStates: chartItemStates;
     denomInBase: boolean;
-    expandTradeTable: boolean;
+    targetData: targetData[] | undefined;
+    limitPrice: string | undefined;
+    setLimitRate: React.Dispatch<React.SetStateAction<string>>;
+    limitRate: string;
+    liquidityData: any;
+    isAdvancedModeActive: boolean | undefined;
+    simpleRangeWidth: number | undefined;
+    pinnedMinPriceDisplayTruncated: number | undefined;
+    pinnedMaxPriceDisplayTruncated: number | undefined;
+    truncatedPoolPrice: number | undefined;
+    spotPriceDisplay: string | undefined;
+    setCurrentData: React.Dispatch<React.SetStateAction<CandleChartData | undefined>>;
+    upBodyColor: string;
+    upBorderColor: string;
+    downBodyColor: string;
+    downBorderColor: string;
+    baseTokenAddress: string;
+    chainId: string;
+    poolPriceNonDisplay: number | undefined;
+}
+
+export interface ChartUtils {
+    period: any;
+    chartData: CandleChartData[];
+    tvlChartData: TvlChartData[];
+    volumeChartData: VolumeChartData[];
 }
 
 type chartItemStates = {
@@ -36,254 +71,192 @@ type chartItemStates = {
 };
 
 export default function TradeCandleStickChart(props: ChartData) {
-    const { showFeeRate, showTvl, showVolume } = props.chartItemStates;
-
-    const numberOfActiveItems = [showFeeRate, showTvl, showVolume].filter(Boolean);
-
-    const chartHeight = 100 - numberOfActiveItems.length * 15;
-    // console.log(chartHeight);
-    // console.log(numberOfActiveItems.length);
-
     const data = {
         tvlData: props.tvlData,
         volumeData: props.volumeData,
         feeData: props.feeData,
         priceData: props.priceData,
+        liquidityData: props.liquidityData,
     };
 
-    const expandTradeTable = props.expandTradeTable;
+    const { denomInBase, baseTokenAddress, chainId /* poolPriceNonDisplay */ } = props;
 
-    const [liquidityData] = useState([]);
+    const [isLoading, setIsLoading] = useState<boolean>(true);
+    const [parsedChartData, setParsedChartData] = useState<ChartUtils | undefined>(undefined);
+    const expandTradeTable = props?.expandTradeTable;
 
-    // Volume Chart
+    const tradeData = useAppSelector((state) => state.tradeData);
+    const activeChartPeriod = tradeData.activeChartPeriod;
+
+    const tokenPair = {
+        dataTokenA: tradeData.tokenA,
+        dataTokenB: tradeData.tokenB,
+    };
+
+    const denominationsInBase = tradeData.isDenomBase;
+    const isTokenABase = tokenPair?.dataTokenA.address === baseTokenAddress;
+
+    const tokenA = tokenPair.dataTokenA;
+    const tokenB = tokenPair.dataTokenB;
+    const tokenADecimals = tokenA.decimals;
+    const tokenBDecimals = tokenB.decimals;
+    const baseTokenDecimals = isTokenABase ? tokenADecimals : tokenBDecimals;
+    const quoteTokenDecimals = !isTokenABase ? tokenADecimals : tokenBDecimals;
+
+    // const currentPoolPriceTick =
+    //     poolPriceNonDisplay === undefined ? 0 : Math.log(poolPriceNonDisplay) / Math.log(1.0001);
+
+    // const defaultMinPriceDifferencePercentage = -15;
+    // const defaultMaxPriceDifferencePercentage = 15;
+
+    // const defaultLowTick =
+    //     tradeData.advancedLowTick === 0
+    //         ? currentPoolPriceTick + defaultMinPriceDifferencePercentage * 100
+    //         : tradeData.advancedLowTick;
+
+    // const defaultHighTick =
+    //     tradeData.advancedHighTick === 0
+    //         ? currentPoolPriceTick + defaultMaxPriceDifferencePercentage * 100
+    //         : tradeData.advancedHighTick;
+
+    // Parse price data
     useEffect(() => {
-        const chartData = {
-            lineseries: data.volumeData,
-        };
+        // setIsLoading(true);
+        const chartData: CandleChartData[] = [];
+        const tvlChartData: TvlChartData[] = [];
+        const volumeChartData: VolumeChartData[] = [];
 
-        const render = () => {
-            d3.select('#chart-volume').datum(chartData).call(chart);
-        };
-
-        const yExtent = d3fc.extentLinear().accessors([(d: any) => d.value]);
-
-        const millisPerDay = 24 * 60 * 60 * 100;
-        const xExtent = d3fc
-            .extentDate()
-            .accessors([(d: any) => d.time])
-            .padUnit('domain')
-            .pad([millisPerDay, 9000000000]);
-
-        const xScale = d3.scaleTime();
-        const yScale = d3.scaleLinear();
-
-        xScale.domain(xExtent(chartData.lineseries));
-        yScale.domain(yExtent(chartData.lineseries));
-
-        const lineSeries = d3fc
-            .autoBandwidth(d3fc.seriesSvgBar())
-            .align('center')
-            .crossValue((d: any) => d.time)
-            .mainValue((d: any) => d.value)
-            .decorate((selection: any) => {
-                selection.enter().style('fill', '#7371FC');
+        props.priceData?.candles.map((data) => {
+            chartData.push({
+                date: new Date(data.time * 1000),
+                open: denomInBase
+                    ? data.invPriceOpenExclMEVDecimalCorrected
+                    : data.priceOpenExclMEVDecimalCorrected,
+                close: denomInBase
+                    ? data.invPriceCloseExclMEVDecimalCorrected
+                    : data.priceCloseExclMEVDecimalCorrected,
+                high: denomInBase
+                    ? data.invMinPriceExclMEVDecimalCorrected
+                    : data.maxPriceExclMEVDecimalCorrected,
+                low: denomInBase
+                    ? data.invMaxPriceExclMEVDecimalCorrected
+                    : data.minPriceExclMEVDecimalCorrected,
+                time: data.time,
+                allSwaps: [],
             });
 
-        const multi = d3fc
-            .seriesSvgMulti()
-            .series([lineSeries])
-            .mapping((data: any) => {
-                if (data.loading) {
-                    return [];
+            tvlChartData.push({
+                time: new Date(data.tvlData.time * 1000),
+                value: data.tvlData.interpDistHigher,
+            });
+
+            volumeChartData.push({
+                time: new Date(data.time * 1000),
+                value: data.volumeUSD,
+            });
+        });
+
+        const chartUtils: ChartUtils = {
+            period: props.priceData?.duration,
+            chartData: chartData,
+            tvlChartData: tvlChartData,
+            volumeChartData: volumeChartData,
+        };
+        setParsedChartData(() => {
+            return chartUtils;
+        });
+    }, [activeChartPeriod, denomInBase, props.priceData]);
+    // }, [activeChartPeriod, denomInBase]);
+
+    // Parse liquidtiy data
+    const liquidityData = useMemo(() => {
+        const liqData: LiquidityData[] = [];
+        const liqSnapData: LiqSnap[] = [];
+
+        if (props.liquidityData) {
+            props.liquidityData.ranges.map((data: any) => {
+                if (data.upperBoundInvPriceDecimalCorrected > 1) {
+                    liqData.push({
+                        activeLiq: data.activeLiq,
+                        upperBoundPriceDecimalCorrected: denomInBase
+                            ? data.upperBoundInvPriceDecimalCorrected
+                            : data.upperBoundInvPriceDecimalCorrected,
+                    });
+
+                    const pinnedDisplayPrices = getPinnedPriceValuesFromDisplayPrices(
+                        denominationsInBase,
+                        baseTokenDecimals,
+                        quoteTokenDecimals,
+                        data.upperBoundInvPriceDecimalCorrected,
+                        data.lowerBoundInvPriceDecimalCorrected,
+                        lookupChain(chainId).gridSize,
+                    );
+
+                    if (!isNaN(parseFloat(pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated))) {
+                        liqSnapData.push({
+                            activeLiq: data.activeLiq,
+                            pinnedMaxPriceDisplayTruncated: parseFloat(
+                                pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
+                            ),
+                            pinnedMinPriceDisplayTruncated: parseFloat(
+                                pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
+                            ),
+                        });
+                    }
                 }
-                return data.lineseries;
             });
-
-        const chart = d3fc
-            .chartCartesian({ xScale, yScale })
-            .xTicks([0])
-            .yTicks([2])
-            // .yTickValues([Math.min(...chartData.lineseries.map((o) => o.value)), Math.max(...chartData.lineseries.map((o) => o.value))])
-            .yTickFormat(formatDollarAmountAxis)
-            .decorate((selection: any) => {
-                selection.select('.x-axis').style('height', '3px');
-            })
-            .svgPlotArea(multi);
-
-        render();
-    }, [data]);
-
-    // Tvl Chart
-    useEffect(() => {
-        const yExtent = d3fc.extentLinear().accessors([(d: any) => d.value]);
-
-        const millisPerDay = 24 * 60 * 60 * 100;
-        const xExtent = d3fc
-            .extentDate()
-            .accessors([(d: any) => d.time])
-            .padUnit('domain')
-            .pad([millisPerDay, 9000000000]);
-
-        const chartData = {
-            series: data.tvlData,
-        };
-
-        const xScale = d3.scaleTime();
-        const yScale = d3.scaleLinear();
-
-        xScale.domain(xExtent(chartData.series));
-        yScale.domain(yExtent(chartData.series));
-
-        const areaSeries = d3fc
-            .seriesSvgArea()
-            .mainValue((d: any) => d.value)
-            .crossValue((d: any) => d.time)
-            .decorate((selection: any) => {
-                selection.style('fill', () => {
-                    return 'url(#mygrad)';
-                });
-            });
-
-        const lineSeries = d3fc
-            .seriesSvgLine()
-            .mainValue((d: any) => d.value)
-            .crossValue((d: any) => d.time)
-            .decorate((selection: any) => {
-                selection.enter().style('stroke', () => '#7371FC');
-                selection.attr('stroke-width', '2');
-            });
-
-        const multi = d3fc
-            .seriesSvgMulti()
-            .series([lineSeries, areaSeries])
-            .mapping((data: any) => {
-                return data.series;
-            });
-
-        const svgmain = d3.select('.chart-tvl').select('svg');
-
-        const lg = svgmain
-            .append('defs')
-            .append('linearGradient')
-            .attr('id', 'mygrad')
-            .attr('x1', '100%')
-            .attr('x2', '100%')
-            .attr('y1', '0%')
-            .attr('y2', '100%');
-        lg.append('stop')
-            .attr('offset', '10%')
-            .style('stop-color', '#7d7cfb')
-            .style('stop-opacity', 0.7);
-
-        lg.append('stop')
-            .attr('offset', '110%')
-            .style('stop-color', 'black')
-            .style('stop-opacity', 0.7);
-
-        const chart = d3fc
-            .chartCartesian(xScale, yScale)
-            .xTicks([0])
-            .yTicks([2])
-            .yTickFormat(formatDollarAmountAxis)
-            .decorate((selection: any) => {
-                selection.select('.x-axis').style('height', '3px');
-            })
-            .svgPlotArea(multi);
-
-        function render() {
-            d3.select('.chart-tvl').datum(chartData).call(chart);
         }
 
-        render();
-    }, [data]);
+        return { liqData: liqData, liqSnapData: liqSnapData };
+    }, [props.liquidityData, denomInBase]);
 
-    // Fee Rate Chart
+    const loading = (
+        <div className='animatedImg'>
+            <img src={logo} width={110} alt='logo' />
+        </div>
+    );
+
     useEffect(() => {
-        const yExtent = d3fc.extentLinear().accessors([(d: any) => d.value]);
-
-        const millisPerDay = 24 * 60 * 60 * 100;
-        const xExtent = d3fc
-            .extentDate()
-            .accessors([(d: any) => d.time])
-            .padUnit('domain')
-            .pad([millisPerDay, 9000000000]);
-
-        const chartData = {
-            series: data.feeData,
-        };
-
-        const xScale = d3.scaleTime();
-        const yScale = d3.scaleLinear();
-
-        xScale.domain(xExtent(chartData.series));
-        yScale.domain(yExtent(chartData.series));
-
-        const lineSeries = d3fc
-            .seriesSvgLine()
-            .mainValue((d: any) => d.value)
-            .crossValue((d: any) => d.time)
-            .decorate((selection: any) => {
-                selection.enter().style('stroke', () => '#7371FC');
-                selection.attr('stroke-width', '1');
-            });
-
-        const multi = d3fc
-            .seriesSvgMulti()
-            .series([lineSeries])
-            .mapping((data: any) => {
-                return data.series;
-            });
-
-        const chart = d3fc
-            .chartCartesian(xScale, yScale)
-            .xTicks([0])
-            .yTicks([2])
-            .yTickFormat(formatDollarAmountAxis)
-            .decorate((selection: any) => {
-                selection.select('.x-axis').style('height', '3px');
-            })
-            .svgPlotArea(multi);
-
-        function render() {
-            d3.select('.chart-fee').datum(chartData).call(chart);
-        }
-
-        render();
-    }, [data]);
+        const timer = setTimeout(() => {
+            setIsLoading(parsedChartData === undefined || parsedChartData.chartData.length === 0);
+        }, 100);
+        return () => clearTimeout(timer);
+    }, [parsedChartData?.chartData]);
 
     return (
         <>
-            <div style={{ height: `${chartHeight}%`, width: '100%' }}>
-                <Chart
-                    expandTradeTable={expandTradeTable}
-                    priceData={data.priceData}
-                    liquidityData={liquidityData}
-                    changeState={props.changeState}
-                    denomInBase={props.denomInBase}
-                />
+            <div style={{ height: '100%', width: '100%' }}>
+                {!isLoading ? (
+                    <Chart
+                        priceData={parsedChartData}
+                        expandTradeTable={expandTradeTable}
+                        liquidityData={liquidityData}
+                        changeState={props.changeState}
+                        targetData={props.targetData}
+                        limitPrice={props.limitPrice}
+                        setLimitRate={props.setLimitRate}
+                        limitRate={props.limitRate}
+                        denomInBase={props.denomInBase}
+                        isAdvancedModeActive={props.isAdvancedModeActive}
+                        simpleRangeWidth={props.simpleRangeWidth}
+                        pinnedMinPriceDisplayTruncated={props.pinnedMinPriceDisplayTruncated}
+                        pinnedMaxPriceDisplayTruncated={props.pinnedMaxPriceDisplayTruncated}
+                        spotPriceDisplay={props.spotPriceDisplay}
+                        truncatedPoolPrice={props.truncatedPoolPrice}
+                        feeData={data.feeData}
+                        volumeData={data.volumeData}
+                        tvlData={data.tvlData}
+                        chartItemStates={props.chartItemStates}
+                        setCurrentData={props.setCurrentData}
+                        upBodyColor={props.upBodyColor}
+                        upBorderColor={props.upBorderColor}
+                        downBodyColor={props.downBodyColor}
+                        downBorderColor={props.downBorderColor}
+                    />
+                ) : (
+                    <>{loading}</>
+                )}
             </div>
-
-            {showFeeRate && (
-                <>
-                    <hr />
-                    <label>Fee Rate</label>
-                    <div style={{ height: '15%', width: '100%' }} className='chart-fee'></div>
-                </>
-            )}
-            {showTvl && (
-                <>
-                    <hr />
-                    <label>TVL</label>
-                    <div style={{ height: '15%', width: '80%' }} className='chart-tvl'></div>
-                </>
-            )}
-            {showVolume === true && (
-                <>
-                    <hr />
-                    <label>Volume</label>
-                    <div style={{ height: '15%', width: '100%' }} id='chart-volume'></div>
-                </>
-            )}
         </>
     );
 }

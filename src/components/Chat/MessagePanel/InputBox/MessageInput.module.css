@@ -1,0 +1,107 @@
+.input_box{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0px 8px;
+    gap: 4px;
+    width: 100%;
+    /* dark/tertiary */
+
+    background: #171d27;
+    border-radius: 4px;
+
+    /* Inside auto layout */
+
+    flex: none;
+    order: 3;
+    align-self: stretch;
+    flex-grow: 0;
+    position: absolute;
+    bottom: 0;
+}
+
+
+
+.modal_body {
+    position: fixed;
+    border: solid 1px transparent;
+    background-image: linear-gradient(rgba(255, 255, 255, 0), rgba(255, 255, 255, 0)),
+        linear-gradient(101deg, #7371fc, #cdc1ff, #7371fc);
+    background-origin: border-box;
+    background-clip: content-box, border-box;
+    box-shadow: 2px 1000px 1px var(--dark1) inset;
+    transition: box-shadow var(--animation-speed) ease-in-out;
+
+    min-width: 407px;
+    min-height: 350px;
+    border-radius: var(--border-radius);
+    position: relative;
+    color: white;
+
+    /* min-height: 80vh; */
+}
+
+
+
+
+
+
+
+.input{
+
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 0px 8px;
+    grid-gap: 4px;
+    gap: 4px;
+    width: 97%;
+    height: 40px;
+    background: #242F3F;
+    border-radius: 4px;
+    flex: none;
+
+    flex-grow: 0;
+    position: relative;
+    margin-bottom: 2%;
+
+}
+
+.emojiPicker {
+    width:97%;
+    padding:0px 8px;
+    height: 250px;
+    
+}
+
+.input_text:focus {
+    outline: none;
+}
+
+.input_text {
+
+    width: 212px;
+    height: 22px;
+
+    /* small */
+
+    font-family: 'Lexend Deca';
+    font-style: normal;
+    font-weight: 300;
+    font-size: calc(1vw - 1px);
+    line-height: 15px;
+    display: flex;
+    align-items: center;
+    outline: none;
+
+    /* text/grey dark */
+    border-color: transparent;
+    color: rgba(235, 235, 255, 0.25);
+    background-color: transparent;
+
+    /* Inside auto layout */
+
+    flex: none;
+    order: 0;
+    flex-grow: 1;
+}

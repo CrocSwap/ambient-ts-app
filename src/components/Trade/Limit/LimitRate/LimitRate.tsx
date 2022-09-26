@@ -51,6 +51,7 @@ export default function LimitRate(props: LimitRatePropsIF) {
                 pattern='^[0-9]*[.,]?[0-9]*$'
                 disabled={disable}
                 required
+                value={props.limitRate}
             />
         </div>
     );

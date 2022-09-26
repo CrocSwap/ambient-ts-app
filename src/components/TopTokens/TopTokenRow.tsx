@@ -1,8 +1,8 @@
-import { useNavigate } from 'react-router-dom';
 import { TokenData } from '../../state/tokens/models';
 import { isAddress } from '../../utils';
+import trimString from '../../utils/functions/trimString';
 import { formatDollarAmount } from '../../utils/numbers';
-import TradeButton from '../Global/Analytics/TradeButton';
+import { DefaultTooltip } from '../Global/StyledTooltip/StyledTooltip';
 import styles from './TopTokenRow.module.css';
 
 interface TokenProps {
@@ -12,16 +12,32 @@ interface TokenProps {
 
 export default function TopTokenRow(props: TokenProps) {
     const tokenData: TokenData = props.token;
-    const navigate = useNavigate();
 
     function handleRowClick() {
-        navigate('/tokens/' + tokenData.address);
+        window.open(
+            `https://etherscan.io/token/${tokenData.address}`,
+            '_blank',
+            'noopener,noreferrer',
+        );
     }
 
     function getTokenLogoURL() {
         const checkSummed = isAddress(tokenData.address);
         return `https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/${checkSummed}/logo.png`;
     }
+
+    const IDWithTooltip = (
+        <DefaultTooltip
+            interactive
+            title={tokenData.address}
+            placement={'right'}
+            arrow
+            enterDelay={400}
+            leaveDelay={200}
+        >
+            <p>{trimString(tokenData.address, 4, 4, '…')}</p>
+        </DefaultTooltip>
+    );
 
     const tokenImages = (
         <div className={styles.tokens_container}>
@@ -51,6 +67,10 @@ export default function TopTokenRow(props: TokenProps) {
                 </>
 
                 <>
+                    <section className={styles.display}> {IDWithTooltip}</section>
+                </>
+
+                <>
                     <section className={styles.display}>
                         {formatDollarAmount(tokenData.priceUSD)}
                     </section>
@@ -60,6 +80,10 @@ export default function TopTokenRow(props: TokenProps) {
                     <section className={styles.display}>
                         {formatDollarAmount(tokenData.tvlUSD)}
                     </section>
+                </>
+
+                <>
+                    <section className={styles.display}>Tvl At Tick</section>
                 </>
 
                 <>
@@ -73,10 +97,6 @@ export default function TopTokenRow(props: TokenProps) {
                         {Math.abs(tokenData.priceUSDChange).toFixed(2)}%
                     </section>
                 </>
-            </div>
-
-            <div className={styles.menu_container}>
-                <TradeButton />
             </div>
         </div>
     );

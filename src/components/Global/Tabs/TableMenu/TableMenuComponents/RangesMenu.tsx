@@ -54,15 +54,15 @@ export default function RangesMenu(props: RangesMenuIF) {
 
     const [openMenuTooltip, setOpenMenuTooltip] = useState(false);
 
-    const feesGreaterThanZero =
-        (positionData.feesLiqBaseDecimalCorrected || 0) +
-            (positionData.feesLiqQuoteDecimalCorrected || 0) >
-        0;
+    // const feesGreaterThanZero =
+    //     (positionData.feesLiqBaseDecimalCorrected || 0) +
+    //         (positionData.feesLiqQuoteDecimalCorrected || 0) >
+    //     0;
 
-    const positionHasLiquidity =
-        (positionData.positionLiqBaseDecimalCorrected || 0) +
-            (positionData.positionLiqQuoteDecimalCorrected || 0) >
-        0;
+    // const positionHasLiquidity =
+    //     (positionData.positionLiqBaseDecimalCorrected || 0) +
+    //         (positionData.positionLiqQuoteDecimalCorrected || 0) >
+    //     0;
 
     // ---------------------MODAL FUNCTIONALITY----------------
 
@@ -101,12 +101,12 @@ export default function RangesMenu(props: RangesMenuIF) {
             </Link>
         ) : null;
 
-    const removeButton =
-        userMatchesConnectedAccount && positionHasLiquidity ? (
-            <button className={styles.option_button} onClick={openRemoveModal}>
-                Remove
-            </button>
-        ) : null;
+    const removeButton = userMatchesConnectedAccount ? (
+        <button className={styles.option_button} onClick={openRemoveModal}>
+            Remove
+        </button>
+    ) : null;
+
     const copyButton = isPositionInRange ? (
         <button className={styles.option_button} onClick={handleCopyAddress}>
             Copy Trade
@@ -119,23 +119,22 @@ export default function RangesMenu(props: RangesMenuIF) {
         </button>
     );
     const harvestButton =
-        !isAmbient && feesGreaterThanZero && userMatchesConnectedAccount ? (
+        !isAmbient && userMatchesConnectedAccount ? (
             <button className={styles.option_button} onClick={openHarvestModal}>
                 Harvest
             </button>
         ) : null;
 
-    const editButton =
-        userMatchesConnectedAccount && positionHasLiquidity ? (
-            <Link
-                className={styles.option_button}
-                to={`/trade/edit/${posHash}`}
-                state={{ position: positionData }}
-                replace={currentLocation.startsWith('/trade/edit')}
-            >
-                Edit
-            </Link>
-        ) : null;
+    const editButton = userMatchesConnectedAccount ? (
+        <Link
+            className={styles.option_button}
+            to={`/trade/edit/${posHash}`}
+            state={{ position: positionData }}
+            replace={currentLocation.startsWith('/trade/edit')}
+        >
+            Edit
+        </Link>
+    ) : null;
 
     const rangesMenu = (
         <div className={styles.actions_menu}>
@@ -152,9 +151,10 @@ export default function RangesMenu(props: RangesMenuIF) {
 
     const menuContent = (
         <div className={styles.menu_column}>
-            {userMatchesConnectedAccount && editButton}
-            {userMatchesConnectedAccount && harvestButton}
-            {userMatchesConnectedAccount && removeButton}
+            {repositionButton}
+            {editButton}
+            {harvestButton}
+            {removeButton}
             {detailsButton}
             {copyButton}
         </div>
