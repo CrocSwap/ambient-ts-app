@@ -214,8 +214,6 @@ export default function TransactionCard(props: TransactionProps) {
             ? 'rangeRemove'
             : 'rangeAdd';
 
-    if (!transactionMatchesSelectedTokens) return null;
-
     const activeTransactionStyle =
         tx.id === currentTxActiveInTransactions ? styles.active_tx_style : '';
 
@@ -234,6 +232,7 @@ export default function TransactionCard(props: TransactionProps) {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
           });
+    if (!transactionMatchesSelectedTokens) return null;
 
     return (
         <div

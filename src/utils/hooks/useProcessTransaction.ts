@@ -5,23 +5,27 @@ import { useState, useEffect } from 'react';
 import getUnicodeCharacter from '../../utils/functions/getUnicodeCharacter';
 import { toDisplayQty } from '@crocswap-libs/sdk';
 import { formatAmount } from '../../utils/numbers';
+import { useAppChain } from '../../App/hooks/useAppChain';
 
 export const useProcessTransaction = (tx: ITransaction) => {
+    const [chainData, isChainSupported, switchChain, switchNetworkInMoralis] = useAppChain('0x5');
+
     const tradeData = useAppSelector((state) => state.tradeData);
+    const blockExplorer = chainData?.blockExplorer;
 
     const { account } = useMoralis();
     const isDenomBase = tradeData.isDenomBase;
 
     const txHash = tx.tx;
     const ownerId = tx.user;
-
+    const ensName = tx.ensResolution ? tx.ensResolution : null;
     const isOwnerActiveAccount = ownerId.toLowerCase() === account?.toLowerCase();
 
     const tokenAAddress = tradeData.tokenA.address;
     const tokenBAddress = tradeData.tokenB.address;
 
-    const baseTokenAddress = tradeData.baseToken.address;
-    const quoteTokenAddress = tradeData.quoteToken.address;
+    // const baseTokenAddress = tradeData.baseToken.address;
+    // const quoteTokenAddress = tradeData.quoteToken.address;
 
     const transactionBaseAddressLowerCase = tx.base.toLowerCase();
     const transactionQuoteAddressLowerCase = tx.quote.toLowerCase();
@@ -154,7 +158,7 @@ export const useProcessTransaction = (tx: ITransaction) => {
             ? 'sell'
             : 'buy';
 
-    const transactionTypeSide =
+    const side =
         tx.entityType === 'swap'
             ? 'market'
             : tx.entityType === 'limitOrder'
@@ -178,4 +182,36 @@ export const useProcessTransaction = (tx: ITransaction) => {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
           });
+
+    const usdValue = usdValueTruncated ? '$' + usdValueTruncated : '…';
+
+    return [
+        // wallet and id data
+        ownerId,
+        txHash,
+        ensName,
+        isOwnerActiveAccount,
+        // Price and Price type data
+        priceType,
+        truncatedDisplayPrice,
+
+        // Transaction type and side data
+        sideType,
+        side,
+
+        // Value data
+        usdValue,
+
+        // Token Qty data
+        baseTokenCharacter,
+        quoteTokenCharacter,
+        baseFlowDisplay,
+        quoteFlowDisplay,
+
+        // block explorer data
+        blockExplorer,
+
+        // transaction matches select token data
+        transactionMatchesSelectedTokens,
+    ] as const;
 };
