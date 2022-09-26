@@ -71,39 +71,59 @@ export default function OrderCard(props: OrderCardProps) {
     if (!transactionMatchesSelectedTokens) return null;
     // if (!limitOrder.positionLiq) return null;
 
-    const liqBaseNum = limitOrder.positionLiqBaseDecimalCorrected;
-    const liqQuoteNum = limitOrder.positionLiqQuoteDecimalCorrected;
+    if (
+        limitOrder.positionLiqBaseDecimalCorrected === 0 &&
+        limitOrder.positionLiqQuoteDecimalCorrected === 0 &&
+        limitOrder.source !== 'manual'
+    )
+        return null;
 
-    const baseQtyTruncated = liqBaseNum
-        ? liqBaseNum === 0
-            ? '0'
-            : liqBaseNum < 0.0001
-            ? liqBaseNum.toExponential(2)
-            : liqBaseNum < 2
-            ? liqBaseNum.toPrecision(3)
-            : liqBaseNum >= 100000
-            ? formatAmount(liqBaseNum)
-            : // ? baseLiqDisplayNum.toExponential(2)
-              liqBaseNum.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              })
-        : '...';
-    const quoteQtyTruncated = liqQuoteNum
-        ? liqQuoteNum === 0
-            ? '0'
-            : liqQuoteNum < 0.0001
-            ? liqQuoteNum.toExponential(2)
-            : liqQuoteNum < 2
-            ? liqQuoteNum.toPrecision(3)
-            : liqQuoteNum >= 100000
-            ? formatAmount(liqQuoteNum)
-            : // ? baseLiqDisplayNum.toExponential(2)
-              liqQuoteNum.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              })
-        : '...';
+    const liqBaseNum =
+        limitOrder.positionLiqBaseDecimalCorrected !== null
+            ? limitOrder.positionLiqBaseDecimalCorrected
+            : limitOrder.baseFlowDecimalCorrected !== null
+            ? limitOrder.baseFlowDecimalCorrected
+            : undefined;
+
+    const liqQuoteNum =
+        limitOrder.positionLiqQuoteDecimalCorrected !== null
+            ? limitOrder.positionLiqQuoteDecimalCorrected
+            : limitOrder.quoteFlowDecimalCorrected !== null
+            ? limitOrder.quoteFlowDecimalCorrected
+            : undefined;
+
+    const baseQtyTruncated =
+        limitOrder.source !== 'manual' && liqBaseNum !== undefined
+            ? liqBaseNum === 0
+                ? '0.00'
+                : liqBaseNum < 0.0001
+                ? liqBaseNum.toExponential(2)
+                : liqBaseNum < 2
+                ? liqBaseNum.toPrecision(3)
+                : liqBaseNum >= 100000
+                ? formatAmount(liqBaseNum)
+                : // ? baseLiqDisplayNum.toExponential(2)
+                  liqBaseNum.toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                  })
+            : undefined;
+    const quoteQtyTruncated =
+        limitOrder.source !== 'manual' && liqQuoteNum !== undefined
+            ? liqQuoteNum === 0
+                ? '0.00'
+                : liqQuoteNum < 0.0001
+                ? liqQuoteNum.toExponential(2)
+                : liqQuoteNum < 2
+                ? liqQuoteNum.toPrecision(3)
+                : liqQuoteNum >= 100000
+                ? formatAmount(liqQuoteNum)
+                : // ? baseLiqDisplayNum.toExponential(2)
+                  liqQuoteNum.toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                  })
+            : undefined;
 
     const usdValueNum = limitOrder.positionLiqTotalUSD;
     const usdValueTruncated = !usdValueNum

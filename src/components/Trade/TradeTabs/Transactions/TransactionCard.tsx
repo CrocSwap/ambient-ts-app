@@ -107,7 +107,7 @@ export default function TransactionCard(props: TransactionProps) {
 
             const nonInvertedPriceTruncated =
                 priceDecimalCorrected === 0
-                    ? '0'
+                    ? '0.00'
                     : priceDecimalCorrected < 0.0001
                     ? priceDecimalCorrected.toExponential(2)
                     : priceDecimalCorrected < 2
@@ -121,7 +121,7 @@ export default function TransactionCard(props: TransactionProps) {
 
             const invertedPriceTruncated =
                 invPriceDecimalCorrected === 0
-                    ? '0'
+                    ? '0.00'
                     : invPriceDecimalCorrected < 0.0001
                     ? invPriceDecimalCorrected.toExponential(2)
                     : invPriceDecimalCorrected < 2
@@ -151,7 +151,7 @@ export default function TransactionCard(props: TransactionProps) {
             const isBaseFlowNegative = baseFlowDisplayNum > 0;
             const baseFlowDisplayTruncated =
                 baseFlowAbsNum === 0
-                    ? '0'
+                    ? '0.00'
                     : baseFlowAbsNum < 0.0001
                     ? baseFlowDisplayNum.toExponential(2)
                     : baseFlowAbsNum < 2
@@ -174,7 +174,7 @@ export default function TransactionCard(props: TransactionProps) {
             const isQuoteFlowNegative = quoteFlowDisplayNum > 0;
             const quoteFlowDisplayTruncated =
                 quoteFlowAbsNum === 0
-                    ? '0'
+                    ? '0.00'
                     : quoteFlowAbsNum < 0.0001
                     ? quoteFlowDisplayNum.toExponential(2)
                     : quoteFlowAbsNum < 2

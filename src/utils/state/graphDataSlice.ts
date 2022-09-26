@@ -27,6 +27,7 @@ export interface ILimitOrderState {
     id: string;
     tx: string;
     positionId: string;
+    source: string;
     network: string;
     block: number;
     time: number;
@@ -43,6 +44,8 @@ export interface ILimitOrderState {
     concGrowth: number;
     positionLiq: number;
     positionLiqBase: number;
+    baseFlowDecimalCorrected: number;
+    quoteFlowDecimalCorrected: number;
     positionLiqBaseDecimalCorrected: number;
     positionLiqQuoteDecimalCorrected: number;
     positionLiqQuote: number;
