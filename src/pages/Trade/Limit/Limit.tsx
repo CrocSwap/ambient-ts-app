@@ -25,7 +25,12 @@ import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
 import { useModal } from '../../../components/Global/Modal/useModal';
 import { SlippagePairIF, TokenIF, TokenPairIF } from '../../../utils/interfaces/exports';
 import { setLimitPrice } from '../../../utils/state/tradeDataSlice';
-import { addReceipt } from '../../../utils/state/receiptDataSlice';
+import { addPendingTx, addReceipt, removePendingTx } from '../../../utils/state/receiptDataSlice';
+import {
+    isTransactionFailedError,
+    isTransactionReplacedError,
+    TransactionError,
+} from '../../../utils/TransactionError';
 
 interface LimitPropsIF {
     isUserLoggedIn: boolean;
@@ -61,8 +66,6 @@ interface LimitPropsIF {
     closeGlobalModal: () => void;
     setLimitRate: React.Dispatch<React.SetStateAction<string>>;
     limitRate: string;
-
-    pendingTransactions: string[];
 }
 
 export default function Limit(props: LimitPropsIF) {
@@ -91,14 +94,13 @@ export default function Limit(props: LimitPropsIF) {
         activeTokenListsChanged,
         indicateActiveTokenListsChanged,
         openModalWallet,
-        pendingTransactions,
         setLimitRate,
         limitRate,
     } = props;
 
     const { tradeData, navigationMenu } = useTradeData();
     const dispatch = useAppDispatch();
-    const { isWeb3Enabled, isAuthenticated } = useMoralis();
+    const { account, isWeb3Enabled, isAuthenticated } = useMoralis();
     const [isModalOpen, openModal, closeModal] = useModal();
     const [limitAllowed, setLimitAllowed] = useState<boolean>(false);
 
@@ -309,17 +311,83 @@ export default function Limit(props: LimitPropsIF) {
             return;
         }
 
+        let tx;
         try {
-            const mint = await ko.mint({ surplus: isWithdrawFromDexChecked });
-            // console.log(mint.hash);
-            setNewLimitOrderTransactionHash(mint.hash);
-            const limitOrderReceipt = await mint.wait();
-            if (limitOrderReceipt) {
-                dispatch(addReceipt(JSON.stringify(limitOrderReceipt)));
-            }
+            tx = await ko.mint({ surplus: isWithdrawFromDexChecked });
+            console.log(tx.hash);
+            dispatch(addPendingTx(tx?.hash));
+            setNewLimitOrderTransactionHash(tx.hash);
         } catch (error) {
             setTxErrorCode(error?.code);
             setTxErrorMessage(error?.message);
+        }
+
+        const newLimitOrderChangeCacheEndpoint =
+            'https://809821320828123.de:5000/new_limit_order_change?';
+
+        if (tx?.hash) {
+            fetch(
+                newLimitOrderChangeCacheEndpoint +
+                    new URLSearchParams({
+                        chainId: chainId,
+                        tx: tx.hash,
+                        user: account ?? '',
+                        base: tradeData.baseToken.address,
+                        quote: tradeData.quoteToken.address,
+                        poolIdx: lookupChain(chainId).poolIndex.toString(),
+                        positionType: 'knockout',
+                        changeType: 'mint',
+                        limitTick: limitTick.toString(),
+                        isBid: isTokenAPrimary.toString(), // boolean (Only applies if knockout is true.) Whether or not the knockout liquidity position is a bid (rather than an ask).
+                        liq: '0', // boolean (Optional.) If true, transaction is immediately inserted into cache without checking whether tx has been mined.
+                    }),
+            );
+        }
+
+        let receipt;
+        try {
+            if (tx) receipt = await tx.wait();
+        } catch (e) {
+            const error = e as TransactionError;
+            console.log({ error });
+            // The user used "speed up" or something similar
+            // in their client, but we now have the updated info
+            if (isTransactionReplacedError(error)) {
+                console.log('repriced');
+                dispatch(removePendingTx(error.hash));
+                const newTransactionHash = error.replacement.hash;
+                dispatch(addPendingTx(newTransactionHash));
+                setNewLimitOrderTransactionHash(newTransactionHash);
+                console.log({ newTransactionHash });
+                receipt = error.receipt;
+
+                if (newTransactionHash) {
+                    fetch(
+                        newLimitOrderChangeCacheEndpoint +
+                            new URLSearchParams({
+                                chainId: chainId,
+                                tx: newTransactionHash,
+                                user: account ?? '',
+                                base: tradeData.baseToken.address,
+                                quote: tradeData.quoteToken.address,
+                                poolIdx: lookupChain(chainId).poolIndex.toString(),
+                                positionType: 'knockout',
+                                changeType: 'mint',
+                                limitTick: limitTick.toString(),
+                                isBid: isTokenAPrimary.toString(), // boolean (Only applies if knockout is true.) Whether or not the knockout liquidity position is a bid (rather than an ask).
+                                liq: '0', // boolean (Optional.) If true, transaction is immediately inserted into cache without checking whether tx has been mined.
+                            }),
+                    );
+                }
+            } else if (isTransactionFailedError(error)) {
+                // console.log({ error });
+                receipt = error.receipt;
+            }
+        }
+
+        if (receipt) {
+            dispatch(addReceipt(JSON.stringify(receipt)));
+            dispatch(removePendingTx(receipt.transactionHash));
         }
     };
 
@@ -349,7 +417,6 @@ export default function Limit(props: LimitPropsIF) {
                 showConfirmation={showConfirmation}
                 setShowConfirmation={setShowConfirmation}
                 resetConfirmation={resetConfirmation}
-                pendingTransactions={pendingTransactions}
             />
         </Modal>
     ) : null;

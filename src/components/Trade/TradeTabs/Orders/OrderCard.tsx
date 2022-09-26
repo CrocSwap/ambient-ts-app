@@ -125,7 +125,7 @@ export default function OrderCard(props: OrderCardProps) {
 
                 <WalletAndId
                     ownerId={ownerIdDisplay}
-                    posHash={limitOrder.positionId}
+                    posHash={limitOrder.limitOrderIdentifier.slice(42)}
                     isOwnerActiveAccount={isOwnerActiveAccount}
                 />
 

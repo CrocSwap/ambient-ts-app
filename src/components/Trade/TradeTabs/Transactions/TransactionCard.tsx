@@ -79,6 +79,11 @@ export default function TransactionCard(props: TransactionProps) {
 
     const [baseFlowDisplay, setBaseFlowDisplay] = useState<string | undefined>(undefined);
     const [quoteFlowDisplay, setQuoteFlowDisplay] = useState<string | undefined>(undefined);
+
+    useEffect(() => {
+        setBaseFlowDisplay(undefined);
+        setQuoteFlowDisplay(undefined);
+    }, [tx.tx]);
     const txDomId = tx.id === currentTxActiveInTransactions ? `tx-${tx.id}` : '';
 
     function scrollToDiv() {
@@ -162,26 +167,6 @@ export default function TransactionCard(props: TransactionProps) {
                 ? `(${baseFlowDisplayTruncated})`
                 : baseFlowDisplayTruncated;
             setBaseFlowDisplay(baseFlowDisplayString);
-        } else {
-            // console.log({ tx });
-            // console.log(tx.tx);
-            if (tx.inBaseQty) {
-                if (!tx.isBuy) {
-                    setBaseFlowDisplay(toDisplayQty(tx.qty, tx.baseDecimals));
-                    setQuoteFlowDisplay(undefined);
-                } else {
-                    setBaseFlowDisplay('(' + toDisplayQty(tx.qty, tx.baseDecimals) + ')');
-                    setQuoteFlowDisplay(undefined);
-                }
-            } else {
-                if (!tx.isBuy) {
-                    setQuoteFlowDisplay('(' + toDisplayQty(tx.qty, tx.quoteDecimals) + ')');
-                    setBaseFlowDisplay(undefined);
-                } else {
-                    setQuoteFlowDisplay(toDisplayQty(tx.qty, tx.quoteDecimals));
-                    setBaseFlowDisplay(undefined);
-                }
-            }
         }
         if (tx.quoteFlow && tx.quoteDecimals) {
             const quoteFlowDisplayNum = parseFloat(toDisplayQty(tx.quoteFlow, tx.quoteDecimals));

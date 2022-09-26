@@ -1,7 +1,8 @@
 .portfolio_container {
     padding: 2rem;
     background: var(--dark3);
-    transition: all var(--animation-speed) ease-in-out
+    transition: all var(--animation-speed) ease-in-out;
+   
 }
 
 /* layouts */

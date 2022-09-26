@@ -32,7 +32,6 @@ interface HeaderPropsIF {
     switchChain: Dispatch<SetStateAction<string>>;
     switchNetworkInMoralis: (providedChainId: string) => Promise<void>;
     openModalWallet: () => void;
-    pendingTransactions: string[];
 
     isMobileSidebarOpen: boolean;
     setIsMobileSidebarOpen: Dispatch<SetStateAction<boolean>>;
@@ -56,7 +55,6 @@ export default function PageHeader(props: HeaderPropsIF) {
         switchChain,
         switchNetworkInMoralis,
         openModalWallet,
-        pendingTransactions,
         lastBlockNumber,
         isMobileSidebarOpen,
         setIsMobileSidebarOpen,
@@ -139,7 +137,7 @@ export default function PageHeader(props: HeaderPropsIF) {
         ? '/trade/range'
         : location.pathname.includes('trade/edit')
         ? '/trade/edit'
-        : '/trade/range';
+        : '/trade/market';
 
     const linkData = [
         { title: t('common:homeTitle'), destination: '/', shouldDisplay: true },
@@ -225,7 +223,6 @@ export default function PageHeader(props: HeaderPropsIF) {
                     <NotificationCenter
                         showNotificationTable={showNotificationTable}
                         setShowNotificationTable={setShowNotificationTable}
-                        pendingTransactions={pendingTransactions}
                         lastBlockNumber={lastBlockNumber}
                     />
                 </div>

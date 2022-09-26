@@ -74,6 +74,14 @@
 
     letter-spacing: -0.02em;
     color: var(--text-grey-white);
+
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+}
+.name div{
+    cursor: pointer;
 }
 
 .hash {
