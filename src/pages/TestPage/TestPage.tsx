@@ -1,6 +1,7 @@
 import React from 'react';
 import NewNetworkSelector from '../../App/components/PageHeader/NetworkSelector/NewNetworkSelector';
 import { useTermsOfService } from '../../App/hooks/useTermsOfService';
+import Accordion from '../../components/Global/Accordion/Accordion';
 import ConfirmationModalControl from '../../components/Global/ConfirmationModalControl/ConfirmationModalControl';
 import { MenuButton } from '../../components/Global/MenuButton/MenuButton';
 import styles from './TestPage.module.css';
@@ -34,6 +35,7 @@ export default function TestPage(props: TestPageProps) {
     const menuButtonStyle = {
         marginLeft: '2rem',
     };
+    const accordionIds = [0, 1, 2, 3];
     return (
         <main className={styles.main}>
             <h1>Hi there!</h1>
@@ -66,6 +68,11 @@ export default function TestPage(props: TestPageProps) {
             />
             <NewNetworkSelector />
             <ConfirmationModalControl />
+            {accordionIds.map((item, idx) => (
+                <Accordion id={item} key={item}>
+                    I am accordion
+                </Accordion>
+            ))}
             {/* <MobileSidebar/> */}
         </main>
     );
