@@ -1897,8 +1897,10 @@ export default function App() {
 
     // const [isGlobalModalOpen, openGlobalModal, closeGlobalModal, currentContent] = useGlobalModal();
 
-    const swapParams =
-        '/swap/chain=0x5&tokenA=0x0000000000000000000000000000000000000000&tokenB=0xD87Ba7A50B2E7E660f678A895E4B72E7CB4CCd9C';
+    const defaultUrlParams = {
+        swap: '/swap/chain=0x5&tokenA=0x0000000000000000000000000000000000000000&tokenB=0xD87Ba7A50B2E7E660f678A895E4B72E7CB4CCd9C',
+        trade: '/swap/chain=0x5&tokenA=0x0000000000000000000000000000000000000000&tokenB=0xD87Ba7A50B2E7E660f678A895E4B72E7CB4CCd9C',
+    }
 
     return (
         <>
@@ -1970,7 +1972,7 @@ export default function App() {
                                 />
                             }
                         >
-                            <Route path='' element={<Swap {...swapPropsTrade} />} />
+                            <Route path='' element={<Navigate to='/trade/market' replace />} />
                             <Route path='market' element={<Swap {...swapPropsTrade} />} />
                             <Route path='limit' element={<Limit {...limitPropsTrade} />} />
                             <Route path='range' element={<Range {...rangeProps} />} />
@@ -2043,14 +2045,13 @@ export default function App() {
                             }
                         />
 
-                        <Route path='swap' element={<Navigate replace to={swapParams} />} />
+                        <Route path='swap' element={<Navigate replace to={defaultUrlParams.swap} />} />
                         <Route path='swap/:params' element={<Swap {...swapProps} />} />
                         <Route path='tos' element={<TermsOfService />} />
                         <Route
                             path='testpage'
                             element={<TestPage openGlobalModal={openGlobalModal} />}
                         />
-                        {/* <Route path='*' element={<Navigate to='/404' replace />} /> */}
                         <Route
                             path='/:address'
                             element={
