@@ -86,6 +86,7 @@ export default function PoolRow(props: PoolProps) {
 
     const favButton = (
         <motion.div
+            className={styles.fab_button}
             whileTap={{ scale: 3 }}
             transition={{ duration: 0.5 }}
             onClick={handleFavButton}
