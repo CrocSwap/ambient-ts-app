@@ -153,6 +153,7 @@ export default function PageHeader(props: HeaderPropsIF) {
 
     // Most of this functionality can be achieve by using the NavLink instead of Link and accessing the isActive prop on the Navlink. Access to this is needed outside of the link itself for animation purposes, which is why it is being done in this way.
 
+
     const routeDisplay = (
         <AnimateSharedLayout>
             <nav
