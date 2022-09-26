@@ -1901,6 +1901,7 @@ export default function App() {
         swap: '/swap/chain=0x5&tokenA=0x0000000000000000000000000000000000000000&tokenB=0xD87Ba7A50B2E7E660f678A895E4B72E7CB4CCd9C',
         market: '/trade/market/chain=0x5&tokenA=0x0000000000000000000000000000000000000000&tokenB=0xD87Ba7A50B2E7E660f678A895E4B72E7CB4CCd9C',
         limit: '/trade/limit/chain=0x5&tokenA=0x0000000000000000000000000000000000000000&tokenB=0xD87Ba7A50B2E7E660f678A895E4B72E7CB4CCd9C',
+        range: '/trade/range/chain=0x5&tokenA=0x0000000000000000000000000000000000000000&tokenB=0xD87Ba7A50B2E7E660f678A895E4B72E7CB4CCd9C',
     }
 
     return (
@@ -1980,7 +1981,9 @@ export default function App() {
                             <Route path='limit' element={<Navigate to={defaultUrlParams.limit} replace />} />
                             <Route path='limit/:params' element={<Limit {...limitPropsTrade} />} />
 
-                            <Route path='range' element={<Range {...rangeProps} />} />
+                            <Route path='range' element={<Navigate to={defaultUrlParams.range} replace />} />
+                            <Route path='range/:params' element={<Range {...rangeProps} />} />
+
                             <Route path='edit/:positionHash' element={<Edit />} />
                             <Route path='reposition' element={<Reposition />} />
                             <Route path='edit/' element={<Navigate to='/trade/market' replace />} />
