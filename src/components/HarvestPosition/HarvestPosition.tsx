@@ -115,6 +115,7 @@ export default function HarvestPosition(props: IHarvestPositionProps) {
 
     const resetConfirmation = () => {
         setShowConfirmation(false);
+        setNewHarvestTransactionHash('');
         setTxErrorCode(0);
         setTxErrorMessage('');
     };
@@ -199,6 +200,8 @@ export default function HarvestPosition(props: IHarvestPositionProps) {
                 dispatch(addPendingTx(tx?.hash));
                 setNewHarvestTransactionHash(tx?.hash);
             } catch (error) {
+                console.log('caught error');
+                dispatch(removePositionPendingUpdate(posHash as string));
                 setTxErrorCode(error?.code);
                 setTxErrorMessage(error?.message);
                 dispatch(removePositionPendingUpdate(posHash as string));
@@ -357,6 +360,12 @@ export default function HarvestPosition(props: IHarvestPositionProps) {
     }
 
     useEffect(() => {
+        if (!showConfirmation) {
+            resetConfirmation();
+        }
+    }, [txErrorCode]);
+
+    useEffect(() => {
         handleConfirmationChange();
     }, [
         transactionApproved,
@@ -450,7 +459,10 @@ export default function HarvestPosition(props: IHarvestPositionProps) {
                 <HarvestPositionHeader
                     onClose={closeGlobalModal}
                     title={showSettings ? 'Harvest Position Settings' : 'Harvest Position'}
-                    onBackButton={() => setShowSettings(false)}
+                    onBackButton={() => {
+                        resetConfirmation();
+                        setShowSettings(false);
+                    }}
                     showBackButton={showSettings}
                 />
                 {mainModalContent}
