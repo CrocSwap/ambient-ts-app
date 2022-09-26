@@ -20,6 +20,7 @@ import { SketchPicker } from 'react-color';
 
 // interface for React functional component props
 interface TradePropsIF {
+    isUserLoggedIn: boolean;
     crocEnv: CrocEnv | undefined;
     provider: ethers.providers.Provider | undefined;
     candleData: CandlesByPoolAndDuration | undefined;
@@ -63,7 +64,6 @@ interface TradePropsIF {
     setOutsideControl: Dispatch<SetStateAction<boolean>>;
     currentPositionActive: string;
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
-    pendingTransactions: string[];
 
     openGlobalModal: (content: React.ReactNode) => void;
 
@@ -74,6 +74,7 @@ interface TradePropsIF {
 // React functional component
 export default function Trade(props: TradePropsIF) {
     const {
+        isUserLoggedIn,
         crocEnv,
         candleData,
         chainId,
@@ -91,7 +92,6 @@ export default function Trade(props: TradePropsIF) {
         favePools,
         addPoolToFaves,
         removePoolFromFaves,
-        pendingTransactions,
     } = props;
 
     const [isCandleSelected, setIsCandleSelected] = useState<boolean | undefined>();
@@ -99,16 +99,16 @@ export default function Trade(props: TradePropsIF) {
 
     const routes = [
         {
-            path: '/range',
-            name: 'Range',
+            path: '/market',
+            name: 'Market',
         },
         {
             path: '/limit',
             name: 'Limit Order',
         },
         {
-            path: '/market',
-            name: 'Market',
+            path: '/range',
+            name: 'Range',
         },
     ];
     const [fullScreenChart, setFullScreenChart] = useState(false);
@@ -449,6 +449,7 @@ export default function Trade(props: TradePropsIF) {
                     >
                         <div className={!showChartAndNotTab ? styles.hide : ''}>
                             <TradeTabs2
+                                isUserLoggedIn={isUserLoggedIn}
                                 crocEnv={crocEnv}
                                 provider={provider}
                                 account={props.account}
@@ -482,7 +483,6 @@ export default function Trade(props: TradePropsIF) {
                                 setCurrentPositionActive={props.setCurrentPositionActive}
                                 openGlobalModal={props.openGlobalModal}
                                 closeGlobalModal={props.closeGlobalModal}
-                                pendingTransactions={pendingTransactions}
                             />
                         </div>
                     </motion.div>
