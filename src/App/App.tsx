@@ -142,6 +142,8 @@ export default function App() {
     const userData = useAppSelector((state) => state.userData);
     const isUserLoggedIn = userData.isLoggedIn;
 
+
+    
     useEffect(() => {
         const isLoggedIn = isAuthenticated && isWeb3Enabled;
 
@@ -151,7 +153,6 @@ export default function App() {
     }, [isAuthenticated, isWeb3Enabled, isUserLoggedIn]);
 
     const tokenMap = useTokenMap();
-
     const location = useLocation();
 
     const [candleData, setCandleData] = useState<CandlesByPoolAndDuration | undefined>();
@@ -1983,7 +1984,6 @@ export default function App() {
 
                             <Route path='range' element={<Navigate to={defaultUrlParams.range} replace />} />
                             <Route path='range/:params' element={<Range {...rangeProps} />} />
-
                             <Route path='edit/:positionHash' element={<Edit />} />
                             <Route path='reposition' element={<Reposition />} />
                             <Route path='edit/' element={<Navigate to='/trade/market' replace />} />

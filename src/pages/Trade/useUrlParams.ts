@@ -38,10 +38,14 @@ export const useUrlParams = (
                 // remove tuples with trisomy issues
                 .filter((par) => par.length === 2)
         );
-    }, []);
+    }, [params]);
+
+    useEffect(() => console.log({urlParams}), [urlParams]);
+
 
     // make a list of params found in the URL queried
-    const paramsUsed = useMemo(() => urlParams.map((param) => param[0]), []);
+    const paramsUsed = useMemo(() => urlParams.map((param) => param[0]), [urlParams]);
+
 
     // determine which chain to use
     const chainToUse = useMemo(() => {
@@ -99,6 +103,7 @@ export const useUrlParams = (
 
             // function to find token if not the native token
             const findToken = (listNames: string[]): TokenIF | undefined => {
+                console.log('looking for token!!')
                 const allTokenLists = tokenList ? JSON.parse(tokenList as string) : undefined;
                 // extract CoinGecko list from allTokenLists
                 if (
@@ -169,6 +174,7 @@ export const useUrlParams = (
         const paramsIncludesToken = paramsUsed.includes('tokenA') || paramsUsed.includes('tokenB');
         // TODO: this needs to be gatekept so it runs only once
         if (isInitialized && tokensAreDifferent && paramsIncludesToken) {
+            console.log('going to new tokens!');
             Promise.all([
                 fetchAndFormatTokenData(addrTokenA),
                 fetchAndFormatTokenData(addrTokenB),
@@ -183,5 +189,5 @@ export const useUrlParams = (
                 res[1] && dispatch(setTokenB(res[1] as TokenIF));
             });
         }
-    }, [tokenList]);
+    }, [tokenList, urlParams]);
 };
