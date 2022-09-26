@@ -74,21 +74,23 @@ export default function OrderCard(props: OrderCardProps) {
     if (
         limitOrder.positionLiqBaseDecimalCorrected === 0 &&
         limitOrder.positionLiqQuoteDecimalCorrected === 0 &&
+        !limitOrder.baseFlowDecimalCorrected &&
+        !limitOrder.quoteFlowDecimalCorrected &&
         limitOrder.source !== 'manual'
     )
         return null;
 
     const liqBaseNum =
-        limitOrder.positionLiqBaseDecimalCorrected !== null
+        limitOrder.positionLiqBaseDecimalCorrected !== 0
             ? limitOrder.positionLiqBaseDecimalCorrected
-            : limitOrder.baseFlowDecimalCorrected !== null
+            : limitOrder.baseFlowDecimalCorrected !== 0
             ? limitOrder.baseFlowDecimalCorrected
             : undefined;
 
     const liqQuoteNum =
-        limitOrder.positionLiqQuoteDecimalCorrected !== null
+        limitOrder.positionLiqQuoteDecimalCorrected !== 0
             ? limitOrder.positionLiqQuoteDecimalCorrected
-            : limitOrder.quoteFlowDecimalCorrected !== null
+            : limitOrder.quoteFlowDecimalCorrected !== 0
             ? limitOrder.quoteFlowDecimalCorrected
             : undefined;
 
