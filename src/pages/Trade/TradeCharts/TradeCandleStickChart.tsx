@@ -121,7 +121,7 @@ export default function TradeCandleStickChart(props: ChartData) {
 
     // Parse price data
     useEffect(() => {
-        setIsLoading(true);
+        // setIsLoading(true);
         const chartData: CandleChartData[] = [];
         const tvlChartData: TvlChartData[] = [];
         const volumeChartData: VolumeChartData[] = [];
@@ -165,10 +165,11 @@ export default function TradeCandleStickChart(props: ChartData) {
         setParsedChartData(() => {
             return chartUtils;
         });
-    }, [activeChartPeriod, denomInBase]);
+    }, [activeChartPeriod, denomInBase, props.priceData]);
+    // }, [activeChartPeriod, denomInBase]);
 
     // Parse liquidtiy data
-    const liquiditiyData = useMemo(() => {
+    const liquidityData = useMemo(() => {
         const liqData: LiquidityData[] = [];
         const liqSnapData: LiqSnap[] = [];
 
@@ -229,7 +230,7 @@ export default function TradeCandleStickChart(props: ChartData) {
                     <Chart
                         priceData={parsedChartData}
                         expandTradeTable={expandTradeTable}
-                        liquidityData={liquiditiyData}
+                        liquidityData={liquidityData}
                         changeState={props.changeState}
                         targetData={props.targetData}
                         limitPrice={props.limitPrice}

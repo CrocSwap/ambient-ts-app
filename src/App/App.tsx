@@ -898,6 +898,11 @@ export default function App() {
 
     const activePeriod = tradeData.activeChartPeriod;
 
+    useEffect(() => {
+        setCandleData(undefined);
+        fetchCandles();
+    }, [mainnetBaseTokenAddress, mainnetQuoteTokenAddress, activePeriod]);
+
     const fetchCandles = () => {
         if (
             baseTokenAddress &&
