@@ -1,0 +1,11 @@
+
+
+
+.accordion_content{
+    background: rgba(37, 46, 62, 0.5);
+    
+    backdrop-filter: blur( 8.5px );
+    -webkit-backdrop-filter: blur( 8.5px );
+   
+    padding: 0 1rem;
+}

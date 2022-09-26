@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import NewNetworkSelector from '../../App/components/PageHeader/NetworkSelector/NewNetworkSelector';
 import { useTermsOfService } from '../../App/hooks/useTermsOfService';
 import Accordion from '../../components/Global/Accordion/Accordion';
 import ConfirmationModalControl from '../../components/Global/ConfirmationModalControl/ConfirmationModalControl';
 import { MenuButton } from '../../components/Global/MenuButton/MenuButton';
+import TransactionAccordions from '../../components/Trade/TradeTabs/Transactions/TransactionAccordions/TransactionAccordions';
 import styles from './TestPage.module.css';
 
 interface TestPageProps {
@@ -36,6 +37,8 @@ export default function TestPage(props: TestPageProps) {
         marginLeft: '2rem',
     };
     const accordionIds = [0, 1, 2, 3];
+    const [expanded, setExpanded] = useState<false | number>(0);
+
     return (
         <main className={styles.main}>
             <h1>Hi there!</h1>
@@ -73,7 +76,23 @@ export default function TestPage(props: TestPageProps) {
                     I am accordion
                 </Accordion>
             ))}
-            {/* <MobileSidebar/> */}
+            {accordionIds.map((item, idx) => (
+                <TransactionAccordions
+                    key={item}
+                    i={item}
+                    expanded={false}
+                    setExpanded={'something'}
+                />
+            ))}
+            <h1>TRANSACTION ACCORDIONS</h1>
+            {accordionIds.map((accordion, idx) => (
+                <TransactionAccordions
+                    i={accordion}
+                    expanded={expanded}
+                    setExpanded={setExpanded}
+                    key={idx}
+                />
+            ))}
         </main>
     );
 }
