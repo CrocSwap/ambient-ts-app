@@ -56,6 +56,7 @@ export interface ILimitOrderState {
     baseTokenLogoURI: string;
     quoteSymbol: string;
     quoteDecimals: number;
+    limitOrderIdentifier: string;
     quoteTokenLogoURI: string;
     limitPrice: number;
     invLimitPrice: number;
