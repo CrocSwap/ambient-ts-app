@@ -41,17 +41,29 @@ body{
    background: #fff;
    box-shadow: 3px 3px 10px 6px rgba(0,0,0,0.06);
    font-weight: 500;
-   color: #333;
+   color: rgba(235, 235, 255, 0.4);
    width: 95%;
 }
 
 .star_icon{
 height: 27px;
 width: 27px;
-
-
-
+color: rgba(235, 235, 255, 0.4);
 }
+
+.dropdown_btn_isActive {
+    padding: 15px 16px;
+    background: #171d27;
+    box-shadow: 3px 3px 10px 6px rgba(0,0,0,0.06);
+    font-weight: 300;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    justify-content: space-between;
+    color: rgba(235, 235, 255, 0.4);
+}
+
+
 
 .star_icon_selected_room{
     height: 27px;
@@ -71,6 +83,7 @@ width: 27px;
     display: flex;
     align-items: center;
     transition: all 0.2s;
+    color: rgba(235, 235, 255, 0.4);
  }
  
 

@@ -47,6 +47,10 @@ export default function MessageInput(props: MessageInputProps, prop: PortfolioBa
         setShowEmojiPicker(!showEmojiPicker);
     };
 
+    const dontShowEmojiPanel = () => {
+        setShowEmojiPicker(false);
+    };
+
     function handlePositionShow() {
         /* setShowPosition(!showPosition);*/
         setPositionIsActive(!positionIsActive);
@@ -61,7 +65,7 @@ export default function MessageInput(props: MessageInputProps, prop: PortfolioBa
         if (e.key === 'Enter') {
             handleSendMsg(e.target.value);
             setMessage('');
-            handleEmojiPickerHideShow();
+            dontShowEmojiPanel();
         }
     };
 

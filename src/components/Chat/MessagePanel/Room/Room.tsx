@@ -88,9 +88,42 @@ export default function RoomDropdown(props: RoomProps) {
         }
     }
 
+    function handleShowRoomsExceptGlobal(selectedRoom: string) {
+        if (selectedRoom === 'Global') {
+            return (
+                <div
+                    className={styles.dropdown_item}
+                    key={defaultRooms[1].id}
+                    data-value={defaultRooms[1].value}
+                    onClick={(event: any) => handleRoomClick(event)}
+                >
+                    {handleShowRooms(defaultRooms[1].name)}
+                    {defaultRooms[1].name}
+                </div>
+            );
+        } else {
+            {
+                return defaultRooms.reverse().map((tab) => (
+                    <div
+                        className={styles.dropdown_item}
+                        key={tab.id}
+                        data-value={tab.value}
+                        onClick={(event: any) => handleRoomClick(event)}
+                    >
+                        {handleShowRooms(tab.name)}
+                        {tab.name}
+                    </div>
+                ));
+            }
+        }
+    }
+
     return (
         <div className={styles.dropdown}>
-            <div className={styles.dropdown_btn} onClick={(e: any) => handleDropdownMenu()}>
+            <div
+                className={isActive ? styles.dropdown_btn_isActive : styles.dropdown_btn}
+                onClick={(e: any) => handleDropdownMenu()}
+            >
                 {props.selectedRoom}
                 {handleShowSelectedRoom(props.selectedRoom)}
                 <RiArrowDownSLine className={styles.star_icon} />
@@ -111,17 +144,8 @@ export default function RoomDropdown(props: RoomProps) {
                                 {pool.quote.symbol}
                             </div>
                         ))}
-                        {defaultRooms.map((tab) => (
-                            <div
-                                className={styles.dropdown_item}
-                                key={tab.id}
-                                data-value={tab.value}
-                                onClick={(event: any) => handleRoomClick(event)}
-                            >
-                                {handleShowRooms(tab.name)}
-                                {tab.name}
-                            </div>
-                        ))}
+
+                        {handleShowRoomsExceptGlobal(props.selectedRoom)}
                     </div>
                 </div>
             )}

@@ -89,6 +89,7 @@ export default function ChatPanel(props: ChatProps) {
     };
 
     function handleCloseChatPanel() {
+        console.log(props.chatStatus);
         props.setChatStatus(false);
     }
 
