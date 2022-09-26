@@ -355,7 +355,7 @@ export default function Range(props: RangePropsIF) {
 
     const lowBoundOnBlur = () => {
         // setInitializationComplete(false);
-        console.log('blurred');
+        // console.log('blurred');
         setRangeLowBoundFieldBlurred(true);
     };
 
@@ -386,7 +386,6 @@ export default function Range(props: RangePropsIF) {
 
     useEffect(() => {
         if (!initializationComplete && isAdvancedModeActive) {
-            console.log('firing');
             const pinnedDisplayPrices = getPinnedPriceValuesFromTicks(
                 denominationsInBase,
                 baseTokenDecimals,
