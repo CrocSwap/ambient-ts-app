@@ -32,7 +32,7 @@ import { useAppSelector, useAppDispatch } from '../../utils/hooks/reduxToolkit';
 import { SlippagePairIF, TokenIF, TokenPairIF } from '../../utils/interfaces/exports';
 import { useModal } from '../../components/Global/Modal/useModal';
 import { useRelativeModal } from '../../components/Global/RelativeModal/useRelativeModal';
-import { addReceipt } from '../../utils/state/receiptDataSlice';
+import { addPendingTx, addReceipt, removePendingTx } from '../../utils/state/receiptDataSlice';
 import { useUrlParams } from './useUrlParams';
 // import { calcImpact } from '../../App/functions/calcImpact';
 
@@ -65,9 +65,6 @@ interface SwapPropsIF {
     indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
     openModalWallet: () => void;
     isInitialized: boolean;
-
-    pendingTransactions: string[];
-    setPendingTransactions: Dispatch<SetStateAction<never[]>>;
 }
 
 export default function Swap(props: SwapPropsIF) {
@@ -99,7 +96,6 @@ export default function Swap(props: SwapPropsIF) {
         indicateActiveTokenListsChanged,
         openModalWallet,
         isInitialized,
-        pendingTransactions,
     } = props;
 
     const [isModalOpen, openModal, closeModal] = useModal();
@@ -259,7 +255,7 @@ export default function Swap(props: SwapPropsIF) {
                       })
                       .swap({ surplus: [isWithdrawFromDexChecked, isSaveAsDexSurplusChecked] }))),
                 setNewSwapTransactionHash(tx?.hash);
-            if (tx?.hash) pendingTransactions.unshift(tx?.hash);
+            dispatch(addPendingTx(tx?.hash));
         } catch (error) {
             setTxErrorCode(error?.code);
             setTxErrorMessage(error?.message);
@@ -304,13 +300,11 @@ export default function Swap(props: SwapPropsIF) {
             // in their client, but we now have the updated info
             if (isTransactionReplacedError(error)) {
                 console.log('repriced');
-                const indexOfOldHash = pendingTransactions.indexOf(error.hash);
-                if (indexOfOldHash > -1) {
-                    // only splice array when item is found
-                    pendingTransactions.splice(indexOfOldHash, 1); // 2nd parameter means remove one item only
-                }
+                dispatch(removePendingTx(error.hash));
+
                 const newTransactionHash = error.replacement.hash;
-                pendingTransactions.unshift(newTransactionHash);
+                dispatch(addPendingTx(newTransactionHash));
+
                 setNewSwapTransactionHash(newTransactionHash);
                 console.log({ newTransactionHash });
                 receipt = error.receipt;
@@ -342,6 +336,7 @@ export default function Swap(props: SwapPropsIF) {
 
         if (receipt) {
             dispatch(addReceipt(JSON.stringify(receipt)));
+            dispatch(removePendingTx(receipt.transactionHash));
         }
     }
 
@@ -373,7 +368,6 @@ export default function Swap(props: SwapPropsIF) {
                 showConfirmation={showConfirmation}
                 setShowConfirmation={setShowConfirmation}
                 resetConfirmation={resetConfirmation}
-                pendingTransactions={pendingTransactions}
             />
         </Modal>
     ) : null;

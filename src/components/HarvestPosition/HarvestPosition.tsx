@@ -30,7 +30,7 @@ import {
     TransactionError,
 } from '../../utils/TransactionError';
 import { useAppDispatch } from '../../utils/hooks/reduxToolkit';
-import { addReceipt } from '../../utils/state/receiptDataSlice';
+import { addPendingTx, addReceipt, removePendingTx } from '../../utils/state/receiptDataSlice';
 
 interface IHarvestPositionProps {
     crocEnv: CrocEnv | undefined;
@@ -56,7 +56,6 @@ interface IHarvestPositionProps {
     isDenomBase: boolean;
     lastBlockNumber: number;
     position: PositionIF;
-    pendingTransactions: string[];
     closeGlobalModal: () => void;
 }
 export default function HarvestPosition(props: IHarvestPositionProps) {
@@ -79,7 +78,6 @@ export default function HarvestPosition(props: IHarvestPositionProps) {
         // provider,
         lastBlockNumber,
         closeGlobalModal,
-        pendingTransactions,
         position,
     } = props;
 
@@ -172,7 +170,7 @@ export default function HarvestPosition(props: IHarvestPositionProps) {
                     { surplus: isSaveAsDexSurplusChecked },
                 );
                 console.log(tx?.hash);
-                if (tx?.hash) pendingTransactions.unshift(tx?.hash);
+                dispatch(addPendingTx(tx?.hash));
                 setNewHarvestTransactionHash(tx?.hash);
             } catch (error) {
                 setTxErrorCode(error?.code);
@@ -212,9 +210,12 @@ export default function HarvestPosition(props: IHarvestPositionProps) {
             // in their client, but we now have the updated info
             if (isTransactionReplacedError(error)) {
                 console.log('repriced');
+                dispatch(removePendingTx(error.hash));
                 const newTransactionHash = error.replacement.hash;
                 setNewHarvestTransactionHash(newTransactionHash);
+                dispatch(addPendingTx(newTransactionHash));
                 console.log({ newTransactionHash });
+
                 receipt = error.receipt;
 
                 if (newTransactionHash) {
@@ -243,6 +244,7 @@ export default function HarvestPosition(props: IHarvestPositionProps) {
             console.log('dispatching receipt');
             console.log({ receipt });
             dispatch(addReceipt(JSON.stringify(receipt)));
+            dispatch(removePendingTx(receipt.transactionHash));
         }
     };
 
@@ -299,10 +301,7 @@ export default function HarvestPosition(props: IHarvestPositionProps) {
     const removalPending = (
         <div className={styles.removal_pending}>
             <CircleLoader size='5rem' borderColor='#171d27' />
-            <p>
-                Check the Metamask extension in your browser for notifications. Make sure your
-                browser is not blocking pop-up windows.
-            </p>
+            <p>Check the Metamask extension in your browser for notifications.</p>
         </div>
     );
 

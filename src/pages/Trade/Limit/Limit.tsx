@@ -25,7 +25,7 @@ import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
 import { useModal } from '../../../components/Global/Modal/useModal';
 import { SlippagePairIF, TokenIF, TokenPairIF } from '../../../utils/interfaces/exports';
 import { setLimitPrice } from '../../../utils/state/tradeDataSlice';
-import { addReceipt } from '../../../utils/state/receiptDataSlice';
+import { addPendingTx, addReceipt, removePendingTx } from '../../../utils/state/receiptDataSlice';
 import {
     isTransactionFailedError,
     isTransactionReplacedError,
@@ -66,8 +66,6 @@ interface LimitPropsIF {
     closeGlobalModal: () => void;
     setLimitRate: React.Dispatch<React.SetStateAction<string>>;
     limitRate: string;
-
-    pendingTransactions: string[];
 }
 
 export default function Limit(props: LimitPropsIF) {
@@ -96,7 +94,6 @@ export default function Limit(props: LimitPropsIF) {
         activeTokenListsChanged,
         indicateActiveTokenListsChanged,
         openModalWallet,
-        pendingTransactions,
         setLimitRate,
         limitRate,
     } = props;
@@ -318,7 +315,7 @@ export default function Limit(props: LimitPropsIF) {
         try {
             tx = await ko.mint({ surplus: isWithdrawFromDexChecked });
             console.log(tx.hash);
-            if (tx?.hash) pendingTransactions.unshift(tx?.hash);
+            dispatch(addPendingTx(tx?.hash));
             setNewLimitOrderTransactionHash(tx.hash);
         } catch (error) {
             setTxErrorCode(error?.code);
@@ -357,13 +354,9 @@ export default function Limit(props: LimitPropsIF) {
             // in their client, but we now have the updated info
             if (isTransactionReplacedError(error)) {
                 console.log('repriced');
-                const indexOfOldHash = pendingTransactions.indexOf(error.hash);
-                if (indexOfOldHash > -1) {
-                    // only splice array when item is found
-                    pendingTransactions.splice(indexOfOldHash, 1); // 2nd parameter means remove one item only
-                }
+                dispatch(removePendingTx(error.hash));
                 const newTransactionHash = error.replacement.hash;
-                pendingTransactions.unshift(newTransactionHash);
+                dispatch(addPendingTx(newTransactionHash));
                 setNewLimitOrderTransactionHash(newTransactionHash);
                 console.log({ newTransactionHash });
                 receipt = error.receipt;
@@ -394,6 +387,7 @@ export default function Limit(props: LimitPropsIF) {
 
         if (receipt) {
             dispatch(addReceipt(JSON.stringify(receipt)));
+            dispatch(removePendingTx(receipt.transactionHash));
         }
     };
 
@@ -423,7 +417,6 @@ export default function Limit(props: LimitPropsIF) {
                 showConfirmation={showConfirmation}
                 setShowConfirmation={setShowConfirmation}
                 resetConfirmation={resetConfirmation}
-                pendingTransactions={pendingTransactions}
             />
         </Modal>
     ) : null;

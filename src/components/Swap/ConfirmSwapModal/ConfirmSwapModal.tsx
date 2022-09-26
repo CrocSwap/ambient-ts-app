@@ -26,7 +26,6 @@ interface ConfirmSwapModalProps {
     showConfirmation: boolean;
     setShowConfirmation: Dispatch<SetStateAction<boolean>>;
     resetConfirmation: () => void;
-    pendingTransactions: string[];
 }
 
 export default function ConfirmSwapModal(props: ConfirmSwapModalProps) {
@@ -45,7 +44,6 @@ export default function ConfirmSwapModal(props: ConfirmSwapModalProps) {
         resetConfirmation,
         showConfirmation,
         setShowConfirmation,
-        // pendingTransactions,
     } = props;
 
     const transactionApproved = newSwapTransactionHash !== '';
@@ -60,12 +58,6 @@ export default function ConfirmSwapModal(props: ConfirmSwapModalProps) {
     const sellTokenData = tokenPair.dataTokenA;
 
     const buyTokenData = tokenPair.dataTokenB;
-
-    // useEffect(() => {
-    //     if (newSwapTransactionHash && newSwapTransactionHash !== '') {
-    //         pendingTransactions.push(newSwapTransactionHash);
-    //     }
-    // }, [newSwapTransactionHash]);
 
     const explanationText =
         primarySwapInput === 'sell' ? (

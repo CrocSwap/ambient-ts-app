@@ -49,7 +49,7 @@ import {
     setSpotPriceDisplay,
     setTargetData,
 } from '../../../utils/state/tradeDataSlice';
-import { addReceipt } from '../../../utils/state/receiptDataSlice';
+import { addPendingTx, addReceipt, removePendingTx } from '../../../utils/state/receiptDataSlice';
 import getUnicodeCharacter from '../../../utils/functions/getUnicodeCharacter';
 import RangeShareControl from '../../../components/Trade/Range/RangeShareControl/RangeShareControl';
 
@@ -82,7 +82,6 @@ interface RangePropsIF {
     openModalWallet: () => void;
     ambientApy: number | undefined;
     openGlobalModal: (content: React.ReactNode, title?: string) => void;
-    pendingTransactions: string[];
 }
 
 export default function Range(props: RangePropsIF) {
@@ -114,7 +113,6 @@ export default function Range(props: RangePropsIF) {
         openModalWallet,
         ambientApy,
         openGlobalModal,
-        pendingTransactions,
     } = props;
 
     const [isModalOpen, openModal, closeModal] = useModal();
@@ -691,7 +689,7 @@ export default function Range(props: RangePropsIF) {
                       },
                   ));
             setNewRangeTransactionHash(tx?.hash);
-            if (tx?.hash) pendingTransactions.unshift(tx?.hash);
+            dispatch(addPendingTx(tx?.hash));
         } catch (error) {
             setTxErrorCode(error?.code);
             setTxErrorMessage(error?.message);
@@ -748,13 +746,9 @@ export default function Range(props: RangePropsIF) {
             // in their client, but we now have the updated info
             if (isTransactionReplacedError(error)) {
                 console.log('repriced');
-                const indexOfOldHash = pendingTransactions.indexOf(error.hash);
-                if (indexOfOldHash > -1) {
-                    // only splice array when item is found
-                    pendingTransactions.splice(indexOfOldHash, 1); // 2nd parameter means remove one item only
-                }
+                dispatch(removePendingTx(error.hash));
                 const newTransactionHash = error.replacement.hash;
-                pendingTransactions.unshift(newTransactionHash);
+                dispatch(addPendingTx(newTransactionHash));
                 setNewRangeTransactionHash(newTransactionHash);
                 console.log({ newTransactionHash });
                 receipt = error.receipt;
@@ -785,6 +779,7 @@ export default function Range(props: RangePropsIF) {
         }
         if (receipt) {
             dispatch(addReceipt(JSON.stringify(receipt)));
+            dispatch(removePendingTx(receipt.transactionHash));
         }
     };
 
@@ -914,8 +909,6 @@ export default function Range(props: RangePropsIF) {
         pinnedMinPriceDisplayTruncatedInQuote: pinnedMinPriceDisplayTruncatedInQuote,
         pinnedMaxPriceDisplayTruncatedInBase: pinnedMaxPriceDisplayTruncatedInBase,
         pinnedMaxPriceDisplayTruncatedInQuote: pinnedMaxPriceDisplayTruncatedInQuote,
-
-        pendingTransactions: pendingTransactions,
     };
 
     // props for <RangeCurrencyConverter/> React element
