@@ -1,59 +1,28 @@
-import Price from '../../../Global/Tabs/Price/Price';
-import TokenQty from '../../../Global/Tabs/TokenQty/TokenQty';
-import TransactionTypeSide from '../../../Global/Tabs/TypeAndSide/TransactionTypeSide/TransactionTypeSide';
-import WalletAndId from '../../../Global/Tabs/WalletAndID/WalletAndId';
-import styles from './TransactionCard.module.css';
-import { ITransaction } from '../../../../utils/state/graphDataSlice';
-import TransactionsMenu from '../../../Global/Tabs/TableMenu/TableMenuComponents/TransactionsMenu';
-import { TokenIF } from '../../../../utils/interfaces/TokenIF';
-import {
-    //  toDisplayPrice,
-    toDisplayQty,
-} from '@crocswap-libs/sdk';
-import { Dispatch, SetStateAction, useEffect, useState } from 'react';
-import { formatAmount } from '../../../../utils/numbers';
-import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
-import Value from '../../../Global/Tabs/Value/Value';
+import { ITransaction } from '../../utils/state/graphDataSlice';
+import { useMoralis } from 'react-moralis';
+import { useAppSelector } from '../../utils/hooks/reduxToolkit';
+import { useState, useEffect } from 'react';
+import getUnicodeCharacter from '../../utils/functions/getUnicodeCharacter';
+import { toDisplayQty } from '@crocswap-libs/sdk';
+import { formatAmount } from '../../utils/numbers';
+import { useAppChain } from '../../App/hooks/useAppChain';
 
-interface TransactionProps {
-    tx: ITransaction;
-    account: string;
-    tokenMap: Map<string, TokenIF>;
-    chainId: string;
-    blockExplorer?: string;
-    tokenAAddress: string;
-    tokenBAddress: string;
-    isDenomBase: boolean;
-    currentTxActiveInTransactions: string;
-    setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
+export const useProcessTransaction = (tx: ITransaction) => {
+    const [chainData] = useAppChain('0x5');
 
-    openGlobalModal: (content: React.ReactNode) => void;
-}
-export default function TransactionCard(props: TransactionProps) {
-    const {
-        tx,
-        account,
-        // tokenMap,
-        // chainId,
-        blockExplorer,
-        tokenAAddress,
-        tokenBAddress,
-        isDenomBase,
-        currentTxActiveInTransactions,
-        setCurrentTxActiveInTransactions,
-    } = props;
+    const tradeData = useAppSelector((state) => state.tradeData);
+    const blockExplorer = chainData?.blockExplorer;
 
-    // const tempOwnerId = '0xa2b398145b7fc8fd9a01142698f15d329ebb5ff5090cfcc8caae440867ab9919';
+    const { account } = useMoralis();
+    const isDenomBase = tradeData.isDenomBase;
+
     const txHash = tx.tx;
     const ownerId = tx.user;
+    const ensName = tx.ensResolution ? tx.ensResolution : null;
+    const isOwnerActiveAccount = ownerId.toLowerCase() === account?.toLowerCase();
 
-    const isOwnerActiveAccount = ownerId.toLowerCase() === account.toLowerCase();
-
-    // const baseId = tx.base + '_' + chainId;
-    // const quoteId = tx.quote + '_' + chainId;
-
-    // const baseToken = tokenMap ? tokenMap.get(baseId.toLowerCase()) : undefined;
-    // const quoteToken = tokenMap ? tokenMap.get(quoteId.toLowerCase()) : undefined;
+    const tokenAAddress = tradeData.tokenA.address;
+    const tokenBAddress = tradeData.tokenB.address;
 
     const transactionBaseAddressLowerCase = tx.base.toLowerCase();
     const transactionQuoteAddressLowerCase = tx.quote.toLowerCase();
@@ -67,15 +36,7 @@ export default function TransactionCard(props: TransactionProps) {
         (transactionBaseAddressLowerCase === tokenBAddressLowerCase ||
             transactionQuoteAddressLowerCase === tokenBAddressLowerCase);
 
-    //    const qtyDecimals = tx.inBaseQty ? baseToken?.decimals : quoteToken?.decimals
-
     const [truncatedDisplayPrice, setTruncatedDisplayPrice] = useState<string | undefined>();
-    // const limitPrice = tx.limitPrice;
-
-    // console.log({ limitPrice });
-    // console.log({ displayPrice });
-    // console.log({ tx });
-    // const txQtyString = tx.qty.toString();
 
     const [baseFlowDisplay, setBaseFlowDisplay] = useState<string | undefined>(undefined);
     const [quoteFlowDisplay, setQuoteFlowDisplay] = useState<string | undefined>(undefined);
@@ -84,17 +45,6 @@ export default function TransactionCard(props: TransactionProps) {
         setBaseFlowDisplay(undefined);
         setQuoteFlowDisplay(undefined);
     }, [tx.tx]);
-    const txDomId = tx.id === currentTxActiveInTransactions ? `tx-${tx.id}` : '';
-
-    function scrollToDiv() {
-        const element = document.getElementById(txDomId);
-
-        element?.scrollIntoView({ behavior: 'smooth', block: 'end', inline: 'nearest' });
-    }
-
-    useEffect(() => {
-        tx.id === currentTxActiveInTransactions ? scrollToDiv() : null;
-    }, [currentTxActiveInTransactions]);
 
     const baseTokenCharacter = tx.baseSymbol ? getUnicodeCharacter(tx.baseSymbol) : '';
     const quoteTokenCharacter = tx.quoteSymbol ? getUnicodeCharacter(tx.quoteSymbol) : '';
@@ -136,10 +86,6 @@ export default function TransactionCard(props: TransactionProps) {
             const truncatedDisplayPrice = isDenomBase
                 ? quoteTokenCharacter + invertedPriceTruncated
                 : baseTokenCharacter + nonInvertedPriceTruncated;
-
-            // const truncatedDisplayPrice = isDenomBase
-            //     ? quoteTokenCharacter + invPriceDecimalCorrected?.toPrecision(3)
-            //     : baseTokenCharacter + priceDecimalCorrected?.toPrecision(3);
 
             setTruncatedDisplayPrice(truncatedDisplayPrice);
         } else {
@@ -205,7 +151,7 @@ export default function TransactionCard(props: TransactionProps) {
             ? 'sell'
             : 'buy';
 
-    const transactionTypeSide =
+    const side =
         tx.entityType === 'swap'
             ? 'market'
             : tx.entityType === 'limitOrder'
@@ -213,9 +159,6 @@ export default function TransactionCard(props: TransactionProps) {
             : tx.changeType === 'burn'
             ? 'rangeRemove'
             : 'rangeAdd';
-
-    const activeTransactionStyle =
-        tx.id === currentTxActiveInTransactions ? styles.active_tx_style : '';
 
     const usdValueNum = tx.valueUSD;
 
@@ -232,49 +175,36 @@ export default function TransactionCard(props: TransactionProps) {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
           });
-    if (!transactionMatchesSelectedTokens) return null;
 
-    return (
-        <div
-            className={`${styles.main_container} ${activeTransactionStyle}`}
-            onClick={() =>
-                tx.id === currentTxActiveInTransactions
-                    ? null
-                    : setCurrentTxActiveInTransactions('')
-            }
-            id={txDomId}
-        >
-            <div className={styles.row_container}>
-                {/* ------------------------------------------------------ */}
+    const usdValue = usdValueTruncated ? '$' + usdValueTruncated : '…';
+    if (!tx) return null;
+    return {
+        // wallet and id data
+        ownerId,
+        txHash,
+        ensName,
+        isOwnerActiveAccount,
+        // Price and Price type data
+        priceType,
+        truncatedDisplayPrice,
 
-                <WalletAndId
-                    ownerId={ownerId}
-                    posHash={txHash}
-                    ensName={tx.ensResolution ? tx.ensResolution : null}
-                    isOwnerActiveAccount={isOwnerActiveAccount}
-                />
+        // Transaction type and side data
+        sideType,
+        side,
 
-                {/* ------------------------------------------------------ */}
+        // Value data
+        usdValue,
 
-                <Price priceType={priceType} displayPrice={truncatedDisplayPrice} />
-                {/* ------------------------------------------------------ */}
+        // Token Qty data
+        baseTokenCharacter,
+        quoteTokenCharacter,
+        baseFlowDisplay,
+        quoteFlowDisplay,
 
-                <TransactionTypeSide type={sideType} side={transactionTypeSide} />
-                {/* ------------------------------------------------------ */}
+        // block explorer data
+        blockExplorer,
 
-                <Value usdValue={usdValueTruncated ? '$' + usdValueTruncated : '…'} />
-                <TokenQty
-                    baseTokenCharacter={baseTokenCharacter}
-                    quoteTokenCharacter={quoteTokenCharacter}
-                    baseQty={baseFlowDisplay}
-                    quoteQty={quoteFlowDisplay}
-                />
-                {/* <button onClick={() => props.openGlobalModal('New modal works')}>Here</button> */}
-            </div>
-
-            <div className={styles.menu_container}>
-                <TransactionsMenu userPosition={false} tx={tx} blockExplorer={blockExplorer} />
-            </div>
-        </div>
-    );
-}
+        // transaction matches select token data
+        transactionMatchesSelectedTokens,
+    } as const;
+};
