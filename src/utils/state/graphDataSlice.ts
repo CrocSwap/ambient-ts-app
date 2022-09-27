@@ -409,9 +409,9 @@ export const graphDataSlice = createSlice({
             for (let index = 0; index < action.payload.length; index++) {
                 const updatedTx = action.payload[index];
                 const txToFind = updatedTx.tx.toLowerCase();
-                const indexOfTxInState = state.changesByUser.changes
-                    .map((item) => item.tx.toLowerCase())
-                    .findIndex((tx) => tx === txToFind);
+                const indexOfTxInState = state.changesByUser.changes.findIndex(
+                    (tx) => tx.tx.toLowerCase() === txToFind,
+                );
                 if (indexOfTxInState === -1) {
                     state.changesByUser.changes = action.payload.concat(
                         state.changesByUser.changes,
@@ -462,9 +462,9 @@ export const graphDataSlice = createSlice({
             for (let index = 0; index < action.payload.length; index++) {
                 const updatedTx = action.payload[index];
                 const txToFind = updatedTx.tx.toLowerCase();
-                const indexOfTxInState = state.changesByPool.changes
-                    .map((item) => item.tx.toLowerCase())
-                    .findIndex((tx) => tx === txToFind);
+                const indexOfTxInState = state.changesByPool.changes.findIndex(
+                    (tx) => tx.tx.toLowerCase() === txToFind,
+                );
                 if (indexOfTxInState === -1) {
                     state.changesByPool.changes = action.payload.concat(
                         state.changesByPool.changes,
