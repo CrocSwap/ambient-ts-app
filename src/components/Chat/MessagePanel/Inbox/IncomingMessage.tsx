@@ -6,6 +6,18 @@ export interface IncomingMessageProps {
     message: Message;
 }
 export default function IncomingMessage(props: IncomingMessageProps) {
+    const formatAMPM = (str: any) => {
+        const date = new Date(str);
+        let hours = date.getHours();
+        const minutes = date.getMinutes();
+        const ampm = hours >= 12 ? 'pm' : 'am';
+        hours = hours % 12;
+        hours = hours ? hours : 12;
+        const _min = minutes.toString().padStart(2, '0');
+        const strTime = hours + ':' + _min + ' ' + ampm;
+        return strTime;
+    };
+
     return (
         <div className={styles.income_message}>
             <div className={styles.avatar_image}>
@@ -17,7 +29,7 @@ export default function IncomingMessage(props: IncomingMessageProps) {
                 <p className={styles.message}>{props.message.message}</p>
             </div>
 
-            <p className={styles.message_date}>{props.message.createdAt}</p>
+            <p className={styles.message_date}>{formatAMPM(props.message.createdAt)}</p>
         </div>
     );
 }
