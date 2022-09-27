@@ -123,6 +123,7 @@ export default function RemoveRange(props: IRemoveRangeProps) {
             position.positionType
         ) {
             (async () => {
+                // console.log('fetching details');
                 fetch(
                     positionStatsCacheEndpoint +
                         new URLSearchParams({
@@ -201,8 +202,6 @@ export default function RemoveRange(props: IRemoveRangeProps) {
     const removeFn = async () => {
         setShowConfirmation(true);
 
-        console.log(`${removalPercentage}% to be removed.`);
-
         const env = new CrocEnv(provider);
         const pool = env.pool(position.base, position.quote);
         const spotPrice = await pool.displayPrice();
@@ -216,6 +215,7 @@ export default function RemoveRange(props: IRemoveRangeProps) {
         let tx;
         if (position.positionType === 'ambient') {
             if (removalPercentage === 100) {
+                console.log(`${removalPercentage}% to be removed.`);
                 try {
                     tx = await pool.burnAmbientAll([lowLimit, highLimit], {
                         surplus: isSaveAsDexSurplusChecked,
@@ -248,8 +248,9 @@ export default function RemoveRange(props: IRemoveRangeProps) {
             const positionLiq = position.positionLiq;
 
             const liquidityToBurn = ethers.BigNumber.from(positionLiq)
-                .mul(removalPercentage)
+                .mul(removalPercentage === 100 ? 99 : removalPercentage)
                 .div(100);
+            console.log(`${removalPercentage === 100 ? 99 : removalPercentage}% to be removed.`);
 
             // console.log({ removalPercentage });
             // console.log({ liquidityToBurn });
