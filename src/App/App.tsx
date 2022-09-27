@@ -25,6 +25,8 @@ import {
     ILimitOrderState,
     // ITransaction,
     addChangesByUser,
+    setLastBlock,
+    addLimitOrderChangesByUser,
     // ChangesByUser,
 } from '../utils/state/graphDataSlice';
 import { ethers } from 'ethers';
@@ -279,9 +281,8 @@ export default function App() {
     // all tokens from active token lists
     const [searchableTokens, setSearchableTokens] = useState<TokenIF[]>(defaultTokens);
 
-    const [limitRate, setLimitRate] = useState<string>(tradeData.limitPrice);
+    // const [limitRate, setLimitRate] = useState<string>(tradeData.limitPrice);
 
-    // prevent multiple fetch requests to external URIs for token lists
     const [needTokenLists, setNeedTokenLists] = useState(true);
 
     // trigger a useEffect() which needs to run when new token lists are received
@@ -323,6 +324,7 @@ export default function App() {
             .then((json) => {
                 if (lastBlockNumber !== parseInt(json?.result)) {
                     setLastBlockNumber(parseInt(json?.result));
+                    dispatch(setLastBlock(parseInt(json?.result)));
                 }
             })
             .catch(console.log);
@@ -351,6 +353,7 @@ export default function App() {
                     const lastBlockNumberHex = lastMessageData.params?.result?.number;
                     if (lastBlockNumberHex && lastBlockNumber !== parseInt(lastBlockNumberHex)) {
                         setLastBlockNumber(parseInt(lastBlockNumberHex));
+                        dispatch(setLastBlock(parseInt(lastBlockNumberHex)));
                     }
                 }
             }
@@ -1230,6 +1233,41 @@ export default function App() {
         }
     }, [lastUserRecentChangesMessage]);
 
+    const userLimitOrderChangesCacheSubscriptionEndpoint = useMemo(
+        () =>
+            wssGraphCacheServerDomain +
+            '/subscribe_user_limit_order_changes?' +
+            new URLSearchParams({
+                user: account || '',
+                chainId: chainData.chainId,
+                addValue: 'true',
+                ensResolution: 'true',
+            }),
+        [account, chainData.chainId],
+    );
+
+    const { lastMessage: lastUserLimitOrderChangesMessage } = useWebSocket(
+        userLimitOrderChangesCacheSubscriptionEndpoint,
+        {
+            // share: true,
+            onOpen: () => console.log('user limit order changes subscription opened'),
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            onClose: (event: any) => console.log({ event }),
+            // Will attempt to reconnect on all close events, such as server shutting down
+            shouldReconnect: () => shouldNonCandleSubscriptionsReconnect,
+        },
+        // only connect is account is available
+        account !== null && account !== '',
+    );
+
+    useEffect(() => {
+        if (lastUserLimitOrderChangesMessage !== null) {
+            const lastMessageData = JSON.parse(lastUserLimitOrderChangesMessage.data).data;
+
+            if (lastMessageData) dispatch(addLimitOrderChangesByUser(lastMessageData));
+        }
+    }, [lastUserLimitOrderChangesMessage]);
+
     const [baseTokenBalance, setBaseTokenBalance] = useState<string>('');
     const [quoteTokenBalance, setQuoteTokenBalance] = useState<string>('');
     const [baseTokenDexBalance, setBaseTokenDexBalance] = useState<string>('');
@@ -1711,8 +1749,8 @@ export default function App() {
         openGlobalModal: openGlobalModal,
         closeGlobalModal: closeGlobalModal,
 
-        limitRate: limitRate,
-        setLimitRate: setLimitRate,
+        // limitRate: limitRate,
+        // setLimitRate: setLimitRate,
     };
 
     // props for <Range/> React element
@@ -1949,8 +1987,8 @@ export default function App() {
                                     expandTradeTable={expandTradeTable}
                                     setExpandTradeTable={setExpandTradeTable}
                                     tokenMap={tokenMap}
-                                    setLimitRate={setLimitRate}
-                                    limitRate={limitRate}
+                                    // setLimitRate={setLimitRate}
+                                    // limitRate={limitRate}
                                     favePools={favePools}
                                     addPoolToFaves={addPoolToFaves}
                                     removePoolFromFaves={removePoolFromFaves}

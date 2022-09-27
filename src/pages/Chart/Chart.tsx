@@ -46,8 +46,6 @@ interface ChartData {
     denomInBase: boolean;
     targetData: targetData[] | undefined;
     limitPrice: string | undefined;
-    setLimitRate: React.Dispatch<React.SetStateAction<string>>;
-    limitRate: string;
     isAdvancedModeActive: boolean | undefined;
     simpleRangeWidth: number | undefined;
     pinnedMinPriceDisplayTruncated: number | undefined;
@@ -1312,9 +1310,10 @@ export default function Chart(props: ChartData) {
     }, [ranges]);
 
     useEffect(() => {
+        const newLimit = limit[0].value.toString();
         const timer = setTimeout(() => {
-            dispatch(setLimitPrice(limit[0].value.toString()));
-            props.setLimitRate(limit[0].value.toString());
+            dispatch(setLimitPrice(newLimit));
+            // props.setLimitRate(newLimit);
         }, 1000);
         return () => clearTimeout(timer);
     }, [limit]);
