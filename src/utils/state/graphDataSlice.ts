@@ -25,6 +25,7 @@ export interface LimitOrdersByPool {
 
 export interface ILimitOrderState {
     id: string;
+    limitOrderIdentifier: string;
     tx: string;
     positionId: string;
     source: string;
@@ -61,7 +62,6 @@ export interface ILimitOrderState {
     baseTokenLogoURI: string;
     quoteSymbol: string;
     quoteDecimals: number;
-    limitOrderIdentifier: string;
     quoteTokenLogoURI: string;
     limitPrice: number;
     invLimitPrice: number;
@@ -422,16 +422,34 @@ export const graphDataSlice = createSlice({
         addLimitOrderChangesByUser: (state, action: PayloadAction<Array<ILimitOrderState>>) => {
             for (let index = 0; index < action.payload.length; index++) {
                 const updatedTx = action.payload[index];
-                const txToFind = updatedTx.tx.toLowerCase();
-                const indexOfTxInState = state.changesByUser.changes
-                    .map((item) => item.tx.toLowerCase())
-                    .findIndex((tx) => tx === txToFind);
-                if (indexOfTxInState === -1) {
+                const idToFind = updatedTx.limitOrderIdentifier.toLowerCase();
+                const indexOfOrderInState = state.limitOrdersByUser.limitOrders.findIndex(
+                    (order) => order.limitOrderIdentifier.toLowerCase() === idToFind,
+                );
+                if (indexOfOrderInState === -1) {
                     state.limitOrdersByUser.limitOrders = action.payload.concat(
                         state.limitOrdersByUser.limitOrders,
                     );
                 } else {
-                    state.limitOrdersByUser.limitOrders[indexOfTxInState] = action.payload[index];
+                    state.limitOrdersByUser.limitOrders[indexOfOrderInState] =
+                        action.payload[index];
+                }
+            }
+        },
+        addLimitOrderChangesByPool: (state, action: PayloadAction<Array<ILimitOrderState>>) => {
+            for (let index = 0; index < action.payload.length; index++) {
+                const updatedTx = action.payload[index];
+                const idToFind = updatedTx.limitOrderIdentifier.toLowerCase();
+                const indexOfOrderInState = state.limitOrdersByPool.limitOrders.findIndex(
+                    (order) => order.limitOrderIdentifier.toLowerCase() === idToFind,
+                );
+                if (indexOfOrderInState === -1) {
+                    state.limitOrdersByPool.limitOrders = action.payload.concat(
+                        state.limitOrdersByPool.limitOrders,
+                    );
+                } else {
+                    state.limitOrdersByPool.limitOrders[indexOfOrderInState] =
+                        action.payload[index];
                 }
             }
         },
@@ -625,6 +643,7 @@ export const {
     setChangesByUser,
     addChangesByUser,
     addLimitOrderChangesByUser,
+    addLimitOrderChangesByPool,
     addChangesByPool,
     setChangesByPool,
     resetGraphData,
