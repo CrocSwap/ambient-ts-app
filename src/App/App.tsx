@@ -1737,7 +1737,6 @@ export default function App() {
         quoteTokenDexBalance: quoteTokenDexBalance,
         isSellTokenBase: isTokenABase,
         tokenPair: tokenPair,
-        isTokenABase: isTokenABase,
         poolPriceDisplay: poolPriceDisplay,
         poolPriceNonDisplay: poolPriceNonDisplay,
         setRecheckTokenAApproval: setRecheckTokenAApproval,

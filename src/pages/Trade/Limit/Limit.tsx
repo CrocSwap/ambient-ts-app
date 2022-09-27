@@ -52,7 +52,6 @@ interface LimitPropsIF {
     quoteTokenDexBalance: string;
     isSellTokenBase: boolean;
     tokenPair: TokenPairIF;
-    isTokenABase: boolean;
     poolPriceDisplay: number | undefined;
     poolPriceNonDisplay: number | undefined;
     tokenAAllowance: string;
@@ -85,7 +84,6 @@ export default function Limit(props: LimitPropsIF) {
         baseTokenDexBalance,
         quoteTokenDexBalance,
         tokenPair,
-        isTokenABase,
         gasPriceInGwei,
         ethMainnetUsdPrice,
         poolPriceDisplay,
@@ -142,8 +140,8 @@ export default function Limit(props: LimitPropsIF) {
     // const tokenADecimals = tokenPair.dataTokenA.decimals;
     // const tokenBDecimals = tokenPair.dataTokenB.decimals;
 
-    // const baseDecimals = isTokenABase ? tokenADecimals : tokenBDecimals;
-    // const quoteDecimals = !isTokenABase ? tokenADecimals : tokenBDecimals;
+    // const baseDecimals = isSellTokenBase ? tokenADecimals : tokenBDecimals;
+    // const quoteDecimals = !isSellTokenBase ? tokenADecimals : tokenBDecimals;
 
     const isTokenAPrimary = tradeData.isTokenAPrimary;
     const limitRate = tradeData.limitPrice;
@@ -170,16 +168,14 @@ export default function Limit(props: LimitPropsIF) {
 
     useEffect(() => {
         if (initialLoad) {
+            // console.log({ initialLoad });
             if (!provider) return;
             if (!poolPriceDisplay) return;
 
             const gridSize = lookupChain(chainId).gridSize;
 
             const croc = crocEnv ? crocEnv : new CrocEnv(provider);
-            const pool =
-                isDenomBase === isTokenABase
-                    ? croc.pool(tradeData.tokenA.address, tradeData.tokenB.address)
-                    : croc.pool(tradeData.tokenB.address, tradeData.tokenA.address);
+            const pool = croc.pool(tradeData.baseToken.address, tradeData.quoteToken.address);
 
             const initialLimitRate = isDenomBase
                 ? (1 / poolPriceDisplay) * (isSellTokenBase ? 1.015 : 0.985)
@@ -190,12 +186,12 @@ export default function Limit(props: LimitPropsIF) {
             // setLimitRate(initialLimitRate.toString());
 
             const limitWei = pool.fromDisplayPrice(initialLimitRate);
-
             const pinTick = limitWei.then((lw) =>
                 isDenomBase ? pinTickLower(lw, gridSize) : pinTickUpper(lw, gridSize),
             );
             // pinTick.then(setLimitTick);
             pinTick.then((newTick) => {
+                // console.log({ newTick });
                 setLimitTick(newTick);
             });
             const tickPrice = pinTick.then(tickToPrice);
@@ -203,6 +199,7 @@ export default function Limit(props: LimitPropsIF) {
 
             tickDispPrice.then((tp) => {
                 setInsideTickDisplayPrice(tp);
+                // console.log({ tp });
                 dispatch(setLimitPrice(tp.toString()));
                 setInitialLoad(false);
                 const limitRateTruncated =
@@ -224,37 +221,33 @@ export default function Limit(props: LimitPropsIF) {
             if (poolPriceNonDisplay === 0) return;
             // if (!priceInputFieldBlurred) return;
 
+            console.log({ isDenomBase });
+            console.log({ isSellTokenBase });
+            console.log({ limitRate });
             const gridSize = lookupChain(chainId).gridSize;
 
             const croc = crocEnv ? crocEnv : new CrocEnv(provider);
 
-            const pool = croc.pool(tradeData.tokenA.address, tradeData.tokenB.address);
+            const pool = croc.pool(tradeData.baseToken.address, tradeData.quoteToken.address);
 
-            const limitWei = pool.fromDisplayPrice(
-                (isDenomBase && isTokenABase) || (!isDenomBase && !isTokenABase)
-                    ? parseFloat(limitRate)
-                    : 1 / parseFloat(limitRate),
-            );
+            const limitWei = pool.fromDisplayPrice(parseFloat(limitRate));
+
             const pinTick = limitWei.then((lw) =>
                 isDenomBase ? pinTickLower(lw, gridSize) : pinTickUpper(lw, gridSize),
             );
             // pinTick.then(setLimitTick);
             pinTick.then((newTick) => {
+                console.log({ newTick });
                 setLimitTick(newTick);
             });
 
             const tickPrice = pinTick.then(tickToPrice);
-            // pinTick.then(console.log);
-            // const tickDispPrice = tickPrice.then((tp) => pool.toDisplayPrice(tp));
-            const tickDispPrice =
-                (isDenomBase && isTokenABase) || (!isDenomBase && !isTokenABase)
-                    ? tickPrice.then((tp) => pool.toDisplayPrice(tp))
-                    : tickPrice.then((tp) => pool.toDisplayPrice(tp)).then((tp) => 1 / tp);
+            const tickDispPrice = tickPrice.then((tp) => pool.toDisplayPrice(tp));
 
             tickDispPrice.then((tp) => {
                 setInsideTickDisplayPrice(tp);
-                dispatch(setLimitPrice(tp.toString()));
-                setInitialLoad(false);
+                console.log({ tp });
+                // dispatch(setLimitPrice(tp.toString()));
                 const limitRateTruncated =
                     tp < 2
                         ? tp.toLocaleString(undefined, {
@@ -273,6 +266,7 @@ export default function Limit(props: LimitPropsIF) {
         }
     }, [
         initialLoad,
+        chainId,
         limitRate,
         poolPriceDisplay,
         isSellTokenBase,
@@ -457,8 +451,8 @@ export default function Limit(props: LimitPropsIF) {
         }
     }, [gasPriceInGwei, ethMainnetUsdPrice]);
 
-    // const tokenABalance = isTokenABase ? baseTokenBalance : quoteTokenBalance;
-    // const tokenBBalance = isTokenABase ? quoteTokenBalance : baseTokenBalance;
+    // const tokenABalance = isSellTokenBase ? baseTokenBalance : quoteTokenBalance;
+    // const tokenBBalance = isSellTokenBase ? quoteTokenBalance : baseTokenBalance;
 
     const approvalButton = (
         <Button
@@ -482,7 +476,7 @@ export default function Limit(props: LimitPropsIF) {
                     mintSlippage={mintSlippage}
                     isPairStable={isPairStable}
                     // isDenomBase={tradeData.isDenomBase}
-                    // isTokenABase={isTokenABase}
+                    // isSellTokenBase={isSellTokenBase}
                 />
                 <DividerDark addMarginTop />
                 {navigationMenu}
