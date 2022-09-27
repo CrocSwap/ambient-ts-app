@@ -9,17 +9,17 @@ import { setTokenA, setTokenB } from '../../../utils/state/tradeDataSlice';
 
 import { topPools } from '../../../App/mockData';
 import { TokenIF } from '../../../utils/interfaces/TokenIF';
-import { ethers } from 'ethers';
+import { CrocEnv } from '@crocswap-libs/sdk';
 
 interface TopPoolsProps {
+    crocEnv?: CrocEnv;
     tokenMap: Map<string, TokenIF>;
     lastBlockNumber: number;
-    provider: ethers.providers.Provider | undefined;
     chainId: string;
 }
 
 export default function TopPools(props: TopPoolsProps) {
-    const { tokenMap, lastBlockNumber, provider, chainId } = props;
+    const { tokenMap, lastBlockNumber, crocEnv, chainId } = props;
 
     const { t } = useTranslation();
 
@@ -38,6 +38,7 @@ export default function TopPools(props: TopPoolsProps) {
                 {topPools.map((pool, idx) => (
                     <NavLink key={idx} to='/trade/market'>
                         <PoolCard
+                            crocEnv={crocEnv}
                             name={pool.name}
                             tokenA={pool.base}
                             tokenB={pool.quote}
@@ -48,7 +49,6 @@ export default function TopPools(props: TopPoolsProps) {
                             }}
                             tokenMap={tokenMap}
                             lastBlockNumber={lastBlockNumber}
-                            provider={provider}
                             chainId={chainId}
                         />
                     </NavLink>
