@@ -170,12 +170,8 @@ export default function Orders(props: propsIF) {
                     })
                         .then((poolChangesJsonData) => {
                             if (poolChangesJsonData) {
-                                dispatch(
-                                    setLimitOrdersByPool({
-                                        dataReceived: true,
-                                        limitOrders: poolChangesJsonData,
-                                    }),
-                                );
+                                // console.log({ poolChangesJsonData });
+                                dispatch(addLimitOrderChangesByPool(poolChangesJsonData));
                             }
                         })
                         .catch(console.log);

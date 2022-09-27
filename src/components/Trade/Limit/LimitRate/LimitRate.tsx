@@ -32,7 +32,6 @@ export default function LimitRate(props: LimitRatePropsIF) {
             <input
                 id={`${fieldId}-quantity`}
                 onFocus={() => {
-                    console.log({ limitPrice });
                     const limitRateInputField = document.getElementById('limit-rate-quantity');
                     if (limitRateInputField)
                         (limitRateInputField as HTMLInputElement).value = limitPrice;
