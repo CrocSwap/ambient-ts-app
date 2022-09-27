@@ -171,9 +171,16 @@ export default function RemoveRange(props: IRemoveRangeProps) {
 
     const resetConfirmation = () => {
         setShowConfirmation(false);
+        setNewRemovalTransactionHash('');
         setTxErrorCode(0);
         setTxErrorMessage('');
     };
+
+    useEffect(() => {
+        if (!showConfirmation) {
+            resetConfirmation();
+        }
+    }, [txErrorCode]);
 
     const liquiditySlippageTolerance = 1;
 
@@ -193,6 +200,7 @@ export default function RemoveRange(props: IRemoveRangeProps) {
 
     const removeFn = async () => {
         setShowConfirmation(true);
+
         console.log(`${removalPercentage}% to be removed.`);
 
         const env = new CrocEnv(provider);
@@ -262,6 +270,7 @@ export default function RemoveRange(props: IRemoveRangeProps) {
                 dispatch(addPendingTx(tx?.hash));
                 setNewRemovalTransactionHash(tx?.hash);
             } catch (error) {
+                dispatch(removePositionPendingUpdate(posHash as string));
                 setTxErrorCode(error?.code);
                 setTxErrorMessage(error?.message);
                 dispatch(removePositionPendingUpdate(posHash as string));
@@ -473,7 +482,8 @@ export default function RemoveRange(props: IRemoveRangeProps) {
 
     const confirmationContent = (
         <div className={styles.confirmation_container}>
-            {showConfirmation && !removalDenied && (
+            {showConfirmation && (
+                // {showConfirmation && !removalDenied && (
                 <div className={styles.button} onClick={resetConfirmation}>
                     <BsArrowLeft size={30} />
                 </div>
@@ -563,7 +573,10 @@ export default function RemoveRange(props: IRemoveRangeProps) {
                 <RemoveRangeHeader
                     onClose={closeGlobalModal}
                     title={showSettings ? 'Remove Position Settings' : 'Remove Position'}
-                    onBackButton={() => setShowSettings(false)}
+                    onBackButton={() => {
+                        resetConfirmation();
+                        setShowSettings(false);
+                    }}
                     showBackButton={showSettings}
                 />
                 {mainModalContent}

@@ -3,7 +3,7 @@ import { PoolIF } from '../../../../utils/interfaces/exports';
 import { getPoolStatsFresh } from '../../../../App/functions/getPoolStats';
 import { useEffect, useState } from 'react';
 import { formatAmount } from '../../../../utils/numbers';
-import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
+import { useAppDispatch, useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { setTokenA, setTokenB } from '../../../../utils/state/tradeDataSlice';
 
 interface FavoritePoolsCardIF {
@@ -18,6 +18,10 @@ export default function FavoritePoolsCard(props: FavoritePoolsCardIF) {
 
     const [poolVolume, setPoolVolume] = useState<string | undefined>();
     const [poolTvl, setPoolTvl] = useState<string | undefined>();
+
+    const tradeData = useAppSelector((state) => state.tradeData);
+    // const tokenA = tradeData.tokenA;
+    const tokenB = tradeData.tokenB;
 
     useEffect(() => {
         (async () => {
@@ -40,8 +44,13 @@ export default function FavoritePoolsCard(props: FavoritePoolsCardIF) {
         <div
             className={styles.container}
             onClick={() => {
-                dispatch(setTokenA(props.pool.base));
-                dispatch(setTokenB(props.pool.quote));
+                if (tokenB.address.toLowerCase() === props.pool.base.address.toLowerCase()) {
+                    dispatch(setTokenB(props.pool.base));
+                    dispatch(setTokenA(props.pool.quote));
+                } else {
+                    dispatch(setTokenA(props.pool.base));
+                    dispatch(setTokenB(props.pool.quote));
+                }
             }}
         >
             <div>

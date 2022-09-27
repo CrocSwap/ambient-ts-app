@@ -234,6 +234,7 @@ export default function TradeTabs2(props: ITabsProps) {
     // Props for <Orders/> React Element
     const ordersProps = {
         expandTradeTable: expandTradeTable,
+        chainData: chainData,
         isShowAllEnabled: isShowAllEnabled,
         account: account,
         graphData: graphData,
