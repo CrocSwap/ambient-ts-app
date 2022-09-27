@@ -287,6 +287,8 @@ export interface ITransaction {
     limitPrice: number;
     price: number;
     invPrice: number;
+    limitPriceDecimalCorrected: number;
+    invLimitPriceDecimalCorrected: number;
     priceDecimalCorrected: number;
     invPriceDecimalCorrected: number;
     valueUSD: number;
