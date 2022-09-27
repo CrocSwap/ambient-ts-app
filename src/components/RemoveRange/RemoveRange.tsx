@@ -59,7 +59,7 @@ interface IRemoveRangeProps {
     baseTokenLogoURI: string;
     quoteTokenLogoURI: string;
     isDenomBase: boolean;
-    lastBlockNumber: number;
+    // lastBlockNumber: number;
     position: PositionIF;
 
     openGlobalModal: (content: React.ReactNode) => void;
@@ -84,9 +84,11 @@ export default function RemoveRange(props: IRemoveRangeProps) {
         closeGlobalModal,
         chainData,
         provider,
-        lastBlockNumber,
+        // lastBlockNumber,
         position,
     } = props;
+
+    const lastBlockNumber = useAppSelector((state) => state.graphData).lastBlock;
 
     const [removalPercentage, setRemovalPercentage] = useState(100);
 
@@ -137,6 +139,7 @@ export default function RemoveRange(props: IRemoveRangeProps) {
                 )
                     .then((response) => response.json())
                     .then((json) => {
+                        console.log({ json });
                         setPosLiqBaseDecimalCorrected(json?.data?.positionLiqBaseDecimalCorrected);
                         setPosLiqQuoteDecimalCorrected(
                             json?.data?.positionLiqQuoteDecimalCorrected,
@@ -168,9 +171,16 @@ export default function RemoveRange(props: IRemoveRangeProps) {
 
     const resetConfirmation = () => {
         setShowConfirmation(false);
+        setNewRemovalTransactionHash('');
         setTxErrorCode(0);
         setTxErrorMessage('');
     };
+
+    useEffect(() => {
+        if (!showConfirmation) {
+            resetConfirmation();
+        }
+    }, [txErrorCode]);
 
     const liquiditySlippageTolerance = 1;
 
@@ -189,9 +199,8 @@ export default function RemoveRange(props: IRemoveRangeProps) {
     const isPositionPendingUpdate = positionsPendingUpdate.indexOf(posHash as string) > -1;
 
     const removeFn = async () => {
-        dispatch(addPositionPendingUpdate(posHash as string));
-
         setShowConfirmation(true);
+
         console.log(`${removalPercentage}% to be removed.`);
 
         const env = new CrocEnv(provider);
@@ -201,6 +210,8 @@ export default function RemoveRange(props: IRemoveRangeProps) {
         const lowLimit = spotPrice * (1 - liquiditySlippageTolerance / 100);
         const highLimit = spotPrice * (1 + liquiditySlippageTolerance / 100);
         // console.log({ position });
+
+        dispatch(addPositionPendingUpdate(posHash as string));
 
         let tx;
         if (position.positionType === 'ambient') {
@@ -212,6 +223,7 @@ export default function RemoveRange(props: IRemoveRangeProps) {
                     console.log(tx?.hash);
                     setNewRemovalTransactionHash(tx?.hash);
                 } catch (error) {
+                    dispatch(removePositionPendingUpdate(posHash as string));
                     setTxErrorCode(error?.code);
                     setTxErrorMessage(error?.message);
                 }
@@ -227,6 +239,7 @@ export default function RemoveRange(props: IRemoveRangeProps) {
                     console.log(tx?.hash);
                     setNewRemovalTransactionHash(tx?.hash);
                 } catch (error) {
+                    dispatch(removePositionPendingUpdate(posHash as string));
                     setTxErrorCode(error?.code);
                     setTxErrorMessage(error?.message);
                 }
@@ -257,8 +270,10 @@ export default function RemoveRange(props: IRemoveRangeProps) {
                 dispatch(addPendingTx(tx?.hash));
                 setNewRemovalTransactionHash(tx?.hash);
             } catch (error) {
+                dispatch(removePositionPendingUpdate(posHash as string));
                 setTxErrorCode(error?.code);
                 setTxErrorMessage(error?.message);
+                dispatch(removePositionPendingUpdate(posHash as string));
             }
         } else {
             console.log('unsupported position type for removal');
@@ -467,7 +482,8 @@ export default function RemoveRange(props: IRemoveRangeProps) {
 
     const confirmationContent = (
         <div className={styles.confirmation_container}>
-            {showConfirmation && !removalDenied && (
+            {showConfirmation && (
+                // {showConfirmation && !removalDenied && (
                 <div className={styles.button} onClick={resetConfirmation}>
                     <BsArrowLeft size={30} />
                 </div>
@@ -557,7 +573,10 @@ export default function RemoveRange(props: IRemoveRangeProps) {
                 <RemoveRangeHeader
                     onClose={closeGlobalModal}
                     title={showSettings ? 'Remove Position Settings' : 'Remove Position'}
-                    onBackButton={() => setShowSettings(false)}
+                    onBackButton={() => {
+                        resetConfirmation();
+                        setShowSettings(false);
+                    }}
                     showBackButton={showSettings}
                 />
                 {mainModalContent}

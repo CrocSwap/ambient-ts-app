@@ -4,12 +4,22 @@ import { useTermsOfService } from '../../App/hooks/useTermsOfService';
 import ConfirmationModalControl from '../../components/Global/ConfirmationModalControl/ConfirmationModalControl';
 import { MenuButton } from '../../components/Global/MenuButton/MenuButton';
 import styles from './TestPage.module.css';
+// import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
+// import { useProcessTransaction } from '../../utils/hooks/useProcessTransaction';
 
 interface TestPageProps {
     openGlobalModal: (content: React.ReactNode, title?: string) => void;
 }
 export default function TestPage(props: TestPageProps) {
     const [isOpen, setOpen] = React.useState(false);
+    // const graphData = useAppSelector((state) => state.graphData);
+
+    // const changesByPool = graphData?.changesByPool?.changes;
+    // const JrTx = changesByPool[0]
+
+    // const txData =  useProcessTransaction(JrTx)
+
+    // console.log(txData?.ownerId)
 
     const { openGlobalModal } = props;
     const { tosText, agreement, agreementDate } = useTermsOfService();

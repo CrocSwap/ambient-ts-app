@@ -1,5 +1,5 @@
 import styles from './TopPoolsCard.module.css';
-import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
+import { useAppDispatch, useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { setTokenA, setTokenB } from '../../../../utils/state/tradeDataSlice';
 import { PoolIF } from '../../../../utils/interfaces/exports';
 import { getPoolStatsFresh } from '../../../../App/functions/getPoolStats';
@@ -15,6 +15,9 @@ export default function TopPoolsCard(props: TopPoolsCardProps) {
     const { pool, lastBlockNumber } = props;
 
     const dispatch = useAppDispatch();
+    const tradeData = useAppSelector((state) => state.tradeData);
+    // const tokenA = tradeData.tokenA;
+    const tokenB = tradeData.tokenB;
 
     const [poolVolume, setPoolVolume] = useState<string | undefined>();
     const [poolTvl, setPoolTvl] = useState<string | undefined>();
@@ -40,8 +43,13 @@ export default function TopPoolsCard(props: TopPoolsCardProps) {
         <div
             className={styles.container}
             onClick={() => {
-                dispatch(setTokenA(props.pool.base));
-                dispatch(setTokenB(props.pool.quote));
+                if (tokenB.address.toLowerCase() === props.pool.base.address.toLowerCase()) {
+                    dispatch(setTokenB(props.pool.base));
+                    dispatch(setTokenA(props.pool.quote));
+                } else {
+                    dispatch(setTokenA(props.pool.base));
+                    dispatch(setTokenB(props.pool.quote));
+                }
             }}
         >
             <div>
