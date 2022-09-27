@@ -221,9 +221,6 @@ export default function Limit(props: LimitPropsIF) {
             if (poolPriceNonDisplay === 0) return;
             // if (!priceInputFieldBlurred) return;
 
-            console.log({ isDenomBase });
-            console.log({ isSellTokenBase });
-            console.log({ limitRate });
             const gridSize = lookupChain(chainId).gridSize;
 
             const croc = crocEnv ? crocEnv : new CrocEnv(provider);
@@ -237,7 +234,7 @@ export default function Limit(props: LimitPropsIF) {
             );
             // pinTick.then(setLimitTick);
             pinTick.then((newTick) => {
-                console.log({ newTick });
+                // console.log({ newTick });
                 setLimitTick(newTick);
             });
 
@@ -246,7 +243,6 @@ export default function Limit(props: LimitPropsIF) {
 
             tickDispPrice.then((tp) => {
                 setInsideTickDisplayPrice(tp);
-                console.log({ tp });
                 // dispatch(setLimitPrice(tp.toString()));
                 const limitRateTruncated =
                     tp < 2
@@ -273,6 +269,37 @@ export default function Limit(props: LimitPropsIF) {
         isDenomBase,
         priceInputFieldBlurred,
     ]);
+
+    const [isOrderValid, setIsOrderValid] = useState<boolean>(true);
+
+    useEffect(() => {
+        if (!provider) return;
+        if (!limitTick) return;
+        const croc = crocEnv ? crocEnv : new CrocEnv(provider);
+
+        const sellToken = tradeData.tokenA.address;
+        const buyToken = tradeData.tokenB.address;
+
+        // const sellQty = tokenAInputQty;
+        // const buyQty = tokenBInputQty;
+        // const qty = isTokenAPrimary ? sellQty : buyQty;
+
+        const testOrder = isTokenAPrimary ? croc.sell(sellToken, 0) : croc.buy(buyToken, 0);
+
+        const ko = testOrder.atLimit(isTokenAPrimary ? buyToken : sellToken, limitTick);
+
+        (async () => {
+            if (await ko.willMintFail()) {
+                // console.log('Cannot send limit order: Knockout price inside spread');
+                setLimitButtonErrorMessage('Limit inside market price');
+                setIsOrderValid(false);
+                return;
+            } else {
+                // setLimitButtonErrorMessage('');
+                setIsOrderValid(true);
+            }
+        })();
+    }, [limitTick, tokenAInputQty, tokenBInputQty]);
 
     const sendLimitOrder = async () => {
         console.log('Send limit');
@@ -537,7 +564,7 @@ export default function Limit(props: LimitPropsIF) {
                     ) : (
                         <LimitButton
                             onClickFn={openModal}
-                            limitAllowed={poolPriceNonDisplay !== 0 && limitAllowed}
+                            limitAllowed={isOrderValid && poolPriceNonDisplay !== 0 && limitAllowed}
                             limitButtonErrorMessage={limitButtonErrorMessage}
                         />
                     )
