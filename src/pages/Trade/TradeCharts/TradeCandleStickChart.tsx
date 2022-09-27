@@ -127,6 +127,8 @@ export default function TradeCandleStickChart(props: ChartData) {
         const tvlChartData: TvlChartData[] = [];
         const volumeChartData: VolumeChartData[] = [];
 
+        console.log(props.priceData);
+
         props.priceData?.candles.map((data) => {
             chartData.push({
                 date: new Date(data.time * 1000),
