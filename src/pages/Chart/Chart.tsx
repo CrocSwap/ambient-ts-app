@@ -880,7 +880,6 @@ export default function Chart(props: ChartData) {
             .selectAll('.annotation-line')
             .select('path')
             .remove();
-        const triangle = d3.symbol().type(d3.symbolTriangle);
 
         if (!location.pathname.includes('market')) {
             d3.select(d3PlotArea.current)
@@ -888,27 +887,26 @@ export default function Chart(props: ChartData) {
                 .selectAll('.annotation-line')
                 .style('cursor', 'ns-resize');
 
-            const max = ranges.find((item) => item.name === 'Max')?.value as number;
-            const min = ranges.find((item) => item.name === 'Min')?.value as number;
-
             const nodes = d3
                 .select(d3PlotArea.current)
                 .select('.targets')
                 .selectAll('.annotation-line')
                 .nodes();
 
-            nodes.forEach((res, index) => {
-                if (index == (max > min && !isAdvancedModeActive ? 1 : 0)) {
-                    d3.select(res)
-                        .append('path')
-                        .attr('d', triangle.size(100))
-                        .style('transform', 'translate(8px, 3px) rotate(300deg)');
-                } else {
-                    d3.select(res)
-                        .append('path')
-                        .attr('d', triangle.size(100))
-                        .style('transform', 'translate(8px, -5px)');
-                }
+            nodes.forEach((res) => {
+                d3.select(res)
+                    .append('polygon')
+                    .attr('points', '0,40 0,55 10,49 10,46')
+                    .attr('stroke', 'rgba(235, 235, 255, 0.4)')
+                    .attr('fill', 'rgba(235, 235, 255, 0.4)')
+                    .style('transform', 'translate(1px, -48px)');
+
+                d3.select(res)
+                    .append('polygon')
+                    .attr('points', '0,40 0,55 10,49 10,46')
+                    .attr('stroke', 'rgba(235, 235, 255, 0.4)')
+                    .attr('fill', 'rgba(235, 235, 255, 0.4)')
+                    .style('transform', 'translate(100%, 48px) rotate(180deg)');
             });
 
             d3.select(d3PlotArea.current)
