@@ -1718,6 +1718,7 @@ export default function App() {
 
     // props for <Limit/> React element on trade route
     const limitPropsTrade = {
+        crocEnv: crocEnv,
         isUserLoggedIn: isUserLoggedIn,
         importedTokens: importedTokens,
         setImportedTokens: setImportedTokens,
@@ -1736,7 +1737,6 @@ export default function App() {
         quoteTokenDexBalance: quoteTokenDexBalance,
         isSellTokenBase: isTokenABase,
         tokenPair: tokenPair,
-        isTokenABase: isTokenABase,
         poolPriceDisplay: poolPriceDisplay,
         poolPriceNonDisplay: poolPriceNonDisplay,
         setRecheckTokenAApproval: setRecheckTokenAApproval,

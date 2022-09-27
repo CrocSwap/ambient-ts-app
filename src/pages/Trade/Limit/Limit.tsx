@@ -33,6 +33,7 @@ import {
 } from '../../../utils/TransactionError';
 
 interface LimitPropsIF {
+    crocEnv: CrocEnv | undefined;
     isUserLoggedIn: boolean;
     importedTokens: Array<TokenIF>;
     searchableTokens: Array<TokenIF>;
@@ -51,7 +52,6 @@ interface LimitPropsIF {
     quoteTokenDexBalance: string;
     isSellTokenBase: boolean;
     tokenPair: TokenPairIF;
-    isTokenABase: boolean;
     poolPriceDisplay: number | undefined;
     poolPriceNonDisplay: number | undefined;
     tokenAAllowance: string;
@@ -70,6 +70,7 @@ interface LimitPropsIF {
 
 export default function Limit(props: LimitPropsIF) {
     const {
+        crocEnv,
         isUserLoggedIn,
         importedTokens,
         searchableTokens,
@@ -83,7 +84,6 @@ export default function Limit(props: LimitPropsIF) {
         baseTokenDexBalance,
         quoteTokenDexBalance,
         tokenPair,
-        isTokenABase,
         gasPriceInGwei,
         ethMainnetUsdPrice,
         poolPriceDisplay,
@@ -140,8 +140,8 @@ export default function Limit(props: LimitPropsIF) {
     // const tokenADecimals = tokenPair.dataTokenA.decimals;
     // const tokenBDecimals = tokenPair.dataTokenB.decimals;
 
-    // const baseDecimals = isTokenABase ? tokenADecimals : tokenBDecimals;
-    // const quoteDecimals = !isTokenABase ? tokenADecimals : tokenBDecimals;
+    // const baseDecimals = isSellTokenBase ? tokenADecimals : tokenBDecimals;
+    // const quoteDecimals = !isSellTokenBase ? tokenADecimals : tokenBDecimals;
 
     const isTokenAPrimary = tradeData.isTokenAPrimary;
     const limitRate = tradeData.limitPrice;
@@ -168,16 +168,14 @@ export default function Limit(props: LimitPropsIF) {
 
     useEffect(() => {
         if (initialLoad) {
+            // console.log({ initialLoad });
             if (!provider) return;
             if (!poolPriceDisplay) return;
 
             const gridSize = lookupChain(chainId).gridSize;
 
-            const croc = new CrocEnv(provider);
-            const pool =
-                isDenomBase === isTokenABase
-                    ? croc.pool(tradeData.tokenA.address, tradeData.tokenB.address)
-                    : croc.pool(tradeData.tokenB.address, tradeData.tokenA.address);
+            const croc = crocEnv ? crocEnv : new CrocEnv(provider);
+            const pool = croc.pool(tradeData.baseToken.address, tradeData.quoteToken.address);
 
             const initialLimitRate = isDenomBase
                 ? (1 / poolPriceDisplay) * (isSellTokenBase ? 1.015 : 0.985)
@@ -188,12 +186,12 @@ export default function Limit(props: LimitPropsIF) {
             // setLimitRate(initialLimitRate.toString());
 
             const limitWei = pool.fromDisplayPrice(initialLimitRate);
-
             const pinTick = limitWei.then((lw) =>
                 isDenomBase ? pinTickLower(lw, gridSize) : pinTickUpper(lw, gridSize),
             );
             // pinTick.then(setLimitTick);
             pinTick.then((newTick) => {
+                // console.log({ newTick });
                 setLimitTick(newTick);
             });
             const tickPrice = pinTick.then(tickToPrice);
@@ -201,6 +199,7 @@ export default function Limit(props: LimitPropsIF) {
 
             tickDispPrice.then((tp) => {
                 setInsideTickDisplayPrice(tp);
+                // console.log({ tp });
                 dispatch(setLimitPrice(tp.toString()));
                 setInitialLoad(false);
                 const limitRateTruncated =
@@ -224,34 +223,27 @@ export default function Limit(props: LimitPropsIF) {
 
             const gridSize = lookupChain(chainId).gridSize;
 
-            const croc = new CrocEnv(provider);
-            const pool = croc.pool(tradeData.tokenA.address, tradeData.tokenB.address);
+            const croc = crocEnv ? crocEnv : new CrocEnv(provider);
 
-            const limitWei = pool.fromDisplayPrice(
-                (isDenomBase && isTokenABase) || (!isDenomBase && !isTokenABase)
-                    ? parseFloat(limitRate)
-                    : 1 / parseFloat(limitRate),
-            );
+            const pool = croc.pool(tradeData.baseToken.address, tradeData.quoteToken.address);
+
+            const limitWei = pool.fromDisplayPrice(parseFloat(limitRate));
+
             const pinTick = limitWei.then((lw) =>
                 isDenomBase ? pinTickLower(lw, gridSize) : pinTickUpper(lw, gridSize),
             );
             // pinTick.then(setLimitTick);
             pinTick.then((newTick) => {
+                // console.log({ newTick });
                 setLimitTick(newTick);
             });
 
             const tickPrice = pinTick.then(tickToPrice);
-            // pinTick.then(console.log);
-            // const tickDispPrice = tickPrice.then((tp) => pool.toDisplayPrice(tp));
-            const tickDispPrice =
-                (isDenomBase && isTokenABase) || (!isDenomBase && !isTokenABase)
-                    ? tickPrice.then((tp) => pool.toDisplayPrice(tp))
-                    : tickPrice.then((tp) => pool.toDisplayPrice(tp)).then((tp) => 1 / tp);
+            const tickDispPrice = tickPrice.then((tp) => pool.toDisplayPrice(tp));
 
             tickDispPrice.then((tp) => {
                 setInsideTickDisplayPrice(tp);
-                dispatch(setLimitPrice(tp.toString()));
-                setInitialLoad(false);
+                // dispatch(setLimitPrice(tp.toString()));
                 const limitRateTruncated =
                     tp < 2
                         ? tp.toLocaleString(undefined, {
@@ -270,12 +262,44 @@ export default function Limit(props: LimitPropsIF) {
         }
     }, [
         initialLoad,
+        chainId,
         limitRate,
         poolPriceDisplay,
         isSellTokenBase,
         isDenomBase,
         priceInputFieldBlurred,
     ]);
+
+    const [isOrderValid, setIsOrderValid] = useState<boolean>(true);
+
+    useEffect(() => {
+        if (!provider) return;
+        if (!limitTick) return;
+        const croc = crocEnv ? crocEnv : new CrocEnv(provider);
+
+        const sellToken = tradeData.tokenA.address;
+        const buyToken = tradeData.tokenB.address;
+
+        // const sellQty = tokenAInputQty;
+        // const buyQty = tokenBInputQty;
+        // const qty = isTokenAPrimary ? sellQty : buyQty;
+
+        const testOrder = isTokenAPrimary ? croc.sell(sellToken, 0) : croc.buy(buyToken, 0);
+
+        const ko = testOrder.atLimit(isTokenAPrimary ? buyToken : sellToken, limitTick);
+
+        (async () => {
+            if (await ko.willMintFail()) {
+                // console.log('Cannot send limit order: Knockout price inside spread');
+                setLimitButtonErrorMessage('Limit inside market price');
+                setIsOrderValid(false);
+                return;
+            } else {
+                // setLimitButtonErrorMessage('');
+                setIsOrderValid(true);
+            }
+        })();
+    }, [limitTick, tokenAInputQty, tokenBInputQty]);
 
     const sendLimitOrder = async () => {
         console.log('Send limit');
@@ -295,9 +319,9 @@ export default function Limit(props: LimitPropsIF) {
         // console.log({ buyToken });
         // console.log({ sellToken });
 
-        const order = isTokenAPrimary
-            ? new CrocEnv(provider).sell(sellToken, qty)
-            : new CrocEnv(provider).buy(buyToken, qty);
+        const croc = crocEnv ? crocEnv : new CrocEnv(provider);
+
+        const order = isTokenAPrimary ? croc.sell(sellToken, qty) : croc.buy(buyToken, qty);
         // const seller = new CrocEnv(provider).sell(sellToken, qty);
         console.log({ limitTick });
         const ko = order.atLimit(isTokenAPrimary ? buyToken : sellToken, limitTick);
@@ -454,8 +478,8 @@ export default function Limit(props: LimitPropsIF) {
         }
     }, [gasPriceInGwei, ethMainnetUsdPrice]);
 
-    // const tokenABalance = isTokenABase ? baseTokenBalance : quoteTokenBalance;
-    // const tokenBBalance = isTokenABase ? quoteTokenBalance : baseTokenBalance;
+    // const tokenABalance = isSellTokenBase ? baseTokenBalance : quoteTokenBalance;
+    // const tokenBBalance = isSellTokenBase ? quoteTokenBalance : baseTokenBalance;
 
     const approvalButton = (
         <Button
@@ -479,7 +503,7 @@ export default function Limit(props: LimitPropsIF) {
                     mintSlippage={mintSlippage}
                     isPairStable={isPairStable}
                     // isDenomBase={tradeData.isDenomBase}
-                    // isTokenABase={isTokenABase}
+                    // isSellTokenBase={isSellTokenBase}
                 />
                 <DividerDark addMarginTop />
                 {navigationMenu}
@@ -540,7 +564,7 @@ export default function Limit(props: LimitPropsIF) {
                     ) : (
                         <LimitButton
                             onClickFn={openModal}
-                            limitAllowed={poolPriceNonDisplay !== 0 && limitAllowed}
+                            limitAllowed={isOrderValid && poolPriceNonDisplay !== 0 && limitAllowed}
                             limitButtonErrorMessage={limitButtonErrorMessage}
                         />
                     )
