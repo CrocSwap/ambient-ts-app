@@ -79,12 +79,20 @@ export default function SidebarRecentTransactionsCard(props: TransactionProps) {
     }
     // const baseTokenCharacter = baseToken ? getUnicodeCharacter(baseToken?.symbol) : null;
 
+    const transactionTypeSide =
+        tx.entityType === 'swap'
+            ? 'Market'
+            : tx.entityType === 'limitOrder'
+            ? 'Limit Order'
+            : tx.changeType === 'burn'
+            ? 'Range (-)'
+            : 'Range (+)';
     return (
         <div className={styles.container} onClick={() => handleRecentTransactionClick(tx)}>
             <div>
                 {baseToken?.symbol} / {quoteToken?.symbol}
             </div>
-            <div>{tx.changeType}</div>
+            <div>{transactionTypeSide}</div>
             <div className={styles.status_display}>
                 {valueUSD ? `$${valueUSD}` : '…'}
                 {/* {baseTokenDisplay} / {quoteTokenDisplay} */}
