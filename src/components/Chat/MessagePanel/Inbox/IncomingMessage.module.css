@@ -9,7 +9,7 @@
     padding: 0px 4px 8px;
     gap: 7px;
 
-    width: 254px;
+    width: 100%;
     height: 100%;
     /* dark/tertiary */
 
@@ -35,6 +35,8 @@
     padding: 2px;
     flex-grow: 1;
     align-self: flex-end;
+    margin-bottom: 8px;
+
 
 }
 
@@ -48,6 +50,8 @@
     color: #EBEBFF;
     white-space: pre-line;
     align-self: stretch;
+    padding: 9px 4px 0px;
+
 
 }
 
@@ -81,6 +85,8 @@
     flex-grow: 5 !important;
     display: flex;
     flex-direction: column;
+    height: 53px;
+    padding: 12px 0px 27px;
 }
 
 .message_date {
