@@ -47,8 +47,6 @@ interface TradeChartsPropsIF {
     candleData: CandlesByPoolAndDuration | undefined;
     targetData: targetData[] | undefined;
     limitPrice: string | undefined;
-    setLimitRate: React.Dispatch<React.SetStateAction<string>>;
-    limitRate: string;
     favePools: PoolIF[];
     addPoolToFaves: (tokenA: TokenIF, tokenB: TokenIF, chainId: string, poolId: number) => void;
     removePoolFromFaves: (
@@ -662,8 +660,6 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
                         chartItemStates={chartItemStates}
                         targetData={props.targetData}
                         limitPrice={props.limitPrice}
-                        setLimitRate={props.setLimitRate}
-                        limitRate={props.limitRate}
                         denomInBase={denomInBase}
                         liquidityData={props.liquidityData}
                         isAdvancedModeActive={props.isAdvancedModeActive}

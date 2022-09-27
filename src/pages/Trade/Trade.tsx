@@ -47,8 +47,6 @@ interface TradePropsIF {
     setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
     expandTradeTable: boolean;
     setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
-    setLimitRate: React.Dispatch<React.SetStateAction<string>>;
-    limitRate: string;
     favePools: PoolIF[];
     addPoolToFaves: (tokenA: TokenIF, tokenB: TokenIF, chainId: string, poolId: number) => void;
     removePoolFromFaves: (
@@ -420,8 +418,8 @@ export default function Trade(props: TradePropsIF) {
                                 lastBlockNumber={lastBlockNumber}
                                 chainId={chainId}
                                 limitPrice={limitPrice}
-                                setLimitRate={props.setLimitRate}
-                                limitRate={props.limitRate}
+                                // setLimitRate={props.setLimitRate}
+                                // limitRate={props.limitRate}
                                 favePools={favePools}
                                 addPoolToFaves={addPoolToFaves}
                                 removePoolFromFaves={removePoolFromFaves}
