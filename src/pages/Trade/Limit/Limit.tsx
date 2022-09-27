@@ -335,7 +335,7 @@ export default function Limit(props: LimitPropsIF) {
                         positionType: 'knockout',
                         changeType: 'mint',
                         limitTick: limitTick.toString(),
-                        isBid: isTokenAPrimary.toString(), // boolean (Only applies if knockout is true.) Whether or not the knockout liquidity position is a bid (rather than an ask).
+                        isBid: isSellTokenBase.toString(), // boolean (Only applies if knockout is true.) Whether or not the knockout liquidity position is a bid (rather than an ask).
                         liq: '0', // boolean (Optional.) If true, transaction is immediately inserted into cache without checking whether tx has been mined.
                     }),
             );
@@ -371,7 +371,7 @@ export default function Limit(props: LimitPropsIF) {
                                 positionType: 'knockout',
                                 changeType: 'mint',
                                 limitTick: limitTick.toString(),
-                                isBid: isTokenAPrimary.toString(), // boolean (Only applies if knockout is true.) Whether or not the knockout liquidity position is a bid (rather than an ask).
+                                isBid: isSellTokenBase.toString(), // boolean (Only applies if knockout is true.) Whether or not the knockout liquidity position is a bid (rather than an ask).
                                 liq: '0', // boolean (Optional.) If true, transaction is immediately inserted into cache without checking whether tx has been mined.
                             }),
                     );
