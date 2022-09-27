@@ -1,10 +1,8 @@
 // START: Import React and Dongles
 import { Dispatch, SetStateAction, useMemo } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
 
 // START: Import Local Files
-import { setTokenA, setTokenB, setDidUserFlipDenom } from '../../../utils/state/tradeDataSlice';
 import styles from './TokenSelectContainer.module.css';
 import TokenSelect from '../TokenSelect/TokenSelect';
 import TokenSelectSearchable from '../TokenSelect/TokenSelectSearchable';
@@ -40,13 +38,10 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
         chainId,
         tokenToUpdate,
         closeModal,
-        reverseTokens,
         showManageTokenListContent,
         activeTokenListsChanged,
         indicateActiveTokenListsChanged,
     } = props;
-
-    const dispatch = useAppDispatch();
 
     const navigate = useNavigate();
 
@@ -65,7 +60,6 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
     );
 
     const importedTokensAddresses = tokensBank.map((token: TokenIF) => token.address);
-
 
     const location = useLocation();
 
