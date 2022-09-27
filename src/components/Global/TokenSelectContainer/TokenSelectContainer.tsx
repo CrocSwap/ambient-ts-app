@@ -1,5 +1,6 @@
 // START: Import React and Dongles
 import { Dispatch, SetStateAction, useMemo } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
 
 // START: Import Local Files
@@ -47,6 +48,8 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
 
     const dispatch = useAppDispatch();
 
+    const navigate = useNavigate();
+
     const undeletableTokens = useMemo(
         () =>
             JSON.parse(localStorage.getItem('allTokenLists') as string)
@@ -63,24 +66,60 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
 
     const importedTokensAddresses = tokensBank.map((token: TokenIF) => token.address);
 
+
+    const location = useLocation();
+
+    const locationSlug = useMemo(() => {
+        const { pathname } = location;
+        if (pathname.startsWith('/trade/market')) {
+            return '/trade/market';
+        } else if (pathname.startsWith('/trade/limit')) {
+            return '/trade/limit';
+        } else if (pathname.startsWith('/trade/range')) {
+            return '/trade/range';
+        } else if (pathname.startsWith('/swap')) {
+            return '/swap';
+        }
+    }, [location]);
+
     const chooseToken = (tok: TokenIF) => {
+        // user is updating token A
         if (tokenToUpdate === 'A') {
+            // user selected current token B, need to reverse tokens
             if (tokenPair.dataTokenB.address === tok.address) {
-                reverseTokens();
-                dispatch(setTokenA(tok));
-                dispatch(setTokenB(tokenPair.dataTokenA));
+                // clicked token is Token A
+                // previous token A is used for Token B
+                const newURLParams = `/chain=0x5&tokenA=${tok.address}&tokenB=${tokenPair.dataTokenA.address}`;
+                navigate(locationSlug + newURLParams);
+                // reverseTokens();
+                // dispatch(setTokenA(tok));
+                // dispatch(setTokenB(tokenPair.dataTokenA));
+            // user selected an entirely new for token A
             } else {
-                dispatch(setTokenA(tok));
-                dispatch(setDidUserFlipDenom(false));
+                // clicked token is Token A
+                // current token B is still Token B
+                const newURLParams = `/chain=0x5&tokenA=${tok.address}&tokenB=${tokenPair.dataTokenB.address}`;
+                navigate(locationSlug + newURLParams);
+                // dispatch(setTokenA(tok));
+                // dispatch(setDidUserFlipDenom(false));
             }
+        // user is updating token B
         } else if (tokenToUpdate === 'B') {
             if (tokenPair.dataTokenA.address === tok.address) {
-                reverseTokens();
-                dispatch(setTokenB(tok));
-                dispatch(setTokenA(tokenPair.dataTokenB));
+                // clicked token is Token B
+                // previous Token B is now Token A
+                const newURLParams = `/chain=0x5&tokenA=${tokenPair.dataTokenB.address}&tokenB=${tok.address}`;
+                navigate(locationSlug + newURLParams);
+                // reverseTokens();
+                // dispatch(setTokenB(tok));
+                // dispatch(setTokenA(tokenPair.dataTokenB));
             } else {
-                dispatch(setTokenB(tok));
-                dispatch(setDidUserFlipDenom(false));
+                // clicked token is Token B
+                // current token A is still Token A
+                const newURLParams = `/chain=0x5&tokenA=${tokenPair.dataTokenA.address}&tokenB=${tok.address}`;
+                navigate(locationSlug + newURLParams);
+                // dispatch(setTokenB(tok));
+                // dispatch(setDidUserFlipDenom(false));
             }
         } else {
             console.warn(
