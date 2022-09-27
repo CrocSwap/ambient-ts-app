@@ -33,6 +33,7 @@ import {
 } from '../../../utils/TransactionError';
 
 interface LimitPropsIF {
+    crocEnv: CrocEnv | undefined;
     isUserLoggedIn: boolean;
     importedTokens: Array<TokenIF>;
     searchableTokens: Array<TokenIF>;
@@ -70,6 +71,7 @@ interface LimitPropsIF {
 
 export default function Limit(props: LimitPropsIF) {
     const {
+        crocEnv,
         isUserLoggedIn,
         importedTokens,
         searchableTokens,
@@ -173,7 +175,7 @@ export default function Limit(props: LimitPropsIF) {
 
             const gridSize = lookupChain(chainId).gridSize;
 
-            const croc = new CrocEnv(provider);
+            const croc = crocEnv ? crocEnv : new CrocEnv(provider);
             const pool =
                 isDenomBase === isTokenABase
                     ? croc.pool(tradeData.tokenA.address, tradeData.tokenB.address)
@@ -224,7 +226,8 @@ export default function Limit(props: LimitPropsIF) {
 
             const gridSize = lookupChain(chainId).gridSize;
 
-            const croc = new CrocEnv(provider);
+            const croc = crocEnv ? crocEnv : new CrocEnv(provider);
+
             const pool = croc.pool(tradeData.tokenA.address, tradeData.tokenB.address);
 
             const limitWei = pool.fromDisplayPrice(
@@ -295,9 +298,9 @@ export default function Limit(props: LimitPropsIF) {
         // console.log({ buyToken });
         // console.log({ sellToken });
 
-        const order = isTokenAPrimary
-            ? new CrocEnv(provider).sell(sellToken, qty)
-            : new CrocEnv(provider).buy(buyToken, qty);
+        const croc = crocEnv ? crocEnv : new CrocEnv(provider);
+
+        const order = isTokenAPrimary ? croc.sell(sellToken, qty) : croc.buy(buyToken, qty);
         // const seller = new CrocEnv(provider).sell(sellToken, qty);
         console.log({ limitTick });
         const ko = order.atLimit(isTokenAPrimary ? buyToken : sellToken, limitTick);
