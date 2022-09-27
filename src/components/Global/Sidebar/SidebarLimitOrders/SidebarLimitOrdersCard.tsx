@@ -36,15 +36,6 @@ export default function SidebarLimitOrdersCard(props: SidebarLimitOrdersCardProp
 
     const tabToSwitchToBasedOnRoute = onTradeRoute ? 1 : onAccountRoute ? 3 : 0;
 
-    // const tokenDisplay = (
-    //     <div className={styles.token_container}>
-    //         <img
-    //             src='https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Ethereum-icon-purple.svg/2048px-Ethereum-icon-purple.svg.png'
-    //             alt='token image'
-    //         />
-    //     </div>
-    // );
-
     const [priceDisplay, setPriceDisplay] = useState<string | undefined>(undefined);
 
     const baseTokenCharacter = baseToken?.symbol ? getUnicodeCharacter(baseToken?.symbol) : '';
@@ -81,11 +72,13 @@ export default function SidebarLimitOrdersCard(props: SidebarLimitOrdersCardProp
     }, [JSON.stringify(order), isDenomBase]);
 
     const liqTotalUSD =
-        '$' +
-        order.positionLiqTotalUSD.toLocaleString(undefined, {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-        });
+        order.positionLiqTotalUSD !== undefined
+            ? '$' +
+              order.positionLiqTotalUSD?.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+              })
+            : '…';
 
     function handleLimitOrderClick() {
         setOutsideControl(true);
