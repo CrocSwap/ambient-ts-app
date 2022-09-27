@@ -16,6 +16,7 @@ import { ChainSpec } from '@crocswap-libs/sdk';
 import useWebSocket from 'react-use-websocket';
 // import useDebounce from '../../../../App/hooks/useDebounce';
 import { fetchPoolRecentChanges } from '../../../../App/functions/fetchPoolRecentChanges';
+import TransactionAccordions from './TransactionAccordions/TransactionAccordions';
 
 interface TransactionsProps {
     isShowAllEnabled: boolean;
@@ -277,6 +278,19 @@ export default function Transactions(props: TransactionsProps) {
             openGlobalModal={props.openGlobalModal}
         />
     ));
+    const [expanded, setExpanded] = useState<false | number>(0);
+
+    const accordionsDisplay = usePaginateDataOrNull
+        ?.slice(0, 2)
+        .map((tx, idx) => (
+            <TransactionAccordions
+                key={idx}
+                expanded={expanded}
+                setExpanded={setExpanded}
+                tx={tx}
+                i={idx}
+            />
+        ));
 
     const noData = <div className={styles.no_data}>No Data to Display</div>;
     const transactionDataOrNull = dataToDisplay ? TransactionsDisplay : noData;
@@ -288,6 +302,7 @@ export default function Transactions(props: TransactionsProps) {
                 className={`${styles.item_container} ${expandTradeTable && styles.expand_height}`}
                 // style={{ height: expandTradeTable ? '100%' : '170px' }}
             >
+                {isDataLoading ? <TransactionsSkeletons /> : accordionsDisplay}
                 {isDataLoading ? <TransactionsSkeletons /> : transactionDataOrNull}
             </div>
             {expandTradeTable && transactionData.length > 30 && (

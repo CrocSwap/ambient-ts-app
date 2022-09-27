@@ -6,6 +6,7 @@ import getUnicodeCharacter from '../../utils/functions/getUnicodeCharacter';
 import { toDisplayQty } from '@crocswap-libs/sdk';
 import { formatAmount } from '../../utils/numbers';
 import { useAppChain } from '../../App/hooks/useAppChain';
+import trimString from '../../utils/functions/trimString';
 
 export const useProcessTransaction = (tx: ITransaction) => {
     const [chainData] = useAppChain('0x5');
@@ -48,6 +49,9 @@ export const useProcessTransaction = (tx: ITransaction) => {
 
     const baseTokenCharacter = tx.baseSymbol ? getUnicodeCharacter(tx.baseSymbol) : '';
     const quoteTokenCharacter = tx.quoteSymbol ? getUnicodeCharacter(tx.quoteSymbol) : '';
+
+    const baseTokenSymbol = tradeData.baseToken.symbol;
+    const quoteTokenSymbol = tradeData.quoteToken.symbol;
 
     useEffect(() => {
         // console.log({ tx });
@@ -151,7 +155,7 @@ export const useProcessTransaction = (tx: ITransaction) => {
             ? 'sell'
             : 'buy';
 
-    const side =
+    const transactionTypeSide =
         tx.entityType === 'swap'
             ? 'market'
             : tx.entityType === 'limitOrder'
@@ -175,22 +179,46 @@ export const useProcessTransaction = (tx: ITransaction) => {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
           });
+    // --------------------------------------------------------
+
+    const quantitiesAvailable = baseFlowDisplay !== undefined || quoteFlowDisplay !== undefined;
+
+    const baseDisplayFrontend = quantitiesAvailable
+        ? `${baseTokenCharacter}${baseFlowDisplay || '0.00'}`
+        : '…';
+
+    const quoteDisplayFrontend = quantitiesAvailable
+        ? `${quoteTokenCharacter}${quoteFlowDisplay || '0.00'}`
+        : '…';
+
+    // --------------------------------------------------------
 
     const usdValue = usdValueTruncated ? '$' + usdValueTruncated : '…';
-    if (!tx) return null;
+    // --------------------OWNER AND ID WALLET DATA
+
+    const ensNameOrOwnerTruncated = ensName
+        ? trimString(ensName, 5, 3, '…')
+        : trimString(ownerId, 6, 0, '…');
+    const txHashTruncated = trimString(txHash, 6, 0, '…');
+
+    const userNameToDisplay = isOwnerActiveAccount ? 'You' : ensNameOrOwnerTruncated;
+
+    // if (!tx) return null;
     return {
         // wallet and id data
         ownerId,
         txHash,
+        txHashTruncated,
         ensName,
         isOwnerActiveAccount,
+        userNameToDisplay,
         // Price and Price type data
         priceType,
         truncatedDisplayPrice,
 
         // Transaction type and side data
         sideType,
-        side,
+        transactionTypeSide,
 
         // Value data
         usdValue,
@@ -200,6 +228,10 @@ export const useProcessTransaction = (tx: ITransaction) => {
         quoteTokenCharacter,
         baseFlowDisplay,
         quoteFlowDisplay,
+        baseTokenSymbol,
+        quoteTokenSymbol,
+        baseDisplayFrontend,
+        quoteDisplayFrontend,
 
         // block explorer data
         blockExplorer,

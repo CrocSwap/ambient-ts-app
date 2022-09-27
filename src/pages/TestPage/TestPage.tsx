@@ -86,23 +86,15 @@ export default function TestPage(props: TestPageProps) {
                     I am accordion
                 </Accordion>
             ))}
-            {accordionIds.map((item, idx) => (
-                <TransactionAccordions
-                    key={item}
-                    i={item}
-                    expanded={false}
-                    setExpanded={'something'}
-                />
-            ))}
             <h1>TRANSACTION ACCORDIONS</h1>
-            {accordionIds.map((accordion, idx) => (
+            {/* {accordionIds.map((accordion, idx) => (
                 <TransactionAccordions
                     i={accordion}
                     expanded={expanded}
                     setExpanded={setExpanded}
                     key={idx}
                 />
-            ))}
+            ))} */}
         </main>
     );
 }

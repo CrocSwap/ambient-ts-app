@@ -9,3 +9,44 @@
    
     padding: 0 1rem;
 }
+
+.main_header{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+.header_container{
+    display: flex;
+    flex-direction: row;
+    gap: 3.5rem;
+    align-items: center;
+
+    font-size: 12px;
+    line-height: 15px;
+}
+
+/* wallet display */
+.wallet_display , .price_display, .side_display, .type_display, .value_display, .base_display, .quote_display{
+    display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px; 
+}
+
+ .base_display, .quote_display, .value_display{
+    display: none;
+}
+.wallet_display span{
+    background:  var(--title-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text; 
+}
+/* ------------------------MIN MAX RANGE DISPLAY */
+@media only screen and (min-width: 768px) {
+    .value_display, .base_display, .quote_display{
+        display: flex;
+    }
+
+}
