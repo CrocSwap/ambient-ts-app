@@ -1,10 +1,9 @@
 import { ChangeEvent, Dispatch, SetStateAction, useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styles from './CurrencyConverter.module.css';
 import CurrencySelector from '../CurrencySelector/CurrencySelector';
 import { TokenIF, TokenPairIF } from '../../../utils/interfaces/exports';
 import {
-    setTokenA,
-    setTokenB,
     setIsTokenAPrimary,
     setPrimaryQuantity,
 } from '../../../utils/state/tradeDataSlice';
@@ -163,13 +162,17 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
         }
     }, [crocEnv]);
 
+    const navigate = useNavigate();
+
     const [switchBoxes, setSwitchBoxes] = useState(false);
     const reverseTokens = (): void => {
         setSwitchBoxes(!switchBoxes);
-        if (tokenPair) {
-            dispatch(setTokenA(tokenPair.dataTokenB));
-            dispatch(setTokenB(tokenPair.dataTokenA));
-        }
+        navigate(
+            '/trade/market/chain=0x5&tokenA=' +
+            tokenPair.dataTokenB.address +
+            '&tokenB=' +
+            tokenPair.dataTokenA.address
+        );
         if (!isTokenAPrimaryLocal) {
             setTokenAQtyLocal(tokenBQtyLocal);
             setTokenAInputQty(tokenBQtyLocal);
@@ -498,8 +501,6 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
                 indicateActiveTokenListsChanged={indicateActiveTokenListsChanged}
             />
             <div className={styles.arrow_container} onClick={handleArrowClick}>
-                {/* <img src={tokensArrowImage} alt="arrow pointing down" /> */}
-                {/* {isLiq ? null : <span className={styles.arrow} />} */}
                 {isLiq ? null : (
                     <IconWithTooltip title='Reverse tokens' placement='left'>
                         <TokensArrow />
