@@ -7,9 +7,7 @@ import {
 } from '../../../utils/numbers';
 import AreaChart from '../../Global/Charts/AreaChart';
 import BarChart from '../../Global/Charts/BarChart';
-import { useTransformedTvlData, useTransformedVolumeData } from '../../../hooks/chart';
 import logo from '../../../assets/images/logos/ambient_logo.svg';
-import moment from 'moment';
 import { ChartDataTimeframe } from '../../../hooks/ChartDataTimeframe';
 import { getDexStatsFresh } from '../../../utils/functions/getDexStats';
 import {
@@ -30,7 +28,6 @@ export default function GraphContainer() {
 
     const [valueLabelTvl, setValueLabelTvl] = useState<string | undefined>();
     const [valueLabelVolume, setValueLabelVolume] = useState<string | undefined>();
-    const [tempData, setTempData] = useState(chartData);
 
     const [totalTvlString, setTotalTvlString] = useState<string | undefined>();
     const [totalVolumeString, setTotalVolumeString] = useState<string | undefined>();
@@ -149,15 +146,10 @@ export default function GraphContainer() {
 
     const [volumeWindow, setVolumeWindow] = useState(ChartDataTimeframe.all);
 
-    const volumeData = useTransformedVolumeData(tempData, volumeWindow);
-
-    const tvlData = useTransformedTvlData(tempData, volumeWindow);
-
     useEffect(() => {
         if (volumeHover === undefined && protocolData) {
             setVolumeHover(protocolData.volumeUSD);
         }
-        setTempData(chartData);
     }, [protocolData, volumeHover]);
 
     useEffect(() => {
@@ -182,56 +174,6 @@ export default function GraphContainer() {
 
     const setChartDataValues = (_volumeWindow: ChartDataTimeframe) => {
         setVolumeWindow(_volumeWindow);
-        switch (_volumeWindow) {
-            case ChartDataTimeframe.oneDay:
-                setTempData(
-                    chartData?.filter(
-                        (item) =>
-                            moment(item.date * 1000).format('YYYY-MM-DD') ===
-                            moment(new Date()).format('YYYY-MM-DD'),
-                    ),
-                );
-                break;
-
-            case ChartDataTimeframe.oneMonth:
-                setTempData(
-                    chartData?.filter(
-                        (item) =>
-                            moment(new Date()).subtract(1, 'M').format('YYYY-MM-DD') <=
-                                moment(item.date * 1000).format('YYYY-MM-DD') ||
-                            moment(new Date()).format('YYYY-MM-DD') <=
-                                moment(item.date * 1000).format('YYYY-MM-DD'),
-                    ),
-                );
-                break;
-
-            case ChartDataTimeframe.sixMonth:
-                setTempData(
-                    chartData?.filter(
-                        (item) =>
-                            moment(new Date()).subtract(6, 'M').format('YYYY-MM-DD') <=
-                                moment(item.date * 1000).format('YYYY-MM-DD') ||
-                            moment(new Date()).format('YYYY-MM-DD') <=
-                                moment(item.date * 1000).format('YYYY-MM-DD'),
-                    ),
-                );
-                break;
-
-            case ChartDataTimeframe.oneYear:
-                setTempData(
-                    chartData?.filter(
-                        (item) =>
-                            moment(new Date()).subtract(12, 'M').format('YYYY-MM-DD') <=
-                                moment(item.date * 1000).format('YYYY-MM-DD') ||
-                            moment(new Date()).format('YYYY-MM-DD') <=
-                                moment(item.date * 1000).format('YYYY-MM-DD'),
-                    ),
-                );
-                break;
-
-            default:
-                setTempData(chartData);
-        }
     };
     const timeFrame = (
         <div className={styles.time_frame_container}>
