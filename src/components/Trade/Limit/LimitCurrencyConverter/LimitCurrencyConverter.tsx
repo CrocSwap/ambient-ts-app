@@ -1,11 +1,8 @@
 // START: Import React and Dongles
 import { ChangeEvent, Dispatch, SetStateAction, useEffect, useState } from 'react';
-
+import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../../../utils/hooks/reduxToolkit';
-
 import {
-    setTokenA,
-    setTokenB,
     setIsTokenAPrimary,
     setPrimaryQuantity,
 } from '../../../../utils/state/tradeDataSlice';
@@ -158,11 +155,15 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
         reverseTokens();
     };
 
+    const navigate = useNavigate();
+
     const reverseTokens = (): void => {
-        if (tokenPair) {
-            dispatch(setTokenA(tokenPair.dataTokenB));
-            dispatch(setTokenB(tokenPair.dataTokenA));
-        }
+        navigate(
+            '/trade/market/chain=0x5&tokenA=' +
+            tokenPair.dataTokenB.address +
+            '&tokenB=' +
+            tokenPair.dataTokenA.address
+        );
         if (!isTokenAPrimaryLocal) {
             setTokenAQtyLocal(tokenBQtyLocal);
             setTokenAInputQty(tokenBQtyLocal);
