@@ -771,7 +771,7 @@ export default function App() {
                 console.log;
             }
 
-            if (provider) {
+            if (crocEnv) {
                 // retrieve pool_positions
                 try {
                     if (httpGraphCacheServerDomain) {
@@ -898,7 +898,7 @@ export default function App() {
                 }
             }
         }
-    }, [tokenPairStringified, chainData.chainId, provider]);
+    }, [tokenPairStringified, chainData.chainId, crocEnv]);
 
     const activePeriod = tradeData.activeChartPeriod;
 
@@ -931,7 +931,7 @@ export default function App() {
                                 // period: '86400', // 1 day
                                 // period: '300', // 5 minute
                                 // time: '1657833300', // optional
-                                n: '200', // positive integer
+                                n: '100', // positive integer
                                 page: '0', // nonnegative integer
                                 chainId: '0x1',
                                 dex: 'all',
