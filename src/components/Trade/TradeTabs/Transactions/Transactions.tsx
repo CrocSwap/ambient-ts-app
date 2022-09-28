@@ -5,6 +5,7 @@ import {
     addChangesByPool,
     CandleData,
     graphData,
+    ITransaction,
     setChangesByPool,
 } from '../../../../utils/state/graphDataSlice';
 import { TokenIF } from '../../../../utils/interfaces/TokenIF';
@@ -22,6 +23,7 @@ interface TransactionsProps {
     isShowAllEnabled: boolean;
     portfolio?: boolean;
     tokenMap: Map<string, TokenIF>;
+    swapsForSelectedCandle: ITransaction[];
     graphData: graphData;
     chainData: ChainSpec;
     blockExplorer?: string;
@@ -40,6 +42,7 @@ export default function Transactions(props: TransactionsProps) {
     const {
         isShowAllEnabled,
         account,
+        swapsForSelectedCandle,
         graphData,
         tokenMap,
         chainData,
@@ -92,18 +95,25 @@ export default function Transactions(props: TransactionsProps) {
         setTransactionData(changesByPool);
         setDataReceived(dataReceivedByPool);
     }
-
+    // console.log({ isCandleSelected });
     useEffect(() => {
         isCandleSelected
-            ? setTransactionData(
-                  changesByPool.filter((data) => {
-                      filter?.allSwaps?.includes(data.id);
-                  }),
-              )
-            : !isShowAllEnabled
+            ? setTransactionData(swapsForSelectedCandle)
+            : // ? setTransactionData(
+            //       changesByPool.filter((data) => {
+            //           filter?.allSwaps?.includes(data.id);
+            //       }),
+            //   )
+            !isShowAllEnabled
             ? handleUserSelected()
             : handlePoolSelected();
-    }, [isShowAllEnabled, isCandleSelected, filter, changesByUser, changesByPool]);
+    }, [
+        isShowAllEnabled,
+        isCandleSelected,
+        filter,
+        swapsForSelectedCandle,
+        // , changesByUser, changesByPool
+    ]);
 
     useEffect(() => {
         // console.log({ dataReceived });
