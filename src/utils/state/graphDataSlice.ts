@@ -291,6 +291,8 @@ export interface ITransaction {
     invLimitPriceDecimalCorrected: number;
     priceDecimalCorrected: number;
     invPriceDecimalCorrected: number;
+    baseFlowDecimalCorrected: number;
+    quoteFlowDecimalCorrected: number;
     valueUSD: number;
     ensResolution: string;
 }

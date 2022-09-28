@@ -39,6 +39,10 @@ export default function TransactionAccordions(props: TransactionAccordionsPropsI
         baseTokenLogo,
     } = useProcessTransaction(tx);
 
+    // console.log(priceType);
+
+    // console.log(useProcessTransaction(tx));
+
     const walletAndIdDisplay = (
         <div className={styles.wallet_display}>
             <BiWallet />
