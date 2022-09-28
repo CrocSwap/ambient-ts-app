@@ -105,7 +105,7 @@
         grid-template-columns: 50px 50px auto ;
         /* background: red; */
     }
-    svg {
+   .fav_button svg {
         width: 15px;
     }
 }
@@ -121,7 +121,7 @@
         /* background: blue; */
     }
 
-    svg {
+   .fav_button svg {
         width: 15px;
     }
 }
@@ -135,7 +135,7 @@
     .main_container {
         grid-template-columns: 100px 100px auto;
     }
-    svg {
+   .fav_button svg {
         width: 20px;
     }
 }
@@ -144,7 +144,7 @@
     .main_container {
         grid-template-columns: 100px 100px 0.99fr ;
     }
-    svg {
+   .fav_button svg {
         width: 20px;
     }
 }

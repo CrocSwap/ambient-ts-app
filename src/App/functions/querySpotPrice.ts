@@ -1,9 +1,9 @@
 import { CrocEnv } from '@crocswap-libs/sdk';
-import { Provider } from '@ethersproject/providers';
-import { memoizeProviderFn } from './memoizePromiseFn';
+// import { Provider } from '@ethersproject/providers';
+import { memoizeCrocEnvFn } from './memoizePromiseFn';
 
 export const querySpotPrice = async (
-    provider: Provider,
+    crocEnv: CrocEnv,
     baseTokenAddress: string,
     quoteTokenAddress: string,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -11,18 +11,18 @@ export const querySpotPrice = async (
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     _lastBlockNumber: number,
 ) => {
+    if (!crocEnv) return;
     // console.log('Query spot price ' + baseTokenAddress + ' ' + quoteTokenAddress);
     // console.log({ provider });
-    const env = new CrocEnv(provider);
     // console.log(
     //     'Query spot price ' + (await env.pool(baseTokenAddress, quoteTokenAddress).spotPrice()),
     // );
 
-    return env.pool(baseTokenAddress, quoteTokenAddress).spotPrice();
+    return crocEnv.pool(baseTokenAddress, quoteTokenAddress).spotPrice();
 };
 
 type SpotPriceFn = (
-    provider: Provider,
+    crocEnv: CrocEnv,
     baseToken: string,
     quoteToken: string,
     chain: string,
@@ -30,5 +30,5 @@ type SpotPriceFn = (
 ) => Promise<number>;
 
 export function memoizeQuerySpotPrice(): SpotPriceFn {
-    return memoizeProviderFn(querySpotPrice) as SpotPriceFn;
+    return memoizeCrocEnvFn(querySpotPrice) as SpotPriceFn;
 }

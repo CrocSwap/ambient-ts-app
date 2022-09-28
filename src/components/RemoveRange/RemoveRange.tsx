@@ -13,7 +13,7 @@ import { RiListSettingsLine } from 'react-icons/ri';
 import { BsArrowLeft } from 'react-icons/bs';
 import { PositionIF } from '../../utils/interfaces/PositionIF';
 import { ethers } from 'ethers';
-import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
+import { ambientPosSlot, ChainSpec, concPosSlot, CrocEnv } from '@crocswap-libs/sdk';
 import Button from '../Global/Button/Button';
 
 import RemoveRangeSettings from './RemoveRangeSettings/RemoveRangeSettings';
@@ -23,8 +23,21 @@ import {
 } from '../Global/LoadingAnimations/CircleLoader/CircleLoader';
 import RemoveRangeHeader from './RemoveRangeHeader/RemoveRangeHeader';
 import ExtraControls from './ExtraControls/ExtraControls';
-import { addReceipt } from '../../utils/state/receiptDataSlice';
-import { useAppDispatch } from '../../utils/hooks/reduxToolkit';
+import {
+    addPendingTx,
+    addPositionPendingUpdate,
+    addReceipt,
+    removePendingTx,
+    removePositionPendingUpdate,
+} from '../../utils/state/receiptDataSlice';
+import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
+import {
+    isTransactionFailedError,
+    isTransactionReplacedError,
+    TransactionError,
+} from '../../utils/TransactionError';
+import WithdrawAs from './WithdrawAs/WithdrawAs';
+import WithdrawTo from './WithdrawTo/WithdrawTo';
 interface IRemoveRangeProps {
     provider: ethers.providers.Provider;
     chainData: ChainSpec;
@@ -46,9 +59,8 @@ interface IRemoveRangeProps {
     baseTokenLogoURI: string;
     quoteTokenLogoURI: string;
     isDenomBase: boolean;
-    lastBlockNumber: number;
+    // lastBlockNumber: number;
     position: PositionIF;
-    pendingTransactions: string[];
 
     openGlobalModal: (content: React.ReactNode) => void;
 
@@ -72,10 +84,11 @@ export default function RemoveRange(props: IRemoveRangeProps) {
         closeGlobalModal,
         chainData,
         provider,
-        lastBlockNumber,
+        // lastBlockNumber,
         position,
-        pendingTransactions,
     } = props;
+
+    const lastBlockNumber = useAppSelector((state) => state.graphData).lastBlock;
 
     const [removalPercentage, setRemovalPercentage] = useState(100);
 
@@ -96,6 +109,10 @@ export default function RemoveRange(props: IRemoveRangeProps) {
 
     const dispatch = useAppDispatch();
 
+    const positionsPendingUpdate = useAppSelector(
+        (state) => state.receiptData,
+    ).positionsPendingUpdate;
+
     useEffect(() => {
         if (
             position.chainId &&
@@ -106,6 +123,7 @@ export default function RemoveRange(props: IRemoveRangeProps) {
             position.positionType
         ) {
             (async () => {
+                // console.log('fetching details');
                 fetch(
                     positionStatsCacheEndpoint +
                         new URLSearchParams({
@@ -122,6 +140,7 @@ export default function RemoveRange(props: IRemoveRangeProps) {
                 )
                     .then((response) => response.json())
                     .then((json) => {
+                        console.log({ json });
                         setPosLiqBaseDecimalCorrected(json?.data?.positionLiqBaseDecimalCorrected);
                         setPosLiqQuoteDecimalCorrected(
                             json?.data?.positionLiqQuoteDecimalCorrected,
@@ -153,15 +172,35 @@ export default function RemoveRange(props: IRemoveRangeProps) {
 
     const resetConfirmation = () => {
         setShowConfirmation(false);
+        setNewRemovalTransactionHash('');
         setTxErrorCode(0);
         setTxErrorMessage('');
     };
 
+    useEffect(() => {
+        if (!showConfirmation) {
+            resetConfirmation();
+        }
+    }, [txErrorCode]);
+
     const liquiditySlippageTolerance = 1;
+
+    const posHash =
+        position.positionType === 'ambient'
+            ? ambientPosSlot(position.user, position.base, position.quote, chainData.poolIndex)
+            : concPosSlot(
+                  position.user,
+                  position.base,
+                  position.quote,
+                  position.bidTick,
+                  position.askTick,
+                  chainData.poolIndex,
+              );
+
+    const isPositionPendingUpdate = positionsPendingUpdate.indexOf(posHash as string) > -1;
 
     const removeFn = async () => {
         setShowConfirmation(true);
-        console.log(`${removalPercentage}% to be removed.`);
 
         const env = new CrocEnv(provider);
         const pool = env.pool(position.base, position.quote);
@@ -169,10 +208,14 @@ export default function RemoveRange(props: IRemoveRangeProps) {
 
         const lowLimit = spotPrice * (1 - liquiditySlippageTolerance / 100);
         const highLimit = spotPrice * (1 + liquiditySlippageTolerance / 100);
+        // console.log({ position });
+
+        dispatch(addPositionPendingUpdate(posHash as string));
 
         let tx;
         if (position.positionType === 'ambient') {
             if (removalPercentage === 100) {
+                console.log(`${removalPercentage}% to be removed.`);
                 try {
                     tx = await pool.burnAmbientAll([lowLimit, highLimit], {
                         surplus: isSaveAsDexSurplusChecked,
@@ -180,6 +223,7 @@ export default function RemoveRange(props: IRemoveRangeProps) {
                     console.log(tx?.hash);
                     setNewRemovalTransactionHash(tx?.hash);
                 } catch (error) {
+                    dispatch(removePositionPendingUpdate(posHash as string));
                     setTxErrorCode(error?.code);
                     setTxErrorMessage(error?.message);
                 }
@@ -195,6 +239,7 @@ export default function RemoveRange(props: IRemoveRangeProps) {
                     console.log(tx?.hash);
                     setNewRemovalTransactionHash(tx?.hash);
                 } catch (error) {
+                    dispatch(removePositionPendingUpdate(posHash as string));
                     setTxErrorCode(error?.code);
                     setTxErrorMessage(error?.message);
                 }
@@ -203,8 +248,17 @@ export default function RemoveRange(props: IRemoveRangeProps) {
             const positionLiq = position.positionLiq;
 
             const liquidityToBurn = ethers.BigNumber.from(positionLiq)
-                .mul(removalPercentage)
+                .mul(removalPercentage === 100 ? 99 : removalPercentage)
                 .div(100);
+            console.log(`${removalPercentage === 100 ? 99 : removalPercentage}% to be removed.`);
+
+            // console.log({ removalPercentage });
+            // console.log({ liquidityToBurn });
+            // console.log({ lowLimit });
+            // console.log({ highLimit });
+            // console.log({ isSaveAsDexSurplusChecked });
+            // console.log(position.bidTick);
+            // console.log(position.askTick);
 
             try {
                 tx = await pool.burnRangeLiq(
@@ -214,22 +268,139 @@ export default function RemoveRange(props: IRemoveRangeProps) {
                     { surplus: isSaveAsDexSurplusChecked },
                 );
                 console.log(tx?.hash);
+                dispatch(addPendingTx(tx?.hash));
                 setNewRemovalTransactionHash(tx?.hash);
             } catch (error) {
+                dispatch(removePositionPendingUpdate(posHash as string));
                 setTxErrorCode(error?.code);
                 setTxErrorMessage(error?.message);
+                dispatch(removePositionPendingUpdate(posHash as string));
             }
         } else {
             console.log('unsupported position type for removal');
         }
 
-        let receipt;
-        if (tx) receipt = await tx.wait();
+        const newLiqChangeCacheEndpoint = 'https://809821320828123.de:5000/new_liqchange?';
+        if (tx?.hash) {
+            const positionLiq = position.positionLiq;
 
+            const liquidityToBurn = ethers.BigNumber.from(positionLiq)
+                .mul(removalPercentage)
+                .div(100);
+
+            if (position.positionType === 'ambient') {
+                fetch(
+                    newLiqChangeCacheEndpoint +
+                        new URLSearchParams({
+                            chainId: position.chainId,
+                            tx: tx.hash,
+                            user: position.user,
+                            base: position.base,
+                            quote: position.quote,
+                            poolIdx: position.poolIdx.toString(),
+                            positionType: 'ambient',
+                            // bidTick: '0',
+                            // askTick: '0',
+                            changeType: 'burn',
+                            isBid: 'false', // boolean (Only applies if knockout is true.) Whether or not the knockout liquidity position is a bid (rather than an ask).
+                            liq: liquidityToBurn.toString(), // boolean (Optional.) If true, transaction is immediately inserted into cache without checking whether tx has been mined.
+                        }),
+                );
+            } else {
+                fetch(
+                    newLiqChangeCacheEndpoint +
+                        new URLSearchParams({
+                            chainId: position.chainId,
+                            tx: tx.hash,
+                            user: position.user,
+                            base: position.base,
+                            quote: position.quote,
+                            poolIdx: position.poolIdx.toString(),
+                            positionType: 'concentrated',
+                            bidTick: position.bidTick.toString(),
+                            askTick: position.askTick.toString(),
+                            changeType: 'burn',
+                            isBid: 'false', // boolean (Only applies if knockout is true.) Whether or not the knockout liquidity position is a bid (rather than an ask).
+                            liq: liquidityToBurn.toString(), // boolean (Optional.) If true, transaction is immediately inserted into cache without checking whether tx has been mined.
+                        }),
+                );
+            }
+        }
+
+        let receipt;
+
+        try {
+            if (tx) receipt = await tx.wait();
+        } catch (e) {
+            const error = e as TransactionError;
+            console.log({ error });
+            // The user used "speed up" or something similar
+            // in their client, but we now have the updated info
+            if (isTransactionReplacedError(error)) {
+                console.log('repriced');
+                dispatch(removePendingTx(error.hash));
+                const newTransactionHash = error.replacement.hash;
+                setNewRemovalTransactionHash(newTransactionHash);
+                dispatch(addPendingTx(newTransactionHash));
+                console.log({ newTransactionHash });
+                receipt = error.receipt;
+
+                if (newTransactionHash) {
+                    const positionLiq = position.positionLiq;
+
+                    const liquidityToBurn = ethers.BigNumber.from(positionLiq)
+                        .mul(removalPercentage)
+                        .div(100);
+
+                    if (position.positionType === 'ambient') {
+                        fetch(
+                            newLiqChangeCacheEndpoint +
+                                new URLSearchParams({
+                                    chainId: position.chainId,
+                                    tx: newTransactionHash,
+                                    user: position.user,
+                                    base: position.base,
+                                    quote: position.quote,
+                                    poolIdx: position.poolIdx.toString(),
+                                    positionType: 'ambient',
+                                    // bidTick: '0',
+                                    // askTick: '0',
+                                    changeType: 'burn',
+                                    isBid: 'false', // boolean (Only applies if knockout is true.) Whether or not the knockout liquidity position is a bid (rather than an ask).
+                                    liq: liquidityToBurn.toString(), // boolean (Optional.) If true, transaction is immediately inserted into cache without checking whether tx has been mined.
+                                }),
+                        );
+                    } else {
+                        fetch(
+                            newLiqChangeCacheEndpoint +
+                                new URLSearchParams({
+                                    chainId: position.chainId,
+                                    tx: newTransactionHash,
+                                    user: position.user,
+                                    base: position.base,
+                                    quote: position.quote,
+                                    poolIdx: position.poolIdx.toString(),
+                                    positionType: 'concentrated',
+                                    bidTick: position.bidTick.toString(),
+                                    askTick: position.askTick.toString(),
+                                    changeType: 'burn',
+                                    isBid: 'false', // boolean (Only applies if knockout is true.) Whether or not the knockout liquidity position is a bid (rather than an ask).
+                                    liq: liquidityToBurn.toString(), // boolean (Optional.) If true, transaction is immediately inserted into cache without checking whether tx has been mined.
+                                }),
+                        );
+                    }
+                }
+            } else if (isTransactionFailedError(error)) {
+                // console.log({ error });
+                receipt = error.receipt;
+            }
+        }
         if (receipt) {
             console.log('dispatching receipt');
             console.log({ receipt });
             dispatch(addReceipt(JSON.stringify(receipt)));
+            dispatch(removePendingTx(receipt.transactionHash));
+            dispatch(removePositionPendingUpdate(posHash as string));
         }
     };
 
@@ -245,12 +416,6 @@ export default function RemoveRange(props: IRemoveRangeProps) {
     );
 
     const etherscanLink = chainData.blockExplorer + 'tx/' + newRemovalTransactionHash;
-
-    useEffect(() => {
-        if (newRemovalTransactionHash && newRemovalTransactionHash !== '') {
-            pendingTransactions.push(newRemovalTransactionHash);
-        }
-    }, [newRemovalTransactionHash]);
 
     const removalSuccess = (
         <div className={styles.removal_pending}>
@@ -273,10 +438,7 @@ export default function RemoveRange(props: IRemoveRangeProps) {
     const removalPending = (
         <div className={styles.removal_pending}>
             <CircleLoader size='5rem' borderColor='#171d27' />
-            <p>
-                Check the Metamask extension in your browser for notifications. Make sure your
-                browser is not blocking pop-up windows.
-            </p>
+            <p>Check the Metamask extension in your browser for notifications.</p>
         </div>
     );
 
@@ -321,7 +483,8 @@ export default function RemoveRange(props: IRemoveRangeProps) {
 
     const confirmationContent = (
         <div className={styles.confirmation_container}>
-            {showConfirmation && !removalDenied && (
+            {showConfirmation && (
+                // {showConfirmation && !removalDenied && (
                 <div className={styles.button} onClick={resetConfirmation}>
                     <BsArrowLeft size={30} />
                 </div>
@@ -334,6 +497,12 @@ export default function RemoveRange(props: IRemoveRangeProps) {
         <div style={{ padding: '0 1rem' }}>
             {showSettings ? (
                 <Button title='Confirm' action={() => setShowSettings(false)} />
+            ) : isPositionPendingUpdate ? (
+                <RemoveRangeButton
+                    removeFn={removeFn}
+                    disabled={true}
+                    title='Position Update Pending…'
+                />
             ) : positionHasLiquidity ? (
                 <RemoveRangeButton
                     removeFn={removeFn}
@@ -380,6 +549,8 @@ export default function RemoveRange(props: IRemoveRangeProps) {
                     baseRemovalNum={baseRemovalNum}
                     quoteRemovalNum={quoteRemovalNum}
                 />
+                <WithdrawAs />
+                <WithdrawTo />
                 <ExtraControls
                     isSaveAsDexSurplusChecked={isSaveAsDexSurplusChecked}
                     setIsSaveAsDexSurplusChecked={setIsSaveAsDexSurplusChecked}
@@ -403,7 +574,10 @@ export default function RemoveRange(props: IRemoveRangeProps) {
                 <RemoveRangeHeader
                     onClose={closeGlobalModal}
                     title={showSettings ? 'Remove Position Settings' : 'Remove Position'}
-                    onBackButton={() => setShowSettings(false)}
+                    onBackButton={() => {
+                        resetConfirmation();
+                        setShowSettings(false);
+                    }}
                     showBackButton={showSettings}
                 />
                 {mainModalContent}

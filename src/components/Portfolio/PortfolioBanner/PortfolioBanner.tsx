@@ -1,16 +1,18 @@
 import styles from './PortfolioBanner.module.css';
 import trimString from '../../../utils/functions/trimString';
 import noAvatarImage from '../../../assets/images/icons/avatar.svg';
-
+import { FiEdit } from 'react-icons/fi';
+import { Dispatch, SetStateAction } from 'react';
 interface PortfolioBannerPropsIF {
     ensName: string;
     activeAccount: string;
     imageData: string[];
     resolvedAddress: string;
+    setShowProfileSettings: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function PortfolioBanner(props: PortfolioBannerPropsIF) {
-    const { ensName, activeAccount, imageData, resolvedAddress } = props;
+    const { ensName, activeAccount, imageData, resolvedAddress, setShowProfileSettings } = props;
     const ensNameAvailable = ensName !== '';
 
     const truncatedAccountAddress = trimString(activeAccount, 6, 6, '…');
@@ -32,6 +34,9 @@ export default function PortfolioBanner(props: PortfolioBannerPropsIF) {
                             : resolvedAddress
                             ? activeAccount
                             : truncatedAccountAddress}
+                        <div onClick={() => setShowProfileSettings(true)}>
+                            <FiEdit size={17} />
+                        </div>
                     </span>
                     <span className={styles.hash}>
                         {resolvedAddress

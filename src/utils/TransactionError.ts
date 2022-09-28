@@ -9,6 +9,7 @@ export type TransactionError = TransactionReplacedError | TransactionFailedError
 
 export interface TransactionReplacedError extends Error {
     code: 'TRANSACTION_REPLACED';
+    hash: string;
     // The reason why the transaction was replaced
     // - "repriced" is generally nothing of concern, the
     //   only difference in the transaction is the gasPrice
@@ -39,10 +40,12 @@ export interface TransactionFailedError {
     code: number;
     message: string;
     stack: string;
+    receipt: ContractReceipt;
 }
 
 export function isTransactionFailedError(error: TransactionError): error is TransactionError {
-    if (error?.message?.includes('-32000')) {
+    if (error?.message?.includes('transaction failed')) {
+        // if (error?.message?.includes('-32000')) {
         return true;
     }
 

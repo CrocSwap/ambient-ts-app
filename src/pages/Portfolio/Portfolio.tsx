@@ -15,9 +15,10 @@ import { Erc20TokenBalanceFn, nativeTokenBalanceFn } from '../../App/functions/f
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { TokenPriceFn } from '../../App/functions/fetchTokenPrice';
 import NotFound from '../NotFound/NotFound';
+import ProfileSettings from '../../components/Portfolio/ProfileSettings/ProfileSettings';
 
 const mainnetProvider = new ethers.providers.WebSocketProvider(
-    'wss://mainnet.infura.io/ws/v3/25e7e0ec71de48bfa9c4d2431fbb3c4a',
+    'wss://mainnet.infura.io/ws/v3/4a162c75bd514925890174ca13cdb6a2',
 );
 
 interface PortfolioPropsIF {
@@ -39,6 +40,7 @@ interface PortfolioPropsIF {
     outsideControl: boolean;
     setOutsideControl: Dispatch<SetStateAction<boolean>>;
     userAccount?: boolean;
+    openGlobalModal: (content: React.ReactNode, title?: string) => void;
 }
 
 // const cachedFetchAddress = memoizePromiseFn(fetchAddress);
@@ -59,6 +61,8 @@ export default function Portfolio(props: PortfolioPropsIF) {
         connectedAccount,
         chainId,
         tokenMap,
+        openGlobalModal,
+        userAccount,
     } = props;
 
     const { address } = useParams();
@@ -207,13 +211,25 @@ export default function Portfolio(props: PortfolioPropsIF) {
         })();
     }, [crocEnv, resolvedAddress, chainId, lastBlockNumber, connectedAccountActive]);
 
+    const [showProfileSettings, setShowProfileSettings] = useState(false);
+
     return (
         <main data-testid={'portfolio'} className={styles.portfolio_container}>
+            {userAccount && showProfileSettings && (
+                <ProfileSettings
+                    showProfileSettings={showProfileSettings}
+                    setShowProfileSettings={setShowProfileSettings}
+                    ensName={address ? secondaryensName : ensName}
+                    imageData={connectedAccountActive ? userImageData : secondaryImageData}
+                    openGlobalModal={openGlobalModal}
+                />
+            )}
             <PortfolioBanner
                 ensName={address ? secondaryensName : ensName}
                 resolvedAddress={resolvedAddress}
                 activeAccount={address ?? connectedAccount}
                 imageData={connectedAccountActive ? userImageData : secondaryImageData}
+                setShowProfileSettings={setShowProfileSettings}
             />
             <div
                 className={

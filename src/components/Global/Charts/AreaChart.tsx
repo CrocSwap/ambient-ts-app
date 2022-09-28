@@ -14,11 +14,11 @@ import { formatDollarAmountAxis } from '../../../utils/numbers';
 
 interface AreaChartProps {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    data: any[];
-    setValue?: Dispatch<SetStateAction<number | undefined>>; // used for value on hover
-    setLabel?: Dispatch<SetStateAction<string | undefined>>; // used for value on hover
-    value?: number;
-    label?: string;
+    data: any[] | undefined;
+    setValueTvl?: Dispatch<SetStateAction<number | undefined>>; // used for value on hover
+    setValueTvlDate?: Dispatch<SetStateAction<string | undefined>>; // used for value on hover
+    valueTvl?: number;
+    valueTvlDate?: string;
 }
 
 declare global {
@@ -160,8 +160,8 @@ export default function AreaChart(props: AreaChartProps) {
             const nearest = minimum(filtered, (d: any) => Math.abs(point.x - xScale(xValue(d))))[1];
             const newX = new Date(nearest.time.getTime());
             const value = new Date(newX.setTime(newX.getTime()));
-            props.setValue?.(nearest?.value);
-            props.setLabel?.(getDate(value));
+            props.setValueTvl?.(nearest?.value);
+            props.setValueTvlDate?.(getDate(value));
             return [
                 {
                     x: xScale(value),

@@ -13,6 +13,7 @@ import { useModal } from '../../../../components/Global/Modal/useModal';
 import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
 import { toggleDidUserFlipDenom } from '../../../../utils/state/tradeDataSlice';
 import IconWithTooltip from '../../../Global/IconWithTooltip/IconWithTooltip';
+import { AiOutlineShareAlt } from 'react-icons/ai';
 
 // interface for component props
 interface RangeHeaderPropsIF {
@@ -22,11 +23,15 @@ interface RangeHeaderPropsIF {
     isPairStable: boolean;
     isDenomBase: boolean;
     isTokenABase: boolean;
+    openGlobalModal: (content: React.ReactNode, title?: string) => void;
+
+    shareOptionsDisplay: JSX.Element;
 }
 
 // central react functional component
 export default function RangeHeader(props: RangeHeaderPropsIF) {
-    const { tokenPair, mintSlippage, isPairStable, isDenomBase, isTokenABase } = props;
+    const { tokenPair, mintSlippage, isPairStable, isDenomBase, isTokenABase, openGlobalModal } =
+        props;
 
     const [isModalOpen, openModal, closeModal] = useModal();
 
@@ -47,7 +52,12 @@ export default function RangeHeader(props: RangeHeaderPropsIF) {
 
     return (
         <ContentHeader>
-            <span />
+            <div
+                className={styles.share_button}
+                onClick={() => openGlobalModal(props.shareOptionsDisplay, 'Share')}
+            >
+                <AiOutlineShareAlt />
+            </div>
             <div className={styles.token_info} onClick={() => dispatch(toggleDidUserFlipDenom())}>
                 {reverseDisplay ? tokenPair.dataTokenA.symbol : tokenPair.dataTokenB.symbol} /{' '}
                 {reverseDisplay ? tokenPair.dataTokenB.symbol : tokenPair.dataTokenA.symbol}

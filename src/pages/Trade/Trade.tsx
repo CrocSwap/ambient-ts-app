@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // START: Import React and Dongles
-import { Dispatch, SetStateAction, useEffect, useState } from 'react';
+import { Dispatch, SetStateAction, useState } from 'react';
 import { Outlet, useOutletContext, NavLink } from 'react-router-dom';
 import { ethers } from 'ethers';
 import { motion, AnimateSharedLayout } from 'framer-motion';
@@ -12,7 +12,7 @@ import TradeTabs2 from '../../components/Trade/TradeTabs/TradeTabs2';
 // START: Import Local Files
 import styles from './Trade.module.css';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
-import { tradeData as TradeDataIF } from '../../utils/state/tradeDataSlice';
+import { targetData, tradeData as TradeDataIF } from '../../utils/state/tradeDataSlice';
 import { CandleData, CandlesByPoolAndDuration } from '../../utils/state/graphDataSlice';
 import { PoolIF, TokenIF, TokenPairIF } from '../../utils/interfaces/exports';
 import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
@@ -20,6 +20,7 @@ import { SketchPicker } from 'react-color';
 
 // interface for React functional component props
 interface TradePropsIF {
+    isUserLoggedIn: boolean;
     crocEnv: CrocEnv | undefined;
     provider: ethers.providers.Provider | undefined;
     candleData: CandlesByPoolAndDuration | undefined;
@@ -46,6 +47,8 @@ interface TradePropsIF {
     expandTradeTable: boolean;
     setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
     setLimitRate: React.Dispatch<React.SetStateAction<string>>;
+    setTargets: React.Dispatch<React.SetStateAction<targetData[]>>;
+    targets: targetData[];
     limitRate: string;
     favePools: PoolIF[];
     addPoolToFaves: (tokenA: TokenIF, tokenB: TokenIF, chainId: string, poolId: number) => void;
@@ -61,7 +64,6 @@ interface TradePropsIF {
     setOutsideControl: Dispatch<SetStateAction<boolean>>;
     currentPositionActive: string;
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
-    pendingTransactions: string[];
 
     openGlobalModal: (content: React.ReactNode) => void;
 
@@ -72,6 +74,7 @@ interface TradePropsIF {
 // React functional component
 export default function Trade(props: TradePropsIF) {
     const {
+        isUserLoggedIn,
         crocEnv,
         candleData,
         chainId,
@@ -81,7 +84,7 @@ export default function Trade(props: TradePropsIF) {
         provider,
         lastBlockNumber,
         baseTokenAddress,
-        quoteTokenAddress,
+        // quoteTokenAddress,
         baseTokenBalance,
         quoteTokenBalance,
         baseTokenDexBalance,
@@ -89,7 +92,6 @@ export default function Trade(props: TradePropsIF) {
         favePools,
         addPoolToFaves,
         removePoolFromFaves,
-        pendingTransactions,
     } = props;
 
     const [isCandleSelected, setIsCandleSelected] = useState<boolean | undefined>();
@@ -97,16 +99,16 @@ export default function Trade(props: TradePropsIF) {
 
     const routes = [
         {
-            path: '/range',
-            name: 'Range',
+            path: '/market',
+            name: 'Market',
         },
         {
             path: '/limit',
             name: 'Limit Order',
         },
         {
-            path: '/market',
-            name: 'Market',
+            path: '/range',
+            name: 'Range',
         },
     ];
     const [fullScreenChart, setFullScreenChart] = useState(false);
@@ -115,16 +117,16 @@ export default function Trade(props: TradePropsIF) {
 
     const graphData = useAppSelector((state) => state.graphData);
 
-    const activePoolDefinition = JSON.stringify({
-        baseAddress: baseTokenAddress,
-        quoteAddress: quoteTokenAddress,
-        poolIdx: 36000,
-        network: chainId,
-    }).toLowerCase();
+    // const activePoolDefinition = JSON.stringify({
+    //     baseAddress: baseTokenAddress,
+    //     quoteAddress: quoteTokenAddress,
+    //     poolIdx: 36000,
+    //     network: chainId,
+    // }).toLowerCase();
 
-    const indexOfActivePool = graphData.candlesForAllPools.pools
-        .map((item) => JSON.stringify(item.pool).toLowerCase())
-        .findIndex((pool) => pool === activePoolDefinition);
+    // const indexOfActivePool = graphData.candlesForAllPools.pools
+    //     .map((item) => JSON.stringify(item.pool).toLowerCase())
+    //     .findIndex((pool) => pool === activePoolDefinition);
 
     // const activePoolCandleData = graphData?.candlesForAllPools?.pools[indexOfActivePool];
     // const candleData = activePoolCandleData?.candlesByPoolAndDuration.find((data) => {
@@ -134,7 +136,6 @@ export default function Trade(props: TradePropsIF) {
     const activePoolLiquidityData = graphData?.liquidityForAllPools?.pools[0];
     const liquidityData = activePoolLiquidityData?.liquidityData;
     const denomInBase = tradeData.isDenomBase;
-    const targetData = tradeData.targetData;
     const limitPrice = tradeData.limitPrice;
 
     const isAdvancedModeActive = tradeData.advancedMode;
@@ -411,12 +412,11 @@ export default function Trade(props: TradePropsIF) {
                                 changeState={changeState}
                                 candleData={candleData}
                                 liquidityData={liquidityData}
-                                targetData={targetData}
                                 lastBlockNumber={lastBlockNumber}
                                 chainId={chainId}
                                 limitPrice={limitPrice}
-                                setLimitRate={props.setLimitRate}
-                                limitRate={props.limitRate}
+                                // setLimitRate={props.setLimitRate}
+                                // limitRate={props.limitRate}
                                 favePools={favePools}
                                 addPoolToFaves={addPoolToFaves}
                                 removePoolFromFaves={removePoolFromFaves}
@@ -431,6 +431,8 @@ export default function Trade(props: TradePropsIF) {
                                 downBorderColor={downBorderColor}
                                 baseTokenAddress={baseTokenAddress}
                                 poolPriceNonDisplay={props.poolPriceNonDisplay}
+                                setTargets={props.setTargets}
+                                targets={props.targets}
                             />
                         </motion.div>
                     </div>
@@ -447,6 +449,7 @@ export default function Trade(props: TradePropsIF) {
                     >
                         <div className={!showChartAndNotTab ? styles.hide : ''}>
                             <TradeTabs2
+                                isUserLoggedIn={isUserLoggedIn}
                                 crocEnv={crocEnv}
                                 provider={provider}
                                 account={props.account}
@@ -480,7 +483,6 @@ export default function Trade(props: TradePropsIF) {
                                 setCurrentPositionActive={props.setCurrentPositionActive}
                                 openGlobalModal={props.openGlobalModal}
                                 closeGlobalModal={props.closeGlobalModal}
-                                pendingTransactions={pendingTransactions}
                             />
                         </div>
                     </motion.div>
