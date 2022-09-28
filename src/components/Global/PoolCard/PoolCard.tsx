@@ -272,9 +272,9 @@ export default function PoolCard(props: PoolCardProps) {
                 {tokenImagesDisplay}
                 {tokenNamesDisplay}
             </div>
-            <div className={styles.row}>{tvlDisplay}</div>
-            <div className={styles.row}>{apyDisplay}</div>
             <div className={styles.row}>{volumeDisplay}</div>
+            <div className={styles.row}>{apyDisplay}</div>
+            <div className={styles.row}>{tvlDisplay}</div>
             <div className={styles.column}>
                 {poolPriceChangeDisplay}
                 {poolPriceDisplayDOM}
