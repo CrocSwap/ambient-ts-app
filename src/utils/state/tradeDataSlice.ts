@@ -49,7 +49,7 @@ const initialState: tradeData = {
     advancedHighTick: 0,
     simpleRangeWidth: 100,
     slippageTolerance: 0.05,
-    activeChartPeriod: 300,
+    activeChartPeriod: 3600,
     targetData: [
         { name: 'Max', value: 0 },
         { name: 'Min', value: 0 },
