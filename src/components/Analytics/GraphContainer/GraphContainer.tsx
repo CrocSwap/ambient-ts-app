@@ -25,11 +25,14 @@ export default function GraphContainer() {
     const [volumeHover, setVolumeHover] = useState<number | undefined>();
     const [liquidityHover, setLiquidityHover] = useState<number | undefined>();
     const [chartData] = useProtocolChartData();
-    const [latestValueTvl, setLatestValueTvl] = useState<number | undefined>();
-    const [latestValueVolume, setLatestValueVolume] = useState<number | undefined>();
 
-    const [valueLabelTvl, setValueLabelTvl] = useState<string | undefined>();
-    const [valueLabelVolume, setValueLabelVolume] = useState<string | undefined>();
+    const [valueTvl, setValueTvl] = useState<number | undefined>();
+
+    const [valueVolume, setValueVolume] = useState<number | undefined>();
+
+    const [valueTvlDate, setValueTvlDate] = useState<string | undefined>();
+
+    const [valueVolumeDate, setValueVolumeDate] = useState<string | undefined>();
     const [tempData, setTempData] = useState(chartData);
 
     const [totalTvlString, setTotalTvlString] = useState<string | undefined>();
@@ -149,9 +152,9 @@ export default function GraphContainer() {
 
     const [volumeWindow, setVolumeWindow] = useState(ChartDataTimeframe.all);
 
-    const volumeData = useTransformedVolumeData(tempData, volumeWindow);
+    // const volumeData = useTransformedVolumeData(tempData, volumeWindow);
 
-    const tvlData = useTransformedTvlData(tempData, volumeWindow);
+    // const tvlData = useTransformedTvlData(tempData, volumeWindow);
 
     useEffect(() => {
         if (volumeHover === undefined && protocolData) {
@@ -303,24 +306,21 @@ export default function GraphContainer() {
                 <div className={styles.title}>Total Value Locked</div>
 
                 <label className={styles.v4m1wv}>
-                    {totalTvlString}
-                    {/* {latestValueTvl
-                        ? formatDollarAmount(latestValueTvl, 2)
-                        : formatDollarAmount(latestValueTvl, 2)} */}
+                    {valueTvl ? '$' + formatAmount(valueTvl) : '-'}
                 </label>
                 <br></br>
                 <label className={styles.eJnjNO}>
-                    {valueLabelTvl ? valueLabelTvl + ' (UTC) ' : '-'}
+                    {valueTvlDate ? valueTvlDate + ' (UTC) ' : '-'}
                 </label>
                 <div className={styles.chart_container}>
                     {' '}
                     {formattedTvlData && formattedTvlData.length > 0 ? (
                         <AreaChart
                             data={formattedTvlData}
-                            value={latestValueTvl}
-                            label={valueLabelTvl}
-                            setValue={setLatestValueTvl}
-                            setLabel={setValueLabelTvl}
+                            valueTvl={valueTvl}
+                            valueTvlDate={valueTvlDate}
+                            setValueTvl={setValueTvl}
+                            setValueTvlDate={setValueTvlDate}
                         />
                     ) : (
                         <>{loading}</>
@@ -330,23 +330,20 @@ export default function GraphContainer() {
             <div className={styles.graph_container}>
                 <div className={styles.title}>Volume 24H</div>
                 <label className={styles.eJnjNO}>
-                    {totalTvlString}
-                    {/* {latestValueVolume
-                        ? formatDollarAmount(latestValueVolume, 2)
-                        : formatDollarAmount(latestValueVolume, 2)} */}
+                    {valueVolume ? '$' + formatAmount(valueVolume) : '-'}
                 </label>
                 <br></br>
                 <label className={styles.eJnjNO}>
-                    {valueLabelVolume ? valueLabelVolume + ' (UTC) ' : '-'}
+                    {valueVolumeDate ? valueVolumeDate + ' (UTC) ' : '-'}
                 </label>
                 <div className={styles.chart_container}>
                     {formattedVolumeData && formattedVolumeData.length > 0 ? (
                         <BarChart
                             data={formattedVolumeData}
-                            value={latestValueVolume}
-                            label={valueLabelVolume}
-                            setValue={setLatestValueVolume}
-                            setLabel={setValueLabelVolume}
+                            valueVolume={valueVolume}
+                            valueVolumeDate={valueVolumeDate}
+                            setValueVolume={setValueVolume}
+                            setValueVolumeDate={setValueVolumeDate}
                             snapType={
                                 volumeWindow === ChartDataTimeframe.oneDay
                                     ? 'days'
