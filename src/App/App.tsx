@@ -3,7 +3,7 @@ import { useEffect, useState, useMemo } from 'react';
 import { Routes, Route, useLocation, Navigate } from 'react-router-dom';
 
 import {
-    resetGraphData,
+    resetUserGraphData,
     setPositionsByPool,
     setPositionsByUser,
     setChangesByUser,
@@ -244,12 +244,13 @@ export default function App() {
                     !metamaskLocked &&
                     validateChain(window.ethereum.chainId)
                 ) {
+                    console.log('use metamask as provider');
                     // console.log(window.ethereum.chainId)
                     const metamaskProvider = new ethers.providers.Web3Provider(window.ethereum);
-                    console.log('Metamask Provider');
                     setProvider(metamaskProvider);
                 }
             } else if (!provider || !onChain) {
+                console.log('use infura as provider');
                 const chainSpec = lookupChain(chainData.chainId);
                 const url = chainSpec.nodeUrl;
                 // const url = chainSpec.wsUrl ? chainSpec.wsUrl : chainSpec.nodeUrl;
@@ -259,7 +260,7 @@ export default function App() {
         } catch (error) {
             console.log(error);
         }
-    }, [isAuthenticated, chainData.chainId, metamaskLocked]);
+    }, [isUserLoggedIn, chainData.chainId, metamaskLocked]);
 
     useEffect(() => {
         dispatch(resetTokens(chainData.chainId));
@@ -1583,7 +1584,7 @@ export default function App() {
         setQuoteTokenDexBalance('');
         dispatch(resetTradeData());
         dispatch(resetTokenData());
-        dispatch(resetGraphData());
+        dispatch(resetUserGraphData());
         dispatch(resetReceiptData());
         dispatch(resetTokenData());
 

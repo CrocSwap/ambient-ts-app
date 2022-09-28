@@ -152,7 +152,10 @@ export default function TradeTabs2(props: ITabsProps) {
         // console.log({ selectedOutsideTab });
         if (!hasInitialized) {
             if (selectedOutsideTab === 0) {
-                if (!isCandleSelected && !isShowAllEnabled && matchingUserChangesLength < 1) {
+                if (
+                    !isUserLoggedIn ||
+                    (!isCandleSelected && !isShowAllEnabled && matchingUserChangesLength < 1)
+                ) {
                     setIsShowAllEnabled(true);
                 } else if (matchingUserChangesLength < 1) {
                     return;
@@ -160,7 +163,10 @@ export default function TradeTabs2(props: ITabsProps) {
                     setIsShowAllEnabled(false);
                 }
             } else if (selectedOutsideTab === 1) {
-                if (!isCandleSelected && !isShowAllEnabled && matchingUserLimitOrdersLength < 1) {
+                if (
+                    !isUserLoggedIn ||
+                    (!isCandleSelected && !isShowAllEnabled && matchingUserLimitOrdersLength < 1)
+                ) {
                     setIsShowAllEnabled(true);
                 } else if (matchingUserLimitOrdersLength < 1) {
                     return;
@@ -168,7 +174,10 @@ export default function TradeTabs2(props: ITabsProps) {
                     setIsShowAllEnabled(false);
                 }
             } else if (selectedOutsideTab === 2) {
-                if (!isCandleSelected && !isShowAllEnabled && matchingUserPositionsLength < 1) {
+                if (
+                    !isUserLoggedIn ||
+                    (!isCandleSelected && !isShowAllEnabled && matchingUserPositionsLength < 1)
+                ) {
                     setIsShowAllEnabled(true);
                 } else if (matchingUserPositionsLength < 1) {
                     return;
@@ -179,6 +188,7 @@ export default function TradeTabs2(props: ITabsProps) {
             }
         }
     }, [
+        isUserLoggedIn,
         hasInitialized,
         selectedOutsideTab,
         isShowAllEnabled,
