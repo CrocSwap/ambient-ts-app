@@ -147,6 +147,7 @@ export default function OrderCard(props: OrderCardProps) {
               maximumFractionDigits: 2,
           });
 
+    console.log(limitOrder);
     return (
         <div className={styles.main_container}>
             <div className={styles.row_container}>
