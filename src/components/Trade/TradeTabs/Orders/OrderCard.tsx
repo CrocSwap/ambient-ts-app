@@ -25,6 +25,7 @@ export default function OrderCard(props: OrderCardProps) {
 
     // const tempOwnerId = '0xa2b398145b7fc8fd9a01142698f15d329ebb5ff5090cfcc8caae440867ab9919';
     // const tempPosHash = '0x01e650abfc761c6a0fc60f62a4e4b3832bb1178b';
+    const [isOrderFilled, setIsOrderFilled] = useState<boolean>(false);
 
     const isOwnerActiveAccount = limitOrder.user.toLowerCase() === account.toLowerCase();
 
@@ -53,6 +54,20 @@ export default function OrderCard(props: OrderCardProps) {
         }
     }, [JSON.stringify(limitOrder), isDenomBase]);
 
+    useEffect(() => {
+        if (
+            limitOrder &&
+            limitOrder.positionLiqBaseDecimalCorrected === 0 &&
+            limitOrder.positionLiqQuoteDecimalCorrected === 0 &&
+            !limitOrder.baseFlowDecimalCorrected &&
+            !limitOrder.quoteFlowDecimalCorrected
+            //  && limitOrder.source !== 'manual'
+        ) {
+            setIsOrderFilled(true);
+            // return null;
+        }
+    }, [JSON.stringify(limitOrder)]);
+
     const priceType =
         (isDenomBase && !limitOrder.isBid) || (!isDenomBase && limitOrder.isBid)
             ? 'priceBuy'
@@ -64,44 +79,58 @@ export default function OrderCard(props: OrderCardProps) {
     const baseTokenAddressLowerCase = limitOrder.base.toLowerCase();
     const quoteTokenAddressLowerCase = limitOrder.quote.toLowerCase();
 
-    const transactionMatchesSelectedTokens =
+    const orderMatchesSelectedTokens =
         selectedBaseToken === baseTokenAddressLowerCase &&
         selectedQuoteToken === quoteTokenAddressLowerCase;
 
-    if (!transactionMatchesSelectedTokens) return null;
-    // if (!limitOrder.positionLiq) return null;
+    if (!orderMatchesSelectedTokens) return null;
 
-    const liqBaseNum = limitOrder.positionLiqBaseDecimalCorrected;
-    const liqQuoteNum = limitOrder.positionLiqQuoteDecimalCorrected;
+    const liqBaseNum =
+        limitOrder.positionLiqBaseDecimalCorrected !== 0
+            ? limitOrder.positionLiqBaseDecimalCorrected
+            : limitOrder.baseFlowDecimalCorrected !== 0
+            ? limitOrder.baseFlowDecimalCorrected
+            : undefined;
+
+    const liqQuoteNum =
+        limitOrder.positionLiqQuoteDecimalCorrected !== 0
+            ? limitOrder.positionLiqQuoteDecimalCorrected
+            : limitOrder.quoteFlowDecimalCorrected !== 0
+            ? limitOrder.quoteFlowDecimalCorrected
+            : undefined;
 
     const baseQtyTruncated =
-        liqBaseNum === 0
-            ? '0'
-            : liqBaseNum < 0.0001
-            ? liqBaseNum.toExponential(2)
-            : liqBaseNum < 2
-            ? liqBaseNum.toPrecision(3)
-            : liqBaseNum >= 100000
-            ? formatAmount(liqBaseNum)
-            : // ? baseLiqDisplayNum.toExponential(2)
-              liqBaseNum.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              });
+        limitOrder.source !== 'manual' && liqBaseNum !== undefined
+            ? liqBaseNum === 0
+                ? '0.00'
+                : liqBaseNum < 0.0001
+                ? liqBaseNum.toExponential(2)
+                : liqBaseNum < 2
+                ? liqBaseNum.toPrecision(3)
+                : liqBaseNum >= 100000
+                ? formatAmount(liqBaseNum)
+                : // ? baseLiqDisplayNum.toExponential(2)
+                  liqBaseNum.toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                  })
+            : undefined;
     const quoteQtyTruncated =
-        liqQuoteNum === 0
-            ? '0'
-            : liqQuoteNum < 0.0001
-            ? liqQuoteNum.toExponential(2)
-            : liqQuoteNum < 2
-            ? liqQuoteNum.toPrecision(3)
-            : liqQuoteNum >= 100000
-            ? formatAmount(liqQuoteNum)
-            : // ? baseLiqDisplayNum.toExponential(2)
-              liqQuoteNum.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              });
+        limitOrder.source !== 'manual' && liqQuoteNum !== undefined
+            ? liqQuoteNum === 0
+                ? '0.00'
+                : liqQuoteNum < 0.0001
+                ? liqQuoteNum.toExponential(2)
+                : liqQuoteNum < 2
+                ? liqQuoteNum.toPrecision(3)
+                : liqQuoteNum >= 100000
+                ? formatAmount(liqQuoteNum)
+                : // ? baseLiqDisplayNum.toExponential(2)
+                  liqQuoteNum.toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                  })
+            : undefined;
 
     const usdValueNum = limitOrder.positionLiqTotalUSD;
     const usdValueTruncated = !usdValueNum
@@ -143,7 +172,7 @@ export default function OrderCard(props: OrderCardProps) {
                 />
                 {/* ------------------------------------------------------ */}
                 <div className={styles.status}>
-                    <OpenOrderStatus isFilled={!limitOrder.positionLiq} />
+                    <OpenOrderStatus isFilled={isOrderFilled} />
                 </div>
             </div>
 

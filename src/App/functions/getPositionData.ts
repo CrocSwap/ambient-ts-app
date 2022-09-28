@@ -1,9 +1,9 @@
-import { tickToPrice, toDisplayPrice } from '@crocswap-libs/sdk';
+import { CrocEnv, tickToPrice, toDisplayPrice } from '@crocswap-libs/sdk';
 // import truncateDecimals from '../../utils/data/truncateDecimals';
 import { TokenIF } from '../../utils/interfaces/TokenIF';
 import { PositionIF } from '../../utils/interfaces/PositionIF';
 import { formatAmount } from '../../utils/numbers';
-import { ethers } from 'ethers';
+// import { ethers } from 'ethers';
 import { memoizeQuerySpotPrice } from './querySpotPrice';
 
 // import { fetchAddress } from './fetchAddress';
@@ -12,7 +12,7 @@ const cachedQuerySpotPrice = memoizeQuerySpotPrice();
 export const getPositionData = async (
     position: PositionIF,
     importedTokens: TokenIF[],
-    provider: ethers.providers.Provider,
+    crocEnv: CrocEnv,
     chainId: string,
     lastBlockNumber: number,
 ): Promise<PositionIF> => {
@@ -20,7 +20,7 @@ export const getPositionData = async (
     const quoteTokenAddress = position.quote;
 
     const poolPriceNonDisplay = await cachedQuerySpotPrice(
-        provider,
+        crocEnv,
         baseTokenAddress,
         quoteTokenAddress,
         chainId,

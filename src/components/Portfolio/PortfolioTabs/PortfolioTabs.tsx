@@ -52,7 +52,7 @@ interface PortfolioTabsPropsIF {
 export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
     const {
         crocEnv,
-        provider,
+        // provider,
         cachedFetchTokenPrice,
         importedTokens,
         connectedUserTokens,
@@ -106,13 +106,13 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
             .then((json) => {
                 const userPositions = json?.data;
 
-                if (userPositions && provider) {
+                if (userPositions && crocEnv) {
                     Promise.all(
                         userPositions.map((position: PositionIF) => {
                             return getPositionData(
                                 position,
                                 importedTokens,
-                                provider,
+                                crocEnv,
                                 chainId,
                                 lastBlockNumber,
                             );

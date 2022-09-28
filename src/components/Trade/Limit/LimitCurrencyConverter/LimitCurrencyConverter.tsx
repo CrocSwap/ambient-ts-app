@@ -50,9 +50,7 @@ interface LimitCurrencyConverterProps {
     setIsWithdrawFromDexChecked: Dispatch<SetStateAction<boolean>>;
     isSaveAsDexSurplusChecked: boolean;
     setIsSaveAsDexSurplusChecked: Dispatch<SetStateAction<boolean>>;
-    setLimitRate: Dispatch<SetStateAction<string>>;
-    priceInputOnBlur: () => void;
-    limitRate: string;
+    // priceInputOnBlur: () => void;
     isDenominationInBase: boolean;
     activeTokenListsChanged: boolean;
     indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
@@ -82,9 +80,7 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
         setIsWithdrawFromDexChecked,
         isSaveAsDexSurplusChecked,
         setIsSaveAsDexSurplusChecked,
-        setLimitRate,
-        priceInputOnBlur,
-        limitRate,
+        // priceInputOnBlur,
         isDenominationInBase,
         activeTokenListsChanged,
         indicateActiveTokenListsChanged,
@@ -480,11 +476,9 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
                 chainId={chainId}
                 fieldId='limit-rate'
                 reverseTokens={reverseTokens}
-                setLimitRate={setLimitRate}
-                onBlur={priceInputOnBlur}
+                // onBlur={priceInputOnBlur}
                 poolPriceNonDisplay={poolPriceNonDisplay}
                 insideTickDisplayPrice={insideTickDisplayPrice}
-                limitRate={limitRate}
             />
         </section>
     );

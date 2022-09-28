@@ -6,6 +6,18 @@
     color: rgba(235, 235, 255, 0.4);
 }
 
+.arrow_placeholder{
+    opacity: 0;
+}
+
+.sortable_container{
+    cursor: pointer;
+    display: flex;
+ 
+    flex-direction: row;
+    align-items: center;
+    gap: 2px;
+}
 /*
 OLD STUFF BELOW!!!!
 */
@@ -26,7 +38,7 @@ OLD STUFF BELOW!!!!
     padding: 0 8px;
 }
 
-.row_container p {
+.row_container section {
     flex: 0.4 0;
     /* flex-flow: column; */
     align-items: center;
@@ -82,6 +94,7 @@ OLD STUFF BELOW!!!!
     .token,
     .range_sing {
         display: flex;
+      
     }
 }
 

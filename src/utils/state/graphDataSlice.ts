@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { PositionIF } from '../interfaces/PositionIF';
 export interface graphData {
+    lastBlock: number;
     positionsByUser: PositionsByUser;
     positionsByPool: PositionsByPool;
     changesByUser: ChangesByUser;
@@ -24,7 +25,10 @@ export interface LimitOrdersByPool {
 
 export interface ILimitOrderState {
     id: string;
+    limitOrderIdentifier: string;
+    tx: string;
     positionId: string;
+    source: string;
     network: string;
     block: number;
     time: number;
@@ -41,6 +45,8 @@ export interface ILimitOrderState {
     concGrowth: number;
     positionLiq: number;
     positionLiqBase: number;
+    baseFlowDecimalCorrected: number;
+    quoteFlowDecimalCorrected: number;
     positionLiqBaseDecimalCorrected: number;
     positionLiqQuoteDecimalCorrected: number;
     positionLiqQuote: number;
@@ -56,7 +62,6 @@ export interface ILimitOrderState {
     baseTokenLogoURI: string;
     quoteSymbol: string;
     quoteDecimals: number;
-    limitOrderIdentifier: string;
     quoteTokenLogoURI: string;
     limitPrice: number;
     invLimitPrice: number;
@@ -282,6 +287,8 @@ export interface ITransaction {
     limitPrice: number;
     price: number;
     invPrice: number;
+    limitPriceDecimalCorrected: number;
+    invLimitPriceDecimalCorrected: number;
     priceDecimalCorrected: number;
     invPriceDecimalCorrected: number;
     valueUSD: number;
@@ -299,6 +306,7 @@ export interface ChangesByPool {
 }
 
 const initialState: graphData = {
+    lastBlock: 0,
     positionsByUser: { dataReceived: false, positions: [] },
     positionsByPool: { dataReceived: false, positions: [] },
     changesByUser: { dataReceived: false, changes: [] },
@@ -315,6 +323,9 @@ export const graphDataSlice = createSlice({
     name: 'graphData',
     initialState,
     reducers: {
+        setLastBlock: (state, action: PayloadAction<number>) => {
+            state.lastBlock = action.payload;
+        },
         setPositionsByUser: (state, action: PayloadAction<PositionsByUser>) => {
             state.positionsByUser = action.payload;
         },
@@ -398,15 +409,49 @@ export const graphDataSlice = createSlice({
             for (let index = 0; index < action.payload.length; index++) {
                 const updatedTx = action.payload[index];
                 const txToFind = updatedTx.tx.toLowerCase();
-                const indexOfTxInState = state.changesByUser.changes
-                    .map((item) => item.tx.toLowerCase())
-                    .findIndex((tx) => tx === txToFind);
+                const indexOfTxInState = state.changesByUser.changes.findIndex(
+                    (tx) => tx.tx.toLowerCase() === txToFind,
+                );
                 if (indexOfTxInState === -1) {
                     state.changesByUser.changes = action.payload.concat(
                         state.changesByUser.changes,
                     );
                 } else {
                     state.changesByUser.changes[indexOfTxInState] = action.payload[index];
+                }
+            }
+        },
+        addLimitOrderChangesByUser: (state, action: PayloadAction<Array<ILimitOrderState>>) => {
+            for (let index = 0; index < action.payload.length; index++) {
+                const updatedTx = action.payload[index];
+                const idToFind = updatedTx.limitOrderIdentifier.toLowerCase();
+                const indexOfOrderInState = state.limitOrdersByUser.limitOrders.findIndex(
+                    (order) => order.limitOrderIdentifier.toLowerCase() === idToFind,
+                );
+                if (indexOfOrderInState === -1) {
+                    state.limitOrdersByUser.limitOrders = action.payload.concat(
+                        state.limitOrdersByUser.limitOrders,
+                    );
+                } else {
+                    state.limitOrdersByUser.limitOrders[indexOfOrderInState] =
+                        action.payload[index];
+                }
+            }
+        },
+        addLimitOrderChangesByPool: (state, action: PayloadAction<Array<ILimitOrderState>>) => {
+            for (let index = 0; index < action.payload.length; index++) {
+                const updatedTx = action.payload[index];
+                const idToFind = updatedTx.limitOrderIdentifier.toLowerCase();
+                const indexOfOrderInState = state.limitOrdersByPool.limitOrders.findIndex(
+                    (order) => order.limitOrderIdentifier.toLowerCase() === idToFind,
+                );
+                if (indexOfOrderInState === -1) {
+                    state.limitOrdersByPool.limitOrders = action.payload.concat(
+                        state.limitOrdersByPool.limitOrders,
+                    );
+                } else {
+                    state.limitOrdersByPool.limitOrders[indexOfOrderInState] =
+                        action.payload[index];
                 }
             }
         },
@@ -417,9 +462,9 @@ export const graphDataSlice = createSlice({
             for (let index = 0; index < action.payload.length; index++) {
                 const updatedTx = action.payload[index];
                 const txToFind = updatedTx.tx.toLowerCase();
-                const indexOfTxInState = state.changesByPool.changes
-                    .map((item) => item.tx.toLowerCase())
-                    .findIndex((tx) => tx === txToFind);
+                const indexOfTxInState = state.changesByPool.changes.findIndex(
+                    (tx) => tx.tx.toLowerCase() === txToFind,
+                );
                 if (indexOfTxInState === -1) {
                     state.changesByPool.changes = action.payload.concat(
                         state.changesByPool.changes,
@@ -576,7 +621,7 @@ export const graphDataSlice = createSlice({
                 }
             }
         },
-        resetGraphData: (state) => {
+        resetUserGraphData: (state) => {
             state.positionsByUser = initialState.positionsByUser;
             state.changesByUser = initialState.changesByUser;
         },
@@ -585,6 +630,7 @@ export const graphDataSlice = createSlice({
 
 // action creators are generated for each case reducer function
 export const {
+    setLastBlock,
     setPositionsByUser,
     addPositionsByUser,
     setPositionsByPool,
@@ -598,9 +644,11 @@ export const {
     setLimitOrdersByPool,
     setChangesByUser,
     addChangesByUser,
+    addLimitOrderChangesByUser,
+    addLimitOrderChangesByPool,
     addChangesByPool,
     setChangesByPool,
-    resetGraphData,
+    resetUserGraphData,
 } = graphDataSlice.actions;
 
 export default graphDataSlice.reducer;

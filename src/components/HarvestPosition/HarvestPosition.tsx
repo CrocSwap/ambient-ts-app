@@ -60,7 +60,6 @@ interface IHarvestPositionProps {
     baseTokenLogoURI: string;
     quoteTokenLogoURI: string;
     isDenomBase: boolean;
-    lastBlockNumber: number;
     position: PositionIF;
     closeGlobalModal: () => void;
 }
@@ -82,7 +81,6 @@ export default function HarvestPosition(props: IHarvestPositionProps) {
         // baseTokenAddress,
         // quoteTokenAddress,
         // provider,
-        lastBlockNumber,
         closeGlobalModal,
         position,
     } = props;
@@ -95,6 +93,8 @@ export default function HarvestPosition(props: IHarvestPositionProps) {
             {showSettings ? null : <RiListSettingsLine size={20} />}
         </div>
     );
+
+    const lastBlockNumber = useAppSelector((state) => state.graphData).lastBlock;
 
     // const [removalPercentage, setRemovalPercentage] = useState(100);
 
@@ -115,6 +115,7 @@ export default function HarvestPosition(props: IHarvestPositionProps) {
 
     const resetConfirmation = () => {
         setShowConfirmation(false);
+        setNewHarvestTransactionHash('');
         setTxErrorCode(0);
         setTxErrorMessage('');
     };
@@ -176,8 +177,6 @@ export default function HarvestPosition(props: IHarvestPositionProps) {
     const isPositionPendingUpdate = positionsPendingUpdate.indexOf(posHash as string) > -1;
 
     const harvestFn = async () => {
-        console.log('100% of fees to be removed.');
-        dispatch(addPositionPendingUpdate(posHash as string));
         setShowConfirmation(true);
         if (!crocEnv) return;
         const env = crocEnv;
@@ -190,6 +189,8 @@ export default function HarvestPosition(props: IHarvestPositionProps) {
         let tx;
         if (position.positionType === 'concentrated') {
             try {
+                console.log('Harvesting 100% of fees.');
+                dispatch(addPositionPendingUpdate(posHash as string));
                 tx = await pool.harvestRange(
                     [position.bidTick, position.askTick],
                     [lowLimit, highLimit],
@@ -199,8 +200,11 @@ export default function HarvestPosition(props: IHarvestPositionProps) {
                 dispatch(addPendingTx(tx?.hash));
                 setNewHarvestTransactionHash(tx?.hash);
             } catch (error) {
+                console.log('caught error');
+                dispatch(removePositionPendingUpdate(posHash as string));
                 setTxErrorCode(error?.code);
                 setTxErrorMessage(error?.message);
+                dispatch(removePositionPendingUpdate(posHash as string));
             }
         } else {
             console.log('unsupported position type for harvest');
@@ -356,6 +360,12 @@ export default function HarvestPosition(props: IHarvestPositionProps) {
     }
 
     useEffect(() => {
+        if (!showConfirmation) {
+            resetConfirmation();
+        }
+    }, [txErrorCode]);
+
+    useEffect(() => {
         handleConfirmationChange();
     }, [
         transactionApproved,
@@ -449,7 +459,10 @@ export default function HarvestPosition(props: IHarvestPositionProps) {
                 <HarvestPositionHeader
                     onClose={closeGlobalModal}
                     title={showSettings ? 'Harvest Position Settings' : 'Harvest Position'}
-                    onBackButton={() => setShowSettings(false)}
+                    onBackButton={() => {
+                        resetConfirmation();
+                        setShowSettings(false);
+                    }}
                     showBackButton={showSettings}
                 />
                 {mainModalContent}

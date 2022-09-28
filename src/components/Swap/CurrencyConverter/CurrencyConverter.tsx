@@ -463,42 +463,40 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
                 switchBoxes ? styles.currency_converter_switch : null
             }`}
         >
-            <div className={switchBoxes ? styles.slide_in_bottom : undefined}>
-                <CurrencySelector
-                    isUserLoggedIn={isUserLoggedIn}
-                    tokenPair={tokenPair}
-                    tokensBank={tokensBank}
-                    searchableTokens={searchableTokens}
-                    setImportedTokens={setImportedTokens}
-                    chainId={chainId}
-                    direction={isLiq ? 'Select Pair' : 'From:'}
-                    fieldId='sell'
-                    sellToken
-                    userHasEnteredAmount={userHasEnteredAmount}
-                    handleChangeEvent={handleTokenAChangeEvent}
-                    handleChangeClick={handleTokenAChangeClick}
-                    nativeBalance={props.nativeBalance}
-                    tokenABalance={tokenABalance}
-                    tokenBBalance={tokenBBalance}
-                    tokenADexBalance={tokenADexBalance}
-                    tokenBDexBalance={tokenBDexBalance}
-                    isSellTokenEth={isSellTokenEth}
-                    tokenAQtyCoveredByWalletBalance={tokenAQtyCoveredByWalletBalance}
-                    tokenAQtyCoveredBySurplusBalance={tokenAQtyCoveredBySurplusBalance}
-                    tokenASurplusMinusTokenARemainderNum={tokenASurplusMinusTokenARemainderNum}
-                    tokenAWalletMinusTokenAQtyNum={tokenAWalletMinusTokenAQtyNum}
-                    tokenBWalletPlusTokenBQtyNum={tokenBWalletPlusTokenBQtyNum}
-                    tokenASurplusMinusTokenAQtyNum={tokenASurplusMinusTokenAQtyNum}
-                    tokenBSurplusPlusTokenBQtyNum={tokenBSurplusPlusTokenBQtyNum}
-                    isWithdrawFromDexChecked={isWithdrawFromDexChecked}
-                    setIsWithdrawFromDexChecked={setIsWithdrawFromDexChecked}
-                    isSaveAsDexSurplusChecked={isSaveAsDexSurplusChecked}
-                    setIsSaveAsDexSurplusChecked={setIsSaveAsDexSurplusChecked}
-                    reverseTokens={reverseTokens}
-                    activeTokenListsChanged={activeTokenListsChanged}
-                    indicateActiveTokenListsChanged={indicateActiveTokenListsChanged}
-                />
-            </div>
+            <CurrencySelector
+                isUserLoggedIn={isUserLoggedIn}
+                tokenPair={tokenPair}
+                tokensBank={tokensBank}
+                searchableTokens={searchableTokens}
+                setImportedTokens={setImportedTokens}
+                chainId={chainId}
+                direction={isLiq ? 'Select Pair' : 'From:'}
+                fieldId='sell'
+                sellToken
+                userHasEnteredAmount={userHasEnteredAmount}
+                handleChangeEvent={handleTokenAChangeEvent}
+                handleChangeClick={handleTokenAChangeClick}
+                nativeBalance={props.nativeBalance}
+                tokenABalance={tokenABalance}
+                tokenBBalance={tokenBBalance}
+                tokenADexBalance={tokenADexBalance}
+                tokenBDexBalance={tokenBDexBalance}
+                isSellTokenEth={isSellTokenEth}
+                tokenAQtyCoveredByWalletBalance={tokenAQtyCoveredByWalletBalance}
+                tokenAQtyCoveredBySurplusBalance={tokenAQtyCoveredBySurplusBalance}
+                tokenASurplusMinusTokenARemainderNum={tokenASurplusMinusTokenARemainderNum}
+                tokenAWalletMinusTokenAQtyNum={tokenAWalletMinusTokenAQtyNum}
+                tokenBWalletPlusTokenBQtyNum={tokenBWalletPlusTokenBQtyNum}
+                tokenASurplusMinusTokenAQtyNum={tokenASurplusMinusTokenAQtyNum}
+                tokenBSurplusPlusTokenBQtyNum={tokenBSurplusPlusTokenBQtyNum}
+                isWithdrawFromDexChecked={isWithdrawFromDexChecked}
+                setIsWithdrawFromDexChecked={setIsWithdrawFromDexChecked}
+                isSaveAsDexSurplusChecked={isSaveAsDexSurplusChecked}
+                setIsSaveAsDexSurplusChecked={setIsSaveAsDexSurplusChecked}
+                reverseTokens={reverseTokens}
+                activeTokenListsChanged={activeTokenListsChanged}
+                indicateActiveTokenListsChanged={indicateActiveTokenListsChanged}
+            />
             <div className={styles.arrow_container} onClick={handleArrowClick}>
                 {/* <img src={tokensArrowImage} alt="arrow pointing down" /> */}
                 {/* {isLiq ? null : <span className={styles.arrow} />} */}
@@ -508,38 +506,36 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
                     </IconWithTooltip>
                 )}
             </div>
-            <div className={switchBoxes ? styles.slide_in_top : undefined}>
-                <CurrencySelector
-                    isUserLoggedIn={isUserLoggedIn}
-                    tokenBQtyLocal={tokenBQtyLocal}
-                    tokenPair={tokenPair}
-                    tokensBank={tokensBank}
-                    setImportedTokens={setImportedTokens}
-                    searchableTokens={searchableTokens}
-                    chainId={chainId}
-                    direction={isLiq ? '' : 'To:'}
-                    fieldId='buy'
-                    userHasEnteredAmount={userHasEnteredAmount}
-                    handleChangeEvent={handleTokenBChangeEvent}
-                    // handleChangeClick={handleTokenBChangeClick}
-                    nativeBalance={props.nativeBalance}
-                    tokenABalance={tokenABalance}
-                    tokenBBalance={tokenBBalance}
-                    tokenADexBalance={tokenADexBalance}
-                    tokenBDexBalance={tokenBDexBalance}
-                    tokenAWalletMinusTokenAQtyNum={tokenAWalletMinusTokenAQtyNum}
-                    tokenBWalletPlusTokenBQtyNum={tokenBWalletPlusTokenBQtyNum}
-                    tokenASurplusMinusTokenAQtyNum={tokenASurplusMinusTokenAQtyNum}
-                    tokenBSurplusPlusTokenBQtyNum={tokenBSurplusPlusTokenBQtyNum}
-                    isWithdrawFromDexChecked={isWithdrawFromDexChecked}
-                    setIsWithdrawFromDexChecked={setIsWithdrawFromDexChecked}
-                    isSaveAsDexSurplusChecked={isSaveAsDexSurplusChecked}
-                    reverseTokens={reverseTokens}
-                    setIsSaveAsDexSurplusChecked={setIsSaveAsDexSurplusChecked}
-                    activeTokenListsChanged={activeTokenListsChanged}
-                    indicateActiveTokenListsChanged={indicateActiveTokenListsChanged}
-                />
-            </div>
+            <CurrencySelector
+                isUserLoggedIn={isUserLoggedIn}
+                tokenBQtyLocal={tokenBQtyLocal}
+                tokenPair={tokenPair}
+                tokensBank={tokensBank}
+                setImportedTokens={setImportedTokens}
+                searchableTokens={searchableTokens}
+                chainId={chainId}
+                direction={isLiq ? '' : 'To:'}
+                fieldId='buy'
+                userHasEnteredAmount={userHasEnteredAmount}
+                handleChangeEvent={handleTokenBChangeEvent}
+                // handleChangeClick={handleTokenBChangeClick}
+                nativeBalance={props.nativeBalance}
+                tokenABalance={tokenABalance}
+                tokenBBalance={tokenBBalance}
+                tokenADexBalance={tokenADexBalance}
+                tokenBDexBalance={tokenBDexBalance}
+                tokenAWalletMinusTokenAQtyNum={tokenAWalletMinusTokenAQtyNum}
+                tokenBWalletPlusTokenBQtyNum={tokenBWalletPlusTokenBQtyNum}
+                tokenASurplusMinusTokenAQtyNum={tokenASurplusMinusTokenAQtyNum}
+                tokenBSurplusPlusTokenBQtyNum={tokenBSurplusPlusTokenBQtyNum}
+                isWithdrawFromDexChecked={isWithdrawFromDexChecked}
+                setIsWithdrawFromDexChecked={setIsWithdrawFromDexChecked}
+                isSaveAsDexSurplusChecked={isSaveAsDexSurplusChecked}
+                reverseTokens={reverseTokens}
+                setIsSaveAsDexSurplusChecked={setIsSaveAsDexSurplusChecked}
+                activeTokenListsChanged={activeTokenListsChanged}
+                indicateActiveTokenListsChanged={indicateActiveTokenListsChanged}
+            />
         </section>
     );
 }

@@ -37,8 +37,6 @@ interface ChartData {
     chartItemStates: chartItemStates;
     denomInBase: boolean;
     limitPrice: string | undefined;
-    setLimitRate: React.Dispatch<React.SetStateAction<string>>;
-    limitRate: string;
     liquidityData: any;
     isAdvancedModeActive: boolean | undefined;
     simpleRangeWidth: number | undefined;
@@ -236,8 +234,6 @@ export default function TradeCandleStickChart(props: ChartData) {
                         liquidityData={liquidityData}
                         changeState={props.changeState}
                         limitPrice={props.limitPrice}
-                        setLimitRate={props.setLimitRate}
-                        limitRate={props.limitRate}
                         denomInBase={props.denomInBase}
                         isAdvancedModeActive={props.isAdvancedModeActive}
                         simpleRangeWidth={props.simpleRangeWidth}

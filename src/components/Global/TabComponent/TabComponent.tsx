@@ -23,6 +23,7 @@ type tabData = {
 
 interface TabPropsIF {
     data: tabData[];
+    setSelectedInsideTab?: Dispatch<SetStateAction<number>>;
     rightTabOptions?: ReactNode;
     selectedOutsideTab: number;
     setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
@@ -32,11 +33,34 @@ interface TabPropsIF {
 }
 
 export default function TabComponent(props: TabPropsIF) {
-    const { data, selectedOutsideTab, rightTabOptions, outsideControl, setOutsideControl } = props;
+    const {
+        data,
+        setSelectedInsideTab,
+        selectedOutsideTab,
+        rightTabOptions,
+        outsideControl,
+        setOutsideControl,
+    } = props;
 
     const [selectedTab, setSelectedTab] = useState(data[0]);
 
     function handleSelectedTab(item: tabData) {
+        // console.log({ item });
+        if (setSelectedInsideTab) {
+            switch (item.label) {
+                case 'Transactions':
+                    setSelectedInsideTab(0);
+                    break;
+                case 'Limit Orders':
+                    setSelectedInsideTab(1);
+                    break;
+                case 'Ranges':
+                    setSelectedInsideTab(2);
+                    break;
+                default:
+                    break;
+            }
+        }
         setOutsideControl(false);
         setSelectedTab(item);
     }

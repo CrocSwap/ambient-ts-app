@@ -103,6 +103,8 @@ export default function TradeTabs2(props: ITabsProps) {
 
     const [hasInitialized, setHasInitialized] = useState(false);
 
+    const [selectedInsideTab, setSelectedInsideTab] = useState<number>(0);
+
     const selectedBase = tradeData.baseToken.address;
     const selectedQuote = tradeData.quoteToken.address;
 
@@ -128,8 +130,8 @@ export default function TradeTabs2(props: ITabsProps) {
     });
 
     const matchingUserChangesLength = userChangesMatchingTokenSelection.length;
-    const matchingUserPositionsLength = userLimitOrdersMatchingTokenSelection.length;
-    const matchingUserLimitOrdersLength = userPositionsMatchingTokenSelection.length;
+    const matchingUserLimitOrdersLength = userLimitOrdersMatchingTokenSelection.length;
+    const matchingUserPositionsLength = userPositionsMatchingTokenSelection.length;
 
     useEffect(() => {
         setHasInitialized(false);
@@ -140,46 +142,66 @@ export default function TradeTabs2(props: ITabsProps) {
         matchingUserChangesLength,
         matchingUserLimitOrdersLength,
         matchingUserPositionsLength,
-        selectedOutsideTab,
+        // selectedOutsideTab,
         selectedBase,
         selectedQuote,
     ]);
 
     useEffect(() => {
-        // console.log({ hasInitialized });
-        // console.log({ userChangesLength });
-        // console.log({ userPositions });
-        // console.log({ selectedOutsideTab });
         if (!hasInitialized) {
-            if (selectedOutsideTab === 0) {
-                if (!isCandleSelected && !isShowAllEnabled && matchingUserChangesLength < 1) {
+            // console.log({ outsideControl });
+            // console.log({ selectedOutsideTab });
+            // console.log({ selectedInsideTab });
+            if (
+                (outsideControl && selectedOutsideTab === 0) ||
+                (!outsideControl && selectedInsideTab === 0)
+            ) {
+                if (
+                    !isUserLoggedIn ||
+                    (!isCandleSelected && !isShowAllEnabled && matchingUserChangesLength < 1)
+                ) {
                     setIsShowAllEnabled(true);
                 } else if (matchingUserChangesLength < 1) {
                     return;
                 } else if (isShowAllEnabled && matchingUserChangesLength >= 1) {
                     setIsShowAllEnabled(false);
                 }
-            } else if (selectedOutsideTab === 1) {
-                if (!isCandleSelected && !isShowAllEnabled && matchingUserLimitOrdersLength < 1) {
+            } else if (
+                (outsideControl && selectedOutsideTab === 1) ||
+                (!outsideControl && selectedInsideTab === 1)
+            ) {
+                if (
+                    !isUserLoggedIn ||
+                    (!isCandleSelected && !isShowAllEnabled && matchingUserLimitOrdersLength < 1)
+                ) {
                     setIsShowAllEnabled(true);
                 } else if (matchingUserLimitOrdersLength < 1) {
                     return;
                 } else if (isShowAllEnabled && matchingUserLimitOrdersLength >= 1) {
                     setIsShowAllEnabled(false);
                 }
-            } else if (selectedOutsideTab === 2) {
-                if (!isCandleSelected && !isShowAllEnabled && matchingUserPositionsLength < 1) {
+            } else if (
+                (outsideControl && selectedOutsideTab === 2) ||
+                (!outsideControl && selectedInsideTab === 2)
+            ) {
+                if (
+                    !isUserLoggedIn ||
+                    (!isCandleSelected && !isShowAllEnabled && matchingUserPositionsLength < 1)
+                ) {
                     setIsShowAllEnabled(true);
                 } else if (matchingUserPositionsLength < 1) {
                     return;
                 } else if (isShowAllEnabled && matchingUserPositionsLength >= 1) {
                     setIsShowAllEnabled(false);
                 }
-                setHasInitialized(true);
             }
+            setHasInitialized(true);
         }
     }, [
+        isUserLoggedIn,
         hasInitialized,
+        outsideControl,
+        selectedInsideTab,
         selectedOutsideTab,
         isShowAllEnabled,
         matchingUserPositionsLength,
@@ -234,6 +256,7 @@ export default function TradeTabs2(props: ITabsProps) {
     // Props for <Orders/> React Element
     const ordersProps = {
         expandTradeTable: expandTradeTable,
+        chainData: chainData,
         isShowAllEnabled: isShowAllEnabled,
         account: account,
         graphData: graphData,
@@ -283,6 +306,7 @@ export default function TradeTabs2(props: ITabsProps) {
                     setSelectedOutsideTab={setSelectedOutsideTab}
                     outsideControl={outsideControl}
                     setOutsideControl={setOutsideControl}
+                    setSelectedInsideTab={setSelectedInsideTab}
                 />
             }
         </div>

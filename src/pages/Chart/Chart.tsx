@@ -44,8 +44,6 @@ interface ChartData {
     changeState: (isOpen: boolean | undefined, candleData: CandleData | undefined) => void;
     denomInBase: boolean;
     limitPrice: string | undefined;
-    setLimitRate: React.Dispatch<React.SetStateAction<string>>;
-    limitRate: string;
     isAdvancedModeActive: boolean | undefined;
     simpleRangeWidth: number | undefined;
     pinnedMinPriceDisplayTruncated: number | undefined;
@@ -1432,7 +1430,6 @@ export default function Chart(props: ChartData) {
 
     const onBlurlimitRate = (newLimitValue: any) => {
         dispatch(setLimitPrice(newLimitValue.toString()));
-        props.setLimitRate(newLimitValue.toString());
     };
 
     return (

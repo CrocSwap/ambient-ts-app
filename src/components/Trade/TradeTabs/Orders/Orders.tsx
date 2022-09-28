@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 // START: Import JSX Elements
 import styles from './Orders.module.css';
@@ -7,12 +7,20 @@ import OrderCard from './OrderCard';
 import OrderCardHeader from './OrderCardHeader';
 
 // START: Import Local Files
-import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
-import { graphData } from '../../../../utils/state/graphDataSlice';
+import { useAppDispatch, useAppSelector } from '../../../../utils/hooks/reduxToolkit';
+import {
+    addLimitOrderChangesByPool,
+    graphData,
+    setLimitOrdersByPool,
+} from '../../../../utils/state/graphDataSlice';
+import { fetchPoolLimitOrderStates } from '../../../../App/functions/fetchPoolLimitOrderStates';
+import { ChainSpec } from '@crocswap-libs/sdk';
+import useWebSocket from 'react-use-websocket';
 
 // interface for props for react functional component
 interface propsIF {
     expandTradeTable: boolean;
+    chainData: ChainSpec;
     account: string;
     graphData: graphData;
     isShowAllEnabled: boolean;
@@ -20,12 +28,13 @@ interface propsIF {
 
 // main react functional component
 export default function Orders(props: propsIF) {
-    const { expandTradeTable, account, graphData, isShowAllEnabled } = props;
+    const { chainData, expandTradeTable, account, graphData, isShowAllEnabled } = props;
 
     const limitOrdersByUser = graphData.limitOrdersByUser.limitOrders;
     const limitOrdersByPool = graphData.limitOrdersByPool.limitOrders;
 
     const tradeData = useAppSelector((state) => state.tradeData);
+    const dispatch = useAppDispatch();
 
     const selectedBaseToken = tradeData.baseToken.address.toLowerCase();
     const selectedQuoteToken = tradeData.quoteToken.address.toLowerCase();
@@ -82,9 +91,113 @@ export default function Orders(props: propsIF) {
     const [sortBy, setSortBy] = useState('default');
     const [reverseSort, setReverseSort] = useState(false);
 
+    // useEffect(() => {
+    //     console.log({ sortBy, reverseSort });
+    // }, [sortBy, reverseSort]);
+
+    const [debouncedIsShowAllEnabled, setDebouncedIsShowAllEnabled] = useState(false);
+
+    // wait 5 seconds to open a subscription to pool changes
     useEffect(() => {
-        console.log({ sortBy, reverseSort });
-    }, [sortBy, reverseSort]);
+        const handler = setTimeout(() => setDebouncedIsShowAllEnabled(isShowAllEnabled), 5000);
+        return () => clearTimeout(handler);
+    }, [isShowAllEnabled]);
+
+    useEffect(() => {
+        if (isShowAllEnabled) {
+            fetchPoolLimitOrderStates({
+                chainId: chainData.chainId,
+                base: tradeData.baseToken.address,
+                quote: tradeData.quoteToken.address,
+                poolIdx: chainData.poolIndex,
+                ensResolution: true,
+            })
+                .then((poolChangesJsonData) => {
+                    if (poolChangesJsonData) {
+                        dispatch(
+                            setLimitOrdersByPool({
+                                dataReceived: true,
+                                limitOrders: poolChangesJsonData,
+                            }),
+                        );
+                    }
+                })
+                .catch(console.log);
+        }
+    }, [isShowAllEnabled]);
+
+    const wssGraphCacheServerDomain = 'wss://809821320828123.de:5000';
+
+    const poolLimitOrderChangesCacheSubscriptionEndpoint = useMemo(
+        () =>
+            wssGraphCacheServerDomain +
+            '/subscribe_pool_recent_changes?' +
+            new URLSearchParams({
+                chainId: chainData.chainId,
+                base: tradeData.baseToken.address,
+                quote: tradeData.quoteToken.address,
+                poolIdx: chainData.poolIndex.toString(),
+                ensResolution: 'true',
+            }),
+        [
+            chainData.chainId,
+            account,
+            tradeData.baseToken.address,
+            tradeData.quoteToken.address,
+            chainData.poolIndex,
+        ],
+    );
+
+    const {
+        //  sendMessage,
+        lastMessage: lastPoolLimitOrderChangeMessage,
+        //  readyState
+    } = useWebSocket(
+        poolLimitOrderChangesCacheSubscriptionEndpoint,
+        {
+            // share:  true,
+            onOpen: () => {
+                console.log('pool limit orders subscription opened');
+
+                // repeat fetch with the interval of 30 seconds
+                const timerId = setInterval(() => {
+                    fetchPoolLimitOrderStates({
+                        chainId: chainData.chainId,
+                        base: tradeData.baseToken.address,
+                        quote: tradeData.quoteToken.address,
+                        poolIdx: chainData.poolIndex,
+                        ensResolution: true,
+                    })
+                        .then((poolChangesJsonData) => {
+                            if (poolChangesJsonData) {
+                                // console.log({ poolChangesJsonData });
+                                dispatch(addLimitOrderChangesByPool(poolChangesJsonData));
+                            }
+                        })
+                        .catch(console.log);
+                }, 30000);
+
+                // after 90 seconds stop
+                setTimeout(() => {
+                    clearInterval(timerId);
+                }, 90000);
+            },
+            onClose: (event: CloseEvent) => console.log({ event }),
+            // onClose: () => console.log('allPositions websocket connection closed'),
+            // Will attempt to reconnect on all close events, such as server shutting down
+            shouldReconnect: () => true,
+        },
+        // only connect if user is viewing pool changes
+        debouncedIsShowAllEnabled,
+    );
+
+    useEffect(() => {
+        if (lastPoolLimitOrderChangeMessage !== null) {
+            const lastMessageData = JSON.parse(lastPoolLimitOrderChangeMessage.data).data;
+            // console.log({ lastMessageData });
+            if (lastMessageData) dispatch(addLimitOrderChangesByPool(lastMessageData));
+        }
+    }, [lastPoolLimitOrderChangeMessage]);
 
     const ItemContent = (
         <div className={styles.item_container}>

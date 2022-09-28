@@ -18,7 +18,7 @@ import NotFound from '../NotFound/NotFound';
 import ProfileSettings from '../../components/Portfolio/ProfileSettings/ProfileSettings';
 
 const mainnetProvider = new ethers.providers.WebSocketProvider(
-    'wss://mainnet.infura.io/ws/v3/25e7e0ec71de48bfa9c4d2431fbb3c4a',
+    'wss://mainnet.infura.io/ws/v3/4a162c75bd514925890174ca13cdb6a2',
 );
 
 interface PortfolioPropsIF {
