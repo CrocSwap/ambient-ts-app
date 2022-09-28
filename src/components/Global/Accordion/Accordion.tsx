@@ -1,5 +1,4 @@
 import { useState, ReactNode } from 'react';
-import styles from './Accordion.module.css';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface AccordionProps {
