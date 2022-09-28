@@ -116,9 +116,7 @@ export default function Trade(props: TradePropsIF) {
     ];
     const [fullScreenChart, setFullScreenChart] = useState(false);
 
-    const tradeData = useAppSelector((state) => state.tradeData);
-
-    const graphData = useAppSelector((state) => state.graphData);
+    const { tradeData, graphData } = useAppSelector((state) => state);
 
     const activePoolLiquidityData = graphData?.liquidityForAllPools?.pools[0];
     const liquidityData = activePoolLiquidityData?.liquidityData;
