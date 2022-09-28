@@ -63,7 +63,7 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
 
     const location = useLocation();
 
-    const locationSlug = useMemo(() => {
+    const locationSlug = useMemo<string>(() => {
         const { pathname } = location;
         if (pathname.startsWith('/trade/market')) {
             return '/trade/market';
@@ -77,33 +77,75 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
     }, [location]);
 
     const chooseToken = (tok: TokenIF) => {
+        // function to generate the URL string for navigation
+        const makeUrlParams = (
+            pathSlug: string,
+            chain: string,
+            addrTokenA: string,
+            addrTokenB: string
+        ) => (
+            pathSlug + '/chain=' + chain + '&tokenA=' + addrTokenA + '&tokenB=' + addrTokenB
+        );
+
         // user is updating token A
         if (tokenToUpdate === 'A') {
             // user selected current token B, need to reverse tokens
             if (tokenPair.dataTokenB.address === tok.address) {
                 // clicked token is Token A
                 // previous token A is used for Token B
-                const newURLParams = `/chain=0x5&tokenA=${tok.address}&tokenB=${tokenPair.dataTokenA.address}`;
-                navigate(locationSlug + newURLParams);
+                // const newURLParams = `/chain=0x5&tokenA=${tok.address}&tokenB=${tokenPair.dataTokenA.address}`;
+                // navigate(locationSlug + newURLParams);
+                navigate(
+                    makeUrlParams(
+                        locationSlug,
+                        '0x5',
+                        tok.address,
+                        tokenPair.dataTokenA.address
+                    )
+                );
             // user selected an entirely new for token A
             } else {
                 // clicked token is Token A
                 // current token B is still Token B
-                const newURLParams = `/chain=0x5&tokenA=${tok.address}&tokenB=${tokenPair.dataTokenB.address}`;
-                navigate(locationSlug + newURLParams);
+                // const newURLParams = `/chain=0x5&tokenA=${tok.address}&tokenB=${tokenPair.dataTokenB.address}`;
+                // navigate(locationSlug + newURLParams);
+                navigate(
+                    makeUrlParams(
+                        locationSlug,
+                        '0x5',
+                        tok.address,
+                        tokenPair.dataTokenB.address
+                    )
+                );
             }
         // user is updating token B
         } else if (tokenToUpdate === 'B') {
             if (tokenPair.dataTokenA.address === tok.address) {
                 // clicked token is Token B
                 // previous Token B is now Token A
-                const newURLParams = `/chain=0x5&tokenA=${tokenPair.dataTokenB.address}&tokenB=${tok.address}`;
-                navigate(locationSlug + newURLParams);
+                // const newURLParams = `/chain=0x5&tokenA=${tokenPair.dataTokenB.address}&tokenB=${tok.address}`;
+                // navigate(locationSlug + newURLParams);
+                navigate(
+                    makeUrlParams(
+                        locationSlug,
+                        '0x5',
+                        tokenPair.dataTokenB.address,
+                        tok.address
+                    )
+                );
             } else {
                 // clicked token is Token B
                 // current token A is still Token A
-                const newURLParams = `/chain=0x5&tokenA=${tokenPair.dataTokenA.address}&tokenB=${tok.address}`;
-                navigate(locationSlug + newURLParams);
+                // const newURLParams = `/chain=0x5&tokenA=${tokenPair.dataTokenA.address}&tokenB=${tok.address}`;
+                // navigate(locationSlug + newURLParams);
+                navigate(
+                    makeUrlParams(
+                        locationSlug,
+                        '0x5',
+                        tokenPair.dataTokenA.address,
+                        tok.address
+                    )
+                );
             }
         } else {
             console.warn(
