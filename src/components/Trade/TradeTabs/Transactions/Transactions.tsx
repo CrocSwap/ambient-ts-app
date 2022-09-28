@@ -261,36 +261,41 @@ export default function Transactions(props: TransactionsProps) {
         }
     }, [lastPoolChangeMessage]);
 
-    const TransactionsDisplay = usePaginateDataOrNull?.map((tx, idx) => (
-        //   />
-        <TransactionCard
-            key={idx}
-            tx={tx}
-            tokenMap={tokenMap}
-            chainId={chainData.chainId}
-            blockExplorer={blockExplorer}
-            tokenAAddress={tokenAAddress}
-            tokenBAddress={tokenBAddress}
-            isDenomBase={isDenomBase}
-            account={account}
-            currentTxActiveInTransactions={currentTxActiveInTransactions}
-            setCurrentTxActiveInTransactions={setCurrentTxActiveInTransactions}
-            openGlobalModal={props.openGlobalModal}
-        />
-    ));
-    const [expanded, setExpanded] = useState<false | number>(0);
+    const TransactionsDisplay = (
+        <div className={styles.desktop_transaction_display_container}>
+            {usePaginateDataOrNull?.map((tx, idx) => (
+                <TransactionCard
+                    key={idx}
+                    tx={tx}
+                    tokenMap={tokenMap}
+                    chainId={chainData.chainId}
+                    blockExplorer={blockExplorer}
+                    tokenAAddress={tokenAAddress}
+                    tokenBAddress={tokenBAddress}
+                    isDenomBase={isDenomBase}
+                    account={account}
+                    currentTxActiveInTransactions={currentTxActiveInTransactions}
+                    setCurrentTxActiveInTransactions={setCurrentTxActiveInTransactions}
+                    openGlobalModal={props.openGlobalModal}
+                />
+            ))}
+        </div>
+    );
+    const [expanded, setExpanded] = useState<false | number>(false);
 
-    const accordionsDisplay = usePaginateDataOrNull
-        ?.slice(0, 2)
-        .map((tx, idx) => (
-            <TransactionAccordions
-                key={idx}
-                expanded={expanded}
-                setExpanded={setExpanded}
-                tx={tx}
-                i={idx}
-            />
-        ));
+    const accordionsDisplay = (
+        <div className={styles.accordion_display_container}>
+            {usePaginateDataOrNull?.map((tx, idx) => (
+                <TransactionAccordions
+                    key={idx}
+                    expanded={expanded}
+                    setExpanded={setExpanded}
+                    tx={tx}
+                    i={idx}
+                />
+            ))}
+        </div>
+    );
 
     const noData = <div className={styles.no_data}>No Data to Display</div>;
     const transactionDataOrNull = dataToDisplay ? TransactionsDisplay : noData;

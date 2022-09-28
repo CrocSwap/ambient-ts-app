@@ -4,16 +4,16 @@ import { IoMdArrowDropdown } from 'react-icons/io';
 import { RiArrowUpSFill } from 'react-icons/ri';
 import { ITransaction } from '../../../../../utils/state/graphDataSlice';
 import { useProcessTransaction } from '../../../../../utils/hooks/useProcessTransaction';
-import { BiWallet, BiLeftDownArrowCircle, BiRightTopArrowCircle } from 'react-icons/bi';
-import trimString from '../../../../../utils/functions/trimString';
-import truncateDecimals from '../../../../../utils/data/truncateDecimals';
+import { BiWallet } from 'react-icons/bi';
+import { Dispatch, SetStateAction } from 'react';
 import Price from '../../../../Global/Tabs/Price/Price';
 import TransactionTypeSide from '../../../../Global/Tabs/TypeAndSide/TransactionTypeSide/TransactionTypeSide';
+import TransactionAccordionContent from './TransactionAccordionContent';
 
 interface TransactionAccordionsPropsIF {
     i: number;
     expanded: number | boolean;
-    setExpanded: any;
+    setExpanded: Dispatch<SetStateAction<number | false>>;
     tx: ITransaction;
 }
 export default function TransactionAccordions(props: TransactionAccordionsPropsIF) {
@@ -23,10 +23,6 @@ export default function TransactionAccordions(props: TransactionAccordionsPropsI
     // ----------------------------------------------------------------------
 
     const {
-        ownerId,
-        txHash,
-        ensName,
-        isOwnerActiveAccount,
         userNameToDisplay,
         txHashTruncated,
         truncatedDisplayPrice,
@@ -38,7 +34,12 @@ export default function TransactionAccordions(props: TransactionAccordionsPropsI
         quoteTokenSymbol,
         baseDisplayFrontend,
         quoteDisplayFrontend,
+        blockExplorer,
+        quoteTokenLogo,
+        baseTokenLogo,
     } = useProcessTransaction(tx);
+
+    console.log(priceType);
 
     console.log(useProcessTransaction(tx));
 
@@ -52,14 +53,13 @@ export default function TransactionAccordions(props: TransactionAccordionsPropsI
     );
     // -------------
 
-    // const priceDisplay = (
-    //     <div className={styles.price_display}>
+    const priceDisplay = (
+        <div className={styles.price_display}>
+            <p>Price:</p>
 
-    //         <p> Price: </p>
-    //         <p>{ truncatedDisplayPrice ? truncatedDisplayPrice : '...'}</p>
-
-    //     </div>
-    // )
+            <Price priceType={priceType} displayPrice={truncatedDisplayPrice} />
+        </div>
+    );
     // const sideDisplay = (
     //     <div className={styles.side_display}>
 
@@ -68,39 +68,39 @@ export default function TransactionAccordions(props: TransactionAccordionsPropsI
 
     //     </div>
     // )
-    // const typeDisplay = (
-    //     <div className={styles.type_display}>
-
-    //         <p> Type: </p>
-    //         <p>{sideType}</p>
-
-    //     </div>
-    // )
+    const typeSideDisplay = (
+        <div className={styles.type_display}>
+            <p>Type:</p>
+            <TransactionTypeSide type={sideType} side={transactionTypeSide} />
+        </div>
+    );
 
     // ------------------
     const valueDisplay = (
         <div className={styles.value_display}>
-            value:
+            Value:
             <p>{usdValue}</p>
         </div>
     );
 
     const baseTokenDisplay = (
         <div className={styles.base_display}>
-            {baseTokenSymbol}:<p>{baseDisplayFrontend}</p>
+            <img src={baseTokenLogo} alt='base token logo' width='20px' />
+            <p>{baseDisplayFrontend}</p>
         </div>
     );
     const quoteTokenDisplay = (
         <div className={styles.quote_display}>
-            {quoteTokenSymbol}:<p>{quoteDisplayFrontend}</p>
+            <img src={quoteTokenLogo} alt='quote token logo' width='20px' />
+            <p>{quoteDisplayFrontend}</p>
         </div>
     );
 
     const headerData = (
         <div className={styles.header_container}>
             {walletAndIdDisplay}
-            <Price priceType={priceType} displayPrice={truncatedDisplayPrice} />
-            <TransactionTypeSide type={sideType} side={transactionTypeSide} />
+            {priceDisplay}
+            {typeSideDisplay}
             {valueDisplay}
             {baseTokenDisplay}
             {quoteTokenDisplay}
@@ -145,8 +145,18 @@ export default function TransactionAccordions(props: TransactionAccordionsPropsI
                         }}
                         transition={{ duration: 0.8, ease: [0.04, 0.62, 0.23, 0.98] }}
                     >
-                        {/* <ContentPlaceholder /> */}
-                        <div>I am the children of the transaction</div>
+                        <TransactionAccordionContent
+                            txHash={txHashTruncated}
+                            userNameToDisplay={userNameToDisplay}
+                            price={truncatedDisplayPrice}
+                            side={transactionTypeSide}
+                            value={usdValue}
+                            baseTokenSymbol={baseTokenSymbol}
+                            quoteTokenSymbol={quoteTokenSymbol}
+                            baseDisplay={baseDisplayFrontend}
+                            quoteDisplay={quoteDisplayFrontend}
+                            blockExplorer={blockExplorer}
+                        />
                     </motion.section>
                 )}
             </AnimatePresence>

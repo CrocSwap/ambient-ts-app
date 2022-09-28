@@ -31,6 +31,9 @@ export const useProcessTransaction = (tx: ITransaction) => {
     const tokenAAddressLowerCase = tokenAAddress.toLowerCase();
     const tokenBAddressLowerCase = tokenBAddress.toLowerCase();
 
+    const quoteTokenLogo = tradeData.quoteToken.logoURI;
+    const baseTokenLogo = tradeData.baseToken.logoURI;
+
     const transactionMatchesSelectedTokens =
         (transactionBaseAddressLowerCase === tokenAAddressLowerCase ||
             transactionQuoteAddressLowerCase === tokenAAddressLowerCase) &&
@@ -232,6 +235,8 @@ export const useProcessTransaction = (tx: ITransaction) => {
         quoteTokenSymbol,
         baseDisplayFrontend,
         quoteDisplayFrontend,
+        quoteTokenLogo,
+        baseTokenLogo,
 
         // block explorer data
         blockExplorer,

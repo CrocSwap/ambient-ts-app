@@ -1,10 +1,6 @@
-import React, { useState } from 'react';
-import NewNetworkSelector from '../../App/components/PageHeader/NetworkSelector/NewNetworkSelector';
+import React from 'react';
 import { useTermsOfService } from '../../App/hooks/useTermsOfService';
-import Accordion from '../../components/Global/Accordion/Accordion';
-import ConfirmationModalControl from '../../components/Global/ConfirmationModalControl/ConfirmationModalControl';
 import { MenuButton } from '../../components/Global/MenuButton/MenuButton';
-import TransactionAccordions from '../../components/Trade/TradeTabs/Transactions/TransactionAccordions/TransactionAccordions';
 import styles from './TestPage.module.css';
 // import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
 // import { useProcessTransaction } from '../../utils/hooks/useProcessTransaction';
@@ -14,14 +10,6 @@ interface TestPageProps {
 }
 export default function TestPage(props: TestPageProps) {
     const [isOpen, setOpen] = React.useState(false);
-    // const graphData = useAppSelector((state) => state.graphData);
-
-    // const changesByPool = graphData?.changesByPool?.changes;
-    // const JrTx = changesByPool[0]
-
-    // const txData =  useProcessTransaction(JrTx)
-
-    // console.log(txData?.ownerId)
 
     const { openGlobalModal } = props;
     const { tosText, agreement, agreementDate } = useTermsOfService();
@@ -46,8 +34,6 @@ export default function TestPage(props: TestPageProps) {
     const menuButtonStyle = {
         marginLeft: '2rem',
     };
-    const accordionIds = [0, 1, 2, 3];
-    const [expanded, setExpanded] = useState<false | number>(0);
 
     return (
         <main className={styles.main}>
@@ -79,22 +65,6 @@ export default function TestPage(props: TestPageProps) {
                 height='24'
                 style={menuButtonStyle}
             />
-            <NewNetworkSelector />
-            <ConfirmationModalControl />
-            {accordionIds.map((item, idx) => (
-                <Accordion id={item} key={item}>
-                    I am accordion
-                </Accordion>
-            ))}
-            <h1>TRANSACTION ACCORDIONS</h1>
-            {/* {accordionIds.map((accordion, idx) => (
-                <TransactionAccordions
-                    i={accordion}
-                    expanded={expanded}
-                    setExpanded={setExpanded}
-                    key={idx}
-                />
-            ))} */}
         </main>
     );
 }

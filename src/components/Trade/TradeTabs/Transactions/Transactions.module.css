@@ -27,3 +27,19 @@
     justify-content: center;
     align-items: center;
 }
+.accordion_display_container{
+    display: block;
+}
+.desktop_transaction_display_container{
+    display: none;
+}
+
+@media only screen and (min-width: 568px) {
+.accordion_display_container{
+    display: none;
+}
+.desktop_transaction_display_container{
+    display: block;
+}
+
+}
