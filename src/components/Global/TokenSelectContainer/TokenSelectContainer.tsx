@@ -91,28 +91,24 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
 
         // user is updating token A
         if (tokenToUpdate === 'A') {
-            // user selected current token B, need to reverse tokens
-            if (tokenPair.dataTokenB.address === tok.address) {
-                // clicked token is Token A
-                // previous token A is used for Token B
-                goToNewUrlParams(locationSlug, '0x5', tok.address, tokenPair.dataTokenA.address);
-            // user selected an entirely new for token A
-            } else {
-                // clicked token is Token A
-                // current token B is still Token B
-                goToNewUrlParams(locationSlug, '0x5', tok.address, tokenPair.dataTokenB.address);
-            }
+            goToNewUrlParams(
+                locationSlug,
+                '0x5',
+                tok.address,
+                tokenPair.dataTokenB.address === tok.address
+                    ? tokenPair.dataTokenA.address
+                    : tokenPair.dataTokenB.address
+            );
         // user is updating token B
         } else if (tokenToUpdate === 'B') {
-            if (tokenPair.dataTokenA.address === tok.address) {
-                // clicked token is Token B
-                // previous Token B is now Token A
-                goToNewUrlParams(locationSlug, '0x5', tokenPair.dataTokenB.address, tok.address);
-            } else {
-                // clicked token is Token B
-                // current token A is still Token A
-                goToNewUrlParams(locationSlug, '0x5', tokenPair.dataTokenA.address, tok.address);
-            }
+            goToNewUrlParams(
+                locationSlug,
+                '0x5',
+                tokenPair.dataTokenA.address === tok.address
+                    ? tokenPair.dataTokenB.address
+                    : tokenPair.dataTokenA.address,
+                tok.address
+            );
         } else {
             console.warn(
                 'Error in TokenSelectContainer.tsx, failed to find proper dispatch function.',
