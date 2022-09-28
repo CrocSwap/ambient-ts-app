@@ -1,11 +1,14 @@
 .pool_card {
     width: 270px;
-    height: 140px;
+    height: 120px;
     border-radius: 4px;
     background: var(--dark3);
     padding: 8px;
     z-index: 1;
     cursor: pointer;
+    position: relative;
+
+    
 }
 
 .pool_card:hover {
@@ -23,6 +26,12 @@
     display: grid;
     grid-template-columns: 1fr 1fr;
     align-items: center;
+}
+.column{
+    position: absolute;
+    bottom: 15px;
+    display: flex;
+    flex-direction: column;
 }
 
 .row div {
@@ -44,6 +53,19 @@
     display: flex;
     justify-content: flex-end;
    
+}
+
+.pool_price_change{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 4px;
+}
+.pool_price_title{
+    font-family: 'Lexend Deca';
+    font-style: normal;
+    font-weight: 300;
+    font-size: 12px;
 }
 
 .row_title {
@@ -132,7 +154,7 @@
     align-items: center;
 }
 
-.vol, .apy, .change_negative, .change_positive {
+.vol, .apy {
     display: flex;
     width: 50%;
     justify-content: flex-end;
