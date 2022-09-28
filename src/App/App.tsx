@@ -1,5 +1,5 @@
 /** ***** Import React and Dongles *******/
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, SetStateAction } from 'react';
 import { Routes, Route, useLocation, Navigate } from 'react-router-dom';
 
 import {
@@ -2019,6 +2019,10 @@ export default function App() {
                                     poolPriceNonDisplay={undefined}
                                     setTargets={setTargets}
                                     targets={targets}
+                                    setLimitRate={function (value: SetStateAction<string>): void {
+                                        throw new Error('Function not implemented.');
+                                    }}
+                                    limitRate={''}
                                 />
                             }
                         >
