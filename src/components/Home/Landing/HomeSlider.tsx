@@ -20,7 +20,7 @@ export default function HomeSlider() {
                 navigation
                 speed={800}
                 autoplay={{
-                    delay: 9000,
+                    delay: 30000,
                     disableOnInteraction: true,
                 }}
                 slidesPerView={1}
