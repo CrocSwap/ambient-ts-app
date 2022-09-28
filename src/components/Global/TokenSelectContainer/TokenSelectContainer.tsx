@@ -85,17 +85,12 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
                 // previous token A is used for Token B
                 const newURLParams = `/chain=0x5&tokenA=${tok.address}&tokenB=${tokenPair.dataTokenA.address}`;
                 navigate(locationSlug + newURLParams);
-                // reverseTokens();
-                // dispatch(setTokenA(tok));
-                // dispatch(setTokenB(tokenPair.dataTokenA));
             // user selected an entirely new for token A
             } else {
                 // clicked token is Token A
                 // current token B is still Token B
                 const newURLParams = `/chain=0x5&tokenA=${tok.address}&tokenB=${tokenPair.dataTokenB.address}`;
                 navigate(locationSlug + newURLParams);
-                // dispatch(setTokenA(tok));
-                // dispatch(setDidUserFlipDenom(false));
             }
         // user is updating token B
         } else if (tokenToUpdate === 'B') {
@@ -104,16 +99,11 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
                 // previous Token B is now Token A
                 const newURLParams = `/chain=0x5&tokenA=${tokenPair.dataTokenB.address}&tokenB=${tok.address}`;
                 navigate(locationSlug + newURLParams);
-                // reverseTokens();
-                // dispatch(setTokenB(tok));
-                // dispatch(setTokenA(tokenPair.dataTokenB));
             } else {
                 // clicked token is Token B
                 // current token A is still Token A
                 const newURLParams = `/chain=0x5&tokenA=${tokenPair.dataTokenA.address}&tokenB=${tok.address}`;
                 navigate(locationSlug + newURLParams);
-                // dispatch(setTokenB(tok));
-                // dispatch(setDidUserFlipDenom(false));
             }
         } else {
             console.warn(
