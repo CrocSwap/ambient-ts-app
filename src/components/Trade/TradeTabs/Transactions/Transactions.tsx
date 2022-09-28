@@ -5,6 +5,7 @@ import {
     addChangesByPool,
     CandleData,
     graphData,
+    ITransaction,
     setChangesByPool,
 } from '../../../../utils/state/graphDataSlice';
 import { TokenIF } from '../../../../utils/interfaces/TokenIF';
@@ -16,11 +17,13 @@ import { ChainSpec } from '@crocswap-libs/sdk';
 import useWebSocket from 'react-use-websocket';
 // import useDebounce from '../../../../App/hooks/useDebounce';
 import { fetchPoolRecentChanges } from '../../../../App/functions/fetchPoolRecentChanges';
+import TransactionAccordions from './TransactionAccordions/TransactionAccordions';
 
 interface TransactionsProps {
     isShowAllEnabled: boolean;
     portfolio?: boolean;
     tokenMap: Map<string, TokenIF>;
+    swapsForSelectedCandle: ITransaction[];
     graphData: graphData;
     chainData: ChainSpec;
     blockExplorer?: string;
@@ -39,6 +42,7 @@ export default function Transactions(props: TransactionsProps) {
     const {
         isShowAllEnabled,
         account,
+        swapsForSelectedCandle,
         graphData,
         tokenMap,
         chainData,
@@ -91,18 +95,25 @@ export default function Transactions(props: TransactionsProps) {
         setTransactionData(changesByPool);
         setDataReceived(dataReceivedByPool);
     }
-
+    // console.log({ isCandleSelected });
     useEffect(() => {
         isCandleSelected
-            ? setTransactionData(
-                  changesByPool.filter((data) => {
-                      filter?.allSwaps?.includes(data.id);
-                  }),
-              )
-            : !isShowAllEnabled
+            ? setTransactionData(swapsForSelectedCandle)
+            : // ? setTransactionData(
+            //       changesByPool.filter((data) => {
+            //           filter?.allSwaps?.includes(data.id);
+            //       }),
+            //   )
+            !isShowAllEnabled
             ? handleUserSelected()
             : handlePoolSelected();
-    }, [isShowAllEnabled, isCandleSelected, filter, changesByUser, changesByPool]);
+    }, [
+        isShowAllEnabled,
+        isCandleSelected,
+        filter,
+        swapsForSelectedCandle,
+        // , changesByUser, changesByPool
+    ]);
 
     useEffect(() => {
         // console.log({ dataReceived });
@@ -260,23 +271,41 @@ export default function Transactions(props: TransactionsProps) {
         }
     }, [lastPoolChangeMessage]);
 
-    const TransactionsDisplay = usePaginateDataOrNull?.map((tx, idx) => (
-        //   />
-        <TransactionCard
-            key={idx}
-            tx={tx}
-            tokenMap={tokenMap}
-            chainId={chainData.chainId}
-            blockExplorer={blockExplorer}
-            tokenAAddress={tokenAAddress}
-            tokenBAddress={tokenBAddress}
-            isDenomBase={isDenomBase}
-            account={account}
-            currentTxActiveInTransactions={currentTxActiveInTransactions}
-            setCurrentTxActiveInTransactions={setCurrentTxActiveInTransactions}
-            openGlobalModal={props.openGlobalModal}
-        />
-    ));
+    const TransactionsDisplay = (
+        <div className={styles.desktop_transaction_display_container}>
+            {usePaginateDataOrNull?.map((tx, idx) => (
+                <TransactionCard
+                    key={idx}
+                    tx={tx}
+                    tokenMap={tokenMap}
+                    chainId={chainData.chainId}
+                    blockExplorer={blockExplorer}
+                    tokenAAddress={tokenAAddress}
+                    tokenBAddress={tokenBAddress}
+                    isDenomBase={isDenomBase}
+                    account={account}
+                    currentTxActiveInTransactions={currentTxActiveInTransactions}
+                    setCurrentTxActiveInTransactions={setCurrentTxActiveInTransactions}
+                    openGlobalModal={props.openGlobalModal}
+                />
+            ))}
+        </div>
+    );
+    const [expanded, setExpanded] = useState<false | number>(false);
+
+    const accordionsDisplay = (
+        <div className={styles.accordion_display_container}>
+            {usePaginateDataOrNull?.map((tx, idx) => (
+                <TransactionAccordions
+                    key={idx}
+                    expanded={expanded}
+                    setExpanded={setExpanded}
+                    tx={tx}
+                    i={idx}
+                />
+            ))}
+        </div>
+    );
 
     const noData = <div className={styles.no_data}>No Data to Display</div>;
     const transactionDataOrNull = dataToDisplay ? TransactionsDisplay : noData;
@@ -288,6 +317,7 @@ export default function Transactions(props: TransactionsProps) {
                 className={`${styles.item_container} ${expandTradeTable && styles.expand_height}`}
                 // style={{ height: expandTradeTable ? '100%' : '170px' }}
             >
+                {isDataLoading ? <TransactionsSkeletons /> : accordionsDisplay}
                 {isDataLoading ? <TransactionsSkeletons /> : transactionDataOrNull}
             </div>
             {expandTradeTable && transactionData.length > 30 && (

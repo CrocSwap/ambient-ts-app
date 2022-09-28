@@ -143,7 +143,7 @@ export default function PageHeader(props: HeaderPropsIF) {
         { title: t('common:homeTitle'), destination: '/', shouldDisplay: true },
         { title: t('common:swapTitle'), destination: '/swap', shouldDisplay: true },
         { title: t('common:tradeTitle'), destination: tradeDestination, shouldDisplay: true },
-        { title: t('common:analyticsTitle'), destination: '/analytics', shouldDisplay: true },
+        { title: t('common:analyticsTitle'), destination: '/analytics', shouldDisplay: false },
         {
             title: t('common:accountTitle'),
             destination: '/account',

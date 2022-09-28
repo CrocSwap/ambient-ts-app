@@ -1,7 +1,5 @@
 import React from 'react';
-import NewNetworkSelector from '../../App/components/PageHeader/NetworkSelector/NewNetworkSelector';
 import { useTermsOfService } from '../../App/hooks/useTermsOfService';
-import ConfirmationModalControl from '../../components/Global/ConfirmationModalControl/ConfirmationModalControl';
 import { MenuButton } from '../../components/Global/MenuButton/MenuButton';
 import styles from './TestPage.module.css';
 // import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
@@ -12,14 +10,6 @@ interface TestPageProps {
 }
 export default function TestPage(props: TestPageProps) {
     const [isOpen, setOpen] = React.useState(false);
-    // const graphData = useAppSelector((state) => state.graphData);
-
-    // const changesByPool = graphData?.changesByPool?.changes;
-    // const JrTx = changesByPool[0]
-
-    // const txData =  useProcessTransaction(JrTx)
-
-    // console.log(txData?.ownerId)
 
     const { openGlobalModal } = props;
     const { tosText, agreement, agreementDate } = useTermsOfService();
@@ -44,6 +34,7 @@ export default function TestPage(props: TestPageProps) {
     const menuButtonStyle = {
         marginLeft: '2rem',
     };
+
     return (
         <main className={styles.main}>
             <h1>Hi there!</h1>
@@ -74,9 +65,6 @@ export default function TestPage(props: TestPageProps) {
                 height='24'
                 style={menuButtonStyle}
             />
-            <NewNetworkSelector />
-            <ConfirmationModalControl />
-            {/* <MobileSidebar/> */}
         </main>
     );
 }

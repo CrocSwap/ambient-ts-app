@@ -201,9 +201,11 @@ export default function TransactionCard(props: TransactionProps) {
                           minimumFractionDigits: 2,
                           maximumFractionDigits: 2,
                       });
-            const baseFlowDisplayString = isBaseFlowNegative
-                ? `(${baseFlowDisplayTruncated})`
-                : baseFlowDisplayTruncated;
+            const baseFlowDisplayString =
+                (isBaseFlowNegative && tx.entityType !== 'liqchange') ||
+                (!isBaseFlowNegative && tx.entityType === 'liqchange')
+                    ? `(${baseFlowDisplayTruncated})`
+                    : baseFlowDisplayTruncated;
             setBaseFlowDisplay(baseFlowDisplayString);
         }
         if (tx.quoteFlow && tx.quoteDecimals) {
@@ -224,9 +226,11 @@ export default function TransactionCard(props: TransactionProps) {
                           minimumFractionDigits: 2,
                           maximumFractionDigits: 2,
                       });
-            const quoteFlowDisplayString = isQuoteFlowNegative
-                ? `(${quoteFlowDisplayTruncated})`
-                : quoteFlowDisplayTruncated;
+            const quoteFlowDisplayString =
+                (isQuoteFlowNegative && tx.entityType !== 'liqchange') ||
+                (!isQuoteFlowNegative && tx.entityType === 'liqchange')
+                    ? `(${quoteFlowDisplayTruncated})`
+                    : quoteFlowDisplayTruncated;
             setQuoteFlowDisplay(quoteFlowDisplayString);
         }
     }, [JSON.stringify(tx), isDenomBase]);
@@ -235,22 +239,22 @@ export default function TransactionCard(props: TransactionProps) {
         (isDenomBase && !tx.isBuy) || (!isDenomBase && tx.isBuy) ? 'priceBuy' : 'priceSell';
 
     const sideType =
-        tx.entityType === 'swap' || tx.entityType === 'limitOrder'
-            ? (isDenomBase && !tx.isBuy) || (!isDenomBase && tx.isBuy)
+        tx.entityType === 'liqchange'
+            ? tx.changeType === 'mint'
                 ? 'buy'
                 : 'sell'
-            : tx.changeType === 'burn'
+            : (isDenomBase && tx.isBuy) || (!isDenomBase && !tx.isBuy)
             ? 'sell'
             : 'buy';
 
     const transactionTypeSide =
-        tx.entityType === 'swap'
-            ? 'market'
+        tx.entityType === 'liqchange'
+            ? tx.changeType === 'mint'
+                ? 'rangeAdd'
+                : 'rangeRemove'
             : tx.entityType === 'limitOrder'
             ? 'limit'
-            : tx.changeType === 'burn'
-            ? 'rangeRemove'
-            : 'rangeAdd';
+            : 'market';
 
     const activeTransactionStyle =
         tx.id === currentTxActiveInTransactions ? styles.active_tx_style : '';
