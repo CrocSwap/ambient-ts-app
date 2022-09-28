@@ -220,8 +220,6 @@ export default function TradeTabs2(props: ITabsProps) {
         if (isCandleSelected && filter?.time) {
             const poolSwapsCacheEndpoint = httpGraphCacheServerDomain + '/pool_swaps?';
 
-            console.log(filter?.time);
-
             fetch(
                 poolSwapsCacheEndpoint +
                     new URLSearchParams({
@@ -236,7 +234,7 @@ export default function TradeTabs2(props: ITabsProps) {
                         addValue: 'true',
                         n: '100',
                         period: activeChartPeriod.toString(),
-                        time: filter?.time.toString() ?? '1664381784',
+                        time: filter?.time.toString(),
                     }),
             )
                 .then((response) => response?.json())

@@ -95,7 +95,7 @@ export default function Transactions(props: TransactionsProps) {
         setTransactionData(changesByPool);
         setDataReceived(dataReceivedByPool);
     }
-
+    // console.log({ isCandleSelected });
     useEffect(() => {
         isCandleSelected
             ? setTransactionData(swapsForSelectedCandle)
