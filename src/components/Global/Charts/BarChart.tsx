@@ -7,10 +7,10 @@ import { formatDollarAmountAxis } from '../../../utils/numbers';
 
 interface BarData {
     data: any[];
-    value?: number;
-    label?: string;
-    setValue?: Dispatch<SetStateAction<number | undefined>>; // used for value on hover
-    setLabel?: Dispatch<SetStateAction<string | undefined>>; // used for value label on hover
+    valueVolume?: number;
+    valueVolumeDate?: string;
+    setValueVolume?: Dispatch<SetStateAction<number | undefined>>; // used for value on hover
+    setValueVolumeDate?: Dispatch<SetStateAction<string | undefined>>; // used for value label on hover
     snapType?: string;
 }
 
@@ -31,8 +31,9 @@ export default function BarChart(props: BarData) {
             const pointer = d3fc.pointer().on('point', (event: any) => {
                 if (event[0] !== undefined) {
                     chartData.crosshair = snap(lineSeries, chartData.lineseries, event[0]);
-                    props.setValue?.(getValue(chartData.crosshair[0].x));
-                    props.setLabel?.(getDate(chartData.crosshair[0].x));
+
+                    props.setValueVolume?.(getValue(chartData.crosshair[0].x));
+                    props.setValueVolumeDate?.(getDate(chartData.crosshair[0].x));
                     render();
                 }
             });
