@@ -3,7 +3,7 @@ import { useEffect, useState, useMemo } from 'react';
 import { Routes, Route, useLocation, Navigate } from 'react-router-dom';
 
 import {
-    resetGraphData,
+    resetUserGraphData,
     setPositionsByPool,
     setPositionsByUser,
     setChangesByUser,
@@ -244,12 +244,13 @@ export default function App() {
                     !metamaskLocked &&
                     validateChain(window.ethereum.chainId)
                 ) {
+                    console.log('use metamask as provider');
                     // console.log(window.ethereum.chainId)
                     const metamaskProvider = new ethers.providers.Web3Provider(window.ethereum);
-                    console.log('Metamask Provider');
                     setProvider(metamaskProvider);
                 }
             } else if (!provider || !onChain) {
+                console.log('use infura as provider');
                 const chainSpec = lookupChain(chainData.chainId);
                 const url = chainSpec.nodeUrl;
                 // const url = chainSpec.wsUrl ? chainSpec.wsUrl : chainSpec.nodeUrl;
@@ -259,7 +260,7 @@ export default function App() {
         } catch (error) {
             console.log(error);
         }
-    }, [isAuthenticated, chainData.chainId, metamaskLocked]);
+    }, [isUserLoggedIn, chainData.chainId, metamaskLocked]);
 
     useEffect(() => {
         dispatch(resetTokens(chainData.chainId));
@@ -795,14 +796,14 @@ export default function App() {
                             .then((json) => {
                                 const poolPositions = json.data;
 
-                                if (poolPositions) {
+                                if (poolPositions && crocEnv) {
                                     // console.log({ poolPositions });
                                     Promise.all(
                                         poolPositions.map((position: PositionIF) => {
                                             return getPositionData(
                                                 position,
                                                 importedTokens,
-                                                provider,
+                                                crocEnv,
                                                 chainData.chainId,
                                                 lastBlockNumber,
                                             );
@@ -1031,13 +1032,13 @@ export default function App() {
         if (lastPoolLiqChangeMessage !== null) {
             const lastMessageData = JSON.parse(lastPoolLiqChangeMessage.data).data;
             // console.log({ lastMessageData });
-            if (lastMessageData && provider) {
+            if (lastMessageData && crocEnv) {
                 Promise.all(
                     lastMessageData.map((position: PositionIF) => {
                         return getPositionData(
                             position,
                             importedTokens,
-                            provider,
+                            crocEnv,
                             chainData.chainId,
                             lastBlockNumber,
                         );
@@ -1180,13 +1181,13 @@ export default function App() {
         if (lastUserPositionsMessage !== null) {
             const lastMessageData = JSON.parse(lastUserPositionsMessage.data).data;
 
-            if (lastMessageData && provider) {
+            if (lastMessageData && crocEnv) {
                 Promise.all(
                     lastMessageData.map((position: PositionIF) => {
                         return getPositionData(
                             position,
                             importedTokens,
-                            provider,
+                            crocEnv,
                             chainData.chainId,
                             lastBlockNumber,
                         );
@@ -1281,6 +1282,7 @@ export default function App() {
     // useEffect to get spot price when tokens change and block updates
     useEffect(() => {
         if (
+            crocEnv &&
             baseTokenAddress &&
             quoteTokenAddress &&
             baseTokenDecimals &&
@@ -1288,12 +1290,12 @@ export default function App() {
             lastBlockNumber !== 0
         ) {
             (async () => {
-                const viewProvider = provider
-                    ? provider
-                    : (await new CrocEnv(chainData.chainId).context).provider;
+                // const viewProvider = provider
+                //     ? provider
+                //     : (await new CrocEnv(chainData.chainId).context).provider;
 
                 const spotPrice = await querySpotPrice(
-                    viewProvider,
+                    crocEnv,
                     baseTokenAddress,
                     quoteTokenAddress,
                     chainData.chainId,
@@ -1320,7 +1322,7 @@ export default function App() {
         baseTokenDecimals,
         quoteTokenDecimals,
         chainData.chainId,
-        provider,
+        crocEnv,
     ]);
 
     // useEffect to update selected token balances
@@ -1442,13 +1444,13 @@ export default function App() {
                     .then((json) => {
                         const userPositions = json?.data;
 
-                        if (userPositions && provider) {
+                        if (userPositions && crocEnv) {
                             Promise.all(
                                 userPositions.map((position: PositionIF) => {
                                     return getPositionData(
                                         position,
                                         importedTokens,
-                                        provider,
+                                        crocEnv,
                                         chainData.chainId,
                                         lastBlockNumber,
                                     );
@@ -1582,7 +1584,7 @@ export default function App() {
         setQuoteTokenDexBalance('');
         dispatch(resetTradeData());
         dispatch(resetTokenData());
-        dispatch(resetGraphData());
+        dispatch(resetUserGraphData());
         dispatch(resetReceiptData());
         dispatch(resetTokenData());
 
@@ -1950,7 +1952,7 @@ export default function App() {
                                 <Home
                                     tokenMap={tokenMap}
                                     lastBlockNumber={lastBlockNumber}
-                                    provider={provider}
+                                    crocEnv={crocEnv}
                                     chainId={chainData.chainId}
                                 />
                             }

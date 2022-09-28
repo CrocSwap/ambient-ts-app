@@ -91,9 +91,9 @@ export default function Orders(props: propsIF) {
     const [sortBy, setSortBy] = useState('default');
     const [reverseSort, setReverseSort] = useState(false);
 
-    useEffect(() => {
-        console.log({ sortBy, reverseSort });
-    }, [sortBy, reverseSort]);
+    // useEffect(() => {
+    //     console.log({ sortBy, reverseSort });
+    // }, [sortBy, reverseSort]);
 
     const [debouncedIsShowAllEnabled, setDebouncedIsShowAllEnabled] = useState(false);
 
@@ -194,7 +194,7 @@ export default function Orders(props: propsIF) {
     useEffect(() => {
         if (lastPoolLimitOrderChangeMessage !== null) {
             const lastMessageData = JSON.parse(lastPoolLimitOrderChangeMessage.data).data;
-            console.log({ lastMessageData });
+            // console.log({ lastMessageData });
             if (lastMessageData) dispatch(addLimitOrderChangesByPool(lastMessageData));
         }
     }, [lastPoolLimitOrderChangeMessage]);

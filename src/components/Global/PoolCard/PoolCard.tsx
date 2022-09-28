@@ -1,6 +1,6 @@
 import { TokenIF } from '../../../utils/interfaces/TokenIF';
 import styles from './PoolCard.module.css';
-import { ethers } from 'ethers';
+// import { ethers } from 'ethers';
 import { useEffect, useState } from 'react';
 import { CrocEnv, toDisplayPrice } from '@crocswap-libs/sdk';
 import { querySpotPrice } from '../../../App/functions/querySpotPrice';
@@ -16,18 +16,18 @@ import { formatAmount } from '../../../utils/numbers';
 import PoolCardSkeleton from './PoolCardSkeleton/PoolCardSkeleton';
 
 interface PoolCardProps {
+    crocEnv?: CrocEnv;
     onClick: () => void;
     name: string;
     tokenMap: Map<string, TokenIF>;
     tokenA: TokenIF;
     tokenB: TokenIF;
     lastBlockNumber: number;
-    provider: ethers.providers.Provider | undefined;
     chainId: string;
 }
 
 export default function PoolCard(props: PoolCardProps) {
-    const { onClick, tokenMap, tokenA, tokenB, lastBlockNumber, provider, chainId } = props;
+    const { crocEnv, onClick, tokenMap, tokenA, tokenB, lastBlockNumber, chainId } = props;
 
     const tokenAAddress = tokenA?.address ?? undefined;
     const tokenBAddress = tokenB?.address ?? undefined;
@@ -47,6 +47,7 @@ export default function PoolCard(props: PoolCardProps) {
     // useEffect to get spot price when tokens change and block updates
     useEffect(() => {
         if (
+            crocEnv &&
             tokenAAddress &&
             tokenBAddress &&
             tokenA?.decimals &&
@@ -54,12 +55,12 @@ export default function PoolCard(props: PoolCardProps) {
             lastBlockNumber !== 0
         ) {
             (async () => {
-                const viewProvider = provider
-                    ? provider
-                    : (await new CrocEnv(chainId).context).provider;
+                // const viewProvider = provider
+                //     ? provider
+                //     : (await new CrocEnv(chainId).context).provider;
 
                 const spotPrice = await querySpotPrice(
-                    viewProvider,
+                    crocEnv,
                     tokenA.address,
                     tokenB.address,
                     chainId,
@@ -107,7 +108,7 @@ export default function PoolCard(props: PoolCardProps) {
                 }
             })();
         }
-    }, [lastBlockNumber, tokenA, tokenB, chainId, provider]);
+    }, [lastBlockNumber, tokenA, tokenB, chainId, crocEnv]);
 
     const [poolVolume, setPoolVolume] = useState<string | undefined>(undefined);
     const [poolTvl, setPoolTvl] = useState<string | undefined>(undefined);

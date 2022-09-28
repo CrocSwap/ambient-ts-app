@@ -621,7 +621,7 @@ export const graphDataSlice = createSlice({
                 }
             }
         },
-        resetGraphData: (state) => {
+        resetUserGraphData: (state) => {
             state.positionsByUser = initialState.positionsByUser;
             state.changesByUser = initialState.changesByUser;
         },
@@ -648,7 +648,7 @@ export const {
     addLimitOrderChangesByPool,
     addChangesByPool,
     setChangesByPool,
-    resetGraphData,
+    resetUserGraphData,
 } = graphDataSlice.actions;
 
 export default graphDataSlice.reducer;
