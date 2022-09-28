@@ -314,7 +314,7 @@ export default function GraphContainer() {
                 </label>
                 <div className={styles.chart_container}>
                     {' '}
-                    {chartData && chartData.length > 0 ? (
+                    {formattedTvlData && formattedTvlData.length > 0 ? (
                         <AreaChart
                             data={formattedTvlData}
                             value={latestValueTvl}
@@ -340,7 +340,7 @@ export default function GraphContainer() {
                     {valueLabelVolume ? valueLabelVolume + ' (UTC) ' : '-'}
                 </label>
                 <div className={styles.chart_container}>
-                    {chartData && chartData.length > 0 ? (
+                    {formattedVolumeData && formattedVolumeData.length > 0 ? (
                         <BarChart
                             data={formattedVolumeData}
                             value={latestValueVolume}
