@@ -25,6 +25,7 @@ export default function OrderCard(props: OrderCardProps) {
 
     // const tempOwnerId = '0xa2b398145b7fc8fd9a01142698f15d329ebb5ff5090cfcc8caae440867ab9919';
     // const tempPosHash = '0x01e650abfc761c6a0fc60f62a4e4b3832bb1178b';
+    const [isOrderFilled, setIsOrderFilled] = useState<boolean>(false);
 
     const isOwnerActiveAccount = limitOrder.user.toLowerCase() === account.toLowerCase();
 
@@ -53,6 +54,20 @@ export default function OrderCard(props: OrderCardProps) {
         }
     }, [JSON.stringify(limitOrder), isDenomBase]);
 
+    useEffect(() => {
+        if (
+            limitOrder &&
+            limitOrder.positionLiqBaseDecimalCorrected === 0 &&
+            limitOrder.positionLiqQuoteDecimalCorrected === 0 &&
+            !limitOrder.baseFlowDecimalCorrected &&
+            !limitOrder.quoteFlowDecimalCorrected
+            //  && limitOrder.source !== 'manual'
+        ) {
+            setIsOrderFilled(true);
+            // return null;
+        }
+    }, [JSON.stringify(limitOrder)]);
+
     const priceType =
         (isDenomBase && !limitOrder.isBid) || (!isDenomBase && limitOrder.isBid)
             ? 'priceBuy'
@@ -64,21 +79,11 @@ export default function OrderCard(props: OrderCardProps) {
     const baseTokenAddressLowerCase = limitOrder.base.toLowerCase();
     const quoteTokenAddressLowerCase = limitOrder.quote.toLowerCase();
 
-    const transactionMatchesSelectedTokens =
+    const orderMatchesSelectedTokens =
         selectedBaseToken === baseTokenAddressLowerCase &&
         selectedQuoteToken === quoteTokenAddressLowerCase;
 
-    if (!transactionMatchesSelectedTokens) return null;
-    // if (!limitOrder.positionLiq) return null;
-
-    if (
-        limitOrder.positionLiqBaseDecimalCorrected === 0 &&
-        limitOrder.positionLiqQuoteDecimalCorrected === 0 &&
-        !limitOrder.baseFlowDecimalCorrected &&
-        !limitOrder.quoteFlowDecimalCorrected &&
-        limitOrder.source !== 'manual'
-    )
-        return null;
+    if (!orderMatchesSelectedTokens) return null;
 
     const liqBaseNum =
         limitOrder.positionLiqBaseDecimalCorrected !== 0
@@ -167,7 +172,7 @@ export default function OrderCard(props: OrderCardProps) {
                 />
                 {/* ------------------------------------------------------ */}
                 <div className={styles.status}>
-                    <OpenOrderStatus isFilled={!limitOrder.positionLiq} />
+                    <OpenOrderStatus isFilled={isOrderFilled} />
                 </div>
             </div>
 

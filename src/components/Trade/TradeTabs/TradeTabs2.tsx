@@ -128,8 +128,8 @@ export default function TradeTabs2(props: ITabsProps) {
     });
 
     const matchingUserChangesLength = userChangesMatchingTokenSelection.length;
-    const matchingUserPositionsLength = userLimitOrdersMatchingTokenSelection.length;
-    const matchingUserLimitOrdersLength = userPositionsMatchingTokenSelection.length;
+    const matchingUserLimitOrdersLength = userLimitOrdersMatchingTokenSelection.length;
+    const matchingUserPositionsLength = userPositionsMatchingTokenSelection.length;
 
     useEffect(() => {
         setHasInitialized(false);
@@ -151,6 +151,7 @@ export default function TradeTabs2(props: ITabsProps) {
         // console.log({ userPositions });
         // console.log({ selectedOutsideTab });
         if (!hasInitialized) {
+            console.log({ selectedOutsideTab });
             if (selectedOutsideTab === 0) {
                 if (
                     !isUserLoggedIn ||
@@ -163,14 +164,20 @@ export default function TradeTabs2(props: ITabsProps) {
                     setIsShowAllEnabled(false);
                 }
             } else if (selectedOutsideTab === 1) {
+                console.log({ isCandleSelected });
+                console.log({ isShowAllEnabled });
+                console.log({ matchingUserLimitOrdersLength });
                 if (
                     !isUserLoggedIn ||
                     (!isCandleSelected && !isShowAllEnabled && matchingUserLimitOrdersLength < 1)
                 ) {
+                    console.log('firing');
                     setIsShowAllEnabled(true);
                 } else if (matchingUserLimitOrdersLength < 1) {
+                    console.log('firing');
                     return;
                 } else if (isShowAllEnabled && matchingUserLimitOrdersLength >= 1) {
+                    console.log('firing');
                     setIsShowAllEnabled(false);
                 }
             } else if (selectedOutsideTab === 2) {
