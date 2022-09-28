@@ -15,8 +15,8 @@ interface IPriceInfoProps {
     usdValue: string;
     lowRangeDisplay: string;
     highRangeDisplay: string;
-    baseLiquidityDisplay: string | undefined;
-    quoteLiquidityDisplay: string | undefined;
+    baseCollateralDisplay: string | undefined;
+    quoteCollateralDisplay: string | undefined;
     baseFeesDisplay: string | undefined;
     quoteFeesDisplay: string | undefined;
     baseTokenLogoURI: string;
@@ -35,8 +35,8 @@ export default function PriceInfo(props: IPriceInfoProps) {
         usdValue,
         lowRangeDisplay,
         highRangeDisplay,
-        baseLiquidityDisplay,
-        quoteLiquidityDisplay,
+        baseCollateralDisplay,
+        quoteCollateralDisplay,
         baseFeesDisplay,
         quoteFeesDisplay,
         baseTokenLogoURI,
@@ -59,7 +59,7 @@ export default function PriceInfo(props: IPriceInfoProps) {
             <Row>
                 <span>Pooled {baseTokenSymbol}</span>
                 <div className={styles.info_text}>
-                    {baseLiquidityDisplay || '…'}
+                    {baseCollateralDisplay || '…'}
                     <img src={baseTokenLogoURI} alt='' />
                 </div>
             </Row>
@@ -67,7 +67,7 @@ export default function PriceInfo(props: IPriceInfoProps) {
             <Row>
                 <span>Pooled {quoteTokenSymbol}</span>
                 <div className={styles.info_text}>
-                    {quoteLiquidityDisplay || '…'}
+                    {quoteCollateralDisplay || '…'}
                     <img src={quoteTokenLogoURI} alt='' />
                 </div>
             </Row>

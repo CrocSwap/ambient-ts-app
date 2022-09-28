@@ -1,4 +1,5 @@
-import { ethers } from 'ethers';
+import { CrocEnv } from '@crocswap-libs/sdk';
+// import { ethers } from 'ethers';
 import DividerDark from '../../components/Global/DividerDark/DividerDark';
 import Investors from '../../components/Home/Investors/Investors';
 import HomeSlider from '../../components/Home/Landing/HomeSlider';
@@ -9,13 +10,13 @@ import { TokenIF } from '../../utils/interfaces/TokenIF';
 import styles from './Home.module.css';
 
 interface HomeProps {
+    crocEnv?: CrocEnv;
     tokenMap: Map<string, TokenIF>;
     lastBlockNumber: number;
-    provider: ethers.providers.Provider | undefined;
     chainId: string;
 }
 export default function Home(props: HomeProps) {
-    const { tokenMap, lastBlockNumber, provider, chainId } = props;
+    const { tokenMap, lastBlockNumber, crocEnv, chainId } = props;
 
     return (
         <>
@@ -26,9 +27,9 @@ export default function Home(props: HomeProps) {
 
                 <div className={styles.pools_container}>
                     <TopPools
+                        crocEnv={crocEnv}
                         tokenMap={tokenMap}
                         lastBlockNumber={lastBlockNumber}
-                        provider={provider}
                         chainId={chainId}
                     />
                     <DividerDark />
