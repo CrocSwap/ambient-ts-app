@@ -295,6 +295,10 @@ export interface ITransaction {
     quoteFlowDecimalCorrected: number;
     valueUSD: number;
     ensResolution: string;
+    bidTickPriceDecimalCorrected: number;
+    bidTickInvPriceDecimalCorrected: number;
+    askTickPriceDecimalCorrected: number;
+    askTickInvPriceDecimalCorrected: number;
 }
 
 export interface ChangesByUser {
