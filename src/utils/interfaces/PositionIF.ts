@@ -51,4 +51,8 @@ export interface PositionIF {
     latestUpdateTime: number;
     positionLiq: string;
     positionLiqTotalUSD: number;
+    bidTickPriceDecimalCorrected: number;
+    bidTickInvPriceDecimalCorrected: number;
+    askTickPriceDecimalCorrected: number;
+    askTickInvPriceDecimalCorrected: number;
 }

@@ -251,8 +251,8 @@ export default function PoolCard(props: PoolCardProps) {
     );
 
     const poolPriceChangeDisplay = (
-        <div>
-            <div className={styles.row_title}>24h Δ</div>
+        <div className={styles.pool_price_change}>
+            <div className={styles.pool_price_title}>24h Δ</div>
             <div
                 className={
                     isPoolPriceChangePositive ? styles.change_positive : styles.change_negative
@@ -272,13 +272,12 @@ export default function PoolCard(props: PoolCardProps) {
                 {tokenImagesDisplay}
                 {tokenNamesDisplay}
             </div>
-            <div className={styles.row}>{tvlDisplay}</div>
-            <div className={styles.row}>{apyDisplay}</div>
             <div className={styles.row}>{volumeDisplay}</div>
-
-            <div className={styles.row}>
-                {poolPriceDisplayDOM}
+            <div className={styles.row}>{apyDisplay}</div>
+            <div className={styles.row}>{tvlDisplay}</div>
+            <div className={styles.column}>
                 {poolPriceChangeDisplay}
+                {poolPriceDisplayDOM}
             </div>
         </div>
     );

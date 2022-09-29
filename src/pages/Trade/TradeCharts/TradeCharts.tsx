@@ -335,7 +335,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
         { label: '4h', activePeriod: 14400 },
         { label: '1d', activePeriod: 86400 },
     ];
-    const [activeTimeFrame, setActiveTimeFrame] = useState('5m');
+    const [activeTimeFrame, setActiveTimeFrame] = useState('1h');
 
     function handleTimeFrameButtonClick(label: string, time: number) {
         setActiveTimeFrame(label);

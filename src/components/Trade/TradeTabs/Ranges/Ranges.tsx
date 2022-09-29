@@ -68,10 +68,10 @@ export default function Ranges(props: RangesPropsIF) {
     const columnHeaders = [
         { name: 'ID', sortable: false, className: '' },
         { name: 'Wallet', sortable: true, className: 'wallet' },
-        { name: 'Range', sortable: false, className: 'Range' },
+        // { name: 'Range', sortable: false, className: 'Range' },
         { name: ' Min', sortable: false, className: 'range_sing' },
         { name: 'Max', sortable: false, className: 'range_sing' },
-        // { name: 'Value', sortable: true },
+        { name: 'Value', sortable: true, className: 'wallet' },
         { name: tradeData.baseToken.symbol, sortable: false, className: 'token' },
         { name: tradeData.quoteToken.symbol, sortable: false, className: 'token' },
         { name: 'APY', sortable: true, className: '' },

@@ -158,9 +158,9 @@ export default function App() {
 
     const [candleData, setCandleData] = useState<CandlesByPoolAndDuration | undefined>();
 
-    useEffect(() => {
-        if (candleData) console.log({ candleData });
-    }, [candleData]);
+    // useEffect(() => {
+    //     if (candleData) console.log({ candleData });
+    // }, [candleData]);
 
     // custom hook to manage chain the app is using
     // `chainData` is data on the current chain retrieved from our SDK
@@ -772,7 +772,7 @@ export default function App() {
                 console.log;
             }
 
-            if (provider) {
+            if (crocEnv) {
                 // retrieve pool_positions
                 try {
                     if (httpGraphCacheServerDomain) {
@@ -899,7 +899,7 @@ export default function App() {
                 }
             }
         }
-    }, [tokenPairStringified, chainData.chainId, provider]);
+    }, [tokenPairStringified, chainData.chainId, crocEnv]);
 
     const activePeriod = tradeData.activeChartPeriod;
 
@@ -932,7 +932,7 @@ export default function App() {
                                 // period: '86400', // 1 day
                                 // period: '300', // 5 minute
                                 // time: '1657833300', // optional
-                                n: '200', // positive integer
+                                n: '100', // positive integer
                                 page: '0', // nonnegative integer
                                 chainId: '0x1',
                                 dex: 'all',
@@ -1208,6 +1208,7 @@ export default function App() {
                 user: account || '',
                 chainId: chainData.chainId,
                 addValue: 'true',
+                annotate: 'true',
                 ensResolution: 'true',
             }),
         [account, chainData.chainId],
@@ -1807,33 +1808,33 @@ export default function App() {
         setSidebarManuallySet(true);
     }
 
-    function handleTabChangedBasedOnRoute() {
-        const onTradeRoute = location.pathname.includes('trade');
+    // function handleTabChangedBasedOnRoute() {
+    //     const onTradeRoute = location.pathname.includes('trade');
 
-        const marketTabBasedOnRoute = onTradeRoute ? 0 : 0;
-        const orderTabBasedOnRoute = onTradeRoute ? 1 : 0;
-        const rangeTabBasedOnRoute = onTradeRoute ? 2 : 0;
-        setOutsideControl(true);
-        if (location.pathname === '/trade/market') {
-            setSelectedOutsideTab(marketTabBasedOnRoute);
-        } else if (location.pathname === '/trade/limit') {
-            setSelectedOutsideTab(orderTabBasedOnRoute);
-        } else if (
-            location.pathname === '/trade/range' ||
-            location.pathname.includes('/trade/edit/')
-        ) {
-            setSelectedOutsideTab(rangeTabBasedOnRoute);
-        } else {
-            setSelectedOutsideTab(0);
-        }
-    }
+    //     const marketTabBasedOnRoute = onTradeRoute ? 0 : 0;
+    //     const orderTabBasedOnRoute = onTradeRoute ? 1 : 0;
+    //     const rangeTabBasedOnRoute = onTradeRoute ? 2 : 0;
+    //     setOutsideControl(true);
+    //     if (location.pathname === '/trade/market') {
+    //         setSelectedOutsideTab(marketTabBasedOnRoute);
+    //     } else if (location.pathname === '/trade/limit') {
+    //         setSelectedOutsideTab(orderTabBasedOnRoute);
+    //     } else if (
+    //         location.pathname === '/trade/range' ||
+    //         location.pathname.includes('/trade/edit/')
+    //     ) {
+    //         setSelectedOutsideTab(rangeTabBasedOnRoute);
+    //     } else {
+    //         setSelectedOutsideTab(0);
+    //     }
+    // }
 
     useEffect(() => {
         if (location.pathname.includes('account') || location.pathname.includes('analytics')) {
             setShowSidebar(false);
         }
 
-        handleTabChangedBasedOnRoute();
+        // handleTabChangedBasedOnRoute();
     }, [location.pathname]);
 
     // market - /trade/market
