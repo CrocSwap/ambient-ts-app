@@ -291,8 +291,14 @@ export interface ITransaction {
     invLimitPriceDecimalCorrected: number;
     priceDecimalCorrected: number;
     invPriceDecimalCorrected: number;
+    baseFlowDecimalCorrected: number;
+    quoteFlowDecimalCorrected: number;
     valueUSD: number;
     ensResolution: string;
+    bidTickPriceDecimalCorrected: number;
+    bidTickInvPriceDecimalCorrected: number;
+    askTickPriceDecimalCorrected: number;
+    askTickInvPriceDecimalCorrected: number;
 }
 
 export interface ChangesByUser {

@@ -198,7 +198,7 @@ export default function Chart(props: ChartData) {
             .select('svg')
             .append('text')
             .attr('class', 'popup')
-            .attr('dy', '20px')
+            .attr('dy', '28px')
             .style('visibility', 'visible')
             .style('font-size', '13px');
 
@@ -1358,7 +1358,7 @@ export default function Chart(props: ChartData) {
                         xValue = series.crossValue();
 
                     const filtered =
-                        data.lenght > 1 ? data.filter((d: any) => xValue(d) != null) : data;
+                        data.length > 1 ? data.filter((d: any) => xValue(d) != null) : data;
                     const nearest = minimum(filtered, (d: any) =>
                         Math.abs(point.offsetX - xScale(xValue(d))),
                     )[1];
