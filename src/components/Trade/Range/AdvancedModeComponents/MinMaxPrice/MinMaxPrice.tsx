@@ -50,22 +50,42 @@ export default function MinMaxPrice(props: MinMaxPriceIF) {
 
     const dispatch = useAppDispatch();
 
+    const handleSetMinTarget = (minPriceInput: string) => {
+        setMinPriceInputString(minPriceInput);
+
+        const newTargetData: targetData[] = [
+            { name: !isDenomBase ? 'Max' : 'Min', value: parseFloat(minPriceInput) },
+            {
+                name: !isDenomBase ? 'Min' : 'Max',
+                value: targetData.filter(
+                    (target) => target.name === (!isDenomBase ? 'Min' : 'Max'),
+                )[0].value,
+            },
+        ];
+
+        dispatch(setTargetData(newTargetData));
+    };
+
+    const handleSetMaxTarget = (maxPriceInput: string) => {
+        setMaxPriceInputString(maxPriceInput);
+
+        const newTargetData: targetData[] = [
+            { name: !isDenomBase ? 'Min' : 'Max', value: parseFloat(maxPriceInput) },
+            {
+                name: !isDenomBase ? 'Max' : 'Min',
+                value: targetData.filter(
+                    (target) => target.name === (!isDenomBase ? 'Max' : 'Min'),
+                )[0].value,
+            },
+        ];
+
+        dispatch(setTargetData(newTargetData));
+    };
+
     const handleMinPriceChangeEvent = (evt?: ChangeEvent<HTMLInputElement>) => {
         if (evt) {
             const minPriceInput = evt.target.value;
-            setMinPriceInputString(minPriceInput);
-
-            const newTargetData: targetData[] = [
-                { name: !isDenomBase ? 'Max' : 'Min', value: parseFloat(minPriceInput) },
-                {
-                    name: !isDenomBase ? 'Min' : 'Max',
-                    value: targetData.filter(
-                        (target) => target.name === (!isDenomBase ? 'Min' : 'Max'),
-                    )[0].value,
-                },
-            ];
-
-            dispatch(setTargetData(newTargetData));
+            handleSetMinTarget(minPriceInput);
         } else {
             console.log('no event');
         }
@@ -74,19 +94,7 @@ export default function MinMaxPrice(props: MinMaxPriceIF) {
     const handleMaxPriceChangeEvent = (evt?: ChangeEvent<HTMLInputElement>) => {
         if (evt) {
             const maxPriceInput = evt.target.value;
-            setMaxPriceInputString(maxPriceInput);
-
-            const newTargetData: targetData[] = [
-                { name: !isDenomBase ? 'Min' : 'Max', value: parseFloat(maxPriceInput) },
-                {
-                    name: !isDenomBase ? 'Max' : 'Min',
-                    value: targetData.filter(
-                        (target) => target.name === (!isDenomBase ? 'Max' : 'Min'),
-                    )[0].value,
-                },
-            ];
-
-            dispatch(setTargetData(newTargetData));
+            handleSetMaxTarget(maxPriceInput);
         } else {
             console.log('no event');
         }
