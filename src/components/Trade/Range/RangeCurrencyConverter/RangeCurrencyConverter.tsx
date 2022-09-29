@@ -12,10 +12,12 @@ import { calculateSecondaryDepositQty } from '../../../../utils/functions/calcul
 import { TokenIF, TokenPairIF } from '../../../../utils/interfaces/exports';
 import { useAppDispatch, useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import {
+    reverseTokensInRTK,
     setIsTokenAPrimaryRange,
     setPrimaryQuantityRange,
 } from '../../../../utils/state/tradeDataSlice';
 import { ZERO_ADDRESS } from '../../../../constants';
+import { useNavigate } from 'react-router-dom';
 
 // interface for component props
 interface RangeCurrencyConverterPropsIF {
@@ -306,28 +308,36 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
             tokenAQtyField.value = '';
             // dispatch(setPrimaryQuantityRange('0'));
             setIsTokenAPrimaryLocal(false);
-            console.log('setting to zero');
             setTokenAQtyLocal(0);
             // setTokenAInputQty('0');
         }
     };
+    const navigate = useNavigate();
 
     const reverseTokens = (): void => {
         // console.log('reversing tokens');
-        if (!isTokenAPrimaryLocal) {
-            setTokenAQtyValue(tokenBQtyLocal);
+        dispatch(reverseTokensInRTK());
+        resetTokenQuantities();
+        navigate(
+            '/trade/range/chain=0x5&tokenA=' +
+                tokenPair.dataTokenB.address +
+                '&tokenB=' +
+                tokenPair.dataTokenA.address,
+        );
+        // if (!isTokenAPrimaryLocal) {
+        //     setTokenAQtyValue(tokenBQtyLocal);
 
-            const tokenAField = document.getElementById('A-range-quantity') as HTMLInputElement;
-            if (tokenAField) {
-                tokenAField.value = isNaN(tokenBQtyLocal) ? '' : tokenBQtyLocal.toString();
-            }
-        } else {
-            setTokenBQtyValue(tokenAQtyLocal);
-            const tokenBField = document.getElementById('B-range-quantity') as HTMLInputElement;
-            if (tokenBField) {
-                tokenBField.value = isNaN(tokenAQtyLocal) ? '' : tokenAQtyLocal.toString();
-            }
-        }
+        //     const tokenAField = document.getElementById('A-range-quantity') as HTMLInputElement;
+        //     if (tokenAField) {
+        //         tokenAField.value = isNaN(tokenBQtyLocal) ? '' : tokenBQtyLocal.toString();
+        //     }
+        // } else {
+        //     setTokenBQtyValue(tokenAQtyLocal);
+        //     const tokenBField = document.getElementById('B-range-quantity') as HTMLInputElement;
+        //     if (tokenBField) {
+        //         tokenBField.value = isNaN(tokenAQtyLocal) ? '' : tokenAQtyLocal.toString();
+        //     }
+        // }
 
         setIsTokenAPrimaryLocal(!isTokenAPrimaryLocal);
         dispatch(setIsTokenAPrimaryRange(!isTokenAPrimaryLocal));
