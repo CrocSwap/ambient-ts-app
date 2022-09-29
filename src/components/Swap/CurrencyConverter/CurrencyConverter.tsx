@@ -1,5 +1,5 @@
-import { ChangeEvent, Dispatch, SetStateAction, useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { ChangeEvent, Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import styles from './CurrencyConverter.module.css';
 import CurrencySelector from '../CurrencySelector/CurrencySelector';
 import { TokenIF, TokenPairIF } from '../../../utils/interfaces/exports';
@@ -166,16 +166,33 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
 
     const navigate = useNavigate();
 
+    const { pathname } = useLocation();
+
+    const linkPath = useMemo(() => {
+        let locationSlug = '';
+        if (pathname.startsWith('/trade/market')) {
+            locationSlug = '/trade/market';
+        } else if (pathname.startsWith('/trade/limit')) {
+            locationSlug = '/trade/limit';
+        } else if (pathname.startsWith('/trade/range')) {
+            locationSlug = '/trade/range';
+        } else if (pathname.startsWith('/swap')) {
+            locationSlug = '/swap';
+        }
+        return (
+            locationSlug +
+            '/chain=0x5&tokenA=' +
+            tokenPair.dataTokenB.address +
+            '&tokenB=' +
+            tokenPair.dataTokenA.address
+        );
+    }, [pathname]);
+
     const [switchBoxes, setSwitchBoxes] = useState(false);
     const reverseTokens = (): void => {
         setSwitchBoxes(!switchBoxes);
         dispatch(reverseTokensInRTK());
-        navigate(
-            '/trade/market/chain=0x5&tokenA=' +
-                tokenPair.dataTokenB.address +
-                '&tokenB=' +
-                tokenPair.dataTokenA.address,
-        );
+        navigate(linkPath);
         if (!isTokenAPrimaryLocal) {
             console.log('setting token a');
             setTokenAQtyLocal(tokenBQtyLocal);
