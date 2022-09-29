@@ -196,7 +196,7 @@ export default function Chart(props: ChartData) {
             .select('svg')
             .append('text')
             .attr('class', 'popup')
-            .attr('dy', '20px')
+            .attr('dy', '28px')
             .style('visibility', 'visible')
             .style('font-size', '13px');
 
