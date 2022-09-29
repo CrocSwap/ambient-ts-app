@@ -216,7 +216,7 @@ export default function TradeTabs2(props: ITabsProps) {
     const [swapsForSelectedCandle, setSwapsForSelectedCandle] = useState<ITransaction[]>([]);
 
     useEffect(() => {
-        console.log({ filter });
+        // console.log({ filter });
         if (isCandleSelected && filter?.time) {
             const poolSwapsCacheEndpoint = httpGraphCacheServerDomain + '/pool_swaps?';
 
@@ -245,7 +245,7 @@ export default function TradeTabs2(props: ITabsProps) {
                 })
                 .catch(console.log);
         }
-    }, [isCandleSelected, filter?.time]);
+    }, [isCandleSelected, filter?.time, lastBlockNumber]);
 
     // -------------------------------DATA-----------------------------------------
 

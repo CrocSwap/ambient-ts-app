@@ -157,9 +157,9 @@ export default function App() {
 
     const [candleData, setCandleData] = useState<CandlesByPoolAndDuration | undefined>();
 
-    useEffect(() => {
-        if (candleData) console.log({ candleData });
-    }, [candleData]);
+    // useEffect(() => {
+    //     if (candleData) console.log({ candleData });
+    // }, [candleData]);
 
     // custom hook to manage chain the app is using
     // `chainData` is data on the current chain retrieved from our SDK
