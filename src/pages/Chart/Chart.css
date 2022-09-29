@@ -19,17 +19,17 @@ text {
 
 .annotation-line > .redline {
     stroke: rgba(235, 235, 255, 0.4);
-    stroke-width: 3;
+    stroke-width: 4;
     stroke-dasharray: 16 16;
     stroke-opacity: 0.4;
-    border: 1px dashed rgba(235, 235, 255, 0.4);
+    border: 2px dashed rgba(235, 235, 255, 0.4);
 }
 
 .annotation-line > .ghostline {
-    stroke: rgba(235, 235, 255, 0.4);
-    stroke-width: 0.5;
-    stroke-opacity: 0.4;
-    border: 1px dashed rgba(235, 235, 255, 0.4);
+    stroke: rgba(247, 247, 255, 0.5);
+    stroke-width: 1;
+    stroke-opacity: 0.5;
+    border: 1px rgba(247, 247, 255, 0.5);
 }
 
 .candlestick .down {

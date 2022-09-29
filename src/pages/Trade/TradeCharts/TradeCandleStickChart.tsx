@@ -36,10 +36,7 @@ interface ChartData {
     changeState: (isOpen: boolean | undefined, candleData: CandleData | undefined) => void;
     chartItemStates: chartItemStates;
     denomInBase: boolean;
-    targetData: targetData[] | undefined;
     limitPrice: string | undefined;
-    setLimitRate: React.Dispatch<React.SetStateAction<string>>;
-    limitRate: string;
     liquidityData: any;
     isAdvancedModeActive: boolean | undefined;
     simpleRangeWidth: number | undefined;
@@ -55,6 +52,8 @@ interface ChartData {
     baseTokenAddress: string;
     chainId: string;
     poolPriceNonDisplay: number | undefined;
+    setTargets: React.Dispatch<React.SetStateAction<targetData[]>>;
+    targets: targetData[];
 }
 
 export interface ChartUtils {
@@ -79,7 +78,7 @@ export default function TradeCandleStickChart(props: ChartData) {
         liquidityData: props.liquidityData,
     };
 
-    const { denomInBase, baseTokenAddress, chainId, poolPriceNonDisplay } = props;
+    const { denomInBase, baseTokenAddress, chainId /* poolPriceNonDisplay */ } = props;
 
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [parsedChartData, setParsedChartData] = useState<ChartUtils | undefined>(undefined);
@@ -103,28 +102,30 @@ export default function TradeCandleStickChart(props: ChartData) {
     const baseTokenDecimals = isTokenABase ? tokenADecimals : tokenBDecimals;
     const quoteTokenDecimals = !isTokenABase ? tokenADecimals : tokenBDecimals;
 
-    const currentPoolPriceTick =
-        poolPriceNonDisplay === undefined ? 0 : Math.log(poolPriceNonDisplay) / Math.log(1.0001);
+    // const currentPoolPriceTick =
+    //     poolPriceNonDisplay === undefined ? 0 : Math.log(poolPriceNonDisplay) / Math.log(1.0001);
 
-    const defaultMinPriceDifferencePercentage = -15;
-    const defaultMaxPriceDifferencePercentage = 15;
+    // const defaultMinPriceDifferencePercentage = -15;
+    // const defaultMaxPriceDifferencePercentage = 15;
 
-    const defaultLowTick =
-        tradeData.advancedLowTick === 0
-            ? currentPoolPriceTick + defaultMinPriceDifferencePercentage * 100
-            : tradeData.advancedLowTick;
+    // const defaultLowTick =
+    //     tradeData.advancedLowTick === 0
+    //         ? currentPoolPriceTick + defaultMinPriceDifferencePercentage * 100
+    //         : tradeData.advancedLowTick;
 
-    const defaultHighTick =
-        tradeData.advancedHighTick === 0
-            ? currentPoolPriceTick + defaultMaxPriceDifferencePercentage * 100
-            : tradeData.advancedHighTick;
+    // const defaultHighTick =
+    //     tradeData.advancedHighTick === 0
+    //         ? currentPoolPriceTick + defaultMaxPriceDifferencePercentage * 100
+    //         : tradeData.advancedHighTick;
 
     // Parse price data
     useEffect(() => {
-        setIsLoading(true);
+        // setIsLoading(true);
         const chartData: CandleChartData[] = [];
         const tvlChartData: TvlChartData[] = [];
         const volumeChartData: VolumeChartData[] = [];
+
+        console.log(props.priceData);
 
         props.priceData?.candles.map((data) => {
             chartData.push({
@@ -165,10 +166,11 @@ export default function TradeCandleStickChart(props: ChartData) {
         setParsedChartData(() => {
             return chartUtils;
         });
-    }, [activeChartPeriod, denomInBase]);
+    }, [activeChartPeriod, denomInBase, props.priceData]);
+    // }, [activeChartPeriod, denomInBase]);
 
     // Parse liquidtiy data
-    const liquiditiyData = useMemo(() => {
+    const liquidityData = useMemo(() => {
         const liqData: LiquidityData[] = [];
         const liqSnapData: LiqSnap[] = [];
 
@@ -229,12 +231,9 @@ export default function TradeCandleStickChart(props: ChartData) {
                     <Chart
                         priceData={parsedChartData}
                         expandTradeTable={expandTradeTable}
-                        liquidityData={liquiditiyData}
+                        liquidityData={liquidityData}
                         changeState={props.changeState}
-                        targetData={props.targetData}
                         limitPrice={props.limitPrice}
-                        setLimitRate={props.setLimitRate}
-                        limitRate={props.limitRate}
                         denomInBase={props.denomInBase}
                         isAdvancedModeActive={props.isAdvancedModeActive}
                         simpleRangeWidth={props.simpleRangeWidth}
@@ -251,6 +250,8 @@ export default function TradeCandleStickChart(props: ChartData) {
                         upBorderColor={props.upBorderColor}
                         downBodyColor={props.downBodyColor}
                         downBorderColor={props.downBorderColor}
+                        setTargets={props.setTargets}
+                        targets={props.targets}
                     />
                 ) : (
                     <>{loading}</>

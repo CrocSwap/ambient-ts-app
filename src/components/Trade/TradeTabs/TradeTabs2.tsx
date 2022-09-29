@@ -22,6 +22,7 @@ import { CandleData } from '../../../utils/state/graphDataSlice';
 import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
 
 interface ITabsProps {
+    isUserLoggedIn: boolean;
     crocEnv: CrocEnv | undefined;
     provider: ethers.providers.Provider | undefined;
     account: string;
@@ -51,7 +52,6 @@ interface ITabsProps {
     setOutsideControl: Dispatch<SetStateAction<boolean>>;
     currentPositionActive: string;
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
-    pendingTransactions: string[];
 
     openGlobalModal: (content: React.ReactNode) => void;
 
@@ -60,6 +60,7 @@ interface ITabsProps {
 
 export default function TradeTabs2(props: ITabsProps) {
     const {
+        isUserLoggedIn,
         crocEnv,
         chainId,
         chainData,
@@ -89,79 +90,130 @@ export default function TradeTabs2(props: ITabsProps) {
         setSelectedOutsideTab,
         outsideControl,
         setOutsideControl,
-        pendingTransactions,
     } = props;
 
     const graphData = useAppSelector((state) => state?.graphData);
-    const userData = useAppSelector((state) => state?.userData);
+    const tradeData = useAppSelector((state) => state?.tradeData);
+    // const userData = useAppSelector((state) => state?.userData);
 
-    const userPositions = graphData?.positionsByUser?.positions;
     const userChanges = graphData?.changesByUser?.changes;
     const userLimitOrders = graphData?.limitOrdersByUser?.limitOrders;
+    const userPositions = graphData?.positionsByUser?.positions;
     // const poolPositions = graphData?.positionsByPool?.positions;
 
     const [hasInitialized, setHasInitialized] = useState(false);
 
-    const userChangesLength = userChanges.length;
-    const userPositionsLength = userPositions.length;
-    const userLimitOrdersLength = userLimitOrders.length;
+    const [selectedInsideTab, setSelectedInsideTab] = useState<number>(0);
+
+    const selectedBase = tradeData.baseToken.address;
+    const selectedQuote = tradeData.quoteToken.address;
+
+    const userChangesMatchingTokenSelection = userChanges.filter((userChange) => {
+        return (
+            userChange.base.toLowerCase() === selectedBase.toLowerCase() &&
+            userChange.quote.toLowerCase() === selectedQuote.toLowerCase()
+        );
+    });
+
+    const userLimitOrdersMatchingTokenSelection = userLimitOrders.filter((userLimitOrder) => {
+        return (
+            userLimitOrder.base.toLowerCase() === selectedBase.toLowerCase() &&
+            userLimitOrder.quote.toLowerCase() === selectedQuote.toLowerCase()
+        );
+    });
+
+    const userPositionsMatchingTokenSelection = userPositions.filter((userPosition) => {
+        return (
+            userPosition.base.toLowerCase() === selectedBase.toLowerCase() &&
+            userPosition.quote.toLowerCase() === selectedQuote.toLowerCase()
+        );
+    });
+
+    const matchingUserChangesLength = userChangesMatchingTokenSelection.length;
+    const matchingUserLimitOrdersLength = userLimitOrdersMatchingTokenSelection.length;
+    const matchingUserPositionsLength = userPositionsMatchingTokenSelection.length;
 
     useEffect(() => {
         setHasInitialized(false);
     }, [
         account,
-        userData.isLoggedIn,
-        userChangesLength,
-        userLimitOrdersLength,
-        userPositionsLength,
-        selectedOutsideTab,
+        isUserLoggedIn,
+        // userData.isLoggedIn,
+        matchingUserChangesLength,
+        matchingUserLimitOrdersLength,
+        matchingUserPositionsLength,
+        // selectedOutsideTab,
+        selectedBase,
+        selectedQuote,
     ]);
 
     useEffect(() => {
-        // console.log({ hasInitialized });
-        // console.log({ userChangesLength });
-        // console.log({ userPositions });
-        // console.log({ selectedOutsideTab });
         if (!hasInitialized) {
-            if (selectedOutsideTab === 0) {
-                if (!isCandleSelected && !isShowAllEnabled && userPositions.length < 1) {
+            // console.log({ outsideControl });
+            // console.log({ selectedOutsideTab });
+            // console.log({ selectedInsideTab });
+            if (
+                (outsideControl && selectedOutsideTab === 0) ||
+                (!outsideControl && selectedInsideTab === 0)
+            ) {
+                if (
+                    !isUserLoggedIn ||
+                    (!isCandleSelected && !isShowAllEnabled && matchingUserChangesLength < 1)
+                ) {
                     setIsShowAllEnabled(true);
-                } else if (userPositions.length < 1) {
+                } else if (matchingUserChangesLength < 1) {
                     return;
-                } else if (isShowAllEnabled && userPositions.length >= 1) {
+                } else if (isShowAllEnabled && matchingUserChangesLength >= 1) {
                     setIsShowAllEnabled(false);
                 }
-            } else if (selectedOutsideTab === 1) {
-                if (!isCandleSelected && !isShowAllEnabled && userLimitOrders.length < 1) {
+            } else if (
+                (outsideControl && selectedOutsideTab === 1) ||
+                (!outsideControl && selectedInsideTab === 1)
+            ) {
+                if (
+                    !isUserLoggedIn ||
+                    (!isCandleSelected && !isShowAllEnabled && matchingUserLimitOrdersLength < 1)
+                ) {
                     setIsShowAllEnabled(true);
-                } else if (userLimitOrders.length < 1) {
+                } else if (matchingUserLimitOrdersLength < 1) {
                     return;
-                } else if (isShowAllEnabled && userLimitOrders.length >= 1) {
+                } else if (isShowAllEnabled && matchingUserLimitOrdersLength >= 1) {
                     setIsShowAllEnabled(false);
                 }
-            } else if (selectedOutsideTab === 2) {
-                if (!isCandleSelected && !isShowAllEnabled && userChanges.length < 1) {
+            } else if (
+                (outsideControl && selectedOutsideTab === 2) ||
+                (!outsideControl && selectedInsideTab === 2)
+            ) {
+                if (
+                    !isUserLoggedIn ||
+                    (!isCandleSelected && !isShowAllEnabled && matchingUserPositionsLength < 1)
+                ) {
                     setIsShowAllEnabled(true);
-                } else if (userChanges.length < 1) {
+                } else if (matchingUserPositionsLength < 1) {
                     return;
-                } else if (isShowAllEnabled && userChanges.length >= 1) {
+                } else if (isShowAllEnabled && matchingUserPositionsLength >= 1) {
                     setIsShowAllEnabled(false);
                 }
-                setHasInitialized(true);
             }
+            setHasInitialized(true);
         }
     }, [
+        isUserLoggedIn,
         hasInitialized,
+        outsideControl,
+        selectedInsideTab,
+        selectedOutsideTab,
         isShowAllEnabled,
-        userPositions.length,
-        userChanges.length,
-        userLimitOrders.length,
+        matchingUserPositionsLength,
+        matchingUserChangesLength,
+        matchingUserLimitOrdersLength,
     ]);
 
     // -------------------------------DATA-----------------------------------------
 
     // Props for <Ranges/> React Element
     const rangesProps = {
+        isUserLoggedIn: isUserLoggedIn,
         crocEnv: crocEnv,
         chainData: chainData,
         baseTokenBalance: baseTokenBalance,
@@ -180,7 +232,6 @@ export default function TradeTabs2(props: ITabsProps) {
         expandTradeTable: expandTradeTable,
         currentPositionActive: currentPositionActive,
         setCurrentPositionActive: setCurrentPositionActive,
-        pendingTransactions: pendingTransactions,
         openGlobalModal: props.openGlobalModal,
 
         closeGlobalModal: props.closeGlobalModal,
@@ -190,7 +241,7 @@ export default function TradeTabs2(props: ITabsProps) {
         isShowAllEnabled: isShowAllEnabled,
         tokenMap: tokenMap,
         graphData: graphData,
-        chainId: chainId,
+        chainData: chainData,
         blockExplorer: chainData.blockExplorer || undefined,
         currentTxActiveInTransactions: currentTxActiveInTransactions,
         account: account,
@@ -205,6 +256,7 @@ export default function TradeTabs2(props: ITabsProps) {
     // Props for <Orders/> React Element
     const ordersProps = {
         expandTradeTable: expandTradeTable,
+        chainData: chainData,
         isShowAllEnabled: isShowAllEnabled,
         account: account,
         graphData: graphData,
@@ -225,13 +277,13 @@ export default function TradeTabs2(props: ITabsProps) {
 
     // data for headings of each of the three tabs
     const tradeTabData = [
-        { label: 'Ranges', content: <Ranges {...rangesProps} />, icon: rangePositionsImage },
-        { label: 'Limit Orders', content: <Orders {...ordersProps} />, icon: openOrdersImage },
         {
             label: 'Transactions',
             content: <Transactions {...transactionsProps} />,
             icon: recentTransactionsImage,
         },
+        { label: 'Limit Orders', content: <Orders {...ordersProps} />, icon: openOrdersImage },
+        { label: 'Ranges', content: <Ranges {...rangesProps} />, icon: rangePositionsImage },
     ];
 
     // -------------------------------END OF DATA-----------------------------------------
@@ -254,6 +306,7 @@ export default function TradeTabs2(props: ITabsProps) {
                     setSelectedOutsideTab={setSelectedOutsideTab}
                     outsideControl={outsideControl}
                     setOutsideControl={setOutsideControl}
+                    setSelectedInsideTab={setSelectedInsideTab}
                 />
             }
         </div>

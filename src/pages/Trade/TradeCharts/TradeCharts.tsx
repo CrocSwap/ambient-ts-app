@@ -45,10 +45,7 @@ interface TradeChartsPropsIF {
     setFullScreenChart: Dispatch<SetStateAction<boolean>>;
     changeState: (isOpen: boolean | undefined, candleData: CandleData | undefined) => void;
     candleData: CandlesByPoolAndDuration | undefined;
-    targetData: targetData[] | undefined;
     limitPrice: string | undefined;
-    setLimitRate: React.Dispatch<React.SetStateAction<string>>;
-    limitRate: string;
     favePools: PoolIF[];
     addPoolToFaves: (tokenA: TokenIF, tokenB: TokenIF, chainId: string, poolId: number) => void;
     removePoolFromFaves: (
@@ -70,6 +67,8 @@ interface TradeChartsPropsIF {
     downBorderColor: string;
     baseTokenAddress: string;
     poolPriceNonDisplay: number | undefined;
+    setTargets: React.Dispatch<React.SetStateAction<targetData[]>>;
+    targets: targetData[];
 }
 
 export interface CandleChartData {
@@ -106,6 +105,7 @@ export interface LiqSnap {
     activeLiq: any;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     pinnedMaxPriceDisplayTruncated: any;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     pinnedMinPriceDisplayTruncated: any;
 }
 
@@ -659,10 +659,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
                         priceData={props.candleData}
                         changeState={props.changeState}
                         chartItemStates={chartItemStates}
-                        targetData={props.targetData}
                         limitPrice={props.limitPrice}
-                        setLimitRate={props.setLimitRate}
-                        limitRate={props.limitRate}
                         denomInBase={denomInBase}
                         liquidityData={props.liquidityData}
                         isAdvancedModeActive={props.isAdvancedModeActive}
@@ -679,6 +676,8 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
                         baseTokenAddress={props.baseTokenAddress}
                         chainId={chainId}
                         poolPriceNonDisplay={props.poolPriceNonDisplay}
+                        setTargets={props.setTargets}
+                        targets={props.targets}
                     />
                 </div>
             )}

@@ -72,7 +72,7 @@ export default function RemoveRangeWidth(props: RemoveRangeWidthPropsIF) {
                         min='1'
                         max='100'
                         step='1'
-                        defaultValue={100}
+                        defaultValue={removalPercentage}
                         type='range'
                         className={styles.percentage_input}
                         onChange={(e) => handlePercentageUpdate(parseInt(e.target.value))}

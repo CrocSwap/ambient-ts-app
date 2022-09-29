@@ -66,11 +66,12 @@ export default function RangeDetails(props: IRangeDetailsProps) {
 
     const httpGraphCacheServerDomain = 'https://809821320828123.de:5000';
 
-    const [baseLiquidityDisplay, setBaseLiquidityDisplay] = useState<string | undefined>();
-    const [quoteLiquidityDisplay, setQuoteLiquidityDisplay] = useState<string | undefined>();
+    const [baseCollateralDisplay, setBaseCollateralDisplay] = useState<string | undefined>();
+    const [quoteCollateralDisplay, setQuoteCollateralDisplay] = useState<string | undefined>();
 
     const [baseFeesDisplay, setBaseFeesDisplay] = useState<string | undefined>();
     const [quoteFeesDisplay, setQuoteFeesDisplay] = useState<string | undefined>();
+
     const [usdValue, setUsdValue] = useState<string | undefined>();
 
     // eslint-disable-next-line
@@ -98,8 +99,33 @@ export default function RangeDetails(props: IRangeDetailsProps) {
                 .then((response) => response?.json())
                 .then((json) => {
                     const positionStats = json?.data;
-                    const liqBaseNum = position.positionLiqBaseDecimalCorrected;
-                    const liqQuoteNum = position.positionLiqQuoteDecimalCorrected;
+                    const liqBaseNum = positionStats.positionLiqBaseDecimalCorrected;
+                    const liqQuoteNum = positionStats.positionLiqQuoteDecimalCorrected;
+                    const liqBaseDisplay = liqBaseNum
+                        ? liqBaseNum < 2
+                            ? liqBaseNum.toLocaleString(undefined, {
+                                  minimumFractionDigits: 2,
+                                  maximumFractionDigits: 6,
+                              })
+                            : liqBaseNum.toLocaleString(undefined, {
+                                  minimumFractionDigits: 2,
+                                  maximumFractionDigits: 2,
+                              })
+                        : undefined;
+                    setBaseCollateralDisplay(liqBaseDisplay);
+
+                    const liqQuoteDisplay = liqQuoteNum
+                        ? liqQuoteNum < 2
+                            ? liqQuoteNum.toLocaleString(undefined, {
+                                  minimumFractionDigits: 2,
+                                  maximumFractionDigits: 6,
+                              })
+                            : liqQuoteNum.toLocaleString(undefined, {
+                                  minimumFractionDigits: 2,
+                                  maximumFractionDigits: 2,
+                              })
+                        : undefined;
+                    setQuoteCollateralDisplay(liqQuoteDisplay);
 
                     const usdValue = position.positionLiqTotalUSD;
 
@@ -113,50 +139,11 @@ export default function RangeDetails(props: IRangeDetailsProps) {
                         );
                     }
 
-                    if (liqBaseNum) {
-                        const baseLiqDisplayTruncated =
-                            liqBaseNum === 0
-                                ? '0'
-                                : liqBaseNum < 0.0001
-                                ? liqBaseNum.toExponential(2)
-                                : liqBaseNum < 2
-                                ? liqBaseNum.toPrecision(3)
-                                : liqBaseNum >= 100000
-                                ? formatAmount(liqBaseNum)
-                                : // ? baseLiqDisplayNum.toExponential(2)
-                                  liqBaseNum.toLocaleString(undefined, {
-                                      minimumFractionDigits: 2,
-                                      maximumFractionDigits: 2,
-                                  });
+                    const baseFeeDisplayNum = positionStats.feesLiqBaseDecimalCorrected;
+                    const quoteFeeDisplayNum = positionStats.feesLiqQuoteDecimalCorrected;
 
-                        setBaseLiquidityDisplay(baseLiqDisplayTruncated);
-                    }
-                    if (liqQuoteNum) {
-                        const quoteLiqDisplayTruncated =
-                            liqQuoteNum === 0
-                                ? '0'
-                                : liqQuoteNum < 0.0001
-                                ? liqQuoteNum.toExponential(2)
-                                : liqQuoteNum < 2
-                                ? liqQuoteNum.toPrecision(3)
-                                : liqQuoteNum >= 100000
-                                ? formatAmount(liqQuoteNum)
-                                : // ? quoteLiqDisplayNum.toExponential(2)
-                                  liqQuoteNum.toLocaleString(undefined, {
-                                      minimumFractionDigits: 2,
-                                      maximumFractionDigits: 2,
-                                  });
-                        setQuoteLiquidityDisplay(quoteLiqDisplayTruncated);
-                    }
-
-                    const baseFeeDisplayNum = position.feesLiqBaseDecimalCorrected;
-                    const quoteFeeDisplayNum = position.feesLiqQuoteDecimalCorrected;
-
-                    // const baseFeeDisplayNum = parseFloat(
-                    //     toDisplayQty(positionStats.feeLiqBase, positionStats.baseDecimals),
-                    // );
                     const baseFeeDisplayTruncated = !baseFeeDisplayNum
-                        ? '0'
+                        ? '0.00'
                         : baseFeeDisplayNum < 0.0001
                         ? baseFeeDisplayNum.toExponential(2)
                         : baseFeeDisplayNum < 2
@@ -171,7 +158,7 @@ export default function RangeDetails(props: IRangeDetailsProps) {
                     setBaseFeesDisplay(baseFeeDisplayTruncated);
 
                     const quoteFeesDisplayTruncated = !quoteFeeDisplayNum
-                        ? '0'
+                        ? '0.00'
                         : quoteFeeDisplayNum < 0.0001
                         ? quoteFeeDisplayNum.toExponential(2)
                         : quoteFeeDisplayNum < 2
@@ -246,8 +233,8 @@ export default function RangeDetails(props: IRangeDetailsProps) {
                             usdValue={usdValue ?? '…'}
                             lowRangeDisplay={lowRangeDisplay}
                             highRangeDisplay={highRangeDisplay}
-                            baseLiquidityDisplay={baseLiquidityDisplay}
-                            quoteLiquidityDisplay={quoteLiquidityDisplay}
+                            baseCollateralDisplay={baseCollateralDisplay}
+                            quoteCollateralDisplay={quoteCollateralDisplay}
                             baseFeesDisplay={baseFeesDisplay}
                             quoteFeesDisplay={quoteFeesDisplay}
                             baseTokenLogoURI={baseTokenLogoURI}

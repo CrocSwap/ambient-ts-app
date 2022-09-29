@@ -79,6 +79,11 @@ export default function TransactionCard(props: TransactionProps) {
 
     const [baseFlowDisplay, setBaseFlowDisplay] = useState<string | undefined>(undefined);
     const [quoteFlowDisplay, setQuoteFlowDisplay] = useState<string | undefined>(undefined);
+
+    useEffect(() => {
+        setBaseFlowDisplay(undefined);
+        setQuoteFlowDisplay(undefined);
+    }, [tx.tx]);
     const txDomId = tx.id === currentTxActiveInTransactions ? `tx-${tx.id}` : '';
 
     function scrollToDiv() {
@@ -96,57 +101,95 @@ export default function TransactionCard(props: TransactionProps) {
 
     useEffect(() => {
         // console.log({ tx });
-        if (tx.priceDecimalCorrected && tx.invPriceDecimalCorrected) {
-            const priceDecimalCorrected = tx.priceDecimalCorrected;
-            const invPriceDecimalCorrected = tx.invPriceDecimalCorrected;
+        if (tx.entityType === 'limitOrder') {
+            if (tx.limitPriceDecimalCorrected && tx.invLimitPriceDecimalCorrected) {
+                const priceDecimalCorrected = tx.limitPriceDecimalCorrected;
+                const invPriceDecimalCorrected = tx.invLimitPriceDecimalCorrected;
 
-            const nonInvertedPriceTruncated =
-                priceDecimalCorrected === 0
-                    ? '0'
-                    : priceDecimalCorrected < 0.0001
-                    ? priceDecimalCorrected.toExponential(2)
-                    : priceDecimalCorrected < 2
-                    ? priceDecimalCorrected.toPrecision(3)
-                    : priceDecimalCorrected >= 100000
-                    ? formatAmount(priceDecimalCorrected)
-                    : priceDecimalCorrected.toLocaleString(undefined, {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                      });
+                const nonInvertedPriceTruncated =
+                    priceDecimalCorrected === 0
+                        ? '0.00'
+                        : priceDecimalCorrected < 0.0001
+                        ? priceDecimalCorrected.toExponential(2)
+                        : priceDecimalCorrected < 2
+                        ? priceDecimalCorrected.toPrecision(3)
+                        : priceDecimalCorrected >= 100000
+                        ? formatAmount(priceDecimalCorrected)
+                        : priceDecimalCorrected.toLocaleString(undefined, {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2,
+                          });
 
-            const invertedPriceTruncated =
-                invPriceDecimalCorrected === 0
-                    ? '0'
-                    : invPriceDecimalCorrected < 0.0001
-                    ? invPriceDecimalCorrected.toExponential(2)
-                    : invPriceDecimalCorrected < 2
-                    ? invPriceDecimalCorrected.toPrecision(3)
-                    : invPriceDecimalCorrected >= 100000
-                    ? formatAmount(invPriceDecimalCorrected)
-                    : invPriceDecimalCorrected.toLocaleString(undefined, {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                      });
+                const invertedPriceTruncated =
+                    invPriceDecimalCorrected === 0
+                        ? '0.00'
+                        : invPriceDecimalCorrected < 0.0001
+                        ? invPriceDecimalCorrected.toExponential(2)
+                        : invPriceDecimalCorrected < 2
+                        ? priceDecimalCorrected.toPrecision(3)
+                        : invPriceDecimalCorrected >= 100000
+                        ? formatAmount(invPriceDecimalCorrected)
+                        : invPriceDecimalCorrected.toLocaleString(undefined, {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2,
+                          });
 
-            const truncatedDisplayPrice = isDenomBase
-                ? quoteTokenCharacter + invertedPriceTruncated
-                : baseTokenCharacter + nonInvertedPriceTruncated;
+                const truncatedDisplayPrice = isDenomBase
+                    ? quoteTokenCharacter + invertedPriceTruncated
+                    : baseTokenCharacter + nonInvertedPriceTruncated;
 
-            // const truncatedDisplayPrice = isDenomBase
-            //     ? quoteTokenCharacter + invPriceDecimalCorrected?.toPrecision(3)
-            //     : baseTokenCharacter + priceDecimalCorrected?.toPrecision(3);
-
-            setTruncatedDisplayPrice(truncatedDisplayPrice);
+                setTruncatedDisplayPrice(truncatedDisplayPrice);
+            }
         } else {
-            setTruncatedDisplayPrice(undefined);
+            if (tx.priceDecimalCorrected && tx.invPriceDecimalCorrected) {
+                const priceDecimalCorrected = tx.priceDecimalCorrected;
+                const invPriceDecimalCorrected = tx.invPriceDecimalCorrected;
+
+                const nonInvertedPriceTruncated =
+                    priceDecimalCorrected === 0
+                        ? '0.00'
+                        : priceDecimalCorrected < 0.0001
+                        ? priceDecimalCorrected.toExponential(2)
+                        : priceDecimalCorrected < 2
+                        ? priceDecimalCorrected.toPrecision(3)
+                        : priceDecimalCorrected >= 100000
+                        ? formatAmount(priceDecimalCorrected)
+                        : priceDecimalCorrected.toLocaleString(undefined, {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2,
+                          });
+
+                const invertedPriceTruncated =
+                    invPriceDecimalCorrected === 0
+                        ? '0.00'
+                        : invPriceDecimalCorrected < 0.0001
+                        ? invPriceDecimalCorrected.toExponential(2)
+                        : invPriceDecimalCorrected < 2
+                        ? invPriceDecimalCorrected.toPrecision(3)
+                        : invPriceDecimalCorrected >= 100000
+                        ? formatAmount(invPriceDecimalCorrected)
+                        : invPriceDecimalCorrected.toLocaleString(undefined, {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2,
+                          });
+
+                const truncatedDisplayPrice = isDenomBase
+                    ? quoteTokenCharacter + invertedPriceTruncated
+                    : baseTokenCharacter + nonInvertedPriceTruncated;
+
+                setTruncatedDisplayPrice(truncatedDisplayPrice);
+            } else {
+                setTruncatedDisplayPrice(undefined);
+            }
         }
+
         if (tx.baseFlow && tx.baseDecimals) {
             const baseFlowDisplayNum = parseFloat(toDisplayQty(tx.baseFlow, tx.baseDecimals));
             const baseFlowAbsNum = Math.abs(baseFlowDisplayNum);
             const isBaseFlowNegative = baseFlowDisplayNum > 0;
             const baseFlowDisplayTruncated =
                 baseFlowAbsNum === 0
-                    ? '0'
+                    ? '0.00'
                     : baseFlowAbsNum < 0.0001
                     ? baseFlowDisplayNum.toExponential(2)
                     : baseFlowAbsNum < 2
@@ -162,26 +205,6 @@ export default function TransactionCard(props: TransactionProps) {
                 ? `(${baseFlowDisplayTruncated})`
                 : baseFlowDisplayTruncated;
             setBaseFlowDisplay(baseFlowDisplayString);
-        } else {
-            // console.log({ tx });
-            // console.log(tx.tx);
-            if (tx.inBaseQty) {
-                if (!tx.isBuy) {
-                    setBaseFlowDisplay(toDisplayQty(tx.qty, tx.baseDecimals));
-                    setQuoteFlowDisplay(undefined);
-                } else {
-                    setBaseFlowDisplay('(' + toDisplayQty(tx.qty, tx.baseDecimals) + ')');
-                    setQuoteFlowDisplay(undefined);
-                }
-            } else {
-                if (!tx.isBuy) {
-                    setQuoteFlowDisplay('(' + toDisplayQty(tx.qty, tx.quoteDecimals) + ')');
-                    setBaseFlowDisplay(undefined);
-                } else {
-                    setQuoteFlowDisplay(toDisplayQty(tx.qty, tx.quoteDecimals));
-                    setBaseFlowDisplay(undefined);
-                }
-            }
         }
         if (tx.quoteFlow && tx.quoteDecimals) {
             const quoteFlowDisplayNum = parseFloat(toDisplayQty(tx.quoteFlow, tx.quoteDecimals));
@@ -189,7 +212,7 @@ export default function TransactionCard(props: TransactionProps) {
             const isQuoteFlowNegative = quoteFlowDisplayNum > 0;
             const quoteFlowDisplayTruncated =
                 quoteFlowAbsNum === 0
-                    ? '0'
+                    ? '0.00'
                     : quoteFlowAbsNum < 0.0001
                     ? quoteFlowDisplayNum.toExponential(2)
                     : quoteFlowAbsNum < 2
@@ -229,8 +252,6 @@ export default function TransactionCard(props: TransactionProps) {
             ? 'rangeRemove'
             : 'rangeAdd';
 
-    if (!transactionMatchesSelectedTokens) return null;
-
     const activeTransactionStyle =
         tx.id === currentTxActiveInTransactions ? styles.active_tx_style : '';
 
@@ -249,6 +270,7 @@ export default function TransactionCard(props: TransactionProps) {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
           });
+    if (!transactionMatchesSelectedTokens) return null;
 
     return (
         <div

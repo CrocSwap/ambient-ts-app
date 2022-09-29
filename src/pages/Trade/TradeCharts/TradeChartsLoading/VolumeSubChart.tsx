@@ -23,6 +23,7 @@ export default function VolumeSubChart(props: VolumeData) {
         if (volumeData !== undefined && period !== undefined && xScale !== undefined) {
             const chartData = {
                 lineseries: volumeData,
+                crosshairDataLocal: crosshairData,
             };
 
             const render = () => {
@@ -50,6 +51,14 @@ export default function VolumeSubChart(props: VolumeData) {
 
                     return newTargets;
                 });
+
+                const pointer = d3fc.pointer().on('point', (event: any) => {
+                    if (event[0] !== undefined) {
+                        chartData.crosshairDataLocal[0].y = event[0].y;
+                        render();
+                    }
+                });
+                d3.select('.chart-volume').call(pointer);
             };
 
             const minimum = (volumeData: any, accessor: any) => {
@@ -107,10 +116,6 @@ export default function VolumeSubChart(props: VolumeData) {
                         .selectAll('.point>path')
                         .attr('transform', 'scale(0.2)')
                         .style('fill', 'white');
-                    selection
-                        .enter()
-                        .select('g.annotation-line.horizontal')
-                        .attr('visibility', 'hidden');
                 });
 
             const multi = d3fc
@@ -119,7 +124,7 @@ export default function VolumeSubChart(props: VolumeData) {
                 .mapping((volumeData: any, index: any, series: any) => {
                     switch (series[index]) {
                         case crosshair:
-                            return crosshairData;
+                            return chartData.crosshairDataLocal;
                         default:
                             return volumeData.lineseries;
                     }
@@ -148,6 +153,16 @@ export default function VolumeSubChart(props: VolumeData) {
                     'grid-template-rows',
                     'minmax(1px,max-content) auto 1fr auto minmax(1px,max-content)',
                 );
+
+            d3.select('.chart-volume').on('mouseleave', () => {
+                crosshair.decorate((selection: any) => {
+                    selection
+                        .enter()
+                        .select('g.annotation-line.horizontal')
+                        .attr('visibility', 'hidden');
+                });
+                render();
+            });
 
             render();
         }
