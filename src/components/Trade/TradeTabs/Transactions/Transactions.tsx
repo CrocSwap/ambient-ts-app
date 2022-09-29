@@ -23,7 +23,7 @@ interface TransactionsProps {
     isShowAllEnabled: boolean;
     portfolio?: boolean;
     tokenMap: Map<string, TokenIF>;
-    swapsForSelectedCandle: ITransaction[];
+    changesInSelectedCandle: ITransaction[];
     graphData: graphData;
     chainData: ChainSpec;
     blockExplorer?: string;
@@ -42,7 +42,7 @@ export default function Transactions(props: TransactionsProps) {
     const {
         isShowAllEnabled,
         account,
-        swapsForSelectedCandle,
+        changesInSelectedCandle,
         graphData,
         tokenMap,
         chainData,
@@ -98,7 +98,7 @@ export default function Transactions(props: TransactionsProps) {
     // console.log({ isCandleSelected });
     useEffect(() => {
         isCandleSelected
-            ? setTransactionData(swapsForSelectedCandle)
+            ? setTransactionData(changesInSelectedCandle)
             : // ? setTransactionData(
             //       changesByPool.filter((data) => {
             //           filter?.allSwaps?.includes(data.id);
@@ -111,8 +111,9 @@ export default function Transactions(props: TransactionsProps) {
         isShowAllEnabled,
         isCandleSelected,
         filter,
-        swapsForSelectedCandle,
-        // , changesByUser, changesByPool
+        changesInSelectedCandle,
+        changesByUser,
+        changesByPool,
     ]);
 
     useEffect(() => {
