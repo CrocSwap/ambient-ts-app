@@ -71,8 +71,8 @@ export default function MessageInput(props: MessageInputProps, prop: PortfolioBa
 
     const handleSendMsg = async (msg: string) => {
         _socket.emit('send-msg', {
-            from: '62f24f3ff40188d467c532e8',
-            to: '62fa389c897f9778e2eb863f',
+            from: '63344e11ea85c4140fb20740',
+            to: '62fe2c15020c9afc6e5882de',
             message: msg,
             roomInfo: props.room,
         });
@@ -119,6 +119,7 @@ export default function MessageInput(props: MessageInputProps, prop: PortfolioBa
                     value={message}
                     onChange={onChangeMessage}
                 />
+
                 <BsSlashSquare
                     style={positionIsActive ? { color: '#5FA2FF' } : { color: '' }}
                     onClick={() => {

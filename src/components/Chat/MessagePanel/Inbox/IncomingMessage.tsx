@@ -23,12 +23,10 @@ export default function IncomingMessage(props: IncomingMessageProps) {
             <div className={styles.avatar_image}>
                 <img src={noAvatarImage} alt='no avatar' />
             </div>
-
             <div className={styles.message_body}>
                 <div className={styles.name}>name</div>
                 <p className={styles.message}>{props.message.message}</p>
             </div>
-
             <p className={styles.message_date}>{formatAMPM(props.message.createdAt)}</p>
         </div>
     );

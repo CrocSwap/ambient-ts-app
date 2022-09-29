@@ -13,6 +13,7 @@ import { Message } from './Model/MessageModel';
 import { PoolIF } from '../../utils/interfaces/PoolIF';
 import { TokenIF } from '../../utils/interfaces/TokenIF';
 import { targetData } from '../../utils/state/tradeDataSlice';
+import { useMoralis } from 'react-moralis';
 
 interface currentPoolInfo {
     tokenA: TokenIF;
