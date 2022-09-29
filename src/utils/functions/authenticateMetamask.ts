@@ -24,7 +24,7 @@ Your authentication status will reset on logout.`;
 
     if (!isAuthenticated || !isWeb3Enabled) {
         authenticate({
-            provider: 'metamask',
+            // provider: 'metamask',
             signingMessage: signingMessage,
             onSuccess: async () => {
                 await enableWeb3();
