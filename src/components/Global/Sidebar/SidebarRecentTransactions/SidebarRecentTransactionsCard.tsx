@@ -18,12 +18,10 @@ interface TransactionProps {
     setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
     isShowAllEnabled: boolean;
     setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
-
     selectedOutsideTab: number;
     setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
     outsideControl: boolean;
     setOutsideControl: Dispatch<SetStateAction<boolean>>;
-
     tabToSwitchToBasedOnRoute: number;
 }
 
@@ -32,23 +30,14 @@ export default function SidebarRecentTransactionsCard(props: TransactionProps) {
         tx,
         coinGeckoTokenMap,
         chainId,
-        // currentTxActiveInTransactions,
         setCurrentTxActiveInTransactions,
-        // isShowAllEnabled,
         setIsShowAllEnabled,
-
-        // selectedOutsideTab,
         setSelectedOutsideTab,
-        // outsideControl,
         setOutsideControl,
-
         tabToSwitchToBasedOnRoute,
     } = props;
 
     const dispatch = useAppDispatch();
-
-    // console.log(tx.source);
-    // console.log(tx.block);
 
     const baseId = tx.base + '_' + chainId;
     const quoteId = tx.quote + '_' + chainId;
@@ -56,9 +45,7 @@ export default function SidebarRecentTransactionsCard(props: TransactionProps) {
     const baseToken = coinGeckoTokenMap ? coinGeckoTokenMap.get(baseId.toLowerCase()) : null;
     const quoteToken = coinGeckoTokenMap ? coinGeckoTokenMap.get(quoteId.toLowerCase()) : null;
 
-    // const [baseFlowDisplay, setBaseFlowDisplay] = useState<string | undefined>(undefined);
     const [valueUSD, setValueUSD] = useState<string | undefined>(undefined);
-    //  const [quoteFlowDisplay, setQuoteFlowDisplay] = useState<string | undefined>(undefined);
 
     useEffect(() => {
         if (tx.valueUSD) {
@@ -77,7 +64,6 @@ export default function SidebarRecentTransactionsCard(props: TransactionProps) {
         if (baseToken) dispatch(setTokenA(baseToken));
         if (quoteToken) dispatch(setTokenB(quoteToken));
     }
-    // const baseTokenCharacter = baseToken ? getUnicodeCharacter(baseToken?.symbol) : null;
 
     const transactionTypeSide =
         tx.entityType === 'swap'
@@ -95,7 +81,6 @@ export default function SidebarRecentTransactionsCard(props: TransactionProps) {
             <div>{transactionTypeSide}</div>
             <div className={styles.status_display}>
                 {valueUSD ? `$${valueUSD}` : '…'}
-                {/* {baseTokenDisplay} / {quoteTokenDisplay} */}
             </div>
         </div>
     );
