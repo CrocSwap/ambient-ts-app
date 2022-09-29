@@ -3,6 +3,7 @@ import { ChangeEvent, Dispatch, SetStateAction, useEffect, useState } from 'reac
 import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import {
+    reverseTokensInRTK,
     setIsTokenAPrimary,
     setPrimaryQuantity,
 } from '../../../../utils/state/tradeDataSlice';
@@ -158,11 +159,13 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
     const navigate = useNavigate();
 
     const reverseTokens = (): void => {
+        dispatch(reverseTokensInRTK());
+
         navigate(
-            '/trade/market/chain=0x5&tokenA=' +
-            tokenPair.dataTokenB.address +
-            '&tokenB=' +
-            tokenPair.dataTokenA.address
+            '/trade/limit/chain=0x5&tokenA=' +
+                tokenPair.dataTokenB.address +
+                '&tokenB=' +
+                tokenPair.dataTokenA.address,
         );
         if (!isTokenAPrimaryLocal) {
             setTokenAQtyLocal(tokenBQtyLocal);
