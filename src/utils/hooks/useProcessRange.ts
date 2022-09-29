@@ -5,6 +5,7 @@ import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import getUnicodeCharacter from '../../utils/functions/getUnicodeCharacter';
 import { formatAmount } from '../../utils/numbers';
 import { PositionIF } from '../../utils/interfaces/PositionIF';
+import trimString from '../../utils/functions/trimString';
 
 export const useProcessRange = (position: PositionIF) => {
     const { account } = useMoralis();
@@ -17,11 +18,19 @@ export const useProcessRange = (position: PositionIF) => {
     const baseQty = position.positionLiqBaseTruncated;
     const quoteQty = position.positionLiqQuoteTruncated;
 
+    const baseTokenSymbol = tradeData.baseToken.symbol;
+    const quoteTokenSymbol = tradeData.quoteToken.symbol;
+
+    const quoteTokenLogo = tradeData.quoteToken.logoURI;
+    const baseTokenLogo = tradeData.baseToken.logoURI;
+
     const apy = position.apy ?? undefined;
     const isAmbient = position.positionType === 'ambient';
 
     const ensName = position.ensResolution ? position.ensResolution : null;
     const ownerId = position.user;
+
+    const isOwnerActiveAccount = position.user.toLowerCase() === account?.toLowerCase();
 
     // -------------------------------POSITION HASH------------------------
 
@@ -91,9 +100,26 @@ export const useProcessRange = (position: PositionIF) => {
               maximumFractionDigits: 2,
           });
 
+    const quantitiesAvailable = baseQty !== undefined || quoteQty !== undefined;
+
+    const baseDisplayFrontend = quantitiesAvailable
+        ? `${baseTokenCharacter}${baseQty || '0.00'}`
+        : '…';
+
+    const quoteDisplayFrontend = quantitiesAvailable
+        ? `${quoteTokenCharacter}${quoteQty || '0.00'}`
+        : '…';
+
     const usdValue = usdValueTruncated ? '$' + usdValueTruncated : '…';
 
-    if (!position) return null;
+    const ensNameOrOwnerTruncated = ensName
+        ? trimString(ensName, 5, 3, '…')
+        : trimString(ownerId, 6, 0, '…');
+    const posHashTruncated = trimString(posHash.toString(), 6, 0, '…');
+
+    const userNameToDisplay = isOwnerActiveAccount ? 'You' : ensNameOrOwnerTruncated;
+
+    // if (!position) return null;
 
     return {
         // wallet and id data
@@ -101,6 +127,8 @@ export const useProcessRange = (position: PositionIF) => {
         posHash,
         ensName,
         userMatchesConnectedAccount,
+        posHashTruncated,
+        userNameToDisplay,
 
         // Range min and max
         ambientMinOrNull,
@@ -114,6 +142,12 @@ export const useProcessRange = (position: PositionIF) => {
         quoteQty,
         baseTokenCharacter,
         quoteTokenCharacter,
+        baseTokenLogo,
+        quoteTokenLogo,
+        baseDisplayFrontend,
+        quoteDisplayFrontend,
+        baseTokenSymbol,
+        quoteTokenSymbol,
 
         // apy
         apy,

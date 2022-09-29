@@ -1,6 +1,7 @@
 import { Dispatch, SetStateAction, useMemo } from 'react';
 import { FaAngleUp, FaAngleDown } from 'react-icons/fa';
 import styles from './OrderCardHeader.module.css';
+import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 
 type ColumnData = {
     name: string;
@@ -33,6 +34,9 @@ interface OrderCardHeaderPropsIF {
 }
 
 export default function OrderCardHeader(props: OrderCardHeaderPropsIF) {
+    const tradeData = useAppSelector((state) => state.tradeData);
+    const baseTokenSymbol = tradeData.baseToken.symbol;
+    const quoteTokenSymbol = tradeData.quoteToken.symbol;
     const {
         // data,
 
@@ -117,8 +121,8 @@ export default function OrderCardHeader(props: OrderCardHeaderPropsIF) {
         <div className={styles.mobile_header_display}>
             <div className={styles.mobile_header_content}>
                 <p>ID/Wallet</p>
-                <p>{'ETH'}</p>
-                <p>{'USDC'}</p>
+                <p>{quoteTokenSymbol}</p>
+                <p>{baseTokenSymbol}</p>
                 <p>Status</p>
             </div>
             <div />
