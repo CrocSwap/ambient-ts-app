@@ -52,8 +52,6 @@ interface ChartData {
     baseTokenAddress: string;
     chainId: string;
     poolPriceNonDisplay: number | undefined;
-    setTargets: React.Dispatch<React.SetStateAction<targetData[]>>;
-    targets: targetData[];
 }
 
 export interface ChartUtils {
@@ -250,8 +248,6 @@ export default function TradeCandleStickChart(props: ChartData) {
                         upBorderColor={props.upBorderColor}
                         downBodyColor={props.downBodyColor}
                         downBorderColor={props.downBorderColor}
-                        setTargets={props.setTargets}
-                        targets={props.targets}
                     />
                 ) : (
                     <>{loading}</>

@@ -157,6 +157,9 @@ export const tradeDataSlice = createSlice({
         setSpotPriceDisplay: (state, action: PayloadAction<string>) => {
             state.spotPriceDisplay = action.payload;
         },
+        setTargetData: (state, action: PayloadAction<targetData[]>) => {
+            state.targetData = action.payload;
+        },
 
         resetTradeData: () => initialState,
     },
@@ -188,6 +191,7 @@ export const {
     setPinnedMaxPrice,
     setPinnedMinPrice,
     setSpotPriceDisplay,
+    setTargetData,
 } = tradeDataSlice.actions;
 
 export default tradeDataSlice.reducer;

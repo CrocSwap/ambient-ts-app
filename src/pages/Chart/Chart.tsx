@@ -3,7 +3,7 @@ import * as d3fc from 'd3fc';
 import moment from 'moment';
 import { DetailedHTMLProps, HTMLAttributes, useCallback, useEffect, useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import { useAppDispatch } from '../../utils/hooks/reduxToolkit';
+import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { formatDollarAmountAxis } from '../../utils/numbers';
 import { CandleData } from '../../utils/state/graphDataSlice';
 import {
@@ -11,6 +11,7 @@ import {
     setPinnedMaxPrice,
     setPinnedMinPrice,
     setSimpleRangeWidth,
+    setTargetData,
     targetData,
 } from '../../utils/state/tradeDataSlice';
 import { CandleChartData } from '../Trade/TradeCharts/TradeCharts';
@@ -59,8 +60,6 @@ interface ChartData {
     upBorderColor: string;
     downBodyColor: string;
     downBorderColor: string;
-    setTargets: React.Dispatch<React.SetStateAction<targetData[]>>;
-    targets: targetData[];
 }
 
 export default function Chart(props: ChartData) {
@@ -73,6 +72,9 @@ export default function Chart(props: ChartData) {
         spotPriceDisplay,
         expandTradeTable,
     } = props;
+
+    const tradeData = useAppSelector((state) => state.tradeData);
+    const targetData = tradeData.targetData;
 
     const { showFeeRate, showTvl, showVolume } = props.chartItemStates;
     const { upBodyColor, upBorderColor, downBodyColor, downBorderColor } = props;
@@ -486,7 +488,7 @@ export default function Chart(props: ChartData) {
                 }
             } else if (isAdvancedModeActive) {
                 ranges.map((mapData) => {
-                    props.targets?.map((data) => {
+                    targetData?.map((data) => {
                         if (mapData.name === data.name && mapData.value == data.value) {
                             results.push(true);
                         }
@@ -494,15 +496,15 @@ export default function Chart(props: ChartData) {
                 });
 
                 if (
-                    props.targets === undefined ||
-                    (props.targets[0].value === 0 && props.targets[1].value === 0)
+                    targetData === undefined ||
+                    (targetData[0].value === 0 && targetData[1].value === 0)
                 ) {
                     setDefaultRangeData();
                 } else if (results.length < 2) {
                     setRanges(() => {
-                        let high = props.targets?.filter((target: any) => target.name === 'Max')[0]
+                        let high = targetData?.filter((target: any) => target.name === 'Max')[0]
                             .value;
-                        const low = props.targets?.filter((target: any) => target.name === 'Min')[0]
+                        const low = targetData?.filter((target: any) => target.name === 'Min')[0]
                             .value;
 
                         if (high !== undefined && low !== undefined) {
@@ -557,7 +559,7 @@ export default function Chart(props: ChartData) {
     }, [
         location,
         props.limitPrice,
-        props.targets,
+        targetData,
         denomInBase,
         isAdvancedModeActive,
         simpleRangeWidth,
@@ -1629,10 +1631,8 @@ export default function Chart(props: ChartData) {
     const onBlurRange = (range: any) => {
         const results: boolean[] = [];
 
-        console.log({ range });
-
         range.map((mapData: any) => {
-            props.targets?.map((data) => {
+            targetData?.map((data) => {
                 if (mapData.name === data.name && mapData.value == data.value) {
                     results.push(true);
                 }
@@ -1683,7 +1683,7 @@ export default function Chart(props: ChartData) {
                     },
                 ];
 
-                props.setTargets(newTargetData);
+                dispatch(setTargetData(newTargetData));
             }
         }
     };

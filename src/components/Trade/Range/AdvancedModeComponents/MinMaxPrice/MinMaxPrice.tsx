@@ -7,6 +7,7 @@ import { useAppDispatch } from '../../../../../utils/hooks/reduxToolkit';
 import {
     setAdvancedHighTick,
     setAdvancedLowTick,
+    setTargetData,
     targetData,
 } from '../../../../../utils/state/tradeDataSlice';
 
@@ -26,8 +27,7 @@ interface MinMaxPriceIF {
     setRangeLowTick: Dispatch<SetStateAction<number>>;
     setRangeHighTick: Dispatch<SetStateAction<number>>;
     chainId: string;
-    targets: targetData[];
-    setTargets: Dispatch<SetStateAction<targetData[]>>;
+    targetData: targetData[];
 }
 
 export default function MinMaxPrice(props: MinMaxPriceIF) {
@@ -45,7 +45,7 @@ export default function MinMaxPrice(props: MinMaxPriceIF) {
         setRangeLowTick,
         setRangeHighTick,
         chainId,
-        targets,
+        targetData,
     } = props;
 
     const dispatch = useAppDispatch();
@@ -59,13 +59,13 @@ export default function MinMaxPrice(props: MinMaxPriceIF) {
                 { name: !isDenomBase ? 'Max' : 'Min', value: parseFloat(minPriceInput) },
                 {
                     name: !isDenomBase ? 'Min' : 'Max',
-                    value: targets.filter(
+                    value: targetData.filter(
                         (target) => target.name === (!isDenomBase ? 'Min' : 'Max'),
                     )[0].value,
                 },
             ];
 
-            props.setTargets(newTargetData);
+            dispatch(setTargetData(newTargetData));
         } else {
             console.log('no event');
         }
@@ -80,13 +80,13 @@ export default function MinMaxPrice(props: MinMaxPriceIF) {
                 { name: !isDenomBase ? 'Min' : 'Max', value: parseFloat(maxPriceInput) },
                 {
                     name: !isDenomBase ? 'Max' : 'Min',
-                    value: targets.filter(
+                    value: targetData.filter(
                         (target) => target.name === (!isDenomBase ? 'Max' : 'Min'),
                     )[0].value,
                 },
             ];
 
-            props.setTargets(newTargetData);
+            dispatch(setTargetData(newTargetData));
         } else {
             console.log('no event');
         }
@@ -99,11 +99,11 @@ export default function MinMaxPrice(props: MinMaxPriceIF) {
     );
 
     useEffect(() => {
-        if (targets !== undefined) {
-            const high = targets.filter((data) => {
+        if (targetData !== undefined) {
+            const high = targetData.filter((data) => {
                 return data.name === 'Max';
             })[0].value;
-            const low = targets.filter((data) => {
+            const low = targetData.filter((data) => {
                 return data.name === 'Min';
             })[0].value;
 
@@ -113,7 +113,7 @@ export default function MinMaxPrice(props: MinMaxPriceIF) {
             // lowBoundOnBlur();
             // highBoundOnBlur();
         }
-    }, [targets]);
+    }, [JSON.stringify(targetData)]);
 
     const tickSize = lookupChain(chainId).gridSize;
 

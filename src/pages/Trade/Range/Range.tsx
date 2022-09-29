@@ -47,7 +47,7 @@ import {
     setPinnedMaxPrice,
     setPinnedMinPrice,
     setSpotPriceDisplay,
-    targetData,
+    setTargetData,
 } from '../../../utils/state/tradeDataSlice';
 import { addPendingTx, addReceipt, removePendingTx } from '../../../utils/state/receiptDataSlice';
 import getUnicodeCharacter from '../../../utils/functions/getUnicodeCharacter';
@@ -82,8 +82,6 @@ interface RangePropsIF {
     openModalWallet: () => void;
     ambientApy: number | undefined;
     openGlobalModal: (content: React.ReactNode, title?: string) => void;
-    targets: targetData[];
-    setTargets: Dispatch<SetStateAction<targetData[]>>;
 }
 
 export default function Range(props: RangePropsIF) {
@@ -147,7 +145,7 @@ export default function Range(props: RangePropsIF) {
 
     const denominationsInBase = tradeData.isDenomBase;
     const isTokenAPrimary = tradeData.isTokenAPrimaryRange;
-    const targetData = props.targets;
+    const targetData = tradeData.targetData;
 
     const [rangeAllowed, setRangeAllowed] = useState<boolean>(false);
 
@@ -534,10 +532,10 @@ export default function Range(props: RangePropsIF) {
                 },
             ];
 
-            props.setTargets(newTargetData);
+            dispatch(setTargetData(newTargetData));
             setRangeLowBoundFieldBlurred(false);
         }
-    }, [rangeLowBoundFieldBlurred, JSON.stringify(props.targets)]);
+    }, [rangeLowBoundFieldBlurred, JSON.stringify(targetData)]);
 
     useEffect(() => {
         if (rangeHighBoundFieldBlurred) {
@@ -614,10 +612,10 @@ export default function Range(props: RangePropsIF) {
                 },
             ];
 
-            props.setTargets(newTargetData);
+            dispatch(setTargetData(newTargetData));
             setRangeHighBoundFieldBlurred(false);
         }
-    }, [rangeHighBoundFieldBlurred, JSON.stringify(props.targets)]);
+    }, [rangeHighBoundFieldBlurred, JSON.stringify(targetData)]);
 
     const depositSkew = useMemo(
         () =>
@@ -1015,8 +1013,7 @@ export default function Range(props: RangePropsIF) {
                     setRangeHighTick={setRangeHighTick}
                     disable={isInvalidRange}
                     chainId={chainId.toString()}
-                    targets={targetData}
-                    setTargets={props.setTargets}
+                    targetData={targetData}
                 />
             </motion.div>
             <DividerDark addMarginTop />

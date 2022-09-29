@@ -67,8 +67,6 @@ interface TradeChartsPropsIF {
     downBorderColor: string;
     baseTokenAddress: string;
     poolPriceNonDisplay: number | undefined;
-    setTargets: React.Dispatch<React.SetStateAction<targetData[]>>;
-    targets: targetData[];
 }
 
 export interface CandleChartData {
@@ -676,8 +674,6 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
                         baseTokenAddress={props.baseTokenAddress}
                         chainId={chainId}
                         poolPriceNonDisplay={props.poolPriceNonDisplay}
-                        setTargets={props.setTargets}
-                        targets={props.targets}
                     />
                 </div>
             )}

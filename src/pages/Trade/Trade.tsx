@@ -47,8 +47,6 @@ interface TradePropsIF {
     expandTradeTable: boolean;
     setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
     setLimitRate: React.Dispatch<React.SetStateAction<string>>;
-    setTargets: React.Dispatch<React.SetStateAction<targetData[]>>;
-    targets: targetData[];
     limitRate: string;
     favePools: PoolIF[];
     addPoolToFaves: (tokenA: TokenIF, tokenB: TokenIF, chainId: string, poolId: number) => void;
@@ -431,8 +429,6 @@ export default function Trade(props: TradePropsIF) {
                                 downBorderColor={downBorderColor}
                                 baseTokenAddress={baseTokenAddress}
                                 poolPriceNonDisplay={props.poolPriceNonDisplay}
-                                setTargets={props.setTargets}
-                                targets={props.targets}
                             />
                         </motion.div>
                     </div>
