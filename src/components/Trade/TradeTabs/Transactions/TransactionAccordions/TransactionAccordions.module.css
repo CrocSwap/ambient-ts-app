@@ -10,6 +10,7 @@
 
     font-size: 12px;
     line-height: 15px;
+    cursor: pointer;
 }
 
 .accordion_content{
