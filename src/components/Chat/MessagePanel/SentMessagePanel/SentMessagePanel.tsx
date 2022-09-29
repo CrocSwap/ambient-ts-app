@@ -1,6 +1,7 @@
 import styles from './SentMessagePanel.module.css';
 import noAvatarImage from '../../../../assets/images/icons/avatar.svg';
 import { Message } from '../../Model/MessageModel';
+import PositionBox from '../PositionBox/PositionBox';
 
 interface SentMessageProps {
     message: Message;
@@ -18,9 +19,14 @@ export default function SentMessagePanel(props: SentMessageProps) {
         const strTime = hours + ':' + _min + ' ' + ampm;
         return strTime;
     };
+
     return (
         <div className={styles.sent_message_body}>
-            <p className={styles.message}>{props.message.message}</p>
+            <div className={styles.message_item}>
+                <PositionBox message={props.message.message} />
+
+                <p className={styles.message}>{props.message.message}</p>
+            </div>
 
             <div className={styles.right_image_box}>
                 <div className={styles.avatar_image}>
