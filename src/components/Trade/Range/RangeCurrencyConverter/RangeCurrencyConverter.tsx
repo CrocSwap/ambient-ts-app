@@ -216,6 +216,11 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
         }
     }, []);
 
+    useEffect(() => {
+        console.log({ isTokenAPrimaryLocal });
+        console.log({ isOutOfRange });
+    }, [tradeData.isTokenAPrimaryRange, isTokenAPrimaryLocal, isOutOfRange]);
+
     const setTokenAQtyValue = (value: number) => {
         if (poolPriceNonDisplay === undefined) return;
         console.log({ value });
@@ -491,6 +496,7 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
                                 dispatch(setIsTokenAPrimaryRange(true));
                             }
                             setTokenAQtyValue(tokenAQtyLocal);
+                            setTokenBAllowed(true);
                         }
                     } else {
                         if (tokenBQtyLocal && tokenBQtyLocal !== 0) {
@@ -498,6 +504,7 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
                                 dispatch(setIsTokenAPrimaryRange(false));
                             }
                             setTokenBQtyValue(tokenBQtyLocal);
+                            setTokenAAllowed(true);
                         }
                     }
                 } else {
@@ -507,6 +514,7 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
                                 dispatch(setIsTokenAPrimaryRange(false));
                             }
                             setTokenBQtyValue(tokenBQtyLocal);
+                            setTokenAAllowed(true);
                         }
                     } else {
                         if (tokenAQtyLocal && tokenAQtyLocal !== 0) {
@@ -514,6 +522,7 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
                                 dispatch(setIsTokenAPrimaryRange(true));
                             }
                             setTokenAQtyValue(tokenAQtyLocal);
+                            setTokenBAllowed(true);
                         }
                     }
                 }
@@ -584,6 +593,7 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
                                 dispatch(setIsTokenAPrimaryRange(true));
                             }
                             setTokenAQtyValue(tokenAQtyLocal);
+                            setTokenBAllowed(true);
                         }
                     } else {
                         if (tokenBQtyLocal && tokenBQtyLocal !== 0) {
@@ -591,6 +601,7 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
                                 dispatch(setIsTokenAPrimaryRange(false));
                             }
                             setTokenBQtyValue(tokenBQtyLocal);
+                            setTokenAAllowed(true);
                         }
                     }
                 } else {
@@ -600,6 +611,7 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
                                 dispatch(setIsTokenAPrimaryRange(false));
                             }
                             setTokenBQtyValue(tokenBQtyLocal);
+                            setTokenAAllowed(true);
                         }
                     } else {
                         if (tokenAQtyLocal && tokenAQtyLocal !== 0) {
@@ -607,6 +619,7 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
                                 dispatch(setIsTokenAPrimaryRange(true));
                             }
                             setTokenAQtyValue(tokenAQtyLocal);
+                            setTokenBAllowed(true);
                         }
                     }
                 }
