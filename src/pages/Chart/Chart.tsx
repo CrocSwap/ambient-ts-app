@@ -8,8 +8,9 @@ import { formatDollarAmountAxis } from '../../utils/numbers';
 import { CandleData } from '../../utils/state/graphDataSlice';
 import {
     setLimitPrice,
-    setPinnedMaxPrice,
-    setPinnedMinPrice,
+    setRangeHighLineTriggered,
+    setRangeLowLineTriggered,
+    setRangeModuleTriggered,
     setSimpleRangeWidth,
     setTargetData,
     targetData,
@@ -75,6 +76,7 @@ export default function Chart(props: ChartData) {
 
     const tradeData = useAppSelector((state) => state.tradeData);
     const targetData = tradeData.targetData;
+    const rangeModuleTriggered = tradeData.rangeModuleTriggered;
 
     const { showFeeRate, showTvl, showVolume } = props.chartItemStates;
     const { upBodyColor, upBorderColor, downBodyColor, downBorderColor } = props;
@@ -133,8 +135,6 @@ export default function Chart(props: ChartData) {
 
     // Rules
     const [isChartSelected, setIsChartSelected] = useState<boolean>(false);
-    const [isHighMoved, setIsHighMoved] = useState<boolean>(false);
-    const [isLowMoved, setIsLowMoved] = useState<boolean>(false);
     const [isLineSwapped, setIsLineSwapped] = useState<boolean>(false);
     const [drawControl, setDrawControl] = useState(false);
     const [dragControl, setDragControl] = useState(false);
@@ -426,134 +426,150 @@ export default function Chart(props: ChartData) {
         }
     }, [scaleData]);
 
-    // Targets
-    useEffect(() => {
-        const results: boolean[] = [];
+    const setMarketLine = () => {
+        let lastCandlePrice: number | undefined;
+        props.priceData?.chartData.map((data) => {
+            if (lastCandlePrice === undefined && data.close !== undefined) {
+                lastCandlePrice = data.close;
+            }
+        });
+        setMarket(() => {
+            return [
+                {
+                    name: 'Current Market Price',
+                    value: lastCandlePrice !== undefined ? lastCandlePrice : 0,
+                },
+            ];
+        });
+    };
 
-        if (location.pathname.includes('market')) {
-            let lastCandlePrice: number | undefined;
-            props.priceData?.chartData.map((data) => {
-                if (lastCandlePrice === undefined && data.close !== undefined) {
-                    lastCandlePrice = data.close;
-                }
-            });
-            setMarket(() => {
-                return [
-                    {
-                        name: 'Current Market Price',
-                        value: lastCandlePrice !== undefined ? lastCandlePrice : 0,
-                    },
-                ];
-            });
-        } else if (location.pathname.includes('limit')) {
-            setLimit(() => {
-                return [
-                    {
-                        name: 'Limit',
-                        value: parseFloat(props.limitPrice !== undefined ? props.limitPrice : '0'),
-                    },
-                ];
-            });
-        } else if (location.pathname.includes('range')) {
-            if (!isAdvancedModeActive && !isHighMoved && !isLowMoved) {
-                if (simpleRangeWidth === 100) {
-                    ranges.map((mapData) => {
-                        if (mapData.value === 0) {
-                            results.push(true);
-                        }
-                    });
+    const setLimitLine = () => {
+        setLimit(() => {
+            return [
+                {
+                    name: 'Limit',
+                    value: parseFloat(props.limitPrice !== undefined ? props.limitPrice : '0'),
+                },
+            ];
+        });
+    };
 
-                    if (results.length === 2) {
-                        setDefaultRangeData();
+    const setBalancedLines = () => {
+        if (simpleRangeWidth === 100 || rangeModuleTriggered) {
+            const results: boolean[] = [];
+
+            if (simpleRangeWidth === 100) {
+                ranges.map((mapData) => {
+                    if (mapData.value === 0) {
+                        results.push(true);
                     }
-                } else {
-                    setRanges(() => {
-                        return [
-                            {
-                                name: 'Min',
-                                value:
-                                    pinnedMinPriceDisplayTruncated !== undefined
-                                        ? pinnedMinPriceDisplayTruncated
-                                        : 0,
-                            },
+                });
+
+                if (results.length === 2) {
+                    setDefaultRangeData();
+                }
+            } else {
+                setRanges(() => {
+                    return [
+                        {
+                            name: 'Min',
+                            value:
+                                pinnedMinPriceDisplayTruncated !== undefined
+                                    ? pinnedMinPriceDisplayTruncated
+                                    : 0,
+                        },
+                        {
+                            name: 'Max',
+                            value:
+                                pinnedMaxPriceDisplayTruncated !== undefined
+                                    ? pinnedMaxPriceDisplayTruncated
+                                    : 0,
+                        },
+                    ];
+                });
+            }
+            dispatch(setRangeModuleTriggered(false));
+        }
+    };
+
+    const setAdvancedLines = () => {
+        if (rangeModuleTriggered) {
+            const results: boolean[] = [];
+
+            ranges.map((mapData) => {
+                targetData?.map((data) => {
+                    if (mapData.name === data.name && mapData.value == data.value) {
+                        results.push(true);
+                    }
+                });
+            });
+
+            if (
+                targetData === undefined ||
+                (targetData[0].value === 0 && targetData[1].value === 0)
+            ) {
+                setDefaultRangeData();
+            } else if (results.length < 2) {
+                setRanges(() => {
+                    let high = targetData?.filter((target: any) => target.name === 'Max')[0].value;
+                    const low = targetData?.filter((target: any) => target.name === 'Min')[0].value;
+
+                    if (high !== undefined && low !== undefined) {
+                        if (high !== 0 && high < low) {
+                            high = low + low / 100;
+                        }
+
+                        const chartTargets = [
                             {
                                 name: 'Max',
                                 value:
-                                    pinnedMaxPriceDisplayTruncated !== undefined
-                                        ? pinnedMaxPriceDisplayTruncated
+                                    high !== undefined && high !== 0
+                                        ? high
+                                        : props.priceData !== undefined
+                                        ? Math.max(
+                                              ...props.priceData.chartData.map((o) => {
+                                                  return o.open !== undefined ? o.open : 0;
+                                              }),
+                                          )
+                                        : 0,
+                            },
+                            {
+                                name: 'Min',
+                                value:
+                                    low !== undefined && low !== 0
+                                        ? low
+                                        : props.priceData !== undefined
+                                        ? Math.min(
+                                              ...props.priceData.chartData.map((o) => {
+                                                  return o.close !== undefined ? o.close : Infinity;
+                                              }),
+                                          )
                                         : 0,
                             },
                         ];
-                    });
-                }
-            } else if (isAdvancedModeActive) {
-                ranges.map((mapData) => {
-                    targetData?.map((data) => {
-                        if (mapData.name === data.name && mapData.value == data.value) {
-                            results.push(true);
-                        }
-                    });
+                        return chartTargets;
+                    }
+                    return [
+                        { name: 'Min', value: 0 },
+                        { name: 'Max', value: 0 },
+                    ];
                 });
+            }
+            dispatch(setRangeModuleTriggered(false));
+        }
+    };
 
-                if (
-                    targetData === undefined ||
-                    (targetData[0].value === 0 && targetData[1].value === 0)
-                ) {
-                    setDefaultRangeData();
-                } else if (results.length < 2) {
-                    setRanges(() => {
-                        let high = targetData?.filter((target: any) => target.name === 'Max')[0]
-                            .value;
-                        const low = targetData?.filter((target: any) => target.name === 'Min')[0]
-                            .value;
-
-                        if (high !== undefined && low !== undefined) {
-                            if (high !== 0 && high < low) {
-                                high = low + low / 100;
-                            }
-
-                            const chartTargets = [
-                                {
-                                    name: 'Max',
-                                    value:
-                                        high !== undefined && high !== 0
-                                            ? high
-                                            : props.priceData !== undefined
-                                            ? Math.max(
-                                                  ...props.priceData.chartData.map((o) => {
-                                                      return o.open !== undefined ? o.open : 0;
-                                                  }),
-                                              )
-                                            : 0,
-                                },
-                                {
-                                    name: 'Min',
-                                    value:
-                                        low !== undefined && low !== 0
-                                            ? low
-                                            : props.priceData !== undefined
-                                            ? Math.min(
-                                                  ...props.priceData.chartData.map((o) => {
-                                                      return o.close !== undefined
-                                                          ? o.close
-                                                          : Infinity;
-                                                  }),
-                                              )
-                                            : 0,
-                                },
-                            ];
-                            setIsHighMoved(false);
-                            setIsLowMoved(false);
-                            return chartTargets;
-                        }
-                        setIsHighMoved(false);
-                        setIsLowMoved(false);
-                        return [
-                            { name: 'Min', value: 0 },
-                            { name: 'Max', value: 0 },
-                        ];
-                    });
-                }
+    // Targets
+    useEffect(() => {
+        if (location.pathname.includes('market')) {
+            setMarketLine();
+        } else if (location.pathname.includes('limit')) {
+            setLimitLine();
+        } else if (location.pathname.includes('range')) {
+            if (!isAdvancedModeActive) {
+                setBalancedLines();
+            } else if (isAdvancedModeActive) {
+                setAdvancedLines();
             }
         }
     }, [
@@ -563,8 +579,7 @@ export default function Chart(props: ChartData) {
         denomInBase,
         isAdvancedModeActive,
         simpleRangeWidth,
-        pinnedMinPriceDisplayTruncated,
-        pinnedMaxPriceDisplayTruncated,
+        rangeModuleTriggered,
     ]);
 
     // Ghost Lines
@@ -616,6 +631,9 @@ export default function Chart(props: ChartData) {
 
             let newLimitValue: any;
             let newRangeValue: any;
+
+            let lowLineMoved: any;
+            let highLineMoved: any;
 
             const dragRange = d3
                 .drag()
@@ -705,7 +723,7 @@ export default function Chart(props: ChartData) {
                                 newRangeValue = newTargets;
                                 return newTargets;
                             });
-                            setIsHighMoved(true);
+                            highLineMoved = true;
                         } else {
                             setRanges((prevState) => {
                                 const newTargets = [...prevState];
@@ -759,7 +777,7 @@ export default function Chart(props: ChartData) {
                                 newRangeValue = newTargets;
                                 return newTargets;
                             });
-                            setIsLowMoved(true);
+                            lowLineMoved = true;
                         }
                     } else {
                         setRanges((prevState) => {
@@ -818,8 +836,8 @@ export default function Chart(props: ChartData) {
                             newRangeValue = newTargets;
                             return newTargets;
                         });
-                        setIsHighMoved(true);
-                        setIsLowMoved(true);
+                        highLineMoved = true;
+                        lowLineMoved = true;
                     }
 
                     d3.select(d3PlotArea.current).on('draw', async function (event: any) {
@@ -843,7 +861,7 @@ export default function Chart(props: ChartData) {
                         .selectAll('.horizontal')
                         .remove();
 
-                    onBlurRange(newRangeValue);
+                    onBlurRange(newRangeValue, highLineMoved, lowLineMoved);
                 });
 
             const dragLimit = d3
@@ -1105,8 +1123,11 @@ export default function Chart(props: ChartData) {
         }
 
         if (location.pathname.includes('range') && scaleData !== undefined) {
+            let newRangeValue: any;
+            let lowLineMoved: boolean;
+            let highLineMoved: boolean;
+
             d3.select(d3Container.current).on('click', async (event: any) => {
-                let newRangeValue: any;
                 const clickedValue = scaleData.yScale.invert(d3.pointer(event)[1]);
                 const snapResponse = snap(props.liquidityData.liqSnapData, clickedValue);
                 const snappedValue = Math.round(snapResponse[0].value * 100) / 100;
@@ -1159,11 +1180,10 @@ export default function Chart(props: ChartData) {
                                 render();
                             }
 
-                            console.log({ newTargets });
                             newRangeValue = newTargets;
                             return newTargets;
                         });
-                        setIsHighMoved(true);
+                        highLineMoved = true;
                     } else {
                         await setRanges((prevState) => {
                             const newTargets = [...prevState];
@@ -1203,11 +1223,10 @@ export default function Chart(props: ChartData) {
                                 render();
                             }
 
-                            console.log({ newTargets });
                             newRangeValue = newTargets;
                             return newTargets;
                         });
-                        setIsLowMoved(true);
+                        lowLineMoved = true;
                     }
                 } else {
                     await setRanges((prevState) => {
@@ -1265,11 +1284,9 @@ export default function Chart(props: ChartData) {
                         newRangeValue = newTargets;
                         return newTargets;
                     });
-                    setIsHighMoved(true);
-                    setIsLowMoved(true);
                 }
 
-                onBlurRange(newRangeValue);
+                onBlurRange(newRangeValue, highLineMoved, lowLineMoved);
             });
         }
     }, [dragLimit, dragRange, parsedChartData?.period, location, horizontalLine]);
@@ -1628,7 +1645,7 @@ export default function Chart(props: ChartData) {
         }
     }, [isChartSelected, transactionFilter]);
 
-    const onBlurRange = (range: any) => {
+    const onBlurRange = (range: any, highLineMoved: boolean, lowLineMoved: boolean) => {
         const results: boolean[] = [];
 
         range.map((mapData: any) => {
@@ -1644,26 +1661,22 @@ export default function Chart(props: ChartData) {
             const high = range.filter((target: any) => target.name === 'Max')[0].value;
 
             if (!isAdvancedModeActive) {
-                dispatch(setPinnedMinPrice(low));
-                dispatch(setPinnedMaxPrice(high));
-
-                if (spotPriceDisplay !== undefined && (isHighMoved || isLowMoved)) {
+                if (spotPriceDisplay !== undefined && (highLineMoved || lowLineMoved)) {
                     const displayValue = spotPriceDisplay.replace(',', '');
 
                     const dragLimit = parseFloat(displayValue) / 100;
 
-                    const difference = isHighMoved
+                    const difference = highLineMoved
                         ? high - parseFloat(displayValue)
-                        : isLowMoved
+                        : lowLineMoved
                         ? parseFloat(displayValue) - low
                         : 1;
 
                     if (!(dragLimit > difference)) {
                         const percentage = (difference * 100) / parseFloat(displayValue);
-
-                        setIsHighMoved(false);
-                        setIsLowMoved(false);
                         dispatch(setSimpleRangeWidth(Math.round(percentage)));
+                    } else {
+                        dispatch(setSimpleRangeWidth(1));
                     }
                 } else {
                     dispatch(setSimpleRangeWidth(simpleRangeWidth ? simpleRangeWidth : 1));
@@ -1684,6 +1697,8 @@ export default function Chart(props: ChartData) {
                 ];
 
                 dispatch(setTargetData(newTargetData));
+                dispatch(setRangeHighLineTriggered(highLineMoved));
+                dispatch(setRangeLowLineTriggered(lowLineMoved));
             }
         }
     };

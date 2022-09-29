@@ -12,7 +12,7 @@ import TradeTabs2 from '../../components/Trade/TradeTabs/TradeTabs2';
 // START: Import Local Files
 import styles from './Trade.module.css';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
-import { targetData, tradeData as TradeDataIF } from '../../utils/state/tradeDataSlice';
+import { tradeData as TradeDataIF } from '../../utils/state/tradeDataSlice';
 import { CandleData, CandlesByPoolAndDuration } from '../../utils/state/graphDataSlice';
 import { PoolIF, TokenIF, TokenPairIF } from '../../utils/interfaces/exports';
 import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';

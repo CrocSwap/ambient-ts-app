@@ -23,7 +23,6 @@ import {
     // tradeData as TradeDataIF,
     toggleDidUserFlipDenom,
     setActiveChartPeriod,
-    targetData,
 } from '../../../utils/state/tradeDataSlice';
 import { CandleData, CandlesByPoolAndDuration } from '../../../utils/state/graphDataSlice';
 import { usePoolChartData } from '../../../state/pools/hooks';

@@ -73,7 +73,6 @@ import {
     setDidUserFlipDenom,
     setPrimaryQuantityRange,
     setSimpleRangeWidth,
-    targetData,
 } from '../utils/state/tradeDataSlice';
 import {
     //  memoizeQuerySpotPrice,

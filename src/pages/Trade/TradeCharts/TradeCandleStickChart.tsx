@@ -1,6 +1,5 @@
 import { DetailedHTMLProps, HTMLAttributes, useEffect, useMemo, useState } from 'react';
 import { CandleData, CandlesByPoolAndDuration } from '../../../utils/state/graphDataSlice';
-import { targetData } from '../../../utils/state/tradeDataSlice';
 import Chart from '../../Chart/Chart';
 import './TradeCandleStickChart.css';
 import logo from '../../../assets/images/logos/ambient_logo.svg';
