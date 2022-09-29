@@ -34,6 +34,7 @@ export default function RangeAccordions(props: RangeAccordionsPropsIF) {
         usdValue,
         // baseTokenCharacter, quoteTokenCharacter,
         apy,
+        apyString,
         userMatchesConnectedAccount,
         baseTokenSymbol,
         quoteTokenSymbol,
@@ -61,6 +62,29 @@ export default function RangeAccordions(props: RangeAccordionsPropsIF) {
         </div>
     );
 
+    const valueDisplay = (
+        <div className={styles.value_display}>
+            <p>{usdValue}</p>
+        </div>
+    );
+
+    const minDisplay = (
+        <div className={styles.min_display}>
+            <p>{ambientMinOrNull}</p>
+        </div>
+    );
+    const maxDisplay = (
+        <div className={styles.min_display}>
+            <p>{ambientMaxOrNull}</p>
+        </div>
+    );
+
+    const apyDisplay = (
+        <div className={styles.apy_display}>
+            <p>{apyString}</p>
+        </div>
+    );
+
     const status = (
         <div className={styles.status}>
             <RangeStatus isInRange={isPositionInRange} isAmbient={isAmbient} justSymbol />
@@ -72,6 +96,10 @@ export default function RangeAccordions(props: RangeAccordionsPropsIF) {
             {walletAndIdDisplay}
             {baseTokenDisplay}
             {quoteTokenDisplay}
+            {valueDisplay}
+            {minDisplay}
+            {maxDisplay}
+            {apyDisplay}
             {status}
         </div>
     );

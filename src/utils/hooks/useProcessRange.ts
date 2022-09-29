@@ -25,6 +25,12 @@ export const useProcessRange = (position: PositionIF) => {
     const baseTokenLogo = tradeData.baseToken.logoURI;
 
     const apy = position.apy ?? undefined;
+    const apyString = apy
+        ? apy.toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+          }) + '%'
+        : undefined;
     const isAmbient = position.positionType === 'ambient';
 
     const ensName = position.ensResolution ? position.ensResolution : null;
@@ -151,6 +157,7 @@ export const useProcessRange = (position: PositionIF) => {
 
         // apy
         apy,
+        apyString,
 
         // range status
         isPositionInRange,
