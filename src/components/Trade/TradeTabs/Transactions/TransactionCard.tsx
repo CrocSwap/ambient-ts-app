@@ -156,10 +156,10 @@ export default function TransactionCard(props: TransactionProps) {
 
                 const nonInvertedBidPriceTruncated =
                     bidTickPriceDecimalCorrected === 1000000000000
-                        ? '0-∞'
+                        ? '0 - ∞'
                         : bidTickPriceDecimalCorrected === 0 ||
                           bidTickPriceDecimalCorrected === 1e-12
-                        ? '0-∞'
+                        ? '0 - ∞'
                         : bidTickPriceDecimalCorrected < 0.0001
                         ? bidTickPriceDecimalCorrected.toExponential(2)
                         : bidTickPriceDecimalCorrected < 2
@@ -173,9 +173,9 @@ export default function TransactionCard(props: TransactionProps) {
 
                 const invertedBidPriceTruncated =
                     bidTickInvPriceDecimalCorrected === 1000000000000
-                        ? '0-∞'
+                        ? '0 - ∞'
                         : bidTickInvPriceDecimalCorrected === 0
-                        ? '0-∞'
+                        ? '0 - ∞'
                         : bidTickInvPriceDecimalCorrected < 0.0001
                         ? bidTickInvPriceDecimalCorrected.toExponential(2)
                         : bidTickInvPriceDecimalCorrected < 2
