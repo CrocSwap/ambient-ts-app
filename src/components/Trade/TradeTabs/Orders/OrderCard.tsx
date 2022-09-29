@@ -155,6 +155,7 @@ export default function OrderCard(props: OrderCardProps) {
                 <WalletAndId
                     ownerId={ownerIdDisplay}
                     posHash={limitOrder.limitOrderIdentifier.slice(42)}
+                    ensName={limitOrder.ensResolution ? limitOrder.ensResolution : null}
                     isOwnerActiveAccount={isOwnerActiveAccount}
                 />
 
