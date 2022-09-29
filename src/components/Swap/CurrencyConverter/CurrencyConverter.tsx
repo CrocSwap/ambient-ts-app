@@ -4,6 +4,7 @@ import styles from './CurrencyConverter.module.css';
 import CurrencySelector from '../CurrencySelector/CurrencySelector';
 import { TokenIF, TokenPairIF } from '../../../utils/interfaces/exports';
 import {
+    reverseTokensInRTK,
     setIsTokenAPrimary,
     setPrimaryQuantity,
 } from '../../../utils/state/tradeDataSlice';
@@ -94,6 +95,7 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
     const [isTokenAPrimaryLocal, setIsTokenAPrimaryLocal] = useState<boolean>(
         tradeData.isTokenAPrimary,
     );
+
     const [tokenAQtyLocal, setTokenAQtyLocal] = useState<string>(
         isTokenAPrimaryLocal ? tradeData?.primaryQuantity : '',
     );
@@ -167,13 +169,15 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
     const [switchBoxes, setSwitchBoxes] = useState(false);
     const reverseTokens = (): void => {
         setSwitchBoxes(!switchBoxes);
+        dispatch(reverseTokensInRTK());
         navigate(
             '/trade/market/chain=0x5&tokenA=' +
-            tokenPair.dataTokenB.address +
-            '&tokenB=' +
-            tokenPair.dataTokenA.address
+                tokenPair.dataTokenB.address +
+                '&tokenB=' +
+                tokenPair.dataTokenA.address,
         );
         if (!isTokenAPrimaryLocal) {
+            console.log('setting token a');
             setTokenAQtyLocal(tokenBQtyLocal);
             setTokenAInputQty(tokenBQtyLocal);
             const sellQtyField = document.getElementById('sell-quantity') as HTMLInputElement;
@@ -181,6 +185,7 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
                 sellQtyField.value = tokenBQtyLocal === 'NaN' ? '' : tokenBQtyLocal;
             }
         } else {
+            console.log('setting token a');
             setTokenBQtyLocal(tokenAQtyLocal);
             setTokenBInputQty(tokenAQtyLocal);
             const buyQtyField = document.getElementById('buy-quantity') as HTMLInputElement;
@@ -201,6 +206,8 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
         isTokenAPrimaryLocal,
         tokenABalance,
         isWithdrawFromDexChecked,
+        tokenPair.dataTokenA.address,
+        tokenPair.dataTokenB.address,
         // isSellTokenEth,
     ]);
 
@@ -261,7 +268,6 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
     };
 
     const handleTokenAChangeEvent = async (evt?: ChangeEvent<HTMLInputElement>) => {
-        if (!poolPriceDisplay) return;
         if (!crocEnv) return;
         let rawTokenBQty;
 
@@ -276,6 +282,7 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
             dispatch(setIsTokenAPrimary(true));
             dispatch(setPrimaryQuantity(input));
             handleSwapButtonMessage(parseFloat(input));
+            if (!poolPriceDisplay) return;
 
             const impact =
                 input !== ''
@@ -288,6 +295,7 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
                           input,
                       )
                     : undefined;
+            console.log({ impact });
 
             impact ? setPriceImpact(impact) : null;
 
@@ -295,6 +303,7 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
         } else {
             handleSwapButtonMessage(parseFloat(tokenAQtyLocal));
 
+            console.log(tokenPair.dataTokenA.address);
             const impact =
                 tokenAQtyLocal !== ''
                     ? await calcImpact(
@@ -306,7 +315,7 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
                           tokenAQtyLocal,
                       )
                     : undefined;
-
+            console.log({ impact });
             impact ? setPriceImpact(impact) : null;
 
             rawTokenBQty = impact ? parseFloat(impact.buyQty) : undefined;
@@ -328,7 +337,6 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
     };
 
     const handleTokenAChangeClick = async (value: string) => {
-        if (!poolPriceDisplay) return;
         if (!crocEnv) return;
         let rawTokenBQty;
         const tokenAInputField = document.getElementById('sell-quantity');
@@ -344,6 +352,7 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
             dispatch(setPrimaryQuantity(input));
             handleSwapButtonMessage(parseFloat(input));
 
+            if (!poolPriceDisplay) return;
             const impact =
                 input !== ''
                     ? await calcImpact(
