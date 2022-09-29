@@ -31,6 +31,7 @@ interface TokenSelectContainerPropsIF {
 export default function TokenSelectContainer(props: TokenSelectContainerPropsIF) {
     const {
         resetTokenQuantities,
+        reverseTokens,
         tokenPair,
         tokensBank,
         setImportedTokens,
@@ -84,30 +85,41 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
             pathSlug: string,
             chain: string,
             addrTokenA: string,
-            addrTokenB: string
-        ) => navigate(
-            pathSlug + '/chain=' + chain + '&tokenA=' + addrTokenA + '&tokenB=' + addrTokenB
-        );
+            addrTokenB: string,
+        ) =>
+            navigate(
+                pathSlug + '/chain=' + chain + '&tokenA=' + addrTokenA + '&tokenB=' + addrTokenB,
+            );
 
         // user is updating token A
         if (tokenToUpdate === 'A') {
+            if (tokenPair.dataTokenB.address === tok.address) {
+                reverseTokens();
+                closeModal();
+                return;
+            }
             goToNewUrlParams(
                 locationSlug,
                 '0x5',
                 tok.address,
                 tokenPair.dataTokenB.address === tok.address
                     ? tokenPair.dataTokenA.address
-                    : tokenPair.dataTokenB.address
+                    : tokenPair.dataTokenB.address,
             );
-        // user is updating token B
+            // user is updating token B
         } else if (tokenToUpdate === 'B') {
+            if (tokenPair.dataTokenA.address === tok.address) {
+                reverseTokens();
+                closeModal();
+                return;
+            }
             goToNewUrlParams(
                 locationSlug,
                 '0x5',
                 tokenPair.dataTokenA.address === tok.address
                     ? tokenPair.dataTokenB.address
                     : tokenPair.dataTokenA.address,
-                tok.address
+                tok.address,
             );
         } else {
             console.warn(
