@@ -222,10 +222,10 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
     // }, [tradeData.isTokenAPrimaryRange, isTokenAPrimaryLocal, isOutOfRange]);
 
     const setTokenAQtyValue = (value: number) => {
-        if (poolPriceNonDisplay === undefined) return;
         setTokenAQtyLocal(parseFloat(truncateDecimals(value, tokenPair.dataTokenA.decimals)));
         setTokenAInputQty(truncateDecimals(value, tokenPair.dataTokenA.decimals));
         handleRangeButtonMessageTokenA(value);
+        if (poolPriceNonDisplay === undefined) return;
 
         const qtyTokenB =
             calculateSecondaryDepositQty(
@@ -268,10 +268,10 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
     };
 
     const setTokenBQtyValue = (value: number) => {
-        if (poolPriceNonDisplay === undefined) return;
         setTokenBQtyLocal(parseFloat(truncateDecimals(value, tokenPair.dataTokenB.decimals)));
         setTokenBInputQty(truncateDecimals(value, tokenPair.dataTokenB.decimals));
         handleRangeButtonMessageTokenB(value);
+        if (poolPriceNonDisplay === undefined) return;
 
         const qtyTokenA =
             calculateSecondaryDepositQty(
@@ -306,6 +306,7 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
             tokenAQtyField.value = '';
             // dispatch(setPrimaryQuantityRange('0'));
             setIsTokenAPrimaryLocal(false);
+            console.log('setting to zero');
             setTokenAQtyLocal(0);
             // setTokenAInputQty('0');
         }
