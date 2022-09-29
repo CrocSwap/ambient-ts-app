@@ -618,17 +618,17 @@ export default function Range(props: RangePropsIF) {
         [poolPriceNonDisplay, rangeLowBoundNonDisplayPrice, rangeHighBoundNonDisplayPrice],
     );
 
-    useEffect(() => {
-        console.log({ depositSkew });
-        console.log({ poolPriceNonDisplay });
-        console.log({ rangeLowBoundNonDisplayPrice });
-        console.log({ rangeHighBoundNonDisplayPrice });
-    }, [
-        depositSkew,
-        poolPriceNonDisplay,
-        rangeLowBoundNonDisplayPrice,
-        rangeHighBoundNonDisplayPrice,
-    ]);
+    // useEffect(() => {
+    //     console.log({ depositSkew });
+    //     console.log({ poolPriceNonDisplay });
+    //     console.log({ rangeLowBoundNonDisplayPrice });
+    //     console.log({ rangeHighBoundNonDisplayPrice });
+    // }, [
+    //     depositSkew,
+    //     poolPriceNonDisplay,
+    //     rangeLowBoundNonDisplayPrice,
+    //     rangeHighBoundNonDisplayPrice,
+    // ]);
 
     let maxPriceDisplay: string;
 

@@ -216,14 +216,13 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
         }
     }, []);
 
-    useEffect(() => {
-        console.log({ isTokenAPrimaryLocal });
-        console.log({ isOutOfRange });
-    }, [tradeData.isTokenAPrimaryRange, isTokenAPrimaryLocal, isOutOfRange]);
+    // useEffect(() => {
+    //     console.log({ isTokenAPrimaryLocal });
+    //     console.log({ isOutOfRange });
+    // }, [tradeData.isTokenAPrimaryRange, isTokenAPrimaryLocal, isOutOfRange]);
 
     const setTokenAQtyValue = (value: number) => {
         if (poolPriceNonDisplay === undefined) return;
-        console.log({ value });
         setTokenAQtyLocal(parseFloat(truncateDecimals(value, tokenPair.dataTokenA.decimals)));
         setTokenAInputQty(truncateDecimals(value, tokenPair.dataTokenA.decimals));
         handleRangeButtonMessageTokenA(value);
@@ -239,7 +238,6 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
                 isAmbient,
                 depositSkew,
             ) ?? 0;
-        console.log({ qtyTokenB });
 
         handleSecondaryTokenQty('B', value, qtyTokenB);
 
@@ -270,7 +268,6 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
     };
 
     const setTokenBQtyValue = (value: number) => {
-        console.log({ value });
         if (poolPriceNonDisplay === undefined) return;
         setTokenBQtyLocal(parseFloat(truncateDecimals(value, tokenPair.dataTokenB.decimals)));
         setTokenBInputQty(truncateDecimals(value, tokenPair.dataTokenB.decimals));
@@ -287,7 +284,6 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
                 isAmbient,
                 depositSkew,
             ) ?? 0;
-        console.log({ qtyTokenA });
 
         handleSecondaryTokenQty('A', value, qtyTokenA);
         // handleRangeButtonMessageTokenA(qtyTokenA);
@@ -479,13 +475,6 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
             dispatch(setPrimaryQuantityRange(input));
             handleRangeButtonMessageTokenA(parseFloat(input));
         } else {
-            console.log({ isOutOfRange });
-            console.log({ tokenAQtyLocal });
-            console.log({ tokenAAllowed });
-            console.log({ tokenBQtyLocal });
-            console.log({ tokenBAllowed });
-            console.log({ rangeSpanAboveCurrentPrice });
-            console.log({ isTokenAPrimaryLocal });
             if (!isOutOfRange) {
                 if (tokenAQtyLocal) setTokenAQtyValue(tokenAQtyLocal);
             } else {
@@ -579,10 +568,6 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
             dispatch(setPrimaryQuantityRange(input));
             handleRangeButtonMessageTokenB(parseFloat(input));
         } else {
-            console.log({ isOutOfRange });
-            console.log({ tokenAQtyLocal });
-            console.log({ tokenBQtyLocal });
-            console.log({ rangeSpanAboveCurrentPrice });
             if (!isOutOfRange) {
                 if (tokenBQtyLocal) setTokenBQtyValue(tokenBQtyLocal);
             } else {
