@@ -12,6 +12,9 @@ import { Message } from '../../Model/MessageModel';
 import Picker from 'emoji-picker-react';
 import styles from './MessageInput.module.css';
 import { useEffect, useState } from 'react';
+import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
+import { ITransaction } from '../../../../utils/state/graphDataSlice';
+import PositionBox from '../PositionBox/PositionBox';
 
 interface MessageInputProps {
     message: Message;
@@ -104,6 +107,8 @@ export default function MessageInput(props: MessageInputProps, prop: PortfolioBa
 
     return (
         <div className={styles.input_box}>
+            <PositionBox message={message} />
+
             <div className={styles.input}>
                 <input
                     type='text'

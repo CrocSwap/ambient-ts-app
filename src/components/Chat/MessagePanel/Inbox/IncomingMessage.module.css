@@ -45,7 +45,7 @@
     font-family: 'Lexend Deca';
     font-style: normal;
     font-weight: 300;
-    font-size: calc(1vw - 2px);
+    font-size: 15px;
     line-height: 15px;
     color: #EBEBFF;
     white-space: pre-line;
@@ -109,4 +109,8 @@
     /* Inside auto layout */
     order: 0;
 
+}
+
+p {
+    word-break: break-all;
 }
