@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction } from 'react';
+import React, { Dispatch, SetStateAction, useState } from 'react';
 import styles from './ProfileSettings.module.css';
 import { BiArrowBack } from 'react-icons/bi';
 import ProfileSettingsTheme from './ProfileSettingsTheme/ProfileSettingsTheme';
@@ -6,6 +6,7 @@ import ProfileSettingsSkin from './ProfileSettingsSkin/ProfileSettingsSkin';
 import noAvatarImage from '../../../assets/images/icons/avatar.svg';
 
 import { motion } from 'framer-motion';
+import { useMoralis } from 'react-moralis';
 
 const pageVariant3D = {
     initial: {
@@ -39,11 +40,21 @@ interface ProfileSettingsPropsIF {
 }
 
 export default function ProfileSettings(props: ProfileSettingsPropsIF) {
+    const { user, account, enableWeb3, isWeb3Enabled, isAuthenticated } = useMoralis();
+    const [name, setName] = useState('');
     const { setShowProfileSettings, ensName, imageData, openGlobalModal } = props;
+    const onChangeName = async (e: any) => {
+        setName(e.target.value);
+    };
     const nameDisplay = (
         <div className={styles.row}>
             <h4>Name</h4>
-            <input type='text' placeholder={ensName} />
+            <input
+                type='text'
+                onChange={(e) => setName(e.target.value)}
+                value={name}
+                placeholder={'Name'}
+            />
         </div>
     );
 
@@ -113,6 +124,21 @@ export default function ProfileSettings(props: ProfileSettingsPropsIF) {
             <ProfileSettingsSkin />
         </div>
     );
+    async function saveUser() {
+        const response = await fetch('http://localhost:5000/api/auth/saveUser', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ ensName: name, walletID: account }),
+        });
+        const data = await response.json();
+        if (data.status === 'OK') {
+            console.log(data.status);
+        } else {
+            console.log(data.status);
+        }
+    }
 
     return (
         <motion.div
@@ -136,7 +162,9 @@ export default function ProfileSettings(props: ProfileSettingsPropsIF) {
                         {themeDisplay}
                         {skinDisplay}
                     </section>
-                    <button className={styles.save_button}>Save</button>
+                    <button className={styles.save_button} onClick={() => saveUser()}>
+                        Save
+                    </button>
                 </div>
             </div>
         </motion.div>

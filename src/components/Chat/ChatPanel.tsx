@@ -55,6 +55,7 @@ export default function ChatPanel(props: ChatProps) {
     const [room, setRoom] = useState('Global');
     const [showChatPanel, setShowChatPanel] = useState(true);
     const [selected, setSelected] = useState('');
+    const { user, account, enableWeb3, isWeb3Enabled, isAuthenticated } = useMoralis();
 
     useEffect(() => {
         props.isFullScreen ? setShowChatPanel(true) : null;
@@ -65,7 +66,31 @@ export default function ChatPanel(props: ChatProps) {
     useEffect(() => {
         _socket.connect();
     }, [_socket]);
-    const currentUser = '62f24f3ff40188d467c532e8';
+    const currentUser = getID();
+
+    async function getName() {
+        const response = await fetch('http://localhost:5000/api/auth/getUserByAccount/' + account, {
+            method: 'GET',
+        });
+        const data = await response.json();
+        if (data.status === 200) {
+            return data.ensName;
+        } else {
+            console.log(data);
+        }
+    }
+
+    async function getID() {
+        const response = await fetch('http://localhost:5000/api/auth/getUserByAccount/' + account, {
+            method: 'GET',
+        });
+        const data = await response.json();
+        if (data.status === 200) {
+            return data._id;
+        } else {
+            console.log(data);
+        }
+    }
 
     useEffect(() => {
         _socket.on('msg-recieve', (mostRecentMessages) => {
