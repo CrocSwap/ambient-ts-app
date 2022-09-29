@@ -64,6 +64,7 @@ OLD STUFF BELOW!!!!
     text-align: center;
 } */
 
+/* ------------------------------------------MOBILE ACCORDION RELATED----------------- */
 /* mobile header display */
 .mobile_header_display{
     display: flex;
@@ -72,7 +73,7 @@ OLD STUFF BELOW!!!!
     align-items: center;
     font-size: 10px;
     color: rgba(235, 235, 255, 0.4);
-    padding: 0 1rem;
+    padding: 0 0.5rem;
 }
 .mobile_header_content{
     display: flex;
@@ -80,15 +81,34 @@ OLD STUFF BELOW!!!!
     align-items: center;
     gap: 1rem
 }
+/* ID/Wallet */
 .mobile_header_content p:first-child{
     width: 150px;
 }
+/* base token symbol / quote token symbol */
 .mobile_header_content p:nth-child(2), .mobile_header_content p:nth-child(3){
-    width: 110px;
+    width: 80px;
 }
+/* value */
 .mobile_header_content p:nth-child(4){
-    width: 50px;
+   
+    display: none;
 }
+/* min / max */
+.mobile_header_content p:nth-child(5), .mobile_header_content p:nth-child(6){
+display: none;
+}
+/* apy */
+.mobile_header_content p:nth-child(7){
+display: none;
+}
+/* status */
+.mobile_header_content p:nth-child(8){
+    width: 30px;
+
+}
+/* ---------------------------------END OF MOBILE ACCORDION RELATED----------------- */
+
 .main_container{
     display: none;
 }
@@ -116,6 +136,36 @@ OLD STUFF BELOW!!!!
 
 }
 
+/* value */
+@media only screen and (min-width: 768px) {
+    .mobile_header_content p:nth-child(4){
+    display: block;
+    width: 60px;
+
+
+}
+}
+@media only screen and (min-width: 968px) {
+    /* min / max */
+    .mobile_header_content p:nth-child(5), .mobile_header_content p:nth-child(6){
+        display: block;
+        width: 60px;
+        word-wrap: break-word;
+        text-align: start;
+      
+        }
+}
+@media only screen and (min-width: 1200px) {
+/* apy */
+.mobile_header_content p:nth-child(7){
+display: block;
+
+width: 50px;
+
+}
+
+}
+    
 
 /* Desktop screen Sizes */
 @media only screen and (min-width: 768px) {

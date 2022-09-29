@@ -129,6 +129,10 @@ export default function RangeCardHeader(props: RangeCardHeaderPropsIF) {
                 <p>ID/Wallet</p>
                 <p>{baseTokenSymbol}</p>
                 <p>{quoteTokenSymbol}</p>
+                <p>Value</p>
+                <p>Min</p>
+                <p>Max</p>
+                <p>APY</p>
                 <p>Status</p>
             </div>
             <div />
