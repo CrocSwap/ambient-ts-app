@@ -157,7 +157,13 @@ export default function TransactionCard(props: TransactionProps) {
                 <Price priceType={priceType} displayPrice={truncatedDisplayPrice} />
                 {/* ------------------------------------------------------ */}
 
-                <TransactionTypeSide type={sideType} side={transactionTypeSide} />
+                <TransactionTypeSide
+                    type={sideType}
+                    side={transactionTypeSide}
+                    isDenomBase={true}
+                    baseTokenCharacter={baseTokenCharacter}
+                    quoteTokenCharacter={quoteTokenCharacter}
+                />
                 {/* ------------------------------------------------------ */}
 
                 <Value usdValue={usdValueTruncated ? '$' + usdValueTruncated : '…'} />

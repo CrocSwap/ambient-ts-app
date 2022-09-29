@@ -20,6 +20,7 @@ import PositionsOnlyToggle from './PositionsOnlyToggle/PositionsOnlyToggle';
 import { TokenIF } from '../../../utils/interfaces/TokenIF';
 import { CandleData, ITransaction } from '../../../utils/state/graphDataSlice';
 import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
+import { fetchPoolRecentChanges } from '../../../App/functions/fetchPoolRecentChanges';
 
 interface ITabsProps {
     isUserLoggedIn: boolean;
@@ -58,7 +59,7 @@ interface ITabsProps {
     closeGlobalModal: () => void;
 }
 
-const httpGraphCacheServerDomain = 'https://809821320828123.de:5000';
+// const httpGraphCacheServerDomain = 'https://809821320828123.de:5000';
 
 export default function TradeTabs2(props: ITabsProps) {
     const {
@@ -213,37 +214,56 @@ export default function TradeTabs2(props: ITabsProps) {
         matchingUserLimitOrdersLength,
     ]);
 
-    const [swapsForSelectedCandle, setSwapsForSelectedCandle] = useState<ITransaction[]>([]);
+    const [changesInSelectedCandle, setChangesInSelectedCandle] = useState<ITransaction[]>([]);
 
     useEffect(() => {
         // console.log({ filter });
         if (isCandleSelected && filter?.time) {
-            const poolSwapsCacheEndpoint = httpGraphCacheServerDomain + '/pool_swaps?';
+            // const poolSwapsCacheEndpoint = httpGraphCacheServerDomain + '/pool_recent_changes?';
 
-            fetch(
-                poolSwapsCacheEndpoint +
-                    new URLSearchParams({
-                        base: selectedBase,
-                        quote: selectedQuote,
-                        chainId: chainData.chainId,
-                        poolIdx: chainData.poolIndex.toString(),
-                        ensResolution: 'true',
-                        annotate: 'true',
-                        omitEmpty: 'true',
-                        omitKnockout: 'false',
-                        addValue: 'true',
-                        n: '100',
-                        period: activeChartPeriod.toString(),
-                        time: filter?.time.toString(),
-                    }),
-            )
-                .then((response) => response?.json())
-                .then((json) => {
-                    const selectedCandlePoolSwaps = json?.data;
-                    console.log({ selectedCandlePoolSwaps });
-                    setSwapsForSelectedCandle(selectedCandlePoolSwaps);
+            fetchPoolRecentChanges({
+                base: selectedBase,
+                quote: selectedQuote,
+                poolIdx: chainData.poolIndex,
+                chainId: chainData.chainId,
+                annotate: true,
+                addValue: true,
+                simpleCalc: true,
+                annotateMEV: false,
+                ensResolution: true,
+                n: 100,
+                period: activeChartPeriod,
+                time: filter?.time,
+            })
+                .then((selectedCandleChangesJson) => {
+                    console.log({ selectedCandleChangesJson });
+                    setChangesInSelectedCandle(selectedCandleChangesJson);
                 })
                 .catch(console.log);
+            // fetch(
+            //     poolSwapsCacheEndpoint +
+            //         new URLSearchParams({
+            //             base: selectedBase,
+            //             quote: selectedQuote,
+            //             chainId: chainData.chainId,
+            //             poolIdx: chainData.poolIndex.toString(),
+            //             ensResolution: 'true',
+            //             annotate: 'true',
+            //             omitEmpty: 'true',
+            //             omitKnockout: 'false',
+            //             addValue: 'true',
+            //             n: '100',
+            //             period: activeChartPeriod.toString(),
+            //             time: filter?.time.toString(),
+            //         }),
+            // )
+            //     .then((response) => response?.json())
+            //     .then((json) => {
+            //         const selectedCandlePoolSwaps = json?.data;
+            //         console.log({ selectedCandlePoolSwaps });
+            //         setSwapsForSelectedCandle(selectedCandlePoolSwaps);
+            //     })
+            //     .catch(console.log);
         }
     }, [isCandleSelected, filter?.time, lastBlockNumber]);
 
@@ -277,7 +297,7 @@ export default function TradeTabs2(props: ITabsProps) {
     // Props for <Transactions/> React Element
     const transactionsProps = {
         isShowAllEnabled: isShowAllEnabled,
-        swapsForSelectedCandle: swapsForSelectedCandle,
+        changesInSelectedCandle: changesInSelectedCandle,
         tokenMap: tokenMap,
         graphData: graphData,
         chainData: chainData,

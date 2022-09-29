@@ -100,7 +100,7 @@ export default function TransactionCard(props: TransactionProps) {
     const quoteTokenCharacter = tx.quoteSymbol ? getUnicodeCharacter(tx.quoteSymbol) : '';
 
     useEffect(() => {
-        // console.log({ tx });
+        // setTruncatedDisplayPrice(undefined);
         if (tx.entityType === 'limitOrder') {
             if (tx.limitPriceDecimalCorrected && tx.invLimitPriceDecimalCorrected) {
                 const priceDecimalCorrected = tx.limitPriceDecimalCorrected;
@@ -139,6 +139,89 @@ export default function TransactionCard(props: TransactionProps) {
                     : baseTokenCharacter + nonInvertedPriceTruncated;
 
                 setTruncatedDisplayPrice(truncatedDisplayPrice);
+            } else {
+                setTruncatedDisplayPrice(undefined);
+            }
+        } else if (tx.entityType === 'liqchange') {
+            if (
+                tx.bidTickPriceDecimalCorrected &&
+                tx.bidTickInvPriceDecimalCorrected &&
+                tx.askTickPriceDecimalCorrected &&
+                tx.askTickInvPriceDecimalCorrected
+            ) {
+                const bidTickPriceDecimalCorrected = tx.bidTickPriceDecimalCorrected;
+                const bidTickInvPriceDecimalCorrected = tx.bidTickInvPriceDecimalCorrected;
+                // const askTickPriceDecimalCorrected = tx.askTickPriceDecimalCorrected;
+                // const askTickInvPriceDecimalCorrected = tx.askTickInvPriceDecimalCorrected;
+
+                const nonInvertedBidPriceTruncated =
+                    bidTickPriceDecimalCorrected === 1000000000000
+                        ? '0-∞'
+                        : bidTickPriceDecimalCorrected === 0 ||
+                          bidTickPriceDecimalCorrected === 1e-12
+                        ? '0-∞'
+                        : bidTickPriceDecimalCorrected < 0.0001
+                        ? bidTickPriceDecimalCorrected.toExponential(2)
+                        : bidTickPriceDecimalCorrected < 2
+                        ? bidTickPriceDecimalCorrected.toPrecision(3)
+                        : bidTickPriceDecimalCorrected >= 100000
+                        ? formatAmount(bidTickPriceDecimalCorrected)
+                        : bidTickPriceDecimalCorrected.toLocaleString(undefined, {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2,
+                          });
+
+                const invertedBidPriceTruncated =
+                    bidTickInvPriceDecimalCorrected === 1000000000000
+                        ? '0-∞'
+                        : bidTickInvPriceDecimalCorrected === 0
+                        ? '0-∞'
+                        : bidTickInvPriceDecimalCorrected < 0.0001
+                        ? bidTickInvPriceDecimalCorrected.toExponential(2)
+                        : bidTickInvPriceDecimalCorrected < 2
+                        ? bidTickInvPriceDecimalCorrected.toPrecision(3)
+                        : bidTickInvPriceDecimalCorrected >= 100000
+                        ? formatAmount(bidTickInvPriceDecimalCorrected)
+                        : bidTickInvPriceDecimalCorrected.toLocaleString(undefined, {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2,
+                          });
+
+                // const nonInvertedAskPriceTruncated =
+                //     askTickPriceDecimalCorrected === 0
+                //         ? '0.00'
+                //         : askTickPriceDecimalCorrected < 0.0001
+                //         ? askTickPriceDecimalCorrected.toExponential(2)
+                //         : askTickPriceDecimalCorrected < 2
+                //         ? askTickPriceDecimalCorrected.toPrecision(3)
+                //         : askTickPriceDecimalCorrected >= 100000
+                //         ? formatAmount(askTickPriceDecimalCorrected)
+                //         : askTickPriceDecimalCorrected.toLocaleString(undefined, {
+                //               minimumFractionDigits: 2,
+                //               maximumFractionDigits: 2,
+                //           });
+
+                // const invertedAskPriceTruncated =
+                //     askTickInvPriceDecimalCorrected === 0
+                //         ? '0.00'
+                //         : askTickInvPriceDecimalCorrected < 0.0001
+                //         ? askTickInvPriceDecimalCorrected.toExponential(2)
+                //         : askTickInvPriceDecimalCorrected < 2
+                //         ? askTickInvPriceDecimalCorrected.toPrecision(3)
+                //         : askTickInvPriceDecimalCorrected >= 100000
+                //         ? formatAmount(askTickInvPriceDecimalCorrected)
+                //         : askTickInvPriceDecimalCorrected.toLocaleString(undefined, {
+                //               minimumFractionDigits: 2,
+                //               maximumFractionDigits: 2,
+                //           });
+
+                const truncatedDisplayPrice = isDenomBase
+                    ? quoteTokenCharacter + invertedBidPriceTruncated
+                    : baseTokenCharacter + nonInvertedBidPriceTruncated;
+
+                setTruncatedDisplayPrice(truncatedDisplayPrice);
+            } else {
+                setTruncatedDisplayPrice(undefined);
             }
         } else {
             if (tx.priceDecimalCorrected && tx.invPriceDecimalCorrected) {
@@ -240,9 +323,9 @@ export default function TransactionCard(props: TransactionProps) {
 
     const sideType =
         tx.entityType === 'liqchange'
-            ? tx.changeType === 'mint'
-                ? 'buy'
-                : 'sell'
+            ? isDenomBase
+                ? 'sell'
+                : 'buy'
             : (isDenomBase && tx.isBuy) || (!isDenomBase && !tx.isBuy)
             ? 'sell'
             : 'buy';
@@ -301,7 +384,13 @@ export default function TransactionCard(props: TransactionProps) {
                 <Price priceType={priceType} displayPrice={truncatedDisplayPrice} />
                 {/* ------------------------------------------------------ */}
 
-                <TransactionTypeSide type={sideType} side={transactionTypeSide} />
+                <TransactionTypeSide
+                    isDenomBase={isDenomBase}
+                    type={sideType}
+                    side={transactionTypeSide}
+                    baseTokenCharacter={baseTokenCharacter}
+                    quoteTokenCharacter={quoteTokenCharacter}
+                />
                 {/* ------------------------------------------------------ */}
 
                 <Value usdValue={usdValueTruncated ? '$' + usdValueTruncated : '…'} />

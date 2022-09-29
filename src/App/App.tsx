@@ -1207,6 +1207,7 @@ export default function App() {
                 user: account || '',
                 chainId: chainData.chainId,
                 addValue: 'true',
+                annotate: 'true',
                 ensResolution: 'true',
             }),
         [account, chainData.chainId],
@@ -1793,33 +1794,33 @@ export default function App() {
         setSidebarManuallySet(true);
     }
 
-    function handleTabChangedBasedOnRoute() {
-        const onTradeRoute = location.pathname.includes('trade');
+    // function handleTabChangedBasedOnRoute() {
+    //     const onTradeRoute = location.pathname.includes('trade');
 
-        const marketTabBasedOnRoute = onTradeRoute ? 0 : 0;
-        const orderTabBasedOnRoute = onTradeRoute ? 1 : 0;
-        const rangeTabBasedOnRoute = onTradeRoute ? 2 : 0;
-        setOutsideControl(true);
-        if (location.pathname === '/trade/market') {
-            setSelectedOutsideTab(marketTabBasedOnRoute);
-        } else if (location.pathname === '/trade/limit') {
-            setSelectedOutsideTab(orderTabBasedOnRoute);
-        } else if (
-            location.pathname === '/trade/range' ||
-            location.pathname.includes('/trade/edit/')
-        ) {
-            setSelectedOutsideTab(rangeTabBasedOnRoute);
-        } else {
-            setSelectedOutsideTab(0);
-        }
-    }
+    //     const marketTabBasedOnRoute = onTradeRoute ? 0 : 0;
+    //     const orderTabBasedOnRoute = onTradeRoute ? 1 : 0;
+    //     const rangeTabBasedOnRoute = onTradeRoute ? 2 : 0;
+    //     setOutsideControl(true);
+    //     if (location.pathname === '/trade/market') {
+    //         setSelectedOutsideTab(marketTabBasedOnRoute);
+    //     } else if (location.pathname === '/trade/limit') {
+    //         setSelectedOutsideTab(orderTabBasedOnRoute);
+    //     } else if (
+    //         location.pathname === '/trade/range' ||
+    //         location.pathname.includes('/trade/edit/')
+    //     ) {
+    //         setSelectedOutsideTab(rangeTabBasedOnRoute);
+    //     } else {
+    //         setSelectedOutsideTab(0);
+    //     }
+    // }
 
     useEffect(() => {
         if (location.pathname.includes('account') || location.pathname.includes('analytics')) {
             setShowSidebar(false);
         }
 
-        handleTabChangedBasedOnRoute();
+        // handleTabChangedBasedOnRoute();
     }, [location.pathname]);
 
     // market - /trade/market
