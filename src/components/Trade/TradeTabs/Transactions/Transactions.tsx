@@ -112,7 +112,8 @@ export default function Transactions(props: TransactionsProps) {
         isCandleSelected,
         filter,
         swapsForSelectedCandle,
-        // , changesByUser, changesByPool
+        changesByUser,
+        changesByPool,
     ]);
 
     useEffect(() => {
