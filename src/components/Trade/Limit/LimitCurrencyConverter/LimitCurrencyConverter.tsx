@@ -152,10 +152,6 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
         }
     }, []);
 
-    const handleArrowClick = (): void => {
-        reverseTokens();
-    };
-
     const navigate = useNavigate();
 
     const reverseTokens = (): void => {
@@ -439,7 +435,7 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
 
             <div
                 className={styles.arrow_container}
-                onClick={handleArrowClick}
+                onClick={reverseTokens}
                 style={{ cursor: 'pointer' }}
             >
                 <IconWithTooltip title='Reverse tokens' placement='left'>

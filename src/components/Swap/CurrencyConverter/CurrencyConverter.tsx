@@ -482,10 +482,6 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
         }
     };
 
-    const handleArrowClick = (): void => {
-        reverseTokens();
-    };
-
     return (
         <section
             className={`${styles.currency_converter} ${
@@ -526,7 +522,7 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
                 activeTokenListsChanged={activeTokenListsChanged}
                 indicateActiveTokenListsChanged={indicateActiveTokenListsChanged}
             />
-            <div className={styles.arrow_container} onClick={handleArrowClick}>
+            <div className={styles.arrow_container} onClick={reverseTokens}>
                 {isLiq ? null : (
                     <IconWithTooltip title='Reverse tokens' placement='left'>
                         <TokensArrow />
