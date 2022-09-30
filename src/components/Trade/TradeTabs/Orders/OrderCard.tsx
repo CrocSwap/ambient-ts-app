@@ -152,6 +152,7 @@ export default function OrderCard(props: OrderCardProps) {
     const orderMenuProps = {
         closeGlobalModal: props.closeGlobalModal,
         openGlobalModal: props.openGlobalModal,
+        isOwnerActiveAccount: isOwnerActiveAccount,
     };
 
     // console.log(limitOrder);

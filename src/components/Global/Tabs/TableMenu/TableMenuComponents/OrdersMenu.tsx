@@ -20,11 +20,12 @@ interface OrdersMenuIF {
     limitOrder: ILimitOrderState;
     openGlobalModal: (content: React.ReactNode) => void;
     closeGlobalModal: () => void;
+    isOwnerActiveAccount: boolean;
 }
 
 // React functional component
 export default function OrdersMenu(props: OrdersMenuIF) {
-    const { limitOrder, openGlobalModal } = props;
+    const { limitOrder, openGlobalModal, isOwnerActiveAccount } = props;
     const [value, copy] = useCopyToClipboard();
     const [openSnackbar, setOpenSnackbar] = useState<boolean>(false);
 
@@ -101,11 +102,12 @@ export default function OrdersMenu(props: OrdersMenuIF) {
     //     </Link>
     // ) : null;
 
-    const removeButton = limitOrder ? (
-        <button className={styles.option_button} onClick={openRemoveModal}>
-            Remove
-        </button>
-    ) : null;
+    const removeButton =
+        limitOrder && isOwnerActiveAccount ? (
+            <button className={styles.option_button} onClick={openRemoveModal}>
+                Remove
+            </button>
+        ) : null;
     const copyButton = limitOrder ? (
         <button className={styles.option_button} onClick={handleCopyAddress}>
             Copy Trade
