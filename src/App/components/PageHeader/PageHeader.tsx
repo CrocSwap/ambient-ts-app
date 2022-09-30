@@ -17,6 +17,7 @@ import styles from './PageHeader.module.css';
 import trimString from '../../../utils/functions/trimString';
 import ambientLogo from '../../../assets/images/logos/ambient_logo.svg';
 import { useModal } from '../../../components/Global/Modal/useModal';
+import { useUrlParams } from './useUrlParams';
 import MobileSidebar from '../../../components/Global/MobileSidebar/MobileSidebar';
 import NotificationCenter from '../../../components/Global/NotificationCenter/NotificationCenter';
 
@@ -130,24 +131,7 @@ export default function PageHeader(props: HeaderPropsIF) {
 
     const location = useLocation();
 
-    const makeParamsSlug = (url: string) => {
-        let paramsString = url;
-        while (paramsString && !paramsString.startsWith('/chain=')) {
-            paramsString = paramsString.slice(1);
-        }
-        return paramsString;
-    }
-
-    // params slug to use in URL bar on header navigation
-    // useState() + useEffect() is necessary over useMemo() to
-    // ... only overwrite the value conditionally
-    const [paramsSlug, setParamsSlug] = useState(makeParamsSlug(location.pathname));
-    useEffect(() => {
-        // make a new params slug from the URL path
-        const newSlug = makeParamsSlug(location.pathname);
-        // prevent overwrite if there are no params
-        newSlug && setParamsSlug(newSlug);
-    }, [location]);
+    const urlParams = useUrlParams();
 
     const tradeDestination = location.pathname.includes('trade/market')
         ? '/trade/market'
@@ -161,8 +145,8 @@ export default function PageHeader(props: HeaderPropsIF) {
 
     const linkData = [
         { title: t('common:homeTitle'), destination: '/', shouldDisplay: true },
-        { title: t('common:swapTitle'), destination: '/swap' + paramsSlug, shouldDisplay: true },
-        { title: t('common:tradeTitle'), destination: tradeDestination + paramsSlug, shouldDisplay: true },
+        { title: t('common:swapTitle'), destination: '/swap' + urlParams, shouldDisplay: true },
+        { title: t('common:tradeTitle'), destination: tradeDestination + urlParams, shouldDisplay: true },
         { title: t('common:analyticsTitle'), destination: '/analytics', shouldDisplay: false },
         {
             title: t('common:accountTitle'),
