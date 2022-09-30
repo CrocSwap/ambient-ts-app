@@ -121,6 +121,10 @@ export default function OrderCardHeader(props: OrderCardHeaderPropsIF) {
         <div className={styles.mobile_header_display}>
             <div className={styles.mobile_header_content}>
                 <p>ID/Wallet</p>
+                <p>Price</p>
+                <p>Type</p>
+                <p>Side</p>
+                <p>Value</p>
                 <p>{quoteTokenSymbol}</p>
                 <p>{baseTokenSymbol}</p>
                 <p>Status</p>
