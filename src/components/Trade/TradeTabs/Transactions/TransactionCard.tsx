@@ -170,13 +170,12 @@ export default function TransactionCard(props: TransactionProps) {
                         : bidTickPriceDecimalCorrected < 2
                         ? bidTickPriceDecimalCorrected.toPrecision(3)
                         : bidTickPriceDecimalCorrected >= 1000
-                        ? formatAmount(bidTickPriceDecimalCorrected, 0)
+                        ? formatAmount(bidTickPriceDecimalCorrected, 1)
                         : bidTickPriceDecimalCorrected.toLocaleString(undefined, {
                               minimumFractionDigits: 0,
                               maximumFractionDigits: 0,
                           });
 
-                console.log({ tx });
                 const invertedBidPriceTruncated =
                     bidTickInvPriceDecimalCorrected === 1000000000000
                         ? '∞'
@@ -187,7 +186,7 @@ export default function TransactionCard(props: TransactionProps) {
                         : bidTickInvPriceDecimalCorrected < 2
                         ? bidTickInvPriceDecimalCorrected.toPrecision(3)
                         : bidTickInvPriceDecimalCorrected >= 1000
-                        ? formatAmount(bidTickInvPriceDecimalCorrected, 0)
+                        ? formatAmount(bidTickInvPriceDecimalCorrected, 1)
                         : bidTickInvPriceDecimalCorrected.toLocaleString(undefined, {
                               minimumFractionDigits: 0,
                               maximumFractionDigits: 0,
@@ -203,7 +202,7 @@ export default function TransactionCard(props: TransactionProps) {
                         : askTickPriceDecimalCorrected < 2
                         ? askTickPriceDecimalCorrected.toPrecision(3)
                         : askTickPriceDecimalCorrected >= 1000
-                        ? formatAmount(askTickPriceDecimalCorrected, 0)
+                        ? formatAmount(askTickPriceDecimalCorrected, 1)
                         : askTickPriceDecimalCorrected.toLocaleString(undefined, {
                               minimumFractionDigits: 0,
                               maximumFractionDigits: 0,
@@ -219,7 +218,7 @@ export default function TransactionCard(props: TransactionProps) {
                         : askTickInvPriceDecimalCorrected < 2
                         ? askTickInvPriceDecimalCorrected.toPrecision(3)
                         : askTickInvPriceDecimalCorrected >= 1000
-                        ? formatAmount(askTickInvPriceDecimalCorrected, 0)
+                        ? formatAmount(askTickInvPriceDecimalCorrected, 1)
                         : askTickInvPriceDecimalCorrected.toLocaleString(undefined, {
                               minimumFractionDigits: 0,
                               maximumFractionDigits: 0,
