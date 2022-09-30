@@ -16,6 +16,7 @@ import {
 import { fetchPoolLimitOrderStates } from '../../../../App/functions/fetchPoolLimitOrderStates';
 import { ChainSpec } from '@crocswap-libs/sdk';
 import useWebSocket from 'react-use-websocket';
+import OrderAccordions from './OrderAccordions/OrderAccordions';
 
 // interface for props for react functional component
 interface propsIF {
@@ -199,29 +200,34 @@ export default function Orders(props: propsIF) {
         }
     }, [lastPoolLimitOrderChangeMessage]);
 
+    const showAllOrUserPositions = isShowAllEnabled ? limitOrdersByPool : limitOrdersByUser;
+    const [expanded, setExpanded] = useState<false | number>(false);
     const ItemContent = (
-        <div className={styles.item_container}>
-            {isShowAllEnabled
-                ? limitOrdersByPool.map((order, idx) => (
-                      <OrderCard
-                          key={idx}
-                          account={account}
-                          limitOrder={order}
-                          isDenomBase={isDenomBase}
-                          selectedBaseToken={selectedBaseToken}
-                          selectedQuoteToken={selectedQuoteToken}
-                      />
-                  ))
-                : limitOrdersByUser.map((order, idx) => (
-                      <OrderCard
-                          key={idx}
-                          account={account}
-                          limitOrder={order}
-                          isDenomBase={isDenomBase}
-                          selectedBaseToken={selectedBaseToken}
-                          selectedQuoteToken={selectedQuoteToken}
-                      />
-                  ))}
+        <div className={styles.desktop_transaction_display_container}>
+            {showAllOrUserPositions.map((order, idx) => (
+                <OrderCard
+                    key={idx}
+                    account={account}
+                    limitOrder={order}
+                    isDenomBase={isDenomBase}
+                    selectedBaseToken={selectedBaseToken}
+                    selectedQuoteToken={selectedQuoteToken}
+                />
+            ))}
+        </div>
+    );
+
+    const mobileAccordionDisplay = (
+        <div className={styles.accordion_display_container}>
+            {showAllOrUserPositions.map((order, idx) => (
+                <OrderAccordions
+                    key={idx}
+                    expanded={expanded}
+                    setExpanded={setExpanded}
+                    i={idx}
+                    limitOrder={order}
+                />
+            ))}
         </div>
     );
 
@@ -252,6 +258,7 @@ export default function Orders(props: propsIF) {
                 style={{ height: expandTradeTable ? '100%' : '170px' }}
             >
                 {ItemContent}
+                {mobileAccordionDisplay}
             </div>
         </div>
     );

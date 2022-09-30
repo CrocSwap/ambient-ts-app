@@ -4,6 +4,7 @@ import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { useState, useEffect } from 'react';
 import getUnicodeCharacter from '../../utils/functions/getUnicodeCharacter';
 import { formatAmount } from '../../utils/numbers';
+import trimString from '../../utils/functions/trimString';
 
 export const useProcessOrder = (limitOrder: ILimitOrderState) => {
     const { account } = useMoralis();
@@ -12,10 +13,17 @@ export const useProcessOrder = (limitOrder: ILimitOrderState) => {
     const selectedBaseToken = tradeData.baseToken.address.toLowerCase();
     const selectedQuoteToken = tradeData.quoteToken.address.toLowerCase();
 
+    const quoteTokenLogo = tradeData.quoteToken.logoURI;
+    const baseTokenLogo = tradeData.baseToken.logoURI;
+
+    const baseTokenSymbol = tradeData.baseToken.symbol;
+    const quoteTokenSymbol = tradeData.quoteToken.symbol;
+
     const isOwnerActiveAccount = limitOrder.user.toLowerCase() === account?.toLowerCase();
     const isDenomBase = tradeData.isDenomBase;
 
     const ownerId = limitOrder.ensResolution ? limitOrder.ensResolution : limitOrder.user;
+    const ensName = limitOrder.ensResolution ? limitOrder.ensResolution : null;
 
     const isOrderFilled = !limitOrder.positionLiq;
 
@@ -108,13 +116,34 @@ export const useProcessOrder = (limitOrder: ILimitOrderState) => {
               maximumFractionDigits: 2,
           });
 
+    // ------------------------------------------------------------------
+
+    const quantitiesAvailable = baseQty !== undefined || quoteQty !== undefined;
+
+    const baseDisplayFrontend = quantitiesAvailable
+        ? `${baseTokenCharacter}${baseQty || '0.00'}`
+        : '…';
+
+    const quoteDisplayFrontend = quantitiesAvailable
+        ? `${quoteTokenCharacter}${quoteQty || '0.00'}`
+        : '…';
+    // ------------------------------------------------------------------
     const usdValue = usdValueTruncated ? '$' + usdValueTruncated : '…';
+
+    const ensNameOrOwnerTruncated = ensName
+        ? trimString(ensName, 5, 3, '…')
+        : trimString(ownerId, 6, 0, '…');
+    const posHashTruncated = trimString(posHash, 6, 0, '…');
+
+    const userNameToDisplay = isOwnerActiveAccount ? 'You' : ensNameOrOwnerTruncated;
 
     return {
         // wallet and id data
         ownerId,
         posHash,
         isOwnerActiveAccount,
+        posHashTruncated,
+        userNameToDisplay,
 
         // Price and Price type data
         priceType,
@@ -132,6 +161,12 @@ export const useProcessOrder = (limitOrder: ILimitOrderState) => {
         quoteQty,
         baseTokenCharacter,
         quoteTokenCharacter,
+        quoteTokenLogo,
+        baseTokenLogo,
+        baseDisplayFrontend,
+        quoteDisplayFrontend,
+        baseTokenSymbol,
+        quoteTokenSymbol,
 
         // open order status
         isOrderFilled,

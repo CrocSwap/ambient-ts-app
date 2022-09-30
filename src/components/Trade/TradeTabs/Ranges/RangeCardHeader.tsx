@@ -1,6 +1,7 @@
 import { Dispatch, SetStateAction, useMemo } from 'react';
 import styles from './RangeCardHeader.module.css';
 import { FaAngleUp, FaAngleDown } from 'react-icons/fa';
+import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 
 type ColumnData = {
     name: string;
@@ -33,6 +34,9 @@ interface RangeCardHeaderPropsIF {
 
 export default function RangeCardHeader(props: RangeCardHeaderPropsIF) {
     const { sortBy, setSortBy, reverseSort, setReverseSort, columnHeaders } = props;
+    const tradeData = useAppSelector((state) => state.tradeData);
+    const baseTokenSymbol = tradeData.baseToken.symbol;
+    const quoteTokenSymbol = tradeData.quoteToken.symbol;
 
     function handleClick(name: string) {
         const resetSearch = () => {
@@ -119,6 +123,21 @@ export default function RangeCardHeader(props: RangeCardHeaderPropsIF) {
     // TODO:   @Junior we need to make <div> wrapping the arrow icon a fixed
     // TODO:   ... width so the parent element does not resize based on whether
     // TODO:   ... or not it is being rendered
+    const mobileHeaderDisplay = (
+        <div className={styles.mobile_header_display}>
+            <div className={styles.mobile_header_content}>
+                <p>ID/Wallet</p>
+                <p>{baseTokenSymbol}</p>
+                <p>{quoteTokenSymbol}</p>
+                <p>Value</p>
+                <p>Min</p>
+                <p>Max</p>
+                <p>APY</p>
+                <p>Status</p>
+            </div>
+            <div />
+        </div>
+    );
 
     return (
         // <div
@@ -129,9 +148,12 @@ export default function RangeCardHeader(props: RangeCardHeaderPropsIF) {
         //     <h5>{data.name}</h5>
         //     <div className={styles.arrow_wrapper}>{arrow}</div>
         // </div>
-        <div className={styles.main_container}>
-            <div className={styles.row_container}>{columnHeaderContent}</div>
-            <div />
-        </div>
+        <>
+            {mobileHeaderDisplay}
+            <div className={styles.main_container}>
+                <div className={styles.row_container}>{columnHeaderContent}</div>
+                <div />
+            </div>
+        </>
     );
 }

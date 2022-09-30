@@ -16,8 +16,8 @@ export default function TransactionCardHeader(props: TransactionCardHeaderProps)
         <div className={styles.mobile_header_display}>
             <div className={styles.mobile_header_content}>
                 <p>ID/Wallet</p>
-                <p>ETH</p>
-                <p>USDC</p>
+                <p>{baseTokenSymbol}</p>
+                <p>{quoteTokenSymbol}</p>
             </div>
             <div />
         </div>

@@ -159,7 +159,8 @@ export default function PoolCard(props: PoolCardProps) {
                         true, // denomInBase
                     );
                     if (priceChangeResult > -0.01 && priceChangeResult < 0.01) {
-                        setPoolPriceChangePercent('None');
+                        setPoolPriceChangePercent('No Change');
+                        setIsPoolPriceChangePositive(true);
                     } else if (priceChangeResult) {
                         priceChangeResult > 0
                             ? setIsPoolPriceChangePositive(true)
@@ -188,7 +189,7 @@ export default function PoolCard(props: PoolCardProps) {
     }, [tokenAAddress, tokenBAddress, lastBlockNumber]);
 
     const tokenImagesDisplay = (
-        <div>
+        <div className={styles.token_images}>
             <img
                 src={shouldInvertDisplay ? tokenAFromMap?.logoURI : tokenBFromMap?.logoURI}
                 alt=''
