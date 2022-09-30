@@ -21,6 +21,9 @@ export default function TopPools(props: TopPoolsProps) {
 
     const { t } = useTranslation();
 
+    // @Junior  please remove the NavLink wrapper or refactor PoolCard.tsx
+    // @Junior  ... so it returns a NavLink element
+
     return (
         <motion.div
             className={styles.container}
