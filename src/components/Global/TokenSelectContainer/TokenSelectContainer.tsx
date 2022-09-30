@@ -1,9 +1,8 @@
 // START: Import React and Dongles
 import { Dispatch, SetStateAction, useMemo } from 'react';
-import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 // START: Import Local Files
-import { setTokenA, setTokenB, setDidUserFlipDenom } from '../../../utils/state/tradeDataSlice';
 import styles from './TokenSelectContainer.module.css';
 import TokenSelect from '../TokenSelect/TokenSelect';
 import TokenSelectSearchable from '../TokenSelect/TokenSelectSearchable';
@@ -32,6 +31,7 @@ interface TokenSelectContainerPropsIF {
 export default function TokenSelectContainer(props: TokenSelectContainerPropsIF) {
     const {
         resetTokenQuantities,
+        reverseTokens,
         tokenPair,
         tokensBank,
         setImportedTokens,
@@ -39,13 +39,12 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
         chainId,
         tokenToUpdate,
         closeModal,
-        reverseTokens,
         showManageTokenListContent,
         activeTokenListsChanged,
         indicateActiveTokenListsChanged,
     } = props;
 
-    const dispatch = useAppDispatch();
+    const navigate = useNavigate();
 
     const undeletableTokens = useMemo(
         () =>
@@ -63,25 +62,65 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
 
     const importedTokensAddresses = tokensBank.map((token: TokenIF) => token.address);
 
+    const location = useLocation();
+
+    const locationSlug = useMemo<string>(() => {
+        const { pathname } = location;
+        let slug = '';
+        if (pathname.startsWith('/trade/market')) {
+            slug = '/trade/market';
+        } else if (pathname.startsWith('/trade/limit')) {
+            slug = '/trade/limit';
+        } else if (pathname.startsWith('/trade/range')) {
+            slug = '/trade/range';
+        } else if (pathname.startsWith('/swap')) {
+            slug = '/swap';
+        }
+        return slug;
+    }, [location]);
+
     const chooseToken = (tok: TokenIF) => {
+        // function to generate the URL string and navigate to it
+        const goToNewUrlParams = (
+            pathSlug: string,
+            chain: string,
+            addrTokenA: string,
+            addrTokenB: string,
+        ) =>
+            navigate(
+                pathSlug + '/chain=' + chain + '&tokenA=' + addrTokenA + '&tokenB=' + addrTokenB,
+            );
+
+        // user is updating token A
         if (tokenToUpdate === 'A') {
             if (tokenPair.dataTokenB.address === tok.address) {
                 reverseTokens();
-                dispatch(setTokenA(tok));
-                dispatch(setTokenB(tokenPair.dataTokenA));
-            } else {
-                dispatch(setTokenA(tok));
-                dispatch(setDidUserFlipDenom(false));
+                closeModal();
+                return;
             }
+            goToNewUrlParams(
+                locationSlug,
+                '0x5',
+                tok.address,
+                tokenPair.dataTokenB.address === tok.address
+                    ? tokenPair.dataTokenA.address
+                    : tokenPair.dataTokenB.address,
+            );
+            // user is updating token B
         } else if (tokenToUpdate === 'B') {
             if (tokenPair.dataTokenA.address === tok.address) {
                 reverseTokens();
-                dispatch(setTokenB(tok));
-                dispatch(setTokenA(tokenPair.dataTokenB));
-            } else {
-                dispatch(setTokenB(tok));
-                dispatch(setDidUserFlipDenom(false));
+                closeModal();
+                return;
             }
+            goToNewUrlParams(
+                locationSlug,
+                '0x5',
+                tokenPair.dataTokenA.address === tok.address
+                    ? tokenPair.dataTokenB.address
+                    : tokenPair.dataTokenA.address,
+                tok.address,
+            );
         } else {
             console.warn(
                 'Error in TokenSelectContainer.tsx, failed to find proper dispatch function.',

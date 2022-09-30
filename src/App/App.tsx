@@ -144,6 +144,8 @@ export default function App() {
     const userData = useAppSelector((state) => state.userData);
     const isUserLoggedIn = userData.isLoggedIn;
 
+
+    
     useEffect(() => {
         const isLoggedIn = isAuthenticated && isWeb3Enabled;
 
@@ -153,14 +155,13 @@ export default function App() {
     }, [isAuthenticated, isWeb3Enabled, isUserLoggedIn]);
 
     const tokenMap = useTokenMap();
-
     const location = useLocation();
 
     const [candleData, setCandleData] = useState<CandlesByPoolAndDuration | undefined>();
 
-    useEffect(() => {
-        if (candleData) console.log({ candleData });
-    }, [candleData]);
+    // useEffect(() => {
+    //     if (candleData) console.log({ candleData });
+    // }, [candleData]);
 
     // custom hook to manage chain the app is using
     // `chainData` is data on the current chain retrieved from our SDK
@@ -171,7 +172,7 @@ export default function App() {
     // useEffect(() => console.warn(chainData.chainId), [chainData.chainId]);
 
     const tokenUniverse = useTokenUniverse(chainData.chainId);
-    useEffect(() => console.log({ tokenUniverse }), [tokenUniverse]);
+    useEffect(() => {false && console.log({ tokenUniverse })}, [tokenUniverse]);
 
     const [isShowAllEnabled, setIsShowAllEnabled] = useState(true);
     const [currentTxActiveInTransactions, setCurrentTxActiveInTransactions] = useState('');
@@ -251,7 +252,7 @@ export default function App() {
                     setProvider(metamaskProvider);
                 }
             } else if (!provider || !onChain) {
-                console.log('use infura as provider');
+                // console.log('use infura as provider');
                 const chainSpec = lookupChain(chainData.chainId);
                 const url = chainSpec.nodeUrl;
                 // const url = chainSpec.wsUrl ? chainSpec.wsUrl : chainSpec.nodeUrl;
@@ -336,12 +337,12 @@ export default function App() {
         chainData.wsUrl || '',
         {
             onOpen: () => {
-                console.log('infura newHeads subscription opened');
+                // console.log('infura newHeads subscription opened');
                 send('{"jsonrpc":"2.0","method":"eth_subscribe","params":["newHeads"],"id":5}');
             },
             onClose: (event: CloseEvent) => {
-                console.log('infura newHeads subscription closed');
-                console.log({ event });
+                false && console.log('infura newHeads subscription closed');
+                false && console.log({ event });
             },
             shouldReconnect: () => shouldNonCandleSubscriptionsReconnect,
         },
@@ -731,7 +732,7 @@ export default function App() {
             // retrieve pool liquidity
             try {
                 if (httpGraphCacheServerDomain) {
-                    console.log('fetching pool liquidity distribution');
+                    // console.log('fetching pool liquidity distribution');
 
                     const poolLiquidityCacheEndpoint =
                         httpGraphCacheServerDomain + '/pool_liquidity_distribution?';
@@ -776,7 +777,7 @@ export default function App() {
                 // retrieve pool_positions
                 try {
                     if (httpGraphCacheServerDomain) {
-                        console.log('fetching pool positions');
+                        // console.log('fetching pool positions');
                         const allPositionsCacheEndpoint =
                             httpGraphCacheServerDomain + '/pool_positions?';
                         fetch(
@@ -918,7 +919,7 @@ export default function App() {
         ) {
             try {
                 if (httpGraphCacheServerDomain) {
-                    console.log('fetching candles');
+                    // console.log('fetching candles');
                     const candleSeriesCacheEndpoint =
                         httpGraphCacheServerDomain + '/candle_series?';
 
@@ -1955,8 +1956,12 @@ export default function App() {
 
     // const [isGlobalModalOpen, openGlobalModal, closeGlobalModal, currentContent] = useGlobalModal();
 
-    const swapParams =
-        '/swap/chain=0x5&tokenA=0x0000000000000000000000000000000000000000&tokenB=0xD87Ba7A50B2E7E660f678A895E4B72E7CB4CCd9C';
+    const defaultUrlParams = {
+        swap: '/swap/chain=0x5&tokenA=0x0000000000000000000000000000000000000000&tokenB=0xD87Ba7A50B2E7E660f678A895E4B72E7CB4CCd9C',
+        market: '/trade/market/chain=0x5&tokenA=0x0000000000000000000000000000000000000000&tokenB=0xD87Ba7A50B2E7E660f678A895E4B72E7CB4CCd9C',
+        limit: '/trade/limit/chain=0x5&tokenA=0x0000000000000000000000000000000000000000&tokenB=0xD87Ba7A50B2E7E660f678A895E4B72E7CB4CCd9C',
+        range: '/trade/range/chain=0x5&tokenA=0x0000000000000000000000000000000000000000&tokenB=0xD87Ba7A50B2E7E660f678A895E4B72E7CB4CCd9C',
+    }
 
     return (
         <>
@@ -2023,6 +2028,7 @@ export default function App() {
                                     setCurrentPositionActive={setCurrentPositionActive}
                                     openGlobalModal={openGlobalModal}
                                     closeGlobalModal={closeGlobalModal}
+                                    isInitialized={isInitialized}
                                     poolPriceNonDisplay={undefined}
                                     setTargets={setTargets}
                                     targets={targets}
@@ -2033,10 +2039,15 @@ export default function App() {
                                 />
                             }
                         >
-                            <Route path='' element={<Swap {...swapPropsTrade} />} />
-                            <Route path='market' element={<Swap {...swapPropsTrade} />} />
-                            <Route path='limit' element={<Limit {...limitPropsTrade} />} />
-                            <Route path='range' element={<Range {...rangeProps} />} />
+                            <Route path='' element={<Navigate to='/trade/market' replace />} />
+                            <Route path='market' element={<Navigate to={defaultUrlParams.market} replace />} />
+                            <Route path='market/:params' element={<Swap {...swapPropsTrade} />} />
+
+                            <Route path='limit' element={<Navigate to={defaultUrlParams.limit} replace />} />
+                            <Route path='limit/:params' element={<Limit {...limitPropsTrade} />} />
+
+                            <Route path='range' element={<Navigate to={defaultUrlParams.range} replace />} />
+                            <Route path='range/:params' element={<Range {...rangeProps} />} />
                             <Route path='edit/:positionHash' element={<Edit />} />
                             <Route path='reposition' element={<Reposition />} />
                             <Route path='edit/' element={<Navigate to='/trade/market' replace />} />
@@ -2106,14 +2117,13 @@ export default function App() {
                             }
                         />
 
-                        <Route path='swap' element={<Navigate replace to={swapParams} />} />
+                        <Route path='swap' element={<Navigate replace to={defaultUrlParams.swap} />} />
                         <Route path='swap/:params' element={<Swap {...swapProps} />} />
                         <Route path='tos' element={<TermsOfService />} />
                         <Route
                             path='testpage'
                             element={<TestPage openGlobalModal={openGlobalModal} />}
                         />
-                        {/* <Route path='*' element={<Navigate to='/404' replace />} /> */}
                         <Route
                             path='/:address'
                             element={

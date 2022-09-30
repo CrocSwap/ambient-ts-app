@@ -1,16 +1,7 @@
 import styles from './SidebarRangePositionsCard.module.css';
-import { PositionIF } from '../../../../utils/interfaces/PositionIF';
-
-// import { toDisplayQty } from '@crocswap-libs/sdk';
-import {
-    //  useEffect, useState,
-    SetStateAction,
-    Dispatch,
-} from 'react';
-import { TokenIF } from '../../../../utils/interfaces/TokenIF';
-import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
-import { setTokenA, setTokenB } from '../../../../utils/state/tradeDataSlice';
-// import { formatAmount } from '../../../../utils/numbers';
+import { PositionIF, TokenIF } from '../../../../utils/interfaces/exports';
+import { useMemo, SetStateAction, Dispatch } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
 
 interface SidebarRangePositionsProps {
@@ -21,13 +12,10 @@ interface SidebarRangePositionsProps {
     setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
     outsideControl: boolean;
     setOutsideControl: Dispatch<SetStateAction<boolean>>;
-
     isShowAllEnabled: boolean;
     setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
-
     currentPositionActive: string;
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
-
     tabToSwitchToBasedOnRoute: number;
 }
 
@@ -38,33 +26,45 @@ export default function SidebarRangePositionsCard(props: SidebarRangePositionsPr
         position,
         setOutsideControl,
         setSelectedOutsideTab,
-        // currentPositionActive,
         setCurrentPositionActive,
         setIsShowAllEnabled,
-
         tabToSwitchToBasedOnRoute,
     } = props;
 
-    const dispatch = useAppDispatch();
+    const getToken = (addr: string) => tokenMap.get(addr.toLowerCase()) as TokenIF;
+    const baseToken = getToken(position.base + '_' + position.chainId);
+    const quoteToken = getToken(position.quote + '_' + position.chainId);
 
-    const baseId = position.base + '_' + position.chainId;
-    const quoteId = position.quote + '_' + position.chainId;
+    const { pathname } = useLocation();
 
-    const baseToken = tokenMap ? tokenMap.get(baseId.toLowerCase()) : null;
-    const quoteToken = tokenMap ? tokenMap.get(quoteId.toLowerCase()) : null;
+    const linkPath = useMemo(() => {
+        let locationSlug = '';
+        if (pathname.startsWith('/trade/market')) {
+            locationSlug = '/trade/market';
+        } else if (pathname.startsWith('/trade/limit')) {
+            locationSlug = '/trade/limit';
+        } else if (pathname.startsWith('/trade/range')) {
+            locationSlug = '/trade/range';
+        } else if (pathname.startsWith('/swap')) {
+            locationSlug = '/swap';
+        }
+        return (
+            locationSlug +
+            '/chain=0x5&tokenA=' +
+            baseToken.address +
+            '&tokenB=' +
+            quoteToken.address
+        );
+    }, [pathname]);
 
-    // const onTradeRoute = location.pathname.includes('trade');
-    // const onAccountRoute = location.pathname.includes('account');
-
-    // const tabToSwitchToBasedOnRoute = onTradeRoute ? 2 : onAccountRoute ? 2 : 0;
+    const navigate = useNavigate();
 
     function handleRangePositionClick(pos: PositionIF) {
         setOutsideControl(true);
         setSelectedOutsideTab(tabToSwitchToBasedOnRoute);
         setCurrentPositionActive(pos.positionStorageSlot);
         setIsShowAllEnabled(false);
-        if (baseToken) dispatch(setTokenA(baseToken));
-        if (quoteToken) dispatch(setTokenB(quoteToken));
+        navigate(linkPath);
     }
 
     const liqTotalUSD =
