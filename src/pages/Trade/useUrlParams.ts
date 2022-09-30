@@ -40,8 +40,12 @@ export const useUrlParams = (
         );
     }, [params]);
 
+    useEffect(() => console.log({urlParams}), [urlParams]);
+
+
     // make a list of params found in the URL queried
     const paramsUsed = useMemo(() => urlParams.map((param) => param[0]), [urlParams]);
+
 
     // determine which chain to use
     const chainToUse = useMemo(() => {
@@ -99,6 +103,7 @@ export const useUrlParams = (
 
             // function to find token if not the native token
             const findToken = (listNames: string[]): TokenIF | undefined => {
+                console.log('looking for token!!')
                 const allTokenLists = tokenList ? JSON.parse(tokenList as string) : undefined;
                 // extract CoinGecko list from allTokenLists
                 if (
@@ -169,16 +174,17 @@ export const useUrlParams = (
         const paramsIncludesToken = paramsUsed.includes('tokenA') || paramsUsed.includes('tokenB');
         // TODO: this needs to be gatekept so it runs only once
         if (isInitialized && tokensAreDifferent && paramsIncludesToken) {
+            console.log('going to new tokens!');
             Promise.all([
                 fetchAndFormatTokenData(addrTokenA),
                 fetchAndFormatTokenData(addrTokenB),
             ]).then((res) => {
-                // res.forEach((tkn) =>
-                //     console.assert(
-                //         tkn,
-                //         'Missing token data in useUrlParams.ts, refer to file for troubleshooting',
-                //     ),
-                // );
+                res.forEach((tkn) =>
+                    console.assert(
+                        tkn,
+                        'Missing token data in useUrlParams.ts, refer to file for troubleshooting',
+                    ),
+                );
                 res[0] && dispatch(setTokenA(res[0] as TokenIF));
                 res[1] && dispatch(setTokenB(res[1] as TokenIF));
             });

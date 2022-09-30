@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // START: Import React and Dongles
 import { Dispatch, SetStateAction, useState } from 'react';
-import { Outlet, useOutletContext, NavLink } from 'react-router-dom';
+import { useParams, Outlet, useOutletContext, NavLink } from 'react-router-dom';
 import { ethers } from 'ethers';
 import { motion, AnimateSharedLayout } from 'framer-motion';
 
@@ -15,6 +15,7 @@ import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { targetData, tradeData as TradeDataIF } from '../../utils/state/tradeDataSlice';
 import { CandleData, CandlesByPoolAndDuration } from '../../utils/state/graphDataSlice';
 import { PoolIF, TokenIF, TokenPairIF } from '../../utils/interfaces/exports';
+import { useUrlParams } from './useUrlParams';
 import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
 import { SketchPicker } from 'react-color';
 
@@ -68,6 +69,7 @@ interface TradePropsIF {
     openGlobalModal: (content: React.ReactNode) => void;
 
     closeGlobalModal: () => void;
+    isInitialized: boolean;
     poolPriceNonDisplay: number | undefined;
 }
 
@@ -92,10 +94,15 @@ export default function Trade(props: TradePropsIF) {
         favePools,
         addPoolToFaves,
         removePoolFromFaves,
+        isInitialized
     } = props;
+
+    useUrlParams(chainId, isInitialized);
 
     const [isCandleSelected, setIsCandleSelected] = useState<boolean | undefined>();
     const [transactionFilter, setTransactionFilter] = useState<CandleData>();
+
+    const { params } = useParams();
 
     const routes = [
         {
@@ -113,25 +120,7 @@ export default function Trade(props: TradePropsIF) {
     ];
     const [fullScreenChart, setFullScreenChart] = useState(false);
 
-    const tradeData = useAppSelector((state) => state.tradeData);
-
-    const graphData = useAppSelector((state) => state.graphData);
-
-    // const activePoolDefinition = JSON.stringify({
-    //     baseAddress: baseTokenAddress,
-    //     quoteAddress: quoteTokenAddress,
-    //     poolIdx: 36000,
-    //     network: chainId,
-    // }).toLowerCase();
-
-    // const indexOfActivePool = graphData.candlesForAllPools.pools
-    //     .map((item) => JSON.stringify(item.pool).toLowerCase())
-    //     .findIndex((pool) => pool === activePoolDefinition);
-
-    // const activePoolCandleData = graphData?.candlesForAllPools?.pools[indexOfActivePool];
-    // const candleData = activePoolCandleData?.candlesByPoolAndDuration.find((data) => {
-    //     return data.duration === tradeData.activeChartPeriod;
-    // });
+    const { tradeData, graphData } = useAppSelector((state) => state);
 
     const activePoolLiquidityData = graphData?.liquidityForAllPools?.pools[0];
     const liquidityData = activePoolLiquidityData?.liquidityData;
@@ -154,7 +143,7 @@ export default function Trade(props: TradePropsIF) {
         <div className={styles.navigation_menu}>
             {routes.map((route, idx) => (
                 <div className={`${styles.nav_container} trade_route`} key={idx}>
-                    <NavLink to={`/trade${route.path}`}>{route.name}</NavLink>
+                    <NavLink to={`/trade${route.path}/${params}`}>{route.name}</NavLink>
                 </div>
             ))}
         </div>
