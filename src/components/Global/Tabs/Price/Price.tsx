@@ -1,13 +1,20 @@
 import styles from './Price.module.css';
 
 interface PriceProps {
-    priceType: 'priceBuy' | 'priceSell' | 'minMaxBuy' | 'minMaxAdd';
+    priceType: 'priceBuy' | 'priceSell' | 'minMaxBuy' | 'minMaxAdd' | 'range';
     displayPrice?: string;
+    truncatedLowDisplayPrice?: string;
+    truncatedHighDisplayPrice?: string;
 }
 export default function Price(props: PriceProps) {
-    const { priceType, displayPrice } = props;
+    const { priceType, displayPrice, truncatedLowDisplayPrice, truncatedHighDisplayPrice } = props;
     const priceBuy = <p className={styles.buy_style}>{displayPrice ?? '…'}</p>;
     const priceSell = <p className={styles.sell_style}>{displayPrice ?? '…'}</p>;
+    const range = (
+        <p className={styles.sell_style}>
+            {truncatedLowDisplayPrice + '-' + truncatedHighDisplayPrice ?? '…'}
+        </p>
+    );
 
     const minMaxBuy = (
         <div className={styles.min_max}>
@@ -27,6 +34,7 @@ export default function Price(props: PriceProps) {
         priceSell: priceSell,
         minMaxBuy: minMaxBuy,
         minMaxAdd: minMaxAdd,
+        range: range,
     };
 
     return (
