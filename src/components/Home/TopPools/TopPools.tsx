@@ -4,8 +4,6 @@ import { motion } from 'framer-motion';
 
 import { useTranslation } from 'react-i18next';
 import { NavLink } from 'react-router-dom';
-import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
-import { setTokenA, setTokenB } from '../../../utils/state/tradeDataSlice';
 
 import { topPools } from '../../../App/mockData';
 import { TokenIF } from '../../../utils/interfaces/TokenIF';
@@ -22,8 +20,6 @@ export default function TopPools(props: TopPoolsProps) {
     const { tokenMap, lastBlockNumber, crocEnv, chainId } = props;
 
     const { t } = useTranslation();
-
-    const dispatch = useAppDispatch();
 
     return (
         <motion.div
@@ -43,10 +39,6 @@ export default function TopPools(props: TopPoolsProps) {
                             tokenA={pool.base}
                             tokenB={pool.quote}
                             key={idx}
-                            onClick={() => {
-                                dispatch(setTokenA(pool.base));
-                                dispatch(setTokenB(pool.quote));
-                            }}
                             tokenMap={tokenMap}
                             lastBlockNumber={lastBlockNumber}
                             chainId={chainId}
