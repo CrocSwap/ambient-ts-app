@@ -7,6 +7,7 @@ import './TradeCandleStickChart.css';
 import candleStikPlaceholder from '../../../assets/images/charts/candlestick2.png';
 import {
     CandleChartData,
+    FeeChartData,
     LiqSnap,
     LiquidityData,
     TvlChartData,
@@ -30,14 +31,13 @@ declare global {
 
 interface ChartData {
     expandTradeTable: boolean;
-    tvlData: any[];
-    volumeData: any[];
-    feeData: any[];
+    // tvlData: any[];
+    // volumeData: any[];
+    // feeData: any[];
     priceData: CandlesByPoolAndDuration | undefined;
     changeState: (isOpen: boolean | undefined, candleData: CandleData | undefined) => void;
     chartItemStates: chartItemStates;
     denomInBase: boolean;
-    targetData: targetData[] | undefined;
     limitPrice: string | undefined;
     liquidityData: any;
     isAdvancedModeActive: boolean | undefined;
@@ -54,12 +54,15 @@ interface ChartData {
     baseTokenAddress: string;
     chainId: string;
     poolPriceNonDisplay: number | undefined;
+    setTargets: React.Dispatch<React.SetStateAction<targetData[]>>;
+    targets: targetData[];
 }
 
 export interface ChartUtils {
     period: any;
     chartData: CandleChartData[];
     tvlChartData: TvlChartData[];
+    feeChartData: FeeChartData[];
     volumeChartData: VolumeChartData[];
 }
 
@@ -70,13 +73,13 @@ type chartItemStates = {
 };
 
 export default function TradeCandleStickChart(props: ChartData) {
-    const data = {
-        tvlData: props.tvlData,
-        volumeData: props.volumeData,
-        feeData: props.feeData,
-        priceData: props.priceData,
-        liquidityData: props.liquidityData,
-    };
+    // const data = {
+    //     // tvlData: props.tvlData,
+    //     // volumeData: props.volumeData,
+    //     // feeData: props.feeData,
+    //     priceData: props.priceData,
+    //     liquidityData: props.liquidityData,
+    // };
 
     const { denomInBase, baseTokenAddress, chainId /* poolPriceNonDisplay */ } = props;
 
@@ -124,6 +127,9 @@ export default function TradeCandleStickChart(props: ChartData) {
         const chartData: CandleChartData[] = [];
         const tvlChartData: TvlChartData[] = [];
         const volumeChartData: VolumeChartData[] = [];
+        const feeChartData: FeeChartData[] = [];
+
+        // console.log(props.priceData);
 
         props.priceData?.candles.map((data) => {
             chartData.push({
@@ -146,12 +152,17 @@ export default function TradeCandleStickChart(props: ChartData) {
 
             tvlChartData.push({
                 time: new Date(data.tvlData.time * 1000),
-                value: data.tvlData.interpDistHigher,
+                value: data.tvlData.tvl,
             });
 
             volumeChartData.push({
                 time: new Date(data.time * 1000),
                 value: data.volumeUSD,
+            });
+
+            feeChartData.push({
+                time: new Date(data.time * 1000),
+                value: data.averageLiquidityFee,
             });
         });
 
@@ -160,6 +171,7 @@ export default function TradeCandleStickChart(props: ChartData) {
             chartData: chartData,
             tvlChartData: tvlChartData,
             volumeChartData: volumeChartData,
+            feeChartData: feeChartData,
         };
         setParsedChartData(() => {
             return chartUtils;
@@ -247,7 +259,6 @@ export default function TradeCandleStickChart(props: ChartData) {
                         expandTradeTable={expandTradeTable}
                         liquidityData={liquidityData}
                         changeState={props.changeState}
-                        targetData={props.targetData}
                         limitPrice={props.limitPrice}
                         denomInBase={props.denomInBase}
                         isAdvancedModeActive={props.isAdvancedModeActive}
@@ -256,15 +267,17 @@ export default function TradeCandleStickChart(props: ChartData) {
                         pinnedMaxPriceDisplayTruncated={props.pinnedMaxPriceDisplayTruncated}
                         spotPriceDisplay={props.spotPriceDisplay}
                         truncatedPoolPrice={props.truncatedPoolPrice}
-                        feeData={data.feeData}
-                        volumeData={data.volumeData}
-                        tvlData={data.tvlData}
+                        // feeData={data.feeData}
+                        // volumeData={data.volumeData}
+                        // tvlData={data.tvlData}
                         chartItemStates={props.chartItemStates}
                         setCurrentData={props.setCurrentData}
                         upBodyColor={props.upBodyColor}
                         upBorderColor={props.upBorderColor}
                         downBodyColor={props.downBodyColor}
                         downBorderColor={props.downBorderColor}
+                        setTargets={props.setTargets}
+                        targets={props.targets}
                     />
                 ) : (
                     <>{loading}</>
