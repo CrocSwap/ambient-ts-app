@@ -186,7 +186,7 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
             '&tokenB=' +
             tokenPair.dataTokenA.address
         );
-    }, [pathname]);
+    }, [pathname, tokenPair.dataTokenB.address, tokenPair.dataTokenA.address]);
 
     const [switchBoxes, setSwitchBoxes] = useState(false);
     const reverseTokens = (): void => {
