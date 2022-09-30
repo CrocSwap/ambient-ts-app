@@ -200,6 +200,7 @@ export interface TvlData {
 export interface CandleData {
     tvlData: TvlData;
     volumeUSD: number;
+    averageLiquidityFee: number;
     time: number;
     poolHash: string;
     firstBlock: number;
