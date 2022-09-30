@@ -5,12 +5,21 @@ interface PriceProps {
     displayPrice?: string;
     truncatedLowDisplayPrice?: string;
     truncatedHighDisplayPrice?: string;
+    isAmbient?: boolean;
 }
 export default function Price(props: PriceProps) {
-    const { priceType, displayPrice, truncatedLowDisplayPrice, truncatedHighDisplayPrice } = props;
+    const {
+        priceType,
+        displayPrice,
+        truncatedLowDisplayPrice,
+        truncatedHighDisplayPrice,
+        isAmbient,
+    } = props;
     const priceBuy = <p className={styles.buy_style}>{displayPrice ?? '…'}</p>;
     const priceSell = <p className={styles.sell_style}>{displayPrice ?? '…'}</p>;
-    const range = (
+    const range = isAmbient ? (
+        <p className={styles.sell_style}>Ambient (0-∞)</p>
+    ) : (
         <p className={styles.sell_style}>
             {truncatedLowDisplayPrice + '-' + truncatedHighDisplayPrice ?? '…'}
         </p>

@@ -83,6 +83,7 @@ export default function TransactionCard(props: TransactionProps) {
 
     const [baseFlowDisplay, setBaseFlowDisplay] = useState<string | undefined>(undefined);
     const [quoteFlowDisplay, setQuoteFlowDisplay] = useState<string | undefined>(undefined);
+    const [isAmbient, setIsAmbient] = useState<boolean>(false);
 
     useEffect(() => {
         setBaseFlowDisplay(undefined);
@@ -159,6 +160,15 @@ export default function TransactionCard(props: TransactionProps) {
                 const askTickPriceDecimalCorrected = tx.askTickPriceDecimalCorrected;
                 const askTickInvPriceDecimalCorrected = tx.askTickInvPriceDecimalCorrected;
 
+                if (
+                    bidTickInvPriceDecimalCorrected === 1000000000000 ||
+                    bidTickPriceDecimalCorrected === 1e-12 ||
+                    bidTickPriceDecimalCorrected === 0
+                ) {
+                    setIsAmbient(true);
+                } else {
+                    setIsAmbient(false);
+                }
                 const nonInvertedBidPriceTruncated =
                     bidTickPriceDecimalCorrected === 1000000000000
                         ? '∞'
@@ -417,6 +427,7 @@ export default function TransactionCard(props: TransactionProps) {
 
                 <Price
                     priceType={priceType}
+                    isAmbient={isAmbient}
                     displayPrice={truncatedDisplayPrice}
                     truncatedLowDisplayPrice={truncatedLowDisplayPrice}
                     truncatedHighDisplayPrice={truncatedHighDisplayPrice}
