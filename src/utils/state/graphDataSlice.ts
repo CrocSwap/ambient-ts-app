@@ -74,6 +74,7 @@ export interface ILimitOrderState {
     positionLiqBaseUSD: number;
     positionLiqQuoteUSD: number;
     positionLiqTotalUSD: number;
+    totalValueUSD: number;
     chainId: string;
 }
 export interface PoolVolumeSeries {
@@ -200,6 +201,7 @@ export interface TvlData {
 export interface CandleData {
     tvlData: TvlData;
     volumeUSD: number;
+    averageLiquidityFee: number;
     time: number;
     poolHash: string;
     firstBlock: number;

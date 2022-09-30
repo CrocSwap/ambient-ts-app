@@ -73,6 +73,7 @@ import {
     setDidUserFlipDenom,
     setPrimaryQuantityRange,
     setSimpleRangeWidth,
+    targetData,
 } from '../utils/state/tradeDataSlice';
 import {
     //  memoizeQuerySpotPrice,
@@ -158,9 +159,9 @@ export default function App() {
 
     const [candleData, setCandleData] = useState<CandlesByPoolAndDuration | undefined>();
 
-    // useEffect(() => {
-    //     if (candleData) console.log({ candleData });
-    // }, [candleData]);
+    useEffect(() => {
+        if (candleData) console.log({ candleData });
+    }, [candleData]);
 
     // custom hook to manage chain the app is using
     // `chainData` is data on the current chain retrieved from our SDK
@@ -925,19 +926,21 @@ export default function App() {
                     fetch(
                         candleSeriesCacheEndpoint +
                             new URLSearchParams({
-                                base: mainnetBaseTokenAddress,
-                                quote: mainnetQuoteTokenAddress,
+                                base: mainnetBaseTokenAddress.toLowerCase(),
+                                quote: mainnetQuoteTokenAddress.toLowerCase(),
                                 poolIdx: chainData.poolIndex.toString(),
                                 period: activePeriod.toString(),
-                                // period: '86400', // 1 day
-                                // period: '300', // 5 minute
                                 // time: '1657833300', // optional
                                 n: '100', // positive integer
-                                page: '0', // nonnegative integer
+                                // page: '0', // nonnegative integer
                                 chainId: '0x1',
                                 dex: 'all',
                                 poolStats: 'true',
                                 concise: 'true',
+                                poolStatsChainIdOverride: '0x5',
+                                poolStatsBaseOverride: baseTokenAddress.toLowerCase(),
+                                poolStatsQuoteOverride: quoteTokenAddress.toLowerCase(),
+                                poolStatsPoolIdxOverride: chainData.poolIndex.toString(),
                             }),
                     )
                         .then((response) => response?.json())
@@ -1064,6 +1067,10 @@ export default function App() {
                 dex: 'all',
                 poolStats: 'true',
                 concise: 'true',
+                poolStatsChainIdOverride: '0x5',
+                poolStatsBaseOverride: baseTokenAddress.toLowerCase(),
+                poolStatsQuoteOverride: quoteTokenAddress.toLowerCase(),
+                poolStatsPoolIdxOverride: chainData.poolIndex.toString(),
             }),
         [mainnetBaseTokenAddress, mainnetQuoteTokenAddress, chainData.poolIndex, activePeriod],
     );
@@ -1636,6 +1643,17 @@ export default function App() {
 
     const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
+    const [targets, setTargets] = useState<targetData[]>([
+        {
+            name: 'Min',
+            value: 0,
+        },
+        {
+            name: 'Max',
+            value: 0,
+        },
+    ]);
+
     // props for <PageHeader/> React element
     const headerProps = {
         isUserLoggedIn: isUserLoggedIn,
@@ -1788,6 +1806,8 @@ export default function App() {
         ambientApy: ambientApy,
 
         openGlobalModal: openGlobalModal,
+        targets: targets,
+        setTargets: setTargets,
     };
 
     function toggleSidebar() {
@@ -2010,6 +2030,12 @@ export default function App() {
                                     closeGlobalModal={closeGlobalModal}
                                     isInitialized={isInitialized}
                                     poolPriceNonDisplay={undefined}
+                                    setTargets={setTargets}
+                                    targets={targets}
+                                    setLimitRate={function (): void {
+                                        throw new Error('Function not implemented.');
+                                    }}
+                                    limitRate={''}
                                 />
                             }
                         >

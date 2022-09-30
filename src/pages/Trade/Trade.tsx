@@ -12,7 +12,7 @@ import TradeTabs2 from '../../components/Trade/TradeTabs/TradeTabs2';
 // START: Import Local Files
 import styles from './Trade.module.css';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
-import { tradeData as TradeDataIF } from '../../utils/state/tradeDataSlice';
+import { targetData, tradeData as TradeDataIF } from '../../utils/state/tradeDataSlice';
 import { CandleData, CandlesByPoolAndDuration } from '../../utils/state/graphDataSlice';
 import { PoolIF, TokenIF, TokenPairIF } from '../../utils/interfaces/exports';
 import { useUrlParams } from './useUrlParams';
@@ -47,6 +47,10 @@ interface TradePropsIF {
     setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
     expandTradeTable: boolean;
     setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
+    setLimitRate: React.Dispatch<React.SetStateAction<string>>;
+    setTargets: React.Dispatch<React.SetStateAction<targetData[]>>;
+    targets: targetData[];
+    limitRate: string;
     favePools: PoolIF[];
     addPoolToFaves: (tokenA: TokenIF, tokenB: TokenIF, chainId: string, poolId: number) => void;
     removePoolFromFaves: (
@@ -121,7 +125,6 @@ export default function Trade(props: TradePropsIF) {
     const activePoolLiquidityData = graphData?.liquidityForAllPools?.pools[0];
     const liquidityData = activePoolLiquidityData?.liquidityData;
     const denomInBase = tradeData.isDenomBase;
-    const targetData = tradeData.targetData;
     const limitPrice = tradeData.limitPrice;
 
     const isAdvancedModeActive = tradeData.advancedMode;
@@ -398,7 +401,6 @@ export default function Trade(props: TradePropsIF) {
                                 changeState={changeState}
                                 candleData={candleData}
                                 liquidityData={liquidityData}
-                                targetData={targetData}
                                 lastBlockNumber={lastBlockNumber}
                                 chainId={chainId}
                                 limitPrice={limitPrice}
@@ -418,6 +420,8 @@ export default function Trade(props: TradePropsIF) {
                                 downBorderColor={downBorderColor}
                                 baseTokenAddress={baseTokenAddress}
                                 poolPriceNonDisplay={props.poolPriceNonDisplay}
+                                setTargets={props.setTargets}
+                                targets={props.targets}
                             />
                         </motion.div>
                     </div>

@@ -183,7 +183,7 @@ export default function RangeCard(props: RangeCardProps) {
 
     if (!positionMatchesSelectedTokens) return null;
 
-    const usdValueNum = position.positionLiqTotalUSD;
+    const usdValueNum = position.totalValueUSD;
 
     const usdValueTruncated = !usdValueNum
         ? undefined

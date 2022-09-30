@@ -1,6 +1,6 @@
 // START: Import React and Dongles
 import { useState, ReactNode } from 'react';
-import { Link } from 'react-router-dom';
+// import { Link } from 'react-router-dom';
 import { FiMoreHorizontal } from 'react-icons/fi';
 
 // START: Import JSX Functional Components
@@ -12,15 +12,16 @@ import styles from './TableMenuComponents.module.css';
 import { useModal } from '../../../../Global/Modal/useModal';
 import { DefaultTooltip } from '../../../StyledTooltip/StyledTooltip';
 import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
+import { ILimitOrderState } from '../../../../../utils/state/graphDataSlice';
 
 // interface for React functional component props
 interface OrdersMenuIF {
-    userPosition: boolean | undefined;
+    limitOrder: ILimitOrderState;
 }
 
 // React functional component
 export default function OrdersMenu(props: OrdersMenuIF) {
-    const { userPosition } = props;
+    const { limitOrder } = props;
     const [value, copy] = useCopyToClipboard();
     const [openSnackbar, setOpenSnackbar] = useState<boolean>(false);
 
@@ -85,18 +86,18 @@ export default function OrdersMenu(props: OrdersMenuIF) {
 
     // ------------------  END OF MODAL FUNCTIONALITY-----------------
 
-    const repositionButton = userPosition ? (
-        <Link className={styles.reposition_button} to={'/trade/reposition'}>
-            Reposition
-        </Link>
-    ) : null;
+    // const repositionButton = userPosition ? (
+    //     <Link className={styles.reposition_button} to={'/trade/reposition'}>
+    //         Reposition
+    //     </Link>
+    // ) : null;
 
-    const removeButton = userPosition ? (
+    const removeButton = limitOrder ? (
         <button className={styles.option_button} onClick={openRemoveModal}>
             Remove
         </button>
     ) : null;
-    const copyButton = userPosition ? (
+    const copyButton = limitOrder ? (
         <button className={styles.option_button} onClick={handleCopyAddress}>
             Copy Trade
         </button>
@@ -106,16 +107,16 @@ export default function OrdersMenu(props: OrdersMenuIF) {
             Details
         </button>
     );
-    const editButton = userPosition ? (
-        <Link className={styles.option_button} to={'/trade/edit'}>
-            Edit
-        </Link>
-    ) : null;
+    // const editButton = userPosition ? (
+    //     <Link className={styles.option_button} to={'/trade/edit'}>
+    //         Edit
+    //     </Link>
+    // ) : null;
 
     const ordersMenu = (
         <div className={styles.actions_menu}>
-            {repositionButton}
-            {editButton}
+            {/* {repositionButton}
+            {editButton} */}
             {removeButton}
             {detailsButton}
             {copyButton}
@@ -124,7 +125,7 @@ export default function OrdersMenu(props: OrdersMenuIF) {
 
     const menuContent = (
         <div className={styles.menu_column}>
-            {editButton}
+            {/* {editButton} */}
             {removeButton}
             {detailsButton}
             {copyButton}

@@ -25,6 +25,7 @@ export default function TvlSubChart(props: TvlData) {
 
             const chartData = {
                 series: tvlData,
+                crosshairDataLocal: crosshairData,
             };
 
             const yScale = d3.scaleLinear();
@@ -62,10 +63,6 @@ export default function TvlSubChart(props: TvlData) {
                         .selectAll('.point>path')
                         .attr('transform', 'scale(0.2)')
                         .style('fill', 'white');
-                    selection
-                        .enter()
-                        .select('g.annotation-line.horizontal')
-                        .attr('visibility', 'hidden');
                 });
 
             const multi = d3fc
@@ -74,7 +71,7 @@ export default function TvlSubChart(props: TvlData) {
                 .mapping((tvlData: any, index: any, series: any) => {
                     switch (series[index]) {
                         case crosshair:
-                            return crosshairData;
+                            return chartData.crosshairDataLocal;
                         default:
                             return tvlData.series;
                     }
@@ -140,6 +137,14 @@ export default function TvlSubChart(props: TvlData) {
 
                     return newTargets;
                 });
+
+                const pointer = d3fc.pointer().on('point', (event: any) => {
+                    if (event[0] !== undefined) {
+                        chartData.crosshairDataLocal[0].y = event[0].y;
+                        render();
+                    }
+                });
+                d3.select('.chart-tvl').call(pointer);
             };
 
             const minimum = (tvlData: any, accessor: any) => {
@@ -161,7 +166,7 @@ export default function TvlSubChart(props: TvlData) {
                     xValue = series.crossValue();
 
                 const filtered =
-                    tvlData.lenght > 1 ? tvlData.filter((d: any) => xValue(d) != null) : tvlData;
+                    tvlData.length > 1 ? tvlData.filter((d: any) => xValue(d) != null) : tvlData;
                 const nearest = minimum(filtered, (d: any) =>
                     Math.abs(point.x - xScale(xValue(d))),
                 )[1];
@@ -176,6 +181,16 @@ export default function TvlSubChart(props: TvlData) {
             };
 
             render();
+
+            d3.select('.chart-tvl').on('mouseleave', () => {
+                crosshair.decorate((selection: any) => {
+                    selection
+                        .enter()
+                        .select('g.annotation-line.horizontal')
+                        .attr('visibility', 'hidden');
+                });
+                render();
+            });
         }
     }, [tvlData, crosshairData, period, xScale]);
 

@@ -89,7 +89,7 @@ export default function OrderCard(props: OrderCardProps) {
                   maximumFractionDigits: 2,
               });
 
-    const usdValueNum = limitOrder.positionLiqTotalUSD;
+    const usdValueNum = limitOrder.totalValueUSD;
     const usdValueTruncated = !usdValueNum
         ? undefined
         : usdValueNum < 0.0001

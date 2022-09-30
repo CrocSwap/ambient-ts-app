@@ -132,7 +132,7 @@ export default function OrderCard(props: OrderCardProps) {
                   })
             : undefined;
 
-    const usdValueNum = limitOrder.positionLiqTotalUSD;
+    const usdValueNum = limitOrder.totalValueUSD;
     const usdValueTruncated = !usdValueNum
         ? undefined
         : usdValueNum < 0.0001
@@ -147,6 +147,7 @@ export default function OrderCard(props: OrderCardProps) {
               maximumFractionDigits: 2,
           });
 
+    // console.log(limitOrder);
     return (
         <div className={styles.main_container}>
             <div className={styles.row_container}>
@@ -178,7 +179,7 @@ export default function OrderCard(props: OrderCardProps) {
             </div>
 
             <div className={styles.menu_container}>
-                <OrdersMenu userPosition={false} />
+                <OrdersMenu limitOrder={limitOrder} />
             </div>
         </div>
     );

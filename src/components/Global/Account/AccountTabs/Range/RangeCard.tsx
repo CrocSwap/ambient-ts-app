@@ -32,7 +32,7 @@ export default function RangeCard(props: RangeCardPropsIF) {
         ? getUnicodeCharacter(position.quoteSymbol)
         : '';
 
-    const usdValueNum = position.positionLiqTotalUSD;
+    const usdValueNum = position.totalValueUSD;
 
     const usdValueTruncated = !usdValueNum
         ? undefined
@@ -73,7 +73,7 @@ export default function RangeCard(props: RangeCardPropsIF) {
                 />
                 {/* <WalletAndId posHash='0xcD3eee3fddg134' ownerId={position.user} /> */}
                 <RangeMinMax min={minRangeOrAmbient} max={maxRangeOrAmbient} />
-                <Value usdValue={position.positionLiqTotalUSD ? '$' + usdValueTruncated : '…'} />
+                <Value usdValue={position.totalValueUSD ? '$' + usdValueTruncated : '…'} />
                 <TokenQty
                     baseTokenCharacter={baseTokenCharacter}
                     quoteTokenCharacter={quoteTokenCharacter}

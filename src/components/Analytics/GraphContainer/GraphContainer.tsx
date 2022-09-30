@@ -1,5 +1,5 @@
 import styles from './GraphContainer.module.css';
-import { useProtocolChartData, useProtocolData } from '../../../state/protocol/hooks';
+import { useProtocolData } from '../../../state/protocol/hooks';
 import { useEffect, useMemo, useState } from 'react';
 import {
     formatAmount,
@@ -7,9 +7,7 @@ import {
 } from '../../../utils/numbers';
 import AreaChart from '../../Global/Charts/AreaChart';
 import BarChart from '../../Global/Charts/BarChart';
-import { useTransformedTvlData, useTransformedVolumeData } from '../../../hooks/chart';
 import logo from '../../../assets/images/logos/ambient_logo.svg';
-import moment from 'moment';
 import { ChartDataTimeframe } from '../../../hooks/ChartDataTimeframe';
 import { getDexStatsFresh } from '../../../utils/functions/getDexStats';
 import {
@@ -17,19 +15,28 @@ import {
     getDexVolumeSeries,
     ITvlSeriesData,
     IVolumeSeriesData,
+    seriesDatum,
 } from '../../../utils/functions/getDexSeriesData';
+import { motion } from 'framer-motion';
+
+const spring = {
+    type: 'spring',
+    stiffness: 500,
+    damping: 30,
+};
 
 export default function GraphContainer() {
     const [protocolData] = useProtocolData();
     const [volumeHover, setVolumeHover] = useState<number | undefined>();
     const [liquidityHover, setLiquidityHover] = useState<number | undefined>();
-    const [chartData] = useProtocolChartData();
-    const [latestValueTvl, setLatestValueTvl] = useState<number | undefined>();
-    const [latestValueVolume, setLatestValueVolume] = useState<number | undefined>();
 
-    const [valueLabelTvl, setValueLabelTvl] = useState<string | undefined>();
-    const [valueLabelVolume, setValueLabelVolume] = useState<string | undefined>();
-    const [tempData, setTempData] = useState(chartData);
+    const [valueTvl, setValueTvl] = useState<number | undefined>();
+
+    const [valueVolume, setValueVolume] = useState<number | undefined>();
+
+    const [valueTvlDate, setValueTvlDate] = useState<string | undefined>();
+
+    const [valueVolumeDate, setValueVolumeDate] = useState<string | undefined>();
 
     const [totalTvlString, setTotalTvlString] = useState<string | undefined>();
     const [totalVolumeString, setTotalVolumeString] = useState<string | undefined>();
@@ -41,6 +48,9 @@ export default function GraphContainer() {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [volumeSeriesData, setVolumeSeriesData] = useState<IVolumeSeriesData | undefined>();
     // const [volumeSeriesData, setVolumeSeriesData] = useState<volumeSeriesData | undefined>();
+    const [selectedTimeFrame, setVelectedTimeFrame] = useState<ChartDataTimeframe>(
+        ChartDataTimeframe.all,
+    );
 
     useEffect(() => {
         console.log({ tvlSeriesData });
@@ -58,77 +68,51 @@ export default function GraphContainer() {
                 if (dexStats.fees) setTotalFeesString('$' + formatAmount(dexStats.fees));
             })
             .catch(console.log);
-
-        getDexTvlSeries()
+        getDexTvlSeries(selectedTimeFrame.toString())
             .then((tvlSeriesData) => {
                 setTvlSeriesData(tvlSeriesData);
             })
             .catch(console.log);
 
-        getDexVolumeSeries()
+        getDexVolumeSeries(selectedTimeFrame.toString())
             .then((volumeSeriesData) => {
                 setVolumeSeriesData(volumeSeriesData);
             })
             .catch(console.log);
-    }, []);
+    }, [selectedTimeFrame]);
 
-    // const oneDayVolumeData = useTransformedVolumeData(
-    //     chartData?.filter(
-    //         (item) =>
-    //             moment(item.date * 1000).format('YYYY-MM-DD') ===
-    //             moment(new Date()).format('YYYY-MM-DD'),
-    //     ),
-    //     ChartDataTimeframe.oneDay,
-    // );
-    // const oneMonthVolumeData = useTransformedVolumeData(
-    //     chartData?.filter(
-    //         (item) =>
-    //             moment(new Date()).subtract(1, 'M').format('YYYY-MM-DD') <=
-    //                 moment(item.date * 1000).format('YYYY-MM-DD') ||
-    //             moment(new Date()).format('YYYY-MM-DD') <=
-    //                 moment(item.date * 1000).format('YYYY-MM-DD'),
-    //     ),
-    //     ChartDataTimeframe.oneMonth,
-    // );
+    const formattedTvlData = useMemo(() => {
+        if (tvlSeriesData) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            return tvlSeriesData.series.map((item: seriesDatum) => {
+                return {
+                    time: new Date(item.time * 1000),
+                    value: item.total,
+                };
+            });
+        } else {
+            return [];
+        }
+    }, [tvlSeriesData]);
 
-    // const sixMonthVolumeData = useTransformedVolumeData(
-    //     chartData?.filter(
-    //         (item) =>
-    //             moment(new Date()).subtract(6, 'M').format('YYYY-MM-DD') <=
-    //                 moment(item.date * 1000).format('YYYY-MM-DD') ||
-    //             moment(new Date()).format('YYYY-MM-DD') <=
-    //                 moment(item.date * 1000).format('YYYY-MM-DD'),
-    //     ),
-    //     ChartDataTimeframe.sixMonth,
-    // );
-
-    // const oneYearVolumeData = useTransformedVolumeData(
-    //     chartData?.filter(
-    //         (item) =>
-    //             moment(new Date()).subtract(12, 'M').format('YYYY-MM-DD') <=
-    //                 moment(item.date * 1000).format('YYYY-MM-DD') ||
-    //             moment(new Date()).format('YYYY-MM-DD') <=
-    //                 moment(item.date * 1000).format('YYYY-MM-DD'),
-    //     ),
-    //     ChartDataTimeframe.oneYear,
-    // );
-
-    //  const sixMonthVolumeData = useTransformedVolumeData(
-    //     chartData,
-    //     ChartDataTimeframe.oneYear,
-    // );
-
-    const [volumeWindow, setVolumeWindow] = useState(ChartDataTimeframe.all);
-
-    const volumeData = useTransformedVolumeData(tempData, volumeWindow);
-
-    const tvlData = useTransformedTvlData(tempData, volumeWindow);
+    const formattedVolumeData = useMemo(() => {
+        if (volumeSeriesData) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            return volumeSeriesData.series.map((item: seriesDatum) => {
+                return {
+                    time: new Date(item.time * 1000),
+                    value: item.total,
+                };
+            });
+        } else {
+            return [];
+        }
+    }, [volumeSeriesData]);
 
     useEffect(() => {
         if (volumeHover === undefined && protocolData) {
             setVolumeHover(protocolData.volumeUSD);
         }
-        setTempData(chartData);
     }, [protocolData, volumeHover]);
 
     useEffect(() => {
@@ -137,140 +121,100 @@ export default function GraphContainer() {
         }
     }, [liquidityHover, protocolData]);
 
-    const formattedTvlData = useMemo(() => {
-        if (tvlData) {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            return tvlData.map((day: any) => {
-                return {
-                    time: new Date(day.time), // new Date(day.time * 1000),
-                    value: day.value,
-                };
-            });
-        } else {
-            return [];
-        }
-    }, [tvlData]);
-
-    const formattedVolumeData = useMemo(() => {
-        if (volumeData) {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            return volumeData.map((day: any) => {
-                return {
-                    time: new Date(day.time),
-                    value: day.value,
-                };
-            });
-        } else {
-            return [];
-        }
-    }, [volumeData]);
-
-    const setChartDataValues = (_volumeWindow: ChartDataTimeframe) => {
-        setVolumeWindow(_volumeWindow);
-        switch (_volumeWindow) {
-            case ChartDataTimeframe.oneDay:
-                setTempData(
-                    chartData?.filter(
-                        (item) =>
-                            moment(item.date * 1000).format('YYYY-MM-DD') ===
-                            moment(new Date()).format('YYYY-MM-DD'),
-                    ),
-                );
-                break;
-
-            case ChartDataTimeframe.oneMonth:
-                setTempData(
-                    chartData?.filter(
-                        (item) =>
-                            moment(new Date()).subtract(1, 'M').format('YYYY-MM-DD') <=
-                                moment(item.date * 1000).format('YYYY-MM-DD') ||
-                            moment(new Date()).format('YYYY-MM-DD') <=
-                                moment(item.date * 1000).format('YYYY-MM-DD'),
-                    ),
-                );
-                break;
-
-            case ChartDataTimeframe.sixMonth:
-                setTempData(
-                    chartData?.filter(
-                        (item) =>
-                            moment(new Date()).subtract(6, 'M').format('YYYY-MM-DD') <=
-                                moment(item.date * 1000).format('YYYY-MM-DD') ||
-                            moment(new Date()).format('YYYY-MM-DD') <=
-                                moment(item.date * 1000).format('YYYY-MM-DD'),
-                    ),
-                );
-                break;
-
-            case ChartDataTimeframe.oneYear:
-                setTempData(
-                    chartData?.filter(
-                        (item) =>
-                            moment(new Date()).subtract(12, 'M').format('YYYY-MM-DD') <=
-                                moment(item.date * 1000).format('YYYY-MM-DD') ||
-                            moment(new Date()).format('YYYY-MM-DD') <=
-                                moment(item.date * 1000).format('YYYY-MM-DD'),
-                    ),
-                );
-                break;
-
-            default:
-                setTempData(chartData);
-        }
-    };
     const timeFrame = (
         <div className={styles.time_frame_container}>
             <div className={styles.title}>Ambient Analytics</div>
             <div className={styles.right_side}>
                 <span>Timeframe</span>
                 <button
-                    style={{
-                        backgroundColor:
-                            volumeWindow === ChartDataTimeframe.oneDay ? '#7371FC' : '',
-                        cursor: 'pointer',
-                    }}
-                    onClick={() => setChartDataValues(ChartDataTimeframe.oneDay)}
+                    className={
+                        selectedTimeFrame === ChartDataTimeframe.oneDay
+                            ? styles.active_button2
+                            : styles.non_active_button2
+                    }
+                    onClick={() => setVelectedTimeFrame(ChartDataTimeframe.oneDay)}
                 >
                     1d
+                    {selectedTimeFrame === ChartDataTimeframe.oneDay && (
+                        <motion.div
+                            layoutId='outline2'
+                            className={styles.outline2}
+                            initial={false}
+                            transition={spring}
+                        />
+                    )}
                 </button>
                 <button
-                    style={{
-                        backgroundColor:
-                            volumeWindow === ChartDataTimeframe.oneMonth ? '#7371FC' : '',
-                        cursor: 'pointer',
-                    }}
-                    onClick={() => setChartDataValues(ChartDataTimeframe.oneMonth)}
+                    className={
+                        selectedTimeFrame === ChartDataTimeframe.oneMonth
+                            ? styles.active_button2
+                            : styles.non_active_button2
+                    }
+                    onClick={() => setVelectedTimeFrame(ChartDataTimeframe.oneMonth)}
                 >
                     1M
+                    {selectedTimeFrame === ChartDataTimeframe.oneMonth && (
+                        <motion.div
+                            layoutId='outline2'
+                            className={styles.outline2}
+                            initial={false}
+                            transition={spring}
+                        />
+                    )}
                 </button>
                 <button
-                    style={{
-                        backgroundColor:
-                            volumeWindow === ChartDataTimeframe.sixMonth ? '#7371FC' : '',
-                        cursor: 'pointer',
-                    }}
-                    onClick={() => setChartDataValues(ChartDataTimeframe.sixMonth)}
+                    className={
+                        selectedTimeFrame === ChartDataTimeframe.sixMonth
+                            ? styles.active_button2
+                            : styles.non_active_button2
+                    }
+                    onClick={() => setVelectedTimeFrame(ChartDataTimeframe.sixMonth)}
                 >
-                    6M{' '}
+                    6M
+                    {selectedTimeFrame === ChartDataTimeframe.sixMonth && (
+                        <motion.div
+                            layoutId='outline2'
+                            className={styles.outline2}
+                            initial={false}
+                            transition={spring}
+                        />
+                    )}
                 </button>
                 <button
-                    style={{
-                        backgroundColor:
-                            volumeWindow === ChartDataTimeframe.oneYear ? '#7371FC' : '',
-                        cursor: 'pointer',
-                    }}
-                    onClick={() => setChartDataValues(ChartDataTimeframe.oneYear)}
+                    className={
+                        selectedTimeFrame === ChartDataTimeframe.oneYear
+                            ? styles.active_button2
+                            : styles.non_active_button2
+                    }
+                    onClick={() => setVelectedTimeFrame(ChartDataTimeframe.oneYear)}
                 >
                     1Y
+                    {selectedTimeFrame === ChartDataTimeframe.oneYear && (
+                        <motion.div
+                            layoutId='outline2'
+                            className={styles.outline2}
+                            initial={false}
+                            transition={spring}
+                        />
+                    )}
                 </button>
                 <button
-                    style={{
-                        backgroundColor: volumeWindow === ChartDataTimeframe.all ? '#7371FC' : '',
-                        cursor: 'pointer',
-                    }}
-                    onClick={() => setChartDataValues(ChartDataTimeframe.all)}
+                    className={
+                        selectedTimeFrame === ChartDataTimeframe.all
+                            ? styles.active_button2
+                            : styles.non_active_button2
+                    }
+                    onClick={() => setVelectedTimeFrame(ChartDataTimeframe.all)}
                 >
                     All
+                    {selectedTimeFrame === ChartDataTimeframe.all && (
+                        <motion.div
+                            layoutId='outline2'
+                            className={styles.outline2}
+                            initial={false}
+                            transition={spring}
+                        />
+                    )}
                 </button>
             </div>
         </div>
@@ -288,24 +232,21 @@ export default function GraphContainer() {
                 <div className={styles.title}>Total Value Locked</div>
 
                 <label className={styles.v4m1wv}>
-                    {totalTvlString}
-                    {/* {latestValueTvl
-                        ? formatDollarAmount(latestValueTvl, 2)
-                        : formatDollarAmount(latestValueTvl, 2)} */}
+                    {valueTvl ? '$' + formatAmount(valueTvl) : '-'}
                 </label>
                 <br></br>
                 <label className={styles.eJnjNO}>
-                    {valueLabelTvl ? valueLabelTvl + ' (UTC) ' : '-'}
+                    {valueTvlDate ? valueTvlDate + ' (UTC) ' : '-'}
                 </label>
                 <div className={styles.chart_container}>
                     {' '}
-                    {chartData && chartData.length > 0 ? (
+                    {formattedTvlData && formattedTvlData.length > 0 ? (
                         <AreaChart
                             data={formattedTvlData}
-                            value={latestValueTvl}
-                            label={valueLabelTvl}
-                            setValue={setLatestValueTvl}
-                            setLabel={setValueLabelTvl}
+                            valueTvl={valueTvl}
+                            valueTvlDate={valueTvlDate}
+                            setValueTvl={setValueTvl}
+                            setValueTvlDate={setValueTvlDate}
                         />
                     ) : (
                         <>{loading}</>
@@ -315,27 +256,24 @@ export default function GraphContainer() {
             <div className={styles.graph_container}>
                 <div className={styles.title}>Volume 24H</div>
                 <label className={styles.eJnjNO}>
-                    {totalTvlString}
-                    {/* {latestValueVolume
-                        ? formatDollarAmount(latestValueVolume, 2)
-                        : formatDollarAmount(latestValueVolume, 2)} */}
+                    {valueVolume ? '$' + formatAmount(valueVolume) : '-'}
                 </label>
                 <br></br>
                 <label className={styles.eJnjNO}>
-                    {valueLabelVolume ? valueLabelVolume + ' (UTC) ' : '-'}
+                    {valueVolumeDate ? valueVolumeDate + ' (UTC) ' : '-'}
                 </label>
                 <div className={styles.chart_container}>
-                    {chartData && chartData.length > 0 ? (
+                    {formattedVolumeData && formattedVolumeData.length > 0 ? (
                         <BarChart
                             data={formattedVolumeData}
-                            value={latestValueVolume}
-                            label={valueLabelVolume}
-                            setValue={setLatestValueVolume}
-                            setLabel={setValueLabelVolume}
+                            valueVolume={valueVolume}
+                            valueVolumeDate={valueVolumeDate}
+                            setValueVolume={setValueVolume}
+                            setValueVolumeDate={setValueVolumeDate}
                             snapType={
-                                volumeWindow === ChartDataTimeframe.oneDay
+                                selectedTimeFrame === ChartDataTimeframe.oneDay
                                     ? 'days'
-                                    : volumeWindow === ChartDataTimeframe.oneMonth
+                                    : selectedTimeFrame === ChartDataTimeframe.oneMonth
                                     ? 'months'
                                     : 'weeks'
                             }
