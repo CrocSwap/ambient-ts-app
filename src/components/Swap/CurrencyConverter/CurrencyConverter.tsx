@@ -320,7 +320,7 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
         } else {
             handleSwapButtonMessage(parseFloat(tokenAQtyLocal));
 
-            console.log(tokenPair.dataTokenA.address);
+            // console.log(tokenPair.dataTokenA.address);
             const impact =
                 tokenAQtyLocal !== ''
                     ? await calcImpact(
@@ -332,7 +332,7 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
                           tokenAQtyLocal,
                       )
                     : undefined;
-            console.log({ impact });
+            // console.log({ impact });
             impact ? setPriceImpact(impact) : null;
 
             rawTokenBQty = impact ? parseFloat(impact.buyQty) : undefined;

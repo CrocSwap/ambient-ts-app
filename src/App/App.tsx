@@ -159,9 +159,9 @@ export default function App() {
 
     const [candleData, setCandleData] = useState<CandlesByPoolAndDuration | undefined>();
 
-    useEffect(() => {
-        if (candleData) console.log({ candleData });
-    }, [candleData]);
+    // useEffect(() => {
+    //     if (candleData) console.log({ candleData });
+    // }, [candleData]);
 
     // custom hook to manage chain the app is using
     // `chainData` is data on the current chain retrieved from our SDK
@@ -172,7 +172,7 @@ export default function App() {
     // useEffect(() => console.warn(chainData.chainId), [chainData.chainId]);
 
     const tokenUniverse = useTokenUniverse(chainData.chainId);
-    useEffect(() => console.log({ tokenUniverse }), [tokenUniverse]);
+    useEffect(() => {false && console.log({ tokenUniverse })}, [tokenUniverse]);
 
     const [isShowAllEnabled, setIsShowAllEnabled] = useState(true);
     const [currentTxActiveInTransactions, setCurrentTxActiveInTransactions] = useState('');
@@ -252,7 +252,7 @@ export default function App() {
                     setProvider(metamaskProvider);
                 }
             } else if (!provider || !onChain) {
-                console.log('use infura as provider');
+                // console.log('use infura as provider');
                 const chainSpec = lookupChain(chainData.chainId);
                 const url = chainSpec.nodeUrl;
                 // const url = chainSpec.wsUrl ? chainSpec.wsUrl : chainSpec.nodeUrl;
@@ -337,12 +337,12 @@ export default function App() {
         chainData.wsUrl || '',
         {
             onOpen: () => {
-                console.log('infura newHeads subscription opened');
+                // console.log('infura newHeads subscription opened');
                 send('{"jsonrpc":"2.0","method":"eth_subscribe","params":["newHeads"],"id":5}');
             },
             onClose: (event: CloseEvent) => {
-                console.log('infura newHeads subscription closed');
-                console.log({ event });
+                false && console.log('infura newHeads subscription closed');
+                false && console.log({ event });
             },
             shouldReconnect: () => shouldNonCandleSubscriptionsReconnect,
         },
@@ -732,7 +732,7 @@ export default function App() {
             // retrieve pool liquidity
             try {
                 if (httpGraphCacheServerDomain) {
-                    console.log('fetching pool liquidity distribution');
+                    // console.log('fetching pool liquidity distribution');
 
                     const poolLiquidityCacheEndpoint =
                         httpGraphCacheServerDomain + '/pool_liquidity_distribution?';
@@ -777,7 +777,7 @@ export default function App() {
                 // retrieve pool_positions
                 try {
                     if (httpGraphCacheServerDomain) {
-                        console.log('fetching pool positions');
+                        // console.log('fetching pool positions');
                         const allPositionsCacheEndpoint =
                             httpGraphCacheServerDomain + '/pool_positions?';
                         fetch(
@@ -919,7 +919,7 @@ export default function App() {
         ) {
             try {
                 if (httpGraphCacheServerDomain) {
-                    console.log('fetching candles');
+                    // console.log('fetching candles');
                     const candleSeriesCacheEndpoint =
                         httpGraphCacheServerDomain + '/candle_series?';
 
