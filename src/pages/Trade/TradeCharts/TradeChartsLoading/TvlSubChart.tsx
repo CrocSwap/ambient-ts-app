@@ -166,7 +166,7 @@ export default function TvlSubChart(props: TvlData) {
                     xValue = series.crossValue();
 
                 const filtered =
-                    tvlData.lenght > 1 ? tvlData.filter((d: any) => xValue(d) != null) : tvlData;
+                    tvlData.length > 1 ? tvlData.filter((d: any) => xValue(d) != null) : tvlData;
                 const nearest = minimum(filtered, (d: any) =>
                     Math.abs(point.x - xScale(xValue(d))),
                 )[1];

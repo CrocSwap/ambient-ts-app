@@ -80,7 +80,7 @@ export default function VolumeSubChart(props: VolumeData) {
                     xValue = series.crossValue();
 
                 const filtered =
-                    volumeData.lenght > 1
+                    volumeData.length > 1
                         ? volumeData.filter((d: any) => xValue(d) != null)
                         : volumeData;
                 const nearest = minimum(filtered, (d: any) =>
