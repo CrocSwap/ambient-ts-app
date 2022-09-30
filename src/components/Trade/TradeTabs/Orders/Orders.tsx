@@ -25,6 +25,8 @@ interface propsIF {
     account: string;
     graphData: graphData;
     isShowAllEnabled: boolean;
+    openGlobalModal: (content: React.ReactNode) => void;
+    closeGlobalModal: () => void;
 }
 
 // main react functional component
@@ -212,6 +214,8 @@ export default function Orders(props: propsIF) {
                     isDenomBase={isDenomBase}
                     selectedBaseToken={selectedBaseToken}
                     selectedQuoteToken={selectedQuoteToken}
+                    openGlobalModal={props.openGlobalModal}
+                    closeGlobalModal={props.closeGlobalModal}
                 />
             ))}
         </div>
