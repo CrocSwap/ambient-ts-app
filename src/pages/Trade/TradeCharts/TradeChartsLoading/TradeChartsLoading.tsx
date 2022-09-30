@@ -1,4 +1,5 @@
 import candleStickImage from '../../../../assets/images/charts/candlestick2.png';
+import Shimmer from '../../../../components/Global/Skeletons/Shimmer';
 import styles from './TradeChartsLoading.module.css';
 export default function TradeChartsLoading() {
     return (
@@ -8,6 +9,7 @@ export default function TradeChartsLoading() {
                 <div className={styles.overlay}> </div>
                 <div className={styles.overlay}> </div>
             </div>
+            <Shimmer />
         </div>
     );
 }

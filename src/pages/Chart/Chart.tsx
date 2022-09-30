@@ -50,9 +50,9 @@ interface ChartData {
     pinnedMaxPriceDisplayTruncated: number | undefined;
     truncatedPoolPrice: number | undefined;
     spotPriceDisplay: string | undefined;
-    feeData: any[];
-    volumeData: any[];
-    tvlData: any[];
+    // feeData: any[];
+    // volumeData: any[];
+    // tvlData: any[];
     chartItemStates: chartItemStates;
     setCurrentData: React.Dispatch<React.SetStateAction<CandleChartData | undefined>>;
     upBodyColor: string;
@@ -593,7 +593,7 @@ export default function Chart(props: ChartData) {
                 if (value == undefined) return [];
 
                 const filtered =
-                    data.lenght > 1
+                    data.length > 1
                         ? data.filter((d: any) => d.pinnedMaxPriceDisplayTruncated != null)
                         : data;
 
@@ -1067,7 +1067,7 @@ export default function Chart(props: ChartData) {
             if (value == undefined) return [];
 
             const filtered =
-                data.lenght > 1
+                data.length > 1
                     ? data.filter((d: any) => d.pinnedMaxPriceDisplayTruncated != null)
                     : data;
 
@@ -1738,7 +1738,7 @@ export default function Chart(props: ChartData) {
                                 )}
                             </label>
                             <FeeRateSubChart
-                                feeData={props.feeData}
+                                feeData={parsedChartData?.feeChartData}
                                 crosshairData={crosshairData}
                                 setsubChartValues={setsubChartValues}
                             />
