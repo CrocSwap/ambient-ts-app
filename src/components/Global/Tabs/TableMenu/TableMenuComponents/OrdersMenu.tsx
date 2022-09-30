@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { useState, ReactNode } from 'react';
+import { useState, ReactNode, useEffect } from 'react';
 // import { Link } from 'react-router-dom';
 import { FiMoreHorizontal } from 'react-icons/fi';
 
@@ -13,20 +13,33 @@ import { useModal } from '../../../../Global/Modal/useModal';
 import { DefaultTooltip } from '../../../StyledTooltip/StyledTooltip';
 import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
 import { ILimitOrderState } from '../../../../../utils/state/graphDataSlice';
+import { useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
 
 // interface for React functional component props
 interface OrdersMenuIF {
     limitOrder: ILimitOrderState;
+    openGlobalModal: (content: React.ReactNode) => void;
+    closeGlobalModal: () => void;
 }
 
 // React functional component
 export default function OrdersMenu(props: OrdersMenuIF) {
-    const { limitOrder } = props;
+    const lastBlockNumber = useAppSelector((state) => state.graphData).lastBlock;
+
+    const { limitOrder, openGlobalModal } = props;
     const [value, copy] = useCopyToClipboard();
     const [openSnackbar, setOpenSnackbar] = useState<boolean>(false);
 
-    const [isModalOpen, openModal, closeModal] = useModal();
-    const [currentModal, setCurrentModal] = useState<string>('edit');
+    const [
+        isModalOpen,
+        //  openModal,
+        closeModal,
+    ] = useModal();
+
+    const [
+        currentModal,
+        //  setCurrentModal
+    ] = useState<string>('edit');
 
     const [openMenuTooltip, setOpenMenuTooltip] = useState(false);
 
@@ -35,15 +48,15 @@ export default function OrdersMenu(props: OrdersMenuIF) {
 
     let modalTitle;
 
-    function openRemoveModal() {
-        setCurrentModal('remove');
-        openModal();
-    }
+    // function openRemoveModal() {
+    //     setCurrentModal('remove');
+    //     openModal();
+    // }
 
-    function openDetailsModal() {
-        setCurrentModal('details');
-        openModal();
-    }
+    // function openDetailsModal() {
+    //     setCurrentModal('details');
+    //     openModal();
+    // }
 
     // -----------------SNACKBAR----------------
     function handleCopyAddress() {
@@ -62,17 +75,99 @@ export default function OrdersMenu(props: OrdersMenuIF) {
     );
     // -----------------END OF SNACKBAR----------------
 
+    const [posLiqBaseDecimalCorrected, setPosLiqBaseDecimalCorrected] = useState<
+        number | undefined
+    >();
+    const [posLiqQuoteDecimalCorrected, setPosLiqQuoteDecimalCorrected] = useState<
+        number | undefined
+    >();
+    const [feesBaseDecimalCorrected, setFeeLiqBaseDecimalCorrected] = useState<
+        number | undefined
+    >();
+    const [feesQuoteDecimalCorrected, setFeeLiqQuoteDecimalCorrected] = useState<
+        number | undefined
+    >();
+
+    console.log({ posLiqQuoteDecimalCorrected });
+
+    const positionStatsCacheEndpoint = 'https://809821320828123.de:5000/position_stats?';
+
+    useEffect(() => {
+        if (
+            limitOrder.chainId &&
+            limitOrder.poolIdx &&
+            limitOrder.user &&
+            limitOrder.base &&
+            limitOrder.quote &&
+            limitOrder.bidTick &&
+            limitOrder.askTick
+        ) {
+            (async () => {
+                // console.log('fetching details');
+                fetch(
+                    positionStatsCacheEndpoint +
+                        new URLSearchParams({
+                            chainId: limitOrder.chainId,
+                            user: limitOrder.user,
+                            base: limitOrder.base,
+                            quote: limitOrder.quote,
+                            poolIdx: limitOrder.poolIdx.toString(),
+                            bidTick: limitOrder.bidTick.toString(),
+                            askTick: limitOrder.askTick.toString(),
+                            addValue: 'true',
+                            positionType: 'knockout',
+                            isBid: limitOrder.isBid.toString(),
+                            omitAPY: 'true',
+                            ensResolution: 'true',
+                        }),
+                )
+                    .then((response) => response.json())
+                    .then((json) => {
+                        console.log({ json });
+                        setPosLiqBaseDecimalCorrected(json?.data?.positionLiqBaseDecimalCorrected);
+                        setPosLiqQuoteDecimalCorrected(
+                            json?.data?.positionLiqQuoteDecimalCorrected,
+                        );
+                        setFeeLiqBaseDecimalCorrected(json?.data?.feesLiqBaseDecimalCorrected);
+                        setFeeLiqQuoteDecimalCorrected(json?.data?.feesLiqQuoteDecimalCorrected);
+                    });
+            })();
+        }
+    }, [limitOrder, lastBlockNumber]);
+
+    const openRemoveModal = () => openGlobalModal(removalContent);
+    const openDetailsModal = () => openGlobalModal(detailsContent);
+
+    const removalContent = (
+        <div>
+            <div>Removal Details:</div>
+            <div>Liquidity Base Qty: {posLiqBaseDecimalCorrected}</div>
+            <div>Liquidity Quote Qty: {posLiqQuoteDecimalCorrected}</div>
+            <div>Fees Base Qty: {feesBaseDecimalCorrected}</div>
+            <div>Fees Quote Qty: {feesQuoteDecimalCorrected}</div>
+        </div>
+    );
+    const detailsContent = (
+        <div>
+            <div>Removal Details:</div>
+            <div>Liquidity Base Qty: {posLiqBaseDecimalCorrected}</div>
+            <div>Liquidity Quote Qty: {posLiqQuoteDecimalCorrected}</div>
+            <div>Fees Base Qty: {feesBaseDecimalCorrected}</div>
+            <div>Fees Quote Qty: {feesQuoteDecimalCorrected}</div>
+        </div>
+    );
+
     switch (currentModal) {
         case 'remove':
             // modalContent = <RemoveRange {...removeRangeProps} />;
-            modalContent = 'Remove';
-            modalTitle = 'Remove Position';
+            modalContent = removalContent;
+            modalTitle = 'Limit Order Removal';
             break;
 
         case 'details':
             // modalContent = <RangeDetails {...removeRangeProps} />;
-            modalContent = 'details';
-            modalTitle = '';
+            modalContent = detailsContent;
+            modalTitle = 'Limit Order Details';
             break;
     }
 
@@ -86,9 +181,9 @@ export default function OrdersMenu(props: OrdersMenuIF) {
 
     // ------------------  END OF MODAL FUNCTIONALITY-----------------
 
-    // const repositionButton = userPosition ? (
-    //     <Link className={styles.reposition_button} to={'/trade/reposition'}>
-    //         Reposition
+    // const relimitOrderButton = userlimitOrder ? (
+    //     <Link className={styles.relimitOrder_button} to={'/trade/relimitOrder'}>
+    //         RelimitOrder
     //     </Link>
     // ) : null;
 
@@ -107,7 +202,7 @@ export default function OrdersMenu(props: OrdersMenuIF) {
             Details
         </button>
     );
-    // const editButton = userPosition ? (
+    // const editButton = userlimitOrder ? (
     //     <Link className={styles.option_button} to={'/trade/edit'}>
     //         Edit
     //     </Link>
@@ -115,7 +210,7 @@ export default function OrdersMenu(props: OrdersMenuIF) {
 
     const ordersMenu = (
         <div className={styles.actions_menu}>
-            {/* {repositionButton}
+            {/* {relimitOrderButton}
             {editButton} */}
             {removeButton}
             {detailsButton}

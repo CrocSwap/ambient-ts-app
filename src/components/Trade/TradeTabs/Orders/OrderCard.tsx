@@ -17,6 +17,8 @@ interface OrderCardProps {
     isDenomBase: boolean;
     selectedBaseToken: string;
     selectedQuoteToken: string;
+    openGlobalModal: (content: React.ReactNode) => void;
+    closeGlobalModal: () => void;
 }
 
 export default function OrderCard(props: OrderCardProps) {
@@ -147,6 +149,11 @@ export default function OrderCard(props: OrderCardProps) {
               maximumFractionDigits: 2,
           });
 
+    const orderMenuProps = {
+        closeGlobalModal: props.closeGlobalModal,
+        openGlobalModal: props.openGlobalModal,
+    };
+
     // console.log(limitOrder);
     return (
         <div className={styles.main_container}>
@@ -179,7 +186,7 @@ export default function OrderCard(props: OrderCardProps) {
             </div>
 
             <div className={styles.menu_container}>
-                <OrdersMenu limitOrder={limitOrder} />
+                <OrdersMenu limitOrder={limitOrder} {...orderMenuProps} />
             </div>
         </div>
     );
