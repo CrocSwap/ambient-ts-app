@@ -1,6 +1,7 @@
 import { Dispatch, SetStateAction, useMemo } from 'react';
 import { FaAngleUp, FaAngleDown } from 'react-icons/fa';
 import styles from './OrderCardHeader.module.css';
+import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 
 type ColumnData = {
     name: string;
@@ -33,6 +34,9 @@ interface OrderCardHeaderPropsIF {
 }
 
 export default function OrderCardHeader(props: OrderCardHeaderPropsIF) {
+    const tradeData = useAppSelector((state) => state.tradeData);
+    const baseTokenSymbol = tradeData.baseToken.symbol;
+    const quoteTokenSymbol = tradeData.quoteToken.symbol;
     const {
         // data,
 
@@ -113,19 +117,24 @@ export default function OrderCardHeader(props: OrderCardHeaderPropsIF) {
         </>
     );
 
-    return (
-        // <div
-        //     className={styles.order_card_header}
-        //     onClick={() => handleClick(data.name.toLowerCase())}
-        // >
-        //     <p className={styles.headerClassName}>{data.name}
-
-        //     </p>
-        //     <div className={styles.arrow_wrapper}>{arrow}</div>
-        // </div>
-        <div className={styles.main_container}>
-            <div className={styles.row_container}>{columnHeaderContent}</div>
-            <div></div>
+    const mobileHeaderDisplay = (
+        <div className={styles.mobile_header_display}>
+            <div className={styles.mobile_header_content}>
+                <p>ID/Wallet</p>
+                <p>{quoteTokenSymbol}</p>
+                <p>{baseTokenSymbol}</p>
+                <p>Status</p>
+            </div>
+            <div />
         </div>
+    );
+    return (
+        <>
+            {mobileHeaderDisplay}
+            <div className={styles.main_container}>
+                <div className={styles.row_container}>{columnHeaderContent}</div>
+                <div></div>
+            </div>
+        </>
     );
 }

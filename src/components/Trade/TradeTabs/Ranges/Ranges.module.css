@@ -22,3 +22,21 @@
     width: 1px;
     display: none;
 }
+
+
+.accordion_display_container{
+    display: block;
+}
+.desktop_ranges_display_container{
+    display: none;
+}
+
+@media only screen and (min-width: 568px) {
+.accordion_display_container{
+    display: none;
+}
+.desktop_ranges_display_container{
+    display: block;
+}
+
+}
