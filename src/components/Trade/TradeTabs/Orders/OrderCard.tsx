@@ -132,7 +132,7 @@ export default function OrderCard(props: OrderCardProps) {
                   })
             : undefined;
 
-    const usdValueNum = limitOrder.positionLiqTotalUSD;
+    const usdValueNum = limitOrder.totalValueUSD;
     const usdValueTruncated = !usdValueNum
         ? undefined
         : usdValueNum < 0.0001
