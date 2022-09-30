@@ -147,7 +147,7 @@ export default function OrderCard(props: OrderCardProps) {
               maximumFractionDigits: 2,
           });
 
-    console.log(limitOrder);
+    // console.log(limitOrder);
     return (
         <div className={styles.main_container}>
             <div className={styles.row_container}>
@@ -179,7 +179,7 @@ export default function OrderCard(props: OrderCardProps) {
             </div>
 
             <div className={styles.menu_container}>
-                <OrdersMenu userPosition={false} />
+                <OrdersMenu limitOrder={limitOrder} />
             </div>
         </div>
     );
