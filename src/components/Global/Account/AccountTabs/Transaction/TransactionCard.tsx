@@ -98,7 +98,7 @@ export default function TransactionCard(props: TransactionProps) {
               maximumFractionDigits: 2,
           });
 
-    const baseFlowDisplayNum = parseFloat(toDisplayQty(tx.baseFlow, tx.baseDecimals));
+    const baseFlowDisplayNum = parseFloat(toDisplayQty(tx.baseFlow ?? '0', tx.baseDecimals));
     const baseFlowAbsNum = Math.abs(baseFlowDisplayNum);
     const isBaseFlowNegative = baseFlowDisplayNum > 0;
     const baseFlowDisplayTruncated =
@@ -119,7 +119,7 @@ export default function TransactionCard(props: TransactionProps) {
         ? `(${baseFlowDisplayTruncated})`
         : baseFlowDisplayTruncated;
 
-    const quoteFlowDisplayNum = parseFloat(toDisplayQty(tx.quoteFlow, tx.quoteDecimals));
+    const quoteFlowDisplayNum = parseFloat(toDisplayQty(tx.quoteFlow ?? '0', tx.quoteDecimals));
     const quoteFlowAbsNum = Math.abs(quoteFlowDisplayNum);
     const isQuoteFlowNegative = quoteFlowDisplayNum > 0;
     const quoteFlowDisplayTruncated =
