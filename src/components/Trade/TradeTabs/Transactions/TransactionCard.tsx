@@ -70,6 +70,10 @@ export default function TransactionCard(props: TransactionProps) {
     //    const qtyDecimals = tx.inBaseQty ? baseToken?.decimals : quoteToken?.decimals
 
     const [truncatedDisplayPrice, setTruncatedDisplayPrice] = useState<string | undefined>();
+    const [truncatedLowDisplayPrice, setTruncatedLowDisplayPrice] = useState<string | undefined>();
+    const [truncatedHighDisplayPrice, setTruncatedHighDisplayPrice] = useState<
+        string | undefined
+    >();
     // const limitPrice = tx.limitPrice;
 
     // console.log({ limitPrice });
@@ -79,6 +83,7 @@ export default function TransactionCard(props: TransactionProps) {
 
     const [baseFlowDisplay, setBaseFlowDisplay] = useState<string | undefined>(undefined);
     const [quoteFlowDisplay, setQuoteFlowDisplay] = useState<string | undefined>(undefined);
+    const [isAmbient, setIsAmbient] = useState<boolean>(false);
 
     useEffect(() => {
         setBaseFlowDisplay(undefined);
@@ -126,7 +131,7 @@ export default function TransactionCard(props: TransactionProps) {
                         : invPriceDecimalCorrected < 0.0001
                         ? invPriceDecimalCorrected.toExponential(2)
                         : invPriceDecimalCorrected < 2
-                        ? priceDecimalCorrected.toPrecision(3)
+                        ? invPriceDecimalCorrected.toPrecision(3)
                         : invPriceDecimalCorrected >= 100000
                         ? formatAmount(invPriceDecimalCorrected)
                         : invPriceDecimalCorrected.toLocaleString(undefined, {
@@ -138,6 +143,7 @@ export default function TransactionCard(props: TransactionProps) {
                     ? quoteTokenCharacter + invertedPriceTruncated
                     : baseTokenCharacter + nonInvertedPriceTruncated;
 
+                setTruncatedDisplayPrice(truncatedDisplayPrice);
                 setTruncatedDisplayPrice(truncatedDisplayPrice);
             } else {
                 setTruncatedDisplayPrice(undefined);
@@ -151,77 +157,110 @@ export default function TransactionCard(props: TransactionProps) {
             ) {
                 const bidTickPriceDecimalCorrected = tx.bidTickPriceDecimalCorrected;
                 const bidTickInvPriceDecimalCorrected = tx.bidTickInvPriceDecimalCorrected;
-                // const askTickPriceDecimalCorrected = tx.askTickPriceDecimalCorrected;
-                // const askTickInvPriceDecimalCorrected = tx.askTickInvPriceDecimalCorrected;
+                const askTickPriceDecimalCorrected = tx.askTickPriceDecimalCorrected;
+                const askTickInvPriceDecimalCorrected = tx.askTickInvPriceDecimalCorrected;
 
+                if (
+                    bidTickInvPriceDecimalCorrected === 1000000000000 ||
+                    bidTickPriceDecimalCorrected === 1e-12 ||
+                    bidTickPriceDecimalCorrected === 0
+                ) {
+                    setIsAmbient(true);
+                } else {
+                    setIsAmbient(false);
+                }
                 const nonInvertedBidPriceTruncated =
                     bidTickPriceDecimalCorrected === 1000000000000
-                        ? '0 - ∞'
+                        ? '∞'
                         : bidTickPriceDecimalCorrected === 0 ||
                           bidTickPriceDecimalCorrected === 1e-12
-                        ? '0 - ∞'
-                        : bidTickPriceDecimalCorrected < 0.0001
-                        ? bidTickPriceDecimalCorrected.toExponential(2)
+                        ? '0.00'
+                        : bidTickPriceDecimalCorrected < 0.001
+                        ? bidTickPriceDecimalCorrected.toExponential(1)
                         : bidTickPriceDecimalCorrected < 2
-                        ? bidTickPriceDecimalCorrected.toPrecision(3)
-                        : bidTickPriceDecimalCorrected >= 100000
-                        ? formatAmount(bidTickPriceDecimalCorrected)
-                        : bidTickPriceDecimalCorrected.toLocaleString(undefined, {
+                        ? // ? bidTickPriceDecimalCorrected.toPrecision(2)
+                          bidTickPriceDecimalCorrected.toLocaleString(undefined, {
                               minimumFractionDigits: 2,
                               maximumFractionDigits: 2,
+                          })
+                        : bidTickPriceDecimalCorrected >= 1000
+                        ? formatAmount(bidTickPriceDecimalCorrected, 1)
+                        : bidTickPriceDecimalCorrected.toLocaleString(undefined, {
+                              minimumFractionDigits: 0,
+                              maximumFractionDigits: 0,
                           });
 
                 const invertedBidPriceTruncated =
                     bidTickInvPriceDecimalCorrected === 1000000000000
-                        ? '0 - ∞'
+                        ? '∞'
                         : bidTickInvPriceDecimalCorrected === 0
-                        ? '0 - ∞'
-                        : bidTickInvPriceDecimalCorrected < 0.0001
-                        ? bidTickInvPriceDecimalCorrected.toExponential(2)
+                        ? '0.00'
+                        : bidTickInvPriceDecimalCorrected < 0.001
+                        ? bidTickInvPriceDecimalCorrected.toExponential(1)
                         : bidTickInvPriceDecimalCorrected < 2
-                        ? bidTickInvPriceDecimalCorrected.toPrecision(3)
-                        : bidTickInvPriceDecimalCorrected >= 100000
-                        ? formatAmount(bidTickInvPriceDecimalCorrected)
-                        : bidTickInvPriceDecimalCorrected.toLocaleString(undefined, {
+                        ? bidTickInvPriceDecimalCorrected.toLocaleString(undefined, {
                               minimumFractionDigits: 2,
                               maximumFractionDigits: 2,
+                          })
+                        : bidTickInvPriceDecimalCorrected >= 1000
+                        ? formatAmount(bidTickInvPriceDecimalCorrected, 1)
+                        : bidTickInvPriceDecimalCorrected.toLocaleString(undefined, {
+                              minimumFractionDigits: 0,
+                              maximumFractionDigits: 0,
                           });
 
-                // const nonInvertedAskPriceTruncated =
-                //     askTickPriceDecimalCorrected === 0
-                //         ? '0.00'
-                //         : askTickPriceDecimalCorrected < 0.0001
-                //         ? askTickPriceDecimalCorrected.toExponential(2)
-                //         : askTickPriceDecimalCorrected < 2
-                //         ? askTickPriceDecimalCorrected.toPrecision(3)
-                //         : askTickPriceDecimalCorrected >= 100000
-                //         ? formatAmount(askTickPriceDecimalCorrected)
-                //         : askTickPriceDecimalCorrected.toLocaleString(undefined, {
-                //               minimumFractionDigits: 2,
-                //               maximumFractionDigits: 2,
-                //           });
+                const nonInvertedAskPriceTruncated =
+                    askTickPriceDecimalCorrected === 1000000000000
+                        ? '∞'
+                        : askTickPriceDecimalCorrected === 0
+                        ? '0.00'
+                        : askTickPriceDecimalCorrected < 0.001
+                        ? askTickPriceDecimalCorrected.toExponential(1)
+                        : askTickPriceDecimalCorrected < 2
+                        ? askTickPriceDecimalCorrected.toLocaleString(undefined, {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2,
+                          })
+                        : askTickPriceDecimalCorrected >= 1000
+                        ? formatAmount(askTickPriceDecimalCorrected, 1)
+                        : askTickPriceDecimalCorrected.toLocaleString(undefined, {
+                              minimumFractionDigits: 0,
+                              maximumFractionDigits: 0,
+                          });
 
-                // const invertedAskPriceTruncated =
-                //     askTickInvPriceDecimalCorrected === 0
-                //         ? '0.00'
-                //         : askTickInvPriceDecimalCorrected < 0.0001
-                //         ? askTickInvPriceDecimalCorrected.toExponential(2)
-                //         : askTickInvPriceDecimalCorrected < 2
-                //         ? askTickInvPriceDecimalCorrected.toPrecision(3)
-                //         : askTickInvPriceDecimalCorrected >= 100000
-                //         ? formatAmount(askTickInvPriceDecimalCorrected)
-                //         : askTickInvPriceDecimalCorrected.toLocaleString(undefined, {
-                //               minimumFractionDigits: 2,
-                //               maximumFractionDigits: 2,
-                //           });
+                const invertedAskPriceTruncated =
+                    askTickInvPriceDecimalCorrected === 1000000000000
+                        ? '0.00'
+                        : askTickInvPriceDecimalCorrected === 0
+                        ? '∞'
+                        : askTickInvPriceDecimalCorrected < 0.001
+                        ? askTickInvPriceDecimalCorrected.toExponential(1)
+                        : askTickInvPriceDecimalCorrected < 2
+                        ? // ? askTickInvPriceDecimalCorrected.toPrecision(2)
+                          askTickInvPriceDecimalCorrected.toLocaleString(undefined, {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2,
+                          })
+                        : askTickInvPriceDecimalCorrected >= 1000
+                        ? formatAmount(askTickInvPriceDecimalCorrected, 1)
+                        : askTickInvPriceDecimalCorrected.toLocaleString(undefined, {
+                              minimumFractionDigits: 0,
+                              maximumFractionDigits: 0,
+                          });
 
-                const truncatedDisplayPrice = isDenomBase
-                    ? quoteTokenCharacter + invertedBidPriceTruncated
-                    : baseTokenCharacter + nonInvertedBidPriceTruncated;
+                const truncatedLowDisplayPrice = isDenomBase
+                    ? `${quoteTokenCharacter}${invertedAskPriceTruncated}`
+                    : `${baseTokenCharacter}${nonInvertedAskPriceTruncated}`;
 
-                setTruncatedDisplayPrice(truncatedDisplayPrice);
+                const truncatedHighDisplayPrice = isDenomBase
+                    ? `${quoteTokenCharacter}${invertedBidPriceTruncated}`
+                    : `${baseTokenCharacter}${nonInvertedBidPriceTruncated}`;
+
+                setTruncatedLowDisplayPrice(truncatedLowDisplayPrice);
+                setTruncatedHighDisplayPrice(truncatedHighDisplayPrice);
             } else {
-                setTruncatedDisplayPrice(undefined);
+                setTruncatedLowDisplayPrice(undefined);
+                setTruncatedHighDisplayPrice(undefined);
             }
         } else {
             if (tx.priceDecimalCorrected && tx.invPriceDecimalCorrected) {
@@ -319,13 +358,17 @@ export default function TransactionCard(props: TransactionProps) {
     }, [JSON.stringify(tx), isDenomBase]);
 
     const priceType =
-        (isDenomBase && !tx.isBuy) || (!isDenomBase && tx.isBuy) ? 'priceBuy' : 'priceSell';
+        tx.entityType === 'liqchange'
+            ? 'range'
+            : (isDenomBase && !tx.isBuy) || (!isDenomBase && tx.isBuy)
+            ? 'priceBuy'
+            : 'priceSell';
 
     const sideType =
         tx.entityType === 'liqchange'
-            ? isDenomBase
-                ? 'sell'
-                : 'buy'
+            ? parseFloat(tx.quoteFlow) > 0
+                ? 'add'
+                : 'remove'
             : (isDenomBase && tx.isBuy) || (!isDenomBase && !tx.isBuy)
             ? 'sell'
             : 'buy';
@@ -343,6 +386,7 @@ export default function TransactionCard(props: TransactionProps) {
         tx.id === currentTxActiveInTransactions ? styles.active_tx_style : '';
 
     const usdValueNum = tx.valueUSD;
+    const totalValueUSD = tx.totalValueUSD;
 
     const usdValueTruncated = !usdValueNum
         ? undefined
@@ -350,10 +394,24 @@ export default function TransactionCard(props: TransactionProps) {
         ? usdValueNum.toExponential(2)
         : usdValueNum < 2
         ? usdValueNum.toPrecision(3)
-        : usdValueNum >= 100000
-        ? formatAmount(usdValueNum)
+        : usdValueNum >= 10000
+        ? formatAmount(usdValueNum, 1)
         : // ? baseLiqDisplayNum.toExponential(2)
           usdValueNum.toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+          });
+
+    const totalValueUSDTruncated = !totalValueUSD
+        ? undefined
+        : totalValueUSD < 0.0001
+        ? totalValueUSD.toExponential(2)
+        : totalValueUSD < 2
+        ? totalValueUSD.toPrecision(3)
+        : totalValueUSD >= 10000
+        ? formatAmount(totalValueUSD, 1)
+        : // ? baseLiqDisplayNum.toExponential(2)
+          totalValueUSD.toLocaleString(undefined, {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
           });
@@ -381,7 +439,13 @@ export default function TransactionCard(props: TransactionProps) {
 
                 {/* ------------------------------------------------------ */}
 
-                <Price priceType={priceType} displayPrice={truncatedDisplayPrice} />
+                <Price
+                    priceType={priceType}
+                    isAmbient={isAmbient}
+                    displayPrice={truncatedDisplayPrice}
+                    truncatedLowDisplayPrice={truncatedLowDisplayPrice}
+                    truncatedHighDisplayPrice={truncatedHighDisplayPrice}
+                />
                 {/* ------------------------------------------------------ */}
 
                 <TransactionTypeSide
@@ -393,7 +457,15 @@ export default function TransactionCard(props: TransactionProps) {
                 />
                 {/* ------------------------------------------------------ */}
 
-                <Value usdValue={usdValueTruncated ? '$' + usdValueTruncated : '…'} />
+                <Value
+                    usdValue={
+                        totalValueUSDTruncated
+                            ? '$' + totalValueUSDTruncated
+                            : usdValueTruncated
+                            ? '$' + usdValueTruncated
+                            : '…'
+                    }
+                />
                 <TokenQty
                     baseTokenCharacter={baseTokenCharacter}
                     quoteTokenCharacter={quoteTokenCharacter}

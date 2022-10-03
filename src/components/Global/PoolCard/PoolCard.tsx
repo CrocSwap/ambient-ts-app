@@ -254,25 +254,23 @@ export default function PoolCard(props: PoolCardProps) {
 
     if (!tokenA || !tokenB) return <PoolCardSkeleton />;
 
-    const linkpath = (
-        '/trade/market/chain=0x5&tokenA=' +
-        tokenA.address +
-        '&tokenB=' +
-        tokenB.address
-    );
+    const linkpath =
+        '/trade/market/chain=0x5&tokenA=' + tokenA.address + '&tokenB=' + tokenB.address;
 
     return (
         <Link className={styles.pool_card} to={linkpath}>
-            <div className={styles.row}>
-                {tokenImagesDisplay}
-                {tokenNamesDisplay}
-            </div>
-            <div className={styles.row}>{volumeDisplay}</div>
-            <div className={styles.row}>{apyDisplay}</div>
-            <div className={styles.row}>{tvlDisplay}</div>
-            <div className={styles.column}>
-                {poolPriceChangeDisplay}
-                {poolPriceDisplayDOM}
+            <div className={styles.main_container}>
+                <div className={styles.row}>
+                    {tokenImagesDisplay}
+                    {tokenNamesDisplay}
+                </div>
+                <div className={styles.row}>{volumeDisplay}</div>
+                <div className={styles.row}>{apyDisplay}</div>
+                <div className={styles.row}>{tvlDisplay}</div>
+                <div className={styles.column}>
+                    {poolPriceChangeDisplay}
+                    {poolPriceDisplayDOM}
+                </div>
             </div>
         </Link>
     );

@@ -319,6 +319,9 @@ export default function TradeTabs2(props: ITabsProps) {
         isShowAllEnabled: isShowAllEnabled,
         account: account,
         graphData: graphData,
+        openGlobalModal: props.openGlobalModal,
+
+        closeGlobalModal: props.closeGlobalModal,
     };
     // props for <PositionsOnlyToggle/> React Element
 

@@ -454,6 +454,7 @@ export default function App() {
     useEffect(() => {
         (async () => {
             if (window.ethereum) {
+                console.log('requesting eth_accounts');
                 const metamaskAccounts = await window.ethereum.request({ method: 'eth_accounts' });
                 if (metamaskAccounts?.length > 0) {
                     setMetamaskLocked(false);
