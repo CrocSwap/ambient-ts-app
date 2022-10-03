@@ -22,10 +22,11 @@ import styles from './OrderCard.module.css';
 
 interface OrderCardProps {
     limitOrder: ILimitOrderState;
+    isDenomBase: boolean;
 }
 
 export default function OrderCard(props: OrderCardProps) {
-    const { limitOrder } = props;
+    const { limitOrder, isDenomBase } = props;
     // console.log({ limitOrder });
 
     // const tempOwnerId = '0xa2b398145b7fc8fd9a01142698f15d329ebb5ff5090cfcc8caae440867ab9919';
@@ -134,7 +135,13 @@ export default function OrderCard(props: OrderCardProps) {
                 {/* ------------------------------------------------------ */}
                 <Price priceType={priceType} displayPrice={truncatedDisplayPrice} />
                 {/* ------------------------------------------------------ */}
-                <OrderTypeSide type='order' side={sideType} />
+                <OrderTypeSide
+                    type='order'
+                    side={sideType}
+                    isDenomBase={isDenomBase}
+                    baseTokenCharacter={baseTokenCharacter}
+                    quoteTokenCharacter={quoteTokenCharacter}
+                />
                 {/* ------------------------------------------------------ */}
                 <Value usdValue={usdValueTruncated ? '$' + usdValueTruncated : '…'} />
                 <TokenQty

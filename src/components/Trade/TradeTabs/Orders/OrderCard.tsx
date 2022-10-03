@@ -199,7 +199,13 @@ export default function OrderCard(props: OrderCardProps) {
                 {/* ------------------------------------------------------ */}
                 <Price priceType={priceType} displayPrice={truncatedDisplayPrice} />
                 {/* ------------------------------------------------------ */}
-                <OrderTypeSide type='order' side={sideType} />
+                <OrderTypeSide
+                    type='order'
+                    side={sideType}
+                    isDenomBase={isDenomBase}
+                    baseTokenCharacter={baseTokenCharacter}
+                    quoteTokenCharacter={quoteTokenCharacter}
+                />
                 {/* ------------------------------------------------------ */}
                 <Value usdValue={usdValueTruncated ? '$' + usdValueTruncated : '…'} />
                 <TokenQty
