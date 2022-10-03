@@ -620,11 +620,6 @@ export default function Chart(props: ChartData) {
                 .on('start', () => {
                     d3.select(d3Container.current).style('cursor', 'grabbing');
                     d3.select(d3Container.current).select('.targets').style('cursor', 'grabbing');
-                    d3.select(d3Container.current)
-                        .select('.targets')
-                        .select('.horizontal')
-                        .select('line')
-                        .style('cursor', 'grabbing');
                 })
                 .on('drag', function (event, d: any) {
                     d3.select(d3Container.current)
@@ -829,12 +824,6 @@ export default function Chart(props: ChartData) {
                 })
                 .on('end', () => {
                     d3.select(d3Container.current).style('cursor', 'default');
-                    d3.select(d3Container.current).select('.targets').style('cursor', 'default');
-                    d3.select(d3Container.current)
-                        .select('.targets')
-                        .select('.horizontal')
-                        .select('line')
-                        .style('cursor', 'default');
 
                     d3.select(d3Container.current)
                         .select('.ghostLines')
@@ -946,12 +935,6 @@ export default function Chart(props: ChartData) {
                     .style('transform', (d: any) =>
                         d.name == 'Min' ? ' translate(0px, 20px)' : '',
                     );
-                selection
-                    .enter()
-                    .select('line')
-                    .on('mouseout', (event: any) => {
-                        d3.select(event.currentTarget).style('cursor', 'default');
-                    });
             });
 
             const targetsJoin = d3fc.dataJoin('g', 'targets');
@@ -1006,11 +989,6 @@ export default function Chart(props: ChartData) {
                     .attr('fill', 'rgba(235, 235, 255, 0.4)')
                     .style('transform', 'translate(100%, 48px) rotate(180deg)');
             });
-
-            d3.select(d3PlotArea.current)
-                .select('.market')
-                .select('.annotation-line')
-                .style('cursor', 'default');
         }
     }
 
@@ -1454,9 +1432,6 @@ export default function Chart(props: ChartData) {
                             .on('mouseover', (event: any) => {
                                 d3.select(event.currentTarget).style('cursor', 'pointer');
                             })
-                            .on('mouseout', (event: any) => {
-                                d3.select(event.currentTarget).style('cursor', 'default');
-                            })
                             .on('click', (event: any) => {
                                 if (
                                     selectedCandle !== undefined &&
@@ -1529,8 +1504,8 @@ export default function Chart(props: ChartData) {
                     crosshairHorizontalJoin(svg, [crosshairData]).call(crosshairHorizontal);
                     crosshairVerticalJoin(svg, [crosshairData]).call(crosshairVertical);
                     barJoin(svg, [liquidityData.liqData]).call(barSeries);
-                    candleJoin(svg, [chartData]).call(candlestick);
                     targetsJoin(svg, [targets.ranges]).call(horizontalLine);
+                    candleJoin(svg, [chartData]).call(candlestick);
                     marketJoin(svg, [targets.market]).call(horizontalLine);
                     limitJoin(svg, [targets.limit]).call(horizontalLine);
                     setDrawControl(event);
