@@ -2098,6 +2098,7 @@ export default function App() {
                                     setOutsideControl={setOutsideControl}
                                     userAccount={true}
                                     openGlobalModal={openGlobalModal}
+                                    closeGlobalModal={closeGlobalModal}
                                 />
                             }
                         />
@@ -2123,6 +2124,7 @@ export default function App() {
                                     setOutsideControl={setOutsideControl}
                                     userAccount={false}
                                     openGlobalModal={openGlobalModal}
+                                    closeGlobalModal={closeGlobalModal}
                                 />
                             }
                         />
@@ -2159,6 +2161,7 @@ export default function App() {
                                     setOutsideControl={setOutsideControl}
                                     userAccount={false}
                                     openGlobalModal={openGlobalModal}
+                                    closeGlobalModal={closeGlobalModal}
                                 />
                             }
                         />
