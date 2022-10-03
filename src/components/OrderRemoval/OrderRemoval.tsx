@@ -1,13 +1,16 @@
+import { CrocEnv } from '@crocswap-libs/sdk';
+import { BigNumber } from 'ethers';
 import { useEffect, useState } from 'react';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { ILimitOrderState } from '../../utils/state/graphDataSlice';
 
 interface IOrderRemovalProps {
     limitOrder: ILimitOrderState;
+    crocEnv: CrocEnv | undefined;
 }
 
 export default function OrderRemoval(props: IOrderRemovalProps) {
-    const { limitOrder } = props;
+    const { limitOrder, crocEnv } = props;
 
     const lastBlockNumber = useAppSelector((state) => state.graphData).lastBlock;
     const isDenomBase = useAppSelector((state) => state.tradeData.isDenomBase);
@@ -109,6 +112,35 @@ export default function OrderRemoval(props: IOrderRemovalProps) {
         }
     }, [limitOrder, lastBlockNumber, isDenomBase]);
 
+    const removeFn = () => {
+        console.log({ positionLiquidity });
+        if (crocEnv) {
+            console.log({ limitOrder });
+            if (limitOrder.isBid === true) {
+                crocEnv
+                    .sell(limitOrder.quote, 0)
+                    .atLimit(limitOrder.base, limitOrder.askTick)
+                    .burnLiq(BigNumber.from('1000'));
+                // .burnLiq(BigNumber.from(positionLiquidity));
+            } else {
+                crocEnv
+                    .sell(limitOrder.quote, 0)
+                    .atLimit(limitOrder.base, limitOrder.bidTick)
+                    .burnLiq(BigNumber.from('1000'));
+                // .burnLiq(BigNumber.from(positionLiquidity));
+            }
+        }
+    };
+
+    const removeButton = (
+        <button
+            disabled={!positionLiquidity || positionLiquidity === '0'}
+            onClick={() => removeFn()}
+        >
+            Remove
+        </button>
+    );
+
     return (
         <div>
             {/* <div>Time Updated: {lastUpdatedTime}</div> */}
@@ -125,6 +157,7 @@ export default function OrderRemoval(props: IOrderRemovalProps) {
             {/* <div>Fees Base Qty: {feesBaseDecimalCorrected}</div>
             <div>Fees Quote Qty: {feesQuoteDecimalCorrected}</div> */}
             <div>Total Value USD: {positionLiqTotalUSD}</div>
+            {removeButton}
         </div>
     );
 }

@@ -14,12 +14,13 @@ import {
     setLimitOrdersByPool,
 } from '../../../../utils/state/graphDataSlice';
 import { fetchPoolLimitOrderStates } from '../../../../App/functions/fetchPoolLimitOrderStates';
-import { ChainSpec } from '@crocswap-libs/sdk';
+import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
 import useWebSocket from 'react-use-websocket';
 import OrderAccordions from './OrderAccordions/OrderAccordions';
 
 // interface for props for react functional component
 interface propsIF {
+    crocEnv: CrocEnv | undefined;
     expandTradeTable: boolean;
     chainData: ChainSpec;
     account: string;
@@ -31,7 +32,7 @@ interface propsIF {
 
 // main react functional component
 export default function Orders(props: propsIF) {
-    const { chainData, expandTradeTable, account, graphData, isShowAllEnabled } = props;
+    const { crocEnv, chainData, expandTradeTable, account, graphData, isShowAllEnabled } = props;
 
     const limitOrdersByUser = graphData.limitOrdersByUser.limitOrders;
     const limitOrdersByPool = graphData.limitOrdersByPool.limitOrders;
@@ -209,6 +210,7 @@ export default function Orders(props: propsIF) {
             {showAllOrUserPositions.map((order, idx) => (
                 <OrderCard
                     key={idx}
+                    crocEnv={crocEnv}
                     account={account}
                     limitOrder={order}
                     isDenomBase={isDenomBase}

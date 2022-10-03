@@ -1,3 +1,4 @@
+import { CrocEnv } from '@crocswap-libs/sdk';
 import { useEffect, useState } from 'react';
 import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
 import { formatAmount } from '../../../../utils/numbers';
@@ -12,6 +13,7 @@ import WalletAndId from '../../../Global/Tabs/WalletAndID/WalletAndId';
 import styles from './OrderCard.module.css';
 
 interface OrderCardProps {
+    crocEnv: CrocEnv | undefined;
     account: string;
     limitOrder: ILimitOrderState;
     isDenomBase: boolean;
@@ -22,7 +24,8 @@ interface OrderCardProps {
 }
 
 export default function OrderCard(props: OrderCardProps) {
-    const { account, limitOrder, isDenomBase, selectedBaseToken, selectedQuoteToken } = props;
+    const { crocEnv, account, limitOrder, isDenomBase, selectedBaseToken, selectedQuoteToken } =
+        props;
     // console.log({ limitOrder });
 
     // const tempOwnerId = '0xa2b398145b7fc8fd9a01142698f15d329ebb5ff5090cfcc8caae440867ab9919';
@@ -95,6 +98,8 @@ export default function OrderCard(props: OrderCardProps) {
         ) {
             setIsOrderFilled(true);
             // return null;
+        } else {
+            setIsOrderFilled(false);
         }
     }, [JSON.stringify(limitOrder)]);
 
@@ -178,6 +183,7 @@ export default function OrderCard(props: OrderCardProps) {
           });
 
     const orderMenuProps = {
+        crocEnv: crocEnv,
         closeGlobalModal: props.closeGlobalModal,
         openGlobalModal: props.openGlobalModal,
         isOwnerActiveAccount: isOwnerActiveAccount,

@@ -15,9 +15,11 @@ import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
 import { ILimitOrderState } from '../../../../../utils/state/graphDataSlice';
 import OrderDetails from '../../../../OrderDetails/OrderDetails';
 import OrderRemoval from '../../../../OrderRemoval/OrderRemoval';
+import { CrocEnv } from '@crocswap-libs/sdk';
 
 // interface for React functional component props
 interface OrdersMenuIF {
+    crocEnv: CrocEnv | undefined;
     limitOrder: ILimitOrderState;
     openGlobalModal: (content: React.ReactNode, title?: string) => void;
     closeGlobalModal: () => void;
@@ -26,7 +28,7 @@ interface OrdersMenuIF {
 
 // React functional component
 export default function OrdersMenu(props: OrdersMenuIF) {
-    const { limitOrder, openGlobalModal, isOwnerActiveAccount } = props;
+    const { crocEnv, limitOrder, openGlobalModal, isOwnerActiveAccount } = props;
     const [value, copy] = useCopyToClipboard();
     const [openSnackbar, setOpenSnackbar] = useState<boolean>(false);
 
@@ -71,7 +73,10 @@ export default function OrdersMenu(props: OrdersMenuIF) {
     // -----------------END OF SNACKBAR----------------
 
     const openRemoveModal = () =>
-        openGlobalModal(<OrderRemoval limitOrder={limitOrder} />, 'Limit Order Removal');
+        openGlobalModal(
+            <OrderRemoval limitOrder={limitOrder} crocEnv={crocEnv} />,
+            'Limit Order Removal',
+        );
     const openDetailsModal = () =>
         openGlobalModal(<OrderDetails limitOrder={limitOrder} />, 'Limit Order Details');
 
