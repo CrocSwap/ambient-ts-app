@@ -268,6 +268,7 @@ export const useProcessOrder = (limitOrder: ILimitOrderState) => {
         posLiqBaseDecimalCorrected,
         posLiqQuoteDecimalCorrected,
         positionLiquidity,
+        positionLiqTotalUSD,
 
         // transaction matches selected token
         transactionMatchesSelectedTokens,

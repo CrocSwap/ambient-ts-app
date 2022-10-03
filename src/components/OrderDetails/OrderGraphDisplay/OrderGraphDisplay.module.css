@@ -11,40 +11,46 @@
     align-items: center;
 }
 
-.main_container .apy{
-
+.main_container .status{
+    margin: 1rem 0;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    gap: 1rem;
     align-items: center;
-font-size: 48px;
-line-height: 60px;
+    
+font-size: var(--header2-size);
+line-height: var(--header2-lh);
 }
 
-.apy_text{
-    font-size: 24px;
-    line-height: 30px;
+/* .top_details{
+    display: flex;
+    flex-direction: row;
+
+} */
+
+.user{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    font-size: var(--header2-size);
+line-height: var(--header2-lh);
+gap: 4px;
+
+background: var(--title-gradient);
+-webkit-background-clip: text;
+-webkit-text-fill-color: transparent;
+background-clip: text;
+text-fill-color: transparent;
 }
 
-.apy_green {
-    /* apy/green */
-
-    background: linear-gradient(90deg, #15be6f 32.38%, #8fe9bf 51.39%, #15be6f 68.17%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    text-fill-color: transparent;
-
-    text-shadow: 0px 0px 10px rgba(21, 190, 111, 0.75);
+@media only screen and (min-width: 768px) {
+.top_details{
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-around;
 }
 
-.apy_red  {
-    /* apy/green */
 
-    background: linear-gradient(90deg, #be4515 32.38%, #de5a2e 51.39%, #be5315 68.17%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    text-fill-color: transparent;
-
-    text-shadow: 0px 0px 10px rgba(190, 100, 21, 0.75);
 }

@@ -7,13 +7,12 @@ import { toggleDidUserFlipDenom } from '../../../utils/state/tradeDataSlice';
 import Divider from '../../Global/Divider/Divider';
 import { motion } from 'framer-motion';
 import { useProcessOrder } from '../../../utils/hooks/useProcessOrder';
-import { usePoolChartData } from '../../../state/pools/hooks';
 
-type ItemIF = {
-    slug: string;
-    name: string;
-    checked: boolean;
-};
+// type ItemIF = {
+//     slug: string;
+//     name: string;
+//     checked: boolean;
+// };
 interface IPriceInfoProps {
     // usdValue: number | undefined;
     limitOrder: ILimitOrderState;
@@ -47,8 +46,8 @@ export default function PriceInfo(props: IPriceInfoProps) {
         highPriceDisplay,
         bidTick,
         askTick,
-        posLiqBaseDecimalCorrected,
-        posLiqQuoteDecimalCorrected,
+        positionLiqTotalUSD,
+
         baseDisplayFrontend,
         quoteDisplayFrontend,
         positionLiquidity,
@@ -66,27 +65,35 @@ export default function PriceInfo(props: IPriceInfoProps) {
         >
             <p>Liquidity</p>
             <Row>
-                <div>
-                    <img src={baseTokenLogo} alt='' width='25px' />
+                <div className={styles.align_center}>
+                    <img src={baseTokenLogo} alt='' width='20px' />
                     {baseTokenSymbol}
                 </div>
 
-                <div className={styles.info_text}>{posLiqBaseDecimalCorrected}</div>
+                <div className={styles.info_text}>{baseDisplayFrontend}</div>
             </Row>
             {/*  */}
             <Row>
-                <div>
-                    <img src={quoteTokenLogo} alt='' width='25px' />
+                <div className={styles.align_center}>
+                    <img src={quoteTokenLogo} alt='' width='20px' />
                     {quoteTokenSymbol}
                 </div>
-                <div className={styles.info_text}>{posLiqQuoteDecimalCorrected}</div>
+                <div className={styles.info_text}>{quoteDisplayFrontend}</div>
             </Row>
             {/*  */}
             <Divider />
             {/* <div className={styles.divider}></div> */}
             <Row>
-                <span> Liquidity Wei Qty</span>
-                <div className={styles.info_text}>{positionLiquidity}</div>
+                <span> Total Liquidity</span>
+                <div className={styles.info_text}>
+                    {positionLiqTotalUSD ? positionLiqTotalUSD.toFixed(2) : '...'}
+                </div>
+            </Row>
+            <Row>
+                <span> Liquidity Wei </span>
+                <div className={styles.info_text}>
+                    {positionLiquidity ? parseFloat(positionLiquidity).toFixed(2) : '...'}
+                </div>
             </Row>
             {/*  */}
         </motion.div>
@@ -149,11 +156,15 @@ export default function PriceInfo(props: IPriceInfoProps) {
         <div className={styles.min_max_price}>
             <div className={styles.min_max_content}>
                 Min Price
-                <span className={styles.min_price}>{lowPriceDisplay ?? 0}</span>
+                <span className={styles.min_price}>
+                    {lowPriceDisplay ? parseFloat(lowPriceDisplay).toFixed(2) : 0}
+                </span>
             </div>
             <div className={styles.min_max_content}>
                 Max Price
-                <span className={styles.max_price}>{highPriceDisplay ?? 'Infinity'}</span>
+                <span className={styles.max_price}>
+                    {highPriceDisplay ? parseFloat(highPriceDisplay).toFixed(2) : 'Infinity'}
+                </span>
             </div>
         </div>
     );
