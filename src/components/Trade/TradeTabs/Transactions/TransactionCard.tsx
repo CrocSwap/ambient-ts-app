@@ -131,7 +131,7 @@ export default function TransactionCard(props: TransactionProps) {
                         : invPriceDecimalCorrected < 0.0001
                         ? invPriceDecimalCorrected.toExponential(2)
                         : invPriceDecimalCorrected < 2
-                        ? priceDecimalCorrected.toPrecision(3)
+                        ? invPriceDecimalCorrected.toPrecision(3)
                         : invPriceDecimalCorrected >= 100000
                         ? formatAmount(invPriceDecimalCorrected)
                         : invPriceDecimalCorrected.toLocaleString(undefined, {
@@ -178,7 +178,11 @@ export default function TransactionCard(props: TransactionProps) {
                         : bidTickPriceDecimalCorrected < 0.001
                         ? bidTickPriceDecimalCorrected.toExponential(1)
                         : bidTickPriceDecimalCorrected < 2
-                        ? bidTickPriceDecimalCorrected.toPrecision(3)
+                        ? // ? bidTickPriceDecimalCorrected.toPrecision(2)
+                          bidTickPriceDecimalCorrected.toLocaleString(undefined, {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2,
+                          })
                         : bidTickPriceDecimalCorrected >= 1000
                         ? formatAmount(bidTickPriceDecimalCorrected, 1)
                         : bidTickPriceDecimalCorrected.toLocaleString(undefined, {
@@ -194,7 +198,10 @@ export default function TransactionCard(props: TransactionProps) {
                         : bidTickInvPriceDecimalCorrected < 0.001
                         ? bidTickInvPriceDecimalCorrected.toExponential(1)
                         : bidTickInvPriceDecimalCorrected < 2
-                        ? bidTickInvPriceDecimalCorrected.toPrecision(3)
+                        ? bidTickInvPriceDecimalCorrected.toLocaleString(undefined, {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2,
+                          })
                         : bidTickInvPriceDecimalCorrected >= 1000
                         ? formatAmount(bidTickInvPriceDecimalCorrected, 1)
                         : bidTickInvPriceDecimalCorrected.toLocaleString(undefined, {
@@ -210,7 +217,10 @@ export default function TransactionCard(props: TransactionProps) {
                         : askTickPriceDecimalCorrected < 0.001
                         ? askTickPriceDecimalCorrected.toExponential(1)
                         : askTickPriceDecimalCorrected < 2
-                        ? askTickPriceDecimalCorrected.toPrecision(3)
+                        ? askTickPriceDecimalCorrected.toLocaleString(undefined, {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2,
+                          })
                         : askTickPriceDecimalCorrected >= 1000
                         ? formatAmount(askTickPriceDecimalCorrected, 1)
                         : askTickPriceDecimalCorrected.toLocaleString(undefined, {
@@ -226,7 +236,11 @@ export default function TransactionCard(props: TransactionProps) {
                         : askTickInvPriceDecimalCorrected < 0.001
                         ? askTickInvPriceDecimalCorrected.toExponential(1)
                         : askTickInvPriceDecimalCorrected < 2
-                        ? askTickInvPriceDecimalCorrected.toPrecision(3)
+                        ? // ? askTickInvPriceDecimalCorrected.toPrecision(2)
+                          askTickInvPriceDecimalCorrected.toLocaleString(undefined, {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2,
+                          })
                         : askTickInvPriceDecimalCorrected >= 1000
                         ? formatAmount(askTickInvPriceDecimalCorrected, 1)
                         : askTickInvPriceDecimalCorrected.toLocaleString(undefined, {

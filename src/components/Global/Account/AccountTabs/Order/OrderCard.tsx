@@ -46,7 +46,21 @@ export default function OrderCard(props: OrderCardProps) {
     //   const priceDecimalCorrected = limitOrder.limitPriceDecimalCorrected;
     const invPriceDecimalCorrected = limitOrder.invLimitPriceDecimalCorrected;
 
-    const truncatedDisplayPrice = quoteTokenCharacter + invPriceDecimalCorrected?.toPrecision(6);
+    const invertedPriceTruncated =
+        invPriceDecimalCorrected === 0
+            ? '0.00'
+            : invPriceDecimalCorrected < 0.0001
+            ? invPriceDecimalCorrected.toExponential(2)
+            : invPriceDecimalCorrected < 2
+            ? invPriceDecimalCorrected.toPrecision(3)
+            : invPriceDecimalCorrected >= 100000
+            ? formatAmount(invPriceDecimalCorrected)
+            : invPriceDecimalCorrected.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+              });
+
+    const truncatedDisplayPrice = quoteTokenCharacter + invertedPriceTruncated;
 
     const priceType = !limitOrder.isBid ? 'priceBuy' : 'priceSell';
 
