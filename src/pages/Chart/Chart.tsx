@@ -61,6 +61,7 @@ interface ChartData {
     upBorderColor: string;
     downBodyColor: string;
     downBorderColor: string;
+    isCandleSelected: boolean | undefined;
 }
 
 export default function Chart(props: ChartData) {
@@ -79,7 +80,7 @@ export default function Chart(props: ChartData) {
     const rangeModuleTriggered = tradeData.rangeModuleTriggered;
 
     const { showFeeRate, showTvl, showVolume } = props.chartItemStates;
-    const { upBodyColor, upBorderColor, downBodyColor, downBorderColor } = props;
+    const { upBodyColor, upBorderColor, downBodyColor, downBorderColor, isCandleSelected } = props;
 
     const parsedChartData = props.priceData;
 
@@ -148,6 +149,7 @@ export default function Chart(props: ChartData) {
     const [horizontalLine, setHorizontalLine] = useState<any>();
     const [targetsJoin, setTargetsJoin] = useState<any>();
     const [limitJoin, setLimitJoin] = useState<any>();
+    const [popup, setPopup] = useState<any>();
 
     // Utils
     const [zoomUtils, setZoomUtils] = useState<any>();
@@ -155,6 +157,7 @@ export default function Chart(props: ChartData) {
     const [scaleData, setScaleData] = useState<any>();
     const [dragRange, setDragRange] = useState<any>();
     const [dragLimit, setDragLimit] = useState<any>();
+    const [selectedCandleState, setSelectedCandleState] = useState<any>();
 
     const valueFormatter = d3.format('.5f');
 
@@ -974,8 +977,18 @@ export default function Chart(props: ChartData) {
                     });
             });
 
+            const popup = d3
+                .select(d3Container.current)
+                .append('div')
+                .attr('class', 'popup')
+                .style('visibility', 'hidden');
+
             const targetsJoin = d3fc.dataJoin('g', 'targets');
             const limitJoin = d3fc.dataJoin('g', 'limit');
+
+            setPopup(() => {
+                return popup;
+            });
 
             setTargetsJoin(() => {
                 return targetsJoin;
@@ -1299,6 +1312,7 @@ export default function Chart(props: ChartData) {
             scaleData !== undefined &&
             zoomUtils !== undefined &&
             limitJoin !== undefined &&
+            popup !== undefined &&
             targetsJoin !== undefined
         ) {
             const targetData = {
@@ -1320,6 +1334,7 @@ export default function Chart(props: ChartData) {
                 horizontalLine,
                 targetsJoin,
                 limitJoin,
+                popup,
             );
         }
     }, [
@@ -1333,6 +1348,7 @@ export default function Chart(props: ChartData) {
         horizontalLine,
         targetsJoin,
         limitJoin,
+        popup,
     ]);
 
     // Draw Chart
@@ -1350,6 +1366,7 @@ export default function Chart(props: ChartData) {
             horizontalLine: any,
             targetsJoin: any,
             limitJoin: any,
+            popup: any,
         ) => {
             if (chartData.length > 0) {
                 let selectedCandle: any;
@@ -1415,12 +1432,6 @@ export default function Chart(props: ChartData) {
                                 : 'rgba(205, 193, 255, 0.3)';
                         });
                     });
-
-                const popup = d3
-                    .select(d3Container.current)
-                    .append('div')
-                    .attr('class', 'popup')
-                    .style('visibility', 'hidden');
 
                 const crosshairHorizontal = d3fc
                     .annotationSvgLine()
@@ -1500,8 +1511,13 @@ export default function Chart(props: ChartData) {
                                         );
                                     setIsChartSelected(false);
                                     selectedCandle = undefined;
+                                    setSelectedCandleState(undefined);
                                 } else {
                                     selectedCandle = event.currentTarget;
+                                    setSelectedCandleState(() => {
+                                        return event.currentTarget;
+                                    });
+
                                     setIsChartSelected(true);
                                     setTransactionFilter(() => {
                                         return event.target.__data__;
@@ -1706,6 +1722,16 @@ export default function Chart(props: ChartData) {
     const onBlurlimitRate = (newLimitValue: any) => {
         dispatch(setLimitPrice(newLimitValue.toString()));
     };
+
+    useEffect(() => {
+        if (!isCandleSelected && popup !== undefined) {
+            d3.select(selectedCandleState)
+                .style('fill', (d: any) => (d.close > d.open ? '#7371FC' : '#CDC1FF'))
+                .style('stroke', (d: any) => (d.close > d.open ? '#7371FC' : '#CDC1FF'));
+
+            popup.style('visibility', 'hidden');
+        }
+    }, [isCandleSelected]);
 
     return (
         <div ref={d3Container} className='main_layout_chart' data-testid={'chart'}>

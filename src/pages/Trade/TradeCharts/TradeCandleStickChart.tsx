@@ -53,6 +53,7 @@ interface ChartData {
     baseTokenAddress: string;
     chainId: string;
     poolPriceNonDisplay: number | undefined;
+    isCandleSelected: boolean | undefined;
 }
 
 export interface ChartUtils {
@@ -264,15 +265,13 @@ export default function TradeCandleStickChart(props: ChartData) {
                         pinnedMaxPriceDisplayTruncated={props.pinnedMaxPriceDisplayTruncated}
                         spotPriceDisplay={props.spotPriceDisplay}
                         truncatedPoolPrice={props.truncatedPoolPrice}
-                        // feeData={data.feeData}
-                        // volumeData={data.volumeData}
-                        // tvlData={data.tvlData}
                         chartItemStates={props.chartItemStates}
                         setCurrentData={props.setCurrentData}
                         upBodyColor={props.upBodyColor}
                         upBorderColor={props.upBorderColor}
                         downBodyColor={props.downBodyColor}
                         downBorderColor={props.downBorderColor}
+                        isCandleSelected={props.isCandleSelected}
                     />
                 ) : (
                     <>{loading}</>

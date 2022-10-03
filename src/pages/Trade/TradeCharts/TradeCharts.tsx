@@ -73,6 +73,7 @@ interface TradeChartsPropsIF {
     downBorderColor: string;
     baseTokenAddress: string;
     poolPriceNonDisplay: number | undefined;
+    isCandleSelected: boolean | undefined;
 }
 
 export interface CandleChartData {
@@ -685,6 +686,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
                         baseTokenAddress={props.baseTokenAddress}
                         chainId={chainId}
                         poolPriceNonDisplay={props.poolPriceNonDisplay}
+                        isCandleSelected={props.isCandleSelected}
                     />
                 </div>
             )}
