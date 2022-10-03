@@ -1,9 +1,16 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { ILimitOrderState } from '../../utils/state/graphDataSlice';
+import styles from './OrderDetails.module.css';
+import OrderDetailsHeader from './OrderDetailsHeader/OrderDetailsHeader';
+import printDomToImage from '../../utils/functions/printDomToImage';
+import PriceInfo from '../OrderDetails/PriceInfo/PriceInfo';
+import OrderGraphDisplay from './OrderGraphDisplay/OrderGraphDisplay';
 
 interface IOrderDetailsProps {
     limitOrder: ILimitOrderState;
+
+    closeGlobalModal: () => void;
 }
 
 export default function OrderDetails(props: IOrderDetailsProps) {
@@ -11,6 +18,7 @@ export default function OrderDetails(props: IOrderDetailsProps) {
 
     const lastBlockNumber = useAppSelector((state) => state.graphData).lastBlock;
     const isDenomBase = useAppSelector((state) => state.tradeData.isDenomBase);
+    const [showSettings, setShowSettings] = useState(false);
 
     const [posLiqBaseDecimalCorrected, setPosLiqBaseDecimalCorrected] = useState<
         number | undefined
@@ -108,6 +116,36 @@ export default function OrderDetails(props: IOrderDetailsProps) {
             })();
         }
     }, [limitOrder, lastBlockNumber, isDenomBase]);
+
+    const detailsRef = useRef(null);
+    const downloadAsImage = () => {
+        if (detailsRef.current) {
+            printDomToImage(detailsRef.current);
+        }
+    };
+    const example = true;
+    if (example)
+        return (
+            <div className={styles.range_details_container}>
+                <OrderDetailsHeader
+                    onClose={props.closeGlobalModal}
+                    showSettings={showSettings}
+                    setShowSettings={setShowSettings}
+                    downloadAsImage={downloadAsImage}
+                />
+                {'Sonething else here'}
+                <div ref={detailsRef}>
+                    <div className={styles.main_content}>
+                        <div className={styles.left_container}>
+                            <PriceInfo limitOrder={limitOrder} />
+                        </div>
+                        <div className={styles.right_container}>
+                            <OrderGraphDisplay />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
 
     return (
         <div>
