@@ -46,9 +46,37 @@ export default function OrderCard(props: OrderCardProps) {
             const priceDecimalCorrected = limitOrder.limitPriceDecimalCorrected;
             const invPriceDecimalCorrected = limitOrder.invLimitPriceDecimalCorrected;
 
+            const nonInvertedPriceTruncated =
+                priceDecimalCorrected === 0
+                    ? '0.00'
+                    : priceDecimalCorrected < 0.0001
+                    ? priceDecimalCorrected.toExponential(2)
+                    : priceDecimalCorrected < 2
+                    ? priceDecimalCorrected.toPrecision(3)
+                    : priceDecimalCorrected >= 100000
+                    ? formatAmount(priceDecimalCorrected)
+                    : priceDecimalCorrected.toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                      });
+
+            const invertedPriceTruncated =
+                invPriceDecimalCorrected === 0
+                    ? '0.00'
+                    : invPriceDecimalCorrected < 0.0001
+                    ? invPriceDecimalCorrected.toExponential(2)
+                    : invPriceDecimalCorrected < 2
+                    ? invPriceDecimalCorrected.toPrecision(3)
+                    : invPriceDecimalCorrected >= 100000
+                    ? formatAmount(invPriceDecimalCorrected)
+                    : invPriceDecimalCorrected.toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                      });
+
             const truncatedDisplayPrice = isDenomBase
-                ? quoteTokenCharacter + invPriceDecimalCorrected?.toPrecision(6)
-                : baseTokenCharacter + priceDecimalCorrected?.toPrecision(6);
+                ? quoteTokenCharacter + invertedPriceTruncated
+                : baseTokenCharacter + nonInvertedPriceTruncated;
 
             setTruncatedDisplayPrice(truncatedDisplayPrice);
         } else {
@@ -141,8 +169,8 @@ export default function OrderCard(props: OrderCardProps) {
         ? usdValueNum.toExponential(2)
         : usdValueNum < 2
         ? usdValueNum.toPrecision(3)
-        : usdValueNum >= 100000
-        ? formatAmount(usdValueNum)
+        : usdValueNum >= 10000
+        ? formatAmount(usdValueNum, 1)
         : // ? baseLiqDisplayNum.toExponential(2)
           usdValueNum.toLocaleString(undefined, {
               minimumFractionDigits: 2,
@@ -171,7 +199,13 @@ export default function OrderCard(props: OrderCardProps) {
                 {/* ------------------------------------------------------ */}
                 <Price priceType={priceType} displayPrice={truncatedDisplayPrice} />
                 {/* ------------------------------------------------------ */}
-                <OrderTypeSide type='order' side={sideType} />
+                <OrderTypeSide
+                    type='order'
+                    side={sideType}
+                    isDenomBase={isDenomBase}
+                    baseTokenCharacter={baseTokenCharacter}
+                    quoteTokenCharacter={quoteTokenCharacter}
+                />
                 {/* ------------------------------------------------------ */}
                 <Value usdValue={usdValueTruncated ? '$' + usdValueTruncated : '…'} />
                 <TokenQty

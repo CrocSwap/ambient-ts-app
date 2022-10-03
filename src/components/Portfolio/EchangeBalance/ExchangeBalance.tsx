@@ -10,15 +10,37 @@ import depositImage from '../../../assets/images/sidebarImages/deposit.svg';
 import TabComponent from '../../Global/TabComponent/TabComponent';
 
 import { SetStateAction, Dispatch } from 'react';
+import { TokenIF } from '../../../utils/interfaces/TokenIF';
 
 interface ExchangeBalanceProps {
     setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
     setOutsideControl: Dispatch<SetStateAction<boolean>>;
+    openGlobalModal: (content: React.ReactNode, title?: string) => void;
+    closeGlobalModal: () => void;
+    tempTokenSelection: TokenIF;
 }
 
 export default function ExchangeBalance(props: ExchangeBalanceProps) {
+    const {
+        openGlobalModal,
+        closeGlobalModal,
+        setSelectedOutsideTab,
+        setOutsideControl,
+        tempTokenSelection,
+    } = props;
+
     const accountData = [
-        { label: 'Deposit', content: <Deposit />, icon: depositImage },
+        {
+            label: 'Deposit',
+            content: (
+                <Deposit
+                    openGlobalModal={openGlobalModal}
+                    closeGlobalModal={closeGlobalModal}
+                    tempTokenSelection={tempTokenSelection}
+                />
+            ),
+            icon: depositImage,
+        },
         { label: 'Withdraw', content: <Withdraw />, icon: withdrawImage },
         { label: 'Transfer', content: <Transfer />, icon: transferImage },
     ];
@@ -31,8 +53,8 @@ export default function ExchangeBalance(props: ExchangeBalanceProps) {
                 <TabComponent
                     data={accountData}
                     rightTabOptions={false}
-                    setSelectedOutsideTab={props.setSelectedOutsideTab}
-                    setOutsideControl={props.setOutsideControl}
+                    setSelectedOutsideTab={setSelectedOutsideTab}
+                    setOutsideControl={setOutsideControl}
                     outsideControl={false}
                     selectedOutsideTab={0}
                 />

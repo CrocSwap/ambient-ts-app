@@ -144,8 +144,6 @@ export default function App() {
     const userData = useAppSelector((state) => state.userData);
     const isUserLoggedIn = userData.isLoggedIn;
 
-
-    
     useEffect(() => {
         const isLoggedIn = isAuthenticated && isWeb3Enabled;
 
@@ -172,7 +170,9 @@ export default function App() {
     // useEffect(() => console.warn(chainData.chainId), [chainData.chainId]);
 
     const tokenUniverse = useTokenUniverse(chainData.chainId);
-    useEffect(() => {false && console.log({ tokenUniverse })}, [tokenUniverse]);
+    useEffect(() => {
+        false && console.log({ tokenUniverse });
+    }, [tokenUniverse]);
 
     const [isShowAllEnabled, setIsShowAllEnabled] = useState(true);
     const [currentTxActiveInTransactions, setCurrentTxActiveInTransactions] = useState('');
@@ -454,6 +454,7 @@ export default function App() {
     useEffect(() => {
         (async () => {
             if (window.ethereum) {
+                console.log('requesting eth_accounts');
                 const metamaskAccounts = await window.ethereum.request({ method: 'eth_accounts' });
                 if (metamaskAccounts?.length > 0) {
                     setMetamaskLocked(false);
@@ -1961,7 +1962,7 @@ export default function App() {
         market: '/trade/market/chain=0x5&tokenA=0x0000000000000000000000000000000000000000&tokenB=0xD87Ba7A50B2E7E660f678A895E4B72E7CB4CCd9C',
         limit: '/trade/limit/chain=0x5&tokenA=0x0000000000000000000000000000000000000000&tokenB=0xD87Ba7A50B2E7E660f678A895E4B72E7CB4CCd9C',
         range: '/trade/range/chain=0x5&tokenA=0x0000000000000000000000000000000000000000&tokenB=0xD87Ba7A50B2E7E660f678A895E4B72E7CB4CCd9C',
-    }
+    };
 
     return (
         <>
@@ -2040,13 +2041,22 @@ export default function App() {
                             }
                         >
                             <Route path='' element={<Navigate to='/trade/market' replace />} />
-                            <Route path='market' element={<Navigate to={defaultUrlParams.market} replace />} />
+                            <Route
+                                path='market'
+                                element={<Navigate to={defaultUrlParams.market} replace />}
+                            />
                             <Route path='market/:params' element={<Swap {...swapPropsTrade} />} />
 
-                            <Route path='limit' element={<Navigate to={defaultUrlParams.limit} replace />} />
+                            <Route
+                                path='limit'
+                                element={<Navigate to={defaultUrlParams.limit} replace />}
+                            />
                             <Route path='limit/:params' element={<Limit {...limitPropsTrade} />} />
 
-                            <Route path='range' element={<Navigate to={defaultUrlParams.range} replace />} />
+                            <Route
+                                path='range'
+                                element={<Navigate to={defaultUrlParams.range} replace />}
+                            />
                             <Route path='range/:params' element={<Range {...rangeProps} />} />
                             <Route path='edit/:positionHash' element={<Edit />} />
                             <Route path='reposition' element={<Reposition />} />
@@ -2088,6 +2098,7 @@ export default function App() {
                                     setOutsideControl={setOutsideControl}
                                     userAccount={true}
                                     openGlobalModal={openGlobalModal}
+                                    closeGlobalModal={closeGlobalModal}
                                 />
                             }
                         />
@@ -2113,11 +2124,15 @@ export default function App() {
                                     setOutsideControl={setOutsideControl}
                                     userAccount={false}
                                     openGlobalModal={openGlobalModal}
+                                    closeGlobalModal={closeGlobalModal}
                                 />
                             }
                         />
 
-                        <Route path='swap' element={<Navigate replace to={defaultUrlParams.swap} />} />
+                        <Route
+                            path='swap'
+                            element={<Navigate replace to={defaultUrlParams.swap} />}
+                        />
                         <Route path='swap/:params' element={<Swap {...swapProps} />} />
                         <Route path='tos' element={<TermsOfService />} />
                         <Route
@@ -2146,6 +2161,7 @@ export default function App() {
                                     setOutsideControl={setOutsideControl}
                                     userAccount={false}
                                     openGlobalModal={openGlobalModal}
+                                    closeGlobalModal={closeGlobalModal}
                                 />
                             }
                         />

@@ -28,6 +28,7 @@ export default function OrderDetails(props: IOrderDetailsProps) {
     };
 
     return (
+
         <div className={styles.range_details_container}>
             <OrderDetailsHeader
                 onClose={props.closeGlobalModal}
@@ -47,6 +48,7 @@ export default function OrderDetails(props: IOrderDetailsProps) {
                     <h1>actions display</h1>
                 </div>
             </div>
+
         </div>
     );
 }
