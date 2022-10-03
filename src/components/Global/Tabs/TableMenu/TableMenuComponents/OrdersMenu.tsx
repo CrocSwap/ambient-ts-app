@@ -23,12 +23,13 @@ interface OrdersMenuIF {
     limitOrder: ILimitOrderState;
     openGlobalModal: (content: React.ReactNode, title?: string) => void;
     closeGlobalModal: () => void;
-    isOwnerActiveAccount: boolean;
+    isOwnerActiveAccount?: boolean;
+    // orderDetailsProps: any;
 }
 
 // React functional component
 export default function OrdersMenu(props: OrdersMenuIF) {
-    const { crocEnv, limitOrder, openGlobalModal, isOwnerActiveAccount } = props;
+    const { crocEnv, limitOrder, openGlobalModal, closeGlobalModal, isOwnerActiveAccount } = props;
     const [value, copy] = useCopyToClipboard();
     const [openSnackbar, setOpenSnackbar] = useState<boolean>(false);
 
@@ -78,7 +79,9 @@ export default function OrdersMenu(props: OrdersMenuIF) {
             'Limit Order Removal',
         );
     const openDetailsModal = () =>
-        openGlobalModal(<OrderDetails limitOrder={limitOrder} />, 'Limit Order Details');
+        openGlobalModal(
+            <OrderDetails limitOrder={limitOrder} closeGlobalModal={closeGlobalModal} />,
+        );
 
     // switch (currentModal) {
     //     case 'remove':
