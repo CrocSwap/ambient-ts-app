@@ -204,8 +204,8 @@ export default function TransactionCard(props: TransactionProps) {
         ? usdValueNum.toExponential(2)
         : usdValueNum < 2
         ? usdValueNum.toPrecision(3)
-        : usdValueNum >= 100000
-        ? formatAmount(usdValueNum)
+        : usdValueNum >= 10000
+        ? formatAmount(usdValueNum, 1)
         : // ? baseLiqDisplayNum.toExponential(2)
           usdValueNum.toLocaleString(undefined, {
               minimumFractionDigits: 2,
@@ -218,8 +218,8 @@ export default function TransactionCard(props: TransactionProps) {
         ? totalValueUSD.toExponential(2)
         : totalValueUSD < 2
         ? totalValueUSD.toPrecision(3)
-        : totalValueUSD >= 100000
-        ? formatAmount(totalValueUSD)
+        : totalValueUSD >= 10000
+        ? formatAmount(totalValueUSD, 1)
         : // ? baseLiqDisplayNum.toExponential(2)
           totalValueUSD.toLocaleString(undefined, {
               minimumFractionDigits: 2,
