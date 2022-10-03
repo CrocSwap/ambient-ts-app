@@ -12,10 +12,15 @@ import { TokenIF } from '../../utils/interfaces/TokenIF';
 import { CrocEnv } from '@crocswap-libs/sdk';
 
 import { Erc20TokenBalanceFn, nativeTokenBalanceFn } from '../../App/functions/fetchTokenBalances';
-import { useAppSelector } from '../../utils/hooks/reduxToolkit';
+import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { TokenPriceFn } from '../../App/functions/fetchTokenPrice';
 import NotFound from '../NotFound/NotFound';
 import ProfileSettings from '../../components/Portfolio/ProfileSettings/ProfileSettings';
+import { useModal } from '../../components/Global/Modal/useModal';
+import Modal from '../../components/Global/Modal/Modal';
+import { defaultTokens } from '../../utils/data/defaultTokens';
+import { setToken } from '../../utils/state/temp';
+
 
 const mainnetProvider = new ethers.providers.WebSocketProvider(
     'wss://mainnet.infura.io/ws/v3/4a162c75bd514925890174ca13cdb6a2',
@@ -64,6 +69,39 @@ export default function Portfolio(props: PortfolioPropsIF) {
         openGlobalModal,
         userAccount,
     } = props;
+
+
+    const tempToken: TokenIF = useAppSelector(state => state.temp.token);
+    const dispatch = useAppDispatch();
+    const [isTempModalOpen, openTempModal, closeTempModal] = useModal();
+    const chooseToken = (tok: TokenIF) => {
+        console.log(tok);
+        dispatch(setToken(tok));
+        closeTempModal();
+    }
+
+    const modalOrNull = isTempModalOpen ? (
+        <Modal
+            onClose={closeTempModal}
+            title='Select Token'
+            centeredTitle
+            showBackButton={false}
+            footer={null}
+        >
+            {
+                defaultTokens
+                    .filter((token: TokenIF) => token.chainId === parseInt(chainId))
+                    .map((token: TokenIF) => (
+                        <button
+                            key={'button_to_set_' + token.name}
+                            onClick={() => chooseToken(token)}
+                        >
+                            {token.name}
+                        </button>
+                    ))
+            }
+        </Modal>
+    ) : null;
 
     const { address } = useParams();
 
@@ -228,6 +266,8 @@ export default function Portfolio(props: PortfolioPropsIF) {
                     openGlobalModal={openGlobalModal}
                 />
             )}
+            <button onClick={openTempModal}>Choose a Token</button>
+            <h3>{tempToken.name}</h3>
             <PortfolioBanner
                 ensName={address ? secondaryensName : ensName}
                 resolvedAddress={resolvedAddress}
@@ -263,6 +303,7 @@ export default function Portfolio(props: PortfolioPropsIF) {
                 />
                 {connectedAccountActive && !fullLayoutActive ? exchangeBalanceComponent : null}
             </div>
+            {modalOrNull}
         </main>
     );
 }
