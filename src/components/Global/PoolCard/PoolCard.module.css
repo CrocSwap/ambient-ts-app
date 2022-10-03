@@ -1,4 +1,12 @@
 .pool_card {
+    
+    cursor: pointer;
+    position: relative;
+}
+
+
+
+.main_container{
     width: 270px;
     height: 120px;
     border-radius: 4px;
@@ -8,8 +16,7 @@
     cursor: pointer;
     position: relative;
 }
-
-.pool_card:hover {
+.main_container:hover{
     transition: all var(--animation-speed) ease-in-out;
     box-shadow: 0px 0px 36px rgba(205, 193, 255, 0.2), 0px 0px 21px rgba(205, 193, 255, 0.2),
         0px 0px 12px rgba(205, 193, 255, 0.2), 0px 0px 7px rgba(205, 193, 255, 0.2),
