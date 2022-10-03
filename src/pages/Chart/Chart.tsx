@@ -266,7 +266,7 @@ export default function Chart(props: ChartData) {
         if (scaleData !== undefined) {
             addHorizontalLineArea();
         }
-    }, [ranges, zoomStatus, drawControl]);
+    }, [ranges]);
 
     // Scale
     useEffect(() => {
@@ -376,11 +376,10 @@ export default function Chart(props: ChartData) {
                         lastY = event.transform.y - yOffset;
                         const translate = d3.zoomIdentity.translate(0, lastY);
                         scaleData.yScale.domain(translate.rescaleY(scaleData.yScaleCopy).domain());
-                        setZoomStatus(event.sourceEvent.pageX + event.sourceEvent.pageY);
                     } else {
                         yOffset = event.transform.y - lastY;
                     }
-
+                    addHorizontalLineArea();
                     render();
                 })
                 .on('end', (event: any) => {
@@ -408,7 +407,7 @@ export default function Chart(props: ChartData) {
                     const factor = Math.pow(2, -event.dy * 0.01);
                     d3.select(d3PlotArea.current).call(yAxisZoom.scaleBy, factor);
 
-                    setZoomStatus(event.sourceEvent.pageX + event.sourceEvent.pageY);
+                    addHorizontalLineArea();
                 })
                 .on('end', () => {
                     d3.select(d3Container.current).style('cursor', 'default');
