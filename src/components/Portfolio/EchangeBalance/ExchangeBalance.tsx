@@ -11,8 +11,11 @@ import TabComponent from '../../Global/TabComponent/TabComponent';
 
 import { SetStateAction, Dispatch } from 'react';
 import { TokenIF } from '../../../utils/interfaces/TokenIF';
+import { CrocEnv } from '@crocswap-libs/sdk';
 
 interface ExchangeBalanceProps {
+    crocEnv: CrocEnv | undefined;
+    connectedAccount: string;
     setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
     setOutsideControl: Dispatch<SetStateAction<boolean>>;
     openGlobalModal: (content: React.ReactNode, title?: string) => void;
@@ -22,6 +25,8 @@ interface ExchangeBalanceProps {
 
 export default function ExchangeBalance(props: ExchangeBalanceProps) {
     const {
+        crocEnv,
+        connectedAccount,
         openGlobalModal,
         closeGlobalModal,
         setSelectedOutsideTab,
@@ -34,6 +39,8 @@ export default function ExchangeBalance(props: ExchangeBalanceProps) {
             label: 'Deposit',
             content: (
                 <Deposit
+                    crocEnv={crocEnv}
+                    connectedAccount={connectedAccount}
                     openGlobalModal={openGlobalModal}
                     closeGlobalModal={closeGlobalModal}
                     tempTokenSelection={tempTokenSelection}

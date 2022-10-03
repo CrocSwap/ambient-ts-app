@@ -1,6 +1,7 @@
 import styles from './DepositCurrencySelector.module.css';
 import { RiArrowDownSLine } from 'react-icons/ri';
 import { TokenIF } from '../../../../../utils/interfaces/TokenIF';
+import { Dispatch, SetStateAction } from 'react';
 
 interface DepositCurrencySelectorProps {
     fieldId: string;
@@ -9,19 +10,21 @@ interface DepositCurrencySelectorProps {
     sellToken?: boolean;
     disable?: boolean;
     tempTokenSelection: TokenIF;
-    // updateOtherQuantity: (evt: ChangeEvent<HTMLInputElement>) => void;
+    setDepositQty: Dispatch<SetStateAction<number | undefined>>; // updateOtherQuantity: (evt: ChangeEvent<HTMLInputElement>) => void;
 }
 
 export default function DepositCurrencySelector(props: DepositCurrencySelectorProps) {
-    const { fieldId, disable, onClick, tempTokenSelection } = props;
+    const { fieldId, disable, onClick, tempTokenSelection, setDepositQty } = props;
 
     const rateInput = (
         <div className={styles.token_amount}>
             <input
                 id={`${fieldId}-exchange-balance-deposit-quantity`}
                 className={styles.currency_quantity}
-                placeholder='0'
-                // onChange={(event) => updateOtherQuantity(event)}
+                // placeholder='0'
+                onChange={(event) => {
+                    setDepositQty(parseFloat(event.target.value));
+                }}
                 type='string'
                 inputMode='decimal'
                 autoComplete='off'

@@ -5,16 +5,23 @@ import { defaultTokens } from '../../../../utils/data/defaultTokens';
 import { TokenIF } from '../../../../utils/interfaces/TokenIF';
 import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
 import { setToken } from '../../../../utils/state/temp';
+import { CrocEnv } from '@crocswap-libs/sdk';
+import { useState } from 'react';
 
 interface PortfolioDepositProps {
+    crocEnv: CrocEnv | undefined;
+    connectedAccount: string;
     openGlobalModal: (content: React.ReactNode, title?: string) => void;
     closeGlobalModal: () => void;
     tempTokenSelection: TokenIF;
 }
 
 export default function Deposit(props: PortfolioDepositProps) {
-    const { openGlobalModal, closeGlobalModal, tempTokenSelection } = props;
+    const { crocEnv, connectedAccount, openGlobalModal, closeGlobalModal, tempTokenSelection } =
+        props;
     const dispatch = useAppDispatch();
+
+    const [depositQty, setDepositQty] = useState<number | undefined>();
 
     const chooseToken = (tok: TokenIF) => {
         console.log(tok);
@@ -34,6 +41,13 @@ export default function Deposit(props: PortfolioDepositProps) {
         </div>
     );
 
+    const depositFn = () => {
+        if (crocEnv && depositQty) {
+            crocEnv.token(tempTokenSelection.address).deposit(depositQty, connectedAccount);
+            // crocEnv.token(tempTokenSelection.address).deposit(1, wallet.address);
+        }
+    };
+
     return (
         <div className={styles.deposit_container}>
             <div className={styles.info_text}>
@@ -43,10 +57,12 @@ export default function Deposit(props: PortfolioDepositProps) {
                 fieldId='exchange-balance-deposit'
                 onClick={() => openGlobalModal(chooseTokenDiv)}
                 tempTokenSelection={tempTokenSelection}
+                setDepositQty={setDepositQty}
             />
             <DepositButton
                 onClick={() => {
-                    console.log('clicked');
+                    // console.log('clicked');
+                    depositFn();
                 }}
             />
         </div>
