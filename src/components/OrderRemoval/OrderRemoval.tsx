@@ -120,14 +120,14 @@ export default function OrderRemoval(props: IOrderRemovalProps) {
                 crocEnv
                     .sell(limitOrder.quote, 0)
                     .atLimit(limitOrder.base, limitOrder.askTick)
-                    .burnLiq(BigNumber.from('1000'));
-                // .burnLiq(BigNumber.from(positionLiquidity));
+                    // .burnLiq(BigNumber.from('1000'));
+                    .burnLiq(BigNumber.from(positionLiquidity).div(2));
             } else {
                 crocEnv
                     .sell(limitOrder.quote, 0)
                     .atLimit(limitOrder.base, limitOrder.bidTick)
-                    .burnLiq(BigNumber.from('1000'));
-                // .burnLiq(BigNumber.from(positionLiquidity));
+                    // .burnLiq(BigNumber.from('1000'));
+                    .burnLiq(BigNumber.from(positionLiquidity).div(2));
             }
         }
     };
