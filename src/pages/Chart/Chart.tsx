@@ -1548,10 +1548,10 @@ export default function Chart(props: ChartData) {
                     crosshairHorizontalJoin(svg, [crosshairData]).call(crosshairHorizontal);
                     crosshairVerticalJoin(svg, [crosshairData]).call(crosshairVertical);
                     barJoin(svg, [liquidityData.liqData]).call(barSeries);
-                    candleJoin(svg, [chartData]).call(candlestick);
                     targetsJoin(svg, [targets.ranges]).call(horizontalLine);
                     marketJoin(svg, [targets.market]).call(horizontalLine);
                     limitJoin(svg, [targets.limit]).call(horizontalLine);
+                    candleJoin(svg, [chartData]).call(candlestick);
                     setDrawControl(event);
                     setDragControl(true);
                 });
@@ -1754,8 +1754,10 @@ export default function Chart(props: ChartData) {
                             </label>
                             <FeeRateSubChart
                                 feeData={parsedChartData?.feeChartData}
+                                period={parsedChartData?.period}
                                 crosshairData={crosshairData}
                                 setsubChartValues={setsubChartValues}
+                                xScale={scaleData !== undefined ? scaleData.xScale : undefined}
                             />
                         </>
                     )}

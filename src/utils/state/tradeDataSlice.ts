@@ -166,9 +166,6 @@ export const tradeDataSlice = createSlice({
         setSpotPriceDisplay: (state, action: PayloadAction<string>) => {
             state.spotPriceDisplay = action.payload;
         },
-        setTargetData: (state, action: PayloadAction<targetData[]>) => {
-            state.targetData = action.payload;
-        },
         setRangeModuleTriggered: (state, action: PayloadAction<boolean>) => {
             state.rangeModuleTriggered = action.payload;
         },
@@ -204,7 +201,6 @@ export const {
     setSimpleRangeWidth,
     setSlippageTolerance,
     setActiveChartPeriod,
-    setTargetData,
     resetTradeData,
     resetTokens,
     setPinnedMaxPrice,
