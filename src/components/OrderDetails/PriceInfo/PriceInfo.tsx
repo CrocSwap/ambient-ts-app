@@ -8,11 +8,11 @@ import Divider from '../../Global/Divider/Divider';
 import { motion } from 'framer-motion';
 import { useProcessOrder } from '../../../utils/hooks/useProcessOrder';
 
-// type ItemIF = {
-//     slug: string;
-//     name: string;
-//     checked: boolean;
-// };
+type ItemIF = {
+    slug: string;
+    name: string;
+    checked: boolean;
+};
 interface IPriceInfoProps {
     // usdValue: number | undefined;
     limitOrder: ILimitOrderState;
@@ -29,11 +29,11 @@ interface IPriceInfoProps {
 
     // isDenomBase: boolean;
 
-    // controlItems: ItemIF[];
+    controlItems: ItemIF[];
 }
 
 export default function PriceInfo(props: IPriceInfoProps) {
-    const { limitOrder } = props;
+    const { limitOrder, controlItems } = props;
     const dispatch = useAppDispatch();
     const {
         usdValue,
@@ -174,13 +174,10 @@ export default function PriceInfo(props: IPriceInfoProps) {
         <div className={styles.main_container}>
             <div className={styles.price_info_container}>
                 {tokenPairDetails}
-                {true && totalValueContent}
-                {true && tickContent}
-                {true && liquidityContent}
+                {controlItems[2] && totalValueContent}
+                {controlItems[0] && tickContent}
+                {controlItems[1] && liquidityContent}
                 {minMaxPriceDipslay}
-                {/* <div className={styles.graph_image_container}>
-                    <img src={graphImage} alt='chart' />
-                </div> */}
             </div>
         </div>
     );
