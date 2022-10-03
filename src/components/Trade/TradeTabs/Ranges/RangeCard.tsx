@@ -230,7 +230,7 @@ export default function RangeCard(props: RangeCardProps) {
                     baseQty={position.positionLiqBaseTruncated}
                     quoteQty={position.positionLiqQuoteTruncated}
                     baseTokenCharacter={baseTokenCharacter}
-                    quoteTokenCharacter={baseTokenCharacter}
+                    quoteTokenCharacter={quoteTokenCharacter}
                 />
                 {/* ------------------------------------------------------ */}
                 <Apy amount={position.apy ?? undefined} />
