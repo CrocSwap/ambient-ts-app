@@ -3,9 +3,10 @@ import { useEffect } from 'react';
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
 import { formatDollarAmountAxis } from '../../../../utils/numbers';
+import { FeeChartData } from '../TradeCharts';
 
 interface FreeRateData {
-    feeData: any[];
+    feeData: FeeChartData[] | undefined;
     crosshairData: any[];
     setsubChartValues: React.Dispatch<React.SetStateAction<any>>;
 }
@@ -156,10 +157,10 @@ export default function FeeRateSubChart(props: FreeRateData) {
             const xScale = series.xScale(),
                 xValue = series.crossValue();
 
-            const filtered = data.lenght > 1 ? data.filter((d: any) => xValue(d) != null) : data;
+            const filtered = data.length > 1 ? data.filter((d: any) => xValue(d) != null) : data;
             const nearest = minimum(filtered, (d: any) => Math.abs(point.x - xScale(xValue(d))))[1];
 
-            return nearest !== undefined ? nearest.value : 0;
+            return nearest !== undefined ? nearest?.value : 0;
         };
 
         render();

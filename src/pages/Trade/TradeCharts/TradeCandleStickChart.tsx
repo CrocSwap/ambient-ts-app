@@ -2,9 +2,11 @@ import { DetailedHTMLProps, HTMLAttributes, useEffect, useMemo, useState } from 
 import { CandleData, CandlesByPoolAndDuration } from '../../../utils/state/graphDataSlice';
 import Chart from '../../Chart/Chart';
 import './TradeCandleStickChart.css';
-import logo from '../../../assets/images/logos/ambient_logo.svg';
+
+import candleStikPlaceholder from '../../../assets/images/charts/candlestick2.png';
 import {
     CandleChartData,
+    FeeChartData,
     LiqSnap,
     LiquidityData,
     TvlChartData,
@@ -28,9 +30,9 @@ declare global {
 
 interface ChartData {
     expandTradeTable: boolean;
-    tvlData: any[];
-    volumeData: any[];
-    feeData: any[];
+    // tvlData: any[];
+    // volumeData: any[];
+    // feeData: any[];
     priceData: CandlesByPoolAndDuration | undefined;
     changeState: (isOpen: boolean | undefined, candleData: CandleData | undefined) => void;
     chartItemStates: chartItemStates;
@@ -57,6 +59,7 @@ export interface ChartUtils {
     period: any;
     chartData: CandleChartData[];
     tvlChartData: TvlChartData[];
+    feeChartData: FeeChartData[];
     volumeChartData: VolumeChartData[];
 }
 
@@ -67,13 +70,13 @@ type chartItemStates = {
 };
 
 export default function TradeCandleStickChart(props: ChartData) {
-    const data = {
-        tvlData: props.tvlData,
-        volumeData: props.volumeData,
-        feeData: props.feeData,
-        priceData: props.priceData,
-        liquidityData: props.liquidityData,
-    };
+    // const data = {
+    //     // tvlData: props.tvlData,
+    //     // volumeData: props.volumeData,
+    //     // feeData: props.feeData,
+    //     priceData: props.priceData,
+    //     liquidityData: props.liquidityData,
+    // };
 
     const { denomInBase, baseTokenAddress, chainId /* poolPriceNonDisplay */ } = props;
 
@@ -121,8 +124,9 @@ export default function TradeCandleStickChart(props: ChartData) {
         const chartData: CandleChartData[] = [];
         const tvlChartData: TvlChartData[] = [];
         const volumeChartData: VolumeChartData[] = [];
+        const feeChartData: FeeChartData[] = [];
 
-        console.log(props.priceData);
+        // console.log(props.priceData);
 
         props.priceData?.candles.map((data) => {
             chartData.push({
@@ -145,12 +149,17 @@ export default function TradeCandleStickChart(props: ChartData) {
 
             tvlChartData.push({
                 time: new Date(data.tvlData.time * 1000),
-                value: data.tvlData.interpDistHigher,
+                value: data.tvlData.tvl,
             });
 
             volumeChartData.push({
                 time: new Date(data.time * 1000),
                 value: data.volumeUSD,
+            });
+
+            feeChartData.push({
+                time: new Date(data.time * 1000),
+                value: data.averageLiquidityFee,
             });
         });
 
@@ -159,6 +168,7 @@ export default function TradeCandleStickChart(props: ChartData) {
             chartData: chartData,
             tvlChartData: tvlChartData,
             volumeChartData: volumeChartData,
+            feeChartData: feeChartData,
         };
         setParsedChartData(() => {
             return chartUtils;
@@ -208,9 +218,25 @@ export default function TradeCandleStickChart(props: ChartData) {
         return { liqData: liqData, liqSnapData: liqSnapData };
     }, [props.liquidityData, denomInBase]);
 
+    // cursor change----------------------------------------------
+    function loadingCursor(event: any) {
+        const el = document?.getElementById('hov_text');
+        if (el != null) {
+            el.style.top = event.clientY + 'px';
+            el.style.left = event.clientX + 'px';
+        }
+    }
+
+    const loadingChartElement = document?.getElementById('loading_chart_hover');
+    if (loadingChartElement != null) {
+        loadingChartElement?.addEventListener('mousemove', loadingCursor);
+    }
+    // end of cursor change----------------------------------------------
+
     const loading = (
-        <div className='animatedImg'>
-            <img src={logo} width={110} alt='logo' />
+        <div className='animatedImg_container' id='loading_chart_hover'>
+            <img src={candleStikPlaceholder} className='img_shimmer' />
+            <div id='hov_text'>Fetching chart data...</div>
         </div>
     );
 
@@ -238,9 +264,9 @@ export default function TradeCandleStickChart(props: ChartData) {
                         pinnedMaxPriceDisplayTruncated={props.pinnedMaxPriceDisplayTruncated}
                         spotPriceDisplay={props.spotPriceDisplay}
                         truncatedPoolPrice={props.truncatedPoolPrice}
-                        feeData={data.feeData}
-                        volumeData={data.volumeData}
-                        tvlData={data.tvlData}
+                        // feeData={data.feeData}
+                        // volumeData={data.volumeData}
+                        // tvlData={data.tvlData}
                         chartItemStates={props.chartItemStates}
                         setCurrentData={props.setCurrentData}
                         upBodyColor={props.upBodyColor}
@@ -250,6 +276,9 @@ export default function TradeCandleStickChart(props: ChartData) {
                     />
                 ) : (
                     <>{loading}</>
+                    // <TradeChartsLoading/>
+
+                    // <Animation animData={candleStickLoading} />
                 )}
             </div>
         </>

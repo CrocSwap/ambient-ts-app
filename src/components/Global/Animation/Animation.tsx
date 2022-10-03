@@ -5,10 +5,11 @@ interface AnimationProps {
     animData: Record<string, unknown>;
     width?: number | string;
     height?: number | string;
+    speed?: number;
 }
 
 export default function Animation(props: AnimationProps) {
-    const { loop, animData, width, height } = props;
+    const { loop, animData, width, height, speed } = props;
 
     const chosenWidth = width ? width : '100%';
     const chosenHeight = height ? height : '100%';
@@ -19,7 +20,7 @@ export default function Animation(props: AnimationProps) {
                 loop={loop}
                 animationData={animData}
                 play
-                speed={1}
+                speed={speed ? speed : 1}
                 style={{ width: chosenWidth, height: chosenHeight }}
             />
         </div>
