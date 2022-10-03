@@ -2,11 +2,11 @@ import { useEffect, useState } from 'react';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { ILimitOrderState } from '../../utils/state/graphDataSlice';
 
-interface IOrderDetailsProps {
+interface IOrderRemovalProps {
     limitOrder: ILimitOrderState;
 }
 
-export default function OrderDetails(props: IOrderDetailsProps) {
+export default function OrderRemoval(props: IOrderRemovalProps) {
     const { limitOrder } = props;
 
     const lastBlockNumber = useAppSelector((state) => state.graphData).lastBlock;

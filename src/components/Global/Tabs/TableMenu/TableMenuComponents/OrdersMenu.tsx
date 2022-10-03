@@ -14,11 +14,12 @@ import { DefaultTooltip } from '../../../StyledTooltip/StyledTooltip';
 import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
 import { ILimitOrderState } from '../../../../../utils/state/graphDataSlice';
 import OrderDetails from '../../../../OrderDetails/OrderDetails';
+import OrderRemoval from '../../../../OrderRemoval/OrderRemoval';
 
 // interface for React functional component props
 interface OrdersMenuIF {
     limitOrder: ILimitOrderState;
-    openGlobalModal: (content: React.ReactNode) => void;
+    openGlobalModal: (content: React.ReactNode, title?: string) => void;
     closeGlobalModal: () => void;
     isOwnerActiveAccount: boolean;
 }
@@ -69,8 +70,10 @@ export default function OrdersMenu(props: OrdersMenuIF) {
     );
     // -----------------END OF SNACKBAR----------------
 
-    const openRemoveModal = () => openGlobalModal(<OrderDetails limitOrder={limitOrder} />);
-    const openDetailsModal = () => openGlobalModal(<OrderDetails limitOrder={limitOrder} />);
+    const openRemoveModal = () =>
+        openGlobalModal(<OrderRemoval limitOrder={limitOrder} />, 'Limit Order Removal');
+    const openDetailsModal = () =>
+        openGlobalModal(<OrderDetails limitOrder={limitOrder} />, 'Limit Order Details');
 
     // switch (currentModal) {
     //     case 'remove':
