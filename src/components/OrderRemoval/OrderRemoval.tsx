@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { useProcessOrder } from '../../utils/hooks/useProcessOrder';
 import { ILimitOrderState } from '../../utils/state/graphDataSlice';
+import RemoveRangeButton from '../RemoveRange/RemoveRangeButton/RemoveRangeButton';
+import RemoveOrderButton from './RemoveOrderButton/RemoveOrderButton';
 import RemoveOrderTokenHeader from './RemoveOrderHeader/RemoveOrderTokenHeader';
 import RemoveOrderInfo from './RemoveOrderInfo/RemoveOrderInfo';
 import RemoveOrderWidth from './RemoveOrderWidth/RemoveOrderWidth';
@@ -35,6 +37,8 @@ export default function OrderRemoval(props: IOrderRemovalProps) {
 
     const [removalPercentage, setRemovalPercentage] = useState(100);
 
+    const removeFn = () => console.log('order removed');
+
     return (
         <div>
             <RemoveOrderTokenHeader
@@ -65,6 +69,7 @@ export default function OrderRemoval(props: IOrderRemovalProps) {
                 positionLiqTotalUSD={positionLiqTotalUSD}
                 positionLiquidity={positionLiquidity}
             />
+            <RemoveOrderButton removeFn={removeFn} disabled={true} title='…' />
         </div>
     );
 }

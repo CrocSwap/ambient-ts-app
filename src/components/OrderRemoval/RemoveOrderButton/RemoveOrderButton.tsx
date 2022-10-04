@@ -1,6 +1,6 @@
 import Button from '../../Global/Button/Button';
-
-interface IRemoveRangeButtonProps {
+import styles from './RemoveOrderButton.module.css';
+interface IRemoveOrderButtonProps {
     removeFn: () => void;
 
     title: string;
@@ -8,11 +8,11 @@ interface IRemoveRangeButtonProps {
     disabled?: boolean;
 }
 
-export default function RemoveRangeButton(props: IRemoveRangeButtonProps) {
+export default function RemoveOrderButton(props: IRemoveOrderButtonProps) {
     const { removeFn, title } = props;
 
     return (
-        <div>
+        <div className={styles.button_container}>
             <Button title={title} disabled={props.disabled} action={removeFn} />
         </div>
     );
