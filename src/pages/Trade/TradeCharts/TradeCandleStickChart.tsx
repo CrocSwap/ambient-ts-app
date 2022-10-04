@@ -97,7 +97,6 @@ export default function TradeCandleStickChart(props: ChartData) {
 
     useEffect(() => {
         setIsLoading(true);
-        console.log('setIsLoading(true)');
 
         parseData();
     }, [activeChartPeriod, denominationsInBase]);
@@ -113,8 +112,6 @@ export default function TradeCandleStickChart(props: ChartData) {
         const tvlChartData: TvlChartData[] = [];
         const volumeChartData: VolumeChartData[] = [];
         const feeChartData: FeeChartData[] = [];
-
-        // console.log(props.candleData);
 
         props.candleData?.candles.map((data) => {
             chartData.push({
@@ -160,7 +157,6 @@ export default function TradeCandleStickChart(props: ChartData) {
         };
 
         setParsedChartData(() => {
-            console.log('setParsedChartData');
             return chartUtils;
         });
     };

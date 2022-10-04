@@ -52,9 +52,6 @@ interface ChartData {
     pinnedMaxPriceDisplayTruncated: number | undefined;
     truncatedPoolPrice: number | undefined;
     spotPriceDisplay: string | undefined;
-    // feeData: any[];
-    // volumeData: any[];
-    // tvlData: any[];
     chartItemStates: chartItemStates;
     setCurrentData: React.Dispatch<React.SetStateAction<CandleChartData | undefined>>;
     upBodyColor: string;
@@ -1560,6 +1557,17 @@ export default function Chart(props: ChartData) {
                     scaleData.xScaleCopy.range([0, event.detail.width]);
                     scaleData.yScaleCopy.range([event.detail.height, 0]);
                     svg.call(zoomUtils.zoom);
+                });
+
+                d3.select(d3PlotArea.current).on('measure.bandwidth', function (event: any) {
+                    const { width } = event.detail;
+                    console.log(parsedChartData?.period);
+                    barSeries.bandwidth(
+                        width /
+                            (60 *
+                                (parsedChartData?.period /
+                                    (parsedChartData?.period > 1000 ? 6000 : 1500))),
+                    );
                 });
 
                 d3.select(d3PlotArea.current).on('mousemove', function (event: any) {
