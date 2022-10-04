@@ -11,19 +11,19 @@ import { setToken } from '../../../../utils/state/temp';
 
 interface PortfolioTransferProps {
     crocEnv: CrocEnv | undefined;
-    connectedAccount: string;
+    // connectedAccount: string;
     openGlobalModal: (content: React.ReactNode, title?: string) => void;
     closeGlobalModal: () => void;
     tempTokenSelection: TokenIF;
 }
 
 export default function Transfer(props: PortfolioTransferProps) {
-    const { crocEnv, connectedAccount, openGlobalModal, closeGlobalModal, tempTokenSelection } =
-        props;
+    const { crocEnv, openGlobalModal, closeGlobalModal, tempTokenSelection } = props;
 
     const dispatch = useAppDispatch();
 
     const [transferQty, setTransferQty] = useState<number | undefined>();
+    const [transferToAddress, setTransferToAddress] = useState<string | undefined>();
 
     const chooseToken = (tok: TokenIF) => {
         console.log(tok);
@@ -44,8 +44,8 @@ export default function Transfer(props: PortfolioTransferProps) {
     );
 
     const transferFn = () => {
-        if (crocEnv && transferQty) {
-            crocEnv.token(tempTokenSelection.address).transfer(transferQty, connectedAccount);
+        if (crocEnv && transferQty && transferToAddress) {
+            crocEnv.token(tempTokenSelection.address).transfer(transferQty, transferToAddress);
             // crocEnv.token(tempTokenSelection.address).deposit(1, wallet.address);
         }
     };
@@ -55,7 +55,10 @@ export default function Transfer(props: PortfolioTransferProps) {
             <div className={styles.info_text}>
                 Transfer tokens to another account within the exchange
             </div>
-            <TransferAddressInput fieldId='exchange-balance-transfer-address' />
+            <TransferAddressInput
+                fieldId='exchange-balance-transfer-address'
+                setTransferToAddress={setTransferToAddress}
+            />
             <TransferCurrencySelector
                 fieldId='exchange-balance-transfer'
                 onClick={() => openGlobalModal(chooseTokenDiv)}

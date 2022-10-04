@@ -66,7 +66,7 @@ export default function ExchangeBalance(props: ExchangeBalanceProps) {
             content: (
                 <Transfer
                     crocEnv={crocEnv}
-                    connectedAccount={connectedAccount}
+                    // connectedAccount={connectedAccount}
                     openGlobalModal={openGlobalModal}
                     closeGlobalModal={closeGlobalModal}
                     tempTokenSelection={tempTokenSelection}
