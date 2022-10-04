@@ -48,8 +48,32 @@ export default function ExchangeBalance(props: ExchangeBalanceProps) {
             ),
             icon: depositImage,
         },
-        { label: 'Withdraw', content: <Withdraw />, icon: withdrawImage },
-        { label: 'Transfer', content: <Transfer />, icon: transferImage },
+        {
+            label: 'Withdraw',
+            content: (
+                <Withdraw
+                    crocEnv={crocEnv}
+                    connectedAccount={connectedAccount}
+                    openGlobalModal={openGlobalModal}
+                    closeGlobalModal={closeGlobalModal}
+                    tempTokenSelection={tempTokenSelection}
+                />
+            ),
+            icon: withdrawImage,
+        },
+        {
+            label: 'Transfer',
+            content: (
+                <Transfer
+                    crocEnv={crocEnv}
+                    connectedAccount={connectedAccount}
+                    openGlobalModal={openGlobalModal}
+                    closeGlobalModal={closeGlobalModal}
+                    tempTokenSelection={tempTokenSelection}
+                />
+            ),
+            icon: transferImage,
+        },
     ];
 
     return (
