@@ -139,7 +139,6 @@ export default function Chart(props: ChartData) {
     // Rules
     const [isChartSelected, setIsChartSelected] = useState<boolean>(false);
     const [isLineSwapped, setIsLineSwapped] = useState<boolean>(false);
-    const [drawControl, setDrawControl] = useState(false);
     const [dragControl, setDragControl] = useState(false);
 
     // Data
@@ -155,7 +154,6 @@ export default function Chart(props: ChartData) {
 
     // Utils
     const [zoomUtils, setZoomUtils] = useState<any>();
-    const [zoomStatus, setZoomStatus] = useState();
     const [scaleData, setScaleData] = useState<any>();
     const [dragRange, setDragRange] = useState<any>();
     const [dragLimit, setDragLimit] = useState<any>();
@@ -1546,7 +1544,6 @@ export default function Chart(props: ChartData) {
                     marketJoin(svg, [targets.market]).call(horizontalLine);
                     limitJoin(svg, [targets.limit]).call(horizontalLine);
                     candleJoin(svg, [chartData]).call(candlestick);
-                    setDrawControl(event);
                     setDragControl(true);
                 });
 
