@@ -63,9 +63,34 @@ export default function OrderAccordions(props: OrderAccordionsPropsIF) {
         </div>
     );
 
+    const priceDisplay = (
+        <div className={styles.price}>
+            <p>{truncatedDisplayPrice}</p>
+        </div>
+    );
+    const sideDisplay = (
+        <div className={styles.side}>
+            <p>{side}</p>
+        </div>
+    );
+    const typeDisplay = (
+        <div className={styles.type}>
+            <p>{'type'}</p>
+        </div>
+    );
+    const valueDisplay = (
+        <div className={styles.value}>
+            <p>{usdValue}</p>
+        </div>
+    );
+
     const headerData = (
         <div className={styles.header_container}>
             {walletAndIdDisplay}
+            {priceDisplay}
+            {sideDisplay}
+            {typeDisplay}
+            {valueDisplay}
             {baseTokenDisplay}
             {quoteTokenDisplay}
             {status}

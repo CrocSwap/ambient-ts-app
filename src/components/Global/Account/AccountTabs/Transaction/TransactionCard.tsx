@@ -12,6 +12,7 @@ import Value from '../../../Tabs/Value/Value';
 import styles from './TransactionCard.module.css';
 // import AccountPoolDisplay from '../../../Tabs/AccountPoolDisplay/AccountPoolDisplay';
 import AccountTokensDisplay from '../../../Tabs/AccountTokensDisplay/AccountTokensDisplay';
+import { useEffect, useState } from 'react';
 // import TransactionsMenu from '../../../Tabs/TableMenu/TableMenuComponents/TransactionsMenu';
 
 interface TransactionProps {
@@ -43,46 +44,163 @@ export default function TransactionCard(props: TransactionProps) {
 
     const baseTokenCharacter = tx.baseSymbol ? getUnicodeCharacter(tx.baseSymbol) : '';
     const quoteTokenCharacter = tx.quoteSymbol ? getUnicodeCharacter(tx.quoteSymbol) : '';
+    const [isAmbient, setIsAmbient] = useState<boolean>(false);
 
-    const invPriceDecimalCorrected = tx.invPriceDecimalCorrected;
+    const [truncatedDisplayPrice, setTruncatedDisplayPrice] = useState<string | undefined>();
+    const [truncatedLowDisplayPrice, setTruncatedLowDisplayPrice] = useState<string | undefined>();
+    const [truncatedHighDisplayPrice, setTruncatedHighDisplayPrice] = useState<
+        string | undefined
+    >();
 
-    const invertedPriceTruncated = invPriceDecimalCorrected
-        ? invPriceDecimalCorrected === 0
-            ? '0'
-            : invPriceDecimalCorrected < 0.0001
-            ? invPriceDecimalCorrected.toExponential(2)
-            : invPriceDecimalCorrected < 2
-            ? invPriceDecimalCorrected.toPrecision(3)
-            : invPriceDecimalCorrected >= 100000
-            ? formatAmount(invPriceDecimalCorrected)
-            : invPriceDecimalCorrected.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              })
-        : '';
-    const truncatedDisplayPrice = quoteTokenCharacter + invertedPriceTruncated;
+    useEffect(() => {
+        if (tx.entityType === 'limitOrder') {
+            if (tx.limitPriceDecimalCorrected && tx.invLimitPriceDecimalCorrected) {
+                const invPriceDecimalCorrected = tx.invLimitPriceDecimalCorrected;
 
-    const priceType = tx.isBuy ? 'priceBuy' : 'priceSell';
+                const invertedPriceTruncated =
+                    invPriceDecimalCorrected === 0
+                        ? '0.00'
+                        : invPriceDecimalCorrected < 0.0001
+                        ? invPriceDecimalCorrected.toExponential(2)
+                        : invPriceDecimalCorrected < 2
+                        ? invPriceDecimalCorrected.toPrecision(3)
+                        : invPriceDecimalCorrected >= 100000
+                        ? formatAmount(invPriceDecimalCorrected)
+                        : invPriceDecimalCorrected.toLocaleString(undefined, {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2,
+                          });
+                setTruncatedDisplayPrice(quoteTokenCharacter + invertedPriceTruncated);
+            }
+        } else if (tx.entityType === 'liqchange') {
+            if (
+                tx.bidTickPriceDecimalCorrected &&
+                tx.bidTickInvPriceDecimalCorrected &&
+                tx.askTickPriceDecimalCorrected &&
+                tx.askTickInvPriceDecimalCorrected
+            ) {
+                const bidTickPriceDecimalCorrected = tx.bidTickPriceDecimalCorrected;
+                const bidTickInvPriceDecimalCorrected = tx.bidTickInvPriceDecimalCorrected;
+                const askTickInvPriceDecimalCorrected = tx.askTickInvPriceDecimalCorrected;
+
+                if (
+                    bidTickInvPriceDecimalCorrected === 1000000000000 ||
+                    bidTickPriceDecimalCorrected === 1e-12 ||
+                    bidTickPriceDecimalCorrected === 0
+                ) {
+                    setIsAmbient(true);
+                } else {
+                    setIsAmbient(false);
+                }
+
+                const invertedBidPriceTruncated =
+                    bidTickInvPriceDecimalCorrected === 1000000000000
+                        ? '∞'
+                        : bidTickInvPriceDecimalCorrected === 0
+                        ? '0.00'
+                        : bidTickInvPriceDecimalCorrected < 0.001
+                        ? bidTickInvPriceDecimalCorrected.toExponential(1)
+                        : bidTickInvPriceDecimalCorrected < 2
+                        ? bidTickInvPriceDecimalCorrected.toLocaleString(undefined, {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2,
+                          })
+                        : bidTickInvPriceDecimalCorrected >= 1000
+                        ? formatAmount(bidTickInvPriceDecimalCorrected, 1)
+                        : bidTickInvPriceDecimalCorrected.toLocaleString(undefined, {
+                              minimumFractionDigits: 0,
+                              maximumFractionDigits: 0,
+                          });
+
+                const invertedAskPriceTruncated =
+                    askTickInvPriceDecimalCorrected === 1000000000000
+                        ? '0.00'
+                        : askTickInvPriceDecimalCorrected === 0
+                        ? '∞'
+                        : askTickInvPriceDecimalCorrected < 0.001
+                        ? askTickInvPriceDecimalCorrected.toExponential(1)
+                        : askTickInvPriceDecimalCorrected < 2
+                        ? // ? askTickInvPriceDecimalCorrected.toPrecision(2)
+                          askTickInvPriceDecimalCorrected.toLocaleString(undefined, {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2,
+                          })
+                        : askTickInvPriceDecimalCorrected >= 1000
+                        ? formatAmount(askTickInvPriceDecimalCorrected, 1)
+                        : askTickInvPriceDecimalCorrected.toLocaleString(undefined, {
+                              minimumFractionDigits: 0,
+                              maximumFractionDigits: 0,
+                          });
+
+                const truncatedLowDisplayPrice = `${quoteTokenCharacter}${invertedAskPriceTruncated}`;
+
+                const truncatedHighDisplayPrice = `${quoteTokenCharacter}${invertedBidPriceTruncated}`;
+
+                setTruncatedLowDisplayPrice(truncatedLowDisplayPrice);
+                setTruncatedHighDisplayPrice(truncatedHighDisplayPrice);
+            } else {
+                setTruncatedLowDisplayPrice(undefined);
+                setTruncatedHighDisplayPrice(undefined);
+            }
+        } else {
+            if (tx.priceDecimalCorrected && tx.invPriceDecimalCorrected) {
+                const invPriceDecimalCorrected = tx.invPriceDecimalCorrected;
+
+                const invertedPriceTruncated =
+                    invPriceDecimalCorrected === 0
+                        ? '0.00'
+                        : invPriceDecimalCorrected < 0.0001
+                        ? invPriceDecimalCorrected.toExponential(2)
+                        : invPriceDecimalCorrected < 2
+                        ? invPriceDecimalCorrected.toPrecision(3)
+                        : invPriceDecimalCorrected >= 100000
+                        ? formatAmount(invPriceDecimalCorrected)
+                        : invPriceDecimalCorrected.toLocaleString(undefined, {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2,
+                          });
+
+                const truncatedDisplayPrice = quoteTokenCharacter + invertedPriceTruncated;
+
+                setTruncatedDisplayPrice(truncatedDisplayPrice);
+            } else {
+                setTruncatedDisplayPrice(undefined);
+            }
+        }
+    }, [JSON.stringify(tx)]);
+
+    const priceType =
+        tx.entityType === 'liqchange'
+            ? 'range'
+            : !tx.isBuy
+            ? // : (isDenomBase && !tx.isBuy) || (!isDenomBase && tx.isBuy)
+              'priceBuy'
+            : 'priceSell';
 
     const sideType =
-        tx.entityType === 'swap' || tx.entityType === 'limitOrder'
-            ? tx.isBuy
-                ? 'buy'
-                : 'sell'
-            : tx.changeType === 'burn'
+        tx.entityType === 'liqchange'
+            ? parseFloat(tx.quoteFlow) > 0
+                ? 'add'
+                : 'remove'
+            : tx.entityType === 'limitOrder'
+            ? tx.changeType === 'burn'
+                ? 'remove'
+                : 'add'
+            : tx.isBuy
             ? 'sell'
             : 'buy';
 
     const transactionTypeSide =
-        tx.entityType === 'swap'
-            ? 'market'
+        tx.entityType === 'liqchange'
+            ? tx.changeType === 'mint'
+                ? 'rangeAdd'
+                : 'rangeRemove'
             : tx.entityType === 'limitOrder'
             ? 'limit'
-            : tx.changeType === 'burn'
-            ? 'rangeRemove'
-            : 'rangeAdd';
+            : 'market';
 
     const usdValueNum = tx.valueUSD;
+    const totalValueUSD = tx.totalValueUSD;
 
     const usdValueTruncated = !usdValueNum
         ? undefined
@@ -90,15 +208,28 @@ export default function TransactionCard(props: TransactionProps) {
         ? usdValueNum.toExponential(2)
         : usdValueNum < 2
         ? usdValueNum.toPrecision(3)
-        : usdValueNum >= 100000
-        ? formatAmount(usdValueNum)
+        : usdValueNum >= 10000
+        ? formatAmount(usdValueNum, 1)
         : // ? baseLiqDisplayNum.toExponential(2)
           usdValueNum.toLocaleString(undefined, {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
           });
 
-    const baseFlowDisplayNum = parseFloat(toDisplayQty(tx.baseFlow, tx.baseDecimals));
+    const totalValueUSDTruncated = !totalValueUSD
+        ? undefined
+        : totalValueUSD < 0.0001
+        ? totalValueUSD.toExponential(2)
+        : totalValueUSD < 2
+        ? totalValueUSD.toPrecision(3)
+        : totalValueUSD >= 10000
+        ? formatAmount(totalValueUSD, 1)
+        : // ? baseLiqDisplayNum.toExponential(2)
+          totalValueUSD.toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+          });
+    const baseFlowDisplayNum = parseFloat(toDisplayQty(tx.baseFlow ?? '0', tx.baseDecimals));
     const baseFlowAbsNum = Math.abs(baseFlowDisplayNum);
     const isBaseFlowNegative = baseFlowDisplayNum > 0;
     const baseFlowDisplayTruncated =
@@ -119,7 +250,7 @@ export default function TransactionCard(props: TransactionProps) {
         ? `(${baseFlowDisplayTruncated})`
         : baseFlowDisplayTruncated;
 
-    const quoteFlowDisplayNum = parseFloat(toDisplayQty(tx.quoteFlow, tx.quoteDecimals));
+    const quoteFlowDisplayNum = parseFloat(toDisplayQty(tx.quoteFlow ?? '0', tx.quoteDecimals));
     const quoteFlowAbsNum = Math.abs(quoteFlowDisplayNum);
     const isQuoteFlowNegative = quoteFlowDisplayNum > 0;
     const quoteFlowDisplayTruncated =
@@ -154,7 +285,13 @@ export default function TransactionCard(props: TransactionProps) {
                 />
                 {/* ------------------------------------------------------ */}
 
-                <Price priceType={priceType} displayPrice={truncatedDisplayPrice} />
+                <Price
+                    priceType={priceType}
+                    isAmbient={isAmbient}
+                    displayPrice={truncatedDisplayPrice}
+                    truncatedLowDisplayPrice={truncatedLowDisplayPrice}
+                    truncatedHighDisplayPrice={truncatedHighDisplayPrice}
+                />
                 {/* ------------------------------------------------------ */}
 
                 <TransactionTypeSide
@@ -166,7 +303,15 @@ export default function TransactionCard(props: TransactionProps) {
                 />
                 {/* ------------------------------------------------------ */}
 
-                <Value usdValue={usdValueTruncated ? '$' + usdValueTruncated : '…'} />
+                <Value
+                    usdValue={
+                        totalValueUSDTruncated
+                            ? '$' + totalValueUSDTruncated
+                            : usdValueTruncated
+                            ? '$' + usdValueTruncated
+                            : '…'
+                    }
+                />
                 <TokenQty
                     baseTokenCharacter={baseTokenCharacter}
                     quoteTokenCharacter={quoteTokenCharacter}

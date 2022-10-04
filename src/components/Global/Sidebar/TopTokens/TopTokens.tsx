@@ -19,7 +19,6 @@ export default function TopTokens(props: TopTokensProps) {
         </div>
     );
 
-    // const mapItems = [1, 2, 3, 4, 5, 6, 7];
     return (
         <div className={styles.container}>
             {header}

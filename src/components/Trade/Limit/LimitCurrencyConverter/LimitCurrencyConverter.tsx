@@ -1,11 +1,9 @@
 // START: Import React and Dongles
 import { ChangeEvent, Dispatch, SetStateAction, useEffect, useState } from 'react';
-
+import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../../../utils/hooks/reduxToolkit';
-
 import {
-    setTokenA,
-    setTokenB,
+    reverseTokensInRTK,
     setIsTokenAPrimary,
     setPrimaryQuantity,
 } from '../../../../utils/state/tradeDataSlice';
@@ -154,15 +152,17 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
         }
     }, []);
 
-    const handleArrowClick = (): void => {
-        reverseTokens();
-    };
+    const navigate = useNavigate();
 
     const reverseTokens = (): void => {
-        if (tokenPair) {
-            dispatch(setTokenA(tokenPair.dataTokenB));
-            dispatch(setTokenB(tokenPair.dataTokenA));
-        }
+        dispatch(reverseTokensInRTK());
+
+        navigate(
+            '/trade/limit/chain=0x5&tokenA=' +
+                tokenPair.dataTokenB.address +
+                '&tokenB=' +
+                tokenPair.dataTokenA.address,
+        );
         if (!isTokenAPrimaryLocal) {
             setTokenAQtyLocal(tokenBQtyLocal);
             setTokenAInputQty(tokenBQtyLocal);
@@ -435,7 +435,7 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
 
             <div
                 className={styles.arrow_container}
-                onClick={handleArrowClick}
+                onClick={reverseTokens}
                 style={{ cursor: 'pointer' }}
             >
                 <IconWithTooltip title='Reverse tokens' placement='left'>

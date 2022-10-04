@@ -47,6 +47,10 @@ export default function CustomTokens(props: CustomTokensPropsIF) {
         localStorage.setItem('user', JSON.stringify(user));
     }
 
+    // TODO:  circle back and refactor this function later to navigate with URL params
+    // TODO:  ... can't do this until we have Doug's token universe code in place and
+    // TODO:  ... and this exists to handle tokens for which we have no internal reference
+
     function importToken(newToken: TokenIF) {
         switch (tokenToUpdate) {
             case 'A':

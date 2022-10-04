@@ -8,8 +8,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 interface SidebarRecentTransactionsPropsIF {
     // showSidebar: boolean;
     mostRecentTransactions: ITransaction[];
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    coinGeckoTokenMap?: Map<string, TokenIF>;
+    coinGeckoTokenMap: Map<string, TokenIF>;
     chainId: string;
     currentTxActiveInTransactions: string;
     setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;

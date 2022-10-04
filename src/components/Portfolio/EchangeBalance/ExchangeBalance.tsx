@@ -10,15 +10,44 @@ import depositImage from '../../../assets/images/sidebarImages/deposit.svg';
 import TabComponent from '../../Global/TabComponent/TabComponent';
 
 import { SetStateAction, Dispatch } from 'react';
+import { TokenIF } from '../../../utils/interfaces/TokenIF';
+import { CrocEnv } from '@crocswap-libs/sdk';
 
 interface ExchangeBalanceProps {
+    crocEnv: CrocEnv | undefined;
+    connectedAccount: string;
     setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
     setOutsideControl: Dispatch<SetStateAction<boolean>>;
+    openGlobalModal: (content: React.ReactNode, title?: string) => void;
+    closeGlobalModal: () => void;
+    tempTokenSelection: TokenIF;
 }
 
 export default function ExchangeBalance(props: ExchangeBalanceProps) {
+    const {
+        crocEnv,
+        connectedAccount,
+        openGlobalModal,
+        closeGlobalModal,
+        setSelectedOutsideTab,
+        setOutsideControl,
+        tempTokenSelection,
+    } = props;
+
     const accountData = [
-        { label: 'Deposit', content: <Deposit />, icon: depositImage },
+        {
+            label: 'Deposit',
+            content: (
+                <Deposit
+                    crocEnv={crocEnv}
+                    connectedAccount={connectedAccount}
+                    openGlobalModal={openGlobalModal}
+                    closeGlobalModal={closeGlobalModal}
+                    tempTokenSelection={tempTokenSelection}
+                />
+            ),
+            icon: depositImage,
+        },
         { label: 'Withdraw', content: <Withdraw />, icon: withdrawImage },
         { label: 'Transfer', content: <Transfer />, icon: transferImage },
     ];
@@ -31,8 +60,8 @@ export default function ExchangeBalance(props: ExchangeBalanceProps) {
                 <TabComponent
                     data={accountData}
                     rightTabOptions={false}
-                    setSelectedOutsideTab={props.setSelectedOutsideTab}
-                    setOutsideControl={props.setOutsideControl}
+                    setSelectedOutsideTab={setSelectedOutsideTab}
+                    setOutsideControl={setOutsideControl}
                     outsideControl={false}
                     selectedOutsideTab={0}
                 />

@@ -6,6 +6,7 @@ import pools from '../../state/pools/reducer';
 import protocol from '../../state/protocol/reducer';
 import receiptDataReducer from './receiptDataSlice';
 import userDataReducer from './userDataSlice';
+import tempReducer from './temp';
 
 export const store = configureStore({
     reducer: {
@@ -16,6 +17,7 @@ export const store = configureStore({
         protocol,
         receiptData: receiptDataReducer,
         userData: userDataReducer,
+        temp: tempReducer
     },
 });
 
