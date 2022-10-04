@@ -6,15 +6,11 @@ import RemoveOrderTokenHeader from './RemoveOrderTokenHeader/RemoveOrderTokenHea
 import RemoveOrderInfo from './RemoveOrderInfo/RemoveOrderInfo';
 import RemoveOrderWidth from './RemoveOrderWidth/RemoveOrderWidth';
 import styles from './OrderRemoval.module.css';
-import {
-    CircleLoader,
-    CircleLoaderFailed,
-} from '../Global/LoadingAnimations/CircleLoader/CircleLoader';
+import { CircleLoaderFailed } from '../Global/LoadingAnimations/CircleLoader/CircleLoader';
 import Button from '../Global/Button/Button';
 import Animation from '../Global/Animation/Animation';
 import completed from '../../assets/animations/completed.json';
 import { FiExternalLink } from 'react-icons/fi';
-import { BsArrowLeft } from 'react-icons/bs';
 import RemoveOrderModalHeader from './RemoveOrderModalHeader/RemoveOrderModalHeader';
 interface IOrderRemovalProps {
     limitOrder: ILimitOrderState;
@@ -67,6 +63,7 @@ export default function OrderRemoval(props: IOrderRemovalProps) {
 
     const removeFn = () => {
         setShowConfirmation(true);
+        setShowSettings(false);
         console.log('order removed');
         // rorder removal function here
     };
@@ -143,12 +140,11 @@ export default function OrderRemoval(props: IOrderRemovalProps) {
 
     const confirmationContent = (
         <div className={styles.confirmation_container}>
-            {showConfirmation && (
-                // {showConfirmation && !removalDenied && (
+            {/* {showConfirmation && (
                 <div className={styles.button} onClick={resetConfirmation}>
                     <BsArrowLeft size={30} />
                 </div>
-            )}
+            )} */}
             <div className={styles.confirmation_content}>{currentConfirmationData}</div>
         </div>
     );
@@ -170,6 +166,7 @@ export default function OrderRemoval(props: IOrderRemovalProps) {
                 setShowSettings={setShowSettings}
                 onGoBack={showSettings ? () => setShowSettings(false) : null}
             />
+
             <RemoveOrderTokenHeader
                 isDenomBase={isDenomBase}
                 isOrderFilled={isOrderFilled}
@@ -199,6 +196,7 @@ export default function OrderRemoval(props: IOrderRemovalProps) {
                 positionLiquidity={positionLiquidity}
             />
             <RemoveOrderButton removeFn={removeFn} disabled={false} title='Show Example Submit' />
+            <button onClick={() => setNewRemovalTransactionHash('fake tx')}>fake tx hash</button>
         </div>
     );
 }
