@@ -3,6 +3,7 @@ import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { useProcessOrder } from '../../utils/hooks/useProcessOrder';
 import { ILimitOrderState } from '../../utils/state/graphDataSlice';
 import RemoveOrderTokenHeader from './RemoveOrderHeader/RemoveOrderTokenHeader';
+import RemoveOrderWidth from './RemoveOrderWidth/RemoveOrderWidth';
 
 interface IOrderRemovalProps {
     limitOrder: ILimitOrderState;
@@ -28,6 +29,8 @@ export default function OrderRemoval(props: IOrderRemovalProps) {
         quoteTokenLogo,
     } = useProcessOrder(limitOrder);
 
+    const [removalPercentage, setRemovalPercentage] = useState(100);
+
     return (
         <div>
             <RemoveOrderTokenHeader
@@ -37,6 +40,10 @@ export default function OrderRemoval(props: IOrderRemovalProps) {
                 quoteTokenSymbol={quoteTokenSymbol}
                 baseTokenLogoURI={baseTokenLogo}
                 quoteTokenLogoURI={quoteTokenLogo}
+            />
+            <RemoveOrderWidth
+                removalPercentage={removalPercentage}
+                setRemovalPercentage={setRemovalPercentage}
             />
             {/* <div>Time Updated: {lastUpdatedTime}</div> */}
             <div>Owner: {userNameToDisplay}</div>
