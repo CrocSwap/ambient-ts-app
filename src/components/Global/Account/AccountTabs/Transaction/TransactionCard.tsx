@@ -36,6 +36,8 @@ export default function TransactionCard(props: TransactionProps) {
     const { tx } = props;
     // console.log({ tx });
 
+    if (tx.changeType === 'fill') return null;
+
     const baseTokenSymbol = tx.baseSymbol;
     const quoteTokenSymbol = tx.quoteSymbol;
 
@@ -60,7 +62,7 @@ export default function TransactionCard(props: TransactionProps) {
                 const invertedPriceTruncated =
                     invPriceDecimalCorrected === 0
                         ? '0.00'
-                        : invPriceDecimalCorrected < 0.0001
+                        : invPriceDecimalCorrected < 0.001
                         ? invPriceDecimalCorrected.toExponential(2)
                         : invPriceDecimalCorrected < 2
                         ? invPriceDecimalCorrected.toPrecision(3)
@@ -206,7 +208,7 @@ export default function TransactionCard(props: TransactionProps) {
 
     const usdValueTruncated = !usdValueNum
         ? undefined
-        : usdValueNum < 0.0001
+        : usdValueNum < 0.001
         ? usdValueNum.toExponential(2)
         : usdValueNum < 2
         ? usdValueNum.toPrecision(3)
@@ -220,7 +222,7 @@ export default function TransactionCard(props: TransactionProps) {
 
     const totalValueUSDTruncated = !totalValueUSD
         ? undefined
-        : totalValueUSD < 0.0001
+        : totalValueUSD < 0.001
         ? totalValueUSD.toExponential(2)
         : totalValueUSD < 2
         ? totalValueUSD.toPrecision(3)
@@ -237,7 +239,7 @@ export default function TransactionCard(props: TransactionProps) {
             ? undefined
             : totalFlowAbsNum === 0
             ? '0.00'
-            : totalFlowAbsNum < 0.0001
+            : totalFlowAbsNum < 0.001
             ? totalFlowAbsNum.toExponential(2)
             : totalFlowAbsNum < 2
             ? totalFlowAbsNum.toPrecision(3)
@@ -255,7 +257,7 @@ export default function TransactionCard(props: TransactionProps) {
     const baseFlowDisplayTruncated =
         baseFlowAbsNum === 0
             ? '0.00'
-            : baseFlowAbsNum < 0.0001
+            : baseFlowAbsNum < 0.001
             ? baseFlowAbsNum.toExponential(2)
             : baseFlowAbsNum < 2
             ? baseFlowAbsNum.toPrecision(3)
@@ -280,7 +282,7 @@ export default function TransactionCard(props: TransactionProps) {
     const quoteFlowDisplayTruncated =
         quoteFlowAbsNum === 0
             ? '0.00'
-            : quoteFlowAbsNum < 0.0001
+            : quoteFlowAbsNum < 0.001
             ? quoteFlowAbsNum.toExponential(2)
             : quoteFlowAbsNum < 2
             ? quoteFlowAbsNum.toPrecision(3)
