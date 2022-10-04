@@ -666,11 +666,10 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
                         expandTradeTable={expandTradeTable}
                         // volumeData={formattedVolumeData}
                         // feeData={formattedFeesUSD}
-                        priceData={props.candleData}
+                        candleData={props.candleData}
                         changeState={props.changeState}
                         chartItemStates={chartItemStates}
                         limitPrice={props.limitPrice}
-                        denomInBase={denomInBase}
                         liquidityData={props.liquidityData}
                         isAdvancedModeActive={props.isAdvancedModeActive}
                         simpleRangeWidth={props.simpleRangeWidth}

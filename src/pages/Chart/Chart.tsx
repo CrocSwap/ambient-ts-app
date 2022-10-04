@@ -41,7 +41,7 @@ type chartItemStates = {
 };
 interface ChartData {
     expandTradeTable: boolean;
-    priceData: ChartUtils | undefined;
+    candleData: ChartUtils | undefined;
     liquidityData: any;
     changeState: (isOpen: boolean | undefined, candleData: CandleData | undefined) => void;
     denomInBase: boolean;
@@ -62,6 +62,7 @@ interface ChartData {
     downBodyColor: string;
     downBorderColor: string;
     isCandleSelected: boolean | undefined;
+    isCandleAdded: boolean | undefined;
 }
 
 export default function Chart(props: ChartData) {
@@ -73,6 +74,7 @@ export default function Chart(props: ChartData) {
         simpleRangeWidth,
         spotPriceDisplay,
         expandTradeTable,
+        isCandleAdded,
     } = props;
 
     const tradeData = useAppSelector((state) => state.tradeData);
@@ -82,7 +84,7 @@ export default function Chart(props: ChartData) {
     const { showFeeRate, showTvl, showVolume } = props.chartItemStates;
     const { upBodyColor, upBorderColor, downBodyColor, downBorderColor, isCandleSelected } = props;
 
-    const parsedChartData = props.priceData;
+    const parsedChartData = props.candleData;
 
     const d3Container = useRef(null);
     const d3PlotArea = useRef(null);
@@ -165,17 +167,17 @@ export default function Chart(props: ChartData) {
         setRanges((prevState) => {
             const newTargets = [...prevState];
             newTargets.filter((target: any) => target.name === 'Max')[0].value =
-                props.priceData !== undefined
+                props.candleData !== undefined
                     ? Math.max(
-                          ...props.priceData.chartData.map((o) => {
+                          ...props.candleData.chartData.map((o) => {
                               return o.open !== undefined ? o.open : 0;
                           }),
                       )
                     : 0;
             newTargets.filter((target: any) => target.name === 'Min')[0].value =
-                props.priceData !== undefined
+                props.candleData !== undefined
                     ? Math.min(
-                          ...props.priceData.chartData.map((o) => {
+                          ...props.candleData.chartData.map((o) => {
                               return o.close !== undefined ? o.close : Infinity;
                           }),
                       )
@@ -194,7 +196,7 @@ export default function Chart(props: ChartData) {
         if (expandTradeTable) return;
 
         render();
-    }, [props.chartItemStates, expandTradeTable]);
+    }, [props.chartItemStates, expandTradeTable, isCandleAdded]);
 
     useEffect(() => {
         d3.select(d3Xaxis.current)
@@ -431,7 +433,7 @@ export default function Chart(props: ChartData) {
 
     const setMarketLine = () => {
         let lastCandlePrice: number | undefined;
-        props.priceData?.chartData.map((data) => {
+        props.candleData?.chartData.map((data) => {
             if (lastCandlePrice === undefined && data.close !== undefined) {
                 lastCandlePrice = data.close;
             }
@@ -528,9 +530,9 @@ export default function Chart(props: ChartData) {
                                 value:
                                     high !== undefined && high !== 0
                                         ? high
-                                        : props.priceData !== undefined
+                                        : props.candleData !== undefined
                                         ? Math.max(
-                                              ...props.priceData.chartData.map((o) => {
+                                              ...props.candleData.chartData.map((o) => {
                                                   return o.open !== undefined ? o.open : 0;
                                               }),
                                           )
@@ -541,9 +543,9 @@ export default function Chart(props: ChartData) {
                                 value:
                                     low !== undefined && low !== 0
                                         ? low
-                                        : props.priceData !== undefined
+                                        : props.candleData !== undefined
                                         ? Math.min(
-                                              ...props.priceData.chartData.map((o) => {
+                                              ...props.candleData.chartData.map((o) => {
                                                   return o.close !== undefined ? o.close : Infinity;
                                               }),
                                           )
@@ -1349,6 +1351,7 @@ export default function Chart(props: ChartData) {
         targetsJoin,
         limitJoin,
         popup,
+        denomInBase,
     ]);
 
     // Draw Chart
