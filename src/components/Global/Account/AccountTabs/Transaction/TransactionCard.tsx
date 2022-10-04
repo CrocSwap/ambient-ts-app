@@ -268,11 +268,14 @@ export default function TransactionCard(props: TransactionProps) {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
               });
-    const baseFlowDisplayString = isBaseFlowPositive
-        ? // (isBaseFlowNegative && tx.entityType !== 'liqchange') ||
-          // (!isBaseFlowNegative && tx.entityType === 'liqchange')
-          `(${baseFlowDisplayTruncated})`
-        : baseFlowDisplayTruncated;
+    const baseFlowDisplayString =
+        tx.baseFlowDecimalCorrected === null
+            ? undefined
+            : isBaseFlowPositive
+            ? // (isBaseFlowNegative && tx.entityType !== 'liqchange') ||
+              // (!isBaseFlowNegative && tx.entityType === 'liqchange')
+              `(${baseFlowDisplayTruncated})`
+            : baseFlowDisplayTruncated;
 
     const quoteFlowDisplayNum = tx.quoteFlowDecimalCorrected ?? 0;
     // const quoteFlowDisplayNum = parseFloat(toDisplayQty(tx.quoteFlow ?? '0', tx.quoteDecimals));
@@ -294,11 +297,14 @@ export default function TransactionCard(props: TransactionProps) {
                   maximumFractionDigits: 2,
               });
 
-    const quoteFlowDisplayString = isQuoteFlowPositive
-        ? // (isQuoteFlowNegative && tx.entityType !== 'liqchange') ||
-          // (!isQuoteFlowNegative && tx.entityType === 'liqchange')
-          `(${quoteFlowDisplayTruncated})`
-        : quoteFlowDisplayTruncated;
+    const quoteFlowDisplayString =
+        tx.quoteFlowDecimalCorrected === null
+            ? undefined
+            : isQuoteFlowPositive
+            ? // (isQuoteFlowNegative && tx.entityType !== 'liqchange') ||
+              // (!isQuoteFlowNegative && tx.entityType === 'liqchange')
+              `(${quoteFlowDisplayTruncated})`
+            : quoteFlowDisplayTruncated;
 
     return (
         <div className={styles.main_container}>

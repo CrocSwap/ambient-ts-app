@@ -305,7 +305,7 @@ export default function TransactionCard(props: TransactionProps) {
             }
         }
 
-        if (tx.baseFlowDecimalCorrected !== undefined) {
+        if (tx.baseFlowDecimalCorrected !== undefined && tx.baseFlowDecimalCorrected !== null) {
             const baseFlowDisplayNum = tx.baseFlowDecimalCorrected;
             const baseFlowAbsNum = Math.abs(baseFlowDisplayNum);
             const isBaseFlowPositive = baseFlowDisplayNum > 0;
@@ -330,7 +330,7 @@ export default function TransactionCard(props: TransactionProps) {
                 : baseFlowDisplayTruncated;
             setBaseFlowDisplay(baseFlowDisplayString);
         }
-        if (tx.quoteFlowDecimalCorrected !== undefined) {
+        if (tx.quoteFlowDecimalCorrected !== undefined && tx.quoteFlowDecimalCorrected !== null) {
             const quoteFlowDisplayNum = tx.quoteFlowDecimalCorrected;
             const quoteFlowAbsNum = Math.abs(quoteFlowDisplayNum);
             const isQuoteFlowPositive = quoteFlowDisplayNum > 0;
