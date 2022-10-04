@@ -273,7 +273,7 @@ export default function Chart(props: ChartData) {
         if (scaleData !== undefined) {
             addHorizontalLineArea();
         }
-    }, [ranges, zoomStatus, drawControl]);
+    }, [ranges]);
 
     // Scale
     useEffect(() => {
@@ -383,11 +383,10 @@ export default function Chart(props: ChartData) {
                         lastY = event.transform.y - yOffset;
                         const translate = d3.zoomIdentity.translate(0, lastY);
                         scaleData.yScale.domain(translate.rescaleY(scaleData.yScaleCopy).domain());
-                        setZoomStatus(event.sourceEvent.pageX + event.sourceEvent.pageY);
                     } else {
                         yOffset = event.transform.y - lastY;
                     }
-
+                    addHorizontalLineArea();
                     render();
                 })
                 .on('end', (event: any) => {
@@ -415,7 +414,7 @@ export default function Chart(props: ChartData) {
                     const factor = Math.pow(2, -event.dy * 0.01);
                     d3.select(d3PlotArea.current).call(yAxisZoom.scaleBy, factor);
 
-                    setZoomStatus(event.sourceEvent.pageX + event.sourceEvent.pageY);
+                    addHorizontalLineArea();
                 })
                 .on('end', () => {
                     d3.select(d3Container.current).style('cursor', 'default');
@@ -645,11 +644,6 @@ export default function Chart(props: ChartData) {
                 .on('start', () => {
                     d3.select(d3Container.current).style('cursor', 'grabbing');
                     d3.select(d3Container.current).select('.targets').style('cursor', 'grabbing');
-                    d3.select(d3Container.current)
-                        .select('.targets')
-                        .select('.horizontal')
-                        .select('line')
-                        .style('cursor', 'grabbing');
                 })
                 .on('drag', function (event, d: any) {
                     d3.select(d3Container.current)
@@ -854,12 +848,6 @@ export default function Chart(props: ChartData) {
                 })
                 .on('end', () => {
                     d3.select(d3Container.current).style('cursor', 'default');
-                    d3.select(d3Container.current).select('.targets').style('cursor', 'default');
-                    d3.select(d3Container.current)
-                        .select('.targets')
-                        .select('.horizontal')
-                        .select('line')
-                        .style('cursor', 'default');
 
                     d3.select(d3Container.current)
                         .select('.ghostLines')
@@ -971,12 +959,6 @@ export default function Chart(props: ChartData) {
                     .style('transform', (d: any) =>
                         d.name == 'Min' ? ' translate(0px, 20px)' : '',
                     );
-                selection
-                    .enter()
-                    .select('line')
-                    .on('mouseout', (event: any) => {
-                        d3.select(event.currentTarget).style('cursor', 'default');
-                    });
             });
 
             const popup = d3
@@ -1041,11 +1023,6 @@ export default function Chart(props: ChartData) {
                     .attr('fill', 'rgba(235, 235, 255, 0.4)')
                     .style('transform', 'translate(100%, 48px) rotate(180deg)');
             });
-
-            d3.select(d3PlotArea.current)
-                .select('.market')
-                .select('.annotation-line')
-                .style('cursor', 'default');
         }
     }
 
@@ -1487,9 +1464,6 @@ export default function Chart(props: ChartData) {
                             .on('mouseover', (event: any) => {
                                 d3.select(event.currentTarget).style('cursor', 'pointer');
                             })
-                            .on('mouseout', (event: any) => {
-                                d3.select(event.currentTarget).style('cursor', 'default');
-                            })
                             .on('click', (event: any) => {
                                 if (
                                     selectedCandle !== undefined &&
@@ -1568,6 +1542,7 @@ export default function Chart(props: ChartData) {
                     crosshairVerticalJoin(svg, [crosshairData]).call(crosshairVertical);
                     barJoin(svg, [liquidityData.liqData]).call(barSeries);
                     targetsJoin(svg, [targets.ranges]).call(horizontalLine);
+                    candleJoin(svg, [chartData]).call(candlestick);
                     marketJoin(svg, [targets.market]).call(horizontalLine);
                     limitJoin(svg, [targets.limit]).call(horizontalLine);
                     candleJoin(svg, [chartData]).call(candlestick);
