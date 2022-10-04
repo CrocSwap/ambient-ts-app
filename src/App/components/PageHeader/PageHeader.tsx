@@ -1,6 +1,6 @@
 // START: Import React and Dongles
 import { useCallback, useEffect, useState, Dispatch, SetStateAction } from 'react';
-import { Link } from 'react-router-dom';
+import { useLocation, Link } from 'react-router-dom';
 import { useMoralis } from 'react-moralis';
 import { useTranslation } from 'react-i18next';
 import { motion, AnimateSharedLayout } from 'framer-motion';
@@ -17,6 +17,7 @@ import styles from './PageHeader.module.css';
 import trimString from '../../../utils/functions/trimString';
 import ambientLogo from '../../../assets/images/logos/ambient_logo.svg';
 import { useModal } from '../../../components/Global/Modal/useModal';
+import { useUrlParams } from './useUrlParams';
 import MobileSidebar from '../../../components/Global/MobileSidebar/MobileSidebar';
 import NotificationCenter from '../../../components/Global/NotificationCenter/NotificationCenter';
 
@@ -128,7 +129,10 @@ export default function PageHeader(props: HeaderPropsIF) {
 
     // ----------------------------NAVIGATION FUNCTIONALITY-------------------------------------
 
-    const { pathname } = location;
+    const location = useLocation();
+
+    const urlParams = useUrlParams();
+
     const tradeDestination = location.pathname.includes('trade/market')
         ? '/trade/market'
         : location.pathname.includes('trade/limit')
@@ -137,12 +141,12 @@ export default function PageHeader(props: HeaderPropsIF) {
         ? '/trade/range'
         : location.pathname.includes('trade/edit')
         ? '/trade/edit'
-        : '/trade/market';
+        : '/trade/market'
 
     const linkData = [
         { title: t('common:homeTitle'), destination: '/', shouldDisplay: true },
-        { title: t('common:swapTitle'), destination: '/swap', shouldDisplay: true },
-        { title: t('common:tradeTitle'), destination: tradeDestination, shouldDisplay: true },
+        { title: t('common:swapTitle'), destination: '/swap' + urlParams, shouldDisplay: true },
+        { title: t('common:tradeTitle'), destination: tradeDestination + urlParams, shouldDisplay: true },
         { title: t('common:analyticsTitle'), destination: '/analytics', shouldDisplay: false },
         {
             title: t('common:accountTitle'),
@@ -164,14 +168,14 @@ export default function PageHeader(props: HeaderPropsIF) {
                     link.shouldDisplay ? (
                         <Link
                             className={
-                                pathname === link.destination ? styles.active : styles.inactive
+                                location.pathname === link.destination ? styles.active : styles.inactive
                             }
                             to={link.destination}
                             key={idx}
                         >
                             {link.title}
 
-                            {pathname === link.destination && (
+                            {location.pathname === link.destination && (
                                 <motion.div className={styles.underline} layoutId='underline' />
                             )}
                         </Link>

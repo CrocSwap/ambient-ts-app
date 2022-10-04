@@ -302,7 +302,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
     ];
 
     const chartOverlayButtonData2 = [
-        { name: 'Curve', selected: false, action: exampleAction },
+        { name: 'Curve', selected: true, action: exampleAction },
         { name: 'Depth', selected: false, action: exampleAction },
     ];
 

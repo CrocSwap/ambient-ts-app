@@ -1,29 +1,22 @@
 import { TokenIF } from '../../../../utils/interfaces/TokenIF';
 import { ITransaction } from '../../../../utils/state/graphDataSlice';
-
+import { useLocation, useNavigate } from 'react-router-dom';
 import styles from './SidebarRecentTransactionsCard.module.css';
-import { Dispatch, SetStateAction, useEffect, useState } from 'react';
-import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
-import { setTokenA, setTokenB } from '../../../../utils/state/tradeDataSlice';
-// import { toDisplayQty } from '@crocswap-libs/sdk';
+import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
 import { formatAmount } from '../../../../utils/numbers';
-// import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
 
 interface TransactionProps {
     tx: ITransaction;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    coinGeckoTokenMap?: Map<string, TokenIF>;
+    coinGeckoTokenMap: Map<string, TokenIF>;
     chainId: string;
     currentTxActiveInTransactions: string;
     setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
     isShowAllEnabled: boolean;
     setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
-
     selectedOutsideTab: number;
     setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
     outsideControl: boolean;
     setOutsideControl: Dispatch<SetStateAction<boolean>>;
-
     tabToSwitchToBasedOnRoute: number;
 }
 
@@ -32,33 +25,43 @@ export default function SidebarRecentTransactionsCard(props: TransactionProps) {
         tx,
         coinGeckoTokenMap,
         chainId,
-        // currentTxActiveInTransactions,
         setCurrentTxActiveInTransactions,
-        // isShowAllEnabled,
         setIsShowAllEnabled,
-
-        // selectedOutsideTab,
         setSelectedOutsideTab,
-        // outsideControl,
         setOutsideControl,
-
         tabToSwitchToBasedOnRoute,
     } = props;
-
-    const dispatch = useAppDispatch();
-
-    // console.log(tx.source);
-    // console.log(tx.block);
 
     const baseId = tx.base + '_' + chainId;
     const quoteId = tx.quote + '_' + chainId;
 
-    const baseToken = coinGeckoTokenMap ? coinGeckoTokenMap.get(baseId.toLowerCase()) : null;
-    const quoteToken = coinGeckoTokenMap ? coinGeckoTokenMap.get(quoteId.toLowerCase()) : null;
+    const getToken = (addr: string) => coinGeckoTokenMap.get(addr.toLowerCase());
+    const baseToken = getToken(baseId) as TokenIF;
+    const quoteToken = getToken(quoteId) as TokenIF;
 
-    // const [baseFlowDisplay, setBaseFlowDisplay] = useState<string | undefined>(undefined);
+    const { pathname } = useLocation();
+
+    const linkPath = useMemo(() => {
+        let locationSlug = '';
+        if (pathname.startsWith('/trade/market')) {
+            locationSlug = '/trade/market';
+        } else if (pathname.startsWith('/trade/limit')) {
+            locationSlug = '/trade/limit';
+        } else if (pathname.startsWith('/trade/range')) {
+            locationSlug = '/trade/range';
+        } else if (pathname.startsWith('/swap')) {
+            locationSlug = '/swap';
+        }
+        return (
+            locationSlug +
+            '/chain=0x5&tokenA=' +
+            baseToken.address +
+            '&tokenB=' +
+            quoteToken.address
+        );
+    }, [pathname]);
+
     const [valueUSD, setValueUSD] = useState<string | undefined>(undefined);
-    //  const [quoteFlowDisplay, setQuoteFlowDisplay] = useState<string | undefined>(undefined);
 
     useEffect(() => {
         if (tx.valueUSD) {
@@ -68,16 +71,15 @@ export default function SidebarRecentTransactionsCard(props: TransactionProps) {
         }
     }, [JSON.stringify(tx)]);
 
+    const navigate = useNavigate();
+
     function handleRecentTransactionClick(tx: ITransaction) {
         setOutsideControl(true);
         setSelectedOutsideTab(tabToSwitchToBasedOnRoute);
         setIsShowAllEnabled(false);
-
         setCurrentTxActiveInTransactions(tx.id);
-        if (baseToken) dispatch(setTokenA(baseToken));
-        if (quoteToken) dispatch(setTokenB(quoteToken));
+        navigate(linkPath);
     }
-    // const baseTokenCharacter = baseToken ? getUnicodeCharacter(baseToken?.symbol) : null;
 
     const transactionTypeSide =
         tx.entityType === 'swap'
@@ -87,15 +89,15 @@ export default function SidebarRecentTransactionsCard(props: TransactionProps) {
             : tx.changeType === 'burn'
             ? 'Range (-)'
             : 'Range (+)';
+
     return (
         <div className={styles.container} onClick={() => handleRecentTransactionClick(tx)}>
             <div>
-                {baseToken?.symbol} / {quoteToken?.symbol}
+                {baseToken.symbol} / {quoteToken.symbol}
             </div>
             <div>{transactionTypeSide}</div>
             <div className={styles.status_display}>
                 {valueUSD ? `$${valueUSD}` : '…'}
-                {/* {baseTokenDisplay} / {quoteTokenDisplay} */}
             </div>
         </div>
     );

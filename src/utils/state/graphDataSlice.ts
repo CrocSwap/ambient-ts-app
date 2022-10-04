@@ -74,6 +74,7 @@ export interface ILimitOrderState {
     positionLiqBaseUSD: number;
     positionLiqQuoteUSD: number;
     positionLiqTotalUSD: number;
+    totalValueUSD: number;
     chainId: string;
 }
 export interface PoolVolumeSeries {
@@ -295,6 +296,7 @@ export interface ITransaction {
     baseFlowDecimalCorrected: number;
     quoteFlowDecimalCorrected: number;
     valueUSD: number;
+    totalValueUSD: number;
     ensResolution: string;
     bidTickPriceDecimalCorrected: number;
     bidTickInvPriceDecimalCorrected: number;
