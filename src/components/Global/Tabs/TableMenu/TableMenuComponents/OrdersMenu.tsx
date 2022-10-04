@@ -71,16 +71,15 @@ export default function OrdersMenu(props: OrdersMenuIF) {
     );
     // -----------------END OF SNACKBAR----------------
 
-    const openRemoveModal = () => openGlobalModal(<OrderRemoval limitOrder={limitOrder} />, 'Limit Order Removal');
-        
+    const openRemoveModal = () =>
+        openGlobalModal(
+            <OrderRemoval limitOrder={limitOrder} closeGlobalModal={closeGlobalModal} />,
+        );
+
     const openDetailsModal = () =>
         openGlobalModal(
             <OrderDetails limitOrder={limitOrder} closeGlobalModal={closeGlobalModal} />,
         );
-
-        
-        
-
 
     // switch (currentModal) {
     //     case 'remove':
