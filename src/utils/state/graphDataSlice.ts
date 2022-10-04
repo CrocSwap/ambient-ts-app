@@ -200,6 +200,7 @@ export interface TvlData {
 export interface CandleData {
     tvlData: TvlData;
     volumeUSD: number;
+    averageLiquidityFee: number;
     time: number;
     poolHash: string;
     firstBlock: number;
@@ -291,8 +292,14 @@ export interface ITransaction {
     invLimitPriceDecimalCorrected: number;
     priceDecimalCorrected: number;
     invPriceDecimalCorrected: number;
+    baseFlowDecimalCorrected: number;
+    quoteFlowDecimalCorrected: number;
     valueUSD: number;
     ensResolution: string;
+    bidTickPriceDecimalCorrected: number;
+    bidTickInvPriceDecimalCorrected: number;
+    askTickPriceDecimalCorrected: number;
+    askTickInvPriceDecimalCorrected: number;
 }
 
 export interface ChangesByUser {

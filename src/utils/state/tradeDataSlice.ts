@@ -29,7 +29,9 @@ export interface tradeData {
     targetData: targetData[];
     pinnedMaxPriceDisplayTruncated: number;
     pinnedMinPriceDisplayTruncated: number;
-    spotPriceDisplay: string;
+    rangeModuleTriggered: boolean;
+    rangeLowLineTriggered: boolean;
+    rangeHighLineTriggered: boolean;
 }
 
 const initialState: tradeData = {
@@ -49,14 +51,16 @@ const initialState: tradeData = {
     advancedHighTick: 0,
     simpleRangeWidth: 100,
     slippageTolerance: 0.05,
-    activeChartPeriod: 300,
+    activeChartPeriod: 3600,
     targetData: [
         { name: 'Max', value: 0 },
         { name: 'Min', value: 0 },
     ],
     pinnedMaxPriceDisplayTruncated: 0,
     pinnedMinPriceDisplayTruncated: 0,
-    spotPriceDisplay: '0',
+    rangeModuleTriggered: false,
+    rangeLowLineTriggered: false,
+    rangeHighLineTriggered: false,
 };
 
 export const tradeDataSlice = createSlice({
@@ -142,6 +146,9 @@ export const tradeDataSlice = createSlice({
         setActiveChartPeriod: (state, action: PayloadAction<number>) => {
             state.activeChartPeriod = action.payload;
         },
+        setTargetData: (state, action: PayloadAction<targetData[]>) => {
+            state.targetData = action.payload;
+        },
         resetTokens: (state, action: PayloadAction<string>) => {
             if (action.payload === '0x5') {
                 state.tokenA = initialState.tokenA;
@@ -154,8 +161,14 @@ export const tradeDataSlice = createSlice({
         setPinnedMinPrice: (state, action: PayloadAction<number>) => {
             state.pinnedMinPriceDisplayTruncated = action.payload;
         },
-        setSpotPriceDisplay: (state, action: PayloadAction<string>) => {
-            state.spotPriceDisplay = action.payload;
+        setRangeModuleTriggered: (state, action: PayloadAction<boolean>) => {
+            state.rangeModuleTriggered = action.payload;
+        },
+        setRangeHighLineTriggered: (state, action: PayloadAction<boolean>) => {
+            state.rangeHighLineTriggered = action.payload;
+        },
+        setRangeLowLineTriggered: (state, action: PayloadAction<boolean>) => {
+            state.rangeLowLineTriggered = action.payload;
         },
 
         resetTradeData: () => initialState,
@@ -187,7 +200,10 @@ export const {
     resetTokens,
     setPinnedMaxPrice,
     setPinnedMinPrice,
-    setSpotPriceDisplay,
+    setTargetData,
+    setRangeModuleTriggered,
+    setRangeLowLineTriggered,
+    setRangeHighLineTriggered,
 } = tradeDataSlice.actions;
 
 export default tradeDataSlice.reducer;

@@ -184,8 +184,11 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
     useEffect(() => {
         if (tradeData) {
             if (tradeData.isTokenAPrimaryRange) {
-                setTokenAQtyLocal(parseFloat(tradeData.primaryQuantityRange));
-                setTokenAInputQty(tradeData.primaryQuantityRange);
+                if (tradeData.primaryQuantityRange) {
+                    setTokenAQtyLocal(parseFloat(tradeData.primaryQuantityRange));
+                    setTokenAInputQty(tradeData.primaryQuantityRange);
+                }
+
                 const sellQtyField = document.getElementById(
                     'A-range-quantity',
                 ) as HTMLInputElement;
@@ -197,8 +200,10 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
                             : tradeData.primaryQuantityRange;
                 }
             } else {
-                setTokenBQtyLocal(parseFloat(tradeData.primaryQuantityRange));
-                setTokenBInputQty(tradeData.primaryQuantityRange);
+                if (tradeData.primaryQuantityRange) {
+                    setTokenBQtyLocal(parseFloat(tradeData.primaryQuantityRange));
+                    setTokenBInputQty(tradeData.primaryQuantityRange);
+                }
                 const buyQtyField = document.getElementById('B-range-quantity') as HTMLInputElement;
                 if (buyQtyField) {
                     buyQtyField.value =
@@ -211,11 +216,16 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
         }
     }, []);
 
+    // useEffect(() => {
+    //     console.log({ isTokenAPrimaryLocal });
+    //     console.log({ isOutOfRange });
+    // }, [tradeData.isTokenAPrimaryRange, isTokenAPrimaryLocal, isOutOfRange]);
+
     const setTokenAQtyValue = (value: number) => {
-        if (poolPriceNonDisplay === undefined) return;
         setTokenAQtyLocal(parseFloat(truncateDecimals(value, tokenPair.dataTokenA.decimals)));
         setTokenAInputQty(truncateDecimals(value, tokenPair.dataTokenA.decimals));
         handleRangeButtonMessageTokenA(value);
+        if (poolPriceNonDisplay === undefined) return;
 
         const qtyTokenB =
             calculateSecondaryDepositQty(
@@ -240,7 +250,7 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
 
         const tokenBQtyField = document.getElementById('B-range-quantity') as HTMLInputElement;
 
-        if (truncatedTokenBQty !== '0') {
+        if (truncatedTokenBQty !== '0' && truncatedTokenBQty !== '') {
             tokenBQtyField.value = truncatedTokenBQty;
             if (primaryQuantityRange !== value.toString()) {
                 dispatch(setPrimaryQuantityRange(value.toString()));
@@ -258,10 +268,10 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
     };
 
     const setTokenBQtyValue = (value: number) => {
-        if (poolPriceNonDisplay === undefined) return;
         setTokenBQtyLocal(parseFloat(truncateDecimals(value, tokenPair.dataTokenB.decimals)));
         setTokenBInputQty(truncateDecimals(value, tokenPair.dataTokenB.decimals));
         handleRangeButtonMessageTokenB(value);
+        if (poolPriceNonDisplay === undefined) return;
 
         const qtyTokenA =
             calculateSecondaryDepositQty(
@@ -284,7 +294,7 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
         ).toString();
 
         const tokenAQtyField = document.getElementById('A-range-quantity') as HTMLInputElement;
-        if (truncatedTokenAQty !== '0') {
+        if (truncatedTokenAQty !== '0' && truncatedTokenAQty !== '') {
             tokenAQtyField.value = truncatedTokenAQty;
             if (primaryQuantityRange !== value.toString()) {
                 dispatch(setPrimaryQuantityRange(value.toString()));
@@ -296,6 +306,7 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
             tokenAQtyField.value = '';
             // dispatch(setPrimaryQuantityRange('0'));
             setIsTokenAPrimaryLocal(false);
+            console.log('setting to zero');
             setTokenAQtyLocal(0);
             // setTokenAInputQty('0');
         }
@@ -456,8 +467,10 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
             if (input === '' || parseFloat(input) <= 0) {
                 setTokenAAllowed(false);
                 setRangeButtonErrorMessage('Enter an Amount');
+                setTokenAQtyValue(0);
+            } else {
+                setTokenAQtyValue(parseFloat(input));
             }
-            setTokenAQtyValue(parseFloat(input));
             setIsTokenAPrimaryLocal(true);
             dispatch(setIsTokenAPrimaryRange(true));
             dispatch(setPrimaryQuantityRange(input));
@@ -473,6 +486,7 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
                                 dispatch(setIsTokenAPrimaryRange(true));
                             }
                             setTokenAQtyValue(tokenAQtyLocal);
+                            setTokenBAllowed(true);
                         }
                     } else {
                         if (tokenBQtyLocal && tokenBQtyLocal !== 0) {
@@ -480,6 +494,7 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
                                 dispatch(setIsTokenAPrimaryRange(false));
                             }
                             setTokenBQtyValue(tokenBQtyLocal);
+                            setTokenAAllowed(true);
                         }
                     }
                 } else {
@@ -489,6 +504,7 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
                                 dispatch(setIsTokenAPrimaryRange(false));
                             }
                             setTokenBQtyValue(tokenBQtyLocal);
+                            setTokenAAllowed(true);
                         }
                     } else {
                         if (tokenAQtyLocal && tokenAQtyLocal !== 0) {
@@ -496,6 +512,7 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
                                 dispatch(setIsTokenAPrimaryRange(true));
                             }
                             setTokenAQtyValue(tokenAQtyLocal);
+                            setTokenBAllowed(true);
                         }
                     }
                 }
@@ -507,8 +524,10 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
         if (input === '' || parseFloat(input) <= 0) {
             setTokenAAllowed(false);
             setRangeButtonErrorMessage('Enter an Amount');
+            setTokenAQtyValue(0);
+        } else {
+            setTokenAQtyValue(parseFloat(input));
         }
-        setTokenAQtyValue(parseFloat(input));
         setIsTokenAPrimaryLocal(true);
         dispatch(setIsTokenAPrimaryRange(true));
         dispatch(setPrimaryQuantityRange(input));
@@ -522,8 +541,10 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
         if (input === '' || parseFloat(input) <= 0) {
             setTokenBAllowed(false);
             setRangeButtonErrorMessage('Enter an Amount');
+            setTokenBQtyValue(0);
+        } else {
+            setTokenBQtyValue(parseFloat(input));
         }
-        setTokenBQtyValue(parseFloat(input));
         setIsTokenAPrimaryLocal(false);
         dispatch(setIsTokenAPrimaryRange(false));
         dispatch(setPrimaryQuantityRange(input));
@@ -539,8 +560,10 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
             if (input === '' || parseFloat(input) <= 0) {
                 setTokenBAllowed(false);
                 setRangeButtonErrorMessage('Enter an Amount');
+                setTokenBQtyValue(0);
+            } else {
+                setTokenBQtyValue(parseFloat(input));
             }
-            setTokenBQtyValue(parseFloat(input));
             setIsTokenAPrimaryLocal(false);
             dispatch(setIsTokenAPrimaryRange(false));
             dispatch(setPrimaryQuantityRange(input));
@@ -556,6 +579,7 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
                                 dispatch(setIsTokenAPrimaryRange(true));
                             }
                             setTokenAQtyValue(tokenAQtyLocal);
+                            setTokenBAllowed(true);
                         }
                     } else {
                         if (tokenBQtyLocal && tokenBQtyLocal !== 0) {
@@ -563,6 +587,7 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
                                 dispatch(setIsTokenAPrimaryRange(false));
                             }
                             setTokenBQtyValue(tokenBQtyLocal);
+                            setTokenAAllowed(true);
                         }
                     }
                 } else {
@@ -572,6 +597,7 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
                                 dispatch(setIsTokenAPrimaryRange(false));
                             }
                             setTokenBQtyValue(tokenBQtyLocal);
+                            setTokenAAllowed(true);
                         }
                     } else {
                         if (tokenAQtyLocal && tokenAQtyLocal !== 0) {
@@ -579,6 +605,7 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
                                 dispatch(setIsTokenAPrimaryRange(true));
                             }
                             setTokenAQtyValue(tokenAQtyLocal);
+                            setTokenBAllowed(true);
                         }
                     }
                 }
@@ -593,6 +620,7 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
     }, [
         poolPriceNonDisplay,
         depositSkew,
+        primaryQuantityRange,
         isWithdrawTokenAFromDexChecked,
         isWithdrawTokenBFromDexChecked,
         // tradeData.isTokenAPrimaryRange,

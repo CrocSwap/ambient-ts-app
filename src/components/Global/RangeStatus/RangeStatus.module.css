@@ -7,7 +7,7 @@
     align-items: center;
     background: var(--dark2);
     border: unset;
-    min-width: 6rem;
+    min-width: 1rem;
     padding: 4px 6px;
     border-radius: 100px;
     color: var(--text-grey-white);

@@ -19,12 +19,18 @@
     flex-direction: row;
     gap: 7px;
     cursor: pointer;
+
+    
 }
 
+.tokens_images img{
+    width: 18px;
+}
 .tokens_name {
     letter-spacing: -0.02em;
-    font-size: var(--header1-size);
-    line-height: var(--header1-lh);
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+    font-weight: 400;
     color: white;
     cursor: pointer;
 }
@@ -332,6 +338,15 @@
 }
 
 @media (min-width: 720px) {
+    .tokens_name {
+      font-weight: 300;
+        font-size: var(--header1-size);
+        line-height: var(--header1-lh);
+     
+    }
+    .tokens_images img{
+        width: 30px;
+    }
     .middle_content_style {
         display: flex;
         flex-direction: column;
@@ -355,6 +370,10 @@
         height: 100%;
     }
 }
+
+
+
+
 
 @media (min-width: 940px) {
     .graph_settings_container {

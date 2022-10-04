@@ -136,8 +136,12 @@ export default function Portfolio(props: PortfolioPropsIF) {
     const [fullLayoutActive, setFullLayoutActive] = useState(false);
 
     useEffect(() => {
-        !props.userAccount ? setFullLayoutActive(true) : null;
-    }, [props.userAccount]);
+        !connectedAccountActive ? setFullLayoutActive(true) : setFullLayoutActive(false);
+    }, [connectedAccountActive]);
+
+    // useEffect(() => {
+    //     !props.userAccount ? setFullLayoutActive(true) : null;
+    // }, [props.userAccount]);
 
     const connectedUserNativeToken = useAppSelector((state) => state.userData.tokens.nativeToken);
     const connectedUserErc20Tokens = useAppSelector((state) => state.userData.tokens.erc20Tokens);
