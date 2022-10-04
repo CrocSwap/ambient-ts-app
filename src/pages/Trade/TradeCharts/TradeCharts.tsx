@@ -66,7 +66,6 @@ interface TradeChartsPropsIF {
     simpleRangeWidth: number | undefined;
     pinnedMinPriceDisplayTruncated: number | undefined;
     pinnedMaxPriceDisplayTruncated: number | undefined;
-    spotPriceDisplay: string | undefined;
     upBodyColor: string;
     upBorderColor: string;
     downBodyColor: string;
@@ -675,7 +674,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
                         simpleRangeWidth={props.simpleRangeWidth}
                         pinnedMinPriceDisplayTruncated={props.pinnedMinPriceDisplayTruncated}
                         pinnedMaxPriceDisplayTruncated={props.pinnedMaxPriceDisplayTruncated}
-                        spotPriceDisplay={props.spotPriceDisplay}
+                        poolPriceDisplay={poolPriceDisplay}
                         truncatedPoolPrice={parseFloat(truncatedPoolPrice)}
                         setCurrentData={setCurrentData}
                         upBodyColor={props.upBodyColor}
