@@ -14,12 +14,11 @@ interface PortfolioWithdrawProps {
     connectedAccount: string;
     openGlobalModal: (content: React.ReactNode, title?: string) => void;
     closeGlobalModal: () => void;
-    tempTokenSelection: TokenIF;
+    selectedToken: TokenIF;
 }
 
 export default function Withdraw(props: PortfolioWithdrawProps) {
-    const { crocEnv, connectedAccount, openGlobalModal, closeGlobalModal, tempTokenSelection } =
-        props;
+    const { crocEnv, connectedAccount, openGlobalModal, closeGlobalModal, selectedToken } = props;
 
     const dispatch = useAppDispatch();
 
@@ -48,11 +47,11 @@ export default function Withdraw(props: PortfolioWithdrawProps) {
     const withdrawFn = () => {
         if (crocEnv && withdrawQty) {
             if (isSendToAddressChecked && transferToAddress) {
-                crocEnv.token(tempTokenSelection.address).withdraw(withdrawQty, transferToAddress);
+                crocEnv.token(selectedToken.address).withdraw(withdrawQty, transferToAddress);
             } else {
-                crocEnv.token(tempTokenSelection.address).withdraw(withdrawQty, connectedAccount);
+                crocEnv.token(selectedToken.address).withdraw(withdrawQty, connectedAccount);
             }
-            // crocEnv.token(tempTokenSelection.address).deposit(1, wallet.address);
+            // crocEnv.token(selectedToken.address).deposit(1, wallet.address);
         }
     };
 
@@ -69,7 +68,7 @@ export default function Withdraw(props: PortfolioWithdrawProps) {
             <WithdrawCurrencySelector
                 fieldId='exchange-balance-withdraw'
                 onClick={() => openGlobalModal(chooseTokenDiv)}
-                tempTokenSelection={tempTokenSelection}
+                selectedToken={selectedToken}
                 setWithdrawQty={setWithdrawQty}
                 isSendToAddressChecked={isSendToAddressChecked}
                 setIsSendToAddressChecked={setIsSendToAddressChecked}

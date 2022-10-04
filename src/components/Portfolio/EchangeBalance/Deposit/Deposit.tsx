@@ -13,12 +13,11 @@ interface PortfolioDepositProps {
     connectedAccount: string;
     openGlobalModal: (content: React.ReactNode, title?: string) => void;
     closeGlobalModal: () => void;
-    tempTokenSelection: TokenIF;
+    selectedToken: TokenIF;
 }
 
 export default function Deposit(props: PortfolioDepositProps) {
-    const { crocEnv, connectedAccount, openGlobalModal, closeGlobalModal, tempTokenSelection } =
-        props;
+    const { crocEnv, connectedAccount, openGlobalModal, closeGlobalModal, selectedToken } = props;
 
     const dispatch = useAppDispatch();
 
@@ -44,8 +43,8 @@ export default function Deposit(props: PortfolioDepositProps) {
 
     const depositFn = () => {
         if (crocEnv && depositQty) {
-            crocEnv.token(tempTokenSelection.address).deposit(depositQty, connectedAccount);
-            // crocEnv.token(tempTokenSelection.address).deposit(1, wallet.address);
+            crocEnv.token(selectedToken.address).deposit(depositQty, connectedAccount);
+            // crocEnv.token(selectedToken.address).deposit(1, wallet.address);
         }
     };
 
@@ -57,7 +56,7 @@ export default function Deposit(props: PortfolioDepositProps) {
             <DepositCurrencySelector
                 fieldId='exchange-balance-deposit'
                 onClick={() => openGlobalModal(chooseTokenDiv)}
-                tempTokenSelection={tempTokenSelection}
+                selectedToken={selectedToken}
                 setDepositQty={setDepositQty}
             />
             <DepositButton

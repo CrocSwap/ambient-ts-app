@@ -9,12 +9,12 @@ interface DepositCurrencySelectorProps {
 
     sellToken?: boolean;
     disable?: boolean;
-    tempTokenSelection: TokenIF;
+    selectedToken: TokenIF;
     setDepositQty: Dispatch<SetStateAction<number | undefined>>; // updateOtherQuantity: (evt: ChangeEvent<HTMLInputElement>) => void;
 }
 
 export default function DepositCurrencySelector(props: DepositCurrencySelectorProps) {
-    const { fieldId, disable, onClick, tempTokenSelection, setDepositQty } = props;
+    const { fieldId, disable, onClick, selectedToken, setDepositQty } = props;
 
     const rateInput = (
         <div className={styles.token_amount}>
@@ -46,11 +46,11 @@ export default function DepositCurrencySelector(props: DepositCurrencySelectorPr
                 <div className={styles.token_select} onClick={onClick}>
                     <img
                         className={styles.token_list_img}
-                        src={tempTokenSelection.logoURI}
-                        alt={tempTokenSelection.name}
+                        src={selectedToken.logoURI}
+                        alt={selectedToken.name}
                         width='30px'
                     />
-                    <span className={styles.token_list_text}>{tempTokenSelection.symbol}</span>
+                    <span className={styles.token_list_text}>{selectedToken.symbol}</span>
                     <RiArrowDownSLine size={27} />
                 </div>
             </div>

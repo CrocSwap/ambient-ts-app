@@ -14,11 +14,11 @@ interface PortfolioTransferProps {
     // connectedAccount: string;
     openGlobalModal: (content: React.ReactNode, title?: string) => void;
     closeGlobalModal: () => void;
-    tempTokenSelection: TokenIF;
+    selectedToken: TokenIF;
 }
 
 export default function Transfer(props: PortfolioTransferProps) {
-    const { crocEnv, openGlobalModal, closeGlobalModal, tempTokenSelection } = props;
+    const { crocEnv, openGlobalModal, closeGlobalModal, selectedToken } = props;
 
     const dispatch = useAppDispatch();
 
@@ -45,8 +45,8 @@ export default function Transfer(props: PortfolioTransferProps) {
 
     const transferFn = () => {
         if (crocEnv && transferQty && transferToAddress) {
-            crocEnv.token(tempTokenSelection.address).transfer(transferQty, transferToAddress);
-            // crocEnv.token(tempTokenSelection.address).deposit(1, wallet.address);
+            crocEnv.token(selectedToken.address).transfer(transferQty, transferToAddress);
+            // crocEnv.token(selectedToken.address).deposit(1, wallet.address);
         }
     };
 
@@ -62,7 +62,7 @@ export default function Transfer(props: PortfolioTransferProps) {
             <TransferCurrencySelector
                 fieldId='exchange-balance-transfer'
                 onClick={() => openGlobalModal(chooseTokenDiv)}
-                tempTokenSelection={tempTokenSelection}
+                selectedToken={selectedToken}
                 setTransferQty={setTransferQty}
             />
             <TransferButton
