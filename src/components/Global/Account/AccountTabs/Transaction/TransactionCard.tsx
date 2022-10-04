@@ -179,13 +179,13 @@ export default function TransactionCard(props: TransactionProps) {
 
     const sideType =
         tx.entityType === 'liqchange'
-            ? parseFloat(tx.quoteFlow) > 0
-                ? 'add'
-                : 'remove'
-            : tx.entityType === 'limitOrder'
             ? tx.changeType === 'burn'
                 ? 'remove'
                 : 'add'
+            : tx.entityType === 'limitOrder'
+            ? tx.changeType === 'mint'
+                ? 'add'
+                : 'remove'
             : tx.isBuy
             ? 'sell'
             : 'buy';
@@ -251,7 +251,7 @@ export default function TransactionCard(props: TransactionProps) {
 
     const baseFlowDisplayNum = tx.baseFlowDecimalCorrected ?? 0;
     const baseFlowAbsNum = Math.abs(baseFlowDisplayNum);
-    const isBaseFlowNegative = baseFlowDisplayNum > 0;
+    const isBaseFlowPositive = baseFlowDisplayNum > 0;
     const baseFlowDisplayTruncated =
         baseFlowAbsNum === 0
             ? '0.00'
@@ -266,16 +266,16 @@ export default function TransactionCard(props: TransactionProps) {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
               });
-    const baseFlowDisplayString =
-        (isBaseFlowNegative && tx.entityType !== 'liqchange') ||
-        (!isBaseFlowNegative && tx.entityType === 'liqchange')
-            ? `(${baseFlowDisplayTruncated})`
-            : baseFlowDisplayTruncated;
+    const baseFlowDisplayString = isBaseFlowPositive
+        ? // (isBaseFlowNegative && tx.entityType !== 'liqchange') ||
+          // (!isBaseFlowNegative && tx.entityType === 'liqchange')
+          `(${baseFlowDisplayTruncated})`
+        : baseFlowDisplayTruncated;
 
     const quoteFlowDisplayNum = tx.quoteFlowDecimalCorrected ?? 0;
     // const quoteFlowDisplayNum = parseFloat(toDisplayQty(tx.quoteFlow ?? '0', tx.quoteDecimals));
     const quoteFlowAbsNum = Math.abs(quoteFlowDisplayNum);
-    const isQuoteFlowNegative = quoteFlowDisplayNum > 0;
+    const isQuoteFlowPositive = quoteFlowDisplayNum > 0;
 
     const quoteFlowDisplayTruncated =
         quoteFlowAbsNum === 0
@@ -292,11 +292,11 @@ export default function TransactionCard(props: TransactionProps) {
                   maximumFractionDigits: 2,
               });
 
-    const quoteFlowDisplayString =
-        (isQuoteFlowNegative && tx.entityType !== 'liqchange') ||
-        (!isQuoteFlowNegative && tx.entityType === 'liqchange')
-            ? `(${quoteFlowDisplayTruncated})`
-            : quoteFlowDisplayTruncated;
+    const quoteFlowDisplayString = isQuoteFlowPositive
+        ? // (isQuoteFlowNegative && tx.entityType !== 'liqchange') ||
+          // (!isQuoteFlowNegative && tx.entityType === 'liqchange')
+          `(${quoteFlowDisplayTruncated})`
+        : quoteFlowDisplayTruncated;
 
     return (
         <div className={styles.main_container}>

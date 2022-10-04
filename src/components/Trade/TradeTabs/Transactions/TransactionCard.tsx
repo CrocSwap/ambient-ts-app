@@ -308,7 +308,7 @@ export default function TransactionCard(props: TransactionProps) {
         if (tx.baseFlowDecimalCorrected !== undefined) {
             const baseFlowDisplayNum = tx.baseFlowDecimalCorrected;
             const baseFlowAbsNum = Math.abs(baseFlowDisplayNum);
-            const isBaseFlowNegative = baseFlowDisplayNum > 0;
+            const isBaseFlowPositive = baseFlowDisplayNum > 0;
             const baseFlowDisplayTruncated =
                 baseFlowAbsNum === 0
                     ? '0.00'
@@ -323,17 +323,17 @@ export default function TransactionCard(props: TransactionProps) {
                           minimumFractionDigits: 2,
                           maximumFractionDigits: 2,
                       });
-            const baseFlowDisplayString =
-                (isBaseFlowNegative && tx.entityType !== 'liqchange') ||
-                (!isBaseFlowNegative && tx.entityType === 'liqchange')
-                    ? `(${baseFlowDisplayTruncated})`
-                    : baseFlowDisplayTruncated;
+            const baseFlowDisplayString = isBaseFlowPositive
+                ? // (isBaseFlowNegative && tx.entityType !== 'liqchange') ||
+                  // (!isBaseFlowNegative && tx.entityType === 'liqchange')
+                  `(${baseFlowDisplayTruncated})`
+                : baseFlowDisplayTruncated;
             setBaseFlowDisplay(baseFlowDisplayString);
         }
         if (tx.quoteFlowDecimalCorrected !== undefined) {
             const quoteFlowDisplayNum = tx.quoteFlowDecimalCorrected;
             const quoteFlowAbsNum = Math.abs(quoteFlowDisplayNum);
-            const isQuoteFlowNegative = quoteFlowDisplayNum > 0;
+            const isQuoteFlowPositive = quoteFlowDisplayNum > 0;
             const quoteFlowDisplayTruncated =
                 quoteFlowAbsNum === 0
                     ? '0.00'
@@ -348,11 +348,11 @@ export default function TransactionCard(props: TransactionProps) {
                           minimumFractionDigits: 2,
                           maximumFractionDigits: 2,
                       });
-            const quoteFlowDisplayString =
-                (isQuoteFlowNegative && tx.entityType !== 'liqchange') ||
-                (!isQuoteFlowNegative && tx.entityType === 'liqchange')
-                    ? `(${quoteFlowDisplayTruncated})`
-                    : quoteFlowDisplayTruncated;
+            const quoteFlowDisplayString = isQuoteFlowPositive
+                ? // (isQuoteFlowNegative && tx.entityType !== 'liqchange') ||
+                  // (!isQuoteFlowNegative && tx.entityType === 'liqchange')
+                  `(${quoteFlowDisplayTruncated})`
+                : quoteFlowDisplayTruncated;
             setQuoteFlowDisplay(quoteFlowDisplayString);
         }
     }, [JSON.stringify(tx), isDenomBase]);
@@ -366,16 +366,27 @@ export default function TransactionCard(props: TransactionProps) {
 
     const sideType =
         tx.entityType === 'liqchange'
-            ? parseFloat(tx.quoteFlow) > 0
-                ? 'add'
-                : 'remove'
-            : tx.entityType === 'limitOrder'
             ? tx.changeType === 'burn'
                 ? 'remove'
                 : 'add'
+            : tx.entityType === 'limitOrder'
+            ? tx.changeType === 'mint'
+                ? 'add'
+                : 'remove'
             : (isDenomBase && tx.isBuy) || (!isDenomBase && !tx.isBuy)
             ? 'sell'
             : 'buy';
+    // tx.entityType === 'liqchange'
+    //     ? parseFloat(tx.quoteFlow) > 0
+    //         ? 'add'
+    //         : 'remove'
+    //     : tx.entityType === 'limitOrder'
+    //     ? tx.changeType === 'burn'
+    //         ? 'remove'
+    //         : 'add'
+    //     : (isDenomBase && tx.isBuy) || (!isDenomBase && !tx.isBuy)
+    //     ? 'sell'
+    //     : 'buy';
 
     const transactionTypeSide =
         tx.entityType === 'liqchange'
