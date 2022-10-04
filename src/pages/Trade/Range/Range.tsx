@@ -46,7 +46,6 @@ import {
     setSimpleRangeWidth,
     setPinnedMaxPrice,
     setPinnedMinPrice,
-    setSpotPriceDisplay,
     setTargetData,
 } from '../../../utils/state/tradeDataSlice';
 import { addPendingTx, addReceipt, removePendingTx } from '../../../utils/state/receiptDataSlice';
@@ -183,10 +182,6 @@ export default function Range(props: RangePropsIF) {
     const tokenBDecimals = tokenB.decimals;
     const baseTokenDecimals = isTokenABase ? tokenADecimals : tokenBDecimals;
     const quoteTokenDecimals = !isTokenABase ? tokenADecimals : tokenBDecimals;
-
-    useEffect(() => {
-        dispatch(setSpotPriceDisplay(displayPriceString));
-    }, [displayPriceString]);
 
     const poolPriceCharacter = denominationsInBase
         ? isTokenABase

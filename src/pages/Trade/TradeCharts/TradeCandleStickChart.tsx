@@ -45,7 +45,7 @@ interface ChartData {
     pinnedMinPriceDisplayTruncated: number | undefined;
     pinnedMaxPriceDisplayTruncated: number | undefined;
     truncatedPoolPrice: number | undefined;
-    spotPriceDisplay: string | undefined;
+    poolPriceDisplay: number | undefined;
     setCurrentData: React.Dispatch<React.SetStateAction<CandleChartData | undefined>>;
     upBodyColor: string;
     upBorderColor: string;
@@ -245,10 +245,15 @@ export default function TradeCandleStickChart(props: ChartData) {
 
     useEffect(() => {
         const timer = setTimeout(() => {
-            setIsLoading(parsedChartData === undefined || parsedChartData.chartData.length === 0);
+            console.error('props.poolPriceDisplay', props.poolPriceDisplay);
+            setIsLoading(
+                parsedChartData === undefined ||
+                    parsedChartData.chartData.length === 0 ||
+                    props.poolPriceDisplay === 0,
+            );
         }, 100);
         return () => clearTimeout(timer);
-    }, [parsedChartData?.chartData]);
+    }, [parsedChartData?.chartData, props.poolPriceDisplay]);
 
     return (
         <>
@@ -265,7 +270,7 @@ export default function TradeCandleStickChart(props: ChartData) {
                         simpleRangeWidth={props.simpleRangeWidth}
                         pinnedMinPriceDisplayTruncated={props.pinnedMinPriceDisplayTruncated}
                         pinnedMaxPriceDisplayTruncated={props.pinnedMaxPriceDisplayTruncated}
-                        spotPriceDisplay={props.spotPriceDisplay}
+                        poolPriceDisplay={props.poolPriceDisplay}
                         truncatedPoolPrice={props.truncatedPoolPrice}
                         // feeData={data.feeData}
                         // volumeData={data.volumeData}

@@ -29,7 +29,6 @@ export interface tradeData {
     targetData: targetData[];
     pinnedMaxPriceDisplayTruncated: number;
     pinnedMinPriceDisplayTruncated: number;
-    spotPriceDisplay: string;
 }
 
 const initialState: tradeData = {
@@ -56,7 +55,6 @@ const initialState: tradeData = {
     ],
     pinnedMaxPriceDisplayTruncated: 0,
     pinnedMinPriceDisplayTruncated: 0,
-    spotPriceDisplay: '0',
 };
 
 export const tradeDataSlice = createSlice({
@@ -157,9 +155,6 @@ export const tradeDataSlice = createSlice({
         setPinnedMinPrice: (state, action: PayloadAction<number>) => {
             state.pinnedMinPriceDisplayTruncated = action.payload;
         },
-        setSpotPriceDisplay: (state, action: PayloadAction<string>) => {
-            state.spotPriceDisplay = action.payload;
-        },
 
         resetTradeData: () => initialState,
     },
@@ -191,7 +186,6 @@ export const {
     resetTokens,
     setPinnedMaxPrice,
     setPinnedMinPrice,
-    setSpotPriceDisplay,
 } = tradeDataSlice.actions;
 
 export default tradeDataSlice.reducer;
