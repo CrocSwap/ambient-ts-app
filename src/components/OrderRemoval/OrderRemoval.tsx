@@ -3,6 +3,7 @@ import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { useProcessOrder } from '../../utils/hooks/useProcessOrder';
 import { ILimitOrderState } from '../../utils/state/graphDataSlice';
 import RemoveOrderTokenHeader from './RemoveOrderHeader/RemoveOrderTokenHeader';
+import RemoveOrderInfo from './RemoveOrderInfo/RemoveOrderInfo';
 import RemoveOrderWidth from './RemoveOrderWidth/RemoveOrderWidth';
 
 interface IOrderRemovalProps {
@@ -27,6 +28,9 @@ export default function OrderRemoval(props: IOrderRemovalProps) {
         isDenomBase,
         baseTokenLogo,
         quoteTokenLogo,
+        usdValue,
+        baseDisplayFrontend,
+        quoteDisplayFrontend,
     } = useProcessOrder(limitOrder);
 
     const [removalPercentage, setRemovalPercentage] = useState(100);
@@ -45,20 +49,22 @@ export default function OrderRemoval(props: IOrderRemovalProps) {
                 removalPercentage={removalPercentage}
                 setRemovalPercentage={setRemovalPercentage}
             />
-            {/* <div>Time Updated: {lastUpdatedTime}</div> */}
-            <div>Owner: {userNameToDisplay}</div>
-            <div>Base Token: {baseTokenSymbol}</div>
-            <div>Quote Token: {quoteTokenSymbol}</div>
-            <div>Low Price: {lowPriceDisplay}</div>
-            <div>High Price: {highPriceDisplay}</div>
-            <div>Bid Tick: {bidTick}</div>
-            <div>Ask Tick: {askTick}</div>
-            <div>Liquidity Base Qty: {posLiqBaseDecimalCorrected}</div>
-            <div>Liquidity Quote Qty: {posLiqQuoteDecimalCorrected}</div>
-            <div>Liquidity Wei Qty: {positionLiquidity}</div>
-            {/* <div>Fees Base Qty: {feesBaseDecimalCorrected}</div>
-            <div>Fees Quote Qty: {feesQuoteDecimalCorrected}</div> */}
-            <div>Total Value USD: {positionLiqTotalUSD}</div>
+            <RemoveOrderInfo
+                baseTokenSymbol={baseTokenSymbol}
+                quoteTokenSymbol={quoteTokenSymbol}
+                baseTokenLogoURI={baseTokenLogo}
+                quoteTokenLogoURI={quoteTokenLogo}
+                posLiqBaseDecimalCorrected={posLiqBaseDecimalCorrected}
+                posLiqQuoteDecimalCorrected={posLiqQuoteDecimalCorrected}
+                removalPercentage={removalPercentage}
+                usdValue={usdValue}
+                bidTick={bidTick}
+                askTick={askTick}
+                baseDisplayFrontend={baseDisplayFrontend}
+                quoteDisplayFrontend={quoteDisplayFrontend}
+                positionLiqTotalUSD={positionLiqTotalUSD}
+                positionLiquidity={positionLiquidity}
+            />
         </div>
     );
 }
