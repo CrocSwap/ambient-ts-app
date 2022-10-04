@@ -198,6 +198,19 @@ export default function App() {
         })();
     }, [provider]);
 
+    const [poolExists, setPoolExists] = useState(false);
+    useEffect(() => console.log({poolExists}), [poolExists]);
+
+    useEffect(() => {
+        const doesPoolExist = crocEnv?.pool(
+            '0x0000000000000000000000000000000000000000',
+            '0xD87Ba7A50B2E7E660f678A895E4B72E7CB4CCd9C'
+        ).isInit();
+
+        Promise.resolve(doesPoolExist)
+            .then(res => setPoolExists(res ?? false));
+    }, [crocEnv]);
+
     useEffect(() => {
         if (isInitialized) {
             (async () => {
