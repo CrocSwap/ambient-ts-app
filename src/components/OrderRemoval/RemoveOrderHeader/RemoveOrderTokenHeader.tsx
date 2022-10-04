@@ -1,4 +1,3 @@
-import RangeStatus from '../../Global/RangeStatus/RangeStatus';
 import styles from './RemoveOrderTokenHeader.module.css';
 import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
 import { toggleDidUserFlipDenom } from '../../../utils/state/tradeDataSlice';

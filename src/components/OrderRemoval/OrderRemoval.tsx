@@ -1,8 +1,6 @@
-import { useEffect, useState } from 'react';
-import { useAppSelector } from '../../utils/hooks/reduxToolkit';
+import { useState } from 'react';
 import { useProcessOrder } from '../../utils/hooks/useProcessOrder';
 import { ILimitOrderState } from '../../utils/state/graphDataSlice';
-import RemoveRangeButton from '../RemoveRange/RemoveRangeButton/RemoveRangeButton';
 import RemoveOrderButton from './RemoveOrderButton/RemoveOrderButton';
 import RemoveOrderTokenHeader from './RemoveOrderHeader/RemoveOrderTokenHeader';
 import RemoveOrderInfo from './RemoveOrderInfo/RemoveOrderInfo';
@@ -17,13 +15,13 @@ export default function OrderRemoval(props: IOrderRemovalProps) {
     const {
         posLiqBaseDecimalCorrected,
         posLiqQuoteDecimalCorrected,
-        lowPriceDisplay,
-        highPriceDisplay,
+        // lowPriceDisplay,
+        // highPriceDisplay,
         bidTick,
         askTick,
         positionLiquidity,
         positionLiqTotalUSD,
-        userNameToDisplay,
+        // userNameToDisplay,
         baseTokenSymbol,
         quoteTokenSymbol,
         isOrderFilled,
