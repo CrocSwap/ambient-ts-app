@@ -578,6 +578,9 @@ export default function App() {
 
     // hook to update `poolExists` when crocEnv changes
     useEffect(() => {
+        // set pool exists to false if there is no env
+        crocEnv || setPoolExists(false);
+
         // token pair has an initialized pool on-chain
         // returns a promise object
         const doesPoolExist = crocEnv?.pool(
