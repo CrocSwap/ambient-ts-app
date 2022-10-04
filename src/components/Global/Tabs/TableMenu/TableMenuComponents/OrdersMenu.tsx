@@ -74,7 +74,6 @@ export default function OrdersMenu(props: OrdersMenuIF) {
     const openRemoveModal = () =>
         openGlobalModal(
             <OrderRemoval limitOrder={limitOrder} closeGlobalModal={closeGlobalModal} />,
-            'Limit Order Removal',
         );
 
     const openDetailsModal = () =>

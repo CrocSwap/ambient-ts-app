@@ -15,13 +15,14 @@ import Animation from '../Global/Animation/Animation';
 import completed from '../../assets/animations/completed.json';
 import { FiExternalLink } from 'react-icons/fi';
 import { BsArrowLeft } from 'react-icons/bs';
+import RemoveOrderModalHeader from './RemoveOrderModalHeader/RemoveOrderModalHeader';
 interface IOrderRemovalProps {
     limitOrder: ILimitOrderState;
     closeGlobalModal: () => void;
 }
 
 export default function OrderRemoval(props: IOrderRemovalProps) {
-    const { limitOrder } = props;
+    const { limitOrder, closeGlobalModal } = props;
     const {
         posLiqBaseDecimalCorrected,
         posLiqQuoteDecimalCorrected,
@@ -155,6 +156,10 @@ export default function OrderRemoval(props: IOrderRemovalProps) {
     if (showConfirmation) return confirmationContent;
     return (
         <div>
+            <RemoveOrderModalHeader
+                onClose={closeGlobalModal}
+                title={showConfirmation ? '' : 'Limit Order Removal'}
+            />
             <RemoveOrderTokenHeader
                 isDenomBase={isDenomBase}
                 isOrderFilled={isOrderFilled}
