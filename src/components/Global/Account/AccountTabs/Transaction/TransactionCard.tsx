@@ -256,7 +256,7 @@ export default function TransactionCard(props: TransactionProps) {
         baseFlowAbsNum === 0
             ? '0.00'
             : baseFlowAbsNum < 0.0001
-            ? baseFlowDisplayNum.toExponential(2)
+            ? baseFlowAbsNum.toExponential(2)
             : baseFlowAbsNum < 2
             ? baseFlowAbsNum.toPrecision(3)
             : baseFlowAbsNum >= 100000
@@ -266,9 +266,11 @@ export default function TransactionCard(props: TransactionProps) {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
               });
-    const baseFlowDisplayString = isBaseFlowNegative
-        ? `(${baseFlowDisplayTruncated})`
-        : baseFlowDisplayTruncated;
+    const baseFlowDisplayString =
+        (isBaseFlowNegative && tx.entityType !== 'liqchange') ||
+        (!isBaseFlowNegative && tx.entityType === 'liqchange')
+            ? `(${baseFlowDisplayTruncated})`
+            : baseFlowDisplayTruncated;
 
     const quoteFlowDisplayNum = tx.quoteFlowDecimalCorrected ?? 0;
     // const quoteFlowDisplayNum = parseFloat(toDisplayQty(tx.quoteFlow ?? '0', tx.quoteDecimals));
@@ -279,7 +281,7 @@ export default function TransactionCard(props: TransactionProps) {
         quoteFlowAbsNum === 0
             ? '0.00'
             : quoteFlowAbsNum < 0.0001
-            ? quoteFlowDisplayNum.toExponential(2)
+            ? quoteFlowAbsNum.toExponential(2)
             : quoteFlowAbsNum < 2
             ? quoteFlowAbsNum.toPrecision(3)
             : quoteFlowAbsNum >= 100000
@@ -290,9 +292,11 @@ export default function TransactionCard(props: TransactionProps) {
                   maximumFractionDigits: 2,
               });
 
-    const quoteFlowDisplayString = isQuoteFlowNegative
-        ? `(${quoteFlowDisplayTruncated})`
-        : quoteFlowDisplayTruncated;
+    const quoteFlowDisplayString =
+        (isQuoteFlowNegative && tx.entityType !== 'liqchange') ||
+        (!isQuoteFlowNegative && tx.entityType === 'liqchange')
+            ? `(${quoteFlowDisplayTruncated})`
+            : quoteFlowDisplayTruncated;
 
     return (
         <div className={styles.main_container}>

@@ -313,7 +313,7 @@ export default function TransactionCard(props: TransactionProps) {
                 baseFlowAbsNum === 0
                     ? '0.00'
                     : baseFlowAbsNum < 0.0001
-                    ? baseFlowDisplayNum.toExponential(2)
+                    ? baseFlowAbsNum.toExponential(2)
                     : baseFlowAbsNum < 2
                     ? baseFlowAbsNum.toPrecision(3)
                     : baseFlowAbsNum >= 100000
@@ -338,7 +338,7 @@ export default function TransactionCard(props: TransactionProps) {
                 quoteFlowAbsNum === 0
                     ? '0.00'
                     : quoteFlowAbsNum < 0.0001
-                    ? quoteFlowDisplayNum.toExponential(2)
+                    ? quoteFlowAbsNum.toExponential(2)
                     : quoteFlowAbsNum < 2
                     ? quoteFlowAbsNum.toPrecision(3)
                     : quoteFlowAbsNum >= 100000
