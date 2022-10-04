@@ -1,5 +1,12 @@
 // START: Import React and Dongles
-import { Dispatch, SetStateAction, useState, useEffect, useMemo, useRef } from 'react';
+import {
+    Dispatch,
+    SetStateAction,
+    useState,
+    useEffect,
+    //  useMemo,
+    useRef,
+} from 'react';
 import { motion } from 'framer-motion';
 import {
     AiOutlineCamera,
@@ -23,10 +30,9 @@ import {
     // tradeData as TradeDataIF,
     toggleDidUserFlipDenom,
     setActiveChartPeriod,
-    targetData,
 } from '../../../utils/state/tradeDataSlice';
 import { CandleData, CandlesByPoolAndDuration } from '../../../utils/state/graphDataSlice';
-import { usePoolChartData } from '../../../state/pools/hooks';
+// import { usePoolChartData } from '../../../state/pools/hooks';
 import { useAppSelector, useAppDispatch } from '../../../utils/hooks/reduxToolkit';
 import TradeCandleStickChart from './TradeCandleStickChart';
 import { PoolIF, TokenIF } from '../../../utils/interfaces/exports';
@@ -60,15 +66,13 @@ interface TradeChartsPropsIF {
     simpleRangeWidth: number | undefined;
     pinnedMinPriceDisplayTruncated: number | undefined;
     pinnedMaxPriceDisplayTruncated: number | undefined;
-    spotPriceDisplay: string | undefined;
     upBodyColor: string;
     upBorderColor: string;
     downBodyColor: string;
     downBorderColor: string;
     baseTokenAddress: string;
     poolPriceNonDisplay: number | undefined;
-    setTargets: React.Dispatch<React.SetStateAction<targetData[]>>;
-    targets: targetData[];
+    isCandleSelected: boolean | undefined;
 }
 
 export interface CandleChartData {
@@ -89,6 +93,11 @@ export interface TvlChartData {
 }
 
 export interface VolumeChartData {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    time: any;
+    value: number;
+}
+export interface FeeChartData {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     time: any;
     value: number;
@@ -335,7 +344,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
         { label: '4h', activePeriod: 14400 },
         { label: '1d', activePeriod: 86400 },
     ];
-    const [activeTimeFrame, setActiveTimeFrame] = useState('5m');
+    const [activeTimeFrame, setActiveTimeFrame] = useState('1h');
 
     function handleTimeFrameButtonClick(label: string, time: number) {
         setActiveTimeFrame(label);
@@ -583,47 +592,47 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
     // END OF CURRENT DATA INFO--------------------------------------------------------------
 
     // CANDLE STICK DATA---------------------------------------------------
-    const chartData = usePoolChartData('0x8ad599c3a0ff1de082011efddc58f1908eb6e6d8'); // ETH/USDC pool address
+    // const chartData = usePoolChartData('0x8ad599c3a0ff1de082011efddc58f1908eb6e6d8'); // ETH/USDC pool address
 
-    const formattedTvlData = useMemo(() => {
-        if (chartData) {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            return chartData.map((day: any) => {
-                return {
-                    time: new Date(day.date * 1000),
-                    value: day.totalValueLockedUSD,
-                };
-            });
-        } else {
-            return [];
-        }
-    }, [chartData]);
+    // const formattedTvlData = useMemo(() => {
+    //     if (chartData) {
+    //         // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    //         return chartData.map((day: any) => {
+    //             return {
+    //                 time: new Date(day.date * 1000),
+    //                 value: day.totalValueLockedUSD,
+    //             };
+    //         });
+    //     } else {
+    //         return [];
+    //     }
+    // }, [chartData]);
 
-    const formattedVolumeData = useMemo(() => {
-        if (chartData) {
-            return chartData.map((day) => {
-                return {
-                    time: new Date(day.date * 1000),
-                    value: day.volumeUSD,
-                };
-            });
-        } else {
-            return [];
-        }
-    }, [chartData]);
+    // const formattedVolumeData = useMemo(() => {
+    //     if (chartData) {
+    //         return chartData.map((day) => {
+    //             return {
+    //                 time: new Date(day.date * 1000),
+    //                 value: day.volumeUSD,
+    //             };
+    //         });
+    //     } else {
+    //         return [];
+    //     }
+    // }, [chartData]);
 
-    const formattedFeesUSD = useMemo(() => {
-        if (chartData) {
-            return chartData.map((day) => {
-                return {
-                    time: new Date(day.date * 1000),
-                    value: day.feesUSD,
-                };
-            });
-        } else {
-            return [];
-        }
-    }, [chartData]);
+    // const formattedFeesUSD = useMemo(() => {
+    //     if (chartData) {
+    //         return chartData.map((day) => {
+    //             return {
+    //                 time: new Date(day.date * 1000),
+    //                 value: day.feesUSD,
+    //             };
+    //         });
+    //     } else {
+    //         return [];
+    //     }
+    // }, [chartData]);
     // END OF CANDLE STICK DATA---------------------------------------------------
     // This is a simple loading that last for 1 sec before displaying the graph. The graph is already in the dom by then. We will just positon this in front of it and then remove it after 1 sec.
 
@@ -652,21 +661,20 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
             ) : (
                 <div style={{ width: '100%', height: '100%' }} ref={canvasRef}>
                     <TradeCandleStickChart
-                        tvlData={formattedTvlData}
+                        // tvlData={formattedTvlData}
                         expandTradeTable={expandTradeTable}
-                        volumeData={formattedVolumeData}
-                        feeData={formattedFeesUSD}
-                        priceData={props.candleData}
+                        // volumeData={formattedVolumeData}
+                        // feeData={formattedFeesUSD}
+                        candleData={props.candleData}
                         changeState={props.changeState}
                         chartItemStates={chartItemStates}
                         limitPrice={props.limitPrice}
-                        denomInBase={denomInBase}
                         liquidityData={props.liquidityData}
                         isAdvancedModeActive={props.isAdvancedModeActive}
                         simpleRangeWidth={props.simpleRangeWidth}
                         pinnedMinPriceDisplayTruncated={props.pinnedMinPriceDisplayTruncated}
                         pinnedMaxPriceDisplayTruncated={props.pinnedMaxPriceDisplayTruncated}
-                        spotPriceDisplay={props.spotPriceDisplay}
+                        poolPriceDisplay={poolPriceDisplay}
                         truncatedPoolPrice={parseFloat(truncatedPoolPrice)}
                         setCurrentData={setCurrentData}
                         upBodyColor={props.upBodyColor}
@@ -676,8 +684,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
                         baseTokenAddress={props.baseTokenAddress}
                         chainId={chainId}
                         poolPriceNonDisplay={props.poolPriceNonDisplay}
-                        setTargets={props.setTargets}
-                        targets={props.targets}
+                        isCandleSelected={props.isCandleSelected}
                     />
                 </div>
             )}

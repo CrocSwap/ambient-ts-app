@@ -12,23 +12,37 @@ export default function TransactionCardHeader(props: TransactionCardHeaderProps)
     const baseTokenSymbol = tradeData.baseToken.symbol;
     const quoteTokenSymbol = tradeData.quoteToken.symbol;
 
+    const mobileHeaderDisplay = (
+        <div className={styles.mobile_header_display}>
+            <div className={styles.mobile_header_content}>
+                <p>ID/Wallet</p>
+                <p>{baseTokenSymbol}</p>
+                <p>{quoteTokenSymbol}</p>
+            </div>
+            <div />
+        </div>
+    );
+
     return (
-        <div className={styles.main_container}>
-            <div className={styles.row_container}>
-                <p>ID</p>
-                <p className={styles.wallet}>Wallet</p>
-                <p className={styles.price}>Price</p>
-                <p className={styles.side}>Side</p>
-                <p className={styles.type}>Type</p>
-                {/* <p className={styles.tokens}>
+        <>
+            {mobileHeaderDisplay}
+            <div className={styles.main_container}>
+                <div className={styles.row_container}>
+                    <p>ID</p>
+                    <p className={styles.wallet}>Wallet</p>
+                    <p className={styles.price}>Price</p>
+                    <p className={styles.side}>Side</p>
+                    <p className={styles.type}>Type</p>
+                    {/* <p className={styles.tokens}>
                     {baseTokenSymbol}/{quoteTokenSymbol}
                 </p> */}
-                <p className={styles.token}>Value</p>
-                <p className={styles.token}>{baseTokenSymbol}</p>
-                <p className={styles.token}>{quoteTokenSymbol}</p>
-            </div>
+                    <p className={styles.token}>Value</p>
+                    <p className={styles.token}>{baseTokenSymbol}</p>
+                    <p className={styles.token}>{quoteTokenSymbol}</p>
+                </div>
 
-            <div></div>
-        </div>
+                <div></div>
+            </div>
+        </>
     );
 }

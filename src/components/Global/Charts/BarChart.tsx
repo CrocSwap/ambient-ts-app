@@ -58,7 +58,7 @@ export default function BarChart(props: BarData) {
             const xScale = series.xScale(),
                 xValue = series.crossValue();
 
-            const filtered = data.lenght > 1 ? data.filter((d: any) => xValue(d) != null) : data;
+            const filtered = data.length > 1 ? data.filter((d: any) => xValue(d) != null) : data;
             const nearest = minimum(filtered, (d: any) => Math.abs(point.x - xScale(xValue(d))))[1];
             const newX = new Date(nearest.time.getTime());
             const value = new Date(newX.setTime(newX.getTime()));
