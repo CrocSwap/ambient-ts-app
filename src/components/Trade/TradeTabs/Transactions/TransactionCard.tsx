@@ -369,6 +369,10 @@ export default function TransactionCard(props: TransactionProps) {
             ? parseFloat(tx.quoteFlow) > 0
                 ? 'add'
                 : 'remove'
+            : tx.entityType === 'limitOrder'
+            ? tx.changeType === 'burn'
+                ? 'remove'
+                : 'add'
             : (isDenomBase && tx.isBuy) || (!isDenomBase && !tx.isBuy)
             ? 'sell'
             : 'buy';
