@@ -7,6 +7,7 @@ import { defaultTokens } from '../../../../utils/data/defaultTokens';
 import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
 import { setToken } from '../../../../utils/state/temp';
 import { useState } from 'react';
+import TransferAddressInput from '../Transfer/TransferAddressInput/TransferAddressInput';
 
 interface PortfolioWithdrawProps {
     crocEnv: CrocEnv | undefined;
@@ -23,6 +24,8 @@ export default function Withdraw(props: PortfolioWithdrawProps) {
     const dispatch = useAppDispatch();
 
     const [withdrawQty, setWithdrawQty] = useState<number | undefined>();
+    const [transferToAddress, setTransferToAddress] = useState<string | undefined>();
+    const [isSendToAddressChecked, setIsSendToAddressChecked] = useState<boolean>(false);
 
     const chooseToken = (tok: TokenIF) => {
         console.log(tok);
@@ -44,10 +47,21 @@ export default function Withdraw(props: PortfolioWithdrawProps) {
 
     const withdrawFn = () => {
         if (crocEnv && withdrawQty) {
-            crocEnv.token(tempTokenSelection.address).withdraw(withdrawQty, connectedAccount);
+            if (isSendToAddressChecked && transferToAddress) {
+                crocEnv.token(tempTokenSelection.address).withdraw(withdrawQty, transferToAddress);
+            } else {
+                crocEnv.token(tempTokenSelection.address).withdraw(withdrawQty, connectedAccount);
+            }
             // crocEnv.token(tempTokenSelection.address).deposit(1, wallet.address);
         }
     };
+
+    const transferAddressOrNull = isSendToAddressChecked ? (
+        <TransferAddressInput
+            fieldId='exchange-balance-withdraw-address'
+            setTransferToAddress={setTransferToAddress}
+        />
+    ) : null;
 
     return (
         <div className={styles.deposit_container}>
@@ -57,7 +71,10 @@ export default function Withdraw(props: PortfolioWithdrawProps) {
                 onClick={() => openGlobalModal(chooseTokenDiv)}
                 tempTokenSelection={tempTokenSelection}
                 setWithdrawQty={setWithdrawQty}
+                isSendToAddressChecked={isSendToAddressChecked}
+                setIsSendToAddressChecked={setIsSendToAddressChecked}
             />
+            {transferAddressOrNull}
             <WithdrawButton
                 onClick={() => {
                     // console.log('clicked');

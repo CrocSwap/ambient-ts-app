@@ -1,13 +1,14 @@
 import styles from './WithdrawCurrencySelector.module.css';
 import { RiArrowDownSLine } from 'react-icons/ri';
 import Toggle from '../../../../Global/Toggle/Toggle';
-import { Dispatch, SetStateAction, useState } from 'react';
+import { Dispatch, SetStateAction } from 'react';
 import { TokenIF } from '../../../../../utils/interfaces/TokenIF';
 
 interface WithdrawCurrencySelectorProps {
     fieldId: string;
     onClick: () => void;
-
+    isSendToAddressChecked: boolean;
+    setIsSendToAddressChecked: Dispatch<SetStateAction<boolean>>;
     sellToken?: boolean;
     disable?: boolean;
     tempTokenSelection: TokenIF;
@@ -15,17 +16,23 @@ interface WithdrawCurrencySelectorProps {
 }
 
 export default function WithdrawCurrencySelector(props: WithdrawCurrencySelectorProps) {
-    const { fieldId, disable, onClick, tempTokenSelection, setWithdrawQty } = props;
-
-    const [isChecked, setIsChecked] = useState<boolean>(false);
+    const {
+        fieldId,
+        disable,
+        isSendToAddressChecked,
+        setIsSendToAddressChecked,
+        onClick,
+        tempTokenSelection,
+        setWithdrawQty,
+    } = props;
 
     const toggleContent = (
         <span className={styles.surplus_toggle}>
             Send to a different address
             <div className={styles.toggle_container}>
                 <Toggle
-                    isOn={isChecked}
-                    handleToggle={() => setIsChecked(!isChecked)}
+                    isOn={isSendToAddressChecked}
+                    handleToggle={() => setIsSendToAddressChecked(!isSendToAddressChecked)}
                     Width={36}
                     id='withdraw_to_different_address'
                 />
