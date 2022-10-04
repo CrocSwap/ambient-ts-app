@@ -51,7 +51,7 @@ interface ChartData {
     pinnedMinPriceDisplayTruncated: number | undefined;
     pinnedMaxPriceDisplayTruncated: number | undefined;
     truncatedPoolPrice: number | undefined;
-    spotPriceDisplay: string | undefined;
+    poolPriceDisplay: number | undefined;
     // feeData: any[];
     // volumeData: any[];
     // tvlData: any[];
@@ -72,7 +72,7 @@ export default function Chart(props: ChartData) {
         pinnedMinPriceDisplayTruncated,
         pinnedMaxPriceDisplayTruncated,
         simpleRangeWidth,
-        spotPriceDisplay,
+        poolPriceDisplay,
         expandTradeTable,
         isCandleAdded,
     } = props;
@@ -309,9 +309,7 @@ export default function Chart(props: ChartData) {
             const liquidityScale = d3.scaleLinear();
             const ghostScale = d3.scaleLinear();
 
-            const displayValue =
-                spotPriceDisplay !== undefined ? spotPriceDisplay.replace(',', '') : '0';
-            const barThreshold = parseFloat(displayValue);
+            const barThreshold = poolPriceDisplay !== undefined ? poolPriceDisplay : 0;
 
             // bar chart
             const liquidityExtent = d3fc
@@ -677,17 +675,15 @@ export default function Chart(props: ChartData) {
                                 )[0].value;
 
                                 const displayValue =
-                                    spotPriceDisplay !== undefined
-                                        ? spotPriceDisplay.replace(',', '')
-                                        : '';
+                                    poolPriceDisplay !== undefined ? poolPriceDisplay : 0;
 
-                                const dragLimit = parseFloat(displayValue) / 100;
+                                const dragLimit = displayValue / 100.0;
 
                                 valueWithRange =
                                     newTargets.filter((target: any) => target.name === 'Max')[0]
                                         .value - snappedValue;
 
-                                if (snappedValue > parseFloat(displayValue) + dragLimit) {
+                                if (snappedValue > displayValue + dragLimit) {
                                     newTargets.filter(
                                         (target: any) => target.name === 'Max',
                                     )[0].value = snappedValue;
@@ -705,14 +701,14 @@ export default function Chart(props: ChartData) {
                                         (target: any) => target.name === 'Max',
                                     )[0].value = snap(
                                         props.liquidityData.liqSnapData,
-                                        parseFloat(displayValue) + dragLimit * 1.01,
+                                        displayValue + dragLimit * 1.01,
                                     )[0].value;
 
                                     newTargets.filter(
                                         (target: any) => target.name === 'Min',
                                     )[0].value = snap(
                                         props.liquidityData.liqSnapData,
-                                        parseFloat(displayValue) - dragLimit * 1.01,
+                                        displayValue - dragLimit * 1.01,
                                     )[0].value;
 
                                     render();
@@ -726,11 +722,8 @@ export default function Chart(props: ChartData) {
                                 const newTargets = [...prevState];
 
                                 const displayValue =
-                                    spotPriceDisplay !== undefined
-                                        ? spotPriceDisplay.replace(',', '')
-                                        : '';
-
-                                const dragLimit = parseFloat(displayValue) / 100;
+                                    poolPriceDisplay !== undefined ? poolPriceDisplay : 0;
+                                const dragLimit = displayValue / 100.0;
 
                                 valueWithRange =
                                     newTargets.filter((target: any) => target.name === 'Min')[0]
@@ -740,7 +733,7 @@ export default function Chart(props: ChartData) {
                                     (target: any) => target.name === 'Max',
                                 )[0].value;
 
-                                if (snappedValue < parseFloat(displayValue) - dragLimit) {
+                                if (snappedValue < displayValue - dragLimit) {
                                     newTargets.filter(
                                         (target: any) => target.name === 'Min',
                                     )[0].value = snappedValue;
@@ -758,14 +751,14 @@ export default function Chart(props: ChartData) {
                                         (target: any) => target.name === 'Max',
                                     )[0].value = snap(
                                         props.liquidityData.liqSnapData,
-                                        parseFloat(displayValue) + dragLimit * 1.01,
+                                        displayValue + dragLimit * 1.01,
                                     )[0].value;
 
                                     newTargets.filter(
                                         (target: any) => target.name === 'Min',
                                     )[0].value = snap(
                                         props.liquidityData.liqSnapData,
-                                        parseFloat(displayValue) - dragLimit * 1.01,
+                                        displayValue - dragLimit * 1.01,
                                     )[0].value;
 
                                     render();
@@ -917,7 +910,7 @@ export default function Chart(props: ChartData) {
                 return dragLimit;
             });
         }
-    }, [spotPriceDisplay, location, scaleData, isAdvancedModeActive, dragControl]);
+    }, [poolPriceDisplay, location, scaleData, isAdvancedModeActive, dragControl]);
 
     useEffect(() => {
         setDragControl(false);
@@ -1122,12 +1115,11 @@ export default function Chart(props: ChartData) {
                 const snapResponse = snap(props.liquidityData.liqSnapData, clickedValue);
                 const snappedValue = Math.round(snapResponse[0].value * 100) / 100;
 
-                const displayValue =
-                    spotPriceDisplay !== undefined ? spotPriceDisplay.replace(',', '') : '';
+                const displayValue = poolPriceDisplay !== undefined ? poolPriceDisplay : 0;
 
-                const dragLimit = parseFloat(displayValue) / 100;
+                const dragLimit = displayValue / 100.0;
 
-                const lineToBeSet = clickedValue > parseFloat(displayValue) ? 'Max' : 'Min';
+                const lineToBeSet = clickedValue > displayValue ? 'Max' : 'Min';
 
                 if (!isAdvancedModeActive) {
                     let valueWithRange: number;
@@ -1143,7 +1135,7 @@ export default function Chart(props: ChartData) {
                                 newTargets.filter((target: any) => target.name === 'Max')[0].value -
                                 snappedValue;
 
-                            if (snappedValue > parseFloat(displayValue) + dragLimit) {
+                            if (snappedValue > displayValue + dragLimit) {
                                 newTargets.filter((target: any) => target.name === 'Max')[0].value =
                                     snappedValue;
 
@@ -1158,13 +1150,13 @@ export default function Chart(props: ChartData) {
                                 newTargets.filter((target: any) => target.name === 'Max')[0].value =
                                     snap(
                                         props.liquidityData.liqSnapData,
-                                        parseFloat(displayValue) + dragLimit * 1.01,
+                                        displayValue + dragLimit * 1.01,
                                     )[0].value;
 
                                 newTargets.filter((target: any) => target.name === 'Min')[0].value =
                                     snap(
                                         props.liquidityData.liqSnapData,
-                                        parseFloat(displayValue) - dragLimit * 1.01,
+                                        displayValue - dragLimit * 1.01,
                                     )[0].value;
 
                                 render();
@@ -1186,7 +1178,7 @@ export default function Chart(props: ChartData) {
                                 (target: any) => target.name === 'Max',
                             )[0].value;
 
-                            if (snappedValue < parseFloat(displayValue) - dragLimit) {
+                            if (snappedValue < displayValue - dragLimit) {
                                 newTargets.filter((target: any) => target.name === 'Min')[0].value =
                                     snappedValue;
 
@@ -1201,13 +1193,13 @@ export default function Chart(props: ChartData) {
                                 newTargets.filter((target: any) => target.name === 'Max')[0].value =
                                     snap(
                                         props.liquidityData.liqSnapData,
-                                        parseFloat(displayValue) + dragLimit * 1.01,
+                                        displayValue + dragLimit * 1.01,
                                     )[0].value;
 
                                 newTargets.filter((target: any) => target.name === 'Min')[0].value =
                                     snap(
                                         props.liquidityData.liqSnapData,
-                                        parseFloat(displayValue) - dragLimit * 1.01,
+                                        displayValue - dragLimit * 1.01,
                                     )[0].value;
 
                                 render();
@@ -1652,19 +1644,19 @@ export default function Chart(props: ChartData) {
             const high = range.filter((target: any) => target.name === 'Max')[0].value;
 
             if (!isAdvancedModeActive) {
-                if (spotPriceDisplay !== undefined && (highLineMoved || lowLineMoved)) {
-                    const displayValue = spotPriceDisplay.replace(',', '');
+                if (poolPriceDisplay !== undefined && (highLineMoved || lowLineMoved)) {
+                    const displayValue = poolPriceDisplay !== undefined ? poolPriceDisplay : 0;
 
-                    const dragLimit = parseFloat(displayValue) / 100;
+                    const dragLimit = displayValue / 100.0;
 
                     const difference = highLineMoved
-                        ? high - parseFloat(displayValue)
+                        ? high - displayValue
                         : lowLineMoved
-                        ? parseFloat(displayValue) - low
+                        ? displayValue - low
                         : 1;
 
                     if (!(dragLimit > difference)) {
-                        const percentage = (difference * 100) / parseFloat(displayValue);
+                        const percentage = (difference * 100) / displayValue;
                         dispatch(setSimpleRangeWidth(Math.round(percentage)));
                     } else {
                         dispatch(setSimpleRangeWidth(1));
