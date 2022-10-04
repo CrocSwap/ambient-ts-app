@@ -19,6 +19,7 @@ interface PortfolioDepositProps {
 export default function Deposit(props: PortfolioDepositProps) {
     const { crocEnv, connectedAccount, openGlobalModal, closeGlobalModal, tempTokenSelection } =
         props;
+
     const dispatch = useAppDispatch();
 
     const [depositQty, setDepositQty] = useState<number | undefined>();

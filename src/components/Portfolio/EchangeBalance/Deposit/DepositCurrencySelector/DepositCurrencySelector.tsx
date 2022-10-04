@@ -21,7 +21,7 @@ export default function DepositCurrencySelector(props: DepositCurrencySelectorPr
             <input
                 id={`${fieldId}-exchange-balance-deposit-quantity`}
                 className={styles.currency_quantity}
-                // placeholder='0'
+                placeholder='0'
                 onChange={(event) => {
                     setDepositQty(parseFloat(event.target.value));
                 }}
