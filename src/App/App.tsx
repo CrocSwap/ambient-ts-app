@@ -27,6 +27,7 @@ import {
     addChangesByUser,
     setLastBlock,
     addLimitOrderChangesByUser,
+    ITransaction,
     // ChangesByUser,
 } from '../utils/state/graphDataSlice';
 import { ethers } from 'ethers';
@@ -115,6 +116,7 @@ import { getLimitOrderData } from './functions/getLimitOrderData';
 // import { getTransactionData } from './functions/getTransactionData';
 import { fetchPoolRecentChanges } from './functions/fetchPoolRecentChanges';
 import { fetchUserRecentChanges } from './functions/fetchUserRecentChanges';
+import { getTransactionData } from './functions/getTransactionData';
 
 const cachedFetchAddress = memoizeFetchAddress();
 const cachedFetchNativeTokenBalance = memoizeFetchNativeTokenBalance();
@@ -1240,7 +1242,17 @@ export default function App() {
         if (lastUserRecentChangesMessage !== null) {
             const lastMessageData = JSON.parse(lastUserRecentChangesMessage.data).data;
 
-            if (lastMessageData) dispatch(addChangesByUser(lastMessageData));
+            if (lastMessageData) {
+                Promise.all(
+                    lastMessageData.map((tx: ITransaction) => {
+                        return getTransactionData(tx, importedTokens);
+                    }),
+                )
+                    .then((updatedTransactions) => {
+                        dispatch(addChangesByUser(updatedTransactions));
+                    })
+                    .catch(console.log);
+            }
         }
     }, [lastUserRecentChangesMessage]);
 
