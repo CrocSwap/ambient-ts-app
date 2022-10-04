@@ -29,3 +29,10 @@ letter-spacing: -0.02em;
 
 color: var(--text-grey-white)
 }
+
+.align_center{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 4px;
+}

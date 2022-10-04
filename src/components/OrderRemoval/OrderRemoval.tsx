@@ -48,6 +48,7 @@ export default function OrderRemoval(props: IOrderRemovalProps) {
     const [newRemovalTransactionHash, setNewRemovalTransactionHash] = useState('');
     const [txErrorCode, setTxErrorCode] = useState(0);
     const [txErrorMessage, setTxErrorMessage] = useState('');
+    const [showSettings, setShowSettings] = useState(false);
 
     const resetConfirmation = () => {
         setShowConfirmation(false);
@@ -158,7 +159,16 @@ export default function OrderRemoval(props: IOrderRemovalProps) {
         <div>
             <RemoveOrderModalHeader
                 onClose={closeGlobalModal}
-                title={showConfirmation ? '' : 'Limit Order Removal'}
+                title={
+                    showSettings
+                        ? 'Order Removal Settings'
+                        : showConfirmation
+                        ? ''
+                        : 'Limit Order Removal'
+                }
+                showSettings={showSettings}
+                setShowSettings={setShowSettings}
+                onGoBack={showSettings ? () => setShowSettings(false) : null}
             />
             <RemoveOrderTokenHeader
                 isDenomBase={isDenomBase}
