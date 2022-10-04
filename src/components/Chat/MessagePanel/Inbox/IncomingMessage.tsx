@@ -27,15 +27,15 @@ export default function IncomingMessage(props: IncomingMessageProps) {
             method: 'GET',
         });
         const data = await response.json();
-        if (data.status === 'OK') {
-            setName(data.ensName);
-        }
+
+        return data;
     }
 
     useEffect(() => {
-        getName();
-    }),
-        [name];
+        getName().then((res) => {
+            setName(res.userData.ensName);
+        });
+    }, [name]);
 
     return (
         <div className={styles.income_message}>

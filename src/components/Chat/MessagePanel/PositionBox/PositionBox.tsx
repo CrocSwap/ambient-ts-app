@@ -9,6 +9,8 @@ import { formatAmount } from '../../../../utils/numbers';
 import { ITransaction } from '../../../../utils/state/graphDataSlice';
 import styles from './PositionBox.module.css';
 import { motion } from 'framer-motion';
+import { useSortedPositions } from '../../../Trade/TradeTabs/Ranges/useSortedPositions';
+import { ambientPosSlot, concPosSlot } from '@crocswap-libs/sdk';
 
 interface PositionBoxProps {
     message: string;
@@ -23,7 +25,40 @@ export default function PositionBox(props: PositionBoxProps) {
     const tradeData = useAppSelector((state) => state.tradeData);
     const graphData = useAppSelector((state) => state?.graphData);
     const transactionsData = graphData?.changesByPool?.changes;
+    const [sortBy, setSortBy, reverseSort, setReverseSort, sortedPositions] = useSortedPositions(
+        true,
+        graphData?.positionsByUser?.positions,
+        graphData?.positionsByPool?.positions,
+    );
 
+    useEffect(() => {
+        sortedPositions.map((position, index) => {
+            // console.log(`aaa+${index}` ,
+            let posHash;
+            let min;
+            let max;
+            let apy;
+
+            if (position.positionType == 'ambient') {
+                posHash = ambientPosSlot(position.user, position.base, position.quote, 36000);
+            } else {
+                posHash = concPosSlot(
+                    position.user,
+                    position.base,
+                    position.quote,
+                    position.bidTick,
+                    position.askTick,
+                    36000,
+                );
+            }
+            console.error(sortedPositions);
+            /* console.error(position.positionStorageSlot);
+            console.error(position.lowRangeDisplayInBase);
+            console.error(position.highRangeDisplayInBase);
+            console.error(position.apy);*/
+            // )
+        });
+    }, [sortedPositions]);
     useEffect(() => {
         if (message.includes('0x')) {
             const hashMsg = message.split(' ').find((item) => item.includes('0x'));
