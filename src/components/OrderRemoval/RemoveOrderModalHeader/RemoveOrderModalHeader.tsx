@@ -33,10 +33,10 @@ export default function RemoveOrderModalHeader(props: RemoveOrderModalHeaderProp
             <h2>{props.title}</h2>
 
             <div className={styles.align_center}>
+                {settingsIcon}
                 <div onClick={props.onClose}>
                     <VscClose size={22} />
                 </div>
-                {settingsIcon}
             </div>
         </header>
     );

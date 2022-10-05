@@ -12,6 +12,7 @@ import Animation from '../Global/Animation/Animation';
 import completed from '../../assets/animations/completed.json';
 import { FiExternalLink } from 'react-icons/fi';
 import RemoveOrderModalHeader from './RemoveOrderModalHeader/RemoveOrderModalHeader';
+import RemoveOrderSettings from './RemoveOrderSettings/RemoveOrderSettings';
 interface IOrderRemovalProps {
     limitOrder: ILimitOrderState;
     closeGlobalModal: () => void;
@@ -150,18 +151,17 @@ export default function OrderRemoval(props: IOrderRemovalProps) {
     );
     // ----------------------------END OF CONFIRMATION JSX------------------------------
 
-    if (showConfirmation) return confirmationContent;
-    return (
+    const showSettingsOrMainContent = showSettings ? (
+        <RemoveOrderSettings
+            showSettings={showSettings}
+            setShowSettings={setShowSettings}
+            onBackClick={resetConfirmation}
+        />
+    ) : (
         <div>
             <RemoveOrderModalHeader
                 onClose={closeGlobalModal}
-                title={
-                    showSettings
-                        ? 'Order Removal Settings'
-                        : showConfirmation
-                        ? ''
-                        : 'Limit Order Removal'
-                }
+                title={showConfirmation ? '' : 'Limit Order Removal'}
                 showSettings={showSettings}
                 setShowSettings={setShowSettings}
                 onGoBack={showSettings ? () => setShowSettings(false) : null}
@@ -196,7 +196,11 @@ export default function OrderRemoval(props: IOrderRemovalProps) {
                 positionLiquidity={positionLiquidity}
             />
             <RemoveOrderButton removeFn={removeFn} disabled={false} title='Show Example Submit' />
-            <button onClick={() => setNewRemovalTransactionHash('fake tx')}>fake tx hash</button>
         </div>
     );
+
+    // --------------------------------------------------------------------------------------
+
+    if (showConfirmation) return confirmationContent;
+    return <>{showSettingsOrMainContent}</>;
 }
