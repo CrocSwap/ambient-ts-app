@@ -737,11 +737,10 @@ export default function App() {
             // retrieve pool liquidity
             try {
                 if (httpGraphCacheServerDomain) {
-                    // console.log('fetching pool liquidity distribution');
-
                     const poolLiquidityCacheEndpoint =
                         httpGraphCacheServerDomain + '/pool_liquidity_distribution?';
 
+                    console.log('fetching pool liquidity distribution');
                     fetch(
                         poolLiquidityCacheEndpoint +
                             new URLSearchParams({
@@ -782,7 +781,7 @@ export default function App() {
                 // retrieve pool_positions
                 try {
                     if (httpGraphCacheServerDomain) {
-                        // console.log('fetching pool positions');
+                        console.log('fetching pool positions');
                         const allPositionsCacheEndpoint =
                             httpGraphCacheServerDomain + '/pool_positions?';
                         fetch(
@@ -868,11 +867,10 @@ export default function App() {
                 // retrieve pool limit order states
                 try {
                     if (httpGraphCacheServerDomain) {
-                        console.log('fetching pool limit order states');
-
                         const poolLimitOrderStatesCacheEndpoint =
                             httpGraphCacheServerDomain + '/pool_limit_order_states?';
 
+                        console.log('fetching pool limit order states');
                         fetch(
                             poolLimitOrderStatesCacheEndpoint +
                                 new URLSearchParams({
@@ -924,10 +922,10 @@ export default function App() {
         ) {
             try {
                 if (httpGraphCacheServerDomain) {
-                    // console.log('fetching candles');
                     const candleSeriesCacheEndpoint =
                         httpGraphCacheServerDomain + '/candle_series?';
 
+                    console.log('fetching candle series');
                     fetch(
                         candleSeriesCacheEndpoint +
                             new URLSearchParams({
@@ -1447,10 +1445,9 @@ export default function App() {
 
     useEffect(() => {
         if (isUserLoggedIn && account) {
-            console.log('fetching user positions');
-
             const userPositionsCacheEndpoint = httpGraphCacheServerDomain + '/user_positions?';
 
+            console.log('fetching user positions');
             try {
                 fetch(
                     userPositionsCacheEndpoint +
@@ -1499,10 +1496,9 @@ export default function App() {
                 console.log;
             }
 
-            console.log('fetching user limit orders ');
-
             const userLimitOrderStatesCacheEndpoint =
                 httpGraphCacheServerDomain + '/user_limit_order_states?';
+            console.log('fetching user limit orders states');
             try {
                 fetch(
                     userLimitOrderStatesCacheEndpoint +
