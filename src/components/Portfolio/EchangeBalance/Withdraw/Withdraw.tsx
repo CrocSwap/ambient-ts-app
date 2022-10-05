@@ -220,12 +220,13 @@ export default function Withdraw(props: PortfolioWithdrawProps) {
     // };
     const isResolvedAddressDifferent = resolvedAddress !== sendToAddress;
 
-    const resolvedAddressOrNull = isResolvedAddressDifferent ? (
-        <div className={styles.info_text}>
-            Resolved Destination Address:
-            <div className={styles.hex_address}>{resolvedAddress}</div>
-        </div>
-    ) : null;
+    const resolvedAddressOrNull =
+        isSendToAddressChecked && isResolvedAddressDifferent ? (
+            <div className={styles.info_text}>
+                Resolved Destination Address:
+                <div className={styles.hex_address}>{resolvedAddress}</div>
+            </div>
+        ) : null;
 
     const toggleContent = (
         <span className={styles.surplus_toggle}>
