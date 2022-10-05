@@ -13,6 +13,7 @@ import { SetStateAction, Dispatch, useState, useEffect } from 'react';
 import { TokenIF } from '../../../utils/interfaces/TokenIF';
 import { CrocEnv } from '@crocswap-libs/sdk';
 import { ethers } from 'ethers';
+import { fetchAddress } from '../../../App/functions/fetchAddress';
 
 interface ExchangeBalanceProps {
     crocEnv: CrocEnv | undefined;
@@ -73,6 +74,32 @@ export default function ExchangeBalance(props: ExchangeBalanceProps) {
         })();
     }, [sendToAddress, isSendToAddressHex, isSendToAddressEns, mainnetProvider]);
 
+    const [secondaryEnsName, setSecondaryEnsName] = useState<string | undefined>();
+
+    // check for ENS name
+    useEffect(() => {
+        (async () => {
+            if (
+                sendToAddress &&
+                isSendToAddressHex &&
+                sendToAddress.length === 42 &&
+                sendToAddress.startsWith('0x')
+            ) {
+                try {
+                    const ensName = await fetchAddress(mainnetProvider, sendToAddress, '0x1');
+                    if (ensName) {
+                        setSecondaryEnsName(ensName);
+                    } else setSecondaryEnsName(undefined);
+                } catch (error) {
+                    setSecondaryEnsName(undefined);
+                    console.log({ error });
+                }
+            } else {
+                setSecondaryEnsName(undefined);
+            }
+        })();
+    }, [sendToAddress, isSendToAddressHex]);
+
     const accountData = [
         {
             label: 'Deposit',
@@ -108,6 +135,7 @@ export default function ExchangeBalance(props: ExchangeBalanceProps) {
                     sendToAddress={sendToAddress}
                     resolvedAddress={resolvedAddress}
                     setSendToAddress={setSendToAddress}
+                    secondaryEnsName={secondaryEnsName}
                 />
             ),
             icon: withdrawImage,
@@ -127,6 +155,7 @@ export default function ExchangeBalance(props: ExchangeBalanceProps) {
                     sendToAddress={sendToAddress}
                     resolvedAddress={resolvedAddress}
                     setSendToAddress={setSendToAddress}
+                    secondaryEnsName={secondaryEnsName}
                 />
             ),
             icon: transferImage,

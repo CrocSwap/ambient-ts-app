@@ -23,6 +23,7 @@ interface PortfolioWithdrawProps {
     sendToAddress: string | undefined;
     resolvedAddress: string | undefined;
     setSendToAddress: Dispatch<SetStateAction<string | undefined>>;
+    secondaryEnsName: string | undefined;
 }
 
 export default function Withdraw(props: PortfolioWithdrawProps) {
@@ -41,6 +42,7 @@ export default function Withdraw(props: PortfolioWithdrawProps) {
         sendToAddress,
         resolvedAddress,
         setSendToAddress,
+        secondaryEnsName,
     } = props;
 
     const dispatch = useAppDispatch();
@@ -109,16 +111,15 @@ export default function Withdraw(props: PortfolioWithdrawProps) {
 
     useEffect(() => {
         // console.log({ isDepositQtyValid });
-        // console.log({ isTokenAllowanceSufficient });
-        if (!withdrawQty) {
+        if (isSendToAddressChecked && !isResolvedAddressValid) {
+            setIsButtonDisabled(true);
+            setButtonMessage('Please enter a valid address');
+        } else if (!withdrawQty) {
             setIsButtonDisabled(true);
             setButtonMessage('Please Enter Token Quantity');
         } else if (!isDexBalanceSufficient) {
             setIsButtonDisabled(true);
             setButtonMessage(`${selectedToken.symbol} Exchange Balance Insufficient`);
-        } else if (isSendToAddressChecked && !isResolvedAddressValid) {
-            setIsButtonDisabled(true);
-            setButtonMessage('Please enter a valid address');
         }
         // else if (isApprovalPending) {
         //     setIsButtonDisabled(true);
@@ -221,10 +222,18 @@ export default function Withdraw(props: PortfolioWithdrawProps) {
     const isResolvedAddressDifferent = resolvedAddress !== sendToAddress;
 
     const resolvedAddressOrNull =
-        isSendToAddressChecked && isResolvedAddressDifferent ? (
+        isSendToAddressChecked && isResolvedAddressValid && isResolvedAddressDifferent ? (
             <div className={styles.info_text}>
                 Resolved Destination Address:
                 <div className={styles.hex_address}>{resolvedAddress}</div>
+            </div>
+        ) : null;
+
+    const secondaryEnsOrNull =
+        isSendToAddressChecked && secondaryEnsName ? (
+            <div className={styles.info_text}>
+                Resolved ENS Address:
+                <div className={styles.hex_address}>{secondaryEnsName}</div>
             </div>
         ) : null;
 
@@ -265,6 +274,7 @@ export default function Withdraw(props: PortfolioWithdrawProps) {
                 {isSendToAddressChecked ? sendToAddressWalletBalance : tokenWalletBalance}
             </div>
             {resolvedAddressOrNull}
+            {secondaryEnsOrNull}
             <WithdrawButton
                 onClick={() => {
                     withdrawFn();

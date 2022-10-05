@@ -21,6 +21,7 @@ interface PortfolioTransferProps {
     sendToAddress: string | undefined;
     resolvedAddress: string | undefined;
     setSendToAddress: Dispatch<SetStateAction<string | undefined>>;
+    secondaryEnsName: string | undefined;
 }
 
 export default function Transfer(props: PortfolioTransferProps) {
@@ -36,6 +37,7 @@ export default function Transfer(props: PortfolioTransferProps) {
         sendToAddress,
         resolvedAddress,
         setSendToAddress,
+        secondaryEnsName,
     } = props;
 
     const dispatch = useAppDispatch();
@@ -91,15 +93,15 @@ export default function Transfer(props: PortfolioTransferProps) {
     useEffect(() => {
         // console.log({ isDepositQtyValid });
         // console.log({ isTokenAllowanceSufficient });
-        if (!transferQty) {
+        if (!isResolvedAddressValid) {
+            setIsButtonDisabled(true);
+            setButtonMessage('Please enter a valid address');
+        } else if (!transferQty) {
             setIsButtonDisabled(true);
             setButtonMessage('Please Enter Token Quantity');
         } else if (!isDexBalanceSufficient) {
             setIsButtonDisabled(true);
             setButtonMessage(`${selectedToken.symbol} Exchange Balance Insufficient`);
-        } else if (!isResolvedAddressValid) {
-            setIsButtonDisabled(true);
-            setButtonMessage('Please enter a valid address');
         }
         // else if (isApprovalPending) {
         //     setIsButtonDisabled(true);
@@ -173,6 +175,13 @@ export default function Transfer(props: PortfolioTransferProps) {
         </div>
     ) : null;
 
+    const secondaryEnsOrNull = secondaryEnsName ? (
+        <div className={styles.info_text}>
+            Resolved ENS Address:
+            <div className={styles.hex_address}>{secondaryEnsName}</div>
+        </div>
+    ) : null;
+
     return (
         <div className={styles.deposit_container}>
             <div className={styles.info_text}>
@@ -196,6 +205,7 @@ export default function Transfer(props: PortfolioTransferProps) {
                 Destination Exchange Balance ({selectedToken.symbol}): {sendToAddressDexBalance}
             </div>
             {resolvedAddressOrNull}
+            {secondaryEnsOrNull}
             <TransferButton
                 onClick={() => {
                     // console.log('clicked');
