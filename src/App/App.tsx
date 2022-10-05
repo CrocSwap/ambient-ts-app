@@ -1460,14 +1460,6 @@ export default function App() {
 
     const graphData = useAppSelector((state) => state.graphData);
 
-    // const getSwapData = async (swap: ITransaction): Promise<ITransaction> => {
-    //     return swap;
-    // };
-
-    // const getCandleData = async (candle: CandleData): Promise<CandleData> => {
-    //     return candle;
-    // };
-
     useEffect(() => {
         if (isUserLoggedIn && account) {
             console.log('fetching user positions');
@@ -1742,6 +1734,7 @@ export default function App() {
         indicateActiveTokenListsChanged: indicateActiveTokenListsChanged,
         openModalWallet: openModalWallet,
         isInitialized: isInitialized,
+        poolExists: poolExists
     };
 
     // props for <Swap/> React element on trade route
@@ -1774,6 +1767,7 @@ export default function App() {
         indicateActiveTokenListsChanged: indicateActiveTokenListsChanged,
         openModalWallet: openModalWallet,
         isInitialized: isInitialized,
+        poolExists: poolExists
     };
 
     // props for <Limit/> React element on trade route
@@ -1808,6 +1802,7 @@ export default function App() {
 
         openGlobalModal: openGlobalModal,
         closeGlobalModal: closeGlobalModal,
+        poolExists: poolExists
 
         // limitRate: limitRate,
         // setLimitRate: setLimitRate,
@@ -1846,6 +1841,7 @@ export default function App() {
         openGlobalModal: openGlobalModal,
         targets: targets,
         setTargets: setTargets,
+        poolExists: poolExists
     };
 
     function toggleSidebar() {
