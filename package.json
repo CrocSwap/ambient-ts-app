@@ -4,7 +4,7 @@
     "private": true,
     "dependencies": {
         "@apollo/client": "^3.6.8",
-        "@crocswap-libs/sdk": "^0.2.39-6",
+        "@crocswap-libs/sdk": "^0.2.39-7",
         "@d3fc/d3fc-extent": "^4.0.2",
         "@emotion/react": "^11.9.0",
         "@emotion/style": "^0.8.0",

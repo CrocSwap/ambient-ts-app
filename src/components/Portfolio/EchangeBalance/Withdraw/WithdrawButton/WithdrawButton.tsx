@@ -1,22 +1,22 @@
 import styles from './WithdrawButton.module.css';
-import { useState } from 'react';
 import Button from '../../../../Global/Button/Button';
 
 interface PortfolioWithdrawButtonProps {
     onClick: () => void;
+    disabled: boolean;
+    buttonMessage: string;
 }
 
 export default function WithdrawButton(props: PortfolioWithdrawButtonProps) {
-    const { onClick } = props;
-    const [allowedButton] = useState<boolean>(true);
+    const { onClick, disabled, buttonMessage } = props;
 
     const ButtonDisplay = (
         <div className={styles.button_container}>
             <Button
-                title={allowedButton ? 'Withdraw' : 'Enter an amount'}
+                title={buttonMessage}
                 // action={() => console.log('clicked')}
                 action={onClick}
-                disabled={!allowedButton}
+                disabled={disabled}
             />
         </div>
     );
