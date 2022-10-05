@@ -60,12 +60,9 @@ interface LimitPropsIF {
     activeTokenListsChanged: boolean;
     indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
     openModalWallet: () => void;
-
     openGlobalModal: (content: React.ReactNode) => void;
-
     closeGlobalModal: () => void;
-    // setLimitRate: React.Dispatch<React.SetStateAction<string>>;
-    // limitRate: string;
+    poolExists: boolean;
 }
 
 export default function Limit(props: LimitPropsIF) {
@@ -94,8 +91,7 @@ export default function Limit(props: LimitPropsIF) {
         activeTokenListsChanged,
         indicateActiveTokenListsChanged,
         openModalWallet,
-        // setLimitRate,
-        // limitRate,
+        poolExists
     } = props;
 
     const { tradeData, navigationMenu } = useTradeData();
@@ -112,8 +108,6 @@ export default function Limit(props: LimitPropsIF) {
 
     const [limitButtonErrorMessage, setLimitButtonErrorMessage] = useState<string>('');
     const [priceInputFieldBlurred, setPriceInputFieldBlurred] = useState(false);
-
-    // const priceInputOnBlur = () => setPriceInputFieldBlurred(true);
 
     useEffect(() => {
         if (poolPriceDisplay === undefined) {
@@ -136,12 +130,6 @@ export default function Limit(props: LimitPropsIF) {
         setTxErrorCode(0);
         setTxErrorMessage('');
     };
-
-    // const tokenADecimals = tokenPair.dataTokenA.decimals;
-    // const tokenBDecimals = tokenPair.dataTokenB.decimals;
-
-    // const baseDecimals = isSellTokenBase ? tokenADecimals : tokenBDecimals;
-    // const quoteDecimals = !isSellTokenBase ? tokenADecimals : tokenBDecimals;
 
     const isTokenAPrimary = tradeData.isTokenAPrimary;
     const limitRate = tradeData.limitPrice;
@@ -315,12 +303,7 @@ export default function Limit(props: LimitPropsIF) {
         const buyQty = tokenBInputQty;
 
         const qty = isTokenAPrimary ? sellQty : buyQty;
-
-        // console.log({ qty });
-        // console.log({ isTokenAPrimary });
-        // console.log({ buyToken });
-        // console.log({ sellToken });
-
+    
         const croc = crocEnv ? crocEnv : new CrocEnv(provider);
 
         const order = isTokenAPrimary ? croc.sell(sellToken, qty) : croc.buy(buyToken, qty);
@@ -480,9 +463,6 @@ export default function Limit(props: LimitPropsIF) {
         }
     }, [gasPriceInGwei, ethMainnetUsdPrice]);
 
-    // const tokenABalance = isSellTokenBase ? baseTokenBalance : quoteTokenBalance;
-    // const tokenBBalance = isSellTokenBase ? quoteTokenBalance : baseTokenBalance;
-
     const approvalButton = (
         <Button
             title={
@@ -501,11 +481,8 @@ export default function Limit(props: LimitPropsIF) {
             <ContentContainer isOnTradeRoute>
                 <LimitHeader
                     chainId={chainId}
-                    // tokenPair={tokenPair}
                     mintSlippage={mintSlippage}
                     isPairStable={isPairStable}
-                    // isDenomBase={tradeData.isDenomBase}
-                    // isSellTokenBase={isSellTokenBase}
                 />
                 <DividerDark addMarginTop />
                 {navigationMenu}
@@ -537,11 +514,11 @@ export default function Limit(props: LimitPropsIF) {
                         setLimitButtonErrorMessage={setLimitButtonErrorMessage}
                         isWithdrawFromDexChecked={isWithdrawFromDexChecked}
                         setIsWithdrawFromDexChecked={setIsWithdrawFromDexChecked}
-                        // priceInputOnBlur={priceInputOnBlur}
                         insideTickDisplayPrice={insideTickDisplayPrice}
                         isDenominationInBase={tradeData.isDenomBase}
                         activeTokenListsChanged={activeTokenListsChanged}
                         indicateActiveTokenListsChanged={indicateActiveTokenListsChanged}
+                        poolExists={poolExists}
                     />
                 </motion.div>
                 <div className={styles.header_container}>
