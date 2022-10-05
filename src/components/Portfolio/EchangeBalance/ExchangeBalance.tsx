@@ -26,6 +26,7 @@ interface ExchangeBalanceProps {
     tokenDexBalance: string;
     setRecheckTokenAllowance: Dispatch<SetStateAction<boolean>>;
     setRecheckTokenBalances: Dispatch<SetStateAction<boolean>>;
+    lastBlockNumber: number;
 }
 
 export default function ExchangeBalance(props: ExchangeBalanceProps) {
@@ -42,6 +43,7 @@ export default function ExchangeBalance(props: ExchangeBalanceProps) {
         tokenDexBalance,
         setRecheckTokenAllowance,
         setRecheckTokenBalances,
+        lastBlockNumber,
     } = props;
 
     const accountData = [
@@ -72,6 +74,12 @@ export default function ExchangeBalance(props: ExchangeBalanceProps) {
                     openGlobalModal={openGlobalModal}
                     closeGlobalModal={closeGlobalModal}
                     selectedToken={selectedToken}
+                    // tokenAllowance={tokenAllowance}
+                    tokenWalletBalance={tokenWalletBalance}
+                    tokenDexBalance={tokenDexBalance}
+                    lastBlockNumber={lastBlockNumber}
+                    // setRecheckTokenAllowance={setRecheckTokenAllowance}
+                    setRecheckTokenBalances={setRecheckTokenBalances}
                 />
             ),
             icon: withdrawImage,

@@ -58,6 +58,7 @@ export default function Transfer(props: PortfolioTransferProps) {
             <TransferAddressInput
                 fieldId='exchange-balance-transfer-address'
                 setTransferToAddress={setTransferToAddress}
+                sendToAddress={transferToAddress}
             />
             <TransferCurrencySelector
                 fieldId='exchange-balance-transfer'

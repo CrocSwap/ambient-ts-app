@@ -6,12 +6,12 @@ interface TransferAddressInputProps {
     setTransferToAddress: Dispatch<SetStateAction<string | undefined>>;
     sellToken?: boolean;
     disable?: boolean;
-
+    sendToAddress: string | undefined;
     // updateOtherQuantity: (evt: ChangeEvent<HTMLInputElement>) => void;
 }
 
 export default function TransferAddressInput(props: TransferAddressInputProps) {
-    const { fieldId, disable, setTransferToAddress } = props;
+    const { fieldId, disable, sendToAddress, setTransferToAddress } = props;
 
     const rateInput = (
         <div className={styles.token_amount}>
@@ -22,6 +22,7 @@ export default function TransferAddressInput(props: TransferAddressInputProps) {
                 onChange={(event) => {
                     setTransferToAddress(event.target.value);
                 }}
+                defaultValue={sendToAddress ? sendToAddress : undefined}
                 type='string'
                 inputMode='text'
                 autoComplete='off'

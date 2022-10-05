@@ -39,7 +39,6 @@ export default function Deposit(props: PortfolioDepositProps) {
 
     const [depositQty, setDepositQty] = useState<number>(0);
     const [buttonMessage, setButtonMessage] = useState<string>('...');
-    // const [isDepositAllowed, setIsDepositAllowed] = useState<boolean>(false);
     const [isButtonDisabled, setIsButtonDisabled] = useState<boolean>(true);
 
     const isTokenAllowanceSufficient = useMemo(

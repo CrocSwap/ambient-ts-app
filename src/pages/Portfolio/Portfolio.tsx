@@ -101,6 +101,7 @@ export default function Portfolio(props: PortfolioPropsIF) {
                 })
                 .catch(console.log);
         }
+        setRecheckTokenBalances(false);
     }, [crocEnv, selectedToken.address, connectedAccount, lastBlockNumber, recheckTokenBalances]);
 
     useEffect(() => {
@@ -198,6 +199,7 @@ export default function Portfolio(props: PortfolioPropsIF) {
                 tokenDexBalance={tokenDexBalance}
                 setRecheckTokenAllowance={setRecheckTokenAllowance}
                 setRecheckTokenBalances={setRecheckTokenBalances}
+                lastBlockNumber={lastBlockNumber}
             />
         </div>
     );

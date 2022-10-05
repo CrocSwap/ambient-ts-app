@@ -12,7 +12,7 @@ interface WithdrawCurrencySelectorProps {
     sellToken?: boolean;
     disable?: boolean;
     selectedToken: TokenIF;
-    setWithdrawQty: Dispatch<SetStateAction<number | undefined>>; // updateOtherQuantity: (evt: ChangeEvent<HTMLInputElement>) => void;
+    setWithdrawQty: Dispatch<SetStateAction<number>>; // updateOtherQuantity: (evt: ChangeEvent<HTMLInputElement>) => void;
 }
 
 export default function WithdrawCurrencySelector(props: WithdrawCurrencySelectorProps) {
@@ -47,7 +47,9 @@ export default function WithdrawCurrencySelector(props: WithdrawCurrencySelector
                 className={styles.currency_quantity}
                 placeholder='0'
                 onChange={(event) => {
-                    setWithdrawQty(parseFloat(event.target.value));
+                    setWithdrawQty(
+                        parseFloat(event.target.value) > 0 ? parseFloat(event.target.value) : 0,
+                    );
                 }}
                 // onChange={(event) => updateOtherQuantity(event)}
                 type='string'
