@@ -9,7 +9,16 @@ import { setToken } from '../../../../utils/state/temp';
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
 import TransferAddressInput from '../Transfer/TransferAddressInput/TransferAddressInput';
 import Toggle from '../../../Global/Toggle/Toggle';
-
+import {
+    addPendingTx,
+    addReceipt,
+    removePendingTx,
+} from '../../../../utils/state/receiptDataSlice';
+import {
+    isTransactionFailedError,
+    isTransactionReplacedError,
+    TransactionError,
+} from '../../../../utils/TransactionError';
 interface PortfolioWithdrawProps {
     crocEnv: CrocEnv | undefined;
     connectedAccount: string;
@@ -174,9 +183,56 @@ export default function Withdraw(props: PortfolioWithdrawProps) {
                         .token(selectedToken.address)
                         .withdraw(withdrawQty, connectedAccount);
                 }
+                dispatch(addPendingTx(tx?.hash));
 
-                if (tx) {
-                    await tx.wait();
+                let receipt;
+                try {
+                    if (tx) receipt = await tx.wait();
+                } catch (e) {
+                    const error = e as TransactionError;
+                    console.log({ error });
+                    // The user used "speed up" or something similar
+                    // in their client, but we now have the updated info
+                    if (isTransactionReplacedError(error)) {
+                        console.log('repriced');
+                        dispatch(removePendingTx(error.hash));
+
+                        const newTransactionHash = error.replacement.hash;
+                        dispatch(addPendingTx(newTransactionHash));
+
+                        console.log({ newTransactionHash });
+                        receipt = error.receipt;
+
+                        //  if (newTransactionHash) {
+                        //      fetch(
+                        //          newSwapCacheEndpoint +
+                        //              new URLSearchParams({
+                        //                  tx: newTransactionHash,
+                        //                  user: account ?? '',
+                        //                  base: isSellTokenBase ? sellTokenAddress : buyTokenAddress,
+                        //                  quote: isSellTokenBase
+                        //                      ? buyTokenAddress
+                        //                      : sellTokenAddress,
+                        //                  poolIdx: (await env.context).chain.poolIndex.toString(),
+                        //                  isBuy: isSellTokenBase.toString(),
+                        //                  inBaseQty: inBaseQty.toString(),
+                        //                  qty: crocQty.toString(),
+                        //                  override: 'false',
+                        //                  chainId: chainId,
+                        //                  limitPrice: '0',
+                        //                  minOut: '0',
+                        //              }),
+                        //      );
+                        //  }
+                    } else if (isTransactionFailedError(error)) {
+                        // console.log({ error });
+                        receipt = error.receipt;
+                    }
+                }
+
+                if (receipt) {
+                    dispatch(addReceipt(JSON.stringify(receipt)));
+                    dispatch(removePendingTx(receipt.transactionHash));
                 }
             } catch (error) {
                 console.warn({ error });
