@@ -6,7 +6,7 @@ import TransferButton from './TransferButton/TransferButton';
 import TransferCurrencySelector from './TransferCurrencySelector/TransferCurrencySelector';
 import { defaultTokens } from '../../../../utils/data/defaultTokens';
 import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
-import { useState } from 'react';
+import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
 import { setToken } from '../../../../utils/state/temp';
 
 interface PortfolioTransferProps {
@@ -15,21 +15,115 @@ interface PortfolioTransferProps {
     openGlobalModal: (content: React.ReactNode, title?: string) => void;
     closeGlobalModal: () => void;
     selectedToken: TokenIF;
+    tokenDexBalance: string;
+    setRecheckTokenBalances: Dispatch<SetStateAction<boolean>>;
+    lastBlockNumber: number;
 }
 
 export default function Transfer(props: PortfolioTransferProps) {
-    const { crocEnv, openGlobalModal, closeGlobalModal, selectedToken } = props;
+    const {
+        crocEnv,
+        openGlobalModal,
+        closeGlobalModal,
+        selectedToken, // tokenAllowance,
+        tokenDexBalance,
+        // setRecheckTokenAllowance,
+        setRecheckTokenBalances,
+        lastBlockNumber,
+    } = props;
 
     const dispatch = useAppDispatch();
 
-    const [transferQty, setTransferQty] = useState<number | undefined>();
-    const [transferToAddress, setTransferToAddress] = useState<string | undefined>();
+    const [transferQty, setTransferQty] = useState<number>(0);
+    const [sendToAddress, setSendToAddress] = useState<string | undefined>();
+    const [buttonMessage, setButtonMessage] = useState<string>('...');
+    const [isButtonDisabled, setIsButtonDisabled] = useState<boolean>(true);
+    const [sendToAddressDexBalance, setSendToAddressDexBalance] = useState<string>('');
+    const [recheckSendToAddressDexBalance, setRecheckSendToAddressDexBalance] =
+        useState<boolean>(false);
+
+    const isSendToAddressValid = useMemo(
+        () =>
+            (sendToAddress?.length === 42 && sendToAddress.startsWith('0x')) ||
+            sendToAddress?.endsWith('.eth'),
+        [sendToAddress],
+    );
+
+    useEffect(() => {
+        if (crocEnv && selectedToken.address && sendToAddress && isSendToAddressValid) {
+            crocEnv
+                .token(selectedToken.address)
+                .balanceDisplay(sendToAddress)
+                .then((bal: string) => {
+                    setSendToAddressDexBalance(bal);
+                })
+                .catch(console.log);
+        } else {
+            setSendToAddressDexBalance('');
+        }
+        setRecheckSendToAddressDexBalance(false);
+    }, [
+        crocEnv,
+        selectedToken.address,
+        sendToAddress,
+        lastBlockNumber,
+        recheckSendToAddressDexBalance,
+    ]);
+
+    const isDexBalanceSufficient = useMemo(
+        () => (tokenDexBalance !== '0.0' ? parseFloat(tokenDexBalance) >= transferQty : false),
+        [tokenDexBalance, transferQty],
+    );
+
+    const isTransferQtyValid = useMemo(() => transferQty > 0, [transferQty]);
+
+    // const [isApprovalPending, setIsApprovalPending] = useState(false);
+    const [isTransferPending, setIsTransferPending] = useState(false);
 
     const chooseToken = (tok: TokenIF) => {
         console.log(tok);
         dispatch(setToken(tok));
         closeGlobalModal();
     };
+
+    useEffect(() => {
+        // console.log({ isDepositQtyValid });
+        // console.log({ isTokenAllowanceSufficient });
+        if (!transferQty) {
+            setIsButtonDisabled(true);
+            setButtonMessage('Please Enter Token Quantity');
+        } else if (!isDexBalanceSufficient) {
+            setIsButtonDisabled(true);
+            setButtonMessage(`${selectedToken.symbol} Exchange Balance Insufficient`);
+        } else if (!isSendToAddressValid) {
+            setIsButtonDisabled(true);
+            setButtonMessage('Please enter a valid address');
+        }
+        // else if (isApprovalPending) {
+        //     setIsButtonDisabled(true);
+        //     setButtonMessage(`${selectedToken.symbol} Approval Pending`);
+        // }
+        else if (isTransferPending) {
+            setIsButtonDisabled(true);
+            setButtonMessage(`${selectedToken.symbol} Transfer Pending`);
+        }
+        // else if (!isTokenAllowanceSufficient) {
+        //     setIsButtonDisabled(false);
+        //     setButtonMessage(`Click to Approve ${selectedToken.symbol}`);
+        // }
+        else if (isTransferQtyValid) {
+            setIsButtonDisabled(false);
+            setButtonMessage('Transfer');
+        }
+    }, [
+        // isApprovalPending,
+        isTransferPending,
+        // isTokenAllowanceSufficient,
+        isDexBalanceSufficient,
+        isTransferQtyValid,
+        selectedToken.symbol,
+        isSendToAddressValid,
+    ]);
 
     const chooseTokenDiv = (
         <div>
@@ -43,11 +137,29 @@ export default function Transfer(props: PortfolioTransferProps) {
         </div>
     );
 
-    const transferFn = () => {
-        if (crocEnv && transferQty && transferToAddress) {
-            crocEnv.token(selectedToken.address).transfer(transferQty, transferToAddress);
-            // crocEnv.token(selectedToken.address).deposit(1, wallet.address);
+    const transfer = async (transferQty: number) => {
+        if (crocEnv && transferQty && sendToAddress) {
+            try {
+                setIsTransferPending(true);
+                const tx = await crocEnv
+                    .token(selectedToken.address)
+                    .transfer(transferQty, sendToAddress);
+
+                if (tx) {
+                    await tx.wait();
+                }
+            } catch (error) {
+                console.warn({ error });
+            } finally {
+                setIsTransferPending(false);
+                setRecheckTokenBalances(true);
+                setRecheckSendToAddressDexBalance(true);
+            }
         }
+    };
+
+    const transferFn = async () => {
+        await transfer(transferQty);
     };
 
     return (
@@ -57,8 +169,8 @@ export default function Transfer(props: PortfolioTransferProps) {
             </div>
             <TransferAddressInput
                 fieldId='exchange-balance-transfer-address'
-                setTransferToAddress={setTransferToAddress}
-                sendToAddress={transferToAddress}
+                setTransferToAddress={setSendToAddress}
+                sendToAddress={sendToAddress}
             />
             <TransferCurrencySelector
                 fieldId='exchange-balance-transfer'
@@ -66,11 +178,19 @@ export default function Transfer(props: PortfolioTransferProps) {
                 selectedToken={selectedToken}
                 setTransferQty={setTransferQty}
             />
+            <div className={styles.info_text}>
+                Your Exchange Balance ({selectedToken.symbol}): {tokenDexBalance}
+            </div>
+            <div className={styles.info_text}>
+                Destination Exchange Balance ({selectedToken.symbol}): {sendToAddressDexBalance}
+            </div>
             <TransferButton
                 onClick={() => {
                     // console.log('clicked');
                     transferFn();
                 }}
+                disabled={isButtonDisabled}
+                buttonMessage={buttonMessage}
             />
         </div>
     );

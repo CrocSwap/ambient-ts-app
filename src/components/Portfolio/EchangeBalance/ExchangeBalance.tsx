@@ -74,11 +74,9 @@ export default function ExchangeBalance(props: ExchangeBalanceProps) {
                     openGlobalModal={openGlobalModal}
                     closeGlobalModal={closeGlobalModal}
                     selectedToken={selectedToken}
-                    // tokenAllowance={tokenAllowance}
                     tokenWalletBalance={tokenWalletBalance}
                     tokenDexBalance={tokenDexBalance}
                     lastBlockNumber={lastBlockNumber}
-                    // setRecheckTokenAllowance={setRecheckTokenAllowance}
                     setRecheckTokenBalances={setRecheckTokenBalances}
                 />
             ),
@@ -93,6 +91,9 @@ export default function ExchangeBalance(props: ExchangeBalanceProps) {
                     openGlobalModal={openGlobalModal}
                     closeGlobalModal={closeGlobalModal}
                     selectedToken={selectedToken}
+                    tokenDexBalance={tokenDexBalance}
+                    lastBlockNumber={lastBlockNumber}
+                    setRecheckTokenBalances={setRecheckTokenBalances}
                 />
             ),
             icon: transferImage,

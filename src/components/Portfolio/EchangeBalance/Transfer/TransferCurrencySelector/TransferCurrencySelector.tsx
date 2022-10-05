@@ -10,7 +10,7 @@ interface TransferCurrencySelectorProps {
     sellToken?: boolean;
     disable?: boolean;
     selectedToken: TokenIF;
-    setTransferQty: Dispatch<SetStateAction<number | undefined>>; // updateOtherQuantity: (evt: ChangeEvent<HTMLInputElement>) => void;
+    setTransferQty: Dispatch<SetStateAction<number>>; // updateOtherQuantity: (evt: ChangeEvent<HTMLInputElement>) => void;
 }
 
 export default function TransferCurrencySelector(props: TransferCurrencySelectorProps) {

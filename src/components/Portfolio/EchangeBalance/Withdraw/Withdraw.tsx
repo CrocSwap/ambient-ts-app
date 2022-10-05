@@ -15,10 +15,8 @@ interface PortfolioWithdrawProps {
     openGlobalModal: (content: React.ReactNode, title?: string) => void;
     closeGlobalModal: () => void;
     selectedToken: TokenIF;
-    // tokenAllowance: string;
     tokenWalletBalance: string;
     tokenDexBalance: string;
-    // setRecheckTokenAllowance: Dispatch<SetStateAction<boolean>>;
     setRecheckTokenBalances: Dispatch<SetStateAction<boolean>>;
     lastBlockNumber: number;
 }
