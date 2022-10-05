@@ -168,7 +168,7 @@ export default function Transfer(props: PortfolioTransferProps) {
 
     const resolvedAddressOrNull = isResolvedAddressDifferent ? (
         <div className={styles.info_text}>
-            Resolved Hex Address:
+            Resolved Destination Address:
             <div className={styles.hex_address}>{resolvedAddress}</div>
         </div>
     ) : null;

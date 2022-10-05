@@ -62,6 +62,8 @@ export default function ExchangeBalance(props: ExchangeBalanceProps) {
 
                 if (newResolvedAddress) {
                     setResolvedAddress(newResolvedAddress);
+                } else {
+                    setResolvedAddress(undefined);
                 }
             } else if (sendToAddress && isSendToAddressHex && !isSendToAddressEns) {
                 setResolvedAddress(sendToAddress);

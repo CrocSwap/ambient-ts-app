@@ -8,6 +8,7 @@ import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
 import { setToken } from '../../../../utils/state/temp';
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
 import TransferAddressInput from '../Transfer/TransferAddressInput/TransferAddressInput';
+import Toggle from '../../../Global/Toggle/Toggle';
 
 interface PortfolioWithdrawProps {
     crocEnv: CrocEnv | undefined;
@@ -221,14 +222,30 @@ export default function Withdraw(props: PortfolioWithdrawProps) {
 
     const resolvedAddressOrNull = isResolvedAddressDifferent ? (
         <div className={styles.info_text}>
-            Resolved Hex Address:
+            Resolved Destination Address:
             <div className={styles.hex_address}>{resolvedAddress}</div>
         </div>
     ) : null;
 
+    const toggleContent = (
+        <span className={styles.surplus_toggle}>
+            Send to a different address
+            <div className={styles.toggle_container}>
+                <Toggle
+                    isOn={isSendToAddressChecked}
+                    handleToggle={() => setIsSendToAddressChecked(!isSendToAddressChecked)}
+                    Width={36}
+                    id='withdraw_to_different_address'
+                />
+            </div>
+        </span>
+    );
+
     return (
         <div className={styles.deposit_container}>
             <div className={styles.info_text}>Withdraw tokens from the exchange to your wallet</div>
+            {toggleContent}
+            {transferAddressOrNull}
             <WithdrawCurrencySelector
                 fieldId='exchange-balance-withdraw'
                 onClick={() => openGlobalModal(chooseTokenDiv)}
@@ -237,7 +254,6 @@ export default function Withdraw(props: PortfolioWithdrawProps) {
                 isSendToAddressChecked={isSendToAddressChecked}
                 setIsSendToAddressChecked={setIsSendToAddressChecked}
             />
-            {transferAddressOrNull}
             <div className={styles.info_text}>
                 Your Exchange Balance ({selectedToken.symbol}): {tokenDexBalance}
             </div>
