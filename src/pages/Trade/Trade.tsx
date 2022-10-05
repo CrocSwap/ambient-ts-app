@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // START: Import React and Dongles
 import { Dispatch, SetStateAction, ReactNode, useState } from 'react';
-import { useParams, Outlet, useOutletContext, NavLink } from 'react-router-dom';
+import { useParams, Outlet, useOutletContext, NavLink, useNavigate } from 'react-router-dom';
 import { ethers } from 'ethers';
 import { motion, AnimateSharedLayout } from 'framer-motion';
 import { SketchPicker } from 'react-color';
@@ -119,6 +119,7 @@ export default function Trade(props: TradePropsIF) {
 
     useUrlParams(chainId, isInitialized);
     const { params } = useParams();
+    const navigate = useNavigate();
 
     const [isCandleSelected, setIsCandleSelected] = useState<boolean | undefined>();
     const [transactionFilter, setTransactionFilter] = useState<CandleData>();
@@ -235,6 +236,7 @@ export default function Trade(props: TradePropsIF) {
 
     const clickInitPool = () => {
         console.log('User wants to intialize a pool!');
+        navigate('/initpool');
     }
 
     return (
