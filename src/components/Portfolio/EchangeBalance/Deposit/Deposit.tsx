@@ -59,7 +59,10 @@ export default function Deposit(props: PortfolioDepositProps) {
     useEffect(() => {
         // console.log({ isDepositQtyValid });
         // console.log({ isTokenAllowanceSufficient });
-        if (isApprovalPending) {
+        if (!depositQty) {
+            setIsButtonDisabled(true);
+            setButtonMessage('Please Enter Token Quantity');
+        } else if (isApprovalPending) {
             setIsButtonDisabled(true);
             setButtonMessage(`${selectedToken.symbol} Approval Pending`);
         } else if (isDepositPending) {
@@ -71,12 +74,9 @@ export default function Deposit(props: PortfolioDepositProps) {
         } else if (!isTokenAllowanceSufficient) {
             setIsButtonDisabled(false);
             setButtonMessage(`Click to Approve ${selectedToken.symbol}`);
-        } else if (isTokenAllowanceSufficient && isDepositQtyValid) {
+        } else if (isDepositQtyValid) {
             setIsButtonDisabled(false);
             setButtonMessage('Deposit');
-        } else if (!isDepositQtyValid) {
-            setIsButtonDisabled(true);
-            setButtonMessage('Please Enter Token Quantity');
         }
     }, [
         isApprovalPending,
@@ -108,11 +108,11 @@ export default function Deposit(props: PortfolioDepositProps) {
     const deposit = async (depositQty: number) => {
         if (crocEnv && depositQty) {
             try {
+                setIsDepositPending(true);
                 const tx = await crocEnv
                     .token(selectedToken.address)
                     .deposit(depositQty, connectedAccount);
                 if (tx) {
-                    setIsDepositPending(true);
                     await tx.wait();
                 }
             } catch (error) {
@@ -133,9 +133,9 @@ export default function Deposit(props: PortfolioDepositProps) {
     const approve = async (tokenAddress: string) => {
         if (!crocEnv) return;
         try {
+            setIsApprovalPending(true);
             const tx = await crocEnv.token(tokenAddress).approve();
             if (tx) {
-                setIsApprovalPending(true);
                 await tx.wait();
             }
         } catch (error) {
