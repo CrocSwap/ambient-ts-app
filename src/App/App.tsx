@@ -2049,8 +2049,6 @@ export default function App() {
                                     expandTradeTable={expandTradeTable}
                                     setExpandTradeTable={setExpandTradeTable}
                                     tokenMap={tokenMap}
-                                    // setLimitRate={setLimitRate}
-                                    // limitRate={limitRate}
                                     favePools={favePools}
                                     addPoolToFaves={addPoolToFaves}
                                     removePoolFromFaves={removePoolFromFaves}
@@ -2070,6 +2068,7 @@ export default function App() {
                                         throw new Error('Function not implemented.');
                                     }}
                                     limitRate={''}
+                                    poolExists={poolExists}
                                 />
                             }
                         >

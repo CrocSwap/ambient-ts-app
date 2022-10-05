@@ -69,6 +69,7 @@ interface TradePropsIF {
     closeGlobalModal: () => void;
     isInitialized: boolean;
     poolPriceNonDisplay: number | undefined;
+    poolExists: boolean;
 }
 
 // React functional component
@@ -112,7 +113,8 @@ export default function Trade(props: TradePropsIF) {
         currentPositionActive,
         setCurrentPositionActive,
         openGlobalModal,
-        closeGlobalModal
+        closeGlobalModal,
+        poolExists
     } = props;
 
     useUrlParams(chainId, isInitialized);
@@ -235,7 +237,7 @@ export default function Trade(props: TradePropsIF) {
             <main className={styles.main_layout}>
                 <div className={styles.middle_col}>
                     {mobileDataToggle}
-                    <div className={` ${expandGraphStyle} ${fullScreenStyle}`}>
+                    { poolExists && <div className={` ${expandGraphStyle} ${fullScreenStyle}`}>
                         <div style={{ textAlign: 'center', display: 'flex' }}>
                             <label style={{ padding: '0px' }}>Up</label>
                             <div style={{ marginLeft: '4px' }}>
@@ -441,6 +443,7 @@ export default function Trade(props: TradePropsIF) {
                             />
                         </motion.div>
                     </div>
+                    }
 
                     <motion.div
                         animate={{
