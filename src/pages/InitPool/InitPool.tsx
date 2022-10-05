@@ -2,7 +2,8 @@ import styles from './InitPool.module.css';
 import { useUrlParams } from './useUrlParams';
 
 export default function InitPool() {
-    useUrlParams();
+    const newPoolData = useUrlParams();
+    console.log(newPoolData);
 
     return (
         <main className={styles.main}>
