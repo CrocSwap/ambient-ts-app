@@ -20,6 +20,7 @@ interface PortfolioWithdrawProps {
     setRecheckTokenBalances: Dispatch<SetStateAction<boolean>>;
     lastBlockNumber: number;
     sendToAddress: string | undefined;
+    resolvedAddress: string | undefined;
     setSendToAddress: Dispatch<SetStateAction<string | undefined>>;
 }
 
@@ -37,6 +38,7 @@ export default function Withdraw(props: PortfolioWithdrawProps) {
         setRecheckTokenBalances,
         lastBlockNumber,
         sendToAddress,
+        resolvedAddress,
         setSendToAddress,
     } = props;
 
@@ -51,24 +53,22 @@ export default function Withdraw(props: PortfolioWithdrawProps) {
     const [recheckSendToAddressWalletBalance, setRecheckSendToAddressWalletBalance] =
         useState<boolean>(false);
 
-    const isSendToAddressValid = useMemo(
-        () =>
-            (sendToAddress?.length === 42 && sendToAddress.startsWith('0x')) ||
-            sendToAddress?.endsWith('.eth'),
-        [sendToAddress],
+    const isResolvedAddressValid = useMemo(
+        () => resolvedAddress?.length === 42 && resolvedAddress.startsWith('0x'),
+        [resolvedAddress],
     );
 
     useEffect(() => {
         if (
             crocEnv &&
             selectedToken.address &&
-            sendToAddress &&
+            resolvedAddress &&
             isSendToAddressChecked &&
-            isSendToAddressValid
+            isResolvedAddressValid
         ) {
             crocEnv
                 .token(selectedToken.address)
-                .walletDisplay(sendToAddress)
+                .walletDisplay(resolvedAddress)
                 .then((bal: string) => {
                     setSendToAddressWalletBalance(bal);
                 })
@@ -80,7 +80,7 @@ export default function Withdraw(props: PortfolioWithdrawProps) {
     }, [
         crocEnv,
         selectedToken.address,
-        sendToAddress,
+        resolvedAddress,
         lastBlockNumber,
         isSendToAddressChecked,
         recheckSendToAddressWalletBalance,
@@ -115,7 +115,7 @@ export default function Withdraw(props: PortfolioWithdrawProps) {
         } else if (!isDexBalanceSufficient) {
             setIsButtonDisabled(true);
             setButtonMessage(`${selectedToken.symbol} Exchange Balance Insufficient`);
-        } else if (isSendToAddressChecked && !isSendToAddressValid) {
+        } else if (isSendToAddressChecked && !isResolvedAddressValid) {
             setIsButtonDisabled(true);
             setButtonMessage('Please enter a valid address');
         }
@@ -142,7 +142,7 @@ export default function Withdraw(props: PortfolioWithdrawProps) {
         isDexBalanceSufficient,
         isWithdrawQtyValid,
         selectedToken.symbol,
-        isSendToAddressValid,
+        isResolvedAddressValid,
         isSendToAddressChecked,
     ]);
 
@@ -163,10 +163,10 @@ export default function Withdraw(props: PortfolioWithdrawProps) {
             try {
                 setIsWithdrawPending(true);
                 let tx;
-                if (isSendToAddressChecked && sendToAddress) {
+                if (isSendToAddressChecked && resolvedAddress) {
                     tx = await crocEnv
                         .token(selectedToken.address)
-                        .withdraw(withdrawQty, sendToAddress);
+                        .withdraw(withdrawQty, resolvedAddress);
                 } else {
                     tx = await crocEnv
                         .token(selectedToken.address)
@@ -217,6 +217,14 @@ export default function Withdraw(props: PortfolioWithdrawProps) {
     // const approvalFn = async () => {
     //     await approve(selectedToken.address);
     // };
+    const isResolvedAddressDifferent = resolvedAddress !== sendToAddress;
+
+    const resolvedAddressOrNull = isResolvedAddressDifferent ? (
+        <div className={styles.info_text}>
+            Resolved Hex Address:
+            <div className={styles.hex_address}>{resolvedAddress}</div>
+        </div>
+    ) : null;
 
     return (
         <div className={styles.deposit_container}>
@@ -239,6 +247,7 @@ export default function Withdraw(props: PortfolioWithdrawProps) {
                     : `Your Wallet Balance (${selectedToken.symbol}): `}
                 {isSendToAddressChecked ? sendToAddressWalletBalance : tokenWalletBalance}
             </div>
+            {resolvedAddressOrNull}
             <WithdrawButton
                 onClick={() => {
                     withdrawFn();

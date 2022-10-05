@@ -9,12 +9,14 @@ import withdrawImage from '../../../assets/images/sidebarImages/withdraw.svg';
 import depositImage from '../../../assets/images/sidebarImages/deposit.svg';
 import TabComponent from '../../Global/TabComponent/TabComponent';
 
-import { SetStateAction, Dispatch, useState } from 'react';
+import { SetStateAction, Dispatch, useState, useEffect } from 'react';
 import { TokenIF } from '../../../utils/interfaces/TokenIF';
 import { CrocEnv } from '@crocswap-libs/sdk';
+import { ethers } from 'ethers';
 
 interface ExchangeBalanceProps {
     crocEnv: CrocEnv | undefined;
+    mainnetProvider: ethers.providers.WebSocketProvider;
     connectedAccount: string;
     setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
     setOutsideControl: Dispatch<SetStateAction<boolean>>;
@@ -32,6 +34,7 @@ interface ExchangeBalanceProps {
 export default function ExchangeBalance(props: ExchangeBalanceProps) {
     const {
         crocEnv,
+        mainnetProvider,
         connectedAccount,
         openGlobalModal,
         closeGlobalModal,
@@ -47,6 +50,26 @@ export default function ExchangeBalance(props: ExchangeBalanceProps) {
     } = props;
 
     const [sendToAddress, setSendToAddress] = useState<string | undefined>();
+    const [resolvedAddress, setResolvedAddress] = useState<string | undefined>();
+
+    const isSendToAddressEns = sendToAddress?.endsWith('.eth');
+    const isSendToAddressHex = sendToAddress?.startsWith('0x') && sendToAddress?.length == 42;
+
+    useEffect(() => {
+        (async () => {
+            if (sendToAddress && isSendToAddressEns && mainnetProvider) {
+                const newResolvedAddress = await mainnetProvider.resolveName(sendToAddress);
+
+                if (newResolvedAddress) {
+                    setResolvedAddress(newResolvedAddress);
+                }
+            } else if (sendToAddress && isSendToAddressHex && !isSendToAddressEns) {
+                setResolvedAddress(sendToAddress);
+            } else {
+                setResolvedAddress(undefined);
+            }
+        })();
+    }, [sendToAddress, isSendToAddressHex, isSendToAddressEns, mainnetProvider]);
 
     const accountData = [
         {
@@ -81,6 +104,7 @@ export default function ExchangeBalance(props: ExchangeBalanceProps) {
                     lastBlockNumber={lastBlockNumber}
                     setRecheckTokenBalances={setRecheckTokenBalances}
                     sendToAddress={sendToAddress}
+                    resolvedAddress={resolvedAddress}
                     setSendToAddress={setSendToAddress}
                 />
             ),
@@ -99,6 +123,7 @@ export default function ExchangeBalance(props: ExchangeBalanceProps) {
                     lastBlockNumber={lastBlockNumber}
                     setRecheckTokenBalances={setRecheckTokenBalances}
                     sendToAddress={sendToAddress}
+                    resolvedAddress={resolvedAddress}
                     setSendToAddress={setSendToAddress}
                 />
             ),

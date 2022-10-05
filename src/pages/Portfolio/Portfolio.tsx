@@ -188,6 +188,7 @@ export default function Portfolio(props: PortfolioPropsIF) {
         <div className={styles.exchange_balance}>
             <ExchangeBalance
                 crocEnv={crocEnv}
+                mainnetProvider={mainnetProvider}
                 connectedAccount={connectedAccount}
                 setSelectedOutsideTab={props.setSelectedOutsideTab}
                 setOutsideControl={props.setOutsideControl}

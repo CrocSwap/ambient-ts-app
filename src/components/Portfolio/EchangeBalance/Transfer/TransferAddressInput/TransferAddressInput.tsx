@@ -18,7 +18,7 @@ export default function TransferAddressInput(props: TransferAddressInputProps) {
             <input
                 id={`${fieldId}-exchange-balance-transfer-quantity`}
                 className={styles.currency_quantity}
-                placeholder='Enter address... '
+                placeholder='Enter Hex or ENS address... '
                 onChange={(event) => {
                     setTransferToAddress(event.target.value);
                 }}

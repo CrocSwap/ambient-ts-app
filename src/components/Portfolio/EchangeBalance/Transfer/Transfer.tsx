@@ -19,6 +19,7 @@ interface PortfolioTransferProps {
     setRecheckTokenBalances: Dispatch<SetStateAction<boolean>>;
     lastBlockNumber: number;
     sendToAddress: string | undefined;
+    resolvedAddress: string | undefined;
     setSendToAddress: Dispatch<SetStateAction<string | undefined>>;
 }
 
@@ -33,6 +34,7 @@ export default function Transfer(props: PortfolioTransferProps) {
         setRecheckTokenBalances,
         lastBlockNumber,
         sendToAddress,
+        resolvedAddress,
         setSendToAddress,
     } = props;
 
@@ -45,18 +47,15 @@ export default function Transfer(props: PortfolioTransferProps) {
     const [recheckSendToAddressDexBalance, setRecheckSendToAddressDexBalance] =
         useState<boolean>(false);
 
-    const isSendToAddressValid = useMemo(
-        () =>
-            (sendToAddress?.length === 42 && sendToAddress.startsWith('0x')) ||
-            sendToAddress?.endsWith('.eth'),
-        [sendToAddress],
+    const isResolvedAddressValid = useMemo(
+        () => resolvedAddress?.length === 42 && resolvedAddress.startsWith('0x'),
+        [resolvedAddress],
     );
-
     useEffect(() => {
-        if (crocEnv && selectedToken.address && sendToAddress && isSendToAddressValid) {
+        if (crocEnv && selectedToken.address && resolvedAddress && isResolvedAddressValid) {
             crocEnv
                 .token(selectedToken.address)
-                .balanceDisplay(sendToAddress)
+                .balanceDisplay(resolvedAddress)
                 .then((bal: string) => {
                     setSendToAddressDexBalance(bal);
                 })
@@ -68,7 +67,7 @@ export default function Transfer(props: PortfolioTransferProps) {
     }, [
         crocEnv,
         selectedToken.address,
-        sendToAddress,
+        resolvedAddress,
         lastBlockNumber,
         recheckSendToAddressDexBalance,
     ]);
@@ -98,7 +97,7 @@ export default function Transfer(props: PortfolioTransferProps) {
         } else if (!isDexBalanceSufficient) {
             setIsButtonDisabled(true);
             setButtonMessage(`${selectedToken.symbol} Exchange Balance Insufficient`);
-        } else if (!isSendToAddressValid) {
+        } else if (!isResolvedAddressValid) {
             setIsButtonDisabled(true);
             setButtonMessage('Please enter a valid address');
         }
@@ -125,7 +124,7 @@ export default function Transfer(props: PortfolioTransferProps) {
         isDexBalanceSufficient,
         isTransferQtyValid,
         selectedToken.symbol,
-        isSendToAddressValid,
+        isResolvedAddressValid,
     ]);
 
     const chooseTokenDiv = (
@@ -141,12 +140,12 @@ export default function Transfer(props: PortfolioTransferProps) {
     );
 
     const transfer = async (transferQty: number) => {
-        if (crocEnv && transferQty && sendToAddress) {
+        if (crocEnv && transferQty && resolvedAddress) {
             try {
                 setIsTransferPending(true);
                 const tx = await crocEnv
                     .token(selectedToken.address)
-                    .transfer(transferQty, sendToAddress);
+                    .transfer(transferQty, resolvedAddress);
 
                 if (tx) {
                     await tx.wait();
@@ -164,6 +163,15 @@ export default function Transfer(props: PortfolioTransferProps) {
     const transferFn = async () => {
         await transfer(transferQty);
     };
+
+    const isResolvedAddressDifferent = resolvedAddress !== sendToAddress;
+
+    const resolvedAddressOrNull = isResolvedAddressDifferent ? (
+        <div className={styles.info_text}>
+            Resolved Hex Address:
+            <div className={styles.hex_address}>{resolvedAddress}</div>
+        </div>
+    ) : null;
 
     return (
         <div className={styles.deposit_container}>
@@ -187,6 +195,7 @@ export default function Transfer(props: PortfolioTransferProps) {
             <div className={styles.info_text}>
                 Destination Exchange Balance ({selectedToken.symbol}): {sendToAddressDexBalance}
             </div>
+            {resolvedAddressOrNull}
             <TransferButton
                 onClick={() => {
                     // console.log('clicked');
