@@ -1,9 +1,8 @@
-import { useParams } from 'react-router-dom';
 import styles from './InitPool.module.css';
+import { useUrlParams } from './useUrlParams';
 
 export default function InitPool() {
-    const { params } = useParams();
-    console.log(params);
+    useUrlParams();
 
     return (
         <main className={styles.main}>
