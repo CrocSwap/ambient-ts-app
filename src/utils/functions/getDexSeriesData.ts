@@ -1,4 +1,5 @@
 export const getDexTvlSeries = async (day: string): Promise<ITvlSeriesData> => {
+    console.log('fetching dex tvl series');
     return fetch(
         'https://809821320828123.de:5000/dex_tvl_series?' +
             new URLSearchParams({
@@ -15,6 +16,7 @@ export const getDexTvlSeries = async (day: string): Promise<ITvlSeriesData> => {
 };
 
 export const getDexFeeSeries = async () => {
+    console.log('fetching dex fee series');
     return fetch(
         'https://809821320828123.de:5000/dex_fee_series?' +
             new URLSearchParams({
@@ -31,6 +33,7 @@ export const getDexFeeSeries = async () => {
 };
 
 export const getDexVolumeSeries = async (day: string): Promise<IVolumeSeriesData> => {
+    console.log('fetching dex volume series');
     return fetch(
         'https://809821320828123.de:5000/dex_volume_series?' +
             new URLSearchParams({

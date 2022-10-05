@@ -171,6 +171,10 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
     useEffect(() => {
         (async () => {
             if (!connectedAccountActive && resolvedAddress) {
+                console.log('fetching user positions');
+                console.log('fetching user limit orders');
+                console.log('fetching user transactions');
+
                 await getUserPositions(resolvedAddress);
                 await getUserLimitOrders(resolvedAddress);
                 await getUserTransactions(resolvedAddress);

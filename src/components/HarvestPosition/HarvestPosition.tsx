@@ -137,6 +137,7 @@ export default function HarvestPosition(props: IHarvestPositionProps) {
             position.positionType
         ) {
             (async () => {
+                console.log('fetching position stats');
                 fetch(
                     positionStatsCacheEndpoint +
                         new URLSearchParams({

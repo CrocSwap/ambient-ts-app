@@ -146,7 +146,8 @@ export const useProcessOrder = (limitOrder: ILimitOrderState) => {
             limitOrder.askTick
         ) {
             (async () => {
-                // console.log('fetching details');
+                console.log('fetching position stats');
+
                 fetch(
                     positionStatsCacheEndpoint +
                         new URLSearchParams({

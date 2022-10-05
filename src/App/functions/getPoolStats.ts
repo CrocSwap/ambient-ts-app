@@ -1,6 +1,7 @@
 const poolStatsFreshEndpoint = 'https://809821320828123.de:5000/pool_stats_fresh?';
 
 const getPoolStatsFresh = async (chainId: string, base: string, quote: string, poolIdx: number) => {
+    console.log('fetching pool stats fresh');
     return fetch(
         poolStatsFreshEndpoint +
             new URLSearchParams({
@@ -25,6 +26,7 @@ const getPoolVolume = async (
     poolIdx: number,
     chainId: string,
 ): Promise<number> => {
+    console.log('fetching pool volume');
     if (tokenA && tokenB && poolIdx) {
         const totalVolumeUSD = fetch(
             poolVolumeCacheEndpoint +
@@ -55,6 +57,7 @@ const getPoolTVL = async (
     chainId: string,
 ): Promise<number> => {
     if (tokenA && tokenB && poolIdx) {
+        console.log('fetching pool tvl');
         const tvl = fetch(
             poolTvlCacheEndpoint +
                 new URLSearchParams({
@@ -83,6 +86,7 @@ const getPoolPriceChange = async (
     quoteToken: string,
     poolIdx: number,
 ) => {
+    console.log('fetching pool price change');
     return fetch(
         poolPriceChangeCacheEndpoint +
             new URLSearchParams({
@@ -107,6 +111,7 @@ const get24hChange = async (
     denomInBase: boolean,
 ): Promise<number> => {
     if (baseToken && quoteToken && poolIdx) {
+        console.log('fetching 24hr change');
         const changePercentage = fetch(
             poolPriceChangeCacheEndpoint +
                 new URLSearchParams({

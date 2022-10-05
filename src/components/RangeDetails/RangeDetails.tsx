@@ -82,6 +82,7 @@ export default function RangeDetails(props: IRangeDetailsProps) {
 
         const poolIndex = lookupChain(chainId).poolIndex;
         if (position.positionType) {
+            console.log('fetching position stats');
             fetch(
                 positionStatsCacheEndpoint +
                     new URLSearchParams({

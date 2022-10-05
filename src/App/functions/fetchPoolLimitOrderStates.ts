@@ -12,7 +12,7 @@ export const fetchPoolLimitOrderStates = (props: IFetchPoolLimitOrderStatesProps
     const poolLimitOrderStatesCacheEndpoint =
         'https://809821320828123.de:5000' + '/pool_limit_order_states?';
 
-    console.log('fetching pool recent changes');
+    console.log('fetching pool limit order states');
 
     const poolLimitOrderStates = fetch(
         poolLimitOrderStatesCacheEndpoint +

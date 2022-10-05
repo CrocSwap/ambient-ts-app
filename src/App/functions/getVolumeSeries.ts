@@ -10,6 +10,7 @@ export const getVolumeSeries = async (
     const httpGraphCacheServerDomain = 'https://809821320828123.de:5000';
 
     const poolVolumeSeriesCacheEndpoint = httpGraphCacheServerDomain + '/pool_volume_series?';
+    console.log('fetching pool volume series');
     return fetch(
         poolVolumeSeriesCacheEndpoint +
             new URLSearchParams({

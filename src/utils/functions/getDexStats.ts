@@ -1,4 +1,5 @@
 export const getDexStatsFresh = async () => {
+    console.log('fetching dex stats fresh');
     return fetch(
         'https://809821320828123.de:5000/dex_stats_fresh?' +
             new URLSearchParams({

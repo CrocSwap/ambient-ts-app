@@ -123,7 +123,8 @@ export default function RemoveRange(props: IRemoveRangeProps) {
             position.positionType
         ) {
             (async () => {
-                // console.log('fetching details');
+                console.log('fetching position stats');
+
                 fetch(
                     positionStatsCacheEndpoint +
                         new URLSearchParams({

@@ -592,6 +592,8 @@ export default function App() {
                 const poolAmbientApyCacheEndpoint =
                     'https://809821320828123.de:5000' + '/pool_ambient_apy_cached?';
 
+                console.log('fetching pool cached APY');
+
                 fetch(
                     poolAmbientApyCacheEndpoint +
                         new URLSearchParams({

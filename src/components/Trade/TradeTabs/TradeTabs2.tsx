@@ -60,8 +60,6 @@ interface ITabsProps {
     closeGlobalModal: () => void;
 }
 
-// const httpGraphCacheServerDomain = 'https://809821320828123.de:5000';
-
 export default function TradeTabs2(props: ITabsProps) {
     const {
         isUserLoggedIn,
