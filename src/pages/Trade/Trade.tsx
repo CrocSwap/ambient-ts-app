@@ -232,6 +232,11 @@ export default function Trade(props: TradePropsIF) {
             </button>
         </div>
     );
+
+    const clickInitPool = () => {
+        console.log('User wants to intialize a pool!');
+    }
+
     return (
         <AnimateSharedLayout>
             <main className={styles.main_layout}>
@@ -447,7 +452,7 @@ export default function Trade(props: TradePropsIF) {
                     : <div>
                         <h2>This pool has not been initialized.</h2>
                         <h3>Do you want to initialize it?</h3>
-                        <button>Initialize Pool</button>
+                        <button onClick={clickInitPool}>Initialize Pool</button>
                     </div>
                     }
 
