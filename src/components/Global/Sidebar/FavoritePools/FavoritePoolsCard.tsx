@@ -24,7 +24,10 @@ export default function FavoritePoolsCard(props: FavoritePoolsCardIF) {
     const linkPath = useMemo(() => {
         const { pathname } = location;
         let locationSlug = '';
-        if (pathname.startsWith('/trade/market')) {
+        if (
+            pathname.startsWith('/trade/market') ||
+            pathname.startsWith('/account')
+        ) {
             locationSlug = '/trade/market';
         } else if (pathname.startsWith('/trade/limit')) {
             locationSlug = '/trade/limit';
