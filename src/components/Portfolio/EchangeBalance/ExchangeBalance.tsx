@@ -22,6 +22,7 @@ interface ExchangeBalanceProps {
     closeGlobalModal: () => void;
     selectedToken: TokenIF;
     tokenAllowance: string;
+    tokenWalletBalance: string;
     setRecheckTokenAllowance: Dispatch<SetStateAction<boolean>>;
 }
 
@@ -35,6 +36,7 @@ export default function ExchangeBalance(props: ExchangeBalanceProps) {
         setOutsideControl,
         selectedToken,
         tokenAllowance,
+        tokenWalletBalance,
         setRecheckTokenAllowance,
     } = props;
 
@@ -49,6 +51,7 @@ export default function ExchangeBalance(props: ExchangeBalanceProps) {
                     closeGlobalModal={closeGlobalModal}
                     selectedToken={selectedToken}
                     tokenAllowance={tokenAllowance}
+                    tokenWalletBalance={tokenWalletBalance}
                     setRecheckTokenAllowance={setRecheckTokenAllowance}
                 />
             ),

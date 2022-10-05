@@ -15,6 +15,7 @@ interface PortfolioDepositProps {
     closeGlobalModal: () => void;
     selectedToken: TokenIF;
     tokenAllowance: string;
+    tokenWalletBalance: string;
     setRecheckTokenAllowance: Dispatch<SetStateAction<boolean>>;
 }
 
@@ -26,6 +27,7 @@ export default function Deposit(props: PortfolioDepositProps) {
         openGlobalModal,
         closeGlobalModal,
         selectedToken,
+        tokenWalletBalance,
         setRecheckTokenAllowance,
     } = props;
 
@@ -39,6 +41,11 @@ export default function Deposit(props: PortfolioDepositProps) {
     const isTokenAllowanceSufficient = useMemo(
         () => (tokenAllowance !== '0.0' ? parseFloat(tokenAllowance) >= depositQty : false),
         [tokenAllowance, depositQty],
+    );
+
+    const isWalletBalanceSufficient = useMemo(
+        () => (tokenWalletBalance !== '0.0' ? parseFloat(tokenWalletBalance) >= depositQty : false),
+        [tokenWalletBalance, depositQty],
     );
 
     const isDepositQtyValid = useMemo(() => depositQty > 0, [depositQty]);
@@ -67,6 +74,9 @@ export default function Deposit(props: PortfolioDepositProps) {
         if (isApprovalPending) {
             setIsButtonDisabled(true);
             setButtonMessage(`${selectedToken.symbol} Approval Pending`);
+        } else if (!isWalletBalanceSufficient) {
+            setIsButtonDisabled(true);
+            setButtonMessage(`${selectedToken.symbol} Wallet Balance Insufficient`);
         } else if (!isTokenAllowanceSufficient) {
             setIsButtonDisabled(false);
             setButtonMessage(`Click to Approve ${selectedToken.symbol}`);
@@ -77,7 +87,13 @@ export default function Deposit(props: PortfolioDepositProps) {
             setIsButtonDisabled(true);
             setButtonMessage('Please Enter Token Quantity');
         }
-    }, [isApprovalPending, isTokenAllowanceSufficient, isDepositQtyValid, selectedToken.symbol]);
+    }, [
+        isApprovalPending,
+        isTokenAllowanceSufficient,
+        isWalletBalanceSufficient,
+        isDepositQtyValid,
+        selectedToken.symbol,
+    ]);
 
     const chooseToken = (tok: TokenIF) => {
         console.log(tok);
