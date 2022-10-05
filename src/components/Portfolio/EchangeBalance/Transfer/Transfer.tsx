@@ -177,7 +177,7 @@ export default function Transfer(props: PortfolioTransferProps) {
 
     const secondaryEnsOrNull = secondaryEnsName ? (
         <div className={styles.info_text}>
-            Resolved ENS Address:
+            Destination ENS Address:
             <div className={styles.hex_address}>{secondaryEnsName}</div>
         </div>
     ) : null;

@@ -232,7 +232,7 @@ export default function Withdraw(props: PortfolioWithdrawProps) {
     const secondaryEnsOrNull =
         isSendToAddressChecked && secondaryEnsName ? (
             <div className={styles.info_text}>
-                Resolved ENS Address:
+                Destination ENS Address:
                 <div className={styles.hex_address}>{secondaryEnsName}</div>
             </div>
         ) : null;
