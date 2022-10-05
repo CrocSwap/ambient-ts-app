@@ -4,6 +4,8 @@ import { Dispatch, SetStateAction, ReactNode, useState } from 'react';
 import { useParams, Outlet, useOutletContext, NavLink } from 'react-router-dom';
 import { ethers } from 'ethers';
 import { motion, AnimateSharedLayout } from 'framer-motion';
+import { SketchPicker } from 'react-color';
+import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
 
 // START: Import JSX Components
 import TradeCharts from './TradeCharts/TradeCharts';
@@ -16,8 +18,6 @@ import { targetData, tradeData as TradeDataIF } from '../../utils/state/tradeDat
 import { CandleData, CandlesByPoolAndDuration } from '../../utils/state/graphDataSlice';
 import { PoolIF, TokenIF, TokenPairIF } from '../../utils/interfaces/exports';
 import { useUrlParams } from './useUrlParams';
-import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
-import { SketchPicker } from 'react-color';
 
 // interface for React functional component props
 interface TradePropsIF {
