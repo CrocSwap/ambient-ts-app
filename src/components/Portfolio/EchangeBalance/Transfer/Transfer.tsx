@@ -18,6 +18,8 @@ interface PortfolioTransferProps {
     tokenDexBalance: string;
     setRecheckTokenBalances: Dispatch<SetStateAction<boolean>>;
     lastBlockNumber: number;
+    sendToAddress: string | undefined;
+    setSendToAddress: Dispatch<SetStateAction<string | undefined>>;
 }
 
 export default function Transfer(props: PortfolioTransferProps) {
@@ -30,12 +32,13 @@ export default function Transfer(props: PortfolioTransferProps) {
         // setRecheckTokenAllowance,
         setRecheckTokenBalances,
         lastBlockNumber,
+        sendToAddress,
+        setSendToAddress,
     } = props;
 
     const dispatch = useAppDispatch();
 
     const [transferQty, setTransferQty] = useState<number>(0);
-    const [sendToAddress, setSendToAddress] = useState<string | undefined>();
     const [buttonMessage, setButtonMessage] = useState<string>('...');
     const [isButtonDisabled, setIsButtonDisabled] = useState<boolean>(true);
     const [sendToAddressDexBalance, setSendToAddressDexBalance] = useState<string>('');

@@ -19,6 +19,8 @@ interface PortfolioWithdrawProps {
     tokenDexBalance: string;
     setRecheckTokenBalances: Dispatch<SetStateAction<boolean>>;
     lastBlockNumber: number;
+    sendToAddress: string | undefined;
+    setSendToAddress: Dispatch<SetStateAction<string | undefined>>;
 }
 
 export default function Withdraw(props: PortfolioWithdrawProps) {
@@ -34,6 +36,8 @@ export default function Withdraw(props: PortfolioWithdrawProps) {
         // setRecheckTokenAllowance,
         setRecheckTokenBalances,
         lastBlockNumber,
+        sendToAddress,
+        setSendToAddress,
     } = props;
 
     const dispatch = useAppDispatch();
@@ -42,7 +46,6 @@ export default function Withdraw(props: PortfolioWithdrawProps) {
     const [buttonMessage, setButtonMessage] = useState<string>('...');
     const [isButtonDisabled, setIsButtonDisabled] = useState<boolean>(true);
 
-    const [sendToAddress, setSendToAddress] = useState<string | undefined>();
     const [isSendToAddressChecked, setIsSendToAddressChecked] = useState<boolean>(false);
     const [sendToAddressWalletBalance, setSendToAddressWalletBalance] = useState<string>('');
     const [recheckSendToAddressWalletBalance, setRecheckSendToAddressWalletBalance] =

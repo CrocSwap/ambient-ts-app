@@ -9,7 +9,7 @@ import withdrawImage from '../../../assets/images/sidebarImages/withdraw.svg';
 import depositImage from '../../../assets/images/sidebarImages/deposit.svg';
 import TabComponent from '../../Global/TabComponent/TabComponent';
 
-import { SetStateAction, Dispatch } from 'react';
+import { SetStateAction, Dispatch, useState } from 'react';
 import { TokenIF } from '../../../utils/interfaces/TokenIF';
 import { CrocEnv } from '@crocswap-libs/sdk';
 
@@ -46,6 +46,8 @@ export default function ExchangeBalance(props: ExchangeBalanceProps) {
         lastBlockNumber,
     } = props;
 
+    const [sendToAddress, setSendToAddress] = useState<string | undefined>();
+
     const accountData = [
         {
             label: 'Deposit',
@@ -78,6 +80,8 @@ export default function ExchangeBalance(props: ExchangeBalanceProps) {
                     tokenDexBalance={tokenDexBalance}
                     lastBlockNumber={lastBlockNumber}
                     setRecheckTokenBalances={setRecheckTokenBalances}
+                    sendToAddress={sendToAddress}
+                    setSendToAddress={setSendToAddress}
                 />
             ),
             icon: withdrawImage,
@@ -94,6 +98,8 @@ export default function ExchangeBalance(props: ExchangeBalanceProps) {
                     tokenDexBalance={tokenDexBalance}
                     lastBlockNumber={lastBlockNumber}
                     setRecheckTokenBalances={setRecheckTokenBalances}
+                    sendToAddress={sendToAddress}
+                    setSendToAddress={setSendToAddress}
                 />
             ),
             icon: transferImage,
