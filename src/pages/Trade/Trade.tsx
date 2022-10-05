@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // START: Import React and Dongles
 import { Dispatch, SetStateAction, ReactNode, useState } from 'react';
-import { useParams, Outlet, useOutletContext, NavLink, useNavigate } from 'react-router-dom';
+import { useParams, Outlet, useOutletContext, Link, NavLink } from 'react-router-dom';
 import { ethers } from 'ethers';
 import { motion, AnimateSharedLayout } from 'framer-motion';
 import { SketchPicker } from 'react-color';
@@ -85,6 +85,7 @@ export default function Trade(props: TradePropsIF) {
         provider,
         lastBlockNumber,
         baseTokenAddress,
+        quoteTokenAddress,
         baseTokenBalance,
         quoteTokenBalance,
         baseTokenDexBalance,
@@ -119,7 +120,6 @@ export default function Trade(props: TradePropsIF) {
 
     useUrlParams(chainId, isInitialized);
     const { params } = useParams();
-    const navigate = useNavigate();
 
     const [isCandleSelected, setIsCandleSelected] = useState<boolean | undefined>();
     const [transactionFilter, setTransactionFilter] = useState<CandleData>();
@@ -234,10 +234,12 @@ export default function Trade(props: TradePropsIF) {
         </div>
     );
 
-    const clickInitPool = () => {
-        console.log('User wants to intialize a pool!');
-        navigate('/initpool');
-    }
+    const initLinkPath = (
+        '/initpool/chain=0x5&base=' +
+        baseTokenAddress +
+        '&quote=' +
+        quoteTokenAddress
+    );
 
     return (
         <AnimateSharedLayout>
@@ -454,7 +456,9 @@ export default function Trade(props: TradePropsIF) {
                     : <div>
                         <h2>This pool has not been initialized.</h2>
                         <h3>Do you want to initialize it?</h3>
-                        <button onClick={clickInitPool}>Initialize Pool</button>
+                        <Link to={initLinkPath}>
+                            Initialize Pool
+                        </Link>
                     </div>
                     }
 
