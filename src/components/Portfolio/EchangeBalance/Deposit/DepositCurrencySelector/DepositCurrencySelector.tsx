@@ -6,11 +6,10 @@ import { Dispatch, SetStateAction } from 'react';
 interface DepositCurrencySelectorProps {
     fieldId: string;
     onClick: () => void;
-
     sellToken?: boolean;
     disable?: boolean;
     selectedToken: TokenIF;
-    setDepositQty: Dispatch<SetStateAction<number | undefined>>; // updateOtherQuantity: (evt: ChangeEvent<HTMLInputElement>) => void;
+    setDepositQty: Dispatch<SetStateAction<number>>; // updateOtherQuantity: (evt: ChangeEvent<HTMLInputElement>) => void;
 }
 
 export default function DepositCurrencySelector(props: DepositCurrencySelectorProps) {
@@ -23,7 +22,7 @@ export default function DepositCurrencySelector(props: DepositCurrencySelectorPr
                 className={styles.currency_quantity}
                 placeholder='0'
                 onChange={(event) => {
-                    setDepositQty(parseFloat(event.target.value));
+                    setDepositQty(parseFloat(event.target.value || '0'));
                 }}
                 type='string'
                 inputMode='decimal'

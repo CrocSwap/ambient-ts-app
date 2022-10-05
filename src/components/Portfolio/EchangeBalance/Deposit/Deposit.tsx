@@ -6,7 +6,7 @@ import { TokenIF } from '../../../../utils/interfaces/TokenIF';
 import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
 import { setToken } from '../../../../utils/state/temp';
 import { CrocEnv } from '@crocswap-libs/sdk';
-import { useState } from 'react';
+import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
 
 interface PortfolioDepositProps {
     crocEnv: CrocEnv | undefined;
@@ -14,14 +14,70 @@ interface PortfolioDepositProps {
     openGlobalModal: (content: React.ReactNode, title?: string) => void;
     closeGlobalModal: () => void;
     selectedToken: TokenIF;
+    tokenAllowance: string;
+    setRecheckTokenAllowance: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function Deposit(props: PortfolioDepositProps) {
-    const { crocEnv, connectedAccount, openGlobalModal, closeGlobalModal, selectedToken } = props;
+    const {
+        crocEnv,
+        tokenAllowance,
+        connectedAccount,
+        openGlobalModal,
+        closeGlobalModal,
+        selectedToken,
+        setRecheckTokenAllowance,
+    } = props;
 
     const dispatch = useAppDispatch();
 
-    const [depositQty, setDepositQty] = useState<number | undefined>();
+    const [depositQty, setDepositQty] = useState<number>(0);
+    const [buttonMessage, setButtonMessage] = useState<string>('...');
+    // const [isDepositAllowed, setIsDepositAllowed] = useState<boolean>(false);
+    const [isButtonDisabled, setIsButtonDisabled] = useState<boolean>(true);
+
+    const isTokenAllowanceSufficient = useMemo(
+        () => (tokenAllowance !== '0.0' ? parseFloat(tokenAllowance) >= depositQty : false),
+        [tokenAllowance, depositQty],
+    );
+
+    const isDepositQtyValid = useMemo(() => depositQty > 0, [depositQty]);
+
+    const [isApprovalPending, setIsApprovalPending] = useState(false);
+
+    const approve = async (tokenAddress: string) => {
+        if (!crocEnv) return;
+        setIsApprovalPending(true);
+        try {
+            const tx = await crocEnv.token(tokenAddress).approve();
+            if (tx) {
+                await tx.wait();
+            }
+        } catch (error) {
+            console.warn({ error });
+        } finally {
+            setIsApprovalPending(false);
+            setRecheckTokenAllowance(true);
+        }
+    };
+
+    useEffect(() => {
+        // console.log({ isDepositQtyValid });
+        // console.log({ isTokenAllowanceSufficient });
+        if (isApprovalPending) {
+            setIsButtonDisabled(true);
+            setButtonMessage(`${selectedToken.symbol} Approval Pending`);
+        } else if (!isTokenAllowanceSufficient) {
+            setIsButtonDisabled(false);
+            setButtonMessage(`Click to Approve ${selectedToken.symbol}`);
+        } else if (isTokenAllowanceSufficient && isDepositQtyValid) {
+            setIsButtonDisabled(false);
+            setButtonMessage('Deposit');
+        } else if (!isDepositQtyValid) {
+            setIsButtonDisabled(true);
+            setButtonMessage('Please Enter Token Quantity');
+        }
+    }, [isApprovalPending, isTokenAllowanceSufficient, isDepositQtyValid, selectedToken.symbol]);
 
     const chooseToken = (tok: TokenIF) => {
         console.log(tok);
@@ -48,6 +104,10 @@ export default function Deposit(props: PortfolioDepositProps) {
         }
     };
 
+    const approvalFn = async () => {
+        await approve(selectedToken.address);
+    };
+
     return (
         <div className={styles.deposit_container}>
             <div className={styles.info_text}>
@@ -61,9 +121,10 @@ export default function Deposit(props: PortfolioDepositProps) {
             />
             <DepositButton
                 onClick={() => {
-                    // console.log('clicked');
-                    depositFn();
+                    !isTokenAllowanceSufficient ? approvalFn() : depositFn();
                 }}
+                disabled={isButtonDisabled}
+                buttonMessage={buttonMessage}
             />
         </div>
     );

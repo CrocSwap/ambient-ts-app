@@ -21,6 +21,8 @@ interface ExchangeBalanceProps {
     openGlobalModal: (content: React.ReactNode, title?: string) => void;
     closeGlobalModal: () => void;
     selectedToken: TokenIF;
+    tokenAllowance: string;
+    setRecheckTokenAllowance: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function ExchangeBalance(props: ExchangeBalanceProps) {
@@ -32,6 +34,8 @@ export default function ExchangeBalance(props: ExchangeBalanceProps) {
         setSelectedOutsideTab,
         setOutsideControl,
         selectedToken,
+        tokenAllowance,
+        setRecheckTokenAllowance,
     } = props;
 
     const accountData = [
@@ -44,6 +48,8 @@ export default function ExchangeBalance(props: ExchangeBalanceProps) {
                     openGlobalModal={openGlobalModal}
                     closeGlobalModal={closeGlobalModal}
                     selectedToken={selectedToken}
+                    tokenAllowance={tokenAllowance}
+                    setRecheckTokenAllowance={setRecheckTokenAllowance}
                 />
             ),
             icon: depositImage,

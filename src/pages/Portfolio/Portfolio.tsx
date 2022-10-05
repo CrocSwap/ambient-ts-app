@@ -77,10 +77,7 @@ export default function Portfolio(props: PortfolioPropsIF) {
     const selectedToken: TokenIF = useAppSelector((state) => state.temp.token);
 
     const [tokenAllowance, setTokenAllowance] = useState<string>('');
-
-    useEffect(() => {
-        console.log({ tokenAllowance });
-    }, [tokenAllowance]);
+    const [recheckTokenAllowance, setRecheckTokenAllowance] = useState<boolean>(false);
 
     const selectedTokenAddress = selectedToken.address;
     const selectedTokenDecimals = selectedToken.decimals;
@@ -95,10 +92,10 @@ export default function Portfolio(props: PortfolioPropsIF) {
                 } catch (err) {
                     console.log(err);
                 }
-                //  setRecheckTokenAApproval(false);
+                setRecheckTokenAllowance(false);
             }
         })();
-    }, [crocEnv, selectedTokenAddress, lastBlockNumber, connectedAccount]);
+    }, [crocEnv, selectedTokenAddress, lastBlockNumber, connectedAccount, recheckTokenAllowance]);
 
     const { address } = useParams();
 
@@ -174,6 +171,8 @@ export default function Portfolio(props: PortfolioPropsIF) {
                 openGlobalModal={openGlobalModal}
                 closeGlobalModal={closeGlobalModal}
                 selectedToken={selectedToken}
+                tokenAllowance={tokenAllowance}
+                setRecheckTokenAllowance={setRecheckTokenAllowance}
             />
         </div>
     );
