@@ -27,6 +27,7 @@ import formatSearchText from './formatSeachText';
 import { MdClose } from 'react-icons/md';
 
 import closeSidebarImage from '../../../assets/images/sidebarImages/closeSidebar.svg';
+import OverlayComponent from '../../../components/Global/OverlayComponent/OverlayComponent';
 
 // interface for component props
 interface SidebarPropsIF {
@@ -356,6 +357,9 @@ export default function Sidebar(props: SidebarPropsIF) {
                     )}
                 </ul>
             </nav>
+            <OverlayComponent top='50%' left='50px'>
+                I am overlay
+            </OverlayComponent>
         </div>
     );
 }
