@@ -142,7 +142,7 @@ export default function Transactions(props: TransactionsProps) {
     // Get current transactions
     const indexOfLastTransaction = currentPage * transactionsPerPage;
     const indexOfFirstTransaction = indexOfLastTransaction - transactionsPerPage;
-    const currentTransactions = transactionData.slice(
+    const currentTransactions = transactionData?.slice(
         indexOfFirstTransaction,
         indexOfLastTransaction,
     );
