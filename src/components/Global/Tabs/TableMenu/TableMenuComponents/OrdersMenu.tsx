@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { useState, ReactNode } from 'react';
+import { useState, ReactNode, useRef } from 'react';
 // import { Link } from 'react-router-dom';
 import { FiMoreHorizontal } from 'react-icons/fi';
 
@@ -10,12 +10,11 @@ import Modal from '../../../../Global/Modal/Modal';
 // START: Import Local Files
 import styles from './TableMenuComponents.module.css';
 import { useModal } from '../../../../Global/Modal/useModal';
-import { DefaultTooltip } from '../../../StyledTooltip/StyledTooltip';
 import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
 import { ILimitOrderState } from '../../../../../utils/state/graphDataSlice';
 import OrderDetails from '../../../../OrderDetails/OrderDetails';
 import OrderRemoval from '../../../../OrderRemoval/OrderRemoval';
-
+import UseOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 // interface for React functional component props
 interface OrdersMenuIF {
     limitOrder: ILimitOrderState;
@@ -27,6 +26,8 @@ interface OrdersMenuIF {
 
 // React functional component
 export default function OrdersMenu(props: OrdersMenuIF) {
+    const menuItemRef = useRef<HTMLDivElement>(null);
+
     const { limitOrder, openGlobalModal, isOwnerActiveAccount, closeGlobalModal } = props;
     const [value, copy] = useCopyToClipboard();
     const [openSnackbar, setOpenSnackbar] = useState<boolean>(false);
@@ -36,8 +37,6 @@ export default function OrdersMenu(props: OrdersMenuIF) {
         //  openModal,
         closeModal,
     ] = useModal();
-
-    const [openMenuTooltip, setOpenMenuTooltip] = useState(false);
 
     // ---------------------MODAL FUNCTIONALITY----------------
     let modalContent: ReactNode;
@@ -71,16 +70,15 @@ export default function OrdersMenu(props: OrdersMenuIF) {
     );
     // -----------------END OF SNACKBAR----------------
 
-    const openRemoveModal = () => openGlobalModal(<OrderRemoval limitOrder={limitOrder} />, 'Limit Order Removal');
-        
+    const openRemoveModal = () =>
+        openGlobalModal(
+            <OrderRemoval limitOrder={limitOrder} closeGlobalModal={closeGlobalModal} />,
+        );
+
     const openDetailsModal = () =>
         openGlobalModal(
             <OrderDetails limitOrder={limitOrder} closeGlobalModal={closeGlobalModal} />,
         );
-
-        
-        
-
 
     // switch (currentModal) {
     //     case 'remove':
@@ -120,7 +118,7 @@ export default function OrdersMenu(props: OrdersMenuIF) {
         ) : null;
     const copyButton = limitOrder ? (
         <button className={styles.option_button} onClick={handleCopyAddress}>
-            Copy Trade
+            Copy
         </button>
     ) : null;
     const detailsButton = (
@@ -153,23 +151,23 @@ export default function OrdersMenu(props: OrdersMenuIF) {
         </div>
     );
 
+    const [showDropdownMenu, setShowDropdownMenu] = useState(false);
+
+    const wrapperStyle = showDropdownMenu
+        ? styles.dropdown_wrapper_active
+        : styles.dropdown_wrapper;
+
+    const clickOutsideHandler = () => {
+        setShowDropdownMenu(false);
+    };
+
+    UseOnClickOutside(menuItemRef, clickOutsideHandler);
     const dropdownOrdersMenu = (
-        <div className={styles.dropdown_menu}>
-            <DefaultTooltip
-                open={openMenuTooltip}
-                onOpen={() => setOpenMenuTooltip(true)}
-                onClose={() => setOpenMenuTooltip(false)}
-                interactive
-                placement='left'
-                title={menuContent}
-            >
-                <div
-                    style={{ cursor: 'pointer' }}
-                    onClick={() => setOpenMenuTooltip(!openMenuTooltip)}
-                >
-                    <FiMoreHorizontal size={20} />
-                </div>
-            </DefaultTooltip>
+        <div className={styles.dropdown_menu} ref={menuItemRef}>
+            <div onClick={() => setShowDropdownMenu(!showDropdownMenu)}>
+                <FiMoreHorizontal />
+            </div>
+            <div className={wrapperStyle}>{menuContent}</div>
         </div>
     );
     return (

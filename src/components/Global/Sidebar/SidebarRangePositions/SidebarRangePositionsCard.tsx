@@ -39,7 +39,10 @@ export default function SidebarRangePositionsCard(props: SidebarRangePositionsPr
 
     const linkPath = useMemo(() => {
         let locationSlug = '';
-        if (pathname.startsWith('/trade/market')) {
+        if (
+            pathname.startsWith('/trade/market') ||
+            pathname.startsWith('/account')
+        ) {
             locationSlug = '/trade/market';
         } else if (pathname.startsWith('/trade/limit')) {
             locationSlug = '/trade/limit';

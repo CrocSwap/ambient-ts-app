@@ -297,6 +297,7 @@ export interface ITransaction {
     quoteFlowDecimalCorrected: number;
     valueUSD: number;
     totalValueUSD: number;
+    totalFlowUSD: number;
     ensResolution: string;
     bidTickPriceDecimalCorrected: number;
     bidTickInvPriceDecimalCorrected: number;
