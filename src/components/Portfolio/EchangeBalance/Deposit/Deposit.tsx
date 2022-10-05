@@ -16,7 +16,9 @@ interface PortfolioDepositProps {
     selectedToken: TokenIF;
     tokenAllowance: string;
     tokenWalletBalance: string;
+    tokenDexBalance: string;
     setRecheckTokenAllowance: Dispatch<SetStateAction<boolean>>;
+    setRecheckTokenBalances: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function Deposit(props: PortfolioDepositProps) {
@@ -28,7 +30,9 @@ export default function Deposit(props: PortfolioDepositProps) {
         closeGlobalModal,
         selectedToken,
         tokenWalletBalance,
+        tokenDexBalance,
         setRecheckTokenAllowance,
+        setRecheckTokenBalances,
     } = props;
 
     const dispatch = useAppDispatch();
@@ -42,7 +46,6 @@ export default function Deposit(props: PortfolioDepositProps) {
         () => (tokenAllowance !== '0.0' ? parseFloat(tokenAllowance) >= depositQty : false),
         [tokenAllowance, depositQty],
     );
-
     const isWalletBalanceSufficient = useMemo(
         () => (tokenWalletBalance !== '0.0' ? parseFloat(tokenWalletBalance) >= depositQty : false),
         [tokenWalletBalance, depositQty],
@@ -51,22 +54,7 @@ export default function Deposit(props: PortfolioDepositProps) {
     const isDepositQtyValid = useMemo(() => depositQty > 0, [depositQty]);
 
     const [isApprovalPending, setIsApprovalPending] = useState(false);
-
-    const approve = async (tokenAddress: string) => {
-        if (!crocEnv) return;
-        setIsApprovalPending(true);
-        try {
-            const tx = await crocEnv.token(tokenAddress).approve();
-            if (tx) {
-                await tx.wait();
-            }
-        } catch (error) {
-            console.warn({ error });
-        } finally {
-            setIsApprovalPending(false);
-            setRecheckTokenAllowance(true);
-        }
-    };
+    const [isDepositPending, setIsDepositPending] = useState(false);
 
     useEffect(() => {
         // console.log({ isDepositQtyValid });
@@ -74,6 +62,9 @@ export default function Deposit(props: PortfolioDepositProps) {
         if (isApprovalPending) {
             setIsButtonDisabled(true);
             setButtonMessage(`${selectedToken.symbol} Approval Pending`);
+        } else if (isDepositPending) {
+            setIsButtonDisabled(true);
+            setButtonMessage(`${selectedToken.symbol} Deposit Pending`);
         } else if (!isWalletBalanceSufficient) {
             setIsButtonDisabled(true);
             setButtonMessage(`${selectedToken.symbol} Wallet Balance Insufficient`);
@@ -89,6 +80,7 @@ export default function Deposit(props: PortfolioDepositProps) {
         }
     }, [
         isApprovalPending,
+        isDepositPending,
         isTokenAllowanceSufficient,
         isWalletBalanceSufficient,
         isDepositQtyValid,
@@ -113,10 +105,44 @@ export default function Deposit(props: PortfolioDepositProps) {
         </div>
     );
 
-    const depositFn = () => {
+    const deposit = async (depositQty: number) => {
         if (crocEnv && depositQty) {
-            crocEnv.token(selectedToken.address).deposit(depositQty, connectedAccount);
+            try {
+                const tx = await crocEnv
+                    .token(selectedToken.address)
+                    .deposit(depositQty, connectedAccount);
+                if (tx) {
+                    setIsDepositPending(true);
+                    await tx.wait();
+                }
+            } catch (error) {
+                console.warn({ error });
+            } finally {
+                setIsDepositPending(false);
+                setRecheckTokenBalances(true);
+            }
+
             // crocEnv.token(selectedToken.address).deposit(1, wallet.address);
+        }
+    };
+
+    const depositFn = async () => {
+        await deposit(depositQty);
+    };
+
+    const approve = async (tokenAddress: string) => {
+        if (!crocEnv) return;
+        try {
+            const tx = await crocEnv.token(tokenAddress).approve();
+            if (tx) {
+                setIsApprovalPending(true);
+                await tx.wait();
+            }
+        } catch (error) {
+            console.warn({ error });
+        } finally {
+            setIsApprovalPending(false);
+            setRecheckTokenAllowance(true);
         }
     };
 
@@ -135,6 +161,12 @@ export default function Deposit(props: PortfolioDepositProps) {
                 selectedToken={selectedToken}
                 setDepositQty={setDepositQty}
             />
+            <div className={styles.info_text}>
+                {selectedToken.symbol} Wallet Balance: {tokenWalletBalance}
+            </div>
+            <div className={styles.info_text}>
+                {selectedToken.symbol} Exchange Balance: {tokenDexBalance}
+            </div>
             <DepositButton
                 onClick={() => {
                     !isTokenAllowanceSufficient ? approvalFn() : depositFn();

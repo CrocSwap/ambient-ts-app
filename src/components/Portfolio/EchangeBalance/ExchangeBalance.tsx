@@ -23,7 +23,9 @@ interface ExchangeBalanceProps {
     selectedToken: TokenIF;
     tokenAllowance: string;
     tokenWalletBalance: string;
+    tokenDexBalance: string;
     setRecheckTokenAllowance: Dispatch<SetStateAction<boolean>>;
+    setRecheckTokenBalances: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function ExchangeBalance(props: ExchangeBalanceProps) {
@@ -37,7 +39,9 @@ export default function ExchangeBalance(props: ExchangeBalanceProps) {
         selectedToken,
         tokenAllowance,
         tokenWalletBalance,
+        tokenDexBalance,
         setRecheckTokenAllowance,
+        setRecheckTokenBalances,
     } = props;
 
     const accountData = [
@@ -52,7 +56,9 @@ export default function ExchangeBalance(props: ExchangeBalanceProps) {
                     selectedToken={selectedToken}
                     tokenAllowance={tokenAllowance}
                     tokenWalletBalance={tokenWalletBalance}
+                    tokenDexBalance={tokenDexBalance}
                     setRecheckTokenAllowance={setRecheckTokenAllowance}
+                    setRecheckTokenBalances={setRecheckTokenBalances}
                 />
             ),
             icon: depositImage,

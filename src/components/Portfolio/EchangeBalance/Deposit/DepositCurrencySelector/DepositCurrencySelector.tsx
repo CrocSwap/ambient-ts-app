@@ -22,7 +22,9 @@ export default function DepositCurrencySelector(props: DepositCurrencySelectorPr
                 className={styles.currency_quantity}
                 placeholder='0'
                 onChange={(event) => {
-                    setDepositQty(parseFloat(event.target.value || '0'));
+                    setDepositQty(
+                        parseFloat(event.target.value) > 0 ? parseFloat(event.target.value) : 0,
+                    );
                 }}
                 type='string'
                 inputMode='decimal'

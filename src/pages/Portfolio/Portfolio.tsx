@@ -78,8 +78,10 @@ export default function Portfolio(props: PortfolioPropsIF) {
 
     const [tokenAllowance, setTokenAllowance] = useState<string>('');
     const [recheckTokenAllowance, setRecheckTokenAllowance] = useState<boolean>(false);
+    const [recheckTokenBalances, setRecheckTokenBalances] = useState<boolean>(false);
 
     const [tokenWalletBalance, setTokenWalletBalance] = useState<string>('');
+    const [tokenDexBalance, setTokenDexBalance] = useState<string>('');
 
     const selectedTokenAddress = selectedToken.address;
     const selectedTokenDecimals = selectedToken.decimals;
@@ -91,8 +93,15 @@ export default function Portfolio(props: PortfolioPropsIF) {
                 .walletDisplay(connectedAccount)
                 .then((bal: string) => setTokenWalletBalance(bal))
                 .catch(console.log);
+            crocEnv
+                .token(selectedToken.address)
+                .balanceDisplay(connectedAccount)
+                .then((bal: string) => {
+                    setTokenDexBalance(bal);
+                })
+                .catch(console.log);
         }
-    }, [crocEnv, selectedToken.address, connectedAccount]);
+    }, [crocEnv, selectedToken.address, connectedAccount, lastBlockNumber, recheckTokenBalances]);
 
     useEffect(() => {
         (async () => {
@@ -186,7 +195,9 @@ export default function Portfolio(props: PortfolioPropsIF) {
                 selectedToken={selectedToken}
                 tokenAllowance={tokenAllowance}
                 tokenWalletBalance={tokenWalletBalance}
+                tokenDexBalance={tokenDexBalance}
                 setRecheckTokenAllowance={setRecheckTokenAllowance}
+                setRecheckTokenBalances={setRecheckTokenBalances}
             />
         </div>
     );
