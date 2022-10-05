@@ -237,7 +237,8 @@ export default function Trade(props: TradePropsIF) {
             <main className={styles.main_layout}>
                 <div className={styles.middle_col}>
                     {mobileDataToggle}
-                    { poolExists && <div className={` ${expandGraphStyle} ${fullScreenStyle}`}>
+                    { poolExists
+                    ? <div className={` ${expandGraphStyle} ${fullScreenStyle}`}>
                         <div style={{ textAlign: 'center', display: 'flex' }}>
                             <label style={{ padding: '0px' }}>Up</label>
                             <div style={{ marginLeft: '4px' }}>
@@ -442,6 +443,11 @@ export default function Trade(props: TradePropsIF) {
                                 targets={targets}
                             />
                         </motion.div>
+                    </div>
+                    : <div>
+                        <h2>This pool has not been initialized.</h2>
+                        <h3>Do you want to initialize it?</h3>
+                        <button>Initialize Pool</button>
                     </div>
                     }
 
