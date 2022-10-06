@@ -27,11 +27,19 @@ interface propsIF {
     isShowAllEnabled: boolean;
     openGlobalModal: (content: React.ReactNode) => void;
     closeGlobalModal: () => void;
+    currentPositionActive: string;
 }
 
 // main react functional component
 export default function Orders(props: propsIF) {
-    const { chainData, expandTradeTable, account, graphData, isShowAllEnabled } = props;
+    const {
+        chainData,
+        expandTradeTable,
+        account,
+        graphData,
+        isShowAllEnabled,
+        currentPositionActive,
+    } = props;
 
     const limitOrdersByUser = graphData.limitOrdersByUser.limitOrders;
     const limitOrdersByPool = graphData.limitOrdersByPool.limitOrders;
@@ -216,6 +224,7 @@ export default function Orders(props: propsIF) {
                     selectedQuoteToken={selectedQuoteToken}
                     openGlobalModal={props.openGlobalModal}
                     closeGlobalModal={props.closeGlobalModal}
+                    currentPositionActive={currentPositionActive}
                 />
             ))}
         </div>

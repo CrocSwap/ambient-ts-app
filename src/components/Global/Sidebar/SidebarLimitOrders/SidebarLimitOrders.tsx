@@ -15,12 +15,13 @@ interface SidebarLimitOrdersProps {
     limitOrderByUser?: ILimitOrderState[];
     isShowAllEnabled: boolean;
     setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
+    setCurrentPositionActive: Dispatch<SetStateAction<string>>;
 
     expandTradeTable: boolean;
     setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
 }
 export default function SidebarLimitOrders(props: SidebarLimitOrdersProps) {
-    const { limitOrderByUser, tokenMap, isDenomBase } = props;
+    const { limitOrderByUser, tokenMap, isDenomBase, setCurrentPositionActive } = props;
     const location = useLocation();
     const navigate = useNavigate();
     const header = (
@@ -37,6 +38,7 @@ export default function SidebarLimitOrders(props: SidebarLimitOrdersProps) {
         setSelectedOutsideTab: props.setSelectedOutsideTab,
         outsideControl: props.outsideControl,
         setOutsideControl: props.setOutsideControl,
+        setCurrentPositionActive: setCurrentPositionActive,
     };
 
     const onTradeRoute = location.pathname.includes('trade');

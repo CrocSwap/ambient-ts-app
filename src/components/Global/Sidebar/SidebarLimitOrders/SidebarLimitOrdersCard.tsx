@@ -15,12 +15,20 @@ interface SidebarLimitOrdersCardProps {
     selectedOutsideTab: number;
     setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
     outsideControl: boolean;
+    setCurrentPositionActive: Dispatch<SetStateAction<string>>;
     setOutsideControl: Dispatch<SetStateAction<boolean>>;
 }
 export default function SidebarLimitOrdersCard(props: SidebarLimitOrdersCardProps) {
     const location = useLocation();
 
-    const { tokenMap, order, setOutsideControl, setSelectedOutsideTab, isDenomBase } = props;
+    const {
+        tokenMap,
+        order,
+        setOutsideControl,
+        setCurrentPositionActive,
+        setSelectedOutsideTab,
+        isDenomBase,
+    } = props;
 
     if (order.positionLiq === 0) return null;
 
@@ -99,6 +107,7 @@ export default function SidebarLimitOrdersCard(props: SidebarLimitOrdersCardProp
     function handleLimitOrderClick() {
         setOutsideControl(true);
         setSelectedOutsideTab(tabToSwitchToBasedOnRoute);
+        setCurrentPositionActive(order.limitOrderIdentifier);
         if (baseToken) dispatch(setTokenA(baseToken));
         if (quoteToken) dispatch(setTokenB(quoteToken));
     }

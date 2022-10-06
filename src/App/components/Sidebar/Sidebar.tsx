@@ -104,6 +104,7 @@ export default function Sidebar(props: SidebarPropsIF) {
         outsideControl: props.outsideControl,
         setOutsideControl: props.setOutsideControl,
         isShowAllEnabled: props.isShowAllEnabled,
+        setCurrentPositionActive: setCurrentPositionActive,
         setIsShowAllEnabled: props.setIsShowAllEnabled,
         expandTradeTable: expandTradeTable,
         setExpandTradeTable: setExpandTradeTable,
