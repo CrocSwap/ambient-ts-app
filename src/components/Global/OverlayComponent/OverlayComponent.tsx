@@ -16,14 +16,15 @@ export default function OverlayComponent(props: OverlayComponentPropsIF) {
     const leftStyle = left ? left : '0';
     const rightStyle = right ? right : '0';
 
-    const showGlobalOverlay = false;
+    const showGlobalOverlay = true;
     const wrapperStyle = showGlobalOverlay ? styles.overlay_wrapper_active : styles.overlay_wrapper;
     return (
         <div
             className={wrapperStyle}
             style={{ top: topStyle, bottom: bottomStyle, left: leftStyle, right: rightStyle }}
         >
-            {children}
+            <h3>{children}</h3>
+            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Reprehenderit, ratione!</p>
         </div>
     );
 }
