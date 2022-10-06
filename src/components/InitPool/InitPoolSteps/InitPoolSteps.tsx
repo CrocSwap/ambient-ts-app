@@ -24,7 +24,7 @@ function Step(props: InitStepPropsIF) {
 
     const activeStyle = (
         <div className={styles.step_active}>
-            <div />{' '}
+            <div />
         </div>
     );
     const nonActiveStyle = <div className={styles.step_non_active} />;
