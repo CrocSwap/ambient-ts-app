@@ -1,7 +1,6 @@
 .steps_display_container{
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    align-items: center;
+display: flex;
+flex-direction: column;
     gap: 1rem;
     position: relative;
 }
@@ -52,4 +51,17 @@
     height: 30px;
     background: var(--title-gradient);
     border-radius: 50%;
+}
+
+
+@media only screen and (min-width: 768px) {
+
+    .steps_display_container{
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        align-items: center;
+        gap: 1rem;
+       
+    }
+
 }
