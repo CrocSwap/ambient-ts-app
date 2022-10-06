@@ -248,8 +248,13 @@ export default function Chart(props: ChartData) {
     }, [location]);
 
     async function addHorizontalLineArea() {
-        await d3.select(d3PlotArea.current).select('.targets').selectAll('#rect').remove();
-        await d3.select(d3PlotArea.current).select('.targets').append('rect').attr('id', 'rect');
+        if (d3.select(d3PlotArea.current).select('.targets').select('#rect').node() === null) {
+            await d3
+                .select(d3PlotArea.current)
+                .select('.targets')
+                .append('rect')
+                .attr('id', 'rect');
+        }
         const max = ranges.find((item) => item.name === 'Max')?.value as number;
         const min = ranges.find((item) => item.name === 'Min')?.value as number;
 
@@ -428,7 +433,7 @@ export default function Chart(props: ChartData) {
                 };
             });
         }
-    }, [scaleData]);
+    }, [scaleData, ranges]);
 
     const setMarketLine = () => {
         let lastCandlePrice: number | undefined;
