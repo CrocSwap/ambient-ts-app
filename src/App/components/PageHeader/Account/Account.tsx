@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { useState } from 'react';
+import { useState, Dispatch, SetStateAction } from 'react';
 import { FiMoreHorizontal } from 'react-icons/fi';
 
 // START: Import Local Files
@@ -20,10 +20,22 @@ interface AccountPropsIF {
     openModal: () => void;
     ensName: string;
     chainId: string;
+    isAppOverlayActive: boolean;
+
+    setIsAppOverlayActive: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function Account(props: AccountPropsIF) {
-    const { isUserLoggedIn, nativeBalance, clickLogout, ensName, openModal, chainId } = props;
+    const {
+        isUserLoggedIn,
+        nativeBalance,
+        clickLogout,
+        ensName,
+        openModal,
+        chainId,
+        isAppOverlayActive,
+        setIsAppOverlayActive,
+    } = props;
 
     const [openSnackbar, setOpenSnackbar] = useState(false);
     const [value, copy] = useCopyToClipboard();
@@ -42,6 +54,8 @@ export default function Account(props: AccountPropsIF) {
             {value} copied
         </SnackbarComponent>
     );
+
+    const [openNavbarMenu, setOpenNavbarMenu] = useState(false);
     return (
         <div className={styles.account_container}>
             <IconWithTooltip title='Wallet balance' placement='bottom'>
@@ -59,7 +73,11 @@ export default function Account(props: AccountPropsIF) {
                     <p>{ensName !== '' ? ensName : props.accountAddress}</p>
                 </div>
             )}
-            <NavItem icon={<FiMoreHorizontal size={20} color='#CDC1FF' />}>
+            <NavItem
+                icon={<FiMoreHorizontal size={20} color='#CDC1FF' />}
+                open={openNavbarMenu}
+                setOpen={setOpenNavbarMenu}
+            >
                 <DropdownMenu
                     isUserLoggedIn={isUserLoggedIn}
                     // isAuthenticated={isAuthenticated}
@@ -67,6 +85,9 @@ export default function Account(props: AccountPropsIF) {
                     clickLogout={clickLogout}
                     openModal={openModal}
                     chainId={chainId}
+                    isAppOverlayActive={isAppOverlayActive}
+                    setIsAppOverlayActive={setIsAppOverlayActive}
+                    setIsNavbarMenuOpen={setOpenNavbarMenu}
                 />
             </NavItem>
             {snackbarContent}
