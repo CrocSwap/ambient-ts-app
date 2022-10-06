@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { FiMoreHorizontal } from 'react-icons/fi';
 
@@ -11,10 +11,10 @@ import SnackbarComponent from '../../../../../components/Global/SnackbarComponen
 // START: Import Local Files
 import styles from './TableMenuComponents.module.css';
 import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
-import { DefaultTooltip } from '../../../StyledTooltip/StyledTooltip';
 import { PositionIF } from '../../../../../utils/interfaces/PositionIF';
 import HarvestPosition from '../../../../HarvestPosition/HarvestPosition';
 import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
+import UseOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 
 // interface for React functional component props
 interface RangesMenuIF {
@@ -34,6 +34,8 @@ interface RangesMenuIF {
 
 // React functional component
 export default function RangesMenu(props: RangesMenuIF) {
+    const menuItemRef = useRef<HTMLDivElement>(null);
+
     const {
         crocEnv,
         // chainData,
@@ -51,8 +53,6 @@ export default function RangesMenu(props: RangesMenuIF) {
     // eslint-disable-next-line
     const [value, copy] = useCopyToClipboard();
     const [openSnackbar, setOpenSnackbar] = useState<boolean>(false);
-
-    const [openMenuTooltip, setOpenMenuTooltip] = useState(false);
 
     // const feesGreaterThanZero =
     //     (positionData.feesLiqBaseDecimalCorrected || 0) +
@@ -109,7 +109,7 @@ export default function RangesMenu(props: RangesMenuIF) {
 
     const copyButton = isPositionInRange ? (
         <button className={styles.option_button} onClick={handleCopyAddress}>
-            Copy Trade
+            Copy
         </button>
     ) : null;
 
@@ -160,23 +160,23 @@ export default function RangesMenu(props: RangesMenuIF) {
         </div>
     );
 
+    const [showDropdownMenu, setShowDropdownMenu] = useState(false);
+
+    const wrapperStyle = showDropdownMenu
+        ? styles.dropdown_wrapper_active
+        : styles.dropdown_wrapper;
+
+    const clickOutsideHandler = () => {
+        setShowDropdownMenu(false);
+    };
+
+    UseOnClickOutside(menuItemRef, clickOutsideHandler);
     const dropdownRangesMenu = (
-        <div className={styles.dropdown_menu}>
-            <DefaultTooltip
-                open={openMenuTooltip}
-                onOpen={() => setOpenMenuTooltip(true)}
-                onClose={() => setOpenMenuTooltip(false)}
-                interactive
-                placement='left'
-                title={menuContent}
-            >
-                <div
-                    style={{ cursor: 'pointer' }}
-                    onClick={() => setOpenMenuTooltip(!openMenuTooltip)}
-                >
-                    <FiMoreHorizontal size={20} />
-                </div>
-            </DefaultTooltip>
+        <div className={styles.dropdown_menu} ref={menuItemRef}>
+            <div onClick={() => setShowDropdownMenu(!showDropdownMenu)}>
+                <FiMoreHorizontal />
+            </div>
+            <div className={wrapperStyle}>{menuContent}</div>
         </div>
     );
 

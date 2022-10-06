@@ -9,7 +9,7 @@ import { fetchAddress } from '../../App/functions/fetchAddress';
 import { useMoralis } from 'react-moralis';
 import { ethers } from 'ethers';
 import { TokenIF } from '../../utils/interfaces/TokenIF';
-import { CrocEnv } from '@crocswap-libs/sdk';
+import { CrocEnv, toDisplayQty } from '@crocswap-libs/sdk';
 
 import { Erc20TokenBalanceFn, nativeTokenBalanceFn } from '../../App/functions/fetchTokenBalances';
 import {
@@ -25,7 +25,7 @@ import ProfileSettings from '../../components/Portfolio/ProfileSettings/ProfileS
 // import { setToken } from '../../utils/state/temp';
 
 const mainnetProvider = new ethers.providers.WebSocketProvider(
-    'wss://mainnet.infura.io/ws/v3/4a162c75bd514925890174ca13cdb6a2',
+    'wss://mainnet.infura.io/ws/v3/cbb2856ea8804fc5ba59be0a2e8a9f88',
 );
 
 interface PortfolioPropsIF {
@@ -74,33 +74,51 @@ export default function Portfolio(props: PortfolioPropsIF) {
         userAccount,
     } = props;
 
-    const tempTokenSelection: TokenIF = useAppSelector((state) => state.temp.token);
-    // const dispatch = useAppDispatch();
-    // const [isTempModalOpen, openTempModal, closeTempModal] = useModal();
+    const selectedToken: TokenIF = useAppSelector((state) => state.temp.token);
 
-    // const chooseToken = (tok: TokenIF) => {
-    //     console.log(tok);
-    //     dispatch(setToken(tok));
-    //     closeTempModal();
-    // };
+    const [tokenAllowance, setTokenAllowance] = useState<string>('');
+    const [recheckTokenAllowance, setRecheckTokenAllowance] = useState<boolean>(false);
+    const [recheckTokenBalances, setRecheckTokenBalances] = useState<boolean>(false);
 
-    // const modalOrNull = isTempModalOpen ? (
-    //     <Modal
-    //         onClose={closeTempModal}
-    //         title='Select Token'
-    //         centeredTitle
-    //         showBackButton={false}
-    //         footer={null}
-    //     >
-    //         {defaultTokens
-    //             .filter((token: TokenIF) => token.chainId === parseInt(chainId))
-    //             .map((token: TokenIF) => (
-    //                 <button key={'button_to_set_' + token.name} onClick={() => chooseToken(token)}>
-    //                     {token.name}
-    //                 </button>
-    //             ))}
-    //     </Modal>
-    // ) : null;
+    const [tokenWalletBalance, setTokenWalletBalance] = useState<string>('');
+    const [tokenDexBalance, setTokenDexBalance] = useState<string>('');
+
+    const selectedTokenAddress = selectedToken.address;
+    const selectedTokenDecimals = selectedToken.decimals;
+
+    useEffect(() => {
+        if (crocEnv && selectedToken.address && connectedAccount) {
+            crocEnv
+                .token(selectedToken.address)
+                .walletDisplay(connectedAccount)
+                .then((bal: string) => setTokenWalletBalance(bal))
+                .catch(console.log);
+            crocEnv
+                .token(selectedToken.address)
+                .balanceDisplay(connectedAccount)
+                .then((bal: string) => {
+                    setTokenDexBalance(bal);
+                })
+                .catch(console.log);
+        }
+        setRecheckTokenBalances(false);
+    }, [crocEnv, selectedToken.address, connectedAccount, lastBlockNumber, recheckTokenBalances]);
+
+    useEffect(() => {
+        (async () => {
+            if (crocEnv && connectedAccount && selectedTokenAddress) {
+                try {
+                    const allowance = await crocEnv
+                        .token(selectedTokenAddress)
+                        .allowance(connectedAccount);
+                    setTokenAllowance(toDisplayQty(allowance, selectedTokenDecimals));
+                } catch (err) {
+                    console.log(err);
+                }
+                setRecheckTokenAllowance(false);
+            }
+        })();
+    }, [crocEnv, selectedTokenAddress, lastBlockNumber, connectedAccount, recheckTokenAllowance]);
 
     const { address } = useParams();
 
@@ -163,19 +181,26 @@ export default function Portfolio(props: PortfolioPropsIF) {
     }, [address, isInitialized, isAddressEns]);
 
     useEffect(() => {
-        console.log({ tempTokenSelection });
-    }, [tempTokenSelection]);
+        console.log({ selectedToken });
+    }, [selectedToken]);
 
     const exchangeBalanceComponent = (
         <div className={styles.exchange_balance}>
             <ExchangeBalance
                 crocEnv={crocEnv}
+                mainnetProvider={mainnetProvider}
                 connectedAccount={connectedAccount}
                 setSelectedOutsideTab={props.setSelectedOutsideTab}
                 setOutsideControl={props.setOutsideControl}
                 openGlobalModal={openGlobalModal}
                 closeGlobalModal={closeGlobalModal}
-                tempTokenSelection={tempTokenSelection}
+                selectedToken={selectedToken}
+                tokenAllowance={tokenAllowance}
+                tokenWalletBalance={tokenWalletBalance}
+                tokenDexBalance={tokenDexBalance}
+                setRecheckTokenAllowance={setRecheckTokenAllowance}
+                setRecheckTokenBalances={setRecheckTokenBalances}
+                lastBlockNumber={lastBlockNumber}
             />
         </div>
     );

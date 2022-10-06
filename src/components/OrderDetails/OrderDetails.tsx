@@ -8,6 +8,7 @@ import PriceInfo from '../OrderDetails/PriceInfo/PriceInfo';
 import OrderGraphDisplay from './OrderGraphDisplay/OrderGraphDisplay';
 import { useProcessOrder } from '../../utils/hooks/useProcessOrder';
 import OrderDetailsControl from './OderDetailsControl/OrderDetailsControl';
+import OrderDetailsActions from '../RangeDetails/OrderDetailsActions/OrderDetailsActions';
 
 interface IOrderDetailsProps {
     limitOrder: ILimitOrderState;
@@ -72,7 +73,7 @@ export default function OrderDetails(props: IOrderDetailsProps) {
                     <div className={styles.right_container}>
                         <OrderGraphDisplay isOrderFilled={isOrderFilled} user={userNameToDisplay} />
                     </div>
-                    <h1>actions display</h1>
+                    <OrderDetailsActions />
                 </div>
             </div>
         </div>

@@ -12,7 +12,7 @@ import TradeTabs2 from '../../components/Trade/TradeTabs/TradeTabs2';
 // START: Import Local Files
 import styles from './Trade.module.css';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
-import { targetData, tradeData as TradeDataIF } from '../../utils/state/tradeDataSlice';
+import { tradeData as TradeDataIF } from '../../utils/state/tradeDataSlice';
 import { CandleData, CandlesByPoolAndDuration } from '../../utils/state/graphDataSlice';
 import { PoolIF, TokenIF, TokenPairIF } from '../../utils/interfaces/exports';
 import { useUrlParams } from './useUrlParams';
@@ -48,8 +48,6 @@ interface TradePropsIF {
     expandTradeTable: boolean;
     setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
     setLimitRate: React.Dispatch<React.SetStateAction<string>>;
-    setTargets: React.Dispatch<React.SetStateAction<targetData[]>>;
-    targets: targetData[];
     limitRate: string;
     favePools: PoolIF[];
     addPoolToFaves: (tokenA: TokenIF, tokenB: TokenIF, chainId: string, poolId: number) => void;
@@ -71,6 +69,7 @@ interface TradePropsIF {
     closeGlobalModal: () => void;
     isInitialized: boolean;
     poolPriceNonDisplay: number | undefined;
+    importedTokens: TokenIF[];
 }
 
 // React functional component
@@ -94,7 +93,8 @@ export default function Trade(props: TradePropsIF) {
         favePools,
         addPoolToFaves,
         removePoolFromFaves,
-        isInitialized
+        isInitialized,
+        importedTokens,
     } = props;
 
     useUrlParams(chainId, isInitialized);
@@ -122,7 +122,22 @@ export default function Trade(props: TradePropsIF) {
 
     const { tradeData, graphData } = useAppSelector((state) => state);
 
-    const activePoolLiquidityData = graphData?.liquidityForAllPools?.pools[0];
+    const indexOfPoolInLiqData = graphData?.liquidityForAllPools.pools.findIndex(
+        (pool) =>
+            pool.pool.baseAddress.toLowerCase() === tradeData.baseToken.address.toLowerCase() &&
+            pool.pool.quoteAddress.toLowerCase() === tradeData.quoteToken.address.toLowerCase() &&
+            pool.pool.poolIdx === chainData.poolIndex &&
+            pool.pool.chainId === chainData.chainId,
+    );
+
+    // const liqData = graphData?.liquidityForAllPools.pools;
+    // console.log({ liqData });
+    // console.log({ tradeData });
+    // console.log({ chainData });
+    // console.log({ indexOfPoolInLiqData });
+
+    const activePoolLiquidityData = graphData?.liquidityForAllPools?.pools[indexOfPoolInLiqData];
+    // console.log({ activePoolLiquidityData });
     const liquidityData = activePoolLiquidityData?.liquidityData;
     const denomInBase = tradeData.isDenomBase;
     const limitPrice = tradeData.limitPrice;
@@ -131,7 +146,6 @@ export default function Trade(props: TradePropsIF) {
     const simpleRangeWidth = tradeData.simpleRangeWidth;
     const pinnedMaxPriceDisplayTruncated = tradeData.pinnedMaxPriceDisplayTruncated;
     const pinnedMinPriceDisplayTruncated = tradeData.pinnedMinPriceDisplayTruncated;
-    const spotPriceDisplay = tradeData.spotPriceDisplay;
 
     const poolPriceDisplayWithDenom = poolPriceDisplay
         ? denomInBase
@@ -413,15 +427,13 @@ export default function Trade(props: TradePropsIF) {
                                 simpleRangeWidth={simpleRangeWidth}
                                 pinnedMinPriceDisplayTruncated={pinnedMinPriceDisplayTruncated}
                                 pinnedMaxPriceDisplayTruncated={pinnedMaxPriceDisplayTruncated}
-                                spotPriceDisplay={spotPriceDisplay}
                                 upBodyColor={upBodyColor}
                                 upBorderColor={upBorderColor}
                                 downBodyColor={downBodyColor}
                                 downBorderColor={downBorderColor}
                                 baseTokenAddress={baseTokenAddress}
                                 poolPriceNonDisplay={props.poolPriceNonDisplay}
-                                setTargets={props.setTargets}
-                                targets={props.targets}
+                                isCandleSelected={isCandleSelected}
                             />
                         </motion.div>
                     </div>
@@ -472,6 +484,7 @@ export default function Trade(props: TradePropsIF) {
                                 setCurrentPositionActive={props.setCurrentPositionActive}
                                 openGlobalModal={props.openGlobalModal}
                                 closeGlobalModal={props.closeGlobalModal}
+                                importedTokens={importedTokens}
                             />
                         </div>
                     </motion.div>

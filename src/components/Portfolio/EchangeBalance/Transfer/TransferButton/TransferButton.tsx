@@ -1,17 +1,22 @@
 import styles from './TransferButton.module.css';
-import { useState } from 'react';
 import Button from '../../../../Global/Button/Button';
 
-export default function TransferButton() {
-    const [allowedButton] = useState<boolean>(false);
+interface PortfolioTransferButtonProps {
+    onClick: () => void;
+    disabled: boolean;
+    buttonMessage: string;
+}
+
+export default function TransferButton(props: PortfolioTransferButtonProps) {
+    const { onClick, disabled, buttonMessage } = props;
 
     const ButtonDisplay = (
         <div className={styles.button_container}>
             <Button
-                title={allowedButton ? 'Transfer' : 'Enter an amount'}
+                title={buttonMessage}
                 // action={() => console.log('clicked')}
-                action={() => console.log('depositing...')}
-                disabled={!allowedButton}
+                action={onClick}
+                disabled={disabled}
             />
         </div>
     );

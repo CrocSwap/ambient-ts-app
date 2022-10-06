@@ -19,12 +19,11 @@ export default function FavoritePoolsCard(props: FavoritePoolsCardIF) {
 
     const { tokenB } = useAppSelector((state) => state.tradeData);
 
-    const location = useLocation();
+    const { pathname } = useLocation();
 
     const linkPath = useMemo(() => {
-        const { pathname } = location;
         let locationSlug = '';
-        if (pathname.startsWith('/trade/market')) {
+        if (pathname.startsWith('/trade/market') || pathname.startsWith('/account')) {
             locationSlug = '/trade/market';
         } else if (pathname.startsWith('/trade/limit')) {
             locationSlug = '/trade/limit';
@@ -37,17 +36,12 @@ export default function FavoritePoolsCard(props: FavoritePoolsCardIF) {
             tokenB.address.toLowerCase() === pool.base.address.toLowerCase()
                 ? [pool.quote.address, pool.base.address]
                 : [pool.base.address, pool.quote.address];
-        return (
-            locationSlug +
-            '/chain=0x5&tokenA=' +
-            addrTokenA +
-            '&tokenB=' +
-            addrTokenB
-        );
-    }, [location]);
+        return locationSlug + '/chain=0x5&tokenA=' + addrTokenA + '&tokenB=' + addrTokenB;
+    }, [pathname]);
 
     useEffect(() => {
         (async () => {
+            // so fresh
             const poolStatsFresh = await getPoolStatsFresh(
                 pool.chainId,
                 pool.base.address,

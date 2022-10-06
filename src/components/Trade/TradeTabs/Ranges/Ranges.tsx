@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { Dispatch, SetStateAction, useState } from 'react';
+import { Dispatch, SetStateAction } from 'react';
 import { ethers } from 'ethers';
 
 // START: Import JSX Components
@@ -12,7 +12,7 @@ import { graphData } from '../../../../utils/state/graphDataSlice';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { useSortedPositions } from './useSortedPositions';
 import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
-import RangeAccordions from './RangeAccordions/RangeAccordions';
+// import RangeAccordions from './RangeAccordions/RangeAccordions';
 
 // interface for props
 interface RangesPropsIF {
@@ -84,7 +84,7 @@ export default function Ranges(props: RangesPropsIF) {
         graphData?.positionsByUser?.positions,
         graphData?.positionsByPool?.positions,
     );
-    const [expanded, setExpanded] = useState<false | number>(false);
+    // const [expanded, setExpanded] = useState<false | number>(false);
 
     const desktopDisplay = (
         <div className={styles.desktop_ranges_display_container}>
@@ -121,7 +121,7 @@ export default function Ranges(props: RangesPropsIF) {
 
     const mobileAccordionDisplay = (
         <div className={styles.accordion_display_container}>
-            {sortedPositions.map((position, idx) => (
+            {/* {sortedPositions.map((position, idx) => (
                 <RangeAccordions
                     key={idx}
                     expanded={expanded}
@@ -129,7 +129,8 @@ export default function Ranges(props: RangesPropsIF) {
                     i={idx}
                     position={position}
                 />
-            ))}
+            ))} */}
+            <p>Mobile Accordion here: Disabled for now</p>
         </div>
     );
 

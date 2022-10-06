@@ -30,7 +30,6 @@ import {
     // tradeData as TradeDataIF,
     toggleDidUserFlipDenom,
     setActiveChartPeriod,
-    targetData,
 } from '../../../utils/state/tradeDataSlice';
 import { CandleData, CandlesByPoolAndDuration } from '../../../utils/state/graphDataSlice';
 // import { usePoolChartData } from '../../../state/pools/hooks';
@@ -67,15 +66,13 @@ interface TradeChartsPropsIF {
     simpleRangeWidth: number | undefined;
     pinnedMinPriceDisplayTruncated: number | undefined;
     pinnedMaxPriceDisplayTruncated: number | undefined;
-    spotPriceDisplay: string | undefined;
     upBodyColor: string;
     upBorderColor: string;
     downBodyColor: string;
     downBorderColor: string;
     baseTokenAddress: string;
     poolPriceNonDisplay: number | undefined;
-    setTargets: React.Dispatch<React.SetStateAction<targetData[]>>;
-    targets: targetData[];
+    isCandleSelected: boolean | undefined;
 }
 
 export interface CandleChartData {
@@ -302,7 +299,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
     ];
 
     const chartOverlayButtonData2 = [
-        { name: 'Curve', selected: false, action: exampleAction },
+        { name: 'Curve', selected: true, action: exampleAction },
         { name: 'Depth', selected: false, action: exampleAction },
     ];
 
@@ -668,17 +665,16 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
                         expandTradeTable={expandTradeTable}
                         // volumeData={formattedVolumeData}
                         // feeData={formattedFeesUSD}
-                        priceData={props.candleData}
+                        candleData={props.candleData}
                         changeState={props.changeState}
                         chartItemStates={chartItemStates}
                         limitPrice={props.limitPrice}
-                        denomInBase={denomInBase}
                         liquidityData={props.liquidityData}
                         isAdvancedModeActive={props.isAdvancedModeActive}
                         simpleRangeWidth={props.simpleRangeWidth}
                         pinnedMinPriceDisplayTruncated={props.pinnedMinPriceDisplayTruncated}
                         pinnedMaxPriceDisplayTruncated={props.pinnedMaxPriceDisplayTruncated}
-                        spotPriceDisplay={props.spotPriceDisplay}
+                        poolPriceDisplay={poolPriceDisplay}
                         truncatedPoolPrice={parseFloat(truncatedPoolPrice)}
                         setCurrentData={setCurrentData}
                         upBodyColor={props.upBodyColor}
@@ -688,8 +684,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
                         baseTokenAddress={props.baseTokenAddress}
                         chainId={chainId}
                         poolPriceNonDisplay={props.poolPriceNonDisplay}
-                        setTargets={props.setTargets}
-                        targets={props.targets}
+                        isCandleSelected={props.isCandleSelected}
                     />
                 </div>
             )}
