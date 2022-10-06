@@ -7,6 +7,7 @@ import { useAppDispatch } from '../../../../../utils/hooks/reduxToolkit';
 import {
     setAdvancedHighTick,
     setAdvancedLowTick,
+    setRangeModuleTriggered,
     setTargetData,
     targetData,
 } from '../../../../../utils/state/tradeDataSlice';
@@ -80,6 +81,7 @@ export default function MinMaxPrice(props: MinMaxPriceIF) {
         ];
 
         dispatch(setTargetData(newTargetData));
+        dispatch(setRangeModuleTriggered(true));
     };
 
     const handleMinPriceChangeEvent = (evt?: ChangeEvent<HTMLInputElement>) => {
@@ -121,7 +123,7 @@ export default function MinMaxPrice(props: MinMaxPriceIF) {
             // lowBoundOnBlur();
             // highBoundOnBlur();
         }
-    }, [targetData]);
+    }, [JSON.stringify(targetData)]);
 
     const tickSize = lookupChain(chainId).gridSize;
 

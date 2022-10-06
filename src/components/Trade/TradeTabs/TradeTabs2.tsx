@@ -22,7 +22,6 @@ import { CandleData, ITransaction, setChangesByUser } from '../../../utils/state
 import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
 import { fetchPoolRecentChanges } from '../../../App/functions/fetchPoolRecentChanges';
 
-
 import { fetchUserRecentChanges } from '../../../App/functions/fetchUserRecentChanges';
 
 interface ITabsProps {
