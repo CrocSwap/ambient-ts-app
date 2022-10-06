@@ -15,12 +15,20 @@ interface SidebarLimitOrdersProps {
     limitOrderByUser?: ILimitOrderState[];
     isShowAllEnabled: boolean;
     setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
-
+    setCurrentPositionActive: Dispatch<SetStateAction<string>>;
+    isUserLoggedIn: boolean;
     expandTradeTable: boolean;
     setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
 }
 export default function SidebarLimitOrders(props: SidebarLimitOrdersProps) {
-    const { limitOrderByUser, tokenMap, isDenomBase } = props;
+    const {
+        limitOrderByUser,
+        tokenMap,
+        isDenomBase,
+        setCurrentPositionActive,
+        setIsShowAllEnabled,
+        isUserLoggedIn,
+    } = props;
     const location = useLocation();
     const navigate = useNavigate();
     const header = (
@@ -37,6 +45,8 @@ export default function SidebarLimitOrders(props: SidebarLimitOrdersProps) {
         setSelectedOutsideTab: props.setSelectedOutsideTab,
         outsideControl: props.outsideControl,
         setOutsideControl: props.setOutsideControl,
+        setCurrentPositionActive: setCurrentPositionActive,
+        setIsShowAllEnabled: setIsShowAllEnabled,
     };
 
     const onTradeRoute = location.pathname.includes('trade');
@@ -44,7 +54,8 @@ export default function SidebarLimitOrders(props: SidebarLimitOrdersProps) {
 
     const tabToSwitchToBasedOnRoute = onTradeRoute ? 1 : onAccountRoute ? 3 : 1;
     function redirectBasedOnRoute() {
-        if (onTradeRoute || onAccountRoute) return;
+        // if (onTradeRoute || onAccountRoute) return;
+        if (onTradeRoute) return;
         navigate('/trade');
     }
 
@@ -70,7 +81,7 @@ export default function SidebarLimitOrders(props: SidebarLimitOrdersProps) {
                         />
                     ))}
             </div>
-            {!props.expandTradeTable && (
+            {!props.expandTradeTable && isUserLoggedIn && (
                 <div className={styles.view_more} onClick={handleViewMoreClick}>
                     View More
                 </div>

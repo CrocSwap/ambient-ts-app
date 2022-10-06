@@ -1861,13 +1861,13 @@ export default function App() {
     //     }
     // }
 
-    useEffect(() => {
-        if (location.pathname.includes('account') || location.pathname.includes('analytics')) {
-            setShowSidebar(false);
-        }
+    // useEffect(() => {
+    //     if (location.pathname.includes('account') || location.pathname.includes('analytics')) {
+    //         setShowSidebar(false);
+    //     }
 
-        // handleTabChangedBasedOnRoute();
-    }, [location.pathname]);
+    //     // handleTabChangedBasedOnRoute();
+    // }, [location.pathname]);
 
     // market - /trade/market
     // limit - /trade/limit
