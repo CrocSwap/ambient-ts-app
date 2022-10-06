@@ -2047,6 +2047,7 @@ export default function App() {
                                         throw new Error('Function not implemented.');
                                     }}
                                     limitRate={''}
+                                    importedTokens={importedTokens}
                                 />
                             }
                         >
