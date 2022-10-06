@@ -61,8 +61,24 @@ export default function PageHeader(props: HeaderPropsIF) {
         setIsMobileSidebarOpen,
     } = props;
 
-    const { user, account, enableWeb3, isWeb3Enabled, isAuthenticated } = useMoralis();
+    const {
+        user,
+        account,
+        enableWeb3,
+        isAuthenticated,
+        // isWeb3EnableLoading,
+        // isInitialized,
+        // isInitializing,
+        // isUserUpdating,
+    } = useMoralis();
 
+    // console.log({ user });
+    // console.log({ isUserUpdating });
+    // console.log({ isInitialized });
+    // console.log({ isAuthenticated });
+    // console.log({ isInitializing });
+    // console.log({ isUserLoggedIn });
+    // console.log({ isWeb3EnableLoading });
     const { t } = useTranslation();
 
     const [isModalOpen, openModal, closeModal] = useModal();
@@ -74,6 +90,15 @@ export default function PageHeader(props: HeaderPropsIF) {
         </Modal>
     );
 
+    const [connectButtonDelayElapsed, setConnectButtonDelayElapsed] = useState(false);
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setConnectButtonDelayElapsed(true);
+        }, 3000);
+        return () => clearTimeout(timer);
+    }, []);
+
     const modalOrNull = isModalOpen ? mainModal : null;
 
     useEffect(() => {
@@ -84,6 +109,7 @@ export default function PageHeader(props: HeaderPropsIF) {
     }, [user, account, metamaskLocked]);
 
     const reenableWeb3 = useCallback(async () => {
+        // console.log('enabling web3');
         try {
             if (user && !account && !metamaskLocked) {
                 await enableWeb3();
@@ -141,12 +167,16 @@ export default function PageHeader(props: HeaderPropsIF) {
         ? '/trade/range'
         : location.pathname.includes('trade/edit')
         ? '/trade/edit'
-        : '/trade/market'
+        : '/trade/market';
 
     const linkData = [
         { title: t('common:homeTitle'), destination: '/', shouldDisplay: true },
         { title: t('common:swapTitle'), destination: '/swap' + urlParams, shouldDisplay: true },
-        { title: t('common:tradeTitle'), destination: tradeDestination + urlParams, shouldDisplay: true },
+        {
+            title: t('common:tradeTitle'),
+            destination: tradeDestination + urlParams,
+            shouldDisplay: true,
+        },
         { title: t('common:analyticsTitle'), destination: '/analytics', shouldDisplay: false },
         {
             title: t('common:accountTitle'),
@@ -168,7 +198,9 @@ export default function PageHeader(props: HeaderPropsIF) {
                     link.shouldDisplay ? (
                         <Link
                             className={
-                                location.pathname === link.destination ? styles.active : styles.inactive
+                                location.pathname === link.destination
+                                    ? styles.active
+                                    : styles.inactive
                             }
                             to={link.destination}
                             key={idx}
@@ -222,7 +254,7 @@ export default function PageHeader(props: HeaderPropsIF) {
                 />
                 <div className={styles.account}>
                     <NetworkSelector chainId={chainId} switchChain={switchChain} />
-                    {(!isAuthenticated || !isWeb3Enabled) && metamaskButton}
+                    {connectButtonDelayElapsed && !isUserLoggedIn && metamaskButton}
                     <Account {...accountProps} />
                     <NotificationCenter
                         showNotificationTable={showNotificationTable}
