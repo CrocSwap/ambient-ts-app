@@ -1521,6 +1521,7 @@ export default function Chart(props: ChartData) {
                                         .style('stroke', (d: any) =>
                                             d.close > d.open ? '#7371FC' : '#CDC1FF',
                                         );
+
                                     setIsChartSelected(false);
                                     selectedCandle = undefined;
                                     setSelectedCandleState(undefined);
@@ -1556,6 +1557,7 @@ export default function Chart(props: ChartData) {
                     .xScale(scaleData.xScale)
                     .yScale(scaleData.yScale);
 
+                let firstRender = true;
                 const barSeries = d3fc
                     .seriesSvgBar()
                     .orient('horizontal')
@@ -1565,11 +1567,15 @@ export default function Chart(props: ChartData) {
                     .xScale(scaleData.liquidityScale)
                     .yScale(scaleData.yScale)
                     .decorate((selection: any) => {
-                        selection.select('.bar > path').style('fill', (d: any) => {
-                            return d.upperBoundPriceDecimalCorrected > scaleData.barThreshold
-                                ? 'rgba(115, 113, 252, 0.3)'
-                                : 'rgba(205, 193, 255, 0.3)';
-                        });
+                        if (firstRender) {
+                            selection.select('.bar > path').style('fill', (d: any) => {
+                                return d.upperBoundPriceDecimalCorrected > scaleData.barThreshold
+                                    ? 'rgba(115, 113, 252, 0.3)'
+                                    : 'rgba(205, 193, 255, 0.3)';
+                            });
+
+                            firstRender = false;
+                        }
                     });
 
                 const candleJoin = d3fc.dataJoin('g', 'candle');
@@ -1689,22 +1695,65 @@ export default function Chart(props: ChartData) {
 
                         d3.select(d3PlotArea.current)
                             .select('.bar')
-                            .selectAll('.horizontal  > path')
-                            .style('fill', 'red');
+                            .on('mouseover', (event: any) => {
+                                // const filtered =
+                                //     liquidityData.liqData.length > 1
+                                //         ? liquidityData.liqData.filter(
+                                //               (d: any) => d.upperBoundPriceDecimalCorrected != null,
+                                //           )
+                                //         : liquidityData.liqData;
 
-                        // (d: any) => {
-                        //     const highlighLimit = scaleData.yScale.invert(event.offsetY);
+                                // const nearest = filtered.reduce(function (prev: any, curr: any) {
+                                //     return Math.abs(
+                                //         curr.upperBoundPriceDecimalCorrected -
+                                //             scaleData.yScale.invert(event.offsetY),
+                                //     ) <
+                                //         Math.abs(
+                                //             prev.upperBoundPriceDecimalCorrected -
+                                //                 scaleData.yScale.invert(event.offsetY),
+                                //         )
+                                //         ? curr
+                                //         : prev;
+                                // });
 
-                        //     return d.upperBoundPriceDecimalCorrected > scaleData.barThreshold
-                        //         ? 'rgba(115, 113, 252,' + d.upperBoundPriceDecimalCorrected <
-                        //           highlighLimit
-                        //             ? '0.6'
-                        //             : '0.3)'
-                        //         : 'rgba(205, 193, 255,' + d.upperBoundPriceDecimalCorrected >
-                        //           highlighLimit
-                        //         ? '0.6'
-                        //         : '0.3)';
-                        // });
+                                const nearest = {
+                                    upperBoundPriceDecimalCorrected: scaleData.yScale.invert(
+                                        event.offsetY,
+                                    ),
+                                };
+
+                                d3.select(event.currentTarget)
+                                    .selectAll('.horizontal  > path')
+
+                                    .style('fill', (d: any) => {
+                                        if (
+                                            currentPriceData[0].value >
+                                                d.upperBoundPriceDecimalCorrected &&
+                                            d.upperBoundPriceDecimalCorrected >
+                                                nearest.upperBoundPriceDecimalCorrected
+                                        ) {
+                                            return 'rgba(205, 193, 255, 0.8)';
+                                        } else if (
+                                            currentPriceData[0].value <
+                                                d.upperBoundPriceDecimalCorrected &&
+                                            d.upperBoundPriceDecimalCorrected <
+                                                nearest.upperBoundPriceDecimalCorrected
+                                        ) {
+                                            return 'rgba(115, 113, 252, 0.8)';
+                                        } else {
+                                            return d.upperBoundPriceDecimalCorrected >
+                                                scaleData.barThreshold
+                                                ? 'rgba(115, 113, 252, 0.3)'
+                                                : 'rgba(205, 193, 255, 0.3)';
+                                        }
+                                    });
+                            });
+
+                        d3.select(d3PlotArea.current)
+                            .select('.bar')
+                            .on('mouseout', (event: any) => {
+                                firstRender = true;
+                            });
 
                         render();
                     })
