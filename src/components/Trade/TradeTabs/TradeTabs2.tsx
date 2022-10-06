@@ -21,7 +21,7 @@ import { TokenIF } from '../../../utils/interfaces/TokenIF';
 import { CandleData, ITransaction, setChangesByUser } from '../../../utils/state/graphDataSlice';
 import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
 import { fetchPoolRecentChanges } from '../../../App/functions/fetchPoolRecentChanges';
-import OverlayComponent from '../../Global/OverlayComponent/OverlayComponent';
+
 import { fetchUserRecentChanges } from '../../../App/functions/fetchUserRecentChanges';
 
 interface ITabsProps {
@@ -408,9 +408,6 @@ export default function TradeTabs2(props: ITabsProps) {
                     setSelectedInsideTab={setSelectedInsideTab}
                 />
             }
-            <OverlayComponent top='-230px' left='40%'>
-                I am overlay compoent
-            </OverlayComponent>
         </div>
     );
 }

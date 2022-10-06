@@ -41,6 +41,10 @@ interface HeaderPropsIF {
     openGlobalModal: (content: React.ReactNode) => void;
 
     closeGlobalModal: () => void;
+
+    isAppOverlayActive: boolean;
+
+    setIsAppOverlayActive: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function PageHeader(props: HeaderPropsIF) {
@@ -59,6 +63,8 @@ export default function PageHeader(props: HeaderPropsIF) {
         lastBlockNumber,
         isMobileSidebarOpen,
         setIsMobileSidebarOpen,
+        isAppOverlayActive,
+        setIsAppOverlayActive,
     } = props;
 
     const {
@@ -143,6 +149,8 @@ export default function PageHeader(props: HeaderPropsIF) {
         clickLogout: clickLogout,
         openModal: openModal,
         chainId: chainId,
+        isAppOverlayActive: isAppOverlayActive,
+        setIsAppOverlayActive: setIsAppOverlayActive,
     };
 
     // End of Page Header Functions
