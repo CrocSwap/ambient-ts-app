@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import { CSSTransition } from 'react-transition-group';
 import { AiFillTwitterCircle, AiFillInfoCircle } from 'react-icons/ai';
-import { BiArrowBack } from 'react-icons/bi';
+import { BiArrowBack, BiMessageCheck } from 'react-icons/bi';
 import { BsBook, BsMedium } from 'react-icons/bs';
 import { FiSettings, FiMoreHorizontal } from 'react-icons/fi';
 import { FaDiscord, FaSun, FaGithub, FaDotCircle } from 'react-icons/fa';
@@ -37,6 +37,10 @@ interface NavbarDropdownMenuPropsIF {
     openModal: () => void;
     closeMenu?: () => void;
     chainId: string;
+    isAppOverlayActive: boolean;
+
+    setIsAppOverlayActive: React.Dispatch<React.SetStateAction<boolean>>;
+    setIsNavbarMenuOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export default function NavbarDropdownMenu(props: NavbarDropdownMenuPropsIF) {
@@ -47,6 +51,8 @@ export default function NavbarDropdownMenu(props: NavbarDropdownMenuPropsIF) {
         clickLogout,
         openModal,
         closeMenu,
+        setIsAppOverlayActive,
+        setIsNavbarMenuOpen,
     } = props;
 
     const navigate = useNavigate();
@@ -154,6 +160,11 @@ export default function NavbarDropdownMenu(props: NavbarDropdownMenuPropsIF) {
         </>
     );
 
+    const handleWalkthroughClick = () => {
+        navigate('/trade/market');
+        setIsAppOverlayActive(true);
+        setIsNavbarMenuOpen(false);
+    };
     const supportItems = (
         <>
             <NavbarDropdownItem leftIcon={<MdHelp size={20} />}>Help Center</NavbarDropdownItem>
@@ -162,6 +173,9 @@ export default function NavbarDropdownMenu(props: NavbarDropdownMenuPropsIF) {
             </NavbarDropdownItem>
             <NavbarDropdownItem leftIcon={<GoRequestChanges size={20} />}>
                 Request Features
+            </NavbarDropdownItem>
+            <NavbarDropdownItem leftIcon={<BiMessageCheck size={20} />}>
+                <div onClick={handleWalkthroughClick}>Show Walkthrough</div>
             </NavbarDropdownItem>
         </>
     );
