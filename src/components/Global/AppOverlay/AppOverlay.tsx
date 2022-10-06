@@ -16,7 +16,7 @@ export default function AppOverlay(props: AppOverlayPropsIf) {
 
     const { isAppOverlayActive, setIsAppOverlayActive } = props;
 
-    console.log(isAppOverlayActive);
+    // console.log(isAppOverlayActive);
     const [page, setPage] = useState(0);
 
     // useEffect(() => {

@@ -14,7 +14,7 @@ import TradeTabs2 from '../../components/Trade/TradeTabs/TradeTabs2';
 // START: Import Local Files
 import styles from './Trade.module.css';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
-import { targetData, tradeData as TradeDataIF } from '../../utils/state/tradeDataSlice';
+import { tradeData as TradeDataIF } from '../../utils/state/tradeDataSlice';
 import { CandleData, CandlesByPoolAndDuration } from '../../utils/state/graphDataSlice';
 import { PoolIF, TokenIF, TokenPairIF } from '../../utils/interfaces/exports';
 import { useUrlParams } from './useUrlParams';
@@ -50,6 +50,8 @@ interface TradePropsIF {
     setLimitRate: Dispatch<SetStateAction<string>>;
     setTargets: Dispatch<SetStateAction<targetData[]>>;
     targets: targetData[];
+
+
     limitRate: string;
     favePools: PoolIF[];
     addPoolToFaves: (tokenA: TokenIF, tokenB: TokenIF, chainId: string, poolId: number) => void;
@@ -155,8 +157,31 @@ export default function Trade(props: TradePropsIF) {
     const baseTokenLogo = isDenomBase ? tradeData.baseToken.logoURI : tradeData.quoteToken.logoURI;
     const quoteTokenLogo = isDenomBase ? tradeData.quoteToken.logoURI : tradeData.baseToken.logoURI;
 
-    const activePoolLiquidityData = graphData?.liquidityForAllPools?.pools[0];
+    const indexOfPoolInLiqData = graphData?.liquidityForAllPools.pools.findIndex(
+        (pool) =>
+            pool.pool.baseAddress.toLowerCase() === tradeData.baseToken.address.toLowerCase() &&
+            pool.pool.quoteAddress.toLowerCase() === tradeData.quoteToken.address.toLowerCase() &&
+            pool.pool.poolIdx === chainData.poolIndex &&
+            pool.pool.chainId === chainData.chainId,
+    );
+
+    // const liqData = graphData?.liquidityForAllPools.pools;
+    // console.log({ liqData });
+    // console.log({ tradeData });
+    // console.log({ chainData });
+    // console.log({ indexOfPoolInLiqData });
+
+    const activePoolLiquidityData = graphData?.liquidityForAllPools?.pools[indexOfPoolInLiqData];
+    // console.log({ activePoolLiquidityData });
     const liquidityData = activePoolLiquidityData?.liquidityData;
+
+    const denomInBase = tradeData.isDenomBase;
+    const limitPrice = tradeData.limitPrice;
+
+    const isAdvancedModeActive = tradeData.advancedMode;
+    const simpleRangeWidth = tradeData.simpleRangeWidth;
+    const pinnedMaxPriceDisplayTruncated = tradeData.pinnedMaxPriceDisplayTruncated;
+    const pinnedMinPriceDisplayTruncated = tradeData.pinnedMinPriceDisplayTruncated;
 
     const poolPriceDisplayWithDenom = poolPriceDisplay
         ? isDenomBase
@@ -455,7 +480,6 @@ export default function Trade(props: TradePropsIF) {
                                 simpleRangeWidth={simpleRangeWidth}
                                 pinnedMinPriceDisplayTruncated={pinnedMinPriceDisplayTruncated}
                                 pinnedMaxPriceDisplayTruncated={pinnedMaxPriceDisplayTruncated}
-                                spotPriceDisplay={spotPriceDisplay}
                                 upBodyColor={upBodyColor}
                                 upBorderColor={upBorderColor}
                                 downBodyColor={downBodyColor}
@@ -464,6 +488,9 @@ export default function Trade(props: TradePropsIF) {
                                 poolPriceNonDisplay={poolPriceNonDisplay}
                                 setTargets={setTargets}
                                 targets={targets}
+                                poolPriceNonDisplay={props.poolPriceNonDisplay}
+                                isCandleSelected={isCandleSelected}
+
                             />
                         </motion.div>
                     </div>
