@@ -6,15 +6,18 @@ interface InitPoolStepsPropsIF {
     progressStepsData: {
         id: number;
         name: string;
+        data: JSX.Element;
     }[];
     progressStep: number;
     setProgressStep: Dispatch<SetStateAction<number>>;
+    handleChangeStep: (e: string) => void;
 }
 
 interface InitStepPropsIF {
     step: {
         id: number;
         name: string;
+        data: JSX.Element;
     };
     progressStep: number;
     index: number;
@@ -54,14 +57,7 @@ function Step(props: InitStepPropsIF) {
     );
 }
 export default function InitPoolSteps(props: InitPoolStepsPropsIF) {
-    const { progressStepsData, progressStep, setProgressStep } = props;
-
-    const handleChangeStep = (e: any) => {
-        e.target.value === 'prev' && progressStep > 0 && setProgressStep(progressStep - 1);
-        e.target.value === 'next' &&
-            progressStep < progressStepsData.length &&
-            setProgressStep(progressStep + 1);
-    };
+    const { progressStepsData, progressStep, setProgressStep, handleChangeStep } = props;
 
     const stepsDisplay = (
         <div className={styles.steps_display_container}>
@@ -71,12 +67,12 @@ export default function InitPoolSteps(props: InitPoolStepsPropsIF) {
                 </>
             ))}
 
-            <button value='prev' onClick={handleChangeStep}>
+            {/* <button value='prev' onClick={handleChangeStep}>
                 Previous step
             </button>
             <button value='next' onClick={handleChangeStep}>
                 Next step
-            </button>
+            </button> */}
         </div>
     );
     return <div className={styles.container}>{stepsDisplay}</div>;
