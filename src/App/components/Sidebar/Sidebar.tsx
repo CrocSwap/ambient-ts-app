@@ -292,7 +292,17 @@ export default function Sidebar(props: SidebarPropsIF) {
 
     const bottomElementsDisplay = (
         <div className={styles.bottom_elements}>
-            {favoritePools.map((item, idx) => (
+            {recentTransactions.map((item, idx) => (
+                <SidebarAccordion
+                    toggleSidebar={toggleSidebar}
+                    showSidebar={showSidebar}
+                    idx={idx}
+                    item={item}
+                    key={idx}
+                    mostRecent={mostRecentTransactions}
+                />
+            ))}{' '}
+            {recentLimitOrders.map((item, idx) => (
                 <SidebarAccordion
                     toggleSidebar={toggleSidebar}
                     showSidebar={showSidebar}
@@ -300,7 +310,7 @@ export default function Sidebar(props: SidebarPropsIF) {
                     item={item}
                     key={idx}
                 />
-            ))}
+            ))}{' '}
             {rangePositions.map((item, idx) => (
                 <SidebarAccordion
                     toggleSidebar={toggleSidebar}
@@ -311,23 +321,13 @@ export default function Sidebar(props: SidebarPropsIF) {
                     mostRecent={positionsByUser}
                 />
             ))}
-            {recentLimitOrders.map((item, idx) => (
+            {favoritePools.map((item, idx) => (
                 <SidebarAccordion
                     toggleSidebar={toggleSidebar}
                     showSidebar={showSidebar}
                     idx={idx}
                     item={item}
                     key={idx}
-                />
-            ))}
-            {recentTransactions.map((item, idx) => (
-                <SidebarAccordion
-                    toggleSidebar={toggleSidebar}
-                    showSidebar={showSidebar}
-                    idx={idx}
-                    item={item}
-                    key={idx}
-                    mostRecent={mostRecentTransactions}
                 />
             ))}
         </div>
