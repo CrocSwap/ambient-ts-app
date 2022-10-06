@@ -72,6 +72,7 @@ interface TradePropsIF {
     closeGlobalModal: () => void;
     isInitialized: boolean;
     poolPriceNonDisplay: number | undefined;
+    importedTokens: TokenIF[];
 }
 
 // React functional component
@@ -96,6 +97,7 @@ export default function Trade(props: TradePropsIF) {
         addPoolToFaves,
         removePoolFromFaves,
         isInitialized,
+        importedTokens,
     } = props;
 
     useUrlParams(chainId, isInitialized);
@@ -476,6 +478,7 @@ export default function Trade(props: TradePropsIF) {
                                 setCurrentPositionActive={props.setCurrentPositionActive}
                                 openGlobalModal={props.openGlobalModal}
                                 closeGlobalModal={props.closeGlobalModal}
+                                importedTokens={importedTokens}
                             />
                         </div>
                     </motion.div>

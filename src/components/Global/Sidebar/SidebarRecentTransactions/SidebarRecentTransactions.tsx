@@ -62,7 +62,7 @@ export default function SidebarRecentTransactions(props: SidebarRecentTransactio
         props.setOutsideControl(true);
         props.setSelectedOutsideTab(tabToSwitchToBasedOnRoute);
 
-        props.setIsShowAllEnabled(true);
+        props.setIsShowAllEnabled(false);
         props.setExpandTradeTable(true);
     };
 
