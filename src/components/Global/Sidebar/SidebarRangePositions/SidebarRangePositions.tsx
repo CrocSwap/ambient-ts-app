@@ -62,7 +62,7 @@ export default function SidebarRangePositions(props: SidebarRangeProps) {
         props.setSelectedOutsideTab(2);
         redirectBasedOnRoute();
 
-        props.setIsShowAllEnabled(true);
+        props.setIsShowAllEnabled(false);
         props.setExpandTradeTable(true);
     };
 

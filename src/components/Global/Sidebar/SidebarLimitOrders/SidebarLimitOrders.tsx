@@ -43,7 +43,6 @@ export default function SidebarLimitOrders(props: SidebarLimitOrdersProps) {
     const onAccountRoute = location.pathname.includes('account');
 
     const tabToSwitchToBasedOnRoute = onTradeRoute ? 1 : onAccountRoute ? 3 : 1;
-
     function redirectBasedOnRoute() {
         if (onTradeRoute || onAccountRoute) return;
         navigate('/trade');
@@ -54,7 +53,7 @@ export default function SidebarLimitOrders(props: SidebarLimitOrdersProps) {
         props.setOutsideControl(true);
         props.setSelectedOutsideTab(tabToSwitchToBasedOnRoute);
 
-        props.setIsShowAllEnabled(true);
+        props.setIsShowAllEnabled(false);
         props.setExpandTradeTable(true);
     };
     return (

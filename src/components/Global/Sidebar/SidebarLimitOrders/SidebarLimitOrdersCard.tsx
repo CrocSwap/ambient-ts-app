@@ -6,6 +6,7 @@ import { TokenIF } from '../../../../utils/interfaces/TokenIF';
 import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
 import { setTokenA, setTokenB } from '../../../../utils/state/tradeDataSlice';
 import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
+import { formatAmount } from '../../../../utils/numbers';
 
 interface SidebarLimitOrdersCardProps {
     isDenomBase: boolean;
@@ -71,14 +72,29 @@ export default function SidebarLimitOrdersCard(props: SidebarLimitOrdersCardProp
         }
     }, [JSON.stringify(order), isDenomBase]);
 
-    const liqTotalUSD =
-        order.positionLiqTotalUSD !== undefined
-            ? '$' +
-              order.positionLiqTotalUSD?.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              })
-            : '…';
+    // const liqTotalUSD =
+    //     order.positionLiqTotalUSD !== undefined
+    //         ? '$' +
+    //           order.positionLiqTotalUSD?.toLocaleString(undefined, {
+    //               minimumFractionDigits: 2,
+    //               maximumFractionDigits: 2,
+    //           })
+    //         : '…';
+
+    const usdValueNum = order.totalValueUSD;
+    const usdValueTruncated = !usdValueNum
+        ? undefined
+        : usdValueNum < 0.0001
+        ? usdValueNum.toExponential(2)
+        : usdValueNum < 2
+        ? usdValueNum.toPrecision(3)
+        : usdValueNum >= 10000
+        ? formatAmount(usdValueNum, 1)
+        : // ? baseLiqDisplayNum.toExponential(2)
+          usdValueNum.toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+          });
 
     function handleLimitOrderClick() {
         setOutsideControl(true);
@@ -96,7 +112,7 @@ export default function SidebarLimitOrdersCard(props: SidebarLimitOrdersCardProp
             </div>
             <div>{priceDisplay}</div>
             <div className={styles.status_display}>
-                {liqTotalUSD}
+                {usdValueTruncated ? '$' + usdValueTruncated : '…'}
                 {/* {tokenDisplay} */}
             </div>
         </div>
