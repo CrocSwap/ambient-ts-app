@@ -41,6 +41,10 @@ interface HeaderPropsIF {
     openGlobalModal: (content: React.ReactNode) => void;
 
     closeGlobalModal: () => void;
+
+    isAppOverlayActive: boolean;
+
+    setIsAppOverlayActive: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function PageHeader(props: HeaderPropsIF) {
@@ -59,6 +63,8 @@ export default function PageHeader(props: HeaderPropsIF) {
         lastBlockNumber,
         isMobileSidebarOpen,
         setIsMobileSidebarOpen,
+        isAppOverlayActive,
+        setIsAppOverlayActive,
     } = props;
 
     const { user, account, enableWeb3, isWeb3Enabled, isAuthenticated } = useMoralis();
@@ -117,6 +123,8 @@ export default function PageHeader(props: HeaderPropsIF) {
         clickLogout: clickLogout,
         openModal: openModal,
         chainId: chainId,
+        isAppOverlayActive: isAppOverlayActive,
+        setIsAppOverlayActive: setIsAppOverlayActive,
     };
 
     // End of Page Header Functions
@@ -141,12 +149,16 @@ export default function PageHeader(props: HeaderPropsIF) {
         ? '/trade/range'
         : location.pathname.includes('trade/edit')
         ? '/trade/edit'
-        : '/trade/market'
+        : '/trade/market';
 
     const linkData = [
         { title: t('common:homeTitle'), destination: '/', shouldDisplay: true },
         { title: t('common:swapTitle'), destination: '/swap' + urlParams, shouldDisplay: true },
-        { title: t('common:tradeTitle'), destination: tradeDestination + urlParams, shouldDisplay: true },
+        {
+            title: t('common:tradeTitle'),
+            destination: tradeDestination + urlParams,
+            shouldDisplay: true,
+        },
         { title: t('common:analyticsTitle'), destination: '/analytics', shouldDisplay: false },
         {
             title: t('common:accountTitle'),
@@ -168,7 +180,9 @@ export default function PageHeader(props: HeaderPropsIF) {
                     link.shouldDisplay ? (
                         <Link
                             className={
-                                location.pathname === link.destination ? styles.active : styles.inactive
+                                location.pathname === link.destination
+                                    ? styles.active
+                                    : styles.inactive
                             }
                             to={link.destination}
                             key={idx}

@@ -18,7 +18,6 @@ import { PoolIF, TokenIF, TokenPairIF } from '../../utils/interfaces/exports';
 import { useUrlParams } from './useUrlParams';
 import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
 import { SketchPicker } from 'react-color';
-import OverlayComponent from '../../components/Global/OverlayComponent/OverlayComponent';
 
 // interface for React functional component props
 interface TradePropsIF {
@@ -153,9 +152,6 @@ export default function Trade(props: TradePropsIF) {
     const mainContent = (
         <div className={styles.right_col}>
             <Outlet context={{ tradeData: tradeData, navigationMenu: navigationMenu }} />
-            <OverlayComponent top='50%' left='30px'>
-                I am overlay right side
-            </OverlayComponent>
         </div>
     );
     const expandGraphStyle = props.expandTradeTable ? styles.hide_graph : '';

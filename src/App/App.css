@@ -239,6 +239,10 @@ footer {
     grid-template-columns: 100%;
 }
 
+.tutorial_navigation_container{
+position: absolute;
+bottom: 0;
+}
 @media only screen and (max-width: 600px) {
     .main-layout {
         margin: 0;

@@ -117,6 +117,7 @@ import { getLimitOrderData } from './functions/getLimitOrderData';
 import { fetchPoolRecentChanges } from './functions/fetchPoolRecentChanges';
 import { fetchUserRecentChanges } from './functions/fetchUserRecentChanges';
 import { getTransactionData } from './functions/getTransactionData';
+import AppOverlay from '../components/Global/AppOverlay/AppOverlay';
 
 const cachedFetchAddress = memoizeFetchAddress();
 const cachedFetchNativeTokenBalance = memoizeFetchNativeTokenBalance();
@@ -1666,6 +1667,7 @@ export default function App() {
             value: 0,
         },
     ]);
+    const [isAppOverlayActive, setIsAppOverlayActive] = useState(false);
 
     // props for <PageHeader/> React element
     const headerProps = {
@@ -1686,6 +1688,8 @@ export default function App() {
 
         openGlobalModal: openGlobalModal,
         closeGlobalModal: closeGlobalModal,
+        isAppOverlayActive: isAppOverlayActive,
+        setIsAppOverlayActive: setIsAppOverlayActive,
     };
 
     // props for <Swap/> React element
@@ -1976,10 +1980,18 @@ export default function App() {
         range: '/trade/range/chain=0x5&tokenA=0x0000000000000000000000000000000000000000&tokenB=0xD87Ba7A50B2E7E660f678A895E4B72E7CB4CCd9C',
     };
 
+    // app overlay-----------------------------------------------
+    // end of app overlay-----------------------------------------------
+
     return (
         <>
             <div className={containerStyle}>
                 {isMobileSidebarOpen && <div className='blur_app' />}
+                <AppOverlay
+                    isAppOverlayActive={isAppOverlayActive}
+                    setIsAppOverlayActive={setIsAppOverlayActive}
+                />
+
                 {currentLocation !== '/404' && <PageHeader {...headerProps} />}
                 {/* <MobileSidebar/> */}
                 <main className={`${showSidebarOrNullStyle} ${swapBodyStyle}`}>
