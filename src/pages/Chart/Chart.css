@@ -64,6 +64,35 @@ div.popup {
     border-radius: var(--border-radius);
 }
 
+div.liqTooltip {
+    position: absolute;
+    text-align: center;
+    align-items: center;
+
+
+    background: rgba(10, 10, 19, 0.47);
+    padding: 3px;
+
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.47);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    border-radius: var(--border-radius);
+}
+
+.liqTooltip {
+    position: absolute;
+    text-align: center;
+    align-items: center;
+
+    background: rgba(10, 10, 19, 0.47);
+    padding: 3px;
+    font-size: small;
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.47);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    border-radius: var(--border-radius);
+}
+
 div.tooltip {
     position: absolute;
     pointer-events: none;
