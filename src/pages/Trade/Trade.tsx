@@ -124,7 +124,22 @@ export default function Trade(props: TradePropsIF) {
 
     const { tradeData, graphData } = useAppSelector((state) => state);
 
-    const activePoolLiquidityData = graphData?.liquidityForAllPools?.pools[0];
+    const indexOfPoolInLiqData = graphData?.liquidityForAllPools.pools.findIndex(
+        (pool) =>
+            pool.pool.baseAddress.toLowerCase() === tradeData.baseToken.address.toLowerCase() &&
+            pool.pool.quoteAddress.toLowerCase() === tradeData.quoteToken.address.toLowerCase() &&
+            pool.pool.poolIdx === chainData.poolIndex &&
+            pool.pool.chainId === chainData.chainId,
+    );
+
+    // const liqData = graphData?.liquidityForAllPools.pools;
+    // console.log({ liqData });
+    // console.log({ tradeData });
+    // console.log({ chainData });
+    // console.log({ indexOfPoolInLiqData });
+
+    const activePoolLiquidityData = graphData?.liquidityForAllPools?.pools[indexOfPoolInLiqData];
+    // console.log({ activePoolLiquidityData });
     const liquidityData = activePoolLiquidityData?.liquidityData;
     const denomInBase = tradeData.isDenomBase;
     const limitPrice = tradeData.limitPrice;
