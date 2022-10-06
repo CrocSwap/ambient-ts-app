@@ -16,7 +16,7 @@ interface SidebarLimitOrdersProps {
     isShowAllEnabled: boolean;
     setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
-
+    isUserLoggedIn: boolean;
     expandTradeTable: boolean;
     setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
 }
@@ -27,6 +27,7 @@ export default function SidebarLimitOrders(props: SidebarLimitOrdersProps) {
         isDenomBase,
         setCurrentPositionActive,
         setIsShowAllEnabled,
+        isUserLoggedIn,
     } = props;
     const location = useLocation();
     const navigate = useNavigate();
@@ -80,7 +81,7 @@ export default function SidebarLimitOrders(props: SidebarLimitOrdersProps) {
                         />
                     ))}
             </div>
-            {!props.expandTradeTable && (
+            {!props.expandTradeTable && isUserLoggedIn && (
                 <div className={styles.view_more} onClick={handleViewMoreClick}>
                     View More
                 </div>

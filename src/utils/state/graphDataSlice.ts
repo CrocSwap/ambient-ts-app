@@ -636,6 +636,7 @@ export const graphDataSlice = createSlice({
         resetUserGraphData: (state) => {
             state.positionsByUser = initialState.positionsByUser;
             state.changesByUser = initialState.changesByUser;
+            state.limitOrdersByUser = initialState.limitOrdersByUser;
         },
     },
 });
