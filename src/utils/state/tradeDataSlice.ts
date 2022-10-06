@@ -29,7 +29,9 @@ export interface tradeData {
     targetData: targetData[];
     pinnedMaxPriceDisplayTruncated: number;
     pinnedMinPriceDisplayTruncated: number;
-    spotPriceDisplay: string;
+    rangeModuleTriggered: boolean;
+    rangeLowLineTriggered: boolean;
+    rangeHighLineTriggered: boolean;
 }
 
 const initialState: tradeData = {
@@ -56,7 +58,9 @@ const initialState: tradeData = {
     ],
     pinnedMaxPriceDisplayTruncated: 0,
     pinnedMinPriceDisplayTruncated: 0,
-    spotPriceDisplay: '0',
+    rangeModuleTriggered: false,
+    rangeLowLineTriggered: false,
+    rangeHighLineTriggered: false,
 };
 
 export const tradeDataSlice = createSlice({
@@ -161,8 +165,14 @@ export const tradeDataSlice = createSlice({
         setPinnedMinPrice: (state, action: PayloadAction<number>) => {
             state.pinnedMinPriceDisplayTruncated = action.payload;
         },
-        setSpotPriceDisplay: (state, action: PayloadAction<string>) => {
-            state.spotPriceDisplay = action.payload;
+        setRangeModuleTriggered: (state, action: PayloadAction<boolean>) => {
+            state.rangeModuleTriggered = action.payload;
+        },
+        setRangeHighLineTriggered: (state, action: PayloadAction<boolean>) => {
+            state.rangeHighLineTriggered = action.payload;
+        },
+        setRangeLowLineTriggered: (state, action: PayloadAction<boolean>) => {
+            state.rangeLowLineTriggered = action.payload;
         },
 
         resetTradeData: () => initialState,
@@ -190,13 +200,15 @@ export const {
     setSimpleRangeWidth,
     setSlippageTolerance,
     setActiveChartPeriod,
-    setTargetData,
     resetTradeData,
     resetTokens,
     reverseTokensInRTK,
     setPinnedMaxPrice,
     setPinnedMinPrice,
-    setSpotPriceDisplay,
+    setTargetData,
+    setRangeModuleTriggered,
+    setRangeLowLineTriggered,
+    setRangeHighLineTriggered,
 } = tradeDataSlice.actions;
 
 export default tradeDataSlice.reducer;

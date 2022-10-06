@@ -74,7 +74,6 @@ import {
     setDidUserFlipDenom,
     setPrimaryQuantityRange,
     setSimpleRangeWidth,
-    targetData,
 } from '../utils/state/tradeDataSlice';
 import {
     //  memoizeQuerySpotPrice,
@@ -1657,18 +1656,7 @@ export default function App() {
 
     const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
-    const [targets, setTargets] = useState<targetData[]>([
-        {
-            name: 'Min',
-            value: 0,
-        },
-        {
-            name: 'Max',
-            value: 0,
-        },
-    ]);
     const [isAppOverlayActive, setIsAppOverlayActive] = useState(false);
-
     // props for <PageHeader/> React element
     const headerProps = {
         isUserLoggedIn: isUserLoggedIn,
@@ -1823,8 +1811,6 @@ export default function App() {
         ambientApy: ambientApy,
 
         openGlobalModal: openGlobalModal,
-        targets: targets,
-        setTargets: setTargets,
     };
 
     function toggleSidebar() {
@@ -2055,8 +2041,6 @@ export default function App() {
                                     closeGlobalModal={closeGlobalModal}
                                     isInitialized={isInitialized}
                                     poolPriceNonDisplay={undefined}
-                                    setTargets={setTargets}
-                                    targets={targets}
                                     setLimitRate={function (): void {
                                         throw new Error('Function not implemented.');
                                     }}
