@@ -80,7 +80,6 @@ export default function OrdersMenu(props: OrdersMenuIF) {
                 crocEnv={crocEnv}
                 closeGlobalModal={closeGlobalModal}
             />,
-            'Limit Order Removal',
         );
 
     const openDetailsModal = () =>
