@@ -1,6 +1,7 @@
 import styles from './InitPool.module.css';
 import { useUrlParams } from './useUrlParams';
 import { useState } from 'react';
+import InitPoolSteps from '../../components/InitPool/InitPoolSteps/InitPoolSteps';
 export default function InitPool() {
     const newPoolData = useUrlParams();
     console.log(newPoolData);
@@ -14,17 +15,15 @@ export default function InitPool() {
 
     const [progressStep, setProgressStep] = useState(0);
 
-    const handleChangeStep = (e: any) => {
-        e.target.value === 'prev' && progressStep > 0 && setProgressStep(progressStep - 1);
-        e.target.value === 'next' &&
-            progressStep < progressStepsData.length &&
-            setProgressStep(progressStep + 1);
-    };
-
     return (
         <main className={styles.main}>
             <div className={styles.init_pool_container}>
                 <h2>This is the Initialize Pool Page!</h2>
+                <InitPoolSteps
+                    progressStep={progressStep}
+                    setProgressStep={setProgressStep}
+                    progressStepsData={progressStepsData}
+                />
             </div>
         </main>
     );
