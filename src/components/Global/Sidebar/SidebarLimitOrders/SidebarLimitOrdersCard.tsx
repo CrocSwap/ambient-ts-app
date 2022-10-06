@@ -1,10 +1,10 @@
 import styles from './SidebarLimitOrdersCard.module.css';
-import { SetStateAction, Dispatch, useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { SetStateAction, Dispatch, useState, useEffect, useMemo } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { ILimitOrderState } from '../../../../utils/state/graphDataSlice';
 import { TokenIF } from '../../../../utils/interfaces/TokenIF';
-import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
-import { setTokenA, setTokenB } from '../../../../utils/state/tradeDataSlice';
+// import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
+// import { setTokenA, setTokenB } from '../../../../utils/state/tradeDataSlice';
 import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
 import { formatAmount } from '../../../../utils/numbers';
 
@@ -16,14 +16,16 @@ interface SidebarLimitOrdersCardProps {
     setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
     outsideControl: boolean;
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
+    setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
     setOutsideControl: Dispatch<SetStateAction<boolean>>;
 }
 export default function SidebarLimitOrdersCard(props: SidebarLimitOrdersCardProps) {
-    const location = useLocation();
+    // const location = useLocation();
 
     const {
         tokenMap,
         order,
+        setIsShowAllEnabled,
         setOutsideControl,
         setCurrentPositionActive,
         setSelectedOutsideTab,
@@ -32,18 +34,16 @@ export default function SidebarLimitOrdersCard(props: SidebarLimitOrdersCardProp
 
     if (order.positionLiq === 0) return null;
 
-    const dispatch = useAppDispatch();
-
     const baseId = order.base + '_' + order.chainId;
     const quoteId = order.quote + '_' + order.chainId;
 
     const baseToken = tokenMap ? tokenMap.get(baseId.toLowerCase()) : null;
     const quoteToken = tokenMap ? tokenMap.get(quoteId.toLowerCase()) : null;
 
-    const onTradeRoute = location.pathname.includes('trade');
-    const onAccountRoute = location.pathname.includes('account');
+    // const onTradeRoute = location.pathname.includes('trade');
+    // const onAccountRoute = location.pathname.includes('account');
 
-    const tabToSwitchToBasedOnRoute = onTradeRoute ? 1 : onAccountRoute ? 3 : 0;
+    // const tabToSwitchToBasedOnRoute = onTradeRoute ? 1 : onAccountRoute ? 3 : 0;
 
     const [priceDisplay, setPriceDisplay] = useState<string | undefined>(undefined);
 
@@ -104,12 +104,36 @@ export default function SidebarLimitOrdersCard(props: SidebarLimitOrdersCardProp
               maximumFractionDigits: 2,
           });
 
+    const { pathname } = useLocation();
+
+    //   const getToken = (addr: string) => tokenMap.get(addr.toLowerCase()) as TokenIF;
+    //   const baseToken = getToken(order.base + '_' + order.chainId);
+    //   const quoteToken = getToken(order.quote + '_' + order.chainId);
+
+    const linkPath = useMemo(() => {
+        let locationSlug = '';
+        if (pathname.startsWith('/trade/market') || pathname.startsWith('/account')) {
+            locationSlug = '/trade/market';
+        } else if (pathname.startsWith('/trade/limit')) {
+            locationSlug = '/trade/limit';
+        } else if (pathname.startsWith('/trade/range')) {
+            locationSlug = '/trade/range';
+        } else if (pathname.startsWith('/swap')) {
+            locationSlug = '/swap';
+        }
+        return locationSlug + '/chain=0x5&tokenA=' + order.base + '&tokenB=' + order.quote;
+    }, [pathname]);
+
+    const navigate = useNavigate();
+
     function handleLimitOrderClick() {
         setOutsideControl(true);
-        setSelectedOutsideTab(tabToSwitchToBasedOnRoute);
+        setSelectedOutsideTab(1);
         setCurrentPositionActive(order.limitOrderIdentifier);
-        if (baseToken) dispatch(setTokenA(baseToken));
-        if (quoteToken) dispatch(setTokenB(quoteToken));
+        setIsShowAllEnabled(false);
+        // if (baseToken) dispatch(setTokenA(baseToken));
+        // if (quoteToken) dispatch(setTokenB(quoteToken));
+        navigate(linkPath);
     }
 
     return (
