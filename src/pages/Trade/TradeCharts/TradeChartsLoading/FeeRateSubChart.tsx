@@ -18,8 +18,6 @@ export default function FeeRateSubChart(props: FreeRateData) {
 
     // Fee Rate Chart
     useEffect(() => {
-        console.log({ feeData });
-
         if (feeData !== undefined && period !== undefined && xScale !== undefined) {
             const yExtent = d3fc.extentLinear().accessors([(d: any) => d.value]);
 

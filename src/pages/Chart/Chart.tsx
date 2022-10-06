@@ -148,6 +148,7 @@ export default function Chart(props: ChartData) {
     const [targetsJoin, setTargetsJoin] = useState<any>();
     const [limitJoin, setLimitJoin] = useState<any>();
     const [popup, setPopup] = useState<any>();
+    const [liqTooltip, setLiqTooltip] = useState<any>();
     const [highlightedCurrentPriceLine, setHighlightedCurrentPriceLine] = useState<any>();
     const [indicatorLine, setIndicatorLine] = useState<any>();
 
@@ -961,17 +962,27 @@ export default function Chart(props: ChartData) {
                     );
             });
 
+            const targetsJoin = d3fc.dataJoin('g', 'targets');
+            const limitJoin = d3fc.dataJoin('g', 'limit');
+
             const popup = d3
                 .select(d3Container.current)
                 .append('div')
                 .attr('class', 'popup')
                 .style('visibility', 'hidden');
 
-            const targetsJoin = d3fc.dataJoin('g', 'targets');
-            const limitJoin = d3fc.dataJoin('g', 'limit');
+            const liqTooltip = d3
+                .select(d3Container.current)
+                .append('div')
+                .attr('class', 'liqTooltip')
+                .style('visibility', 'hidden');
 
             setPopup(() => {
                 return popup;
+            });
+
+            setLiqTooltip(() => {
+                return liqTooltip;
             });
 
             setTargetsJoin(() => {
@@ -1339,6 +1350,7 @@ export default function Chart(props: ChartData) {
             popup !== undefined &&
             indicatorLine !== undefined &&
             highlightedCurrentPriceLine !== undefined &&
+            liqTooltip !== undefined &&
             targetsJoin !== undefined
         ) {
             const targetData = {
@@ -1363,6 +1375,7 @@ export default function Chart(props: ChartData) {
                 popup,
                 indicatorLine,
                 highlightedCurrentPriceLine,
+                liqTooltip,
             );
         }
     }, [
@@ -1380,6 +1393,7 @@ export default function Chart(props: ChartData) {
         denomInBase,
         indicatorLine,
         highlightedCurrentPriceLine,
+        liqTooltip,
     ]);
 
     // Draw Chart
@@ -1400,6 +1414,7 @@ export default function Chart(props: ChartData) {
             popup: any,
             indicatorLine: any,
             highlightedCurrentPriceLine: any,
+            liqTooltip: any,
         ) => {
             if (chartData.length > 0) {
                 let selectedCandle: any;
@@ -1433,7 +1448,7 @@ export default function Chart(props: ChartData) {
                         Math.abs(point.offsetX - xScale(xValue(d))),
                     )[1];
 
-                    setCrosshairData([{ x: point.offsetX, y: -1 }]);
+                    setCrosshairData([{ x: scaleData.xScale(nearest?.date), y: -1 }]);
 
                     props.setCurrentData(nearest);
                     return [
@@ -1606,18 +1621,21 @@ export default function Chart(props: ChartData) {
                 d3.select(d3PlotArea.current).on('draw', function (event: any) {
                     const svg = d3.select(event.target).select('svg');
 
+                    targetsJoin(svg, [targets.ranges]).call(horizontalLine);
+                    marketJoin(svg, [targets.market]).call(horizontalLine);
+                    limitJoin(svg, [targets.limit]).call(horizontalLine);
+
                     crosshairHorizontalJoin(svg, [crosshairData]).call(crosshairHorizontal);
                     crosshairVerticalJoin(svg, [crosshairData]).call(crosshairVertical);
+
                     highlightedCurrentPriceLineJoin(svg, [currentPriceData]).call(
                         highlightedCurrentPriceLine,
                     );
                     indicatorLineJoin(svg, [indicatorLineData]).call(indicatorLine);
+
                     barJoin(svg, [liquidityData.liqData]).call(barSeries);
-                    targetsJoin(svg, [targets.ranges]).call(horizontalLine);
                     candleJoin(svg, [chartData]).call(candlestick);
-                    marketJoin(svg, [targets.market]).call(horizontalLine);
-                    limitJoin(svg, [targets.limit]).call(horizontalLine);
-                    candleJoin(svg, [chartData]).call(candlestick);
+
                     setDragControl(true);
                 });
 
@@ -1648,7 +1666,7 @@ export default function Chart(props: ChartData) {
                 d3.select(d3PlotArea.current).on('mousemove', function (event: any) {
                     crosshairData[0] = snap(candlestick, chartData, event)[0];
 
-                    const dateIndcLocation = event.offsetX;
+                    const dateIndcLocation = scaleData.xScale(crosshairData[0].x);
                     const valueIndcLocation = event.offsetY;
 
                     d3.select(d3Xaxis.current)
@@ -1693,71 +1711,70 @@ export default function Chart(props: ChartData) {
                             .select('.indicatorLine')
                             .style('visibility', 'visible');
 
-                        d3.select(d3PlotArea.current)
-                            .select('.bar')
-                            .on('mouseover', (event: any) => {
-                                // const filtered =
-                                //     liquidityData.liqData.length > 1
-                                //         ? liquidityData.liqData.filter(
-                                //               (d: any) => d.upperBoundPriceDecimalCorrected != null,
-                                //           )
-                                //         : liquidityData.liqData;
+                        liqTooltip
+                            .style('visibility', 'visible')
+                            .html('<p> % 0.1 </p>' + '<p> $ 500k </p>')
+                            .style(
+                                'top',
+                                event.offsetY +
+                                    (event.offsetY - scaleData.yScale(poolPriceDisplay)) / 2 +
+                                    'px',
+                            )
+                            .style('left', event.offsetX - 40 + 'px');
 
-                                // const nearest = filtered.reduce(function (prev: any, curr: any) {
-                                //     return Math.abs(
-                                //         curr.upperBoundPriceDecimalCorrected -
-                                //             scaleData.yScale.invert(event.offsetY),
-                                //     ) <
-                                //         Math.abs(
-                                //             prev.upperBoundPriceDecimalCorrected -
-                                //                 scaleData.yScale.invert(event.offsetY),
-                                //         )
-                                //         ? curr
-                                //         : prev;
-                                // });
+                        // const filtered =
+                        //     liquidityData.liqData.length > 1
+                        //         ? liquidityData.liqData.filter(
+                        //               (d: any) => d.upperBoundPriceDecimalCorrected != null,
+                        //           )
+                        //         : liquidityData.liqData;
 
-                                const nearest = {
-                                    upperBoundPriceDecimalCorrected: scaleData.yScale.invert(
-                                        event.offsetY,
-                                    ),
-                                };
+                        // const nearest = filtered.reduce(function (prev: any, curr: any) {
+                        //     return Math.abs(
+                        //         curr.upperBoundPriceDecimalCorrected -
+                        //             scaleData.yScale.invert(event.offsetY),
+                        //     ) <
+                        //         Math.abs(
+                        //             prev.upperBoundPriceDecimalCorrected -
+                        //                 scaleData.yScale.invert(event.offsetY),
+                        //         )
+                        //         ? curr
+                        //         : prev;
+                        // });
 
-                                d3.select(event.currentTarget)
-                                    .selectAll('.horizontal  > path')
+                        const nearest = {
+                            upperBoundPriceDecimalCorrected: scaleData.yScale.invert(event.offsetY),
+                        };
 
-                                    .style('fill', (d: any) => {
-                                        if (
-                                            currentPriceData[0].value >
-                                                d.upperBoundPriceDecimalCorrected &&
-                                            d.upperBoundPriceDecimalCorrected >
-                                                nearest.upperBoundPriceDecimalCorrected
-                                        ) {
-                                            return 'rgba(205, 193, 255, 0.8)';
-                                        } else if (
-                                            currentPriceData[0].value <
-                                                d.upperBoundPriceDecimalCorrected &&
-                                            d.upperBoundPriceDecimalCorrected <
-                                                nearest.upperBoundPriceDecimalCorrected
-                                        ) {
-                                            return 'rgba(115, 113, 252, 0.8)';
-                                        } else {
-                                            return d.upperBoundPriceDecimalCorrected >
-                                                scaleData.barThreshold
-                                                ? 'rgba(115, 113, 252, 0.3)'
-                                                : 'rgba(205, 193, 255, 0.3)';
-                                        }
-                                    });
-                            });
+                        d3.select(event.currentTarget)
+                            .selectAll('.horizontal  > path')
 
-                        d3.select(d3PlotArea.current)
-                            .select('.bar')
-                            .on('mouseout', (event: any) => {
-                                firstRender = true;
+                            .style('fill', (d: any) => {
+                                if (
+                                    currentPriceData[0].value > d.upperBoundPriceDecimalCorrected &&
+                                    d.upperBoundPriceDecimalCorrected >
+                                        nearest.upperBoundPriceDecimalCorrected
+                                ) {
+                                    return 'rgba(205, 193, 255, 0.8)';
+                                } else if (
+                                    currentPriceData[0].value < d.upperBoundPriceDecimalCorrected &&
+                                    d.upperBoundPriceDecimalCorrected <
+                                        nearest.upperBoundPriceDecimalCorrected
+                                ) {
+                                    return 'rgba(115, 113, 252, 0.8)';
+                                } else {
+                                    return d.upperBoundPriceDecimalCorrected >
+                                        scaleData.barThreshold
+                                        ? 'rgba(115, 113, 252, 0.3)'
+                                        : 'rgba(205, 193, 255, 0.3)';
+                                }
                             });
 
                         render();
                     })
+
                     .on('mouseleave', () => {
+                        firstRender = true;
                         d3.select(d3PlotArea.current)
                             .select('.highlightedCurrentPriceLine')
                             .style('visibility', 'hidden');
@@ -1765,6 +1782,8 @@ export default function Chart(props: ChartData) {
                         d3.select(d3PlotArea.current)
                             .select('.indicatorLine')
                             .style('visibility', 'hidden');
+
+                        liqTooltip.style('visibility', 'hidden');
                     });
 
                 d3.select(d3Yaxis.current)
