@@ -6,10 +6,10 @@ import styles from './TransactionCard.module.css';
 import { ITransaction } from '../../../../utils/state/graphDataSlice';
 import TransactionsMenu from '../../../Global/Tabs/TableMenu/TableMenuComponents/TransactionsMenu';
 import { TokenIF } from '../../../../utils/interfaces/TokenIF';
-import {
-    //  toDisplayPrice,
-    toDisplayQty,
-} from '@crocswap-libs/sdk';
+// import {
+//     //  toDisplayPrice,
+//     toDisplayQty,
+// } from '@crocswap-libs/sdk';
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { formatAmount } from '../../../../utils/numbers';
 import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
@@ -161,9 +161,10 @@ export default function TransactionCard(props: TransactionProps) {
                 const askTickInvPriceDecimalCorrected = tx.askTickInvPriceDecimalCorrected;
 
                 if (
-                    bidTickInvPriceDecimalCorrected === 1000000000000 ||
-                    bidTickPriceDecimalCorrected === 1e-12 ||
-                    bidTickPriceDecimalCorrected === 0
+                    tx.positionType === 'ambient'
+                    // bidTickInvPriceDecimalCorrected === 1000000000000 ||
+                    // bidTickPriceDecimalCorrected === 1e-12 ||
+                    // bidTickPriceDecimalCorrected === 0
                 ) {
                     setIsAmbient(true);
                 } else {
@@ -270,7 +271,7 @@ export default function TransactionCard(props: TransactionProps) {
                 const nonInvertedPriceTruncated =
                     priceDecimalCorrected === 0
                         ? '0.00'
-                        : priceDecimalCorrected < 0.0001
+                        : priceDecimalCorrected < 0.001
                         ? priceDecimalCorrected.toExponential(2)
                         : priceDecimalCorrected < 2
                         ? priceDecimalCorrected.toPrecision(3)
@@ -284,7 +285,7 @@ export default function TransactionCard(props: TransactionProps) {
                 const invertedPriceTruncated =
                     invPriceDecimalCorrected === 0
                         ? '0.00'
-                        : invPriceDecimalCorrected < 0.0001
+                        : invPriceDecimalCorrected < 0.001
                         ? invPriceDecimalCorrected.toExponential(2)
                         : invPriceDecimalCorrected < 2
                         ? invPriceDecimalCorrected.toPrecision(3)
@@ -305,15 +306,15 @@ export default function TransactionCard(props: TransactionProps) {
             }
         }
 
-        if (tx.baseFlow && tx.baseDecimals) {
-            const baseFlowDisplayNum = parseFloat(toDisplayQty(tx.baseFlow, tx.baseDecimals));
+        if (tx.baseFlowDecimalCorrected !== undefined && tx.baseFlowDecimalCorrected !== null) {
+            const baseFlowDisplayNum = tx.baseFlowDecimalCorrected;
             const baseFlowAbsNum = Math.abs(baseFlowDisplayNum);
-            const isBaseFlowNegative = baseFlowDisplayNum > 0;
+            const isBaseFlowPositive = baseFlowDisplayNum > 0;
             const baseFlowDisplayTruncated =
                 baseFlowAbsNum === 0
                     ? '0.00'
-                    : baseFlowAbsNum < 0.0001
-                    ? baseFlowDisplayNum.toExponential(2)
+                    : baseFlowAbsNum < 0.001
+                    ? baseFlowAbsNum.toExponential(2)
                     : baseFlowAbsNum < 2
                     ? baseFlowAbsNum.toPrecision(3)
                     : baseFlowAbsNum >= 100000
@@ -323,22 +324,22 @@ export default function TransactionCard(props: TransactionProps) {
                           minimumFractionDigits: 2,
                           maximumFractionDigits: 2,
                       });
-            const baseFlowDisplayString =
-                (isBaseFlowNegative && tx.entityType !== 'liqchange') ||
-                (!isBaseFlowNegative && tx.entityType === 'liqchange')
-                    ? `(${baseFlowDisplayTruncated})`
-                    : baseFlowDisplayTruncated;
+            const baseFlowDisplayString = isBaseFlowPositive
+                ? // (isBaseFlowNegative && tx.entityType !== 'liqchange') ||
+                  // (!isBaseFlowNegative && tx.entityType === 'liqchange')
+                  `(${baseFlowDisplayTruncated})`
+                : baseFlowDisplayTruncated;
             setBaseFlowDisplay(baseFlowDisplayString);
         }
-        if (tx.quoteFlow && tx.quoteDecimals) {
-            const quoteFlowDisplayNum = parseFloat(toDisplayQty(tx.quoteFlow, tx.quoteDecimals));
+        if (tx.quoteFlowDecimalCorrected !== undefined && tx.quoteFlowDecimalCorrected !== null) {
+            const quoteFlowDisplayNum = tx.quoteFlowDecimalCorrected;
             const quoteFlowAbsNum = Math.abs(quoteFlowDisplayNum);
-            const isQuoteFlowNegative = quoteFlowDisplayNum > 0;
+            const isQuoteFlowPositive = quoteFlowDisplayNum > 0;
             const quoteFlowDisplayTruncated =
                 quoteFlowAbsNum === 0
                     ? '0.00'
-                    : quoteFlowAbsNum < 0.0001
-                    ? quoteFlowDisplayNum.toExponential(2)
+                    : quoteFlowAbsNum < 0.001
+                    ? quoteFlowAbsNum.toExponential(2)
                     : quoteFlowAbsNum < 2
                     ? quoteFlowAbsNum.toPrecision(3)
                     : quoteFlowAbsNum >= 100000
@@ -348,11 +349,11 @@ export default function TransactionCard(props: TransactionProps) {
                           minimumFractionDigits: 2,
                           maximumFractionDigits: 2,
                       });
-            const quoteFlowDisplayString =
-                (isQuoteFlowNegative && tx.entityType !== 'liqchange') ||
-                (!isQuoteFlowNegative && tx.entityType === 'liqchange')
-                    ? `(${quoteFlowDisplayTruncated})`
-                    : quoteFlowDisplayTruncated;
+            const quoteFlowDisplayString = isQuoteFlowPositive
+                ? // (isQuoteFlowNegative && tx.entityType !== 'liqchange') ||
+                  // (!isQuoteFlowNegative && tx.entityType === 'liqchange')
+                  `(${quoteFlowDisplayTruncated})`
+                : quoteFlowDisplayTruncated;
             setQuoteFlowDisplay(quoteFlowDisplayString);
         }
     }, [JSON.stringify(tx), isDenomBase]);
@@ -366,16 +367,27 @@ export default function TransactionCard(props: TransactionProps) {
 
     const sideType =
         tx.entityType === 'liqchange'
-            ? parseFloat(tx.quoteFlow) > 0
-                ? 'add'
-                : 'remove'
-            : tx.entityType === 'limitOrder'
             ? tx.changeType === 'burn'
                 ? 'remove'
                 : 'add'
+            : tx.entityType === 'limitOrder'
+            ? tx.changeType === 'mint'
+                ? 'add'
+                : 'remove'
             : (isDenomBase && tx.isBuy) || (!isDenomBase && !tx.isBuy)
             ? 'sell'
             : 'buy';
+    // tx.entityType === 'liqchange'
+    //     ? parseFloat(tx.quoteFlow) > 0
+    //         ? 'add'
+    //         : 'remove'
+    //     : tx.entityType === 'limitOrder'
+    //     ? tx.changeType === 'burn'
+    //         ? 'remove'
+    //         : 'add'
+    //     : (isDenomBase && tx.isBuy) || (!isDenomBase && !tx.isBuy)
+    //     ? 'sell'
+    //     : 'buy';
 
     const transactionTypeSide =
         tx.entityType === 'liqchange'
@@ -391,10 +403,12 @@ export default function TransactionCard(props: TransactionProps) {
 
     const usdValueNum = tx.valueUSD;
     const totalValueUSD = tx.totalValueUSD;
+    const totalFlowUSD = tx.totalFlowUSD;
+    const totalFlowAbsNum = totalFlowUSD !== undefined ? Math.abs(totalFlowUSD) : undefined;
 
     const usdValueTruncated = !usdValueNum
         ? undefined
-        : usdValueNum < 0.0001
+        : usdValueNum < 0.001
         ? usdValueNum.toExponential(2)
         : usdValueNum < 2
         ? usdValueNum.toPrecision(3)
@@ -408,7 +422,7 @@ export default function TransactionCard(props: TransactionProps) {
 
     const totalValueUSDTruncated = !totalValueUSD
         ? undefined
-        : totalValueUSD < 0.0001
+        : totalValueUSD < 0.001
         ? totalValueUSD.toExponential(2)
         : totalValueUSD < 2
         ? totalValueUSD.toPrecision(3)
@@ -419,7 +433,26 @@ export default function TransactionCard(props: TransactionProps) {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
           });
+
+    const totalFlowUSDTruncated =
+        totalFlowAbsNum === undefined
+            ? undefined
+            : totalFlowAbsNum === 0
+            ? '0.00'
+            : totalFlowAbsNum < 0.001
+            ? totalFlowAbsNum.toExponential(2)
+            : totalFlowAbsNum < 2
+            ? totalFlowAbsNum.toPrecision(3)
+            : totalFlowAbsNum >= 10000
+            ? formatAmount(totalFlowAbsNum, 1)
+            : // ? baseLiqDisplayNum.toExponential(2)
+              totalFlowAbsNum.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+              });
+
     if (!transactionMatchesSelectedTokens) return null;
+    if (tx.changeType === 'fill') return null;
 
     return (
         <div
@@ -463,7 +496,9 @@ export default function TransactionCard(props: TransactionProps) {
 
                 <Value
                     usdValue={
-                        totalValueUSDTruncated
+                        totalFlowUSDTruncated !== undefined
+                            ? '$' + totalFlowUSDTruncated
+                            : totalValueUSDTruncated
                             ? '$' + totalValueUSDTruncated
                             : usdValueTruncated
                             ? '$' + usdValueTruncated

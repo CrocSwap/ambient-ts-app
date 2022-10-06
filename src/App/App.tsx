@@ -27,6 +27,7 @@ import {
     addChangesByUser,
     setLastBlock,
     addLimitOrderChangesByUser,
+    ITransaction,
     // ChangesByUser,
 } from '../utils/state/graphDataSlice';
 import { ethers } from 'ethers';
@@ -114,6 +115,7 @@ import { getLimitOrderData } from './functions/getLimitOrderData';
 // import { getTransactionData } from './functions/getTransactionData';
 import { fetchPoolRecentChanges } from './functions/fetchPoolRecentChanges';
 import { fetchUserRecentChanges } from './functions/fetchUserRecentChanges';
+import { getTransactionData } from './functions/getTransactionData';
 
 const cachedFetchAddress = memoizeFetchAddress();
 const cachedFetchNativeTokenBalance = memoizeFetchNativeTokenBalance();
@@ -1239,7 +1241,17 @@ export default function App() {
         if (lastUserRecentChangesMessage !== null) {
             const lastMessageData = JSON.parse(lastUserRecentChangesMessage.data).data;
 
-            if (lastMessageData) dispatch(addChangesByUser(lastMessageData));
+            if (lastMessageData) {
+                Promise.all(
+                    lastMessageData.map((tx: ITransaction) => {
+                        return getTransactionData(tx, importedTokens);
+                    }),
+                )
+                    .then((updatedTransactions) => {
+                        dispatch(addChangesByUser(updatedTransactions));
+                    })
+                    .catch(console.log);
+            }
         }
     }, [lastUserRecentChangesMessage]);
 
@@ -1403,7 +1415,7 @@ export default function App() {
                 setRecheckTokenAApproval(false);
             }
         })();
-    }, [crocEnv, tokenAAddress, lastBlockNumber, account, recheckTokenAApproval, account]);
+    }, [crocEnv, tokenAAddress, lastBlockNumber, account, recheckTokenAApproval]);
 
     // useEffect to check if user has approved CrocSwap to sell the token B
     useEffect(() => {
@@ -2021,6 +2033,7 @@ export default function App() {
                                         throw new Error('Function not implemented.');
                                     }}
                                     limitRate={''}
+                                    importedTokens={importedTokens}
                                 />
                             }
                         >

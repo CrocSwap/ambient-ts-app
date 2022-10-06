@@ -18,6 +18,7 @@ import { PoolIF, TokenIF, TokenPairIF } from '../../utils/interfaces/exports';
 import { useUrlParams } from './useUrlParams';
 import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
 import { SketchPicker } from 'react-color';
+import OverlayComponent from '../../components/Global/OverlayComponent/OverlayComponent';
 
 // interface for React functional component props
 interface TradePropsIF {
@@ -69,6 +70,7 @@ interface TradePropsIF {
     closeGlobalModal: () => void;
     isInitialized: boolean;
     poolPriceNonDisplay: number | undefined;
+    importedTokens: TokenIF[];
 }
 
 // React functional component
@@ -92,7 +94,8 @@ export default function Trade(props: TradePropsIF) {
         favePools,
         addPoolToFaves,
         removePoolFromFaves,
-        isInitialized
+        isInitialized,
+        importedTokens,
     } = props;
 
     useUrlParams(chainId, isInitialized);
@@ -149,6 +152,9 @@ export default function Trade(props: TradePropsIF) {
     const mainContent = (
         <div className={styles.right_col}>
             <Outlet context={{ tradeData: tradeData, navigationMenu: navigationMenu }} />
+            <OverlayComponent top='50%' left='30px'>
+                I am overlay right side
+            </OverlayComponent>
         </div>
     );
     const expandGraphStyle = props.expandTradeTable ? styles.hide_graph : '';
@@ -467,6 +473,7 @@ export default function Trade(props: TradePropsIF) {
                                 setCurrentPositionActive={props.setCurrentPositionActive}
                                 openGlobalModal={props.openGlobalModal}
                                 closeGlobalModal={props.closeGlobalModal}
+                                importedTokens={importedTokens}
                             />
                         </div>
                     </motion.div>

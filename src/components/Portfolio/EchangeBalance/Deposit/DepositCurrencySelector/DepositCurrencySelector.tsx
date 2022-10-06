@@ -6,24 +6,25 @@ import { Dispatch, SetStateAction } from 'react';
 interface DepositCurrencySelectorProps {
     fieldId: string;
     onClick: () => void;
-
     sellToken?: boolean;
     disable?: boolean;
-    tempTokenSelection: TokenIF;
-    setDepositQty: Dispatch<SetStateAction<number | undefined>>; // updateOtherQuantity: (evt: ChangeEvent<HTMLInputElement>) => void;
+    selectedToken: TokenIF;
+    setDepositQty: Dispatch<SetStateAction<number>>; // updateOtherQuantity: (evt: ChangeEvent<HTMLInputElement>) => void;
 }
 
 export default function DepositCurrencySelector(props: DepositCurrencySelectorProps) {
-    const { fieldId, disable, onClick, tempTokenSelection, setDepositQty } = props;
+    const { fieldId, disable, onClick, selectedToken, setDepositQty } = props;
 
     const rateInput = (
         <div className={styles.token_amount}>
             <input
                 id={`${fieldId}-exchange-balance-deposit-quantity`}
                 className={styles.currency_quantity}
-                // placeholder='0'
+                placeholder='0'
                 onChange={(event) => {
-                    setDepositQty(parseFloat(event.target.value));
+                    setDepositQty(
+                        parseFloat(event.target.value) > 0 ? parseFloat(event.target.value) : 0,
+                    );
                 }}
                 type='string'
                 inputMode='decimal'
@@ -46,11 +47,11 @@ export default function DepositCurrencySelector(props: DepositCurrencySelectorPr
                 <div className={styles.token_select} onClick={onClick}>
                     <img
                         className={styles.token_list_img}
-                        src={tempTokenSelection.logoURI}
-                        alt={tempTokenSelection.name}
+                        src={selectedToken.logoURI}
+                        alt={selectedToken.name}
                         width='30px'
                     />
-                    <span className={styles.token_list_text}>{tempTokenSelection.symbol}</span>
+                    <span className={styles.token_list_text}>{selectedToken.symbol}</span>
                     <RiArrowDownSLine size={27} />
                 </div>
             </div>

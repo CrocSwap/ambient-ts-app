@@ -269,6 +269,7 @@ export interface ITransaction {
     dex: string;
     id: string;
     inBaseQty: boolean;
+    isBid: boolean;
     isBuy: boolean;
     minOut: string;
     poolHash: string;
@@ -282,6 +283,7 @@ export interface ITransaction {
     source: string;
     entityType: string;
     changeType: string;
+    positionType: string;
     time: number;
     tx: string;
     user: string;
@@ -297,6 +299,7 @@ export interface ITransaction {
     quoteFlowDecimalCorrected: number;
     valueUSD: number;
     totalValueUSD: number;
+    totalFlowUSD: number;
     ensResolution: string;
     bidTickPriceDecimalCorrected: number;
     bidTickInvPriceDecimalCorrected: number;
