@@ -7,7 +7,9 @@ export default function InitPool() {
 
     return (
         <main className={styles.main}>
-            <h2>This is the Initialize Pool Page!</h2>
+            <div className={styles.init_pool_container}>
+                <h2>This is the Initialize Pool Page!</h2>
+            </div>
         </main>
     );
 }

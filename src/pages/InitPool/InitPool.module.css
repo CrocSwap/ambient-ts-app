@@ -1,0 +1,18 @@
+.main{
+    height: calc(100vh - 4rem);
+    width: 100vw;
+
+    background: url('../../assets/images/backgrounds/background.png') no-repeat center center fixed;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+
+    display: flex;
+    justify-content: center;
+
+}
+.init_pool_container{
+    margin-top: 64px;
+ 
+}
