@@ -128,6 +128,19 @@ div.tooltip {
     stroke-opacity: 1;
 }
 
+.indicatorLine {
+    stroke: rgb(255, 255, 255);
+    stroke-width: 0.5px;
+    stroke-dasharray: 0.6 0.6;
+    stroke-opacity: 1;
+}
+
+.highlightedPrice {
+    stroke: rgb(255, 255, 255);
+    stroke-width: 0.5px;
+    stroke-opacity: 1;
+}
+
 label {
     color: rgba(204, 204, 204, 0.63);
     padding-left: 7px;
