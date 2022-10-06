@@ -8,8 +8,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 interface SidebarRecentTransactionsPropsIF {
     // showSidebar: boolean;
     mostRecentTransactions: ITransaction[];
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    coinGeckoTokenMap?: Map<string, TokenIF>;
+    coinGeckoTokenMap: Map<string, TokenIF>;
     chainId: string;
     currentTxActiveInTransactions: string;
     setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
@@ -63,7 +62,7 @@ export default function SidebarRecentTransactions(props: SidebarRecentTransactio
         props.setOutsideControl(true);
         props.setSelectedOutsideTab(tabToSwitchToBasedOnRoute);
 
-        props.setIsShowAllEnabled(true);
+        props.setIsShowAllEnabled(false);
         props.setExpandTradeTable(true);
     };
 

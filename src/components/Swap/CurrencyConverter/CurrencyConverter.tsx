@@ -1,10 +1,10 @@
-import { ChangeEvent, Dispatch, SetStateAction, useEffect, useState } from 'react';
+import { ChangeEvent, Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import styles from './CurrencyConverter.module.css';
 import CurrencySelector from '../CurrencySelector/CurrencySelector';
 import { TokenIF, TokenPairIF } from '../../../utils/interfaces/exports';
 import {
-    setTokenA,
-    setTokenB,
+    reverseTokensInRTK,
     setIsTokenAPrimary,
     setPrimaryQuantity,
 } from '../../../utils/state/tradeDataSlice';
@@ -95,6 +95,7 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
     const [isTokenAPrimaryLocal, setIsTokenAPrimaryLocal] = useState<boolean>(
         tradeData.isTokenAPrimary,
     );
+
     const [tokenAQtyLocal, setTokenAQtyLocal] = useState<string>(
         isTokenAPrimaryLocal ? tradeData?.primaryQuantity : '',
     );
@@ -163,14 +164,37 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
         }
     }, [crocEnv]);
 
+    const navigate = useNavigate();
+
+    const { pathname } = useLocation();
+
+    const linkPath = useMemo(() => {
+        let locationSlug = '';
+        if (pathname.startsWith('/trade/market')) {
+            locationSlug = '/trade/market';
+        } else if (pathname.startsWith('/trade/limit')) {
+            locationSlug = '/trade/limit';
+        } else if (pathname.startsWith('/trade/range')) {
+            locationSlug = '/trade/range';
+        } else if (pathname.startsWith('/swap')) {
+            locationSlug = '/swap';
+        }
+        return (
+            locationSlug +
+            '/chain=0x5&tokenA=' +
+            tokenPair.dataTokenB.address +
+            '&tokenB=' +
+            tokenPair.dataTokenA.address
+        );
+    }, [pathname, tokenPair.dataTokenB.address, tokenPair.dataTokenA.address]);
+
     const [switchBoxes, setSwitchBoxes] = useState(false);
     const reverseTokens = (): void => {
         setSwitchBoxes(!switchBoxes);
-        if (tokenPair) {
-            dispatch(setTokenA(tokenPair.dataTokenB));
-            dispatch(setTokenB(tokenPair.dataTokenA));
-        }
+        dispatch(reverseTokensInRTK());
+        navigate(linkPath);
         if (!isTokenAPrimaryLocal) {
+            console.log('setting token a');
             setTokenAQtyLocal(tokenBQtyLocal);
             setTokenAInputQty(tokenBQtyLocal);
             const sellQtyField = document.getElementById('sell-quantity') as HTMLInputElement;
@@ -178,6 +202,7 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
                 sellQtyField.value = tokenBQtyLocal === 'NaN' ? '' : tokenBQtyLocal;
             }
         } else {
+            console.log('setting token a');
             setTokenBQtyLocal(tokenAQtyLocal);
             setTokenBInputQty(tokenAQtyLocal);
             const buyQtyField = document.getElementById('buy-quantity') as HTMLInputElement;
@@ -198,6 +223,8 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
         isTokenAPrimaryLocal,
         tokenABalance,
         isWithdrawFromDexChecked,
+        tokenPair.dataTokenA.address,
+        tokenPair.dataTokenB.address,
         // isSellTokenEth,
     ]);
 
@@ -258,7 +285,6 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
     };
 
     const handleTokenAChangeEvent = async (evt?: ChangeEvent<HTMLInputElement>) => {
-        if (!poolPriceDisplay) return;
         if (!crocEnv) return;
         let rawTokenBQty;
 
@@ -273,6 +299,7 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
             dispatch(setIsTokenAPrimary(true));
             dispatch(setPrimaryQuantity(input));
             handleSwapButtonMessage(parseFloat(input));
+            if (!poolPriceDisplay) return;
 
             const impact =
                 input !== ''
@@ -285,6 +312,7 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
                           input,
                       )
                     : undefined;
+            console.log({ impact });
 
             impact ? setPriceImpact(impact) : null;
 
@@ -292,6 +320,7 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
         } else {
             handleSwapButtonMessage(parseFloat(tokenAQtyLocal));
 
+            // console.log(tokenPair.dataTokenA.address);
             const impact =
                 tokenAQtyLocal !== ''
                     ? await calcImpact(
@@ -303,7 +332,7 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
                           tokenAQtyLocal,
                       )
                     : undefined;
-
+            // console.log({ impact });
             impact ? setPriceImpact(impact) : null;
 
             rawTokenBQty = impact ? parseFloat(impact.buyQty) : undefined;
@@ -325,7 +354,6 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
     };
 
     const handleTokenAChangeClick = async (value: string) => {
-        if (!poolPriceDisplay) return;
         if (!crocEnv) return;
         let rawTokenBQty;
         const tokenAInputField = document.getElementById('sell-quantity');
@@ -341,6 +369,7 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
             dispatch(setPrimaryQuantity(input));
             handleSwapButtonMessage(parseFloat(input));
 
+            if (!poolPriceDisplay) return;
             const impact =
                 input !== ''
                     ? await calcImpact(
@@ -453,10 +482,6 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
         }
     };
 
-    const handleArrowClick = (): void => {
-        reverseTokens();
-    };
-
     return (
         <section
             className={`${styles.currency_converter} ${
@@ -497,9 +522,7 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
                 activeTokenListsChanged={activeTokenListsChanged}
                 indicateActiveTokenListsChanged={indicateActiveTokenListsChanged}
             />
-            <div className={styles.arrow_container} onClick={handleArrowClick}>
-                {/* <img src={tokensArrowImage} alt="arrow pointing down" /> */}
-                {/* {isLiq ? null : <span className={styles.arrow} />} */}
+            <div className={styles.arrow_container} onClick={reverseTokens}>
                 {isLiq ? null : (
                     <IconWithTooltip title='Reverse tokens' placement='left'>
                         <TokensArrow />

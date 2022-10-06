@@ -38,10 +38,10 @@ export const useUrlParams = (
                 // remove tuples with trisomy issues
                 .filter((par) => par.length === 2)
         );
-    }, []);
+    }, [params]);
 
     // make a list of params found in the URL queried
-    const paramsUsed = useMemo(() => urlParams.map((param) => param[0]), []);
+    const paramsUsed = useMemo(() => urlParams.map((param) => param[0]), [urlParams]);
 
     // determine which chain to use
     const chainToUse = useMemo(() => {
@@ -183,5 +183,5 @@ export const useUrlParams = (
                 res[1] && dispatch(setTokenB(res[1] as TokenIF));
             });
         }
-    }, [tokenList]);
+    }, [tokenList, urlParams]);
 };

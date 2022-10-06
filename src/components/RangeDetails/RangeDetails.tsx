@@ -218,15 +218,6 @@ export default function RangeDetails(props: IRangeDetailsProps) {
             />
             {controlDisplay}
             <div ref={detailsRef}>
-                {/* <RemoveRangeHeader
-                    isPositionInRange={props.isPositionInRange}
-                    isAmbient={props.isAmbient}
-                    baseTokenSymbol={props.baseTokenSymbol}
-                    quoteTokenSymbol={props.quoteTokenSymbol}
-                    baseTokenLogoURI={props.baseTokenLogoURI}
-                    quoteTokenLogoURI={props.quoteTokenLogoURI}
-                    isDenomBase={props.isDenomBase}
-                /> */}
                 <div className={styles.main_content}>
                     <div className={styles.left_container}>
                         <PriceInfo
@@ -248,17 +239,7 @@ export default function RangeDetails(props: IRangeDetailsProps) {
                     <div className={styles.right_container}>
                         <APYGraphDisplay updatedPositionApy={updatedPositionApy} />
                     </div>
-                    {/* <TokenInfo
-                        provider={props.provider}
-                        chainId={chainId}
-                        baseTokenAddress={props.baseTokenAddress}
-                        baseTokenDecimals={props.baseTokenDecimals}
-                        quoteTokenAddress={props.quoteTokenAddress}
-                        quoteTokenDecimals={props.quoteTokenDecimals}
-                        lastBlockNumber={props.lastBlockNumber}
-                        isDenomBase={props.isDenomBase}
-                        positionApy={apy}
-                    /> */}
+
                     <RangeDetailsActions />
                 </div>
             </div>

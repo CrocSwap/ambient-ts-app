@@ -9,3 +9,22 @@
     line-height: var(--body-lh);
     color: var(--text-grey-dark);
 }
+.hex_address {
+    user-select: all;
+}
+
+/* toggle */
+.toggle_container {
+    margin-bottom: 12px;
+    margin-left: 10px;
+}
+
+.surplus_toggle {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+    color: var(--text-grey-light);
+}

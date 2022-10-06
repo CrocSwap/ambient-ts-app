@@ -9,16 +9,23 @@ import { fetchAddress } from '../../App/functions/fetchAddress';
 import { useMoralis } from 'react-moralis';
 import { ethers } from 'ethers';
 import { TokenIF } from '../../utils/interfaces/TokenIF';
-import { CrocEnv } from '@crocswap-libs/sdk';
+import { CrocEnv, toDisplayQty } from '@crocswap-libs/sdk';
 
 import { Erc20TokenBalanceFn, nativeTokenBalanceFn } from '../../App/functions/fetchTokenBalances';
-import { useAppSelector } from '../../utils/hooks/reduxToolkit';
+import {
+    // useAppDispatch,
+    useAppSelector,
+} from '../../utils/hooks/reduxToolkit';
 import { TokenPriceFn } from '../../App/functions/fetchTokenPrice';
 import NotFound from '../NotFound/NotFound';
 import ProfileSettings from '../../components/Portfolio/ProfileSettings/ProfileSettings';
+// import { useModal } from '../../components/Global/Modal/useModal';
+// import Modal from '../../components/Global/Modal/Modal';
+// import { defaultTokens } from '../../utils/data/defaultTokens';
+// import { setToken } from '../../utils/state/temp';
 
 const mainnetProvider = new ethers.providers.WebSocketProvider(
-    'wss://mainnet.infura.io/ws/v3/4a162c75bd514925890174ca13cdb6a2',
+    'wss://mainnet.infura.io/ws/v3/cbb2856ea8804fc5ba59be0a2e8a9f88',
 );
 
 interface PortfolioPropsIF {
@@ -41,6 +48,7 @@ interface PortfolioPropsIF {
     setOutsideControl: Dispatch<SetStateAction<boolean>>;
     userAccount?: boolean;
     openGlobalModal: (content: React.ReactNode, title?: string) => void;
+    closeGlobalModal: () => void;
 }
 
 // const cachedFetchAddress = memoizePromiseFn(fetchAddress);
@@ -62,8 +70,55 @@ export default function Portfolio(props: PortfolioPropsIF) {
         chainId,
         tokenMap,
         openGlobalModal,
+        closeGlobalModal,
         userAccount,
     } = props;
+
+    const selectedToken: TokenIF = useAppSelector((state) => state.temp.token);
+
+    const [tokenAllowance, setTokenAllowance] = useState<string>('');
+    const [recheckTokenAllowance, setRecheckTokenAllowance] = useState<boolean>(false);
+    const [recheckTokenBalances, setRecheckTokenBalances] = useState<boolean>(false);
+
+    const [tokenWalletBalance, setTokenWalletBalance] = useState<string>('');
+    const [tokenDexBalance, setTokenDexBalance] = useState<string>('');
+
+    const selectedTokenAddress = selectedToken.address;
+    const selectedTokenDecimals = selectedToken.decimals;
+
+    useEffect(() => {
+        if (crocEnv && selectedToken.address && connectedAccount) {
+            crocEnv
+                .token(selectedToken.address)
+                .walletDisplay(connectedAccount)
+                .then((bal: string) => setTokenWalletBalance(bal))
+                .catch(console.log);
+            crocEnv
+                .token(selectedToken.address)
+                .balanceDisplay(connectedAccount)
+                .then((bal: string) => {
+                    setTokenDexBalance(bal);
+                })
+                .catch(console.log);
+        }
+        setRecheckTokenBalances(false);
+    }, [crocEnv, selectedToken.address, connectedAccount, lastBlockNumber, recheckTokenBalances]);
+
+    useEffect(() => {
+        (async () => {
+            if (crocEnv && connectedAccount && selectedTokenAddress) {
+                try {
+                    const allowance = await crocEnv
+                        .token(selectedTokenAddress)
+                        .allowance(connectedAccount);
+                    setTokenAllowance(toDisplayQty(allowance, selectedTokenDecimals));
+                } catch (err) {
+                    console.log(err);
+                }
+                setRecheckTokenAllowance(false);
+            }
+        })();
+    }, [crocEnv, selectedTokenAddress, lastBlockNumber, connectedAccount, recheckTokenAllowance]);
 
     const { address } = useParams();
 
@@ -125,11 +180,27 @@ export default function Portfolio(props: PortfolioPropsIF) {
         })();
     }, [address, isInitialized, isAddressEns]);
 
+    useEffect(() => {
+        console.log({ selectedToken });
+    }, [selectedToken]);
+
     const exchangeBalanceComponent = (
         <div className={styles.exchange_balance}>
             <ExchangeBalance
+                crocEnv={crocEnv}
+                mainnetProvider={mainnetProvider}
+                connectedAccount={connectedAccount}
                 setSelectedOutsideTab={props.setSelectedOutsideTab}
                 setOutsideControl={props.setOutsideControl}
+                openGlobalModal={openGlobalModal}
+                closeGlobalModal={closeGlobalModal}
+                selectedToken={selectedToken}
+                tokenAllowance={tokenAllowance}
+                tokenWalletBalance={tokenWalletBalance}
+                tokenDexBalance={tokenDexBalance}
+                setRecheckTokenAllowance={setRecheckTokenAllowance}
+                setRecheckTokenBalances={setRecheckTokenBalances}
+                lastBlockNumber={lastBlockNumber}
             />
         </div>
     );
@@ -228,6 +299,8 @@ export default function Portfolio(props: PortfolioPropsIF) {
                     openGlobalModal={openGlobalModal}
                 />
             )}
+            {/* <button onClick={openTempModal}>Choose a Token</button> */}
+            {/* <h3>{tempToken.name}</h3> */}
             <PortfolioBanner
                 ensName={address ? secondaryensName : ensName}
                 resolvedAddress={resolvedAddress}
@@ -263,6 +336,7 @@ export default function Portfolio(props: PortfolioPropsIF) {
                 />
                 {connectedAccountActive && !fullLayoutActive ? exchangeBalanceComponent : null}
             </div>
+            {/* {modalOrNull} */}
         </main>
     );
 }

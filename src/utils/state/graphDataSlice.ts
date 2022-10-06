@@ -74,6 +74,7 @@ export interface ILimitOrderState {
     positionLiqBaseUSD: number;
     positionLiqQuoteUSD: number;
     positionLiqTotalUSD: number;
+    totalValueUSD: number;
     chainId: string;
 }
 export interface PoolVolumeSeries {
@@ -268,6 +269,7 @@ export interface ITransaction {
     dex: string;
     id: string;
     inBaseQty: boolean;
+    isBid: boolean;
     isBuy: boolean;
     minOut: string;
     poolHash: string;
@@ -281,6 +283,7 @@ export interface ITransaction {
     source: string;
     entityType: string;
     changeType: string;
+    positionType: string;
     time: number;
     tx: string;
     user: string;
@@ -295,6 +298,8 @@ export interface ITransaction {
     baseFlowDecimalCorrected: number;
     quoteFlowDecimalCorrected: number;
     valueUSD: number;
+    totalValueUSD: number;
+    totalFlowUSD: number;
     ensResolution: string;
     bidTickPriceDecimalCorrected: number;
     bidTickInvPriceDecimalCorrected: number;
