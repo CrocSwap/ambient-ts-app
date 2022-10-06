@@ -48,9 +48,6 @@ interface TradePropsIF {
     expandTradeTable: boolean;
     setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
     setLimitRate: Dispatch<SetStateAction<string>>;
-    setTargets: Dispatch<SetStateAction<targetData[]>>;
-    targets: targetData[];
-
 
     limitRate: string;
     favePools: PoolIF[];
@@ -104,8 +101,7 @@ export default function Trade(props: TradePropsIF) {
         setIsShowAllEnabled,
         isTokenABase,
         poolPriceNonDisplay,
-        targets,
-        setTargets,
+
         account,
         isAuthenticated,
         isWeb3Enabled,
@@ -150,7 +146,7 @@ export default function Trade(props: TradePropsIF) {
         limitPrice,
         advancedMode,
         simpleRangeWidth,
-        spotPriceDisplay,
+
         pinnedMaxPriceDisplayTruncated,
         pinnedMinPriceDisplayTruncated,
     } = tradeData;
@@ -175,13 +171,9 @@ export default function Trade(props: TradePropsIF) {
     // console.log({ activePoolLiquidityData });
     const liquidityData = activePoolLiquidityData?.liquidityData;
 
-    const denomInBase = tradeData.isDenomBase;
-    const limitPrice = tradeData.limitPrice;
+    // const denomInBase = tradeData.isDenomBase;
 
-    const isAdvancedModeActive = tradeData.advancedMode;
-    const simpleRangeWidth = tradeData.simpleRangeWidth;
-    const pinnedMaxPriceDisplayTruncated = tradeData.pinnedMaxPriceDisplayTruncated;
-    const pinnedMinPriceDisplayTruncated = tradeData.pinnedMinPriceDisplayTruncated;
+    // const isAdvancedModeActive = tradeData.advancedMode;
 
     const poolPriceDisplayWithDenom = poolPriceDisplay
         ? isDenomBase
@@ -486,11 +478,7 @@ export default function Trade(props: TradePropsIF) {
                                 downBorderColor={downBorderColor}
                                 baseTokenAddress={baseTokenAddress}
                                 poolPriceNonDisplay={poolPriceNonDisplay}
-                                setTargets={setTargets}
-                                targets={targets}
-                                poolPriceNonDisplay={props.poolPriceNonDisplay}
                                 isCandleSelected={isCandleSelected}
-
                             />
                         </motion.div>
                     </div>

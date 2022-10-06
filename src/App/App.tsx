@@ -1831,10 +1831,8 @@ export default function App() {
         ambientApy: ambientApy,
 
         openGlobalModal: openGlobalModal,
-        targets: targets,
-        setTargets: setTargets,
-        poolExists: poolExists,
 
+        poolExists: poolExists,
     };
 
     function toggleSidebar() {
