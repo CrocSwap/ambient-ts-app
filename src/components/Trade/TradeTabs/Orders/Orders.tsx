@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { useEffect, useMemo, useState } from 'react';
+import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
 
 // START: Import JSX Elements
 import styles from './Orders.module.css';
@@ -28,6 +28,7 @@ interface propsIF {
     openGlobalModal: (content: React.ReactNode) => void;
     closeGlobalModal: () => void;
     currentPositionActive: string;
+    setCurrentPositionActive: Dispatch<SetStateAction<string>>;
 }
 
 // main react functional component
@@ -38,6 +39,7 @@ export default function Orders(props: propsIF) {
         account,
         graphData,
         isShowAllEnabled,
+        setCurrentPositionActive,
         currentPositionActive,
     } = props;
 
@@ -225,6 +227,7 @@ export default function Orders(props: propsIF) {
                     openGlobalModal={props.openGlobalModal}
                     closeGlobalModal={props.closeGlobalModal}
                     currentPositionActive={currentPositionActive}
+                    setCurrentPositionActive={setCurrentPositionActive}
                 />
             ))}
         </div>

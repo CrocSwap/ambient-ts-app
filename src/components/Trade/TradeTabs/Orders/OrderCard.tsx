@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
 import { formatAmount } from '../../../../utils/numbers';
 import { ILimitOrderState } from '../../../../utils/state/graphDataSlice';
@@ -20,6 +20,7 @@ interface OrderCardProps {
     openGlobalModal: (content: React.ReactNode) => void;
     closeGlobalModal: () => void;
     currentPositionActive: string;
+    setCurrentPositionActive: Dispatch<SetStateAction<string>>;
 }
 
 export default function OrderCard(props: OrderCardProps) {
@@ -27,6 +28,7 @@ export default function OrderCard(props: OrderCardProps) {
         account,
         limitOrder,
         currentPositionActive,
+        setCurrentPositionActive,
         isDenomBase,
         selectedBaseToken,
         selectedQuoteToken,
@@ -215,11 +217,11 @@ export default function OrderCard(props: OrderCardProps) {
     return (
         <li
             className={`${styles.main_container} ${activePositionStyle}`}
-            // onClick={() =>
-            //     position.positionStorageSlot === currentPositionActive
-            //         ? null
-            //         : setCurrentPositionActive('')
-            // }
+            onClick={() =>
+                limitOrder.limitOrderIdentifier === currentPositionActive
+                    ? null
+                    : setCurrentPositionActive('')
+            }
             id={orderDomId}
         >
             <div className={styles.main_container}>

@@ -359,6 +359,7 @@ export default function TradeTabs2(props: ITabsProps) {
         openGlobalModal: props.openGlobalModal,
         currentPositionActive: currentPositionActive,
         closeGlobalModal: props.closeGlobalModal,
+        setCurrentPositionActive: setCurrentPositionActive,
     };
     // props for <PositionsOnlyToggle/> React Element
 
