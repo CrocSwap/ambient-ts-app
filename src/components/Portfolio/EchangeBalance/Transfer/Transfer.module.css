@@ -9,3 +9,7 @@
     line-height: var(--body-lh);
     color: var(--text-grey-dark);
 }
+
+.hex_address {
+    user-select: all;
+}

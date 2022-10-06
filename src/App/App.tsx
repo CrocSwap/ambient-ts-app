@@ -1417,7 +1417,7 @@ export default function App() {
                 setRecheckTokenAApproval(false);
             }
         })();
-    }, [crocEnv, tokenAAddress, lastBlockNumber, account, recheckTokenAApproval, account]);
+    }, [crocEnv, tokenAAddress, lastBlockNumber, account, recheckTokenAApproval]);
 
     // useEffect to check if user has approved CrocSwap to sell the token B
     useEffect(() => {
@@ -2061,6 +2061,7 @@ export default function App() {
                                         throw new Error('Function not implemented.');
                                     }}
                                     limitRate={''}
+                                    importedTokens={importedTokens}
                                 />
                             }
                         >

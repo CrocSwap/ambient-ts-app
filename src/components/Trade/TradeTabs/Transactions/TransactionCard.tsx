@@ -161,9 +161,10 @@ export default function TransactionCard(props: TransactionProps) {
                 const askTickInvPriceDecimalCorrected = tx.askTickInvPriceDecimalCorrected;
 
                 if (
-                    bidTickInvPriceDecimalCorrected === 1000000000000 ||
-                    bidTickPriceDecimalCorrected === 1e-12 ||
-                    bidTickPriceDecimalCorrected === 0
+                    tx.positionType === 'ambient'
+                    // bidTickInvPriceDecimalCorrected === 1000000000000 ||
+                    // bidTickPriceDecimalCorrected === 1e-12 ||
+                    // bidTickPriceDecimalCorrected === 0
                 ) {
                     setIsAmbient(true);
                 } else {

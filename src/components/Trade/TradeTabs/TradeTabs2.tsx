@@ -1,6 +1,6 @@
 import { useState, useEffect, Dispatch, SetStateAction, useRef } from 'react';
 
-import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
+import { useAppDispatch, useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { ethers } from 'ethers';
 import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
 import Transactions from './Transactions/Transactions';
@@ -18,9 +18,12 @@ import Ranges from './Ranges/Ranges';
 import TabComponent from '../../Global/TabComponent/TabComponent';
 import PositionsOnlyToggle from './PositionsOnlyToggle/PositionsOnlyToggle';
 import { TokenIF } from '../../../utils/interfaces/TokenIF';
-import { CandleData, ITransaction } from '../../../utils/state/graphDataSlice';
+import { CandleData, ITransaction, setChangesByUser } from '../../../utils/state/graphDataSlice';
 import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
 import { fetchPoolRecentChanges } from '../../../App/functions/fetchPoolRecentChanges';
+
+
+import { fetchUserRecentChanges } from '../../../App/functions/fetchUserRecentChanges';
 
 interface ITabsProps {
     isUserLoggedIn: boolean;
@@ -57,6 +60,7 @@ interface ITabsProps {
     openGlobalModal: (content: React.ReactNode) => void;
 
     closeGlobalModal: () => void;
+    importedTokens: TokenIF[];
 }
 
 // const httpGraphCacheServerDomain = 'https://809821320828123.de:5000';
@@ -93,6 +97,7 @@ export default function TradeTabs2(props: ITabsProps) {
         setSelectedOutsideTab,
         outsideControl,
         setOutsideControl,
+        importedTokens,
     } = props;
 
     const graphData = useAppSelector((state) => state?.graphData);
@@ -213,6 +218,39 @@ export default function TradeTabs2(props: ITabsProps) {
         matchingUserChangesLength,
         matchingUserLimitOrdersLength,
     ]);
+
+    const dispatch = useAppDispatch();
+
+    useEffect(() => {
+        if (!isShowAllEnabled) {
+            try {
+                fetchUserRecentChanges({
+                    importedTokens: importedTokens,
+                    user: account,
+                    chainId: chainData.chainId,
+                    annotate: true,
+                    addValue: true,
+                    simpleCalc: true,
+                    annotateMEV: false,
+                    ensResolution: true,
+                    n: 100,
+                })
+                    .then((updatedTransactions) => {
+                        if (updatedTransactions) {
+                            dispatch(
+                                setChangesByUser({
+                                    dataReceived: true,
+                                    changes: updatedTransactions,
+                                }),
+                            );
+                        }
+                    })
+                    .catch(console.log);
+            } catch (error) {
+                console.log;
+            }
+        }
+    }, [isShowAllEnabled]);
 
     const [changesInSelectedCandle, setChangesInSelectedCandle] = useState<ITransaction[]>([]);
 

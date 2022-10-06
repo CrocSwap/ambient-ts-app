@@ -67,8 +67,24 @@ export default function PageHeader(props: HeaderPropsIF) {
         setIsAppOverlayActive,
     } = props;
 
-    const { user, account, enableWeb3, isWeb3Enabled, isAuthenticated } = useMoralis();
+    const {
+        user,
+        account,
+        enableWeb3,
+        isAuthenticated,
+        // isWeb3EnableLoading,
+        // isInitialized,
+        // isInitializing,
+        // isUserUpdating,
+    } = useMoralis();
 
+    // console.log({ user });
+    // console.log({ isUserUpdating });
+    // console.log({ isInitialized });
+    // console.log({ isAuthenticated });
+    // console.log({ isInitializing });
+    // console.log({ isUserLoggedIn });
+    // console.log({ isWeb3EnableLoading });
     const { t } = useTranslation();
 
     const [isModalOpen, openModal, closeModal] = useModal();
@@ -80,6 +96,15 @@ export default function PageHeader(props: HeaderPropsIF) {
         </Modal>
     );
 
+    const [connectButtonDelayElapsed, setConnectButtonDelayElapsed] = useState(false);
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setConnectButtonDelayElapsed(true);
+        }, 3000);
+        return () => clearTimeout(timer);
+    }, []);
+
     const modalOrNull = isModalOpen ? mainModal : null;
 
     useEffect(() => {
@@ -90,6 +115,7 @@ export default function PageHeader(props: HeaderPropsIF) {
     }, [user, account, metamaskLocked]);
 
     const reenableWeb3 = useCallback(async () => {
+        // console.log('enabling web3');
         try {
             if (user && !account && !metamaskLocked) {
                 await enableWeb3();
@@ -236,7 +262,7 @@ export default function PageHeader(props: HeaderPropsIF) {
                 />
                 <div className={styles.account}>
                     <NetworkSelector chainId={chainId} switchChain={switchChain} />
-                    {(!isAuthenticated || !isWeb3Enabled) && metamaskButton}
+                    {connectButtonDelayElapsed && !isUserLoggedIn && metamaskButton}
                     <Account {...accountProps} />
                     <NotificationCenter
                         showNotificationTable={showNotificationTable}

@@ -9,12 +9,12 @@ interface TransferCurrencySelectorProps {
 
     sellToken?: boolean;
     disable?: boolean;
-    tempTokenSelection: TokenIF;
-    setTransferQty: Dispatch<SetStateAction<number | undefined>>; // updateOtherQuantity: (evt: ChangeEvent<HTMLInputElement>) => void;
+    selectedToken: TokenIF;
+    setTransferQty: Dispatch<SetStateAction<number>>; // updateOtherQuantity: (evt: ChangeEvent<HTMLInputElement>) => void;
 }
 
 export default function TransferCurrencySelector(props: TransferCurrencySelectorProps) {
-    const { fieldId, disable, onClick, tempTokenSelection, setTransferQty } = props;
+    const { fieldId, disable, onClick, selectedToken, setTransferQty } = props;
 
     const rateInput = (
         <div className={styles.token_amount}>
@@ -46,11 +46,11 @@ export default function TransferCurrencySelector(props: TransferCurrencySelector
                 <div className={styles.token_select} onClick={onClick}>
                     <img
                         className={styles.token_list_img}
-                        src={tempTokenSelection.logoURI}
-                        alt={tempTokenSelection.name}
+                        src={selectedToken.logoURI}
+                        alt={selectedToken.name}
                         width='30px'
                     />
-                    <span className={styles.token_list_text}>{tempTokenSelection.symbol}</span>
+                    <span className={styles.token_list_text}>{selectedToken.symbol}</span>
                     <RiArrowDownSLine size={27} />
                 </div>
             </div>
