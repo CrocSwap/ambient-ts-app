@@ -1,9 +1,8 @@
+import { Link, useLocation } from 'react-router-dom';
 import styles from './TopPoolsCard.module.css';
-import { useAppDispatch, useAppSelector } from '../../../../utils/hooks/reduxToolkit';
-import { setTokenA, setTokenB } from '../../../../utils/state/tradeDataSlice';
 import { PoolIF } from '../../../../utils/interfaces/exports';
 import { getPoolStatsFresh } from '../../../../App/functions/getPoolStats';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { formatAmount } from '../../../../utils/numbers';
 interface TopPoolsCardProps {
     pool: PoolIF;
@@ -14,10 +13,18 @@ interface TopPoolsCardProps {
 export default function TopPoolsCard(props: TopPoolsCardProps) {
     const { pool, lastBlockNumber } = props;
 
-    const dispatch = useAppDispatch();
-    const tradeData = useAppSelector((state) => state.tradeData);
-    // const tokenA = tradeData.tokenA;
-    const tokenB = tradeData.tokenB;
+    const location = useLocation();
+
+    const locationSlug = useMemo(() => {
+        const { pathname } = location;
+        if (pathname.startsWith('/trade/market')) {
+            return '/trade/market';
+        } else if (pathname.startsWith('/trade/limit')) {
+            return '/trade/limit';
+        } else if (pathname.startsWith('/trade/range')) {
+            return '/trade/range';
+        }
+    }, [location]);
 
     const [poolVolume, setPoolVolume] = useState<string | undefined>();
     const [poolTvl, setPoolTvl] = useState<string | undefined>();
@@ -40,23 +47,15 @@ export default function TopPoolsCard(props: TopPoolsCardProps) {
     }, [JSON.stringify(pool), lastBlockNumber]);
 
     return (
-        <div
+        <Link
             className={styles.container}
-            onClick={() => {
-                if (tokenB.address.toLowerCase() === props.pool.base.address.toLowerCase()) {
-                    dispatch(setTokenB(props.pool.base));
-                    dispatch(setTokenA(props.pool.quote));
-                } else {
-                    dispatch(setTokenA(props.pool.base));
-                    dispatch(setTokenB(props.pool.quote));
-                }
-            }}
+            to={`${locationSlug}/chain=0x5&tokenA=${pool.base.address}&tokenB=${pool.quote.address}`}
         >
             <div>
                 {pool.base.symbol} / {pool.quote.symbol}
             </div>
             <div>{poolVolume ?? '…'}</div>
             <div>{poolTvl ?? '…'}</div>
-        </div>
+        </Link>
     );
 }

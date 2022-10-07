@@ -1,17 +1,22 @@
 import styles from './DepositButton.module.css';
-import { useState } from 'react';
 import Button from '../../../../Global/Button/Button';
 
-export default function DepositButton() {
-    const [allowedButton] = useState<boolean>(false);
+interface PortfolioDepositButtonProps {
+    onClick: () => void;
+    disabled: boolean;
+    buttonMessage: string;
+}
+
+export default function DepositButton(props: PortfolioDepositButtonProps) {
+    const { onClick, disabled, buttonMessage } = props;
 
     const ButtonDisplay = (
         <div className={styles.button_container}>
             <Button
-                title={allowedButton ? 'Deposit' : 'Enter an amount'}
+                title={buttonMessage}
                 // action={() => console.log('clicked')}
-                action={() => console.log('depositing...')}
-                disabled={!allowedButton}
+                action={onClick}
+                disabled={disabled}
             />
         </div>
     );

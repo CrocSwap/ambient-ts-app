@@ -17,7 +17,7 @@ import { ChainSpec } from '@crocswap-libs/sdk';
 import useWebSocket from 'react-use-websocket';
 // import useDebounce from '../../../../App/hooks/useDebounce';
 import { fetchPoolRecentChanges } from '../../../../App/functions/fetchPoolRecentChanges';
-import TransactionAccordions from './TransactionAccordions/TransactionAccordions';
+// import TransactionAccordions from './TransactionAccordions/TransactionAccordions';
 
 interface TransactionsProps {
     isShowAllEnabled: boolean;
@@ -142,7 +142,7 @@ export default function Transactions(props: TransactionsProps) {
     // Get current transactions
     const indexOfLastTransaction = currentPage * transactionsPerPage;
     const indexOfFirstTransaction = indexOfLastTransaction - transactionsPerPage;
-    const currentTransactions = transactionData.slice(
+    const currentTransactions = transactionData?.slice(
         indexOfFirstTransaction,
         indexOfLastTransaction,
     );
@@ -292,11 +292,11 @@ export default function Transactions(props: TransactionsProps) {
             ))}
         </div>
     );
-    const [expanded, setExpanded] = useState<false | number>(false);
+    // const [expanded, setExpanded] = useState<false | number>(false);
 
     const accordionsDisplay = (
         <div className={styles.accordion_display_container}>
-            {usePaginateDataOrNull?.map((tx, idx) => (
+            {/* {usePaginateDataOrNull?.map((tx, idx) => (
                 <TransactionAccordions
                     key={idx}
                     expanded={expanded}
@@ -304,7 +304,8 @@ export default function Transactions(props: TransactionsProps) {
                     tx={tx}
                     i={idx}
                 />
-            ))}
+            ))} */}
+            <p>Mobile Accordion here: Disabled for now</p>
         </div>
     );
 

@@ -1,9 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // START: Import React and Dongles
-import { Dispatch, SetStateAction, useState } from 'react';
-import { Outlet, useOutletContext, NavLink } from 'react-router-dom';
+import { Dispatch, SetStateAction, ReactNode, useState } from 'react';
+import { useParams, Outlet, useOutletContext, Link, NavLink } from 'react-router-dom';
 import { ethers } from 'ethers';
 import { motion, AnimateSharedLayout } from 'framer-motion';
+import { SketchPicker } from 'react-color';
+import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
 
 // START: Import JSX Components
 import TradeCharts from './TradeCharts/TradeCharts';
@@ -15,8 +17,7 @@ import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { tradeData as TradeDataIF } from '../../utils/state/tradeDataSlice';
 import { CandleData, CandlesByPoolAndDuration } from '../../utils/state/graphDataSlice';
 import { PoolIF, TokenIF, TokenPairIF } from '../../utils/interfaces/exports';
-import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
-import { SketchPicker } from 'react-color';
+import { useUrlParams } from './useUrlParams';
 
 // interface for React functional component props
 interface TradePropsIF {
@@ -46,7 +47,8 @@ interface TradePropsIF {
     setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
     expandTradeTable: boolean;
     setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
-    setLimitRate: React.Dispatch<React.SetStateAction<string>>;
+    setLimitRate: Dispatch<SetStateAction<string>>;
+
     limitRate: string;
     favePools: PoolIF[];
     addPoolToFaves: (tokenA: TokenIF, tokenB: TokenIF, chainId: string, poolId: number) => void;
@@ -62,11 +64,12 @@ interface TradePropsIF {
     setOutsideControl: Dispatch<SetStateAction<boolean>>;
     currentPositionActive: string;
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
-
-    openGlobalModal: (content: React.ReactNode) => void;
-
+    openGlobalModal: (content: ReactNode) => void;
     closeGlobalModal: () => void;
+    isInitialized: boolean;
     poolPriceNonDisplay: number | undefined;
+    importedTokens: TokenIF[];
+    poolExists: boolean;
 }
 
 // React functional component
@@ -82,7 +85,7 @@ export default function Trade(props: TradePropsIF) {
         provider,
         lastBlockNumber,
         baseTokenAddress,
-        // quoteTokenAddress,
+        quoteTokenAddress,
         baseTokenBalance,
         quoteTokenBalance,
         baseTokenDexBalance,
@@ -90,7 +93,33 @@ export default function Trade(props: TradePropsIF) {
         favePools,
         addPoolToFaves,
         removePoolFromFaves,
+        isInitialized,
+        importedTokens,
+        expandTradeTable,
+        setExpandTradeTable,
+        isShowAllEnabled,
+        setIsShowAllEnabled,
+        isTokenABase,
+        poolPriceNonDisplay,
+
+        account,
+        isAuthenticated,
+        isWeb3Enabled,
+        currentTxActiveInTransactions,
+        setCurrentTxActiveInTransactions,
+        // selectedOutsideTab,
+        // setSelectedOutsideTab,
+        // outsideControl,
+        // setOutsideControl,
+        // currentPositionActive,
+        // setCurrentPositionActive,
+        // openGlobalModal,
+        // closeGlobalModal,
+        poolExists,
     } = props;
+
+    useUrlParams(chainId, isInitialized);
+    const { params } = useParams();
 
     const [isCandleSelected, setIsCandleSelected] = useState<boolean | undefined>();
     const [transactionFilter, setTransactionFilter] = useState<CandleData>();
@@ -111,38 +140,43 @@ export default function Trade(props: TradePropsIF) {
     ];
     const [fullScreenChart, setFullScreenChart] = useState(false);
 
-    const tradeData = useAppSelector((state) => state.tradeData);
+    const { tradeData, graphData } = useAppSelector((state) => state);
+    const {
+        isDenomBase,
+        limitPrice,
+        advancedMode,
+        simpleRangeWidth,
 
-    const graphData = useAppSelector((state) => state.graphData);
+        pinnedMaxPriceDisplayTruncated,
+        pinnedMinPriceDisplayTruncated,
+    } = tradeData;
+    const baseTokenLogo = isDenomBase ? tradeData.baseToken.logoURI : tradeData.quoteToken.logoURI;
+    const quoteTokenLogo = isDenomBase ? tradeData.quoteToken.logoURI : tradeData.baseToken.logoURI;
 
-    // const activePoolDefinition = JSON.stringify({
-    //     baseAddress: baseTokenAddress,
-    //     quoteAddress: quoteTokenAddress,
-    //     poolIdx: 36000,
-    //     network: chainId,
-    // }).toLowerCase();
+    const indexOfPoolInLiqData = graphData?.liquidityForAllPools.pools.findIndex(
+        (pool) =>
+            pool.pool.baseAddress.toLowerCase() === tradeData.baseToken.address.toLowerCase() &&
+            pool.pool.quoteAddress.toLowerCase() === tradeData.quoteToken.address.toLowerCase() &&
+            pool.pool.poolIdx === chainData.poolIndex &&
+            pool.pool.chainId === chainData.chainId,
+    );
 
-    // const indexOfActivePool = graphData.candlesForAllPools.pools
-    //     .map((item) => JSON.stringify(item.pool).toLowerCase())
-    //     .findIndex((pool) => pool === activePoolDefinition);
+    // const liqData = graphData?.liquidityForAllPools.pools;
+    // console.log({ liqData });
+    // console.log({ tradeData });
+    // console.log({ chainData });
+    // console.log({ indexOfPoolInLiqData });
 
-    // const activePoolCandleData = graphData?.candlesForAllPools?.pools[indexOfActivePool];
-    // const candleData = activePoolCandleData?.candlesByPoolAndDuration.find((data) => {
-    //     return data.duration === tradeData.activeChartPeriod;
-    // });
-
-    const activePoolLiquidityData = graphData?.liquidityForAllPools?.pools[0];
+    const activePoolLiquidityData = graphData?.liquidityForAllPools?.pools[indexOfPoolInLiqData];
+    // console.log({ activePoolLiquidityData });
     const liquidityData = activePoolLiquidityData?.liquidityData;
-    const denomInBase = tradeData.isDenomBase;
-    const limitPrice = tradeData.limitPrice;
 
-    const isAdvancedModeActive = tradeData.advancedMode;
-    const simpleRangeWidth = tradeData.simpleRangeWidth;
-    const pinnedMaxPriceDisplayTruncated = tradeData.pinnedMaxPriceDisplayTruncated;
-    const pinnedMinPriceDisplayTruncated = tradeData.pinnedMinPriceDisplayTruncated;
+    // const denomInBase = tradeData.isDenomBase;
+
+    // const isAdvancedModeActive = tradeData.advancedMode;
 
     const poolPriceDisplayWithDenom = poolPriceDisplay
-        ? denomInBase
+        ? isDenomBase
             ? 1 / poolPriceDisplay
             : poolPriceDisplay
         : 0;
@@ -151,7 +185,7 @@ export default function Trade(props: TradePropsIF) {
         <div className={styles.navigation_menu}>
             {routes.map((route, idx) => (
                 <div className={`${styles.nav_container} trade_route`} key={idx}>
-                    <NavLink to={`/trade${route.path}`}>{route.name}</NavLink>
+                    <NavLink to={`/trade${route.path}/${params}`}>{route.name}</NavLink>
                 </div>
             ))}
         </div>
@@ -162,12 +196,12 @@ export default function Trade(props: TradePropsIF) {
             <Outlet context={{ tradeData: tradeData, navigationMenu: navigationMenu }} />
         </div>
     );
-    const expandGraphStyle = props.expandTradeTable ? styles.hide_graph : '';
+    const expandGraphStyle = expandTradeTable ? styles.hide_graph : '';
     const fullScreenStyle = fullScreenChart ? styles.chart_full_screen : styles.main__chart;
 
     const changeState = (isOpen: boolean | undefined, candleData: CandleData | undefined) => {
         setIsCandleSelected(isOpen);
-        props.setIsShowAllEnabled(!isOpen);
+        setIsShowAllEnabled(!isOpen);
         setTransactionFilter(candleData);
     };
 
@@ -220,6 +254,25 @@ export default function Trade(props: TradePropsIF) {
             </button>
         </div>
     );
+
+    const initLinkPath =
+        '/initpool/chain=0x5&base=' + baseTokenAddress + '&quote=' + quoteTokenAddress;
+
+    const poolNotInitializedContent = (
+        <div className={styles.pool_not_initialialized_container}>
+            <div className={styles.pool_not_initialialized_content}>
+                <h2>This pool has not been initialized.</h2>
+                <h3>Do you want to initialize it?</h3>
+
+                <Link to={initLinkPath} className={styles.initialize_link}>
+                    <img src={baseTokenLogo} alt='base token' />
+                    Initialize Pool
+                    <img src={quoteTokenLogo} alt=' quote token' />
+                </Link>
+            </div>
+        </div>
+    );
+    if (!poolExists) return poolNotInitializedContent;
     return (
         <AnimateSharedLayout>
             <main className={styles.main_layout}>
@@ -401,9 +454,9 @@ export default function Trade(props: TradePropsIF) {
                         >
                             <TradeCharts
                                 poolPriceDisplay={poolPriceDisplayWithDenom}
-                                expandTradeTable={props.expandTradeTable}
-                                setExpandTradeTable={props.setExpandTradeTable}
-                                isTokenABase={props.isTokenABase}
+                                expandTradeTable={expandTradeTable}
+                                setExpandTradeTable={setExpandTradeTable}
+                                isTokenABase={isTokenABase}
                                 fullScreenChart={fullScreenChart}
                                 setFullScreenChart={setFullScreenChart}
                                 changeState={changeState}
@@ -412,12 +465,10 @@ export default function Trade(props: TradePropsIF) {
                                 lastBlockNumber={lastBlockNumber}
                                 chainId={chainId}
                                 limitPrice={limitPrice}
-                                // setLimitRate={props.setLimitRate}
-                                // limitRate={props.limitRate}
                                 favePools={favePools}
                                 addPoolToFaves={addPoolToFaves}
                                 removePoolFromFaves={removePoolFromFaves}
-                                isAdvancedModeActive={isAdvancedModeActive}
+                                isAdvancedModeActive={advancedMode}
                                 simpleRangeWidth={simpleRangeWidth}
                                 pinnedMinPriceDisplayTruncated={pinnedMinPriceDisplayTruncated}
                                 pinnedMaxPriceDisplayTruncated={pinnedMaxPriceDisplayTruncated}
@@ -426,7 +477,7 @@ export default function Trade(props: TradePropsIF) {
                                 downBodyColor={downBodyColor}
                                 downBorderColor={downBorderColor}
                                 baseTokenAddress={baseTokenAddress}
-                                poolPriceNonDisplay={props.poolPriceNonDisplay}
+                                poolPriceNonDisplay={poolPriceNonDisplay}
                                 isCandleSelected={isCandleSelected}
                             />
                         </motion.div>
@@ -434,7 +485,7 @@ export default function Trade(props: TradePropsIF) {
 
                     <motion.div
                         animate={{
-                            height: props.expandTradeTable ? '100%' : '30%',
+                            height: expandTradeTable ? '100%' : '30%',
                             transition: {
                                 duration: 0.5,
                                 type: 'spring',
@@ -447,24 +498,22 @@ export default function Trade(props: TradePropsIF) {
                                 isUserLoggedIn={isUserLoggedIn}
                                 crocEnv={crocEnv}
                                 provider={provider}
-                                account={props.account}
-                                isAuthenticated={props.isAuthenticated}
-                                isWeb3Enabled={props.isWeb3Enabled}
-                                lastBlockNumber={props.lastBlockNumber}
+                                account={account}
+                                isAuthenticated={isAuthenticated}
+                                isWeb3Enabled={isWeb3Enabled}
+                                lastBlockNumber={lastBlockNumber}
                                 chainId={chainId}
                                 chainData={chainData}
-                                currentTxActiveInTransactions={props.currentTxActiveInTransactions}
-                                setCurrentTxActiveInTransactions={
-                                    props.setCurrentTxActiveInTransactions
-                                }
+                                currentTxActiveInTransactions={currentTxActiveInTransactions}
+                                setCurrentTxActiveInTransactions={setCurrentTxActiveInTransactions}
                                 baseTokenBalance={baseTokenBalance}
                                 quoteTokenBalance={quoteTokenBalance}
                                 baseTokenDexBalance={baseTokenDexBalance}
                                 quoteTokenDexBalance={quoteTokenDexBalance}
-                                isShowAllEnabled={props.isShowAllEnabled}
-                                setIsShowAllEnabled={props.setIsShowAllEnabled}
-                                expandTradeTable={props.expandTradeTable}
-                                setExpandTradeTable={props.setExpandTradeTable}
+                                isShowAllEnabled={isShowAllEnabled}
+                                setIsShowAllEnabled={setIsShowAllEnabled}
+                                expandTradeTable={expandTradeTable}
+                                setExpandTradeTable={setExpandTradeTable}
                                 tokenMap={tokenMap}
                                 isCandleSelected={isCandleSelected}
                                 setIsCandleSelected={setIsCandleSelected}
@@ -478,6 +527,7 @@ export default function Trade(props: TradePropsIF) {
                                 setCurrentPositionActive={props.setCurrentPositionActive}
                                 openGlobalModal={props.openGlobalModal}
                                 closeGlobalModal={props.closeGlobalModal}
+                                importedTokens={importedTokens}
                             />
                         </div>
                     </motion.div>

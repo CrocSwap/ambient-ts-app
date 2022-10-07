@@ -74,6 +74,7 @@ export default function Sidebar(props: SidebarPropsIF) {
     } = props;
 
     const graphData = useAppSelector((state) => state.graphData);
+    const isUserLoggedIn = useAppSelector((state) => state.userData).isLoggedIn;
     const transactionsByUser = graphData.changesByUser.changes;
     const positionsByUser = graphData.positionsByUser.positions;
     const limitOrderByUser = graphData.limitOrdersByUser.limitOrders;
@@ -104,9 +105,11 @@ export default function Sidebar(props: SidebarPropsIF) {
         outsideControl: props.outsideControl,
         setOutsideControl: props.setOutsideControl,
         isShowAllEnabled: props.isShowAllEnabled,
+        setCurrentPositionActive: setCurrentPositionActive,
         setIsShowAllEnabled: props.setIsShowAllEnabled,
         expandTradeTable: expandTradeTable,
         setExpandTradeTable: setExpandTradeTable,
+        isUserLoggedIn: isUserLoggedIn,
     };
     const sidebarRangePositionProps = {
         selectedOutsideTab: props.selectedOutsideTab,
@@ -120,6 +123,7 @@ export default function Sidebar(props: SidebarPropsIF) {
         setIsShowAllEnabled: props.setIsShowAllEnabled,
         expandTradeTable: expandTradeTable,
         setExpandTradeTable: setExpandTradeTable,
+        isUserLoggedIn: isUserLoggedIn,
     };
 
     const rangePositions = [
@@ -178,6 +182,7 @@ export default function Sidebar(props: SidebarPropsIF) {
                     setSelectedOutsideTab={props.setSelectedOutsideTab}
                     setOutsideControl={props.setOutsideControl}
                     outsideControl={props.outsideControl}
+                    isUserLoggedIn={isUserLoggedIn}
                 />
             ),
         },
@@ -287,6 +292,25 @@ export default function Sidebar(props: SidebarPropsIF) {
 
     const bottomElementsDisplay = (
         <div className={styles.bottom_elements}>
+            {recentTransactions.map((item, idx) => (
+                <SidebarAccordion
+                    toggleSidebar={toggleSidebar}
+                    showSidebar={showSidebar}
+                    idx={idx}
+                    item={item}
+                    key={idx}
+                    mostRecent={mostRecentTransactions}
+                />
+            ))}{' '}
+            {recentLimitOrders.map((item, idx) => (
+                <SidebarAccordion
+                    toggleSidebar={toggleSidebar}
+                    showSidebar={showSidebar}
+                    idx={idx}
+                    item={item}
+                    key={idx}
+                />
+            ))}{' '}
             {rangePositions.map((item, idx) => (
                 <SidebarAccordion
                     toggleSidebar={toggleSidebar}
@@ -297,15 +321,6 @@ export default function Sidebar(props: SidebarPropsIF) {
                     mostRecent={positionsByUser}
                 />
             ))}
-            {recentLimitOrders.map((item, idx) => (
-                <SidebarAccordion
-                    toggleSidebar={toggleSidebar}
-                    showSidebar={showSidebar}
-                    idx={idx}
-                    item={item}
-                    key={idx}
-                />
-            ))}
             {favoritePools.map((item, idx) => (
                 <SidebarAccordion
                     toggleSidebar={toggleSidebar}
@@ -313,16 +328,6 @@ export default function Sidebar(props: SidebarPropsIF) {
                     idx={idx}
                     item={item}
                     key={idx}
-                />
-            ))}
-            {recentTransactions.map((item, idx) => (
-                <SidebarAccordion
-                    toggleSidebar={toggleSidebar}
-                    showSidebar={showSidebar}
-                    idx={idx}
-                    item={item}
-                    key={idx}
-                    mostRecent={mostRecentTransactions}
                 />
             ))}
         </div>

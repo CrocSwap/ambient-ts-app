@@ -1,17 +1,28 @@
-import { useState, useRef, Children, ReactNode, ReactElement, cloneElement } from 'react';
+import {
+    useRef,
+    Children,
+    ReactNode,
+    ReactElement,
+    cloneElement,
+    Dispatch,
+    SetStateAction,
+} from 'react';
 import styles from './NavItem.module.css';
 import UseOnClickOutside from '../../../../utils/hooks/useOnClickOutside';
 
 interface NavItemPropsIF {
     children: ReactNode;
     icon: ReactNode;
+    // eslint-disable-next-line
+    open: boolean;
+    setOpen: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function NavItem(props: NavItemPropsIF) {
     const { children, icon } = props;
     const navItemRef = useRef<HTMLDivElement>(null);
 
-    const [open, setOpen] = useState(false);
+    const { open, setOpen } = props;
 
     const clickOutsideHandler = () => {
         setOpen(false);

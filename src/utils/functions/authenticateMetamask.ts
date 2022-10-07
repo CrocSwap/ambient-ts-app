@@ -23,6 +23,7 @@ This request will not trigger a blockchain transaction or cost any gas fees.
 Your authentication status will reset on logout.`;
 
     if (!isAuthenticated || !isWeb3Enabled) {
+        console.log('attempting to authenticate');
         authenticate({
             // provider: 'metamask',
             signingMessage: signingMessage,

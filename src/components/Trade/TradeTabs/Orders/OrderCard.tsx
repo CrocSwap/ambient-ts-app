@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
 import { formatAmount } from '../../../../utils/numbers';
 import { ILimitOrderState } from '../../../../utils/state/graphDataSlice';
@@ -17,10 +17,22 @@ interface OrderCardProps {
     isDenomBase: boolean;
     selectedBaseToken: string;
     selectedQuoteToken: string;
+    openGlobalModal: (content: React.ReactNode) => void;
+    closeGlobalModal: () => void;
+    currentPositionActive: string;
+    setCurrentPositionActive: Dispatch<SetStateAction<string>>;
 }
 
 export default function OrderCard(props: OrderCardProps) {
-    const { account, limitOrder, isDenomBase, selectedBaseToken, selectedQuoteToken } = props;
+    const {
+        account,
+        limitOrder,
+        currentPositionActive,
+        setCurrentPositionActive,
+        isDenomBase,
+        selectedBaseToken,
+        selectedQuoteToken,
+    } = props;
     // console.log({ limitOrder });
 
     // const tempOwnerId = '0xa2b398145b7fc8fd9a01142698f15d329ebb5ff5090cfcc8caae440867ab9919';
@@ -44,9 +56,37 @@ export default function OrderCard(props: OrderCardProps) {
             const priceDecimalCorrected = limitOrder.limitPriceDecimalCorrected;
             const invPriceDecimalCorrected = limitOrder.invLimitPriceDecimalCorrected;
 
+            const nonInvertedPriceTruncated =
+                priceDecimalCorrected === 0
+                    ? '0.00'
+                    : priceDecimalCorrected < 0.0001
+                    ? priceDecimalCorrected.toExponential(2)
+                    : priceDecimalCorrected < 2
+                    ? priceDecimalCorrected.toPrecision(3)
+                    : priceDecimalCorrected >= 100000
+                    ? formatAmount(priceDecimalCorrected)
+                    : priceDecimalCorrected.toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                      });
+
+            const invertedPriceTruncated =
+                invPriceDecimalCorrected === 0
+                    ? '0.00'
+                    : invPriceDecimalCorrected < 0.0001
+                    ? invPriceDecimalCorrected.toExponential(2)
+                    : invPriceDecimalCorrected < 2
+                    ? invPriceDecimalCorrected.toPrecision(3)
+                    : invPriceDecimalCorrected >= 100000
+                    ? formatAmount(invPriceDecimalCorrected)
+                    : invPriceDecimalCorrected.toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                      });
+
             const truncatedDisplayPrice = isDenomBase
-                ? quoteTokenCharacter + invPriceDecimalCorrected?.toPrecision(6)
-                : baseTokenCharacter + priceDecimalCorrected?.toPrecision(6);
+                ? quoteTokenCharacter + invertedPriceTruncated
+                : baseTokenCharacter + nonInvertedPriceTruncated;
 
             setTruncatedDisplayPrice(truncatedDisplayPrice);
         } else {
@@ -82,8 +122,6 @@ export default function OrderCard(props: OrderCardProps) {
     const orderMatchesSelectedTokens =
         selectedBaseToken === baseTokenAddressLowerCase &&
         selectedQuoteToken === quoteTokenAddressLowerCase;
-
-    if (!orderMatchesSelectedTokens) return null;
 
     const liqBaseNum =
         limitOrder.positionLiqBaseDecimalCorrected !== 0
@@ -132,55 +170,99 @@ export default function OrderCard(props: OrderCardProps) {
                   })
             : undefined;
 
-    const usdValueNum = limitOrder.positionLiqTotalUSD;
+    const usdValueNum = limitOrder.totalValueUSD;
     const usdValueTruncated = !usdValueNum
         ? undefined
         : usdValueNum < 0.0001
         ? usdValueNum.toExponential(2)
         : usdValueNum < 2
         ? usdValueNum.toPrecision(3)
-        : usdValueNum >= 100000
-        ? formatAmount(usdValueNum)
+        : usdValueNum >= 10000
+        ? formatAmount(usdValueNum, 1)
         : // ? baseLiqDisplayNum.toExponential(2)
           usdValueNum.toLocaleString(undefined, {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
           });
 
-    console.log(limitOrder);
+    const orderMenuProps = {
+        closeGlobalModal: props.closeGlobalModal,
+        openGlobalModal: props.openGlobalModal,
+        isOwnerActiveAccount: isOwnerActiveAccount,
+    };
+
+    const orderDomId =
+        limitOrder.limitOrderIdentifier === currentPositionActive
+            ? `order-${limitOrder.limitOrderIdentifier}`
+            : '';
+
+    // console.log(rangeDetailsProps.lastBlockNumber);
+
+    function scrollToDiv() {
+        const element = document.getElementById(orderDomId);
+        element?.scrollIntoView({ behavior: 'smooth', block: 'end', inline: 'nearest' });
+    }
+
+    useEffect(() => {
+        limitOrder.limitOrderIdentifier === currentPositionActive ? scrollToDiv() : null;
+    }, [currentPositionActive]);
+
+    const activePositionStyle =
+        limitOrder.limitOrderIdentifier === currentPositionActive
+            ? styles.active_position_style
+            : '';
+    if (!orderMatchesSelectedTokens) return null;
+
+    // console.log(limitOrder);
     return (
-        <div className={styles.main_container}>
-            <div className={styles.row_container}>
-                {/* ------------------------------------------------------ */}
+        <li
+            className={`${styles.main_container} ${activePositionStyle}`}
+            onClick={() =>
+                limitOrder.limitOrderIdentifier === currentPositionActive
+                    ? null
+                    : setCurrentPositionActive('')
+            }
+            id={orderDomId}
+        >
+            <div className={styles.main_container}>
+                <div className={styles.row_container}>
+                    {/* ------------------------------------------------------ */}
 
-                <WalletAndId
-                    ownerId={ownerIdDisplay}
-                    posHash={limitOrder.limitOrderIdentifier.slice(42)}
-                    ensName={limitOrder.ensResolution ? limitOrder.ensResolution : null}
-                    isOwnerActiveAccount={isOwnerActiveAccount}
-                />
+                    <WalletAndId
+                        ownerId={ownerIdDisplay}
+                        posHash={limitOrder.limitOrderIdentifier.slice(42)}
+                        ensName={limitOrder.ensResolution ? limitOrder.ensResolution : null}
+                        isOwnerActiveAccount={isOwnerActiveAccount}
+                    />
 
-                {/* ------------------------------------------------------ */}
-                <Price priceType={priceType} displayPrice={truncatedDisplayPrice} />
-                {/* ------------------------------------------------------ */}
-                <OrderTypeSide type='order' side={sideType} />
-                {/* ------------------------------------------------------ */}
-                <Value usdValue={usdValueTruncated ? '$' + usdValueTruncated : '…'} />
-                <TokenQty
-                    baseQty={baseQtyTruncated}
-                    quoteQty={quoteQtyTruncated}
-                    baseTokenCharacter={baseTokenCharacter}
-                    quoteTokenCharacter={quoteTokenCharacter}
-                />
-                {/* ------------------------------------------------------ */}
-                <div className={styles.status}>
-                    <OpenOrderStatus isFilled={isOrderFilled} />
+                    {/* ------------------------------------------------------ */}
+                    <Price priceType={priceType} displayPrice={truncatedDisplayPrice} />
+                    {/* ------------------------------------------------------ */}
+                    <OrderTypeSide
+                        type='order'
+                        side={sideType}
+                        isDenomBase={isDenomBase}
+                        baseTokenCharacter={baseTokenCharacter}
+                        quoteTokenCharacter={quoteTokenCharacter}
+                    />
+                    {/* ------------------------------------------------------ */}
+                    <Value usdValue={usdValueTruncated ? '$' + usdValueTruncated : '…'} />
+                    <TokenQty
+                        baseQty={baseQtyTruncated}
+                        quoteQty={quoteQtyTruncated}
+                        baseTokenCharacter={baseTokenCharacter}
+                        quoteTokenCharacter={quoteTokenCharacter}
+                    />
+                    {/* ------------------------------------------------------ */}
+                    <div className={styles.status}>
+                        <OpenOrderStatus isFilled={isOrderFilled} />
+                    </div>
+                </div>
+
+                <div className={styles.menu_container}>
+                    <OrdersMenu limitOrder={limitOrder} {...orderMenuProps} />
                 </div>
             </div>
-
-            <div className={styles.menu_container}>
-                <OrdersMenu userPosition={false} />
-            </div>
-        </div>
+        </li>
     );
 }
