@@ -7,20 +7,27 @@ import trimString from '../../../../utils/functions/trimString';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { formatAmount } from '../../../../utils/numbers';
 import { ITransaction } from '../../../../utils/state/graphDataSlice';
+import { PositionIF } from '../../../../utils/interfaces/PositionIF';
 import styles from './PositionBox.module.css';
 import { motion } from 'framer-motion';
 import { useSortedPositions } from '../../../Trade/TradeTabs/Ranges/useSortedPositions';
 import { ambientPosSlot, concPosSlot } from '@crocswap-libs/sdk';
+import { applyMiddleware } from '@reduxjs/toolkit';
+import { FiCopy } from 'react-icons/fi';
+import useCopyToClipboard from '../../../../utils/hooks/useCopyToClipboard';
+import SnackbarComponent from '../../../Global/SnackbarComponent/SnackbarComponent';
 
 interface PositionBoxProps {
     message: string;
 }
 
 export default function PositionBox(props: PositionBoxProps) {
+    const [openSnackbar, setOpenSnackbar] = useState<boolean>(false);
+    const [value, copy] = useCopyToClipboard();
     const [isPoolPriceChangePositive, setIsPoolPriceChangePositive] = useState<boolean>(false);
     const message = props.message;
     const [position, setPosition] = useState<ITransaction | undefined>(undefined);
-
+    const [sPositions, setSPosition] = useState<PositionIF | undefined>(undefined);
     const [truncatedDisplayPrice, setTruncatedDisplayPrice] = useState<string | undefined>();
     const tradeData = useAppSelector((state) => state.tradeData);
     const graphData = useAppSelector((state) => state?.graphData);
@@ -30,35 +37,10 @@ export default function PositionBox(props: PositionBoxProps) {
         graphData?.positionsByUser?.positions,
         graphData?.positionsByPool?.positions,
     );
+    const [minPrice, setMinPrice] = useState<string | undefined>();
+    const [maxPrice, setMaxPrice] = useState<string | undefined>();
+    const [apy, setApy] = useState<any | undefined>();
 
-    useEffect(() => {
-        sortedPositions.map((position, index) => {
-            // console.log(`aaa+${index}` ,
-            let posHash;
-            let min;
-            let max;
-            let apy;
-
-            if (position.positionType == 'ambient') {
-                posHash = ambientPosSlot(position.user, position.base, position.quote, 36000);
-            } else {
-                posHash = concPosSlot(
-                    position.user,
-                    position.base,
-                    position.quote,
-                    position.bidTick,
-                    position.askTick,
-                    36000,
-                );
-            }
-            console.error(sortedPositions);
-            /* console.error(position.positionStorageSlot);
-            console.error(position.lowRangeDisplayInBase);
-            console.error(position.highRangeDisplayInBase);
-            console.error(position.apy);*/
-            // )
-        });
-    }, [sortedPositions]);
     useEffect(() => {
         if (message.includes('0x')) {
             const hashMsg = message.split(' ').find((item) => item.includes('0x'));
@@ -67,6 +49,23 @@ export default function PositionBox(props: PositionBoxProps) {
             setPosition(undefined);
         }
     }, [message]);
+
+    useEffect(() => {
+        if (message.includes('0x')) {
+            const hashMsg = message.split(' ').find((item) => item.includes('0x'));
+            setSPosition(
+                sortedPositions.find((item: PositionIF) => item.positionStorageSlot === hashMsg),
+            );
+        } else {
+            setSPosition(undefined);
+        }
+    }, [message]);
+
+    const sSideType = sPositions ? 'Range' : '';
+
+    function financial(x: any) {
+        return Number.parseFloat(x).toFixed(2);
+    }
 
     const sideType =
         position &&
@@ -80,7 +79,15 @@ export default function PositionBox(props: PositionBoxProps) {
             : 'Buy');
 
     useEffect(() => {
-        if (position) {
+        if (sPositions) {
+            setMinPrice(sPositions?.lowRangeDisplayInBase);
+            setMaxPrice(sPositions?.highRangeDisplayInBase);
+            setApy(sPositions.apy);
+        }
+    }, [sPositions]);
+
+    useEffect(() => {
+        if (position !== undefined) {
             if (position.entityType === 'limitOrder') {
                 if (position.limitPriceDecimalCorrected && position.invLimitPriceDecimalCorrected) {
                     const priceDecimalCorrected = position.limitPriceDecimalCorrected;
@@ -121,9 +128,12 @@ export default function PositionBox(props: PositionBoxProps) {
                         ? getUnicodeCharacter(position.baseSymbol)
                         : '' + nonInvertedPriceTruncated;
 
-                    setTruncatedDisplayPrice(truncatedDisplayPrice);
+                    setTruncatedDisplayPrice(
+                        financial(position.askTickPriceDecimalCorrected).toString(),
+                    );
                 }
             } else {
+                console.error(position);
                 if (position.priceDecimalCorrected && position.invPriceDecimalCorrected) {
                     const priceDecimalCorrected = position.priceDecimalCorrected;
                     const invPriceDecimalCorrected = position.invPriceDecimalCorrected;
@@ -169,7 +179,29 @@ export default function PositionBox(props: PositionBoxProps) {
         }
     }, [position]);
 
-    return position ? (
+    function getPositionAdress() {
+        if (position) {
+            return trimString(position.tx, 6, 4, '…');
+        }
+
+        if (sPositions) {
+            return trimString(sPositions.positionStorageSlot, 6, 4, '…');
+        }
+    }
+    const snackbarContent = (
+        <SnackbarComponent
+            severity='info'
+            setOpenSnackbar={setOpenSnackbar}
+            openSnackbar={openSnackbar}
+        >
+            {trimString(message, 6, 4, '…')} copied
+        </SnackbarComponent>
+    );
+    function handleCopyAddress() {
+        copy(message);
+        setOpenSnackbar(true);
+    }
+    return position !== undefined ? (
         <motion.div
             className={styles.animate_position_box}
             key='content'
@@ -189,18 +221,19 @@ export default function PositionBox(props: PositionBoxProps) {
                             {position.quoteSymbol} / {position.baseSymbol}
                         </div>
                         <div className={styles.address_box}>
-                            <span className={styles.address}>
-                                {trimString(position.tx, 6, 4, '…')}
-                            </span>
+                            <span className={styles.address}>{getPositionAdress()}</span>
                             <span>
                                 <HiOutlineExternalLink size={22} color='rgba(235, 235, 255, 0.4)' />
+                            </span>
+                            <span>
+                                <FiCopy onClick={handleCopyAddress} />
                             </span>
                         </div>
                     </div>
                     <div className={styles.position_info}>
                         <span className={styles.tokens_name}>{sideType} Price</span>
 
-                        <span className={styles.price}>{truncatedDisplayPrice}</span>
+                        <span className={styles.price}>${truncatedDisplayPrice}</span>
                     </div>
                     {isPoolPriceChangePositive ? (
                         <>
@@ -226,6 +259,49 @@ export default function PositionBox(props: PositionBoxProps) {
                     ) : (
                         <></>
                     )}
+                </div>
+                {snackbarContent}
+            </div>
+        </motion.div>
+    ) : sPositions ? (
+        <motion.div
+            className={styles.animate_position_box}
+            key='content'
+            initial='collapsed'
+            animate='open'
+            exit='collapsed'
+            variants={{
+                open: { opacity: 1, height: 'auto' },
+                collapsed: { opacity: 0, height: 0 },
+            }}
+            transition={{ duration: 0.8, ease: [0.04, 0.62, 0.23, 0.98] }}
+        >
+            <div className={styles.position_main_box}>
+                {snackbarContent}
+                <div className={styles.position_box}>
+                    <div className={styles.position_info}>
+                        <div className={styles.tokens_name}>
+                            {sPositions.quoteSymbol} / {sPositions.baseSymbol}
+                        </div>
+                        <div className={styles.address_box}>
+                            <span className={styles.address}>{getPositionAdress()}</span>
+                            <span>
+                                <HiOutlineExternalLink size={22} color='rgba(235, 235, 255, 0.4)' />
+                            </span>
+                            <span>
+                                <FiCopy onClick={handleCopyAddress} />
+                            </span>
+                        </div>
+                    </div>
+                    <div className={styles.position_info}>
+                        <span className={styles.tokens_name}>Range</span>
+                        <span className={styles.tokens_min_price}>${minPrice}</span>
+                        <span className={styles.tokens_max_price}>${maxPrice}</span>
+                    </div>
+                    <div className={styles.position_info}>
+                        <span className={styles.tokens_name}>APY</span>
+                        <span className={styles.tokens_apy}>{financial(apy)}%</span>
+                    </div>
                 </div>
             </div>
         </motion.div>
