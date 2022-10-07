@@ -20,18 +20,19 @@ interface SidebarLimitOrdersCardProps {
     setOutsideControl: Dispatch<SetStateAction<boolean>>;
 }
 export default function SidebarLimitOrdersCard(props: SidebarLimitOrdersCardProps) {
+    // const location = useLocation();
+
     const {
         tokenMap,
         order,
-        // setOutsideControl,
-        // setSelectedOutsideTab,
-        isDenomBase
+        setIsShowAllEnabled,
+        setOutsideControl,
+        setCurrentPositionActive,
+        setSelectedOutsideTab,
+        isDenomBase,
     } = props;
 
-    const navigate = useNavigate();
-
     if (order.positionLiq === 0) return null;
-
 
     const baseId = order.base + '_' + order.chainId;
     const quoteId = order.quote + '_' + order.chainId;
@@ -39,10 +40,6 @@ export default function SidebarLimitOrdersCard(props: SidebarLimitOrdersCardProp
     const baseToken = tokenMap ? tokenMap.get(baseId.toLowerCase()) : null;
     const quoteToken = tokenMap ? tokenMap.get(quoteId.toLowerCase()) : null;
 
-    // const location = useLocation();
-    // const dispatch = useAppDispatch();
-    // const onTradeRoute = location.pathname.includes('trade');
-    // const onAccountRoute = location.pathname.includes('account');
     // const onTradeRoute = location.pathname.includes('trade');
     // const onAccountRoute = location.pathname.includes('account');
 
@@ -127,10 +124,13 @@ export default function SidebarLimitOrdersCard(props: SidebarLimitOrdersCardProp
         return locationSlug + '/chain=0x5&tokenA=' + order.base + '&tokenB=' + order.quote;
     }, [pathname]);
 
+    const navigate = useNavigate();
+
     function handleLimitOrderClick() {
-        // PLEASE SAVE DISABLED CODE -Emily
-        // setOutsideControl(true);
-        // setSelectedOutsideTab(tabToSwitchToBasedOnRoute);
+        setOutsideControl(true);
+        setSelectedOutsideTab(1);
+        setCurrentPositionActive(order.limitOrderIdentifier);
+        setIsShowAllEnabled(false);
         // if (baseToken) dispatch(setTokenA(baseToken));
         // if (quoteToken) dispatch(setTokenB(quoteToken));
         navigate(linkPath);

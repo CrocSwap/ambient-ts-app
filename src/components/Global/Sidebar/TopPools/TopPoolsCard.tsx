@@ -13,23 +13,18 @@ interface TopPoolsCardProps {
 export default function TopPoolsCard(props: TopPoolsCardProps) {
     const { pool, lastBlockNumber } = props;
 
-    const { pathname } = useLocation();
+    const location = useLocation();
 
     const locationSlug = useMemo(() => {
-        if (
-            pathname.startsWith('/trade/market') ||
-            pathname.startsWith('/account')
-        ) {
+        const { pathname } = location;
+        if (pathname.startsWith('/trade/market')) {
             return '/trade/market';
         } else if (pathname.startsWith('/trade/limit')) {
             return '/trade/limit';
         } else if (pathname.startsWith('/trade/range')) {
             return '/trade/range';
-        } else {
-            console.warn('Could not identify the correct URL path for redirect. Using /trade/market as a fallback value. Refer to TopPoolsCard.tsx for troubleshooting.');
-            return '/trade/market';
-        };
-    }, [pathname]);
+        }
+    }, [location]);
 
     const [poolVolume, setPoolVolume] = useState<string | undefined>();
     const [poolTvl, setPoolTvl] = useState<string | undefined>();
