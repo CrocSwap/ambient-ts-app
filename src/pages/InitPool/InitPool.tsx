@@ -10,7 +10,7 @@ import ChooseTokens from '../../components/InitPool/ChooseTokens/ChooseTokens';
 import SetPoolFees from '../../components/InitPool/SetPoolFees/SetPoolFees';
 import SetInitialLiquidity from '../../components/InitPool/SetInitialLiquidity/SetInitialLiquidity';
 import ConfirmPoolCreation from '../../components/InitPool/ConfirmPoolCreation/ConfirmPoolCreation';
-
+import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 const animationsNext = {
     initial: { opacity: 0, x: 30 },
     animate: { opacity: 1, x: 0 },
@@ -28,6 +28,10 @@ interface InitPoolPropsIf {
 export default function InitPool(props: InitPoolPropsIf) {
     const { showSidebar } = props;
     const newPoolData = useUrlParams();
+    const tradeData = useAppSelector((state) => state.tradeData);
+
+    const tokenA = tradeData.tokenA;
+    const tokenB = tradeData.tokenB;
     console.log(newPoolData);
     const [progressStep, setProgressStep] = useState(0);
     const [animation, setAnimation] = useState(animationsNext);
@@ -37,12 +41,16 @@ export default function InitPool(props: InitPoolPropsIf) {
     };
     const setInitialLiquidityProps = {
         animation: animation,
+        tokenA: tokenA,
+        tokenB: tokenB,
     };
     const confirmPoolCreationProps = {
         animation: animation,
     };
     const chooseTokensProps = {
         animation: animation,
+        tokenA: tokenA,
+        tokenB: tokenB,
     };
 
     const progressStepsData = [

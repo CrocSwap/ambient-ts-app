@@ -1,6 +1,7 @@
 import styles from './SetPoolFees.module.css';
 import { motion } from 'framer-motion';
-
+import { useState } from 'react';
+import Toggle2 from '../../Global/Toggle/Toggle2';
 interface SetPoolFeesPropsIF {
     animation: {
         initial: {
@@ -19,8 +20,24 @@ interface SetPoolFeesPropsIF {
 }
 export default function SetPoolFees(props: SetPoolFeesPropsIF) {
     const { animation } = props;
+    const [fee, setFee] = useState('0.3');
+    const [ambientControl, setAmbientControl] = useState(false);
 
-    console.log(animation);
+    const preset1 = '0.1';
+    const preset2 = '0.3';
+    const preset3 = '0.5';
+
+    const allowAmbientControl = (
+        <div className={styles.ambient_control}>
+            <p>Allow Ambient Finance to manage fees</p>
+            <Toggle2
+                id='allow_ambi_man_fees'
+                isOn={ambientControl}
+                handleToggle={() => setAmbientControl(!ambientControl)}
+            />
+        </div>
+    );
+
     return (
         <motion.div
             variants={animation}
@@ -29,12 +46,30 @@ export default function SetPoolFees(props: SetPoolFeesPropsIF) {
             exit='exit'
             transition={{ duration: 0.2 }}
         >
-            <h1>SET POOL FEES</h1>
-            Lorem ipsum dolor sit amet consectetur, adipisicing elit. Cum necessitatibus suscipit
-            iusto et officiis nisi sapiente facere recusandae neque sint quis dignissimos cupiditate
-            omnis praesentium earum veniam, ea fugiat repellat unde molestiae possimus, minus libero
-            consequatur. Eveniet est animi vero tempore reiciendis odit et, ab consequatur
-            aspernatur amet quod eaque?
+            <div className={styles.slippage_tolerance_container}>
+                <div className={styles.slippage_title}>Initial pool fee (%)</div>
+                <p className={styles.help_guide}>
+                    0.30% is best for most weighted pools with established tokens. Go higher for
+                    more exotic tokens.
+                </p>
+                <div className={styles.slippage_box}>
+                    <div className={styles.slippage_content}>
+                        <div className={styles.input_container}>
+                            <input
+                                id='slippage_tolerance_input_field'
+                                onChange={(e) => setFee(e.target.value)}
+                                type='text'
+                                value={fee}
+                                placeholder={'slippage'}
+                            />
+                        </div>
+                        <button onClick={() => setFee(preset1)}>{preset1}%</button>
+                        <button onClick={() => setFee(preset2)}>{preset2}%</button>
+                        <button onClick={() => setFee(preset3)}>{preset3}%</button>
+                    </div>
+                </div>
+                {allowAmbientControl}
+            </div>
         </motion.div>
     );
 }

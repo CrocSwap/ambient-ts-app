@@ -1,6 +1,5 @@
 import styles from './ChooseTokens.module.css';
 import { motion } from 'framer-motion';
-import { useAppDispatch, useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { TokenIF } from '../../../utils/interfaces/TokenIF';
 import { FiInfo } from 'react-icons/fi';
 interface chooseTokensPropsIF {
@@ -18,6 +17,9 @@ interface chooseTokensPropsIF {
             x: number;
         };
     };
+
+    tokenA: TokenIF;
+    tokenB: TokenIF;
 }
 
 interface TokenAndWeightPropsIF {
@@ -40,11 +42,7 @@ function TokenAndWeightDisplay(props: TokenAndWeightPropsIF) {
     );
 }
 export default function ChooseTokens(props: chooseTokensPropsIF) {
-    const tradeData = useAppSelector((state) => state.tradeData);
-
-    const tokenA = tradeData.tokenA;
-    const tokenB = tradeData.tokenB;
-    console.log(tokenA);
+    const { tokenA, tokenB } = props;
     const { animation } = props;
     return (
         <motion.div

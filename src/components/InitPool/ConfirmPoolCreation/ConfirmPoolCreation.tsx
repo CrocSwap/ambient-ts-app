@@ -27,13 +27,12 @@ export default function ConfirmPoolCreation(props: confirmPoolCreationPropsIF) {
             animate='animate'
             exit='exit'
             transition={{ duration: 0.2 }}
+            className={styles.container}
         >
-            <h1>CONFIRM POOL CREATION</h1>
-            Lorem ipsum dolor sit amet consectetur, adipisicing elit. Cum necessitatibus suscipit
-            iusto et officiis nisi sapiente facere recusandae neque sint quis dignissimos cupiditate
-            omnis praesentium earum veniam, ea fugiat repellat unde molestiae possimus, minus libero
-            consequatur. Eveniet est animi vero tempore reiciendis odit et, ab consequatur
-            aspernatur amet quod eaque?
+            <p>
+                Currently deciding whether this is needed or if it should be replace with a Confirm
+                Pool Modal
+            </p>
         </motion.div>
     );
 }

@@ -1,6 +1,6 @@
 import styles from './InitPoolSteps.module.css';
-import { useState, Dispatch, SetStateAction } from 'react';
-import { act } from 'react-dom/test-utils';
+import { Dispatch, SetStateAction } from 'react';
+
 import { GiCheckMark } from 'react-icons/gi';
 interface InitPoolStepsPropsIF {
     progressStepsData: {
@@ -63,7 +63,11 @@ function Step(props: InitStepPropsIF) {
     );
 }
 export default function InitPoolSteps(props: InitPoolStepsPropsIF) {
-    const { progressStepsData, progressStep, setProgressStep, handleChangeStep } = props;
+    const {
+        progressStepsData,
+        progressStep,
+        // setProgressStep, handleChangeStep
+    } = props;
 
     const stepsDisplay = (
         <div className={styles.steps_display_container}>
