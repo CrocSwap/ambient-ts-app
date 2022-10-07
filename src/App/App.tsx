@@ -54,6 +54,7 @@ import TermsOfService from '../pages/TermsOfService/TermsOfService';
 import TestPage from '../pages/TestPage/TestPage';
 import NotFound from '../pages/NotFound/NotFound';
 import Trade from '../pages/Trade/Trade';
+import InitPool from '../pages/InitPool/InitPool';
 import Reposition from '../pages/Trade/Reposition/Reposition';
 import SidebarFooter from '../components/Global/SIdebarFooter/SidebarFooter';
 
@@ -573,6 +574,30 @@ export default function App() {
         dataTokenA: tradeData.tokenA,
         dataTokenB: tradeData.tokenB,
     };
+
+    // value for whether a pool exists on current chain and token pair
+    const [poolExists, setPoolExists] = useState(false);
+    useEffect(() => console.log({ poolExists }), [poolExists]);
+
+    // hook to update `poolExists` when crocEnv changes
+    useEffect(() => {
+        if (crocEnv) {
+            // token pair has an initialized pool on-chain
+            // returns a promise object
+            const doesPoolExist = crocEnv
+                .pool(tokenPair.dataTokenA.address, tokenPair.dataTokenB.address)
+                .isInit();
+            // resolve the promise object to see if pool exists
+            Promise.resolve(doesPoolExist)
+                // track whether pool exists on state (can be undefined)
+                .then((res) => setPoolExists(res ?? false));
+        } else {
+            // set pool exists to false if there is no env
+            setPoolExists(false);
+        }
+        // run every time crocEnv updates
+        // this indirectly tracks a new chain being used
+    }, [crocEnv, tokenPair]);
 
     const tokenPairStringified = useMemo(() => JSON.stringify(tokenPair), [tokenPair]);
 
@@ -1435,14 +1460,6 @@ export default function App() {
 
     const graphData = useAppSelector((state) => state.graphData);
 
-    // const getSwapData = async (swap: ITransaction): Promise<ITransaction> => {
-    //     return swap;
-    // };
-
-    // const getCandleData = async (candle: CandleData): Promise<CandleData> => {
-    //     return candle;
-    // };
-
     useEffect(() => {
         if (isUserLoggedIn && account) {
             const userPositionsCacheEndpoint = httpGraphCacheServerDomain + '/user_positions?';
@@ -1707,6 +1724,7 @@ export default function App() {
         indicateActiveTokenListsChanged: indicateActiveTokenListsChanged,
         openModalWallet: openModalWallet,
         isInitialized: isInitialized,
+        poolExists: poolExists,
     };
 
     // props for <Swap/> React element on trade route
@@ -1739,6 +1757,7 @@ export default function App() {
         indicateActiveTokenListsChanged: indicateActiveTokenListsChanged,
         openModalWallet: openModalWallet,
         isInitialized: isInitialized,
+        poolExists: poolExists,
     };
 
     // props for <Limit/> React element on trade route
@@ -1773,6 +1792,7 @@ export default function App() {
 
         openGlobalModal: openGlobalModal,
         closeGlobalModal: closeGlobalModal,
+        poolExists: poolExists,
 
         // limitRate: limitRate,
         // setLimitRate: setLimitRate,
@@ -1809,6 +1829,8 @@ export default function App() {
         ambientApy: ambientApy,
 
         openGlobalModal: openGlobalModal,
+
+        poolExists: poolExists,
     };
 
     function toggleSidebar() {
@@ -1837,13 +1859,13 @@ export default function App() {
     //     }
     // }
 
-    useEffect(() => {
-        if (location.pathname.includes('account') || location.pathname.includes('analytics')) {
-            setShowSidebar(false);
-        }
+    // useEffect(() => {
+    //     if (location.pathname.includes('account') || location.pathname.includes('analytics')) {
+    //         setShowSidebar(false);
+    //     }
 
-        // handleTabChangedBasedOnRoute();
-    }, [location.pathname]);
+    //     // handleTabChangedBasedOnRoute();
+    // }, [location.pathname]);
 
     // market - /trade/market
     // limit - /trade/limit
@@ -2024,8 +2046,6 @@ export default function App() {
                                     expandTradeTable={expandTradeTable}
                                     setExpandTradeTable={setExpandTradeTable}
                                     tokenMap={tokenMap}
-                                    // setLimitRate={setLimitRate}
-                                    // limitRate={limitRate}
                                     favePools={favePools}
                                     addPoolToFaves={addPoolToFaves}
                                     removePoolFromFaves={removePoolFromFaves}
@@ -2044,6 +2064,7 @@ export default function App() {
                                     }}
                                     limitRate={''}
                                     importedTokens={importedTokens}
+                                    poolExists={poolExists}
                                 />
                             }
                         >
@@ -2082,7 +2103,7 @@ export default function App() {
                         />
 
                         <Route path='range2' element={<Range {...rangeProps} />} />
-
+                        <Route path='initpool/:params' element={<InitPool />} />
                         <Route
                             path='account'
                             element={

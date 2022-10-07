@@ -106,8 +106,9 @@ export default function PoolCard(props: PoolCardProps) {
 
     const poolIndex = lookupChain(chainId).poolIndex;
 
-    useEffect(() => {
+    const fetchPoolStats = () => {
         (async () => {
+            console.log('fetching fresh pool stats ');
             if (tokenAAddress && tokenBAddress && poolIndex && chainId) {
                 const poolStats = await getPoolStatsFresh(
                     chainId,
@@ -172,7 +173,20 @@ export default function PoolCard(props: PoolCardProps) {
                 }
             }
         })();
-    }, [tokenAAddress, tokenBAddress, lastBlockNumber]);
+    };
+
+    useEffect(() => {
+        fetchPoolStats();
+
+        const timerId = setInterval(() => {
+            fetchPoolStats();
+        }, 60000);
+
+        // after 10 minutes stop
+        setTimeout(() => {
+            clearInterval(timerId);
+        }, 600000);
+    }, []);
 
     const tokenImagesDisplay = (
         <div className={styles.token_images}>

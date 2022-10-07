@@ -22,6 +22,7 @@ interface SidebarRecentTransactionsPropsIF {
     setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
     outsideControl: boolean;
     setOutsideControl: Dispatch<SetStateAction<boolean>>;
+    isUserLoggedIn: boolean;
 }
 
 export default function SidebarRecentTransactions(props: SidebarRecentTransactionsPropsIF) {
@@ -35,7 +36,7 @@ export default function SidebarRecentTransactions(props: SidebarRecentTransactio
         setCurrentTxActiveInTransactions,
         isShowAllEnabled,
         setIsShowAllEnabled,
-
+        isUserLoggedIn,
         expandTradeTable,
     } = props;
 
@@ -89,7 +90,7 @@ export default function SidebarRecentTransactions(props: SidebarRecentTransactio
                     />
                 ))}
             </div>
-            {!expandTradeTable && (
+            {!expandTradeTable && isUserLoggedIn && (
                 <div className={styles.view_more} onClick={handleViewMoreClick}>
                     View More
                 </div>
