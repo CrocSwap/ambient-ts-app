@@ -25,11 +25,17 @@ export default function SidebarLimitOrders(props: SidebarLimitOrdersProps) {
         limitOrderByUser,
         tokenMap,
         isDenomBase,
-        setCurrentPositionActive,
-        setIsShowAllEnabled,
         isUserLoggedIn,
+        outsideControl,
+        setOutsideControl,
+        selectedOutsideTab,
+        setSelectedOutsideTab,
+        // expandTradeTable,
+        setExpandTradeTable,
+        setIsShowAllEnabled,
+        setCurrentPositionActive,
     } = props;
-    const location = useLocation();
+    const { pathname } = useLocation();
     const navigate = useNavigate();
     const header = (
         <div className={styles.header}>
@@ -39,18 +45,8 @@ export default function SidebarLimitOrders(props: SidebarLimitOrdersProps) {
         </div>
     );
 
-    const sidebarLimitOrderCardProps = {
-        tokenMap: tokenMap,
-        selectedOutsideTab: props.selectedOutsideTab,
-        setSelectedOutsideTab: props.setSelectedOutsideTab,
-        outsideControl: props.outsideControl,
-        setOutsideControl: props.setOutsideControl,
-        setCurrentPositionActive: setCurrentPositionActive,
-        setIsShowAllEnabled: setIsShowAllEnabled,
-    };
-
-    const onTradeRoute = location.pathname.includes('trade');
-    const onAccountRoute = location.pathname.includes('account');
+    const onTradeRoute = pathname.startsWith('/trade');
+    const onAccountRoute = pathname.startsWith('/account');
 
     const tabToSwitchToBasedOnRoute = onTradeRoute ? 1 : onAccountRoute ? 3 : 1;
     function redirectBasedOnRoute() {
@@ -61,12 +57,12 @@ export default function SidebarLimitOrders(props: SidebarLimitOrdersProps) {
 
     const handleViewMoreClick = () => {
         redirectBasedOnRoute();
-        props.setOutsideControl(true);
-        props.setSelectedOutsideTab(tabToSwitchToBasedOnRoute);
-
-        props.setIsShowAllEnabled(false);
-        props.setExpandTradeTable(true);
+        setOutsideControl(true);
+        setSelectedOutsideTab(tabToSwitchToBasedOnRoute);
+        setIsShowAllEnabled(true);
+        setExpandTradeTable(true);
     };
+console.log(limitOrderByUser);
     return (
         <div className={styles.container}>
             {header}
@@ -77,9 +73,16 @@ export default function SidebarLimitOrders(props: SidebarLimitOrdersProps) {
                             key={idx}
                             isDenomBase={isDenomBase}
                             order={order}
-                            {...sidebarLimitOrderCardProps}
+                            tokenMap={tokenMap}
+                            selectedOutsideTab={selectedOutsideTab}
+                            setSelectedOutsideTab={setSelectedOutsideTab}
+                            outsideControl={outsideControl}
+                            setOutsideControl={setOutsideControl}
+                            setCurrentPositionActive={setCurrentPositionActive}
+                            setIsShowAllEnabled={setIsShowAllEnabled}
                         />
-                    ))}
+                    ))
+                }
             </div>
             {!props.expandTradeTable && isUserLoggedIn && (
                 <div className={styles.view_more} onClick={handleViewMoreClick}>
