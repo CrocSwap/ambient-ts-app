@@ -1722,29 +1722,25 @@ export default function Chart(props: ChartData) {
                             )
                             .style('left', event.offsetX - 40 + 'px');
 
-                        // const filtered =
-                        //     liquidityData.liqData.length > 1
-                        //         ? liquidityData.liqData.filter(
-                        //               (d: any) => d.upperBoundPriceDecimalCorrected != null,
-                        //           )
-                        //         : liquidityData.liqData;
+                        const filtered =
+                            liquidityData.liqData.length > 1
+                                ? liquidityData.liqData.filter(
+                                      (d: any) => d.upperBoundPriceDecimalCorrected != null,
+                                  )
+                                : liquidityData.liqData;
 
-                        // const nearest = filtered.reduce(function (prev: any, curr: any) {
-                        //     return Math.abs(
-                        //         curr.upperBoundPriceDecimalCorrected -
-                        //             scaleData.yScale.invert(event.offsetY),
-                        //     ) <
-                        //         Math.abs(
-                        //             prev.upperBoundPriceDecimalCorrected -
-                        //                 scaleData.yScale.invert(event.offsetY),
-                        //         )
-                        //         ? curr
-                        //         : prev;
-                        // });
-
-                        const nearest = {
-                            upperBoundPriceDecimalCorrected: scaleData.yScale.invert(event.offsetY),
-                        };
+                        const nearest = filtered.reduce(function (prev: any, curr: any) {
+                            return Math.abs(
+                                curr.upperBoundPriceDecimalCorrected -
+                                    scaleData.yScale.invert(event.offsetY),
+                            ) <
+                                Math.abs(
+                                    prev.upperBoundPriceDecimalCorrected -
+                                        scaleData.yScale.invert(event.offsetY),
+                                )
+                                ? curr
+                                : prev;
+                        });
 
                         d3.select(event.currentTarget)
                             .selectAll('.horizontal  > path')
@@ -1752,13 +1748,13 @@ export default function Chart(props: ChartData) {
                             .style('fill', (d: any) => {
                                 if (
                                     currentPriceData[0].value > d.upperBoundPriceDecimalCorrected &&
-                                    d.upperBoundPriceDecimalCorrected >
+                                    d.upperBoundPriceDecimalCorrected >=
                                         nearest.upperBoundPriceDecimalCorrected
                                 ) {
                                     return 'rgba(205, 193, 255, 0.8)';
                                 } else if (
                                     currentPriceData[0].value < d.upperBoundPriceDecimalCorrected &&
-                                    d.upperBoundPriceDecimalCorrected <
+                                    d.upperBoundPriceDecimalCorrected <=
                                         nearest.upperBoundPriceDecimalCorrected
                                 ) {
                                     return 'rgba(115, 113, 252, 0.8)';
