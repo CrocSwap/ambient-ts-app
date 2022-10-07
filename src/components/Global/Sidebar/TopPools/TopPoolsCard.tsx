@@ -53,14 +53,15 @@ export default function TopPoolsCard(props: TopPoolsCardProps) {
     useEffect(() => {
         fetchPoolStats();
 
+        // fetch every minute
         const timerId = setInterval(() => {
             fetchPoolStats();
         }, 60000);
 
-        // after 10 minutes stop
+        // after 1 hour stop
         setTimeout(() => {
             clearInterval(timerId);
-        }, 600000);
+        }, 3600000);
 
         // clear interval when component unmounts
         return () => clearInterval(timerId);

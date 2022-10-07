@@ -100,14 +100,15 @@ export default function TopTokensCard(props: TopTokensCardProps) {
     useEffect(() => {
         fetchPoolPriceChange();
 
+        // fetch every minute
         const timerId = setInterval(() => {
             fetchPoolPriceChange();
         }, 60000);
 
-        // after 10 minutes stop
+        // after 1 hour stop
         setTimeout(() => {
             clearInterval(timerId);
-        }, 600000);
+        }, 3600000);
 
         // clear interval when component unmounts
         return () => clearInterval(timerId);
