@@ -11,6 +11,8 @@ import SetPoolFees from '../../components/InitPool/SetPoolFees/SetPoolFees';
 import SetInitialLiquidity from '../../components/InitPool/SetInitialLiquidity/SetInitialLiquidity';
 import ConfirmPoolCreation from '../../components/InitPool/ConfirmPoolCreation/ConfirmPoolCreation';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
+import { useNavigate } from 'react-router-dom';
+
 const animationsNext = {
     initial: { opacity: 0, x: 30 },
     animate: { opacity: 1, x: 0 },
@@ -32,6 +34,8 @@ export default function InitPool(props: InitPoolPropsIf) {
 
     const tokenA = tradeData.tokenA;
     const tokenB = tradeData.tokenB;
+    // eslint-disable-next-line
+    const navigate = useNavigate();
     console.log(newPoolData);
     const [progressStep, setProgressStep] = useState(0);
     const [animation, setAnimation] = useState(animationsNext);
