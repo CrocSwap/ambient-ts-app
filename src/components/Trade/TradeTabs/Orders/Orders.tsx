@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { useEffect, useMemo, useState } from 'react';
+import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
 
 // START: Import JSX Elements
 import styles from './Orders.module.css';
@@ -16,7 +16,7 @@ import {
 import { fetchPoolLimitOrderStates } from '../../../../App/functions/fetchPoolLimitOrderStates';
 import { ChainSpec } from '@crocswap-libs/sdk';
 import useWebSocket from 'react-use-websocket';
-import OrderAccordions from './OrderAccordions/OrderAccordions';
+// import OrderAccordions from './OrderAccordions/OrderAccordions';
 
 // interface for props for react functional component
 interface propsIF {
@@ -25,11 +25,23 @@ interface propsIF {
     account: string;
     graphData: graphData;
     isShowAllEnabled: boolean;
+    openGlobalModal: (content: React.ReactNode) => void;
+    closeGlobalModal: () => void;
+    currentPositionActive: string;
+    setCurrentPositionActive: Dispatch<SetStateAction<string>>;
 }
 
 // main react functional component
 export default function Orders(props: propsIF) {
-    const { chainData, expandTradeTable, account, graphData, isShowAllEnabled } = props;
+    const {
+        chainData,
+        expandTradeTable,
+        account,
+        graphData,
+        isShowAllEnabled,
+        setCurrentPositionActive,
+        currentPositionActive,
+    } = props;
 
     const limitOrdersByUser = graphData.limitOrdersByUser.limitOrders;
     const limitOrdersByPool = graphData.limitOrdersByPool.limitOrders;
@@ -201,7 +213,7 @@ export default function Orders(props: propsIF) {
     }, [lastPoolLimitOrderChangeMessage]);
 
     const showAllOrUserPositions = isShowAllEnabled ? limitOrdersByPool : limitOrdersByUser;
-    const [expanded, setExpanded] = useState<false | number>(false);
+    // const [expanded, setExpanded] = useState<false | number>(false);
     const ItemContent = (
         <div className={styles.desktop_transaction_display_container}>
             {showAllOrUserPositions.map((order, idx) => (
@@ -212,6 +224,10 @@ export default function Orders(props: propsIF) {
                     isDenomBase={isDenomBase}
                     selectedBaseToken={selectedBaseToken}
                     selectedQuoteToken={selectedQuoteToken}
+                    openGlobalModal={props.openGlobalModal}
+                    closeGlobalModal={props.closeGlobalModal}
+                    currentPositionActive={currentPositionActive}
+                    setCurrentPositionActive={setCurrentPositionActive}
                 />
             ))}
         </div>
@@ -219,7 +235,7 @@ export default function Orders(props: propsIF) {
 
     const mobileAccordionDisplay = (
         <div className={styles.accordion_display_container}>
-            {showAllOrUserPositions.map((order, idx) => (
+            {/* {showAllOrUserPositions.map((order, idx) => (
                 <OrderAccordions
                     key={idx}
                     expanded={expanded}
@@ -227,7 +243,8 @@ export default function Orders(props: propsIF) {
                     i={idx}
                     limitOrder={order}
                 />
-            ))}
+            ))} */}
+            <p>Mobile Accordion here: Disabled for now</p>
         </div>
     );
 

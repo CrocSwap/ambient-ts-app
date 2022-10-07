@@ -14,7 +14,7 @@ export default function Order(props: OrderTabPropsIF) {
     const ItemContent = (
         <div className={styles.item_container}>
             {orders.map((order, idx) => (
-                <OrderCard limitOrder={order} key={idx} />
+                <OrderCard limitOrder={order} key={idx} isDenomBase={true} />
             ))}
         </div>
     );

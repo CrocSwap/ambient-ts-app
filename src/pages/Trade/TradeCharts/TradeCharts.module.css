@@ -19,11 +19,9 @@
     flex-direction: row;
     gap: 7px;
     cursor: pointer;
-
-    
 }
 
-.tokens_images img{
+.tokens_images img {
     width: 18px;
 }
 .tokens_name {
@@ -324,10 +322,10 @@
     color: rgba(235, 235, 255, 0.4);
 }
 
-@media only screen and (min-device-width: 320px) and (max-device-width: 568px) and (-webkit-min-device-pixel-ratio: 2) {
+@media only screen and (min-device-width: 200px) and (max-device-width: 568px) and (-webkit-min-device-pixel-ratio: 2) {
     .graph_container {
         /* display: none; */
-        margin-bottom: 35px;
+        margin-bottom: 15px;
     }
 
     .chart_image,
@@ -337,14 +335,13 @@
     }
 }
 
-@media (min-width: 720px) {
+@media (min-width: 680px) {
     .tokens_name {
-      font-weight: 300;
+        font-weight: 300;
         font-size: var(--header1-size);
         line-height: var(--header1-lh);
-     
     }
-    .tokens_images img{
+    .tokens_images img {
         width: 30px;
     }
     .middle_content_style {
@@ -371,11 +368,7 @@
     }
 }
 
-
-
-
-
-@media (min-width: 940px) {
+@media (min-width: 680px) {
     .graph_settings_container {
         width: 100%;
         display: flex;

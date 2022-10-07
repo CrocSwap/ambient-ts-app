@@ -1,4 +1,4 @@
-.container{
+.container {
     width: 100%;
     height: 100%;
     position: absolute;
@@ -12,92 +12,88 @@
     padding: 1rem 2rem;
 }
 
-.container , .nft_modal_container img{
+.container,
+.nft_modal_container img {
     width: 65px;
     height: 65px;
     border-radius: 8px;
     cursor: pointer;
 }
- .no_image{
+.no_image {
     width: 65px;
     height: 65px;
     background: var(--dark1);
-  
+
     border-radius: 8px;
     cursor: pointer;
 }
 
-.content{
+.content {
     display: flex;
     justify-content: center;
-
 }
 
-.settings_container{
-    
+.settings_container {
     display: flex;
     flex-direction: column;
 
     width: 306px;
-
 }
 
-.settings_container section{
+.settings_container section {
     display: flex;
     flex-direction: column;
     gap: 1rem;
 }
 
-.content h3{
+.content h3 {
     font-weight: 300;
-font-size: 24px;
-line-height: 30px;
-color: var(--text-grey-white);
+    font-size: 24px;
+    line-height: 30px;
+    color: var(--text-grey-white);
 }
-.back_button{
+.back_button {
     cursor: pointer;
 }
 
-.row{
+.row {
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
 }
 
-.row input{
-    padding: 2px 10px 2px 4px; 
+.row input {
+    padding: 2px 10px 2px 4px;
     height: 40px;
     width: 222px;
 
     border-radius: 4px;
-    background: #242F3F;
+    background: #242f3f;
     outline: none;
     border: none;
     text-align: end;
     color: var(--text-grey-white);
 }
 
-.nft_container{
+.nft_container {
     display: flex;
     flex-direction: row;
     align-items: center;
     gap: 8px;
 }
 
-
 .settings_container .save_button {
     width: 100%;
     height: 25px;
     margin: 1rem 0;
 
-   
     font-size: 16px;
 
     line-height: 24px;
 
-border-radius: 4px;
-  
+    border-radius: 4px;
+
     cursor: pointer;
     text-align: center;
 
@@ -129,7 +125,7 @@ border-radius: 4px;
 
 /* NFT MODAL------------------------------------*/
 
-.nft_modal_container{
+.nft_modal_container {
     width: 338px;
     height: 276px;
     overflow-y: scroll;
@@ -139,34 +135,29 @@ border-radius: 4px;
     align-items: center;
     gap: 1rem;
     flex-wrap: wrap;
-
 }
 
-.nft_modal_container h1{
+.nft_modal_container h1 {
     width: 100%;
     height: 100%;
-display: flex;
-justify-content: center;
-align-items: center;
-color: var(--text-grey-light)
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: var(--text-grey-light);
 }
 
 .nft_modal_container::-webkit-scrollbar {
-  
     display: none;
 }
 
-
 /* END OF NFT MODAL------------------------------------*/
 @media (min-width: 940px) {
-.container{
-    height: calc(100vh - 5.5rem);
-    width: 100%;
-}
-.content{
-    width: 100%;
-    /* height: calc(100vh - 5.5rem); */
-    
-}
-
+    .container {
+        height: calc(100vh - 5.5rem);
+        width: 100%;
+    }
+    .content {
+        width: 100%;
+        /* height: calc(100vh - 5.5rem); */
+    }
 }

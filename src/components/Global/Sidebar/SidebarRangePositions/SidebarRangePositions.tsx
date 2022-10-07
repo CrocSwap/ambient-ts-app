@@ -19,7 +19,7 @@ interface SidebarRangeProps {
 
     isShowAllEnabled: boolean;
     setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
-
+    isUserLoggedIn: boolean;
     expandTradeTable: boolean;
     setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
 }
@@ -35,6 +35,7 @@ export default function SidebarRangePositions(props: SidebarRangeProps) {
         currentPositionActive,
         setCurrentPositionActive,
         expandTradeTable,
+        isUserLoggedIn,
     } = props;
 
     const header = (
@@ -62,7 +63,7 @@ export default function SidebarRangePositions(props: SidebarRangeProps) {
         props.setSelectedOutsideTab(2);
         redirectBasedOnRoute();
 
-        props.setIsShowAllEnabled(true);
+        props.setIsShowAllEnabled(false);
         props.setExpandTradeTable(true);
     };
 
@@ -76,7 +77,7 @@ export default function SidebarRangePositions(props: SidebarRangeProps) {
         setCurrentPositionActive: setCurrentPositionActive,
         isShowAllEnabled: props.isShowAllEnabled,
         setIsShowAllEnabled: props.setIsShowAllEnabled,
-
+        isUserLoggedIn: isUserLoggedIn,
         tabToSwitchToBasedOnRoute: tabToSwitchToBasedOnRoute,
     };
 
@@ -94,7 +95,7 @@ export default function SidebarRangePositions(props: SidebarRangeProps) {
                         />
                     ))}
             </div>
-            {!expandTradeTable && (
+            {!expandTradeTable && isUserLoggedIn && (
                 <div className={styles.view_more} onClick={handleViewMoreClick}>
                     View More
                 </div>

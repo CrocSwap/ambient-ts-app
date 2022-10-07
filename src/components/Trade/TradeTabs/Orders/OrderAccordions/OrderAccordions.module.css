@@ -58,5 +58,39 @@
 }
 
 .status{
-    width: 50px;
+    width: 25px;
+  
 }
+
+.value, .type, .side, .price{
+    display: none;
+}
+
+@media only screen and (min-width: 768px) {
+    .value{
+        display: block;
+        width: 60px;
+    }
+    
+    }
+
+    @media only screen and (min-width: 968px) {
+        .type, .side{
+            display: block;
+            width: 40px;
+            word-wrap: break-word;
+            
+          
+        }
+        
+        }
+
+        @media only screen and (min-width: 1200px) {
+
+.price{
+    display: block;
+    width: 100px;
+    
+}
+
+        }

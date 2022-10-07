@@ -1,6 +1,6 @@
 // START: Import React and Dongles
 import { useCallback, useEffect, useState, Dispatch, SetStateAction } from 'react';
-import { Link } from 'react-router-dom';
+import { useLocation, Link } from 'react-router-dom';
 import { useMoralis } from 'react-moralis';
 import { useTranslation } from 'react-i18next';
 import { motion, AnimateSharedLayout } from 'framer-motion';
@@ -17,6 +17,7 @@ import styles from './PageHeader.module.css';
 import trimString from '../../../utils/functions/trimString';
 import ambientLogo from '../../../assets/images/logos/ambient_logo.svg';
 import { useModal } from '../../../components/Global/Modal/useModal';
+import { useUrlParams } from './useUrlParams';
 import MobileSidebar from '../../../components/Global/MobileSidebar/MobileSidebar';
 import NotificationCenter from '../../../components/Global/NotificationCenter/NotificationCenter';
 
@@ -40,6 +41,10 @@ interface HeaderPropsIF {
     openGlobalModal: (content: React.ReactNode) => void;
 
     closeGlobalModal: () => void;
+
+    isAppOverlayActive: boolean;
+
+    setIsAppOverlayActive: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function PageHeader(props: HeaderPropsIF) {
@@ -58,10 +63,28 @@ export default function PageHeader(props: HeaderPropsIF) {
         lastBlockNumber,
         isMobileSidebarOpen,
         setIsMobileSidebarOpen,
+        isAppOverlayActive,
+        setIsAppOverlayActive,
     } = props;
 
-    const { user, account, enableWeb3, isWeb3Enabled, isAuthenticated } = useMoralis();
+    const {
+        user,
+        account,
+        enableWeb3,
+        isAuthenticated,
+        // isWeb3EnableLoading,
+        // isInitialized,
+        // isInitializing,
+        // isUserUpdating,
+    } = useMoralis();
 
+    // console.log({ user });
+    // console.log({ isUserUpdating });
+    // console.log({ isInitialized });
+    // console.log({ isAuthenticated });
+    // console.log({ isInitializing });
+    // console.log({ isUserLoggedIn });
+    // console.log({ isWeb3EnableLoading });
     const { t } = useTranslation();
 
     const [isModalOpen, openModal, closeModal] = useModal();
@@ -73,6 +96,15 @@ export default function PageHeader(props: HeaderPropsIF) {
         </Modal>
     );
 
+    const [connectButtonDelayElapsed, setConnectButtonDelayElapsed] = useState(false);
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setConnectButtonDelayElapsed(true);
+        }, 3000);
+        return () => clearTimeout(timer);
+    }, []);
+
     const modalOrNull = isModalOpen ? mainModal : null;
 
     useEffect(() => {
@@ -83,6 +115,7 @@ export default function PageHeader(props: HeaderPropsIF) {
     }, [user, account, metamaskLocked]);
 
     const reenableWeb3 = useCallback(async () => {
+        // console.log('enabling web3');
         try {
             if (user && !account && !metamaskLocked) {
                 await enableWeb3();
@@ -116,6 +149,8 @@ export default function PageHeader(props: HeaderPropsIF) {
         clickLogout: clickLogout,
         openModal: openModal,
         chainId: chainId,
+        isAppOverlayActive: isAppOverlayActive,
+        setIsAppOverlayActive: setIsAppOverlayActive,
     };
 
     // End of Page Header Functions
@@ -128,7 +163,10 @@ export default function PageHeader(props: HeaderPropsIF) {
 
     // ----------------------------NAVIGATION FUNCTIONALITY-------------------------------------
 
-    const { pathname } = location;
+    const location = useLocation();
+
+    const urlParams = useUrlParams();
+
     const tradeDestination = location.pathname.includes('trade/market')
         ? '/trade/market'
         : location.pathname.includes('trade/limit')
@@ -141,8 +179,12 @@ export default function PageHeader(props: HeaderPropsIF) {
 
     const linkData = [
         { title: t('common:homeTitle'), destination: '/', shouldDisplay: true },
-        { title: t('common:swapTitle'), destination: '/swap', shouldDisplay: true },
-        { title: t('common:tradeTitle'), destination: tradeDestination, shouldDisplay: true },
+        { title: t('common:swapTitle'), destination: '/swap' + urlParams, shouldDisplay: true },
+        {
+            title: t('common:tradeTitle'),
+            destination: tradeDestination + urlParams,
+            shouldDisplay: true,
+        },
         { title: t('common:analyticsTitle'), destination: '/analytics', shouldDisplay: false },
         {
             title: t('common:accountTitle'),
@@ -164,14 +206,16 @@ export default function PageHeader(props: HeaderPropsIF) {
                     link.shouldDisplay ? (
                         <Link
                             className={
-                                pathname === link.destination ? styles.active : styles.inactive
+                                location.pathname === link.destination
+                                    ? styles.active
+                                    : styles.inactive
                             }
                             to={link.destination}
                             key={idx}
                         >
                             {link.title}
 
-                            {pathname === link.destination && (
+                            {location.pathname === link.destination && (
                                 <motion.div className={styles.underline} layoutId='underline' />
                             )}
                         </Link>
@@ -218,7 +262,7 @@ export default function PageHeader(props: HeaderPropsIF) {
                 />
                 <div className={styles.account}>
                     <NetworkSelector chainId={chainId} switchChain={switchChain} />
-                    {(!isAuthenticated || !isWeb3Enabled) && metamaskButton}
+                    {connectButtonDelayElapsed && !isUserLoggedIn && metamaskButton}
                     <Account {...accountProps} />
                     <NotificationCenter
                         showNotificationTable={showNotificationTable}
