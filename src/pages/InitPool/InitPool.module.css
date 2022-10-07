@@ -9,6 +9,14 @@
     background-size: cover;
 
     display: flex;
+    /* justify-content: center; */
+
+}
+
+.active_sidebar{
+    margin-left: 10rem;
+}
+.non_active_sidebar{
     justify-content: center;
 
 }
@@ -35,6 +43,7 @@
     font-size: var(--header2-size);
     line-height: var(--header2-lh);
     color: var(--text-grey-white);
+    text-transform: uppercase;
     text-align: center;
     padding: 0.5rem;
 }

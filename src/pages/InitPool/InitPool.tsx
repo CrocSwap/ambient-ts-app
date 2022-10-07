@@ -12,30 +12,75 @@ import ChooseTokens from '../../components/InitPool/ChooseTokens/ChooseTokens';
 import SetPoolFees from '../../components/InitPool/SetPoolFees/SetPoolFees';
 import SetInitialLiquidity from '../../components/InitPool/SetInitialLiquidity/SetInitialLiquidity';
 import ConfirmPoolCreation from '../../components/InitPool/ConfirmPoolCreation/ConfirmPoolCreation';
-export default function InitPool() {
+
+const animationsNext = {
+    initial: { opacity: 0, x: 30 },
+    animate: { opacity: 1, x: 0 },
+    exit: { opacity: 0, x: -100 },
+};
+const animationsBack = {
+    initial: { opacity: 0, x: -30 },
+    animate: { opacity: 1, x: 0 },
+    exit: { opacity: 0, x: -100 },
+};
+
+interface InitPoolPropsIf {
+    showSidebar: boolean;
+}
+export default function InitPool(props: InitPoolPropsIf) {
+    const { showSidebar } = props;
     const newPoolData = useUrlParams();
     console.log(newPoolData);
+    const [progressStep, setProgressStep] = useState(0);
+    const [animation, setAnimation] = useState(animationsNext);
+
+    const setPoolFeesProps = {
+        animation: animation,
+    };
+    const setInitialLiquidityProps = {
+        animation: animation,
+    };
+    const confirmPoolCreationProps = {
+        animation: animation,
+    };
+    const chooseTokensProps = {
+        animation: animation,
+    };
 
     const progressStepsData = [
-        { id: 1, name: 'Choose tokens & weights', data: <ChooseTokens /> },
-        { id: 2, name: 'Set pool fees', data: <SetPoolFees /> },
-        { id: 3, name: 'Set initial liquidity', data: <SetInitialLiquidity /> },
-        { id: 4, name: 'Confirm  pool creation', data: <ConfirmPoolCreation /> },
+        { id: 1, name: 'Choose tokens & weights', data: <ChooseTokens {...chooseTokensProps} /> },
+        { id: 2, name: 'Set pool fees', data: <SetPoolFees {...setPoolFeesProps} /> },
+        {
+            id: 3,
+            name: 'Set initial liquidity',
+            data: <SetInitialLiquidity {...setInitialLiquidityProps} />,
+        },
+        {
+            id: 4,
+            name: 'Confirm  pool creation',
+            data: <ConfirmPoolCreation {...confirmPoolCreationProps} />,
+        },
     ];
 
     const handleChangeStep = (e: string) => {
-        e === 'prev' && progressStep > 0 && setProgressStep(progressStep - 1);
-        e === 'next' &&
-            progressStep < progressStepsData.length &&
+        if (e === 'prev' && progressStep > 0) {
+            setProgressStep(progressStep - 1);
+            setAnimation(animationsBack);
+        } else if (e === 'next' && progressStep < progressStepsData.length) {
             setProgressStep(progressStep + 1);
+            setAnimation(animationsNext);
+        }
     };
 
-    const [progressStep, setProgressStep] = useState(0);
-    console.log(progressStep);
-
     return (
-        <main className={styles.main}>
-            <div className={styles.init_pool_container}>
+        <main
+            className={styles.main}
+            style={{ justifyContent: showSidebar ? 'flex-start' : 'center' }}
+        >
+            <div
+                className={styles.init_pool_container}
+                style={{ marginLeft: showSidebar ? '15rem' : '' }}
+            >
                 <div className={styles.top_content}>
                     <ContentContainer>
                         <header>

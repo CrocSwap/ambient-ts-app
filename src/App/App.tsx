@@ -2105,7 +2105,10 @@ export default function App() {
                         />
 
                         <Route path='range2' element={<Range {...rangeProps} />} />
-                        <Route path='initpool/:params' element={<InitPool />} />
+                        <Route
+                            path='initpool/:params'
+                            element={<InitPool showSidebar={showSidebar} />}
+                        />
                         <Route
                             path='account'
                             element={
