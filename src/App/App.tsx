@@ -2061,7 +2061,9 @@ export default function App() {
                         />
 
                         <Route path='range2' element={<Range {...rangeProps} />} />
-                        <Route path='initpool/:params' element={<InitPool />} />
+                        <Route path='initpool/:params' element={
+                            <InitPool poolExists={poolExists} />
+                        } />
                         <Route
                             path='account'
                             element={

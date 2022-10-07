@@ -2,7 +2,14 @@ import styles from './InitPool.module.css';
 import { useNavigate } from 'react-router-dom';
 import { useUrlParams } from './useUrlParams';
 
-export default function InitPool() {
+interface propsIF {
+    poolExists: boolean | null;
+}
+
+export default function InitPool(props: propsIF) {
+    const { poolExists } = props;
+    console.log({poolExists});
+
     const newPoolData = useUrlParams();
     const navigate = useNavigate();
     console.log(newPoolData);
