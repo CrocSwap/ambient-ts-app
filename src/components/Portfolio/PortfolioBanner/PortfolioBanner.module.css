@@ -1,10 +1,10 @@
 .rectangle_container {
     font-family: var(--font-family);
     width: 100%;
-    /* height: calc(100% / 3); */
-    height: 250px;
+    height: calc(20%);
+    /* height: 250px; */
     background-color: red;
-  
+
     background: url('../../../assets/images/backgrounds/account_image.png') no-repeat center center;
     -webkit-background-size: cover;
     -moz-background-size: cover;
@@ -80,7 +80,7 @@
     align-items: center;
     gap: 8px;
 }
-.name div{
+.name div {
     cursor: pointer;
 }
 
