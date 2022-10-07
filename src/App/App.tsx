@@ -574,7 +574,7 @@ export default function App() {
     // ... true => pool exists
     // ... false => pool does not exist
     // ... null => no crocEnv to check if pool exists
-    const [poolExists, setPoolExists] = useState<boolean|null>(null);
+    const [poolExists, setPoolExists] = useState<boolean | null>(null);
     useEffect(() => console.log({ poolExists }), [poolExists]);
 
     // hook to update `poolExists` when crocEnv changes
@@ -2061,7 +2061,10 @@ export default function App() {
                         />
 
                         <Route path='range2' element={<Range {...rangeProps} />} />
-                        <Route path='initpool/:params' element={<InitPool />} />
+                        <Route
+                            path='initpool/:params'
+                            element={<InitPool showSidebar={showSidebar} />}
+                        />
                         <Route
                             path='account'
                             element={
