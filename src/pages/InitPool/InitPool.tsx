@@ -47,17 +47,7 @@ export default function InitPool() {
                                 </p>
                             )}
                         </header>
-                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Porro possimus
-                        quaerat perferendis quia, exercitationem eligendi harum magni consectetur,
-                        voluptatibus ad libero. Omnis ea tempore quis, aperiam repellendus,
-                        aspernatur ipsum assumenda hic iste sunt modi velit est ullam expedita eius
-                        possimus? Dolores necessitatibus non temporibus perspiciatis, delectus nisi
-                        corrupti, cum quas inventore, deleniti iure! Ab maxime reprehenderit cumque
-                        et culpa eius minus eum nemo doloremque, exercitationem voluptatum saepe ad
-                        quidem maiores repellendus inventore fugiat aut rerum! Quam exercitationem
-                        animi voluptate minima nihil impedit assumenda nisi vitae cupiditate totam
-                        rem quaerat laboriosam adipisci ullam facere dicta, hic ex placeat itaque
-                        libero quibusdam.
+                        {progressStepsData[progressStep].data}
                         <footer>
                             <Button
                                 title='Next'

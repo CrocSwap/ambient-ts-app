@@ -1,7 +1,7 @@
 import styles from './InitPoolSteps.module.css';
 import { useState, Dispatch, SetStateAction } from 'react';
 import { act } from 'react-dom/test-utils';
-
+import { GiCheckMark } from 'react-icons/gi';
 interface InitPoolStepsPropsIF {
     progressStepsData: {
         id: number;
@@ -31,7 +31,13 @@ function Step(props: InitStepPropsIF) {
         </div>
     );
     const nonActiveStyle = <div className={styles.step_non_active} />;
-    const completedStyle = <div className={styles.step_completed} />;
+    const completedStyle = (
+        <div className={styles.step_completed}>
+            <div>
+                <GiCheckMark color='#cdc1ff' />
+            </div>
+        </div>
+    );
 
     return (
         <div>
