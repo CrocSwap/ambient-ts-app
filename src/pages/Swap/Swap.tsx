@@ -65,6 +65,7 @@ interface SwapPropsIF {
     indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
     openModalWallet: () => void;
     isInitialized: boolean;
+    poolExists: boolean;
 }
 
 export default function Swap(props: SwapPropsIF) {
@@ -96,6 +97,7 @@ export default function Swap(props: SwapPropsIF) {
         indicateActiveTokenListsChanged,
         openModalWallet,
         isInitialized,
+        poolExists,
     } = props;
 
     const [isModalOpen, openModal, closeModal] = useModal();
@@ -185,9 +187,9 @@ export default function Swap(props: SwapPropsIF) {
         if (poolPriceDisplay === undefined) {
             setSwapAllowed(false);
             setSwapButtonErrorMessage('…');
-        } else if (poolPriceDisplay === 0 || poolPriceDisplay === Infinity) {
+        } else if (!poolExists) {
             setSwapAllowed(false);
-            setSwapButtonErrorMessage('Invalid Token Pair');
+            setSwapButtonErrorMessage('Pool Not Initialized');
         }
     }, [poolPriceDisplay]);
 

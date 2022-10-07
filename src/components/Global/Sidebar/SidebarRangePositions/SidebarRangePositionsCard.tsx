@@ -3,6 +3,7 @@ import { PositionIF, TokenIF } from '../../../../utils/interfaces/exports';
 import { useMemo, SetStateAction, Dispatch } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
+import { formatAmount } from '../../../../utils/numbers';
 
 interface SidebarRangePositionsProps {
     isDenomBase: boolean;
@@ -67,12 +68,28 @@ export default function SidebarRangePositionsCard(props: SidebarRangePositionsPr
         navigate(linkPath);
     }
 
-    const liqTotalUSD =
-        '$' +
-        position.positionLiqTotalUSD.toLocaleString(undefined, {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-        });
+    const usdValueNum = position.totalValueUSD;
+
+    const usdValueTruncated = !usdValueNum
+        ? undefined
+        : usdValueNum < 0.0001
+        ? usdValueNum.toExponential(2)
+        : usdValueNum < 2
+        ? usdValueNum.toPrecision(3)
+        : usdValueNum >= 10000
+        ? formatAmount(usdValueNum, 1)
+        : // ? baseLiqDisplayNum.toExponential(2)
+          usdValueNum.toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+          });
+
+    // const liqTotalUSD =
+    //     '$' +
+    //     position.positionLiqTotalUSD.toLocaleString(undefined, {
+    //         minimumFractionDigits: 2,
+    //         maximumFractionDigits: 2,
+    //     });
 
     const rangeStatusStyle =
         position.positionType === 'ambient'
@@ -114,7 +131,7 @@ export default function SidebarRangePositionsCard(props: SidebarRangePositionsPr
                 {rangeDisplay}
                 {rangeStatusDisplay}
             </div>
-            <div className={styles.status_display}>{liqTotalUSD}</div>
+            <div className={styles.status_display}>{'$' + usdValueTruncated}</div>
         </div>
     );
 }

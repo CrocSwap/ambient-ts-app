@@ -84,6 +84,7 @@ interface RangePropsIF {
     openModalWallet: () => void;
     ambientApy: number | undefined;
     openGlobalModal: (content: React.ReactNode, title?: string) => void;
+    poolExists: boolean;
 }
 
 export default function Range(props: RangePropsIF) {
@@ -115,6 +116,7 @@ export default function Range(props: RangePropsIF) {
         openModalWallet,
         ambientApy,
         openGlobalModal,
+        poolExists,
     } = props;
 
     const [isModalOpen, openModal, closeModal] = useModal();
@@ -157,7 +159,7 @@ export default function Range(props: RangePropsIF) {
     const [tokenAInputQty, setTokenAInputQty] = useState<string>('');
     const [tokenBInputQty, setTokenBInputQty] = useState<string>('');
 
-    const isTokenABase = tokenPair?.dataTokenA.address === baseTokenAddress;
+    const isTokenABase = tradeData.tokenA.address === baseTokenAddress;
 
     const slippageTolerancePercentage = isPairStable
         ? mintSlippage.stable.value
@@ -182,8 +184,7 @@ export default function Range(props: RangePropsIF) {
                   maximumFractionDigits: 2,
               });
 
-    const tokenA = tokenPair.dataTokenA;
-    const tokenB = tokenPair.dataTokenB;
+    const { tokenA, tokenB } = tradeData;
     const tokenADecimals = tokenA.decimals;
     const tokenBDecimals = tokenB.decimals;
     const baseTokenDecimals = isTokenABase ? tokenADecimals : tokenBDecimals;
@@ -298,8 +299,8 @@ export default function Range(props: RangePropsIF) {
     useEffect(() => {
         if (poolPriceNonDisplay === undefined) {
             setRangeButtonErrorMessage('…');
-        } else if (poolPriceNonDisplay === 0) {
-            setRangeButtonErrorMessage('Token Pair Invalid');
+        } else if (!poolExists) {
+            setRangeButtonErrorMessage('Pool Not Initialized');
         } else if (isInvalidRange) {
             setRangeButtonErrorMessage('Please Enter a Valid Range');
         } else {
@@ -358,14 +359,11 @@ export default function Range(props: RangePropsIF) {
     const [rangeLowBoundFieldBlurred, setRangeLowBoundFieldBlurred] = useState(false);
 
     const lowBoundOnBlur = () => {
-        // setInitializationComplete(false);
-        // console.log('blurred');
         setRangeLowBoundFieldBlurred(true);
     };
 
     const [rangeHighBoundFieldBlurred, setRangeHighBoundFieldBlurred] = useState(false);
     const highBoundOnBlur = () => {
-        // setInitializationComplete(false);
         setRangeHighBoundFieldBlurred(true);
     };
 
@@ -425,8 +423,6 @@ export default function Range(props: RangePropsIF) {
             denominationsInBase
                 ? setMinPriceDifferencePercentage(-highGeometricDifferencePercentage)
                 : setMinPriceDifferencePercentage(lowGeometricDifferencePercentage);
-
-            // console.log({ pinnedDisplayPrices });
 
             const rangeLowBoundDisplayField = document.getElementById(
                 'min-price-input-quantity',
@@ -625,25 +621,7 @@ export default function Range(props: RangePropsIF) {
         [poolPriceNonDisplay, rangeLowBoundNonDisplayPrice, rangeHighBoundNonDisplayPrice],
     );
 
-    // useEffect(() => {
-    //     console.log({ depositSkew });
-    //     console.log({ poolPriceNonDisplay });
-    //     console.log({ rangeLowBoundNonDisplayPrice });
-    //     console.log({ rangeHighBoundNonDisplayPrice });
-    // }, [
-    //     depositSkew,
-    //     poolPriceNonDisplay,
-    //     rangeLowBoundNonDisplayPrice,
-    //     rangeHighBoundNonDisplayPrice,
-    // ]);
-
-    let maxPriceDisplay: string;
-
-    if (isAmbient) {
-        maxPriceDisplay = 'Infinity';
-    } else {
-        maxPriceDisplay = pinnedMaxPriceDisplayTruncated;
-    }
+    const maxPriceDisplay = isAmbient ? 'Infinity' : pinnedMaxPriceDisplayTruncated;
 
     const apyPercentage: number | undefined = ambientApy
         ? 100 - rangeWidthPercentage + ambientApy
@@ -658,13 +636,7 @@ export default function Range(props: RangePropsIF) {
         ? advancedDaysInRangeEstimation
         : rangeWidthPercentage;
 
-    let minPriceDisplay: string;
-
-    if (isAmbient) {
-        minPriceDisplay = '0';
-    } else {
-        minPriceDisplay = pinnedMinPriceDisplayTruncated;
-    }
+    const minPriceDisplay = isAmbient ? '0' : pinnedMinPriceDisplayTruncated;
 
     const sendTransaction = async () => {
         if (!provider || !(provider as ethers.providers.WebSocketProvider).getSigner()) {
@@ -893,13 +865,8 @@ export default function Range(props: RangePropsIF) {
     const handleModalClose = () => {
         closeModal();
         setNewRangeTransactionHash('');
-        // setTxErrorCode(0);
-        // setTxErrorMessage('');
         resetConfirmation();
     };
-
-    // const tokenABalance = isTokenABase ? baseTokenBalance : quoteTokenBalance;
-    // const tokenBBalance = isTokenABase ? quoteTokenBalance : baseTokenBalance;
 
     // props for <ConfirmRangeModal/> React element
     const rangeModalProps = {
@@ -1021,7 +988,7 @@ export default function Range(props: RangePropsIF) {
                     rangeHighTick={rangeHighTick}
                     setRangeLowTick={setRangeLowTick}
                     setRangeHighTick={setRangeHighTick}
-                    disable={isInvalidRange}
+                    disable={isInvalidRange || !poolExists}
                     chainId={chainId.toString()}
                     targetData={targetData}
                 />
@@ -1172,7 +1139,6 @@ export default function Range(props: RangePropsIF) {
                     <DividerDark />
                     {isAdvancedModeActive ? advancedModeContent : baseModeContent}
                 </motion.div>
-
                 {!isAuthenticated || !isWeb3Enabled ? (
                     loginButton
                 ) : poolPriceNonDisplay !== 0 &&
@@ -1186,12 +1152,11 @@ export default function Range(props: RangePropsIF) {
                 ) : (
                     <RangeButton
                         onClickFn={openModal}
-                        rangeAllowed={poolPriceNonDisplay !== 0 && rangeAllowed && !isInvalidRange}
+                        rangeAllowed={poolExists && rangeAllowed && !isInvalidRange}
                         rangeButtonErrorMessage={rangeButtonErrorMessage}
                     />
                 )}
             </ContentContainer>
-
             {confirmSwapModalOrNull}
         </section>
     );

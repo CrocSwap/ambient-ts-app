@@ -2,75 +2,68 @@
     padding: 2rem;
     background: var(--dark3);
     transition: all var(--animation-speed) ease-in-out;
-   
 }
 
 /* layouts */
 
-.right_tab_option{
+.right_tab_option {
     display: flex;
     flex-direction: row;
     gap: 12px;
     background: var(--dark3);
     padding: 4px;
     border-radius: 4px;
-    transition: all var(--animation-speed) ease-in-out
+    transition: all var(--animation-speed) ease-in-out;
 }
-.full_layout_svg{
+.full_layout_svg {
     width: 30px;
     height: 20px;
     border-radius: 4px;
     background: var(--dark2);
     cursor: pointer;
-    transition: all var(--animation-speed) ease-in-out
+    transition: all var(--animation-speed) ease-in-out;
 }
 
-.half_layout_svg{
+.half_layout_svg {
     width: 10px;
     height: 20px;
     border-radius: 4px;
     background: var(--dark2);
-} 
-.shared_layout_svg{
+}
+.shared_layout_svg {
     display: flex;
     flex-direction: row;
     gap: 2px;
     position: relative;
     cursor: pointer;
-    transition: all var(--animation-speed) ease-in-out
+    transition: all var(--animation-speed) ease-in-out;
 }
-.full_layout_svg_copied{
+.full_layout_svg_copied {
     width: 30px;
     height: 20px;
     border-radius: 4px;
     background: var(--dark2);
     cursor: pointer;
 }
-.active_layout_style{
-  background: var(--title-gradient)
+.active_layout_style {
+    background: var(--title-gradient);
 }
 
-
-
-
-@media (min-width: 940px) {
-
-    .tabs_exchange_balance_container, .full_layout_container{
+@media (min-width: 1280px) {
+    .tabs_exchange_balance_container,
+    .full_layout_container {
         /* I wish I had a logical answer to this calculation but it was through trial and error. The higher level containers of the app needs to be refactored to prevent this workflow */
-        height: calc(100vh - 23.2rem);
-       
-        display: grid;
-        transition: all var(--animation-speed) ease-in-out
-    }
-   
-    .tabs_exchange_balance_container{
+        height: calc(100vh - 20.2rem);
 
+        display: grid;
+        transition: all var(--animation-speed) ease-in-out;
+    }
+
+    .tabs_exchange_balance_container {
         grid-template-columns: auto 380px;
         gap: 1rem;
-      
-
     }
- .full_layout_container{
-   grid-template-columns: auto ;
+    .full_layout_container {
+        grid-template-columns: auto;
     }
 }

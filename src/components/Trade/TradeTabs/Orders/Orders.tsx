@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { useEffect, useMemo, useState } from 'react';
+import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
 
 // START: Import JSX Elements
 import styles from './Orders.module.css';
@@ -28,11 +28,22 @@ interface propsIF {
     isShowAllEnabled: boolean;
     openGlobalModal: (content: React.ReactNode) => void;
     closeGlobalModal: () => void;
+    currentPositionActive: string;
+    setCurrentPositionActive: Dispatch<SetStateAction<string>>;
 }
 
 // main react functional component
 export default function Orders(props: propsIF) {
-    const { crocEnv, chainData, expandTradeTable, account, graphData, isShowAllEnabled } = props;
+    const {
+        crocEnv,
+        chainData,
+        expandTradeTable,
+        account,
+        graphData,
+        isShowAllEnabled,
+        setCurrentPositionActive,
+        currentPositionActive,
+    } = props;
 
     const limitOrdersByUser = graphData.limitOrdersByUser.limitOrders;
     const limitOrdersByPool = graphData.limitOrdersByPool.limitOrders;
@@ -218,6 +229,8 @@ export default function Orders(props: propsIF) {
                     selectedQuoteToken={selectedQuoteToken}
                     openGlobalModal={props.openGlobalModal}
                     closeGlobalModal={props.closeGlobalModal}
+                    currentPositionActive={currentPositionActive}
+                    setCurrentPositionActive={setCurrentPositionActive}
                 />
             ))}
         </div>

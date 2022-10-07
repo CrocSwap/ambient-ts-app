@@ -17,6 +17,8 @@ export default function HomeSlider() {
         <div className={styles.container}>
             <Swiper
                 modules={[Navigation, EffectFade, Autoplay, Pagination]}
+                // touchStartPreventDefault={false}
+                noSwipingSelector={'button'}
                 navigation
                 speed={800}
                 autoplay={{
