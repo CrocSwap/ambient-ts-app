@@ -1,0 +1,63 @@
+"filename", "language", "TypeScript React", "CSS", "Markdown", "TypeScript", "comment", "blank", "total"
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/Analytics/ANALYTICS.md", "Markdown", 0, 0, 8, 0, 0, 4, 12
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/Analytics/Analytics.module.css", "CSS", 0, 4, 0, 0, 7, 2, 13
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/Analytics/Analytics.test.tsx", "TypeScript React", 7, 0, 0, 0, 0, 3, 10
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/Analytics/Analytics.tsx", "TypeScript React", 32, 0, 0, 0, 0, 3, 35
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/Chart/CHART.md", "Markdown", 0, 0, 0, 0, 0, 1, 1
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/Chart/Chart.css", "CSS", 0, 151, 0, 0, 0, 28, 179
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/Chart/Chart.tsx", "TypeScript React", 1692, 0, 0, 0, 46, 280, 2018
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/Home/HOME.md", "Markdown", 0, 0, 8, 0, 0, 4, 12
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/Home/Home.module.css", "CSS", 0, 47, 0, 0, 17, 10, 74
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/Home/Home.test.tsx", "TypeScript React", 7, 0, 0, 0, 0, 3, 10
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/Home/Home.tsx", "TypeScript React", 39, 0, 0, 0, 3, 5, 47
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/InitPool/InitPool.module.css", "CSS", 0, 60, 0, 0, 1, 10, 71
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/InitPool/InitPool.tsx", "TypeScript React", 120, 0, 0, 0, 1, 8, 129
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/InitPool/useUrlParams.ts", "TypeScript", 0, 0, 0, 24, 9, 4, 37
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/NotFound/NotFound.module.css", "CSS", 0, 6, 0, 0, 0, 1, 7
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/NotFound/NotFound.tsx", "TypeScript React", 11, 0, 0, 0, 0, 1, 12
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/PAGES.md", "Markdown", 0, 0, 11, 0, 0, 7, 18
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/Portfolio/PORTFOLIO.md", "Markdown", 0, 0, 8, 0, 0, 4, 12
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/Portfolio/Portfolio.module.css", "CSS", 0, 60, 0, 0, 2, 15, 77
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/Portfolio/Portfolio.test.tsx", "TypeScript React", 7, 0, 0, 0, 0, 3, 10
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/Portfolio/Portfolio.tsx", "TypeScript React", 283, 0, 0, 0, 20, 40, 343
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/Swap/SWAP.md", "Markdown", 0, 0, 0, 0, 0, 1, 1
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/Swap/Swap.module.css", "CSS", 0, 16, 0, 0, 19, 7, 42
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/Swap/Swap.test.tsx", "TypeScript React", 21, 0, 0, 0, 0, 4, 25
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/Swap/Swap.tsx", "TypeScript React", 420, 0, 0, 0, 32, 47, 499
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/Swap/useUrlParams.ts", "TypeScript", 0, 0, 0, 128, 43, 17, 188
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/TermsOfService/TermsOfService.module.css", "CSS", 0, 3, 0, 0, 0, 0, 3
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/TermsOfService/TermsOfService.tsx", "TypeScript React", 64, 0, 0, 0, 0, 4, 68
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/TestPage/TestPage.module.css", "CSS", 0, 15, 0, 0, 24, 6, 45
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/TestPage/TestPage.tsx", "TypeScript React", 61, 0, 0, 0, 4, 6, 71
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/Trade/Edit/Edit.module.css", "CSS", 0, 11, 0, 0, 0, 2, 13
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/Trade/Edit/Edit.tsx", "TypeScript React", 322, 0, 0, 0, 32, 65, 419
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/Trade/Limit/LIMIT.md", "Markdown", 0, 0, 0, 0, 0, 1, 1
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/Trade/Limit/Limit.module.css", "CSS", 0, 5, 0, 0, 1, 1, 7
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/Trade/Limit/Limit.test.tsx", "TypeScript React", 7, 0, 0, 0, 0, 3, 10
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/Trade/Limit/Limit.tsx", "TypeScript React", 474, 0, 0, 0, 26, 58, 558
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/Trade/Range/PositionDetails.module.css", "CSS", 0, 12, 0, 0, 1, 2, 15
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/Trade/Range/PositionDetails.tsx", "TypeScript React", 14, 0, 0, 0, 13, 2, 29
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/Trade/Range/Range.md", "Markdown", 0, 0, 0, 0, 0, 1, 1
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/Trade/Range/Range.module.css", "CSS", 0, 40, 0, 0, 2, 7, 49
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/Trade/Range/Range.test.tsx", "TypeScript React", 15, 0, 0, 0, 0, 5, 20
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/Trade/Range/Range.tsx", "TypeScript React", 1009, 0, 0, 0, 28, 127, 1164
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/Trade/Range/rangeFunctions.ts", "TypeScript", 0, 0, 0, 132, 19, 29, 180
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/Trade/Reposition/Reposition.module.css", "CSS", 0, 11, 0, 0, 0, 2, 13
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/Trade/Reposition/Reposition.tsx", "TypeScript React", 31, 0, 0, 0, 1, 4, 36
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/Trade/TRADE.md", "Markdown", 0, 0, 8, 0, 0, 4, 12
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/Trade/Trade.module.css", "CSS", 0, 250, 0, 0, 41, 53, 344
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/Trade/Trade.test.tsx", "TypeScript React", 8, 0, 0, 0, 0, 3, 11
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/Trade/Trade.tsx", "TypeScript React", 491, 0, 0, 0, 22, 33, 546
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/Trade/TradeCharts/TradeCandleStickChart.css", "CSS", 0, 59, 0, 0, 3, 13, 75
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/Trade/TradeCharts/TradeCandleStickChart.tsx", "TypeScript React", 230, 0, 0, 0, 11, 34, 275
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/Trade/TradeCharts/TradeCharts.module.css", "CSS", 0, 305, 0, 0, 39, 65, 409
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/Trade/TradeCharts/TradeCharts.tsx", "TypeScript React", 541, 0, 0, 0, 91, 68, 700
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/Trade/TradeCharts/TradeChartsLoading/FeeRateSubChart.tsx", "TypeScript React", 131, 0, 0, 0, 2, 24, 157
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/Trade/TradeCharts/TradeChartsLoading/TradeChartsLoading.module.css", "CSS", 0, 101, 0, 0, 1, 8, 110
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/Trade/TradeCharts/TradeChartsLoading/TradeChartsLoading.tsx", "TypeScript React", 15, 0, 0, 0, 0, 1, 16
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/Trade/TradeCharts/TradeChartsLoading/TvlSubChart.tsx", "TypeScript React", 167, 0, 0, 0, 2, 30, 199
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/Trade/TradeCharts/TradeChartsLoading/VolumeSubChart.tsx", "TypeScript React", 145, 0, 0, 0, 3, 25, 173
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/Trade/useUrlParams.ts", "TypeScript", 0, 0, 0, 137, 37, 20, 194
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/Transactions/Transaction.tsx", "TypeScript React", 17, 0, 0, 0, 10, 6, 33
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/Transactions/Transactions.tsx", "TypeScript React", 73, 0, 0, 0, 0, 10, 83
+"Total", "-", 6454, 1156, 43, 421, 613, 1234, 9921

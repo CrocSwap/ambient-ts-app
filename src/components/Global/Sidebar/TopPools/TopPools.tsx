@@ -1,15 +1,14 @@
 import { topPools } from '../../../../App/mockData';
 import styles from './TopPools.module.css';
 import TopPoolsCard from './TopPoolsCard';
-import { Link } from 'react-router-dom';
+// import { Link } from 'react-router-dom';
 
 interface TopPoolsProps {
     chainId: string;
-    lastBlockNumber: number;
 }
 
 export default function TopPools(props: TopPoolsProps) {
-    const { chainId, lastBlockNumber } = props;
+    const { chainId } = props;
 
     const header = (
         <div className={styles.header}>
@@ -28,13 +27,13 @@ export default function TopPools(props: TopPoolsProps) {
                         pool={item}
                         key={idx}
                         chainId={chainId}
-                        lastBlockNumber={lastBlockNumber}
+                        // lastBlockNumber={lastBlockNumber}
                     />
                 ))}
             </div>
-            <Link className={styles.view_more} to='/analytics'>
+            {/* <Link className={styles.view_more} to='/analytics'>
                 View More
-            </Link>
+            </Link> */}
         </div>
     );
 }

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
 import { formatAmount } from '../../../../utils/numbers';
 import { ILimitOrderState } from '../../../../utils/state/graphDataSlice';
@@ -19,10 +19,20 @@ interface OrderCardProps {
     selectedQuoteToken: string;
     openGlobalModal: (content: React.ReactNode) => void;
     closeGlobalModal: () => void;
+    currentPositionActive: string;
+    setCurrentPositionActive: Dispatch<SetStateAction<string>>;
 }
 
 export default function OrderCard(props: OrderCardProps) {
-    const { account, limitOrder, isDenomBase, selectedBaseToken, selectedQuoteToken } = props;
+    const {
+        account,
+        limitOrder,
+        currentPositionActive,
+        setCurrentPositionActive,
+        isDenomBase,
+        selectedBaseToken,
+        selectedQuoteToken,
+    } = props;
     // console.log({ limitOrder });
 
     // const tempOwnerId = '0xa2b398145b7fc8fd9a01142698f15d329ebb5ff5090cfcc8caae440867ab9919';
@@ -113,8 +123,6 @@ export default function OrderCard(props: OrderCardProps) {
         selectedBaseToken === baseTokenAddressLowerCase &&
         selectedQuoteToken === quoteTokenAddressLowerCase;
 
-    if (!orderMatchesSelectedTokens) return null;
-
     const liqBaseNum =
         limitOrder.positionLiqBaseDecimalCorrected !== 0
             ? limitOrder.positionLiqBaseDecimalCorrected
@@ -183,46 +191,78 @@ export default function OrderCard(props: OrderCardProps) {
         isOwnerActiveAccount: isOwnerActiveAccount,
     };
 
+    const orderDomId =
+        limitOrder.limitOrderIdentifier === currentPositionActive
+            ? `order-${limitOrder.limitOrderIdentifier}`
+            : '';
+
+    // console.log(rangeDetailsProps.lastBlockNumber);
+
+    function scrollToDiv() {
+        const element = document.getElementById(orderDomId);
+        element?.scrollIntoView({ behavior: 'smooth', block: 'end', inline: 'nearest' });
+    }
+
+    useEffect(() => {
+        limitOrder.limitOrderIdentifier === currentPositionActive ? scrollToDiv() : null;
+    }, [currentPositionActive]);
+
+    const activePositionStyle =
+        limitOrder.limitOrderIdentifier === currentPositionActive
+            ? styles.active_position_style
+            : '';
+    if (!orderMatchesSelectedTokens) return null;
+
     // console.log(limitOrder);
     return (
-        <div className={styles.main_container}>
-            <div className={styles.row_container}>
-                {/* ------------------------------------------------------ */}
+        <li
+            className={`${styles.main_container} ${activePositionStyle}`}
+            onClick={() =>
+                limitOrder.limitOrderIdentifier === currentPositionActive
+                    ? null
+                    : setCurrentPositionActive('')
+            }
+            id={orderDomId}
+        >
+            <div className={styles.main_container}>
+                <div className={styles.row_container}>
+                    {/* ------------------------------------------------------ */}
 
-                <WalletAndId
-                    ownerId={ownerIdDisplay}
-                    posHash={limitOrder.limitOrderIdentifier.slice(42)}
-                    ensName={limitOrder.ensResolution ? limitOrder.ensResolution : null}
-                    isOwnerActiveAccount={isOwnerActiveAccount}
-                />
+                    <WalletAndId
+                        ownerId={ownerIdDisplay}
+                        posHash={limitOrder.limitOrderIdentifier.slice(42)}
+                        ensName={limitOrder.ensResolution ? limitOrder.ensResolution : null}
+                        isOwnerActiveAccount={isOwnerActiveAccount}
+                    />
 
-                {/* ------------------------------------------------------ */}
-                <Price priceType={priceType} displayPrice={truncatedDisplayPrice} />
-                {/* ------------------------------------------------------ */}
-                <OrderTypeSide
-                    type='order'
-                    side={sideType}
-                    isDenomBase={isDenomBase}
-                    baseTokenCharacter={baseTokenCharacter}
-                    quoteTokenCharacter={quoteTokenCharacter}
-                />
-                {/* ------------------------------------------------------ */}
-                <Value usdValue={usdValueTruncated ? '$' + usdValueTruncated : '…'} />
-                <TokenQty
-                    baseQty={baseQtyTruncated}
-                    quoteQty={quoteQtyTruncated}
-                    baseTokenCharacter={baseTokenCharacter}
-                    quoteTokenCharacter={quoteTokenCharacter}
-                />
-                {/* ------------------------------------------------------ */}
-                <div className={styles.status}>
-                    <OpenOrderStatus isFilled={isOrderFilled} />
+                    {/* ------------------------------------------------------ */}
+                    <Price priceType={priceType} displayPrice={truncatedDisplayPrice} />
+                    {/* ------------------------------------------------------ */}
+                    <OrderTypeSide
+                        type='order'
+                        side={sideType}
+                        isDenomBase={isDenomBase}
+                        baseTokenCharacter={baseTokenCharacter}
+                        quoteTokenCharacter={quoteTokenCharacter}
+                    />
+                    {/* ------------------------------------------------------ */}
+                    <Value usdValue={usdValueTruncated ? '$' + usdValueTruncated : '…'} />
+                    <TokenQty
+                        baseQty={baseQtyTruncated}
+                        quoteQty={quoteQtyTruncated}
+                        baseTokenCharacter={baseTokenCharacter}
+                        quoteTokenCharacter={quoteTokenCharacter}
+                    />
+                    {/* ------------------------------------------------------ */}
+                    <div className={styles.status}>
+                        <OpenOrderStatus isFilled={isOrderFilled} />
+                    </div>
+                </div>
+
+                <div className={styles.menu_container}>
+                    <OrdersMenu limitOrder={limitOrder} {...orderMenuProps} />
                 </div>
             </div>
-
-            <div className={styles.menu_container}>
-                <OrdersMenu limitOrder={limitOrder} {...orderMenuProps} />
-            </div>
-        </div>
+        </li>
     );
 }

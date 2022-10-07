@@ -84,7 +84,7 @@ interface RangePropsIF {
     openModalWallet: () => void;
     ambientApy: number | undefined;
     openGlobalModal: (content: React.ReactNode, title?: string) => void;
-    poolExists: boolean;
+    poolExists: boolean | null;
 }
 
 export default function Range(props: RangePropsIF) {
@@ -1152,7 +1152,7 @@ export default function Range(props: RangePropsIF) {
                 ) : (
                     <RangeButton
                         onClickFn={openModal}
-                        rangeAllowed={poolExists && rangeAllowed && !isInvalidRange}
+                        rangeAllowed={!!poolExists && rangeAllowed && !isInvalidRange}
                         rangeButtonErrorMessage={rangeButtonErrorMessage}
                     />
                 )}

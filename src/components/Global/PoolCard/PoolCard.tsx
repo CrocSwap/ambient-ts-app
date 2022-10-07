@@ -55,6 +55,7 @@ export default function PoolCard(props: PoolCardProps) {
             lastBlockNumber !== 0
         ) {
             (async () => {
+                console.log('querying spot price');
                 const spotPrice = await querySpotPrice(
                     crocEnv,
                     tokenA.address,
@@ -106,8 +107,9 @@ export default function PoolCard(props: PoolCardProps) {
 
     const poolIndex = lookupChain(chainId).poolIndex;
 
-    useEffect(() => {
+    const fetchPoolStats = () => {
         (async () => {
+            console.log('fetching fresh pool stats ');
             if (tokenAAddress && tokenBAddress && poolIndex && chainId) {
                 const poolStats = await getPoolStatsFresh(
                     chainId,
@@ -172,7 +174,23 @@ export default function PoolCard(props: PoolCardProps) {
                 }
             }
         })();
-    }, [tokenAAddress, tokenBAddress, lastBlockNumber]);
+    };
+
+    useEffect(() => {
+        fetchPoolStats();
+
+        const timerId = setInterval(() => {
+            fetchPoolStats();
+        }, 60000);
+
+        // after 10 minutes stop
+        setTimeout(() => {
+            clearInterval(timerId);
+        }, 600000);
+
+        // clear interval when component unmounts
+        return () => clearInterval(timerId);
+    }, []);
 
     const tokenImagesDisplay = (
         <div className={styles.token_images}>
