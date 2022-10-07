@@ -14,6 +14,7 @@ flex-direction: column;
     display: flex;
     flex-direction: column;
     align-items: center;
+    gap: 8px;
     
 }
 
@@ -65,15 +66,55 @@ flex-direction: column;
     display: flex;
     justify-content: center;
     align-items: center;
+
+    transition: width 0.6s ease-in-out,
+    opacity 0.6s ease-in-out;
+
+    animation: bounce 0.5s ease-in-out;
 }
 
+.step_content div{
+    position: relative;
+}
+
+.step_content .step_completed::after{
+    content: " ";
+    display: block;
+    position: absolute;
+    height: 5px;
+    background: #cdc1ff;
+    width: 125px;
+    left: 100%;
+    top: calc(50% - 2px);
+}
+
+@keyframes bounce {
+    0% {
+      transform: scale(1);
+    }
+    
+    33% {
+      transform: scale(0.9);
+    }
+    
+    66% {
+      transform: scale(1.1);
+    }
+    
+    100% {
+      transform: scale(1);
+    }
+  }
 @media only screen and (min-width: 768px) {
 
     .steps_display_container{
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
+       display: flex;
+       flex-direction: row;
+     
+        
+    
         align-items: center;
-        gap: 1rem;
+        /* gap: 1rem; */
        
     }
 
