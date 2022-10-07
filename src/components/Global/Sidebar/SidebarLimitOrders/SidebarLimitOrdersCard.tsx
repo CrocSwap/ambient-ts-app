@@ -133,12 +133,7 @@ export default function SidebarLimitOrdersCard(props: SidebarLimitOrdersCardProp
         // setSelectedOutsideTab(tabToSwitchToBasedOnRoute);
         // if (baseToken) dispatch(setTokenA(baseToken));
         // if (quoteToken) dispatch(setTokenB(quoteToken));
-        navigate(
-            '/trade/limit/chain=0x5&tokenA=' +
-            baseToken?.address +
-            '&tokenB=' +
-            quoteToken?.address
-        );
+        navigate(linkPath);
     }
 
     return (
