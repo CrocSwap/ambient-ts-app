@@ -427,11 +427,6 @@ export default function App() {
 
     const isLastReceiptSuccess = lastReceipt?.status === 1;
 
-    // let snackMessage = '';
-    // if (lastReceipt) {
-
-    //     snackMessage = `Transaction ${lastReceipt.transactionHash} successfully completed`;
-    // }
     const snackMessage = lastReceipt
         ? isLastReceiptSuccess
             ? `Transaction ${lastReceipt.transactionHash} successfully completed`
@@ -1012,15 +1007,6 @@ export default function App() {
         }
     };
 
-    // useEffect(() => {}, [
-    //     baseTokenAddress,
-    //     quoteTokenAddress,
-    //     mainnetBaseTokenAddress,
-    //     mainnetQuoteTokenAddress,
-    //     activePeriod,
-    //     chainData.chainId,
-    // ]);
-
     const poolLiqChangesCacheSubscriptionEndpoint = useMemo(
         () =>
             wssGraphCacheServerDomain +
@@ -1324,8 +1310,6 @@ export default function App() {
     const [poolPriceNonDisplay, setPoolPriceNonDisplay] = useState<number | undefined>(undefined);
     const [poolPriceDisplay, setPoolPriceDisplay] = useState<number | undefined>(undefined);
 
-    // console.log({ baseTokenBalance });
-    // console.log({ quoteTokenBalance });
     // useEffect to get spot price when tokens change and block updates
     useEffect(() => {
         if (
@@ -1392,9 +1376,6 @@ export default function App() {
                     .balanceDisplay(account)
                     .then((bal: string) => {
                         setBaseTokenDexBalance(bal);
-                        if (tradeData.baseToken.address === ZERO_ADDRESS) {
-                            setNativeDexBalance(bal);
-                        }
                     })
                     .catch(console.log);
                 crocEnv
@@ -1606,17 +1587,10 @@ export default function App() {
 
     useEffect(() => toggleSidebarBasedOnRoute(), [location]);
 
-    // const [nativeBalance, setNativeBalance] = useState<string>('');
-    const [nativeWalletBalance, setNativeWalletBalance] = useState<string>('');
-    const [nativeDexBalance, setNativeDexBalance] = useState<string>('');
-    const nativeBalance = nativeDexBalance
-        ? (parseFloat(nativeWalletBalance) + parseFloat(nativeDexBalance)).toString()
-        : undefined;
-
     // function to sever connection between user wallet and Moralis server
     const clickLogout = async () => {
-        setNativeWalletBalance('');
-        setNativeDexBalance('');
+        // setNativeWalletBalance('');
+        // setNativeDexBalance('');
         setBaseTokenBalance('');
         setQuoteTokenBalance('');
         setBaseTokenDexBalance('');
@@ -1629,23 +1603,6 @@ export default function App() {
 
         await logout();
     };
-
-    // TODO: this may work better as a useMemo... play with it a bit
-    // this is how we run the function to pull back balances asynchronously
-    useEffect(() => {
-        (async () => {
-            if (crocEnv && account) {
-                crocEnv
-                    .tokenEth()
-                    .wallet(account)
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    .then((eth: any) => {
-                        const displayBalance = toDisplayQty(eth.toString(), 18);
-                        if (displayBalance) setNativeWalletBalance(displayBalance);
-                    });
-            }
-        })();
-    }, [crocEnv, account, lastBlockNumber]);
 
     const [gasPriceInGwei, setGasPriceinGwei] = useState<number | undefined>();
     // const [gasPriceinDollars, setGasPriceinDollars] = useState<string | undefined>();
@@ -1677,7 +1634,6 @@ export default function App() {
     // props for <PageHeader/> React element
     const headerProps = {
         isUserLoggedIn: isUserLoggedIn,
-        nativeBalance: nativeBalance,
         clickLogout: clickLogout,
         metamaskLocked: metamaskLocked,
         ensName: ensName,
@@ -1710,7 +1666,6 @@ export default function App() {
         isPairStable: isPairStable,
         gasPriceInGwei: gasPriceInGwei,
         ethMainnetUsdPrice: ethMainnetUsdPrice,
-        nativeBalance: nativeBalance,
         lastBlockNumber: lastBlockNumber,
         baseTokenBalance: baseTokenBalance,
         quoteTokenBalance: quoteTokenBalance,
@@ -1743,7 +1698,6 @@ export default function App() {
         isOnTradeRoute: true,
         gasPriceInGwei: gasPriceInGwei,
         ethMainnetUsdPrice: ethMainnetUsdPrice,
-        nativeBalance: nativeBalance,
         lastBlockNumber: lastBlockNumber,
         baseTokenBalance: baseTokenBalance,
         quoteTokenBalance: quoteTokenBalance,
@@ -1775,7 +1729,6 @@ export default function App() {
         isOnTradeRoute: true,
         gasPriceInGwei: gasPriceInGwei,
         ethMainnetUsdPrice: ethMainnetUsdPrice,
-        nativeBalance: nativeBalance,
         lastBlockNumber: lastBlockNumber,
         baseTokenBalance: baseTokenBalance,
         quoteTokenBalance: quoteTokenBalance,
