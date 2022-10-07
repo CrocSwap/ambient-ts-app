@@ -1,6 +1,8 @@
 import styles from './ChooseTokens.module.css';
 import { motion } from 'framer-motion';
-
+import { useAppDispatch, useAppSelector } from '../../../utils/hooks/reduxToolkit';
+import { TokenIF } from '../../../utils/interfaces/TokenIF';
+import { FiInfo } from 'react-icons/fi';
 interface chooseTokensPropsIF {
     animation: {
         initial: {
@@ -17,7 +19,32 @@ interface chooseTokensPropsIF {
         };
     };
 }
+
+interface TokenAndWeightPropsIF {
+    token: TokenIF;
+}
+function TokenAndWeightDisplay(props: TokenAndWeightPropsIF) {
+    const { token } = props;
+
+    return (
+        <div className={styles.token_weight_container}>
+            <div className={styles.token}>
+                <img src={token.logoURI} alt='base token' />
+                <p>{token.symbol}</p>
+            </div>
+            <div className={styles.weight}>
+                <input type='text' placeholder='50' value={50} />
+                <span>%</span>
+            </div>
+        </div>
+    );
+}
 export default function ChooseTokens(props: chooseTokensPropsIF) {
+    const tradeData = useAppSelector((state) => state.tradeData);
+
+    const tokenA = tradeData.tokenA;
+    const tokenB = tradeData.tokenB;
+    console.log(tokenA);
     const { animation } = props;
     return (
         <motion.div
@@ -27,12 +54,26 @@ export default function ChooseTokens(props: chooseTokensPropsIF) {
             exit='exit'
             transition={{ duration: 0.2 }}
         >
-            <h1>CHOOSE TOKENS</h1>
-            Lorem ipsum dolor sit amet consectetur, adipisicing elit. Cum necessitatibus suscipit
-            iusto et officiis nisi sapiente facere recusandae neque sint quis dignissimos cupiditate
-            omnis praesentium earum veniam, ea fugiat repellat unde molestiae possimus, minus libero
-            consequatur. Eveniet est animi vero tempore reiciendis odit et, ab consequatur
-            aspernatur amet quod eaque?
+            <div className={styles.labels}>
+                <p>Token</p>
+                <p>Weight</p>
+            </div>
+            <div className={styles.tokens_weight_main_container}>
+                <TokenAndWeightDisplay token={tokenA} />
+                <TokenAndWeightDisplay token={tokenB} />
+            </div>
+            <div className={styles.total_allocated}>
+                <p>Total allocated</p>
+                <span>100%</span>
+            </div>
+
+            <div className={styles.extra_info}>
+                <FiInfo size={35} />
+                <p>
+                    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Labore nulla laborum
+                    hic quaerat eaque necessitatibus minima cumque debitis sunt libero!
+                </p>
+            </div>
         </motion.div>
     );
 }
