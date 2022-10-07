@@ -1,14 +1,12 @@
 import styles from './SidebarLimitOrdersCard.module.css';
-import { SetStateAction, Dispatch, useState, useEffect } from 'react';
-import {
-    // useLocation,
-    useNavigate
-} from 'react-router-dom';
+import { SetStateAction, Dispatch, useState, useEffect, useMemo } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { ILimitOrderState } from '../../../../utils/state/graphDataSlice';
 import { TokenIF } from '../../../../utils/interfaces/TokenIF';
 // import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
 // import { setTokenA, setTokenB } from '../../../../utils/state/tradeDataSlice';
 import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
+import { formatAmount } from '../../../../utils/numbers';
 
 interface SidebarLimitOrdersCardProps {
     isDenomBase: boolean;
@@ -17,6 +15,8 @@ interface SidebarLimitOrdersCardProps {
     selectedOutsideTab: number;
     setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
     outsideControl: boolean;
+    setCurrentPositionActive: Dispatch<SetStateAction<string>>;
+    setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
     setOutsideControl: Dispatch<SetStateAction<boolean>>;
 }
 export default function SidebarLimitOrdersCard(props: SidebarLimitOrdersCardProps) {
@@ -43,6 +43,9 @@ export default function SidebarLimitOrdersCard(props: SidebarLimitOrdersCardProp
     // const dispatch = useAppDispatch();
     // const onTradeRoute = location.pathname.includes('trade');
     // const onAccountRoute = location.pathname.includes('account');
+    // const onTradeRoute = location.pathname.includes('trade');
+    // const onAccountRoute = location.pathname.includes('account');
+
     // const tabToSwitchToBasedOnRoute = onTradeRoute ? 1 : onAccountRoute ? 3 : 0;
 
     const [priceDisplay, setPriceDisplay] = useState<string | undefined>(undefined);
@@ -80,14 +83,49 @@ export default function SidebarLimitOrdersCard(props: SidebarLimitOrdersCardProp
         }
     }, [JSON.stringify(order), isDenomBase]);
 
-    const liqTotalUSD =
-        order.positionLiqTotalUSD !== undefined
-            ? '$' +
-              order.positionLiqTotalUSD?.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              })
-            : '…';
+    // const liqTotalUSD =
+    //     order.positionLiqTotalUSD !== undefined
+    //         ? '$' +
+    //           order.positionLiqTotalUSD?.toLocaleString(undefined, {
+    //               minimumFractionDigits: 2,
+    //               maximumFractionDigits: 2,
+    //           })
+    //         : '…';
+
+    const usdValueNum = order.totalValueUSD;
+    const usdValueTruncated = !usdValueNum
+        ? undefined
+        : usdValueNum < 0.0001
+        ? usdValueNum.toExponential(2)
+        : usdValueNum < 2
+        ? usdValueNum.toPrecision(3)
+        : usdValueNum >= 10000
+        ? formatAmount(usdValueNum, 1)
+        : // ? baseLiqDisplayNum.toExponential(2)
+          usdValueNum.toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+          });
+
+    const { pathname } = useLocation();
+
+    //   const getToken = (addr: string) => tokenMap.get(addr.toLowerCase()) as TokenIF;
+    //   const baseToken = getToken(order.base + '_' + order.chainId);
+    //   const quoteToken = getToken(order.quote + '_' + order.chainId);
+
+    const linkPath = useMemo(() => {
+        let locationSlug = '';
+        if (pathname.startsWith('/trade/market') || pathname.startsWith('/account')) {
+            locationSlug = '/trade/market';
+        } else if (pathname.startsWith('/trade/limit')) {
+            locationSlug = '/trade/limit';
+        } else if (pathname.startsWith('/trade/range')) {
+            locationSlug = '/trade/range';
+        } else if (pathname.startsWith('/swap')) {
+            locationSlug = '/swap';
+        }
+        return locationSlug + '/chain=0x5&tokenA=' + order.base + '&tokenB=' + order.quote;
+    }, [pathname]);
 
     function handleLimitOrderClick() {
         // PLEASE SAVE DISABLED CODE -Emily
@@ -112,7 +150,8 @@ export default function SidebarLimitOrdersCard(props: SidebarLimitOrdersCardProp
             </div>
             <div>{priceDisplay}</div>
             <div className={styles.status_display}>
-                {liqTotalUSD}
+                {usdValueTruncated ? '$' + usdValueTruncated : '…'}
+                {/* {tokenDisplay} */}
             </div>
         </div>
     );

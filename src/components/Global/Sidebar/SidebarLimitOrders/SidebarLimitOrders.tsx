@@ -15,7 +15,8 @@ interface SidebarLimitOrdersProps {
     limitOrderByUser?: ILimitOrderState[];
     isShowAllEnabled: boolean;
     setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
-
+    setCurrentPositionActive: Dispatch<SetStateAction<string>>;
+    isUserLoggedIn: boolean;
     expandTradeTable: boolean;
     setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
 }
@@ -24,13 +25,15 @@ export default function SidebarLimitOrders(props: SidebarLimitOrdersProps) {
         limitOrderByUser,
         tokenMap,
         isDenomBase,
+        isUserLoggedIn,
         outsideControl,
         setOutsideControl,
         selectedOutsideTab,
         setSelectedOutsideTab,
-        expandTradeTable,
+        // expandTradeTable,
         setExpandTradeTable,
-        setIsShowAllEnabled
+        setIsShowAllEnabled,
+        setCurrentPositionActive,
     } = props;
     const { pathname } = useLocation();
     const navigate = useNavigate();
@@ -46,9 +49,9 @@ export default function SidebarLimitOrders(props: SidebarLimitOrdersProps) {
     const onAccountRoute = pathname.startsWith('/account');
 
     const tabToSwitchToBasedOnRoute = onTradeRoute ? 1 : onAccountRoute ? 3 : 1;
-
     function redirectBasedOnRoute() {
-        if (onTradeRoute || onAccountRoute) return;
+        // if (onTradeRoute || onAccountRoute) return;
+        if (onTradeRoute) return;
         navigate('/trade');
     }
 
@@ -75,11 +78,13 @@ console.log(limitOrderByUser);
                             setSelectedOutsideTab={setSelectedOutsideTab}
                             outsideControl={outsideControl}
                             setOutsideControl={setOutsideControl}
+                            setCurrentPositionActive={setCurrentPositionActive}
+                            setIsShowAllEnabled={setIsShowAllEnabled}
                         />
                     ))
                 }
             </div>
-            {!expandTradeTable && (
+            {!props.expandTradeTable && isUserLoggedIn && (
                 <div className={styles.view_more} onClick={handleViewMoreClick}>
                     View More
                 </div>
