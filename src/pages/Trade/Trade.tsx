@@ -272,10 +272,8 @@ export default function Trade(props: TradePropsIF) {
             </div>
         </div>
     );
-    if (poolExists === false) {
-        console.log({poolExists});
-        return poolNotInitializedContent;
-    };
+    if (poolExists === false) return poolNotInitializedContent;
+
     return (
         <AnimateSharedLayout>
             <main className={styles.main_layout}>
