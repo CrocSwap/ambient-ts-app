@@ -140,6 +140,8 @@ export default function Chart(props: ChartData) {
 
     // Data
     const [crosshairData, setCrosshairData] = useState([{ x: 0, y: -1 }]);
+    const [currentPriceData, setCurrentPriceData] = useState([{ value: -1 }]);
+    const [indicatorLineData, setIndicatorLineData] = useState([{ x: 0, y: 0 }]);
 
     // d3
     const [transactionFilter, setTransactionFilter] = useState<CandleData>();
@@ -151,6 +153,8 @@ export default function Chart(props: ChartData) {
     const [liqTooltip, setLiqTooltip] = useState<any>();
     const [highlightedCurrentPriceLine, setHighlightedCurrentPriceLine] = useState<any>();
     const [indicatorLine, setIndicatorLine] = useState<any>();
+    const [crosshairHorizontal, setCrosshairHorizontal] = useState<any>();
+    const [crosshairVertical, setCrosshairVertical] = useState<any>();
 
     // Utils
     const [zoomUtils, setZoomUtils] = useState<any>();
@@ -160,6 +164,7 @@ export default function Chart(props: ChartData) {
     const [selectedCandleState, setSelectedCandleState] = useState<any>();
 
     const valueFormatter = d3.format('.5f');
+    const indicatorFormatter = d3.format('.6f');
 
     const setDefaultRangeData = () => {
         setRanges((prevState) => {
@@ -1364,6 +1369,53 @@ export default function Chart(props: ChartData) {
         }
     }, [scaleData]);
 
+    useEffect(() => {
+        if (scaleData !== undefined) {
+            const crosshairHorizontal = d3fc
+                .annotationSvgLine()
+                .orient('vertical')
+                .value((d: any) => d.x)
+                .xScale(scaleData.xScale)
+                .yScale(scaleData.yScale)
+                .label('');
+
+            crosshairHorizontal.decorate((selection: any) => {
+                selection.enter().select('line').attr('class', 'crosshair');
+                selection
+                    .enter()
+                    .append('line')
+                    .attr('stroke-width', 1)
+                    .style('pointer-events', 'all');
+                selection.enter().select('g.top-handle').remove();
+            });
+
+            setCrosshairHorizontal(() => {
+                return crosshairHorizontal;
+            });
+
+            const crosshairVertical = d3fc
+                .annotationSvgLine()
+                .value((d: any) => d.y)
+                .xScale(scaleData.xScale)
+                .yScale(scaleData.yScale);
+
+            crosshairVertical.decorate((selection: any) => {
+                selection.enter().select('line').attr('class', 'crosshair');
+                selection
+                    .enter()
+                    .append('line')
+                    .attr('stroke-width', 1)
+                    .style('pointer-events', 'all');
+                selection.enter().select('g.left-handle').remove();
+                selection.enter().select('g.right-handle').remove();
+            });
+
+            setCrosshairVertical(() => {
+                return crosshairVertical;
+            });
+        }
+    }, [scaleData]);
+
     // Call drawChart()
     useEffect(() => {
         if (
@@ -1376,6 +1428,8 @@ export default function Chart(props: ChartData) {
             indicatorLine !== undefined &&
             highlightedCurrentPriceLine !== undefined &&
             liqTooltip !== undefined &&
+            crosshairVertical !== undefined &&
+            crosshairHorizontal !== undefined &&
             targetsJoin !== undefined
         ) {
             const targetData = {
@@ -1401,6 +1455,8 @@ export default function Chart(props: ChartData) {
                 indicatorLine,
                 highlightedCurrentPriceLine,
                 liqTooltip,
+                crosshairVertical,
+                crosshairHorizontal,
             );
         }
     }, [
@@ -1419,6 +1475,8 @@ export default function Chart(props: ChartData) {
         indicatorLine,
         highlightedCurrentPriceLine,
         liqTooltip,
+        crosshairVertical,
+        crosshairHorizontal,
     ]);
 
     // Draw Chart
@@ -1440,14 +1498,13 @@ export default function Chart(props: ChartData) {
             indicatorLine: any,
             highlightedCurrentPriceLine: any,
             liqTooltip: any,
+            crosshairVertical: any,
+            crosshairHorizontal: any,
         ) => {
             if (chartData.length > 0) {
                 let selectedCandle: any;
 
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                const crosshairData = [{ x: 0, y: -1 }];
-                const currentPriceData = [{ value: -1 }];
-                const indicatorLineData = [{ x: 0, y: 0 }];
 
                 const minimum = (data: any, accessor: any) => {
                     return data
@@ -1487,41 +1544,6 @@ export default function Chart(props: ChartData) {
                 // axes
                 const xAxis = d3fc.axisBottom().scale(scaleData.xScale);
                 const yAxis = d3fc.axisRight().scale(scaleData.yScale);
-
-                const crosshairHorizontal = d3fc
-                    .annotationSvgLine()
-                    .orient('vertical')
-                    .value((d: any) => d.x)
-                    .xScale(scaleData.xScale)
-                    .yScale(scaleData.yScale)
-                    .label('');
-
-                crosshairHorizontal.decorate((selection: any) => {
-                    selection.enter().select('line').attr('class', 'crosshair');
-                    selection
-                        .enter()
-                        .append('line')
-                        .attr('stroke-width', 1)
-                        .style('pointer-events', 'all');
-                    selection.enter().select('g.top-handle').remove();
-                });
-
-                const crosshairVertical = d3fc
-                    .annotationSvgLine()
-                    .value((d: any) => d.y)
-                    .xScale(scaleData.xScale)
-                    .yScale(scaleData.yScale);
-
-                crosshairVertical.decorate((selection: any) => {
-                    selection.enter().select('line').attr('class', 'crosshair');
-                    selection
-                        .enter()
-                        .append('line')
-                        .attr('stroke-width', 1)
-                        .style('pointer-events', 'all');
-                    selection.enter().select('g.left-handle').remove();
-                    selection.enter().select('g.right-handle').remove();
-                });
 
                 const candlestick = d3fc
                     .autoBandwidth(d3fc.seriesSvgCandlestick())
@@ -1705,7 +1727,7 @@ export default function Chart(props: ChartData) {
                         .select('svg')
                         .select('text')
                         .style('visibility', 'visible')
-                        .text(scaleData.yScale.invert(event.offsetY))
+                        .text(indicatorFormatter(scaleData.yScale.invert(event.offsetY)))
                         .style('transform', 'translateY(' + valueIndcLocation + 'px)');
 
                     render();
@@ -1746,26 +1768,6 @@ export default function Chart(props: ChartData) {
                                     'px',
                             )
                             .style('left', event.offsetX - 40 + 'px');
-
-                        // const filtered =
-                        //     liquidityData.liqData.length > 1
-                        //         ? liquidityData.liqData.filter(
-                        //               (d: any) => d.upperBoundPriceDecimalCorrected != null,
-                        //           )
-                        //         : liquidityData.liqData;
-
-                        // const nearest = filtered.reduce(function (prev: any, curr: any) {
-                        //     return Math.abs(
-                        //         curr.upperBoundPriceDecimalCorrected -
-                        //             scaleData.yScale.invert(event.offsetY),
-                        //     ) <
-                        //         Math.abs(
-                        //             prev.upperBoundPriceDecimalCorrected -
-                        //                 scaleData.yScale.invert(event.offsetY),
-                        //         )
-                        //         ? curr
-                        //         : prev;
-                        // });
 
                         const nearest = {
                             upperBoundPriceDecimalCorrected: scaleData.yScale.invert(event.offsetY),
@@ -1964,7 +1966,7 @@ export default function Chart(props: ChartData) {
                         <d3fc-svg
                             className='y-axis'
                             ref={d3Yaxis}
-                            style={{ width: '3em' }}
+                            style={{ width: '5%' }}
                         ></d3fc-svg>
                     </div>
 
