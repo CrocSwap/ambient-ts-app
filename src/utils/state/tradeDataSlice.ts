@@ -155,6 +155,10 @@ export const tradeDataSlice = createSlice({
                 state.tokenB = initialState.tokenB;
             }
         },
+        reverseTokensInRTK: (state) => {
+            state.tokenA = state.tokenB;
+            state.tokenB = state.tokenA;
+        },
         setPinnedMaxPrice: (state, action: PayloadAction<number>) => {
             state.pinnedMaxPriceDisplayTruncated = action.payload;
         },
@@ -198,6 +202,7 @@ export const {
     setActiveChartPeriod,
     resetTradeData,
     resetTokens,
+    reverseTokensInRTK,
     setPinnedMaxPrice,
     setPinnedMinPrice,
     setTargetData,

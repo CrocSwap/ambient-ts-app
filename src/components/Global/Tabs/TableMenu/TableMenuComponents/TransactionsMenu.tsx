@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { useState, ReactNode } from 'react';
+import { useState, ReactNode, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { FiExternalLink, FiMoreHorizontal } from 'react-icons/fi';
 
@@ -11,8 +11,8 @@ import SnackbarComponent from '../../../../../components/Global/SnackbarComponen
 import styles from './TableMenuComponents.module.css';
 import { useModal } from '../../../../Global/Modal/useModal';
 import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
-import { DefaultTooltip } from '../../../StyledTooltip/StyledTooltip';
 import { ITransaction } from '../../../../../utils/state/graphDataSlice';
+import UseOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 
 // interface for React functional component props
 interface TransactionMenuIF {
@@ -23,13 +23,13 @@ interface TransactionMenuIF {
 
 // React functional component
 export default function TransactionsMenu(props: TransactionMenuIF) {
+    const menuItemRef = useRef<HTMLDivElement>(null);
     const { userPosition, tx, blockExplorer } = props;
 
     const [value, copy] = useCopyToClipboard();
     const [openSnackbar, setOpenSnackbar] = useState(false);
     const [isModalOpen, openModal, closeModal] = useModal();
     const [currentModal, setCurrentModal] = useState('edit');
-    const [openMenuTooltip, setOpenMenuTooltip] = useState(false);
     // ---------------------MODAL FUNCTIONALITY----------------
     let modalContent: ReactNode;
 
@@ -152,23 +152,24 @@ export default function TransactionsMenu(props: TransactionMenuIF) {
             {copyButton}
         </div>
     );
+
+    const [showDropdownMenu, setShowDropdownMenu] = useState(false);
+
+    const wrapperStyle = showDropdownMenu
+        ? styles.dropdown_wrapper_active
+        : styles.dropdown_wrapper;
+
+    const clickOutsideHandler = () => {
+        setShowDropdownMenu(false);
+    };
+
+    UseOnClickOutside(menuItemRef, clickOutsideHandler);
     const dropdownTransactionsMenu = (
-        <div className={styles.dropdown_menu}>
-            <DefaultTooltip
-                open={openMenuTooltip}
-                onOpen={() => setOpenMenuTooltip(true)}
-                onClose={() => setOpenMenuTooltip(false)}
-                interactive
-                placement='left'
-                title={menuContent}
-            >
-                <div
-                    style={{ cursor: 'pointer' }}
-                    onClick={() => setOpenMenuTooltip(!openMenuTooltip)}
-                >
-                    <FiMoreHorizontal size={20} />
-                </div>
-            </DefaultTooltip>
+        <div className={styles.dropdown_menu} ref={menuItemRef}>
+            <div onClick={() => setShowDropdownMenu(!showDropdownMenu)}>
+                <FiMoreHorizontal />
+            </div>
+            <div className={wrapperStyle}>{menuContent}</div>
         </div>
     );
 

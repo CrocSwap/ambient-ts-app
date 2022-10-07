@@ -1,11 +1,9 @@
 // START: Import React and Dongles
 import { ChangeEvent, Dispatch, SetStateAction, useEffect, useState } from 'react';
-
+import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../../../utils/hooks/reduxToolkit';
-
 import {
-    setTokenA,
-    setTokenB,
+    reverseTokensInRTK,
     setIsTokenAPrimary,
     setPrimaryQuantity,
 } from '../../../../utils/state/tradeDataSlice';
@@ -54,6 +52,7 @@ interface LimitCurrencyConverterProps {
     isDenominationInBase: boolean;
     activeTokenListsChanged: boolean;
     indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
+    poolExists: boolean;
 }
 
 // central react functional component
@@ -84,6 +83,7 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
         isDenominationInBase,
         activeTokenListsChanged,
         indicateActiveTokenListsChanged,
+        poolExists,
     } = props;
 
     const dispatch = useAppDispatch();
@@ -108,9 +108,6 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
     const tokenBBalance = isSellTokenBase ? quoteTokenBalance : baseTokenBalance;
     const tokenADexBalance = isSellTokenBase ? baseTokenDexBalance : quoteTokenDexBalance;
     const tokenBDexBalance = isSellTokenBase ? quoteTokenDexBalance : baseTokenDexBalance;
-
-    // const tokenADecimals = tokenPair.dataTokenA.decimals;
-    // const tokenBDecimals = tokenPair.dataTokenB.decimals;
 
     const tokenASurplusMinusTokenARemainderNum =
         parseFloat(tokenADexBalance || '0') - parseFloat(tokenAQtyLocal || '0');
@@ -154,15 +151,17 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
         }
     }, []);
 
-    const handleArrowClick = (): void => {
-        reverseTokens();
-    };
+    const navigate = useNavigate();
 
     const reverseTokens = (): void => {
-        if (tokenPair) {
-            dispatch(setTokenA(tokenPair.dataTokenB));
-            dispatch(setTokenB(tokenPair.dataTokenA));
-        }
+        dispatch(reverseTokensInRTK());
+
+        navigate(
+            '/trade/limit/chain=0x5&tokenA=' +
+                tokenPair.dataTokenB.address +
+                '&tokenB=' +
+                tokenPair.dataTokenA.address,
+        );
         if (!isTokenAPrimaryLocal) {
             setTokenAQtyLocal(tokenBQtyLocal);
             setTokenAInputQty(tokenBQtyLocal);
@@ -193,9 +192,9 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
     ]);
 
     const handleLimitButtonMessage = (tokenAAmount: number) => {
-        if (limitRateNumber === 0 || poolPriceNonDisplay === 0) {
+        if (!poolExists) {
             setLimitAllowed(false);
-            setLimitButtonErrorMessage('Invalid Token Pair');
+            setLimitButtonErrorMessage('Pool Not Initialized');
         } else if (isNaN(tokenAAmount) || tokenAAmount <= 0) {
             setLimitAllowed(false);
             setLimitButtonErrorMessage('Enter an Amount');
@@ -435,7 +434,7 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
 
             <div
                 className={styles.arrow_container}
-                onClick={handleArrowClick}
+                onClick={reverseTokens}
                 style={{ cursor: 'pointer' }}
             >
                 <IconWithTooltip title='Reverse tokens' placement='left'>

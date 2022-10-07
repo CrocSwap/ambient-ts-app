@@ -1,18 +1,38 @@
 import styles from './OpenOrderStatus.module.css';
 import { AiOutlineCheck } from 'react-icons/ai';
-
+import { DefaultTooltip } from '../StyledTooltip/StyledTooltip';
 interface OpenOrderStatusProps {
     isFilled: boolean;
     isAmbient?: boolean;
 }
 
 export default function OpenOrderStatus(props: OpenOrderStatusProps) {
-    const nonFilled = <div className={styles.non_filled}></div>;
-
-    const filled = (
-        <div className={styles.filled}>
-            <AiOutlineCheck color='#41D18E' size={15} />
-        </div>
+    const filledWithTooltip = (
+        <DefaultTooltip
+            interactive
+            title={'Filled'}
+            placement={'right'}
+            arrow
+            enterDelay={400}
+            leaveDelay={200}
+        >
+            <div className={styles.filled}>
+                <AiOutlineCheck color='#41D18E' size={15} />
+            </div>
+        </DefaultTooltip>
     );
-    return <> {props.isFilled ? filled : nonFilled}</>;
+
+    const nonFilledWithTooltip = (
+        <DefaultTooltip
+            title={'Not Filled'}
+            placement={'right'}
+            arrow
+            enterDelay={400}
+            leaveDelay={200}
+        >
+            <div className={styles.non_filled}></div>
+        </DefaultTooltip>
+    );
+
+    return <> {props.isFilled ? filledWithTooltip : nonFilledWithTooltip}</>;
 }

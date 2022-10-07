@@ -24,8 +24,9 @@ import { CrocEnv } from '@crocswap-libs/sdk';
 import { ethers } from 'ethers';
 import { ILimitOrderState, ITransaction } from '../../../utils/state/graphDataSlice';
 import { getLimitOrderData } from '../../../App/functions/getLimitOrderData';
-import { getTransactionData } from '../../../App/functions/getTransactionData';
+// import { getTransactionData } from '../../../App/functions/getTransactionData';
 import { TokenPriceFn } from '../../../App/functions/fetchTokenPrice';
+import { fetchUserRecentChanges } from '../../../App/functions/fetchUserRecentChanges';
 
 // interface for React functional component props
 interface PortfolioTabsPropsIF {
@@ -87,7 +88,7 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
 
     const userPositionsCacheEndpoint = httpGraphCacheServerDomain + '/user_positions?';
     const userLimitOrdersCacheEndpoint = httpGraphCacheServerDomain + '/user_limit_order_states?';
-    const userTransactionsCacheEndpoint = httpGraphCacheServerDomain + '/user_recent_changes?';
+    // const userTransactionsCacheEndpoint = httpGraphCacheServerDomain + '/user_recent_changes?';
 
     const getUserPositions = async (accountToSearch: string) =>
         fetch(
@@ -149,25 +150,20 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
             .catch(console.log);
 
     const getUserTransactions = async (accountToSearch: string) =>
-        fetch(
-            userTransactionsCacheEndpoint +
-                new URLSearchParams({
-                    user: accountToSearch,
-                    chainId: chainId,
-                    ensResolution: 'true',
-                }),
-        )
-            .then((response) => response?.json())
-            .then((json) => {
-                const userTransactions = json?.data;
-                if (userTransactions) {
-                    Promise.all(
-                        userTransactions.map((tx: ITransaction) => {
-                            return getTransactionData(tx, importedTokens);
-                        }),
-                    ).then((updatedTransactions) => {
-                        setOtherAccountTransactionData(updatedTransactions);
-                    });
+        fetchUserRecentChanges({
+            importedTokens: importedTokens,
+            user: accountToSearch,
+            chainId: chainId,
+            annotate: true,
+            addValue: true,
+            simpleCalc: true,
+            annotateMEV: false,
+            ensResolution: true,
+            n: 100,
+        })
+            .then((updatedTransactions) => {
+                if (updatedTransactions) {
+                    setOtherAccountTransactionData(updatedTransactions);
                 }
             })
             .catch(console.log);
@@ -235,13 +231,13 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
     };
 
     const accountTabData = [
-        { label: 'Ranges', content: <Range {...rangeProps} />, icon: rangePositionsImage },
-        { label: 'Limit Orders', content: <Order {...limitOrderProps} />, icon: openOrdersImage },
         {
             label: 'Transactions',
             content: <TransactionsTable {...transactionsProps} />,
             icon: recentTransactionsImage,
         },
+        { label: 'Limit Orders', content: <Order {...limitOrderProps} />, icon: openOrdersImage },
+        { label: 'Ranges', content: <Range {...rangeProps} />, icon: rangePositionsImage },
         {
             label: 'Exchange Balances',
             content: <Exchange {...exchangeProps} />,

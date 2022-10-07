@@ -8,8 +8,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 interface SidebarRecentTransactionsPropsIF {
     // showSidebar: boolean;
     mostRecentTransactions: ITransaction[];
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    coinGeckoTokenMap?: Map<string, TokenIF>;
+    coinGeckoTokenMap: Map<string, TokenIF>;
     chainId: string;
     currentTxActiveInTransactions: string;
     setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
@@ -23,6 +22,7 @@ interface SidebarRecentTransactionsPropsIF {
     setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
     outsideControl: boolean;
     setOutsideControl: Dispatch<SetStateAction<boolean>>;
+    isUserLoggedIn: boolean;
 }
 
 export default function SidebarRecentTransactions(props: SidebarRecentTransactionsPropsIF) {
@@ -36,7 +36,7 @@ export default function SidebarRecentTransactions(props: SidebarRecentTransactio
         setCurrentTxActiveInTransactions,
         isShowAllEnabled,
         setIsShowAllEnabled,
-
+        isUserLoggedIn,
         expandTradeTable,
     } = props;
 
@@ -63,7 +63,7 @@ export default function SidebarRecentTransactions(props: SidebarRecentTransactio
         props.setOutsideControl(true);
         props.setSelectedOutsideTab(tabToSwitchToBasedOnRoute);
 
-        props.setIsShowAllEnabled(true);
+        props.setIsShowAllEnabled(false);
         props.setExpandTradeTable(true);
     };
 
@@ -90,7 +90,7 @@ export default function SidebarRecentTransactions(props: SidebarRecentTransactio
                     />
                 ))}
             </div>
-            {!expandTradeTable && (
+            {!expandTradeTable && isUserLoggedIn && (
                 <div className={styles.view_more} onClick={handleViewMoreClick}>
                     View More
                 </div>

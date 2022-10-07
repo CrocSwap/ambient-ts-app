@@ -27,6 +27,7 @@ import {
     addChangesByUser,
     setLastBlock,
     addLimitOrderChangesByUser,
+    ITransaction,
     // ChangesByUser,
 } from '../utils/state/graphDataSlice';
 import { ethers } from 'ethers';
@@ -53,6 +54,7 @@ import TermsOfService from '../pages/TermsOfService/TermsOfService';
 import TestPage from '../pages/TestPage/TestPage';
 import NotFound from '../pages/NotFound/NotFound';
 import Trade from '../pages/Trade/Trade';
+import InitPool from '../pages/InitPool/InitPool';
 import Reposition from '../pages/Trade/Reposition/Reposition';
 import SidebarFooter from '../components/Global/SIdebarFooter/SidebarFooter';
 
@@ -114,6 +116,8 @@ import { getLimitOrderData } from './functions/getLimitOrderData';
 // import { getTransactionData } from './functions/getTransactionData';
 import { fetchPoolRecentChanges } from './functions/fetchPoolRecentChanges';
 import { fetchUserRecentChanges } from './functions/fetchUserRecentChanges';
+import { getTransactionData } from './functions/getTransactionData';
+import AppOverlay from '../components/Global/AppOverlay/AppOverlay';
 
 const cachedFetchAddress = memoizeFetchAddress();
 const cachedFetchNativeTokenBalance = memoizeFetchNativeTokenBalance();
@@ -152,14 +156,13 @@ export default function App() {
     }, [isAuthenticated, isWeb3Enabled, isUserLoggedIn]);
 
     const tokenMap = useTokenMap();
-
     const location = useLocation();
 
     const [candleData, setCandleData] = useState<CandlesByPoolAndDuration | undefined>();
 
-    useEffect(() => {
-        if (candleData) console.log({ candleData });
-    }, [candleData]);
+    // useEffect(() => {
+    //     if (candleData) console.log({ candleData });
+    // }, [candleData]);
 
     // custom hook to manage chain the app is using
     // `chainData` is data on the current chain retrieved from our SDK
@@ -170,7 +173,9 @@ export default function App() {
     // useEffect(() => console.warn(chainData.chainId), [chainData.chainId]);
 
     const tokenUniverse = useTokenUniverse(chainData.chainId);
-    useEffect(() => console.log({ tokenUniverse }), [tokenUniverse]);
+    useEffect(() => {
+        false && console.log({ tokenUniverse });
+    }, [tokenUniverse]);
 
     const [isShowAllEnabled, setIsShowAllEnabled] = useState(true);
     const [currentTxActiveInTransactions, setCurrentTxActiveInTransactions] = useState('');
@@ -250,7 +255,7 @@ export default function App() {
                     setProvider(metamaskProvider);
                 }
             } else if (!provider || !onChain) {
-                console.log('use infura as provider');
+                // console.log('use infura as provider');
                 const chainSpec = lookupChain(chainData.chainId);
                 const url = chainSpec.nodeUrl;
                 // const url = chainSpec.wsUrl ? chainSpec.wsUrl : chainSpec.nodeUrl;
@@ -335,12 +340,12 @@ export default function App() {
         chainData.wsUrl || '',
         {
             onOpen: () => {
-                console.log('infura newHeads subscription opened');
+                // console.log('infura newHeads subscription opened');
                 send('{"jsonrpc":"2.0","method":"eth_subscribe","params":["newHeads"],"id":5}');
             },
             onClose: (event: CloseEvent) => {
-                console.log('infura newHeads subscription closed');
-                console.log({ event });
+                false && console.log('infura newHeads subscription closed');
+                false && console.log({ event });
             },
             shouldReconnect: () => shouldNonCandleSubscriptionsReconnect,
         },
@@ -452,6 +457,7 @@ export default function App() {
     useEffect(() => {
         (async () => {
             if (window.ethereum) {
+                console.log('requesting eth_accounts');
                 const metamaskAccounts = await window.ethereum.request({ method: 'eth_accounts' });
                 if (metamaskAccounts?.length > 0) {
                     setMetamaskLocked(false);
@@ -568,6 +574,30 @@ export default function App() {
         dataTokenA: tradeData.tokenA,
         dataTokenB: tradeData.tokenB,
     };
+
+    // value for whether a pool exists on current chain and token pair
+    const [poolExists, setPoolExists] = useState(false);
+    useEffect(() => console.log({ poolExists }), [poolExists]);
+
+    // hook to update `poolExists` when crocEnv changes
+    useEffect(() => {
+        if (crocEnv) {
+            // token pair has an initialized pool on-chain
+            // returns a promise object
+            const doesPoolExist = crocEnv
+                .pool(tokenPair.dataTokenA.address, tokenPair.dataTokenB.address)
+                .isInit();
+            // resolve the promise object to see if pool exists
+            Promise.resolve(doesPoolExist)
+                // track whether pool exists on state (can be undefined)
+                .then((res) => setPoolExists(res ?? false));
+        } else {
+            // set pool exists to false if there is no env
+            setPoolExists(false);
+        }
+        // run every time crocEnv updates
+        // this indirectly tracks a new chain being used
+    }, [crocEnv, tokenPair]);
 
     const tokenPairStringified = useMemo(() => JSON.stringify(tokenPair), [tokenPair]);
 
@@ -730,7 +760,7 @@ export default function App() {
             // retrieve pool liquidity
             try {
                 if (httpGraphCacheServerDomain) {
-                    console.log('fetching pool liquidity distribution');
+                    // console.log('fetching pool liquidity distribution');
 
                     const poolLiquidityCacheEndpoint =
                         httpGraphCacheServerDomain + '/pool_liquidity_distribution?';
@@ -775,7 +805,7 @@ export default function App() {
                 // retrieve pool_positions
                 try {
                     if (httpGraphCacheServerDomain) {
-                        console.log('fetching pool positions');
+                        // console.log('fetching pool positions');
                         const allPositionsCacheEndpoint =
                             httpGraphCacheServerDomain + '/pool_positions?';
                         fetch(
@@ -917,7 +947,7 @@ export default function App() {
         ) {
             try {
                 if (httpGraphCacheServerDomain) {
-                    console.log('fetching candles');
+                    // console.log('fetching candles');
                     const candleSeriesCacheEndpoint =
                         httpGraphCacheServerDomain + '/candle_series?';
 
@@ -1237,7 +1267,17 @@ export default function App() {
         if (lastUserRecentChangesMessage !== null) {
             const lastMessageData = JSON.parse(lastUserRecentChangesMessage.data).data;
 
-            if (lastMessageData) dispatch(addChangesByUser(lastMessageData));
+            if (lastMessageData) {
+                Promise.all(
+                    lastMessageData.map((tx: ITransaction) => {
+                        return getTransactionData(tx, importedTokens);
+                    }),
+                )
+                    .then((updatedTransactions) => {
+                        dispatch(addChangesByUser(updatedTransactions));
+                    })
+                    .catch(console.log);
+            }
         }
     }, [lastUserRecentChangesMessage]);
 
@@ -1401,7 +1441,7 @@ export default function App() {
                 setRecheckTokenAApproval(false);
             }
         })();
-    }, [crocEnv, tokenAAddress, lastBlockNumber, account, recheckTokenAApproval, account]);
+    }, [crocEnv, tokenAAddress, lastBlockNumber, account, recheckTokenAApproval]);
 
     // useEffect to check if user has approved CrocSwap to sell the token B
     useEffect(() => {
@@ -1419,14 +1459,6 @@ export default function App() {
     }, [crocEnv, tokenBAddress, lastBlockNumber, account, recheckTokenBApproval]);
 
     const graphData = useAppSelector((state) => state.graphData);
-
-    // const getSwapData = async (swap: ITransaction): Promise<ITransaction> => {
-    //     return swap;
-    // };
-
-    // const getCandleData = async (candle: CandleData): Promise<CandleData> => {
-    //     return candle;
-    // };
 
     useEffect(() => {
         if (isUserLoggedIn && account) {
@@ -1641,6 +1673,7 @@ export default function App() {
 
     const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
+    const [isAppOverlayActive, setIsAppOverlayActive] = useState(false);
     // props for <PageHeader/> React element
     const headerProps = {
         isUserLoggedIn: isUserLoggedIn,
@@ -1660,6 +1693,8 @@ export default function App() {
 
         openGlobalModal: openGlobalModal,
         closeGlobalModal: closeGlobalModal,
+        isAppOverlayActive: isAppOverlayActive,
+        setIsAppOverlayActive: setIsAppOverlayActive,
     };
 
     // props for <Swap/> React element
@@ -1691,6 +1726,7 @@ export default function App() {
         indicateActiveTokenListsChanged: indicateActiveTokenListsChanged,
         openModalWallet: openModalWallet,
         isInitialized: isInitialized,
+        poolExists: poolExists,
     };
 
     // props for <Swap/> React element on trade route
@@ -1723,6 +1759,7 @@ export default function App() {
         indicateActiveTokenListsChanged: indicateActiveTokenListsChanged,
         openModalWallet: openModalWallet,
         isInitialized: isInitialized,
+        poolExists: poolExists,
     };
 
     // props for <Limit/> React element on trade route
@@ -1757,6 +1794,7 @@ export default function App() {
 
         openGlobalModal: openGlobalModal,
         closeGlobalModal: closeGlobalModal,
+        poolExists: poolExists,
 
         // limitRate: limitRate,
         // setLimitRate: setLimitRate,
@@ -1793,6 +1831,8 @@ export default function App() {
         ambientApy: ambientApy,
 
         openGlobalModal: openGlobalModal,
+
+        poolExists: poolExists,
     };
 
     function toggleSidebar() {
@@ -1821,13 +1861,13 @@ export default function App() {
     //     }
     // }
 
-    useEffect(() => {
-        if (location.pathname.includes('account') || location.pathname.includes('analytics')) {
-            setShowSidebar(false);
-        }
+    // useEffect(() => {
+    //     if (location.pathname.includes('account') || location.pathname.includes('analytics')) {
+    //         setShowSidebar(false);
+    //     }
 
-        // handleTabChangedBasedOnRoute();
-    }, [location.pathname]);
+    //     // handleTabChangedBasedOnRoute();
+    // }, [location.pathname]);
 
     // market - /trade/market
     // limit - /trade/limit
@@ -1941,13 +1981,25 @@ export default function App() {
 
     // const [isGlobalModalOpen, openGlobalModal, closeGlobalModal, currentContent] = useGlobalModal();
 
-    const swapParams =
-        '/swap/chain=0x5&tokenA=0x0000000000000000000000000000000000000000&tokenB=0xD87Ba7A50B2E7E660f678A895E4B72E7CB4CCd9C';
+    const defaultUrlParams = {
+        swap: '/swap/chain=0x5&tokenA=0x0000000000000000000000000000000000000000&tokenB=0xD87Ba7A50B2E7E660f678A895E4B72E7CB4CCd9C',
+        market: '/trade/market/chain=0x5&tokenA=0x0000000000000000000000000000000000000000&tokenB=0xD87Ba7A50B2E7E660f678A895E4B72E7CB4CCd9C',
+        limit: '/trade/limit/chain=0x5&tokenA=0x0000000000000000000000000000000000000000&tokenB=0xD87Ba7A50B2E7E660f678A895E4B72E7CB4CCd9C',
+        range: '/trade/range/chain=0x5&tokenA=0x0000000000000000000000000000000000000000&tokenB=0xD87Ba7A50B2E7E660f678A895E4B72E7CB4CCd9C',
+    };
+
+    // app overlay-----------------------------------------------
+    // end of app overlay-----------------------------------------------
 
     return (
         <>
             <div className={containerStyle}>
                 {isMobileSidebarOpen && <div className='blur_app' />}
+                <AppOverlay
+                    isAppOverlayActive={isAppOverlayActive}
+                    setIsAppOverlayActive={setIsAppOverlayActive}
+                />
+
                 {currentLocation !== '/404' && <PageHeader {...headerProps} />}
                 {/* <MobileSidebar/> */}
                 <main className={`${showSidebarOrNullStyle} ${swapBodyStyle}`}>
@@ -1996,8 +2048,6 @@ export default function App() {
                                     expandTradeTable={expandTradeTable}
                                     setExpandTradeTable={setExpandTradeTable}
                                     tokenMap={tokenMap}
-                                    // setLimitRate={setLimitRate}
-                                    // limitRate={limitRate}
                                     favePools={favePools}
                                     addPoolToFaves={addPoolToFaves}
                                     removePoolFromFaves={removePoolFromFaves}
@@ -2009,18 +2059,35 @@ export default function App() {
                                     setCurrentPositionActive={setCurrentPositionActive}
                                     openGlobalModal={openGlobalModal}
                                     closeGlobalModal={closeGlobalModal}
+                                    isInitialized={isInitialized}
                                     poolPriceNonDisplay={undefined}
                                     setLimitRate={function (): void {
                                         throw new Error('Function not implemented.');
                                     }}
                                     limitRate={''}
+                                    importedTokens={importedTokens}
+                                    poolExists={poolExists}
                                 />
                             }
                         >
-                            <Route path='' element={<Swap {...swapPropsTrade} />} />
-                            <Route path='market' element={<Swap {...swapPropsTrade} />} />
-                            <Route path='limit' element={<Limit {...limitPropsTrade} />} />
-                            <Route path='range' element={<Range {...rangeProps} />} />
+                            <Route path='' element={<Navigate to='/trade/market' replace />} />
+                            <Route
+                                path='market'
+                                element={<Navigate to={defaultUrlParams.market} replace />}
+                            />
+                            <Route path='market/:params' element={<Swap {...swapPropsTrade} />} />
+
+                            <Route
+                                path='limit'
+                                element={<Navigate to={defaultUrlParams.limit} replace />}
+                            />
+                            <Route path='limit/:params' element={<Limit {...limitPropsTrade} />} />
+
+                            <Route
+                                path='range'
+                                element={<Navigate to={defaultUrlParams.range} replace />}
+                            />
+                            <Route path='range/:params' element={<Range {...rangeProps} />} />
                             <Route path='edit/:positionHash' element={<Edit />} />
                             <Route path='reposition' element={<Reposition />} />
                             <Route path='edit/' element={<Navigate to='/trade/market' replace />} />
@@ -2038,7 +2105,7 @@ export default function App() {
                         />
 
                         <Route path='range2' element={<Range {...rangeProps} />} />
-
+                        <Route path='initpool/:params' element={<InitPool />} />
                         <Route
                             path='account'
                             element={
@@ -2061,6 +2128,7 @@ export default function App() {
                                     setOutsideControl={setOutsideControl}
                                     userAccount={true}
                                     openGlobalModal={openGlobalModal}
+                                    closeGlobalModal={closeGlobalModal}
                                 />
                             }
                         />
@@ -2086,18 +2154,21 @@ export default function App() {
                                     setOutsideControl={setOutsideControl}
                                     userAccount={false}
                                     openGlobalModal={openGlobalModal}
+                                    closeGlobalModal={closeGlobalModal}
                                 />
                             }
                         />
 
-                        <Route path='swap' element={<Navigate replace to={swapParams} />} />
+                        <Route
+                            path='swap'
+                            element={<Navigate replace to={defaultUrlParams.swap} />}
+                        />
                         <Route path='swap/:params' element={<Swap {...swapProps} />} />
                         <Route path='tos' element={<TermsOfService />} />
                         <Route
                             path='testpage'
                             element={<TestPage openGlobalModal={openGlobalModal} />}
                         />
-                        {/* <Route path='*' element={<Navigate to='/404' replace />} /> */}
                         <Route
                             path='/:address'
                             element={
@@ -2120,6 +2191,7 @@ export default function App() {
                                     setOutsideControl={setOutsideControl}
                                     userAccount={false}
                                     openGlobalModal={openGlobalModal}
+                                    closeGlobalModal={closeGlobalModal}
                                 />
                             }
                         />

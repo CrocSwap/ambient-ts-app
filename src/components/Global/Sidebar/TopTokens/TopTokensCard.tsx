@@ -1,8 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { useLocation, Link } from 'react-router-dom';
 import { getPoolPriceChange } from '../../../../App/functions/getPoolStats';
-import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
 import { PoolIF } from '../../../../utils/interfaces/PoolIF';
-import { setTokenA, setTokenB } from '../../../../utils/state/tradeDataSlice';
 import styles from './TopTokensCard.module.css';
 
 interface TopTokensCardProps {
@@ -14,7 +13,31 @@ interface TopTokensCardProps {
 export default function TopTokensCard(props: TopTokensCardProps) {
     const { pool, lastBlockNumber } = props;
 
-    const dispatch = useAppDispatch();
+    const location = useLocation();
+
+    const linkPath = useMemo(() => {
+        const { pathname } = location;
+        let locationSlug = '';
+        if (
+            pathname.startsWith('/trade/market') ||
+            pathname.startsWith('/account')
+        ) {
+            locationSlug = '/trade/market';
+        } else if (pathname.startsWith('/trade/limit')) {
+            locationSlug = '/trade/limit';
+        } else if (pathname.startsWith('/trade/range')) {
+            locationSlug = '/trade/range';
+        } else if (pathname.startsWith('/swap')) {
+            locationSlug = '/swap';
+        }
+        return (
+            locationSlug +
+            '/chain=0x5&tokenA=' +
+            pool.base.address +
+            '&tokenB=' +
+            pool.quote.address
+        );
+    }, [location]);
 
     const topTokenName = pool.name;
 
@@ -77,16 +100,10 @@ export default function TopTokensCard(props: TopTokensCardProps) {
     }, [JSON.stringify(pool), lastBlockNumber]);
 
     return (
-        <div
-            className={styles.container}
-            onClick={() => {
-                dispatch(setTokenA(props.pool.base));
-                dispatch(setTokenB(props.pool.quote));
-            }}
-        >
+        <Link className={styles.container} to={linkPath}>
             <div>{topTokenName}</div>
             <div>{tokenPrice ?? '…'}</div>
             <div>{tokenPrice24hChange ?? '…'}</div>
-        </div>
+        </Link>
     );
 }

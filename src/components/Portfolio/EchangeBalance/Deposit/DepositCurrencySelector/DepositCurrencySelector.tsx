@@ -1,17 +1,19 @@
 import styles from './DepositCurrencySelector.module.css';
 import { RiArrowDownSLine } from 'react-icons/ri';
+import { TokenIF } from '../../../../../utils/interfaces/TokenIF';
+import { Dispatch, SetStateAction } from 'react';
 
 interface DepositCurrencySelectorProps {
     fieldId: string;
-
+    onClick: () => void;
     sellToken?: boolean;
     disable?: boolean;
-
-    // updateOtherQuantity: (evt: ChangeEvent<HTMLInputElement>) => void;
+    selectedToken: TokenIF;
+    setDepositQty: Dispatch<SetStateAction<number>>; // updateOtherQuantity: (evt: ChangeEvent<HTMLInputElement>) => void;
 }
 
 export default function DepositCurrencySelector(props: DepositCurrencySelectorProps) {
-    const { fieldId, disable } = props;
+    const { fieldId, disable, onClick, selectedToken, setDepositQty } = props;
 
     const rateInput = (
         <div className={styles.token_amount}>
@@ -19,7 +21,11 @@ export default function DepositCurrencySelector(props: DepositCurrencySelectorPr
                 id={`${fieldId}-exchange-balance-deposit-quantity`}
                 className={styles.currency_quantity}
                 placeholder='0'
-                // onChange={(event) => updateOtherQuantity(event)}
+                onChange={(event) => {
+                    setDepositQty(
+                        parseFloat(event.target.value) > 0 ? parseFloat(event.target.value) : 0,
+                    );
+                }}
                 type='string'
                 inputMode='decimal'
                 autoComplete='off'
@@ -38,14 +44,14 @@ export default function DepositCurrencySelector(props: DepositCurrencySelectorPr
             <span className={styles.direction}>Select Token</span>
             <div className={styles.swapbox_top}>
                 <div className={styles.swap_input}>{rateInput}</div>
-                <div className={styles.token_select}>
+                <div className={styles.token_select} onClick={onClick}>
                     <img
                         className={styles.token_list_img}
-                        src='https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Ethereum-icon-purple.svg/480px-Ethereum-icon-purple.svg.png'
-                        alt='ethreum'
+                        src={selectedToken.logoURI}
+                        alt={selectedToken.name}
                         width='30px'
                     />
-                    <span className={styles.token_list_text}>ETH</span>
+                    <span className={styles.token_list_text}>{selectedToken.symbol}</span>
                     <RiArrowDownSLine size={27} />
                 </div>
             </div>

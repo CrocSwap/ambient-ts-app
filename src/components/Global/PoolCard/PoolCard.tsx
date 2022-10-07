@@ -2,6 +2,7 @@ import { TokenIF } from '../../../utils/interfaces/TokenIF';
 import styles from './PoolCard.module.css';
 // import { ethers } from 'ethers';
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { CrocEnv, toDisplayPrice } from '@crocswap-libs/sdk';
 import { querySpotPrice } from '../../../App/functions/querySpotPrice';
 import getUnicodeCharacter from '../../../utils/functions/getUnicodeCharacter';
@@ -17,7 +18,6 @@ import PoolCardSkeleton from './PoolCardSkeleton/PoolCardSkeleton';
 
 interface PoolCardProps {
     crocEnv?: CrocEnv;
-    onClick: () => void;
     name: string;
     tokenMap: Map<string, TokenIF>;
     tokenA: TokenIF;
@@ -27,10 +27,10 @@ interface PoolCardProps {
 }
 
 export default function PoolCard(props: PoolCardProps) {
-    const { crocEnv, onClick, tokenMap, tokenA, tokenB, lastBlockNumber, chainId } = props;
+    const { crocEnv, tokenMap, tokenA, tokenB, lastBlockNumber, chainId } = props;
 
-    const tokenAAddress = tokenA?.address ?? undefined;
-    const tokenBAddress = tokenB?.address ?? undefined;
+    const tokenAAddress = tokenA.address;
+    const tokenBAddress = tokenB.address;
 
     const tokenAKey = tokenAAddress?.toLowerCase() + '_0x' + tokenA?.chainId.toString();
     const tokenBKey = tokenBAddress?.toLowerCase() + '_0x' + tokenB?.chainId.toString();
@@ -55,10 +55,6 @@ export default function PoolCard(props: PoolCardProps) {
             lastBlockNumber !== 0
         ) {
             (async () => {
-                // const viewProvider = provider
-                //     ? provider
-                //     : (await new CrocEnv(chainId).context).provider;
-
                 const spotPrice = await querySpotPrice(
                     crocEnv,
                     tokenA.address,
@@ -67,16 +63,6 @@ export default function PoolCard(props: PoolCardProps) {
                     lastBlockNumber,
                 );
 
-                // const spotPrice = await cachedQuerySpotPrice(
-                //     viewProvider,
-                //     baseTokenAddress,
-                //     quoteTokenAddress,
-                //     chainId,
-                //     lastBlockNumber,
-                // );
-                // console.log({ spotPrice });
-
-                // setPoolPriceNonDisplay(spotPrice);
                 if (spotPrice) {
                     const displayPrice = toDisplayPrice(
                         spotPrice,
@@ -120,8 +106,9 @@ export default function PoolCard(props: PoolCardProps) {
 
     const poolIndex = lookupChain(chainId).poolIndex;
 
-    useEffect(() => {
+    const fetchPoolStats = () => {
         (async () => {
+            console.log('fetching fresh pool stats ');
             if (tokenAAddress && tokenBAddress && poolIndex && chainId) {
                 const poolStats = await getPoolStatsFresh(
                     chainId,
@@ -159,7 +146,8 @@ export default function PoolCard(props: PoolCardProps) {
                         true, // denomInBase
                     );
                     if (priceChangeResult > -0.01 && priceChangeResult < 0.01) {
-                        setPoolPriceChangePercent('None');
+                        setPoolPriceChangePercent('No Change');
+                        setIsPoolPriceChangePositive(true);
                     } else if (priceChangeResult) {
                         priceChangeResult > 0
                             ? setIsPoolPriceChangePositive(true)
@@ -185,10 +173,23 @@ export default function PoolCard(props: PoolCardProps) {
                 }
             }
         })();
-    }, [tokenAAddress, tokenBAddress, lastBlockNumber]);
+    };
+
+    useEffect(() => {
+        fetchPoolStats();
+
+        const timerId = setInterval(() => {
+            fetchPoolStats();
+        }, 60000);
+
+        // after 10 minutes stop
+        setTimeout(() => {
+            clearInterval(timerId);
+        }, 600000);
+    }, []);
 
     const tokenImagesDisplay = (
-        <div>
+        <div className={styles.token_images}>
             <img
                 src={shouldInvertDisplay ? tokenAFromMap?.logoURI : tokenBFromMap?.logoURI}
                 alt=''
@@ -266,19 +267,25 @@ export default function PoolCard(props: PoolCardProps) {
     );
 
     if (!tokenA || !tokenB) return <PoolCardSkeleton />;
+
+    const linkpath =
+        '/trade/market/chain=0x5&tokenA=' + tokenA.address + '&tokenB=' + tokenB.address;
+
     return (
-        <div className={styles.pool_card} onClick={onClick}>
-            <div className={styles.row}>
-                {tokenImagesDisplay}
-                {tokenNamesDisplay}
+        <Link className={styles.pool_card} to={linkpath}>
+            <div className={styles.main_container}>
+                <div className={styles.row}>
+                    {tokenImagesDisplay}
+                    {tokenNamesDisplay}
+                </div>
+                <div className={styles.row}>{volumeDisplay}</div>
+                <div className={styles.row}>{apyDisplay}</div>
+                <div className={styles.row}>{tvlDisplay}</div>
+                <div className={styles.column}>
+                    {poolPriceChangeDisplay}
+                    {poolPriceDisplayDOM}
+                </div>
             </div>
-            <div className={styles.row}>{volumeDisplay}</div>
-            <div className={styles.row}>{apyDisplay}</div>
-            <div className={styles.row}>{tvlDisplay}</div>
-            <div className={styles.column}>
-                {poolPriceChangeDisplay}
-                {poolPriceDisplayDOM}
-            </div>
-        </div>
+        </Link>
     );
 }
