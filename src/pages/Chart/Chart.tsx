@@ -956,7 +956,10 @@ export default function Chart(props: ChartData) {
                 selection.enter().select('line').attr('class', 'redline');
                 selection
                     .select('g.left-handle text')
-                    .text((d: any) => d.name + ' - ' + valueFormatter(d.value))
+                    .text((d: any) => {
+                        if (d.name !== 'Current Market Price')
+                            return d.name + ' - ' + valueFormatter(d.value);
+                    })
                     .style('transform', (d: any) =>
                         d.name == 'Min' ? ' translate(0px, 20px)' : '',
                     );
