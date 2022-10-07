@@ -9,7 +9,7 @@ interface TopTokensProps {
 }
 
 export default function TopTokens(props: TopTokensProps) {
-    const { chainId, lastBlockNumber } = props;
+    const { chainId } = props;
 
     const header = (
         <div className={styles.header}>
@@ -28,7 +28,7 @@ export default function TopTokens(props: TopTokensProps) {
                         key={idx}
                         chainId={chainId}
                         pool={item}
-                        lastBlockNumber={lastBlockNumber}
+                        // lastBlockNumber={lastBlockNumber}
                     />
                 ))}
             </div>
