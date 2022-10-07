@@ -1,4 +1,5 @@
 import styles from './InitPool.module.css';
+import { useNavigate } from 'react-router-dom';
 import { useUrlParams } from './useUrlParams';
 import { useState } from 'react';
 import InitPoolSteps from '../../components/InitPool/InitPoolSteps/InitPoolSteps';
@@ -30,6 +31,7 @@ interface InitPoolPropsIf {
 export default function InitPool(props: InitPoolPropsIf) {
     const { showSidebar } = props;
     const newPoolData = useUrlParams();
+
     const tradeData = useAppSelector((state) => state.tradeData);
 
     const tokenA = tradeData.tokenA;
@@ -82,7 +84,7 @@ export default function InitPool(props: InitPoolPropsIf) {
         }
     };
 
-    return (
+   return (
         <main
             className={styles.main}
             style={{ justifyContent: showSidebar ? 'flex-start' : 'center' }}
@@ -126,3 +128,4 @@ export default function InitPool(props: InitPoolPropsIf) {
         </main>
     );
 }
+

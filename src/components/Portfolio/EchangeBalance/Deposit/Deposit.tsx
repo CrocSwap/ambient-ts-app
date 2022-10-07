@@ -264,10 +264,10 @@ export default function Deposit(props: PortfolioDepositProps) {
                 setDepositQty={setDepositQty}
             />
             <div className={styles.info_text}>
-                {selectedToken.symbol} Wallet Balance: {tokenWalletBalance}
+                Your Wallet Balance ({selectedToken.symbol}): {tokenWalletBalance}
             </div>
             <div className={styles.info_text}>
-                {selectedToken.symbol} Exchange Balance: {tokenDexBalance}
+                Your Exchange Balance ({selectedToken.symbol}): {tokenDexBalance}
             </div>
             <DepositButton
                 onClick={() => {

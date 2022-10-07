@@ -69,7 +69,7 @@ interface TradePropsIF {
     isInitialized: boolean;
     poolPriceNonDisplay: number | undefined;
     importedTokens: TokenIF[];
-    poolExists: boolean;
+    poolExists: boolean | null;
 }
 
 // React functional component
@@ -272,7 +272,10 @@ export default function Trade(props: TradePropsIF) {
             </div>
         </div>
     );
-    if (!poolExists) return poolNotInitializedContent;
+    if (poolExists === false) {
+        console.log({poolExists});
+        return poolNotInitializedContent;
+    };
     return (
         <AnimateSharedLayout>
             <main className={styles.main_layout}>
