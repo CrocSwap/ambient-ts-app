@@ -69,7 +69,7 @@ interface TradePropsIF {
     isInitialized: boolean;
     poolPriceNonDisplay: number | undefined;
     importedTokens: TokenIF[];
-    poolExists: boolean;
+    poolExists: boolean | null;
 }
 
 // React functional component

@@ -62,7 +62,7 @@ interface LimitPropsIF {
     openModalWallet: () => void;
     openGlobalModal: (content: React.ReactNode) => void;
     closeGlobalModal: () => void;
-    poolExists: boolean;
+    poolExists: boolean | null;
 }
 
 export default function Limit(props: LimitPropsIF) {
