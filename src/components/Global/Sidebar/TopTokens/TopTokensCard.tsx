@@ -7,21 +7,18 @@ import styles from './TopTokensCard.module.css';
 interface TopTokensCardProps {
     chainId: string;
     pool: PoolIF;
-    lastBlockNumber: number;
+    // lastBlockNumber: number;
 }
 
 export default function TopTokensCard(props: TopTokensCardProps) {
-    const { pool, lastBlockNumber } = props;
+    const { pool } = props;
 
     const location = useLocation();
 
     const linkPath = useMemo(() => {
         const { pathname } = location;
         let locationSlug = '';
-        if (
-            pathname.startsWith('/trade/market') ||
-            pathname.startsWith('/account')
-        ) {
+        if (pathname.startsWith('/trade/market') || pathname.startsWith('/account')) {
             locationSlug = '/trade/market';
         } else if (pathname.startsWith('/trade/limit')) {
             locationSlug = '/trade/limit';
@@ -44,8 +41,9 @@ export default function TopTokensCard(props: TopTokensCardProps) {
     const [tokenPrice, setTokenPrice] = useState<string | undefined>();
     const [tokenPrice24hChange, setTokenPrice24hChange] = useState<string | undefined>();
 
-    useEffect(() => {
+    const fetchPoolPriceChange = () => {
         (async () => {
+            console.log('fetching pool price change');
             const poolPriceChange = await getPoolPriceChange(
                 pool.chainId,
                 pool.base.address,
@@ -97,7 +95,23 @@ export default function TopTokensCard(props: TopTokensCardProps) {
 
             setTokenPrice24hChange(tokenPriceChangeString);
         })();
-    }, [JSON.stringify(pool), lastBlockNumber]);
+    };
+
+    useEffect(() => {
+        fetchPoolPriceChange();
+
+        const timerId = setInterval(() => {
+            fetchPoolPriceChange();
+        }, 60000);
+
+        // after 10 minutes stop
+        setTimeout(() => {
+            clearInterval(timerId);
+        }, 600000);
+
+        // clear interval when component unmounts
+        return () => clearInterval(timerId);
+    }, []);
 
     return (
         <Link className={styles.container} to={linkPath}>
