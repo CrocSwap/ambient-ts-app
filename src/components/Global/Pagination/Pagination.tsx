@@ -43,6 +43,8 @@ export default function Pagination(props: PaginationPropsIF) {
         if (itemsPerPage < totalItems) {
             if (totalItems > currentPage * itemsPerPage) {
                 setEnd(itemsPerPage * currentPage);
+            } else if (totalItems % itemsPerPage === 0) {
+                setEnd(totalItems);
             } else {
                 setEnd(itemsPerPage * (currentPage - 1) + (totalItems % itemsPerPage));
             }
