@@ -13,6 +13,28 @@
 
 }
 
+.back_button{
+  display: flex;
+  justify-content: flex-end;
+}
+
+.back_button svg{
+    background: transparent;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: var(--dark2);
+    padding: 8px;
+    border-radius: 50%;
+
+
+}
+
 .active_sidebar{
     margin-left: 10rem;
 }
