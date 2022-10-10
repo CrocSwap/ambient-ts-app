@@ -1659,7 +1659,7 @@ export default function Chart(props: ChartData) {
                     .xScale(scaleData.xScale)
                     .yScale(scaleData.yScale);
 
-                let firstRender = true;
+                let firstRender = d3.select(d3Container.current).select('.bar').node() === null;
                 const barSeries = d3fc
                     .seriesSvgBar()
                     .orient('horizontal')
@@ -1705,24 +1705,127 @@ export default function Chart(props: ChartData) {
                 });
 
                 d3.select(d3PlotArea.current).on('draw', function (event: any) {
-                    const svg = d3.select(event.target).select('svg');
+                    async function createElements() {
+                        const svg = d3.select(event.target).select('svg');
 
-                    targetsJoin(svg, [targets.ranges]).call(horizontalLine);
-                    marketJoin(svg, [targets.market]).call(marketLine);
-                    limitJoin(svg, [targets.limit]).call(horizontalLine);
+                        targetsJoin(svg, [targets.ranges]).call(horizontalLine);
+                        marketJoin(svg, [targets.market]).call(marketLine);
+                        limitJoin(svg, [targets.limit]).call(horizontalLine);
 
-                    crosshairHorizontalJoin(svg, [crosshairData]).call(crosshairHorizontal);
-                    crosshairVerticalJoin(svg, [crosshairData]).call(crosshairVertical);
+                        crosshairHorizontalJoin(svg, [crosshairData]).call(crosshairHorizontal);
+                        crosshairVerticalJoin(svg, [crosshairData]).call(crosshairVertical);
 
-                    highlightedCurrentPriceLineJoin(svg, [currentPriceData]).call(
-                        highlightedCurrentPriceLine,
-                    );
-                    indicatorLineJoin(svg, [indicatorLineData]).call(indicatorLine);
+                        highlightedCurrentPriceLineJoin(svg, [currentPriceData]).call(
+                            highlightedCurrentPriceLine,
+                        );
+                        indicatorLineJoin(svg, [indicatorLineData]).call(indicatorLine);
 
-                    barJoin(svg, [liquidityData.liqData]).call(barSeries);
-                    candleJoin(svg, [chartData]).call(candlestick);
+                        barJoin(svg, [liquidityData.liqData]).call(barSeries);
+                        candleJoin(svg, [chartData]).call(candlestick);
 
-                    setDragControl(true);
+                        setDragControl(true);
+                    }
+
+                    createElements().then(() => {
+                        d3.select(d3PlotArea.current)
+                            .select('.bar')
+                            .on('mousemove', (event: any) => {
+                                indicatorLineData[0] = {
+                                    x: scaleData.xScale.invert(event.offsetX),
+                                    y: event.offsetY,
+                                };
+
+                                currentPriceData[0] = {
+                                    value: poolPriceDisplay !== undefined ? poolPriceDisplay : 0,
+                                };
+
+                                scaleData.yScaleIndicator.range([
+                                    event.offsetY,
+                                    scaleData.yScale(poolPriceDisplay),
+                                ]);
+
+                                d3.select(d3PlotArea.current)
+                                    .select('.highlightedCurrentPriceLine')
+                                    .style('visibility', 'visible');
+
+                                d3.select(d3PlotArea.current)
+                                    .select('.indicatorLine')
+                                    .style('visibility', 'visible');
+
+                                liqTooltip
+                                    .style('visibility', 'visible')
+                                    .html('<p> % 0.1 </p>' + '<p> $ 500k </p>')
+                                    .style(
+                                        'top',
+                                        event.y -
+                                            80 -
+                                            (event.offsetY - scaleData.yScale(poolPriceDisplay)) /
+                                                2 +
+                                            'px',
+                                    )
+                                    .style('left', event.offsetX - 40 + 'px');
+
+                                const filtered =
+                                    liquidityData.liqData.length > 1
+                                        ? liquidityData.liqData.filter(
+                                              (d: any) => d.upperBoundPriceDecimalCorrected != null,
+                                          )
+                                        : liquidityData.liqData;
+
+                                const nearest = filtered.reduce(function (prev: any, curr: any) {
+                                    return Math.abs(
+                                        curr.upperBoundPriceDecimalCorrected -
+                                            scaleData.yScale.invert(event.offsetY),
+                                    ) <
+                                        Math.abs(
+                                            prev.upperBoundPriceDecimalCorrected -
+                                                scaleData.yScale.invert(event.offsetY),
+                                        )
+                                        ? curr
+                                        : prev;
+                                });
+
+                                d3.select(event.currentTarget)
+                                    .selectAll('.horizontal  > path')
+                                    .style('fill', (d: any) => {
+                                        if (
+                                            currentPriceData[0].value >
+                                                d.upperBoundPriceDecimalCorrected &&
+                                            d.upperBoundPriceDecimalCorrected >=
+                                                nearest.upperBoundPriceDecimalCorrected
+                                        ) {
+                                            return 'rgba(205, 193, 255, 0.8)';
+                                        } else if (
+                                            currentPriceData[0].value <
+                                                d.upperBoundPriceDecimalCorrected &&
+                                            d.upperBoundPriceDecimalCorrected <=
+                                                nearest.upperBoundPriceDecimalCorrected
+                                        ) {
+                                            return 'rgba(115, 113, 252, 0.8)';
+                                        } else {
+                                            return d.upperBoundPriceDecimalCorrected >
+                                                scaleData.barThreshold
+                                                ? 'rgba(115, 113, 252, 0.3)'
+                                                : 'rgba(205, 193, 255, 0.3)';
+                                        }
+                                    });
+
+                                render();
+                            })
+
+                            .on('mouseout', () => {
+                                firstRender = true;
+                                d3.select(d3PlotArea.current)
+                                    .select('.highlightedCurrentPriceLine')
+                                    .style('visibility', 'hidden');
+
+                                d3.select(d3PlotArea.current)
+                                    .select('.indicatorLine')
+                                    .style('visibility', 'hidden');
+
+                                liqTooltip.style('visibility', 'hidden');
+                            });
+                    });
                 });
 
                 d3.select(d3Xaxis.current).on('draw', function (event: any) {
@@ -1771,102 +1874,6 @@ export default function Chart(props: ChartData) {
 
                     render();
                 });
-
-                d3.select(d3PlotArea.current)
-                    .select('.bar')
-                    .on('mousemove', (event: any) => {
-                        indicatorLineData[0] = {
-                            x: scaleData.xScale.invert(event.offsetX),
-                            y: event.offsetY,
-                        };
-
-                        currentPriceData[0] = {
-                            value: poolPriceDisplay !== undefined ? poolPriceDisplay : 0,
-                        };
-
-                        scaleData.yScaleIndicator.range([
-                            event.offsetY,
-                            scaleData.yScale(poolPriceDisplay),
-                        ]);
-
-                        d3.select(d3PlotArea.current)
-                            .select('.highlightedCurrentPriceLine')
-                            .style('visibility', 'visible');
-
-                        d3.select(d3PlotArea.current)
-                            .select('.indicatorLine')
-                            .style('visibility', 'visible');
-
-                        liqTooltip
-                            .style('visibility', 'visible')
-                            .html('<p> % 0.1 </p>' + '<p> $ 500k </p>')
-                            .style(
-                                'top',
-                                event.y -
-                                    80 -
-                                    (event.offsetY - scaleData.yScale(poolPriceDisplay)) / 2 +
-                                    'px',
-                            )
-                            .style('left', event.offsetX - 40 + 'px');
-
-                        const filtered =
-                            liquidityData.liqData.length > 1
-                                ? liquidityData.liqData.filter(
-                                      (d: any) => d.upperBoundPriceDecimalCorrected != null,
-                                  )
-                                : liquidityData.liqData;
-
-                        const nearest = filtered.reduce(function (prev: any, curr: any) {
-                            return Math.abs(
-                                curr.upperBoundPriceDecimalCorrected -
-                                    scaleData.yScale.invert(event.offsetY),
-                            ) <
-                                Math.abs(
-                                    prev.upperBoundPriceDecimalCorrected -
-                                        scaleData.yScale.invert(event.offsetY),
-                                )
-                                ? curr
-                                : prev;
-                        });
-
-                        d3.select(event.currentTarget)
-                            .selectAll('.horizontal  > path')
-                            .style('fill', (d: any) => {
-                                if (
-                                    currentPriceData[0].value > d.upperBoundPriceDecimalCorrected &&
-                                    d.upperBoundPriceDecimalCorrected >=
-                                        nearest.upperBoundPriceDecimalCorrected
-                                ) {
-                                    return 'rgba(205, 193, 255, 0.8)';
-                                } else if (
-                                    currentPriceData[0].value < d.upperBoundPriceDecimalCorrected &&
-                                    d.upperBoundPriceDecimalCorrected <=
-                                        nearest.upperBoundPriceDecimalCorrected
-                                ) {
-                                    return 'rgba(115, 113, 252, 0.8)';
-                                } else {
-                                    return d.upperBoundPriceDecimalCorrected >
-                                        scaleData.barThreshold
-                                        ? 'rgba(115, 113, 252, 0.3)'
-                                        : 'rgba(205, 193, 255, 0.3)';
-                                }
-                            });
-
-                        render();
-                    })
-
-                    .on('mouseleave', () => {
-                        firstRender = true;
-                        d3.select(d3PlotArea.current)
-                            .select('.highlightedCurrentPriceLine')
-                            .style('visibility', 'hidden');
-
-                        d3.select(d3PlotArea.current)
-                            .select('.indicatorLine')
-                            .style('visibility', 'hidden');
-
-                        liqTooltip.style('visibility', 'hidden');
-                    });
 
                 d3.select(d3Yaxis.current)
                     .on('mouseover', (event: any) => {
