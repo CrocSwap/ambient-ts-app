@@ -30,7 +30,7 @@ export const useUrlParams = () => {
 
     return {
         chain: findParamValue('chain'),
-        baseAddr: findParamValue('base'),
-        quoteAddr: findParamValue('quote'),
+        addrTokenA: findParamValue('tokenA'),
+        addrTokenB: findParamValue('tokenB'),
     };
 };
