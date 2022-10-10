@@ -583,6 +583,7 @@ export default function App() {
             // token pair has an initialized pool on-chain
             // returns a promise object
             const doesPoolExist = crocEnv
+                // TODO: make this function pill addresses directly from URL params
                 .pool(tokenPair.dataTokenA.address, tokenPair.dataTokenB.address)
                 .isInit();
             // resolve the promise object to see if pool exists
