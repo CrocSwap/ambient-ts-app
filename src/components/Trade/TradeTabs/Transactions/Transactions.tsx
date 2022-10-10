@@ -66,7 +66,8 @@ export default function Transactions(props: TransactionsProps) {
     const changesByUserMatchingSelectedTokens = changesByUser.filter((tx) => {
         if (
             tx.base.toLowerCase() === baseTokenAddressLowerCase &&
-            tx.quote.toLowerCase() === quoteTokenAddressLowerCase
+            tx.quote.toLowerCase() === quoteTokenAddressLowerCase &&
+            tx.changeType !== 'fill'
         ) {
             return true;
         } else {
@@ -77,7 +78,8 @@ export default function Transactions(props: TransactionsProps) {
     const changesByPoolMatchingSelectedTokens = changesByPool.filter((tx) => {
         if (
             tx.base.toLowerCase() === baseTokenAddressLowerCase &&
-            tx.quote.toLowerCase() === quoteTokenAddressLowerCase
+            tx.quote.toLowerCase() === quoteTokenAddressLowerCase &&
+            tx.changeType !== 'fill'
         ) {
             return true;
         } else {
