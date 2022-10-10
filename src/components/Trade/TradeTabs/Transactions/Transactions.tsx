@@ -58,14 +58,39 @@ export default function Transactions(props: TransactionsProps) {
     const changesByUser = graphData?.changesByUser?.changes;
     const changesByPool = graphData?.changesByPool?.changes;
 
+    const tradeData = useAppSelector((state) => state.tradeData);
+
+    const baseTokenAddressLowerCase = tradeData.baseToken.address.toLowerCase();
+    const quoteTokenAddressLowerCase = tradeData.quoteToken.address.toLowerCase();
+
+    const changesByUserMatchingSelectedTokens = changesByUser.filter((tx) => {
+        if (
+            tx.base.toLowerCase() === baseTokenAddressLowerCase &&
+            tx.quote.toLowerCase() === quoteTokenAddressLowerCase
+        ) {
+            return true;
+        } else {
+            return false;
+        }
+    });
+
+    const changesByPoolMatchingSelectedTokens = changesByPool.filter((tx) => {
+        if (
+            tx.base.toLowerCase() === baseTokenAddressLowerCase &&
+            tx.quote.toLowerCase() === quoteTokenAddressLowerCase
+        ) {
+            return true;
+        } else {
+            return false;
+        }
+    });
+
     // console.log(changesByPool);
 
     const dataReceivedByUser = graphData?.changesByUser?.dataReceived;
     const dataReceivedByPool = graphData?.changesByPool?.dataReceived;
 
-    const tradeData = useAppSelector((state) => state.tradeData);
-
-    const [transactionData, setTransactionData] = useState(changesByPool);
+    const [transactionData, setTransactionData] = useState(changesByPoolMatchingSelectedTokens);
     const [dataReceived, setDataReceived] = useState(dataReceivedByPool);
     // todoJr: Finish this loading logic
     const [isDataLoading, setIsDataLoading] = useState(true);
@@ -88,11 +113,11 @@ export default function Transactions(props: TransactionsProps) {
         transactionData.length ? setDataToDisplay(true) : setDataToDisplay(false);
     }
     function handleUserSelected() {
-        setTransactionData(changesByUser);
+        setTransactionData(changesByUserMatchingSelectedTokens);
         setDataReceived(dataReceivedByUser);
     }
     function handlePoolSelected() {
-        setTransactionData(changesByPool);
+        setTransactionData(changesByPoolMatchingSelectedTokens);
         setDataReceived(dataReceivedByPool);
     }
     // console.log({ isCandleSelected });
@@ -112,8 +137,8 @@ export default function Transactions(props: TransactionsProps) {
         isCandleSelected,
         filter,
         changesInSelectedCandle,
-        changesByUser,
-        changesByPool,
+        JSON.stringify(changesByUserMatchingSelectedTokens),
+        JSON.stringify(changesByPoolMatchingSelectedTokens),
     ]);
 
     useEffect(() => {
@@ -155,7 +180,9 @@ export default function Transactions(props: TransactionsProps) {
     // console.log({ transactionData });
 
     // Change page
-    const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
+    const paginate = (pageNumber: number) => {
+        setCurrentPage(pageNumber);
+    };
 
     const usePaginateDataOrNull = expandTradeTable ? currentTransactions : transactionData;
 
