@@ -22,7 +22,7 @@ interface SidebarAccordionPropsIF {
         data: ReactNode;
     };
     idx: number | string;
-    mostRecent?: PositionIF[] | ITransaction[] | string[];
+    // mostRecent?: PositionIF[] | ITransaction[] | string[];
 }
 
 export default function SidebarAccordion(props: SidebarAccordionPropsIF) {
