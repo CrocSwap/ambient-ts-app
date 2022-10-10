@@ -158,11 +158,11 @@ export default function Transactions(props: TransactionsProps) {
 
     // const [transactions] = useState(transactionData);
     const [currentPage, setCurrentPage] = useState(1);
-    const [transactionsPerPage] = useState(30);
+    const [transactionsPerPage] = useState(20);
 
     useEffect(() => {
         setCurrentPage(1);
-    }, [isShowAllEnabled]);
+    }, [account, isShowAllEnabled, JSON.stringify({ baseTokenAddress, quoteTokenAddress })]);
 
     // Get current transactions
     const indexOfLastTransaction = currentPage * transactionsPerPage;

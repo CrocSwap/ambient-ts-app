@@ -41,10 +41,10 @@ export default function Pagination(props: PaginationPropsIF) {
 
     function handleUpdatePageShow() {
         if (itemsPerPage < totalItems) {
-            if (totalItems % currentPage !== 0) {
-                setEnd(itemsPerPage * (currentPage - 1) + (totalItems % currentPage));
-            } else {
+            if (totalItems > currentPage * itemsPerPage) {
                 setEnd(itemsPerPage * currentPage);
+            } else {
+                setEnd(itemsPerPage * (currentPage - 1) + (totalItems % itemsPerPage));
             }
         }
     }
