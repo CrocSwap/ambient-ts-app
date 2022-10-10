@@ -15,7 +15,6 @@ import Value from '../../../Global/Tabs/Value/Value';
 import { formatAmount } from '../../../../utils/numbers';
 
 interface RangeCardProps {
-    index: number;
     isUserLoggedIn: boolean;
     crocEnv: CrocEnv | undefined;
     chainData: ChainSpec;
@@ -63,14 +62,7 @@ export default function RangeCard(props: RangeCardProps) {
         lastBlockNumber,
         currentPositionActive,
         setCurrentPositionActive,
-        index,
     } = props;
-
-    useEffect(() => {
-        if (index < 3) {
-            // console.log(position.apy);
-        }
-    }, [index]);
 
     // -------------------------------POSITION HASH------------------------
 

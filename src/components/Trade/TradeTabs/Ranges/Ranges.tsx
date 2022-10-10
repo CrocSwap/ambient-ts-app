@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { Dispatch, SetStateAction } from 'react';
+import { Dispatch, SetStateAction, useEffect } from 'react';
 import { ethers } from 'ethers';
 
 // START: Import JSX Components
@@ -8,10 +8,17 @@ import RangeCardHeader from './RangeCardHeader';
 
 // START: Import Local Files
 import styles from './Ranges.module.css';
-import { graphData } from '../../../../utils/state/graphDataSlice';
-import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
+import {
+    addPositionsByPool,
+    addPositionsByUser,
+    graphData,
+} from '../../../../utils/state/graphDataSlice';
+import { useAppDispatch, useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { useSortedPositions } from './useSortedPositions';
 import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
+import { PositionIF } from '../../../../utils/interfaces/PositionIF';
+import { updatePositionData } from '../../../../App/functions/getPositionData';
+import { TokenIF } from '../../../../utils/interfaces/TokenIF';
 // import RangeAccordions from './RangeAccordions/RangeAccordions';
 
 // interface for props
@@ -35,7 +42,7 @@ interface RangesPropsIF {
     currentPositionActive: string;
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
     portfolio?: boolean;
-
+    importedTokens: TokenIF[];
     openGlobalModal: (content: React.ReactNode) => void;
     closeGlobalModal: () => void;
 }
@@ -100,19 +107,45 @@ export default function Ranges(props: RangesPropsIF) {
         positionsByUserMatchingSelectedTokens,
         graphData?.positionsByPool?.positions,
     );
+
+    const topThreePositions = sortedPositions.slice(0, 3);
+
+    const dispatch = useAppDispatch();
+
+    // useEffect(() => {
+    //     console.log({ topThreePositions });
+    // }, [JSON.stringify(topThreePositions)]);
+
+    useEffect(() => {
+        if (topThreePositions && crocEnv) {
+            Promise.all(
+                topThreePositions.map((position: PositionIF) => {
+                    return updatePositionData(position);
+                }),
+            )
+                .then((updatedPositions) => {
+                    if (isShowAllEnabled) {
+                        dispatch(addPositionsByPool(updatedPositions));
+                    } else {
+                        dispatch(addPositionsByUser(updatedPositions));
+                    }
+                })
+                .catch(console.log);
+        }
+    }, [JSON.stringify(topThreePositions), lastBlockNumber, isShowAllEnabled]);
+
     // const [expanded, setExpanded] = useState<false | number>(false);
 
     const desktopDisplay = (
         <div className={styles.desktop_ranges_display_container}>
-            {sortedPositions.map((position, index) => (
+            {sortedPositions.map((position) => (
                 <RangeCard
-                    index={index}
                     isUserLoggedIn={isUserLoggedIn}
                     crocEnv={crocEnv}
                     chainData={chainData}
                     provider={provider}
                     chainId={chainId}
-                    key={position.id}
+                    key={position.positionId}
                     portfolio={portfolio}
                     baseTokenBalance={baseTokenBalance}
                     quoteTokenBalance={quoteTokenBalance}

@@ -16,6 +16,8 @@ export const getPositionData = async (
     chainId: string,
     lastBlockNumber: number,
 ): Promise<PositionIF> => {
+    const newPosition = { ...position };
+
     const baseTokenAddress = position.base;
     const quoteTokenAddress = position.quote;
 
@@ -28,13 +30,13 @@ export const getPositionData = async (
     );
 
     const poolPriceInTicks = Math.log(poolPriceNonDisplay) / Math.log(1.0001);
-    position.poolPriceInTicks = poolPriceInTicks;
+    newPosition.poolPriceInTicks = poolPriceInTicks;
 
     const isPositionInRange =
         position.positionType === 'ambient' ||
         (position.bidTick <= poolPriceInTicks && poolPriceInTicks <= position.askTick);
 
-    position.isPositionInRange = isPositionInRange;
+    newPosition.isPositionInRange = isPositionInRange;
 
     const baseTokenDecimals = position.baseDecimals;
     const quoteTokenDecimals = position.quoteDecimals;
@@ -60,7 +62,7 @@ export const getPositionData = async (
         quoteTokenDecimals,
     );
 
-    position.lowRangeShortDisplayInBase =
+    newPosition.lowRangeShortDisplayInBase =
         lowerPriceDisplayInBase < 0.0001
             ? lowerPriceDisplayInBase.toExponential(2)
             : lowerPriceDisplayInBase < 2
@@ -71,7 +73,7 @@ export const getPositionData = async (
                   maximumFractionDigits: 0,
               });
 
-    position.lowRangeShortDisplayInQuote =
+    newPosition.lowRangeShortDisplayInQuote =
         lowerPriceDisplayInQuote < 0.0001
             ? lowerPriceDisplayInQuote.toExponential(2)
             : lowerPriceDisplayInQuote < 2
@@ -82,7 +84,7 @@ export const getPositionData = async (
                   maximumFractionDigits: 0,
               });
 
-    position.highRangeShortDisplayInBase =
+    newPosition.highRangeShortDisplayInBase =
         upperPriceDisplayInBase < 0.0001
             ? upperPriceDisplayInBase.toExponential(2)
             : upperPriceDisplayInBase < 2
@@ -93,7 +95,7 @@ export const getPositionData = async (
                   maximumFractionDigits: 0,
               });
 
-    position.highRangeShortDisplayInQuote =
+    newPosition.highRangeShortDisplayInQuote =
         upperPriceDisplayInQuote < 0.0001
             ? upperPriceDisplayInQuote.toExponential(2)
             : upperPriceDisplayInQuote < 2
@@ -111,11 +113,11 @@ export const getPositionData = async (
         (token) => token.address.toLowerCase() === quoteTokenAddress.toLowerCase(),
     )?.logoURI;
 
-    position.baseTokenLogoURI = baseTokenLogoURI ?? '';
-    position.quoteTokenLogoURI = quoteTokenLogoURI ?? '';
+    newPosition.baseTokenLogoURI = baseTokenLogoURI ?? '';
+    newPosition.quoteTokenLogoURI = quoteTokenLogoURI ?? '';
 
     if (position.positionType !== 'ambient') {
-        position.lowRangeDisplayInBase =
+        newPosition.lowRangeDisplayInBase =
             lowerPriceDisplayInBase < 0.0001
                 ? lowerPriceDisplayInBase.toExponential(2)
                 : lowerPriceDisplayInBase < 2
@@ -126,7 +128,7 @@ export const getPositionData = async (
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 2,
                   });
-        position.highRangeDisplayInBase =
+        newPosition.highRangeDisplayInBase =
             upperPriceDisplayInBase < 0.0001
                 ? upperPriceDisplayInBase.toExponential(2)
                 : upperPriceDisplayInBase < 2
@@ -140,7 +142,7 @@ export const getPositionData = async (
     }
 
     if (position.positionType !== 'ambient') {
-        position.lowRangeDisplayInQuote =
+        newPosition.lowRangeDisplayInQuote =
             lowerPriceDisplayInQuote < 0.0001
                 ? lowerPriceDisplayInQuote.toExponential(2)
                 : lowerPriceDisplayInQuote < 2
@@ -151,7 +153,7 @@ export const getPositionData = async (
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 2,
                   });
-        position.highRangeDisplayInQuote =
+        newPosition.highRangeDisplayInQuote =
             upperPriceDisplayInQuote < 0.0001
                 ? upperPriceDisplayInQuote.toExponential(2)
                 : upperPriceDisplayInQuote < 2
@@ -182,7 +184,7 @@ export const getPositionData = async (
                       maximumFractionDigits: 2,
                   });
 
-        position.positionLiqBaseTruncated = baseLiqDisplayTruncated;
+        newPosition.positionLiqBaseTruncated = baseLiqDisplayTruncated;
     }
     if (position.positionLiqQuoteDecimalCorrected) {
         const liqQuoteNum = position.positionLiqQuoteDecimalCorrected;
@@ -201,8 +203,86 @@ export const getPositionData = async (
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 2,
                   });
-        position.positionLiqQuoteTruncated = quoteLiqDisplayTruncated;
+        newPosition.positionLiqQuoteTruncated = quoteLiqDisplayTruncated;
     }
 
-    return position;
+    return newPosition;
+};
+
+export const updatePositionData = async (position: PositionIF): Promise<PositionIF> => {
+    const httpGraphCacheServerDomain = 'https://809821320828123.de:5000';
+    const positionStatsCacheEndpoint = httpGraphCacheServerDomain + '/position_stats?';
+
+    let newPosition = { ...position };
+    console.log('fetching position stats');
+    fetch(
+        positionStatsCacheEndpoint +
+            new URLSearchParams({
+                user: position.user,
+                bidTick: position.bidTick.toString(),
+                askTick: position.askTick.toString(),
+                base: position.base,
+                quote: position.quote,
+                poolIdx: position.poolIdx.toString(),
+                chainId: position.chainId,
+                positionType: position.positionType,
+                addValue: 'true',
+            }),
+    )
+        .then((response) => response?.json())
+        .then((json) => {
+            const positionStats = json?.data;
+            // const liqBaseNum = positionStats.positionLiqBaseDecimalCorrected;
+            // const liqQuoteNum = positionStats.positionLiqQuoteDecimalCorrected;
+            // const liqBaseDisplay = liqBaseNum
+            //     ? liqBaseNum < 2
+            //         ? liqBaseNum.toLocaleString(undefined, {
+            //               minimumFractionDigits: 2,
+            //               maximumFractionDigits: 6,
+            //           })
+            //         : liqBaseNum.toLocaleString(undefined, {
+            //               minimumFractionDigits: 2,
+            //               maximumFractionDigits: 2,
+            //           })
+            //     : undefined;
+
+            // newPosition.positionLiqBaseTruncated = liqBaseDisplay;
+
+            // const liqQuoteDisplay = liqQuoteNum
+            //     ? liqQuoteNum < 2
+            //         ? liqQuoteNum.toLocaleString(undefined, {
+            //               minimumFractionDigits: 2,
+            //               maximumFractionDigits: 6,
+            //           })
+            //         : liqQuoteNum.toLocaleString(undefined, {
+            //               minimumFractionDigits: 2,
+            //               maximumFractionDigits: 2,
+            //           })
+            //     : undefined;
+
+            // newPosition.positionLiqQuoteTruncated = liqQuoteDisplay;
+
+            // const usdValue = position.positionLiqTotalUSD;
+
+            // if (usdValue) {
+            //     newPosition.totalValueUSD = usdValue;
+            // }
+
+            // const baseFeeDisplayNum = positionStats.feesLiqBaseDecimalCorrected;
+            // const quoteFeeDisplayNum = positionStats.feesLiqQuoteDecimalCorrected;
+
+            // newPosition.positionLiqBaseDecimalCorrected = baseFeeDisplayNum;
+
+            // newPosition.positionLiqQuoteDecimalCorrected = quoteFeeDisplayNum;
+
+            if (positionStats.apy) {
+                newPosition = Object.assign({ apy: positionStats.apy }, newPosition);
+                // newPosition.apy = positionStats.apy;
+            }
+            console.log({ newPosition });
+            return newPosition;
+        })
+        .catch(console.log);
+
+    return newPosition;
 };
