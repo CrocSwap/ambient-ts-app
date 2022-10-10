@@ -25,8 +25,10 @@ export default function InitPool(props: InitPoolPropsIf) {
 
     const poolExists = useMemo(() => {
         if (crocEnv) {
+            // TODO: put this in a try-catch to trigger navigation if URL params
+            // TODO: ... to navigate if there is an error in the addresses
             const doesPoolExist = crocEnv
-                .pool(newPoolData.addrTokenA as string, newPoolData.addrTokenB as string)
+                .pool(newPoolData.baseAddr as string, newPoolData.quoteAddr as string)
                 .isInit();
             // resolve the promise object to see if pool exists
             return Promise.resolve(doesPoolExist) ?? null;

@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import { useParams } from 'react-router-dom';
+import { sortBaseQuoteTokens } from '@crocswap-libs/sdk';
 
 export const useUrlParams = () => {
     const { params } = useParams();
@@ -28,9 +29,14 @@ export const useUrlParams = () => {
         return urlParams.find((param) => param[0] === key)?.slice(-1)[0];
     };
 
+    const [baseAddr, quoteAddr] = sortBaseQuoteTokens(
+        findParamValue('tokenA') as string,
+        findParamValue('tokenB') as string
+    );
+
     return {
         chain: findParamValue('chain'),
-        addrTokenA: findParamValue('tokenA'),
-        addrTokenB: findParamValue('tokenB'),
+        baseAddr: baseAddr,
+        quoteAddr: quoteAddr,
     };
 };
