@@ -101,20 +101,11 @@ export default function Trade(props: TradePropsIF) {
         setIsShowAllEnabled,
         isTokenABase,
         poolPriceNonDisplay,
-
         account,
         isAuthenticated,
         isWeb3Enabled,
         currentTxActiveInTransactions,
         setCurrentTxActiveInTransactions,
-        // selectedOutsideTab,
-        // setSelectedOutsideTab,
-        // outsideControl,
-        // setOutsideControl,
-        // currentPositionActive,
-        // setCurrentPositionActive,
-        // openGlobalModal,
-        // closeGlobalModal,
         poolExists,
     } = props;
 
@@ -161,19 +152,8 @@ export default function Trade(props: TradePropsIF) {
             pool.pool.chainId === chainData.chainId,
     );
 
-    // const liqData = graphData?.liquidityForAllPools.pools;
-    // console.log({ liqData });
-    // console.log({ tradeData });
-    // console.log({ chainData });
-    // console.log({ indexOfPoolInLiqData });
-
     const activePoolLiquidityData = graphData?.liquidityForAllPools?.pools[indexOfPoolInLiqData];
-    // console.log({ activePoolLiquidityData });
     const liquidityData = activePoolLiquidityData?.liquidityData;
-
-    // const denomInBase = tradeData.isDenomBase;
-
-    // const isAdvancedModeActive = tradeData.advancedMode;
 
     const poolPriceDisplayWithDenom = poolPriceDisplay
         ? isDenomBase
@@ -258,7 +238,7 @@ export default function Trade(props: TradePropsIF) {
     const initLinkPath =
         '/initpool/chain=0x5&base=' + baseTokenAddress + '&quote=' + quoteTokenAddress;
 
-    const poolNotInitializedContent = poolExists ? null : (
+    const poolNotInitializedContent = poolExists === false ? (
         <div className={styles.pool_not_initialialized_container}>
             <div className={styles.pool_not_initialialized_content}>
                 <h2>This pool has not been initialized.</h2>
@@ -271,11 +251,7 @@ export default function Trade(props: TradePropsIF) {
                 </Link>
             </div>
         </div>
-    );
-    // if (poolExists === false) {
-    //     console.log({ poolExists });
-    //     return poolNotInitializedContent;
-    // }
+    ) : null;
 
     return (
         <AnimateSharedLayout>
