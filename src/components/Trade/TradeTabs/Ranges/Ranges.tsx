@@ -66,6 +66,22 @@ export default function Ranges(props: RangesPropsIF) {
 
     const tradeData = useAppSelector((state) => state.tradeData);
 
+    const baseTokenAddressLowerCase = tradeData.baseToken.address.toLowerCase();
+    const quoteTokenAddressLowerCase = tradeData.quoteToken.address.toLowerCase();
+
+    const positionsByUserMatchingSelectedTokens = graphData?.positionsByUser?.positions.filter(
+        (position) => {
+            if (
+                position.base.toLowerCase() === baseTokenAddressLowerCase &&
+                position.quote.toLowerCase() === quoteTokenAddressLowerCase
+            ) {
+                return true;
+            } else {
+                return false;
+            }
+        },
+    );
+
     const columnHeaders = [
         { name: 'ID', sortable: false, className: '' },
         { name: 'Wallet', sortable: true, className: 'wallet' },
@@ -81,21 +97,22 @@ export default function Ranges(props: RangesPropsIF) {
 
     const [sortBy, setSortBy, reverseSort, setReverseSort, sortedPositions] = useSortedPositions(
         isShowAllEnabled,
-        graphData?.positionsByUser?.positions,
+        positionsByUserMatchingSelectedTokens,
         graphData?.positionsByPool?.positions,
     );
     // const [expanded, setExpanded] = useState<false | number>(false);
 
     const desktopDisplay = (
         <div className={styles.desktop_ranges_display_container}>
-            {sortedPositions.map((position, idx) => (
+            {sortedPositions.map((position, index) => (
                 <RangeCard
+                    index={index}
                     isUserLoggedIn={isUserLoggedIn}
                     crocEnv={crocEnv}
                     chainData={chainData}
                     provider={provider}
                     chainId={chainId}
-                    key={idx}
+                    key={position.id}
                     portfolio={portfolio}
                     baseTokenBalance={baseTokenBalance}
                     quoteTokenBalance={quoteTokenBalance}

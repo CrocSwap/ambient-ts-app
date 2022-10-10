@@ -15,6 +15,7 @@ import Value from '../../../Global/Tabs/Value/Value';
 import { formatAmount } from '../../../../utils/numbers';
 
 interface RangeCardProps {
+    index: number;
     isUserLoggedIn: boolean;
     crocEnv: CrocEnv | undefined;
     chainData: ChainSpec;
@@ -49,8 +50,8 @@ export default function RangeCard(props: RangeCardProps) {
         chainId,
         position,
         // isAllPositionsEnabled,
-        tokenAAddress,
-        tokenBAddress,
+        // tokenAAddress,
+        // tokenBAddress,
         baseTokenBalance,
         quoteTokenBalance,
         baseTokenDexBalance,
@@ -62,7 +63,14 @@ export default function RangeCard(props: RangeCardProps) {
         lastBlockNumber,
         currentPositionActive,
         setCurrentPositionActive,
+        index,
     } = props;
+
+    useEffect(() => {
+        if (index < 3) {
+            // console.log(position.apy);
+        }
+    }, [index]);
 
     // -------------------------------POSITION HASH------------------------
 
@@ -90,17 +98,17 @@ export default function RangeCard(props: RangeCardProps) {
     // --------------------SELECTED TOKEN FUNCTIONALITY---------------------------
     // const ownerId = position ? position.user : null;
 
-    const positionBaseAddressLowerCase = position.base.toLowerCase();
-    const positionQuoteAddressLowerCase = position.quote.toLowerCase();
+    // const positionBaseAddressLowerCase = position.base.toLowerCase();
+    // const positionQuoteAddressLowerCase = position.quote.toLowerCase();
 
-    const tokenAAddressLowerCase = tokenAAddress.toLowerCase();
-    const tokenBAddressLowerCase = tokenBAddress.toLowerCase();
+    // const tokenAAddressLowerCase = tokenAAddress.toLowerCase();
+    // const tokenBAddressLowerCase = tokenBAddress.toLowerCase();
 
-    const positionMatchesSelectedTokens =
-        (positionBaseAddressLowerCase === tokenAAddressLowerCase ||
-            positionQuoteAddressLowerCase === tokenAAddressLowerCase) &&
-        (positionBaseAddressLowerCase === tokenBAddressLowerCase ||
-            positionQuoteAddressLowerCase === tokenBAddressLowerCase);
+    // const positionMatchesSelectedTokens =
+    //     (positionBaseAddressLowerCase === tokenAAddressLowerCase ||
+    //         positionQuoteAddressLowerCase === tokenAAddressLowerCase) &&
+    //     (positionBaseAddressLowerCase === tokenBAddressLowerCase ||
+    //         positionQuoteAddressLowerCase === tokenBAddressLowerCase);
 
     const accountAddress = account ? account.toLowerCase() : null;
     const userMatchesConnectedAccount = accountAddress === position.user.toLowerCase();
@@ -181,7 +189,7 @@ export default function RangeCard(props: RangeCardProps) {
     const activePositionStyle =
         position.positionStorageSlot === currentPositionActive ? styles.active_position_style : '';
 
-    if (!positionMatchesSelectedTokens) return null;
+    // if (!positionMatchesSelectedTokens) return null;
 
     const usdValueNum = position.totalValueUSD;
 
