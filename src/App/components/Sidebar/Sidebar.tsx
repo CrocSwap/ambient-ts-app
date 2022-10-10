@@ -80,6 +80,8 @@ export default function Sidebar(props: SidebarPropsIF) {
     const limitOrderByUser = graphData.limitOrdersByUser.limitOrders;
 
     const mostRecentTransactions = transactionsByUser.slice(0, 4);
+    const mostRecentPositions = positionsByUser.slice(0, 4);
+    const mostRecentLimitOrders = limitOrderByUser.slice(0, 4);
     // const mostRecentPositions = positionsByUser.slice(0, 4);
 
     // TODO:  @Ben this is the map with all the coin gecko token data objects
@@ -132,7 +134,7 @@ export default function Sidebar(props: SidebarPropsIF) {
             icon: rangePositionsImage,
             data: (
                 <SidebarRangePositions
-                    userPositions={positionsByUser}
+                    userPositions={mostRecentPositions}
                     isDenomBase={isDenomBase}
                     {...sidebarRangePositionProps}
                 />
@@ -148,7 +150,7 @@ export default function Sidebar(props: SidebarPropsIF) {
                 <SidebarLimitOrders
                     isDenomBase={isDenomBase}
                     tokenMap={tokenMap}
-                    limitOrderByUser={limitOrderByUser}
+                    limitOrderByUser={mostRecentLimitOrders}
                     {...sidebarLimitOrderProps}
                 />
             ),
@@ -165,7 +167,7 @@ export default function Sidebar(props: SidebarPropsIF) {
 
     const recentTransactions = [
         {
-            name: 'Recent Transactions',
+            name: 'Transactions',
             icon: recentTransactionsImage,
             data: (
                 <SidebarRecentTransactions
@@ -284,7 +286,7 @@ export default function Sidebar(props: SidebarPropsIF) {
                     item={item}
                     toggleSidebar={toggleSidebar}
                     key={idx}
-                    mostRecent={['should open automatically']}
+                    // mostRecent={['should open automatically']}
                 />
             ))}
         </div>
@@ -299,7 +301,7 @@ export default function Sidebar(props: SidebarPropsIF) {
                     idx={idx}
                     item={item}
                     key={idx}
-                    mostRecent={mostRecentTransactions}
+                    // mostRecent={mostRecentTransactions}
                 />
             ))}{' '}
             {recentLimitOrders.map((item, idx) => (
@@ -318,7 +320,7 @@ export default function Sidebar(props: SidebarPropsIF) {
                     idx={idx}
                     item={item}
                     key={idx}
-                    mostRecent={positionsByUser}
+                    // mostRecent={positionsByUser}
                 />
             ))}
             {favoritePools.map((item, idx) => (

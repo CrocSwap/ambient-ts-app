@@ -36,7 +36,7 @@ hr {
 	display:inline-block;
 	-webkit-mask:linear-gradient(-60deg,#000 30%,rgba(119, 117, 117, 0.333),#000 70%) right/300% 100%;
 	background-repeat: no-repeat;
-	animation: shimmer 1s infinite;
+	animation: shimmer 2.2s infinite;
 	filter: blur(8px)
 }
 @keyframes shimmer {

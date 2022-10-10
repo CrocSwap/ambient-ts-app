@@ -36,8 +36,8 @@ export default function TransactionCard(props: TransactionProps) {
         // tokenMap,
         // chainId,
         blockExplorer,
-        tokenAAddress,
-        tokenBAddress,
+        // tokenAAddress,
+        // tokenBAddress,
         isDenomBase,
         currentTxActiveInTransactions,
         setCurrentTxActiveInTransactions,
@@ -55,17 +55,17 @@ export default function TransactionCard(props: TransactionProps) {
     // const baseToken = tokenMap ? tokenMap.get(baseId.toLowerCase()) : undefined;
     // const quoteToken = tokenMap ? tokenMap.get(quoteId.toLowerCase()) : undefined;
 
-    const transactionBaseAddressLowerCase = tx.base.toLowerCase();
-    const transactionQuoteAddressLowerCase = tx.quote.toLowerCase();
+    // const transactionBaseAddressLowerCase = tx.base.toLowerCase();
+    // const transactionQuoteAddressLowerCase = tx.quote.toLowerCase();
 
-    const tokenAAddressLowerCase = tokenAAddress.toLowerCase();
-    const tokenBAddressLowerCase = tokenBAddress.toLowerCase();
+    // const tokenAAddressLowerCase = tokenAAddress.toLowerCase();
+    // const tokenBAddressLowerCase = tokenBAddress.toLowerCase();
 
-    const transactionMatchesSelectedTokens =
-        (transactionBaseAddressLowerCase === tokenAAddressLowerCase ||
-            transactionQuoteAddressLowerCase === tokenAAddressLowerCase) &&
-        (transactionBaseAddressLowerCase === tokenBAddressLowerCase ||
-            transactionQuoteAddressLowerCase === tokenBAddressLowerCase);
+    // const transactionMatchesSelectedTokens =
+    //     (transactionBaseAddressLowerCase === tokenAAddressLowerCase ||
+    //         transactionQuoteAddressLowerCase === tokenAAddressLowerCase) &&
+    //     (transactionBaseAddressLowerCase === tokenBAddressLowerCase ||
+    //         transactionQuoteAddressLowerCase === tokenBAddressLowerCase);
 
     //    const qtyDecimals = tx.inBaseQty ? baseToken?.decimals : quoteToken?.decimals
 
@@ -451,8 +451,8 @@ export default function TransactionCard(props: TransactionProps) {
                   maximumFractionDigits: 2,
               });
 
-    if (!transactionMatchesSelectedTokens) return null;
-    if (tx.changeType === 'fill') return null;
+    // if (!transactionMatchesSelectedTokens) return null;
+    // if (tx.changeType === 'fill') return null;
 
     return (
         <div
