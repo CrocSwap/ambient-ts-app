@@ -12,6 +12,7 @@ import SetInitialLiquidity from '../../components/InitPool/SetInitialLiquidity/S
 import ConfirmPoolCreation from '../../components/InitPool/ConfirmPoolCreation/ConfirmPoolCreation';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { useNavigate } from 'react-router-dom';
+import { VscClose } from 'react-icons/vsc';
 
 const animationsNext = {
     initial: { opacity: 0, x: 30 },
@@ -91,6 +92,9 @@ export default function InitPool(props: InitPoolPropsIf) {
                 className={styles.init_pool_container}
                 style={{ marginLeft: showSidebar ? '15rem' : '' }}
             >
+                <div className={styles.back_button} onClick={() => navigate(-1)}>
+                    <VscClose size={30} />
+                </div>
                 <div className={styles.top_content}>
                     <ContentContainer>
                         <header>
