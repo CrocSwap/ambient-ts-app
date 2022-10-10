@@ -147,7 +147,9 @@ export default function Chart(props: ChartData) {
     const [transactionFilter, setTransactionFilter] = useState<CandleData>();
     const [ghostLines, setGhostLines] = useState<any>();
     const [horizontalLine, setHorizontalLine] = useState<any>();
+    const [marketLine, setMarketLine] = useState<any>();
     const [targetsJoin, setTargetsJoin] = useState<any>();
+    const [marketJoin, setMarketJoin] = useState<any>();
     const [limitJoin, setLimitJoin] = useState<any>();
     const [popup, setPopup] = useState<any>();
     const [liqTooltip, setLiqTooltip] = useState<any>();
@@ -231,7 +233,6 @@ export default function Chart(props: ChartData) {
                         .style('cursor', 'row-resize');
                 });
 
-            d3.select(d3Container.current).select('.market').style('visibility', 'hidden');
             d3.select(d3Container.current).select('.limit').style('visibility', 'hidden');
         } else if (location.pathname.includes('limit')) {
             d3.select(d3Container.current).select('.limit').style('visibility', 'visible');
@@ -244,10 +245,8 @@ export default function Chart(props: ChartData) {
                         .style('cursor', 'row-resize');
                 });
 
-            d3.select(d3Container.current).select('.market').style('visibility', 'hidden');
             d3.select(d3Container.current).select('.targets').style('visibility', 'hidden');
         } else if (location.pathname.includes('market')) {
-            d3.select(d3Container.current).select('.market').style('visibility', 'visible');
             d3.select(d3Container.current).select('.limit').style('visibility', 'hidden');
             d3.select(d3Container.current).select('.targets').style('visibility', 'hidden');
         }
@@ -441,7 +440,7 @@ export default function Chart(props: ChartData) {
         }
     }, [scaleData, ranges]);
 
-    const setMarketLine = () => {
+    const setMarketLineValue = () => {
         let lastCandlePrice: number | undefined;
         props.candleData?.chartData.map((data) => {
             if (lastCandlePrice === undefined && data.close !== undefined) {
@@ -576,9 +575,8 @@ export default function Chart(props: ChartData) {
 
     // Targets
     useEffect(() => {
-        if (location.pathname.includes('market')) {
-            setMarketLine();
-        } else if (location.pathname.includes('limit')) {
+        setMarketLineValue();
+        if (location.pathname.includes('limit')) {
             setLimitLine();
         } else if (location.pathname.includes('range')) {
             if (!isAdvancedModeActive) {
@@ -940,6 +938,34 @@ export default function Chart(props: ChartData) {
                 .xScale(scaleData.xScale)
                 .yScale(scaleData.yScale);
 
+            const marketLine = d3fc
+                .annotationSvgLine()
+                .value((d: any) => d.value)
+                .xScale(scaleData.xScale)
+                .yScale(scaleData.yScale);
+
+            marketLine.decorate((selection: any) => {
+                selection
+                    .enter()
+                    .attr('id', (d: any) => d.name)
+                    .select('g.left-handle')
+                    .append('text')
+                    .attr('x', 5)
+                    .attr('y', -5);
+                selection
+                    .enter()
+                    .append('rect')
+                    .attr('width', '100%')
+                    .attr('y', -20)
+                    .attr('height', '8%')
+                    .attr('fill', 'transparent')
+                    .attr('stroke', 'none');
+
+                selection.enter().select('g.right-handle').remove();
+                selection.enter().select('line').attr('class', 'marketLine');
+                selection.select('g.left-handle').remove();
+            });
+
             horizontalLine.decorate((selection: any) => {
                 selection
                     .enter()
@@ -961,10 +987,7 @@ export default function Chart(props: ChartData) {
                 selection.enter().select('line').attr('class', 'redline');
                 selection
                     .select('g.left-handle text')
-                    .text((d: any) => {
-                        if (d.name !== 'Current Market Price')
-                            return d.name + ' - ' + valueFormatter(d.value);
-                    })
+                    .text((d: any) => d.name + ' - ' + valueFormatter(d.value))
                     .style('transform', (d: any) =>
                         d.name == 'Min' ? ' translate(0px, 20px)' : '',
                     );
@@ -972,6 +995,7 @@ export default function Chart(props: ChartData) {
 
             const targetsJoin = d3fc.dataJoin('g', 'targets');
             const limitJoin = d3fc.dataJoin('g', 'limit');
+            const marketJoin = d3fc.dataJoin('g', 'market');
 
             const popup = d3
                 .select(d3Container.current)
@@ -1001,8 +1025,16 @@ export default function Chart(props: ChartData) {
                 return limitJoin;
             });
 
+            setMarketJoin(() => {
+                return marketJoin;
+            });
+
             setHorizontalLine(() => {
                 return horizontalLine;
+            });
+
+            setMarketLine(() => {
+                return marketLine;
             });
         }
     }, [scaleData]);
@@ -1430,6 +1462,8 @@ export default function Chart(props: ChartData) {
             liqTooltip !== undefined &&
             crosshairVertical !== undefined &&
             crosshairHorizontal !== undefined &&
+            marketLine !== undefined &&
+            marketJoin !== undefined &&
             targetsJoin !== undefined
         ) {
             const targetData = {
@@ -1451,12 +1485,14 @@ export default function Chart(props: ChartData) {
                 horizontalLine,
                 targetsJoin,
                 limitJoin,
+                marketJoin,
                 popup,
                 indicatorLine,
                 highlightedCurrentPriceLine,
                 liqTooltip,
                 crosshairVertical,
                 crosshairHorizontal,
+                marketLine,
             );
         }
     }, [
@@ -1470,6 +1506,7 @@ export default function Chart(props: ChartData) {
         horizontalLine,
         targetsJoin,
         limitJoin,
+        marketJoin,
         popup,
         denomInBase,
         indicatorLine,
@@ -1477,6 +1514,7 @@ export default function Chart(props: ChartData) {
         liqTooltip,
         crosshairVertical,
         crosshairHorizontal,
+        marketLine,
     ]);
 
     // Draw Chart
@@ -1494,12 +1532,14 @@ export default function Chart(props: ChartData) {
             horizontalLine: any,
             targetsJoin: any,
             limitJoin: any,
+            marketJoin: any,
             popup: any,
             indicatorLine: any,
             highlightedCurrentPriceLine: any,
             liqTooltip: any,
             crosshairVertical: any,
             crosshairHorizontal: any,
+            marketLine: any,
         ) => {
             if (chartData.length > 0) {
                 let selectedCandle: any;
@@ -1641,7 +1681,6 @@ export default function Chart(props: ChartData) {
                     });
 
                 const candleJoin = d3fc.dataJoin('g', 'candle');
-                const marketJoin = d3fc.dataJoin('g', 'market');
 
                 const barJoin = d3fc.dataJoin('g', 'bar');
                 const crosshairHorizontalJoin = d3fc.dataJoin('g', 'crosshairHorizontal');
@@ -1669,7 +1708,7 @@ export default function Chart(props: ChartData) {
                     const svg = d3.select(event.target).select('svg');
 
                     targetsJoin(svg, [targets.ranges]).call(horizontalLine);
-                    marketJoin(svg, [targets.market]).call(horizontalLine);
+                    marketJoin(svg, [targets.market]).call(marketLine);
                     limitJoin(svg, [targets.limit]).call(horizontalLine);
 
                     crosshairHorizontalJoin(svg, [crosshairData]).call(crosshairHorizontal);
@@ -1763,7 +1802,8 @@ export default function Chart(props: ChartData) {
                             .html('<p> % 0.1 </p>' + '<p> $ 500k </p>')
                             .style(
                                 'top',
-                                event.offsetY +
+                                event.y -
+                                    80 -
                                     (event.offsetY - scaleData.yScale(poolPriceDisplay)) / 2 +
                                     'px',
                             )
@@ -1791,7 +1831,6 @@ export default function Chart(props: ChartData) {
 
                         d3.select(event.currentTarget)
                             .selectAll('.horizontal  > path')
-
                             .style('fill', (d: any) => {
                                 if (
                                     currentPriceData[0].value > d.upperBoundPriceDecimalCorrected &&
