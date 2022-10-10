@@ -7,11 +7,10 @@ import { formatAmount } from '../../../../utils/numbers';
 interface TopPoolsCardProps {
     pool: PoolIF;
     chainId: string;
-    lastBlockNumber: number;
 }
 
 export default function TopPoolsCard(props: TopPoolsCardProps) {
-    const { pool, lastBlockNumber } = props;
+    const { pool } = props;
 
     const { pathname } = useLocation();
 
@@ -33,8 +32,9 @@ export default function TopPoolsCard(props: TopPoolsCardProps) {
     const [poolVolume, setPoolVolume] = useState<string | undefined>();
     const [poolTvl, setPoolTvl] = useState<string | undefined>();
 
-    useEffect(() => {
+    const fetchPoolStats = () => {
         (async () => {
+            console.log('fetching pool stats from sidebar');
             const poolStatsFresh = await getPoolStatsFresh(
                 pool.chainId,
                 pool.base.address,
@@ -48,7 +48,24 @@ export default function TopPoolsCard(props: TopPoolsCardProps) {
             const tvlString = tvl ? '$' + formatAmount(tvl) : undefined;
             setPoolTvl(tvlString);
         })();
-    }, [JSON.stringify(pool), lastBlockNumber]);
+    };
+
+    useEffect(() => {
+        fetchPoolStats();
+
+        // fetch every minute
+        const timerId = setInterval(() => {
+            fetchPoolStats();
+        }, 60000);
+
+        // after 1 hour stop
+        setTimeout(() => {
+            clearInterval(timerId);
+        }, 3600000);
+
+        // clear interval when component unmounts
+        return () => clearInterval(timerId);
+    }, []);
 
     return (
         <Link

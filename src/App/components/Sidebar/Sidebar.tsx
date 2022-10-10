@@ -96,7 +96,7 @@ export default function Sidebar(props: SidebarPropsIF) {
         {
             name: 'Top Pools',
             icon: topPoolsImage,
-            data: <TopPools chainId={chainId} lastBlockNumber={lastBlockNumber} />,
+            data: <TopPools chainId={chainId} />,
         },
     ];
     const sidebarLimitOrderProps = {
