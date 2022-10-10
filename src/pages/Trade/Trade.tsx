@@ -236,14 +236,13 @@ export default function Trade(props: TradePropsIF) {
     );
 
     const initLinkPath =
-        '/initpool/chain=0x5&base=' + baseTokenAddress + '&quote=' + quoteTokenAddress;
+        '/initpool/chain=0x5&tokenA=' + baseTokenAddress + '&tokenB=' + quoteTokenAddress;
 
     const poolNotInitializedContent = poolExists === false ? (
         <div className={styles.pool_not_initialialized_container}>
             <div className={styles.pool_not_initialialized_content}>
                 <h2>This pool has not been initialized.</h2>
                 <h3>Do you want to initialize it?</h3>
-
                 <Link to={initLinkPath} className={styles.initialize_link}>
                     <img src={baseTokenLogo} alt='base token' />
                     Initialize Pool
