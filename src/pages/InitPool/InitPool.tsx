@@ -1,52 +1,39 @@
-import { useEffect } from 'react';
+import { useMemo } from 'react';
+import { CrocEnv } from '@crocswap-libs/sdk';
 import styles from './InitPool.module.css';
 import { useUrlParams } from './useUrlParams';
-// import InitPoolSteps from '../../components/InitPool/InitPoolSteps/InitPoolSteps';
-// import InitPoolSummary from '../../components/InitPool/InitPoolSummary/InitPoolSummary';
 import ContentContainer from '../../components/Global/ContentContainer/ContentContainer';
 import Button from '../../components/Global/Button/Button';
-
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
-import { useNavigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 import { VscClose } from 'react-icons/vsc';
 import InitPoolExtraInfo from '../../components/InitPool/InitPoolExtraInfo/InitPoolExtraInfo';
 
-// const animationsNext = {
-//     initial: { opacity: 0, x: 30 },
-//     animate: { opacity: 1, x: 0 },
-//     exit: { opacity: 0, x: -100 },
-// };
-// const animationsBack = {
-//     initial: { opacity: 0, x: -30 },
-//     animate: { opacity: 1, x: 0 },
-//     exit: { opacity: 0, x: -100 },
-// };
-
 interface InitPoolPropsIf {
-    poolExists: boolean|null;
+    crocEnv: CrocEnv|undefined;
     showSidebar: boolean;
 }
 export default function InitPool(props: InitPoolPropsIf) {
-    const { poolExists, showSidebar } = props;
+    const { crocEnv, showSidebar } = props;
+
     const newPoolData = useUrlParams();
     const tradeData = useAppSelector((state) => state.tradeData);
 
     const tokenA = tradeData.tokenA;
     const tokenB = tradeData.tokenB;
     const navigate = useNavigate();
-    useEffect(() => {
-        console.log(newPoolData);
-        poolExists && navigate(
-            '/trade/market/chain=0x5&tokenA=' +
-            newPoolData.baseAddr +
-            '&tokenB=' +
-            newPoolData.quoteAddr
-        );
-    }, [poolExists]);
 
-    console.log(newPoolData);
-    // const [progressStep, setProgressStep] = useState(0);
-    // const [animation, setAnimation] = useState(animationsNext);
+    const poolExists = useMemo(() => {
+        if (crocEnv) {
+            const doesPoolExist = crocEnv
+                .pool(newPoolData.baseAddr as string, newPoolData.quoteAddr as string)
+                .isInit();
+            // resolve the promise object to see if pool exists
+            return Promise.resolve(doesPoolExist) ?? null;
+        } else {
+            return null;
+        }
+    }, [crocEnv]);
 
     const initialPoolPriceDisplay = (
         <div className={styles.pool_price_container}>
@@ -56,8 +43,6 @@ export default function InitPool(props: InitPoolPropsIf) {
                     id={'initial-pool-price-quantity'}
                     className={styles.currency_quantity}
                     placeholder='e.g. 1500 (ETH/TokenX)'
-                    // onChange={(event) => handleLimitChange(event.target.value)}
-
                     type='string'
                     inputMode='decimal'
                     autoComplete='off'
@@ -98,6 +83,18 @@ export default function InitPool(props: InitPoolPropsIf) {
             className={styles.main}
             style={{ justifyContent: showSidebar ? 'flex-start' : 'center' }}
         >
+            {
+                poolExists &&
+                <Navigate
+                    to={
+                        '/trade/market/chain=0x5&tokenA=' +
+                        newPoolData.baseAddr +
+                        '&tokenB=' +
+                        newPoolData.quoteAddr
+                    }
+                    replace={true}
+                />
+            }
             <div
                 className={styles.init_pool_container}
                 style={{ marginLeft: showSidebar ? '15rem' : '' }}

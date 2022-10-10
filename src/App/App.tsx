@@ -2064,7 +2064,7 @@ export default function App() {
                         <Route path='range2' element={<Range {...rangeProps} />} />
                         <Route
                             path='initpool/:params'
-                            element={<InitPool showSidebar={showSidebar} poolExists={poolExists} />}
+                            element={<InitPool crocEnv={crocEnv} showSidebar={showSidebar} />}
                         />
                         <Route
                             path='account'
