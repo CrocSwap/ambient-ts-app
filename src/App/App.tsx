@@ -596,7 +596,7 @@ export default function App() {
         }
         // run every time crocEnv updates
         // this indirectly tracks a new chain being used
-    }, [crocEnv, tokenPair]);
+    }, [crocEnv, tokenPair.dataTokenA.address, tokenPair.dataTokenB.address]);
 
     const tokenPairStringified = useMemo(() => JSON.stringify(tokenPair), [tokenPair]);
 
