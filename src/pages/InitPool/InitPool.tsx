@@ -21,17 +21,27 @@ export default function InitPool(props: InitPoolPropsIf) {
 
     const navigate = useNavigate();
 
+    // DO NOT combine these hooks with useMemo()
+    // the useMemo() hook does NOT respect asynchronicity
     const [poolExists, setPoolExists] = useState<boolean|null>(null);
     useEffect(() => {
+        // make sure crocEnv exists (needs a moment to spin up)
         if (crocEnv) {
+            // check if pool exists for token addresses from URL params
             const doesPoolExist = crocEnv
                 .pool(newPoolData.baseAddr as string, newPoolData.quoteAddr as string)
                 .isInit();
+            // resolve the promise
             Promise.resolve(doesPoolExist)
+                // update value of poolExists, use `null` for `undefined`
                 .then(res => setPoolExists(res ?? null));
         } else {
+            // set value of poolExists as null if there is no crocEnv
+            // this is handled as a pre-initialization condition, not a false
             setPoolExists(null);
         }
+    // re-run hook if a new crocEnv is created
+    // this will happen if the user switches chains
     }, [crocEnv]);
 
     const initialPoolPriceDisplay = (
