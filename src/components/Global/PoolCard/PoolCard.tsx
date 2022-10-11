@@ -4,20 +4,24 @@ import styles from './PoolCard.module.css';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { CrocEnv, toDisplayPrice } from '@crocswap-libs/sdk';
-import { querySpotPrice } from '../../../App/functions/querySpotPrice';
+import { SpotPriceFn } from '../../../App/functions/querySpotPrice';
 import getUnicodeCharacter from '../../../utils/functions/getUnicodeCharacter';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import {
     get24hChange,
-    getPoolStatsFresh,
+    // getPoolStatsFresh,
+    memoizePoolStats,
     // getPoolTVL,
     // getPoolVolume,
 } from '../../../App/functions/getPoolStats';
 import { formatAmount } from '../../../utils/numbers';
 import PoolCardSkeleton from './PoolCardSkeleton/PoolCardSkeleton';
 
+const cachedPoolStatsFetch = memoizePoolStats();
+
 interface PoolCardProps {
     crocEnv?: CrocEnv;
+    cachedQuerySpotPrice: SpotPriceFn;
     name: string;
     tokenMap: Map<string, TokenIF>;
     tokenA: TokenIF;
@@ -27,7 +31,8 @@ interface PoolCardProps {
 }
 
 export default function PoolCard(props: PoolCardProps) {
-    const { crocEnv, tokenMap, tokenA, tokenB, lastBlockNumber, chainId } = props;
+    const { crocEnv, tokenMap, tokenA, tokenB, lastBlockNumber, chainId, cachedQuerySpotPrice } =
+        props;
 
     const tokenAAddress = tokenA.address;
     const tokenBAddress = tokenB.address;
@@ -55,8 +60,7 @@ export default function PoolCard(props: PoolCardProps) {
             lastBlockNumber !== 0
         ) {
             (async () => {
-                console.log('querying spot price');
-                const spotPrice = await querySpotPrice(
+                const spotPrice = await cachedQuerySpotPrice(
                     crocEnv,
                     tokenA.address,
                     tokenB.address,
@@ -109,13 +113,13 @@ export default function PoolCard(props: PoolCardProps) {
 
     const fetchPoolStats = () => {
         (async () => {
-            console.log('fetching fresh pool stats ');
             if (tokenAAddress && tokenBAddress && poolIndex && chainId) {
-                const poolStats = await getPoolStatsFresh(
+                const poolStats = await cachedPoolStatsFetch(
                     chainId,
                     tokenAAddress,
                     tokenBAddress,
                     poolIndex,
+                    lastBlockNumber,
                 );
 
                 const tvlResult = poolStats?.tvl;
