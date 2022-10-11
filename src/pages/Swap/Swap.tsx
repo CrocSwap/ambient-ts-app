@@ -440,11 +440,6 @@ export default function Swap(props: SwapPropsIF) {
                             poolPriceDisplay={poolPriceDisplay}
                             isTokenAPrimary={isTokenAPrimary}
                             isSellTokenBase={isSellTokenBase}
-                            // nativeBalance={
-                            //     nativeBalance
-                            //         ? truncateDecimals(parseFloat(nativeBalance), 4).toString()
-                            //         : '...'
-                            // }
                             baseTokenBalance={baseTokenBalance}
                             quoteTokenBalance={quoteTokenBalance}
                             baseTokenDexBalance={baseTokenDexBalance}
