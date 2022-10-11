@@ -130,9 +130,9 @@ export default function Ranges(props: RangesPropsIF) {
         }
     }, [
         JSON.stringify({
-            id0: topThreePositions[0].positionId,
-            id1: topThreePositions[1].positionId,
-            id2: topThreePositions[2].positionId,
+            id0: topThreePositions[0]?.positionId,
+            id1: topThreePositions[1]?.positionId,
+            id2: topThreePositions[2]?.positionId,
         }),
         lastBlockNumber,
         isShowAllEnabled,
