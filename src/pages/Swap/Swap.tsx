@@ -133,10 +133,12 @@ export default function Swap(props: SwapPropsIF) {
     const [isApprovalPending, setIsApprovalPending] = useState(false);
 
     const approve = async (tokenAddress: string) => {
-        if (!provider) return;
+        // if (!provider) return;
+        if (!crocEnv) return;
         setIsApprovalPending(true);
         try {
-            const tx = await new CrocEnv(provider).token(tokenAddress).approve();
+            const tx = await crocEnv.token(tokenAddress).approve();
+            // const tx = await new CrocEnv(provider).token(tokenAddress).approve();
             if (tx) {
                 await tx.wait();
             }
@@ -212,13 +214,14 @@ export default function Swap(props: SwapPropsIF) {
     }, [priceImpact, slippageTolerancePercentage]);
 
     async function initiateSwap() {
-        if (!provider) return;
+        // if (!provider) return;
 
         resetConfirmation();
 
-        if (!(provider as ethers.providers.WebSocketProvider).getSigner()) {
-            return;
-        }
+        // if (!(provider as ethers.providers.WebSocketProvider).getSigner()) {
+        //     return;
+        // }
+        if (!crocEnv) return;
 
         const sellTokenAddress = tokenA.address;
         const buyTokenAddress = tokenB.address;
@@ -229,7 +232,7 @@ export default function Swap(props: SwapPropsIF) {
 
         console.log({ slippageTolerancePercentage });
 
-        const env = new CrocEnv(provider);
+        // const env = new CrocEnv(provider);
 
         // const impact = await calcImpact(
         //     isQtySell,
@@ -247,13 +250,13 @@ export default function Swap(props: SwapPropsIF) {
         let tx;
         try {
             (tx = await (isQtySell
-                ? env
+                ? crocEnv
                       .sell(sellTokenAddress, qty)
                       .for(buyTokenAddress, {
                           slippage: slippageTolerancePercentage / 100,
                       })
                       .swap({ surplus: [isWithdrawFromDexChecked, isSaveAsDexSurplusChecked] })
-                : env
+                : crocEnv
                       .buy(buyTokenAddress, qty)
                       .with(sellTokenAddress, {
                           slippage: slippageTolerancePercentage / 100,
@@ -271,7 +274,7 @@ export default function Swap(props: SwapPropsIF) {
         const inBaseQty =
             (isSellTokenBase && isTokenAPrimary) || (!isSellTokenBase && !isTokenAPrimary);
 
-        const crocQty = await env
+        const crocQty = await crocEnv
             .token(isTokenAPrimary ? tokenA.address : tokenB.address)
             .normQty(qty);
 
@@ -283,7 +286,7 @@ export default function Swap(props: SwapPropsIF) {
                         user: account ?? '',
                         base: isSellTokenBase ? sellTokenAddress : buyTokenAddress,
                         quote: isSellTokenBase ? buyTokenAddress : sellTokenAddress,
-                        poolIdx: (await env.context).chain.poolIndex.toString(),
+                        poolIdx: (await crocEnv.context).chain.poolIndex.toString(),
                         isBuy: isSellTokenBase.toString(),
                         inBaseQty: inBaseQty.toString(),
                         qty: crocQty.toString(),
@@ -322,7 +325,7 @@ export default function Swap(props: SwapPropsIF) {
                                 user: account ?? '',
                                 base: isSellTokenBase ? sellTokenAddress : buyTokenAddress,
                                 quote: isSellTokenBase ? buyTokenAddress : sellTokenAddress,
-                                poolIdx: (await env.context).chain.poolIndex.toString(),
+                                poolIdx: (await crocEnv.context).chain.poolIndex.toString(),
                                 isBuy: isSellTokenBase.toString(),
                                 inBaseQty: inBaseQty.toString(),
                                 qty: crocQty.toString(),

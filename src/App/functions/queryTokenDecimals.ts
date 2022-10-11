@@ -8,6 +8,8 @@ export const queryTokenDecimals = async (
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     _chainId: string,
 ) => {
+    console.error('this should not run');
+
     // console.log('Query token decimals ' + tokenAddress);
     const env = new CrocEnv(provider);
     return env.token(tokenAddress).decimals;
