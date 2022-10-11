@@ -579,6 +579,7 @@ export default function App() {
 
     // hook to update `poolExists` when crocEnv changes
     useEffect(() => {
+        setPoolExists(null);
         if (crocEnv) {
             // token pair has an initialized pool on-chain
             // returns a promise object
@@ -590,9 +591,6 @@ export default function App() {
             Promise.resolve(doesPoolExist)
                 // track whether pool exists on state (can be undefined)
                 .then((res) => setPoolExists(res ?? false));
-        } else {
-            // set pool exists to false if there is no env
-            setPoolExists(null);
         }
         // run every time crocEnv updates
         // this indirectly tracks a new chain being used
