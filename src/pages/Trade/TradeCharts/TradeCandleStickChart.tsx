@@ -170,7 +170,7 @@ export default function TradeCandleStickChart(props: ChartData) {
 
         if (props.liquidityData) {
             props.liquidityData.ranges.map((data: any) => {
-                if (data.upperBoundInvPriceDecimalCorrected > 0) {
+                if (data.upperBoundInvPriceDecimalCorrected > 1) {
                     liqData.push({
                         activeLiq: data.activeLiq,
                         upperBoundPriceDecimalCorrected: denominationsInBase
@@ -201,6 +201,22 @@ export default function TradeCandleStickChart(props: ChartData) {
                 }
             });
         }
+
+        const mostLiq = Math.max(
+            ...liqData.map((o: any) => {
+                return o.activeLiq !== undefined ? o.activeLiq : 0;
+            }),
+        );
+
+        let ahmet = 0;
+
+        liqData.find((data: any, index: number) => {
+            if (parseInt(data.activeLiq) === mostLiq) ahmet = index;
+        });
+
+        console.log(liqData[ahmet]);
+
+        liqData.splice(ahmet, 1);
 
         return { liqData: liqData, liqSnapData: liqSnapData };
     }, [props.liquidityData, denominationsInBase]);

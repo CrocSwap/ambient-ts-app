@@ -374,8 +374,6 @@ export default function Chart(props: ChartData) {
     useEffect(() => {
         if (scaleData !== undefined) {
             let lastY = 0;
-            let yOffset = 0;
-
             const zoom = d3
                 .zoom()
                 .scaleExtent([1, 10])
@@ -389,18 +387,29 @@ export default function Chart(props: ChartData) {
                     }
                 })
                 .on('zoom', (event: any) => {
+                    const t = event.transform;
+
                     scaleData.xScale.domain(
                         event.transform.rescaleX(scaleData.xScaleCopy).domain(),
                     );
 
+                    // PANNING
                     if (event.sourceEvent && event.sourceEvent.type != 'wheel') {
-                        lastY = event.transform.y - yOffset;
-                        const translate = d3.zoomIdentity.translate(0, lastY);
-                        scaleData.yScale.domain(translate.rescaleY(scaleData.yScaleCopy).domain());
-                    } else {
-                        yOffset = event.transform.y - lastY;
+                        const domainY = scaleData.yScale.domain();
+                        const linearY = d3
+                            .scaleLinear()
+                            .domain(scaleData.yScale.range())
+                            .range([domainY[1] - domainY[0], 0]);
+
+                        const deltaY = linearY(t.y - lastY);
+
+                        scaleData.yScale.domain([domainY[0] + deltaY, domainY[1] + deltaY]);
                     }
+
                     addHorizontalLineArea();
+
+                    lastY = t.y;
+
                     render();
                 })
                 .on('end', (event: any) => {
@@ -409,35 +418,20 @@ export default function Chart(props: ChartData) {
                     }
                 }) as any;
 
-            const yAxisZoom = d3
-                .zoom()
-                .scaleExtent([1, 5])
-                .on('zoom', (event: any) => {
-                    scaleData.yScale.domain(
-                        event.transform.rescaleY(scaleData.yScaleCopy).domain(),
-                    );
-                    render();
-                }) as any;
+            const yAxisDrag = d3.drag().on('drag', (event: any) => {
+                const dy = event.dy;
+                const factor = Math.pow(2, -dy * 0.01);
 
-            const yAxisDrag = d3
-                .drag()
-                .on('start', () => {
-                    d3.select(d3Container.current).style('cursor', 'grabbing');
-                })
-                .on('drag', (event: any) => {
-                    const factor = Math.pow(2, -event.dy * 0.01);
-                    d3.select(d3PlotArea.current).call(yAxisZoom.scaleBy, factor);
-
-                    addHorizontalLineArea();
-                })
-                .on('end', () => {
-                    d3.select(d3Container.current).style('cursor', 'default');
-                }) as any;
+                const domain = scaleData.yScale.domain();
+                const center = (domain[1] + domain[0]) / 2;
+                const size = (domain[1] - domain[0]) / 2 / factor;
+                scaleData.yScale.domain([center - size, center + size]);
+                render();
+            });
 
             setZoomUtils(() => {
                 return {
                     zoom: zoom,
-                    yAxisZoom: yAxisZoom,
                     yAxisDrag: yAxisDrag,
                 };
             });
@@ -1712,12 +1706,12 @@ export default function Chart(props: ChartData) {
                     async function createElements() {
                         const svg = d3.select(event.target).select('svg');
 
+                        crosshairHorizontalJoin(svg, [crosshairData]).call(crosshairHorizontal);
+                        crosshairVerticalJoin(svg, [crosshairData]).call(crosshairVertical);
+
                         targetsJoin(svg, [targets.ranges]).call(horizontalLine);
                         marketJoin(svg, [targets.market]).call(marketLine);
                         limitJoin(svg, [targets.limit]).call(horizontalLine);
-
-                        crosshairHorizontalJoin(svg, [crosshairData]).call(crosshairHorizontal);
-                        crosshairVerticalJoin(svg, [crosshairData]).call(crosshairVertical);
 
                         highlightedCurrentPriceLineJoin(svg, [currentPriceData]).call(
                             highlightedCurrentPriceLine,
@@ -1819,8 +1813,9 @@ export default function Chart(props: ChartData) {
 
                                 render();
                             })
-                            .on('mouseout', () => {
+                            .on('mouseleave', () => {
                                 firstRender = true;
+
                                 d3.select(d3PlotArea.current)
                                     .select('.highlightedCurrentPriceLine')
                                     .style('visibility', 'hidden');
@@ -1918,9 +1913,18 @@ export default function Chart(props: ChartData) {
             props.liquidityData.liqData.map((liqData: any) => {
                 if (liqTooltipSelectedLiqBar.upperBoundPriceDecimalCorrected < poolPriceDisplay) {
                     if (
-                        liqData.upperBoundPriceDecimalCorrected >
+                        liqData.upperBoundPriceDecimalCorrected >=
                             liqTooltipSelectedLiqBar.upperBoundPriceDecimalCorrected &&
                         poolPriceDisplay > liqData.upperBoundPriceDecimalCorrected
+                    ) {
+                        liqTextData.totalValue =
+                            liqTextData.totalValue + liqData.upperBoundPriceDecimalCorrected;
+                    }
+                } else {
+                    if (
+                        liqData.upperBoundPriceDecimalCorrected <=
+                            liqTooltipSelectedLiqBar.upperBoundPriceDecimalCorrected &&
+                        poolPriceDisplay < liqData.upperBoundPriceDecimalCorrected
                     ) {
                         liqTextData.totalValue =
                             liqTextData.totalValue + liqData.upperBoundPriceDecimalCorrected;
