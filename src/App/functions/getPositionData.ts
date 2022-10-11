@@ -213,7 +213,7 @@ export const updateApy = async (position: PositionIF): Promise<PositionIF> => {
     const httpGraphCacheServerDomain = 'https://809821320828123.de:5000';
     const positionApyCacheEndpoint = httpGraphCacheServerDomain + '/position_apy?';
 
-    console.log('fetching position apy');
+    // console.log('fetching position apy');
 
     const updatedPosition = await fetch(
         positionApyCacheEndpoint +
