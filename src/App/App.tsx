@@ -583,6 +583,7 @@ export default function App() {
             // token pair has an initialized pool on-chain
             // returns a promise object
             const doesPoolExist = crocEnv
+                // TODO: make this function pill addresses directly from URL params
                 .pool(tokenPair.dataTokenA.address, tokenPair.dataTokenB.address)
                 .isInit();
             // resolve the promise object to see if pool exists
@@ -2063,7 +2064,7 @@ export default function App() {
                         <Route path='range2' element={<Range {...rangeProps} />} />
                         <Route
                             path='initpool/:params'
-                            element={<InitPool showSidebar={showSidebar} />}
+                            element={<InitPool crocEnv={crocEnv} showSidebar={showSidebar} />}
                         />
                         <Route
                             path='account'
