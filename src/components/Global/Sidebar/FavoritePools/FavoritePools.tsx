@@ -1,14 +1,16 @@
 import styles from './FavoritePools.module.css';
 import FavoritePoolsCard from './FavoritePoolsCard';
 import { PoolIF } from '../../../../utils/interfaces/exports';
+import { PoolStatsFn } from '../../../../App/functions/getPoolStats';
 
 interface FavoritePoolsIF {
     favePools: PoolIF[];
     lastBlockNumber: number;
+    cachedPoolStatsFetch: PoolStatsFn;
 }
 
 export default function FavoritePools(props: FavoritePoolsIF) {
-    const { favePools, lastBlockNumber } = props;
+    const { favePools, lastBlockNumber, cachedPoolStatsFetch } = props;
     const header = (
         <div className={styles.header}>
             <div>Pool</div>
@@ -22,7 +24,12 @@ export default function FavoritePools(props: FavoritePoolsIF) {
             {header}
             <div className={styles.content}>
                 {favePools.map((pool, idx) => (
-                    <FavoritePoolsCard key={idx} pool={pool} lastBlockNumber={lastBlockNumber} />
+                    <FavoritePoolsCard
+                        key={idx}
+                        pool={pool}
+                        cachedPoolStatsFetch={cachedPoolStatsFetch}
+                        lastBlockNumber={lastBlockNumber}
+                    />
                 ))}
             </div>
         </div>

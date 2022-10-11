@@ -7,13 +7,7 @@ import { CrocEnv, toDisplayPrice } from '@crocswap-libs/sdk';
 import { SpotPriceFn } from '../../../App/functions/querySpotPrice';
 import getUnicodeCharacter from '../../../utils/functions/getUnicodeCharacter';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
-import {
-    get24hChange,
-    // getPoolStatsFresh,
-    memoizePoolStats,
-    // getPoolTVL,
-    // getPoolVolume,
-} from '../../../App/functions/getPoolStats';
+import { get24hChange, memoizePoolStats } from '../../../App/functions/getPoolStats';
 import { formatAmount } from '../../../utils/numbers';
 import PoolCardSkeleton from './PoolCardSkeleton/PoolCardSkeleton';
 
@@ -113,13 +107,13 @@ export default function PoolCard(props: PoolCardProps) {
 
     const fetchPoolStats = () => {
         (async () => {
-            if (tokenAAddress && tokenBAddress && poolIndex && chainId) {
+            if (tokenAAddress && tokenBAddress && poolIndex && chainId && lastBlockNumber) {
                 const poolStats = await cachedPoolStatsFetch(
                     chainId,
                     tokenAAddress,
                     tokenBAddress,
                     poolIndex,
-                    lastBlockNumber,
+                    Math.floor(lastBlockNumber / 4),
                 );
 
                 const tvlResult = poolStats?.tvl;
@@ -182,19 +176,7 @@ export default function PoolCard(props: PoolCardProps) {
 
     useEffect(() => {
         fetchPoolStats();
-
-        const timerId = setInterval(() => {
-            fetchPoolStats();
-        }, 60000);
-
-        // after 10 minutes stop
-        setTimeout(() => {
-            clearInterval(timerId);
-        }, 600000);
-
-        // clear interval when component unmounts
-        return () => clearInterval(timerId);
-    }, []);
+    }, [lastBlockNumber]);
 
     const tokenImagesDisplay = (
         <div className={styles.token_images}>

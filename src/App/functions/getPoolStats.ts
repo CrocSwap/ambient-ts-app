@@ -133,7 +133,7 @@ const get24hChange = async (
 
 export { getPoolStatsFresh, getPoolVolume, getPoolTVL, get24hChange, getPoolPriceChange };
 
-type PoolStatsFn = (
+export type PoolStatsFn = (
     chain: string,
     baseToken: string,
     quoteToken: string,
