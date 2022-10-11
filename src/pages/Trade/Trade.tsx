@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // START: Import React and Dongles
 import { Dispatch, SetStateAction, ReactNode, useState } from 'react';
-import { useParams, Outlet, useOutletContext, Link, NavLink } from 'react-router-dom';
+import { useParams, Outlet, useOutletContext, Link, NavLink, useNavigate } from 'react-router-dom';
 import { ethers } from 'ethers';
 import { motion, AnimateSharedLayout } from 'framer-motion';
 import { SketchPicker } from 'react-color';
@@ -114,6 +114,8 @@ export default function Trade(props: TradePropsIF) {
 
     const [isCandleSelected, setIsCandleSelected] = useState<boolean | undefined>();
     const [transactionFilter, setTransactionFilter] = useState<CandleData>();
+
+    const navigate = useNavigate();
 
     const routes = [
         {
@@ -240,7 +242,9 @@ export default function Trade(props: TradePropsIF) {
 
     const poolNotInitializedContent = poolExists === false ? (
         <div className={styles.pool_not_initialialized_container}>
+            
             <div className={styles.pool_not_initialialized_content}>
+                <div onClick={() => navigate(-1)}>X</div>
                 <h2>This pool has not been initialized.</h2>
                 <h3>Do you want to initialize it?</h3>
                 <Link to={initLinkPath} className={styles.initialize_link}>
@@ -248,6 +252,7 @@ export default function Trade(props: TradePropsIF) {
                     Initialize Pool
                     <img src={quoteTokenLogo} alt=' quote token' />
                 </Link>
+                <button onClick={() => navigate(-1)}>No Thank You</button>
             </div>
         </div>
     ) : null;
