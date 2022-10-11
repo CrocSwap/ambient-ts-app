@@ -128,7 +128,15 @@ export default function Ranges(props: RangesPropsIF) {
                 })
                 .catch(console.log);
         }
-    }, [JSON.stringify(topThreePositions), lastBlockNumber, isShowAllEnabled]);
+    }, [
+        JSON.stringify({
+            id0: topThreePositions[0].positionId,
+            id1: topThreePositions[1].positionId,
+            id2: topThreePositions[2].positionId,
+        }),
+        lastBlockNumber,
+        isShowAllEnabled,
+    ]);
 
     // const [expanded, setExpanded] = useState<false | number>(false);
 
