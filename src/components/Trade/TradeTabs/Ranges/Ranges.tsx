@@ -17,7 +17,7 @@ import { useAppDispatch, useAppSelector } from '../../../../utils/hooks/reduxToo
 import { useSortedPositions } from './useSortedPositions';
 import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
 import { PositionIF } from '../../../../utils/interfaces/PositionIF';
-import { updatePositionData } from '../../../../App/functions/getPositionData';
+import { updateApy } from '../../../../App/functions/getPositionData';
 import { TokenIF } from '../../../../utils/interfaces/TokenIF';
 // import RangeAccordions from './RangeAccordions/RangeAccordions';
 
@@ -112,15 +112,11 @@ export default function Ranges(props: RangesPropsIF) {
 
     const dispatch = useAppDispatch();
 
-    // useEffect(() => {
-    //     console.log({ topThreePositions });
-    // }, [JSON.stringify(topThreePositions)]);
-
     useEffect(() => {
-        if (topThreePositions && crocEnv) {
+        if (topThreePositions) {
             Promise.all(
                 topThreePositions.map((position: PositionIF) => {
-                    return updatePositionData(position);
+                    return updateApy(position);
                 }),
             )
                 .then((updatedPositions) => {

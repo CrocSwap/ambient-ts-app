@@ -209,14 +209,14 @@ export const getPositionData = async (
     return newPosition;
 };
 
-export const updatePositionData = async (position: PositionIF): Promise<PositionIF> => {
+export const updateApy = async (position: PositionIF): Promise<PositionIF> => {
     const httpGraphCacheServerDomain = 'https://809821320828123.de:5000';
-    const positionStatsCacheEndpoint = httpGraphCacheServerDomain + '/position_stats?';
+    const positionApyCacheEndpoint = httpGraphCacheServerDomain + '/position_apy?';
 
-    let newPosition = { ...position };
-    console.log('fetching position stats');
-    fetch(
-        positionStatsCacheEndpoint +
+    console.log('fetching position apy');
+
+    const updatedPosition = await fetch(
+        positionApyCacheEndpoint +
             new URLSearchParams({
                 user: position.user,
                 bidTick: position.bidTick.toString(),
@@ -226,63 +226,18 @@ export const updatePositionData = async (position: PositionIF): Promise<Position
                 poolIdx: position.poolIdx.toString(),
                 chainId: position.chainId,
                 positionType: position.positionType,
-                addValue: 'true',
             }),
     )
         .then((response) => response?.json())
         .then((json) => {
-            const positionStats = json?.data;
-            // const liqBaseNum = positionStats.positionLiqBaseDecimalCorrected;
-            // const liqQuoteNum = positionStats.positionLiqQuoteDecimalCorrected;
-            // const liqBaseDisplay = liqBaseNum
-            //     ? liqBaseNum < 2
-            //         ? liqBaseNum.toLocaleString(undefined, {
-            //               minimumFractionDigits: 2,
-            //               maximumFractionDigits: 6,
-            //           })
-            //         : liqBaseNum.toLocaleString(undefined, {
-            //               minimumFractionDigits: 2,
-            //               maximumFractionDigits: 2,
-            //           })
-            //     : undefined;
+            const apy = json?.data.results.apy;
 
-            // newPosition.positionLiqBaseTruncated = liqBaseDisplay;
-
-            // const liqQuoteDisplay = liqQuoteNum
-            //     ? liqQuoteNum < 2
-            //         ? liqQuoteNum.toLocaleString(undefined, {
-            //               minimumFractionDigits: 2,
-            //               maximumFractionDigits: 6,
-            //           })
-            //         : liqQuoteNum.toLocaleString(undefined, {
-            //               minimumFractionDigits: 2,
-            //               maximumFractionDigits: 2,
-            //           })
-            //     : undefined;
-
-            // newPosition.positionLiqQuoteTruncated = liqQuoteDisplay;
-
-            // const usdValue = position.positionLiqTotalUSD;
-
-            // if (usdValue) {
-            //     newPosition.totalValueUSD = usdValue;
-            // }
-
-            // const baseFeeDisplayNum = positionStats.feesLiqBaseDecimalCorrected;
-            // const quoteFeeDisplayNum = positionStats.feesLiqQuoteDecimalCorrected;
-
-            // newPosition.positionLiqBaseDecimalCorrected = baseFeeDisplayNum;
-
-            // newPosition.positionLiqQuoteDecimalCorrected = quoteFeeDisplayNum;
-
-            if (positionStats.apy) {
-                newPosition = Object.assign({ apy: positionStats.apy }, newPosition);
-                // newPosition.apy = positionStats.apy;
+            if (apy) {
+                return Object.assign({}, position, { apy: apy });
             }
-            console.log({ newPosition });
-            return newPosition;
         })
+
         .catch(console.log);
 
-    return newPosition;
+    return updatedPosition || position;
 };
