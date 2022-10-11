@@ -225,6 +225,7 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
         isWithdrawFromDexChecked,
         tokenPair.dataTokenA.address,
         tokenPair.dataTokenB.address,
+        slippageTolerancePercentage,
         // isSellTokenEth,
     ]);
 
