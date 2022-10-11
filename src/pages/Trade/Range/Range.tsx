@@ -56,6 +56,7 @@ import getUnicodeCharacter from '../../../utils/functions/getUnicodeCharacter';
 import RangeShareControl from '../../../components/Trade/Range/RangeShareControl/RangeShareControl';
 
 interface RangePropsIF {
+    crocEnv: CrocEnv | undefined;
     isUserLoggedIn: boolean;
     importedTokens: Array<TokenIF>;
     setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
@@ -89,6 +90,7 @@ interface RangePropsIF {
 
 export default function Range(props: RangePropsIF) {
     const {
+        crocEnv,
         isUserLoggedIn,
         importedTokens,
         setImportedTokens,
@@ -639,11 +641,14 @@ export default function Range(props: RangePropsIF) {
     const minPriceDisplay = isAmbient ? '0' : pinnedMinPriceDisplayTruncated;
 
     const sendTransaction = async () => {
-        if (!provider || !(provider as ethers.providers.WebSocketProvider).getSigner()) {
-            return;
-        }
+        // if (!provider || !(provider as ethers.providers.WebSocketProvider).getSigner()) {
+        //     return;
+        // }
+        if (!crocEnv) return;
 
-        const pool = new CrocEnv(provider).pool(tokenA.address, tokenB.address);
+        resetConfirmation();
+
+        const pool = crocEnv.pool(tokenA.address, tokenB.address);
 
         const spot = await pool.displayPrice();
         const minPrice = spot * (1 - parseFloat(slippageTolerancePercentage) / 100);

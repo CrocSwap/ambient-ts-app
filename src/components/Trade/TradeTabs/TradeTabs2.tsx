@@ -315,7 +315,7 @@ export default function TradeTabs2(props: ITabsProps) {
         quoteTokenBalance: quoteTokenBalance,
         baseTokenDexBalance: baseTokenDexBalance,
         quoteTokenDexBalance: quoteTokenDexBalance,
-
+        importedTokens: importedTokens,
         provider: provider,
         account: account,
         isAuthenticated: isAuthenticated,

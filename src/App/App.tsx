@@ -1759,6 +1759,7 @@ export default function App() {
 
     // props for <Range/> React element
     const rangeProps = {
+        crocEnv: crocEnv,
         isUserLoggedIn: isUserLoggedIn,
         importedTokens: importedTokens,
         setImportedTokens: setImportedTokens,

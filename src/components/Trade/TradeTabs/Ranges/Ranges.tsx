@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { Dispatch, SetStateAction } from 'react';
+import { Dispatch, SetStateAction, useEffect } from 'react';
 import { ethers } from 'ethers';
 
 // START: Import JSX Components
@@ -8,10 +8,17 @@ import RangeCardHeader from './RangeCardHeader';
 
 // START: Import Local Files
 import styles from './Ranges.module.css';
-import { graphData } from '../../../../utils/state/graphDataSlice';
-import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
+import {
+    addPositionsByPool,
+    addPositionsByUser,
+    graphData,
+} from '../../../../utils/state/graphDataSlice';
+import { useAppDispatch, useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { useSortedPositions } from './useSortedPositions';
 import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
+import { PositionIF } from '../../../../utils/interfaces/PositionIF';
+import { updateApy } from '../../../../App/functions/getPositionData';
+import { TokenIF } from '../../../../utils/interfaces/TokenIF';
 // import RangeAccordions from './RangeAccordions/RangeAccordions';
 
 // interface for props
@@ -35,7 +42,7 @@ interface RangesPropsIF {
     currentPositionActive: string;
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
     portfolio?: boolean;
-
+    importedTokens: TokenIF[];
     openGlobalModal: (content: React.ReactNode) => void;
     closeGlobalModal: () => void;
 }
@@ -66,6 +73,22 @@ export default function Ranges(props: RangesPropsIF) {
 
     const tradeData = useAppSelector((state) => state.tradeData);
 
+    const baseTokenAddressLowerCase = tradeData.baseToken.address.toLowerCase();
+    const quoteTokenAddressLowerCase = tradeData.quoteToken.address.toLowerCase();
+
+    const positionsByUserMatchingSelectedTokens = graphData?.positionsByUser?.positions.filter(
+        (position) => {
+            if (
+                position.base.toLowerCase() === baseTokenAddressLowerCase &&
+                position.quote.toLowerCase() === quoteTokenAddressLowerCase
+            ) {
+                return true;
+            } else {
+                return false;
+            }
+        },
+    );
+
     const columnHeaders = [
         { name: 'ID', sortable: false, className: '' },
         { name: 'Wallet', sortable: true, className: 'wallet' },
@@ -81,21 +104,52 @@ export default function Ranges(props: RangesPropsIF) {
 
     const [sortBy, setSortBy, reverseSort, setReverseSort, sortedPositions] = useSortedPositions(
         isShowAllEnabled,
-        graphData?.positionsByUser?.positions,
+        positionsByUserMatchingSelectedTokens,
         graphData?.positionsByPool?.positions,
     );
+
+    const topThreePositions = sortedPositions.slice(0, 3);
+
+    const dispatch = useAppDispatch();
+
+    useEffect(() => {
+        if (topThreePositions) {
+            Promise.all(
+                topThreePositions.map((position: PositionIF) => {
+                    return updateApy(position);
+                }),
+            )
+                .then((updatedPositions) => {
+                    if (isShowAllEnabled) {
+                        dispatch(addPositionsByPool(updatedPositions));
+                    } else {
+                        dispatch(addPositionsByUser(updatedPositions));
+                    }
+                })
+                .catch(console.log);
+        }
+    }, [
+        JSON.stringify({
+            id0: topThreePositions[0]?.positionId,
+            id1: topThreePositions[1]?.positionId,
+            id2: topThreePositions[2]?.positionId,
+        }),
+        lastBlockNumber,
+        isShowAllEnabled,
+    ]);
+
     // const [expanded, setExpanded] = useState<false | number>(false);
 
     const desktopDisplay = (
         <div className={styles.desktop_ranges_display_container}>
-            {sortedPositions.map((position, idx) => (
+            {sortedPositions.map((position) => (
                 <RangeCard
                     isUserLoggedIn={isUserLoggedIn}
                     crocEnv={crocEnv}
                     chainData={chainData}
                     provider={provider}
                     chainId={chainId}
-                    key={idx}
+                    key={position.positionId}
                     portfolio={portfolio}
                     baseTokenBalance={baseTokenBalance}
                     quoteTokenBalance={quoteTokenBalance}
