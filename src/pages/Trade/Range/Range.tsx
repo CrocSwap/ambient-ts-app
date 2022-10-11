@@ -646,6 +646,8 @@ export default function Range(props: RangePropsIF) {
         // }
         if (!crocEnv) return;
 
+        resetConfirmation();
+
         const pool = crocEnv.pool(tokenA.address, tokenB.address);
 
         const spot = await pool.displayPrice();

@@ -300,6 +300,7 @@ export default function Limit(props: LimitPropsIF) {
         // if (!provider || !(provider as ethers.providers.WebSocketProvider).getSigner()) {
         //     return;
         // }
+        resetConfirmation();
 
         const sellToken = tradeData.tokenA.address;
         const buyToken = tradeData.tokenB.address;
