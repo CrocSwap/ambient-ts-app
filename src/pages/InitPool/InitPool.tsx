@@ -121,7 +121,6 @@ export default function InitPool(props: InitPoolPropsIf) {
                             <Button title='Next' action={() => console.log('completed')} />
                         </footer>
                     </ContentContainer>
-                    {/* <InitPoolSummary /> */}
                 </div>
             </div>
         </main>
