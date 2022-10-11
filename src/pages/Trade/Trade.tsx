@@ -242,8 +242,9 @@ export default function Trade(props: TradePropsIF) {
 
     const poolNotInitializedContent = poolExists === false ? (
         <div className={styles.pool_not_initialialized_container}>
-            <div onClick={() => navigate(-1)}>X</div>
+            
             <div className={styles.pool_not_initialialized_content}>
+                <div onClick={() => navigate(-1)}>X</div>
                 <h2>This pool has not been initialized.</h2>
                 <h3>Do you want to initialize it?</h3>
                 <Link to={initLinkPath} className={styles.initialize_link}>
