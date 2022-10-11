@@ -27,6 +27,9 @@ import formatSearchText from './formatSeachText';
 import { MdClose } from 'react-icons/md';
 
 import closeSidebarImage from '../../../assets/images/sidebarImages/closeSidebar.svg';
+import { memoizePoolStats } from '../../functions/getPoolStats';
+
+const cachedPoolStatsFetch = memoizePoolStats();
 
 // interface for component props
 interface SidebarPropsIF {
@@ -98,7 +101,13 @@ export default function Sidebar(props: SidebarPropsIF) {
         {
             name: 'Top Pools',
             icon: topPoolsImage,
-            data: <TopPools chainId={chainId} />,
+            data: (
+                <TopPools
+                    chainId={chainId}
+                    cachedPoolStatsFetch={cachedPoolStatsFetch}
+                    lastBlockNumber={lastBlockNumber}
+                />
+            ),
         },
     ];
     const sidebarLimitOrderProps = {
@@ -161,7 +170,13 @@ export default function Sidebar(props: SidebarPropsIF) {
         {
             name: 'Favorite Pools',
             icon: favouritePoolsImage,
-            data: <FavoritePools favePools={favePools} lastBlockNumber={lastBlockNumber} />,
+            data: (
+                <FavoritePools
+                    favePools={favePools}
+                    cachedPoolStatsFetch={cachedPoolStatsFetch}
+                    lastBlockNumber={lastBlockNumber}
+                />
+            ),
         },
     ];
 
