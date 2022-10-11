@@ -214,6 +214,8 @@ export default function Swap(props: SwapPropsIF) {
     async function initiateSwap() {
         if (!provider) return;
 
+        resetConfirmation();
+
         if (!(provider as ethers.providers.WebSocketProvider).getSigner()) {
             return;
         }
