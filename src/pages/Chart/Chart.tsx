@@ -142,6 +142,10 @@ export default function Chart(props: ChartData) {
     const [crosshairData, setCrosshairData] = useState([{ x: 0, y: -1 }]);
     const [currentPriceData] = useState([{ value: -1 }]);
     const [indicatorLineData] = useState([{ x: 0, y: 0 }]);
+    const [liqTooltipSelectedLiqBar, setLiqTooltipSelectedLiqBar] = useState({
+        activeLiq: 0,
+        upperBoundPriceDecimalCorrected: 0,
+    });
 
     // d3
     const [transactionFilter, setTransactionFilter] = useState<CandleData>();
@@ -1752,19 +1756,6 @@ export default function Chart(props: ChartData) {
                                     .select('.indicatorLine')
                                     .style('visibility', 'visible');
 
-                                liqTooltip
-                                    .style('visibility', 'visible')
-                                    .html('<p> % 0.1 </p>' + '<p> $ 500k </p>')
-                                    .style(
-                                        'top',
-                                        event.y -
-                                            80 -
-                                            (event.offsetY - scaleData.yScale(poolPriceDisplay)) /
-                                                2 +
-                                            'px',
-                                    )
-                                    .style('left', event.offsetX - 40 + 'px');
-
                                 const filtered =
                                     liquidityData.liqData.length > 1
                                         ? liquidityData.liqData.filter(
@@ -1784,6 +1775,22 @@ export default function Chart(props: ChartData) {
                                         ? curr
                                         : prev;
                                 });
+
+                                setLiqTooltipSelectedLiqBar(() => {
+                                    return nearest;
+                                });
+
+                                liqTooltip
+                                    .style('visibility', 'visible')
+                                    .style(
+                                        'top',
+                                        event.y -
+                                            80 -
+                                            (event.offsetY - scaleData.yScale(poolPriceDisplay)) /
+                                                2 +
+                                            'px',
+                                    )
+                                    .style('left', event.offsetX - 50 + 'px');
 
                                 d3.select(event.currentTarget)
                                     .selectAll('.horizontal  > path')
@@ -1812,7 +1819,6 @@ export default function Chart(props: ChartData) {
 
                                 render();
                             })
-
                             .on('mouseout', () => {
                                 firstRender = true;
                                 d3.select(d3PlotArea.current)
@@ -1900,6 +1906,36 @@ export default function Chart(props: ChartData) {
         },
         [],
     );
+
+    useEffect(() => {
+        if (
+            liqTooltip !== undefined &&
+            liqTooltipSelectedLiqBar !== undefined &&
+            poolPriceDisplay !== undefined
+        ) {
+            const liqTextData = { volume: 0, totalValue: 0 };
+
+            props.liquidityData.liqData.map((liqData: any) => {
+                if (liqTooltipSelectedLiqBar.upperBoundPriceDecimalCorrected < poolPriceDisplay) {
+                    if (
+                        liqData.upperBoundPriceDecimalCorrected >
+                            liqTooltipSelectedLiqBar.upperBoundPriceDecimalCorrected &&
+                        poolPriceDisplay > liqData.upperBoundPriceDecimalCorrected
+                    ) {
+                        liqTextData.totalValue =
+                            liqTextData.totalValue + liqData.upperBoundPriceDecimalCorrected;
+                    }
+                }
+            });
+
+            liqTooltip.html(
+                '<p> % 0.1 </p>' +
+                    '<p> $ ' +
+                    formatDollarAmountAxis(liqTextData.totalValue) +
+                    ' </p>',
+            );
+        }
+    }, [liqTooltipSelectedLiqBar]);
 
     // Color Picker
     useEffect(() => {

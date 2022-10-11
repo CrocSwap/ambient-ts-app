@@ -97,9 +97,6 @@ export default function TradeCandleStickChart(props: ChartData) {
     const quoteTokenDecimals = !isTokenABase ? tokenADecimals : tokenBDecimals;
 
     useEffect(() => {
-        console.log(props.liquidityData);
-        console.log('atla binicisi');
-
         setIsLoading(true);
 
         parseData();
