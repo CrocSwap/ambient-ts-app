@@ -17,10 +17,8 @@ export default function InitPool(props: InitPoolPropsIf) {
     const { crocEnv, showSidebar } = props;
 
     const newPoolData = useUrlParams();
-    const tradeData = useAppSelector((state) => state.tradeData);
+    const { tokenA, tokenB } = useAppSelector((state) => state.tradeData);
 
-    const tokenA = tradeData.tokenA;
-    const tokenB = tradeData.tokenB;
     const navigate = useNavigate();
 
     const [poolExists, setPoolExists] = useState<boolean|null>(null);
