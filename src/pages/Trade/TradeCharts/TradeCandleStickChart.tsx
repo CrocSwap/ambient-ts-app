@@ -57,6 +57,7 @@ interface ChartData {
 
 export interface ChartUtils {
     period: any;
+    bandwidth: any;
     chartData: CandleChartData[];
     tvlChartData: TvlChartData[];
     feeChartData: FeeChartData[];
@@ -96,6 +97,9 @@ export default function TradeCandleStickChart(props: ChartData) {
     const quoteTokenDecimals = !isTokenABase ? tokenADecimals : tokenBDecimals;
 
     useEffect(() => {
+        console.log(props.liquidityData);
+        console.log('atla binicisi');
+
         setIsLoading(true);
 
         parseData();
@@ -150,6 +154,7 @@ export default function TradeCandleStickChart(props: ChartData) {
 
         const chartUtils: ChartUtils = {
             period: props.candleData?.duration,
+            bandwidth: 0,
             chartData: chartData,
             tvlChartData: tvlChartData,
             volumeChartData: volumeChartData,
@@ -168,12 +173,12 @@ export default function TradeCandleStickChart(props: ChartData) {
 
         if (props.liquidityData) {
             props.liquidityData.ranges.map((data: any) => {
-                if (data.upperBoundInvPriceDecimalCorrected > 1) {
+                if (data.upperBoundInvPriceDecimalCorrected > 0) {
                     liqData.push({
                         activeLiq: data.activeLiq,
                         upperBoundPriceDecimalCorrected: denominationsInBase
                             ? data.upperBoundInvPriceDecimalCorrected
-                            : data.upperBoundInvPriceDecimalCorrected,
+                            : data.upperBoundPriceDecimalCorrected,
                     });
 
                     const pinnedDisplayPrices = getPinnedPriceValuesFromDisplayPrices(
