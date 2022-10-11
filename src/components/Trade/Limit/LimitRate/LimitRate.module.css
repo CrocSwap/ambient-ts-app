@@ -62,13 +62,6 @@
     color: var(--text-grey-light);
 }
 
-.direction,
-.swapbox_bottom {
-    font-size: var(--body-size);
-    line-height: var(--body-lh);
-    color: var(--text-grey-light);
-}
-
 .swapbox_top {
     border-radius: var(--border-radius);
     background-color: var(--dark2);

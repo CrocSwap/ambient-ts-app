@@ -44,7 +44,7 @@ interface LimitPropsIF {
     isOnTradeRoute?: boolean;
     gasPriceInGwei: number | undefined;
     ethMainnetUsdPrice?: number;
-    nativeBalance: string | undefined;
+    // nativeBalance: string | undefined;
     lastBlockNumber: number;
     baseTokenBalance: string;
     quoteTokenBalance: string;
@@ -62,7 +62,7 @@ interface LimitPropsIF {
     openModalWallet: () => void;
     openGlobalModal: (content: React.ReactNode) => void;
     closeGlobalModal: () => void;
-    poolExists: boolean;
+    poolExists: boolean | null;
 }
 
 export default function Limit(props: LimitPropsIF) {
