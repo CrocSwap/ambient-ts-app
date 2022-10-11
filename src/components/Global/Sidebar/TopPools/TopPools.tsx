@@ -5,11 +5,10 @@ import TopPoolsCard from './TopPoolsCard';
 
 interface TopPoolsProps {
     chainId: string;
-    lastBlockNumber: number;
 }
 
 export default function TopPools(props: TopPoolsProps) {
-    const { chainId, lastBlockNumber } = props;
+    const { chainId } = props;
 
     const header = (
         <div className={styles.header}>
@@ -28,7 +27,7 @@ export default function TopPools(props: TopPoolsProps) {
                         pool={item}
                         key={idx}
                         chainId={chainId}
-                        lastBlockNumber={lastBlockNumber}
+                        // lastBlockNumber={lastBlockNumber}
                     />
                 ))}
             </div>

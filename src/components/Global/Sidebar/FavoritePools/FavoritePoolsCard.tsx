@@ -12,7 +12,7 @@ interface FavoritePoolsCardIF {
 }
 
 export default function FavoritePoolsCard(props: FavoritePoolsCardIF) {
-    const { pool, lastBlockNumber } = props;
+    const { pool } = props;
 
     const [poolVolume, setPoolVolume] = useState<string | undefined>();
     const [poolTvl, setPoolTvl] = useState<string | undefined>();
@@ -23,10 +23,7 @@ export default function FavoritePoolsCard(props: FavoritePoolsCardIF) {
 
     const linkPath = useMemo(() => {
         let locationSlug = '';
-        if (
-            pathname.startsWith('/trade/market') ||
-            pathname.startsWith('/account')
-        ) {
+        if (pathname.startsWith('/trade/market') || pathname.startsWith('/account')) {
             locationSlug = '/trade/market';
         } else if (pathname.startsWith('/trade/limit')) {
             locationSlug = '/trade/limit';
@@ -39,18 +36,12 @@ export default function FavoritePoolsCard(props: FavoritePoolsCardIF) {
             tokenB.address.toLowerCase() === pool.base.address.toLowerCase()
                 ? [pool.quote.address, pool.base.address]
                 : [pool.base.address, pool.quote.address];
-        return (
-            locationSlug +
-            '/chain=0x5&tokenA=' +
-            addrTokenA +
-            '&tokenB=' +
-            addrTokenB
-        );
+        return locationSlug + '/chain=0x5&tokenA=' + addrTokenA + '&tokenB=' + addrTokenB;
     }, [pathname]);
 
-    useEffect(() => {
+    const fetchPoolStats = () => {
         (async () => {
-            // so fresh
+            console.log('fetching pool stats from sidebar');
             const poolStatsFresh = await getPoolStatsFresh(
                 pool.chainId,
                 pool.base.address,
@@ -64,7 +55,24 @@ export default function FavoritePoolsCard(props: FavoritePoolsCardIF) {
             const tvlString = tvl ? '$' + formatAmount(tvl) : undefined;
             setPoolTvl(tvlString);
         })();
-    }, [JSON.stringify(pool), lastBlockNumber]);
+    };
+
+    useEffect(() => {
+        fetchPoolStats();
+
+        // fetch every minute
+        const timerId = setInterval(() => {
+            fetchPoolStats();
+        }, 60000);
+
+        // after 1 hour stop
+        setTimeout(() => {
+            clearInterval(timerId);
+        }, 3600000);
+
+        // clear interval when component unmounts
+        return () => clearInterval(timerId);
+    }, []);
 
     return (
         <Link className={styles.container} to={linkPath}>
