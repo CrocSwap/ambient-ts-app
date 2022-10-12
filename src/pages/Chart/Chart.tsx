@@ -1914,9 +1914,33 @@ export default function Chart(props: ChartData) {
                     const dateIndcLocation = scaleData.xScale(crosshairData[0].x);
                     const valueIndcLocation = event.offsetY;
 
+                    if (
+                        d3.select(d3PlotArea.current).select('svg').select('defs').node() === null
+                    ) {
+                        const filterTag = d3
+                            .select(d3PlotArea.current)
+                            .select('svg')
+                            .append('defs')
+                            .append('filter')
+                            .attr('x', 0)
+                            .attr('y', 0)
+                            .attr('width', 1)
+                            .attr('height', 1)
+                            .attr('id', 'textStyle');
+
+                        filterTag
+                            .append('feFlood')
+                            .attr('flood-color', '#242F3F')
+                            .attr('result', 'bg');
+                        const feMergeTag = filterTag.append('feMerge');
+                        feMergeTag.append('feMergeNode').attr('in', 'bg');
+                        feMergeTag.append('feMergeNode').attr('in', 'SourceGraphic');
+                    }
+
                     d3.select(d3Xaxis.current)
                         .select('svg')
                         .select('text')
+                        .style('filter', 'url(#textStyle)')
                         .style('visibility', 'visible')
                         .text(moment(crosshairData[0].x).format('DD MMM  HH:mm'))
                         .style('transform', 'translateX(' + dateIndcLocation + 'px)');
@@ -1924,6 +1948,7 @@ export default function Chart(props: ChartData) {
                     d3.select(d3Yaxis.current)
                         .select('svg')
                         .select('text')
+                        .style('filter', 'url(#textStyle)')
                         .style('visibility', 'visible')
                         .text(indicatorFormatter(scaleData.yScale.invert(event.offsetY)))
                         .style('transform', 'translateY(' + valueIndcLocation + 'px)');
