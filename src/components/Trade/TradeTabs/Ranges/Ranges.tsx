@@ -98,7 +98,7 @@ export default function Ranges(props: RangesPropsIF) {
         { name: 'Value', sortable: true, className: 'wallet' },
         { name: tradeData.baseToken.symbol, sortable: false, className: 'token' },
         { name: tradeData.quoteToken.symbol, sortable: false, className: 'token' },
-        { name: 'APY', sortable: true, className: '' },
+        { name: 'APR', sortable: true, className: '' },
         { name: 'Status', sortable: false, className: '' },
     ];
 

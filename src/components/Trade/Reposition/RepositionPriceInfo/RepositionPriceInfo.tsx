@@ -34,9 +34,9 @@ export default function RepositionPriceInfo() {
     const poolPriceCharacter = 2;
     // -----------------------------END OF TEMPORARY PLACE HOLDERS--------------
 
-    // JSX frag for estimated APY of position
+    // JSX frag for estimated APR of position
 
-    const apy = <span className={styles.apy}> Est. APY | {apyPercentage}%</span>;
+    const apy = <span className={styles.apy}> Est. APR | {apyPercentage}%</span>;
 
     // JSX frag for lowest price in range
     const minimumPrice = (

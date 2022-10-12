@@ -46,7 +46,7 @@ export const useSortedPositions = (
             case 'wallet':
                 sortedData = sortByWallet(data);
                 break;
-            // sort by APY
+            // sort by APR
             case 'apy':
                 sortedData = sortByApy(data);
                 break;

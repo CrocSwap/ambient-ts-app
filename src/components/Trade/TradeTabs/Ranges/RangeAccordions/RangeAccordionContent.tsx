@@ -80,7 +80,7 @@ export default function RangeAccordionContent(props: RangeAccordionContentPropsI
     );
     const apyDisplayDom = (
         <div className={styles.row}>
-            <p>APY:</p>
+            <p>APR:</p>
             {apy}
         </div>
     );

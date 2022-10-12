@@ -42,7 +42,7 @@ export default function TokenInfo(props: ITokenInfoProps) {
 
     const positionApyString =
         positionApy !== undefined
-            ? `APY | ${positionApy.toLocaleString(undefined, {
+            ? `APR | ${positionApy.toLocaleString(undefined, {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
               })}%`

@@ -264,7 +264,7 @@ export default function PositionCard(props: PositionCardPropsIF) {
                     <p className={styles.qty}>T1 Qty</p>
                     <p className={styles.qty}>T2 Qty</p>
                 </div>
-                <p className={`${''} ${styles.apy}`}>APY</p>
+                <p className={`${''} ${styles.apy}`}>APR</p>
                 <div className={styles.full_range}>
                     <RangeStatus
                         isInRange={isPositionInRange}

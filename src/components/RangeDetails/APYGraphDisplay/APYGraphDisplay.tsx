@@ -11,7 +11,7 @@ export default function APYGraphDisplay(props: IApyGraphDisplayProps) {
         <div className={styles.main_container}>
             <div className={styles.apy}>
                 <Apy amount={updatedPositionApy || undefined} />
-                <p className={`${styles.apy_text} ${styles.apy_green}`}>APY</p>
+                <p className={`${styles.apy_text} ${styles.apy_green}`}>APR</p>
             </div>
             <div className={styles.chart_container}>
                 <img src={chartImage} alt='chart' />

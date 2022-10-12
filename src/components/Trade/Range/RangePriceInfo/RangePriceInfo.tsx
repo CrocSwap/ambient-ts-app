@@ -28,12 +28,12 @@ export default function RangePriceInfo(props: IRangePriceInfoPropsIF) {
     // console.log({ spotPriceDisplay });
 
     const apyPercentageString = apyPercentage
-        ? `Est. APY | ${apyPercentage.toLocaleString(undefined, {
+        ? `Est. APR | ${apyPercentage.toLocaleString(undefined, {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
           })}%`
         : '…';
-    // JSX frag for estimated APY of position
+    // JSX frag for estimated APR of position
     const apy = <span className={styles.apy}>{apyPercentageString}</span>;
 
     // JSX frag for lowest price in range
