@@ -14,6 +14,8 @@ import {
     setSimpleRangeWidth,
     setTargetData,
     targetData,
+    candleDomain,
+    setCandleDomains,
 } from '../../utils/state/tradeDataSlice';
 import { CandleChartData } from '../Trade/TradeCharts/TradeCharts';
 import FeeRateSubChart from '../Trade/TradeCharts/TradeChartsLoading/FeeRateSubChart';
@@ -142,6 +144,10 @@ export default function Chart(props: ChartData) {
     const [crosshairData, setCrosshairData] = useState([{ x: 0, y: -1 }]);
     const [currentPriceData] = useState([{ value: -1 }]);
     const [indicatorLineData] = useState([{ x: 0, y: 0 }]);
+    const [liqTooltipSelectedLiqBar, setLiqTooltipSelectedLiqBar] = useState({
+        activeLiq: 0,
+        upperBoundPriceDecimalCorrected: 0,
+    });
 
     // d3
     const [transactionFilter, setTransactionFilter] = useState<CandleData>();
@@ -391,11 +397,11 @@ export default function Chart(props: ChartData) {
     useEffect(() => {
         if (scaleData !== undefined) {
             let lastY = 0;
-            let yOffset = 0;
+            let domainBoundary = scaleData.xScaleCopy.domain();
 
             const zoom = d3
                 .zoom()
-                .scaleExtent([1, 10])
+                .scaleExtent([0.5, 10])
                 // .translateExtent([
                 //     [-150, -200],
                 //     [1600, 600],
@@ -406,18 +412,54 @@ export default function Chart(props: ChartData) {
                     }
                 })
                 .on('zoom', (event: any) => {
+                    const t = event.transform;
+
+                    if (
+                        event.transform.rescaleX(scaleData.xScaleCopy).domain()[0] <
+                        domainBoundary[0]
+                    ) {
+                        domainBoundary = scaleData.xScale.domain();
+                    }
+
                     scaleData.xScale.domain(
                         event.transform.rescaleX(scaleData.xScaleCopy).domain(),
                     );
-                    relocationCrosshairText(event);
-                    if (event.sourceEvent && event.sourceEvent.type != 'wheel') {
-                        lastY = event.transform.y - yOffset;
-                        const translate = d3.zoomIdentity.translate(0, lastY);
-                        scaleData.yScale.domain(translate.rescaleY(scaleData.yScaleCopy).domain());
-                    } else {
-                        yOffset = event.transform.y - lastY;
+
+                    if (
+                        domainBoundary[0] >
+                        event.transform.rescaleX(scaleData.xScaleCopy).domain()[0]
+                    ) {
+                        const candleDomain: candleDomain = {
+                            lastCandleDate:
+                                parsedChartData?.chartData[parsedChartData?.chartData.length - 1]
+                                    .time,
+                            domainBoundry: new Date(
+                                event.transform.rescaleX(scaleData.xScaleCopy).domain()[0],
+                            ).getTime(),
+                        };
+
+                        dispatch(setCandleDomains(candleDomain));
                     }
+
+                    relocationCrosshairText(event);
+
+                    // PANNING
+                    if (event.sourceEvent && event.sourceEvent.type != 'wheel') {
+                        const domainY = scaleData.yScale.domain();
+                        const linearY = d3
+                            .scaleLinear()
+                            .domain(scaleData.yScale.range())
+                            .range([domainY[1] - domainY[0], 0]);
+
+                        const deltaY = linearY(t.y - lastY);
+
+                        scaleData.yScale.domain([domainY[0] + deltaY, domainY[1] + deltaY]);
+                    }
+
                     addHorizontalLineArea();
+
+                    lastY = t.y;
+
                     render();
                 })
                 .on('end', (event: any) => {
@@ -426,35 +468,20 @@ export default function Chart(props: ChartData) {
                     }
                 }) as any;
 
-            const yAxisZoom = d3
-                .zoom()
-                .scaleExtent([1, 5])
-                .on('zoom', (event: any) => {
-                    scaleData.yScale.domain(
-                        event.transform.rescaleY(scaleData.yScaleCopy).domain(),
-                    );
-                    render();
-                }) as any;
+            const yAxisDrag = d3.drag().on('drag', (event: any) => {
+                const dy = event.dy;
+                const factor = Math.pow(2, -dy * 0.01);
 
-            const yAxisDrag = d3
-                .drag()
-                .on('start', () => {
-                    d3.select(d3Container.current).style('cursor', 'grabbing');
-                })
-                .on('drag', (event: any) => {
-                    const factor = Math.pow(2, -event.dy * 0.01);
-                    d3.select(d3PlotArea.current).call(yAxisZoom.scaleBy, factor);
-
-                    addHorizontalLineArea();
-                })
-                .on('end', () => {
-                    d3.select(d3Container.current).style('cursor', 'default');
-                }) as any;
+                const domain = scaleData.yScale.domain();
+                const center = (domain[1] + domain[0]) / 2;
+                const size = (domain[1] - domain[0]) / 2 / factor;
+                scaleData.yScale.domain([center - size, center + size]);
+                render();
+            });
 
             setZoomUtils(() => {
                 return {
                     zoom: zoom,
-                    yAxisZoom: yAxisZoom,
                     yAxisDrag: yAxisDrag,
                 };
             });
@@ -462,12 +489,8 @@ export default function Chart(props: ChartData) {
     }, [scaleData, ranges]);
 
     const setMarketLineValue = () => {
-        let lastCandlePrice: number | undefined;
-        props.candleData?.chartData.map((data) => {
-            if (lastCandlePrice === undefined && data.close !== undefined) {
-                lastCandlePrice = data.close;
-            }
-        });
+        const lastCandlePrice = parsedChartData?.chartData[0].close;
+
         setMarket(() => {
             return [
                 {
@@ -1729,12 +1752,12 @@ export default function Chart(props: ChartData) {
                     async function createElements() {
                         const svg = d3.select(event.target).select('svg');
 
+                        crosshairHorizontalJoin(svg, [crosshairData]).call(crosshairHorizontal);
+                        crosshairVerticalJoin(svg, [crosshairData]).call(crosshairVertical);
+
                         targetsJoin(svg, [targets.ranges]).call(horizontalLine);
                         marketJoin(svg, [targets.market]).call(marketLine);
                         limitJoin(svg, [targets.limit]).call(horizontalLine);
-
-                        crosshairHorizontalJoin(svg, [crosshairData]).call(crosshairHorizontal);
-                        crosshairVerticalJoin(svg, [crosshairData]).call(crosshairVertical);
 
                         highlightedCurrentPriceLineJoin(svg, [currentPriceData]).call(
                             highlightedCurrentPriceLine,
@@ -1773,19 +1796,6 @@ export default function Chart(props: ChartData) {
                                     .select('.indicatorLine')
                                     .style('visibility', 'visible');
 
-                                liqTooltip
-                                    .style('visibility', 'visible')
-                                    .html('<p> % 0.1 </p>' + '<p> $ 500k </p>')
-                                    .style(
-                                        'top',
-                                        event.y -
-                                            80 -
-                                            (event.offsetY - scaleData.yScale(poolPriceDisplay)) /
-                                                2 +
-                                            'px',
-                                    )
-                                    .style('left', event.offsetX - 40 + 'px');
-
                                 const filtered =
                                     liquidityData.liqData.length > 1
                                         ? liquidityData.liqData.filter(
@@ -1805,6 +1815,22 @@ export default function Chart(props: ChartData) {
                                         ? curr
                                         : prev;
                                 });
+
+                                setLiqTooltipSelectedLiqBar(() => {
+                                    return nearest;
+                                });
+
+                                liqTooltip
+                                    .style('visibility', 'visible')
+                                    .style(
+                                        'top',
+                                        event.y -
+                                            80 -
+                                            (event.offsetY - scaleData.yScale(poolPriceDisplay)) /
+                                                2 +
+                                            'px',
+                                    )
+                                    .style('left', event.offsetX - 50 + 'px');
 
                                 d3.select(event.currentTarget)
                                     .selectAll('.horizontal  > path')
@@ -1833,8 +1859,7 @@ export default function Chart(props: ChartData) {
 
                                 render();
                             })
-
-                            .on('mouseout', (event) => {
+                            .on('mouseleave', (event) => {
                                 firstRender = true;
 
                                 d3.select(event.currentTarget)
@@ -1845,6 +1870,7 @@ export default function Chart(props: ChartData) {
                                             ? 'rgba(115, 113, 252, 0.3)'
                                             : 'rgba(205, 193, 255, 0.3)';
                                     });
+
                                 d3.select(d3PlotArea.current)
                                     .select('.highlightedCurrentPriceLine')
                                     .style('visibility', 'hidden');
@@ -1930,6 +1956,45 @@ export default function Chart(props: ChartData) {
         },
         [],
     );
+
+    useEffect(() => {
+        if (
+            liqTooltip !== undefined &&
+            liqTooltipSelectedLiqBar !== undefined &&
+            poolPriceDisplay !== undefined
+        ) {
+            const liqTextData = { volume: 0, totalValue: 0 };
+
+            props.liquidityData.liqData.map((liqData: any) => {
+                if (liqTooltipSelectedLiqBar.upperBoundPriceDecimalCorrected < poolPriceDisplay) {
+                    if (
+                        liqData.upperBoundPriceDecimalCorrected >=
+                            liqTooltipSelectedLiqBar.upperBoundPriceDecimalCorrected &&
+                        poolPriceDisplay > liqData.upperBoundPriceDecimalCorrected
+                    ) {
+                        liqTextData.totalValue =
+                            liqTextData.totalValue + liqData.upperBoundPriceDecimalCorrected;
+                    }
+                } else {
+                    if (
+                        liqData.upperBoundPriceDecimalCorrected <=
+                            liqTooltipSelectedLiqBar.upperBoundPriceDecimalCorrected &&
+                        poolPriceDisplay < liqData.upperBoundPriceDecimalCorrected
+                    ) {
+                        liqTextData.totalValue =
+                            liqTextData.totalValue + liqData.upperBoundPriceDecimalCorrected;
+                    }
+                }
+            });
+
+            liqTooltip.html(
+                '<p> % 0.1 </p>' +
+                    '<p> $ ' +
+                    formatDollarAmountAxis(liqTextData.totalValue) +
+                    ' </p>',
+            );
+        }
+    }, [liqTooltipSelectedLiqBar]);
 
     // Color Picker
     useEffect(() => {
