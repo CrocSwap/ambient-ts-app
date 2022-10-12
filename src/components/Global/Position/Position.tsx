@@ -188,7 +188,7 @@ export default function Position(props: PositionPropsIF) {
                         ambient
                     </td>
                 )}
-                <td data-column='APY' className={styles.apy}>
+                <td data-column='APR' className={styles.apr}>
                     35.65%
                 </td>
                 <td data-column='Range Status'>

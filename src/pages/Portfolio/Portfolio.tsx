@@ -25,7 +25,8 @@ import ProfileSettings from '../../components/Portfolio/ProfileSettings/ProfileS
 // import { setToken } from '../../utils/state/temp';
 
 const mainnetProvider = new ethers.providers.WebSocketProvider(
-    'wss://mainnet.infura.io/ws/v3/4a162c75bd514925890174ca13cdb6a2',
+    'wss://mainnet.infura.io/ws/v3/e0aa879e36fc4c9e91b826ad961a36fd',
+    // 'wss://mainnet.infura.io/ws/v3/4a162c75bd514925890174ca13cdb6a2',
 );
 
 interface PortfolioPropsIF {

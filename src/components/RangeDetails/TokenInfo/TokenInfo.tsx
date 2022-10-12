@@ -42,7 +42,7 @@ export default function TokenInfo(props: ITokenInfoProps) {
 
     const positionApyString =
         positionApy !== undefined
-            ? `APY | ${positionApy.toLocaleString(undefined, {
+            ? `APR | ${positionApy.toLocaleString(undefined, {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
               })}%`
@@ -127,12 +127,12 @@ export default function TokenInfo(props: ITokenInfoProps) {
         }
     }, [crocEnv, isDenomBase, lastBlockNumber, baseTokenAddress, quoteTokenAddress]);
 
-    const apyColor =
+    const aprColor =
         positionApy !== undefined
             ? positionApy > 0
-                ? styles.apy_green
-                : styles.apy_red
-            : styles.apy_green;
+                ? styles.apr_green
+                : styles.apr_red
+            : styles.apr_green;
 
     return (
         <div className={styles.token_info_container}>
@@ -148,7 +148,7 @@ export default function TokenInfo(props: ITokenInfoProps) {
                     {poolPriceChangePercent === undefined ? '…' : poolPriceChangePercent + ' | 24h'}
                 </span>
             </div>
-            <div className={apyColor}>{positionApyString}</div>
+            <div className={aprColor}>{positionApyString}</div>
         </div>
     );
 }

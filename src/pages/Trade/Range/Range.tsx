@@ -56,6 +56,7 @@ import getUnicodeCharacter from '../../../utils/functions/getUnicodeCharacter';
 import RangeShareControl from '../../../components/Trade/Range/RangeShareControl/RangeShareControl';
 
 interface RangePropsIF {
+    crocEnv: CrocEnv | undefined;
     isUserLoggedIn: boolean;
     importedTokens: Array<TokenIF>;
     setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
@@ -89,6 +90,7 @@ interface RangePropsIF {
 
 export default function Range(props: RangePropsIF) {
     const {
+        crocEnv,
         isUserLoggedIn,
         importedTokens,
         setImportedTokens,
@@ -623,7 +625,7 @@ export default function Range(props: RangePropsIF) {
 
     const maxPriceDisplay = isAmbient ? 'Infinity' : pinnedMaxPriceDisplayTruncated;
 
-    const apyPercentage: number | undefined = ambientApy
+    const aprPercentage: number | undefined = ambientApy
         ? 100 - rangeWidthPercentage + ambientApy
         : undefined;
 
@@ -639,11 +641,14 @@ export default function Range(props: RangePropsIF) {
     const minPriceDisplay = isAmbient ? '0' : pinnedMinPriceDisplayTruncated;
 
     const sendTransaction = async () => {
-        if (!provider || !(provider as ethers.providers.WebSocketProvider).getSigner()) {
-            return;
-        }
+        // if (!provider || !(provider as ethers.providers.WebSocketProvider).getSigner()) {
+        //     return;
+        // }
+        if (!crocEnv) return;
 
-        const pool = new CrocEnv(provider).pool(tokenA.address, tokenB.address);
+        resetConfirmation();
+
+        const pool = crocEnv.pool(tokenA.address, tokenB.address);
 
         const spot = await pool.displayPrice();
         const minPrice = spot * (1 - parseFloat(slippageTolerancePercentage) / 100);
@@ -804,7 +809,7 @@ export default function Range(props: RangePropsIF) {
         spotPriceDisplay: displayPriceString,
         maxPriceDisplay: maxPriceDisplay,
         minPriceDisplay: minPriceDisplay,
-        apyPercentage: apyPercentage,
+        aprPercentage: aprPercentage,
         isTokenABase: isTokenABase,
         didUserFlipDenom: tradeData.didUserFlipDenom,
         poolPriceCharacter: poolPriceCharacter,

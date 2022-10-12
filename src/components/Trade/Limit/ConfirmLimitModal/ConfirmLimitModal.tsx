@@ -184,7 +184,11 @@ export default function ConfirmLimitModal(props: ConfirmLimitModalProps) {
     // const currentTxHash = 'i am hash number';
     const confirmSendMessage = (
         <WaitingConfirmation
-            content={` Submitting Limit Order to Swap ${sellTokenQty} ${sellTokenData.symbol} for ${buyTokenQty} ${buyTokenData.symbol}`}
+            content={` Submitting Limit Order to Swap ${sellTokenQty} ${
+                sellTokenData.symbol
+            } for ${buyTokenQty} ${
+                buyTokenData.symbol
+            }. Please check the ${'Metamask'} extension in your browser for notifications.`}
         />
     );
 

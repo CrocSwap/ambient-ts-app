@@ -77,8 +77,8 @@ import {
     setSimpleRangeWidth,
 } from '../utils/state/tradeDataSlice';
 import {
-    //  memoizeQuerySpotPrice,
-    querySpotPrice,
+    memoizeQuerySpotPrice,
+    // querySpotPrice,
 } from './functions/querySpotPrice';
 import { memoizeFetchAddress } from './functions/fetchAddress';
 import {
@@ -123,6 +123,7 @@ const cachedFetchAddress = memoizeFetchAddress();
 const cachedFetchNativeTokenBalance = memoizeFetchNativeTokenBalance();
 const cachedFetchErc20TokenBalances = memoizeFetchErc20TokenBalances();
 const cachedFetchTokenPrice = memoizeTokenPrice();
+const cachedQuerySpotPrice = memoizeQuerySpotPrice();
 
 const httpGraphCacheServerDomain = 'https://809821320828123.de:5000';
 const wssGraphCacheServerDomain = 'wss://809821320828123.de:5000';
@@ -583,6 +584,7 @@ export default function App() {
             // token pair has an initialized pool on-chain
             // returns a promise object
             const doesPoolExist = crocEnv
+                // TODO: make this function pill addresses directly from URL params
                 .pool(tokenPair.dataTokenA.address, tokenPair.dataTokenB.address)
                 .isInit();
             // resolve the promise object to see if pool exists
@@ -1328,7 +1330,7 @@ export default function App() {
                 //     ? provider
                 //     : (await new CrocEnv(chainData.chainId).context).provider;
 
-                const spotPrice = await querySpotPrice(
+                const spotPrice = await cachedQuerySpotPrice(
                     crocEnv,
                     baseTokenAddress,
                     quoteTokenAddress,
@@ -1758,6 +1760,7 @@ export default function App() {
 
     // props for <Range/> React element
     const rangeProps = {
+        crocEnv: crocEnv,
         isUserLoggedIn: isUserLoggedIn,
         importedTokens: importedTokens,
         setImportedTokens: setImportedTokens,
@@ -1965,6 +1968,7 @@ export default function App() {
                             index
                             element={
                                 <Home
+                                    cachedQuerySpotPrice={cachedQuerySpotPrice}
                                     tokenMap={tokenMap}
                                     lastBlockNumber={lastBlockNumber}
                                     crocEnv={crocEnv}
@@ -2063,7 +2067,7 @@ export default function App() {
                         <Route path='range2' element={<Range {...rangeProps} />} />
                         <Route
                             path='initpool/:params'
-                            element={<InitPool showSidebar={showSidebar} />}
+                            element={<InitPool crocEnv={crocEnv} showSidebar={showSidebar} />}
                         />
                         <Route
                             path='account'

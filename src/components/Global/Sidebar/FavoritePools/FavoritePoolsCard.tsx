@@ -1,6 +1,6 @@
 import styles from './FavoritePoolsCard.module.css';
 import { PoolIF } from '../../../../utils/interfaces/exports';
-import { getPoolStatsFresh } from '../../../../App/functions/getPoolStats';
+import { PoolStatsFn } from '../../../../App/functions/getPoolStats';
 import { useEffect, useMemo, useState } from 'react';
 import { useLocation, Link } from 'react-router-dom';
 import { formatAmount } from '../../../../utils/numbers';
@@ -9,10 +9,11 @@ import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 interface FavoritePoolsCardIF {
     pool: PoolIF;
     lastBlockNumber: number;
+    cachedPoolStatsFetch: PoolStatsFn;
 }
 
 export default function FavoritePoolsCard(props: FavoritePoolsCardIF) {
-    const { pool } = props;
+    const { pool, cachedPoolStatsFetch, lastBlockNumber } = props;
 
     const [poolVolume, setPoolVolume] = useState<string | undefined>();
     const [poolTvl, setPoolTvl] = useState<string | undefined>();
@@ -41,12 +42,12 @@ export default function FavoritePoolsCard(props: FavoritePoolsCardIF) {
 
     const fetchPoolStats = () => {
         (async () => {
-            console.log('fetching pool stats from sidebar');
-            const poolStatsFresh = await getPoolStatsFresh(
+            const poolStatsFresh = await cachedPoolStatsFetch(
                 pool.chainId,
                 pool.base.address,
                 pool.quote.address,
                 pool.poolId,
+                Math.floor(lastBlockNumber / 4),
             );
             const volume = poolStatsFresh?.volume;
             const volumeString = volume ? '$' + formatAmount(volume) : undefined;
@@ -59,20 +60,7 @@ export default function FavoritePoolsCard(props: FavoritePoolsCardIF) {
 
     useEffect(() => {
         fetchPoolStats();
-
-        // fetch every minute
-        const timerId = setInterval(() => {
-            fetchPoolStats();
-        }, 60000);
-
-        // after 1 hour stop
-        setTimeout(() => {
-            clearInterval(timerId);
-        }, 3600000);
-
-        // clear interval when component unmounts
-        return () => clearInterval(timerId);
-    }, []);
+    }, [lastBlockNumber]);
 
     return (
         <Link className={styles.container} to={linkPath}>
