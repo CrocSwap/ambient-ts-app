@@ -16,6 +16,8 @@ import {
 import { fetchPoolLimitOrderStates } from '../../../../App/functions/fetchPoolLimitOrderStates';
 import { ChainSpec } from '@crocswap-libs/sdk';
 import useWebSocket from 'react-use-websocket';
+import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
+
 // import OrderAccordions from './OrderAccordions/OrderAccordions';
 
 // interface for props for react functional component
@@ -247,6 +249,124 @@ export default function Orders(props: propsIF) {
             <p>Mobile Accordion here: Disabled for now</p>
         </div>
     );
+
+    const sidebarOpen = true;
+
+    const ipadView = useMediaQuery('(max-width: 480px)');
+    const desktopView = useMediaQuery('(max-width: 768px)');
+    const showColumns = sidebarOpen || desktopView;
+
+    const walID = (
+        <>
+            <p>ID</p>
+            <p>Wallet</p>
+        </>
+    );
+    const sideType = (
+        <>
+            <p>Side</p>
+            <p>Type</p>
+        </>
+    );
+    const tokens = (
+        <>
+            <p>ETH</p>
+            <p>USDC</p>
+        </>
+    );
+    const headerColumns = [
+        {
+            name: 'ID',
+            className: 'ID',
+            show: !showColumns,
+            slug: 'id',
+            sortable: true,
+        },
+        {
+            name: 'Wallet',
+            className: 'wallet',
+            show: !showColumns,
+            slug: 'wallet',
+            sortable: true,
+        },
+        {
+            name: walID,
+            className: 'wallet_it',
+            show: showColumns,
+            slug: 'walletid',
+            sortable: false,
+        },
+        {
+            name: 'Price',
+            className: 'price',
+            show: !ipadView,
+            slug: 'price',
+            sortable: true,
+        },
+        {
+            name: 'Side',
+            className: 'side',
+            show: !showColumns,
+            slug: 'side',
+            sortable: true,
+        },
+        {
+            name: 'Type',
+            className: 'type',
+            show: !showColumns,
+            slug: 'type',
+            sortable: true,
+        },
+        {
+            name: sideType,
+            className: 'side_type',
+            show: showColumns && !ipadView,
+            slug: 'sidetype',
+            sortable: false,
+        },
+        {
+            name: 'Value',
+            className: 'value',
+            show: true,
+            slug: 'value',
+            sortable: true,
+        },
+        {
+            name: 'ETH',
+            className: 'eth',
+            show: !showColumns,
+            slug: 'eth',
+            sortable: false,
+        },
+        {
+            name: 'USDC',
+            className: 'usdc',
+            show: !showColumns,
+            slug: 'usdc',
+            sortable: false,
+        },
+        {
+            name: tokens,
+            className: 'tokens',
+            show: showColumns,
+            slug: 'tokens',
+            sortable: false,
+        },
+        {
+            name: '',
+            className: '',
+            show: !ipadView,
+            slug: 'status',
+            sortable: false,
+        },
+        {
+            name: '',
+            className: '',
+            show: true,
+            slug: 'menu',
+            sortable: false,
+        },
+    ];
 
     return (
         <div className={styles.container}>
