@@ -1,0 +1,887 @@
+"filename", "language", "CSS", "Markdown", "TypeScript React", "TypeScript", "JSON", "XML", "JavaScript", "comment", "blank", "total"
+"/Users/junioradessu/Documents/ambient-ts-app/src/App/APP.md", "Markdown", 0, 6, 0, 0, 0, 0, 0, 0, 5, 11
+"/Users/junioradessu/Documents/ambient-ts-app/src/App/App.css", "CSS", 196, 0, 0, 0, 0, 0, 0, 52, 45, 293
+"/Users/junioradessu/Documents/ambient-ts-app/src/App/App.test.tsx", "TypeScript React", 0, 0, 17, 0, 0, 0, 0, 0, 4, 21
+"/Users/junioradessu/Documents/ambient-ts-app/src/App/App.tsx", "TypeScript React", 0, 0, 1824, 0, 0, 0, 0, 241, 201, 2266
+"/Users/junioradessu/Documents/ambient-ts-app/src/App/components/Chat/Chat.module.css", "CSS", 129, 0, 0, 0, 0, 0, 0, 6, 27, 162
+"/Users/junioradessu/Documents/ambient-ts-app/src/App/components/Chat/Chat.tsx", "TypeScript React", 0, 0, 158, 0, 0, 0, 0, 14, 24, 196
+"/Users/junioradessu/Documents/ambient-ts-app/src/App/components/Chat/ChatButton/ChatButton.module.css", "CSS", 147, 0, 0, 0, 0, 0, 0, 5, 18, 170
+"/Users/junioradessu/Documents/ambient-ts-app/src/App/components/Chat/ChatButton/ChatButton.tsx", "TypeScript React", 0, 0, 54, 0, 0, 0, 0, 2, 5, 61
+"/Users/junioradessu/Documents/ambient-ts-app/src/App/components/Chat/MessageItem/MessageItem.module.css", "CSS", 96, 0, 0, 0, 0, 0, 0, 3, 23, 122
+"/Users/junioradessu/Documents/ambient-ts-app/src/App/components/Chat/MessageItem/MessageItem.tsx", "TypeScript React", 0, 0, 63, 0, 0, 0, 0, 0, 8, 71
+"/Users/junioradessu/Documents/ambient-ts-app/src/App/components/Chat/devpun.js", "JavaScript", 0, 0, 0, 0, 0, 0, 219, 0, 3, 222
+"/Users/junioradessu/Documents/ambient-ts-app/src/App/components/GlobalModal/GlobalModal.module.css", "CSS", 0, 0, 0, 0, 0, 0, 0, 0, 1, 1
+"/Users/junioradessu/Documents/ambient-ts-app/src/App/components/GlobalModal/GlobalModal.tsx", "TypeScript React", 0, 0, 16, 0, 0, 0, 0, 0, 5, 21
+"/Users/junioradessu/Documents/ambient-ts-app/src/App/components/GlobalModal/useGlobalModal.ts", "TypeScript", 0, 0, 0, 19, 0, 0, 0, 7, 10, 36
+"/Users/junioradessu/Documents/ambient-ts-app/src/App/components/PageFooter/PAGEFOOTER.md", "Markdown", 0, 0, 0, 0, 0, 0, 0, 0, 1, 1
+"/Users/junioradessu/Documents/ambient-ts-app/src/App/components/PageFooter/PageFooter.module.css", "CSS", 59, 0, 0, 0, 0, 0, 0, 7, 8, 74
+"/Users/junioradessu/Documents/ambient-ts-app/src/App/components/PageFooter/PageFooter.test.tsx", "TypeScript React", 0, 0, 7, 0, 0, 0, 0, 0, 3, 10
+"/Users/junioradessu/Documents/ambient-ts-app/src/App/components/PageFooter/PageFooter.tsx", "TypeScript React", 0, 0, 67, 0, 0, 0, 0, 7, 8, 82
+"/Users/junioradessu/Documents/ambient-ts-app/src/App/components/PageHeader/Account/Account.module.css", "CSS", 100, 0, 0, 0, 0, 0, 0, 2, 14, 116
+"/Users/junioradessu/Documents/ambient-ts-app/src/App/components/PageHeader/Account/Account.tsx", "TypeScript React", 0, 0, 84, 0, 0, 0, 0, 4, 9, 97
+"/Users/junioradessu/Documents/ambient-ts-app/src/App/components/PageHeader/MagicLogin.module.css", "CSS", 34, 0, 0, 0, 0, 0, 0, 0, 3, 37
+"/Users/junioradessu/Documents/ambient-ts-app/src/App/components/PageHeader/MagicLogin.tsx", "TypeScript React", 0, 0, 64, 0, 0, 0, 0, 1, 5, 70
+"/Users/junioradessu/Documents/ambient-ts-app/src/App/components/PageHeader/NavItem/NavItem.module.css", "CSS", 32, 0, 0, 0, 0, 0, 0, 2, 5, 39
+"/Users/junioradessu/Documents/ambient-ts-app/src/App/components/PageHeader/NavItem/NavItem.tsx", "TypeScript React", 0, 0, 40, 0, 0, 0, 0, 2, 8, 50
+"/Users/junioradessu/Documents/ambient-ts-app/src/App/components/PageHeader/NavbarDropdownMenu/NavbarDropdownMenu.module.css", "CSS", 118, 0, 0, 0, 0, 0, 0, 4, 15, 137
+"/Users/junioradessu/Documents/ambient-ts-app/src/App/components/PageHeader/NavbarDropdownMenu/NavbarDropdownMenu.tsx", "TypeScript React", 0, 0, 297, 0, 0, 0, 0, 12, 25, 334
+"/Users/junioradessu/Documents/ambient-ts-app/src/App/components/PageHeader/NetworkSelector/NetworkSelector.module.css", "CSS", 90, 0, 0, 0, 0, 0, 0, 7, 19, 116
+"/Users/junioradessu/Documents/ambient-ts-app/src/App/components/PageHeader/NetworkSelector/NetworkSelector.tsx", "TypeScript React", 0, 0, 52, 0, 0, 0, 0, 4, 8, 64
+"/Users/junioradessu/Documents/ambient-ts-app/src/App/components/PageHeader/NetworkSelector/NewNetworkSelector.module.css", "CSS", 75, 0, 0, 0, 0, 0, 0, 4, 22, 101
+"/Users/junioradessu/Documents/ambient-ts-app/src/App/components/PageHeader/NetworkSelector/NewNetworkSelector.tsx", "TypeScript React", 0, 0, 132, 0, 0, 0, 0, 0, 11, 143
+"/Users/junioradessu/Documents/ambient-ts-app/src/App/components/PageHeader/PAGEHEADER.md", "Markdown", 0, 0, 0, 0, 0, 0, 0, 0, 1, 1
+"/Users/junioradessu/Documents/ambient-ts-app/src/App/components/PageHeader/PageHeader.module.css", "CSS", 144, 0, 0, 0, 0, 0, 0, 43, 29, 216
+"/Users/junioradessu/Documents/ambient-ts-app/src/App/components/PageHeader/PageHeader.test.tsx", "TypeScript React", 0, 0, 15, 0, 0, 0, 0, 0, 4, 19
+"/Users/junioradessu/Documents/ambient-ts-app/src/App/components/PageHeader/PageHeader.tsx", "TypeScript React", 0, 0, 197, 0, 0, 0, 0, 45, 37, 279
+"/Users/junioradessu/Documents/ambient-ts-app/src/App/components/PageHeader/useUrlParams.ts", "TypeScript", 0, 0, 0, 18, 0, 0, 0, 10, 4, 32
+"/Users/junioradessu/Documents/ambient-ts-app/src/App/components/Sidebar/Sidebar.module.css", "CSS", 244, 0, 0, 0, 0, 0, 0, 21, 66, 331
+"/Users/junioradessu/Documents/ambient-ts-app/src/App/components/Sidebar/Sidebar.tsx", "TypeScript React", 0, 0, 309, 0, 0, 0, 0, 18, 35, 362
+"/Users/junioradessu/Documents/ambient-ts-app/src/App/components/Sidebar/SidebarAccordion/SidebarAccordion.module.css", "CSS", 0, 0, 0, 0, 0, 0, 0, 20, 1, 21
+"/Users/junioradessu/Documents/ambient-ts-app/src/App/components/Sidebar/SidebarAccordion/SidebarAccordion.tsx", "TypeScript React", 0, 0, 60, 0, 0, 0, 0, 15, 11, 86
+"/Users/junioradessu/Documents/ambient-ts-app/src/App/components/Sidebar/SidebarSearchResults/OrdersSearchResults/OrdersSearchResults.tsx", "TypeScript React", 0, 0, 38, 0, 0, 0, 0, 0, 4, 42
+"/Users/junioradessu/Documents/ambient-ts-app/src/App/components/Sidebar/SidebarSearchResults/PoolsSearchResults/PoolsSearchResults.tsx", "TypeScript React", 0, 0, 38, 0, 0, 0, 0, 0, 6, 44
+"/Users/junioradessu/Documents/ambient-ts-app/src/App/components/Sidebar/SidebarSearchResults/PositionsSearchResults/PositionsSearchResults.tsx", "TypeScript React", 0, 0, 38, 0, 0, 0, 0, 0, 7, 45
+"/Users/junioradessu/Documents/ambient-ts-app/src/App/components/Sidebar/SidebarSearchResults/ResultSkeleton/ResultSkeleton.module.css", "CSS", 46, 0, 0, 0, 0, 0, 0, 0, 7, 53
+"/Users/junioradessu/Documents/ambient-ts-app/src/App/components/Sidebar/SidebarSearchResults/ResultSkeleton/ResultSkeleton.tsx", "TypeScript React", 0, 0, 11, 0, 0, 0, 0, 2, 1, 14
+"/Users/junioradessu/Documents/ambient-ts-app/src/App/components/Sidebar/SidebarSearchResults/SidebarSearchResults.module.css", "CSS", 62, 0, 0, 0, 0, 0, 0, 2, 20, 84
+"/Users/junioradessu/Documents/ambient-ts-app/src/App/components/Sidebar/SidebarSearchResults/SidebarSearchResults.tsx", "TypeScript React", 0, 0, 22, 0, 0, 0, 0, 1, 6, 29
+"/Users/junioradessu/Documents/ambient-ts-app/src/App/components/Sidebar/SidebarSearchResults/TransactionsResults/TransactionsResults.tsx", "TypeScript React", 0, 0, 38, 0, 0, 0, 0, 0, 4, 42
+"/Users/junioradessu/Documents/ambient-ts-app/src/App/components/Sidebar/formatSeachText.ts", "TypeScript", 0, 0, 0, 24, 0, 0, 0, 12, 9, 45
+"/Users/junioradessu/Documents/ambient-ts-app/src/App/components/Sidebar/useTokenMap.ts", "TypeScript", 0, 0, 0, 73, 0, 0, 0, 0, 6, 79
+"/Users/junioradessu/Documents/ambient-ts-app/src/App/components/WalletModal/WalletButton/WalletButton.module.css", "CSS", 26, 0, 0, 0, 0, 0, 0, 0, 5, 31
+"/Users/junioradessu/Documents/ambient-ts-app/src/App/components/WalletModal/WalletButton/WalletButton.tsx", "TypeScript React", 0, 0, 16, 0, 0, 0, 0, 0, 2, 18
+"/Users/junioradessu/Documents/ambient-ts-app/src/App/components/WalletModal/WalletModal.module.css", "CSS", 110, 0, 0, 0, 0, 0, 0, 2, 38, 150
+"/Users/junioradessu/Documents/ambient-ts-app/src/App/components/WalletModal/WalletModal.tsx", "TypeScript React", 0, 0, 222, 0, 0, 0, 0, 22, 26, 270
+"/Users/junioradessu/Documents/ambient-ts-app/src/App/components/WalletModal/validateEmail.ts", "TypeScript", 0, 0, 0, 19, 0, 0, 0, 4, 1, 24
+"/Users/junioradessu/Documents/ambient-ts-app/src/App/connectWallet.ts", "TypeScript", 0, 0, 0, 23, 0, 0, 0, 2, 2, 27
+"/Users/junioradessu/Documents/ambient-ts-app/src/App/functions/calcImpact.ts", "TypeScript", 0, 0, 0, 24, 0, 0, 0, 1, 3, 28
+"/Users/junioradessu/Documents/ambient-ts-app/src/App/functions/fetchAddress.ts", "TypeScript", 0, 0, 0, 17, 0, 0, 0, 1, 4, 22
+"/Users/junioradessu/Documents/ambient-ts-app/src/App/functions/fetchPoolLimitOrderStates.ts", "TypeScript", 0, 0, 0, 30, 0, 0, 0, 0, 6, 36
+"/Users/junioradessu/Documents/ambient-ts-app/src/App/functions/fetchPoolRecentChanges.ts", "TypeScript", 0, 0, 0, 72, 0, 0, 0, 3, 6, 81
+"/Users/junioradessu/Documents/ambient-ts-app/src/App/functions/fetchTokenBalances.ts", "TypeScript", 0, 0, 0, 211, 0, 0, 0, 20, 27, 258
+"/Users/junioradessu/Documents/ambient-ts-app/src/App/functions/fetchTokenLists.ts", "TypeScript", 0, 0, 0, 41, 0, 0, 0, 13, 4, 58
+"/Users/junioradessu/Documents/ambient-ts-app/src/App/functions/fetchTokenPrice.ts", "TypeScript", 0, 0, 0, 32, 0, 0, 0, 1, 6, 39
+"/Users/junioradessu/Documents/ambient-ts-app/src/App/functions/fetchUserRecentChanges.ts", "TypeScript", 0, 0, 0, 58, 0, 0, 0, 2, 8, 68
+"/Users/junioradessu/Documents/ambient-ts-app/src/App/functions/getLimitOrderData.ts", "TypeScript", 0, 0, 0, 18, 0, 0, 0, 1, 7, 26
+"/Users/junioradessu/Documents/ambient-ts-app/src/App/functions/getNFTs.ts", "TypeScript", 0, 0, 0, 25, 0, 0, 0, 5, 3, 33
+"/Users/junioradessu/Documents/ambient-ts-app/src/App/functions/getPoolStats.ts", "TypeScript", 0, 0, 0, 122, 0, 0, 0, 0, 10, 132
+"/Users/junioradessu/Documents/ambient-ts-app/src/App/functions/getPositionData.ts", "TypeScript", 0, 0, 0, 180, 0, 0, 0, 3, 26, 209
+"/Users/junioradessu/Documents/ambient-ts-app/src/App/functions/getTransactionData.ts", "TypeScript", 0, 0, 0, 18, 0, 0, 0, 1, 7, 26
+"/Users/junioradessu/Documents/ambient-ts-app/src/App/functions/getTvlSeries.ts", "TypeScript", 0, 0, 0, 28, 0, 0, 0, 1, 4, 33
+"/Users/junioradessu/Documents/ambient-ts-app/src/App/functions/getVolumeSeries.ts", "TypeScript", 0, 0, 0, 28, 0, 0, 0, 1, 4, 33
+"/Users/junioradessu/Documents/ambient-ts-app/src/App/functions/initializeUserLocalStorage.ts", "TypeScript", 0, 0, 0, 50, 0, 0, 0, 24, 13, 87
+"/Users/junioradessu/Documents/ambient-ts-app/src/App/functions/memoizePromiseFn.ts", "TypeScript", 0, 0, 0, 53, 0, 0, 0, 12, 15, 80
+"/Users/junioradessu/Documents/ambient-ts-app/src/App/functions/querySpotPrice.ts", "TypeScript", 0, 0, 0, 22, 0, 0, 0, 8, 5, 35
+"/Users/junioradessu/Documents/ambient-ts-app/src/App/functions/queryTokenDecimals.ts", "TypeScript", 0, 0, 0, 15, 0, 0, 0, 2, 4, 21
+"/Users/junioradessu/Documents/ambient-ts-app/src/App/hooks/useAppChain.ts", "TypeScript", 0, 0, 0, 52, 0, 0, 0, 22, 9, 83
+"/Users/junioradessu/Documents/ambient-ts-app/src/App/hooks/useDebounce.ts", "TypeScript", 0, 0, 0, 12, 0, 0, 0, 8, 2, 22
+"/Users/junioradessu/Documents/ambient-ts-app/src/App/hooks/useFavePools.ts", "TypeScript", 0, 0, 0, 52, 0, 0, 0, 0, 5, 57
+"/Users/junioradessu/Documents/ambient-ts-app/src/App/hooks/useTermsOfService.ts", "TypeScript", 0, 0, 0, 45, 0, 0, 0, 15, 6, 66
+"/Users/junioradessu/Documents/ambient-ts-app/src/App/hooks/useTokenUniverse.ts", "TypeScript", 0, 0, 0, 6, 0, 0, 0, 0, 4, 10
+"/Users/junioradessu/Documents/ambient-ts-app/src/App/mockData.ts", "TypeScript", 0, 0, 0, 200, 0, 0, 0, 0, 1, 201
+"/Users/junioradessu/Documents/ambient-ts-app/src/App/parsePositions.ts", "TypeScript", 0, 0, 0, 109, 0, 0, 0, 7, 9, 125
+"/Users/junioradessu/Documents/ambient-ts-app/src/App/useSlippage.ts", "TypeScript", 0, 0, 0, 66, 0, 0, 0, 2, 10, 78
+"/Users/junioradessu/Documents/ambient-ts-app/src/App/validateChain.ts", "TypeScript", 0, 0, 0, 5, 0, 0, 0, 27, 5, 37
+"/Users/junioradessu/Documents/ambient-ts-app/src/apollo/client.ts", "TypeScript", 0, 0, 0, 153, 0, 0, 0, 16, 10, 179
+"/Users/junioradessu/Documents/ambient-ts-app/src/assets/animations/NotFound.json", "JSON", 0, 0, 0, 0, 25843, 0, 0, 0, 1, 25844
+"/Users/junioradessu/Documents/ambient-ts-app/src/assets/animations/ambient-logo-icon.tsx", "TypeScript React", 0, 0, 4, 0, 0, 0, 0, 0, 2, 6
+"/Users/junioradessu/Documents/ambient-ts-app/src/assets/animations/completed.json", "JSON", 0, 0, 0, 0, 1963, 0, 0, 0, 1, 1964
+"/Users/junioradessu/Documents/ambient-ts-app/src/assets/animations/hamburger-menu-icon.tsx", "TypeScript React", 0, 0, 15, 0, 0, 0, 0, 1, 4, 20
+"/Users/junioradessu/Documents/ambient-ts-app/src/assets/animations/loading2.json", "JSON", 0, 0, 0, 0, 452, 0, 0, 0, 1, 453
+"/Users/junioradessu/Documents/ambient-ts-app/src/assets/animations/loading3.json", "JSON", 0, 0, 0, 0, 71, 0, 0, 0, 1, 72
+"/Users/junioradessu/Documents/ambient-ts-app/src/assets/animations/loading4.json", "JSON", 0, 0, 0, 0, 2571, 0, 0, 0, 1, 2572
+"/Users/junioradessu/Documents/ambient-ts-app/src/assets/animations/loading_spinner.svg", "XML", 0, 0, 0, 0, 0, 202, 0, 0, 0, 202
+"/Users/junioradessu/Documents/ambient-ts-app/src/assets/images/Investors/berachin1.svg", "XML", 0, 0, 0, 0, 0, 3, 0, 0, 1, 4
+"/Users/junioradessu/Documents/ambient-ts-app/src/assets/images/Investors/berachin2.svg", "XML", 0, 0, 0, 0, 0, 3, 0, 0, 1, 4
+"/Users/junioradessu/Documents/ambient-ts-app/src/assets/images/Investors/grug.svg", "XML", 0, 0, 0, 0, 0, 3, 0, 0, 1, 4
+"/Users/junioradessu/Documents/ambient-ts-app/src/assets/images/Investors/hypotenuse.svg", "XML", 0, 0, 0, 0, 0, 3, 0, 0, 1, 4
+"/Users/junioradessu/Documents/ambient-ts-app/src/assets/images/Investors/susa.svg", "XML", 0, 0, 0, 0, 0, 3, 0, 0, 1, 4
+"/Users/junioradessu/Documents/ambient-ts-app/src/assets/images/Temporary/Analytics/chart.svg", "XML", 0, 0, 0, 0, 0, 15, 0, 0, 1, 16
+"/Users/junioradessu/Documents/ambient-ts-app/src/assets/images/Temporary/chart.svg", "XML", 0, 0, 0, 0, 0, 106, 0, 0, 1, 107
+"/Users/junioradessu/Documents/ambient-ts-app/src/assets/images/Temporary/chart2.svg", "XML", 0, 0, 0, 0, 0, 26, 0, 0, 1, 27
+"/Users/junioradessu/Documents/ambient-ts-app/src/assets/images/arbitrum.svg", "XML", 0, 0, 0, 0, 0, 183, 0, 1, 1, 185
+"/Users/junioradessu/Documents/ambient-ts-app/src/assets/images/backgrounds/swap_background.svg", "XML", 0, 0, 0, 0, 0, 88, 0, 0, 1, 89
+"/Users/junioradessu/Documents/ambient-ts-app/src/assets/images/home/active_slider_button.svg", "XML", 0, 0, 0, 0, 0, 10, 0, 0, 1, 11
+"/Users/junioradessu/Documents/ambient-ts-app/src/assets/images/icons/TokensArrow.svg", "XML", 0, 0, 0, 0, 0, 10, 0, 0, 1, 11
+"/Users/junioradessu/Documents/ambient-ts-app/src/assets/images/icons/avatar.svg", "XML", 0, 0, 0, 0, 0, 21, 0, 1, 3, 25
+"/Users/junioradessu/Documents/ambient-ts-app/src/assets/images/icons/settings.svg", "XML", 0, 0, 0, 0, 0, 1, 0, 0, 0, 1
+"/Users/junioradessu/Documents/ambient-ts-app/src/assets/images/icons/star_unfilled.svg", "XML", 0, 0, 0, 0, 0, 3, 0, 0, 1, 4
+"/Users/junioradessu/Documents/ambient-ts-app/src/assets/images/logos/MetaMask_Fox.svg", "XML", 0, 0, 0, 0, 0, 60, 0, 1, 1, 62
+"/Users/junioradessu/Documents/ambient-ts-app/src/assets/images/logos/ambi_grey.svg", "XML", 0, 0, 0, 0, 0, 202, 0, 0, 1, 203
+"/Users/junioradessu/Documents/ambient-ts-app/src/assets/images/logos/ambient_logo.svg", "XML", 0, 0, 0, 0, 0, 1204, 0, 0, 1, 1205
+"/Users/junioradessu/Documents/ambient-ts-app/src/assets/images/networks/arbitrum.svg", "XML", 0, 0, 0, 0, 0, 181, 0, 0, 1, 182
+"/Users/junioradessu/Documents/ambient-ts-app/src/assets/images/networks/kovan.svg", "XML", 0, 0, 0, 0, 0, 1, 0, 0, 0, 1
+"/Users/junioradessu/Documents/ambient-ts-app/src/assets/images/networks/optimistic.svg", "XML", 0, 0, 0, 0, 0, 5, 0, 0, 1, 6
+"/Users/junioradessu/Documents/ambient-ts-app/src/assets/images/networks/polygon.svg", "XML", 0, 0, 0, 0, 0, 15, 0, 1, 1, 17
+"/Users/junioradessu/Documents/ambient-ts-app/src/assets/images/optimism.svg", "XML", 0, 0, 0, 0, 0, 5, 0, 0, 1, 6
+"/Users/junioradessu/Documents/ambient-ts-app/src/assets/images/sidebarImages/closeSidebar.svg", "XML", 0, 0, 0, 0, 0, 5, 0, 0, 1, 6
+"/Users/junioradessu/Documents/ambient-ts-app/src/assets/images/sidebarImages/deposit.svg", "XML", 0, 0, 0, 0, 0, 1, 0, 0, 0, 1
+"/Users/junioradessu/Documents/ambient-ts-app/src/assets/images/sidebarImages/exchange.svg", "XML", 0, 0, 0, 0, 0, 61, 0, 1, 1, 63
+"/Users/junioradessu/Documents/ambient-ts-app/src/assets/images/sidebarImages/favouritePools.svg", "XML", 0, 0, 0, 0, 0, 10, 0, 0, 1, 11
+"/Users/junioradessu/Documents/ambient-ts-app/src/assets/images/sidebarImages/openOrders.svg", "XML", 0, 0, 0, 0, 0, 4, 0, 0, 1, 5
+"/Users/junioradessu/Documents/ambient-ts-app/src/assets/images/sidebarImages/rangePositions.svg", "XML", 0, 0, 0, 0, 0, 6, 0, 0, 1, 7
+"/Users/junioradessu/Documents/ambient-ts-app/src/assets/images/sidebarImages/recentTransactions.svg", "XML", 0, 0, 0, 0, 0, 5, 0, 0, 1, 6
+"/Users/junioradessu/Documents/ambient-ts-app/src/assets/images/sidebarImages/topPools.svg", "XML", 0, 0, 0, 0, 0, 4, 0, 0, 1, 5
+"/Users/junioradessu/Documents/ambient-ts-app/src/assets/images/sidebarImages/topTokens.svg", "XML", 0, 0, 0, 0, 0, 3, 0, 0, 1, 4
+"/Users/junioradessu/Documents/ambient-ts-app/src/assets/images/sidebarImages/transfer.svg", "XML", 0, 0, 0, 0, 0, 1, 0, 0, 0, 1
+"/Users/junioradessu/Documents/ambient-ts-app/src/assets/images/sidebarImages/wallet.svg", "XML", 0, 0, 0, 0, 0, 47, 0, 1, 1, 49
+"/Users/junioradessu/Documents/ambient-ts-app/src/assets/images/sidebarImages/withdraw.svg", "XML", 0, 0, 0, 0, 0, 1, 0, 0, 0, 1
+"/Users/junioradessu/Documents/ambient-ts-app/src/assets/images/waveform.svg", "XML", 0, 0, 0, 0, 0, 57, 0, 0, 1, 58
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Analytics/AnalyticsTabs/AnalyticsTabs.module.css", "CSS", 71, 0, 0, 0, 0, 0, 0, 1, 9, 81
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Analytics/AnalyticsTabs/AnalyticsTabs.tsx", "TypeScript React", 0, 0, 126, 0, 0, 0, 0, 2, 9, 137
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Analytics/GraphContainer/GraphContainer.module.css", "CSS", 150, 0, 0, 0, 0, 0, 0, 9, 21, 180
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Analytics/GraphContainer/GraphContainer.tsx", "TypeScript React", 0, 0, 286, 0, 0, 0, 0, 10, 24, 320
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/COMPONENTS.md", "Markdown", 0, 12, 0, 0, 0, 0, 0, 0, 7, 19
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Chat/ChatPanel.module.css", "CSS", 147, 0, 0, 0, 0, 0, 0, 11, 31, 189
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Chat/ChatPanel.tsx", "TypeScript React", 0, 0, 134, 0, 0, 0, 0, 37, 18, 189
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Chat/MessagePanel/Inbox/IncomingMessage.module.css", "CSS", 68, 0, 0, 0, 0, 0, 0, 10, 28, 106
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Chat/MessagePanel/Inbox/IncomingMessage.tsx", "TypeScript React", 0, 0, 20, 0, 0, 0, 0, 0, 4, 24
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Chat/MessagePanel/InputBox/MessageInput.module.css", "CSS", 73, 0, 0, 0, 0, 0, 0, 6, 28, 107
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Chat/MessagePanel/InputBox/MessageInput.tsx", "TypeScript React", 0, 0, 55, 0, 0, 0, 0, 29, 10, 94
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Chat/MessagePanel/Room/Room.module.css", "CSS", 16, 0, 0, 0, 0, 0, 0, 0, 2, 18
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Chat/MessagePanel/Room/Room.tsx", "TypeScript React", 0, 0, 83, 0, 0, 0, 0, 1, 7, 91
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Chat/MessagePanel/SentMessagePanel/SentMessagePanel.module.css", "CSS", 60, 0, 0, 0, 0, 0, 0, 3, 15, 78
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Chat/MessagePanel/SentMessagePanel/SentMessagePanel.tsx", "TypeScript React", 0, 0, 19, 0, 0, 0, 0, 0, 4, 23
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Chat/Model/MessageModel.ts", "TypeScript", 0, 0, 0, 7, 0, 0, 0, 0, 1, 8
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Chat/Service/chatApi.tsx", "TypeScript React", 0, 0, 7, 0, 0, 0, 0, 31, 11, 49
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Accordion/Accordion.module.css", "CSS", 0, 0, 0, 0, 0, 0, 0, 0, 1, 1
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Accordion/Accordion.tsx", "TypeScript React", 0, 0, 36, 0, 0, 0, 0, 0, 4, 40
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Account/AccountTabs/Exchange/Exchange.module.css", "CSS", 14, 0, 0, 0, 0, 0, 0, 0, 4, 18
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Account/AccountTabs/Exchange/Exchange.tsx", "TypeScript React", 0, 0, 53, 0, 0, 0, 0, 4, 4, 61
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Account/AccountTabs/Exchange/ExchangeCard.module.css", "CSS", 37, 0, 0, 0, 0, 0, 0, 1, 7, 45
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Account/AccountTabs/Exchange/ExchangeCard.tsx", "TypeScript React", 0, 0, 87, 0, 0, 0, 0, 19, 12, 118
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Account/AccountTabs/Exchange/ExchangeHeader.module.css", "CSS", 23, 0, 0, 0, 0, 0, 0, 1, 5, 29
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Account/AccountTabs/Exchange/ExchangeHeader.tsx", "TypeScript React", 0, 0, 10, 0, 0, 0, 0, 0, 2, 12
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Account/AccountTabs/Order/Order.module.css", "CSS", 14, 0, 0, 0, 0, 0, 0, 0, 4, 18
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Account/AccountTabs/Order/Order.tsx", "TypeScript React", 0, 0, 23, 0, 0, 0, 0, 1, 5, 29
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Account/AccountTabs/Order/OrderCard.module.css", "CSS", 51, 0, 0, 0, 0, 0, 0, 11, 8, 70
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Account/AccountTabs/Order/OrderCard.tsx", "TypeScript React", 0, 0, 123, 0, 0, 0, 0, 23, 19, 165
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Account/AccountTabs/Order/OrderCardHeader.module.css", "CSS", 66, 0, 0, 0, 0, 0, 0, 13, 13, 92
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Account/AccountTabs/Order/OrderCardHeader.tsx", "TypeScript React", 0, 0, 19, 0, 0, 0, 0, 4, 3, 26
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Account/AccountTabs/Range/Range.module.css", "CSS", 3, 0, 0, 0, 0, 0, 0, 0, 1, 4
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Account/AccountTabs/Range/Range.tsx", "TypeScript React", 0, 0, 19, 0, 0, 0, 0, 1, 5, 25
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Account/AccountTabs/Range/RangeCard.module.css", "CSS", 51, 0, 0, 0, 0, 0, 0, 11, 8, 70
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Account/AccountTabs/Range/RangeCard.tsx", "TypeScript React", 0, 0, 77, 0, 0, 0, 0, 4, 13, 94
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Account/AccountTabs/Range/RangeCardHeader.module.css", "CSS", 65, 0, 0, 0, 0, 0, 0, 9, 16, 90
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Account/AccountTabs/Range/RangeCardHeader.tsx", "TypeScript React", 0, 0, 19, 0, 0, 0, 0, 3, 2, 24
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Account/AccountTabs/Transaction/TransactionCard.module.css", "CSS", 51, 0, 0, 0, 0, 0, 0, 11, 8, 70
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Account/AccountTabs/Transaction/TransactionCard.tsx", "TypeScript React", 0, 0, 306, 0, 0, 0, 0, 26, 36, 368
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Account/AccountTabs/Transaction/TransactionCardHeader.module.css", "CSS", 66, 0, 0, 0, 0, 0, 0, 13, 13, 92
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Account/AccountTabs/Transaction/TransactionCardHeader.tsx", "TypeScript React", 0, 0, 18, 0, 0, 0, 0, 3, 4, 25
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Account/AccountTabs/Transaction/TransactionsTable.module.css", "CSS", 14, 0, 0, 0, 0, 0, 0, 0, 4, 18
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Account/AccountTabs/Transaction/TransactionsTable.tsx", "TypeScript React", 0, 0, 17, 0, 0, 0, 0, 2, 4, 23
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Account/AccountTabs/Wallet/Wallet.module.css", "CSS", 14, 0, 0, 0, 0, 0, 0, 0, 5, 19
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Account/AccountTabs/Wallet/Wallet.tsx", "TypeScript React", 0, 0, 53, 0, 0, 0, 0, 1, 4, 58
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Account/AccountTabs/Wallet/WalletCard.module.css", "CSS", 37, 0, 0, 0, 0, 0, 0, 1, 7, 45
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Account/AccountTabs/Wallet/WalletCard.tsx", "TypeScript React", 0, 0, 89, 0, 0, 0, 0, 5, 11, 105
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Account/AccountTabs/Wallet/WalletHeader.module.css", "CSS", 23, 0, 0, 0, 0, 0, 0, 1, 5, 29
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Account/AccountTabs/Wallet/WalletHeader.tsx", "TypeScript React", 0, 0, 10, 0, 0, 0, 0, 0, 2, 12
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Analytics/PoolDisplay.module.css", "CSS", 18, 0, 0, 0, 0, 0, 0, 2, 5, 25
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Analytics/PoolDisplay.tsx", "TypeScript React", 0, 0, 12, 0, 0, 0, 0, 0, 2, 14
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Analytics/Price.tsx", "TypeScript React", 0, 0, 4, 0, 0, 0, 0, 0, 2, 6
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Analytics/TokenDisplay.module.css", "CSS", 14, 0, 0, 0, 0, 0, 0, 1, 3, 18
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Analytics/TokenDisplay.tsx", "TypeScript React", 0, 0, 31, 0, 0, 0, 0, 0, 5, 36
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/AnimatedPage/AnimatedPage.tsx", "TypeScript React", 0, 0, 40, 0, 0, 0, 0, 22, 9, 71
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Animation/Animation.tsx", "TypeScript React", 0, 0, 24, 0, 0, 0, 0, 0, 5, 29
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/AppOverlay/AppOverlay.module.css", "CSS", 24, 0, 0, 0, 0, 0, 0, 2, 8, 34
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/AppOverlay/AppOverlay.tsx", "TypeScript React", 0, 0, 140, 0, 0, 0, 0, 20, 14, 174
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Button/Button.module.css", "CSS", 50, 0, 0, 0, 0, 0, 0, 1, 15, 66
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Button/Button.tsx", "TypeScript React", 0, 0, 18, 0, 0, 0, 0, 0, 3, 21
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Carousel/Carousel.module.css", "CSS", 35, 0, 0, 0, 0, 0, 0, 0, 5, 40
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Carousel/Carousel.tsx", "TypeScript React", 0, 0, 57, 0, 0, 0, 0, 6, 8, 71
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Carousel/CarouselItem/CarouselItem.module.css", "CSS", 6, 0, 0, 0, 0, 0, 0, 0, 1, 7
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Carousel/CarouselItem/CarouselItem.tsx", "TypeScript React", 0, 0, 15, 0, 0, 0, 0, 0, 3, 18
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Charts/AreaChart.tsx", "TypeScript React", 0, 0, 182, 0, 0, 0, 0, 4, 22, 208
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Charts/BarChart.tsx", "TypeScript React", 0, 0, 164, 0, 0, 0, 0, 1, 26, 191
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Charts/CandleChart.tsx", "TypeScript React", 0, 0, 166, 0, 0, 0, 0, 3, 23, 192
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/ConfirmationModalControl/ConfirmationModalControl.module.css", "CSS", 12, 0, 0, 0, 0, 0, 0, 0, 3, 15
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/ConfirmationModalControl/ConfirmationModalControl.tsx", "TypeScript React", 0, 0, 17, 0, 0, 0, 0, 2, 4, 23
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/ContentContainer/ContentContainer.md", "Markdown", 0, 18, 0, 0, 0, 0, 0, 0, 5, 23
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/ContentContainer/ContentContainer.module.css", "CSS", 78, 0, 0, 0, 0, 0, 0, 68, 23, 169
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/ContentContainer/ContentContainer.tsx", "TypeScript React", 0, 0, 24, 0, 0, 0, 0, 1, 5, 30
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/ContentHeader/ContentHeader.md", "Markdown", 0, 10, 0, 0, 0, 0, 0, 0, 3, 13
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/ContentHeader/ContentHeader.module.css", "CSS", 24, 0, 0, 0, 0, 0, 0, 0, 4, 28
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/ContentHeader/ContentHeader.tsx", "TypeScript React", 0, 0, 9, 0, 0, 0, 0, 0, 3, 12
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/CurrencyDisplay/CurrencyDisplay.module.css", "CSS", 99, 0, 0, 0, 0, 0, 0, 11, 32, 142
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/CurrencyDisplay/CurrencyDisplay.tsx", "TypeScript React", 0, 0, 42, 0, 0, 0, 0, 2, 5, 49
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Divider/Divider.module.css", "CSS", 11, 0, 0, 0, 0, 0, 0, 0, 1, 12
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Divider/Divider.tsx", "TypeScript React", 0, 0, 4, 0, 0, 0, 0, 0, 2, 6
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/DividerDark/DividerDark.module.css", "CSS", 19, 0, 0, 0, 0, 0, 0, 2, 4, 25
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/DividerDark/DividerDark.tsx", "TypeScript React", 0, 0, 18, 0, 0, 0, 0, 1, 2, 21
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/DropdownMenu/DropdownMenu.module.css", "CSS", 12, 0, 0, 0, 0, 0, 0, 2, 3, 17
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/DropdownMenu/DropdownMenu.tsx", "TypeScript React", 0, 0, 18, 0, 0, 0, 0, 2, 5, 25
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/DropdownMenu/DropdownMenuContainer/DropdownMenuContainer.module.css", "CSS", 17, 0, 0, 0, 0, 0, 0, 0, 4, 21
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/DropdownMenu/DropdownMenuContainer/DropdownMenuContainer.tsx", "TypeScript React", 0, 0, 9, 0, 0, 0, 0, 0, 3, 12
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/DropdownMenu/DropdownMenuItem/DropdownMenuItem.module.css", "CSS", 12, 0, 0, 0, 0, 0, 0, 1, 2, 15
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/DropdownMenu/DropdownMenuItem/DropdownMenuItem.tsx", "TypeScript React", 0, 0, 9, 0, 0, 0, 0, 0, 3, 12
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/DropdownMenu2/DropdownMenu2.module.css", "CSS", 34, 0, 0, 0, 0, 0, 0, 3, 8, 45
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/DropdownMenu2/DropdownMenu2.tsx", "TypeScript React", 0, 0, 55, 0, 0, 0, 0, 6, 8, 69
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Global.md", "Markdown", 0, 5, 0, 0, 0, 0, 0, 0, 5, 10
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/IconWithTooltip/IconWithTooltip.tsx", "TypeScript React", 0, 0, 34, 0, 0, 0, 0, 0, 3, 37
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/LoadingAnimations/CircleLoader/CircleLoader.module.css", "CSS", 33, 0, 0, 0, 0, 0, 0, 4, 12, 49
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/LoadingAnimations/CircleLoader/CircleLoader.tsx", "TypeScript React", 0, 0, 75, 0, 0, 0, 0, 0, 9, 84
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/LoadingAnimations/DotJump/BouncingBall.module.css", "CSS", 0, 0, 0, 0, 0, 0, 0, 0, 1, 1
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/LoadingAnimations/DotJump/BouncingBall.tsx", "TypeScript React", 0, 0, 33, 0, 0, 0, 0, 1, 4, 38
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/LoadingAnimations/RollingBall/RollingBall.module.css", "CSS", 2, 0, 0, 0, 0, 0, 0, 7, 1, 10
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/LoadingAnimations/RollingBall/RollingBall.tsx", "TypeScript React", 0, 0, 36, 0, 0, 0, 0, 1, 3, 40
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/LoadingAnimations/WaveAnimation/WaveAnimation.module.css", "CSS", 6, 0, 0, 0, 0, 0, 0, 3, 2, 11
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/LoadingAnimations/WaveAnimation/WaveAnimation.tsx", "TypeScript React", 0, 0, 67, 0, 0, 0, 0, 1, 9, 77
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/MenuButton/MenuButton.tsx", "TypeScript React", 0, 0, 77, 0, 0, 0, 0, 3, 6, 86
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/MobileSidebar/MobileSidebar.module.css", "CSS", 184, 0, 0, 0, 0, 0, 0, 18, 44, 246
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/MobileSidebar/MobileSidebar.tsx", "TypeScript React", 0, 0, 216, 0, 0, 0, 0, 2, 14, 232
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/MobileSidebar/MobileSidebarItem.tsx", "TypeScript React", 0, 0, 30, 0, 0, 0, 0, 0, 5, 35
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Modal/MODAL.md", "Markdown", 0, 24, 0, 0, 0, 0, 0, 0, 12, 36
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Modal/Modal.module.css", "CSS", 72, 0, 0, 0, 0, 0, 0, 4, 15, 91
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Modal/Modal.tsx", "TypeScript React", 0, 0, 80, 0, 0, 0, 0, 11, 10, 101
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Modal/data/chooseToken.ts", "TypeScript", 0, 0, 0, 4, 0, 0, 0, 0, 1, 5
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Modal/useModal.ts", "TypeScript", 0, 0, 0, 7, 0, 0, 0, 3, 4, 14
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/NotificationCenter/ActivityIndicator/ActivityIndicator.module.css", "CSS", 43, 0, 0, 0, 0, 0, 0, 0, 10, 53
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/NotificationCenter/ActivityIndicator/ActivityIndicator.tsx", "TypeScript React", 0, 0, 63, 0, 0, 0, 0, 0, 9, 72
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/NotificationCenter/NotificationCenter.module.css", "CSS", 0, 0, 0, 0, 0, 0, 0, 0, 1, 1
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/NotificationCenter/NotificationCenter.tsx", "TypeScript React", 0, 0, 45, 0, 0, 0, 0, 1, 11, 57
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/NotificationCenter/NotificationTable/NotificationTable.module.css", "CSS", 80, 0, 0, 0, 0, 0, 0, 3, 26, 109
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/NotificationCenter/NotificationTable/NotificationTable.tsx", "TypeScript React", 0, 0, 55, 0, 0, 0, 0, 0, 11, 66
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/NotificationCenter/ReceiptDisplay/ReceiptDisplay.module.css", "CSS", 76, 0, 0, 0, 0, 0, 0, 0, 16, 92
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/NotificationCenter/ReceiptDisplay/ReceiptDisplay.tsx", "TypeScript React", 0, 0, 82, 0, 0, 0, 0, 1, 8, 91
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/OpenOrderStatus/OpenOrderStatus.module.css", "CSS", 24, 0, 0, 0, 0, 0, 0, 1, 3, 28
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/OpenOrderStatus/OpenOrderStatus.tsx", "TypeScript React", 0, 0, 35, 0, 0, 0, 0, 0, 4, 39
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/OverlayComponent/OverlayComponent.module.css", "CSS", 47, 0, 0, 0, 0, 0, 0, 3, 11, 61
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/OverlayComponent/OverlayComponent.tsx", "TypeScript React", 0, 0, 27, 0, 0, 0, 0, 0, 4, 31
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Pagination/Pagination.module.css", "CSS", 92, 0, 0, 0, 0, 0, 0, 5, 25, 122
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Pagination/Pagination.tsx", "TypeScript React", 0, 0, 128, 0, 0, 0, 0, 6, 19, 153
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/PoolCard/PoolCard.module.css", "CSS", 137, 0, 0, 0, 0, 0, 0, 5, 26, 168
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/PoolCard/PoolCard.tsx", "TypeScript React", 0, 0, 242, 0, 0, 0, 0, 4, 32, 278
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/PoolCard/PoolCardSkeleton/PoolCardSkeleton.module.css", "CSS", 62, 0, 0, 0, 0, 0, 0, 1, 9, 72
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/PoolCard/PoolCardSkeleton/PoolCardSkeleton.tsx", "TypeScript React", 0, 0, 24, 0, 0, 0, 0, 0, 4, 28
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Position/Position.tsx", "TypeScript React", 0, 0, 197, 0, 0, 0, 0, 7, 28, 232
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/RangeStatus/RangeStatus.module.css", "CSS", 59, 0, 0, 0, 0, 0, 0, 0, 5, 64
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/RangeStatus/RangeStatus.tsx", "TypeScript React", 0, 0, 38, 0, 0, 0, 0, 1, 8, 47
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/RelativeModal/RELATIVEMODAL.md", "Markdown", 0, 24, 0, 0, 0, 0, 0, 0, 12, 36
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/RelativeModal/RelativeModal.module.css", "CSS", 92, 0, 0, 0, 0, 0, 0, 1, 17, 110
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/RelativeModal/RelativeModal.tsx", "TypeScript React", 0, 0, 46, 0, 0, 0, 0, 5, 7, 58
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/RelativeModal/data/chooseToken.ts", "TypeScript", 0, 0, 0, 4, 0, 0, 0, 0, 1, 5
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/RelativeModal/useRelativeModal.ts", "TypeScript", 0, 0, 0, 7, 0, 0, 0, 3, 4, 14
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Row/Row.module.css", "CSS", 6, 0, 0, 0, 0, 0, 0, 0, 1, 7
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Row/Row.tsx", "TypeScript React", 0, 0, 9, 0, 0, 0, 0, 0, 3, 12
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/SIdebarFooter/SidebarFooter.module.css", "CSS", 47, 0, 0, 0, 0, 0, 0, 3, 7, 57
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/SIdebarFooter/SidebarFooter.tsx", "TypeScript React", 0, 0, 33, 0, 0, 0, 0, 0, 3, 36
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Sidebar/FavoritePools/FavoritePools.module.css", "CSS", 33, 0, 0, 0, 0, 0, 0, 1, 9, 43
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Sidebar/FavoritePools/FavoritePools.tsx", "TypeScript React", 0, 0, 27, 0, 0, 0, 0, 0, 4, 31
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Sidebar/FavoritePools/FavoritePoolsCard.module.css", "CSS", 17, 0, 0, 0, 0, 0, 0, 0, 2, 19
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Sidebar/FavoritePools/FavoritePoolsCard.tsx", "TypeScript React", 0, 0, 69, 0, 0, 0, 0, 1, 9, 79
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Sidebar/SidebarLimitOrders/SidebarLimitOrders.module.css", "CSS", 45, 0, 0, 0, 0, 0, 0, 1, 10, 56
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Sidebar/SidebarLimitOrders/SidebarLimitOrders.tsx", "TypeScript React", 0, 0, 73, 0, 0, 0, 0, 0, 9, 82
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Sidebar/SidebarLimitOrders/SidebarLimitOrdersCard.module.css", "CSS", 35, 0, 0, 0, 0, 0, 0, 1, 4, 40
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Sidebar/SidebarLimitOrders/SidebarLimitOrdersCard.tsx", "TypeScript React", 0, 0, 89, 0, 0, 0, 0, 1, 15, 105
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Sidebar/SidebarRangePositions/SidebarRangePositions.module.css", "CSS", 45, 0, 0, 0, 0, 0, 0, 1, 10, 56
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Sidebar/SidebarRangePositions/SidebarRangePositions.tsx", "TypeScript React", 0, 0, 87, 0, 0, 0, 0, 1, 17, 105
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Sidebar/SidebarRangePositions/SidebarRangePositionsCard.module.css", "CSS", 59, 0, 0, 0, 0, 0, 0, 1, 6, 66
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Sidebar/SidebarRangePositions/SidebarRangePositionsCard.tsx", "TypeScript React", 0, 0, 110, 0, 0, 0, 0, 0, 14, 124
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Sidebar/SidebarRecentTransactions/SidebarRecentTransactions.module.css", "CSS", 45, 0, 0, 0, 0, 0, 0, 1, 10, 56
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Sidebar/SidebarRecentTransactions/SidebarRecentTransactions.tsx", "TypeScript React", 0, 0, 85, 0, 0, 0, 0, 2, 13, 100
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Sidebar/SidebarRecentTransactions/SidebarRecentTransactionsCard.module.css", "CSS", 35, 0, 0, 0, 0, 0, 0, 1, 4, 40
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Sidebar/SidebarRecentTransactions/SidebarRecentTransactionsCard.tsx", "TypeScript React", 0, 0, 130, 0, 0, 0, 0, 19, 17, 166
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Sidebar/TopPools/TopPools.module.css", "CSS", 45, 0, 0, 0, 0, 0, 0, 1, 10, 56
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Sidebar/TopPools/TopPools.tsx", "TypeScript React", 0, 0, 36, 0, 0, 0, 0, 0, 5, 41
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Sidebar/TopPools/TopPoolsCard.module.css", "CSS", 17, 0, 0, 0, 0, 0, 0, 0, 2, 19
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Sidebar/TopPools/TopPoolsCard.tsx", "TypeScript React", 0, 0, 55, 0, 0, 0, 0, 0, 7, 62
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Sidebar/TopTokens/TopTokens.module.css", "CSS", 45, 0, 0, 0, 0, 0, 0, 1, 10, 56
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Sidebar/TopTokens/TopTokens.tsx", "TypeScript React", 0, 0, 36, 0, 0, 0, 0, 0, 5, 41
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Sidebar/TopTokens/TopTokensCard.module.css", "CSS", 17, 0, 0, 0, 0, 0, 0, 0, 2, 19
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Sidebar/TopTokens/TopTokensCard.tsx", "TypeScript React", 0, 0, 92, 0, 0, 0, 0, 0, 18, 110
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/SimpleModal/SimpleModal.module.css", "CSS", 58, 0, 0, 0, 0, 0, 0, 1, 13, 72
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/SimpleModal/SimpleModal.tsx", "TypeScript React", 0, 0, 44, 0, 0, 0, 0, 4, 9, 57
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/SimpleModal/SimpleModalHeader/SimpleModalHeader.module.css", "CSS", 22, 0, 0, 0, 0, 0, 0, 3, 6, 31
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/SimpleModal/SimpleModalHeader/SimpleModalHeader.tsx", "TypeScript React", 0, 0, 17, 0, 0, 0, 0, 0, 1, 18
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Skeleton/Skeleton.css", "CSS", 30, 0, 0, 0, 0, 0, 0, 0, 6, 36
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Skeleton/Skeleton.tsx", "TypeScript React", 0, 0, 14, 0, 0, 0, 0, 0, 1, 15
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Skeletons/Shimmer.tsx", "TypeScript React", 0, 0, 7, 0, 0, 0, 0, 0, 1, 8
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Skeletons/SkeletonElement.css", "CSS", 59, 0, 0, 0, 0, 0, 0, 1, 7, 67
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Skeletons/SkeletonElement.tsx", "TypeScript React", 0, 0, 8, 0, 0, 0, 0, 0, 2, 10
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/SlippageTolerance/SlippageTolerance.module.css", "CSS", 67, 0, 0, 0, 0, 0, 0, 8, 8, 83
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/SlippageTolerance/SlippageTolerance.tsx", "TypeScript React", 0, 0, 33, 0, 0, 0, 0, 5, 6, 44
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/SnackbarComponent/SnackbarComponent.module.css", "CSS", 0, 0, 0, 0, 0, 0, 0, 0, 1, 1
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/SnackbarComponent/SnackbarComponent.tsx", "TypeScript React", 0, 0, 47, 0, 0, 0, 0, 3, 6, 56
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/StyledTooltip/StyledTooltip.module.css", "CSS", 0, 0, 0, 0, 0, 0, 0, 0, 1, 1
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/StyledTooltip/StyledTooltip.tsx", "TypeScript React", 0, 0, 17, 0, 0, 0, 0, 1, 4, 22
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/SwitchNetworkAlert/NetworkButton/NetworkButton.module.css", "CSS", 28, 0, 0, 0, 0, 0, 0, 0, 7, 35
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/SwitchNetworkAlert/NetworkButton/NetworkButton.tsx", "TypeScript React", 0, 0, 22, 0, 0, 0, 0, 0, 4, 26
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/SwitchNetworkAlert/NetworkButton/NetworkButtons.tsx", "TypeScript React", 0, 0, 30, 0, 0, 0, 0, 0, 4, 34
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/SwitchNetworkAlert/SwitchNetwork/SwitchNetwork.module.css", "CSS", 68, 0, 0, 0, 0, 0, 0, 6, 33, 107
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/SwitchNetworkAlert/SwitchNetwork/SwitchNetwork.tsx", "TypeScript React", 0, 0, 25, 0, 0, 0, 0, 2, 5, 32
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/TabComponent/TabComponent.css", "CSS", 118, 0, 0, 0, 0, 0, 0, 5, 11, 134
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/TabComponent/TabComponent.module.css", "CSS", 131, 0, 0, 0, 0, 0, 0, 9, 16, 156
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/TabComponent/TabComponent.tsx", "TypeScript React", 0, 0, 160, 0, 0, 0, 0, 6, 17, 183
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Tabs/AccountPoolDisplay/AccountPoolDisplay.module.css", "CSS", 17, 0, 0, 0, 0, 0, 0, 2, 4, 23
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Tabs/AccountPoolDisplay/AccountPoolDisplay.tsx", "TypeScript React", 0, 0, 13, 0, 0, 0, 0, 0, 2, 15
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Tabs/AccountTokensDisplay/AccountTokensDisplay.module.css", "CSS", 14, 0, 0, 0, 0, 0, 0, 1, 3, 18
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Tabs/AccountTokensDisplay/AccountTokensDisplay.tsx", "TypeScript React", 0, 0, 16, 0, 0, 0, 0, 0, 5, 21
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Tabs/Apy/Apy.module.css", "CSS", 28, 0, 0, 0, 0, 0, 0, 9, 10, 47
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Tabs/Apy/Apy.tsx", "TypeScript React", 0, 0, 19, 0, 0, 0, 0, 2, 5, 26
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Tabs/Price/Price.module.css", "CSS", 24, 0, 0, 0, 0, 0, 0, 2, 3, 29
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Tabs/Price/Price.tsx", "TypeScript React", 0, 0, 50, 0, 0, 0, 0, 1, 5, 56
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Tabs/RangeMinMax/RangeMinMax.module.css", "CSS", 28, 0, 0, 0, 0, 0, 0, 1, 4, 33
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Tabs/RangeMinMax/RangeMinMax.tsx", "TypeScript React", 0, 0, 21, 0, 0, 0, 0, 0, 3, 24
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Tabs/SelectedCanleData/SelectedCandleData.module.css", "CSS", 5, 0, 0, 0, 0, 0, 0, 0, 0, 5
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Tabs/SelectedCanleData/SelectedCandleData.tsx", "TypeScript React", 0, 0, 23, 0, 0, 0, 0, 0, 3, 26
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Tabs/TabContent/TabContent.module.css", "CSS", 4, 0, 0, 0, 0, 0, 0, 3, 2, 9
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Tabs/TabContent/TabContent.tsx", "TypeScript React", 0, 0, 21, 0, 0, 0, 0, 0, 3, 24
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Tabs/TabNavItem/TabNavItem.module.css", "CSS", 50, 0, 0, 0, 0, 0, 0, 6, 6, 62
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Tabs/TabNavItem/TabNavItem.tsx", "TypeScript React", 0, 0, 19, 0, 0, 0, 0, 0, 6, 25
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Tabs/TableMenu/TableMenu.module.css", "CSS", 0, 0, 0, 0, 0, 0, 0, 0, 1, 1
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Tabs/TableMenu/TableMenu.tsx", "TypeScript React", 0, 0, 7, 0, 0, 0, 0, 10, 3, 20
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Tabs/TableMenu/TableMenuComponents/OrdersMenu.tsx", "TypeScript React", 0, 0, 110, 0, 0, 0, 0, 45, 27, 182
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Tabs/TableMenu/TableMenuComponents/RangesMenu.tsx", "TypeScript React", 0, 0, 140, 0, 0, 0, 0, 22, 29, 191
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Tabs/TableMenu/TableMenuComponents/TableMenuComponents.module.css", "CSS", 120, 0, 0, 0, 0, 0, 0, 4, 38, 162
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Tabs/TableMenu/TableMenuComponents/TransactionsMenu.tsx", "TypeScript React", 0, 0, 140, 0, 0, 0, 0, 20, 25, 185
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Tabs/TokenQty/TokenQty.module.css", "CSS", 44, 0, 0, 0, 0, 0, 0, 2, 4, 50
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Tabs/TokenQty/TokenQty.tsx", "TypeScript React", 0, 0, 44, 0, 0, 0, 0, 7, 8, 59
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Tabs/TypeAndSide/OrderTypeAndSide/OrderTypeSide.module.css", "CSS", 49, 0, 0, 0, 0, 0, 0, 2, 8, 59
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Tabs/TypeAndSide/OrderTypeAndSide/OrderTypeSide.tsx", "TypeScript React", 0, 0, 43, 0, 0, 0, 0, 0, 6, 49
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Tabs/TypeAndSide/TransactionTypeSide/TransactionTypeSide.module.css", "CSS", 58, 0, 0, 0, 0, 0, 0, 2, 5, 65
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Tabs/TypeAndSide/TransactionTypeSide/TransactionTypeSide.tsx", "TypeScript React", 0, 0, 49, 0, 0, 0, 0, 0, 7, 56
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Tabs/Value/Value.module.css", "CSS", 30, 0, 0, 0, 0, 0, 0, 1, 5, 36
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Tabs/Value/Value.tsx", "TypeScript React", 0, 0, 16, 0, 0, 0, 0, 0, 3, 19
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Tabs/WalletAndID/WalletAndId.module.css", "CSS", 42, 0, 0, 0, 0, 0, 0, 4, 5, 51
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Tabs/WalletAndID/WalletAndId.tsx", "TypeScript React", 0, 0, 115, 0, 0, 0, 0, 1, 8, 124
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Toggle/Toggle.md", "Markdown", 0, 12, 0, 0, 0, 0, 0, 0, 7, 19
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Toggle/Toggle.module.css", "CSS", 50, 0, 0, 0, 0, 0, 0, 4, 15, 69
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Toggle/Toggle.tsx", "TypeScript React", 0, 0, 50, 0, 0, 0, 0, 0, 5, 55
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Toggle/Toggle2.module.css", "CSS", 50, 0, 0, 0, 0, 0, 0, 4, 7, 61
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/Toggle/Toggle2.tsx", "TypeScript React", 0, 0, 21, 0, 0, 0, 0, 0, 5, 26
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/TokenList/CustomTokens.module.css", "CSS", 145, 0, 0, 0, 0, 0, 0, 4, 19, 168
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/TokenList/CustomTokens.tsx", "TypeScript React", 0, 0, 132, 0, 0, 0, 0, 3, 14, 149
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/TokenList/TokenList.module.css", "CSS", 91, 0, 0, 0, 0, 0, 0, 8, 13, 112
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/TokenList/TokenList.tsx", "TypeScript React", 0, 0, 112, 0, 0, 0, 0, 13, 15, 140
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/TokenList/fetchList.ts", "TypeScript", 0, 0, 0, 49, 0, 0, 0, 13, 3, 65
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/TokenList/useCustomToken.ts", "TypeScript", 0, 0, 0, 86, 0, 0, 0, 16, 12, 114
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/TokenListCard/TokenListCard.module.css", "CSS", 84, 0, 0, 0, 0, 0, 0, 0, 16, 100
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/TokenListCard/TokenListCard.tsx", "TypeScript React", 0, 0, 95, 0, 0, 0, 0, 2, 8, 105
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/TokenListCard/TokenListImages.ts", "TypeScript", 0, 0, 0, 26, 0, 0, 0, 0, 12, 38
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/TokenListCard/refreshTokenList.ts", "TypeScript", 0, 0, 0, 23, 0, 0, 0, 8, 7, 38
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/TokenSelect/TokenSelect.module.css", "CSS", 139, 0, 0, 0, 0, 0, 0, 13, 28, 180
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/TokenSelect/TokenSelect.tsx", "TypeScript React", 0, 0, 126, 0, 0, 0, 0, 11, 20, 157
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/TokenSelect/TokenSelectSearchable.module.css", "CSS", 36, 0, 0, 0, 0, 0, 0, 2, 6, 44
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/TokenSelect/TokenSelectSearchable.tsx", "TypeScript React", 0, 0, 25, 0, 0, 0, 0, 2, 6, 33
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/TokenSelectContainer/TokenSelectContainer.module.css", "CSS", 59, 0, 0, 0, 0, 0, 0, 11, 10, 80
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/TokenSelectContainer/TokenSelectContainer.tsx", "TypeScript React", 0, 0, 180, 0, 0, 0, 0, 5, 16, 201
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/TokenSelectContainer/importToken.ts", "TypeScript", 0, 0, 0, 21, 0, 0, 0, 2, 3, 26
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/TokenSelectContainer/removeToken.ts", "TypeScript", 0, 0, 0, 18, 0, 0, 0, 8, 2, 28
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/TokenSelectContainer/searchTokens.ts", "TypeScript", 0, 0, 0, 3, 0, 0, 0, 0, 1, 4
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/TokenSelectContainer/useSearch.ts", "TypeScript", 0, 0, 0, 33, 0, 0, 0, 15, 11, 59
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/TokensArrow/TokensArrow.module.css", "CSS", 3, 0, 0, 0, 0, 0, 0, 6, 1, 10
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/TokensArrow/TokensArrow.tsx", "TypeScript React", 0, 0, 32, 0, 0, 0, 0, 0, 1, 33
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/TooltipComponent/TooltipComponent.module.css", "CSS", 7, 0, 0, 0, 0, 0, 0, 0, 1, 8
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/TooltipComponent/TooltipComponent.tsx", "TypeScript React", 0, 0, 41, 0, 0, 0, 0, 0, 4, 45
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/TransactionDenied/TransactionDenied.module.css", "CSS", 14, 0, 0, 0, 0, 0, 0, 0, 6, 20
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/TransactionDenied/TransactionDenied.tsx", "TypeScript React", 0, 0, 19, 0, 0, 0, 0, 10, 5, 34
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/TransactionSettings/TransactionSettings.module.css", "CSS", 19, 0, 0, 0, 0, 0, 0, 2, 2, 23
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/TransactionSettings/TransactionSettings.tsx", "TypeScript React", 0, 0, 45, 0, 0, 0, 0, 10, 10, 65
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/TransactionSubmitted/TransactionSubmitted.module.css", "CSS", 52, 0, 0, 0, 0, 0, 0, 4, 9, 65
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/TransactionSubmitted/TransactionSubmitted.tsx", "TypeScript React", 0, 0, 50, 0, 0, 0, 0, 1, 7, 58
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/TransactionSubmitted/addTokenToWallet.ts", "TypeScript", 0, 0, 0, 27, 0, 0, 0, 1, 2, 30
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/WaitingConfirmation/WaitingConfirmation.module.css", "CSS", 62, 0, 0, 0, 0, 0, 0, 6, 10, 78
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Global/WaitingConfirmation/WaitingConfirmation.tsx", "TypeScript React", 0, 0, 25, 0, 0, 0, 0, 1, 3, 29
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/HarvestPosition/HarvestExtraControls/HarvestExtraControls.module.css", "CSS", 48, 0, 0, 0, 0, 0, 0, 0, 8, 56
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/HarvestPosition/HarvestExtraControls/HarvestExtraControls.tsx", "TypeScript React", 0, 0, 141, 0, 0, 0, 0, 15, 19, 175
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/HarvestPosition/HarvestPosition.module.css", "CSS", 86, 0, 0, 0, 0, 0, 0, 3, 21, 110
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/HarvestPosition/HarvestPosition.tsx", "TypeScript React", 0, 0, 399, 0, 0, 0, 0, 28, 48, 475
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/HarvestPosition/HarvestPositionButton/HarvestPositionButton.module.css", "CSS", 0, 0, 0, 0, 0, 0, 0, 0, 1, 1
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/HarvestPosition/HarvestPositionButton/HarvestPositionButton.tsx", "TypeScript React", 0, 0, 14, 0, 0, 0, 0, 0, 6, 20
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/HarvestPosition/HarvestPositionHeader/HarvestPositionHeader.module.css", "CSS", 22, 0, 0, 0, 0, 0, 0, 3, 6, 31
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/HarvestPosition/HarvestPositionHeader/HarvestPositionHeader.tsx", "TypeScript React", 0, 0, 26, 0, 0, 0, 0, 0, 2, 28
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/HarvestPosition/HarvestPositionInfo/HarvestPositionInfo.module.css", "CSS", 21, 0, 0, 0, 0, 0, 0, 0, 4, 25
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/HarvestPosition/HarvestPositionInfo/HarvestPositionInfo.tsx", "TypeScript React", 0, 0, 107, 0, 0, 0, 0, 55, 14, 176
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/HarvestPosition/HarvestPositionSettings/HarvestPositionSettings.module.css", "CSS", 74, 0, 0, 0, 0, 0, 0, 8, 14, 96
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/HarvestPosition/HarvestPositionSettings/HarvestPositionSettings.tsx", "TypeScript React", 0, 0, 37, 0, 0, 0, 0, 4, 7, 48
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/HarvestPosition/HarvestPositionTokenHeader/HarvestPositionTokenHeader.module.css", "CSS", 21, 0, 0, 0, 0, 0, 0, 0, 4, 25
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/HarvestPosition/HarvestPositionTokenHeader/HarvestPositionTokenHeader.tsx", "TypeScript React", 0, 0, 37, 0, 0, 0, 0, 6, 5, 48
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/HarvestPosition/HarvestPositionWidth/HarvestPositionWidth.module.css", "CSS", 218, 0, 0, 0, 0, 0, 0, 7, 49, 274
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/HarvestPosition/HarvestPositionWidth/HarvestPositionWidth.tsx", "TypeScript React", 0, 0, 80, 0, 0, 0, 0, 1, 6, 87
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Home/Investors/Investors.module.css", "CSS", 155, 0, 0, 0, 0, 0, 0, 9, 30, 194
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Home/Investors/Investors.tsx", "TypeScript React", 0, 0, 162, 0, 0, 0, 0, 2, 12, 176
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Home/Landing/HomeSlider.module.css", "CSS", 4, 0, 0, 0, 0, 0, 0, 0, 1, 5
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Home/Landing/HomeSlider.tsx", "TypeScript React", 0, 0, 49, 0, 0, 0, 0, 6, 1, 56
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Home/Landing/Landing.module.css", "CSS", 13, 0, 0, 0, 0, 0, 0, 0, 4, 17
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Home/Landing/Landing.tsx", "TypeScript React", 0, 0, 4, 0, 0, 0, 0, 0, 2, 6
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Home/Landing/Landing1.module.css", "CSS", 98, 0, 0, 0, 0, 0, 0, 24, 20, 142
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Home/Landing/Landing1.tsx", "TypeScript React", 0, 0, 18, 0, 0, 0, 0, 1, 3, 22
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Home/Landing/Landing2.module.css", "CSS", 68, 0, 0, 0, 0, 0, 0, 2, 19, 89
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Home/Landing/Landing2.tsx", "TypeScript React", 0, 0, 21, 0, 0, 0, 0, 1, 3, 25
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Home/Landing/Landing3.module.css", "CSS", 171, 0, 0, 0, 0, 0, 0, 3, 32, 206
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Home/Landing/Landing3.tsx", "TypeScript React", 0, 0, 98, 0, 0, 0, 0, 2, 8, 108
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Home/Landing/Landing4.module.css", "CSS", 107, 0, 0, 0, 0, 0, 0, 0, 25, 132
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Home/Landing/Landing4.tsx", "TypeScript React", 0, 0, 63, 0, 0, 0, 0, 3, 2, 68
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Home/Landing/Landing5.module.css", "CSS", 20, 0, 0, 0, 0, 0, 0, 0, 7, 27
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Home/Landing/Landing5.tsx", "TypeScript React", 0, 0, 6, 0, 0, 0, 0, 0, 2, 8
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Home/Landing/Landing6.module.css", "CSS", 20, 0, 0, 0, 0, 0, 0, 0, 7, 27
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Home/Landing/Landing6.tsx", "TypeScript React", 0, 0, 6, 0, 0, 0, 0, 0, 2, 8
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Home/Landing/Slides.module.css", "CSS", 0, 0, 0, 0, 0, 0, 0, 0, 1, 1
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Home/Landing/Slides.tsx", "TypeScript React", 0, 0, 34, 0, 0, 0, 0, 0, 2, 36
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Home/Links/Links.module.css", "CSS", 58, 0, 0, 0, 0, 0, 0, 2, 10, 70
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Home/Links/Links.tsx", "TypeScript React", 0, 0, 39, 0, 0, 0, 0, 0, 3, 42
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Home/Stats/AmbientStats.tsx", "TypeScript React", 0, 0, 59, 0, 0, 0, 0, 0, 9, 68
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Home/Stats/Stats.module.css", "CSS", 64, 0, 0, 0, 0, 0, 0, 0, 6, 70
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Home/TopPools/TopPools.module.css", "CSS", 37, 0, 0, 0, 0, 0, 0, 1, 5, 43
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Home/TopPools/TopPools.tsx", "TypeScript React", 0, 0, 45, 0, 0, 0, 0, 2, 8, 55
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/InitPool/ChooseTokens/ChooseTokens.module.css", "CSS", 78, 0, 0, 0, 0, 0, 0, 1, 5, 84
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/InitPool/ChooseTokens/ChooseTokens.tsx", "TypeScript React", 0, 0, 73, 0, 0, 0, 0, 0, 5, 78
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/InitPool/ConfirmPoolCreation/ConfirmPoolCreation.module.css", "CSS", 3, 0, 0, 0, 0, 0, 0, 0, 0, 3
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/InitPool/ConfirmPoolCreation/ConfirmPoolCreation.tsx", "TypeScript React", 0, 0, 36, 0, 0, 0, 0, 0, 3, 39
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/InitPool/InitPoolBox/InitPoolBox.module.css", "CSS", 0, 0, 0, 0, 0, 0, 0, 0, 1, 1
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/InitPool/InitPoolBox/InitPoolBox.tsx", "TypeScript React", 0, 0, 19, 0, 0, 0, 0, 0, 2, 21
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/InitPool/InitPoolSteps/InitPoolSteps.module.css", "CSS", 94, 0, 0, 0, 0, 0, 0, 1, 32, 127
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/InitPool/InitPoolSteps/InitPoolSteps.tsx", "TypeScript React", 0, 0, 76, 0, 0, 0, 0, 7, 7, 90
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/InitPool/InitPoolSummary/InitPoolSummary.module.css", "CSS", 14, 0, 0, 0, 0, 0, 0, 0, 3, 17
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/InitPool/InitPoolSummary/InitPoolSummary.tsx", "TypeScript React", 0, 0, 8, 0, 0, 0, 0, 0, 2, 10
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/InitPool/SetInitialLiquidity/SetInitialLiquidity.module.css", "CSS", 98, 0, 0, 0, 0, 0, 0, 1, 9, 108
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/InitPool/SetInitialLiquidity/SetInitialLiquidity.tsx", "TypeScript React", 0, 0, 87, 0, 0, 0, 0, 0, 6, 93
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/InitPool/SetPoolFees/SetPoolFees.module.css", "CSS", 83, 0, 0, 0, 0, 0, 0, 1, 11, 95
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/InitPool/SetPoolFees/SetPoolFees.tsx", "TypeScript React", 0, 0, 72, 0, 0, 0, 0, 0, 4, 76
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/NotFound/Game/Game.module.css", "CSS", 18, 0, 0, 0, 0, 0, 0, 1, 4, 23
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/NotFound/Game/Game.tsx", "TypeScript React", 0, 0, 85, 0, 0, 0, 0, 6, 11, 102
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/NotFound/GameCard/GameCard.module.css", "CSS", 24, 0, 0, 0, 0, 0, 0, 0, 5, 29
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/NotFound/GameCard/GameCard.tsx", "TypeScript React", 0, 0, 34, 0, 0, 0, 0, 0, 3, 37
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/NotFound/NotFoundLottie/NotFoundLottie.module.css", "CSS", 22, 0, 0, 0, 0, 0, 0, 0, 3, 25
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/NotFound/NotFoundLottie/NotFoundLottie.tsx", "TypeScript React", 0, 0, 16, 0, 0, 0, 0, 0, 2, 18
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/OrderDetails/OderDetailsControl/OrderDetailsControl.module.css", "CSS", 57, 0, 0, 0, 0, 0, 0, 0, 14, 71
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/OrderDetails/OderDetailsControl/OrderDetailsControl.tsx", "TypeScript React", 0, 0, 32, 0, 0, 0, 0, 0, 2, 34
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/OrderDetails/OrderDetails.module.css", "CSS", 33, 0, 0, 0, 0, 0, 0, 6, 10, 49
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/OrderDetails/OrderDetails.tsx", "TypeScript React", 0, 0, 69, 0, 0, 0, 0, 0, 13, 82
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/OrderDetails/OrderDetailsHeader/OrderDetailsHeader.module.css", "CSS", 35, 0, 0, 0, 0, 0, 0, 0, 6, 41
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/OrderDetails/OrderDetailsHeader/OrderDetailsHeader.tsx", "TypeScript React", 0, 0, 55, 0, 0, 0, 0, 0, 7, 62
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/OrderDetails/OrderGraphDisplay/OrderGraphDisplay.module.css", "CSS", 39, 0, 0, 0, 0, 0, 0, 5, 12, 56
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/OrderDetails/OrderGraphDisplay/OrderGraphDisplay.tsx", "TypeScript React", 0, 0, 28, 0, 0, 0, 0, 1, 2, 31
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/OrderDetails/PriceInfo/PriceInfo.module.css", "CSS", 101, 0, 0, 0, 0, 0, 0, 10, 17, 128
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/OrderDetails/PriceInfo/PriceInfo.tsx", "TypeScript React", 0, 0, 153, 0, 0, 0, 0, 17, 15, 185
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/OrderRemoval/OrderRemoval.module.css", "CSS", 135, 0, 0, 0, 0, 0, 0, 6, 31, 172
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/OrderRemoval/OrderRemoval.tsx", "TypeScript React", 0, 0, 170, 0, 0, 0, 0, 12, 25, 207
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/OrderRemoval/RemoveOrderButton/RemoveOrderButton.module.css", "CSS", 3, 0, 0, 0, 0, 0, 0, 0, 0, 3
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/OrderRemoval/RemoveOrderButton/RemoveOrderButton.tsx", "TypeScript React", 0, 0, 15, 0, 0, 0, 0, 0, 5, 20
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/OrderRemoval/RemoveOrderInfo/RemoveOrderInfo.module.css", "CSS", 35, 0, 0, 0, 0, 0, 0, 0, 6, 41
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/OrderRemoval/RemoveOrderInfo/RemoveOrderInfo.tsx", "TypeScript React", 0, 0, 98, 0, 0, 0, 0, 11, 9, 118
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/OrderRemoval/RemoveOrderModalHeader/RemoveOrderModalHeader.module.css", "CSS", 28, 0, 0, 0, 0, 0, 0, 3, 7, 38
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/OrderRemoval/RemoveOrderModalHeader/RemoveOrderModalHeader.tsx", "TypeScript React", 0, 0, 39, 0, 0, 0, 0, 1, 4, 44
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/OrderRemoval/RemoveOrderSettings/RemoveOrderSettings.module.css", "CSS", 99, 0, 0, 0, 0, 0, 0, 11, 22, 132
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/OrderRemoval/RemoveOrderSettings/RemoveOrderSettings.tsx", "TypeScript React", 0, 0, 50, 0, 0, 0, 0, 11, 8, 69
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/OrderRemoval/RemoveOrderTokenHeader/RemoveOrderTokenHeader.module.css", "CSS", 21, 0, 0, 0, 0, 0, 0, 0, 4, 25
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/OrderRemoval/RemoveOrderTokenHeader/RemoveOrderTokenHeader.tsx", "TypeScript React", 0, 0, 39, 0, 0, 0, 0, 2, 4, 45
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/OrderRemoval/RemoveOrderWidth/RemoveOrderWidth.module.css", "CSS", 218, 0, 0, 0, 0, 0, 0, 7, 49, 274
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/OrderRemoval/RemoveOrderWidth/RemoveOrderWidth.tsx", "TypeScript React", 0, 0, 80, 0, 0, 0, 0, 0, 6, 86
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Pools/PoolCardHeader.module.css", "CSS", 66, 0, 0, 0, 0, 0, 0, 9, 12, 87
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Pools/PoolCardHeader.tsx", "TypeScript React", 0, 0, 36, 0, 0, 0, 0, 0, 4, 40
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Pools/PoolRow.module.css", "CSS", 119, 0, 0, 0, 0, 0, 0, 13, 19, 151
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Pools/PoolRow.tsx", "TypeScript React", 0, 0, 140, 0, 0, 0, 0, 6, 16, 162
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Pools/Pools.module.css", "CSS", 3, 0, 0, 0, 0, 0, 0, 0, 1, 4
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Pools/Pools.tsx", "TypeScript React", 0, 0, 79, 0, 0, 0, 0, 0, 9, 88
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Portfolio/EchangeBalance/Deposit/Deposit.module.css", "CSS", 11, 0, 0, 0, 0, 0, 0, 0, 1, 12
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Portfolio/EchangeBalance/Deposit/Deposit.tsx", "TypeScript React", 0, 0, 207, 0, 0, 0, 0, 51, 24, 282
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Portfolio/EchangeBalance/Deposit/DepositButton/DepositButton.module.css", "CSS", 0, 0, 0, 0, 0, 0, 0, 0, 1, 1
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Portfolio/EchangeBalance/Deposit/DepositButton/DepositButton.tsx", "TypeScript React", 0, 0, 20, 0, 0, 0, 0, 1, 5, 26
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Portfolio/EchangeBalance/Deposit/DepositCurrencySelector/DepositCurrencySelector.module.css", "CSS", 70, 0, 0, 0, 0, 0, 0, 4, 9, 83
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Portfolio/EchangeBalance/Deposit/DepositCurrencySelector/DepositCurrencySelector.tsx", "TypeScript React", 0, 0, 56, 0, 0, 0, 0, 0, 5, 61
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Portfolio/EchangeBalance/ExchangeBalance.module.css", "CSS", 59, 0, 0, 0, 0, 0, 0, 16, 10, 85
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Portfolio/EchangeBalance/ExchangeBalance.tsx", "TypeScript React", 0, 0, 169, 0, 0, 0, 0, 3, 15, 187
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Portfolio/EchangeBalance/Transfer/Transfer.module.css", "CSS", 14, 0, 0, 0, 0, 0, 0, 0, 2, 16
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Portfolio/EchangeBalance/Transfer/Transfer.tsx", "TypeScript React", 0, 0, 214, 0, 0, 0, 0, 40, 22, 276
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Portfolio/EchangeBalance/Transfer/TransferAddressInput/TransferAddressInput.module.css", "CSS", 50, 0, 0, 0, 0, 0, 0, 4, 7, 61
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Portfolio/EchangeBalance/Transfer/TransferAddressInput/TransferAddressInput.tsx", "TypeScript React", 0, 0, 41, 0, 0, 0, 0, 2, 5, 48
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Portfolio/EchangeBalance/Transfer/TransferButton/TransferButton.module.css", "CSS", 0, 0, 0, 0, 0, 0, 0, 0, 1, 1
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Portfolio/EchangeBalance/Transfer/TransferButton/TransferButton.tsx", "TypeScript React", 0, 0, 20, 0, 0, 0, 0, 1, 5, 26
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Portfolio/EchangeBalance/Transfer/TransferCurrencySelector/TransferCurrencySelector.module.css", "CSS", 70, 0, 0, 0, 0, 0, 0, 4, 11, 85
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Portfolio/EchangeBalance/Transfer/TransferCurrencySelector/TransferCurrencySelector.tsx", "TypeScript React", 0, 0, 54, 0, 0, 0, 0, 0, 6, 60
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Portfolio/EchangeBalance/Withdraw/Withdraw.module.css", "CSS", 27, 0, 0, 0, 0, 0, 0, 1, 3, 31
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Portfolio/EchangeBalance/Withdraw/Withdraw.tsx", "TypeScript React", 0, 0, 257, 0, 0, 0, 0, 63, 27, 347
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Portfolio/EchangeBalance/Withdraw/WithdrawButton/WithdrawButton.module.css", "CSS", 0, 0, 0, 0, 0, 0, 0, 0, 1, 1
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Portfolio/EchangeBalance/Withdraw/WithdrawButton/WithdrawButton.tsx", "TypeScript React", 0, 0, 20, 0, 0, 0, 0, 1, 5, 26
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Portfolio/EchangeBalance/Withdraw/WithdrawCurrencySelector/WithdrawCurrencySelector.module.css", "CSS", 70, 0, 0, 0, 0, 0, 0, 4, 11, 85
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Portfolio/EchangeBalance/Withdraw/WithdrawCurrencySelector/WithdrawCurrencySelector.tsx", "TypeScript React", 0, 0, 58, 0, 0, 0, 0, 0, 5, 63
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Portfolio/PortfolioBanner/AnimatedWaveForm/AnimatedWaveForm.module.css", "CSS", 237, 0, 0, 0, 0, 0, 0, 0, 4, 241
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Portfolio/PortfolioBanner/AnimatedWaveForm/AnimatedWaveForm.tsx", "TypeScript React", 0, 0, 346, 0, 0, 0, 0, 0, 2, 348
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Portfolio/PortfolioBanner/PortfolioBanner.module.css", "CSS", 89, 0, 0, 0, 0, 0, 0, 19, 21, 129
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Portfolio/PortfolioBanner/PortfolioBanner.tsx", "TypeScript React", 0, 0, 54, 0, 0, 0, 0, 0, 4, 58
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Portfolio/PortfolioTabs/PortfolioTabs.module.css", "CSS", 7, 0, 0, 0, 0, 0, 0, 69, 2, 78
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Portfolio/PortfolioTabs/PortfolioTabs.tsx", "TypeScript React", 0, 0, 228, 0, 0, 0, 0, 13, 21, 262
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Portfolio/ProfileSettings/ProfileSettings.module.css", "CSS", 133, 0, 0, 0, 0, 0, 0, 4, 35, 172
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Portfolio/ProfileSettings/ProfileSettings.tsx", "TypeScript React", 0, 0, 136, 0, 0, 0, 0, 0, 9, 145
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Portfolio/ProfileSettings/ProfileSettingsSkin/ProfileSettingsSkin.module.css", "CSS", 68, 0, 0, 0, 0, 0, 0, 3, 25, 96
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Portfolio/ProfileSettings/ProfileSettingsSkin/ProfileSettingsSkin.tsx", "TypeScript React", 0, 0, 112, 0, 0, 0, 0, 9, 10, 131
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Portfolio/ProfileSettings/ProfileSettingsTheme/ProfileSettingsTheme.module.css", "CSS", 68, 0, 0, 0, 0, 0, 0, 3, 24, 95
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Portfolio/ProfileSettings/ProfileSettingsTheme/ProfileSettingsTheme.tsx", "TypeScript React", 0, 0, 108, 0, 0, 0, 0, 16, 11, 135
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/RangeDetails/APYGraphDisplay/APYGraphDisplay.module.css", "CSS", 35, 0, 0, 0, 0, 0, 0, 2, 13, 50
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/RangeDetails/APYGraphDisplay/APYGraphDisplay.tsx", "TypeScript React", 0, 0, 20, 0, 0, 0, 0, 0, 2, 22
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/RangeDetails/OrderDetailsActions/OrderDetailsActions.module.css", "CSS", 58, 0, 0, 0, 0, 0, 0, 1, 11, 70
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/RangeDetails/OrderDetailsActions/OrderDetailsActions.tsx", "TypeScript React", 0, 0, 41, 0, 0, 0, 0, 3, 8, 52
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/RangeDetails/PriceInfo/PriceInfo.module.css", "CSS", 95, 0, 0, 0, 0, 0, 0, 10, 16, 121
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/RangeDetails/PriceInfo/PriceInfo.tsx", "TypeScript React", 0, 0, 160, 0, 0, 0, 0, 10, 14, 184
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/RangeDetails/RangeDetails.module.css", "CSS", 33, 0, 0, 0, 0, 0, 0, 6, 10, 49
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/RangeDetails/RangeDetails.tsx", "TypeScript React", 0, 0, 219, 0, 0, 0, 0, 2, 28, 249
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/RangeDetails/RangeDetailsActions/RangeDetailsActions.module.css", "CSS", 58, 0, 0, 0, 0, 0, 0, 1, 11, 70
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/RangeDetails/RangeDetailsActions/RangeDetailsActions.tsx", "TypeScript React", 0, 0, 46, 0, 0, 0, 0, 3, 7, 56
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/RangeDetails/RangeDetailsControl/RangeDetailsControl.module.css", "CSS", 57, 0, 0, 0, 0, 0, 0, 0, 14, 71
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/RangeDetails/RangeDetailsControl/RangeDetailsControl.tsx", "TypeScript React", 0, 0, 32, 0, 0, 0, 0, 0, 2, 34
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/RangeDetails/RangeDetailsHeader/RangeDetailsHeader.module.css", "CSS", 35, 0, 0, 0, 0, 0, 0, 0, 6, 41
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/RangeDetails/RangeDetailsHeader/RangeDetailsHeader.tsx", "TypeScript React", 0, 0, 55, 0, 0, 0, 0, 0, 8, 63
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/RangeDetails/TokenInfo/TokenInfo.module.css", "CSS", 56, 0, 0, 0, 0, 0, 0, 0, 4, 60
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/RangeDetails/TokenInfo/TokenInfo.tsx", "TypeScript React", 0, 0, 137, 0, 0, 0, 0, 3, 15, 155
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/RemoveRange/ExtraControls/ExtraControls.module.css", "CSS", 48, 0, 0, 0, 0, 0, 0, 0, 8, 56
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/RemoveRange/ExtraControls/ExtraControls.tsx", "TypeScript React", 0, 0, 141, 0, 0, 0, 0, 12, 18, 171
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/RemoveRange/RemoveRange.module.css", "CSS", 86, 0, 0, 0, 0, 0, 0, 5, 21, 112
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/RemoveRange/RemoveRange.tsx", "TypeScript React", 0, 0, 503, 0, 0, 0, 0, 30, 57, 590
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/RemoveRange/RemoveRangeButton/RemoveRangeButton.module.css", "CSS", 0, 0, 0, 0, 0, 0, 0, 0, 1, 1
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/RemoveRange/RemoveRangeButton/RemoveRangeButton.tsx", "TypeScript React", 0, 0, 14, 0, 0, 0, 0, 0, 6, 20
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/RemoveRange/RemoveRangeHeader/RemoveRangeHeader.module.css", "CSS", 22, 0, 0, 0, 0, 0, 0, 3, 6, 31
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/RemoveRange/RemoveRangeHeader/RemoveRangeHeader.tsx", "TypeScript React", 0, 0, 26, 0, 0, 0, 0, 0, 2, 28
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/RemoveRange/RemoveRangeInfo/RemoveRangInfo.tsx", "TypeScript React", 0, 0, 146, 0, 0, 0, 0, 5, 7, 158
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/RemoveRange/RemoveRangeInfo/RemoveRangeInfo.module.css", "CSS", 21, 0, 0, 0, 0, 0, 0, 0, 4, 25
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/RemoveRange/RemoveRangeSettings/RemoveRangeSettings.module.css", "CSS", 74, 0, 0, 0, 0, 0, 0, 8, 14, 96
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/RemoveRange/RemoveRangeSettings/RemoveRangeSettings.tsx", "TypeScript React", 0, 0, 37, 0, 0, 0, 0, 11, 8, 56
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/RemoveRange/RemoveRangeTokenHeader/RemoveRangeTokenHeader.module.css", "CSS", 21, 0, 0, 0, 0, 0, 0, 0, 4, 25
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/RemoveRange/RemoveRangeTokenHeader/RemoveRangeTokenHeader.tsx", "TypeScript React", 0, 0, 40, 0, 0, 0, 0, 2, 3, 45
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/RemoveRange/RemoveRangeWidth/RemoveRangeWidth.module.css", "CSS", 218, 0, 0, 0, 0, 0, 0, 7, 49, 274
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/RemoveRange/RemoveRangeWidth/RemoveRangeWidth.tsx", "TypeScript React", 0, 0, 80, 0, 0, 0, 0, 0, 6, 86
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/RemoveRange/WithdrawAs/WithdrawAs.module.css", "CSS", 76, 0, 0, 0, 0, 0, 0, 2, 27, 105
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/RemoveRange/WithdrawAs/WithdrawAs.tsx", "TypeScript React", 0, 0, 112, 0, 0, 0, 0, 16, 11, 139
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/RemoveRange/WithdrawTo/WithdrawTo.module.css", "CSS", 76, 0, 0, 0, 0, 0, 0, 3, 27, 106
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/RemoveRange/WithdrawTo/WithdrawTo.tsx", "TypeScript React", 0, 0, 109, 0, 0, 0, 0, 16, 11, 136
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Swap/ConfirmSwapModal/ConfirmSwapModal.module.css", "CSS", 96, 0, 0, 0, 0, 0, 0, 3, 18, 117
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Swap/ConfirmSwapModal/ConfirmSwapModal.tsx", "TypeScript React", 0, 0, 205, 0, 0, 0, 0, 42, 26, 273
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Swap/CurrencyConverter/CurrencyConverter.module.css", "CSS", 24, 0, 0, 0, 0, 0, 0, 76, 10, 110
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Swap/CurrencyConverter/CurrencyConverter.tsx", "TypeScript React", 0, 0, 505, 0, 0, 0, 0, 10, 50, 565
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Swap/CurrencyQuantity/CurrencyQuantity.module.css", "CSS", 26, 0, 0, 0, 0, 0, 0, 0, 2, 28
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Swap/CurrencyQuantity/CurrencyQuantity.tsx", "TypeScript React", 0, 0, 37, 0, 0, 0, 0, 0, 7, 44
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Swap/CurrencySelector/CurrencySelector.module.css", "CSS", 153, 0, 0, 0, 0, 0, 0, 8, 30, 191
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Swap/CurrencySelector/CurrencySelector.tsx", "TypeScript React", 0, 0, 368, 0, 0, 0, 0, 6, 22, 396
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Swap/DenominationSwitch/DenominationSwitch.module.css", "CSS", 40, 0, 0, 0, 0, 0, 0, 6, 4, 50
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Swap/DenominationSwitch/DenominationSwitch.tsx", "TypeScript React", 0, 0, 26, 0, 0, 0, 0, 18, 9, 53
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Swap/ExtraInfo/ExtraInfo.module.css", "CSS", 66, 0, 0, 0, 0, 0, 0, 5, 12, 83
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Swap/ExtraInfo/ExtraInfo.tsx", "TypeScript React", 0, 0, 146, 0, 0, 0, 0, 38, 21, 205
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Swap/ExtraInfo/makePriceDisplay.ts", "TypeScript", 0, 0, 0, 33, 0, 0, 0, 0, 7, 40
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Swap/SwapButton/SwapButton.module.css", "CSS", 3, 0, 0, 0, 0, 0, 0, 0, 1, 4
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Swap/SwapButton/SwapButton.tsx", "TypeScript React", 0, 0, 19, 0, 0, 0, 0, 2, 4, 25
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Swap/SwapHeader/SwapHeader.module.css", "CSS", 14, 0, 0, 0, 0, 0, 0, 0, 3, 17
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Swap/SwapHeader/SwapHeader.tsx", "TypeScript React", 0, 0, 74, 0, 0, 0, 0, 7, 13, 94
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/TopRanges/TopRange.module.css", "CSS", 61, 0, 0, 0, 0, 0, 0, 10, 12, 83
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/TopRanges/TopRange.tsx", "TypeScript React", 0, 0, 53, 0, 0, 0, 0, 9, 9, 71
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/TopRanges/TopRangeCardHeader.module.css", "CSS", 67, 0, 0, 0, 0, 0, 0, 16, 17, 100
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/TopRanges/TopRangeCardHeader.tsx", "TypeScript React", 0, 0, 22, 0, 0, 0, 0, 0, 3, 25
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/TopRanges/TopRanges.module.css", "CSS", 3, 0, 0, 0, 0, 0, 0, 0, 1, 4
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/TopRanges/TopRanges.tsx", "TypeScript React", 0, 0, 15, 0, 0, 0, 0, 0, 4, 19
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/TopTokens/TopTokenHeader.module.css", "CSS", 69, 0, 0, 0, 0, 0, 0, 12, 15, 96
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/TopTokens/TopTokenHeader.tsx", "TypeScript React", 0, 0, 39, 0, 0, 0, 0, 0, 4, 43
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/TopTokens/TopTokenRow.module.css", "CSS", 111, 0, 0, 0, 0, 0, 0, 16, 20, 147
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/TopTokens/TopTokenRow.tsx", "TypeScript React", 0, 0, 89, 0, 0, 0, 0, 0, 15, 104
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/TopTokens/TopTokens.module.css", "CSS", 3, 0, 0, 0, 0, 0, 0, 0, 1, 4
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/TopTokens/TopTokens.tsx", "TypeScript React", 0, 0, 63, 0, 0, 0, 0, 0, 9, 72
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/Edit/AmountAndCurrencyDisplay/AmountAndCurrencyDisplay.module.css", "CSS", 120, 0, 0, 0, 0, 0, 0, 7, 24, 151
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/Edit/AmountAndCurrencyDisplay/AmountAndCurrencyDisplay.tsx", "TypeScript React", 0, 0, 51, 0, 0, 0, 0, 1, 3, 55
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/Edit/ComponentToggle/ComponentToggle.module.css", "CSS", 30, 0, 0, 0, 0, 0, 0, 0, 7, 37
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/Edit/ComponentToggle/ComponentToggle.tsx", "TypeScript React", 0, 0, 21, 0, 0, 0, 0, 0, 3, 24
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/Edit/ConfirmEditModal/ConfirmEditModal.module.css", "CSS", 12, 0, 0, 0, 0, 0, 0, 0, 3, 15
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/Edit/ConfirmEditModal/ConfirmEditModal.tsx", "TypeScript React", 0, 0, 66, 0, 0, 0, 0, 3, 6, 75
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/Edit/CurrencyDisplayContainer/CurrencyDisplayContainer.module.css", "CSS", 5, 0, 0, 0, 0, 0, 0, 0, 1, 6
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/Edit/CurrencyDisplayContainer/CurrencyDisplayContainer.tsx", "TypeScript React", 0, 0, 33, 0, 0, 0, 0, 3, 6, 42
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/Edit/EditButton/EditButton.module.css", "CSS", 3, 0, 0, 0, 0, 0, 0, 0, 1, 4
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/Edit/EditButton/EditButton.tsx", "TypeScript React", 0, 0, 19, 0, 0, 0, 0, 0, 4, 23
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/Edit/EditHeader/EditHeader.module.css", "CSS", 6, 0, 0, 0, 0, 0, 0, 0, 2, 8
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/Edit/EditHeader/EditHeader.tsx", "TypeScript React", 0, 0, 24, 0, 0, 0, 0, 0, 2, 26
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/Edit/EditMinMaxPrice/EditMinMaxPrice.module.css", "CSS", 7, 0, 0, 0, 0, 0, 0, 0, 1, 8
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/Edit/EditMinMaxPrice/EditMinMaxPrice.tsx", "TypeScript React", 0, 0, 111, 0, 0, 0, 0, 4, 10, 125
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/Edit/EditPriceInfo/EditPriceInfo.module.css", "CSS", 95, 0, 0, 0, 0, 0, 0, 12, 16, 123
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/Edit/EditPriceInfo/EditPriceInfo.tsx", "TypeScript React", 0, 0, 100, 0, 0, 0, 0, 9, 11, 120
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/Edit/EditPriceInput/EditPriceInput.module.css", "CSS", 52, 0, 0, 0, 0, 0, 0, 0, 6, 58
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/Edit/EditPriceInput/EditPriceInput.tsx", "TypeScript React", 0, 0, 64, 0, 0, 0, 0, 0, 7, 71
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/Limit/ConfirmLimitModal/ConfirmLimitModal.module.css", "CSS", 120, 0, 0, 0, 0, 0, 0, 8, 42, 170
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/Limit/ConfirmLimitModal/ConfirmLimitModal.tsx", "TypeScript React", 0, 0, 197, 0, 0, 0, 0, 15, 27, 239
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/Limit/LimitButton/LimitButton.module.css", "CSS", 3, 0, 0, 0, 0, 0, 0, 0, 1, 4
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/Limit/LimitButton/LimitButton.tsx", "TypeScript React", 0, 0, 18, 0, 0, 0, 0, 8, 6, 32
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/Limit/LimitCurrencyConverter/LimitCurrencyConverter.module.css", "CSS", 16, 0, 0, 0, 0, 0, 0, 0, 2, 18
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/Limit/LimitCurrencyConverter/LimitCurrencyConverter.tsx", "TypeScript React", 0, 0, 428, 0, 0, 0, 0, 17, 40, 485
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/Limit/LimitCurrencyQuantity/LimitCurrencyQuantity.module.css", "CSS", 26, 0, 0, 0, 0, 0, 0, 0, 2, 28
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/Limit/LimitCurrencyQuantity/LimitCurrencyQuantity.tsx", "TypeScript React", 0, 0, 29, 0, 0, 0, 0, 1, 4, 34
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/Limit/LimitCurrencySelector/LimitCurrencySelector.module.css", "CSS", 135, 0, 0, 0, 0, 0, 0, 7, 23, 165
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/Limit/LimitCurrencySelector/LimitCurrencySelector.tsx", "TypeScript React", 0, 0, 268, 0, 0, 0, 0, 41, 23, 332
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/Limit/LimitExtraInfo/LimitExtraInfo.module.css", "CSS", 60, 0, 0, 0, 0, 0, 0, 5, 10, 75
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/Limit/LimitExtraInfo/LimitExtraInfo.tsx", "TypeScript React", 0, 0, 134, 0, 0, 0, 0, 44, 21, 199
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/Limit/LimitExtraInfo/makePriceDisplay.ts", "TypeScript", 0, 0, 0, 33, 0, 0, 0, 0, 7, 40
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/Limit/LimitHeader/LimitHeader.module.css", "CSS", 14, 0, 0, 0, 0, 0, 0, 0, 3, 17
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/Limit/LimitHeader/LimitHeader.tsx", "TypeScript React", 0, 0, 53, 0, 0, 0, 0, 9, 9, 71
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/Limit/LimitRate/LimitRate.module.css", "CSS", 108, 0, 0, 0, 0, 0, 0, 17, 17, 142
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/Limit/LimitRate/LimitRate.tsx", "TypeScript React", 0, 0, 53, 0, 0, 0, 0, 4, 7, 64
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/Range/AdvancedModeComponents/AdvancedPriceInfo/AdvancedPriceInfo.module.css", "CSS", 52, 0, 0, 0, 0, 0, 0, 4, 9, 65
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/Range/AdvancedModeComponents/AdvancedPriceInfo/AdvancedPriceInfo.tsx", "TypeScript React", 0, 0, 43, 0, 0, 0, 0, 5, 8, 56
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/Range/AdvancedModeComponents/MinMaxPrice/MinMaxPrice.module.css", "CSS", 19, 0, 0, 0, 0, 0, 0, 0, 2, 21
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/Range/AdvancedModeComponents/MinMaxPrice/MinMaxPrice.tsx", "TypeScript React", 0, 0, 155, 0, 0, 0, 0, 2, 20, 177
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/Range/AdvancedModeComponents/PriceInput/PriceInput.module.css", "CSS", 51, 0, 0, 0, 0, 0, 0, 26, 7, 84
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/Range/AdvancedModeComponents/PriceInput/PriceInput.tsx", "TypeScript React", 0, 0, 60, 0, 0, 0, 0, 12, 7, 79
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/Range/AdvancedModeToggle/AdvancedModeToggle.module.css", "CSS", 10, 0, 0, 0, 0, 0, 0, 0, 1, 11
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/Range/AdvancedModeToggle/AdvancedModeToggle.tsx", "TypeScript React", 0, 0, 20, 0, 0, 0, 0, 1, 5, 26
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/Range/ConfirmRangeModal/ConfirmRangeModal.module.css", "CSS", 86, 0, 0, 0, 0, 0, 0, 3, 39, 128
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/Range/ConfirmRangeModal/ConfirmRangeModal.tsx", "TypeScript React", 0, 0, 177, 0, 0, 0, 0, 6, 18, 201
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/Range/ConfirmRangeModal/SelectedRange/SelectedRange.module.css", "CSS", 109, 0, 0, 0, 0, 0, 0, 11, 32, 152
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/Range/ConfirmRangeModal/SelectedRange/SelectedRange.tsx", "TypeScript React", 0, 0, 147, 0, 0, 0, 0, 8, 14, 169
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/Range/RangeButton/RangeButton.module.css", "CSS", 3, 0, 0, 0, 0, 0, 0, 0, 1, 4
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/Range/RangeButton/RangeButton.tsx", "TypeScript React", 0, 0, 19, 0, 0, 0, 0, 3, 5, 27
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/Range/RangeCurrencyConverter/RangeCurrencyConverter.module.css", "CSS", 8, 0, 0, 0, 0, 0, 0, 0, 3, 11
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/Range/RangeCurrencyConverter/RangeCurrencyConverter.tsx", "TypeScript React", 0, 0, 634, 0, 0, 0, 0, 42, 55, 731
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/Range/RangeCurrencyQuantity/RangeCurrencyQuantity.module.css", "CSS", 53, 0, 0, 0, 0, 0, 0, 1, 6, 60
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/Range/RangeCurrencyQuantity/RangeCurrencyQuantity.tsx", "TypeScript React", 0, 0, 41, 0, 0, 0, 0, 1, 5, 47
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/Range/RangeCurrencySelector/RangeCurrencySelector.module.css", "CSS", 153, 0, 0, 0, 0, 0, 0, 8, 30, 191
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/Range/RangeCurrencySelector/RangeCurrencySelector.tsx", "TypeScript React", 0, 0, 374, 0, 0, 0, 0, 15, 20, 409
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/Range/RangeExtraInfo/RangeExtraInfo.module.css", "CSS", 60, 0, 0, 0, 0, 0, 0, 5, 10, 75
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/Range/RangeExtraInfo/RangeExtraInfo.tsx", "TypeScript React", 0, 0, 88, 0, 0, 0, 0, 34, 16, 138
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/Range/RangeHeader/RangeHeader.module.css", "CSS", 14, 0, 0, 0, 0, 0, 0, 0, 3, 17
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/Range/RangeHeader/RangeHeader.tsx", "TypeScript React", 0, 0, 62, 0, 0, 0, 0, 5, 11, 78
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/Range/RangePriceInfo/RangePriceInfo.module.css", "CSS", 76, 0, 0, 0, 0, 0, 0, 4, 14, 94
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/Range/RangePriceInfo/RangePriceInfo.tsx", "TypeScript React", 0, 0, 59, 0, 0, 0, 0, 12, 9, 80
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/Range/RangePriceInfo/makeCurrentPrice.ts", "TypeScript", 0, 0, 0, 13, 0, 0, 0, 0, 2, 15
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/Range/RangeShareControl/RangeShareControl.module.css", "CSS", 58, 0, 0, 0, 0, 0, 0, 0, 14, 72
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/Range/RangeShareControl/RangeShareControl.tsx", "TypeScript React", 0, 0, 26, 0, 0, 0, 0, 0, 3, 29
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/Range/RangeWidth/RangeWidth.module.css", "CSS", 215, 0, 0, 0, 0, 0, 0, 8, 51, 274
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/Range/RangeWidth/RangeWidth.tsx", "TypeScript React", 0, 0, 81, 0, 0, 0, 0, 4, 8, 93
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/Range/RangeWidth/rangeWidthFunctions.ts", "TypeScript", 0, 0, 0, 22, 0, 0, 0, 0, 3, 25
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/Reposition/ConfirmRepositionModal/ConfirmRepositionModal.module.css", "CSS", 12, 0, 0, 0, 0, 0, 0, 0, 3, 15
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/Reposition/ConfirmRepositionModal/ConfirmRepositionModal.tsx", "TypeScript React", 0, 0, 24, 0, 0, 0, 0, 0, 5, 29
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/Reposition/RepositionDenominationSwitch/RepositionDenominationSwitch.module.css", "CSS", 39, 0, 0, 0, 0, 0, 0, 1, 4, 44
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/Reposition/RepositionDenominationSwitch/RepositionDenominationSwitch.tsx", "TypeScript React", 0, 0, 21, 0, 0, 0, 0, 19, 6, 46
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/Reposition/RepositionHeader/RepositionHeader.module.css", "CSS", 6, 0, 0, 0, 0, 0, 0, 0, 2, 8
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/Reposition/RepositionHeader/RepositionHeader.tsx", "TypeScript React", 0, 0, 20, 0, 0, 0, 0, 3, 3, 26
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/Reposition/RepositionPriceInfo/RepositionPriceInfo.module.css", "CSS", 76, 0, 0, 0, 0, 0, 0, 4, 14, 94
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/Reposition/RepositionPriceInfo/RepositionPriceInfo.tsx", "TypeScript React", 0, 0, 56, 0, 0, 0, 0, 31, 11, 98
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/Reposition/RepositionRangeWidth/RepositionRangeWidth.module.css", "CSS", 215, 0, 0, 0, 0, 0, 0, 8, 51, 274
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/Reposition/RepositionRangeWidth/RepositionRangeWidth.tsx", "TypeScript React", 0, 0, 44, 0, 0, 0, 0, 3, 6, 53
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/Reposition/Repositionbutton/RepositionButton.module.css", "CSS", 3, 0, 0, 0, 0, 0, 0, 0, 1, 4
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/Reposition/Repositionbutton/RepositionButton.tsx", "TypeScript React", 0, 0, 19, 0, 0, 0, 0, 7, 5, 31
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/TradeTabs/Orders/OrderAccordions/OrderAccordionContent.module.css", "CSS", 52, 0, 0, 0, 0, 0, 0, 0, 6, 58
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/TradeTabs/Orders/OrderAccordions/OrderAccordionContent.tsx", "TypeScript React", 0, 0, 107, 0, 0, 0, 0, 2, 12, 121
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/TradeTabs/Orders/OrderAccordions/OrderAccordions.module.css", "CSS", 66, 0, 0, 0, 0, 0, 0, 1, 29, 96
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/TradeTabs/Orders/OrderAccordions/OrderAccordions.tsx", "TypeScript React", 0, 0, 141, 0, 0, 0, 0, 1, 9, 151
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/TradeTabs/Orders/OrderCard.module.css", "CSS", 45, 0, 0, 0, 0, 0, 0, 9, 9, 63
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/TradeTabs/Orders/OrderCard.tsx", "TypeScript React", 0, 0, 191, 0, 0, 0, 0, 12, 26, 229
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/TradeTabs/Orders/OrderCardHeader.module.css", "CSS", 136, 0, 0, 0, 0, 0, 0, 37, 34, 207
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/TradeTabs/Orders/OrderCardHeader.tsx", "TypeScript React", 0, 0, 121, 0, 0, 0, 0, 9, 15, 145
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/TradeTabs/Orders/Orders.module.css", "CSS", 29, 0, 0, 0, 0, 0, 0, 0, 5, 34
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/TradeTabs/Orders/Orders.tsx", "TypeScript React", 0, 0, 200, 0, 0, 0, 0, 46, 25, 271
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/TradeTabs/Positions/Position/PositionCard.module.css", "CSS", 200, 0, 0, 0, 0, 0, 0, 29, 46, 275
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/TradeTabs/Positions/Position/PositionCard.tsx", "TypeScript React", 0, 0, 239, 0, 0, 0, 0, 19, 43, 301
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/TradeTabs/Positions/Position/PositionHeader.module.css", "CSS", 79, 0, 0, 0, 0, 0, 0, 15, 18, 112
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/TradeTabs/Positions/Position/PositionHeader.tsx", "TypeScript React", 0, 0, 26, 0, 0, 0, 0, 3, 6, 35
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/TradeTabs/Positions/Positions.module.css", "CSS", 0, 0, 0, 0, 0, 0, 0, 75, 1, 76
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/TradeTabs/Positions/Positions.tsx", "TypeScript React", 0, 0, 65, 0, 0, 0, 0, 3, 14, 82
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/TradeTabs/PositionsOnlyToggle/PositionsOnlyToggle.module.css", "CSS", 31, 0, 0, 0, 0, 0, 0, 1, 5, 37
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/TradeTabs/PositionsOnlyToggle/PositionsOnlyToggle.tsx", "TypeScript React", 0, 0, 57, 0, 0, 0, 0, 2, 9, 68
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/TradeTabs/Ranges/RangeAccordions/RangeAccordionContent.module.css", "CSS", 52, 0, 0, 0, 0, 0, 0, 0, 6, 58
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/TradeTabs/Ranges/RangeAccordions/RangeAccordionContent.tsx", "TypeScript React", 0, 0, 112, 0, 0, 0, 0, 0, 8, 120
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/TradeTabs/Ranges/RangeAccordions/RangeAccordions.module.css", "CSS", 85, 0, 0, 0, 0, 0, 0, 1, 29, 115
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/TradeTabs/Ranges/RangeAccordions/RangeAccordions.tsx", "TypeScript React", 0, 0, 146, 0, 0, 0, 0, 1, 13, 160
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/TradeTabs/Ranges/RangeCard.module.css", "CSS", 54, 0, 0, 0, 0, 0, 0, 9, 10, 73
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/TradeTabs/Ranges/RangeCard.tsx", "TypeScript React", 0, 0, 201, 0, 0, 0, 0, 27, 35, 263
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/TradeTabs/Ranges/RangeCardHeader.module.css", "CSS", 140, 0, 0, 0, 0, 0, 0, 37, 33, 210
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/TradeTabs/Ranges/RangeCardHeader.tsx", "TypeScript React", 0, 0, 118, 0, 0, 0, 0, 27, 15, 160
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/TradeTabs/Ranges/Ranges.module.css", "CSS", 33, 0, 0, 0, 0, 0, 0, 1, 8, 42
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/TradeTabs/Ranges/Ranges.tsx", "TypeScript React", 0, 0, 127, 0, 0, 0, 0, 30, 12, 169
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/TradeTabs/Ranges/useSortedPositions.ts", "TypeScript", 0, 0, 0, 51, 0, 0, 0, 15, 8, 74
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/TradeTabs/TradeTabs.module.css", "CSS", 95, 0, 0, 0, 0, 0, 0, 3, 14, 112
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/TradeTabs/TradeTabs.tsx", "TypeScript React", 0, 0, 160, 0, 0, 0, 0, 30, 20, 210
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/TradeTabs/TradeTabs2.module.css", "CSS", 3, 0, 0, 0, 0, 0, 0, 0, 0, 3
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/TradeTabs/TradeTabs2.tsx", "TypeScript React", 0, 0, 330, 0, 0, 0, 0, 45, 39, 414
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/TradeTabs/Transactions/TransactionAccordions/TransactionAccordionContent.module.css", "CSS", 52, 0, 0, 0, 0, 0, 0, 0, 6, 58
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/TradeTabs/Transactions/TransactionAccordions/TransactionAccordionContent.tsx", "TypeScript React", 0, 0, 115, 0, 0, 0, 0, 2, 12, 129
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/TradeTabs/Transactions/TransactionAccordions/TransactionAccordions.module.css", "CSS", 58, 0, 0, 0, 0, 0, 0, 2, 24, 84
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/TradeTabs/Transactions/TransactionAccordions/TransactionAccordions.tsx", "TypeScript React", 0, 0, 133, 0, 0, 0, 0, 15, 18, 166
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/TradeTabs/Transactions/TransactionCard.module.css", "CSS", 64, 0, 0, 0, 0, 0, 0, 10, 7, 81
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/TradeTabs/Transactions/TransactionCard.tsx", "TypeScript React", 0, 0, 432, 0, 0, 0, 0, 39, 52, 523
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/TradeTabs/Transactions/TransactionCardHeader.module.css", "CSS", 91, 0, 0, 0, 0, 0, 0, 20, 24, 135
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/TradeTabs/Transactions/TransactionCardHeader.tsx", "TypeScript React", 0, 0, 38, 0, 0, 0, 0, 4, 7, 49
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/TradeTabs/Transactions/Transactions.module.css", "CSS", 37, 0, 0, 0, 0, 0, 0, 2, 6, 45
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/TradeTabs/Transactions/Transactions.tsx", "TypeScript React", 0, 0, 244, 0, 0, 0, 0, 55, 37, 336
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/TradeTabs/Transactions/TransactionsSkeletons/TransactionsSkeletons.module.css", "CSS", 4, 0, 0, 0, 0, 0, 0, 2, 1, 7
+"/Users/junioradessu/Documents/ambient-ts-app/src/components/Trade/TradeTabs/Transactions/TransactionsSkeletons/TransactionsSkeletons.tsx", "TypeScript React", 0, 0, 17, 0, 0, 0, 0, 0, 2, 19
+"/Users/junioradessu/Documents/ambient-ts-app/src/constants/index.ts", "TypeScript", 0, 0, 0, 37, 0, 0, 0, 7, 18, 62
+"/Users/junioradessu/Documents/ambient-ts-app/src/constants/intervals.ts", "TypeScript", 0, 0, 0, 9, 0, 0, 0, 4, 4, 17
+"/Users/junioradessu/Documents/ambient-ts-app/src/constants/networks.ts", "TypeScript", 0, 0, 0, 65, 0, 0, 0, 0, 8, 73
+"/Users/junioradessu/Documents/ambient-ts-app/src/css/animations.module.css", "CSS", 0, 0, 0, 0, 0, 0, 0, 0, 1, 1
+"/Users/junioradessu/Documents/ambient-ts-app/src/css/reset.css", "CSS", 59, 0, 0, 0, 0, 0, 0, 9, 11, 79
+"/Users/junioradessu/Documents/ambient-ts-app/src/data/application/index.ts", "TypeScript", 0, 0, 0, 75, 0, 0, 0, 3, 10, 88
+"/Users/junioradessu/Documents/ambient-ts-app/src/data/combined/pools.ts", "TypeScript", 0, 0, 0, 234, 0, 0, 0, 7, 21, 262
+"/Users/junioradessu/Documents/ambient-ts-app/src/data/pools/chartData.ts", "TypeScript", 0, 0, 0, 123, 0, 0, 0, 2, 12, 137
+"/Users/junioradessu/Documents/ambient-ts-app/src/data/pools/poolData.ts", "TypeScript", 0, 0, 0, 234, 0, 0, 0, 7, 22, 263
+"/Users/junioradessu/Documents/ambient-ts-app/src/data/pools/tickData.ts", "TypeScript", 0, 0, 0, 301, 0, 0, 0, 25, 44, 370
+"/Users/junioradessu/Documents/ambient-ts-app/src/data/pools/topPools.ts", "TypeScript", 0, 0, 0, 39, 0, 0, 0, 3, 6, 48
+"/Users/junioradessu/Documents/ambient-ts-app/src/data/pools/transactions.ts", "TypeScript", 0, 0, 0, 222, 0, 0, 0, 0, 9, 231
+"/Users/junioradessu/Documents/ambient-ts-app/src/data/protocol/chart.ts", "TypeScript", 0, 0, 0, 180, 0, 0, 0, 6, 19, 205
+"/Users/junioradessu/Documents/ambient-ts-app/src/data/protocol/overview.ts", "TypeScript", 0, 0, 0, 122, 0, 0, 0, 6, 24, 152
+"/Users/junioradessu/Documents/ambient-ts-app/src/data/protocol/transactions.ts", "TypeScript", 0, 0, 0, 184, 0, 0, 0, 0, 9, 193
+"/Users/junioradessu/Documents/ambient-ts-app/src/data/search/index.ts", "TypeScript", 0, 0, 0, 258, 0, 0, 0, 2, 21, 281
+"/Users/junioradessu/Documents/ambient-ts-app/src/data/tokens/chartData.ts", "TypeScript", 0, 0, 0, 118, 0, 0, 0, 2, 12, 132
+"/Users/junioradessu/Documents/ambient-ts-app/src/data/tokens/poolsForToken.ts", "TypeScript", 0, 0, 0, 69, 0, 0, 0, 3, 7, 79
+"/Users/junioradessu/Documents/ambient-ts-app/src/data/tokens/priceData.ts", "TypeScript", 0, 0, 0, 128, 0, 0, 0, 5, 14, 147
+"/Users/junioradessu/Documents/ambient-ts-app/src/data/tokens/tokenData.ts", "TypeScript", 0, 0, 0, 207, 0, 0, 0, 6, 22, 235
+"/Users/junioradessu/Documents/ambient-ts-app/src/data/tokens/topTokens.ts", "TypeScript", 0, 0, 0, 43, 0, 0, 0, 3, 7, 53
+"/Users/junioradessu/Documents/ambient-ts-app/src/data/tokens/transactions.ts", "TypeScript", 0, 0, 0, 419, 0, 0, 0, 0, 11, 430
+"/Users/junioradessu/Documents/ambient-ts-app/src/declarations.d.ts", "TypeScript", 0, 0, 0, 148, 0, 0, 0, 21, 25, 194
+"/Users/junioradessu/Documents/ambient-ts-app/src/framer-motion.d.ts", "TypeScript", 0, 0, 0, 6, 0, 0, 0, 0, 2, 8
+"/Users/junioradessu/Documents/ambient-ts-app/src/hooks/ChartDataTimeframe.ts", "TypeScript", 0, 0, 0, 7, 0, 0, 0, 0, 1, 8
+"/Users/junioradessu/Documents/ambient-ts-app/src/hooks/chart.ts", "TypeScript", 0, 0, 0, 70, 0, 0, 0, 39, 12, 121
+"/Users/junioradessu/Documents/ambient-ts-app/src/hooks/useBlocksFromTimestamps.ts", "TypeScript", 0, 0, 0, 91, 0, 0, 0, 13, 10, 114
+"/Users/junioradessu/Documents/ambient-ts-app/src/hooks/useEthPrices.ts", "TypeScript", 0, 0, 0, 118, 0, 0, 0, 4, 12, 134
+"/Users/junioradessu/Documents/ambient-ts-app/src/i18n/config.ts", "TypeScript", 0, 0, 0, 42, 0, 0, 0, 5, 4, 51
+"/Users/junioradessu/Documents/ambient-ts-app/src/i18n/en/common.json", "JSON", 0, 0, 0, 0, 34, 0, 0, 0, 1, 35
+"/Users/junioradessu/Documents/ambient-ts-app/src/i18n/en/glossary.json", "JSON", 0, 0, 0, 0, 7, 0, 0, 0, 1, 8
+"/Users/junioradessu/Documents/ambient-ts-app/src/i18n/en/validation.json", "JSON", 0, 0, 0, 0, 7, 0, 0, 0, 1, 8
+"/Users/junioradessu/Documents/ambient-ts-app/src/i18n/kr/common.json", "JSON", 0, 0, 0, 0, 30, 0, 0, 0, 1, 31
+"/Users/junioradessu/Documents/ambient-ts-app/src/i18n/kr/glossary.json", "JSON", 0, 0, 0, 0, 7, 0, 0, 0, 1, 8
+"/Users/junioradessu/Documents/ambient-ts-app/src/i18n/kr/validation.json", "JSON", 0, 0, 0, 0, 7, 0, 0, 0, 1, 8
+"/Users/junioradessu/Documents/ambient-ts-app/src/i18n/zh/common.json", "JSON", 0, 0, 0, 0, 30, 0, 0, 0, 1, 31
+"/Users/junioradessu/Documents/ambient-ts-app/src/i18n/zh/glossary.json", "JSON", 0, 0, 0, 0, 7, 0, 0, 0, 1, 8
+"/Users/junioradessu/Documents/ambient-ts-app/src/i18n/zh/validation.json", "JSON", 0, 0, 0, 0, 7, 0, 0, 0, 1, 8
+"/Users/junioradessu/Documents/ambient-ts-app/src/index.css", "CSS", 49, 0, 0, 0, 0, 0, 0, 5, 14, 68
+"/Users/junioradessu/Documents/ambient-ts-app/src/index.tsx", "TypeScript React", 0, 0, 38, 0, 0, 0, 0, 6, 7, 51
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/Analytics/ANALYTICS.md", "Markdown", 0, 8, 0, 0, 0, 0, 0, 0, 4, 12
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/Analytics/Analytics.module.css", "CSS", 4, 0, 0, 0, 0, 0, 0, 7, 2, 13
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/Analytics/Analytics.test.tsx", "TypeScript React", 0, 0, 7, 0, 0, 0, 0, 0, 3, 10
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/Analytics/Analytics.tsx", "TypeScript React", 0, 0, 32, 0, 0, 0, 0, 0, 3, 35
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/Chart/CHART.md", "Markdown", 0, 0, 0, 0, 0, 0, 0, 0, 1, 1
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/Chart/Chart.css", "CSS", 151, 0, 0, 0, 0, 0, 0, 0, 28, 179
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/Chart/Chart.tsx", "TypeScript React", 0, 0, 1692, 0, 0, 0, 0, 46, 280, 2018
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/Home/HOME.md", "Markdown", 0, 8, 0, 0, 0, 0, 0, 0, 4, 12
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/Home/Home.module.css", "CSS", 47, 0, 0, 0, 0, 0, 0, 17, 10, 74
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/Home/Home.test.tsx", "TypeScript React", 0, 0, 7, 0, 0, 0, 0, 0, 3, 10
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/Home/Home.tsx", "TypeScript React", 0, 0, 39, 0, 0, 0, 0, 3, 5, 47
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/InitPool/InitPool.module.css", "CSS", 60, 0, 0, 0, 0, 0, 0, 1, 10, 71
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/InitPool/InitPool.tsx", "TypeScript React", 0, 0, 120, 0, 0, 0, 0, 1, 8, 129
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/InitPool/useUrlParams.ts", "TypeScript", 0, 0, 0, 24, 0, 0, 0, 9, 4, 37
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/NotFound/NotFound.module.css", "CSS", 6, 0, 0, 0, 0, 0, 0, 0, 1, 7
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/NotFound/NotFound.tsx", "TypeScript React", 0, 0, 11, 0, 0, 0, 0, 0, 1, 12
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/PAGES.md", "Markdown", 0, 11, 0, 0, 0, 0, 0, 0, 7, 18
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/Portfolio/PORTFOLIO.md", "Markdown", 0, 8, 0, 0, 0, 0, 0, 0, 4, 12
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/Portfolio/Portfolio.module.css", "CSS", 60, 0, 0, 0, 0, 0, 0, 2, 15, 77
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/Portfolio/Portfolio.test.tsx", "TypeScript React", 0, 0, 7, 0, 0, 0, 0, 0, 3, 10
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/Portfolio/Portfolio.tsx", "TypeScript React", 0, 0, 283, 0, 0, 0, 0, 20, 40, 343
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/Swap/SWAP.md", "Markdown", 0, 0, 0, 0, 0, 0, 0, 0, 1, 1
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/Swap/Swap.module.css", "CSS", 16, 0, 0, 0, 0, 0, 0, 19, 7, 42
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/Swap/Swap.test.tsx", "TypeScript React", 0, 0, 21, 0, 0, 0, 0, 0, 4, 25
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/Swap/Swap.tsx", "TypeScript React", 0, 0, 420, 0, 0, 0, 0, 32, 47, 499
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/Swap/useUrlParams.ts", "TypeScript", 0, 0, 0, 128, 0, 0, 0, 43, 17, 188
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/TermsOfService/TermsOfService.module.css", "CSS", 3, 0, 0, 0, 0, 0, 0, 0, 0, 3
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/TermsOfService/TermsOfService.tsx", "TypeScript React", 0, 0, 64, 0, 0, 0, 0, 0, 4, 68
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/TestPage/TestPage.module.css", "CSS", 15, 0, 0, 0, 0, 0, 0, 24, 6, 45
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/TestPage/TestPage.tsx", "TypeScript React", 0, 0, 61, 0, 0, 0, 0, 4, 6, 71
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/Trade/Edit/Edit.module.css", "CSS", 11, 0, 0, 0, 0, 0, 0, 0, 2, 13
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/Trade/Edit/Edit.tsx", "TypeScript React", 0, 0, 322, 0, 0, 0, 0, 32, 65, 419
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/Trade/Limit/LIMIT.md", "Markdown", 0, 0, 0, 0, 0, 0, 0, 0, 1, 1
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/Trade/Limit/Limit.module.css", "CSS", 5, 0, 0, 0, 0, 0, 0, 1, 1, 7
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/Trade/Limit/Limit.test.tsx", "TypeScript React", 0, 0, 7, 0, 0, 0, 0, 0, 3, 10
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/Trade/Limit/Limit.tsx", "TypeScript React", 0, 0, 474, 0, 0, 0, 0, 26, 58, 558
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/Trade/Range/PositionDetails.module.css", "CSS", 12, 0, 0, 0, 0, 0, 0, 1, 2, 15
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/Trade/Range/PositionDetails.tsx", "TypeScript React", 0, 0, 14, 0, 0, 0, 0, 13, 2, 29
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/Trade/Range/Range.md", "Markdown", 0, 0, 0, 0, 0, 0, 0, 0, 1, 1
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/Trade/Range/Range.module.css", "CSS", 40, 0, 0, 0, 0, 0, 0, 2, 7, 49
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/Trade/Range/Range.test.tsx", "TypeScript React", 0, 0, 15, 0, 0, 0, 0, 0, 5, 20
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/Trade/Range/Range.tsx", "TypeScript React", 0, 0, 1009, 0, 0, 0, 0, 28, 127, 1164
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/Trade/Range/rangeFunctions.ts", "TypeScript", 0, 0, 0, 132, 0, 0, 0, 19, 29, 180
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/Trade/Reposition/Reposition.module.css", "CSS", 11, 0, 0, 0, 0, 0, 0, 0, 2, 13
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/Trade/Reposition/Reposition.tsx", "TypeScript React", 0, 0, 31, 0, 0, 0, 0, 1, 4, 36
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/Trade/TRADE.md", "Markdown", 0, 8, 0, 0, 0, 0, 0, 0, 4, 12
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/Trade/Trade.module.css", "CSS", 250, 0, 0, 0, 0, 0, 0, 41, 53, 344
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/Trade/Trade.test.tsx", "TypeScript React", 0, 0, 8, 0, 0, 0, 0, 0, 3, 11
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/Trade/Trade.tsx", "TypeScript React", 0, 0, 491, 0, 0, 0, 0, 22, 33, 546
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/Trade/TradeCharts/TradeCandleStickChart.css", "CSS", 59, 0, 0, 0, 0, 0, 0, 3, 13, 75
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/Trade/TradeCharts/TradeCandleStickChart.tsx", "TypeScript React", 0, 0, 230, 0, 0, 0, 0, 11, 34, 275
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/Trade/TradeCharts/TradeCharts.module.css", "CSS", 305, 0, 0, 0, 0, 0, 0, 39, 65, 409
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/Trade/TradeCharts/TradeCharts.tsx", "TypeScript React", 0, 0, 541, 0, 0, 0, 0, 91, 68, 700
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/Trade/TradeCharts/TradeChartsLoading/FeeRateSubChart.tsx", "TypeScript React", 0, 0, 131, 0, 0, 0, 0, 2, 24, 157
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/Trade/TradeCharts/TradeChartsLoading/TradeChartsLoading.module.css", "CSS", 101, 0, 0, 0, 0, 0, 0, 1, 8, 110
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/Trade/TradeCharts/TradeChartsLoading/TradeChartsLoading.tsx", "TypeScript React", 0, 0, 15, 0, 0, 0, 0, 0, 1, 16
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/Trade/TradeCharts/TradeChartsLoading/TvlSubChart.tsx", "TypeScript React", 0, 0, 167, 0, 0, 0, 0, 2, 30, 199
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/Trade/TradeCharts/TradeChartsLoading/VolumeSubChart.tsx", "TypeScript React", 0, 0, 145, 0, 0, 0, 0, 3, 25, 173
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/Trade/useUrlParams.ts", "TypeScript", 0, 0, 0, 137, 0, 0, 0, 37, 20, 194
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/Transactions/Transaction.tsx", "TypeScript React", 0, 0, 17, 0, 0, 0, 0, 10, 6, 33
+"/Users/junioradessu/Documents/ambient-ts-app/src/pages/Transactions/Transactions.tsx", "TypeScript React", 0, 0, 73, 0, 0, 0, 0, 0, 10, 83
+"/Users/junioradessu/Documents/ambient-ts-app/src/react-app-env.d.ts", "TypeScript", 0, 0, 0, 3, 0, 0, 0, 2, 1, 6
+"/Users/junioradessu/Documents/ambient-ts-app/src/reportWebVitals.ts", "TypeScript", 0, 0, 0, 13, 0, 0, 0, 0, 3, 16
+"/Users/junioradessu/Documents/ambient-ts-app/src/setupTests.ts", "TypeScript", 0, 0, 0, 18, 0, 0, 0, 28, 10, 56
+"/Users/junioradessu/Documents/ambient-ts-app/src/state/application/actions.ts", "TypeScript", 0, 0, 0, 20, 0, 0, 0, 11, 4, 35
+"/Users/junioradessu/Documents/ambient-ts-app/src/state/application/hooks.ts", "TypeScript", 0, 0, 0, 139, 0, 0, 0, 7, 16, 162
+"/Users/junioradessu/Documents/ambient-ts-app/src/state/application/reducer.ts", "TypeScript", 0, 0, 0, 67, 0, 0, 0, 0, 5, 72
+"/Users/junioradessu/Documents/ambient-ts-app/src/state/application/updater.ts", "TypeScript", 0, 0, 0, 25, 0, 0, 0, 1, 5, 31
+"/Users/junioradessu/Documents/ambient-ts-app/src/state/global/actions.ts", "TypeScript", 0, 0, 0, 2, 0, 0, 0, 2, 2, 6
+"/Users/junioradessu/Documents/ambient-ts-app/src/state/index.ts", "TypeScript", 0, 0, 0, 25, 0, 0, 0, 0, 8, 33
+"/Users/junioradessu/Documents/ambient-ts-app/src/state/pools/actions.ts", "TypeScript", 0, 0, 0, 33, 0, 0, 0, 2, 6, 41
+"/Users/junioradessu/Documents/ambient-ts-app/src/state/pools/hooks.ts", "TypeScript", 0, 0, 0, 142, 0, 0, 0, 12, 19, 173
+"/Users/junioradessu/Documents/ambient-ts-app/src/state/pools/models.ts", "TypeScript", 0, 0, 0, 56, 0, 0, 0, 7, 12, 75
+"/Users/junioradessu/Documents/ambient-ts-app/src/state/pools/reducer.ts", "TypeScript", 0, 0, 0, 69, 0, 0, 0, 2, 4, 75
+"/Users/junioradessu/Documents/ambient-ts-app/src/state/pools/updater.ts", "TypeScript", 0, 0, 0, 35, 0, 0, 0, 5, 8, 48
+"/Users/junioradessu/Documents/ambient-ts-app/src/state/protocol/actions.ts", "TypeScript", 0, 0, 0, 16, 0, 0, 0, 1, 2, 19
+"/Users/junioradessu/Documents/ambient-ts-app/src/state/protocol/hooks.ts", "TypeScript", 0, 0, 0, 55, 0, 0, 0, 0, 6, 61
+"/Users/junioradessu/Documents/ambient-ts-app/src/state/protocol/models.ts", "TypeScript", 0, 0, 0, 19, 0, 0, 0, 6, 6, 31
+"/Users/junioradessu/Documents/ambient-ts-app/src/state/protocol/reducer.ts", "TypeScript", 0, 0, 0, 44, 0, 0, 0, 1, 3, 48
+"/Users/junioradessu/Documents/ambient-ts-app/src/state/protocol/updater.ts", "TypeScript", 0, 0, 0, 36, 0, 0, 0, 3, 10, 49
+"/Users/junioradessu/Documents/ambient-ts-app/src/state/tokens/actions.ts", "TypeScript", 0, 0, 0, 32, 0, 0, 0, 6, 7, 45
+"/Users/junioradessu/Documents/ambient-ts-app/src/state/tokens/hooks.ts", "TypeScript", 0, 0, 0, 229, 0, 0, 0, 31, 27, 287
+"/Users/junioradessu/Documents/ambient-ts-app/src/state/tokens/models.ts", "TypeScript", 0, 0, 0, 22, 0, 0, 0, 5, 7, 34
+"/Users/junioradessu/Documents/ambient-ts-app/src/state/tokens/reducer.ts", "TypeScript", 0, 0, 0, 113, 0, 0, 0, 5, 4, 122
+"/Users/junioradessu/Documents/ambient-ts-app/src/state/tokens/updater.ts", "TypeScript", 0, 0, 0, 35, 0, 0, 0, 5, 8, 48
+"/Users/junioradessu/Documents/ambient-ts-app/src/test-utils.ts", "TypeScript", 0, 0, 0, 11, 0, 0, 0, 1, 3, 15
+"/Users/junioradessu/Documents/ambient-ts-app/src/types/index.ts", "TypeScript", 0, 0, 0, 43, 0, 0, 0, 3, 7, 53
+"/Users/junioradessu/Documents/ambient-ts-app/src/utils/TransactionError.ts", "TypeScript", 0, 0, 0, 31, 0, 0, 0, 15, 8, 54
+"/Users/junioradessu/Documents/ambient-ts-app/src/utils/classes/swapParams.ts", "TypeScript", 0, 0, 0, 14, 0, 0, 0, 0, 2, 16
+"/Users/junioradessu/Documents/ambient-ts-app/src/utils/data.ts", "TypeScript", 0, 0, 0, 25, 0, 0, 0, 12, 2, 39
+"/Users/junioradessu/Documents/ambient-ts-app/src/utils/data/ambientTokenList.ts", "TypeScript", 0, 0, 0, 128, 0, 0, 0, 0, 2, 130
+"/Users/junioradessu/Documents/ambient-ts-app/src/utils/data/blacklist.ts", "TypeScript", 0, 0, 0, 34, 0, 0, 0, 0, 0, 34
+"/Users/junioradessu/Documents/ambient-ts-app/src/utils/data/chains.ts", "TypeScript", 0, 0, 0, 49, 0, 0, 0, 10, 3, 62
+"/Users/junioradessu/Documents/ambient-ts-app/src/utils/data/defaultTokenLists.ts", "TypeScript", 0, 0, 0, 1, 0, 0, 0, 0, 1, 2
+"/Users/junioradessu/Documents/ambient-ts-app/src/utils/data/defaultTokens.ts", "TypeScript", 0, 0, 0, 109, 0, 0, 0, 0, 11, 120
+"/Users/junioradessu/Documents/ambient-ts-app/src/utils/data/stablePairs.ts", "TypeScript", 0, 0, 0, 48, 0, 0, 0, 11, 7, 66
+"/Users/junioradessu/Documents/ambient-ts-app/src/utils/data/testTokenMap.ts", "TypeScript", 0, 0, 0, 18, 0, 0, 0, 0, 1, 19
+"/Users/junioradessu/Documents/ambient-ts-app/src/utils/data/tokenListSchema.json", "JSON", 0, 0, 0, 0, 302, 0, 0, 0, 1, 303
+"/Users/junioradessu/Documents/ambient-ts-app/src/utils/data/tokenListURIs.ts", "TypeScript", 0, 0, 0, 12, 0, 0, 0, 5, 1, 18
+"/Users/junioradessu/Documents/ambient-ts-app/src/utils/data/tokenUnicodeCharMap.ts", "TypeScript", 0, 0, 0, 7, 0, 0, 0, 0, 1, 8
+"/Users/junioradessu/Documents/ambient-ts-app/src/utils/data/truncateDecimals.ts", "TypeScript", 0, 0, 0, 3, 0, 0, 0, 5, 1, 9
+"/Users/junioradessu/Documents/ambient-ts-app/src/utils/date.ts", "TypeScript", 0, 0, 0, 24, 0, 0, 0, 0, 6, 30
+"/Users/junioradessu/Documents/ambient-ts-app/src/utils/functions/authenticateMagic.ts", "TypeScript", 0, 0, 0, 17, 0, 0, 0, 0, 2, 19
+"/Users/junioradessu/Documents/ambient-ts-app/src/utils/functions/authenticateMetamask.ts", "TypeScript", 0, 0, 0, 32, 0, 0, 0, 2, 6, 40
+"/Users/junioradessu/Documents/ambient-ts-app/src/utils/functions/calculateRangeLimits.ts", "TypeScript", 0, 0, 0, 88, 0, 0, 0, 0, 20, 108
+"/Users/junioradessu/Documents/ambient-ts-app/src/utils/functions/calculateSecondaryDepositQty.ts", "TypeScript", 0, 0, 0, 47, 0, 0, 0, 12, 9, 68
+"/Users/junioradessu/Documents/ambient-ts-app/src/utils/functions/getDexSeriesData.ts", "TypeScript", 0, 0, 0, 87, 0, 0, 0, 0, 7, 94
+"/Users/junioradessu/Documents/ambient-ts-app/src/utils/functions/getDexStats.ts", "TypeScript", 0, 0, 0, 14, 0, 0, 0, 0, 1, 15
+"/Users/junioradessu/Documents/ambient-ts-app/src/utils/functions/getUnicodeCharacter.ts", "TypeScript", 0, 0, 0, 7, 0, 0, 0, 0, 3, 10
+"/Users/junioradessu/Documents/ambient-ts-app/src/utils/functions/printDomToImage.ts", "TypeScript", 0, 0, 0, 27, 0, 0, 0, 7, 7, 41
+"/Users/junioradessu/Documents/ambient-ts-app/src/utils/functions/processTokens.ts", "TypeScript", 0, 0, 0, 20, 0, 0, 0, 0, 6, 26
+"/Users/junioradessu/Documents/ambient-ts-app/src/utils/functions/styles.ts", "TypeScript", 0, 0, 0, 23, 0, 0, 0, 12, 4, 39
+"/Users/junioradessu/Documents/ambient-ts-app/src/utils/functions/trimString.ts", "TypeScript", 0, 0, 0, 12, 0, 0, 0, 10, 2, 24
+"/Users/junioradessu/Documents/ambient-ts-app/src/utils/functions/uriToHttp.ts", "TypeScript", 0, 0, 0, 32, 0, 0, 0, 29, 8, 69
+"/Users/junioradessu/Documents/ambient-ts-app/src/utils/functions/validateTokenList.ts", "TypeScript", 0, 0, 0, 14, 0, 0, 0, 0, 2, 16
+"/Users/junioradessu/Documents/ambient-ts-app/src/utils/hooks/reduxToolkit.ts", "TypeScript", 0, 0, 0, 4, 0, 0, 0, 3, 3, 10
+"/Users/junioradessu/Documents/ambient-ts-app/src/utils/hooks/useCopyToClipboard.ts", "TypeScript", 0, 0, 0, 23, 0, 0, 0, 17, 10, 50
+"/Users/junioradessu/Documents/ambient-ts-app/src/utils/hooks/useLocalStorage.ts", "TypeScript", 0, 0, 0, 10, 0, 0, 0, 7, 4, 21
+"/Users/junioradessu/Documents/ambient-ts-app/src/utils/hooks/useOnClickOutside.ts", "TypeScript", 0, 0, 0, 23, 0, 0, 0, 0, 6, 29
+"/Users/junioradessu/Documents/ambient-ts-app/src/utils/hooks/useProcessOrder.ts", "TypeScript", 0, 0, 0, 209, 0, 0, 0, 24, 44, 277
+"/Users/junioradessu/Documents/ambient-ts-app/src/utils/hooks/useProcessRange.ts", "TypeScript", 0, 0, 0, 121, 0, 0, 0, 12, 37, 170
+"/Users/junioradessu/Documents/ambient-ts-app/src/utils/hooks/useProcessTransaction.ts", "TypeScript", 0, 0, 0, 198, 0, 0, 0, 12, 38, 248
+"/Users/junioradessu/Documents/ambient-ts-app/src/utils/hooks/useTokenMap.ts", "TypeScript", 0, 0, 0, 67, 0, 0, 0, 7, 7, 81
+"/Users/junioradessu/Documents/ambient-ts-app/src/utils/hooks/useUrlParams.ts", "TypeScript", 0, 0, 0, 7, 0, 0, 0, 0, 2, 9
+"/Users/junioradessu/Documents/ambient-ts-app/src/utils/hooks/useWindowDimensions.ts", "TypeScript", 0, 0, 0, 24, 0, 0, 0, 9, 4, 37
+"/Users/junioradessu/Documents/ambient-ts-app/src/utils/index.ts", "TypeScript", 0, 0, 0, 52, 0, 0, 0, 7, 11, 70
+"/Users/junioradessu/Documents/ambient-ts-app/src/utils/interfaces/PoolIF.ts", "TypeScript", 0, 0, 0, 8, 0, 0, 0, 0, 2, 10
+"/Users/junioradessu/Documents/ambient-ts-app/src/utils/interfaces/PositionIF.ts", "TypeScript", 0, 0, 0, 57, 0, 0, 0, 2, 1, 60
+"/Users/junioradessu/Documents/ambient-ts-app/src/utils/interfaces/PositionPoolIF.ts", "TypeScript", 0, 0, 0, 6, 0, 0, 0, 0, 1, 7
+"/Users/junioradessu/Documents/ambient-ts-app/src/utils/interfaces/SlippageIF.ts", "TypeScript", 0, 0, 0, 5, 0, 0, 0, 0, 2, 7
+"/Users/junioradessu/Documents/ambient-ts-app/src/utils/interfaces/SlippagePairIF.ts", "TypeScript", 0, 0, 0, 5, 0, 0, 0, 0, 2, 7
+"/Users/junioradessu/Documents/ambient-ts-app/src/utils/interfaces/TokenIF.ts", "TypeScript", 0, 0, 0, 18, 0, 0, 0, 0, 1, 19
+"/Users/junioradessu/Documents/ambient-ts-app/src/utils/interfaces/TokenListIF.ts", "TypeScript", 0, 0, 0, 17, 0, 0, 0, 1, 2, 20
+"/Users/junioradessu/Documents/ambient-ts-app/src/utils/interfaces/TokenPairIF.ts", "TypeScript", 0, 0, 0, 5, 0, 0, 0, 0, 2, 7
+"/Users/junioradessu/Documents/ambient-ts-app/src/utils/interfaces/UserIF.ts", "TypeScript", 0, 0, 0, 3, 0, 0, 0, 0, 1, 4
+"/Users/junioradessu/Documents/ambient-ts-app/src/utils/interfaces/exports.ts", "TypeScript", 0, 0, 0, 18, 0, 0, 0, 0, 2, 20
+"/Users/junioradessu/Documents/ambient-ts-app/src/utils/numbers.ts", "TypeScript", 0, 0, 0, 48, 0, 0, 0, 3, 6, 57
+"/Users/junioradessu/Documents/ambient-ts-app/src/utils/others/FramerMotionAnimations.ts", "TypeScript", 0, 0, 0, 47, 0, 0, 0, 3, 3, 53
+"/Users/junioradessu/Documents/ambient-ts-app/src/utils/queries.ts", "TypeScript", 0, 0, 0, 51, 0, 0, 0, 9, 4, 64
+"/Users/junioradessu/Documents/ambient-ts-app/src/utils/state/STATE.md", "Markdown", 0, 0, 0, 0, 0, 0, 0, 0, 1, 1
+"/Users/junioradessu/Documents/ambient-ts-app/src/utils/state/graphDataSlice.ts", "TypeScript", 0, 0, 0, 612, 0, 0, 0, 17, 38, 667
+"/Users/junioradessu/Documents/ambient-ts-app/src/utils/state/receiptDataSlice.ts", "TypeScript", 0, 0, 0, 48, 0, 0, 0, 3, 6, 57
+"/Users/junioradessu/Documents/ambient-ts-app/src/utils/state/store.ts", "TypeScript", 0, 0, 0, 23, 0, 0, 0, 2, 3, 28
+"/Users/junioradessu/Documents/ambient-ts-app/src/utils/state/temp.ts", "TypeScript", 0, 0, 0, 20, 0, 0, 0, 1, 5, 26
+"/Users/junioradessu/Documents/ambient-ts-app/src/utils/state/tradeDataSlice.ts", "TypeScript", 0, 0, 0, 206, 0, 0, 0, 37, 12, 255
+"/Users/junioradessu/Documents/ambient-ts-app/src/utils/state/userDataSlice.ts", "TypeScript", 0, 0, 0, 42, 0, 0, 0, 2, 7, 51
+"/Users/junioradessu/Documents/ambient-ts-app/src/utils/tokens.ts", "TypeScript", 0, 0, 0, 33, 0, 0, 0, 2, 6, 41
+"Total", "-", 17001, 154, 33793, 10592, 31338, 2558, 219, 5343, 9276, 110274

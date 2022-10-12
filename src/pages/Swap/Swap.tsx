@@ -21,7 +21,7 @@ import Button from '../../components/Global/Button/Button';
 
 // START: Import Local Files
 import styles from './Swap.module.css';
-import truncateDecimals from '../../utils/data/truncateDecimals';
+// import truncateDecimals from '../../utils/data/truncateDecimals';
 import {
     isTransactionFailedError,
     isTransactionReplacedError,
@@ -49,7 +49,7 @@ interface SwapPropsIF {
     isOnTradeRoute?: boolean;
     gasPriceInGwei: number | undefined;
     ethMainnetUsdPrice?: number;
-    nativeBalance: string | undefined;
+    // nativeBalance: string | undefined;
     lastBlockNumber: number;
     baseTokenBalance: string;
     quoteTokenBalance: string;
@@ -65,7 +65,7 @@ interface SwapPropsIF {
     indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
     openModalWallet: () => void;
     isInitialized: boolean;
-    poolExists: boolean;
+    poolExists: boolean | null;
 }
 
 export default function Swap(props: SwapPropsIF) {
@@ -80,7 +80,7 @@ export default function Swap(props: SwapPropsIF) {
         isPairStable,
         provider,
         isOnTradeRoute,
-        nativeBalance,
+        // nativeBalance,
         ethMainnetUsdPrice,
         gasPriceInGwei,
         baseTokenBalance,
@@ -435,11 +435,11 @@ export default function Swap(props: SwapPropsIF) {
                             poolPriceDisplay={poolPriceDisplay}
                             isTokenAPrimary={isTokenAPrimary}
                             isSellTokenBase={isSellTokenBase}
-                            nativeBalance={
-                                nativeBalance
-                                    ? truncateDecimals(parseFloat(nativeBalance), 4).toString()
-                                    : '...'
-                            }
+                            // nativeBalance={
+                            //     nativeBalance
+                            //         ? truncateDecimals(parseFloat(nativeBalance), 4).toString()
+                            //         : '...'
+                            // }
                             baseTokenBalance={baseTokenBalance}
                             quoteTokenBalance={quoteTokenBalance}
                             baseTokenDexBalance={baseTokenDexBalance}

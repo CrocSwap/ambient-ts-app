@@ -52,7 +52,7 @@ interface LimitCurrencyConverterProps {
     isDenominationInBase: boolean;
     activeTokenListsChanged: boolean;
     indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
-    poolExists: boolean;
+    poolExists: boolean | null;
 }
 
 // central react functional component
