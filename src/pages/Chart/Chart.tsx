@@ -1652,20 +1652,20 @@ export default function Chart(props: ChartData) {
                                 ) {
                                     d3.select(selectedCandle)
                                         .style('fill', (d: any) =>
-                                            d.close > d.open ? '#CDC1FF' : '#24243e',
+                                            d.close > d.open ? upBodyColor : downBodyColor,
                                         )
                                         .style('stroke', (d: any) =>
-                                            d.close > d.open ? '#24243e' : '#CDC1FF',
+                                            d.close > d.open ? upBorderColor : downBorderColor,
                                         );
                                 }
                                 if (event.currentTarget === selectedCandle) {
                                     popup.style('visibility', 'hidden');
                                     d3.select(event.currentTarget)
                                         .style('fill', (d: any) =>
-                                            d.close > d.open ? '#CDC1FF' : '#24243e',
+                                            d.close > d.open ? upBodyColor : downBodyColor,
                                         )
                                         .style('stroke', (d: any) =>
-                                            d.close > d.open ? '#24243e' : '#CDC1FF',
+                                            d.close > d.open ? upBorderColor : downBorderColor,
                                         );
 
                                     setIsChartSelected(false);
