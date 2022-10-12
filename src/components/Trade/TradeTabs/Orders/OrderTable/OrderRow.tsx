@@ -5,7 +5,7 @@ import styles from '../Orders.module.css';
 interface OrderRowPropsIF {
     showColumns: boolean;
     ipadView: boolean;
-    limitOrder: ILimitOrderState;
+    // limitOrder: ILimitOrderState;
 }
 export default function OrderRow(props: OrderRowPropsIF) {
     const { showColumns, ipadView } = props;

@@ -18,6 +18,7 @@ import { ChainSpec } from '@crocswap-libs/sdk';
 import useWebSocket from 'react-use-websocket';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import OrderHeader from './OrderTable/OrderHeader';
+import OrderRow from './OrderTable/OrderRow';
 
 // import OrderAccordions from './OrderAccordions/OrderAccordions';
 
@@ -383,6 +384,10 @@ export default function Orders(props: propsIF) {
             ))}
         </ul>
     );
+
+    const rowItemContent = showAllOrUserPositions.map((item, idx) => (
+        <OrderRow showColumns={showColumns} ipadView={ipadView} key={idx} />
+    ));
 
     return (
         <div className={styles.container}>
