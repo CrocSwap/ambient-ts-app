@@ -1,7 +1,7 @@
 import { CrocEnv } from '@crocswap-libs/sdk';
 // import { ethers } from 'ethers';
 import DividerDark from '../../components/Global/DividerDark/DividerDark';
-import Investors from '../../components/Home/Investors/Investors';
+// import Investors from '../../components/Home/Investors/Investors';
 import HomeSlider from '../../components/Home/Landing/HomeSlider';
 import Links from '../../components/Home/Links/Links';
 import Stats from '../../components/Home/Stats/AmbientStats';
@@ -37,7 +37,7 @@ export default function Home(props: HomeProps) {
                 </div>
                 <DividerDark />
 
-                <Investors />
+                {/* <Investors /> */}
                 <DividerDark />
                 <Links />
             </main>

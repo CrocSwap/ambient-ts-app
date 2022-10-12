@@ -69,7 +69,7 @@ interface TradePropsIF {
     isInitialized: boolean;
     poolPriceNonDisplay: number | undefined;
     importedTokens: TokenIF[];
-    poolExists: boolean;
+    poolExists: boolean | null;
 }
 
 // React functional component
@@ -258,7 +258,7 @@ export default function Trade(props: TradePropsIF) {
     const initLinkPath =
         '/initpool/chain=0x5&base=' + baseTokenAddress + '&quote=' + quoteTokenAddress;
 
-    const poolNotInitializedContent = (
+    const poolNotInitializedContent = poolExists ? null : (
         <div className={styles.pool_not_initialialized_container}>
             <div className={styles.pool_not_initialialized_content}>
                 <h2>This pool has not been initialized.</h2>
@@ -272,11 +272,16 @@ export default function Trade(props: TradePropsIF) {
             </div>
         </div>
     );
-    if (!poolExists) return poolNotInitializedContent;
+    // if (poolExists === false) {
+    //     console.log({ poolExists });
+    //     return poolNotInitializedContent;
+    // }
+
     return (
         <AnimateSharedLayout>
             <main className={styles.main_layout}>
                 <div className={styles.middle_col}>
+                    {poolNotInitializedContent}
                     {mobileDataToggle}
                     <div className={` ${expandGraphStyle} ${fullScreenStyle}`}>
                         <div style={{ textAlign: 'center', display: 'flex' }}>

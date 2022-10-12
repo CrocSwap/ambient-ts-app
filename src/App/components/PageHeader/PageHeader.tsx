@@ -20,10 +20,11 @@ import { useModal } from '../../../components/Global/Modal/useModal';
 import { useUrlParams } from './useUrlParams';
 import MobileSidebar from '../../../components/Global/MobileSidebar/MobileSidebar';
 import NotificationCenter from '../../../components/Global/NotificationCenter/NotificationCenter';
+import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 
 interface HeaderPropsIF {
     isUserLoggedIn: boolean;
-    nativeBalance: string | undefined;
+    // nativeBalance: string | undefined;
     clickLogout: () => void;
     metamaskLocked: boolean;
     ensName: string;
@@ -51,7 +52,7 @@ export default function PageHeader(props: HeaderPropsIF) {
     const {
         isUserLoggedIn,
         ensName,
-        nativeBalance,
+        // nativeBalance,
         clickLogout,
         metamaskLocked,
         shouldDisplayAccountTab,
@@ -139,9 +140,12 @@ export default function PageHeader(props: HeaderPropsIF) {
 
     // -----------------END OF SWITCH NETWORK FUNCTIONALITY--------------------------------------
     const accountAddress = isAuthenticated && account ? trimString(account, 6, 6) : '';
+    const userData = useAppSelector((state) => state.userData);
+
+    const connectedUserNativeToken = userData.tokens.nativeToken;
 
     const accountProps = {
-        nativeBalance: nativeBalance,
+        nativeBalance: connectedUserNativeToken?.combinedBalanceDisplayTruncated,
         accountAddress: accountAddress,
         accountAddressFull: isAuthenticated && account ? account : '',
         ensName: ensName,

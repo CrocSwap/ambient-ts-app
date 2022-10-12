@@ -55,6 +55,7 @@ export default function PoolCard(props: PoolCardProps) {
             lastBlockNumber !== 0
         ) {
             (async () => {
+                console.log('querying spot price');
                 const spotPrice = await querySpotPrice(
                     crocEnv,
                     tokenA.address,
@@ -186,6 +187,9 @@ export default function PoolCard(props: PoolCardProps) {
         setTimeout(() => {
             clearInterval(timerId);
         }, 600000);
+
+        // clear interval when component unmounts
+        return () => clearInterval(timerId);
     }, []);
 
     const tokenImagesDisplay = (
