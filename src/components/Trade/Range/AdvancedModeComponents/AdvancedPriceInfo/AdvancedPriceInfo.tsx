@@ -36,7 +36,7 @@ export default function AdvancedPriceInfo(props: AdvancedPriceInfoIF) {
     // JSX frag to display the estimated APR of the position
     const estimatedAPR = (
         <div
-            className={isOutOfRange ? styles.apy_display_out_of_range : styles.apy_display_in_range}
+            className={isOutOfRange ? styles.apr_display_out_of_range : styles.apr_display_in_range}
         >
             <div>
                 Est. APR | {isOutOfRange ? 0 : truncateDecimals(100 - minimumSpan / 100 + 10, 0)}%

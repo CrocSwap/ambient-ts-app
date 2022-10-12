@@ -625,7 +625,7 @@ export default function Range(props: RangePropsIF) {
 
     const maxPriceDisplay = isAmbient ? 'Infinity' : pinnedMaxPriceDisplayTruncated;
 
-    const apyPercentage: number | undefined = ambientApy
+    const aprPercentage: number | undefined = ambientApy
         ? 100 - rangeWidthPercentage + ambientApy
         : undefined;
 
@@ -809,7 +809,7 @@ export default function Range(props: RangePropsIF) {
         spotPriceDisplay: displayPriceString,
         maxPriceDisplay: maxPriceDisplay,
         minPriceDisplay: minPriceDisplay,
-        apyPercentage: apyPercentage,
+        aprPercentage: aprPercentage,
         isTokenABase: isTokenABase,
         didUserFlipDenom: tradeData.didUserFlipDenom,
         poolPriceCharacter: poolPriceCharacter,

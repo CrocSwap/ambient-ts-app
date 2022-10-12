@@ -46,7 +46,7 @@ export default function EditPriceInfo(props: EditPriceInfoIF) {
     const estimatedAPR = (
         <div className={styles.price_info_row}>
             <span>Est.APR</span>
-            <span className='primary_apy'>35.68%</span>
+            <span className='primary_apr'>35.68%</span>
         </div>
     );
 

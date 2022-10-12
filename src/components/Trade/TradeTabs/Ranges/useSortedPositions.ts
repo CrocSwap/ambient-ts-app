@@ -50,6 +50,9 @@ export const useSortedPositions = (
             case 'apy':
                 sortedData = sortByApy(data);
                 break;
+            case 'apr':
+                sortedData = sortByApy(data);
+                break;
             case 'value':
                 sortedData = sortByValue(data);
                 break;
