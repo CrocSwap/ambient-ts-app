@@ -6,7 +6,7 @@
     align-items: center;
     padding: 1px;
     grid-gap: 10px;
-    gap: 10px;
+    gap: 1px;
     height: auto;
     background-image: linear-gradient(to right top, #7371fc, #887ffd, #9a8efe, #ab9dfe, #baacff, #baacff, #baacff, #baacff, #ab9dfe, #9a8efe, #887ffd, #7371fc);
     border-radius: 4px;
@@ -69,6 +69,7 @@
     line-height: 22px;
     font-family: 'Lexend Deca';
     margin-bottom: 5px;
+    margin-left: -79px;
 }
 
 .address_box {

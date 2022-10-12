@@ -64,8 +64,6 @@ export default function MessageInput(props: MessageInputProps, prop: PortfolioBa
 
     const handleSendMsg = async (msg: string) => {
         _socket.emit('send-msg', {
-            from: '63357aa477c38971c51c74f9',
-            to: '63357c9277c38971c51c74fc',
             message: msg,
             roomInfo: props.room,
         });

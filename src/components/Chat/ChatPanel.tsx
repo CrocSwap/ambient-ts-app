@@ -93,6 +93,7 @@ export default function ChatPanel(props: ChatProps) {
             setMessages([...mostRecentMessages]);
             // if (scrollBottomControl) {
             scrollToBottom();
+            console.log('a');
             // }
         });
     }, [messages]);
@@ -136,7 +137,7 @@ export default function ChatPanel(props: ChatProps) {
 
     useEffect(() => {
         scrollToBottom();
-    }, [props.chatStatus, room]);
+    }, [props.chatStatus, room, messages]);
 
     const header = (
         <header className={styles.modal_header}>

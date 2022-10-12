@@ -3,6 +3,7 @@ import noAvatarImage from '../../../../assets/images/icons/avatar.svg';
 import { Message } from '../../Model/MessageModel';
 import { useMoralis } from 'react-moralis';
 import { useEffect, useState } from 'react';
+import PositionBox from '../PositionBox/PositionBox';
 
 export interface IncomingMessageProps {
     message: Message;
@@ -39,14 +40,18 @@ export default function IncomingMessage(props: IncomingMessageProps) {
 
     return (
         <div className={styles.income_message}>
-            <div className={styles.avatar_image}>
-                <img src={noAvatarImage} alt='no avatar' />
+            <div className={styles.message_row}>
+                <div className={styles.avatar_image}>
+                    <img src={noAvatarImage} alt='no avatar' />
+                </div>
+                <div className={styles.message_body}>
+                    <div className={styles.name}>{name}</div>
+                    <p className={styles.message}>{props.message.message}</p>
+                </div>
+
+                <p className={styles.message_date}>{formatAMPM(props.message.createdAt)}</p>
             </div>
-            <div className={styles.message_body}>
-                <div className={styles.name}>{name}</div>
-                <p className={styles.message}>{props.message.message}</p>
-            </div>
-            <p className={styles.message_date}>{formatAMPM(props.message.createdAt)}</p>
+            <PositionBox message={props.message.message} />
         </div>
     );
 }
