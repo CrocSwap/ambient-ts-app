@@ -7,30 +7,34 @@ import { formatAmount } from '../../../../utils/numbers';
 interface TopPoolsCardProps {
     pool: PoolIF;
     chainId: string;
-    lastBlockNumber: number;
 }
 
 export default function TopPoolsCard(props: TopPoolsCardProps) {
-    const { pool, lastBlockNumber } = props;
+    const { pool } = props;
 
-    const location = useLocation();
+    const { pathname } = useLocation();
 
     const locationSlug = useMemo(() => {
-        const { pathname } = location;
-        if (pathname.startsWith('/trade/market')) {
+        if (pathname.startsWith('/trade/market') || pathname.startsWith('/account')) {
             return '/trade/market';
         } else if (pathname.startsWith('/trade/limit')) {
             return '/trade/limit';
         } else if (pathname.startsWith('/trade/range')) {
             return '/trade/range';
+        } else {
+            console.warn(
+                'Could not identify the correct URL path for redirect. Using /trade/market as a fallback value. Refer to TopPoolsCard.tsx for troubleshooting.',
+            );
+            return '/trade/market';
         }
-    }, [location]);
+    }, [pathname]);
 
     const [poolVolume, setPoolVolume] = useState<string | undefined>();
     const [poolTvl, setPoolTvl] = useState<string | undefined>();
 
-    useEffect(() => {
+    const fetchPoolStats = () => {
         (async () => {
+            console.log('fetching pool stats from sidebar');
             const poolStatsFresh = await getPoolStatsFresh(
                 pool.chainId,
                 pool.base.address,
@@ -44,7 +48,24 @@ export default function TopPoolsCard(props: TopPoolsCardProps) {
             const tvlString = tvl ? '$' + formatAmount(tvl) : undefined;
             setPoolTvl(tvlString);
         })();
-    }, [JSON.stringify(pool), lastBlockNumber]);
+    };
+
+    useEffect(() => {
+        fetchPoolStats();
+
+        // fetch every minute
+        const timerId = setInterval(() => {
+            fetchPoolStats();
+        }, 60000);
+
+        // after 1 hour stop
+        setTimeout(() => {
+            clearInterval(timerId);
+        }, 3600000);
+
+        // clear interval when component unmounts
+        return () => clearInterval(timerId);
+    }, []);
 
     return (
         <Link

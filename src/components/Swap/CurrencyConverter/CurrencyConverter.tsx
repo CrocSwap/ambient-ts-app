@@ -31,7 +31,7 @@ interface CurrencyConverterPropsIF {
     isLiq: boolean;
     poolPriceDisplay: number | undefined;
     isTokenAPrimary: boolean;
-    nativeBalance: string;
+    // nativeBalance: string;
     baseTokenBalance: string;
     quoteTokenBalance: string;
     baseTokenDexBalance: string;
@@ -312,7 +312,6 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
                           input,
                       )
                     : undefined;
-            console.log({ impact });
 
             impact ? setPriceImpact(impact) : null;
 
@@ -501,7 +500,7 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
                 userHasEnteredAmount={userHasEnteredAmount}
                 handleChangeEvent={handleTokenAChangeEvent}
                 handleChangeClick={handleTokenAChangeClick}
-                nativeBalance={props.nativeBalance}
+                // nativeBalance={props.nativeBalance}
                 tokenABalance={tokenABalance}
                 tokenBBalance={tokenBBalance}
                 tokenADexBalance={tokenADexBalance}
@@ -542,7 +541,7 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
                 userHasEnteredAmount={userHasEnteredAmount}
                 handleChangeEvent={handleTokenBChangeEvent}
                 // handleChangeClick={handleTokenBChangeClick}
-                nativeBalance={props.nativeBalance}
+                // nativeBalance={props.nativeBalance}
                 tokenABalance={tokenABalance}
                 tokenBBalance={tokenBBalance}
                 tokenADexBalance={tokenADexBalance}
