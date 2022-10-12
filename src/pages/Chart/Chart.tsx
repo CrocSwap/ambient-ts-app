@@ -1834,8 +1834,17 @@ export default function Chart(props: ChartData) {
                                 render();
                             })
 
-                            .on('mouseout', () => {
+                            .on('mouseout', (event) => {
                                 firstRender = true;
+
+                                d3.select(event.currentTarget)
+                                    .selectAll('.bar > path')
+                                    .style('fill', (d: any) => {
+                                        return d.upperBoundPriceDecimalCorrected >
+                                            scaleData.barThreshold
+                                            ? 'rgba(115, 113, 252, 0.3)'
+                                            : 'rgba(205, 193, 255, 0.3)';
+                                    });
                                 d3.select(d3PlotArea.current)
                                     .select('.highlightedCurrentPriceLine')
                                     .style('visibility', 'hidden');
