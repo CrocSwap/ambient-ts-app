@@ -1,6 +1,9 @@
+import { memoizeCacheQueryFn } from './memoizePromiseFn';
+
 const poolStatsFreshEndpoint = 'https://809821320828123.de:5000/pool_stats_fresh?';
 
 const getPoolStatsFresh = async (chainId: string, base: string, quote: string, poolIdx: number) => {
+    console.log('fetching fresh pool stats ');
     return fetch(
         poolStatsFreshEndpoint +
             new URLSearchParams({
@@ -129,3 +132,16 @@ const get24hChange = async (
 };
 
 export { getPoolStatsFresh, getPoolVolume, getPoolTVL, get24hChange, getPoolPriceChange };
+
+export type PoolStatsFn = (
+    chain: string,
+    baseToken: string,
+    quoteToken: string,
+    poolIdx: number,
+    blockNum: number,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+) => Promise<any>;
+
+export function memoizePoolStats(): PoolStatsFn {
+    return memoizeCacheQueryFn(getPoolStatsFresh) as PoolStatsFn;
+}

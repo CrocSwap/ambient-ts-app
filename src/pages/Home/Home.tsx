@@ -8,15 +8,17 @@ import Stats from '../../components/Home/Stats/AmbientStats';
 import TopPools from '../../components/Home/TopPools/TopPools';
 import { TokenIF } from '../../utils/interfaces/TokenIF';
 import styles from './Home.module.css';
+import { SpotPriceFn } from '../../App/functions/querySpotPrice';
 
 interface HomeProps {
     crocEnv?: CrocEnv;
+    cachedQuerySpotPrice: SpotPriceFn;
     tokenMap: Map<string, TokenIF>;
     lastBlockNumber: number;
     chainId: string;
 }
 export default function Home(props: HomeProps) {
-    const { tokenMap, lastBlockNumber, crocEnv, chainId } = props;
+    const { tokenMap, lastBlockNumber, crocEnv, chainId, cachedQuerySpotPrice } = props;
 
     return (
         <>
@@ -28,6 +30,7 @@ export default function Home(props: HomeProps) {
                 <div className={styles.pools_container}>
                     <TopPools
                         crocEnv={crocEnv}
+                        cachedQuerySpotPrice={cachedQuerySpotPrice}
                         tokenMap={tokenMap}
                         lastBlockNumber={lastBlockNumber}
                         chainId={chainId}

@@ -77,8 +77,8 @@ import {
     setSimpleRangeWidth,
 } from '../utils/state/tradeDataSlice';
 import {
-    //  memoizeQuerySpotPrice,
-    querySpotPrice,
+    memoizeQuerySpotPrice,
+    // querySpotPrice,
 } from './functions/querySpotPrice';
 import { memoizeFetchAddress } from './functions/fetchAddress';
 import {
@@ -123,6 +123,7 @@ const cachedFetchAddress = memoizeFetchAddress();
 const cachedFetchNativeTokenBalance = memoizeFetchNativeTokenBalance();
 const cachedFetchErc20TokenBalances = memoizeFetchErc20TokenBalances();
 const cachedFetchTokenPrice = memoizeTokenPrice();
+const cachedQuerySpotPrice = memoizeQuerySpotPrice();
 
 const httpGraphCacheServerDomain = 'https://809821320828123.de:5000';
 const wssGraphCacheServerDomain = 'wss://809821320828123.de:5000';
@@ -1327,7 +1328,7 @@ export default function App() {
                 //     ? provider
                 //     : (await new CrocEnv(chainData.chainId).context).provider;
 
-                const spotPrice = await querySpotPrice(
+                const spotPrice = await cachedQuerySpotPrice(
                     crocEnv,
                     baseTokenAddress,
                     quoteTokenAddress,
@@ -1965,6 +1966,7 @@ export default function App() {
                             index
                             element={
                                 <Home
+                                    cachedQuerySpotPrice={cachedQuerySpotPrice}
                                     tokenMap={tokenMap}
                                     lastBlockNumber={lastBlockNumber}
                                     crocEnv={crocEnv}
