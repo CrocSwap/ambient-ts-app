@@ -132,7 +132,7 @@ export default function RangeCardHeader(props: RangeCardHeaderPropsIF) {
                 <p>Value</p>
                 <p>Min</p>
                 <p>Max</p>
-                <p>APY</p>
+                <p>APR</p>
                 <p>Status</p>
             </div>
             <div />

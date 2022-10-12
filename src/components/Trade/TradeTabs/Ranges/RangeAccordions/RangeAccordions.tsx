@@ -79,8 +79,8 @@ export default function RangeAccordions(props: RangeAccordionsPropsIF) {
         </div>
     );
 
-    const apyDisplay = (
-        <div className={styles.apy_display}>
+    const aprDisplay = (
+        <div className={styles.apr_display}>
             <p>{apyString}</p>
         </div>
     );
@@ -99,7 +99,7 @@ export default function RangeAccordions(props: RangeAccordionsPropsIF) {
             {valueDisplay}
             {minDisplay}
             {maxDisplay}
-            {apyDisplay}
+            {aprDisplay}
             {status}
         </div>
     );
@@ -146,7 +146,7 @@ export default function RangeAccordions(props: RangeAccordionsPropsIF) {
                             quoteTokenSymbol={quoteTokenSymbol}
                             baseDisplay={baseDisplayFrontend}
                             quoteDisplay={quoteDisplayFrontend}
-                            apy={apy}
+                            apr={apy}
                             isOwnerActiveAccount={userMatchesConnectedAccount}
                             isPositionInRange={isPositionInRange}
                             isAmbient={isAmbient}
