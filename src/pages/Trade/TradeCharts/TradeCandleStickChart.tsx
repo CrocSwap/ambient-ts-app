@@ -202,12 +202,6 @@ export default function TradeCandleStickChart(props: ChartData) {
             });
         }
 
-        const mostLiq = Math.max(
-            ...liqData.map((o: any) => {
-                return o.activeLiq !== undefined ? o.activeLiq : 0;
-            }),
-        );
-
         return { liqData: liqData, liqSnapData: liqSnapData };
     }, [props.liquidityData, denominationsInBase]);
 
