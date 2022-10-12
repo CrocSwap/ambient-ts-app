@@ -4,7 +4,7 @@ import { Dispatch, SetStateAction, ReactNode, useState } from 'react';
 import { useParams, Outlet, useOutletContext, Link, NavLink, useNavigate } from 'react-router-dom';
 import { ethers } from 'ethers';
 import { motion, AnimateSharedLayout } from 'framer-motion';
-import { SketchPicker } from 'react-color';
+// import { SketchPicker } from 'react-color';
 import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
 
 // START: Import JSX Components
@@ -187,28 +187,37 @@ export default function Trade(props: TradePropsIF) {
         setTransactionFilter(candleData);
     };
 
-    const [upBodyColorPicker, setUpBodyColorPicker] = useState<boolean>(false);
-    const [upBorderColorPicker, setUpBorderColorPicker] = useState<boolean>(false);
-    const [downBodyColorPicker, setDownBodyColorPicker] = useState<boolean>(false);
-    const [downBorderColorPicker, setDownBorderColorPicker] = useState<boolean>(false);
+    // const [upBodyColorPicker, setUpBodyColorPicker] = useState<boolean>(false);
+    // const [upBorderColorPicker, setUpBorderColorPicker] = useState<boolean>(false);
+    // const [downBodyColorPicker, setDownBodyColorPicker] = useState<boolean>(false);
+    // const [downBorderColorPicker, setDownBorderColorPicker] = useState<boolean>(false);
 
-    const [upBodyColor, setUpBodyColor] = useState<string>('#7371FC');
-    const [upBorderColor, setUpBorderColor] = useState<string>('#7371FC');
-    const [downBodyColor, setDownBodyColor] = useState<string>('#CDC1FF');
-    const [downBorderColor, setDownBorderColor] = useState<string>('#CDC1FF');
+    const [upBodyColor] = useState<string>('#CDC1FF');
+    const [upBorderColor] = useState<string>('#CDC1FF');
+    const [downBodyColor] = useState<string>('#24243e');
+    const [downBorderColor] = useState<string>('#7371FC');
+    // const [upBodyColor, setUpBodyColor] = useState<string>('#CDC1FF');
+    // const [upBorderColor, setUpBorderColor] = useState<string>('#CDC1FF');
+    // const [downBodyColor, setDownBodyColor] = useState<string>('#24243e');
+    // const [downBorderColor, setDownBorderColor] = useState<string>('#7371FC');
 
-    const handleBodyColorPickerChange = (color: any) => {
-        setUpBodyColor(color.hex);
-    };
-    const handleBorderColorPickerChange = (color: any) => {
-        setUpBorderColor(color.hex);
-    };
-    const handleDownBodyColorPickerChange = (color: any) => {
-        setDownBodyColor(color.hex);
-    };
-    const handleDownBorderColorPickerChange = (color: any) => {
-        setDownBorderColor(color.hex);
-    };
+    // console.log({ upBodyColor });
+    // console.log({ upBorderColor });
+    // console.log({ downBodyColor });
+    // console.log({ downBorderColor });
+
+    // const handleBodyColorPickerChange = (color: any) => {
+    //     setUpBodyColor(color.hex);
+    // };
+    // const handleBorderColorPickerChange = (color: any) => {
+    //     setUpBorderColor(color.hex);
+    // };
+    // const handleDownBodyColorPickerChange = (color: any) => {
+    //     setDownBodyColor(color.hex);
+    // };
+    // const handleDownBorderColorPickerChange = (color: any) => {
+    //     setDownBorderColor(color.hex);
+    // };
 
     const [showChartAndNotTab, setShowChartAndNotTab] = useState(false);
 
@@ -240,22 +249,22 @@ export default function Trade(props: TradePropsIF) {
     const initLinkPath =
         '/initpool/chain=0x5&tokenA=' + baseTokenAddress + '&tokenB=' + quoteTokenAddress;
 
-    const poolNotInitializedContent = poolExists === false ? (
-        <div className={styles.pool_not_initialialized_container}>
-            
-            <div className={styles.pool_not_initialialized_content}>
-                <div onClick={() => navigate(-1)}>X</div>
-                <h2>This pool has not been initialized.</h2>
-                <h3>Do you want to initialize it?</h3>
-                <Link to={initLinkPath} className={styles.initialize_link}>
-                    <img src={baseTokenLogo} alt='base token' />
-                    Initialize Pool
-                    <img src={quoteTokenLogo} alt=' quote token' />
-                </Link>
-                <button onClick={() => navigate(-1)}>No Thank You</button>
+    const poolNotInitializedContent =
+        poolExists === false ? (
+            <div className={styles.pool_not_initialialized_container}>
+                <div className={styles.pool_not_initialialized_content}>
+                    <div onClick={() => navigate(-1)}>X</div>
+                    <h2>This pool has not been initialized.</h2>
+                    <h3>Do you want to initialize it?</h3>
+                    <Link to={initLinkPath} className={styles.initialize_link}>
+                        <img src={baseTokenLogo} alt='base token' />
+                        Initialize Pool
+                        <img src={quoteTokenLogo} alt=' quote token' />
+                    </Link>
+                    <button onClick={() => navigate(-1)}>No Thank You</button>
+                </div>
             </div>
-        </div>
-    ) : null;
+        ) : null;
 
     return (
         <AnimateSharedLayout>
@@ -264,7 +273,7 @@ export default function Trade(props: TradePropsIF) {
                     {poolNotInitializedContent}
                     {mobileDataToggle}
                     <div className={` ${expandGraphStyle} ${fullScreenStyle}`}>
-                        <div style={{ textAlign: 'center', display: 'flex' }}>
+                        {/* <div style={{ textAlign: 'center', display: 'flex' }}>
                             <label style={{ padding: '0px' }}>Up</label>
                             <div style={{ marginLeft: '4px' }}>
                                 <div
@@ -423,7 +432,7 @@ export default function Trade(props: TradePropsIF) {
                                     </div>
                                 ) : null}
                             </div>
-                        </div>
+                        </div> */}
 
                         <motion.div
                             initial={{ opacity: 0, scale: 0.5 }}
