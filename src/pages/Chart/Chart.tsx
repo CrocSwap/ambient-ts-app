@@ -370,6 +370,27 @@ export default function Chart(props: ChartData) {
         }
     }, [parsedChartData?.period, denomInBase]);
 
+    const relocationCrosshairText = (event: any) => {
+        const filtered = parsedChartData
+            ? parsedChartData.chartData.length > 1
+                ? parsedChartData?.chartData.filter((d: any) => d.date != null)
+                : parsedChartData?.chartData
+            : [];
+
+        const nearest = minimum(filtered, (d: any) =>
+            Math.abs(event.sourceEvent.offsetX - scaleData.xScale(d.date)),
+        )[1];
+
+        d3.select(d3Xaxis.current)
+            .select('svg')
+            .select('text')
+            .style('transform', 'translateX(' + scaleData.xScale(nearest.date) + 'px)');
+
+        d3.select(d3Yaxis.current)
+            .select('svg')
+            .select('text')
+            .style('transform', 'translateY(' + scaleData.yScale(crosshairData[0].y) + 'px)');
+    };
     // Zoom
     useEffect(() => {
         if (scaleData !== undefined) {
@@ -392,7 +413,7 @@ export default function Chart(props: ChartData) {
                     scaleData.xScale.domain(
                         event.transform.rescaleX(scaleData.xScaleCopy).domain(),
                     );
-
+                    relocationCrosshairText(event);
                     // PANNING
                     if (event.sourceEvent && event.sourceEvent.type != 'wheel') {
                         const domainY = scaleData.yScale.domain();
@@ -1515,6 +1536,19 @@ export default function Chart(props: ChartData) {
         marketLine,
     ]);
 
+    const minimum = (data: any, accessor: any) => {
+        return data
+            .map(function (dataPoint: any, index: any) {
+                return [accessor(dataPoint, index), dataPoint, index];
+            })
+            .reduce(
+                function (accumulator: any, dataPoint: any) {
+                    return accumulator[0] > dataPoint[0] ? dataPoint : accumulator;
+                },
+                [Number.MAX_VALUE, null, -1],
+            );
+    };
+
     // Draw Chart
     const drawChart = useCallback(
         (
@@ -1543,19 +1577,6 @@ export default function Chart(props: ChartData) {
                 let selectedCandle: any;
 
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-
-                const minimum = (data: any, accessor: any) => {
-                    return data
-                        .map(function (dataPoint: any, index: any) {
-                            return [accessor(dataPoint, index), dataPoint, index];
-                        })
-                        .reduce(
-                            function (accumulator: any, dataPoint: any) {
-                                return accumulator[0] > dataPoint[0] ? dataPoint : accumulator;
-                            },
-                            [Number.MAX_VALUE, null, -1],
-                        );
-                };
 
                 const snap = (series: any, data: any, point: any) => {
                     if (point == undefined) return [];
@@ -1813,8 +1834,17 @@ export default function Chart(props: ChartData) {
 
                                 render();
                             })
-                            .on('mouseleave', () => {
+                            .on('mouseleave', (event) => {
                                 firstRender = true;
+
+                                d3.select(event.currentTarget)
+                                    .selectAll('.bar > path')
+                                    .style('fill', (d: any) => {
+                                        return d.upperBoundPriceDecimalCorrected >
+                                            scaleData.barThreshold
+                                            ? 'rgba(115, 113, 252, 0.3)'
+                                            : 'rgba(205, 193, 255, 0.3)';
+                                    });
 
                                 d3.select(d3PlotArea.current)
                                     .select('.highlightedCurrentPriceLine')
