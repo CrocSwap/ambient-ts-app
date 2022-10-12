@@ -25,6 +25,14 @@ text {
     border: 2px dashed rgba(235, 235, 255, 0.4);
 }
 
+.annotation-line > .marketLine {
+    stroke: rgba(235, 235, 255, 0.4);
+    stroke-width: 1;
+    stroke-dasharray: 4 2;
+    stroke-opacity: 0.4;
+    border: 2px dashed rgba(235, 235, 255, 0.4);
+}
+
 .annotation-line > .ghostline {
     stroke: rgba(235, 235, 255, 0.4);
     stroke-width: 1;

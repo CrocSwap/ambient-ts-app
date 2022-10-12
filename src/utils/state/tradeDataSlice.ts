@@ -8,6 +8,11 @@ export interface targetData {
     value: number | undefined;
 }
 
+export interface candleDomain {
+    lastCandleDate: number | undefined;
+    domainBoundry: number | undefined;
+}
+
 export interface tradeData {
     tokenA: TokenIF;
     tokenB: TokenIF;
@@ -32,6 +37,7 @@ export interface tradeData {
     rangeModuleTriggered: boolean;
     rangeLowLineTriggered: boolean;
     rangeHighLineTriggered: boolean;
+    candleDomains: candleDomain;
 }
 
 const initialState: tradeData = {
@@ -56,6 +62,7 @@ const initialState: tradeData = {
         { name: 'Max', value: 0 },
         { name: 'Min', value: 0 },
     ],
+    candleDomains: { lastCandleDate: undefined, domainBoundry: undefined },
     pinnedMaxPriceDisplayTruncated: 0,
     pinnedMinPriceDisplayTruncated: 0,
     rangeModuleTriggered: false,
@@ -174,6 +181,9 @@ export const tradeDataSlice = createSlice({
         setRangeLowLineTriggered: (state, action: PayloadAction<boolean>) => {
             state.rangeLowLineTriggered = action.payload;
         },
+        setCandleDomains: (state, action: PayloadAction<candleDomain>) => {
+            state.candleDomains = action.payload;
+        },
 
         resetTradeData: () => initialState,
     },
@@ -209,6 +219,7 @@ export const {
     setRangeModuleTriggered,
     setRangeLowLineTriggered,
     setRangeHighLineTriggered,
+    setCandleDomains,
 } = tradeDataSlice.actions;
 
 export default tradeDataSlice.reducer;
