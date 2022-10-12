@@ -173,6 +173,9 @@ export default function App() {
     const [chainData, isChainSupported, switchChain, switchNetworkInMoralis] = useAppChain('0x5');
     // useEffect(() => console.warn(chainData.chainId), [chainData.chainId]);
 
+    const [ tokenPairLocal, setTokenPairLocal ] = useState<string[]|null>(null);
+    useEffect(() => {console.log(tokenPairLocal)}, [tokenPairLocal]);
+
     const tokenUniverse = useTokenUniverse(chainData.chainId);
     useEffect(() => {
         false && console.log({ tokenUniverse });
@@ -1685,6 +1688,7 @@ export default function App() {
         openModalWallet: openModalWallet,
         isInitialized: isInitialized,
         poolExists: poolExists,
+        setTokenPairLocal: setTokenPairLocal
     };
 
     // props for <Swap/> React element on trade route

@@ -66,6 +66,7 @@ interface SwapPropsIF {
     openModalWallet: () => void;
     isInitialized: boolean;
     poolExists: boolean | null;
+    setTokenPairLocal?: Dispatch<SetStateAction<string[]|null>>;
 }
 
 export default function Swap(props: SwapPropsIF) {
