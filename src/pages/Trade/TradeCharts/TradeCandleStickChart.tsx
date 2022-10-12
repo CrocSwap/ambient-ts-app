@@ -208,16 +208,6 @@ export default function TradeCandleStickChart(props: ChartData) {
             }),
         );
 
-        let ahmet = 0;
-
-        liqData.find((data: any, index: number) => {
-            if (parseInt(data.activeLiq) === mostLiq) ahmet = index;
-        });
-
-        console.log(liqData[ahmet]);
-
-        liqData.splice(ahmet, 1);
-
         return { liqData: liqData, liqSnapData: liqSnapData };
     }, [props.liquidityData, denominationsInBase]);
 

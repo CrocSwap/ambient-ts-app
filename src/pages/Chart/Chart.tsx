@@ -14,6 +14,8 @@ import {
     setSimpleRangeWidth,
     setTargetData,
     targetData,
+    candleDomain,
+    setCandleDomains,
 } from '../../utils/state/tradeDataSlice';
 import { CandleChartData } from '../Trade/TradeCharts/TradeCharts';
 import FeeRateSubChart from '../Trade/TradeCharts/TradeChartsLoading/FeeRateSubChart';
@@ -395,9 +397,11 @@ export default function Chart(props: ChartData) {
     useEffect(() => {
         if (scaleData !== undefined) {
             let lastY = 0;
+            let domainBoundary = scaleData.xScaleCopy.domain();
+
             const zoom = d3
                 .zoom()
-                .scaleExtent([1, 10])
+                .scaleExtent([0.5, 10])
                 // .translateExtent([
                 //     [-150, -200],
                 //     [1600, 600],
@@ -410,10 +414,35 @@ export default function Chart(props: ChartData) {
                 .on('zoom', (event: any) => {
                     const t = event.transform;
 
+                    if (
+                        event.transform.rescaleX(scaleData.xScaleCopy).domain()[0] <
+                        domainBoundary[0]
+                    ) {
+                        domainBoundary = scaleData.xScale.domain();
+                    }
+
                     scaleData.xScale.domain(
                         event.transform.rescaleX(scaleData.xScaleCopy).domain(),
                     );
+
+                    if (
+                        domainBoundary[0] >
+                        event.transform.rescaleX(scaleData.xScaleCopy).domain()[0]
+                    ) {
+                        const candleDomain: candleDomain = {
+                            lastCandleDate:
+                                parsedChartData?.chartData[parsedChartData?.chartData.length - 1]
+                                    .time,
+                            domainBoundry: new Date(
+                                event.transform.rescaleX(scaleData.xScaleCopy).domain()[0],
+                            ).getTime(),
+                        };
+
+                        dispatch(setCandleDomains(candleDomain));
+                    }
+
                     relocationCrosshairText(event);
+
                     // PANNING
                     if (event.sourceEvent && event.sourceEvent.type != 'wheel') {
                         const domainY = scaleData.yScale.domain();
@@ -460,12 +489,8 @@ export default function Chart(props: ChartData) {
     }, [scaleData, ranges]);
 
     const setMarketLineValue = () => {
-        let lastCandlePrice: number | undefined;
-        props.candleData?.chartData.map((data) => {
-            if (lastCandlePrice === undefined && data.close !== undefined) {
-                lastCandlePrice = data.close;
-            }
-        });
+        const lastCandlePrice = parsedChartData?.chartData[0].close;
+
         setMarket(() => {
             return [
                 {
