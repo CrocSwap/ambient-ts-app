@@ -17,6 +17,7 @@ import { fetchPoolLimitOrderStates } from '../../../../App/functions/fetchPoolLi
 import { ChainSpec } from '@crocswap-libs/sdk';
 import useWebSocket from 'react-use-websocket';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
+import OrderHeader from './OrderTable/OrderHeader';
 
 // import OrderAccordions from './OrderAccordions/OrderAccordions';
 
@@ -367,6 +368,21 @@ export default function Orders(props: propsIF) {
             sortable: false,
         },
     ];
+
+    const headerColumnsDisplay = (
+        <ul className={styles.header}>
+            {headerColumns.map((header, idx) => (
+                <OrderHeader
+                    key={idx}
+                    sortBy={sortBy}
+                    setSortBy={setSortBy}
+                    reverseSort={reverseSort}
+                    setReverseSort={setReverseSort}
+                    header={header}
+                />
+            ))}
+        </ul>
+    );
 
     return (
         <div className={styles.container}>
