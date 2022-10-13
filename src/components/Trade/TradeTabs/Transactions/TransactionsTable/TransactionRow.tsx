@@ -24,7 +24,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
         tx,
         showSidebar,
         blockExplorer,
-        openGlobalModal,
+        // openGlobalModal,
         // closeGlobalModal,
         currentTxActiveInTransactions,
         setCurrentTxActiveInTransactions,

@@ -1,8 +1,5 @@
-.container {
-    /* padding: 0 8px; */
-}
 
-.item_container {
+/* .item_container {
     max-height: 90%;
     overflow-y: scroll;
     overflow-x: hidden;
@@ -11,7 +8,6 @@
 }
 
 .expand_height{
-    /* background: red; */
     height: calc(100vh - 15rem);
 }
 
@@ -42,7 +38,7 @@
     display: block;
 }
 
-}
+} */
 
 
 .active_position_style, .active_transaction_style{
@@ -84,6 +80,12 @@
       position: sticky;
       top: 0; /* Don't forget this, required for the stickiness */
       box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4);
+    }
+    
+    .footer{
+        position: sticky;
+        bottom: 0;
+        box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4);
     }
   /* width */
   .main_list_container::-webkit-scrollbar {
@@ -157,12 +159,14 @@
         /* I commented this out to make the header align center with arrow */
         width: 100%;
    
-        padding:.3em 1em;
+        padding:.5em 1em;
+        
+     
       }
       
     /* } */
     
-  
+   
   
   
   .align_center{

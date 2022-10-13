@@ -1,6 +1,5 @@
 import styles from './Transactions.module.css';
-import TransactionCard from './TransactionCard';
-import TransactionCardHeader from './TransactionCardHeader';
+
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 
 import {
@@ -21,7 +20,6 @@ import useWebSocket from 'react-use-websocket';
 import { fetchPoolRecentChanges } from '../../../../App/functions/fetchPoolRecentChanges';
 import TransactionHeader from './TransactionsTable/TransactionHeader';
 import TransactionRow from './TransactionsTable/TransactionRow';
-import { FaYenSign } from 'react-icons/fa';
 import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
 // import TransactionAccordions from './TransactionAccordions/TransactionAccordions';
 
@@ -51,7 +49,7 @@ export default function Transactions(props: TransactionsProps) {
         account,
         changesInSelectedCandle,
         graphData,
-        tokenMap,
+
         chainData,
         blockExplorer,
         currentTxActiveInTransactions,
@@ -161,9 +159,6 @@ export default function Transactions(props: TransactionsProps) {
     }, [graphData, transactionData, dataReceived]);
 
     const isDenomBase = tradeData.isDenomBase;
-
-    const tokenAAddress = tradeData.tokenA.address;
-    const tokenBAddress = tradeData.tokenB.address;
 
     const baseTokenAddress = tradeData.baseToken.address;
     const quoteTokenAddress = tradeData.quoteToken.address;
@@ -314,21 +309,6 @@ export default function Transactions(props: TransactionsProps) {
 
     // const [expanded, setExpanded] = useState<false | number>(false);
 
-    const accordionsDisplay = (
-        <div className={styles.accordion_display_container}>
-            {/* {usePaginateDataOrNull?.map((tx, idx) => (
-                <TransactionAccordions
-                    key={idx}
-                    expanded={expanded}
-                    setExpanded={setExpanded}
-                    tx={tx}
-                    i={idx}
-                />
-            ))} */}
-            <p>Mobile Accordion here: Disabled for now</p>
-        </div>
-    );
-
     const sidebarOpen = false;
 
     const ipadView = useMediaQuery('(max-width: 480px)');
@@ -468,21 +448,20 @@ export default function Transactions(props: TransactionsProps) {
         </ul>
     );
 
+    const footerDisplay = (
+        <div className={styles.footer}>
+            {expandTradeTable && transactionData.length > 30 && (
+                <Pagination
+                    itemsPerPage={transactionsPerPage}
+                    totalItems={transactionData.length}
+                    paginate={paginate}
+                    currentPage={currentPage}
+                />
+            )}
+        </div>
+    );
+
     const rowItemContent = usePaginateDataOrNull?.map((tx, idx) => (
-        // <TransactionCard
-        //     key={idx}
-        //     tx={tx}
-        //     tokenMap={tokenMap}
-        //     chainId={chainData.chainId}
-        //     blockExplorer={blockExplorer}
-        //     tokenAAddress={tokenAAddress}
-        //     tokenBAddress={tokenBAddress}
-        //     isDenomBase={isDenomBase}
-        //     account={account}
-        //     currentTxActiveInTransactions={currentTxActiveInTransactions}
-        //     setCurrentTxActiveInTransactions={setCurrentTxActiveInTransactions}
-        //     openGlobalModal={props.openGlobalModal}
-        // />
         <TransactionRow
             key={idx}
             tx={tx}
@@ -500,39 +479,14 @@ export default function Transactions(props: TransactionsProps) {
     const noData = <div className={styles.no_data}>No Data to Display</div>;
     const transactionDataOrNull = dataToDisplay ? rowItemContent : noData;
 
-    const duh = true;
-
-    const newTrial = (
+    return (
         <main
-            className={styles.main_list_container}
-            style={{ height: expandTradeTable ? '100%' : '170px' }}
+            className={`${styles.main_list_container} `}
+            style={{ height: expandTradeTable ? 'calc(100vh - 10rem)' : '170px' }}
         >
             {headerColumnsDisplay}
             {isDataLoading ? <TransactionsSkeletons /> : transactionDataOrNull}
+            {footerDisplay}
         </main>
-    );
-    if (duh) return newTrial;
-
-    return (
-        <div className={styles.container}>
-            {headerColumnsDisplay}
-            {/* <TransactionCardHeader tradeData={tradeData} /> */}
-            <div
-                className={`${styles.item_container} ${expandTradeTable && styles.expand_height}`}
-                // style={{ height: expandTradeTable ? '100%' : '170px' }}
-            >
-                {isDataLoading ? <TransactionsSkeletons /> : accordionsDisplay}
-                {isDataLoading ? <TransactionsSkeletons /> : transactionDataOrNull}
-            </div>
-
-            {expandTradeTable && transactionData.length > 30 && (
-                <Pagination
-                    itemsPerPage={transactionsPerPage}
-                    totalItems={transactionData.length}
-                    paginate={paginate}
-                    currentPage={currentPage}
-                />
-            )}
-        </div>
     );
 }
