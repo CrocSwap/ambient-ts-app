@@ -116,9 +116,19 @@ export default function OrdersMenu(props: OrdersMenuIF) {
     //     </Link>
     // ) : null;
 
+    const removeButtonOnClick = () => {
+        setShowDropdownMenu(false);
+        openRemoveModal();
+    };
+
+    const detailsButtonOnClick = () => {
+        setShowDropdownMenu(false);
+        openDetailsModal();
+    };
+
     const removeButton =
         limitOrder && isOwnerActiveAccount ? (
-            <button className={styles.option_button} onClick={openRemoveModal}>
+            <button className={styles.option_button} onClick={removeButtonOnClick}>
                 Remove
             </button>
         ) : null;
@@ -128,7 +138,7 @@ export default function OrdersMenu(props: OrdersMenuIF) {
         </button>
     ) : null;
     const detailsButton = (
-        <button className={styles.option_button} onClick={openDetailsModal}>
+        <button className={styles.option_button} onClick={detailsButtonOnClick}>
             Details
         </button>
     );
