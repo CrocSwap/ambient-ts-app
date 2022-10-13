@@ -22,6 +22,7 @@ import { fetchPoolRecentChanges } from '../../../../App/functions/fetchPoolRecen
 import TransactionHeader from './TransactionsTable/TransactionHeader';
 import TransactionRow from './TransactionsTable/TransactionRow';
 import { FaYenSign } from 'react-icons/fa';
+import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
 // import TransactionAccordions from './TransactionAccordions/TransactionAccordions';
 
 interface TransactionsProps {
@@ -105,6 +106,8 @@ export default function Transactions(props: TransactionsProps) {
     // todoJr: Finish this loading logic
     const [isDataLoading, setIsDataLoading] = useState(true);
     const [dataToDisplay, setDataToDisplay] = useState(false);
+
+    console.log({ transactionData });
 
     const [debouncedIsShowAllEnabled, setDebouncedIsShowAllEnabled] = useState(false);
 
@@ -333,6 +336,14 @@ export default function Transactions(props: TransactionsProps) {
 
     const showColumns = sidebarOpen || desktopView;
 
+    const quoteTokenSymbol = tradeData.quoteToken?.symbol;
+    const baseTokenSymbol = tradeData.baseToken?.symbol;
+
+    const baseTokenCharacter = baseTokenSymbol ? getUnicodeCharacter(baseTokenSymbol) : '';
+    const quoteTokenCharacter = quoteTokenSymbol ? getUnicodeCharacter(quoteTokenSymbol) : '';
+
+    const priceCharacter = isDenomBase ? quoteTokenCharacter : baseTokenCharacter;
+
     const walID = (
         <>
             <p>ID</p>
@@ -347,98 +358,92 @@ export default function Transactions(props: TransactionsProps) {
     );
     const tokens = (
         <>
-            <p>ETH</p>
-            <p>USDC</p>
+            <p>{`${baseTokenSymbol} (${baseTokenCharacter})`}</p>
+            <p>{`${quoteTokenSymbol} (${quoteTokenCharacter})`}</p>
         </>
     );
     const headerColumns = [
         {
             name: 'ID',
-            className: 'ID',
+
             show: !showColumns,
             slug: 'id',
             sortable: true,
         },
         {
             name: 'Wallet',
-            className: 'wallet',
+
             show: !showColumns,
             slug: 'wallet',
             sortable: true,
         },
         {
             name: walID,
-            className: 'wallet_it',
+
             show: showColumns,
             slug: 'walletid',
             sortable: false,
         },
         {
-            name: 'Price',
-            className: 'price',
+            name: `Price(${priceCharacter})`,
+
             show: !ipadView,
             slug: 'price',
             sortable: true,
         },
         {
             name: 'Side',
-            className: 'side',
+
             show: !showColumns,
             slug: 'side',
             sortable: true,
         },
         {
             name: 'Type',
-            className: 'type',
+
             show: !showColumns,
             slug: 'type',
             sortable: true,
         },
         {
             name: sideType,
-            className: 'side_type',
+
             show: showColumns && !ipadView,
             slug: 'sidetype',
             sortable: false,
         },
         {
-            name: 'Value',
-            className: 'value',
+            name: 'Value($)',
+
             show: true,
             slug: 'value',
             sortable: true,
         },
         {
-            name: 'ETH',
-            className: 'eth',
+            name: `${baseTokenSymbol} (${baseTokenCharacter})`,
+
             show: !showColumns && !showSidebar,
-            slug: 'eth',
+            slug: baseTokenSymbol,
             sortable: false,
         },
         {
-            name: 'USDC',
-            className: 'usdc',
+            name: `${quoteTokenSymbol} (${quoteTokenCharacter})`,
+
             show: !showColumns && !showSidebar,
-            slug: 'usdc',
+            slug: quoteTokenSymbol,
             sortable: false,
         },
         {
             name: tokens,
-            className: 'tokens',
+
             show: showColumns || showSidebar,
             slug: 'tokens',
             sortable: false,
         },
+
         {
             name: '',
-            className: '',
-            show: !ipadView,
-            slug: 'status',
-            sortable: false,
-        },
-        {
-            name: '',
-            className: '',
+
             show: true,
             slug: 'menu',
             sortable: false,
@@ -488,6 +493,7 @@ export default function Transactions(props: TransactionsProps) {
             ipadView={ipadView}
             showColumns={showColumns}
             showSidebar={showSidebar}
+            blockExplorer={blockExplorer}
         />
     ));
 

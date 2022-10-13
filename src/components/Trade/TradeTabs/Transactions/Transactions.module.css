@@ -45,7 +45,7 @@
 }
 
 
-.active_position_style{
+.active_position_style, .active_transaction_style{
     /* background: var(--dark3); */
   
     background-image: linear-gradient(to right, rgba(255,255,255,0) 50%, #171d27 50%);
@@ -128,6 +128,8 @@
       font-weight: 300;
   font-size: var(--body-size);
   line-height: var(--body-lh);
+  text-transform: capitalize;
+
   
   
   

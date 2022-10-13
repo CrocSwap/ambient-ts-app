@@ -90,13 +90,16 @@ export const useProcessTransaction = (tx: ITransaction) => {
                           maximumFractionDigits: 2,
                       });
 
+            // const truncatedDisplayPrice = isDenomBase
+            //     ? quoteTokenCharacter + invertedPriceTruncated
+            //     : baseTokenCharacter + nonInvertedPriceTruncated;
             const truncatedDisplayPrice = isDenomBase
-                ? quoteTokenCharacter + invertedPriceTruncated
-                : baseTokenCharacter + nonInvertedPriceTruncated;
+                ? invertedPriceTruncated
+                : nonInvertedPriceTruncated;
 
             setTruncatedDisplayPrice(truncatedDisplayPrice);
         } else {
-            setTruncatedDisplayPrice(undefined);
+            setTruncatedDisplayPrice('...');
         }
         if (tx.baseFlow && tx.baseDecimals) {
             const baseFlowDisplayNum = parseFloat(toDisplayQty(tx.baseFlow, tx.baseDecimals));
@@ -117,7 +120,7 @@ export const useProcessTransaction = (tx: ITransaction) => {
                           maximumFractionDigits: 2,
                       });
             const baseFlowDisplayString = isBaseFlowNegative
-                ? `(${baseFlowDisplayTruncated})`
+                ? `${baseFlowDisplayTruncated}`
                 : baseFlowDisplayTruncated;
             setBaseFlowDisplay(baseFlowDisplayString);
         }
@@ -140,7 +143,7 @@ export const useProcessTransaction = (tx: ITransaction) => {
                           maximumFractionDigits: 2,
                       });
             const quoteFlowDisplayString = isQuoteFlowNegative
-                ? `(${quoteFlowDisplayTruncated})`
+                ? `${quoteFlowDisplayTruncated}`
                 : quoteFlowDisplayTruncated;
             setQuoteFlowDisplay(quoteFlowDisplayString);
         }
@@ -167,6 +170,15 @@ export const useProcessTransaction = (tx: ITransaction) => {
             ? 'rangeRemove'
             : 'rangeAdd';
 
+    const type =
+        tx.entityType === 'swap'
+            ? 'market'
+            : tx.entityType === 'limitOrder'
+            ? 'limit'
+            : tx.changeType === 'burn'
+            ? 'Remove'
+            : 'Add';
+
     const usdValueNum = tx.valueUSD;
 
     const usdValueTruncated = !usdValueNum
@@ -186,6 +198,10 @@ export const useProcessTransaction = (tx: ITransaction) => {
 
     const quantitiesAvailable = baseFlowDisplay !== undefined || quoteFlowDisplay !== undefined;
 
+    const baseDisplay = quantitiesAvailable ? baseFlowDisplay || '0.00' : '…';
+
+    const quoteDisplay = quantitiesAvailable ? quoteFlowDisplay || '0.00' : '…';
+
     const baseDisplayFrontend = quantitiesAvailable
         ? `${baseTokenCharacter}${baseFlowDisplay || '0.00'}`
         : '…';
@@ -196,7 +212,7 @@ export const useProcessTransaction = (tx: ITransaction) => {
 
     // --------------------------------------------------------
 
-    const usdValue = usdValueTruncated ? '$' + usdValueTruncated : '…';
+    const usdValue = usdValueTruncated ? usdValueTruncated : '…';
     // --------------------OWNER AND ID WALLET DATA
 
     const ensNameOrOwnerTruncated = ensName
@@ -222,12 +238,15 @@ export const useProcessTransaction = (tx: ITransaction) => {
         // Transaction type and side data
         sideType,
         transactionTypeSide,
+        type,
 
         // Value data
         usdValue,
 
         // Token Qty data
         baseTokenCharacter,
+        baseDisplay,
+        quoteDisplay,
         quoteTokenCharacter,
         baseFlowDisplay,
         quoteFlowDisplay,

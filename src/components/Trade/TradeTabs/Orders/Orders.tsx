@@ -17,6 +17,7 @@ import useWebSocket from 'react-use-websocket';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import OrderHeader from './OrderTable/OrderHeader';
 import OrderRow from './OrderTable/OrderRow';
+import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
 
 // import OrderAccordions from './OrderAccordions/OrderAccordions';
 
@@ -53,6 +54,7 @@ export default function Orders(props: propsIF) {
 
     const tradeData = useAppSelector((state) => state.tradeData);
     const dispatch = useAppDispatch();
+    const isDenomBase = tradeData.isDenomBase;
 
     // const selectedBaseToken = tradeData.baseToken.address.toLowerCase();
     // const selectedQuoteToken = tradeData.quoteToken.address.toLowerCase();
@@ -268,6 +270,14 @@ export default function Orders(props: propsIF) {
 
     const showColumns = sidebarOpen || desktopView;
 
+    const quoteTokenSymbol = tradeData.quoteToken?.symbol;
+    const baseTokenSymbol = tradeData.baseToken?.symbol;
+
+    const baseTokenCharacter = baseTokenSymbol ? getUnicodeCharacter(baseTokenSymbol) : '';
+    const quoteTokenCharacter = quoteTokenSymbol ? getUnicodeCharacter(quoteTokenSymbol) : '';
+
+    const priceCharacter = isDenomBase ? quoteTokenCharacter : baseTokenCharacter;
+
     const walID = (
         <>
             <p>ID</p>
@@ -282,8 +292,8 @@ export default function Orders(props: propsIF) {
     );
     const tokens = (
         <>
-            <p>ETH</p>
-            <p>USDC</p>
+            <p>{`${baseTokenSymbol} (${baseTokenCharacter})`}</p>
+            <p>{`${quoteTokenSymbol} (${quoteTokenCharacter})`}</p>
         </>
     );
     const headerColumns = [
@@ -309,8 +319,8 @@ export default function Orders(props: propsIF) {
             sortable: false,
         },
         {
-            name: 'Price',
-            className: 'price',
+            name: `Price(${priceCharacter})`,
+
             show: !ipadView,
             slug: 'price',
             sortable: true,
@@ -337,24 +347,24 @@ export default function Orders(props: propsIF) {
             sortable: false,
         },
         {
-            name: 'Value',
+            name: 'Value($)',
             className: 'value',
             show: true,
             slug: 'value',
             sortable: true,
         },
         {
-            name: 'ETH',
-            className: 'eth',
+            name: `${baseTokenSymbol} (${baseTokenCharacter})`,
+
             show: !showColumns && !showSidebar,
-            slug: 'eth',
+            slug: baseTokenSymbol,
             sortable: false,
         },
         {
-            name: 'USDC',
-            className: 'usdc',
+            name: `${quoteTokenSymbol} (${quoteTokenCharacter})`,
+
             show: !showColumns && !showSidebar,
-            slug: 'usdc',
+            slug: quoteTokenSymbol,
             sortable: false,
         },
         {
