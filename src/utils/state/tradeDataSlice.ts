@@ -32,8 +32,8 @@ export interface tradeData {
     slippageTolerance: number;
     activeChartPeriod: number;
     targetData: targetData[];
-    pinnedMaxPriceDisplayTruncated: number;
-    pinnedMinPriceDisplayTruncated: number;
+    pinnedMaxPriceDisplayTruncated: number | undefined;
+    pinnedMinPriceDisplayTruncated: number | undefined;
     rangeModuleTriggered: boolean;
     rangeLowLineTriggered: boolean;
     rangeHighLineTriggered: boolean;
@@ -59,12 +59,12 @@ const initialState: tradeData = {
     slippageTolerance: 0.05,
     activeChartPeriod: 3600,
     targetData: [
-        { name: 'Max', value: 0 },
-        { name: 'Min', value: 0 },
+        { name: 'Max', value: undefined },
+        { name: 'Min', value: undefined },
     ],
     candleDomains: { lastCandleDate: undefined, domainBoundry: undefined },
-    pinnedMaxPriceDisplayTruncated: 0,
-    pinnedMinPriceDisplayTruncated: 0,
+    pinnedMaxPriceDisplayTruncated: undefined,
+    pinnedMinPriceDisplayTruncated: undefined,
     rangeModuleTriggered: false,
     rangeLowLineTriggered: false,
     rangeHighLineTriggered: false,

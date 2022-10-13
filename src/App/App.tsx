@@ -118,7 +118,6 @@ import { fetchPoolRecentChanges } from './functions/fetchPoolRecentChanges';
 import { fetchUserRecentChanges } from './functions/fetchUserRecentChanges';
 import { getTransactionData } from './functions/getTransactionData';
 import AppOverlay from '../components/Global/AppOverlay/AppOverlay';
-import useDebounce from './hooks/useDebounce';
 
 const cachedFetchAddress = memoizeFetchAddress();
 const cachedFetchNativeTokenBalance = memoizeFetchNativeTokenBalance();
@@ -1096,9 +1095,8 @@ export default function App() {
         mainnetBaseTokenAddress !== '' && mainnetQuoteTokenAddress !== '',
     );
 
-    const domainBoundaryInSeconds = Math.floor((tradeData.candleDomains.domainBoundry || 0) / 1000);
-
-    const debouncedBoundary = useDebounce(domainBoundaryInSeconds, 250); // debounce 1/4 second
+    const candleDomains = tradeData.candleDomains;
+    const domainBoundaryInSeconds = Math.floor((candleDomains?.domainBoundry || 0) / 1000);
 
     useEffect(() => {
         // console.log({ debouncedBoundary });
@@ -1119,9 +1117,9 @@ export default function App() {
         const minTime = getMinTime();
         // console.log({ minTime });
 
-        const numDurationsNeeded = Math.floor((minTime - debouncedBoundary) / activePeriod);
+        const numDurationsNeeded = Math.floor((minTime - domainBoundaryInSeconds) / activePeriod);
 
-        if (httpGraphCacheServerDomain && debouncedBoundary && minTime) {
+        if (httpGraphCacheServerDomain && domainBoundaryInSeconds && minTime) {
             // console.log('fetching candles');
             const candleSeriesCacheEndpoint = httpGraphCacheServerDomain + '/candle_series?';
 
@@ -1180,7 +1178,7 @@ export default function App() {
                 })
                 .catch(console.log);
         }
-    }, [debouncedBoundary]);
+    }, [domainBoundaryInSeconds]);
 
     useEffect(() => {
         if (candlesMessage) {

@@ -248,9 +248,9 @@ export default function Chart(props: ChartData) {
         }
 
         if (location.pathname.includes('range')) {
-            d3.select(d3Container.current).select('.targets').style('visibility', 'visible');
+            d3.select(d3PlotArea.current).select('.targets').style('visibility', 'visible');
 
-            d3.select(d3Container.current)
+            d3.select(d3PlotArea.current)
                 .select('.targets')
                 .select('.annotation-line')
                 .on('mouseover', (event: any) => {
@@ -259,10 +259,10 @@ export default function Chart(props: ChartData) {
                         .style('cursor', 'row-resize');
                 });
 
-            d3.select(d3Container.current).select('.limit').style('visibility', 'hidden');
+            d3.select(d3PlotArea.current).select('.limit').style('visibility', 'hidden');
         } else if (location.pathname.includes('limit')) {
-            d3.select(d3Container.current).select('.limit').style('visibility', 'visible');
-            d3.select(d3Container.current)
+            d3.select(d3PlotArea.current).select('.limit').style('visibility', 'visible');
+            d3.select(d3PlotArea.current)
                 .select('.limit')
                 .select('.annotation-line')
                 .on('mouseover', (event: any) => {
@@ -271,10 +271,12 @@ export default function Chart(props: ChartData) {
                         .style('cursor', 'row-resize');
                 });
 
-            d3.select(d3Container.current).select('.targets').style('visibility', 'hidden');
+            d3.select(d3PlotArea.current).select('.targets').style('visibility', 'hidden');
         } else if (location.pathname.includes('market')) {
-            d3.select(d3Container.current).select('.limit').style('visibility', 'hidden');
-            d3.select(d3Container.current).select('.targets').style('visibility', 'hidden');
+            console.log('asdsadsadsad');
+
+            d3.select(d3PlotArea.current).select('.limit').style('visibility', 'hidden');
+            d3.select(d3PlotArea.current).select('.targets').style('visibility', 'hidden');
         }
     }, [location]);
 
@@ -403,6 +405,8 @@ export default function Chart(props: ChartData) {
             Math.abs(event.sourceEvent.offsetX - scaleData.xScale(d.date)),
         )[1];
 
+        setCrosshairData([{ x: scaleData.xScale(nearest.date), y: -1 }]);
+
         d3.select(d3Xaxis.current)
             .select('svg')
             .select('g')
@@ -413,11 +417,13 @@ export default function Chart(props: ChartData) {
             .select('g')
             .style('transform', 'translateY(' + scaleData.yScale(crosshairData[0].y) + 'px)');
     };
+
     // Zoom
     useEffect(() => {
         if (scaleData !== undefined) {
             let lastY = 0;
             let domainBoundary = scaleData.xScaleCopy.domain();
+            let candleDomain: candleDomain;
 
             const zoom = d3
                 .zoom()
@@ -449,7 +455,7 @@ export default function Chart(props: ChartData) {
                         domainBoundary[0] >
                         event.transform.rescaleX(scaleData.xScaleCopy).domain()[0]
                     ) {
-                        const candleDomain: candleDomain = {
+                        candleDomain = {
                             lastCandleDate:
                                 parsedChartData?.chartData[parsedChartData?.chartData.length - 1]
                                     .time,
@@ -457,11 +463,7 @@ export default function Chart(props: ChartData) {
                                 event.transform.rescaleX(scaleData.xScaleCopy).domain()[0],
                             ).getTime(),
                         };
-
-                        dispatch(setCandleDomains(candleDomain));
                     }
-
-                    relocationCrosshairText(event);
 
                     // PANNING
                     if (event.sourceEvent && event.sourceEvent.type != 'wheel') {
@@ -477,6 +479,7 @@ export default function Chart(props: ChartData) {
                     }
 
                     addHorizontalLineArea();
+                    relocationCrosshairText(event);
 
                     lastY = t.y;
 
@@ -486,6 +489,8 @@ export default function Chart(props: ChartData) {
                     if (event.sourceEvent && event.sourceEvent.type != 'wheel') {
                         d3.select(d3Container.current).style('cursor', 'default');
                     }
+
+                    dispatch(setCandleDomains(candleDomain));
                 }) as any;
 
             const yAxisDrag = d3.drag().on('drag', (event: any) => {
@@ -2195,6 +2200,10 @@ export default function Chart(props: ChartData) {
                                 crosshairData={crosshairData}
                                 setsubChartValues={setsubChartValues}
                                 xScale={scaleData !== undefined ? scaleData.xScale : undefined}
+                                xScaleCopy={
+                                    scaleData !== undefined ? scaleData.xScaleCopy : undefined
+                                }
+                                render={render}
                             />
                         </>
                     )}
@@ -2216,6 +2225,10 @@ export default function Chart(props: ChartData) {
                                 crosshairData={crosshairData}
                                 setsubChartValues={setsubChartValues}
                                 xScale={scaleData !== undefined ? scaleData.xScale : undefined}
+                                xScaleCopy={
+                                    scaleData !== undefined ? scaleData.xScaleCopy : undefined
+                                }
+                                render={render}
                             />
                         </>
                     )}
