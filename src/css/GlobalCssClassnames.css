@@ -1,0 +1,25 @@
+.gradient_text{
+    background: var(--title-gradient);
+    font-family: var(--font-logo);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+
+/* order table */
+
+.color_white{
+  color: var(--text-grey-white)
+}
+
+.base_color {
+  color: rgba(235, 235, 255, 0.4);
+}
+.order_sell{
+   color:  #E480FF
+}
+
+.order_buy{
+  color:  #7371FC  
+}

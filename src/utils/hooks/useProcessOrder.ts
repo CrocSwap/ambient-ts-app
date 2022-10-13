@@ -228,6 +228,7 @@ export const useProcessOrder = (limitOrder: ILimitOrderState) => {
         isOwnerActiveAccount,
         posHashTruncated,
         userNameToDisplay,
+        ensName,
 
         // Price and Price type data
         priceType,
