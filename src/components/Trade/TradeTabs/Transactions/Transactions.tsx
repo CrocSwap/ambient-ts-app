@@ -59,6 +59,7 @@ export default function Transactions(props: TransactionsProps) {
         isCandleSelected,
         filter,
         showSidebar,
+        openGlobalModal,
         // setExpandTradeTable,
     } = props;
 
@@ -477,7 +478,17 @@ export default function Transactions(props: TransactionsProps) {
         //     setCurrentTxActiveInTransactions={setCurrentTxActiveInTransactions}
         //     openGlobalModal={props.openGlobalModal}
         // />
-        <TransactionRow key={idx} />
+        <TransactionRow
+            key={idx}
+            tx={tx}
+            currentTxActiveInTransactions={currentTxActiveInTransactions}
+            setCurrentTxActiveInTransactions={setCurrentTxActiveInTransactions}
+            openGlobalModal={openGlobalModal}
+            isShowAllEnabled={isShowAllEnabled}
+            ipadView={ipadView}
+            showColumns={showColumns}
+            showSidebar={showSidebar}
+        />
     ));
 
     const noData = <div className={styles.no_data}>No Data to Display</div>;
