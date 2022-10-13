@@ -18,6 +18,7 @@ import IconWithTooltip from '../../Global/IconWithTooltip/IconWithTooltip';
 import { ZERO_ADDRESS } from '../../../constants';
 interface CurrencyConverterPropsIF {
     crocEnv: CrocEnv | undefined;
+    poolExists: boolean | null;
     isUserLoggedIn: boolean;
     provider: ethers.providers.Provider | undefined;
     slippageTolerancePercentage: number;
@@ -53,6 +54,7 @@ interface CurrencyConverterPropsIF {
 export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
     const {
         crocEnv,
+        poolExists,
         isUserLoggedIn,
         // provider,
         slippageTolerancePercentage,
@@ -218,6 +220,7 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
         isTokenAPrimaryLocal ? handleTokenAChangeEvent() : handleTokenBChangeEvent();
     }, [
         crocEnv,
+        poolExists,
         poolPriceDisplay,
         isSellTokenBase,
         isTokenAPrimaryLocal,

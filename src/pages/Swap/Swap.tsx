@@ -397,6 +397,7 @@ export default function Swap(props: SwapPropsIF) {
                     >
                         <CurrencyConverter
                             crocEnv={crocEnv}
+                            poolExists={poolExists}
                             isUserLoggedIn={isUserLoggedIn}
                             provider={provider}
                             slippageTolerancePercentage={slippageTolerancePercentage}
