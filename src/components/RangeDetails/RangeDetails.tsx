@@ -179,7 +179,7 @@ export default function RangeDetails(props: IRangeDetailsProps) {
     }, [lastBlockNumber]);
 
     const [controlItems, setControlItems] = useState([
-        { slug: 'times', name: 'Show times', checked: true },
+        // { slug: 'times', name: 'Show times', checked: false },
         { slug: 'collateral', name: 'Show collateral', checked: true },
         { slug: 'value', name: 'Show value', checked: true },
     ]);
