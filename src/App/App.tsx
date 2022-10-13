@@ -1095,7 +1095,8 @@ export default function App() {
         mainnetBaseTokenAddress !== '' && mainnetQuoteTokenAddress !== '',
     );
 
-    const domainBoundaryInSeconds = Math.floor((tradeData.candleDomains.domainBoundry || 0) / 1000);
+    const candleDomains = tradeData.candleDomains;
+    const domainBoundaryInSeconds = Math.floor((candleDomains?.domainBoundry || 0) / 1000);
 
     useEffect(() => {
         // console.log({ debouncedBoundary });

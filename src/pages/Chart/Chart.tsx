@@ -248,9 +248,9 @@ export default function Chart(props: ChartData) {
         }
 
         if (location.pathname.includes('range')) {
-            d3.select(d3Container.current).select('.targets').style('visibility', 'visible');
+            d3.select(d3PlotArea.current).select('.targets').style('visibility', 'visible');
 
-            d3.select(d3Container.current)
+            d3.select(d3PlotArea.current)
                 .select('.targets')
                 .select('.annotation-line')
                 .on('mouseover', (event: any) => {
@@ -259,10 +259,10 @@ export default function Chart(props: ChartData) {
                         .style('cursor', 'row-resize');
                 });
 
-            d3.select(d3Container.current).select('.limit').style('visibility', 'hidden');
+            d3.select(d3PlotArea.current).select('.limit').style('visibility', 'hidden');
         } else if (location.pathname.includes('limit')) {
-            d3.select(d3Container.current).select('.limit').style('visibility', 'visible');
-            d3.select(d3Container.current)
+            d3.select(d3PlotArea.current).select('.limit').style('visibility', 'visible');
+            d3.select(d3PlotArea.current)
                 .select('.limit')
                 .select('.annotation-line')
                 .on('mouseover', (event: any) => {
@@ -271,10 +271,12 @@ export default function Chart(props: ChartData) {
                         .style('cursor', 'row-resize');
                 });
 
-            d3.select(d3Container.current).select('.targets').style('visibility', 'hidden');
+            d3.select(d3PlotArea.current).select('.targets').style('visibility', 'hidden');
         } else if (location.pathname.includes('market')) {
-            d3.select(d3Container.current).select('.limit').style('visibility', 'hidden');
-            d3.select(d3Container.current).select('.targets').style('visibility', 'hidden');
+            console.log('asdsadsadsad');
+
+            d3.select(d3PlotArea.current).select('.limit').style('visibility', 'hidden');
+            d3.select(d3PlotArea.current).select('.targets').style('visibility', 'hidden');
         }
     }, [location]);
 
