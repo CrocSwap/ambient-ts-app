@@ -1,6 +1,8 @@
 import styles from './Transactions.module.css';
 import TransactionCard from './TransactionCard';
 import TransactionCardHeader from './TransactionCardHeader';
+import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
+
 import {
     addChangesByPool,
     CandleData,
@@ -17,6 +19,7 @@ import { ChainSpec } from '@crocswap-libs/sdk';
 import useWebSocket from 'react-use-websocket';
 // import useDebounce from '../../../../App/hooks/useDebounce';
 import { fetchPoolRecentChanges } from '../../../../App/functions/fetchPoolRecentChanges';
+import TransactionHeader from './TransactionsTable/TransactionHeader';
 // import TransactionAccordions from './TransactionAccordions/TransactionAccordions';
 
 interface TransactionsProps {
@@ -36,6 +39,7 @@ interface TransactionsProps {
     filter: CandleData | undefined;
 
     openGlobalModal: (content: React.ReactNode) => void;
+    showSidebar: boolean;
     // setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
 }
 export default function Transactions(props: TransactionsProps) {
@@ -52,6 +56,7 @@ export default function Transactions(props: TransactionsProps) {
         expandTradeTable,
         isCandleSelected,
         filter,
+        showSidebar,
         // setExpandTradeTable,
     } = props;
 
@@ -336,6 +341,143 @@ export default function Transactions(props: TransactionsProps) {
             ))} */}
             <p>Mobile Accordion here: Disabled for now</p>
         </div>
+    );
+
+    const sidebarOpen = false;
+
+    const ipadView = useMediaQuery('(max-width: 480px)');
+    const desktopView = useMediaQuery('(max-width: 768px)');
+
+    const showColumns = sidebarOpen || desktopView;
+
+    const walID = (
+        <>
+            <p>ID</p>
+            <p>Wallet</p>
+        </>
+    );
+    const sideType = (
+        <>
+            <p>Side</p>
+            <p>Type</p>
+        </>
+    );
+    const tokens = (
+        <>
+            <p>ETH</p>
+            <p>USDC</p>
+        </>
+    );
+    const headerColumns = [
+        {
+            name: 'ID',
+            className: 'ID',
+            show: !showColumns,
+            slug: 'id',
+            sortable: true,
+        },
+        {
+            name: 'Wallet',
+            className: 'wallet',
+            show: !showColumns,
+            slug: 'wallet',
+            sortable: true,
+        },
+        {
+            name: walID,
+            className: 'wallet_it',
+            show: showColumns,
+            slug: 'walletid',
+            sortable: false,
+        },
+        {
+            name: 'Price',
+            className: 'price',
+            show: !ipadView,
+            slug: 'price',
+            sortable: true,
+        },
+        {
+            name: 'Side',
+            className: 'side',
+            show: !showColumns,
+            slug: 'side',
+            sortable: true,
+        },
+        {
+            name: 'Type',
+            className: 'type',
+            show: !showColumns,
+            slug: 'type',
+            sortable: true,
+        },
+        {
+            name: sideType,
+            className: 'side_type',
+            show: showColumns && !ipadView,
+            slug: 'sidetype',
+            sortable: false,
+        },
+        {
+            name: 'Value',
+            className: 'value',
+            show: true,
+            slug: 'value',
+            sortable: true,
+        },
+        {
+            name: 'ETH',
+            className: 'eth',
+            show: !showColumns && !showSidebar,
+            slug: 'eth',
+            sortable: false,
+        },
+        {
+            name: 'USDC',
+            className: 'usdc',
+            show: !showColumns && !showSidebar,
+            slug: 'usdc',
+            sortable: false,
+        },
+        {
+            name: tokens,
+            className: 'tokens',
+            show: showColumns || showSidebar,
+            slug: 'tokens',
+            sortable: false,
+        },
+        {
+            name: '',
+            className: '',
+            show: !ipadView,
+            slug: 'status',
+            sortable: false,
+        },
+        {
+            name: '',
+            className: '',
+            show: true,
+            slug: 'menu',
+            sortable: false,
+        },
+    ];
+
+    const [sortBy, setSortBy] = useState('default');
+    const [reverseSort, setReverseSort] = useState(false);
+
+    const headerColumnsDisplay = (
+        <ul className={styles.header}>
+            {headerColumns.map((header, idx) => (
+                <TransactionHeader
+                    key={idx}
+                    sortBy={sortBy}
+                    setSortBy={setSortBy}
+                    reverseSort={reverseSort}
+                    setReverseSort={setReverseSort}
+                    header={header}
+                />
+            ))}
+        </ul>
     );
 
     const noData = <div className={styles.no_data}>No Data to Display</div>;
