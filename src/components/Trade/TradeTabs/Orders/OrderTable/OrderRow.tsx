@@ -3,6 +3,7 @@ import styles from '../Orders.module.css';
 import { useProcessOrder } from '../../../../../utils/hooks/useProcessOrder';
 import OpenOrderStatus from '../../../../Global/OpenOrderStatus/OpenOrderStatus';
 import OrdersMenu from '../../../../Global/Tabs/TableMenu/TableMenuComponents/OrdersMenu';
+import OrderDetails from '../../../../OrderDetails/OrderDetails';
 
 interface OrderRowPropsIF {
     showColumns: boolean;
@@ -14,7 +15,8 @@ interface OrderRowPropsIF {
     closeGlobalModal: () => void;
 }
 export default function OrderRow(props: OrderRowPropsIF) {
-    const { showColumns, ipadView, limitOrder, showSidebar } = props;
+    const { showColumns, ipadView, limitOrder, showSidebar, openGlobalModal, closeGlobalModal } =
+        props;
 
     const {
         posHashTruncated,
@@ -43,6 +45,11 @@ export default function OrderRow(props: OrderRowPropsIF) {
 
     const usernameStyle = ensName || isOwnerActiveAccount ? 'gradient_text' : 'base_color';
 
+    const openDetailsModal = () =>
+        openGlobalModal(
+            <OrderDetails limitOrder={limitOrder} closeGlobalModal={closeGlobalModal} />,
+        );
+
     return (
         <ul className={styles.row_container}>
             {!showColumns && (
@@ -57,7 +64,8 @@ export default function OrderRow(props: OrderRowPropsIF) {
             )}
             {showColumns && (
                 <li data-label='id'>
-                    <p>{posHashTruncated}</p> <p className={usernameStyle}>{userNameToDisplay}</p>
+                    <p className='base_color'>{posHashTruncated}</p>{' '}
+                    <p className={usernameStyle}>{userNameToDisplay}</p>
                 </li>
             )}
             {!ipadView && (

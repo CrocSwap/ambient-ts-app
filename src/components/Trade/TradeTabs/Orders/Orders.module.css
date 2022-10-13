@@ -90,7 +90,7 @@
 .header li{
     font-weight: 300;
 font-size: 12px;
-line-height: 16px;
+line-height: 15px;
 
 color: rgba(235, 235, 255, 0.4);
 }
@@ -128,7 +128,7 @@ line-height: var(--body-lh);
       /* I commented this out to make the header align center with arrow */
       width: 100%;
  
-      padding:.5em 1em;
+      padding:.3em 1em;
     }
     
   /* } */
