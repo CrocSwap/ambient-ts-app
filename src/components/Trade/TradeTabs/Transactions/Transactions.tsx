@@ -20,6 +20,8 @@ import useWebSocket from 'react-use-websocket';
 // import useDebounce from '../../../../App/hooks/useDebounce';
 import { fetchPoolRecentChanges } from '../../../../App/functions/fetchPoolRecentChanges';
 import TransactionHeader from './TransactionsTable/TransactionHeader';
+import TransactionRow from './TransactionsTable/TransactionRow';
+import { FaYenSign } from 'react-icons/fa';
 // import TransactionAccordions from './TransactionAccordions/TransactionAccordions';
 
 interface TransactionsProps {
@@ -306,26 +308,6 @@ export default function Transactions(props: TransactionsProps) {
         }
     }, [lastPoolChangeMessage]);
 
-    const TransactionsDisplay = (
-        <div className={styles.desktop_transaction_display_container}>
-            {usePaginateDataOrNull?.map((tx, idx) => (
-                <TransactionCard
-                    key={idx}
-                    tx={tx}
-                    tokenMap={tokenMap}
-                    chainId={chainData.chainId}
-                    blockExplorer={blockExplorer}
-                    tokenAAddress={tokenAAddress}
-                    tokenBAddress={tokenBAddress}
-                    isDenomBase={isDenomBase}
-                    account={account}
-                    currentTxActiveInTransactions={currentTxActiveInTransactions}
-                    setCurrentTxActiveInTransactions={setCurrentTxActiveInTransactions}
-                    openGlobalModal={props.openGlobalModal}
-                />
-            ))}
-        </div>
-    );
     // const [expanded, setExpanded] = useState<false | number>(false);
 
     const accordionsDisplay = (
@@ -480,12 +462,44 @@ export default function Transactions(props: TransactionsProps) {
         </ul>
     );
 
+    const rowItemContent = usePaginateDataOrNull?.map((tx, idx) => (
+        // <TransactionCard
+        //     key={idx}
+        //     tx={tx}
+        //     tokenMap={tokenMap}
+        //     chainId={chainData.chainId}
+        //     blockExplorer={blockExplorer}
+        //     tokenAAddress={tokenAAddress}
+        //     tokenBAddress={tokenBAddress}
+        //     isDenomBase={isDenomBase}
+        //     account={account}
+        //     currentTxActiveInTransactions={currentTxActiveInTransactions}
+        //     setCurrentTxActiveInTransactions={setCurrentTxActiveInTransactions}
+        //     openGlobalModal={props.openGlobalModal}
+        // />
+        <TransactionRow key={idx} />
+    ));
+
     const noData = <div className={styles.no_data}>No Data to Display</div>;
-    const transactionDataOrNull = dataToDisplay ? TransactionsDisplay : noData;
+    const transactionDataOrNull = dataToDisplay ? rowItemContent : noData;
+
+    const duh = true;
+
+    const newTrial = (
+        <main
+            className={styles.main_list_container}
+            style={{ height: expandTradeTable ? '100%' : '170px' }}
+        >
+            {headerColumnsDisplay}
+            {isDataLoading ? <TransactionsSkeletons /> : transactionDataOrNull}
+        </main>
+    );
+    if (duh) return newTrial;
 
     return (
         <div className={styles.container}>
-            <TransactionCardHeader tradeData={tradeData} />
+            {headerColumnsDisplay}
+            {/* <TransactionCardHeader tradeData={tradeData} /> */}
             <div
                 className={`${styles.item_container} ${expandTradeTable && styles.expand_height}`}
                 // style={{ height: expandTradeTable ? '100%' : '170px' }}
@@ -493,6 +507,7 @@ export default function Transactions(props: TransactionsProps) {
                 {isDataLoading ? <TransactionsSkeletons /> : accordionsDisplay}
                 {isDataLoading ? <TransactionsSkeletons /> : transactionDataOrNull}
             </div>
+
             {expandTradeTable && transactionData.length > 30 && (
                 <Pagination
                     itemsPerPage={transactionsPerPage}
