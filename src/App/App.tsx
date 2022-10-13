@@ -584,12 +584,12 @@ export default function App() {
     // hook to update `poolExists` when crocEnv changes
     useEffect(() => {
         setPoolExists(null);
-        if (crocEnv) {
+        if (crocEnv && tokenPairLocal) {
             // token pair has an initialized pool on-chain
             // returns a promise object
             const doesPoolExist = crocEnv
                 // TODO: make this function pill addresses directly from URL params
-                .pool(tokenPair.dataTokenA.address, tokenPair.dataTokenB.address)
+                .pool(tokenPairLocal[0], tokenPairLocal[1])
                 .isInit();
             // resolve the promise object to see if pool exists
             Promise.resolve(doesPoolExist)

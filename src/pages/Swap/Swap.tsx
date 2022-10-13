@@ -99,13 +99,17 @@ export default function Swap(props: SwapPropsIF) {
         openModalWallet,
         isInitialized,
         poolExists,
+        setTokenPairLocal
     } = props;
 
     const [isModalOpen, openModal, closeModal] = useModal();
 
     const dispatch = useAppDispatch();
 
-    useUrlParams(chainId, isInitialized);
+    const tokenPairFromParams = useUrlParams(chainId, isInitialized);
+    useEffect(() => {
+        setTokenPairLocal && setTokenPairLocal(tokenPairFromParams);
+    }, [tokenPairFromParams]);
 
     const [isRelativeModalOpen, closeRelativeModal] = useRelativeModal();
 
