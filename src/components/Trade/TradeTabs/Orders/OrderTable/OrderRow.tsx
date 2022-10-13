@@ -5,8 +5,11 @@ import OpenOrderStatus from '../../../../Global/OpenOrderStatus/OpenOrderStatus'
 import OrdersMenu from '../../../../Global/Tabs/TableMenu/TableMenuComponents/OrdersMenu';
 import OrderDetails from '../../../../OrderDetails/OrderDetails';
 import { Dispatch, SetStateAction, useEffect } from 'react';
+import { CrocEnv } from '@crocswap-libs/sdk';
 
 interface OrderRowPropsIF {
+    crocEnv: CrocEnv | undefined;
+    expandTradeTable: boolean;
     showColumns: boolean;
     ipadView: boolean;
     limitOrder: ILimitOrderState;
@@ -22,6 +25,7 @@ interface OrderRowPropsIF {
 }
 export default function OrderRow(props: OrderRowPropsIF) {
     const {
+        crocEnv,
         showColumns,
         ipadView,
         limitOrder,
@@ -52,6 +56,7 @@ export default function OrderRow(props: OrderRowPropsIF) {
     } = useProcessOrder(limitOrder);
 
     const orderMenuProps = {
+        crocEnv: crocEnv,
         closeGlobalModal: props.closeGlobalModal,
         openGlobalModal: props.openGlobalModal,
         isOwnerActiveAccount: isOwnerActiveAccount,

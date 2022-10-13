@@ -12,7 +12,7 @@ import {
     setLimitOrdersByPool,
 } from '../../../../utils/state/graphDataSlice';
 import { fetchPoolLimitOrderStates } from '../../../../App/functions/fetchPoolLimitOrderStates';
-import { ChainSpec } from '@crocswap-libs/sdk';
+import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
 import useWebSocket from 'react-use-websocket';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import OrderHeader from './OrderTable/OrderHeader';
@@ -22,6 +22,7 @@ import OrderRow from './OrderTable/OrderRow';
 
 // interface for props for react functional component
 interface propsIF {
+    crocEnv: CrocEnv | undefined;
     expandTradeTable: boolean;
     chainData: ChainSpec;
     account: string;
@@ -38,6 +39,7 @@ interface propsIF {
 // main react functional component
 export default function Orders(props: propsIF) {
     const {
+        crocEnv,
         chainData,
         expandTradeTable,
         account,
@@ -397,6 +399,8 @@ export default function Orders(props: propsIF) {
 
     const rowItemContent = showAllOrUserPositions.map((order, idx) => (
         <OrderRow
+            crocEnv={crocEnv}
+            expandTradeTable={expandTradeTable}
             showSidebar={showSidebar}
             showColumns={showColumns}
             ipadView={ipadView}
