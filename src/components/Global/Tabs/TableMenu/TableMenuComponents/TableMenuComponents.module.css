@@ -88,7 +88,7 @@
     gap: 4px;
 }
 /* Extra large devices (large laptops and desktops, 1200px and up) */
-@media only screen and (min-width: 1500px) {
+@media only screen and (min-width: 1600px) {
     .actions_menu {
         display: flex;
 

@@ -1,4 +1,3 @@
-import styles from './OrderHeader.module.css';
 import { Dispatch, SetStateAction, useMemo } from 'react';
 import { BsSortDown, BsSortUpAlt } from 'react-icons/bs';
 

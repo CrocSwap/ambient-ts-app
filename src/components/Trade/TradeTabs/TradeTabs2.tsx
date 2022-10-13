@@ -60,6 +60,7 @@ interface ITabsProps {
 
     closeGlobalModal: () => void;
     importedTokens: TokenIF[];
+    showSidebar: boolean;
 }
 
 // const httpGraphCacheServerDomain = 'https://809821320828123.de:5000';
@@ -97,6 +98,7 @@ export default function TradeTabs2(props: ITabsProps) {
         outsideControl,
         setOutsideControl,
         importedTokens,
+        showSidebar,
     } = props;
 
     const graphData = useAppSelector((state) => state?.graphData);
@@ -360,6 +362,7 @@ export default function TradeTabs2(props: ITabsProps) {
         currentPositionActive: currentPositionActive,
         closeGlobalModal: props.closeGlobalModal,
         setCurrentPositionActive: setCurrentPositionActive,
+        showSidebar: showSidebar,
     };
     // props for <PositionsOnlyToggle/> React Element
 
