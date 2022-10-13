@@ -66,7 +66,7 @@ interface SwapPropsIF {
     openModalWallet: () => void;
     isInitialized: boolean;
     poolExists: boolean | null;
-    setTokenPairLocal?: Dispatch<SetStateAction<string[]|null>>;
+    setTokenPairLocal?: Dispatch<SetStateAction<string[] | null>>;
 }
 
 export default function Swap(props: SwapPropsIF) {
@@ -99,7 +99,7 @@ export default function Swap(props: SwapPropsIF) {
         openModalWallet,
         isInitialized,
         poolExists,
-        setTokenPairLocal
+        setTokenPairLocal,
     } = props;
 
     const [isModalOpen, openModal, closeModal] = useModal();
@@ -198,7 +198,7 @@ export default function Swap(props: SwapPropsIF) {
             setSwapAllowed(false);
             setSwapButtonErrorMessage('Pool Not Initialized');
         }
-    }, [poolPriceDisplay]);
+    }, [poolExists]);
 
     const [priceImpactExceedsTolerance, setPriceImpactExceedsTolerance] = useState(false);
 
