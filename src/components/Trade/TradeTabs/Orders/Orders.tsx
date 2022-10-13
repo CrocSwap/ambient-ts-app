@@ -43,8 +43,8 @@ export default function Orders(props: propsIF) {
         account,
         graphData,
         isShowAllEnabled,
-        // setCurrentPositionActive,
-        // currentPositionActive,
+        setCurrentPositionActive,
+        currentPositionActive,
         showSidebar,
     } = props;
 
@@ -404,6 +404,9 @@ export default function Orders(props: propsIF) {
             limitOrder={order}
             openGlobalModal={props.openGlobalModal}
             closeGlobalModal={props.closeGlobalModal}
+            currentPositionActive={currentPositionActive}
+            setCurrentPositionActive={setCurrentPositionActive}
+            isShowAllEnabled={isShowAllEnabled}
         />
     ));
 
