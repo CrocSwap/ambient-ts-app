@@ -13,6 +13,7 @@ import completed from '../../assets/animations/completed.json';
 import { FiExternalLink } from 'react-icons/fi';
 import RemoveOrderModalHeader from './RemoveOrderModalHeader/RemoveOrderModalHeader';
 import RemoveOrderSettings from './RemoveOrderSettings/RemoveOrderSettings';
+import { formatAmount } from '../../utils/numbers';
 interface IOrderRemovalProps {
     limitOrder: ILimitOrderState;
     closeGlobalModal: () => void;
@@ -61,6 +62,49 @@ export default function OrderRemoval(props: IOrderRemovalProps) {
     }, [txErrorCode]);
 
     const [removalPercentage, setRemovalPercentage] = useState(100);
+    const [baseQtyToBeRemoved, setBaseQtyToBeRemoved] = useState<string>('…');
+    const [quoteQtyToBeRemoved, setQuoteQtyToBeRemoved] = useState<string>('…');
+
+    const baseQty = limitOrder.positionLiqBaseDecimalCorrected;
+    const quoteQty = limitOrder.positionLiqQuoteDecimalCorrected;
+
+    useEffect(() => {
+        const baseRemovalNum = baseQty * (removalPercentage / 100);
+        const quoteRemovalNum = quoteQty * (removalPercentage / 100);
+        const baseRemovalTruncated =
+            baseRemovalNum === undefined
+                ? undefined
+                : baseRemovalNum === 0
+                ? '0.00'
+                : baseRemovalNum < 0.0001
+                ? baseRemovalNum.toExponential(2)
+                : baseRemovalNum < 2
+                ? baseRemovalNum.toPrecision(3)
+                : baseRemovalNum >= 100000
+                ? formatAmount(baseRemovalNum)
+                : // ? baseLiqDisplayNum.toExponential(2)
+                  baseRemovalNum.toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                  });
+        if (baseRemovalTruncated !== undefined) setBaseQtyToBeRemoved(baseRemovalTruncated);
+        const quoteRemovalTruncated =
+            baseRemovalNum === undefined
+                ? undefined
+                : quoteRemovalNum === 0
+                ? '0.00'
+                : quoteRemovalNum < 0.0001
+                ? quoteRemovalNum.toExponential(2)
+                : quoteRemovalNum < 2
+                ? quoteRemovalNum.toPrecision(3)
+                : quoteRemovalNum >= 100000
+                ? formatAmount(quoteRemovalNum)
+                : quoteRemovalNum.toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                  });
+        if (quoteRemovalTruncated !== undefined) setQuoteQtyToBeRemoved(quoteRemovalTruncated);
+    }, [removalPercentage]);
 
     const removeFn = () => {
         setShowConfirmation(true);
@@ -194,6 +238,8 @@ export default function OrderRemoval(props: IOrderRemovalProps) {
                 quoteDisplayFrontend={quoteDisplayFrontend}
                 positionLiqTotalUSD={positionLiqTotalUSD}
                 positionLiquidity={positionLiquidity}
+                baseRemovalString={baseQtyToBeRemoved}
+                quoteRemovalString={quoteQtyToBeRemoved}
             />
             <RemoveOrderButton removeFn={removeFn} disabled={false} title='Show Example Submit' />
         </div>
