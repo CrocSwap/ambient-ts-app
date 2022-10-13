@@ -421,6 +421,7 @@ export default function Chart(props: ChartData) {
         if (scaleData !== undefined) {
             let lastY = 0;
             let domainBoundary = scaleData.xScaleCopy.domain();
+            let candleDomain: candleDomain;
 
             const zoom = d3
                 .zoom()
@@ -452,7 +453,7 @@ export default function Chart(props: ChartData) {
                         domainBoundary[0] >
                         event.transform.rescaleX(scaleData.xScaleCopy).domain()[0]
                     ) {
-                        const candleDomain: candleDomain = {
+                        candleDomain = {
                             lastCandleDate:
                                 parsedChartData?.chartData[parsedChartData?.chartData.length - 1]
                                     .time,
@@ -460,8 +461,6 @@ export default function Chart(props: ChartData) {
                                 event.transform.rescaleX(scaleData.xScaleCopy).domain()[0],
                             ).getTime(),
                         };
-
-                        dispatch(setCandleDomains(candleDomain));
                     }
 
                     // PANNING
@@ -488,6 +487,8 @@ export default function Chart(props: ChartData) {
                     if (event.sourceEvent && event.sourceEvent.type != 'wheel') {
                         d3.select(d3Container.current).style('cursor', 'default');
                     }
+
+                    dispatch(setCandleDomains(candleDomain));
                 }) as any;
 
             const yAxisDrag = d3.drag().on('drag', (event: any) => {
