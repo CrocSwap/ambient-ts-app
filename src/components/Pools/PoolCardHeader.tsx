@@ -32,7 +32,7 @@ export default function PoolCardHeader(props: PoolCardHeaderProps) {
                 >
                     TVL Change {arrow(SORT_FIELD.feeTier)}
                 </p>
-                <p>APY</p>
+                <p>APR</p>
             </div>
         </div>
     );

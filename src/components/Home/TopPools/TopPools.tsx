@@ -8,16 +8,18 @@ import { NavLink } from 'react-router-dom';
 import { topPools } from '../../../App/mockData';
 import { TokenIF } from '../../../utils/interfaces/TokenIF';
 import { CrocEnv } from '@crocswap-libs/sdk';
+import { SpotPriceFn } from '../../../App/functions/querySpotPrice';
 
 interface TopPoolsProps {
     crocEnv?: CrocEnv;
+    cachedQuerySpotPrice: SpotPriceFn;
     tokenMap: Map<string, TokenIF>;
     lastBlockNumber: number;
     chainId: string;
 }
 
 export default function TopPools(props: TopPoolsProps) {
-    const { tokenMap, lastBlockNumber, crocEnv, chainId } = props;
+    const { tokenMap, lastBlockNumber, crocEnv, chainId, cachedQuerySpotPrice } = props;
 
     const { t } = useTranslation();
 
@@ -38,6 +40,7 @@ export default function TopPools(props: TopPoolsProps) {
                     <NavLink key={idx} to='/trade/market'>
                         <PoolCard
                             crocEnv={crocEnv}
+                            cachedQuerySpotPrice={cachedQuerySpotPrice}
                             name={pool.name}
                             tokenA={pool.base}
                             tokenB={pool.quote}

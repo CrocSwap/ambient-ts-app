@@ -210,22 +210,42 @@ export default function Chart(props: ChartData) {
     }, [props.chartItemStates, expandTradeTable, isCandleAdded]);
 
     useEffect(() => {
-        d3.select(d3Xaxis.current)
-            .select('svg')
-            .append('text')
-            .attr('class', 'popup')
-            .attr('dy', '28px')
-            .style('visibility', 'visible')
-            .style('font-size', '13px');
+        if (d3.select(d3Xaxis.current).select('svg').select('g').select('text').node() === null) {
+            const xAxisText = d3
+                .select(d3Xaxis.current)
+                .select('svg')
+                .append('g')
+                .attr('visibility', 'hidden');
+            xAxisText
+                .append('rect')
+                .attr('width', '100')
+                .attr('height', '17')
+                .attr('fill', '#242F3F')
+                .attr('y', '15')
+                .attr('x', '-50');
+            xAxisText
+                .append('text')
+                .attr('dy', '28px')
+                .style('font-size', '13px')
+                .style('letter-spacing', '1px');
+        }
 
-        d3.select(d3Yaxis.current)
-            .select('svg')
-            .append('text')
-            .attr('class', 'popup')
-            .attr('dx', '5px')
-            .attr('dy', '2px')
-            .style('visibility', 'visible')
-            .style('font-size', '13px');
+        if (d3.select(d3Yaxis.current).select('svg').select('g').select('text').node() === null) {
+            const yAxisText = d3
+                .select(d3Yaxis.current)
+                .select('svg')
+                .append('g')
+                .attr('visibility', 'hidden');
+            yAxisText
+                .append('rect')
+                .attr('width', '100')
+                .attr('height', '17')
+                .attr('fill', '#242F3F')
+                .attr('y', '-10')
+                .attr('x', '0');
+
+            yAxisText.append('text').attr('dx', '5px').attr('dy', '2px').style('font-size', '13px');
+        }
 
         if (location.pathname.includes('range')) {
             d3.select(d3Container.current).select('.targets').style('visibility', 'visible');
@@ -387,12 +407,12 @@ export default function Chart(props: ChartData) {
 
         d3.select(d3Xaxis.current)
             .select('svg')
-            .select('text')
+            .select('g')
             .style('transform', 'translateX(' + scaleData.xScale(nearest.date) + 'px)');
 
         d3.select(d3Yaxis.current)
             .select('svg')
-            .select('text')
+            .select('g')
             .style('transform', 'translateY(' + scaleData.yScale(crosshairData[0].y) + 'px)');
     };
 
@@ -1654,20 +1674,20 @@ export default function Chart(props: ChartData) {
                                 ) {
                                     d3.select(selectedCandle)
                                         .style('fill', (d: any) =>
-                                            d.close > d.open ? '#7371FC' : '#CDC1FF',
+                                            d.close > d.open ? upBodyColor : downBodyColor,
                                         )
                                         .style('stroke', (d: any) =>
-                                            d.close > d.open ? '#7371FC' : '#CDC1FF',
+                                            d.close > d.open ? upBorderColor : downBorderColor,
                                         );
                                 }
                                 if (event.currentTarget === selectedCandle) {
                                     popup.style('visibility', 'hidden');
                                     d3.select(event.currentTarget)
                                         .style('fill', (d: any) =>
-                                            d.close > d.open ? '#7371FC' : '#CDC1FF',
+                                            d.close > d.open ? upBodyColor : downBodyColor,
                                         )
                                         .style('stroke', (d: any) =>
-                                            d.close > d.open ? '#7371FC' : '#CDC1FF',
+                                            d.close > d.open ? upBorderColor : downBorderColor,
                                         );
 
                                     setIsChartSelected(false);
@@ -1675,6 +1695,8 @@ export default function Chart(props: ChartData) {
                                     setSelectedCandleState(undefined);
                                 } else {
                                     selectedCandle = event.currentTarget;
+                                    // console.log({ selectedCandle });
+
                                     setSelectedCandleState(() => {
                                         return event.currentTarget;
                                     });
@@ -1916,44 +1938,27 @@ export default function Chart(props: ChartData) {
                     const dateIndcLocation = scaleData.xScale(crosshairData[0].x);
                     const valueIndcLocation = event.offsetY;
 
-                    if (
-                        d3.select(d3PlotArea.current).select('svg').select('defs').node() === null
-                    ) {
-                        const filterTag = d3
-                            .select(d3PlotArea.current)
-                            .select('svg')
-                            .append('defs')
-                            .append('filter')
-                            .attr('x', 0)
-                            .attr('y', 0)
-                            .attr('width', 1)
-                            .attr('height', 1)
-                            .attr('id', 'textStyle');
-
-                        filterTag
-                            .append('feFlood')
-                            .attr('flood-color', '#242F3F')
-                            .attr('result', 'bg');
-                        const feMergeTag = filterTag.append('feMerge');
-                        feMergeTag.append('feMergeNode').attr('in', 'bg');
-                        feMergeTag.append('feMergeNode').attr('in', 'SourceGraphic');
-                    }
-
-                    d3.select(d3Xaxis.current)
+                    const xAxisText = d3
+                        .select(d3Xaxis.current)
                         .select('svg')
-                        .select('text')
-                        .style('filter', 'url(#textStyle)')
+                        .select('g')
                         .style('visibility', 'visible')
-                        .text(moment(crosshairData[0].x).format('DD MMM  HH:mm'))
                         .style('transform', 'translateX(' + dateIndcLocation + 'px)');
 
-                    d3.select(d3Yaxis.current)
-                        .select('svg')
+                    xAxisText
                         .select('text')
-                        .style('filter', 'url(#textStyle)')
+                        .text(moment(crosshairData[0].x).format('DD MMM  HH:mm'));
+
+                    const yAxisText = d3
+                        .select(d3Yaxis.current)
+                        .select('svg')
+                        .select('g')
                         .style('visibility', 'visible')
-                        .text(indicatorFormatter(scaleData.yScale.invert(event.offsetY)))
                         .style('transform', 'translateY(' + valueIndcLocation + 'px)');
+
+                    yAxisText
+                        .select('text')
+                        .text(indicatorFormatter(scaleData.yScale.invert(event.offsetY)));
 
                     render();
                 });
@@ -2113,8 +2118,9 @@ export default function Chart(props: ChartData) {
     useEffect(() => {
         if (!isCandleSelected && popup !== undefined) {
             d3.select(selectedCandleState)
-                .style('fill', (d: any) => (d.close > d.open ? '#7371FC' : '#CDC1FF'))
-                .style('stroke', (d: any) => (d.close > d.open ? '#7371FC' : '#CDC1FF'));
+                .style('fill', (d: any) => (d.close > d.open ? upBodyColor : downBodyColor))
+                .style('stroke', (d: any) => (d.close > d.open ? upBorderColor : downBorderColor));
+            // .style('stroke', (d: any) => (d.close > d.open ? '#7371FC' : '#CDC1FF'));
 
             popup.style('visibility', 'hidden');
         }

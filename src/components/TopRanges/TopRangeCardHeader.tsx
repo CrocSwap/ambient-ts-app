@@ -14,7 +14,7 @@ export default function TopRangeCardHeader() {
                 <p className={styles.tokens}>ETH/USDC</p>
                 <p className={styles.token}>ETH</p>
                 <p className={styles.token}>USDC</p>
-                <p>APY</p>
+                <p>APR</p>
                 <p>Status</p>
             </div>
 

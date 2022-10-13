@@ -71,8 +71,9 @@ export default function CandleChart(props: CandleChartProps) {
             .decorate((selection: any) => {
                 selection
                     .enter()
-                    .style('fill', (d: any) => (d.close > d.open ? '#7371FC' : '#CDC1FF'))
-                    .style('stroke', (d: any) => (d.close > d.open ? '#7371FC' : '#CDC1FF'));
+                    .style('fill', (d: any) => (d.close > d.open ? '#CDC1FF' : '#171D27'))
+                    // .style('fill', (d: any) => (d.close > d.open ? '#7371FC' : '#CDC1FF'))
+                    .style('stroke', (d: any) => (d.close > d.open ? '#CDC1FF' : '#7371FC'));
             })
             .xScale(xScale)
             .yScale(yScale);
