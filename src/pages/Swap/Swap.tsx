@@ -446,6 +446,7 @@ export default function Swap(props: SwapPropsIF) {
                         isDenomBase={tradeData.isDenomBase}
                     />
                     {isUserLoggedIn ? (
+                        poolExists &&
                         !isTokenAAllowanceSufficient &&
                         parseFloat(tokenAInputQty) > 0 &&
                         tokenAInputQty !== 'Infinity' ? (
