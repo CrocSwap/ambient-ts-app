@@ -1672,20 +1672,20 @@ export default function Chart(props: ChartData) {
                                 ) {
                                     d3.select(selectedCandle)
                                         .style('fill', (d: any) =>
-                                            d.close > d.open ? '#7371FC' : '#CDC1FF',
+                                            d.close > d.open ? upBodyColor : downBodyColor,
                                         )
                                         .style('stroke', (d: any) =>
-                                            d.close > d.open ? '#7371FC' : '#CDC1FF',
+                                            d.close > d.open ? upBorderColor : downBorderColor,
                                         );
                                 }
                                 if (event.currentTarget === selectedCandle) {
                                     popup.style('visibility', 'hidden');
                                     d3.select(event.currentTarget)
                                         .style('fill', (d: any) =>
-                                            d.close > d.open ? '#7371FC' : '#CDC1FF',
+                                            d.close > d.open ? upBodyColor : downBodyColor,
                                         )
                                         .style('stroke', (d: any) =>
-                                            d.close > d.open ? '#7371FC' : '#CDC1FF',
+                                            d.close > d.open ? upBorderColor : downBorderColor,
                                         );
 
                                     setIsChartSelected(false);
@@ -1693,6 +1693,8 @@ export default function Chart(props: ChartData) {
                                     setSelectedCandleState(undefined);
                                 } else {
                                     selectedCandle = event.currentTarget;
+                                    // console.log({ selectedCandle });
+
                                     setSelectedCandleState(() => {
                                         return event.currentTarget;
                                     });
@@ -2114,8 +2116,9 @@ export default function Chart(props: ChartData) {
     useEffect(() => {
         if (!isCandleSelected && popup !== undefined) {
             d3.select(selectedCandleState)
-                .style('fill', (d: any) => (d.close > d.open ? '#7371FC' : '#CDC1FF'))
-                .style('stroke', (d: any) => (d.close > d.open ? '#7371FC' : '#CDC1FF'));
+                .style('fill', (d: any) => (d.close > d.open ? upBodyColor : downBodyColor))
+                .style('stroke', (d: any) => (d.close > d.open ? upBorderColor : downBorderColor));
+            // .style('stroke', (d: any) => (d.close > d.open ? '#7371FC' : '#CDC1FF'));
 
             popup.style('visibility', 'hidden');
         }

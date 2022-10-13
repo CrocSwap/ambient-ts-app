@@ -53,7 +53,6 @@ export default function RangeDetails(props: IRangeDetailsProps) {
         lastBlockNumber,
         position,
         positionApy,
-
         closeGlobalModal,
     } = props;
 
