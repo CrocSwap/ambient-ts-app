@@ -67,7 +67,7 @@ export const useProcessOrder = (limitOrder: ILimitOrderState) => {
     const baseTokenAddressLowerCase = limitOrder.base.toLowerCase();
     const quoteTokenAddressLowerCase = limitOrder.quote.toLowerCase();
 
-    const transactionMatchesSelectedTokens =
+    const orderMatchesSelectedTokens =
         selectedBaseToken === baseTokenAddressLowerCase &&
         selectedQuoteToken === quoteTokenAddressLowerCase;
 
@@ -253,6 +253,8 @@ export const useProcessOrder = (limitOrder: ILimitOrderState) => {
         baseTokenSymbol,
         quoteTokenSymbol,
         isDenomBase,
+        baseTokenAddressLowerCase,
+        quoteTokenAddressLowerCase,
 
         // open order status
         isOrderFilled,
@@ -272,6 +274,6 @@ export const useProcessOrder = (limitOrder: ILimitOrderState) => {
         positionLiqTotalUSD,
 
         // transaction matches selected token
-        transactionMatchesSelectedTokens,
+        orderMatchesSelectedTokens,
     };
 };

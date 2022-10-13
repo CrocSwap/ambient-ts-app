@@ -4,6 +4,7 @@ import { useProcessOrder } from '../../../../../utils/hooks/useProcessOrder';
 import OpenOrderStatus from '../../../../Global/OpenOrderStatus/OpenOrderStatus';
 import OrdersMenu from '../../../../Global/Tabs/TableMenu/TableMenuComponents/OrdersMenu';
 import OrderDetails from '../../../../OrderDetails/OrderDetails';
+import { Dispatch, SetStateAction, useEffect } from 'react';
 
 interface OrderRowPropsIF {
     showColumns: boolean;
@@ -13,10 +14,24 @@ interface OrderRowPropsIF {
 
     openGlobalModal: (content: React.ReactNode) => void;
     closeGlobalModal: () => void;
+
+    currentPositionActive: string;
+    setCurrentPositionActive: Dispatch<SetStateAction<string>>;
+
+    isShowAllEnabled: boolean;
 }
 export default function OrderRow(props: OrderRowPropsIF) {
-    const { showColumns, ipadView, limitOrder, showSidebar, openGlobalModal, closeGlobalModal } =
-        props;
+    const {
+        showColumns,
+        ipadView,
+        limitOrder,
+        showSidebar,
+        openGlobalModal,
+        closeGlobalModal,
+        currentPositionActive,
+        setCurrentPositionActive,
+        isShowAllEnabled,
+    } = props;
 
     const {
         posHashTruncated,
@@ -33,6 +48,7 @@ export default function OrderRow(props: OrderRowPropsIF) {
         quoteTokenSymbol,
         isOwnerActiveAccount,
         ensName,
+        orderMatchesSelectedTokens,
     } = useProcessOrder(limitOrder);
 
     const orderMenuProps = {
@@ -45,20 +61,52 @@ export default function OrderRow(props: OrderRowPropsIF) {
 
     const usernameStyle = ensName || isOwnerActiveAccount ? 'gradient_text' : 'base_color';
 
+    const userPositionStyle =
+        userNameToDisplay === 'You' && isShowAllEnabled ? styles.border_left : null;
+
     const openDetailsModal = () =>
         openGlobalModal(
             <OrderDetails limitOrder={limitOrder} closeGlobalModal={closeGlobalModal} />,
         );
+    const orderDomId =
+        limitOrder.limitOrderIdentifier === currentPositionActive
+            ? `order-${limitOrder.limitOrderIdentifier}`
+            : '';
 
+    // console.log(rangeDetailsProps.lastBlockNumber);
+
+    function scrollToDiv() {
+        const element = document.getElementById(orderDomId);
+        element?.scrollIntoView({ behavior: 'smooth', block: 'end', inline: 'nearest' });
+    }
+
+    useEffect(() => {
+        limitOrder.limitOrderIdentifier === currentPositionActive ? scrollToDiv() : null;
+    }, [currentPositionActive]);
+
+    const activePositionStyle =
+        limitOrder.limitOrderIdentifier === currentPositionActive
+            ? styles.active_position_style
+            : '';
+
+    if (!orderMatchesSelectedTokens) return null;
     return (
-        <ul className={styles.row_container}>
+        <ul
+            className={`${styles.row_container} ${activePositionStyle} ${userPositionStyle}`}
+            id={orderDomId}
+            onClick={() =>
+                limitOrder.limitOrderIdentifier === currentPositionActive
+                    ? null
+                    : setCurrentPositionActive('')
+            }
+        >
             {!showColumns && (
-                <li data-label='id' className='base_color'>
+                <li onClick={openDetailsModal} data-label='id' className='base_color'>
                     {posHashTruncated}
                 </li>
             )}
             {!showColumns && (
-                <li data-label='wallet' className={usernameStyle}>
+                <li onClick={openDetailsModal} data-label='wallet' className={usernameStyle}>
                     {userNameToDisplay}
                 </li>
             )}
@@ -69,18 +117,18 @@ export default function OrderRow(props: OrderRowPropsIF) {
                 </li>
             )}
             {!ipadView && (
-                <li data-label='price' className={sellOrderStyle}>
+                <li onClick={openDetailsModal} data-label='price' className={sellOrderStyle}>
                     {truncatedDisplayPrice}
                 </li>
             )}
 
             {!showColumns && (
-                <li data-label='side' className={sellOrderStyle}>
+                <li onClick={openDetailsModal} data-label='side' className={sellOrderStyle}>
                     {side}
                 </li>
             )}
             {!showColumns && (
-                <li data-label='type' className={sellOrderStyle}>
+                <li onClick={openDetailsModal} data-label='type' className={sellOrderStyle}>
                     Order
                 </li>
             )}
@@ -90,18 +138,22 @@ export default function OrderRow(props: OrderRowPropsIF) {
                     <p>Order</p>
                 </li>
             )}
-            <li data-label='value' className='gradient_text'>
+            <li onClick={openDetailsModal} data-label='value' className='gradient_text'>
                 {' '}
                 {usdValue}
             </li>
 
             {!showColumns && !showSidebar && (
-                <li data-label={baseTokenSymbol} className='color_white'>
+                <li onClick={openDetailsModal} data-label={baseTokenSymbol} className='color_white'>
                     <p>{baseDisplayFrontend}</p>
                 </li>
             )}
             {!showColumns && !showSidebar && (
-                <li data-label={quoteTokenSymbol} className='color_white'>
+                <li
+                    onClick={openDetailsModal}
+                    data-label={quoteTokenSymbol}
+                    className='color_white'
+                >
                     <p>{quoteDisplayFrontend}</p>
                 </li>
             )}
@@ -121,7 +173,7 @@ export default function OrderRow(props: OrderRowPropsIF) {
                 </li>
             )}
             {!ipadView && (
-                <li data-label='status'>
+                <li onClick={openDetailsModal} data-label='status'>
                     <OpenOrderStatus isFilled={isOrderFilled} />
                 </li>
             )}

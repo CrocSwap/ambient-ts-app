@@ -133,12 +133,17 @@ export default function OrderCardHeader(props: OrderCardHeaderPropsIF) {
         </div>
     );
     return (
-        <>
-            {mobileHeaderDisplay}
-            <div className={styles.main_container}>
-                <div className={styles.row_container}>{columnHeaderContent}</div>
-                <div></div>
-            </div>
-        </>
+        // <>
+        //     {mobileHeaderDisplay}
+        //     <div className={styles.main_container}>
+        //         <div className={styles.row_container}>{columnHeaderContent}</div>
+        //         <div></div>
+        //     </div>
+        // </>
+        <p>
+            This file has been refactored and updated to OrderHeader.tsx on 10/13/2022. It is no
+            longer in use. If not uncommented by 12/13/2022, it can be safely deleted, along with
+            OrderCardHeader.module.css. -Jr
+        </p>
     );
 }

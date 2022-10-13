@@ -33,6 +33,20 @@
 
 } */
 
+.active_position_style{
+  /* background: var(--dark3); */
+
+  background-image: linear-gradient(to right, rgba(255,255,255,0) 50%, #171d27 50%);
+  background-position: -0% 0;
+  background-size: 200% auto;
+  transition: background-position 0.5s ease-out;
+
+  background-position: -99.99% 0;
+}
+
+.border_left{
+  border-left: 1px solid var(--text-grey-white);
+}
 
 .main_list_container{
     /* width: 100%;
@@ -96,6 +110,7 @@ color: rgba(235, 235, 255, 0.4);
 }
 .row_container{
     width: 100%;
+   
 }
 .row_container li{
     font-weight: 300;
