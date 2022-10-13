@@ -383,6 +383,8 @@ export default function Chart(props: ChartData) {
             Math.abs(event.sourceEvent.offsetX - scaleData.xScale(d.date)),
         )[1];
 
+        setCrosshairData([{ x: scaleData.xScale(nearest.date), y: -1 }]);
+
         d3.select(d3Xaxis.current)
             .select('svg')
             .select('text')
@@ -393,6 +395,7 @@ export default function Chart(props: ChartData) {
             .select('text')
             .style('transform', 'translateY(' + scaleData.yScale(crosshairData[0].y) + 'px)');
     };
+
     // Zoom
     useEffect(() => {
         if (scaleData !== undefined) {
@@ -441,8 +444,6 @@ export default function Chart(props: ChartData) {
                         dispatch(setCandleDomains(candleDomain));
                     }
 
-                    relocationCrosshairText(event);
-
                     // PANNING
                     if (event.sourceEvent && event.sourceEvent.type != 'wheel') {
                         const domainY = scaleData.yScale.domain();
@@ -457,6 +458,7 @@ export default function Chart(props: ChartData) {
                     }
 
                     addHorizontalLineArea();
+                    relocationCrosshairText(event);
 
                     lastY = t.y;
 
@@ -2189,6 +2191,10 @@ export default function Chart(props: ChartData) {
                                 crosshairData={crosshairData}
                                 setsubChartValues={setsubChartValues}
                                 xScale={scaleData !== undefined ? scaleData.xScale : undefined}
+                                xScaleCopy={
+                                    scaleData !== undefined ? scaleData.xScaleCopy : undefined
+                                }
+                                render={render}
                             />
                         </>
                     )}
@@ -2210,6 +2216,10 @@ export default function Chart(props: ChartData) {
                                 crosshairData={crosshairData}
                                 setsubChartValues={setsubChartValues}
                                 xScale={scaleData !== undefined ? scaleData.xScale : undefined}
+                                xScaleCopy={
+                                    scaleData !== undefined ? scaleData.xScaleCopy : undefined
+                                }
+                                render={render}
                             />
                         </>
                     )}
