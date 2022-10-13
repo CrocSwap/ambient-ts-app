@@ -118,6 +118,7 @@ import { fetchPoolRecentChanges } from './functions/fetchPoolRecentChanges';
 import { fetchUserRecentChanges } from './functions/fetchUserRecentChanges';
 import { getTransactionData } from './functions/getTransactionData';
 import AppOverlay from '../components/Global/AppOverlay/AppOverlay';
+import useDebounce from './hooks/useDebounce';
 
 const cachedFetchAddress = memoizeFetchAddress();
 const cachedFetchNativeTokenBalance = memoizeFetchNativeTokenBalance();
@@ -989,20 +990,7 @@ export default function App() {
                                         duration: activePeriod,
                                         candles: candles,
                                     });
-                                    // dispatch(
-                                    //     setCandles({
-                                    //         pool: {
-                                    //             baseAddress: baseTokenAddress.toLowerCase(),
-                                    //             quoteAddress: quoteTokenAddress.toLowerCase(),
-                                    //             poolIdx: chainData.poolIndex,
-                                    //             network: chainData.chainId,
-                                    //         },
-                                    //         duration: activePeriod,
-                                    //         candles: candles,
-                                    //     }),
-                                    // );
                                 }
-                                // });
                             }
                         })
                         .catch(console.log);
@@ -1109,6 +1097,92 @@ export default function App() {
         mainnetBaseTokenAddress !== '' && mainnetQuoteTokenAddress !== '',
     );
 
+    const domainBoundaryInSeconds = Math.floor((tradeData.candleDomains.domainBoundry || 0) / 1000);
+
+    const debouncedBoundary = useDebounce(domainBoundaryInSeconds, 250); // debounce 1/4 second
+
+    useEffect(() => {
+        // console.log({ debouncedBoundary });
+        // console.log({ activePeriod });
+        // console.log({ candleData });
+
+        function getTime() {
+            if (candleData) {
+                return candleData.candles.map((d) => d.time);
+            } else {
+                return [0];
+            }
+        }
+        function getMinTime() {
+            return Math.min(...getTime());
+        }
+
+        const minTime = getMinTime();
+        // console.log({ minTime });
+
+        const numDurationsNeeded = Math.floor((minTime - debouncedBoundary) / activePeriod);
+
+        if (httpGraphCacheServerDomain && debouncedBoundary && minTime) {
+            // console.log('fetching candles');
+            const candleSeriesCacheEndpoint = httpGraphCacheServerDomain + '/candle_series?';
+
+            fetch(
+                candleSeriesCacheEndpoint +
+                    new URLSearchParams({
+                        base: mainnetBaseTokenAddress.toLowerCase(),
+                        quote: mainnetQuoteTokenAddress.toLowerCase(),
+                        poolIdx: chainData.poolIndex.toString(),
+                        period: activePeriod.toString(),
+                        time: minTime.toString(),
+                        // time: debouncedBoundary.toString(),
+                        n: numDurationsNeeded.toString(), // positive integer
+                        // page: '0', // nonnegative integer
+                        chainId: '0x1',
+                        dex: 'all',
+                        poolStats: 'true',
+                        concise: 'true',
+                        poolStatsChainIdOverride: '0x5',
+                        poolStatsBaseOverride: baseTokenAddress.toLowerCase(),
+                        poolStatsQuoteOverride: quoteTokenAddress.toLowerCase(),
+                        poolStatsPoolIdxOverride: chainData.poolIndex.toString(),
+                    }),
+            )
+                .then((response) => response?.json())
+                .then((json) => {
+                    const fetchedCandles = json?.data;
+
+                    if (fetchedCandles && candleData) {
+                        const newCandles: CandleData[] = [];
+                        const updatedCandles: CandleData[] = candleData.candles;
+
+                        for (let index = 0; index < fetchedCandles.length; index++) {
+                            const messageCandle = fetchedCandles[index];
+                            const indexOfExistingCandle = candleData.candles.findIndex(
+                                (savedCandle) => savedCandle.time === messageCandle.time,
+                            );
+
+                            if (indexOfExistingCandle === -1) {
+                                newCandles.push(messageCandle);
+                            } else if (
+                                JSON.stringify(candleData.candles[indexOfExistingCandle]) !==
+                                JSON.stringify(messageCandle)
+                            ) {
+                                updatedCandles[indexOfExistingCandle] = messageCandle;
+                            }
+                        }
+                        // console.log({ newCandles });
+                        const newCandleData: CandlesByPoolAndDuration = {
+                            pool: candleData.pool,
+                            duration: candleData.duration,
+                            candles: newCandles.concat(updatedCandles),
+                        };
+                        setCandleData(newCandleData);
+                    }
+                })
+                .catch(console.log);
+        }
+    }, [debouncedBoundary]);
+
     useEffect(() => {
         if (candlesMessage) {
             const lastMessageData = JSON.parse(candlesMessage.data).data;
@@ -1139,34 +1213,7 @@ export default function App() {
                     candles: newCandles.concat(updatedCandles),
                 };
                 setCandleData(newCandleData);
-                // setCandleData((savedCandles) => {
-                //     // console.log({ savedCandles });
-                //     if (newCandles && savedCandles) {
-                //         const newCandleData: CandlesByPoolAndDuration = {
-                //             pool: savedCandles.pool,
-                //             duration: savedCandles.duration,
-                //             candles: savedCandles.candles.concat(newCandles),
-                //         };
-                //         return newCandleData;
-                //     } else {
-                //         return savedCandles;
-                //     }
-                // });
-                // dispatch(
-                //     addCandles({
-                //         pool: {
-                //             baseAddress: baseTokenAddress,
-                //             quoteAddress: quoteTokenAddress,
-                //             poolIdx: chainData.poolIndex,
-                //             network: chainData.chainId,
-                //         },
-                //         duration: activePeriod,
-                //         candles: lastMessageData,
-                //     }),
-                // );
-                // });
             }
-            // console.log({ lastMessageData });
         }
     }, [candlesMessage]);
 
@@ -2029,6 +2076,7 @@ export default function App() {
                                     limitRate={''}
                                     importedTokens={importedTokens}
                                     poolExists={poolExists}
+                                    showSidebar={showSidebar}
                                 />
                             }
                         >

@@ -70,6 +70,7 @@ interface TradePropsIF {
     poolPriceNonDisplay: number | undefined;
     importedTokens: TokenIF[];
     poolExists: boolean | null;
+    showSidebar: boolean;
 }
 
 // React functional component
@@ -107,6 +108,7 @@ export default function Trade(props: TradePropsIF) {
         currentTxActiveInTransactions,
         setCurrentTxActiveInTransactions,
         poolExists,
+        showSidebar,
     } = props;
 
     useUrlParams(chainId, isInitialized);
@@ -194,7 +196,8 @@ export default function Trade(props: TradePropsIF) {
 
     const [upBodyColor] = useState<string>('#CDC1FF');
     const [upBorderColor] = useState<string>('#CDC1FF');
-    const [downBodyColor] = useState<string>('#24243e');
+    const [downBodyColor] = useState<string>('#171D27');
+    // const [downBodyColor] = useState<string>('#24243e');
     const [downBorderColor] = useState<string>('#7371FC');
     // const [upBodyColor, setUpBodyColor] = useState<string>('#CDC1FF');
     // const [upBorderColor, setUpBorderColor] = useState<string>('#CDC1FF');
@@ -522,6 +525,7 @@ export default function Trade(props: TradePropsIF) {
                                 openGlobalModal={props.openGlobalModal}
                                 closeGlobalModal={props.closeGlobalModal}
                                 importedTokens={importedTokens}
+                                showSidebar={showSidebar}
                             />
                         </div>
                     </motion.div>
