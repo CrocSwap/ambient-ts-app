@@ -233,7 +233,10 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
     ]);
 
     const handleSwapButtonMessage = (tokenAAmount: number) => {
-        if (poolPriceDisplay === 0 || poolPriceDisplay === Infinity) {
+        if (!poolExists) {
+            setSwapAllowed(false);
+            setSwapButtonErrorMessage('Pool Not Initialized');
+        } else if (poolPriceDisplay === 0 || poolPriceDisplay === Infinity) {
             setSwapAllowed(false);
             setSwapButtonErrorMessage('Invalid Token Pair');
         } else if (isNaN(tokenAAmount) || tokenAAmount <= 0) {
