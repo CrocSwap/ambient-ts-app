@@ -38,7 +38,6 @@ export default function MessageInput(props: MessageInputProps, prop: PortfolioBa
     const [message, setMessage] = useState('');
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
     const { user, account, enableWeb3, isWeb3Enabled, isAuthenticated } = useMoralis();
-    const [positionIsActive, setPositionIsActive] = useState(false);
 
     const handleEmojiClick = (event: any, emoji: any) => {
         let msg = message;
@@ -54,15 +53,6 @@ export default function MessageInput(props: MessageInputProps, prop: PortfolioBa
         setShowEmojiPicker(false);
     };
 
-    function handlePositionShow() {
-        /* setShowPosition(!showPosition);*/
-        setPositionIsActive(!positionIsActive);
-    }
-
-    function handleMessageWithPosition() {
-        setMessage(positionIsActive ? '/position 0xaBcD...1234      ' + message : '');
-    }
-
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const _handleKeyDown = (e: any) => {
         if (e.key === 'Enter') {
@@ -74,8 +64,6 @@ export default function MessageInput(props: MessageInputProps, prop: PortfolioBa
 
     const handleSendMsg = async (msg: string) => {
         _socket.emit('send-msg', {
-            from: '62f24f3ff40188d467c532e8',
-            to: '62fa389c897f9778e2eb863f',
             message: msg,
             roomInfo: props.room,
         });
@@ -119,18 +107,12 @@ export default function MessageInput(props: MessageInputProps, prop: PortfolioBa
                             : 'Type to chat. Enter to submit.'
                     }
                     disabled={!isAuthenticated || !isWeb3Enabled}
-                    className={!positionIsActive ? styles.input_text : styles.input_text_position}
+                    className={styles.input_text}
                     onKeyDown={_handleKeyDown}
                     value={message}
                     onChange={onChangeMessage}
                 />
-                <BsSlashSquare
-                    style={positionIsActive ? { color: '#5FA2FF' } : { color: '' }}
-                    onClick={() => {
-                        handlePositionShow();
-                        handleMessageWithPosition();
-                    }}
-                />
+
                 <BsEmojiSmileFill onClick={handleEmojiPickerHideShow} />
             </div>
             {showEmojiPicker && (

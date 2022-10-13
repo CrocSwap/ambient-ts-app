@@ -6,7 +6,7 @@
     align-items: center;
     padding: 1px;
     grid-gap: 10px;
-    gap: 10px;
+    gap: 1px;
     height: auto;
     background-image: linear-gradient(to right top, #7371fc, #887ffd, #9a8efe, #ab9dfe, #baacff, #baacff, #baacff, #baacff, #ab9dfe, #9a8efe, #887ffd, #7371fc);
     border-radius: 4px;
@@ -22,6 +22,7 @@
     border-radius: 4px;
     display: flex;
     flex-direction: column;
+    
 
 }
 
@@ -41,6 +42,26 @@
     color: rgba(235, 235, 255, 0.4);
 }
 
+.tokens_apy {
+    margin-right: 137px;
+    flex-grow: 4;
+    font-weight: lighter;
+    color: rgba(141, 248, 168, 0.836);
+}
+
+.tokens_min_price {
+    flex-grow: 4;
+    font-weight: lighter;
+    color: rgba(252, 252, 252, 0.822);
+
+}
+
+.tokens_max_price {
+    flex-grow: 4;
+    font-weight: lighter;
+    color: rgba(77, 113, 212, 0.863);
+}
+
 .address {
 
     color: rgba(235, 235, 255, 0.4);
@@ -48,10 +69,14 @@
     line-height: 22px;
     font-family: 'Lexend Deca';
     margin-bottom: 5px;
+    margin-left: -79px;
 }
 
 .address_box {
     flex-grow: 4;
+    margin-left: 127px;
+
+    
 }
 
 .position_info {

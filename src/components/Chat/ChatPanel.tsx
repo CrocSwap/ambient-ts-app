@@ -13,6 +13,8 @@ import { Message } from './Model/MessageModel';
 import { PoolIF } from '../../utils/interfaces/PoolIF';
 import { TokenIF } from '../../utils/interfaces/TokenIF';
 import { targetData } from '../../utils/state/tradeDataSlice';
+import { useMoralis } from 'react-moralis';
+import { id } from 'ethers/lib/utils';
 
 interface currentPoolInfo {
     tokenA: TokenIF;
@@ -54,6 +56,8 @@ export default function ChatPanel(props: ChatProps) {
     const [room, setRoom] = useState('Global');
     const [showChatPanel, setShowChatPanel] = useState(true);
     const [selected, setSelected] = useState('');
+    const { user, account, enableWeb3, isWeb3Enabled, isAuthenticated } = useMoralis();
+    const [currentUser, setCurrentUser] = useState('');
 
     useEffect(() => {
         props.isFullScreen ? setShowChatPanel(true) : null;
@@ -64,14 +68,33 @@ export default function ChatPanel(props: ChatProps) {
     useEffect(() => {
         _socket.connect();
     }, [_socket]);
-    const currentUser = '62f24f3ff40188d467c532e8';
+
+    useEffect(() => {
+        const result = getID();
+        result.then((res) => {
+            setCurrentUser(res._id);
+        });
+    }, []);
+
+    async function getID() {
+        const response = await fetch('http://localhost:5000/api/auth/getUserByAccount/' + account, {
+            method: 'GET',
+        });
+        const data = await response.json();
+        if (data.status === 'OK') {
+            return data;
+        } else {
+            console.log(data);
+        }
+    }
 
     useEffect(() => {
         _socket.on('msg-recieve', (mostRecentMessages) => {
             setMessages([...mostRecentMessages]);
-            if (scrollBottomControl) {
-                scrollToBottom();
-            }
+            // if (scrollBottomControl) {
+            scrollToBottom();
+            console.log('a');
+            // }
         });
     }, [messages]);
 
@@ -90,6 +113,7 @@ export default function ChatPanel(props: ChatProps) {
 
     function handleCloseChatPanel() {
         props.setChatStatus(false);
+        console.log(getID());
     }
 
     const getMentionedMessage = async () => {
@@ -113,7 +137,7 @@ export default function ChatPanel(props: ChatProps) {
 
     useEffect(() => {
         scrollToBottom();
-    }, [props.chatStatus, room]);
+    }, [props.chatStatus, room, messages]);
 
     const header = (
         <header className={styles.modal_header}>
@@ -177,7 +201,7 @@ export default function ChatPanel(props: ChatProps) {
                             >
                                 {messages.map((item) => (
                                     <div key={item._id} style={{ width: '90%', marginBottom: 4 }}>
-                                        {item.sender === currentUser ? (
+                                        {item.sender === '63357aa477c38971c51c74f9' ? (
                                             <>
                                                 <DividerDark
                                                     changeColor

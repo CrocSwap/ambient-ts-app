@@ -48,8 +48,7 @@
     line-height: 15px;
     flex-grow: 5px !important;
     margin: 10px;
-    width: 100%;
-
+    width: 85%;
     font-family: 'Lexend Deca';
     font-style: normal;
     font-weight: 300;
@@ -58,18 +57,23 @@
     color: #EBEBFF;
     white-space: pre-line;
     align-self: stretch;
+    margin-left: 62px
 }
 
 .right_image_box {
     display: flex;
     right: 0%;
-    float: right;
+    float: left;
     vertical-align: middle;
+    margin-left: 301px;
+    
+
+    
 }
 
 .sent_message_body {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     width: 100%;
     padding: 5px;
     grid-template-columns: 1fr 1fr;
@@ -77,8 +81,9 @@
 }
 
 .message_item {
-    width: 100%;
     cursor: default;
+    display: flex;
+    flex-direction: row;
 }
 
 p {

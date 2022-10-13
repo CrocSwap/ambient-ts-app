@@ -4,8 +4,8 @@
     /* Auto layout */
 
     display: flex;
-    flex-direction: row;
-    align-items: flex-end;
+    flex-direction: column-reverse;
+    align-items: flex-start;
     padding: 0px 4px 8px;
     gap: 7px;
 
@@ -51,6 +51,8 @@
     white-space: pre-line;
     align-self: stretch;
     padding: 9px 4px 0px;
+    width: 261%;
+    margin-left: 5px;
 
 
 }
@@ -85,8 +87,9 @@
     flex-grow: 5 !important;
     display: flex;
     flex-direction: column;
-    height: 53px;
-    padding: 12px 0px 27px;
+    height: auto;
+    min-height: 53%;
+    padding: -2px 0px 27px;
 }
 
 .message_date {
@@ -108,9 +111,16 @@
 
     /* Inside auto layout */
     order: 0;
+    margin-left: 200px;
+
 
 }
 
 p {
     word-break: break-all;
+}
+
+.message_row{
+    display: flex;
+    flex-direction: row;
 }
