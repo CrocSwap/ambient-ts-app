@@ -191,10 +191,10 @@ export default function Swap(props: SwapPropsIF) {
     };
 
     useEffect(() => {
-        if (poolPriceDisplay === undefined) {
+        if (poolExists === null) {
             setSwapAllowed(false);
-            setSwapButtonErrorMessage('…');
-        } else if (!poolExists) {
+            setSwapButtonErrorMessage('...');
+        } else if (poolExists === false) {
             setSwapAllowed(false);
             setSwapButtonErrorMessage('Pool Not Initialized');
         }
@@ -203,10 +203,7 @@ export default function Swap(props: SwapPropsIF) {
     const [priceImpactExceedsTolerance, setPriceImpactExceedsTolerance] = useState(false);
 
     useEffect(() => {
-        console.log({ priceImpact });
         const priceImpactPercentChange = priceImpact?.percentChange;
-        // console.log({ priceImpactPercentChange });
-        // console.log({ slippageTolerancePercentage });
         if (priceImpactPercentChange) {
             if (Math.abs(priceImpactPercentChange) > slippageTolerancePercentage / 100) {
                 console.log('price impace exceeds slippage tolerance');
@@ -219,39 +216,14 @@ export default function Swap(props: SwapPropsIF) {
     }, [priceImpact, slippageTolerancePercentage]);
 
     async function initiateSwap() {
-        // if (!provider) return;
-
         resetConfirmation();
-
-        // if (!(provider as ethers.providers.WebSocketProvider).getSigner()) {
-        //     return;
-        // }
         if (!crocEnv) return;
-
         const sellTokenAddress = tokenA.address;
         const buyTokenAddress = tokenB.address;
         const sellTokenQty = (document.getElementById('sell-quantity') as HTMLInputElement)?.value;
         const buyTokenQty = (document.getElementById('buy-quantity') as HTMLInputElement)?.value;
         const qty = isTokenAPrimary ? sellTokenQty : buyTokenQty;
         const isQtySell = isTokenAPrimary;
-
-        console.log({ slippageTolerancePercentage });
-
-        // const env = new CrocEnv(provider);
-
-        // const impact = await calcImpact(
-        //     isQtySell,
-        //     env,
-        //     sellTokenAddress,
-        //     buyTokenAddress,
-        //     slippageTolerancePercentage,
-        //     qty,
-        // );
-
-        console.log({ priceImpact });
-        console.log({ isWithdrawFromDexChecked });
-        console.log({ isSaveAsDexSurplusChecked });
-
         let tx;
         try {
             (tx = await (isQtySell
@@ -342,7 +314,6 @@ export default function Swap(props: SwapPropsIF) {
                     );
                 }
             } else if (isTransactionFailedError(error)) {
-                // console.log({ error });
                 receipt = error.receipt;
             }
         }
@@ -356,8 +327,6 @@ export default function Swap(props: SwapPropsIF) {
     const handleModalClose = () => {
         closeModal();
         setNewSwapTransactionHash('');
-        // setTxErrorCode(0);
-        // setTxErrorMessage('');
         resetConfirmation();
     };
 
@@ -375,7 +344,6 @@ export default function Swap(props: SwapPropsIF) {
                 initiateSwapMethod={initiateSwap}
                 onClose={handleModalClose}
                 newSwapTransactionHash={newSwapTransactionHash}
-                // setNewSwapTransactionHash={setNewSwapTransactionHash}
                 txErrorCode={txErrorCode}
                 txErrorMessage={txErrorMessage}
                 showConfirmation={showConfirmation}
@@ -416,12 +384,9 @@ export default function Swap(props: SwapPropsIF) {
             <div className={`${swapContainerStyle}`}>
                 <ContentContainer isOnTradeRoute={isOnTradeRoute}>
                     <SwapHeader
-                        // tokenPair={{ dataTokenA: tokenA, dataTokenB: tokenB }}
                         swapSlippage={swapSlippage}
                         isPairStable={isPairStable}
                         isOnTradeRoute={isOnTradeRoute}
-                        // isDenomBase={tradeData.isDenomBase}
-                        // isTokenABase={isSellTokenBase}
                     />
                     <DividerDark addMarginTop />
                     {navigationMenu}
