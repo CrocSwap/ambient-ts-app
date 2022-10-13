@@ -42,8 +42,8 @@ export default function OrderRow(props: OrderRowPropsIF) {
         userNameToDisplay,
         quoteTokenLogo,
         baseTokenLogo,
-        baseDisplayFrontend,
-        quoteDisplayFrontend,
+        baseDisplay,
+        quoteDisplay,
         isOrderFilled,
         truncatedDisplayPrice,
         side,
@@ -150,7 +150,7 @@ export default function OrderRow(props: OrderRowPropsIF) {
 
             {!showColumns && !showSidebar && (
                 <li onClick={openDetailsModal} data-label={baseTokenSymbol} className='color_white'>
-                    <p>{baseDisplayFrontend}</p>
+                    <p>{baseDisplay}</p>
                 </li>
             )}
             {!showColumns && !showSidebar && (
@@ -159,7 +159,7 @@ export default function OrderRow(props: OrderRowPropsIF) {
                     data-label={quoteTokenSymbol}
                     className='color_white'
                 >
-                    <p>{quoteDisplayFrontend}</p>
+                    <p>{quoteDisplay}</p>
                 </li>
             )}
             {(showColumns || showSidebar) && (
@@ -167,13 +167,13 @@ export default function OrderRow(props: OrderRowPropsIF) {
                     <p className={styles.align_center}>
                         {' '}
                         <img src={baseTokenLogo} alt='' width='15px' />
-                        {baseDisplayFrontend}{' '}
+                        {baseDisplay}{' '}
                     </p>
 
                     <p className={styles.align_center}>
                         {' '}
                         <img src={quoteTokenLogo} alt='' width='15px' />
-                        {quoteDisplayFrontend}
+                        {quoteDisplay}
                     </p>
                 </li>
             )}

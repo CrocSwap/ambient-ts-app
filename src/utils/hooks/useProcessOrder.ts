@@ -45,8 +45,8 @@ export const useProcessOrder = (limitOrder: ILimitOrderState) => {
             const invPriceDecimalCorrected = limitOrder.invLimitPriceDecimalCorrected;
 
             const truncatedDisplayPrice = isDenomBase
-                ? quoteTokenCharacter + invPriceDecimalCorrected?.toPrecision(6)
-                : baseTokenCharacter + priceDecimalCorrected?.toPrecision(6);
+                ? invPriceDecimalCorrected?.toPrecision(6)
+                : priceDecimalCorrected?.toPrecision(6);
 
             setTruncatedDisplayPrice(truncatedDisplayPrice);
         } else {
@@ -211,8 +211,11 @@ export const useProcessOrder = (limitOrder: ILimitOrderState) => {
     const quoteDisplayFrontend = quantitiesAvailable
         ? `${quoteTokenCharacter}${quoteQty || '0.00'}`
         : '…';
+    const baseDisplay = quantitiesAvailable ? baseQty || '0.00' : '…';
+
+    const quoteDisplay = quantitiesAvailable ? quoteQty || '0.00' : '…';
     // ------------------------------------------------------------------
-    const usdValue = usdValueTruncated ? '$' + usdValueTruncated : '…';
+    const usdValue = usdValueTruncated ? usdValueTruncated : '…';
 
     const ensNameOrOwnerTruncated = ensName
         ? trimString(ensName, 5, 3, '…')
@@ -250,6 +253,8 @@ export const useProcessOrder = (limitOrder: ILimitOrderState) => {
         baseTokenLogo,
         baseDisplayFrontend,
         quoteDisplayFrontend,
+        baseDisplay,
+        quoteDisplay,
         baseTokenSymbol,
         quoteTokenSymbol,
         isDenomBase,
