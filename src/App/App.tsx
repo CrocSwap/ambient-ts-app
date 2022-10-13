@@ -77,8 +77,8 @@ import {
     setSimpleRangeWidth,
 } from '../utils/state/tradeDataSlice';
 import {
-    //  memoizeQuerySpotPrice,
-    querySpotPrice,
+    memoizeQuerySpotPrice,
+    // querySpotPrice,
 } from './functions/querySpotPrice';
 import { memoizeFetchAddress } from './functions/fetchAddress';
 import {
@@ -118,11 +118,13 @@ import { fetchPoolRecentChanges } from './functions/fetchPoolRecentChanges';
 import { fetchUserRecentChanges } from './functions/fetchUserRecentChanges';
 import { getTransactionData } from './functions/getTransactionData';
 import AppOverlay from '../components/Global/AppOverlay/AppOverlay';
+import useDebounce from './hooks/useDebounce';
 
 const cachedFetchAddress = memoizeFetchAddress();
 const cachedFetchNativeTokenBalance = memoizeFetchNativeTokenBalance();
 const cachedFetchErc20TokenBalances = memoizeFetchErc20TokenBalances();
 const cachedFetchTokenPrice = memoizeTokenPrice();
+const cachedQuerySpotPrice = memoizeQuerySpotPrice();
 
 const httpGraphCacheServerDomain = 'https://809821320828123.de:5000';
 const wssGraphCacheServerDomain = 'wss://809821320828123.de:5000';
@@ -427,11 +429,6 @@ export default function App() {
 
     const isLastReceiptSuccess = lastReceipt?.status === 1;
 
-    // let snackMessage = '';
-    // if (lastReceipt) {
-
-    //     snackMessage = `Transaction ${lastReceipt.transactionHash} successfully completed`;
-    // }
     const snackMessage = lastReceipt
         ? isLastReceiptSuccess
             ? `Transaction ${lastReceipt.transactionHash} successfully completed`
@@ -576,7 +573,10 @@ export default function App() {
     };
 
     // value for whether a pool exists on current chain and token pair
-    const [poolExists, setPoolExists] = useState(false);
+    // ... true => pool exists
+    // ... false => pool does not exist
+    // ... null => no crocEnv to check if pool exists
+    const [poolExists, setPoolExists] = useState<boolean | null>(null);
     useEffect(() => console.log({ poolExists }), [poolExists]);
 
     // hook to update `poolExists` when crocEnv changes
@@ -585,6 +585,7 @@ export default function App() {
             // token pair has an initialized pool on-chain
             // returns a promise object
             const doesPoolExist = crocEnv
+                // TODO: make this function pill addresses directly from URL params
                 .pool(tokenPair.dataTokenA.address, tokenPair.dataTokenB.address)
                 .isInit();
             // resolve the promise object to see if pool exists
@@ -593,7 +594,7 @@ export default function App() {
                 .then((res) => setPoolExists(res ?? false));
         } else {
             // set pool exists to false if there is no env
-            setPoolExists(false);
+            setPoolExists(null);
         }
         // run every time crocEnv updates
         // this indirectly tracks a new chain being used
@@ -988,20 +989,7 @@ export default function App() {
                                         duration: activePeriod,
                                         candles: candles,
                                     });
-                                    // dispatch(
-                                    //     setCandles({
-                                    //         pool: {
-                                    //             baseAddress: baseTokenAddress.toLowerCase(),
-                                    //             quoteAddress: quoteTokenAddress.toLowerCase(),
-                                    //             poolIdx: chainData.poolIndex,
-                                    //             network: chainData.chainId,
-                                    //         },
-                                    //         duration: activePeriod,
-                                    //         candles: candles,
-                                    //     }),
-                                    // );
                                 }
-                                // });
                             }
                         })
                         .catch(console.log);
@@ -1011,15 +999,6 @@ export default function App() {
             }
         }
     };
-
-    // useEffect(() => {}, [
-    //     baseTokenAddress,
-    //     quoteTokenAddress,
-    //     mainnetBaseTokenAddress,
-    //     mainnetQuoteTokenAddress,
-    //     activePeriod,
-    //     chainData.chainId,
-    // ]);
 
     const poolLiqChangesCacheSubscriptionEndpoint = useMemo(
         () =>
@@ -1117,6 +1096,92 @@ export default function App() {
         mainnetBaseTokenAddress !== '' && mainnetQuoteTokenAddress !== '',
     );
 
+    const domainBoundaryInSeconds = Math.floor((tradeData.candleDomains.domainBoundry || 0) / 1000);
+
+    const debouncedBoundary = useDebounce(domainBoundaryInSeconds, 250); // debounce 1/4 second
+
+    useEffect(() => {
+        // console.log({ debouncedBoundary });
+        // console.log({ activePeriod });
+        // console.log({ candleData });
+
+        function getTime() {
+            if (candleData) {
+                return candleData.candles.map((d) => d.time);
+            } else {
+                return [0];
+            }
+        }
+        function getMinTime() {
+            return Math.min(...getTime());
+        }
+
+        const minTime = getMinTime();
+        // console.log({ minTime });
+
+        const numDurationsNeeded = Math.floor((minTime - debouncedBoundary) / activePeriod);
+
+        if (httpGraphCacheServerDomain && debouncedBoundary && minTime) {
+            // console.log('fetching candles');
+            const candleSeriesCacheEndpoint = httpGraphCacheServerDomain + '/candle_series?';
+
+            fetch(
+                candleSeriesCacheEndpoint +
+                    new URLSearchParams({
+                        base: mainnetBaseTokenAddress.toLowerCase(),
+                        quote: mainnetQuoteTokenAddress.toLowerCase(),
+                        poolIdx: chainData.poolIndex.toString(),
+                        period: activePeriod.toString(),
+                        time: minTime.toString(),
+                        // time: debouncedBoundary.toString(),
+                        n: numDurationsNeeded.toString(), // positive integer
+                        // page: '0', // nonnegative integer
+                        chainId: '0x1',
+                        dex: 'all',
+                        poolStats: 'true',
+                        concise: 'true',
+                        poolStatsChainIdOverride: '0x5',
+                        poolStatsBaseOverride: baseTokenAddress.toLowerCase(),
+                        poolStatsQuoteOverride: quoteTokenAddress.toLowerCase(),
+                        poolStatsPoolIdxOverride: chainData.poolIndex.toString(),
+                    }),
+            )
+                .then((response) => response?.json())
+                .then((json) => {
+                    const fetchedCandles = json?.data;
+
+                    if (fetchedCandles && candleData) {
+                        const newCandles: CandleData[] = [];
+                        const updatedCandles: CandleData[] = candleData.candles;
+
+                        for (let index = 0; index < fetchedCandles.length; index++) {
+                            const messageCandle = fetchedCandles[index];
+                            const indexOfExistingCandle = candleData.candles.findIndex(
+                                (savedCandle) => savedCandle.time === messageCandle.time,
+                            );
+
+                            if (indexOfExistingCandle === -1) {
+                                newCandles.push(messageCandle);
+                            } else if (
+                                JSON.stringify(candleData.candles[indexOfExistingCandle]) !==
+                                JSON.stringify(messageCandle)
+                            ) {
+                                updatedCandles[indexOfExistingCandle] = messageCandle;
+                            }
+                        }
+                        // console.log({ newCandles });
+                        const newCandleData: CandlesByPoolAndDuration = {
+                            pool: candleData.pool,
+                            duration: candleData.duration,
+                            candles: newCandles.concat(updatedCandles),
+                        };
+                        setCandleData(newCandleData);
+                    }
+                })
+                .catch(console.log);
+        }
+    }, [debouncedBoundary]);
+
     useEffect(() => {
         if (candlesMessage) {
             const lastMessageData = JSON.parse(candlesMessage.data).data;
@@ -1147,34 +1212,7 @@ export default function App() {
                     candles: newCandles.concat(updatedCandles),
                 };
                 setCandleData(newCandleData);
-                // setCandleData((savedCandles) => {
-                //     // console.log({ savedCandles });
-                //     if (newCandles && savedCandles) {
-                //         const newCandleData: CandlesByPoolAndDuration = {
-                //             pool: savedCandles.pool,
-                //             duration: savedCandles.duration,
-                //             candles: savedCandles.candles.concat(newCandles),
-                //         };
-                //         return newCandleData;
-                //     } else {
-                //         return savedCandles;
-                //     }
-                // });
-                // dispatch(
-                //     addCandles({
-                //         pool: {
-                //             baseAddress: baseTokenAddress,
-                //             quoteAddress: quoteTokenAddress,
-                //             poolIdx: chainData.poolIndex,
-                //             network: chainData.chainId,
-                //         },
-                //         duration: activePeriod,
-                //         candles: lastMessageData,
-                //     }),
-                // );
-                // });
             }
-            // console.log({ lastMessageData });
         }
     }, [candlesMessage]);
 
@@ -1324,8 +1362,6 @@ export default function App() {
     const [poolPriceNonDisplay, setPoolPriceNonDisplay] = useState<number | undefined>(undefined);
     const [poolPriceDisplay, setPoolPriceDisplay] = useState<number | undefined>(undefined);
 
-    // console.log({ baseTokenBalance });
-    // console.log({ quoteTokenBalance });
     // useEffect to get spot price when tokens change and block updates
     useEffect(() => {
         if (
@@ -1341,7 +1377,7 @@ export default function App() {
                 //     ? provider
                 //     : (await new CrocEnv(chainData.chainId).context).provider;
 
-                const spotPrice = await querySpotPrice(
+                const spotPrice = await cachedQuerySpotPrice(
                     crocEnv,
                     baseTokenAddress,
                     quoteTokenAddress,
@@ -1392,9 +1428,6 @@ export default function App() {
                     .balanceDisplay(account)
                     .then((bal: string) => {
                         setBaseTokenDexBalance(bal);
-                        if (tradeData.baseToken.address === ZERO_ADDRESS) {
-                            setNativeDexBalance(bal);
-                        }
                     })
                     .catch(console.log);
                 crocEnv
@@ -1606,17 +1639,10 @@ export default function App() {
 
     useEffect(() => toggleSidebarBasedOnRoute(), [location]);
 
-    // const [nativeBalance, setNativeBalance] = useState<string>('');
-    const [nativeWalletBalance, setNativeWalletBalance] = useState<string>('');
-    const [nativeDexBalance, setNativeDexBalance] = useState<string>('');
-    const nativeBalance = nativeDexBalance
-        ? (parseFloat(nativeWalletBalance) + parseFloat(nativeDexBalance)).toString()
-        : undefined;
-
     // function to sever connection between user wallet and Moralis server
     const clickLogout = async () => {
-        setNativeWalletBalance('');
-        setNativeDexBalance('');
+        // setNativeWalletBalance('');
+        // setNativeDexBalance('');
         setBaseTokenBalance('');
         setQuoteTokenBalance('');
         setBaseTokenDexBalance('');
@@ -1629,23 +1655,6 @@ export default function App() {
 
         await logout();
     };
-
-    // TODO: this may work better as a useMemo... play with it a bit
-    // this is how we run the function to pull back balances asynchronously
-    useEffect(() => {
-        (async () => {
-            if (crocEnv && account) {
-                crocEnv
-                    .tokenEth()
-                    .wallet(account)
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    .then((eth: any) => {
-                        const displayBalance = toDisplayQty(eth.toString(), 18);
-                        if (displayBalance) setNativeWalletBalance(displayBalance);
-                    });
-            }
-        })();
-    }, [crocEnv, account, lastBlockNumber]);
 
     const [gasPriceInGwei, setGasPriceinGwei] = useState<number | undefined>();
     // const [gasPriceinDollars, setGasPriceinDollars] = useState<string | undefined>();
@@ -1677,7 +1686,6 @@ export default function App() {
     // props for <PageHeader/> React element
     const headerProps = {
         isUserLoggedIn: isUserLoggedIn,
-        nativeBalance: nativeBalance,
         clickLogout: clickLogout,
         metamaskLocked: metamaskLocked,
         ensName: ensName,
@@ -1710,7 +1718,6 @@ export default function App() {
         isPairStable: isPairStable,
         gasPriceInGwei: gasPriceInGwei,
         ethMainnetUsdPrice: ethMainnetUsdPrice,
-        nativeBalance: nativeBalance,
         lastBlockNumber: lastBlockNumber,
         baseTokenBalance: baseTokenBalance,
         quoteTokenBalance: quoteTokenBalance,
@@ -1743,7 +1750,6 @@ export default function App() {
         isOnTradeRoute: true,
         gasPriceInGwei: gasPriceInGwei,
         ethMainnetUsdPrice: ethMainnetUsdPrice,
-        nativeBalance: nativeBalance,
         lastBlockNumber: lastBlockNumber,
         baseTokenBalance: baseTokenBalance,
         quoteTokenBalance: quoteTokenBalance,
@@ -1775,7 +1781,6 @@ export default function App() {
         isOnTradeRoute: true,
         gasPriceInGwei: gasPriceInGwei,
         ethMainnetUsdPrice: ethMainnetUsdPrice,
-        nativeBalance: nativeBalance,
         lastBlockNumber: lastBlockNumber,
         baseTokenBalance: baseTokenBalance,
         quoteTokenBalance: quoteTokenBalance,
@@ -1802,6 +1807,7 @@ export default function App() {
 
     // props for <Range/> React element
     const rangeProps = {
+        crocEnv: crocEnv,
         isUserLoggedIn: isUserLoggedIn,
         importedTokens: importedTokens,
         setImportedTokens: setImportedTokens,
@@ -2009,6 +2015,7 @@ export default function App() {
                             index
                             element={
                                 <Home
+                                    cachedQuerySpotPrice={cachedQuerySpotPrice}
                                     tokenMap={tokenMap}
                                     lastBlockNumber={lastBlockNumber}
                                     crocEnv={crocEnv}
@@ -2067,6 +2074,7 @@ export default function App() {
                                     limitRate={''}
                                     importedTokens={importedTokens}
                                     poolExists={poolExists}
+                                    showSidebar={showSidebar}
                                 />
                             }
                         >
@@ -2105,7 +2113,10 @@ export default function App() {
                         />
 
                         <Route path='range2' element={<Range {...rangeProps} />} />
-                        <Route path='initpool/:params' element={<InitPool />} />
+                        <Route
+                            path='initpool/:params'
+                            element={<InitPool crocEnv={crocEnv} showSidebar={showSidebar} />}
+                        />
                         <Route
                             path='account'
                             element={

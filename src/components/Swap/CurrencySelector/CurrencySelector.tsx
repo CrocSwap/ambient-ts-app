@@ -24,7 +24,7 @@ interface CurrencySelectorProps {
     direction: string;
     sellToken?: boolean;
     tokenBQtyLocal?: string;
-    nativeBalance: string;
+    // nativeBalance: string;
     tokenABalance: string;
     tokenBBalance: string;
     tokenADexBalance: string;

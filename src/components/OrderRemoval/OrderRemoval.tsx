@@ -1,6 +1,3 @@
-import { CrocEnv } from '@crocswap-libs/sdk';
-import { BigNumber } from 'ethers';
-// import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { useState, useEffect } from 'react';
 import { useProcessOrder } from '../../utils/hooks/useProcessOrder';
 import { ILimitOrderState } from '../../utils/state/graphDataSlice';
@@ -18,12 +15,11 @@ import RemoveOrderModalHeader from './RemoveOrderModalHeader/RemoveOrderModalHea
 import RemoveOrderSettings from './RemoveOrderSettings/RemoveOrderSettings';
 interface IOrderRemovalProps {
     limitOrder: ILimitOrderState;
-    crocEnv: CrocEnv | undefined;
     closeGlobalModal: () => void;
 }
 
 export default function OrderRemoval(props: IOrderRemovalProps) {
-    const { limitOrder, crocEnv, closeGlobalModal } = props;
+    const { limitOrder, closeGlobalModal } = props;
     const {
         posLiqBaseDecimalCorrected,
         posLiqQuoteDecimalCorrected,
@@ -66,12 +62,12 @@ export default function OrderRemoval(props: IOrderRemovalProps) {
 
     const [removalPercentage, setRemovalPercentage] = useState(100);
 
-    // const removeFn = () => {
-    //     setShowConfirmation(true);
-    //     setShowSettings(false);
-    //     console.log('order removed');
-    //     // rorder removal function here
-    // };
+    const removeFn = () => {
+        setShowConfirmation(true);
+        setShowSettings(false);
+        console.log('order removed');
+        // rorder removal function here
+    };
 
     // ----------------------------CONFIRMATION JSX------------------------------
 
@@ -142,35 +138,6 @@ export default function OrderRemoval(props: IOrderRemovalProps) {
         showConfirmation,
         isRemovalDenied,
     ]);
-
-    const removeFn = () => {
-        console.log({ positionLiquidity });
-        if (crocEnv) {
-            console.log({ limitOrder });
-            if (limitOrder.isBid === true) {
-                crocEnv
-                    .sell(limitOrder.quote, 0)
-                    .atLimit(limitOrder.base, limitOrder.askTick)
-                    // .burnLiq(BigNumber.from('1000'));
-                    .burnLiq(BigNumber.from(positionLiquidity).div(2));
-            } else {
-                crocEnv
-                    .sell(limitOrder.quote, 0)
-                    .atLimit(limitOrder.base, limitOrder.bidTick)
-                    // .burnLiq(BigNumber.from('1000'));
-                    .burnLiq(BigNumber.from(positionLiquidity).div(2));
-            }
-        }
-    };
-
-    // const removeButton = (
-    //     <button
-    //         disabled={!positionLiquidity || positionLiquidity === '0'}
-    //         onClick={() => removeFn()}
-    //     >
-    //         Remove
-    //     </button>
-    // );
 
     const confirmationContent = (
         <div className={styles.confirmation_container}>

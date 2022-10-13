@@ -1,22 +1,24 @@
 import { CrocEnv } from '@crocswap-libs/sdk';
 // import { ethers } from 'ethers';
 import DividerDark from '../../components/Global/DividerDark/DividerDark';
-import Investors from '../../components/Home/Investors/Investors';
+// import Investors from '../../components/Home/Investors/Investors';
 import HomeSlider from '../../components/Home/Landing/HomeSlider';
 import Links from '../../components/Home/Links/Links';
 import Stats from '../../components/Home/Stats/AmbientStats';
 import TopPools from '../../components/Home/TopPools/TopPools';
 import { TokenIF } from '../../utils/interfaces/TokenIF';
 import styles from './Home.module.css';
+import { SpotPriceFn } from '../../App/functions/querySpotPrice';
 
 interface HomeProps {
     crocEnv?: CrocEnv;
+    cachedQuerySpotPrice: SpotPriceFn;
     tokenMap: Map<string, TokenIF>;
     lastBlockNumber: number;
     chainId: string;
 }
 export default function Home(props: HomeProps) {
-    const { tokenMap, lastBlockNumber, crocEnv, chainId } = props;
+    const { tokenMap, lastBlockNumber, crocEnv, chainId, cachedQuerySpotPrice } = props;
 
     return (
         <>
@@ -28,6 +30,7 @@ export default function Home(props: HomeProps) {
                 <div className={styles.pools_container}>
                     <TopPools
                         crocEnv={crocEnv}
+                        cachedQuerySpotPrice={cachedQuerySpotPrice}
                         tokenMap={tokenMap}
                         lastBlockNumber={lastBlockNumber}
                         chainId={chainId}
@@ -37,7 +40,7 @@ export default function Home(props: HomeProps) {
                 </div>
                 <DividerDark />
 
-                <Investors />
+                {/* <Investors /> */}
                 <DividerDark />
                 <Links />
             </main>

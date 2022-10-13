@@ -57,6 +57,7 @@ interface ChartData {
 
 export interface ChartUtils {
     period: any;
+    bandwidth: any;
     chartData: CandleChartData[];
     tvlChartData: TvlChartData[];
     feeChartData: FeeChartData[];
@@ -150,6 +151,7 @@ export default function TradeCandleStickChart(props: ChartData) {
 
         const chartUtils: ChartUtils = {
             period: props.candleData?.duration,
+            bandwidth: 0,
             chartData: chartData,
             tvlChartData: tvlChartData,
             volumeChartData: volumeChartData,
@@ -173,7 +175,7 @@ export default function TradeCandleStickChart(props: ChartData) {
                         activeLiq: data.activeLiq,
                         upperBoundPriceDecimalCorrected: denominationsInBase
                             ? data.upperBoundInvPriceDecimalCorrected
-                            : data.upperBoundInvPriceDecimalCorrected,
+                            : data.upperBoundPriceDecimalCorrected,
                     });
 
                     const pinnedDisplayPrices = getPinnedPriceValuesFromDisplayPrices(

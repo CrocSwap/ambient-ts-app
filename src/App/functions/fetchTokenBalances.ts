@@ -30,94 +30,155 @@ export const fetchNativeTokenBalance = async (
 ) => {
     if (!crocEnv) return;
 
-    const options = { address: address, chain: chain as '0x5' };
+    // const options = { address: address, chain: chain as '0x5' };
 
-    const getDexBalance = async (tokenAddress: string, userAddress: string) => {
+    const getDexBalanceNonDisplay = async (tokenAddress: string, userAddress: string) => {
         const dexBalance = (await crocEnv.token(tokenAddress).balance(userAddress)).toString();
         return dexBalance;
     };
 
-    const nativeBalance = await Moralis.Web3API.account.getNativeBalance(options);
+    const getWalletBalanceNonDisplay = async (tokenAddress: string, userAddress: string) => {
+        const walletBalance = (await crocEnv.token(tokenAddress).wallet(userAddress)).toString();
+        return walletBalance;
+    };
 
-    const updatedNativeBalance = Promise.resolve(getDexBalance(ZERO_ADDRESS, address))
-        .then((nativeDexBalance) => {
-            const moralisNativeBalance = nativeBalance.balance;
-            const moralisNativeBalanceDisplay = toDisplayQty(moralisNativeBalance, 18);
-            const moralisNativeBalanceDisplayNum = parseFloat(moralisNativeBalanceDisplay);
-            const moralisNativeBalanceDisplayTruncated =
-                moralisNativeBalanceDisplayNum < 0.0001
-                    ? moralisNativeBalanceDisplayNum.toExponential(2)
-                    : moralisNativeBalanceDisplayNum < 2
-                    ? moralisNativeBalanceDisplayNum.toPrecision(3)
-                    : moralisNativeBalanceDisplayNum >= 100000
-                    ? formatAmount(moralisNativeBalanceDisplayNum)
-                    : moralisNativeBalanceDisplayNum.toLocaleString(undefined, {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                      });
+    // const nativeBalance = await Moralis.Web3API.account.getNativeBalance(options);
 
-            const nativeDexBalanceDisplay = nativeDexBalance
-                ? toDisplayQty(nativeDexBalance, 18)
-                : undefined;
-            const nativeDexBalanceDisplayNum = nativeDexBalanceDisplay
-                ? parseFloat(nativeDexBalanceDisplay)
-                : undefined;
-            const nativeDexBalanceDisplayTruncated = nativeDexBalanceDisplayNum
-                ? nativeDexBalanceDisplayNum < 0.0001
-                    ? nativeDexBalanceDisplayNum.toExponential(2)
-                    : nativeDexBalanceDisplayNum < 2
-                    ? nativeDexBalanceDisplayNum.toPrecision(3)
-                    : nativeDexBalanceDisplayNum >= 100000
-                    ? formatAmount(nativeDexBalanceDisplayNum)
-                    : nativeDexBalanceDisplayNum.toLocaleString(undefined, {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                      })
-                : undefined;
+    const nativeDexBalanceNonDisplay = await getDexBalanceNonDisplay(ZERO_ADDRESS, address);
+    const nativeWalletBalanceNonDisplay = await getWalletBalanceNonDisplay(ZERO_ADDRESS, address);
 
-            const combinedBalanceNonDisplay = BigNumber.from(moralisNativeBalance)
-                .add(BigNumber.from(nativeDexBalance))
-                .toString();
-            const combinedBalanceDisplay = toDisplayQty(combinedBalanceNonDisplay, 18);
+    const combinedBalanceNonDisplay = BigNumber.from(nativeDexBalanceNonDisplay)
+        .add(BigNumber.from(nativeWalletBalanceNonDisplay))
+        .toString();
 
-            const combinedBalanceDisplayNum = parseFloat(combinedBalanceDisplay);
+    const nativeDexBalanceDisplay = toDisplayQty(nativeDexBalanceNonDisplay, 18);
+    const nativeDexBalanceDisplayNum = parseFloat(nativeDexBalanceNonDisplay);
+    const nativeWalletBalanceDisplay = toDisplayQty(nativeWalletBalanceNonDisplay, 18);
+    const nativeWalletBalanceDisplayNum = parseFloat(nativeWalletBalanceDisplay);
 
-            const combinedBalanceDisplayTruncated =
-                combinedBalanceDisplayNum < 0.0001
-                    ? combinedBalanceDisplayNum.toExponential(2)
-                    : combinedBalanceDisplayNum < 2
-                    ? combinedBalanceDisplayNum.toPrecision(3)
-                    : combinedBalanceDisplayNum >= 100000
-                    ? formatAmount(combinedBalanceDisplayNum)
-                    : combinedBalanceDisplayNum.toLocaleString(undefined, {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                      });
+    const combinedBalanceDisplay = toDisplayQty(combinedBalanceNonDisplay, 18);
+    const combinedBalanceDisplayNum = parseFloat(combinedBalanceDisplay);
 
-            const updatedNativeToken: TokenIF = {
-                chainId: parseInt(chain),
-                name: 'Native Ether',
-                logoURI: '',
-                address: ZERO_ADDRESS,
-                symbol: 'ETH',
-                decimals: 18,
-                walletBalance: moralisNativeBalance,
-                walletBalanceDisplay: moralisNativeBalanceDisplay,
-                walletBalanceDisplayTruncated: moralisNativeBalanceDisplayTruncated,
-                dexBalance: nativeDexBalance,
-                dexBalanceDisplay: nativeDexBalanceDisplay,
-                dexBalanceDisplayTruncated: nativeDexBalanceDisplayTruncated,
-                combinedBalance: combinedBalanceNonDisplay,
-                combinedBalanceDisplay: combinedBalanceDisplay,
-                combinedBalanceDisplayTruncated: combinedBalanceDisplayTruncated,
-            };
-            return updatedNativeToken;
-            // updatedTokens.push(updatedNativeToken);
-        })
-        .catch(console.log);
+    const combinedBalanceDisplayTruncated = combinedBalanceDisplayNum
+        ? combinedBalanceDisplayNum < 0.0001
+            ? combinedBalanceDisplayNum.toExponential(2)
+            : combinedBalanceDisplayNum < 2
+            ? combinedBalanceDisplayNum.toPrecision(3)
+            : combinedBalanceDisplayNum >= 100000
+            ? formatAmount(nativeWalletBalanceDisplayNum)
+            : combinedBalanceDisplayNum.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+              })
+        : undefined;
+
+    const nativeDexBalanceDisplayTruncated = nativeDexBalanceDisplayNum
+        ? nativeDexBalanceDisplayNum < 0.0001
+            ? nativeDexBalanceDisplayNum.toExponential(2)
+            : nativeDexBalanceDisplayNum < 2
+            ? nativeDexBalanceDisplayNum.toPrecision(3)
+            : nativeDexBalanceDisplayNum >= 100000
+            ? formatAmount(nativeDexBalanceDisplayNum)
+            : nativeDexBalanceDisplayNum.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+              })
+        : undefined;
+
+    const nativeWalletBalanceDisplayTruncated = nativeWalletBalanceDisplayNum
+        ? nativeWalletBalanceDisplayNum < 0.0001
+            ? nativeWalletBalanceDisplayNum.toExponential(2)
+            : nativeWalletBalanceDisplayNum < 2
+            ? nativeWalletBalanceDisplayNum.toPrecision(3)
+            : nativeWalletBalanceDisplayNum >= 100000
+            ? formatAmount(nativeWalletBalanceDisplayNum)
+            : nativeWalletBalanceDisplayNum.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+              })
+        : undefined;
+
+    const updatedNativeToken: TokenIF = {
+        chainId: parseInt(chain),
+        name: 'Native Ether',
+        logoURI: '',
+        address: ZERO_ADDRESS,
+        symbol: 'ETH',
+        decimals: 18,
+        walletBalance: nativeWalletBalanceNonDisplay,
+        walletBalanceDisplay: nativeWalletBalanceDisplay,
+        walletBalanceDisplayTruncated: nativeWalletBalanceDisplayTruncated,
+        dexBalance: nativeDexBalanceNonDisplay,
+        dexBalanceDisplay: nativeDexBalanceDisplay,
+        dexBalanceDisplayTruncated: nativeDexBalanceDisplayTruncated,
+        combinedBalance: combinedBalanceNonDisplay.toString(),
+        combinedBalanceDisplay: combinedBalanceDisplay,
+        combinedBalanceDisplayTruncated: combinedBalanceDisplayTruncated,
+    };
+
+    return updatedNativeToken;
+
+    // const updatedNativeBalance = Promise.resolve(getDexBalance(ZERO_ADDRESS, address))
+    //     .then((nativeDexBalance) => {
+    //         const moralisNativeBalance = getWalletBalance(ZERO_ADDRESS, address);
+    //         const moralisNativeBalanceDisplay = toDisplayQty(moralisNativeBalance, 18);
+    //         const moralisNativeBalanceDisplayNum = parseFloat(moralisNativeBalanceDisplay);
+    //         const moralisNativeBalanceDisplayTruncated =
+    //             moralisNativeBalanceDisplayNum < 0.0001
+    //                 ? moralisNativeBalanceDisplayNum.toExponential(2)
+    //                 : moralisNativeBalanceDisplayNum < 2
+    //                 ? moralisNativeBalanceDisplayNum.toPrecision(3)
+    //                 : moralisNativeBalanceDisplayNum >= 100000
+    //                 ? formatAmount(moralisNativeBalanceDisplayNum)
+    //                 : moralisNativeBalanceDisplayNum.toLocaleString(undefined, {
+    //                       minimumFractionDigits: 2,
+    //                       maximumFractionDigits: 2,
+    //                   });
+
+    //         const nativeDexBalanceDisplay = nativeDexBalance
+    //             ? toDisplayQty(nativeDexBalance, 18)
+    //             : undefined;
+    //         const nativeDexBalanceDisplayNum = nativeDexBalanceDisplay
+    //             ? parseFloat(nativeDexBalanceDisplay)
+    //             : undefined;
+    // const nativeDexBalanceDisplayTruncated = nativeDexBalanceDisplayNum
+    //     ? nativeDexBalanceDisplayNum < 0.0001
+    //         ? nativeDexBalanceDisplayNum.toExponential(2)
+    //         : nativeDexBalanceDisplayNum < 2
+    //         ? nativeDexBalanceDisplayNum.toPrecision(3)
+    //         : nativeDexBalanceDisplayNum >= 100000
+    //         ? formatAmount(nativeDexBalanceDisplayNum)
+    //         : nativeDexBalanceDisplayNum.toLocaleString(undefined, {
+    //               minimumFractionDigits: 2,
+    //               maximumFractionDigits: 2,
+    //           })
+    //     : undefined;
+
+    // const combinedBalanceNonDisplay = BigNumber.from(moralisNativeBalance)
+    //     .add(BigNumber.from(nativeDexBalance))
+    //     .toString();
+    //         const combinedBalanceDisplay = toDisplayQty(combinedBalanceNonDisplay, 18);
+
+    //         const combinedBalanceDisplayNum = parseFloat(combinedBalanceDisplay);
+
+    //         const combinedBalanceDisplayTruncated =
+    //             combinedBalanceDisplayNum < 0.0001
+    //                 ? combinedBalanceDisplayNum.toExponential(2)
+    //                 : combinedBalanceDisplayNum < 2
+    //                 ? combinedBalanceDisplayNum.toPrecision(3)
+    //                 : combinedBalanceDisplayNum >= 100000
+    //                 ? formatAmount(combinedBalanceDisplayNum)
+    //                 : combinedBalanceDisplayNum.toLocaleString(undefined, {
+    //                       minimumFractionDigits: 2,
+    //                       maximumFractionDigits: 2,
+    //                   });
+
+    // return updatedNativeToken;
+    // updatedTokens.push(updatedNativeToken);
+    // })
+    // .catch(console.log);
 
     // console.log({ updatedTokens });
-    return updatedNativeBalance;
 };
 
 export const fetchErc20TokenBalances = async (

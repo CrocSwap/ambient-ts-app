@@ -7,11 +7,11 @@ import styles from './TopTokensCard.module.css';
 interface TopTokensCardProps {
     chainId: string;
     pool: PoolIF;
-    lastBlockNumber: number;
+    // lastBlockNumber: number;
 }
 
 export default function TopTokensCard(props: TopTokensCardProps) {
-    const { pool, lastBlockNumber } = props;
+    const { pool } = props;
 
     const location = useLocation();
 
@@ -41,8 +41,9 @@ export default function TopTokensCard(props: TopTokensCardProps) {
     const [tokenPrice, setTokenPrice] = useState<string | undefined>();
     const [tokenPrice24hChange, setTokenPrice24hChange] = useState<string | undefined>();
 
-    useEffect(() => {
+    const fetchPoolPriceChange = () => {
         (async () => {
+            console.log('fetching pool price change');
             const poolPriceChange = await getPoolPriceChange(
                 pool.chainId,
                 pool.base.address,
@@ -94,7 +95,24 @@ export default function TopTokensCard(props: TopTokensCardProps) {
 
             setTokenPrice24hChange(tokenPriceChangeString);
         })();
-    }, [JSON.stringify(pool), lastBlockNumber]);
+    };
+
+    useEffect(() => {
+        fetchPoolPriceChange();
+
+        // fetch every minute
+        const timerId = setInterval(() => {
+            fetchPoolPriceChange();
+        }, 60000);
+
+        // after 1 hour stop
+        setTimeout(() => {
+            clearInterval(timerId);
+        }, 3600000);
+
+        // clear interval when component unmounts
+        return () => clearInterval(timerId);
+    }, []);
 
     return (
         <Link className={styles.container} to={linkPath}>
