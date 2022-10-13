@@ -133,7 +133,7 @@ export default function Swap(props: SwapPropsIF) {
         ? parseFloat(swapSlippage.stable.value)
         : parseFloat(swapSlippage.volatile.value);
 
-    const loginButton = <Button title='Login' action={openModalWallet} />;
+    const loginButton = <Button title='Connect Wallet' action={openModalWallet} />;
 
     const [isApprovalPending, setIsApprovalPending] = useState(false);
 
@@ -378,7 +378,18 @@ export default function Swap(props: SwapPropsIF) {
     const isTokenAAllowanceSufficient = parseFloat(tokenAAllowance) >= parseFloat(tokenAInputQty);
 
     const swapContainerStyle = pathname.startsWith('/swap') ? styles.swap_page_container : null;
+
     const swapPageStyle = pathname.startsWith('/swap') ? styles.swap_page : null;
+
+    const [connectButtonDelayElapsed, setConnectButtonDelayElapsed] = useState(false);
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setConnectButtonDelayElapsed(true);
+        }, 3000);
+        return () => clearTimeout(timer);
+    }, []);
+
     return (
         <main data-testid={'swap'} className={swapPageStyle}>
             <div className={`${swapContainerStyle}`}>
@@ -445,7 +456,7 @@ export default function Swap(props: SwapPropsIF) {
                         didUserFlipDenom={tradeData.didUserFlipDenom}
                         isDenomBase={tradeData.isDenomBase}
                     />
-                    {isUserLoggedIn ? (
+                    {isUserLoggedIn || !connectButtonDelayElapsed ? (
                         poolExists &&
                         !isTokenAAllowanceSufficient &&
                         parseFloat(tokenAInputQty) > 0 &&
