@@ -109,10 +109,6 @@ export default function Orders(props: propsIF) {
     const [sortBy, setSortBy] = useState('default');
     const [reverseSort, setReverseSort] = useState(false);
 
-    // useEffect(() => {
-    //     console.log({ sortBy, reverseSort });
-    // }, [sortBy, reverseSort]);
-
     const [debouncedIsShowAllEnabled, setDebouncedIsShowAllEnabled] = useState(false);
 
     // wait 5 seconds to open a subscription to pool changes
@@ -244,6 +240,26 @@ export default function Orders(props: propsIF) {
     //         <p>Mobile Accordion here: Disabled for now</p>
     //     </div>
     // );
+
+    // const olderReturnData = (
+    //        <div className={styles.container}>
+
+    //          <OrderCardHeader
+    //              sortBy={sortBy}
+    //              setSortBy={setSortBy}
+    //              reverseSort={reverseSort}
+    //              setReverseSort={setReverseSort}
+    //              columnHeaders={columnHeaders}
+    //          />
+    //          <div
+    //              className={styles.item_container}
+    //              style={{ height: expandTradeTable ? '100%' : '170px' }}
+    //          >
+    //              {ItemContent}
+    //              {mobileAccordionDisplay}
+    //          </div>
+    //      </div>
+    // )
 
     const sidebarOpen = false;
 
@@ -404,24 +420,5 @@ export default function Orders(props: propsIF) {
         </main>
     );
 
-    return (
-        <>{newTrial}</>
-        // <div className={styles.container}>
-
-        //     <OrderCardHeader
-        //         sortBy={sortBy}
-        //         setSortBy={setSortBy}
-        //         reverseSort={reverseSort}
-        //         setReverseSort={setReverseSort}
-        //         columnHeaders={columnHeaders}
-        //     />
-        //     <div
-        //         className={styles.item_container}
-        //         style={{ height: expandTradeTable ? '100%' : '170px' }}
-        //     >
-        //         {ItemContent}
-        //         {mobileAccordionDisplay}
-        //     </div>
-        // </div>
-    );
+    return <>{newTrial}</>;
 }
