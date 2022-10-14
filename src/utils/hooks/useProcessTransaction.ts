@@ -217,8 +217,11 @@ export const useProcessTransaction = (tx: ITransaction) => {
     // --------------------OWNER AND ID WALLET DATA
 
     const ensNameOrOwnerTruncated = ensName
-        ? trimString(ensName, 5, 3, '…')
+        ? ensName.length > 10
+            ? trimString(ensName, 5, 3, '…')
+            : ensName
         : trimString(ownerId, 6, 0, '…');
+
     const txHashTruncated = trimString(txHash, 6, 0, '…');
 
     const userNameToDisplay = isOwnerActiveAccount ? 'You' : ensNameOrOwnerTruncated;

@@ -218,7 +218,9 @@ export const useProcessOrder = (limitOrder: ILimitOrderState) => {
     const usdValue = usdValueTruncated ? usdValueTruncated : '…';
 
     const ensNameOrOwnerTruncated = ensName
-        ? trimString(ensName, 5, 3, '…')
+        ? ensName.length > 10
+            ? trimString(ensName, 5, 3, '…')
+            : ensName
         : trimString(ownerId, 6, 0, '…');
     const posHashTruncated = trimString(posHash, 6, 0, '…');
 

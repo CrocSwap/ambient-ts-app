@@ -123,7 +123,9 @@ export const useProcessRange = (position: PositionIF) => {
     const usdValue = usdValueTruncated ? usdValueTruncated : '…';
 
     const ensNameOrOwnerTruncated = ensName
-        ? trimString(ensName, 5, 3, '…')
+        ? ensName.length > 10
+            ? trimString(ensName, 5, 3, '…')
+            : ensName
         : trimString(ownerId, 6, 0, '…');
     const posHashTruncated = trimString(posHash.toString(), 6, 0, '…');
 
