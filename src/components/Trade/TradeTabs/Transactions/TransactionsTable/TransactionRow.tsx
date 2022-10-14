@@ -114,7 +114,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
 
             {!showColumns && (
                 <li onClick={openDetailsModal} data-label='side' className={sideTypeStyle}>
-                    {`${sideType}${sideCharacter}`}
+                    {`${sideType} ${sideCharacter}`}
                 </li>
             )}
             {!showColumns && (
