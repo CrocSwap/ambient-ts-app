@@ -1,7 +1,7 @@
 // todo: Commented out code were commented out on 10/14/2022 for a new refactor. If not uncommented by 12/14/2022, they can be safely removed from the file. -Jr
 
 // START: Import React and Dongles
-import { Dispatch, SetStateAction, useEffect } from 'react';
+import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { ethers } from 'ethers';
 
 // START: Import JSX Components
@@ -13,6 +13,8 @@ import {
     addPositionsByUser,
     graphData,
 } from '../../../../utils/state/graphDataSlice';
+import Pagination from '../../../Global/Pagination/Pagination';
+
 import { useAppDispatch, useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { useSortedPositions } from './useSortedPositions';
 import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
@@ -71,11 +73,15 @@ export default function Ranges(props: RangesPropsIF) {
         expandTradeTable,
         currentPositionActive,
         setCurrentPositionActive,
+        account,
 
         showSidebar,
     } = props;
 
     const tradeData = useAppSelector((state) => state.tradeData);
+
+    const baseTokenAddress = tradeData.baseToken.address;
+    const quoteTokenAddress = tradeData.quoteToken.address;
 
     const baseTokenAddressLowerCase = tradeData.baseToken.address.toLowerCase();
     const quoteTokenAddressLowerCase = tradeData.quoteToken.address.toLowerCase();
@@ -207,6 +213,38 @@ export default function Ranges(props: RangesPropsIF) {
     //         </ol>
     //     </div>
     // );
+
+    // ---------------------
+    const [currentPage, setCurrentPage] = useState(1);
+    const [rangesPerPage] = useState(16);
+
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [account, isShowAllEnabled, JSON.stringify({ baseTokenAddress, quoteTokenAddress })]);
+
+    // Get current tranges
+    const indexOfLastRanges = currentPage * rangesPerPage;
+    const indexOfFirstRanges = indexOfLastRanges - rangesPerPage;
+    const currentRangess = sortedPositions?.slice(indexOfFirstRanges, indexOfLastRanges);
+    const paginate = (pageNumber: number) => {
+        setCurrentPage(pageNumber);
+    };
+
+    const usePaginateDataOrNull = expandTradeTable ? currentRangess : sortedPositions;
+
+    const footerDisplay = (
+        <div className={styles.footer}>
+            {expandTradeTable && sortedPositions.length > 30 && (
+                <Pagination
+                    itemsPerPage={rangesPerPage}
+                    totalItems={sortedPositions.length}
+                    paginate={paginate}
+                    currentPage={currentPage}
+                />
+            )}
+        </div>
+    );
+
     // ----------------------
 
     const sidebarOpen = false;
@@ -348,7 +386,7 @@ export default function Ranges(props: RangesPropsIF) {
             ))}
         </ul>
     );
-    const rowItemContent = sortedPositions?.map((position, idx) => (
+    const rowItemContent = usePaginateDataOrNull?.map((position, idx) => (
         <RangesRow
             key={idx}
             position={position}
@@ -381,6 +419,7 @@ export default function Ranges(props: RangesPropsIF) {
         >
             {headerColumnsDisplay}
             {rowItemContent}
+            {footerDisplay}
         </main>
     );
 }

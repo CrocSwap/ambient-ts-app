@@ -1,39 +1,7 @@
-/* .container > header {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-}
 
-.item_container {
-    max-height: 90%;
-    overflow-y: scroll;
-    overflow-x: hidden;
-    padding: 0 8px;
-}
 
-.item_container::-webkit-scrollbar {
-    width: 1px;
-    display: none;
-}
 
-.accordion_display_container{
-    display: block;
-}
-.desktop_transaction_display_container{
-    display: none;
-}
-
-@media only screen and (min-width: 568px) {
-.accordion_display_container{
-    display: none;
-}
-.desktop_transaction_display_container{
-    display: block;
-}
-
-} */
-
-.active_position_style{
+.active_position_style, .active_transaction_style{
   /* background: var(--dark3); */
 
   background-image: linear-gradient(to right, rgba(255,255,255,0) 50%, #171d27 50%);
@@ -73,6 +41,12 @@
     top: 0; /* Don't forget this, required for the stickiness */
     box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4);
   }
+  
+  .footer{
+      position: sticky;
+      bottom: 0;
+      box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4);
+  }
 /* width */
 .main_list_container::-webkit-scrollbar {
     width: 4px;
@@ -103,8 +77,8 @@
 
 .header li{
     font-weight: 300;
-font-size: 12px;
-line-height: 15px;
+font-size: 10px;
+line-height: 13px;
 
 color: rgba(235, 235, 255, 0.4);
 }
@@ -116,6 +90,8 @@ color: rgba(235, 235, 255, 0.4);
     font-weight: 300;
 font-size: var(--body-size);
 line-height: var(--body-lh);
+text-transform: capitalize;
+
 
 
 
@@ -143,12 +119,14 @@ line-height: var(--body-lh);
       /* I commented this out to make the header align center with arrow */
       width: 100%;
  
-      padding:.3em 1em;
+      padding:.2em 1em;
+      
+   
     }
     
   /* } */
   
-
+ 
 
 
 .align_center{

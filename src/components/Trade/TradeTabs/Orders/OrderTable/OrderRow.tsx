@@ -29,7 +29,7 @@ export default function OrderRow(props: OrderRowPropsIF) {
         showColumns,
         ipadView,
         limitOrder,
-        showSidebar,
+        // showSidebar,
         openGlobalModal,
         closeGlobalModal,
         currentPositionActive,
@@ -111,23 +111,22 @@ export default function OrderRow(props: OrderRowPropsIF) {
                     : setCurrentPositionActive('')
             }
         >
-            {!showColumns && !showSidebar && (
+            {!showColumns && (
                 <li onClick={openDetailsModal} data-label='id' className='base_color'>
                     {posHashTruncated}
                 </li>
             )}
-            {!showColumns && !showSidebar && (
+            {!showColumns && (
                 <li onClick={openDetailsModal} data-label='wallet' className={usernameStyle}>
                     {userNameToDisplay}
                 </li>
             )}
-            {showColumns ||
-                (showSidebar && (
-                    <li data-label='id'>
-                        <p className='base_color'>{posHashTruncated}</p>{' '}
-                        <p className={usernameStyle}>{userNameToDisplay}</p>
-                    </li>
-                ))}
+            {showColumns && (
+                <li data-label='id'>
+                    <p className='base_color'>{posHashTruncated}</p>{' '}
+                    <p className={usernameStyle}>{userNameToDisplay}</p>
+                </li>
+            )}
             {!ipadView && (
                 <li onClick={openDetailsModal} data-label='price' className={sellOrderStyle}>
                     {truncatedDisplayPrice}

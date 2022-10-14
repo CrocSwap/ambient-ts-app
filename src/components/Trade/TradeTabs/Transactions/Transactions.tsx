@@ -12,7 +12,7 @@ import {
 import { TokenIF } from '../../../../utils/interfaces/TokenIF';
 import { useAppDispatch, useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { Dispatch, SetStateAction, useState, useEffect, useMemo } from 'react';
-import TransactionsSkeletons from './TransactionsSkeletons/TransactionsSkeletons';
+import TransactionsSkeletons from '../TableSkeletons/TableSkeletons';
 import Pagination from '../../../Global/Pagination/Pagination';
 import { ChainSpec } from '@crocswap-libs/sdk';
 import useWebSocket from 'react-use-websocket';
@@ -346,21 +346,21 @@ export default function Transactions(props: TransactionsProps) {
         {
             name: 'ID',
 
-            show: !showColumns && !showSidebar,
+            show: !showColumns,
             slug: 'id',
             sortable: true,
         },
         {
             name: 'Wallet',
 
-            show: !showColumns && !showSidebar,
+            show: !showColumns,
             slug: 'wallet',
             sortable: true,
         },
         {
             name: walID,
 
-            show: showColumns || showSidebar,
+            show: showColumns,
             slug: 'walletid',
             sortable: false,
         },

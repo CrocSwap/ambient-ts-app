@@ -22,7 +22,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
         showColumns,
         ipadView,
         tx,
-        showSidebar,
+        // showSidebar,
         blockExplorer,
         // openGlobalModal,
         // closeGlobalModal,
@@ -90,23 +90,22 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
             }
             id={txDomId}
         >
-            {!showColumns && !showSidebar && (
+            {!showColumns && (
                 <li onClick={openDetailsModal} data-label='id' className='base_color'>
                     {txHashTruncated}
                 </li>
             )}
-            {!showColumns && !showSidebar && (
+            {!showColumns && (
                 <li onClick={openDetailsModal} data-label='wallet' className={usernameStyle}>
                     {userNameToDisplay}
                 </li>
             )}
-            {showColumns ||
-                (showSidebar && (
-                    <li data-label='id'>
-                        <p className='base_color'>{txHashTruncated}</p>{' '}
-                        <p className={usernameStyle}>{userNameToDisplay}</p>
-                    </li>
-                ))}
+            {showColumns && (
+                <li data-label='id'>
+                    <p className='base_color'>{txHashTruncated}</p>{' '}
+                    <p className={usernameStyle}>{userNameToDisplay}</p>
+                </li>
+            )}
             {!ipadView && (
                 <li onClick={openDetailsModal} data-label='price' className={sideTypeStyle}>
                     {truncatedDisplayPrice}
