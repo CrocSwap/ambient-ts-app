@@ -302,21 +302,21 @@ export default function Orders(props: propsIF) {
         {
             name: 'ID',
             className: 'ID',
-            show: !showColumns,
+            show: !showColumns && !showSidebar,
             slug: 'id',
             sortable: true,
         },
         {
             name: 'Wallet',
             className: 'wallet',
-            show: !showColumns,
+            show: !showColumns && !showSidebar,
             slug: 'wallet',
             sortable: true,
         },
         {
             name: walID,
             className: 'wallet_it',
-            show: showColumns,
+            show: showColumns || showSidebar,
             slug: 'walletid',
             sortable: false,
         },
@@ -358,21 +358,21 @@ export default function Orders(props: propsIF) {
         {
             name: `${baseTokenSymbol} (${baseTokenCharacter})`,
 
-            show: !showColumns && !showSidebar,
+            show: !showColumns,
             slug: baseTokenSymbol,
             sortable: false,
         },
         {
             name: `${quoteTokenSymbol} (${quoteTokenCharacter})`,
 
-            show: !showColumns && !showSidebar,
+            show: !showColumns,
             slug: quoteTokenSymbol,
             sortable: false,
         },
         {
             name: tokens,
             className: 'tokens',
-            show: showColumns || showSidebar,
+            show: showColumns,
             slug: 'tokens',
             sortable: false,
         },

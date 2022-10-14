@@ -1,3 +1,5 @@
+// todo: SEE RETURN STATEMENT
+
 // import { tradeData } from '../../../../utils/state/tradeDataSlice';
 import { tradeData } from '../../../../utils/state/tradeDataSlice';
 import styles from './TransactionCardHeader.module.css';

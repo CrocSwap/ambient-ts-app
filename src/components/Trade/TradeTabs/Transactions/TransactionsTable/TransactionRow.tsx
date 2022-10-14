@@ -48,8 +48,13 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
         quoteTokenSymbol,
         isOwnerActiveAccount,
         ensName,
+        baseTokenCharacter,
+        quoteTokenCharacter,
+        isDenomBase,
         // orderMatchesSelectedTokens,
     } = useProcessTransaction(tx);
+
+    const sideCharacter = isDenomBase ? baseTokenCharacter : quoteTokenCharacter;
 
     const sideTypeStyle = `${sideType}_style`;
 
@@ -85,22 +90,23 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
             }
             id={txDomId}
         >
-            {!showColumns && (
+            {!showColumns && !showSidebar && (
                 <li onClick={openDetailsModal} data-label='id' className='base_color'>
                     {txHashTruncated}
                 </li>
             )}
-            {!showColumns && (
+            {!showColumns && !showSidebar && (
                 <li onClick={openDetailsModal} data-label='wallet' className={usernameStyle}>
                     {userNameToDisplay}
                 </li>
             )}
-            {showColumns && (
-                <li data-label='id'>
-                    <p className='base_color'>{txHashTruncated}</p>{' '}
-                    <p className={usernameStyle}>{userNameToDisplay}</p>
-                </li>
-            )}
+            {showColumns ||
+                (showSidebar && (
+                    <li data-label='id'>
+                        <p className='base_color'>{txHashTruncated}</p>{' '}
+                        <p className={usernameStyle}>{userNameToDisplay}</p>
+                    </li>
+                ))}
             {!ipadView && (
                 <li onClick={openDetailsModal} data-label='price' className={sideTypeStyle}>
                     {truncatedDisplayPrice}
@@ -109,7 +115,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
 
             {!showColumns && (
                 <li onClick={openDetailsModal} data-label='side' className={sideTypeStyle}>
-                    {sideType}
+                    {`${sideType}${sideCharacter}`}
                 </li>
             )}
             {!showColumns && (
@@ -128,12 +134,12 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                 {usdValue}
             </li>
 
-            {!showColumns && !showSidebar && (
+            {!showColumns && (
                 <li onClick={openDetailsModal} data-label={baseTokenSymbol} className='color_white'>
                     <p>{baseDisplay}</p>
                 </li>
             )}
-            {!showColumns && !showSidebar && (
+            {!showColumns && (
                 <li
                     onClick={openDetailsModal}
                     data-label={quoteTokenSymbol}
@@ -142,7 +148,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                     <p>{quoteDisplay}</p>
                 </li>
             )}
-            {(showColumns || showSidebar) && (
+            {showColumns && (
                 <li data-label={baseTokenSymbol + quoteTokenSymbol} className='color_white'>
                     <p className={styles.align_center}>
                         {' '}

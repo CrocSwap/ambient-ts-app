@@ -346,21 +346,21 @@ export default function Transactions(props: TransactionsProps) {
         {
             name: 'ID',
 
-            show: !showColumns,
+            show: !showColumns && !showSidebar,
             slug: 'id',
             sortable: true,
         },
         {
             name: 'Wallet',
 
-            show: !showColumns,
+            show: !showColumns && !showSidebar,
             slug: 'wallet',
             sortable: true,
         },
         {
             name: walID,
 
-            show: showColumns,
+            show: showColumns || showSidebar,
             slug: 'walletid',
             sortable: false,
         },
@@ -402,21 +402,21 @@ export default function Transactions(props: TransactionsProps) {
         {
             name: `${baseTokenSymbol} (${baseTokenCharacter})`,
 
-            show: !showColumns && !showSidebar,
+            show: !showColumns,
             slug: baseTokenSymbol,
             sortable: false,
         },
         {
             name: `${quoteTokenSymbol} (${quoteTokenCharacter})`,
 
-            show: !showColumns && !showSidebar,
+            show: !showColumns,
             slug: quoteTokenSymbol,
             sortable: false,
         },
         {
             name: tokens,
 
-            show: showColumns || showSidebar,
+            show: showColumns,
             slug: 'tokens',
             sortable: false,
         },
