@@ -8,7 +8,7 @@ import SnackbarComponent from '../../../../../components/Global/SnackbarComponen
 import Modal from '../../../../Global/Modal/Modal';
 
 // START: Import Local Files
-import styles from './TableMenuComponents.module.css';
+import styles from './OrdersMenu.module.css';
 import { useModal } from '../../../../Global/Modal/useModal';
 import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
 import { ILimitOrderState } from '../../../../../utils/state/graphDataSlice';
@@ -16,6 +16,7 @@ import OrderDetails from '../../../../OrderDetails/OrderDetails';
 import OrderRemoval from '../../../../OrderRemoval/OrderRemoval';
 import UseOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 import { CrocEnv } from '@crocswap-libs/sdk';
+import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
 // interface for React functional component props
 interface OrdersMenuIF {
     crocEnv: CrocEnv | undefined;
@@ -23,6 +24,7 @@ interface OrdersMenuIF {
     openGlobalModal: (content: React.ReactNode, title?: string) => void;
     closeGlobalModal: () => void;
     isOwnerActiveAccount?: boolean;
+    showSidebar: boolean;
     // orderDetailsProps: any;
 }
 
@@ -30,7 +32,14 @@ interface OrdersMenuIF {
 export default function OrdersMenu(props: OrdersMenuIF) {
     const menuItemRef = useRef<HTMLDivElement>(null);
 
-    const { crocEnv, limitOrder, openGlobalModal, isOwnerActiveAccount, closeGlobalModal } = props;
+    const {
+        crocEnv,
+        limitOrder,
+        openGlobalModal,
+        isOwnerActiveAccount,
+        closeGlobalModal,
+        showSidebar,
+    } = props;
     const [value, copy] = useCopyToClipboard();
     const [openSnackbar, setOpenSnackbar] = useState<boolean>(false);
 
@@ -110,11 +119,12 @@ export default function OrdersMenu(props: OrdersMenuIF) {
 
     // ------------------  END OF MODAL FUNCTIONALITY-----------------
 
-    // const relimitOrderButton = userlimitOrder ? (
-    //     <Link className={styles.relimitOrder_button} to={'/trade/relimitOrder'}>
-    //         RelimitOrder
-    //     </Link>
-    // ) : null;
+    const view1 = useMediaQuery('(min-width: 1280px)');
+    const view2 = useMediaQuery('(min-width: 1680px)');
+    const view3 = useMediaQuery('(min-width: 2300px)');
+
+    const view1NoSidebar = useMediaQuery('(min-width: 1200px)') && !showSidebar;
+    const view2WithNoSidebar = useMediaQuery('(min-width: 1680px)') && !showSidebar;
 
     const removeButtonOnClick = () => {
         setShowDropdownMenu(false);
@@ -152,9 +162,9 @@ export default function OrdersMenu(props: OrdersMenuIF) {
         <div className={styles.actions_menu}>
             {/* {relimitOrderButton}
             {editButton} */}
-            {removeButton}
-            {detailsButton}
-            {copyButton}
+            {view1 && removeButton}
+            {(view2 || view1NoSidebar) && copyButton}
+            {(view3 || view2WithNoSidebar) && detailsButton}
         </div>
     );
 
@@ -187,11 +197,11 @@ export default function OrdersMenu(props: OrdersMenuIF) {
         </div>
     );
     return (
-        <>
+        <div className={styles.main_container}>
             {ordersMenu}
             {dropdownOrdersMenu}
             {modalOrNull}
             {snackbarContent}
-        </>
+        </div>
     );
 }

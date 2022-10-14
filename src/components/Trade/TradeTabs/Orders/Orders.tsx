@@ -405,7 +405,7 @@ export default function Orders(props: propsIF) {
             sortable: false,
         },
         {
-            name: '',
+            name: 'Menu',
             className: '',
             show: true,
             slug: 'menu',
