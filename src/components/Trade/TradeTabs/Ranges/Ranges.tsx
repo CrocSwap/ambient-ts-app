@@ -19,6 +19,10 @@ import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
 import { PositionIF } from '../../../../utils/interfaces/PositionIF';
 import { updateApy } from '../../../../App/functions/getPositionData';
 import { TokenIF } from '../../../../utils/interfaces/TokenIF';
+import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
+import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
+import RangeHeader from './RangesTable/RangeHeader';
+import RangesRow from './RangesTable/RangesRow';
 // import RangeAccordions from './RangeAccordions/RangeAccordions';
 
 // interface for props
@@ -45,6 +49,7 @@ interface RangesPropsIF {
     importedTokens: TokenIF[];
     openGlobalModal: (content: React.ReactNode) => void;
     closeGlobalModal: () => void;
+    showSidebar: boolean;
 }
 
 // react functional component
@@ -69,6 +74,7 @@ export default function Ranges(props: RangesPropsIF) {
         currentPositionActive,
         setCurrentPositionActive,
         portfolio,
+        showSidebar,
     } = props;
 
     const tradeData = useAppSelector((state) => state.tradeData);
@@ -187,6 +193,179 @@ export default function Ranges(props: RangesPropsIF) {
             <p>Mobile Accordion here: Disabled for now</p>
         </div>
     );
+    // ----------------------
+    const isDenomBase = tradeData.isDenomBase;
+
+    const sidebarOpen = false;
+
+    const ipadView = useMediaQuery('(max-width: 480px)');
+    const desktopView = useMediaQuery('(max-width: 768px)');
+
+    const showColumns = sidebarOpen || desktopView;
+
+    const quoteTokenSymbol = tradeData.quoteToken?.symbol;
+    const baseTokenSymbol = tradeData.baseToken?.symbol;
+
+    const baseTokenCharacter = baseTokenSymbol ? getUnicodeCharacter(baseTokenSymbol) : '';
+    const quoteTokenCharacter = quoteTokenSymbol ? getUnicodeCharacter(quoteTokenSymbol) : '';
+
+    const priceCharacter = isDenomBase ? quoteTokenCharacter : baseTokenCharacter;
+
+    const walID = (
+        <>
+            <p>ID</p>
+            <p>Wallet</p>
+        </>
+    );
+    const minMax = (
+        <>
+            <p>Min</p>
+            <p>Max</p>
+        </>
+    );
+    const tokens = (
+        <>
+            <p>{`${baseTokenSymbol} (${baseTokenCharacter})`}</p>
+            <p>{`${quoteTokenSymbol} (${quoteTokenCharacter})`}</p>
+        </>
+    );
+    const headerColumns = [
+        {
+            name: 'ID',
+            className: 'ID',
+            show: !showColumns,
+            slug: 'id',
+            sortable: true,
+        },
+        {
+            name: 'Wallet',
+            className: 'wallet',
+            show: !showColumns,
+            slug: 'wallet',
+            sortable: true,
+        },
+        {
+            name: walID,
+            className: 'wallet_id',
+            show: showColumns,
+            slug: 'walletid',
+            sortable: false,
+        },
+        {
+            name: 'Min',
+
+            show: !showColumns,
+            slug: 'min',
+            sortable: true,
+        },
+        {
+            name: 'Max',
+            className: 'side',
+            show: !showColumns,
+            slug: 'max',
+            sortable: true,
+        },
+
+        {
+            name: minMax,
+            className: 'side_type',
+            show: showColumns && !ipadView,
+            slug: 'minMax',
+            sortable: false,
+        },
+        {
+            name: 'Value($)',
+            className: 'value',
+            show: true,
+            slug: 'value',
+            sortable: true,
+        },
+        {
+            name: `${baseTokenSymbol} (${baseTokenCharacter})`,
+
+            show: !showColumns,
+            slug: baseTokenSymbol,
+            sortable: false,
+        },
+        {
+            name: `${quoteTokenSymbol} (${quoteTokenCharacter})`,
+
+            show: !showColumns,
+            slug: quoteTokenSymbol,
+            sortable: false,
+        },
+        {
+            name: tokens,
+            className: 'tokens',
+            show: showColumns,
+            slug: 'tokens',
+            sortable: false,
+        },
+        {
+            name: 'APR',
+            className: 'apr',
+            show: true,
+            slug: 'apr',
+            sortable: true,
+        },
+        {
+            name: 'Status',
+            className: '',
+            show: !ipadView,
+            slug: 'status',
+            sortable: false,
+        },
+        {
+            name: '',
+            className: '',
+            show: true,
+            slug: 'menu',
+            sortable: false,
+        },
+    ];
+    const headerColumnsDisplay = (
+        <ul className={styles.header}>
+            {headerColumns.map((header, idx) => (
+                <RangeHeader
+                    key={idx}
+                    sortBy={sortBy}
+                    setSortBy={setSortBy}
+                    reverseSort={reverseSort}
+                    setReverseSort={setReverseSort}
+                    header={header}
+                />
+            ))}
+        </ul>
+    );
+    const rowItemContent = sortedPositions?.map((position, idx) => (
+        <RangesRow
+            key={idx}
+            position={position}
+            currentPositionActive={currentPositionActive}
+            setCurrentPositionActive={setCurrentPositionActive}
+            openGlobalModal={props.openGlobalModal}
+            closeGlobalModal={props.closeGlobalModal}
+            isShowAllEnabled={isShowAllEnabled}
+            ipadView={ipadView}
+            showColumns={showColumns}
+            showSidebar={showSidebar}
+            // blockExplorer={blockExplorer}
+        />
+    ));
+
+    const newTrial = (
+        <main
+            className={`${styles.main_list_container} `}
+            style={{ height: expandTradeTable ? 'calc(100vh - 10rem)' : '170px' }}
+        >
+            {headerColumnsDisplay}
+            {rowItemContent}
+        </main>
+    );
+
+    const duh = true;
+
+    if (duh) return newTrial;
 
     return (
         <div className={styles.container}>

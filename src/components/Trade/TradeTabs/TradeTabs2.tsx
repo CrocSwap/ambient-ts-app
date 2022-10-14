@@ -332,6 +332,7 @@ export default function TradeTabs2(props: ITabsProps) {
         openGlobalModal: props.openGlobalModal,
 
         closeGlobalModal: props.closeGlobalModal,
+        showSidebar: showSidebar,
     };
     // Props for <Transactions/> React Element
     const transactionsProps = {
