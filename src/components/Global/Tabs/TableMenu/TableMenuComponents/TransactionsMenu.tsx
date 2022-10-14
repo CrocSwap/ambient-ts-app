@@ -8,23 +8,25 @@ import Modal from '../../../../Global/Modal/Modal';
 import SnackbarComponent from '../../../../../components/Global/SnackbarComponent/SnackbarComponent';
 
 // START: Import Local Files
-import styles from './TableMenuComponents.module.css';
+import styles from './TransactionsMenu.module.css';
 import { useModal } from '../../../../Global/Modal/useModal';
 import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
 import { ITransaction } from '../../../../../utils/state/graphDataSlice';
 import UseOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
+import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
 
 // interface for React functional component props
 interface TransactionMenuIF {
     userPosition: boolean | undefined;
     tx: ITransaction;
     blockExplorer?: string;
+    showSidebar: boolean;
 }
 
 // React functional component
 export default function TransactionsMenu(props: TransactionMenuIF) {
     const menuItemRef = useRef<HTMLDivElement>(null);
-    const { userPosition, tx, blockExplorer } = props;
+    const { userPosition, tx, blockExplorer, showSidebar } = props;
 
     const [value, copy] = useCopyToClipboard();
     const [openSnackbar, setOpenSnackbar] = useState(false);
@@ -106,7 +108,7 @@ export default function TransactionsMenu(props: TransactionMenuIF) {
 
     const copyButton = (
         <button className={styles.option_button} onClick={handleCopyAddress}>
-            Copy Trade
+            Copy
         </button>
     );
     const explorerButton = (
@@ -131,14 +133,26 @@ export default function TransactionsMenu(props: TransactionMenuIF) {
         </Link>
     ) : null;
 
+    // --------------------------------
+
+    const view1 = useMediaQuery('(min-width: 1280px)');
+    const view2 = useMediaQuery('(min-width: 1680px)');
+    const view3 = useMediaQuery('(min-width: 2300px)');
+
+    const view1NoSidebar = useMediaQuery('(min-width: 1280px)') && !showSidebar;
+    const view3WithNoSidebar = useMediaQuery('(min-width: 2300px)') && !showSidebar;
+    // const view2WithNoSidebar = useMediaQuery('(min-width: 1680px)') && !showSidebar;
+
+    // --------------------------------
+
     const transactionsMenu = (
         <div className={styles.actions_menu}>
-            {editButton}
-            {removeButton}
-            {harvestButton}
+            {view1 && editButton}
+            {view3 && removeButton}
+            {view3WithNoSidebar && harvestButton}
             {/* {detailsButton} */}
-            {explorerButton}
-            {copyButton}
+            {view2 && explorerButton}
+            {view1NoSidebar && copyButton}
         </div>
     );
 
@@ -174,11 +188,11 @@ export default function TransactionsMenu(props: TransactionMenuIF) {
     );
 
     return (
-        <>
+        <div className={styles.main_container}>
             {transactionsMenu}
             {dropdownTransactionsMenu}
             {modalOrNull}
             {snackbarContent}
-        </>
+        </div>
     );
 }
