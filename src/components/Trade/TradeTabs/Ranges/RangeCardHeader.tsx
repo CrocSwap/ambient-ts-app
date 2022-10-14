@@ -1,3 +1,5 @@
+// todo: SEE RETURN STATEMENT
+
 import { Dispatch, SetStateAction, useMemo } from 'react';
 import styles from './RangeCardHeader.module.css';
 import { FaAngleUp, FaAngleDown } from 'react-icons/fa';
@@ -149,11 +151,16 @@ export default function RangeCardHeader(props: RangeCardHeaderPropsIF) {
         //     <div className={styles.arrow_wrapper}>{arrow}</div>
         // </div>
         <>
-            {mobileHeaderDisplay}
+            {/* {mobileHeaderDisplay}
             <div className={styles.main_container}>
                 <div className={styles.row_container}>{columnHeaderContent}</div>
                 <div />
-            </div>
+            </div> */}
+            <p>
+                This file has been refactored and updated to RangeHeader.tsx on 10/13/2022. It is no
+                longer in use. If not uncommented by 12/13/2022, it can be safely deleted, along
+                with RangeCardHeader.module.css. -Jr
+            </p>
         </>
     );
 }

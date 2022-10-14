@@ -1,12 +1,11 @@
 import { useEffect, Dispatch, SetStateAction } from 'react';
 import { PositionIF } from '../../../../../utils/interfaces/PositionIF';
-import { ambientPosSlot, ChainSpec, concPosSlot, CrocEnv } from '@crocswap-libs/sdk';
+import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
 import { ethers } from 'ethers';
 import { useProcessRange } from '../../../../../utils/hooks/useProcessRange';
 import styles from '../Ranges.module.css';
 import RangeStatus from '../../../../Global/RangeStatus/RangeStatus';
 import RangesMenu from '../../../../Global/Tabs/TableMenu/TableMenuComponents/RangesMenu';
-import { range } from 'd3';
 import RangeDetails from '../../../../RangeDetails/RangeDetails';
 
 interface RangesRowPropsIF {
@@ -42,7 +41,7 @@ interface RangesRowPropsIF {
 
 export default function RangesRow(props: RangesRowPropsIF) {
     const {
-        showSidebar,
+        // showSidebar,
         ipadView,
         showColumns,
         isShowAllEnabled,
@@ -50,7 +49,6 @@ export default function RangesRow(props: RangesRowPropsIF) {
         currentPositionActive,
         setCurrentPositionActive,
         openGlobalModal,
-        closeGlobalModal,
     } = props;
 
     const {
@@ -70,14 +68,11 @@ export default function RangesRow(props: RangesRowPropsIF) {
         // isOwnerActiveAccount,
         ensName,
 
-        apy,
         apyString,
         apyClassname,
 
         isPositionInRange,
         isAmbient,
-
-        positionMatchesSelectedTokens,
 
         ambientMinOrNull,
         ambientMaxOrNull,
@@ -196,11 +191,7 @@ export default function RangesRow(props: RangesRowPropsIF) {
                     {ambientMaxOrNull}
                 </li>
             )}
-            {/* {!showColumns && (
-            <li onClick={openDetailsModal} data-label='type' className={sideTypeStyle}>
-                {type}
-            </li>
-        )} */}
+
             {showColumns && !ipadView && (
                 <li data-label='side-type' className='color_white'>
                     <p>{ambientMinOrNull}</p>
