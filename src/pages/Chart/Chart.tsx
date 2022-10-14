@@ -271,44 +271,18 @@ export default function Chart(props: ChartData) {
                         .style('cursor', 'row-resize');
                 });
 
-            d3.select(d3PlotArea.current).select('.targets').style('visibility', 'hidden');
+            d3.select(d3Container.current)
+                .select('.targets')
+                .style('visibility', 'hidden')
+                .style('filter', 'none');
         } else if (location.pathname.includes('market')) {
-            console.log('asdsadsadsad');
-
-            d3.select(d3PlotArea.current).select('.limit').style('visibility', 'hidden');
-            d3.select(d3PlotArea.current).select('.targets').style('visibility', 'hidden');
+            d3.select(d3Container.current).select('.limit').style('visibility', 'hidden');
+            d3.select(d3Container.current)
+                .select('.targets')
+                .style('visibility', 'hidden')
+                .style('filter', 'none');
         }
     }, [location]);
-
-    async function addHorizontalLineArea() {
-        if (d3.select(d3PlotArea.current).select('.targets').select('#rect').node() === null) {
-            await d3
-                .select(d3PlotArea.current)
-                .select('.targets')
-                .append('rect')
-                .attr('id', 'rect');
-        }
-        const max = ranges.find((item) => item.name === 'Max')?.value as number;
-        const min = ranges.find((item) => item.name === 'Min')?.value as number;
-
-        d3.select(d3Container.current)
-            .select('.targets')
-            .select('#rect')
-            .attr('fill', '#7371FC1A')
-            .attr('width', '100%')
-            .attr('opacity', '0.7')
-            .attr(
-                'height',
-                Math.abs(scaleData.yScale(ranges[1].value) - scaleData.yScale(ranges[0].value)),
-            )
-            .attr('y', min > max ? scaleData.yScale(min) : scaleData.yScale(max));
-    }
-
-    useEffect(() => {
-        if (scaleData !== undefined) {
-            addHorizontalLineArea();
-        }
-    }, [ranges]);
 
     // Scale
     useEffect(() => {
@@ -474,7 +448,6 @@ export default function Chart(props: ChartData) {
                         scaleData.yScale.domain([domainY[0] + deltaY, domainY[1] + deltaY]);
                     }
 
-                    addHorizontalLineArea();
                     relocationCrosshairText(event);
 
                     lastY = t.y;
@@ -1074,7 +1047,7 @@ export default function Chart(props: ChartData) {
                     .select('g.left-handle text')
                     .text((d: any) => d.name + ' - ' + valueFormatter(d.value))
                     .style('transform', (d: any) =>
-                        d.name == 'Min' ? ' translate(0px, 20px)' : '',
+                        d.name == 'Min' ? ' translate(0px, 25px)' : 'translate(0px, -5px)',
                     );
             });
 
@@ -1145,25 +1118,97 @@ export default function Chart(props: ChartData) {
                 .nodes();
 
             nodes.forEach((res) => {
-                d3.select(res)
-                    .append('polygon')
-                    .attr('points', '0,40 0,55 10,49 10,46')
-                    .attr('stroke', 'rgba(235, 235, 255, 0.4)')
-                    .attr('fill', 'rgba(235, 235, 255, 0.4)')
-                    .style('transform', 'translate(1px, -48px)');
+                if (d3.select(res).select('polygon').node() === null) {
+                    d3.select(res)
+                        .append('polygon')
+                        .attr('points', '0,40 0,55 10,49 10,46')
+                        .attr('stroke', 'rgba(235, 235, 255, 0.4)')
+                        .attr('fill', 'rgba(235, 235, 255, 0.4)')
+                        .style('transform', 'translate(1px, -48px)');
 
-                d3.select(res)
-                    .append('polygon')
-                    .attr('points', '0,40 0,55 10,49 10,46')
-                    .attr('stroke', 'rgba(235, 235, 255, 0.4)')
-                    .attr('fill', 'rgba(235, 235, 255, 0.4)')
-                    .style('transform', 'translate(100%, 48px) rotate(180deg)');
+                    d3.select(res)
+                        .append('polygon')
+                        .attr('points', '0,40 0,55 10,49 10,46')
+                        .attr('stroke', 'rgba(235, 235, 255, 0.4)')
+                        .attr('fill', 'rgba(235, 235, 255, 0.4)')
+                        .style('transform', 'translate(100%, 48px) rotate(180deg)');
+                }
             });
         }
     }
 
     useEffect(() => {
-        addTriangle();
+        if (location.pathname.includes('range')) {
+            const svgmain = d3.select(d3PlotArea.current).select('svg');
+            if (svgmain.select('defs').node() === null) {
+                const lg = svgmain
+                    .append('defs')
+                    .append('filter')
+                    .attr('x', 0)
+                    .attr('y', 0)
+                    .attr('height', 1)
+                    .attr('width', 1)
+                    .attr('id', 'targetsBackground');
+
+                lg.append('feFlood').attr('flood-color', '#7371FC1A').attr('result', 'bg');
+
+                const feMergeTag = lg.append('feMerge');
+                feMergeTag.append('feMergeNode').attr('in', 'bg');
+                feMergeTag.append('feMergeNode').attr('in', 'SourceGraphic');
+
+                const horLineMax = svgmain
+                    .append('defs')
+                    .append('filter')
+                    .attr('x', -0.001)
+                    .attr('y', -0.01)
+                    .attr('height', 1)
+                    .attr('width', 1)
+                    .attr('id', 'horLineMax');
+
+                horLineMax
+                    .append('feFlood')
+                    .attr('flood-color', '#171d27')
+                    .attr('height', '26')
+                    .attr('result', 'bg');
+
+                const feMergeHorMaxTag = horLineMax.append('feMerge');
+                feMergeHorMaxTag.append('feMergeNode').attr('in', 'bg');
+                feMergeHorMaxTag.append('feMergeNode').attr('in', 'SourceGraphic');
+
+                const horLineMin = svgmain
+                    .append('defs')
+                    .append('filter')
+                    .attr('x', -0.001)
+                    .attr('y', 0.2)
+                    .attr('height', 1)
+                    .attr('width', 1)
+                    .attr('id', 'horLineMin');
+
+                horLineMin
+                    .append('feFlood')
+                    .attr('flood-color', '#171d27')
+                    .attr('y', 1)
+                    .attr('height', '30')
+                    .attr('result', 'bg');
+
+                const feMergeHorMinTag = horLineMin.append('feMerge');
+                feMergeHorMinTag.append('feMergeNode').attr('in', 'bg');
+                feMergeHorMinTag.append('feMergeNode').attr('in', 'SourceGraphic');
+            }
+            d3.select(d3PlotArea.current)
+                .select('.targets')
+                .style('filter', 'url(#targetsBackground)');
+            d3.select(d3PlotArea.current)
+                .select('.targets')
+                .select('#Max')
+                .style('filter', 'url(#horLineMax)');
+            d3.select(d3PlotArea.current)
+                .select('.targets')
+                .select('#Min')
+                .style('filter', 'url(#horLineMin)');
+
+            addTriangle();
+        }
     }, [dragControl, location]);
 
     // Line Rules
@@ -1795,10 +1840,10 @@ export default function Chart(props: ChartData) {
                     async function createElements() {
                         const svg = d3.select(event.target).select('svg');
 
+                        targetsJoin(svg, [targets.ranges]).call(horizontalLine);
                         crosshairHorizontalJoin(svg, [crosshairData]).call(crosshairHorizontal);
                         crosshairVerticalJoin(svg, [crosshairData]).call(crosshairVertical);
 
-                        targetsJoin(svg, [targets.ranges]).call(horizontalLine);
                         marketJoin(svg, [targets.market]).call(marketLine);
                         limitJoin(svg, [targets.limit]).call(horizontalLine);
 
