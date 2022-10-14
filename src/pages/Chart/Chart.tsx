@@ -427,11 +427,7 @@ export default function Chart(props: ChartData) {
 
             const zoom = d3
                 .zoom()
-                .scaleExtent([0.5, 10])
-                // .translateExtent([
-                //     [-150, -200],
-                //     [1600, 600],
-                // ])
+                .scaleExtent([0, 10])
                 .on('start', (event: any) => {
                     if (event.sourceEvent && event.sourceEvent.type != 'wheel') {
                         d3.select(d3Container.current).style('cursor', 'grabbing');
@@ -447,10 +443,6 @@ export default function Chart(props: ChartData) {
                         domainBoundary = scaleData.xScale.domain();
                     }
 
-                    scaleData.xScale.domain(
-                        event.transform.rescaleX(scaleData.xScaleCopy).domain(),
-                    );
-
                     if (
                         domainBoundary[0] >
                         event.transform.rescaleX(scaleData.xScaleCopy).domain()[0]
@@ -464,6 +456,10 @@ export default function Chart(props: ChartData) {
                             ).getTime(),
                         };
                     }
+
+                    scaleData.xScale.domain(
+                        event.transform.rescaleX(scaleData.xScaleCopy).domain(),
+                    );
 
                     // PANNING
                     if (event.sourceEvent && event.sourceEvent.type != 'wheel') {
@@ -486,6 +482,26 @@ export default function Chart(props: ChartData) {
                     render();
                 })
                 .on('end', (event: any) => {
+                    const xmin = new Date(Math.floor(scaleData.xScale.domain()[0]));
+                    const xmax = new Date(Math.floor(scaleData.xScale.domain()[1]));
+
+                    const filtered = parsedChartData?.chartData.filter(
+                        (data: any) => data.date >= xmin && data.date <= xmax,
+                    );
+
+                    if (filtered !== undefined) {
+                        const minYBoundary = d3.min(filtered, (d) => d.low);
+                        const maxYBoundary = d3.max(filtered, (d) => d.high);
+
+                        if (maxYBoundary !== undefined && minYBoundary !== undefined) {
+                            const buffer = Math.floor((maxYBoundary - minYBoundary) * 0.1);
+
+                            scaleData.yScale.domain([minYBoundary - buffer, maxYBoundary + buffer]);
+                        }
+
+                        render();
+                    }
+
                     if (event.sourceEvent && event.sourceEvent.type != 'wheel') {
                         d3.select(d3Container.current).style('cursor', 'default');
                     }
@@ -511,7 +527,7 @@ export default function Chart(props: ChartData) {
                 };
             });
         }
-    }, [scaleData, ranges]);
+    }, [scaleData, parsedChartData?.chartData]);
 
     const setMarketLineValue = () => {
         const lastCandlePrice = parsedChartData?.chartData[0].close;
