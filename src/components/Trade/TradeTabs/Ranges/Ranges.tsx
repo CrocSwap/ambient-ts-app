@@ -366,7 +366,7 @@ export default function Ranges(props: RangesPropsIF) {
             sortable: false,
         },
         {
-            name: '',
+            name: 'Menu',
             className: '',
             show: true,
             slug: 'menu',

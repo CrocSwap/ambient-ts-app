@@ -236,8 +236,8 @@ export default function RangesRow(props: RangesRowPropsIF) {
                 <RangeStatus isInRange={isPositionInRange} isAmbient={isAmbient} justSymbol />
             </li>
 
-            <li data-label='menu' style={{ width: showColumns ? '50px' : '100px' }}>
-                <RangesMenu {...rangeMenuProps} />
+            <li data-label='menu'>
+                <RangesMenu {...rangeMenuProps} showSidebar={props.showSidebar} />
             </li>
         </ul>
     );
