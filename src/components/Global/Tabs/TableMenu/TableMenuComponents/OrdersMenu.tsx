@@ -8,7 +8,7 @@ import SnackbarComponent from '../../../../../components/Global/SnackbarComponen
 import Modal from '../../../../Global/Modal/Modal';
 
 // START: Import Local Files
-import styles from './OrdersMenu.module.css';
+import styles from './TableMenus.module.css';
 import { useModal } from '../../../../Global/Modal/useModal';
 import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
 import { ILimitOrderState } from '../../../../../utils/state/graphDataSlice';

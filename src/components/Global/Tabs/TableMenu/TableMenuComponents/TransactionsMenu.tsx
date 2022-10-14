@@ -8,7 +8,7 @@ import Modal from '../../../../Global/Modal/Modal';
 import SnackbarComponent from '../../../../../components/Global/SnackbarComponent/SnackbarComponent';
 
 // START: Import Local Files
-import styles from './TransactionsMenu.module.css';
+import styles from './TableMenus.module.css';
 import { useModal } from '../../../../Global/Modal/useModal';
 import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
 import { ITransaction } from '../../../../../utils/state/graphDataSlice';

@@ -9,7 +9,7 @@ import RangeDetails from '../../../../RangeDetails/RangeDetails';
 import SnackbarComponent from '../../../../../components/Global/SnackbarComponent/SnackbarComponent';
 
 // START: Import Local Files
-import styles from './RangesMenu.module.css';
+import styles from './TableMenus.module.css';
 import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
 import { PositionIF } from '../../../../../utils/interfaces/PositionIF';
 import HarvestPosition from '../../../../HarvestPosition/HarvestPosition';
