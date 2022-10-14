@@ -163,12 +163,13 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                 </li>
             )}
 
-            <li data-label='menu' style={{ width: showColumns ? '50px' : '100px' }}>
+            <li data-label='menu'>
                 {/* <OrdersMenu limitOrder={limitOrder} {...orderMenuProps} /> */}
                 <TransactionsMenu
                     userPosition={userNameToDisplay === 'You'}
                     tx={tx}
                     blockExplorer={blockExplorer}
+                    showSidebar={props.showSidebar}
                 />
             </li>
         </ul>
