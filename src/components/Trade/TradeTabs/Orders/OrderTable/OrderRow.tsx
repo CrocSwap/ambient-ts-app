@@ -53,6 +53,10 @@ export default function OrderRow(props: OrderRowPropsIF) {
         isOwnerActiveAccount,
         ensName,
         orderMatchesSelectedTokens,
+
+        baseTokenCharacter,
+        quoteTokenCharacter,
+        isDenomBase,
     } = useProcessOrder(limitOrder);
 
     const orderMenuProps = {
@@ -61,6 +65,8 @@ export default function OrderRow(props: OrderRowPropsIF) {
         openGlobalModal: props.openGlobalModal,
         isOwnerActiveAccount: isOwnerActiveAccount,
     };
+
+    const sideCharacter = isDenomBase ? baseTokenCharacter : quoteTokenCharacter;
 
     const sellOrderStyle = side === 'sell' ? 'order_sell' : 'order_buy';
 
@@ -105,22 +111,23 @@ export default function OrderRow(props: OrderRowPropsIF) {
                     : setCurrentPositionActive('')
             }
         >
-            {!showColumns && (
+            {!showColumns && !showSidebar && (
                 <li onClick={openDetailsModal} data-label='id' className='base_color'>
                     {posHashTruncated}
                 </li>
             )}
-            {!showColumns && (
+            {!showColumns && !showSidebar && (
                 <li onClick={openDetailsModal} data-label='wallet' className={usernameStyle}>
                     {userNameToDisplay}
                 </li>
             )}
-            {showColumns && (
-                <li data-label='id'>
-                    <p className='base_color'>{posHashTruncated}</p>{' '}
-                    <p className={usernameStyle}>{userNameToDisplay}</p>
-                </li>
-            )}
+            {showColumns ||
+                (showSidebar && (
+                    <li data-label='id'>
+                        <p className='base_color'>{posHashTruncated}</p>{' '}
+                        <p className={usernameStyle}>{userNameToDisplay}</p>
+                    </li>
+                ))}
             {!ipadView && (
                 <li onClick={openDetailsModal} data-label='price' className={sellOrderStyle}>
                     {truncatedDisplayPrice}
@@ -129,7 +136,7 @@ export default function OrderRow(props: OrderRowPropsIF) {
 
             {!showColumns && (
                 <li onClick={openDetailsModal} data-label='side' className={sellOrderStyle}>
-                    {side}
+                    {`${side} ${sideCharacter}`}
                 </li>
             )}
             {!showColumns && (
@@ -148,12 +155,12 @@ export default function OrderRow(props: OrderRowPropsIF) {
                 {usdValue}
             </li>
 
-            {!showColumns && !showSidebar && (
+            {!showColumns && (
                 <li onClick={openDetailsModal} data-label={baseTokenSymbol} className='color_white'>
                     <p>{baseDisplay}</p>
                 </li>
             )}
-            {!showColumns && !showSidebar && (
+            {!showColumns && (
                 <li
                     onClick={openDetailsModal}
                     data-label={quoteTokenSymbol}
@@ -162,7 +169,7 @@ export default function OrderRow(props: OrderRowPropsIF) {
                     <p>{quoteDisplay}</p>
                 </li>
             )}
-            {(showColumns || showSidebar) && (
+            {showColumns && (
                 <li data-label={baseTokenSymbol + quoteTokenSymbol} className='color_white'>
                     <p className={styles.align_center}>
                         {' '}

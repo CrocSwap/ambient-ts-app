@@ -349,6 +349,16 @@ export default function Ranges(props: RangesPropsIF) {
             ipadView={ipadView}
             showColumns={showColumns}
             showSidebar={showSidebar}
+            isUserLoggedIn={isUserLoggedIn}
+            crocEnv={crocEnv}
+            chainData={chainData}
+            provider={provider}
+            chainId={chainId}
+            baseTokenBalance={baseTokenBalance}
+            quoteTokenBalance={quoteTokenBalance}
+            baseTokenDexBalance={baseTokenDexBalance}
+            quoteTokenDexBalance={quoteTokenDexBalance}
+            lastBlockNumber={lastBlockNumber}
             // blockExplorer={blockExplorer}
         />
     ));

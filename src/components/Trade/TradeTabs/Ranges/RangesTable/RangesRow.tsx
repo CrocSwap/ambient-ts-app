@@ -5,26 +5,28 @@ import { ethers } from 'ethers';
 import { useProcessRange } from '../../../../../utils/hooks/useProcessRange';
 import styles from '../Ranges.module.css';
 import RangeStatus from '../../../../Global/RangeStatus/RangeStatus';
+import RangesMenu from '../../../../Global/Tabs/TableMenu/TableMenuComponents/RangesMenu';
+import { range } from 'd3';
 
 interface RangesRowPropsIF {
-    // isUserLoggedIn: boolean;
-    // crocEnv: CrocEnv | undefined;
-    // chainData: ChainSpec;
-    // provider: ethers.providers.Provider | undefined;
-    // chainId: string;
+    isUserLoggedIn: boolean;
+    crocEnv: CrocEnv | undefined;
+    chainData: ChainSpec;
+    provider: ethers.providers.Provider | undefined;
+    chainId: string;
     // portfolio?: boolean;
-    // baseTokenBalance: string;
-    // quoteTokenBalance: string;
-    // baseTokenDexBalance: string;
-    // quoteTokenDexBalance: string;
+    baseTokenBalance: string;
+    quoteTokenBalance: string;
+    baseTokenDexBalance: string;
+    quoteTokenDexBalance: string;
     // notOnTradeRoute?: boolean;
     // isAllPositionsEnabled: boolean;
     // tokenAAddress: string;
     // tokenBAddress: string;
     // isAuthenticated: boolean;
-    // account?: string;
     // isDenomBase: boolean;
-    // lastBlockNumber: number;
+    account?: string;
+    lastBlockNumber: number;
     showSidebar: boolean;
     ipadView: boolean;
     showColumns: boolean;
@@ -51,6 +53,7 @@ export default function RangesRow(props: RangesRowPropsIF) {
     } = props;
 
     const {
+        posHash,
         posHashTruncated,
         userNameToDisplay,
         quoteTokenLogo,
@@ -77,8 +80,55 @@ export default function RangesRow(props: RangesRowPropsIF) {
 
         ambientMinOrNull,
         ambientMaxOrNull,
+        isDenomBase,
         // orderMatchesSelectedTokens,
     } = useProcessRange(position);
+
+    const rangeDetailsProps = {
+        crocEnv: props.crocEnv,
+        provider: props.provider,
+        chainData: props.chainData,
+        chainId: props.chainId,
+        poolIdx: position.poolIdx,
+        isPositionInRange: isPositionInRange,
+        isAmbient: isAmbient,
+        user: position.user,
+        bidTick: position.bidTick,
+        askTick: position.askTick,
+        baseTokenSymbol: position.baseSymbol,
+        baseTokenDecimals: position.baseDecimals,
+        quoteTokenSymbol: position.quoteSymbol,
+        quoteTokenDecimals: position.quoteDecimals,
+        baseTokenBalance: props.baseTokenBalance,
+        quoteTokenBalance: props.quoteTokenBalance,
+        baseTokenDexBalance: props.baseTokenDexBalance,
+        quoteTokenDexBalance: props.quoteTokenDexBalance,
+        lowRangeDisplay: ambientMinOrNull,
+        highRangeDisplay: ambientMaxOrNull,
+        baseTokenLogoURI: position.baseTokenLogoURI,
+        quoteTokenLogoURI: position.quoteTokenLogoURI,
+        isDenomBase: isDenomBase,
+        baseTokenAddress: props.position.base,
+        quoteTokenAddress: props.position.quote,
+        lastBlockNumber: props.lastBlockNumber,
+        positionApy: position.apy,
+
+        closeGlobalModal: props.closeGlobalModal,
+        openGlobalModal: props.openGlobalModal,
+    };
+
+    const rangeMenuProps = {
+        crocEnv: props.crocEnv,
+        chainData: props.chainData,
+        posHash: posHash as string,
+        rangeDetailsProps: rangeDetailsProps,
+        userMatchesConnectedAccount: userMatchesConnectedAccount,
+        positionData: position,
+        baseTokenBalance: props.baseTokenBalance,
+        quoteTokenBalance: props.quoteTokenBalance,
+        baseTokenDexBalance: props.baseTokenDexBalance,
+        quoteTokenDexBalance: props.quoteTokenDexBalance,
+    };
 
     const openDetailsModal = () => console.log('opening detail modal');
 
@@ -193,7 +243,7 @@ export default function RangesRow(props: RangesRowPropsIF) {
             </li>
 
             <li data-label='menu' style={{ width: showColumns ? '50px' : '100px' }}>
-                ....
+                <RangesMenu {...rangeMenuProps} />
             </li>
         </ul>
     );

@@ -48,8 +48,13 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
         quoteTokenSymbol,
         isOwnerActiveAccount,
         ensName,
+        baseTokenCharacter,
+        quoteTokenCharacter,
+        isDenomBase,
         // orderMatchesSelectedTokens,
     } = useProcessTransaction(tx);
+
+    const sideCharacter = isDenomBase ? baseTokenCharacter : quoteTokenCharacter;
 
     const sideTypeStyle = `${sideType}_style`;
 
@@ -110,7 +115,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
 
             {!showColumns && (
                 <li onClick={openDetailsModal} data-label='side' className={sideTypeStyle}>
-                    {sideType}
+                    {`${sideType}${sideCharacter}`}
                 </li>
             )}
             {!showColumns && (

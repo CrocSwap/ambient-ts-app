@@ -172,5 +172,6 @@ export const useProcessRange = (position: PositionIF) => {
 
         // position matches select token data
         positionMatchesSelectedTokens,
+        isDenomBase,
     };
 };

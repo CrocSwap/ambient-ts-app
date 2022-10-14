@@ -152,6 +152,7 @@ export const useProcessTransaction = (tx: ITransaction) => {
     const priceType =
         (isDenomBase && !tx.isBuy) || (!isDenomBase && tx.isBuy) ? 'priceBuy' : 'priceSell';
 
+    // const sideCharacter = isDenomBase ? baseTokenCharacter : quoteTokenCharacter
     const sideType =
         tx.entityType === 'swap' || tx.entityType === 'limitOrder'
             ? (isDenomBase && !tx.isBuy) || (!isDenomBase && tx.isBuy)
@@ -259,6 +260,7 @@ export const useProcessTransaction = (tx: ITransaction) => {
 
         // block explorer data
         blockExplorer,
+        isDenomBase,
 
         // transaction matches select token data
         transactionMatchesSelectedTokens,
