@@ -129,7 +129,9 @@ export default function OrderRow(props: OrderRowPropsIF) {
             {showColumns && (
                 <li data-label='id'>
                     <p className='base_color'>{posHashTruncated}</p>{' '}
-                    <p className={usernameStyle}>{userNameToDisplay}</p>
+                    <p className={usernameStyle} style={{ textTransform: 'lowercase' }}>
+                        {userNameToDisplay}
+                    </p>
                 </li>
             )}
             {!ipadView && (

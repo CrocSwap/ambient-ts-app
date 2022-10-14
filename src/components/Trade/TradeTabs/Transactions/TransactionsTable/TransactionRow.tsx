@@ -108,7 +108,9 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
             {showColumns && (
                 <li data-label='id'>
                     <p className='base_color'>{txHashTruncated}</p>{' '}
-                    <p className={usernameStyle}>{userNameToDisplay}</p>
+                    <p className={usernameStyle} style={{ textTransform: 'lowercase' }}>
+                        {userNameToDisplay}
+                    </p>
                 </li>
             )}
             {!ipadView && (
