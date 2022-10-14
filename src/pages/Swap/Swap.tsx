@@ -81,7 +81,6 @@ export default function Swap(props: SwapPropsIF) {
         isPairStable,
         provider,
         isOnTradeRoute,
-        // nativeBalance,
         ethMainnetUsdPrice,
         gasPriceInGwei,
         baseTokenBalance,

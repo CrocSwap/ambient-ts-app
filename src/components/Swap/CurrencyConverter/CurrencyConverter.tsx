@@ -217,7 +217,6 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
     };
 
     useEffect(() => {
-        console.log({ poolExists });
         isTokenAPrimaryLocal ? handleTokenAChangeEvent() : handleTokenBChangeEvent();
     }, [
         crocEnv,
@@ -230,7 +229,6 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
         tokenPair.dataTokenA.address,
         tokenPair.dataTokenB.address,
         slippageTolerancePercentage,
-        // isSellTokenEth,
     ]);
 
     const handleSwapButtonMessage = (tokenAAmount: number) => {
