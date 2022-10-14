@@ -29,7 +29,7 @@ export default function OrderRow(props: OrderRowPropsIF) {
         showColumns,
         ipadView,
         limitOrder,
-        // showSidebar,
+        showSidebar,
         openGlobalModal,
         closeGlobalModal,
         currentPositionActive,
@@ -189,8 +189,8 @@ export default function OrderRow(props: OrderRowPropsIF) {
                 </li>
             )}
 
-            <li data-label='menu' style={{ width: showColumns ? '50px' : '100px' }}>
-                <OrdersMenu limitOrder={limitOrder} {...orderMenuProps} />
+            <li data-label='menu'>
+                <OrdersMenu limitOrder={limitOrder} {...orderMenuProps} showSidebar={showSidebar} />
             </li>
         </ul>
     );

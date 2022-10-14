@@ -45,8 +45,8 @@ export const useProcessOrder = (limitOrder: ILimitOrderState) => {
             const invPriceDecimalCorrected = limitOrder.invLimitPriceDecimalCorrected;
 
             const truncatedDisplayPrice = isDenomBase
-                ? invPriceDecimalCorrected?.toPrecision(6)
-                : priceDecimalCorrected?.toPrecision(6);
+                ? invPriceDecimalCorrected?.toPrecision(2)
+                : priceDecimalCorrected?.toPrecision(2);
 
             setTruncatedDisplayPrice(truncatedDisplayPrice);
         } else {
