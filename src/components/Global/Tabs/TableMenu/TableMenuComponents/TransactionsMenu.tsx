@@ -136,23 +136,23 @@ export default function TransactionsMenu(props: TransactionMenuIF) {
     // --------------------------------
 
     const view1 = useMediaQuery('(min-width: 1280px)');
-    const view2 = useMediaQuery('(min-width: 1680px)');
-    const view3 = useMediaQuery('(min-width: 2300px)');
+    // const view2 = useMediaQuery('(min-width: 1680px)');
+    // const view3 = useMediaQuery('(min-width: 2300px)');
 
     const view1NoSidebar = useMediaQuery('(min-width: 1280px)') && !showSidebar;
-    const view3WithNoSidebar = useMediaQuery('(min-width: 2300px)') && !showSidebar;
+    // const view3WithNoSidebar = useMediaQuery('(min-width: 2300px)') && !showSidebar;
     // const view2WithNoSidebar = useMediaQuery('(min-width: 1680px)') && !showSidebar;
 
     // --------------------------------
-
+    const notRelevantButton = false;
     const transactionsMenu = (
         <div className={styles.actions_menu}>
-            {view1 && editButton}
-            {view3 && removeButton}
-            {view3WithNoSidebar && harvestButton}
+            {notRelevantButton && editButton}
+            {notRelevantButton && removeButton}
+            {notRelevantButton && harvestButton}
             {/* {detailsButton} */}
-            {view2 && explorerButton}
-            {view1NoSidebar && copyButton}
+            {view1NoSidebar && explorerButton}
+            {view1 && copyButton}
         </div>
     );
 
