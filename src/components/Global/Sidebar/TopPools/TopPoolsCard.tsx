@@ -4,7 +4,9 @@ import { PoolIF } from '../../../../utils/interfaces/exports';
 import { PoolStatsFn } from '../../../../App/functions/getPoolStats';
 import { useEffect, useState, useMemo } from 'react';
 import { formatAmount } from '../../../../utils/numbers';
+import { tradeData } from '../../../../utils/state/tradeDataSlice';
 interface TopPoolsCardProps {
+    tradeData: tradeData;
     pool: PoolIF;
     chainId: string;
     cachedPoolStatsFetch: PoolStatsFn;
@@ -12,7 +14,7 @@ interface TopPoolsCardProps {
 }
 
 export default function TopPoolsCard(props: TopPoolsCardProps) {
-    const { pool, lastBlockNumber, cachedPoolStatsFetch } = props;
+    const { tradeData, pool, lastBlockNumber, cachedPoolStatsFetch } = props;
 
     const { pathname } = useLocation();
 
@@ -69,10 +71,22 @@ export default function TopPoolsCard(props: TopPoolsCardProps) {
         // return () => clearInterval(timerId);
     }, [lastBlockNumber]);
 
+    const chainString = '0x5';
+
+    const tokenAString =
+        pool.base.address.toLowerCase() === tradeData.tokenB.address.toLowerCase()
+            ? pool.quote.address
+            : pool.base.address;
+
+    const tokenBString =
+        pool.base.address.toLowerCase() === tradeData.tokenB.address.toLowerCase()
+            ? pool.base.address
+            : pool.quote.address;
+
     return (
         <Link
             className={styles.container}
-            to={`${locationSlug}/chain=0x5&tokenA=${pool.base.address}&tokenB=${pool.quote.address}`}
+            to={`${locationSlug}/chain=${chainString}&tokenA=${tokenAString}&tokenB=${tokenBString}`}
         >
             <div>
                 {pool.base.symbol} / {pool.quote.symbol}

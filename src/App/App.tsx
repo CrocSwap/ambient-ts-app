@@ -1885,6 +1885,7 @@ export default function App() {
 
     // props for <Sidebar/> React element
     const sidebarProps = {
+        tradeData: tradeData,
         isDenomBase: tradeData.isDenomBase,
         showSidebar: showSidebar,
         toggleSidebar: toggleSidebar,
