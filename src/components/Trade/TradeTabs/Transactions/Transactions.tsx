@@ -105,7 +105,7 @@ export default function Transactions(props: TransactionsProps) {
     const [isDataLoading, setIsDataLoading] = useState(true);
     const [dataToDisplay, setDataToDisplay] = useState(false);
 
-    console.log({ transactionData });
+    // console.log({ transactionData });
 
     const [debouncedIsShowAllEnabled, setDebouncedIsShowAllEnabled] = useState(false);
 
