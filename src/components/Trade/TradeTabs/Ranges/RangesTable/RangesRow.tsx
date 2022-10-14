@@ -7,6 +7,7 @@ import styles from '../Ranges.module.css';
 import RangeStatus from '../../../../Global/RangeStatus/RangeStatus';
 import RangesMenu from '../../../../Global/Tabs/TableMenu/TableMenuComponents/RangesMenu';
 import { range } from 'd3';
+import RangeDetails from '../../../../RangeDetails/RangeDetails';
 
 interface RangesRowPropsIF {
     isUserLoggedIn: boolean;
@@ -130,7 +131,9 @@ export default function RangesRow(props: RangesRowPropsIF) {
         quoteTokenDexBalance: props.quoteTokenDexBalance,
     };
 
-    const openDetailsModal = () => console.log('opening detail modal');
+    const openDetailsModal = () => {
+        openGlobalModal(<RangeDetails position={position} {...rangeDetailsProps} />);
+    };
 
     const positionDomId =
         position.positionStorageSlot === currentPositionActive
