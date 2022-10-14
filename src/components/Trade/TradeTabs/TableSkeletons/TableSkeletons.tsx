@@ -1,8 +1,8 @@
-import Shimmer from '../../../../Global/Skeletons/Shimmer';
-import SkeletonElement from '../../../../Global/Skeletons/SkeletonElement';
-import styles from './TransactionsSkeletons.module.css';
+import Shimmer from '../../../Global/Skeletons/Shimmer';
+import SkeletonElement from '../../../Global/Skeletons/SkeletonElement';
+import styles from './TableSkeletons.module.css';
 
-export default function TransactionsSkeletons() {
+export default function TableSkeletons() {
     return (
         <div className={styles.skeleton_wrapper}>
             <div className={styles.skeleton_transaction}>

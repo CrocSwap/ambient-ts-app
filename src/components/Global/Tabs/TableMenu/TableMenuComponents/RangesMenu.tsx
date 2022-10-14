@@ -66,16 +66,22 @@ export default function RangesMenu(props: RangesMenuIF) {
 
     // ---------------------MODAL FUNCTIONALITY----------------
 
-    const openRemoveModal = () =>
+    const openRemoveModal = () => {
+        setShowDropdownMenu(false);
         openGlobalModal(<RemoveRange position={positionData} {...rangeDetailsProps} />);
+    };
 
-    const openDetailsModal = () =>
+    const openDetailsModal = () => {
+        setShowDropdownMenu(false);
         openGlobalModal(<RangeDetails position={positionData} {...rangeDetailsProps} />);
+    };
 
-    const openHarvestModal = () =>
+    const openHarvestModal = () => {
+        setShowDropdownMenu(false);
         openGlobalModal(
             <HarvestPosition crocEnv={crocEnv} position={positionData} {...rangeDetailsProps} />,
         );
+    };
 
     // -----------------SNACKBAR----------------
     function handleCopyAddress() {

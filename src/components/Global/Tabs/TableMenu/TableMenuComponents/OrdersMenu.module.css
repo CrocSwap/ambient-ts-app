@@ -1,3 +1,12 @@
+.main_container{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 4px;
+    
+}
+
 .actions_menu {
     width: 100%;
     display: flex;
@@ -80,7 +89,8 @@
 }
 
 .actions_menu {
-    display: none;
+  display: flex;
+  justify-content: flex-end;
 }
 
 .menu_column{
@@ -89,18 +99,7 @@
     flex-direction: row;
     gap: 4px;
 }
-/* Extra large devices (large laptops and desktops, 1200px and up) */
-@media only screen and (min-width: 1600px) {
-    .actions_menu {
-        display: flex;
 
-        justify-content: flex-end;
-    }
-
-    .dropdown_menu {
-        display: none;
-    }
-}
 
 
 

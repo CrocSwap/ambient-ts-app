@@ -31,6 +31,8 @@ export const useProcessRange = (position: PositionIF) => {
               maximumFractionDigits: 2,
           }) + '%'
         : undefined;
+
+    const apyClassname = apy > 0 ? 'apy_positive' : 'apy_negative';
     const isAmbient = position.positionType === 'ambient';
 
     const ensName = position.ensResolution ? position.ensResolution : null;
@@ -87,7 +89,7 @@ export const useProcessRange = (position: PositionIF) => {
         ? quoteTokenCharacter + position.highRangeDisplayInBase
         : baseTokenCharacter + position.highRangeDisplayInQuote;
 
-    const ambientMinOrNull = position.positionType === 'ambient' ? '0' : minRange;
+    const ambientMinOrNull = position.positionType === 'ambient' ? '0.00' : minRange;
     const ambientMaxOrNull = position.positionType === 'ambient' ? '∞' : maxRange;
 
     const usdValueNum = position.positionLiqTotalUSD;
@@ -111,15 +113,19 @@ export const useProcessRange = (position: PositionIF) => {
     const baseDisplayFrontend = quantitiesAvailable
         ? `${baseTokenCharacter}${baseQty || '0.00'}`
         : '…';
+    const baseDisplay = quantitiesAvailable ? baseQty || '0.00' : '…';
 
     const quoteDisplayFrontend = quantitiesAvailable
         ? `${quoteTokenCharacter}${quoteQty || '0.00'}`
         : '…';
+    const quoteDisplay = quantitiesAvailable ? quoteQty || '0.00' : '…';
 
-    const usdValue = usdValueTruncated ? '$' + usdValueTruncated : '…';
+    const usdValue = usdValueTruncated ? usdValueTruncated : '…';
 
     const ensNameOrOwnerTruncated = ensName
-        ? trimString(ensName, 5, 3, '…')
+        ? ensName.length > 10
+            ? trimString(ensName, 5, 3, '…')
+            : ensName
         : trimString(ownerId, 6, 0, '…');
     const posHashTruncated = trimString(posHash.toString(), 6, 0, '…');
 
@@ -154,10 +160,13 @@ export const useProcessRange = (position: PositionIF) => {
         quoteDisplayFrontend,
         baseTokenSymbol,
         quoteTokenSymbol,
+        baseDisplay,
+        quoteDisplay,
 
         // apy
         apy,
         apyString,
+        apyClassname,
 
         // range status
         isPositionInRange,
@@ -165,5 +174,6 @@ export const useProcessRange = (position: PositionIF) => {
 
         // position matches select token data
         positionMatchesSelectedTokens,
+        isDenomBase,
     };
 };

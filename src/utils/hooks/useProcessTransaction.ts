@@ -90,13 +90,16 @@ export const useProcessTransaction = (tx: ITransaction) => {
                           maximumFractionDigits: 2,
                       });
 
+            // const truncatedDisplayPrice = isDenomBase
+            //     ? quoteTokenCharacter + invertedPriceTruncated
+            //     : baseTokenCharacter + nonInvertedPriceTruncated;
             const truncatedDisplayPrice = isDenomBase
-                ? quoteTokenCharacter + invertedPriceTruncated
-                : baseTokenCharacter + nonInvertedPriceTruncated;
+                ? invertedPriceTruncated
+                : nonInvertedPriceTruncated;
 
             setTruncatedDisplayPrice(truncatedDisplayPrice);
         } else {
-            setTruncatedDisplayPrice(undefined);
+            setTruncatedDisplayPrice('...');
         }
         if (tx.baseFlow && tx.baseDecimals) {
             const baseFlowDisplayNum = parseFloat(toDisplayQty(tx.baseFlow, tx.baseDecimals));
@@ -117,7 +120,7 @@ export const useProcessTransaction = (tx: ITransaction) => {
                           maximumFractionDigits: 2,
                       });
             const baseFlowDisplayString = isBaseFlowNegative
-                ? `(${baseFlowDisplayTruncated})`
+                ? `${baseFlowDisplayTruncated}`
                 : baseFlowDisplayTruncated;
             setBaseFlowDisplay(baseFlowDisplayString);
         }
@@ -140,7 +143,7 @@ export const useProcessTransaction = (tx: ITransaction) => {
                           maximumFractionDigits: 2,
                       });
             const quoteFlowDisplayString = isQuoteFlowNegative
-                ? `(${quoteFlowDisplayTruncated})`
+                ? `${quoteFlowDisplayTruncated}`
                 : quoteFlowDisplayTruncated;
             setQuoteFlowDisplay(quoteFlowDisplayString);
         }
@@ -149,6 +152,7 @@ export const useProcessTransaction = (tx: ITransaction) => {
     const priceType =
         (isDenomBase && !tx.isBuy) || (!isDenomBase && tx.isBuy) ? 'priceBuy' : 'priceSell';
 
+    // const sideCharacter = isDenomBase ? baseTokenCharacter : quoteTokenCharacter
     const sideType =
         tx.entityType === 'swap' || tx.entityType === 'limitOrder'
             ? (isDenomBase && !tx.isBuy) || (!isDenomBase && tx.isBuy)
@@ -166,6 +170,15 @@ export const useProcessTransaction = (tx: ITransaction) => {
             : tx.changeType === 'burn'
             ? 'rangeRemove'
             : 'rangeAdd';
+
+    const type =
+        tx.entityType === 'swap'
+            ? 'market'
+            : tx.entityType === 'limitOrder'
+            ? 'limit'
+            : tx.changeType === 'burn'
+            ? 'Remove'
+            : 'Add';
 
     const usdValueNum = tx.valueUSD;
 
@@ -186,6 +199,10 @@ export const useProcessTransaction = (tx: ITransaction) => {
 
     const quantitiesAvailable = baseFlowDisplay !== undefined || quoteFlowDisplay !== undefined;
 
+    const baseDisplay = quantitiesAvailable ? baseFlowDisplay || '0.00' : '…';
+
+    const quoteDisplay = quantitiesAvailable ? quoteFlowDisplay || '0.00' : '…';
+
     const baseDisplayFrontend = quantitiesAvailable
         ? `${baseTokenCharacter}${baseFlowDisplay || '0.00'}`
         : '…';
@@ -196,12 +213,15 @@ export const useProcessTransaction = (tx: ITransaction) => {
 
     // --------------------------------------------------------
 
-    const usdValue = usdValueTruncated ? '$' + usdValueTruncated : '…';
+    const usdValue = usdValueTruncated ? usdValueTruncated : '…';
     // --------------------OWNER AND ID WALLET DATA
 
     const ensNameOrOwnerTruncated = ensName
-        ? trimString(ensName, 5, 3, '…')
+        ? ensName.length > 10
+            ? trimString(ensName, 5, 3, '…')
+            : ensName
         : trimString(ownerId, 6, 0, '…');
+
     const txHashTruncated = trimString(txHash, 6, 0, '…');
 
     const userNameToDisplay = isOwnerActiveAccount ? 'You' : ensNameOrOwnerTruncated;
@@ -222,12 +242,15 @@ export const useProcessTransaction = (tx: ITransaction) => {
         // Transaction type and side data
         sideType,
         transactionTypeSide,
+        type,
 
         // Value data
         usdValue,
 
         // Token Qty data
         baseTokenCharacter,
+        baseDisplay,
+        quoteDisplay,
         quoteTokenCharacter,
         baseFlowDisplay,
         quoteFlowDisplay,
@@ -240,6 +263,7 @@ export const useProcessTransaction = (tx: ITransaction) => {
 
         // block explorer data
         blockExplorer,
+        isDenomBase,
 
         // transaction matches select token data
         transactionMatchesSelectedTokens,
