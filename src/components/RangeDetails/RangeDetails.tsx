@@ -196,7 +196,6 @@ export default function RangeDetails(props: IRangeDetailsProps) {
                 .then((json) => {
                     const results = json?.data.results;
                     const apr = results.apy;
-                    console.log({ apr });
 
                     if (apr) {
                         setUpdatedPositionApy(apr);
