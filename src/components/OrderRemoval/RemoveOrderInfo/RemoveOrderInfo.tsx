@@ -20,8 +20,8 @@ interface IRemoveOrderInfoProps {
     // feeLiqQuoteDecimalCorrected: number | undefined;
     removalPercentage: number;
     positionLiquidity: string | undefined;
-    // baseRemovalNum: number;
-    // quoteRemovalNum: number;
+    baseRemovalString: string;
+    quoteRemovalString: string;
 }
 
 export default function RemoveOrderInfo(props: IRemoveOrderInfoProps) {
@@ -31,13 +31,15 @@ export default function RemoveOrderInfo(props: IRemoveOrderInfoProps) {
         baseTokenLogoURI,
         quoteTokenLogoURI,
         usdValue,
-        bidTick,
-        askTick,
+        // bidTick,
+        // askTick,
 
         baseDisplayFrontend,
         quoteDisplayFrontend,
-        positionLiqTotalUSD,
-        positionLiquidity,
+        baseRemovalString,
+        quoteRemovalString,
+        // positionLiqTotalUSD,
+        // positionLiquidity,
     } = props;
 
     return (
@@ -50,7 +52,7 @@ export default function RemoveOrderInfo(props: IRemoveOrderInfoProps) {
                 </Row>
                 <DividerDark />
                 {/* -----------------TICK----------------------------------- */}
-                <Row>
+                {/* <Row>
                     <span>Bid Tick</span>
                     <div className={styles.info_text}>{bidTick}</div>
                 </Row>
@@ -59,7 +61,7 @@ export default function RemoveOrderInfo(props: IRemoveOrderInfoProps) {
                     <span>Ask Tick</span>
                     <div className={styles.info_text}>{askTick}</div>
                 </Row>
-                <DividerDark />
+                <DividerDark /> */}
                 {/* ----------------------------LIQUIDITY------------------------------ */}
                 <div className={styles.info_container}>
                     <p>Liquidity</p>
@@ -81,7 +83,7 @@ export default function RemoveOrderInfo(props: IRemoveOrderInfoProps) {
                     </Row>
                     {/*  */}
 
-                    <Row>
+                    {/* <Row>
                         <span> Total Liquidity</span>
                         <div className={styles.info_text}>
                             {positionLiqTotalUSD ? positionLiqTotalUSD.toFixed(2) : '...'}
@@ -92,7 +94,7 @@ export default function RemoveOrderInfo(props: IRemoveOrderInfoProps) {
                         <div className={styles.info_text}>
                             {positionLiquidity ? parseFloat(positionLiquidity).toFixed(2) : '...'}
                         </div>
-                    </Row>
+                    </Row> */}
                 </div>
                 <DividerDark />
 
@@ -100,14 +102,14 @@ export default function RemoveOrderInfo(props: IRemoveOrderInfoProps) {
                 <Row>
                     <span>{baseTokenSymbol} Removal Summary</span>
                     <div className={styles.token_price}>
-                        {'baseRemovalString' !== undefined ? ' baseRemovalString' : '…'}
+                        {baseRemovalString}
                         <img src={baseTokenLogoURI} alt='' />
                     </div>
                 </Row>
                 <Row>
                     <span>{quoteTokenSymbol} Removal Summary</span>
                     <div className={styles.token_price}>
-                        {'quoteRemovalString' !== undefined ? 'quoteRemovalString' : '…'}
+                        {quoteRemovalString}
                         <img src={quoteTokenLogoURI} alt='' />
                     </div>
                 </Row>

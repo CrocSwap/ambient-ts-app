@@ -455,68 +455,73 @@ export default function TransactionCard(props: TransactionProps) {
     // if (tx.changeType === 'fill') return null;
 
     return (
-        <div
-            className={`${styles.main_container} ${activeTransactionStyle}`}
-            onClick={() =>
-                tx.id === currentTxActiveInTransactions
-                    ? null
-                    : setCurrentTxActiveInTransactions('')
-            }
-            id={txDomId}
-        >
-            <div className={styles.row_container}>
-                {/* ------------------------------------------------------ */}
+        // <div
+        //     className={`${styles.main_container} ${activeTransactionStyle}`}
+        //     onClick={() =>
+        //         tx.id === currentTxActiveInTransactions
+        //             ? null
+        //             : setCurrentTxActiveInTransactions('')
+        //     }
+        //     id={txDomId}
+        // >
+        //     <div className={styles.row_container}>
+        //         {/* ------------------------------------------------------ */}
 
-                <WalletAndId
-                    ownerId={ownerId}
-                    posHash={txHash}
-                    ensName={tx.ensResolution ? tx.ensResolution : null}
-                    isOwnerActiveAccount={isOwnerActiveAccount}
-                />
+        //         <WalletAndId
+        //             ownerId={ownerId}
+        //             posHash={txHash}
+        //             ensName={tx.ensResolution ? tx.ensResolution : null}
+        //             isOwnerActiveAccount={isOwnerActiveAccount}
+        //         />
 
-                {/* ------------------------------------------------------ */}
+        //         {/* ------------------------------------------------------ */}
 
-                <Price
-                    priceType={priceType}
-                    isAmbient={isAmbient}
-                    displayPrice={truncatedDisplayPrice}
-                    truncatedLowDisplayPrice={truncatedLowDisplayPrice}
-                    truncatedHighDisplayPrice={truncatedHighDisplayPrice}
-                />
-                {/* ------------------------------------------------------ */}
+        //         <Price
+        //             priceType={priceType}
+        //             isAmbient={isAmbient}
+        //             displayPrice={truncatedDisplayPrice}
+        //             truncatedLowDisplayPrice={truncatedLowDisplayPrice}
+        //             truncatedHighDisplayPrice={truncatedHighDisplayPrice}
+        //         />
+        //         {/* ------------------------------------------------------ */}
 
-                <TransactionTypeSide
-                    isDenomBase={isDenomBase}
-                    type={sideType}
-                    side={transactionTypeSide}
-                    baseTokenCharacter={baseTokenCharacter}
-                    quoteTokenCharacter={quoteTokenCharacter}
-                />
-                {/* ------------------------------------------------------ */}
+        //         <TransactionTypeSide
+        //             isDenomBase={isDenomBase}
+        //             type={sideType}
+        //             side={transactionTypeSide}
+        //             baseTokenCharacter={baseTokenCharacter}
+        //             quoteTokenCharacter={quoteTokenCharacter}
+        //         />
+        //         {/* ------------------------------------------------------ */}
 
-                <Value
-                    usdValue={
-                        totalFlowUSDTruncated !== undefined
-                            ? '$' + totalFlowUSDTruncated
-                            : totalValueUSDTruncated
-                            ? '$' + totalValueUSDTruncated
-                            : usdValueTruncated
-                            ? '$' + usdValueTruncated
-                            : '…'
-                    }
-                />
-                <TokenQty
-                    baseTokenCharacter={baseTokenCharacter}
-                    quoteTokenCharacter={quoteTokenCharacter}
-                    baseQty={baseFlowDisplay}
-                    quoteQty={quoteFlowDisplay}
-                />
-                {/* <button onClick={() => props.openGlobalModal('New modal works')}>Here</button> */}
-            </div>
+        //         <Value
+        //             usdValue={
+        //                 totalFlowUSDTruncated !== undefined
+        //                     ? '$' + totalFlowUSDTruncated
+        //                     : totalValueUSDTruncated
+        //                     ? '$' + totalValueUSDTruncated
+        //                     : usdValueTruncated
+        //                     ? '$' + usdValueTruncated
+        //                     : '…'
+        //             }
+        //         />
+        //         <TokenQty
+        //             baseTokenCharacter={baseTokenCharacter}
+        //             quoteTokenCharacter={quoteTokenCharacter}
+        //             baseQty={baseFlowDisplay}
+        //             quoteQty={quoteFlowDisplay}
+        //         />
+        //         {/* <button onClick={() => props.openGlobalModal('New modal works')}>Here</button> */}
+        //     </div>
 
-            <div className={styles.menu_container}>
-                <TransactionsMenu userPosition={false} tx={tx} blockExplorer={blockExplorer} />
-            </div>
-        </div>
+        //     <div className={styles.menu_container}>
+        //         <TransactionsMenu userPosition={false} tx={tx} blockExplorer={blockExplorer} />
+        //     </div>
+        // </div>
+        <p>
+            This file has been refactored and updated to TransactionRow.tsx on 10/13/2022. It is no
+            longer in use. If not uncommented by 12/13/2022, it can be safely deleted, along with
+            TransactionCard.module.css. -Jr
+        </p>
     );
 }

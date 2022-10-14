@@ -59,6 +59,7 @@
     width: 100%;
 
     display: flex;
+    flex-direction: row;
     justify-content: flex-end;
     position: relative;
     cursor: pointer;
@@ -85,6 +86,7 @@
 .menu_column{
     display: flex;
     flex-direction: column;
+    flex-direction: row;
     gap: 4px;
 }
 /* Extra large devices (large laptops and desktops, 1200px and up) */
@@ -122,6 +124,7 @@
 
 .example_menu{
     position: relative;
+   
 }
 .dropdown_wrapper,
 .dropdown_wrapper_active {
@@ -136,6 +139,8 @@
   box-shadow: 10px 35px 20px rgba(0, 0, 0, 0.5);
   transition: all 0.2s cubic-bezier(0.68, -0.55, 0.265, 1.55);
   right: 30px;
+
+
 }
 .dropdown_wrapper_active:after{
     content:"";
@@ -156,6 +161,7 @@
 }
 
 .dropdown_wrapper_active {
+  
   opacity: 1;
   top: 10px;
   pointer-events: auto;

@@ -13,13 +13,17 @@ import completed from '../../assets/animations/completed.json';
 import { FiExternalLink } from 'react-icons/fi';
 import RemoveOrderModalHeader from './RemoveOrderModalHeader/RemoveOrderModalHeader';
 import RemoveOrderSettings from './RemoveOrderSettings/RemoveOrderSettings';
+import { formatAmount } from '../../utils/numbers';
+import { CrocEnv } from '@crocswap-libs/sdk';
+import { BigNumber } from 'ethers';
 interface IOrderRemovalProps {
+    crocEnv: CrocEnv | undefined;
     limitOrder: ILimitOrderState;
     closeGlobalModal: () => void;
 }
 
 export default function OrderRemoval(props: IOrderRemovalProps) {
-    const { limitOrder, closeGlobalModal } = props;
+    const { crocEnv, limitOrder, closeGlobalModal } = props;
     const {
         posLiqBaseDecimalCorrected,
         posLiqQuoteDecimalCorrected,
@@ -27,7 +31,7 @@ export default function OrderRemoval(props: IOrderRemovalProps) {
         // highPriceDisplay,
         bidTick,
         askTick,
-        positionLiquidity,
+        // positionLiquidity,
         positionLiqTotalUSD,
         // userNameToDisplay,
         baseTokenSymbol,
@@ -61,12 +65,71 @@ export default function OrderRemoval(props: IOrderRemovalProps) {
     }, [txErrorCode]);
 
     const [removalPercentage, setRemovalPercentage] = useState(100);
+    const [baseQtyToBeRemoved, setBaseQtyToBeRemoved] = useState<string>('…');
+    const [quoteQtyToBeRemoved, setQuoteQtyToBeRemoved] = useState<string>('…');
 
-    const removeFn = () => {
-        setShowConfirmation(true);
-        setShowSettings(false);
-        console.log('order removed');
-        // rorder removal function here
+    const baseQty = limitOrder.positionLiqBaseDecimalCorrected;
+    const quoteQty = limitOrder.positionLiqQuoteDecimalCorrected;
+
+    useEffect(() => {
+        const baseRemovalNum = baseQty * (removalPercentage / 100);
+        const quoteRemovalNum = quoteQty * (removalPercentage / 100);
+        const baseRemovalTruncated =
+            baseRemovalNum === undefined
+                ? undefined
+                : baseRemovalNum === 0
+                ? '0.00'
+                : baseRemovalNum < 0.0001
+                ? baseRemovalNum.toExponential(2)
+                : baseRemovalNum < 2
+                ? baseRemovalNum.toPrecision(3)
+                : baseRemovalNum >= 100000
+                ? formatAmount(baseRemovalNum)
+                : // ? baseLiqDisplayNum.toExponential(2)
+                  baseRemovalNum.toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                  });
+        if (baseRemovalTruncated !== undefined) setBaseQtyToBeRemoved(baseRemovalTruncated);
+        const quoteRemovalTruncated =
+            baseRemovalNum === undefined
+                ? undefined
+                : quoteRemovalNum === 0
+                ? '0.00'
+                : quoteRemovalNum < 0.0001
+                ? quoteRemovalNum.toExponential(2)
+                : quoteRemovalNum < 2
+                ? quoteRemovalNum.toPrecision(3)
+                : quoteRemovalNum >= 100000
+                ? formatAmount(quoteRemovalNum)
+                : quoteRemovalNum.toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                  });
+        if (quoteRemovalTruncated !== undefined) setQuoteQtyToBeRemoved(quoteRemovalTruncated);
+    }, [removalPercentage]);
+
+    // const positionLiquidity = limitOrder.positionLiq;
+
+    const removeFn = async () => {
+        if (crocEnv) {
+            setShowConfirmation(true);
+            setShowSettings(false);
+            console.log({ limitOrder });
+            if (limitOrder.isBid === true) {
+                crocEnv
+                    .sell(limitOrder.base, 0)
+                    .atLimit(limitOrder.quote, limitOrder.askTick)
+                    .burnLiq(BigNumber.from('1000'));
+                // .burnLiq(BigNumber.from(positionLiquidity));
+            } else {
+                crocEnv
+                    .sell(limitOrder.quote, 0)
+                    .atLimit(limitOrder.base, limitOrder.bidTick)
+                    .burnLiq(BigNumber.from('1000'));
+                // .burnLiq(BigNumber.from(positionLiquidity));
+            }
+        }
     };
 
     // ----------------------------CONFIRMATION JSX------------------------------
@@ -193,7 +256,9 @@ export default function OrderRemoval(props: IOrderRemovalProps) {
                 baseDisplayFrontend={baseDisplayFrontend}
                 quoteDisplayFrontend={quoteDisplayFrontend}
                 positionLiqTotalUSD={positionLiqTotalUSD}
-                positionLiquidity={positionLiquidity}
+                positionLiquidity={limitOrder.positionLiq.toString()}
+                baseRemovalString={baseQtyToBeRemoved}
+                quoteRemovalString={quoteQtyToBeRemoved}
             />
             <RemoveOrderButton removeFn={removeFn} disabled={false} title='Show Example Submit' />
         </div>

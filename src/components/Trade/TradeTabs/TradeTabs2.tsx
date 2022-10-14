@@ -350,9 +350,11 @@ export default function TradeTabs2(props: ITabsProps) {
         filter: filter,
 
         openGlobalModal: props.openGlobalModal,
+        showSidebar: showSidebar,
     };
     // Props for <Orders/> React Element
     const ordersProps = {
+        crocEnv: crocEnv,
         expandTradeTable: expandTradeTable,
         chainData: chainData,
         isShowAllEnabled: isShowAllEnabled,
