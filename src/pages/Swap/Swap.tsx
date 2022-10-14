@@ -188,15 +188,15 @@ export default function Swap(props: SwapPropsIF) {
         setTxErrorMessage('');
     };
 
-    useEffect(() => {
-        if (poolExists === null) {
-            setSwapAllowed(false);
-            setSwapButtonErrorMessage('...');
-        } else if (poolExists === false) {
-            setSwapAllowed(false);
-            setSwapButtonErrorMessage('Pool Not Initialized');
-        }
-    }, [poolExists]);
+    // useEffect(() => 
+    //     if (poolExists === null) {
+    //         setSwapAllowed(false);
+    //         setSwapButtonErrorMessage('...');
+    //     } else if (poolExists === false) {
+    //         setSwapAllowed(false);
+    //         setSwapButtonErrorMessage('Pool Not Initialized');
+    //     }
+    // }, [poolExists]);
 
     const [priceImpactExceedsTolerance, setPriceImpactExceedsTolerance] = useState(false);
 
