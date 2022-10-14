@@ -170,7 +170,12 @@ export default function RangesRow(props: RangesRowPropsIF) {
                 </li>
             )}
             {!showColumns && (
-                <li onClick={openDetailsModal} data-label='wallet' className={usernameStyle}>
+                <li
+                    onClick={openDetailsModal}
+                    data-label='wallet'
+                    className={usernameStyle}
+                    style={{ textTransform: 'lowercase' }}
+                >
                     {userNameToDisplay}
                 </li>
             )}
