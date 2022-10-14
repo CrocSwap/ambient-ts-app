@@ -1,3 +1,4 @@
+/* eslint-disable no-irregular-whitespace */
 // todo: Commented out code were commented out on 10/14/2022 for a new refactor. If not uncommented by 12/14/2022, they can be safely removed from the file. -Jr
 
 // START: Import React and Dongles
@@ -274,8 +275,8 @@ export default function Ranges(props: RangesPropsIF) {
     );
     const tokens = (
         <>
-            <p>{`${baseTokenSymbol} (${baseTokenCharacter})`}</p>
-            <p>{`${quoteTokenSymbol} (${quoteTokenCharacter})`}</p>
+            <p>{`${baseTokenSymbol} ( ${baseTokenCharacter} )`}</p>
+            <p>{`${quoteTokenSymbol} ( ${quoteTokenCharacter} )`}</p>
         </>
     );
     const headerColumns = [
@@ -323,21 +324,21 @@ export default function Ranges(props: RangesPropsIF) {
             sortable: false,
         },
         {
-            name: 'Value($)',
+            name: 'Value ( $ )',
             className: 'value',
             show: true,
             slug: 'value',
             sortable: true,
         },
         {
-            name: `${baseTokenSymbol} (${baseTokenCharacter})`,
+            name: `${baseTokenSymbol} ( ${baseTokenCharacter} )`,
 
             show: !showColumns,
             slug: baseTokenSymbol,
             sortable: false,
         },
         {
-            name: `${quoteTokenSymbol} (${quoteTokenCharacter})`,
+            name: `${quoteTokenSymbol} ( ${quoteTokenCharacter} )`,
 
             show: !showColumns,
             slug: quoteTokenSymbol,

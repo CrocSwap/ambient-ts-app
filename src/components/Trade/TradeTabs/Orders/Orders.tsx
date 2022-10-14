@@ -1,3 +1,4 @@
+/* eslint-disable no-irregular-whitespace */
 // START: Import React and Dongles
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
 
@@ -315,8 +316,8 @@ export default function Orders(props: propsIF) {
     );
     const tokens = (
         <>
-            <p>{`${baseTokenSymbol} (${baseTokenCharacter})`}</p>
-            <p>{`${quoteTokenSymbol} (${quoteTokenCharacter})`}</p>
+            <p>{`${baseTokenSymbol} ( ${baseTokenCharacter} )`}</p>
+            <p>{`${quoteTokenSymbol} ( ${quoteTokenCharacter} )`}</p>
         </>
     );
     const headerColumns = [
@@ -342,7 +343,7 @@ export default function Orders(props: propsIF) {
             sortable: false,
         },
         {
-            name: `Price(${priceCharacter})`,
+            name: `Price ( ${priceCharacter} )`,
 
             show: !ipadView,
             slug: 'price',
@@ -370,21 +371,21 @@ export default function Orders(props: propsIF) {
             sortable: false,
         },
         {
-            name: 'Value($)',
+            name: 'Value ( $ )',
             className: 'value',
             show: true,
             slug: 'value',
             sortable: true,
         },
         {
-            name: `${baseTokenSymbol} (${baseTokenCharacter})`,
+            name: `${baseTokenSymbol} ( ${baseTokenCharacter} )`,
 
             show: !showColumns,
             slug: baseTokenSymbol,
             sortable: false,
         },
         {
-            name: `${quoteTokenSymbol} (${quoteTokenCharacter})`,
+            name: `${quoteTokenSymbol} ( ${quoteTokenCharacter} )`,
 
             show: !showColumns,
             slug: quoteTokenSymbol,
