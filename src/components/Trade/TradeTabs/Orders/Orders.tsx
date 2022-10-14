@@ -18,6 +18,7 @@ import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import OrderHeader from './OrderTable/OrderHeader';
 import OrderRow from './OrderTable/OrderRow';
 import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
+import TableSkeletons from '../TableSkeletons/TableSkeletons';
 
 // import OrderAccordions from './OrderAccordions/OrderAccordions';
 
@@ -265,6 +266,26 @@ export default function Orders(props: propsIF) {
     //      </div>
     // )
 
+    // -----------------------------
+    const dataReceivedByPool = graphData?.changesByPool?.dataReceived;
+
+    const [isDataLoading, setIsDataLoading] = useState(true);
+    const [dataToDisplay, setDataToDisplay] = useState(false);
+    const [dataReceived] = useState(dataReceivedByPool);
+
+    function handleDataReceived() {
+        setIsDataLoading(false);
+        showAllOrUserPositions.length ? setDataToDisplay(true) : setDataToDisplay(false);
+    }
+
+    useEffect(() => {
+        // console.log({ dataReceived });
+        // console.log({ isDataLoading });
+        dataReceived ? handleDataReceived() : setIsDataLoading(true);
+    }, [graphData, showAllOrUserPositions, dataReceived]);
+
+    // -----------------------------
+
     const sidebarOpen = false;
 
     const ipadView = useMediaQuery('(max-width: 480px)');
@@ -302,21 +323,21 @@ export default function Orders(props: propsIF) {
         {
             name: 'ID',
             className: 'ID',
-            show: !showColumns && !showSidebar,
+            show: !showColumns,
             slug: 'id',
             sortable: true,
         },
         {
             name: 'Wallet',
             className: 'wallet',
-            show: !showColumns && !showSidebar,
+            show: !showColumns,
             slug: 'wallet',
             sortable: true,
         },
         {
             name: walID,
             className: 'wallet_it',
-            show: showColumns || showSidebar,
+            show: showColumns,
             slug: 'walletid',
             sortable: false,
         },
@@ -377,7 +398,7 @@ export default function Orders(props: propsIF) {
             sortable: false,
         },
         {
-            name: '',
+            name: 'Status',
             className: '',
             show: !ipadView,
             slug: 'status',
@@ -424,18 +445,17 @@ export default function Orders(props: propsIF) {
         />
     ));
 
-    const newTrial = (
+    const orderDataOrNull = dataToDisplay ? rowItemContent : 'noData';
+
+    return (
         <main
             className={styles.main_list_container}
             style={{ height: expandTradeTable ? '100%' : '170px' }}
         >
-            {ipadView && <p>Ipad view</p>}
-            {desktopView && <p>desktop view</p>}
             {/* {header} */}
             {headerColumnsDisplay}
-            {rowItemContent}
+            {isDataLoading ? <TableSkeletons /> : orderDataOrNull}
+            {/* {rowItemContent} */}
         </main>
     );
-
-    return <>{newTrial}</>;
 }
