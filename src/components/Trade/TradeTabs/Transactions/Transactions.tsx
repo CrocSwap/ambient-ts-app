@@ -482,7 +482,7 @@ export default function Transactions(props: TransactionsProps) {
     return (
         <main
             className={`${styles.main_list_container} `}
-            style={{ height: expandTradeTable ? 'calc(100vh - 10rem)' : '170px' }}
+            style={{ height: expandTradeTable ? 'calc(100vh - 10rem)' : '250px' }}
         >
             {headerColumnsDisplay}
             {isDataLoading ? <TransactionsSkeletons /> : transactionDataOrNull}
