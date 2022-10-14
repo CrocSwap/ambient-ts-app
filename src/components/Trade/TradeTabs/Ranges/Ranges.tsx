@@ -377,7 +377,7 @@ export default function Ranges(props: RangesPropsIF) {
     return (
         <main
             className={`${styles.main_list_container} `}
-            style={{ height: expandTradeTable ? 'calc(100vh - 10rem)' : '170px' }}
+            style={{ height: expandTradeTable ? 'calc(100vh - 10rem)' : '250px' }}
         >
             {headerColumnsDisplay}
             {rowItemContent}

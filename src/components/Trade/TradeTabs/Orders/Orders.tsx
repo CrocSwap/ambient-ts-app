@@ -427,7 +427,7 @@ export default function Orders(props: propsIF) {
     const newTrial = (
         <main
             className={styles.main_list_container}
-            style={{ height: expandTradeTable ? '100%' : '170px' }}
+            style={{ height: expandTradeTable ? '100%' : '250px' }}
         >
             {ipadView && <p>Ipad view</p>}
             {desktopView && <p>desktop view</p>}
