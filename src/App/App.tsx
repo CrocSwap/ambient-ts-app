@@ -2066,6 +2066,7 @@ export default function App() {
                                     limitRate={''}
                                     importedTokens={importedTokens}
                                     poolExists={poolExists}
+                                    setTokenPairLocal={setTokenPairLocal}
                                     showSidebar={showSidebar}
                                 />
                             }
