@@ -74,7 +74,6 @@ export default function Limit(props: LimitPropsIF) {
         mintSlippage,
         isPairStable,
         setImportedTokens,
-        // provider,
         isSellTokenBase,
         baseTokenBalance,
         quoteTokenBalance,
@@ -108,16 +107,6 @@ export default function Limit(props: LimitPropsIF) {
 
     const [limitButtonErrorMessage, setLimitButtonErrorMessage] = useState<string>('');
     const [priceInputFieldBlurred, setPriceInputFieldBlurred] = useState(false);
-
-    useEffect(() => {
-        if (poolPriceDisplay === undefined) {
-            setLimitAllowed(false);
-            setLimitButtonErrorMessage('…');
-        } else if (poolPriceDisplay === 0 || poolPriceDisplay === Infinity) {
-            setLimitAllowed(false);
-            setLimitButtonErrorMessage('Invalid Token Pair');
-        }
-    }, [poolPriceDisplay]);
 
     const [newLimitOrderTransactionHash, setNewLimitOrderTransactionHash] = useState('');
     const [txErrorCode, setTxErrorCode] = useState(0);

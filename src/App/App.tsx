@@ -174,6 +174,9 @@ export default function App() {
     const [chainData, isChainSupported, switchChain, switchNetworkInMoralis] = useAppChain('0x5');
     // useEffect(() => console.warn(chainData.chainId), [chainData.chainId]);
 
+    const [ tokenPairLocal, setTokenPairLocal ] = useState<string[]|null>(null);
+    useEffect(() => {console.log({tokenPairLocal})}, [tokenPairLocal]);
+
     const tokenUniverse = useTokenUniverse(chainData.chainId);
     useEffect(() => {
         false && console.log({ tokenUniverse });
@@ -289,8 +292,6 @@ export default function App() {
     // all tokens from active token lists
     const [searchableTokens, setSearchableTokens] = useState<TokenIF[]>(defaultTokens);
 
-    // const [limitRate, setLimitRate] = useState<string>(tradeData.limitPrice);
-
     const [needTokenLists, setNeedTokenLists] = useState(true);
 
     // trigger a useEffect() which needs to run when new token lists are received
@@ -299,10 +300,6 @@ export default function App() {
 
     // this is another case where true vs false is an arbitrary distinction
     const [activeTokenListsChanged, indicateActiveTokenListsChanged] = useState(false);
-
-    // useEffect(() => {
-    //     console.log('changed activeTokensList');
-    // }, [activeTokenListsChanged]);
 
     if (needTokenLists) {
         setNeedTokenLists(false);
@@ -454,7 +451,7 @@ export default function App() {
     useEffect(() => {
         (async () => {
             if (window.ethereum) {
-                console.log('requesting eth_accounts');
+                // console.log('requesting eth_accounts');
                 const metamaskAccounts = await window.ethereum.request({ method: 'eth_accounts' });
                 if (metamaskAccounts?.length > 0) {
                     setMetamaskLocked(false);
@@ -581,25 +578,22 @@ export default function App() {
 
     // hook to update `poolExists` when crocEnv changes
     useEffect(() => {
-        if (crocEnv) {
+        setPoolExists(null);
+        if (crocEnv && tokenPairLocal) {
             // token pair has an initialized pool on-chain
             // returns a promise object
             const doesPoolExist = crocEnv
                 // TODO: make this function pill addresses directly from URL params
-                .pool(tokenPair.dataTokenA.address, tokenPair.dataTokenB.address)
+                .pool(tokenPairLocal[0], tokenPairLocal[1])
                 .isInit();
             // resolve the promise object to see if pool exists
             Promise.resolve(doesPoolExist)
                 // track whether pool exists on state (can be undefined)
-                .then((res) => setPoolExists(res ?? false));
-        } else {
-            // set pool exists to false if there is no env
-            setPoolExists(null);
+                .then((res) => setPoolExists(res));
         }
         // run every time crocEnv updates
         // this indirectly tracks a new chain being used
-    }, [crocEnv, tokenPair]);
-
+    }, [crocEnv, tokenPairLocal]);
     const tokenPairStringified = useMemo(() => JSON.stringify(tokenPair), [tokenPair]);
 
     useEffect(() => {
@@ -892,7 +886,7 @@ export default function App() {
                 // retrieve pool limit order states
                 try {
                     if (httpGraphCacheServerDomain) {
-                        console.log('fetching pool limit order states');
+                        // console.log('fetching pool limit order states');
 
                         const poolLimitOrderStatesCacheEndpoint =
                             httpGraphCacheServerDomain + '/pool_limit_order_states?';
@@ -1028,9 +1022,9 @@ export default function App() {
         poolLiqChangesCacheSubscriptionEndpoint,
         {
             // share:  true,
-            onOpen: () => console.log('pool liqChange subscription opened'),
+            // onOpen: () => console.log('pool liqChange subscription opened'),
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            onClose: (event: any) => console.log({ event }),
+            // onClose: (event: any) => console.log({ event }),
             // onClose: () => console.log('allPositions websocket connection closed'),
             // Will attempt to reconnect on all close events, such as server shutting down
             shouldReconnect: () => shouldNonCandleSubscriptionsReconnect,
@@ -1086,7 +1080,7 @@ export default function App() {
         candleSubscriptionEndpoint,
         {
             onOpen: () => {
-                console.log({ candleSubscriptionEndpoint });
+                // console.log({ candleSubscriptionEndpoint });
                 fetchCandles();
             },
             onClose: (event) => console.log({ event }),
@@ -1185,7 +1179,7 @@ export default function App() {
     useEffect(() => {
         if (candlesMessage) {
             const lastMessageData = JSON.parse(candlesMessage.data).data;
-            console.log({ lastMessageData });
+            // console.log({ lastMessageData });
             if (lastMessageData && candleData) {
                 const newCandles: CandleData[] = [];
                 const updatedCandles: CandleData[] = candleData.candles;
@@ -1205,7 +1199,7 @@ export default function App() {
                         updatedCandles[indexOfExistingCandle] = messageCandle;
                     }
                 }
-                console.log({ newCandles });
+                // console.log({ newCandles });
                 const newCandleData: CandlesByPoolAndDuration = {
                     pool: candleData.pool,
                     duration: candleData.duration,
@@ -1641,8 +1635,6 @@ export default function App() {
 
     // function to sever connection between user wallet and Moralis server
     const clickLogout = async () => {
-        // setNativeWalletBalance('');
-        // setNativeDexBalance('');
         setBaseTokenBalance('');
         setQuoteTokenBalance('');
         setBaseTokenDexBalance('');
@@ -1652,7 +1644,6 @@ export default function App() {
         dispatch(resetUserGraphData());
         dispatch(resetReceiptData());
         dispatch(resetTokenData());
-
         await logout();
     };
 
@@ -1734,6 +1725,7 @@ export default function App() {
         openModalWallet: openModalWallet,
         isInitialized: isInitialized,
         poolExists: poolExists,
+        setTokenPairLocal: setTokenPairLocal
     };
 
     // props for <Swap/> React element on trade route
@@ -2075,6 +2067,7 @@ export default function App() {
                                     limitRate={''}
                                     importedTokens={importedTokens}
                                     poolExists={poolExists}
+                                    setTokenPairLocal={setTokenPairLocal}
                                     showSidebar={showSidebar}
                                 />
                             }

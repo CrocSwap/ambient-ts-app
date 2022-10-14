@@ -18,6 +18,7 @@ import IconWithTooltip from '../../Global/IconWithTooltip/IconWithTooltip';
 import { ZERO_ADDRESS } from '../../../constants';
 interface CurrencyConverterPropsIF {
     crocEnv: CrocEnv | undefined;
+    poolExists: boolean | null;
     isUserLoggedIn: boolean;
     provider: ethers.providers.Provider | undefined;
     slippageTolerancePercentage: number;
@@ -53,6 +54,7 @@ interface CurrencyConverterPropsIF {
 export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
     const {
         crocEnv,
+        poolExists,
         isUserLoggedIn,
         // provider,
         slippageTolerancePercentage,
@@ -218,6 +220,7 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
         isTokenAPrimaryLocal ? handleTokenAChangeEvent() : handleTokenBChangeEvent();
     }, [
         crocEnv,
+        poolExists,
         poolPriceDisplay,
         isSellTokenBase,
         isTokenAPrimaryLocal,
@@ -226,11 +229,14 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
         tokenPair.dataTokenA.address,
         tokenPair.dataTokenB.address,
         slippageTolerancePercentage,
-        // isSellTokenEth,
     ]);
 
     const handleSwapButtonMessage = (tokenAAmount: number) => {
-        if (poolPriceDisplay === 0 || poolPriceDisplay === Infinity) {
+        if (!poolExists) {
+            setSwapAllowed(false);
+            if (poolExists === null) setSwapButtonErrorMessage('...');
+            if (poolExists === false) setSwapButtonErrorMessage('Pool Not Initialized');
+        } else if (poolPriceDisplay === 0 || poolPriceDisplay === Infinity) {
             setSwapAllowed(false);
             setSwapButtonErrorMessage('Invalid Token Pair');
         } else if (isNaN(tokenAAmount) || tokenAAmount <= 0) {

@@ -1,10 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // START: Import React and Dongles
-import { Dispatch, SetStateAction, ReactNode, useState } from 'react';
+import { Dispatch, SetStateAction, ReactNode, useEffect, useState } from 'react';
 import { useParams, Outlet, useOutletContext, Link, NavLink, useNavigate } from 'react-router-dom';
 import { ethers } from 'ethers';
 import { motion, AnimateSharedLayout } from 'framer-motion';
-// import { SketchPicker } from 'react-color';
 import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
 
 // START: Import JSX Components
@@ -71,6 +70,7 @@ interface TradePropsIF {
     importedTokens: TokenIF[];
     poolExists: boolean | null;
     showSidebar: boolean;
+    setTokenPairLocal: Dispatch<SetStateAction<string[] | null>>;
 }
 
 // React functional component
@@ -108,10 +108,14 @@ export default function Trade(props: TradePropsIF) {
         currentTxActiveInTransactions,
         setCurrentTxActiveInTransactions,
         poolExists,
+        setTokenPairLocal,
         showSidebar,
     } = props;
 
-    useUrlParams(chainId, isInitialized);
+    const tokenPairFromParams = useUrlParams(chainId, isInitialized);
+    useEffect(() => {
+        setTokenPairLocal && setTokenPairLocal(tokenPairFromParams);
+    }, [tokenPairFromParams]);
     const { params } = useParams();
 
     const [isCandleSelected, setIsCandleSelected] = useState<boolean | undefined>();
