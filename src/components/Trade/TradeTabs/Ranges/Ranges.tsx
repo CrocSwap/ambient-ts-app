@@ -216,7 +216,7 @@ export default function Ranges(props: RangesPropsIF) {
 
     // ---------------------
     const [currentPage, setCurrentPage] = useState(1);
-    const [rangesPerPage] = useState(16);
+    const [rangesPerPage] = useState(20);
 
     useEffect(() => {
         setCurrentPage(1);
