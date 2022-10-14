@@ -96,14 +96,21 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                 </li>
             )}
             {!showColumns && (
-                <li onClick={openDetailsModal} data-label='wallet' className={usernameStyle}>
+                <li
+                    onClick={openDetailsModal}
+                    data-label='wallet'
+                    className={usernameStyle}
+                    style={{ textTransform: 'lowercase' }}
+                >
                     {userNameToDisplay}
                 </li>
             )}
             {showColumns && (
                 <li data-label='id'>
                     <p className='base_color'>{txHashTruncated}</p>{' '}
-                    <p className={usernameStyle}>{userNameToDisplay}</p>
+                    <p className={usernameStyle} style={{ textTransform: 'lowercase' }}>
+                        {userNameToDisplay}
+                    </p>
                 </li>
             )}
             {!ipadView && (
