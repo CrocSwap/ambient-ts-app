@@ -44,9 +44,37 @@ export const useProcessOrder = (limitOrder: ILimitOrderState) => {
             const priceDecimalCorrected = limitOrder.limitPriceDecimalCorrected;
             const invPriceDecimalCorrected = limitOrder.invLimitPriceDecimalCorrected;
 
+            const nonInvertedPriceTruncated =
+                priceDecimalCorrected === 0
+                    ? '0'
+                    : priceDecimalCorrected < 0.0001
+                    ? priceDecimalCorrected.toExponential(2)
+                    : priceDecimalCorrected < 2
+                    ? priceDecimalCorrected.toPrecision(3)
+                    : priceDecimalCorrected >= 100000
+                    ? formatAmount(priceDecimalCorrected)
+                    : priceDecimalCorrected.toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                      });
+
+            const invertedPriceTruncated =
+                invPriceDecimalCorrected === 0
+                    ? '0'
+                    : invPriceDecimalCorrected < 0.0001
+                    ? invPriceDecimalCorrected.toExponential(2)
+                    : invPriceDecimalCorrected < 2
+                    ? invPriceDecimalCorrected.toPrecision(3)
+                    : invPriceDecimalCorrected >= 100000
+                    ? formatAmount(invPriceDecimalCorrected)
+                    : invPriceDecimalCorrected.toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                      });
+
             const truncatedDisplayPrice = isDenomBase
-                ? invPriceDecimalCorrected?.toPrecision(2)
-                : priceDecimalCorrected?.toPrecision(2);
+                ? invertedPriceTruncated
+                : nonInvertedPriceTruncated;
 
             setTruncatedDisplayPrice(truncatedDisplayPrice);
         } else {
