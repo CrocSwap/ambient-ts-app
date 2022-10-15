@@ -112,6 +112,10 @@ text-transform: capitalize;
      
     
     }
+
+    .main_list_container a{
+      color: red;
+    }
     
 
     

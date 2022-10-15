@@ -3,6 +3,8 @@ import { ITransaction } from '../../../../../utils/state/graphDataSlice';
 import { Dispatch, SetStateAction, useEffect } from 'react';
 import { useProcessTransaction } from '../../../../../utils/hooks/useProcessTransaction';
 import TransactionsMenu from '../../../../Global/Tabs/TableMenu/TableMenuComponents/TransactionsMenu';
+import { DefaultTooltip } from '../../../../Global/StyledTooltip/StyledTooltip';
+import { NavLink } from 'react-router-dom';
 
 interface TransactionRowPropsIF {
     tx: ITransaction;
@@ -32,12 +34,14 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
     } = props;
 
     const {
+        txHash,
         txHashTruncated,
         userNameToDisplay,
         quoteTokenLogo,
         baseTokenLogo,
         baseDisplay,
         quoteDisplay,
+        ownerId,
         // isOrderFilled,
         truncatedDisplayPrice,
         sideType,
@@ -80,6 +84,46 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
         tx.id === currentTxActiveInTransactions ? scrollToDiv() : null;
     }, [currentTxActiveInTransactions]);
 
+    const IDWithTooltip = (
+        <DefaultTooltip
+            interactive
+            title={txHash}
+            placement={'right'}
+            arrow
+            enterDelay={400}
+            leaveDelay={200}
+        >
+            <li onClick={openDetailsModal} data-label='id' className='base_color'>
+                {txHashTruncated}
+            </li>
+        </DefaultTooltip>
+    );
+
+    const walletWithTooltip = (
+        <DefaultTooltip
+            interactive
+            title={
+                <div>
+                    <p>{ownerId}</p>
+                    <NavLink to={`/${ownerId}`}>View Account</NavLink>
+                </div>
+            }
+            placement={'right'}
+            arrow
+            enterDelay={400}
+            leaveDelay={200}
+        >
+            <li
+                onClick={openDetailsModal}
+                data-label='wallet'
+                className={usernameStyle}
+                style={{ textTransform: 'lowercase' }}
+            >
+                {userNameToDisplay}
+            </li>
+        </DefaultTooltip>
+    );
+
     return (
         <ul
             className={`${styles.row_container} ${activeTransactionStyle} ${userPositionStyle}`}
@@ -90,21 +134,8 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
             }
             id={txDomId}
         >
-            {!showColumns && (
-                <li onClick={openDetailsModal} data-label='id' className='base_color'>
-                    {txHashTruncated}
-                </li>
-            )}
-            {!showColumns && (
-                <li
-                    onClick={openDetailsModal}
-                    data-label='wallet'
-                    className={usernameStyle}
-                    style={{ textTransform: 'lowercase' }}
-                >
-                    {userNameToDisplay}
-                </li>
-            )}
+            {!showColumns && IDWithTooltip}
+            {!showColumns && walletWithTooltip}
             {showColumns && (
                 <li data-label='id'>
                     <p className='base_color'>{txHashTruncated}</p>{' '}
