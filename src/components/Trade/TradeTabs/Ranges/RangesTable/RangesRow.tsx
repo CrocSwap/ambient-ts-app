@@ -7,6 +7,8 @@ import styles from '../Ranges.module.css';
 import RangeStatus from '../../../../Global/RangeStatus/RangeStatus';
 import RangesMenu from '../../../../Global/Tabs/TableMenu/TableMenuComponents/RangesMenu';
 import RangeDetails from '../../../../RangeDetails/RangeDetails';
+import { DefaultTooltip } from '../../../../Global/StyledTooltip/StyledTooltip';
+import { NavLink } from 'react-router-dom';
 
 interface RangesRowPropsIF {
     isUserLoggedIn: boolean;
@@ -55,6 +57,7 @@ export default function RangesRow(props: RangesRowPropsIF) {
         posHash,
         posHashTruncated,
         userNameToDisplay,
+        ownerId,
         quoteTokenLogo,
         baseTokenLogo,
         baseDisplay,
@@ -154,6 +157,46 @@ export default function RangesRow(props: RangesRowPropsIF) {
     const activePositionStyle =
         position.positionStorageSlot === currentPositionActive ? styles.active_position_style : '';
 
+    const IDWithTooltip = (
+        <DefaultTooltip
+            interactive
+            title={posHash.toString()}
+            placement={'right'}
+            arrow
+            enterDelay={400}
+            leaveDelay={200}
+        >
+            <li onClick={openDetailsModal} data-label='id' className='base_color'>
+                {posHashTruncated}
+            </li>
+        </DefaultTooltip>
+    );
+
+    const walletWithTooltip = (
+        <DefaultTooltip
+            interactive
+            title={
+                <div>
+                    <p>{ownerId}</p>
+                    <NavLink to={`/${ownerId}`}>View Account</NavLink>
+                </div>
+            }
+            placement={'right'}
+            arrow
+            enterDelay={400}
+            leaveDelay={200}
+        >
+            <li
+                onClick={openDetailsModal}
+                data-label='wallet'
+                className={usernameStyle}
+                style={{ textTransform: 'lowercase' }}
+            >
+                {userNameToDisplay}
+            </li>
+        </DefaultTooltip>
+    );
+
     return (
         <ul
             className={`${styles.row_container} ${activePositionStyle} ${userPositionStyle}`}
@@ -164,21 +207,8 @@ export default function RangesRow(props: RangesRowPropsIF) {
             }
             id={positionDomId}
         >
-            {!showColumns && (
-                <li onClick={openDetailsModal} data-label='id' className='base_color'>
-                    {posHashTruncated}
-                </li>
-            )}
-            {!showColumns && (
-                <li
-                    onClick={openDetailsModal}
-                    data-label='wallet'
-                    className={usernameStyle}
-                    style={{ textTransform: 'lowercase' }}
-                >
-                    {userNameToDisplay}
-                </li>
-            )}
+            {!showColumns && IDWithTooltip}
+            {!showColumns && walletWithTooltip}
             {showColumns && (
                 <li data-label='id'>
                     <p className='base_color'>{posHashTruncated}</p>{' '}
