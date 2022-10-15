@@ -5,6 +5,7 @@ import { useParams, Outlet, useOutletContext, Link, NavLink, useNavigate } from 
 import { ethers } from 'ethers';
 import { motion, AnimateSharedLayout } from 'framer-motion';
 import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
+import { VscClose } from 'react-icons/vsc';
 
 // START: Import JSX Components
 import TradeCharts from './TradeCharts/TradeCharts';
@@ -260,7 +261,9 @@ export default function Trade(props: TradePropsIF) {
         poolExists === false ? (
             <div className={styles.pool_not_initialialized_container}>
                 <div className={styles.pool_not_initialialized_content}>
-                    <div onClick={() => navigate(-1)}>X</div>
+                    <div className={styles.close_init} onClick={() => navigate(-1)}>
+                        <VscClose size={22} />
+                    </div>
                     <h2>This pool has not been initialized.</h2>
                     <h3>Do you want to initialize it?</h3>
                     <Link to={initLinkPath} className={styles.initialize_link}>
@@ -268,7 +271,9 @@ export default function Trade(props: TradePropsIF) {
                         Initialize Pool
                         <img src={quoteTokenLogo} alt=' quote token' />
                     </Link>
-                    <button onClick={() => navigate(-1)}>No Thank You</button>
+                    <button className={styles.no_thanks} onClick={() => navigate(-1)}>
+                        No Thank You
+                    </button>
                 </div>
             </div>
         ) : null;
