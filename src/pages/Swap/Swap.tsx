@@ -188,7 +188,7 @@ export default function Swap(props: SwapPropsIF) {
         setTxErrorMessage('');
     };
 
-    // useEffect(() => 
+    // useEffect(() =>
     //     if (poolExists === null) {
     //         setSwapAllowed(false);
     //         setSwapButtonErrorMessage('...');
@@ -453,6 +453,7 @@ export default function Swap(props: SwapPropsIF) {
                         swapGasPriceinDollars={swapGasPriceinDollars}
                         didUserFlipDenom={tradeData.didUserFlipDenom}
                         isDenomBase={tradeData.isDenomBase}
+                        isOnTradeRoute={isOnTradeRoute}
                     />
                     {isUserLoggedIn || !connectButtonDelayElapsed ? (
                         poolExists &&
