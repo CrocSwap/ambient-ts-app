@@ -21,14 +21,26 @@ export default function InitPoolExtraInfo(props: InitPriceExtraInfoProps) {
 
     const extraInfoData = [
         {
+            title: 'Initial Spot Price',
+            tooltipTitle: 'Additional liquidity can be minted after pool seeding.',
+            data: `${initialPrice || '...'} ${tokenPair.dataTokenB.symbol} per ${
+                tokenPair.dataTokenA.symbol
+            }`,
+        },
+        {
             title: 'Expected Token A Deposit',
             tooltipTitle: 'Expected Token A Deposit',
-            data: '0.000001',
+            data: '0.0000000001',
         },
         {
             title: 'Expected Token B Deposit',
             tooltipTitle: 'Expected Token B Deposit',
             data: '0.000000000000387302',
+        },
+        {
+            title: 'Additional liquidity can be minted after pool seeding.',
+            tooltipTitle: '',
+            data: '',
         },
         // {
         //     title: 'Effective Conversion Rate',
