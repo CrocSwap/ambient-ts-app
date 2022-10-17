@@ -198,7 +198,7 @@ export default function InitPool(props: InitPoolPropsIF) {
                                     <input
                                         id={'initial-pool-price-quantity'}
                                         className={styles.currency_quantity}
-                                        placeholder='e.g. 1500 (ETH/TokenX)'
+                                        placeholder={`e.g. 1500 (${tokenPair.dataTokenA.symbol}/${tokenPair.dataTokenB.symbol})`}
                                         type='string'
                                         onChange={(event) => {
                                             setInitialPrice(
