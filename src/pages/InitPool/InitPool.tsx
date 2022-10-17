@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { VscClose } from 'react-icons/vsc';
 import { CrocEnv } from '@crocswap-libs/sdk';
+import { TokenIF, TokenListIF } from '../../utils/interfaces/exports';
 
 // START: Import JSX Components
 import InitPoolExtraInfo from '../../components/InitPool/InitPoolExtraInfo/InitPoolExtraInfo';
@@ -12,7 +13,6 @@ import Button from '../../components/Global/Button/Button';
 // START: Import Local Files
 import styles from './InitPool.module.css';
 import { useUrlParams } from './useUrlParams';
-import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 
 // interface for props
 interface InitPoolPropsIF {
@@ -25,11 +25,7 @@ export default function InitPool(props: InitPoolPropsIF) {
     const { crocEnv, showSidebar } = props;
 
     // URL parameters
-    const newPoolData = useUrlParams();
-
-    // data on token pair from RTK
-    // may not match params but we'll fix that later with token universe
-    const { tokenA, tokenB } = useAppSelector((state) => state.tradeData);
+    const { baseAddr, quoteAddr } = useUrlParams();
 
     // function to programmatically navigate the user
     const navigate = useNavigate();
@@ -42,7 +38,7 @@ export default function InitPool(props: InitPoolPropsIF) {
         if (crocEnv) {
             // check if pool exists for token addresses from URL params
             const doesPoolExist = crocEnv
-                .pool(newPoolData.baseAddr as string, newPoolData.quoteAddr as string)
+                .pool(baseAddr as string, quoteAddr as string)
                 .isInit();
             // resolve the promise
             Promise.resolve(doesPoolExist)
@@ -57,6 +53,40 @@ export default function InitPool(props: InitPoolPropsIF) {
     // this will happen if the user switches chains
     }, [crocEnv]);
 
+    const [tokenList, setTokenList] = useState<TokenIF[]|null>(null);
+    const [tokenA, setTokenA] = useState<TokenIF|null>(null);
+    const [tokenB, setTokenB] = useState<TokenIF|null>(null);
+    useEffect(() => {
+        // get allTokenLists from local storage
+        function check() {
+            const tokenListsFromStorage = localStorage.getItem('allTokenLists');
+            if (tokenListsFromStorage !== null) {
+                const tokenLists = JSON.parse(tokenListsFromStorage as string);
+                const tokens = tokenLists.find((list: TokenListIF) => list.name === 'Ambient Token List').tokens;
+                console.log(tokens);
+                setTokenList(tokens);
+            } else {
+                setTimeout(check, 100);
+            }
+        }
+        setTimeout(check, 100);
+    }, []);
+
+    useEffect(() => {
+        console.log('running!');
+        console.log(tokenList, baseAddr, quoteAddr);
+        if (tokenList && baseAddr && quoteAddr) {
+            const findToken = (addr:string) => tokenList.find((tkn: TokenIF) => tkn.address.toLowerCase() === addr.toLowerCase());
+            console.log(tokenList);
+            console.log(baseAddr, quoteAddr);
+            const dataTokenA = findToken(baseAddr);
+            const dataTokenB = findToken(quoteAddr);
+            console.log(dataTokenA, dataTokenB);
+            dataTokenA && setTokenA(dataTokenA);
+            dataTokenB && setTokenB(dataTokenB);
+        }
+    }, [tokenList, baseAddr, quoteAddr]);
+
     return (
         <main
             className={styles.main}
@@ -67,9 +97,9 @@ export default function InitPool(props: InitPoolPropsIF) {
                 <Navigate
                     to={
                         '/trade/market/chain=0x5&tokenA=' +
-                        newPoolData.baseAddr +
+                        baseAddr +
                         '&tokenB=' +
-                        newPoolData.quoteAddr
+                        quoteAddr
                     }
                     replace={true}
                 />
@@ -89,17 +119,17 @@ export default function InitPool(props: InitPoolPropsIF) {
                         <div className={styles.pool_display_container}>
                             <div className={styles.pool_display}>
                                 <div>
-                                    <img src={tokenA.logoURI} alt='token a' />
-                                    <h3>{tokenA.symbol}</h3>
+                                    {tokenA && <img src={tokenA.logoURI} alt='token a' />}
+                                    {tokenA && <h3>{tokenA.symbol}</h3>}
                                 </div>
-                                <p>{tokenA.name}</p>
+                                {tokenA && <p>{tokenA.name}</p>}
                             </div>
                             <div className={styles.pool_display}>
                                 <div>
-                                    <img src={tokenB.logoURI} alt='token b' />
-                                    <h3>{tokenB.symbol}</h3>
+                                    {tokenB && <img src={tokenB.logoURI} alt='token b' />}
+                                    {tokenB && <h3>{tokenB.symbol}</h3>}
                                 </div>
-                                <p>{tokenB.name}</p>
+                                {tokenB && <p>{tokenB.name}</p>}
                             </div>
                             <div className={styles.pool_price_container}>
                                 <span>Initial Price</span>
