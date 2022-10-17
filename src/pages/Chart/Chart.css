@@ -44,24 +44,16 @@ text {
     background-color: #7371fc;
 }
 
-div.popup {
-    position: absolute;
-    text-align: center;
-    pointer-events: none;
-
-    background: rgba(10, 10, 19, 0.47);
-    padding: 6px;
-
-    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.47);
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
-    border-radius: var(--border-radius);
-}
 
 .popup {
     position: absolute;
     text-align: center;
     pointer-events: none;
+
+    top: 66%;
+    width: 60%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 
     background: rgba(10, 10, 19, 0.47);
     padding: 6px;
@@ -183,4 +175,62 @@ label {
     padding-left: 7px;
     padding-top: 2px;
     font-size: 12px;
+}
+
+
+#d3fc_group {
+    display: flex;
+    height:100%;
+    width: 100%;
+    flex-direction: column;
+}
+
+@media only screen and (max-width: 1280px) {
+
+    #d3fc_group {
+        height:90%;
+        padding: 1%;
+    }
+
+    .popup {
+        top: 59%;
+        padding: 5px;
+        width: 50%;
+        font-size: large;
+    }
+    
+}
+
+
+@media only screen and (max-width: 1330px) {
+    .popup {
+        font-size: medium;
+    }
+    
+
+}
+
+@media only screen and (max-width: 700px) {
+    .popup {
+        font-size: medium;
+        width: 80%;
+    }
+    
+
+}
+
+
+@media only screen and (max-width: 480px) {
+
+    #d3fc_group {
+        height:85%;
+        padding: 0px 5% 0px 0px;
+
+    }
+    
+    .popup {
+        top: 58%;
+
+    }
+
 }
