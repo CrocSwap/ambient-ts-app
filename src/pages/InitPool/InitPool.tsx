@@ -64,9 +64,7 @@ export default function InitPool(props: InitPoolPropsIF) {
         // make sure crocEnv exists (needs a moment to spin up)
         if (crocEnv) {
             // check if pool exists for token addresses from URL params
-            const doesPoolExist = crocEnv
-                .pool(baseAddr as string, quoteAddr as string)
-                .isInit();
+            const doesPoolExist = crocEnv.pool(baseAddr as string, quoteAddr as string).isInit();
             // resolve the promise
             Promise.resolve(doesPoolExist)
                 // update value of poolExists, use `null` for `undefined`
@@ -80,10 +78,10 @@ export default function InitPool(props: InitPoolPropsIF) {
         // this will happen if the user switches chains
     }, [crocEnv]);
 
-    const [tokenList, setTokenList] = useState<TokenIF[]|null>(null);
-    const [tokenA, setTokenA] = useState<TokenIF|null|undefined>(null);
+    const [tokenList, setTokenList] = useState<TokenIF[] | null>(null);
+    const [tokenA, setTokenA] = useState<TokenIF | null | undefined>(null);
     useEffect(() => console.log(tokenA), [tokenA]);
-    const [tokenB, setTokenB] = useState<TokenIF|null|undefined>(null);
+    const [tokenB, setTokenB] = useState<TokenIF | null | undefined>(null);
     useEffect(() => console.log(tokenB), [tokenB]);
 
     useEffect(() => {
@@ -92,7 +90,9 @@ export default function InitPool(props: InitPoolPropsIF) {
             const tokenListsFromStorage = localStorage.getItem('allTokenLists');
             if (tokenListsFromStorage !== null) {
                 const tokenLists = JSON.parse(tokenListsFromStorage as string);
-                const ambientList = tokenLists.find((list: TokenListIF) => list.name === 'Ambient Token List');
+                const ambientList = tokenLists.find(
+                    (list: TokenListIF) => list.name === 'Ambient Token List',
+                );
                 const tokens = ambientList.tokens;
                 console.log(tokens);
                 setTokenList(tokens);
@@ -107,9 +107,8 @@ export default function InitPool(props: InitPoolPropsIF) {
         console.log(tokenList, baseAddr, quoteAddr);
         if (tokenList && baseAddr && quoteAddr) {
             console.log('running!');
-            const findToken = (addr:string) => (
-                tokenList.find((tkn: TokenIF) => tkn.address.toLowerCase() === addr.toLowerCase())
-            );
+            const findToken = (addr: string) =>
+                tokenList.find((tkn: TokenIF) => tkn.address.toLowerCase() === addr.toLowerCase());
 
             console.log(tokenList);
             console.log(baseAddr, quoteAddr);
@@ -134,7 +133,7 @@ export default function InitPool(props: InitPoolPropsIF) {
                         setTokenB(data);
                         break;
                 }
-            }
+            };
             const promise = Web3Api.token.getTokenMetadata({
                 chain: chain as '0x5',
                 addresses: [addr],
@@ -250,12 +249,7 @@ export default function InitPool(props: InitPoolPropsIF) {
         >
             {poolExists && (
                 <Navigate
-                    to={
-                        '/trade/market/chain=0x5&tokenA=' +
-                        baseAddr +
-                        '&tokenB=' +
-                        quoteAddr
-                    }
+                    to={'/trade/market/chain=0x5&tokenA=' + baseAddr + '&tokenB=' + quoteAddr}
                     replace={true}
                 />
             )}
@@ -275,28 +269,30 @@ export default function InitPool(props: InitPoolPropsIF) {
                             <div className={styles.pool_display}>
                                 <div>
                                     {/* <img src={tokenA.logoURI} alt='token a' /> */}
-                                    {tokenA && (tokenA.logoURI ? (
-                                        <img src={tokenA.logoURI} alt={tokenA.symbol} />
-                                    ) : (
-                                        <NoTokenIcon
-                                            tokenInitial={tokenA.symbol.charAt(0)}
-                                            width='20px'
-                                        />
-                                    ))}
+                                    {tokenA &&
+                                        (tokenA.logoURI ? (
+                                            <img src={tokenA.logoURI} alt={tokenA.symbol} />
+                                        ) : (
+                                            <NoTokenIcon
+                                                tokenInitial={tokenA.symbol.charAt(0)}
+                                                width='30px'
+                                            />
+                                        ))}
                                     {tokenA && <h3>{tokenA.symbol}</h3>}
                                 </div>
                                 {tokenA && <p>{tokenA.name}</p>}
                             </div>
                             <div className={styles.pool_display}>
                                 <div>
-                                {tokenB && (tokenB.logoURI ? (
-                                        <img src={tokenB.logoURI} alt={tokenB.symbol} />
-                                    ) : (
-                                        <NoTokenIcon
-                                            tokenInitial={tokenB.symbol.charAt(0)}
-                                            width='20px'
-                                        />
-                                    ))}
+                                    {tokenB &&
+                                        (tokenB.logoURI ? (
+                                            <img src={tokenB.logoURI} alt={tokenB.symbol} />
+                                        ) : (
+                                            <NoTokenIcon
+                                                tokenInitial={tokenB.symbol.charAt(0)}
+                                                width='30px'
+                                            />
+                                        ))}
                                     {tokenB && <h3>{tokenB.symbol}</h3>}
                                 </div>
                                 {tokenB && <p>{tokenB.name}</p>}
