@@ -1325,11 +1325,7 @@ export default function Chart(props: ChartData) {
 
         if (location.pathname.includes('limit') && scaleData !== undefined) {
             d3.select(d3PlotArea.current).on('click', (event: any) => {
-                if (
-                    !event.path[2].isEqualNode(
-                        d3.select(d3PlotArea.current).select('.candle').node(),
-                    )
-                ) {
+                if ((event.target.__data__ as CandleChartData) === undefined) {
                     const newLimitValue = scaleData.yScale.invert(d3.pointer(event)[1]);
 
                     const snapResponse = snap(props.liquidityData.liqSnapData, newLimitValue);
@@ -1351,11 +1347,7 @@ export default function Chart(props: ChartData) {
             let highLineMoved: boolean;
 
             d3.select(d3PlotArea.current).on('click', async (event: any) => {
-                if (
-                    !event.path[2].isEqualNode(
-                        d3.select(d3PlotArea.current).select('.candle').node(),
-                    )
-                ) {
+                if ((event.target.__data__ as CandleChartData) === undefined) {
                     const clickedValue = scaleData.yScale.invert(d3.pointer(event)[1]);
                     const snapResponse = snap(props.liquidityData.liqSnapData, clickedValue);
                     const snappedValue = Math.round(snapResponse[0].value * 100) / 100;
