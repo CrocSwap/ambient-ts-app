@@ -28,14 +28,14 @@ export default function InitPoolExtraInfo(props: InitPriceExtraInfoProps) {
             }`,
         },
         {
-            title: 'Expected Token A Deposit',
-            tooltipTitle: 'Expected Token A Deposit',
-            data: '0.0000000001',
+            title: `Expected ${tokenPair.dataTokenA.symbol} Deposit`,
+            tooltipTitle: `Expected ${tokenPair.dataTokenA.symbol} Deposit`,
+            data: `0.000001 ${tokenPair.dataTokenA.symbol}`,
         },
         {
-            title: 'Expected Token B Deposit',
-            tooltipTitle: 'Expected Token B Deposit',
-            data: '0.000000000000387302',
+            title: `Expected ${tokenPair.dataTokenB.symbol} Deposit`,
+            tooltipTitle: `Expected ${tokenPair.dataTokenB.symbol} Deposit`,
+            data: `0.000000000000387302 ${tokenPair.dataTokenB.symbol}`,
         },
         {
             title: 'Additional liquidity can be minted after pool seeding.',
