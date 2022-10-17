@@ -4,7 +4,6 @@ import {
     receiveUsername,
     // host,
     sendMessageRoute,
-    socket,
 } from '../../Service/chatApi';
 import axios from 'axios';
 import { BsSlashSquare, BsEmojiSmileFill } from 'react-icons/bs';
@@ -19,6 +18,7 @@ import PositionBox from '../PositionBox/PositionBox';
 interface MessageInputProps {
     message: Message;
     room: string;
+    socket: any;
 }
 
 interface PortfolioBannerPropsIF {
@@ -29,12 +29,6 @@ interface PortfolioBannerPropsIF {
 }
 
 export default function MessageInput(props: MessageInputProps, prop: PortfolioBannerPropsIF) {
-    const _socket = socket;
-
-    useEffect(() => {
-        _socket.connect();
-    }, [_socket]);
-
     const [message, setMessage] = useState('');
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
     const { user, account, enableWeb3, isWeb3Enabled, isAuthenticated } = useMoralis();
@@ -73,7 +67,7 @@ export default function MessageInput(props: MessageInputProps, prop: PortfolioBa
     };
 
     const handleSendMsg = async (msg: string) => {
-        _socket.emit('send-msg', {
+        props.socket.emit('send-msg', {
             from: '62f24f3ff40188d467c532e8',
             to: '62fa389c897f9778e2eb863f',
             message: msg,
@@ -114,11 +108,11 @@ export default function MessageInput(props: MessageInputProps, prop: PortfolioBa
                     type='text'
                     id='box'
                     placeholder={
-                        !isAuthenticated || !isWeb3Enabled
+                        isAuthenticated || isWeb3Enabled
                             ? 'Please log in to chat.'
                             : 'Type to chat. Enter to submit.'
                     }
-                    disabled={!isAuthenticated || !isWeb3Enabled}
+                    // disabled={!isAuthenticated || !isWeb3Enabled}
                     className={!positionIsActive ? styles.input_text : styles.input_text_position}
                     onKeyDown={_handleKeyDown}
                     value={message}
