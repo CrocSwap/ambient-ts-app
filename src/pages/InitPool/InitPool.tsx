@@ -5,7 +5,7 @@ import { VscClose } from 'react-icons/vsc';
 import { CrocEnv } from '@crocswap-libs/sdk';
 
 // START: Import JSX Components
-// import InitPoolExtraInfo from '../../components/InitPool/InitPoolExtraInfo/InitPoolExtraInfo';
+import InitPoolExtraInfo from '../../components/InitPool/InitPoolExtraInfo/InitPoolExtraInfo';
 import ContentContainer from '../../components/Global/ContentContainer/ContentContainer';
 import Button from '../../components/Global/Button/Button';
 
@@ -217,7 +217,7 @@ export default function InitPool(props: InitPoolPropsIF) {
                                     />
                                 </section>
                             </div>
-                            {/* <InitPoolExtraInfo /> */}
+                            <InitPoolExtraInfo initialPrice={initialPrice} tokenPair={tokenPair} />
                         </div>
                         <footer>
                             {poolExists ? (

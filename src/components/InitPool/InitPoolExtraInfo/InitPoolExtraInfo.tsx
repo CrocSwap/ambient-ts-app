@@ -6,8 +6,16 @@ import { RiArrowDownSLine } from 'react-icons/ri';
 // START: Import Local Files
 import styles from './InitPoolExtraInfo.module.css';
 import TooltipComponent from '../../Global/TooltipComponent/TooltipComponent';
+import { TokenPairIF } from '../../../utils/interfaces/TokenPairIF';
 
-export default function InitPoolExtraInfo() {
+interface InitPriceExtraInfoProps {
+    initialPrice: number;
+    tokenPair: TokenPairIF;
+}
+
+export default function InitPoolExtraInfo(props: InitPriceExtraInfoProps) {
+    const { initialPrice, tokenPair } = props;
+
     const [showExtraDetails, setShowExtraDetails] = useState<boolean>(false);
 
     const extraInfoData = [
@@ -16,21 +24,21 @@ export default function InitPoolExtraInfo() {
             tooltipTitle: 'Current Price of the Selected Token Pool',
             data: 'I am example data',
         },
-        {
-            title: 'Effective Conversion Rate',
-            tooltipTitle: 'Conversion Rate After Swap Impact and Fees',
-            data: 'I am example data',
-        },
-        {
-            title: 'Slippage Tolerance',
-            tooltipTitle: 'slippage tolerance explanation',
-            data: 'I am example data',
-        },
-        {
-            title: 'Liquidity Provider Fee',
-            tooltipTitle: 'liquidity provider fee explanation',
-            data: 'I am example data',
-        },
+        // {
+        //     title: 'Effective Conversion Rate',
+        //     tooltipTitle: 'Conversion Rate After Swap Impact and Fees',
+        //     data: 'I am example data',
+        // },
+        // {
+        //     title: 'Slippage Tolerance',
+        //     tooltipTitle: 'slippage tolerance explanation',
+        //     data: 'I am example data',
+        // },
+        // {
+        //     title: 'Liquidity Provider Fee',
+        //     tooltipTitle: 'liquidity provider fee explanation',
+        //     data: 'I am example data',
+        // },
     ];
 
     const extraInfoDetails = (
@@ -60,7 +68,9 @@ export default function InitPoolExtraInfo() {
                     {/* {truncatedGasInGwei ? `${truncatedGasInGwei} gwei` : '…'} */}
                 </div>
                 <div className={styles.token_amount}>
-                    {'init pool extra details'}
+                    {`${initialPrice || '...'} ${tokenPair.dataTokenB.symbol} per ${
+                        tokenPair.dataTokenA.symbol
+                    }`}
                     <RiArrowDownSLine size={27} />{' '}
                 </div>
             </div>
