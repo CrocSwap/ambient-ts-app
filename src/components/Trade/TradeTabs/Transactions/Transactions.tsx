@@ -423,7 +423,7 @@ export default function Transactions(props: TransactionsProps) {
         },
 
         {
-            name: 'Menu',
+            name: '',
 
             show: true,
             slug: 'menu',
