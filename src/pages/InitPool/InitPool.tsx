@@ -13,7 +13,6 @@ import Button from '../../components/Global/Button/Button';
 import styles from './InitPool.module.css';
 import { useUrlParams } from './useUrlParams';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
-import { ZERO_ADDRESS } from '../../constants';
 import { TokenPairIF } from '../../utils/interfaces/TokenPairIF';
 
 // interface for props
@@ -56,6 +55,7 @@ export default function InitPool(props: InitPoolPropsIF) {
     // DO NOT combine these hooks with useMemo()
     // the useMemo() hook does NOT respect asynchronicity
     const [poolExists, setPoolExists] = useState<boolean | null>(null);
+
     useEffect(() => {
         // make sure crocEnv exists (needs a moment to spin up)
         if (crocEnv) {
@@ -76,15 +76,6 @@ export default function InitPool(props: InitPoolPropsIF) {
         // this will happen if the user switches chains
     }, [crocEnv]);
 
-    const sendInit = () => {
-        console.log('send init initiated');
-        (async () => {
-            await crocEnv
-                ?.pool(ZERO_ADDRESS, '0x0da5a3004b0f7afa620c2175d5395ef43419d260')
-                .initPool(2);
-        })();
-    };
-
     const [connectButtonDelayElapsed, setConnectButtonDelayElapsed] = useState(false);
 
     useEffect(() => {
@@ -95,6 +86,8 @@ export default function InitPool(props: InitPoolPropsIF) {
     }, []);
 
     const [isApprovalPending, setIsApprovalPending] = useState(false);
+
+    const [initialPrice, setInitialPrice] = useState(0);
 
     const isTokenAAllowanceSufficient = parseFloat(tokenAAllowance) > 0;
     const isTokenBAllowanceSufficient = parseFloat(tokenBAllowance) > 0;
@@ -118,14 +111,22 @@ export default function InitPool(props: InitPoolPropsIF) {
         }
     };
 
+    const sendInit = () => {
+        console.log(`Initializing ${tokenPair.dataTokenA.symbol}-${tokenPair.dataTokenB.symbol} pool at 
+        an initial price of ${initialPrice}`);
+        (async () => {
+            await crocEnv
+                ?.pool(tokenPair.dataTokenA.address, tokenPair.dataTokenB.address)
+                .initPool(initialPrice);
+        })();
+    };
+
     const tokenAApprovalButton = (
         <Button
             title={
                 !isApprovalPending
-                    ? 'Click to approve WTT'
-                    : // ? `Click to Approve ${tokenPair.dataTokenA.symbol}`
-                      'Token Approval Pending'
-                // : `${tokenPair.dataTokenA.symbol} Approval Pending`
+                    ? `Click to Approve ${tokenPair.dataTokenA.symbol}`
+                    : `${tokenPair.dataTokenA.symbol} Approval Pending`
             }
             disabled={isApprovalPending}
             action={async () => {
@@ -138,10 +139,8 @@ export default function InitPool(props: InitPoolPropsIF) {
         <Button
             title={
                 !isApprovalPending
-                    ? 'Click to approve WTT'
-                    : // ? `Click to Approve ${tokenPair.dataTokenA.symbol}`
-                      'Token Approval Pending'
-                // : `${tokenPair.dataTokenA.symbol} Approval Pending`
+                    ? `Click to Approve ${tokenPair.dataTokenB.symbol}`
+                    : `${tokenPair.dataTokenB.symbol} Approval Pending`
             }
             disabled={isApprovalPending}
             action={async () => {
@@ -201,6 +200,13 @@ export default function InitPool(props: InitPoolPropsIF) {
                                         className={styles.currency_quantity}
                                         placeholder='e.g. 1500 (ETH/TokenX)'
                                         type='string'
+                                        onChange={(event) => {
+                                            setInitialPrice(
+                                                parseFloat(event.target.value) > 0
+                                                    ? parseFloat(event.target.value)
+                                                    : 0,
+                                            );
+                                        }}
                                         inputMode='decimal'
                                         autoComplete='off'
                                         autoCorrect='off'
@@ -214,7 +220,13 @@ export default function InitPool(props: InitPoolPropsIF) {
                             {/* <InitPoolExtraInfo /> */}
                         </div>
                         <footer>
-                            {isUserLoggedIn || !connectButtonDelayElapsed ? (
+                            {poolExists ? (
+                                <Button
+                                    title='Pool Already Initialized'
+                                    disabled={true}
+                                    action={() => console.log('clicked')}
+                                />
+                            ) : isUserLoggedIn || !connectButtonDelayElapsed ? (
                                 !isTokenAAllowanceSufficient ? (
                                     tokenAApprovalButton
                                 ) : !isTokenBAllowanceSufficient ? (
