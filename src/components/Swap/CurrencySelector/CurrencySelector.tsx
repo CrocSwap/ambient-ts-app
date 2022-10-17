@@ -265,7 +265,10 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                             width='30px'
                         />
                     ) : (
-                        <FaRegTimesCircle />
+                        // <FaRegTimesCircle />
+                        <div className={styles.no_token_icon}>
+                            <p>{thisToken.symbol.charAt(0)}</p>
+                        </div>
                     )}
                     <div className={styles.token_list_text}>{thisToken.symbol}</div>
                     <RiArrowDownSLine size={27} />
