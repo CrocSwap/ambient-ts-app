@@ -8,10 +8,10 @@ import { useModal } from '../../../components/Global/Modal/useModal';
 import Modal from '../../../components/Global/Modal/Modal';
 import TokenSelectContainer from '../../Global/TokenSelectContainer/TokenSelectContainer';
 import Toggle2 from '../../Global/Toggle/Toggle2';
-import { FaRegTimesCircle } from 'react-icons/fa';
 import ambientLogo from '../../../assets/images/logos/ambient_logo.svg';
 import { MdAccountBalanceWallet } from 'react-icons/md';
 import IconWithTooltip from '../../Global/IconWithTooltip/IconWithTooltip';
+import NoTokenIcon from '../../Global/NoTokenIcon/NoTokenIcon';
 
 interface CurrencySelectorProps {
     isUserLoggedIn: boolean;
@@ -265,7 +265,7 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                             width='30px'
                         />
                     ) : (
-                        <FaRegTimesCircle />
+                        <NoTokenIcon tokenInitial={thisToken.symbol.charAt(0)} width='30px' />
                     )}
                     <div className={styles.token_list_text}>{thisToken.symbol}</div>
                     <RiArrowDownSLine size={27} />

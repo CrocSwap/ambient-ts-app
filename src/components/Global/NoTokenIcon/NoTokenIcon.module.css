@@ -1,0 +1,22 @@
+.no_token_icon{
+    padding: 1.5px;
+
+    background: var(--title-gradient);
+
+    border-radius: 50%;
+    
+}
+.no_token_icon p{
+    width: 100%;
+    height: 100%;
+    background: black;
+    border-radius: 50%;
+    color: var(--text-grey-white);
+    font-size: 18;
+    line-height: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+
+}
