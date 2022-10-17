@@ -1,5 +1,5 @@
 .no_token_icon{
-    padding: 2px;
+    padding: 1.5px;
 
     background: var(--title-gradient);
 
@@ -12,8 +12,8 @@
     background: black;
     border-radius: 50%;
     color: var(--text-grey-white);
-    font-size: var(--header2-size);
-    line-height: var(--header2-lh);
+    font-size: 18;
+    line-height: 20px;
     display: flex;
     justify-content: center;
     align-items: center;
