@@ -16,6 +16,8 @@ import { useUrlParams } from './useUrlParams';
 import { TokenPairIF } from '../../utils/interfaces/TokenPairIF';
 import NoTokenIcon from '../../components/Global/NoTokenIcon/NoTokenIcon';
 import { TokenIF, TokenListIF } from '../../utils/interfaces/exports';
+import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
+import { setTokenA, setTokenB } from '../../utils/state/tradeDataSlice';
 
 // interface for props
 interface InitPoolPropsIF {
@@ -48,6 +50,8 @@ export default function InitPool(props: InitPoolPropsIF) {
         gasPriceInGwei,
     } = props;
 
+    const dispatch = useAppDispatch();
+
     // URL parameters
     const { chain, baseAddr, quoteAddr } = useUrlParams();
 
@@ -79,10 +83,14 @@ export default function InitPool(props: InitPoolPropsIF) {
     }, [crocEnv]);
 
     const [tokenList, setTokenList] = useState<TokenIF[] | null>(null);
-    const [tokenA, setTokenA] = useState<TokenIF | null | undefined>(null);
-    useEffect(() => console.log(tokenA), [tokenA]);
-    const [tokenB, setTokenB] = useState<TokenIF | null | undefined>(null);
-    useEffect(() => console.log(tokenB), [tokenB]);
+    const [tokenALocal, setTokenALocal] = useState<TokenIF | null | undefined>(null);
+    useEffect(() => console.log(tokenALocal), [tokenALocal]);
+    const [tokenBLocal, setTokenBLocal] = useState<TokenIF | null | undefined>(null);
+    useEffect(() => console.log(tokenBLocal), [tokenBLocal]);
+    useEffect(() => {
+        tokenALocal && dispatch(setTokenA(tokenALocal));
+        tokenBLocal && dispatch(setTokenB(tokenBLocal));
+    }, [tokenALocal, tokenBLocal]);
 
     useEffect(() => {
         // get allTokenLists from local storage
@@ -115,8 +123,8 @@ export default function InitPool(props: InitPoolPropsIF) {
             const dataTokenA = findToken(baseAddr);
             const dataTokenB = findToken(quoteAddr);
             console.log(dataTokenA, dataTokenB);
-            setTokenA(dataTokenA);
-            setTokenB(dataTokenB);
+            setTokenALocal(dataTokenA);
+            setTokenBLocal(dataTokenB);
         }
     }, [tokenList, baseAddr, quoteAddr]);
 
@@ -126,11 +134,11 @@ export default function InitPool(props: InitPoolPropsIF) {
         function setTokenFromChain(addr: string, target: string): any {
             const setTarget = (data: TokenIF, whichToken: string) => {
                 switch (whichToken) {
-                    case 'tokenA':
-                        setTokenA(data);
+                    case 'tokenALocal':
+                        setTokenALocal(data);
                         break;
-                    case 'tokenB':
-                        setTokenB(data);
+                    case 'tokenBLocal':
+                        setTokenBLocal(data);
                         break;
                 }
             };
@@ -151,9 +159,9 @@ export default function InitPool(props: InitPoolPropsIF) {
                 }))
                 .then((res) => setTarget(res, target));
         }
-        tokenA === undefined && setTokenFromChain(baseAddr, 'tokenA');
-        tokenB === undefined && setTokenFromChain(quoteAddr, 'tokenB');
-    }, [tokenA, tokenB]);
+        tokenALocal === undefined && setTokenFromChain(baseAddr, 'tokenALocal');
+        tokenBLocal === undefined && setTokenFromChain(quoteAddr, 'tokenBLocal');
+    }, [tokenALocal, tokenBLocal]);
 
     const [connectButtonDelayElapsed, setConnectButtonDelayElapsed] = useState(false);
     const [initGasPriceinDollars, setInitGasPriceinDollars] = useState<string | undefined>();
@@ -241,6 +249,8 @@ export default function InitPool(props: InitPoolPropsIF) {
             }}
         />
     );
+
+    const {tokenA, tokenB} = useAppSelector((state) => state.tradeData);
 
     return (
         <main
