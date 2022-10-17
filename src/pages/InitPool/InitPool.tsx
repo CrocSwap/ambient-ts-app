@@ -26,6 +26,8 @@ interface InitPoolPropsIF {
     tokenBAllowance: string;
     setRecheckTokenBApproval: Dispatch<SetStateAction<boolean>>;
     openModalWallet: () => void;
+    ethMainnetUsdPrice?: number;
+    gasPriceInGwei: number | undefined;
 }
 
 // react functional component
@@ -40,6 +42,8 @@ export default function InitPool(props: InitPoolPropsIF) {
         tokenBAllowance,
         setRecheckTokenAApproval,
         setRecheckTokenBApproval,
+        ethMainnetUsdPrice,
+        gasPriceInGwei,
     } = props;
 
     // URL parameters
@@ -77,6 +81,7 @@ export default function InitPool(props: InitPoolPropsIF) {
     }, [crocEnv]);
 
     const [connectButtonDelayElapsed, setConnectButtonDelayElapsed] = useState(false);
+    const [initGasPriceinDollars, setInitGasPriceinDollars] = useState<string | undefined>();
 
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -84,6 +89,21 @@ export default function InitPool(props: InitPoolPropsIF) {
         }, 3000);
         return () => clearTimeout(timer);
     }, []);
+
+    // calculate price of gas for swap
+    useEffect(() => {
+        if (gasPriceInGwei && ethMainnetUsdPrice) {
+            const gasPriceInDollarsNum = gasPriceInGwei * 157922 * 1e-9 * ethMainnetUsdPrice;
+
+            setInitGasPriceinDollars(
+                '~$' +
+                    gasPriceInDollarsNum.toLocaleString(undefined, {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                    }),
+            );
+        }
+    }, [gasPriceInGwei, ethMainnetUsdPrice]);
 
     const [isApprovalPending, setIsApprovalPending] = useState(false);
 
@@ -217,7 +237,11 @@ export default function InitPool(props: InitPoolPropsIF) {
                                     />
                                 </section>
                             </div>
-                            <InitPoolExtraInfo initialPrice={initialPrice} tokenPair={tokenPair} />
+                            <InitPoolExtraInfo
+                                initialPrice={initialPrice}
+                                initGasPriceinDollars={initGasPriceinDollars}
+                                tokenPair={tokenPair}
+                            />
                         </div>
                         <footer>
                             {poolExists ? (

@@ -2115,6 +2115,8 @@ export default function App() {
                                 <InitPool
                                     isUserLoggedIn={isUserLoggedIn}
                                     crocEnv={crocEnv}
+                                    gasPriceInGwei={gasPriceInGwei}
+                                    ethMainnetUsdPrice={ethMainnetUsdPrice}
                                     showSidebar={showSidebar}
                                     tokenPair={tokenPair}
                                     openModalWallet={openModalWallet}

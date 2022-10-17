@@ -9,12 +9,13 @@ import TooltipComponent from '../../Global/TooltipComponent/TooltipComponent';
 import { TokenPairIF } from '../../../utils/interfaces/TokenPairIF';
 
 interface InitPriceExtraInfoProps {
+    initGasPriceinDollars: string | undefined;
     initialPrice: number;
     tokenPair: TokenPairIF;
 }
 
 export default function InitPoolExtraInfo(props: InitPriceExtraInfoProps) {
-    const { initialPrice, tokenPair } = props;
+    const { initialPrice, initGasPriceinDollars, tokenPair } = props;
 
     const [showExtraDetails, setShowExtraDetails] = useState<boolean>(false);
 
@@ -64,7 +65,7 @@ export default function InitPoolExtraInfo(props: InitPriceExtraInfoProps) {
                 onClick={() => setShowExtraDetails(!showExtraDetails)}
             >
                 <div className={styles.gas_pump}>
-                    <FaGasPump size={15} /> {'…'}
+                    <FaGasPump size={15} /> {initGasPriceinDollars || '…'}
                     {/* {truncatedGasInGwei ? `${truncatedGasInGwei} gwei` : '…'} */}
                 </div>
                 <div className={styles.token_amount}>
