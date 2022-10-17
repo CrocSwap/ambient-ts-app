@@ -207,7 +207,7 @@ export default function InitPool(props: InitPoolPropsIF) {
                                     ) : (
                                         <NoTokenIcon
                                             tokenInitial={tokenA.symbol.charAt(0)}
-                                            width='20px'
+                                            width='30px'
                                         />
                                     )}
                                     <h3>{tokenA.symbol}</h3>
@@ -221,7 +221,7 @@ export default function InitPool(props: InitPoolPropsIF) {
                                     ) : (
                                         <NoTokenIcon
                                             tokenInitial={tokenB.symbol.charAt(0)}
-                                            width='20px'
+                                            width='30px'
                                         />
                                     )}
                                     <h3>{tokenB.symbol}</h3>
