@@ -16,6 +16,8 @@ import RemoveOrderSettings from './RemoveOrderSettings/RemoveOrderSettings';
 import { formatAmount } from '../../utils/numbers';
 import { CrocEnv } from '@crocswap-libs/sdk';
 import { BigNumber } from 'ethers';
+import Toggle2 from '../Global/Toggle/Toggle2';
+import TooltipComponent from '../Global/TooltipComponent/TooltipComponent';
 interface IOrderRemovalProps {
     crocEnv: CrocEnv | undefined;
     limitOrder: ILimitOrderState;
@@ -43,6 +45,8 @@ export default function OrderRemoval(props: IOrderRemovalProps) {
         usdValue,
         baseDisplayFrontend,
         quoteDisplayFrontend,
+        baseDisplay,
+        quoteDisplay,
     } = useProcessOrder(limitOrder);
 
     const [showConfirmation, setShowConfirmation] = useState(false);
@@ -214,6 +218,57 @@ export default function OrderRemoval(props: IOrderRemovalProps) {
     );
     // ----------------------------END OF CONFIRMATION JSX------------------------------
 
+    // ----------------------------- GASLESS TRANSACTION-----------------------
+
+    const gaslesssTransactionControl = (
+        <section className={styles.gasless_container}>
+            <h3>Enable Gasless Transaction</h3>
+
+            <Toggle2
+                isOn={false}
+                handleToggle={() => console.log('toggled')}
+                id='gasless_transaction_toggle_remove_order'
+                disabled={true}
+            />
+        </section>
+    );
+
+    // ----------------------------- END OF GASLESS TRANSACTION-----------------------
+
+    // ---------------------SLIPPAGE TOLERANCE DISPLAY-----------------------------
+
+    const tooltipExplanationData = [
+        {
+            title: 'Slippage Tolerance',
+            tooltipTitle: 'something here',
+            data: '0.5%',
+        },
+        {
+            title: 'Network Fee',
+            tooltipTitle: 'something here about network fee',
+            data: '-$3.69',
+            // data: isDenomBase
+            //     ? `${displayLimitPriceString} ${quoteTokenSymbol} per ${baseTokenSymbol}`
+            //     : `${displayLimitPriceString} ${baseTokenSymbol} per ${quoteTokenSymbol}`,
+        },
+    ];
+
+    const tooltipExplanationDataDisplay = (
+        <div className={styles.explanation_details}>
+            {tooltipExplanationData.map((item, idx) => (
+                <div className={styles.extra_row} key={idx}>
+                    <div className={styles.align_center}>
+                        <div>{item.title}</div>
+                        <TooltipComponent title={item.tooltipTitle} />
+                    </div>
+                    <div className={styles.data}>{item.data}</div>
+                </div>
+            ))}
+        </div>
+    );
+
+    // ---------------------SLIPPAGE TOLERANCE DISPLAY-----------------------------
+
     const showSettingsOrMainContent = showSettings ? (
         <RemoveOrderSettings
             showSettings={showSettings}
@@ -224,7 +279,7 @@ export default function OrderRemoval(props: IOrderRemovalProps) {
         <div>
             <RemoveOrderModalHeader
                 onClose={closeGlobalModal}
-                title={showConfirmation ? '' : 'Limit Order Removal'}
+                title={showConfirmation ? '' : 'Remove Limit Order'}
                 showSettings={showSettings}
                 setShowSettings={setShowSettings}
                 onGoBack={showSettings ? () => setShowSettings(false) : null}
@@ -255,12 +310,16 @@ export default function OrderRemoval(props: IOrderRemovalProps) {
                 askTick={askTick}
                 baseDisplayFrontend={baseDisplayFrontend}
                 quoteDisplayFrontend={quoteDisplayFrontend}
+                baseDisplay={baseDisplay}
+                quoteDisplay={quoteDisplay}
                 positionLiqTotalUSD={positionLiqTotalUSD}
                 positionLiquidity={limitOrder.positionLiq.toString()}
                 baseRemovalString={baseQtyToBeRemoved}
                 quoteRemovalString={quoteQtyToBeRemoved}
             />
-            <RemoveOrderButton removeFn={removeFn} disabled={false} title='Show Example Submit' />
+            {gaslesssTransactionControl}
+            {tooltipExplanationDataDisplay}
+            <RemoveOrderButton removeFn={removeFn} disabled={false} title='Remove Limit Order' />
         </div>
     );
 

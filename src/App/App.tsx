@@ -174,8 +174,10 @@ export default function App() {
     const [chainData, isChainSupported, switchChain, switchNetworkInMoralis] = useAppChain('0x5');
     // useEffect(() => console.warn(chainData.chainId), [chainData.chainId]);
 
-    const [ tokenPairLocal, setTokenPairLocal ] = useState<string[]|null>(null);
-    useEffect(() => {console.log({tokenPairLocal})}, [tokenPairLocal]);
+    const [tokenPairLocal, setTokenPairLocal] = useState<string[] | null>(null);
+    useEffect(() => {
+        console.log({ tokenPairLocal });
+    }, [tokenPairLocal]);
 
     const tokenUniverse = useTokenUniverse(chainData.chainId);
     useEffect(() => {
@@ -1725,7 +1727,7 @@ export default function App() {
         openModalWallet: openModalWallet,
         isInitialized: isInitialized,
         poolExists: poolExists,
-        setTokenPairLocal: setTokenPairLocal
+        setTokenPairLocal: setTokenPairLocal,
     };
 
     // props for <Swap/> React element on trade route
@@ -2109,7 +2111,21 @@ export default function App() {
                         <Route path='range2' element={<Range {...rangeProps} />} />
                         <Route
                             path='initpool/:params'
-                            element={<InitPool crocEnv={crocEnv} showSidebar={showSidebar} />}
+                            element={
+                                <InitPool
+                                    isUserLoggedIn={isUserLoggedIn}
+                                    crocEnv={crocEnv}
+                                    gasPriceInGwei={gasPriceInGwei}
+                                    ethMainnetUsdPrice={ethMainnetUsdPrice}
+                                    showSidebar={showSidebar}
+                                    tokenPair={tokenPair}
+                                    openModalWallet={openModalWallet}
+                                    tokenAAllowance={tokenAAllowance}
+                                    tokenBAllowance={tokenBAllowance}
+                                    setRecheckTokenAApproval={setRecheckTokenAApproval}
+                                    setRecheckTokenBApproval={setRecheckTokenBApproval}
+                                />
+                            }
                         />
                         <Route
                             path='account'

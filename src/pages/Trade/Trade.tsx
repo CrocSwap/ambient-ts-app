@@ -18,6 +18,7 @@ import { tradeData as TradeDataIF } from '../../utils/state/tradeDataSlice';
 import { CandleData, CandlesByPoolAndDuration } from '../../utils/state/graphDataSlice';
 import { PoolIF, TokenIF, TokenPairIF } from '../../utils/interfaces/exports';
 import { useUrlParams } from './useUrlParams';
+import NoTokenIcon from '../../components/Global/NoTokenIcon/NoTokenIcon';
 
 // interface for React functional component props
 interface TradePropsIF {
@@ -153,6 +154,9 @@ export default function Trade(props: TradePropsIF) {
     const baseTokenLogo = isDenomBase ? tradeData.baseToken.logoURI : tradeData.quoteToken.logoURI;
     const quoteTokenLogo = isDenomBase ? tradeData.quoteToken.logoURI : tradeData.baseToken.logoURI;
 
+    const baseTokenSymbol = isDenomBase ? tradeData.baseToken.symbol : tradeData.quoteToken.symbol;
+    const quoteTokenSymbol = isDenomBase ? tradeData.quoteToken.symbol : tradeData.baseToken.symbol;
+
     const indexOfPoolInLiqData = graphData?.liquidityForAllPools.pools.findIndex(
         (pool) =>
             pool.pool.baseAddress.toLowerCase() === tradeData.baseToken.address.toLowerCase() &&
@@ -262,17 +266,25 @@ export default function Trade(props: TradePropsIF) {
             <div className={styles.pool_not_initialialized_container}>
                 <div className={styles.pool_not_initialialized_content}>
                     <div className={styles.close_init} onClick={() => navigate(-1)}>
-                        <VscClose size={22} />
+                        <VscClose size={25} />
                     </div>
                     <h2>This pool has not been initialized.</h2>
                     <h3>Do you want to initialize it?</h3>
                     <Link to={initLinkPath} className={styles.initialize_link}>
-                        <img src={baseTokenLogo} alt='base token' />
                         Initialize Pool
-                        <img src={quoteTokenLogo} alt=' quote token' />
+                        {baseTokenLogo ? (
+                            <img src={baseTokenLogo} alt={baseTokenSymbol} />
+                        ) : (
+                            <NoTokenIcon tokenInitial={baseTokenSymbol.charAt(0)} width='20px' />
+                        )}
+                        {quoteTokenLogo ? (
+                            <img src={quoteTokenLogo} alt={quoteTokenSymbol} />
+                        ) : (
+                            <NoTokenIcon tokenInitial={quoteTokenSymbol.charAt(0)} width='20px' />
+                        )}
                     </Link>
                     <button className={styles.no_thanks} onClick={() => navigate(-1)}>
-                        No Thank You
+                        No, take me back.
                     </button>
                 </div>
             </div>

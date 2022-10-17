@@ -151,8 +151,8 @@
     width: 100%;
     height: calc(100vh - 4rem);
     /* background: var(--dark2); */
-    backdrop-filter: blur(3px);
-    -webkit-backdrop-filter: blur(3px);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
     z-index: 3;
 
     
@@ -170,9 +170,12 @@
     margin: 0 auto;
 
     background: rgba( 23, 29, 39, 0.95 );
+    
 
 border-radius: var(--border-radius);
 border: 1px solid rgba( 255, 255, 255, 0.18 );
+border: 1px solid var(--text-highlight);
+
     padding: 3rem;
     box-shadow: 0 19px 38px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22);
     display: flex;
@@ -181,6 +184,20 @@ border: 1px solid rgba( 255, 255, 255, 0.18 );
     justify-content: center;
     align-items: center;
 }
+/* .pool_not_initialialized_content::before {
+    content: "";
+    position: absolute;
+    border-radius: var(--border-radius);
+
+    inset: 0;
+    padding: 1px; 
+    background:var(--title-gradient); 
+    -webkit-mask: 
+       linear-gradient(#fff 0 0) content-box, 
+       linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+            mask-composite: exclude; 
+  } */
 
 
 .pool_not_initialialized_content h2 {
@@ -191,6 +208,7 @@ border: 1px solid rgba( 255, 255, 255, 0.18 );
 .pool_not_initialialized_content h3 {
     font-size: var(--header2-size);
     line-height: var(--header2-lh);
+    color: var(--text-grey-dark)
 }
 
 .initialize_link {
@@ -230,6 +248,7 @@ border: 1px solid rgba( 255, 255, 255, 0.18 );
     color: black;
     border: 1px solid rgba(223, 190, 106, 0);
     background-position: 99% 50%;
+  
 }
 .initialize_link img {
     width: 20px;
@@ -240,7 +259,7 @@ border: 1px solid rgba( 255, 255, 255, 0.18 );
     cursor: pointer;
     position: absolute;
     top: 10px;
-    right: 20px;
+    right: 10px;
 }
 
 .no_thanks{
@@ -248,9 +267,9 @@ border: 1px solid rgba( 255, 255, 255, 0.18 );
     outline: none;
     border: none;
     cursor: pointer;
-    color: var(--text-grey-white);
-    text-decoration: underline;
+    color: var(--text-highlight);
 }
+    
 /* .initialiaze_token_img img::before{
     position: absolute;
     background: black;
