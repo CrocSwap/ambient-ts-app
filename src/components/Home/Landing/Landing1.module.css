@@ -66,7 +66,7 @@
     background-size: 300% 300%;
     text-decoration: none;
     border: 1px solid #222157;
-    animation: shine 8s linear infinite;
+    /* animation: shine 8s linear infinite; */
     /* color: #CDC1FF; */
 }
 
@@ -80,12 +80,12 @@
     {
         
         background-position: 100% 50%;
-        color: rgb(43, 42, 42);
+        color: rgb(0, 0, 0);
     }
   100% {
       
       background-position :0%  50%;
-      color: black;
+      color: rgb(0, 0, 0);
     }
   }
 
@@ -96,46 +96,18 @@
     animation-play-state: paused;
 }
 .action_button p {
-    background: var(--title-gradient);
-    font-family: var(--font-logo);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+  color: var(--text-highlight);
     font-weight: 100;
     font-size: 30px;
     line-height: 38px;
 }
 
-.action_button:hover .button_text {
-    background: none;
-    border: 1px solid rgba(223, 190, 106, 0);
-    -webkit-background-clip: unset;
-    -webkit-text-fill-color: unset;
-    background-clip: unset;
+
+ .action_button p:hover {
+color: var(--dark2)
+
 
     /* color: var(--dark3); */
 }
 
-/* Desktop screen Sizes */
-@media only screen and (min-width: 768px) {
-    /* .ambient_background{
-    display: block;
-    font-size: clamp(40px, 10vw, 15vw);
-    font-weight: 700;
-    position: relative;
-    z-index: 1;
-    background-image: -webkit-gradient(linear,left top,left bottom,from(rgba(162,147,255,.3)),to(rgba(22,16,59,.3)));
-    background-image: linear-gradient(180deg,rgba(162,147,255,.3),rgba(22,16,59,.3));
-    font-family: Averta,sans-serif;
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    opacity: 0.19;
-  
-  }
 
-  .ambient{
-    position: absolute;
-    z-index: 2;
-  } */
-}
