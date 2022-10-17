@@ -3,26 +3,31 @@
   background: var(--dark2);
   
 border-bottom: 1px solid rgba( 255, 255, 255, 0.18 );
-    padding: 1rem 8px;
+    padding: 0.4rem 8px;
+display: grid;
+grid-template-columns: 40px auto;
 
-display: flex;
-flex-direction: row;
-justify-content: space-between;
-align-items: center;
+/* align-items: center; */
 }
 
+
+.content{
+	display: flex;
+	flex-direction: column;
+	padding: 0 4px;
+}
 .status{
     width: 50px;
    
 }
 
-.action{
+/* .action{
 cursor: pointer;
     width: 30px;
     display: flex;
     justify-content: center;
     align-items: flex-end;
-}
+} */
 
 .info{
     display: flex;
@@ -52,8 +57,17 @@ cursor: pointer;
 	justify-content: center;
 	align-items: center;
 }
+.row{
+	width: 100%;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: space-between;
+}
 
-
+.row p{
+	color: var(--text-grey-light)
+}
 .pending:before{
 	content: '';
 	position: absolute;
