@@ -155,6 +155,7 @@ export default function Chart(props: ChartData) {
     const [ghostLines, setGhostLines] = useState<any>();
     const [horizontalLine, setHorizontalLine] = useState<any>();
     const [marketLine, setMarketLine] = useState<any>();
+    const [limitLine, setLimitLine] = useState<any>();
     const [targetsJoin, setTargetsJoin] = useState<any>();
     const [marketJoin, setMarketJoin] = useState<any>();
     const [limitJoin, setLimitJoin] = useState<any>();
@@ -250,6 +251,10 @@ export default function Chart(props: ChartData) {
 
         if (location.pathname.includes('range')) {
             d3.select(d3PlotArea.current).select('.targets').style('visibility', 'visible');
+            d3.select(d3PlotArea.current)
+                .select('.targets')
+                .selectAll('.horizontal')
+                .style('visibility', 'visible');
 
             d3.select(d3PlotArea.current)
                 .select('.targets')
@@ -261,8 +266,16 @@ export default function Chart(props: ChartData) {
                 });
 
             d3.select(d3PlotArea.current).select('.limit').style('visibility', 'hidden');
+            d3.select(d3Container.current)
+                .select('.limit')
+                .select('.horizontal')
+                .style('visibility', 'hidden');
         } else if (location.pathname.includes('limit')) {
             d3.select(d3PlotArea.current).select('.limit').style('visibility', 'visible');
+            d3.select(d3PlotArea.current)
+                .select('.limit')
+                .select('.horizontal')
+                .style('visibility', 'visible');
             d3.select(d3PlotArea.current)
                 .select('.limit')
                 .select('.annotation-line')
@@ -276,10 +289,25 @@ export default function Chart(props: ChartData) {
                 .select('.targets')
                 .style('visibility', 'hidden')
                 .style('filter', 'none');
+            d3.select(d3Container.current)
+                .select('.targets')
+                .selectAll('.horizontal')
+                .style('visibility', 'hidden')
+                .style('filter', 'none');
         } else if (location.pathname.includes('market')) {
             d3.select(d3Container.current).select('.limit').style('visibility', 'hidden');
             d3.select(d3Container.current)
+                .select('.limit')
+                .select('.horizontal')
+                .style('visibility', 'hidden');
+
+            d3.select(d3Container.current)
                 .select('.targets')
+                .style('visibility', 'hidden')
+                .style('filter', 'none');
+            d3.select(d3Container.current)
+                .select('.targets')
+                .selectAll('.horizontal')
                 .style('visibility', 'hidden')
                 .style('filter', 'none');
         }
@@ -526,7 +554,7 @@ export default function Chart(props: ChartData) {
         });
     };
 
-    const setLimitLine = () => {
+    const setLimitLineValue = () => {
         setLimit(() => {
             return [
                 {
@@ -646,7 +674,7 @@ export default function Chart(props: ChartData) {
     useEffect(() => {
         setMarketLineValue();
         if (location.pathname.includes('limit')) {
-            setLimitLine();
+            setLimitLineValue();
         } else if (location.pathname.includes('range')) {
             if (!isAdvancedModeActive) {
                 setBalancedLines();
@@ -964,9 +992,7 @@ export default function Chart(props: ChartData) {
                         const svg = d3.select(event.target).select('svg');
 
                         ghostJoin(svg, [neighborValues]).call(ghostLines);
-                        limitJoin(svg, [[{ name: 'Limit', value: snappedValue }]]).call(
-                            horizontalLine,
-                        );
+                        limitJoin(svg, [[{ name: 'Limit', value: snappedValue }]]).call(limitLine);
                     });
 
                     setLimit(() => {
@@ -1001,11 +1027,39 @@ export default function Chart(props: ChartData) {
     // Horizontal Lines
     useEffect(() => {
         if (scaleData !== undefined) {
-            const horizontalLine = d3fc
+            const limitLine = d3fc
                 .annotationSvgLine()
                 .value((d: any) => d.value)
                 .xScale(scaleData.xScale)
                 .yScale(scaleData.yScale);
+
+            limitLine.decorate((selection: any) => {
+                selection
+                    .enter()
+                    .style('visibility', 'hidden')
+                    .attr('id', (d: any) => d.name)
+                    .select('g.left-handle')
+                    .append('text')
+                    .attr('x', 5)
+                    .attr('y', -5);
+                selection
+                    .enter()
+                    .append('rect')
+                    .attr('width', '100%')
+                    .attr('y', -20)
+                    .attr('height', '8%')
+                    .attr('fill', 'transparent')
+                    .attr('stroke', 'none');
+
+                selection.enter().select('g.right-handle').remove();
+                selection.enter().select('line').attr('class', 'redline');
+                selection
+                    .select('g.left-handle text')
+                    .text((d: any) => d.name + ' - ' + valueFormatter(d.value))
+                    .style('transform', (d: any) =>
+                        d.name == 'Min' ? ' translate(0px, 25px)' : 'translate(0px, -5px)',
+                    );
+            });
 
             const marketLine = d3fc
                 .annotationSvgLine()
@@ -1035,10 +1089,17 @@ export default function Chart(props: ChartData) {
                 selection.select('g.left-handle').remove();
             });
 
+            const horizontalLine = d3fc
+                .annotationSvgLine()
+                .value((d: any) => d.value)
+                .xScale(scaleData.xScale)
+                .yScale(scaleData.yScale);
+
             horizontalLine.decorate((selection: any) => {
                 selection
                     .enter()
                     .attr('id', (d: any) => d.name)
+                    .style('visibility', 'hidden')
                     .select('g.left-handle')
                     .append('text')
                     .attr('x', 5)
@@ -1099,6 +1160,10 @@ export default function Chart(props: ChartData) {
 
             setMarketLine(() => {
                 return marketLine;
+            });
+
+            setLimitLine(() => {
+                return limitLine;
             });
         }
     }, [scaleData]);
@@ -1499,6 +1564,7 @@ export default function Chart(props: ChartData) {
                 .xScale(scaleData.xScaleIndicator)
                 .yScale(scaleData.yScale)
                 .decorate((selection: any) => {
+                    selection.enter().style('visibility', 'hidden');
                     selection.enter().select('line').attr('class', 'highlightedPrice');
                     selection
                         .enter()
@@ -1598,6 +1664,7 @@ export default function Chart(props: ChartData) {
             liqTooltip !== undefined &&
             crosshairVertical !== undefined &&
             crosshairHorizontal !== undefined &&
+            limitLine !== undefined &&
             marketLine !== undefined &&
             marketJoin !== undefined &&
             targetsJoin !== undefined
@@ -1619,6 +1686,7 @@ export default function Chart(props: ChartData) {
                 downBorderColor,
                 zoomUtils,
                 horizontalLine,
+                limitLine,
                 targetsJoin,
                 limitJoin,
                 marketJoin,
@@ -1677,6 +1745,7 @@ export default function Chart(props: ChartData) {
             downBorderColor: any,
             zoomUtils: any,
             horizontalLine: any,
+            limitLine: any,
             targetsJoin: any,
             limitJoin: any,
             marketJoin: any,
@@ -1848,7 +1917,7 @@ export default function Chart(props: ChartData) {
                         crosshairVerticalJoin(svg, [crosshairData]).call(crosshairVertical);
 
                         marketJoin(svg, [targets.market]).call(marketLine);
-                        limitJoin(svg, [targets.limit]).call(horizontalLine);
+                        limitJoin(svg, [targets.limit]).call(limitLine);
 
                         highlightedCurrentPriceLineJoin(svg, [currentPriceData]).call(
                             highlightedCurrentPriceLine,
