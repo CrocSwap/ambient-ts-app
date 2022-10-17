@@ -1095,21 +1095,11 @@ export default function Chart(props: ChartData) {
             const limitJoin = d3fc.dataJoin('g', 'limit');
             const marketJoin = d3fc.dataJoin('g', 'market');
 
-            // const popup = d3
-            //     .select('#d3fc_group')
-            //     .append('div')
-            //     .attr('class', 'popup')
-            //     .style('visibility', 'hidden');
-
             const liqTooltip = d3
                 .select(d3Container.current)
                 .append('div')
                 .attr('class', 'liqTooltip')
                 .style('visibility', 'hidden');
-
-            // setPopup(() => {
-            //     return popup;
-            // });
 
             setLiqTooltip(() => {
                 return liqTooltip;
@@ -1291,9 +1281,7 @@ export default function Chart(props: ChartData) {
                 d3.select(d3Container.current)
                     .select('.limit')
                     .on('mouseover', (event: any) => {
-                        d3.select(event.currentTarget)
-                            // .select('.detector')
-                            .style('cursor', 'row-resize');
+                        d3.select(event.currentTarget).style('cursor', 'row-resize');
                         d3.select(event.currentTarget).select('line').style('cursor', 'row-resize');
                     })
                     .call(dragLimit);
@@ -1795,7 +1783,6 @@ export default function Chart(props: ChartData) {
                                     setSelectedCandleState(undefined);
                                 } else {
                                     selectedCandle = event.currentTarget;
-                                    // console.log({ selectedCandle });
 
                                     setSelectedCandleState(() => {
                                         return event.currentTarget;
@@ -2218,7 +2205,6 @@ export default function Chart(props: ChartData) {
             d3.select(selectedCandleState)
                 .style('fill', (d: any) => (d.close > d.open ? upBodyColor : downBodyColor))
                 .style('stroke', (d: any) => (d.close > d.open ? upBorderColor : downBorderColor));
-            // .style('stroke', (d: any) => (d.close > d.open ? '#7371FC' : '#CDC1FF'));
 
             d3.select('#transactionPopup').style('visibility', 'hidden');
         }
