@@ -3,7 +3,7 @@ import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { VscClose } from 'react-icons/vsc';
 import { CrocEnv } from '@crocswap-libs/sdk';
-import { TokenIF, TokenListIF } from '../../utils/interfaces/exports';
+import { useMoralisWeb3Api } from 'react-moralis';
 
 // START: Import JSX Components
 import InitPoolExtraInfo from '../../components/InitPool/InitPoolExtraInfo/InitPoolExtraInfo';
@@ -15,6 +15,7 @@ import styles from './InitPool.module.css';
 import { useUrlParams } from './useUrlParams';
 import { TokenPairIF } from '../../utils/interfaces/TokenPairIF';
 import NoTokenIcon from '../../components/Global/NoTokenIcon/NoTokenIcon';
+import { TokenIF, TokenListIF } from '../../utils/interfaces/exports';
 
 // interface for props
 interface InitPoolPropsIF {
@@ -48,10 +49,12 @@ export default function InitPool(props: InitPoolPropsIF) {
     } = props;
 
     // URL parameters
-    const { baseAddr, quoteAddr } = useUrlParams();
+    const { chain, baseAddr, quoteAddr } = useUrlParams();
 
     // function to programmatically navigate the user
     const navigate = useNavigate();
+
+    const Web3Api = useMoralisWeb3Api();
 
     // DO NOT combine these hooks with useMemo()
     // the useMemo() hook does NOT respect asynchronicity
@@ -78,15 +81,19 @@ export default function InitPool(props: InitPoolPropsIF) {
     }, [crocEnv]);
 
     const [tokenList, setTokenList] = useState<TokenIF[]|null>(null);
-    const [tokenA, setTokenA] = useState<TokenIF|null>(null);
-    const [tokenB, setTokenB] = useState<TokenIF|null>(null);
+    const [tokenA, setTokenA] = useState<TokenIF|null|undefined>(null);
+    useEffect(() => console.log(tokenA), [tokenA]);
+    const [tokenB, setTokenB] = useState<TokenIF|null|undefined>(null);
+    useEffect(() => console.log(tokenB), [tokenB]);
+
     useEffect(() => {
         // get allTokenLists from local storage
         function check() {
             const tokenListsFromStorage = localStorage.getItem('allTokenLists');
             if (tokenListsFromStorage !== null) {
                 const tokenLists = JSON.parse(tokenListsFromStorage as string);
-                const tokens = tokenLists.find((list: TokenListIF) => list.name === 'Ambient Token List').tokens;
+                const ambientList = tokenLists.find((list: TokenListIF) => list.name === 'Ambient Token List');
+                const tokens = ambientList.tokens;
                 console.log(tokens);
                 setTokenList(tokens);
             } else {
@@ -97,19 +104,58 @@ export default function InitPool(props: InitPoolPropsIF) {
     }, []);
 
     useEffect(() => {
-        console.log('running!');
         console.log(tokenList, baseAddr, quoteAddr);
         if (tokenList && baseAddr && quoteAddr) {
-            const findToken = (addr:string) => tokenList.find((tkn: TokenIF) => tkn.address.toLowerCase() === addr.toLowerCase());
+            console.log('running!');
+            const findToken = (addr:string) => (
+                tokenList.find((tkn: TokenIF) => tkn.address.toLowerCase() === addr.toLowerCase())
+            );
+
             console.log(tokenList);
             console.log(baseAddr, quoteAddr);
             const dataTokenA = findToken(baseAddr);
             const dataTokenB = findToken(quoteAddr);
             console.log(dataTokenA, dataTokenB);
-            dataTokenA && setTokenA(dataTokenA);
-            dataTokenB && setTokenB(dataTokenB);
+            setTokenA(dataTokenA);
+            setTokenB(dataTokenB);
         }
     }, [tokenList, baseAddr, quoteAddr]);
+
+    useEffect(() => {
+        // TODO: find a way to correctly type this return
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        function setTokenFromChain(addr: string, target: string): any {
+            const setTarget = (data: TokenIF, whichToken: string) => {
+                switch (whichToken) {
+                    case 'tokenA':
+                        setTokenA(data);
+                        break;
+                    case 'tokenB':
+                        setTokenB(data);
+                        break;
+                }
+            }
+            const promise = Web3Api.token.getTokenMetadata({
+                chain: chain as '0x5',
+                addresses: [addr],
+            });
+            Promise.resolve(promise)
+                .then((res) => res[0])
+                .then((res) => ({
+                    name: res.name,
+                    chainId: parseInt(chain as string),
+                    address: res.address,
+                    symbol: res.symbol,
+                    decimals: parseInt(res.decimals),
+                    logoURI: res.logo ?? '',
+                    fromList: 'urlParam',
+                }))
+                .then((res) => setTarget(res, target));
+        }
+        tokenA === undefined && setTokenFromChain(baseAddr, 'tokenA');
+        tokenB === undefined && setTokenFromChain(quoteAddr, 'tokenB');
+    }, [tokenA, tokenB]);
+
     const [connectButtonDelayElapsed, setConnectButtonDelayElapsed] = useState(false);
     const [initGasPriceinDollars, setInitGasPriceinDollars] = useState<string | undefined>();
 
@@ -141,8 +187,6 @@ export default function InitPool(props: InitPoolPropsIF) {
 
     const isTokenAAllowanceSufficient = parseFloat(tokenAAllowance) > 0;
     const isTokenBAllowanceSufficient = parseFloat(tokenBAllowance) > 0;
-
-    const loginButton = <Button title='Login' action={openModalWallet} />;
 
     const approve = async (tokenAddress: string) => {
         if (!crocEnv) return;
@@ -236,7 +280,7 @@ export default function InitPool(props: InitPoolPropsIF) {
                                     ) : (
                                         <NoTokenIcon
                                             tokenInitial={tokenA.symbol.charAt(0)}
-                                            width='30px'
+                                            width='20px'
                                         />
                                     ))}
                                     {tokenA && <h3>{tokenA.symbol}</h3>}
@@ -245,12 +289,12 @@ export default function InitPool(props: InitPoolPropsIF) {
                             </div>
                             <div className={styles.pool_display}>
                                 <div>
-                                    {tokenB && (tokenB.logoURI ? (
+                                {tokenB && (tokenB.logoURI ? (
                                         <img src={tokenB.logoURI} alt={tokenB.symbol} />
                                     ) : (
                                         <NoTokenIcon
                                             tokenInitial={tokenB.symbol.charAt(0)}
-                                            width='30px'
+                                            width='20px'
                                         />
                                     ))}
                                     {tokenB && <h3>{tokenB.symbol}</h3>}
@@ -304,7 +348,7 @@ export default function InitPool(props: InitPoolPropsIF) {
                                     <Button title='Open Confirmation' action={sendInit} />
                                 )
                             ) : (
-                                loginButton
+                                <Button title='Login' action={openModalWallet} />
                             )}
                         </footer>
                     </ContentContainer>
