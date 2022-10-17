@@ -14,6 +14,7 @@ import styles from './InitPool.module.css';
 import { useUrlParams } from './useUrlParams';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { TokenPairIF } from '../../utils/interfaces/TokenPairIF';
+import NoTokenIcon from '../../components/Global/NoTokenIcon/NoTokenIcon';
 
 // interface for props
 interface InitPoolPropsIF {
@@ -200,14 +201,29 @@ export default function InitPool(props: InitPoolPropsIF) {
                         <div className={styles.pool_display_container}>
                             <div className={styles.pool_display}>
                                 <div>
-                                    <img src={tokenA.logoURI} alt='token a' />
+                                    {/* <img src={tokenA.logoURI} alt='token a' /> */}
+                                    {tokenA.logoURI ? (
+                                        <img src={tokenA.logoURI} alt={tokenA.symbol} />
+                                    ) : (
+                                        <NoTokenIcon
+                                            tokenInitial={tokenA.symbol.charAt(0)}
+                                            width='20px'
+                                        />
+                                    )}
                                     <h3>{tokenA.symbol}</h3>
                                 </div>
                                 <p>{tokenA.name}</p>
                             </div>
                             <div className={styles.pool_display}>
                                 <div>
-                                    <img src={tokenB.logoURI} alt='token b' />
+                                    {tokenB.logoURI ? (
+                                        <img src={tokenA.logoURI} alt={tokenB.symbol} />
+                                    ) : (
+                                        <NoTokenIcon
+                                            tokenInitial={tokenB.symbol.charAt(0)}
+                                            width='20px'
+                                        />
+                                    )}
                                     <h3>{tokenB.symbol}</h3>
                                 </div>
                                 <p>{tokenB.name}</p>
