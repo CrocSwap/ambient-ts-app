@@ -31,10 +31,10 @@ export const useUrlParams = () => {
 
     const [baseAddr, quoteAddr] = sortBaseQuoteTokens(
         findParamValue('tokenA') as string,
-        findParamValue('tokenB') as string
+        findParamValue('tokenB') as string,
     );
 
-    console.log(baseAddr, quoteAddr)
+    // console.log(baseAddr, quoteAddr)
 
     return {
         chain: findParamValue('chain'),
