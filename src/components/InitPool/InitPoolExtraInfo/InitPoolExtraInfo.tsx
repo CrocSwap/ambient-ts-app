@@ -21,9 +21,14 @@ export default function InitPoolExtraInfo(props: InitPriceExtraInfoProps) {
 
     const extraInfoData = [
         {
-            title: 'Spot Price',
-            tooltipTitle: 'Current Price of the Selected Token Pool',
-            data: 'I am example data',
+            title: 'Expected Token A Deposit',
+            tooltipTitle: 'Expected Token A Deposit',
+            data: '0.000001',
+        },
+        {
+            title: 'Expected Token B Deposit',
+            tooltipTitle: 'Expected Token B Deposit',
+            data: '0.000000000000387302',
         },
         // {
         //     title: 'Effective Conversion Rate',
