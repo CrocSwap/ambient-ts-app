@@ -1,7 +1,6 @@
 import styles from './TooltipComponent.module.css';
-import { Tooltip } from '@mui/material';
 import { AiOutlineQuestionCircle } from 'react-icons/ai';
-import { useStyles } from '../../../utils/functions/styles';
+import { DefaultTooltip } from '../StyledTooltip/StyledTooltip';
 
 interface TooltipComponentProps {
     title: string;
@@ -24,21 +23,18 @@ interface TooltipComponentProps {
 }
 
 export default function TooltipComponent(props: TooltipComponentProps) {
-    const classes = useStyles();
     return (
-        <Tooltip
+        <DefaultTooltip
             title={props.title}
+            interactive
             placement={props.placement ? props.placement : 'right'}
             arrow
             enterDelay={400}
             leaveDelay={200}
-            classes={{
-                tooltip: classes.customTooltip,
-            }}
         >
             <div className={styles.icon}>
                 {props.icon ? props.icon : <AiOutlineQuestionCircle size={15} />}
             </div>
-        </Tooltip>
+        </DefaultTooltip>
     );
 }
