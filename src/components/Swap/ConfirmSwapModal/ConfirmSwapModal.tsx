@@ -217,7 +217,10 @@ export default function ConfirmSwapModal(props: ConfirmSwapModalProps) {
     // const currentTxHash = 'i am hash number';
     const confirmSendMessage = (
         <WaitingConfirmation
-            content={` Swapping ${sellTokenQty} ${sellTokenData.symbol} for ${buyTokenQty} ${buyTokenData.symbol}`}
+            content={`Swapping ${sellTokenQty} ${sellTokenData.symbol} for ${buyTokenQty} ${
+                buyTokenData.symbol
+            }. Please check the ${'Metamask'} extension in your browser for notifications.
+            `}
         />
     );
 

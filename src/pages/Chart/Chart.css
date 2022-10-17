@@ -19,7 +19,7 @@ text {
 
 .annotation-line > .redline {
     stroke: rgba(235, 235, 255, 0.4);
-    stroke-width: 4;
+    stroke-width: 3;
     stroke-dasharray: 16 16;
     stroke-opacity: 0.4;
     border: 2px dashed rgba(235, 235, 255, 0.4);

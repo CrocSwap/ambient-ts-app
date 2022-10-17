@@ -77,8 +77,8 @@ import {
     setSimpleRangeWidth,
 } from '../utils/state/tradeDataSlice';
 import {
-    //  memoizeQuerySpotPrice,
-    querySpotPrice,
+    memoizeQuerySpotPrice,
+    // querySpotPrice,
 } from './functions/querySpotPrice';
 import { memoizeFetchAddress } from './functions/fetchAddress';
 import {
@@ -123,6 +123,7 @@ const cachedFetchAddress = memoizeFetchAddress();
 const cachedFetchNativeTokenBalance = memoizeFetchNativeTokenBalance();
 const cachedFetchErc20TokenBalances = memoizeFetchErc20TokenBalances();
 const cachedFetchTokenPrice = memoizeTokenPrice();
+const cachedQuerySpotPrice = memoizeQuerySpotPrice();
 
 const httpGraphCacheServerDomain = 'https://809821320828123.de:5000';
 const wssGraphCacheServerDomain = 'wss://809821320828123.de:5000';
@@ -583,6 +584,7 @@ export default function App() {
             // token pair has an initialized pool on-chain
             // returns a promise object
             const doesPoolExist = crocEnv
+                // TODO: make this function pill addresses directly from URL params
                 .pool(tokenPair.dataTokenA.address, tokenPair.dataTokenB.address)
                 .isInit();
             // resolve the promise object to see if pool exists
@@ -986,20 +988,7 @@ export default function App() {
                                         duration: activePeriod,
                                         candles: candles,
                                     });
-                                    // dispatch(
-                                    //     setCandles({
-                                    //         pool: {
-                                    //             baseAddress: baseTokenAddress.toLowerCase(),
-                                    //             quoteAddress: quoteTokenAddress.toLowerCase(),
-                                    //             poolIdx: chainData.poolIndex,
-                                    //             network: chainData.chainId,
-                                    //         },
-                                    //         duration: activePeriod,
-                                    //         candles: candles,
-                                    //     }),
-                                    // );
                                 }
-                                // });
                             }
                         })
                         .catch(console.log);
@@ -1106,6 +1095,91 @@ export default function App() {
         mainnetBaseTokenAddress !== '' && mainnetQuoteTokenAddress !== '',
     );
 
+    const candleDomains = tradeData.candleDomains;
+    const domainBoundaryInSeconds = Math.floor((candleDomains?.domainBoundry || 0) / 1000);
+
+    useEffect(() => {
+        // console.log({ debouncedBoundary });
+        // console.log({ activePeriod });
+        // console.log({ candleData });
+
+        function getTime() {
+            if (candleData) {
+                return candleData.candles.map((d) => d.time);
+            } else {
+                return [0];
+            }
+        }
+        function getMinTime() {
+            return Math.min(...getTime());
+        }
+
+        const minTime = getMinTime();
+        // console.log({ minTime });
+
+        const numDurationsNeeded = Math.floor((minTime - domainBoundaryInSeconds) / activePeriod);
+
+        if (httpGraphCacheServerDomain && domainBoundaryInSeconds && minTime) {
+            // console.log('fetching candles');
+            const candleSeriesCacheEndpoint = httpGraphCacheServerDomain + '/candle_series?';
+
+            fetch(
+                candleSeriesCacheEndpoint +
+                    new URLSearchParams({
+                        base: mainnetBaseTokenAddress.toLowerCase(),
+                        quote: mainnetQuoteTokenAddress.toLowerCase(),
+                        poolIdx: chainData.poolIndex.toString(),
+                        period: activePeriod.toString(),
+                        time: minTime.toString(),
+                        // time: debouncedBoundary.toString(),
+                        n: numDurationsNeeded.toString(), // positive integer
+                        // page: '0', // nonnegative integer
+                        chainId: '0x1',
+                        dex: 'all',
+                        poolStats: 'true',
+                        concise: 'true',
+                        poolStatsChainIdOverride: '0x5',
+                        poolStatsBaseOverride: baseTokenAddress.toLowerCase(),
+                        poolStatsQuoteOverride: quoteTokenAddress.toLowerCase(),
+                        poolStatsPoolIdxOverride: chainData.poolIndex.toString(),
+                    }),
+            )
+                .then((response) => response?.json())
+                .then((json) => {
+                    const fetchedCandles = json?.data;
+
+                    if (fetchedCandles && candleData) {
+                        const newCandles: CandleData[] = [];
+                        const updatedCandles: CandleData[] = candleData.candles;
+
+                        for (let index = 0; index < fetchedCandles.length; index++) {
+                            const messageCandle = fetchedCandles[index];
+                            const indexOfExistingCandle = candleData.candles.findIndex(
+                                (savedCandle) => savedCandle.time === messageCandle.time,
+                            );
+
+                            if (indexOfExistingCandle === -1) {
+                                newCandles.push(messageCandle);
+                            } else if (
+                                JSON.stringify(candleData.candles[indexOfExistingCandle]) !==
+                                JSON.stringify(messageCandle)
+                            ) {
+                                updatedCandles[indexOfExistingCandle] = messageCandle;
+                            }
+                        }
+                        // console.log({ newCandles });
+                        const newCandleData: CandlesByPoolAndDuration = {
+                            pool: candleData.pool,
+                            duration: candleData.duration,
+                            candles: newCandles.concat(updatedCandles),
+                        };
+                        setCandleData(newCandleData);
+                    }
+                })
+                .catch(console.log);
+        }
+    }, [domainBoundaryInSeconds]);
+
     useEffect(() => {
         if (candlesMessage) {
             const lastMessageData = JSON.parse(candlesMessage.data).data;
@@ -1136,34 +1210,7 @@ export default function App() {
                     candles: newCandles.concat(updatedCandles),
                 };
                 setCandleData(newCandleData);
-                // setCandleData((savedCandles) => {
-                //     // console.log({ savedCandles });
-                //     if (newCandles && savedCandles) {
-                //         const newCandleData: CandlesByPoolAndDuration = {
-                //             pool: savedCandles.pool,
-                //             duration: savedCandles.duration,
-                //             candles: savedCandles.candles.concat(newCandles),
-                //         };
-                //         return newCandleData;
-                //     } else {
-                //         return savedCandles;
-                //     }
-                // });
-                // dispatch(
-                //     addCandles({
-                //         pool: {
-                //             baseAddress: baseTokenAddress,
-                //             quoteAddress: quoteTokenAddress,
-                //             poolIdx: chainData.poolIndex,
-                //             network: chainData.chainId,
-                //         },
-                //         duration: activePeriod,
-                //         candles: lastMessageData,
-                //     }),
-                // );
-                // });
             }
-            // console.log({ lastMessageData });
         }
     }, [candlesMessage]);
 
@@ -1328,7 +1375,7 @@ export default function App() {
                 //     ? provider
                 //     : (await new CrocEnv(chainData.chainId).context).provider;
 
-                const spotPrice = await querySpotPrice(
+                const spotPrice = await cachedQuerySpotPrice(
                     crocEnv,
                     baseTokenAddress,
                     quoteTokenAddress,
@@ -1758,6 +1805,7 @@ export default function App() {
 
     // props for <Range/> React element
     const rangeProps = {
+        crocEnv: crocEnv,
         isUserLoggedIn: isUserLoggedIn,
         importedTokens: importedTokens,
         setImportedTokens: setImportedTokens,
@@ -1965,6 +2013,7 @@ export default function App() {
                             index
                             element={
                                 <Home
+                                    cachedQuerySpotPrice={cachedQuerySpotPrice}
                                     tokenMap={tokenMap}
                                     lastBlockNumber={lastBlockNumber}
                                     crocEnv={crocEnv}
@@ -2023,6 +2072,7 @@ export default function App() {
                                     limitRate={''}
                                     importedTokens={importedTokens}
                                     poolExists={poolExists}
+                                    showSidebar={showSidebar}
                                 />
                             }
                         >
@@ -2063,7 +2113,7 @@ export default function App() {
                         <Route path='range2' element={<Range {...rangeProps} />} />
                         <Route
                             path='initpool/:params'
-                            element={<InitPool showSidebar={showSidebar} />}
+                            element={<InitPool crocEnv={crocEnv} showSidebar={showSidebar} />}
                         />
                         <Route
                             path='account'

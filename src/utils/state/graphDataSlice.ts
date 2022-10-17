@@ -342,33 +342,18 @@ export const graphDataSlice = createSlice({
             state.positionsByUser = action.payload;
         },
         addPositionsByUser: (state, action: PayloadAction<Array<PositionIF>>) => {
-            if (action.payload[0].positionType === 'knockout') {
-                const slotToFind = action.payload[0].merkleStorageSlot?.toLowerCase();
-                const indexOfSlot = state.positionsByUser.positions
-                    .map((position) =>
-                        position.positionType === 'knockout'
-                            ? position.merkleStorageSlot?.toLowerCase()
-                            : false,
-                    )
-                    .findIndex((slot) => slot === slotToFind);
-                if (indexOfSlot === -1) {
-                    state.positionsByUser.positions = action.payload.concat(
+            for (let index = 0; index < action.payload.length; index++) {
+                const updatedPosition = action.payload[index];
+                const positionIdToFind = updatedPosition.positionId.toLowerCase();
+                const indexOfPositionInState = state.positionsByUser.positions.findIndex(
+                    (position) => position.positionId.toLowerCase() === positionIdToFind,
+                );
+                if (indexOfPositionInState === -1) {
+                    state.positionsByUser.positions = [action.payload[index]].concat(
                         state.positionsByUser.positions,
                     );
                 } else {
-                    state.positionsByUser.positions[indexOfSlot] = action.payload[0];
-                }
-            } else {
-                const slotToFind = action.payload[0].positionStorageSlot?.toLowerCase();
-                const indexOfSlot = state.positionsByUser.positions
-                    .map((position) => position.positionStorageSlot?.toLowerCase())
-                    .findIndex((slot) => slot === slotToFind);
-                if (indexOfSlot === -1) {
-                    state.positionsByUser.positions = action.payload.concat(
-                        state.positionsByUser.positions,
-                    );
-                } else {
-                    state.positionsByUser.positions[indexOfSlot] = action.payload[0];
+                    state.positionsByUser.positions[indexOfPositionInState] = action.payload[index];
                 }
             }
         },
@@ -382,29 +367,18 @@ export const graphDataSlice = createSlice({
             state.limitOrdersByPool = action.payload;
         },
         addPositionsByPool: (state, action: PayloadAction<Array<PositionIF>>) => {
-            if (action.payload[0].positionType === 'knockout') {
-                const slotToFind = action.payload[0].merkleStorageSlot?.toLowerCase();
-                const indexOfSlot = state.positionsByPool.positions
-                    .map((position) => position.merkleStorageSlot?.toLowerCase())
-                    .findIndex((slot) => slot === slotToFind);
-                if (indexOfSlot === -1) {
-                    state.positionsByPool.positions = action.payload.concat(
+            for (let index = 0; index < action.payload.length; index++) {
+                const updatedPosition = action.payload[index];
+                const positionIdToFind = updatedPosition.positionId.toLowerCase();
+                const indexOfPositionInState = state.positionsByPool.positions.findIndex(
+                    (position) => position.positionId.toLowerCase() === positionIdToFind,
+                );
+                if (indexOfPositionInState === -1) {
+                    state.positionsByPool.positions = [action.payload[index]].concat(
                         state.positionsByPool.positions,
                     );
                 } else {
-                    state.positionsByPool.positions[indexOfSlot] = action.payload[0];
-                }
-            } else {
-                const slotToFind = action.payload[0].positionStorageSlot?.toLowerCase();
-                const indexOfSlot = state.positionsByPool.positions
-                    .map((position) => position.positionStorageSlot?.toLowerCase())
-                    .findIndex((slot) => slot === slotToFind);
-                if (indexOfSlot === -1) {
-                    state.positionsByPool.positions = action.payload.concat(
-                        state.positionsByPool.positions,
-                    );
-                } else {
-                    state.positionsByPool.positions[indexOfSlot] = action.payload[0];
+                    state.positionsByPool.positions[indexOfPositionInState] = action.payload[index];
                 }
             }
         },
@@ -425,7 +399,7 @@ export const graphDataSlice = createSlice({
                     (tx) => tx.tx.toLowerCase() === txToFind,
                 );
                 if (indexOfTxInState === -1) {
-                    state.changesByUser.changes = action.payload.concat(
+                    state.changesByUser.changes = [action.payload[index]].concat(
                         state.changesByUser.changes,
                     );
                 } else {
@@ -441,7 +415,7 @@ export const graphDataSlice = createSlice({
                     (order) => order.limitOrderIdentifier.toLowerCase() === idToFind,
                 );
                 if (indexOfOrderInState === -1) {
-                    state.limitOrdersByUser.limitOrders = action.payload.concat(
+                    state.limitOrdersByUser.limitOrders = [action.payload[index]].concat(
                         state.limitOrdersByUser.limitOrders,
                     );
                 } else {
@@ -458,7 +432,7 @@ export const graphDataSlice = createSlice({
                     (order) => order.limitOrderIdentifier.toLowerCase() === idToFind,
                 );
                 if (indexOfOrderInState === -1) {
-                    state.limitOrdersByPool.limitOrders = action.payload.concat(
+                    state.limitOrdersByPool.limitOrders = [action.payload[index]].concat(
                         state.limitOrdersByPool.limitOrders,
                     );
                 } else {
@@ -478,7 +452,7 @@ export const graphDataSlice = createSlice({
                     (tx) => tx.tx.toLowerCase() === txToFind,
                 );
                 if (indexOfTxInState === -1) {
-                    state.changesByPool.changes = action.payload.concat(
+                    state.changesByPool.changes = [action.payload[index]].concat(
                         state.changesByPool.changes,
                     );
                 } else {

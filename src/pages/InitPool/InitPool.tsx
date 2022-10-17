@@ -1,82 +1,40 @@
+import { useEffect, useState } from 'react';
+import { CrocEnv } from '@crocswap-libs/sdk';
 import styles from './InitPool.module.css';
-// import { useUrlParams } from './useUrlParams';
-
+import { useUrlParams } from './useUrlParams';
 import ContentContainer from '../../components/Global/ContentContainer/ContentContainer';
 import Button from '../../components/Global/Button/Button';
-
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
-import { useNavigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 import { VscClose } from 'react-icons/vsc';
 import InitPoolExtraInfo from '../../components/InitPool/InitPoolExtraInfo/InitPoolExtraInfo';
 
-// const animationsNext = {
-//     initial: { opacity: 0, x: 30 },
-//     animate: { opacity: 1, x: 0 },
-//     exit: { opacity: 0, x: -100 },
-// };
-// const animationsBack = {
-//     initial: { opacity: 0, x: -30 },
-//     animate: { opacity: 1, x: 0 },
-//     exit: { opacity: 0, x: -100 },
-// };
-
 interface InitPoolPropsIf {
+    crocEnv: CrocEnv|undefined;
     showSidebar: boolean;
 }
 export default function InitPool(props: InitPoolPropsIf) {
-    const { showSidebar } = props;
-    // const newPoolData = useUrlParams();
+    const { crocEnv, showSidebar } = props;
+
+    const newPoolData = useUrlParams();
     const tradeData = useAppSelector((state) => state.tradeData);
 
     const tokenA = tradeData.tokenA;
     const tokenB = tradeData.tokenB;
-    // eslint-disable-next-line
     const navigate = useNavigate();
 
-    // const [progressStep, setProgressStep] = useState(0);
-    // const [animation, setAnimation] = useState(animationsNext);
-
-    // const setPoolFeesProps = {
-    //     animation: animation,
-    // };
-    // const setInitialLiquidityProps = {
-    //     animation: animation,
-    //     tokenA: tokenA,
-    //     tokenB: tokenB,
-    // };
-    // const confirmPoolCreationProps = {
-    //     animation: animation,
-    // };
-    // const chooseTokensProps = {
-    //     animation: animation,
-    //     tokenA: tokenA,
-    //     tokenB: tokenB,
-    // };
-
-    // const progressStepsData = [
-    //     { id: 1, name: 'Choose tokens & weights', data: <ChooseTokens {...chooseTokensProps} /> },
-    //     { id: 2, name: 'Set pool fees', data: <SetPoolFees {...setPoolFeesProps} /> },
-    //     {
-    //         id: 3,
-    //         name: 'Set initial liquidity',
-    //         data: <SetInitialLiquidity {...setInitialLiquidityProps} />,
-    //     },
-    //     {
-    //         id: 4,
-    //         name: 'Confirm  pool creation',
-    //         data: <ConfirmPoolCreation {...confirmPoolCreationProps} />,
-    //     },
-    // ];
-
-    // const handleChangeStep = (e: string) => {
-    //     if (e === 'prev' && progressStep > 0) {
-    //         setProgressStep(progressStep - 1);
-    //         setAnimation(animationsBack);
-    //     } else if (e === 'next' && progressStep < progressStepsData.length) {
-    //         setProgressStep(progressStep + 1);
-    //         setAnimation(animationsNext);
-    //     }
-    // };
+    const [poolExists, setPoolExists] = useState<boolean|null>(null);
+    useEffect(() => {
+        if (crocEnv) {
+            const doesPoolExist = crocEnv
+                .pool(newPoolData.baseAddr as string, newPoolData.quoteAddr as string)
+                .isInit();
+            Promise.resolve(doesPoolExist)
+                .then(res => setPoolExists(res ?? null));
+        } else {
+            setPoolExists(null);
+        }
+    }, [crocEnv]);
 
     const initialPoolPriceDisplay = (
         <div className={styles.pool_price_container}>
@@ -86,8 +44,6 @@ export default function InitPool(props: InitPoolPropsIf) {
                     id={'initial-pool-price-quantity'}
                     className={styles.currency_quantity}
                     placeholder='e.g. 1500 (ETH/TokenX)'
-                    // onChange={(event) => handleLimitChange(event.target.value)}
-
                     type='string'
                     inputMode='decimal'
                     autoComplete='off'
@@ -128,6 +84,18 @@ export default function InitPool(props: InitPoolPropsIf) {
             className={styles.main}
             style={{ justifyContent: showSidebar ? 'flex-start' : 'center' }}
         >
+            {
+                poolExists &&
+                <Navigate
+                    to={
+                        '/trade/market/chain=0x5&tokenA=' +
+                        newPoolData.baseAddr +
+                        '&tokenB=' +
+                        newPoolData.quoteAddr
+                    }
+                    replace={true}
+                />
+            }
             <div
                 className={styles.init_pool_container}
                 style={{ marginLeft: showSidebar ? '15rem' : '' }}

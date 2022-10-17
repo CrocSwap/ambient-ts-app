@@ -22,7 +22,7 @@
     /* padding: 0.2rem 0; */
 }
 
-.apy_display_in_range {
+.apr_display_in_range {
     display: flex;
     justify-content: center;
     margin: 10px 0;
@@ -39,7 +39,7 @@
     text-shadow: 0px 0px 10px rgba(21, 190, 111, 0.75);
 }
 
-.apy_display_out_of_range {
+.apr_display_out_of_range {
     display: flex;
     justify-content: center;
     margin: 10px 0;

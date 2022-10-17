@@ -1,3 +1,4 @@
+import { PoolStatsFn } from '../../../../App/functions/getPoolStats';
 import { topPools } from '../../../../App/mockData';
 import styles from './TopPools.module.css';
 import TopPoolsCard from './TopPoolsCard';
@@ -5,10 +6,12 @@ import TopPoolsCard from './TopPoolsCard';
 
 interface TopPoolsProps {
     chainId: string;
+    cachedPoolStatsFetch: PoolStatsFn;
+    lastBlockNumber: number;
 }
 
 export default function TopPools(props: TopPoolsProps) {
-    const { chainId } = props;
+    const { chainId, lastBlockNumber, cachedPoolStatsFetch } = props;
 
     const header = (
         <div className={styles.header}>
@@ -27,6 +30,8 @@ export default function TopPools(props: TopPoolsProps) {
                         pool={item}
                         key={idx}
                         chainId={chainId}
+                        cachedPoolStatsFetch={cachedPoolStatsFetch}
+                        lastBlockNumber={lastBlockNumber}
                         // lastBlockNumber={lastBlockNumber}
                     />
                 ))}

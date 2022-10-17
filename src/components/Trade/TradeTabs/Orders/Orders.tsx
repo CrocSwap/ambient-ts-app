@@ -3,8 +3,6 @@ import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
 
 // START: Import JSX Elements
 import styles from './Orders.module.css';
-import OrderCard from './OrderCard';
-import OrderCardHeader from './OrderCardHeader';
 
 // START: Import Local Files
 import { useAppDispatch, useAppSelector } from '../../../../utils/hooks/reduxToolkit';
@@ -16,6 +14,10 @@ import {
 import { fetchPoolLimitOrderStates } from '../../../../App/functions/fetchPoolLimitOrderStates';
 import { ChainSpec } from '@crocswap-libs/sdk';
 import useWebSocket from 'react-use-websocket';
+import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
+import OrderHeader from './OrderTable/OrderHeader';
+import OrderRow from './OrderTable/OrderRow';
+
 // import OrderAccordions from './OrderAccordions/OrderAccordions';
 
 // interface for props for react functional component
@@ -29,6 +31,8 @@ interface propsIF {
     closeGlobalModal: () => void;
     currentPositionActive: string;
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
+
+    showSidebar: boolean;
 }
 
 // main react functional component
@@ -39,8 +43,9 @@ export default function Orders(props: propsIF) {
         account,
         graphData,
         isShowAllEnabled,
-        setCurrentPositionActive,
-        currentPositionActive,
+        // setCurrentPositionActive,
+        // currentPositionActive,
+        showSidebar,
     } = props;
 
     const limitOrdersByUser = graphData.limitOrdersByUser.limitOrders;
@@ -49,53 +54,53 @@ export default function Orders(props: propsIF) {
     const tradeData = useAppSelector((state) => state.tradeData);
     const dispatch = useAppDispatch();
 
-    const selectedBaseToken = tradeData.baseToken.address.toLowerCase();
-    const selectedQuoteToken = tradeData.quoteToken.address.toLowerCase();
+    // const selectedBaseToken = tradeData.baseToken.address.toLowerCase();
+    // const selectedQuoteToken = tradeData.quoteToken.address.toLowerCase();
 
-    const isDenomBase = tradeData.isDenomBase;
+    // const isDenomBase = tradeData.isDenomBase;
 
-    const columnHeaders = [
-        {
-            name: 'ID',
-            sortable: true,
-            className: '',
-        },
-        {
-            name: 'Wallet',
-            sortable: true,
-            className: 'wallet',
-        },
-        {
-            name: 'Price',
-            sortable: true,
-            className: 'price',
-        },
-        {
-            name: 'Side',
-            sortable: true,
-            className: 'side',
-        },
-        {
-            name: 'Type',
-            sortable: true,
-            className: 'type',
-        },
-        {
-            name: 'Value',
-            sortable: true,
-            className: '',
-        },
-        {
-            name: tradeData.baseToken.symbol,
-            sortable: false,
-            className: 'token',
-        },
-        {
-            name: tradeData.quoteToken.symbol,
-            sortable: false,
-            className: 'token',
-        },
-    ];
+    // const columnHeaders = [
+    //     {
+    //         name: 'ID',
+    //         sortable: true,
+    //         className: '',
+    //     },
+    //     {
+    //         name: 'Wallet',
+    //         sortable: true,
+    //         className: 'wallet',
+    //     },
+    //     {
+    //         name: 'Price',
+    //         sortable: true,
+    //         className: 'price',
+    //     },
+    //     {
+    //         name: 'Side',
+    //         sortable: true,
+    //         className: 'side',
+    //     },
+    //     {
+    //         name: 'Type',
+    //         sortable: true,
+    //         className: 'type',
+    //     },
+    //     {
+    //         name: 'Value',
+    //         sortable: true,
+    //         className: '',
+    //     },
+    //     {
+    //         name: tradeData.baseToken.symbol,
+    //         sortable: false,
+    //         className: 'token',
+    //     },
+    //     {
+    //         name: tradeData.quoteToken.symbol,
+    //         sortable: false,
+    //         className: 'token',
+    //     },
+    // ];
 
     // TODO:   currently the values to determine sort order are not
     // TODO:   ... being used productively because there is only
@@ -214,69 +219,209 @@ export default function Orders(props: propsIF) {
 
     const showAllOrUserPositions = isShowAllEnabled ? limitOrdersByPool : limitOrdersByUser;
     // const [expanded, setExpanded] = useState<false | number>(false);
-    const ItemContent = (
-        <div className={styles.desktop_transaction_display_container}>
-            {showAllOrUserPositions.map((order, idx) => (
-                <OrderCard
+    // const ItemContent = (
+    //     <div className={styles.desktop_transaction_display_container}>
+    //         {showAllOrUserPositions.map((order, idx) => (
+    //             <OrderCard
+    //                 key={idx}
+    //                 account={account}
+    //                 limitOrder={order}
+    //                 isDenomBase={isDenomBase}
+    //                 selectedBaseToken={selectedBaseToken}
+    //                 selectedQuoteToken={selectedQuoteToken}
+    //                 openGlobalModal={props.openGlobalModal}
+    //                 closeGlobalModal={props.closeGlobalModal}
+    //                 currentPositionActive={currentPositionActive}
+    //                 setCurrentPositionActive={setCurrentPositionActive}
+    //             />
+    //         ))}
+    //     </div>
+    // );
+
+    // const mobileAccordionDisplay = (
+    //     <div className={styles.accordion_display_container}>
+
+    //         <p>Mobile Accordion here: Disabled for now</p>
+    //     </div>
+    // );
+
+    const sidebarOpen = false;
+
+    const ipadView = useMediaQuery('(max-width: 480px)');
+    const desktopView = useMediaQuery('(max-width: 768px)');
+
+    const showColumns = sidebarOpen || desktopView;
+
+    const walID = (
+        <>
+            <p>ID</p>
+            <p>Wallet</p>
+        </>
+    );
+    const sideType = (
+        <>
+            <p>Side</p>
+            <p>Type</p>
+        </>
+    );
+    const tokens = (
+        <>
+            <p>ETH</p>
+            <p>USDC</p>
+        </>
+    );
+    const headerColumns = [
+        {
+            name: 'ID',
+            className: 'ID',
+            show: !showColumns,
+            slug: 'id',
+            sortable: true,
+        },
+        {
+            name: 'Wallet',
+            className: 'wallet',
+            show: !showColumns,
+            slug: 'wallet',
+            sortable: true,
+        },
+        {
+            name: walID,
+            className: 'wallet_it',
+            show: showColumns,
+            slug: 'walletid',
+            sortable: false,
+        },
+        {
+            name: 'Price',
+            className: 'price',
+            show: !ipadView,
+            slug: 'price',
+            sortable: true,
+        },
+        {
+            name: 'Side',
+            className: 'side',
+            show: !showColumns,
+            slug: 'side',
+            sortable: true,
+        },
+        {
+            name: 'Type',
+            className: 'type',
+            show: !showColumns,
+            slug: 'type',
+            sortable: true,
+        },
+        {
+            name: sideType,
+            className: 'side_type',
+            show: showColumns && !ipadView,
+            slug: 'sidetype',
+            sortable: false,
+        },
+        {
+            name: 'Value',
+            className: 'value',
+            show: true,
+            slug: 'value',
+            sortable: true,
+        },
+        {
+            name: 'ETH',
+            className: 'eth',
+            show: !showColumns && !showSidebar,
+            slug: 'eth',
+            sortable: false,
+        },
+        {
+            name: 'USDC',
+            className: 'usdc',
+            show: !showColumns && !showSidebar,
+            slug: 'usdc',
+            sortable: false,
+        },
+        {
+            name: tokens,
+            className: 'tokens',
+            show: showColumns || showSidebar,
+            slug: 'tokens',
+            sortable: false,
+        },
+        {
+            name: '',
+            className: '',
+            show: !ipadView,
+            slug: 'status',
+            sortable: false,
+        },
+        {
+            name: '',
+            className: '',
+            show: true,
+            slug: 'menu',
+            sortable: false,
+        },
+    ];
+
+    const headerColumnsDisplay = (
+        <ul className={styles.header}>
+            {headerColumns.map((header, idx) => (
+                <OrderHeader
                     key={idx}
-                    account={account}
-                    limitOrder={order}
-                    isDenomBase={isDenomBase}
-                    selectedBaseToken={selectedBaseToken}
-                    selectedQuoteToken={selectedQuoteToken}
-                    openGlobalModal={props.openGlobalModal}
-                    closeGlobalModal={props.closeGlobalModal}
-                    currentPositionActive={currentPositionActive}
-                    setCurrentPositionActive={setCurrentPositionActive}
+                    sortBy={sortBy}
+                    setSortBy={setSortBy}
+                    reverseSort={reverseSort}
+                    setReverseSort={setReverseSort}
+                    header={header}
                 />
             ))}
-        </div>
+        </ul>
     );
 
-    const mobileAccordionDisplay = (
-        <div className={styles.accordion_display_container}>
-            {/* {showAllOrUserPositions.map((order, idx) => (
-                <OrderAccordions
-                    key={idx}
-                    expanded={expanded}
-                    setExpanded={setExpanded}
-                    i={idx}
-                    limitOrder={order}
-                />
-            ))} */}
-            <p>Mobile Accordion here: Disabled for now</p>
-        </div>
+    const rowItemContent = showAllOrUserPositions.map((order, idx) => (
+        <OrderRow
+            showSidebar={showSidebar}
+            showColumns={showColumns}
+            ipadView={ipadView}
+            key={idx}
+            limitOrder={order}
+            openGlobalModal={props.openGlobalModal}
+            closeGlobalModal={props.closeGlobalModal}
+        />
+    ));
+
+    const newTrial = (
+        <main
+            className={styles.main_list_container}
+            style={{ height: expandTradeTable ? '100%' : '170px' }}
+        >
+            {ipadView && <p>Ipad view</p>}
+            {desktopView && <p>desktop view</p>}
+            {/* {header} */}
+            {headerColumnsDisplay}
+            {rowItemContent}
+        </main>
     );
 
     return (
-        <div className={styles.container}>
-            {/* <header >
-                {columnHeaders.map((header) => (
-                    <OrderCardHeader
-                        key={`orderDataHeaderField${header.name}`}
-                        data={header}
-                        sortBy={sortBy}
-                        setSortBy={setSortBy}
-                        reverseSort={reverseSort}
-                        setReverseSort={setReverseSort}
-                        columnHeaders={columnHeaders}
-                    />
-                ))}
-            </header> */}
-            <OrderCardHeader
-                sortBy={sortBy}
-                setSortBy={setSortBy}
-                reverseSort={reverseSort}
-                setReverseSort={setReverseSort}
-                columnHeaders={columnHeaders}
-            />
-            <div
-                className={styles.item_container}
-                style={{ height: expandTradeTable ? '100%' : '170px' }}
-            >
-                {ItemContent}
-                {mobileAccordionDisplay}
-            </div>
-        </div>
+        <>{newTrial}</>
+        // <div className={styles.container}>
+
+        //     <OrderCardHeader
+        //         sortBy={sortBy}
+        //         setSortBy={setSortBy}
+        //         reverseSort={reverseSort}
+        //         setReverseSort={setReverseSort}
+        //         columnHeaders={columnHeaders}
+        //     />
+        //     <div
+        //         className={styles.item_container}
+        //         style={{ height: expandTradeTable ? '100%' : '170px' }}
+        //     >
+        //         {ItemContent}
+        //         {mobileAccordionDisplay}
+        //     </div>
+        // </div>
     );
 }

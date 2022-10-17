@@ -147,6 +147,9 @@ export default function FeeRateSubChart(props: FreeRateData) {
                         .select('g.annotation-line.horizontal')
                         .attr('visibility', 'hidden');
                 });
+
+                crosshairData[0].y = -1;
+
                 render();
             });
         }

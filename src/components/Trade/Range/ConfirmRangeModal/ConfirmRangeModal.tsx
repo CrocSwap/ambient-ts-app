@@ -153,7 +153,9 @@ export default function ConfirmRangeModal(props: ConfirmRangeModalPropsIF) {
         <WaitingConfirmation
             content={`Minting a Position with ${tokenAQty ? tokenAQty : '0'} ${tokenA.symbol} and ${
                 tokenBQty ? tokenBQty : '0'
-            } ${tokenB.symbol}`}
+            } ${
+                tokenB.symbol
+            }. Please check the ${'Metamask'} extension in your browser for notifications.`}
         />
     );
     const transactionDenied = <TransactionDenied resetConfirmation={resetConfirmation} />;

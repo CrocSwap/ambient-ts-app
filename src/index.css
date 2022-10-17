@@ -10,9 +10,9 @@
     --title-gradient: linear-gradient(90deg, #7371fc 0%, #cdc1ff 49.48%, #7371fc 100%);
     --text-highlight: #cdc1ff;
 
-    --apy-gradient-primary: linear-gradient(90deg, #15be6f 0%, #8fe9bf 49.48%, #15be6f 100%);
+    --apr-gradient-primary: linear-gradient(90deg, #15be6f 0%, #8fe9bf 49.48%, #15be6f 100%);
 
-    --apy-gradient-secondary: linear-gradient(90deg, #c7d80c 0%, #e0ea74 49.48%, #c7d80c 100%);
+    --apr-gradient-secondary: linear-gradient(90deg, #c7d80c 0%, #e0ea74 49.48%, #c7d80c 100%);
 
     /* font */
     --title-ts: 0px 0px 150px rgba(70, 183, 219, 0.5), 0px 0px 100px rgba(70, 183, 219, 0.5),
