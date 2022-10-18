@@ -75,6 +75,10 @@ export default function Portfolio(props: PortfolioPropsIF) {
         openGlobalModal,
         closeGlobalModal,
         userAccount,
+        outsideControl,
+        setOutsideControl,
+        selectedOutsideTab,
+        setSelectedOutsideTab
     } = props;
 
     const selectedToken: TokenIF = useAppSelector((state) => state.temp.token);
@@ -193,8 +197,8 @@ export default function Portfolio(props: PortfolioPropsIF) {
                 crocEnv={crocEnv}
                 mainnetProvider={mainnetProvider}
                 connectedAccount={connectedAccount}
-                setSelectedOutsideTab={props.setSelectedOutsideTab}
-                setOutsideControl={props.setOutsideControl}
+                setSelectedOutsideTab={setSelectedOutsideTab}
+                setOutsideControl={setOutsideControl}
                 openGlobalModal={openGlobalModal}
                 closeGlobalModal={closeGlobalModal}
                 selectedToken={selectedToken}
@@ -214,8 +218,8 @@ export default function Portfolio(props: PortfolioPropsIF) {
     }, [connectedAccountActive]);
 
     // useEffect(() => {
-    //     !props.userAccount ? setFullLayoutActive(true) : null;
-    // }, [props.userAccount]);
+    //     .userAccount ? setFullLayoutActive(true) : null;
+    // }, [userAccount]);
 
     const connectedUserNativeToken = useAppSelector((state) => state.userData.tokens.nativeToken);
     const connectedUserErc20Tokens = useAppSelector((state) => state.userData.tokens.erc20Tokens);
@@ -331,10 +335,10 @@ export default function Portfolio(props: PortfolioPropsIF) {
                     connectedAccountActive={connectedAccountActive}
                     chainId={chainId}
                     tokenMap={tokenMap}
-                    selectedOutsideTab={props.selectedOutsideTab}
-                    setSelectedOutsideTab={props.setSelectedOutsideTab}
-                    setOutsideControl={props.setOutsideControl}
-                    outsideControl={props.outsideControl}
+                    selectedOutsideTab={selectedOutsideTab}
+                    setSelectedOutsideTab={setSelectedOutsideTab}
+                    setOutsideControl={setOutsideControl}
+                    outsideControl={outsideControl}
                     rightTabOptions={false}
                 />
                 {connectedAccountActive && !fullLayoutActive ? exchangeBalanceComponent : null}
