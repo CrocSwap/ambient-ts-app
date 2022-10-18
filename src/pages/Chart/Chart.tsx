@@ -159,7 +159,6 @@ export default function Chart(props: ChartData) {
     const [targetsJoin, setTargetsJoin] = useState<any>();
     const [marketJoin, setMarketJoin] = useState<any>();
     const [limitJoin, setLimitJoin] = useState<any>();
-    const [popup, setPopup] = useState<any>();
     const [liqTooltip, setLiqTooltip] = useState<any>();
     const [highlightedCurrentPriceLine, setHighlightedCurrentPriceLine] = useState<any>();
     const [indicatorLine, setIndicatorLine] = useState<any>();
@@ -201,7 +200,7 @@ export default function Chart(props: ChartData) {
     };
 
     const render = useCallback(() => {
-        const nd = d3.select('#group').node() as any;
+        const nd = d3.select('#d3fc_group').node() as any;
         nd.requestRedraw();
     }, []);
 
@@ -1134,21 +1133,11 @@ export default function Chart(props: ChartData) {
             const limitJoin = d3fc.dataJoin('g', 'limit');
             const marketJoin = d3fc.dataJoin('g', 'market');
 
-            const popup = d3
-                .select(d3Container.current)
-                .append('div')
-                .attr('class', 'popup')
-                .style('visibility', 'hidden');
-
             const liqTooltip = d3
                 .select(d3Container.current)
                 .append('div')
                 .attr('class', 'liqTooltip')
                 .style('visibility', 'hidden');
-
-            setPopup(() => {
-                return popup;
-            });
 
             setLiqTooltip(() => {
                 return liqTooltip;
@@ -1330,9 +1319,7 @@ export default function Chart(props: ChartData) {
                 d3.select(d3Container.current)
                     .select('.limit')
                     .on('mouseover', (event: any) => {
-                        d3.select(event.currentTarget)
-                            // .select('.detector')
-                            .style('cursor', 'row-resize');
+                        d3.select(event.currentTarget).style('cursor', 'row-resize');
                         d3.select(event.currentTarget).select('line').style('cursor', 'row-resize');
                     })
                     .call(dragLimit);
@@ -1364,11 +1351,7 @@ export default function Chart(props: ChartData) {
 
         if (location.pathname.includes('limit') && scaleData !== undefined) {
             d3.select(d3PlotArea.current).on('click', (event: any) => {
-                if (
-                    !event.path[2].isEqualNode(
-                        d3.select(d3PlotArea.current).select('.candle').node(),
-                    )
-                ) {
+                if ((event.target.__data__ as CandleChartData) === undefined) {
                     const newLimitValue = scaleData.yScale.invert(d3.pointer(event)[1]);
 
                     const snapResponse = snap(props.liquidityData.liqSnapData, newLimitValue);
@@ -1390,11 +1373,7 @@ export default function Chart(props: ChartData) {
             let highLineMoved: boolean;
 
             d3.select(d3PlotArea.current).on('click', async (event: any) => {
-                if (
-                    !event.path[2].isEqualNode(
-                        d3.select(d3PlotArea.current).select('.candle').node(),
-                    )
-                ) {
+                if ((event.target.__data__ as CandleChartData) === undefined) {
                     const clickedValue = scaleData.yScale.invert(d3.pointer(event)[1]);
                     const snapResponse = snap(props.liquidityData.liqSnapData, clickedValue);
                     const snappedValue = Math.round(snapResponse[0].value * 100) / 100;
@@ -1670,7 +1649,6 @@ export default function Chart(props: ChartData) {
             scaleData !== undefined &&
             zoomUtils !== undefined &&
             limitJoin !== undefined &&
-            popup !== undefined &&
             indicatorLine !== undefined &&
             highlightedCurrentPriceLine !== undefined &&
             liqTooltip !== undefined &&
@@ -1702,7 +1680,6 @@ export default function Chart(props: ChartData) {
                 targetsJoin,
                 limitJoin,
                 marketJoin,
-                popup,
                 indicatorLine,
                 highlightedCurrentPriceLine,
                 liqTooltip,
@@ -1721,7 +1698,6 @@ export default function Chart(props: ChartData) {
         targetsJoin,
         limitJoin,
         marketJoin,
-        popup,
         denomInBase,
         indicatorLine,
         highlightedCurrentPriceLine,
@@ -1761,7 +1737,6 @@ export default function Chart(props: ChartData) {
             targetsJoin: any,
             limitJoin: any,
             marketJoin: any,
-            popup: any,
             indicatorLine: any,
             highlightedCurrentPriceLine: any,
             liqTooltip: any,
@@ -1831,7 +1806,7 @@ export default function Chart(props: ChartData) {
                                         );
                                 }
                                 if (event.currentTarget === selectedCandle) {
-                                    popup.style('visibility', 'hidden');
+                                    d3.select('#transactionPopup').style('visibility', 'hidden');
                                     d3.select(event.currentTarget)
                                         .style('fill', (d: any) =>
                                             d.close > d.open ? upBodyColor : downBodyColor,
@@ -1859,7 +1834,7 @@ export default function Chart(props: ChartData) {
                                         .style('fill', '#E480FF')
                                         .style('stroke', '#E480FF');
 
-                                    popup
+                                    d3.select('#transactionPopup')
                                         .style('visibility', 'visible')
                                         .html(
                                             '<p>Showing Transactions for <span style="color: #E480FF">' +
@@ -1867,9 +1842,7 @@ export default function Chart(props: ChartData) {
                                                     'DD MMM  HH:mm',
                                                 ) +
                                                 '</span> Candle</p>',
-                                        )
-                                        .style('left', '34%')
-                                        .style('top', 500 + 'px');
+                                        );
                                 }
                             });
                     })
@@ -2265,29 +2238,19 @@ export default function Chart(props: ChartData) {
     };
 
     useEffect(() => {
-        if (!isCandleSelected && popup !== undefined) {
+        if (!isCandleSelected) {
             d3.select(selectedCandleState)
                 .style('fill', (d: any) => (d.close > d.open ? upBodyColor : downBodyColor))
                 .style('stroke', (d: any) => (d.close > d.open ? upBorderColor : downBorderColor));
-            // .style('stroke', (d: any) => (d.close > d.open ? '#7371FC' : '#CDC1FF'));
 
-            popup.style('visibility', 'hidden');
+            d3.select('#transactionPopup').style('visibility', 'hidden');
         }
     }, [isCandleSelected]);
 
     return (
         <div ref={d3Container} className='main_layout_chart' data-testid={'chart'}>
-            <d3fc-group
-                id='group'
-                className='hellooo'
-                style={{
-                    display: 'flex',
-                    height: '100%',
-                    width: '100%',
-                    flexDirection: 'column',
-                }}
-                auto-resize
-            >
+            <d3fc-group id='d3fc_group' auto-resize>
+                <div className='popup' id='transactionPopup' style={{ visibility: 'hidden' }}></div>
                 <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
                     <div
                         style={{
