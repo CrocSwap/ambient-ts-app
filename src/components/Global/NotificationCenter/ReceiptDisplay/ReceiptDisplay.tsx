@@ -5,6 +5,7 @@ import { AiOutlineLoading3Quarters } from 'react-icons/ai';
 import trimString from '../../../../utils/functions/trimString';
 import { RiExternalLinkLine } from 'react-icons/ri';
 import { motion } from 'framer-motion';
+import { VscClose } from 'react-icons/vsc';
 interface ReceiptDisplayPropsIF {
     status: 'successful' | 'failed' | 'pending';
     hash: string;
@@ -76,15 +77,27 @@ export default function ReceiptDisplay(props: ReceiptDisplayPropsIF) {
             className={styles.container}
         >
             <div className={styles.status}>{handleStatusDisplay(status)}</div>
-            <div className={styles.info}>
-                <div>
-                    Transaction {txHashTruncated} {handleTxTextDisplay(status)}
+            <div className={styles.content}>
+                <div className={styles.info}>
+                    <div className={styles.row}>
+                        Transaction {txHashTruncated} {handleTxTextDisplay(status)}
+                        <div>
+                            <VscClose size={20} />
+                        </div>
+                    </div>
                 </div>
-                <p>{elapsedTimeString}</p>
+                <div className={styles.row}>
+                    <p> {`  ${elapsedTimeString}`}</p>
+                    <a
+                        href={EtherscanTx}
+                        className={styles.action}
+                        target='_blank'
+                        rel='noreferrer'
+                    >
+                        <RiExternalLinkLine size={20} color='#7371fc ' />
+                    </a>
+                </div>
             </div>
-            <a href={EtherscanTx} className={styles.action} target='_blank' rel='noreferrer'>
-                <RiExternalLinkLine size={20} color='#7371fc ' />
-            </a>
         </motion.div>
     );
 }
