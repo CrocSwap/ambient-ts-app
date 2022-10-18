@@ -527,7 +527,7 @@ export default function Chart(props: ChartData) {
 
             const yAxisDrag = d3.drag().on('drag', (event: any) => {
                 const dy = event.dy;
-                const factor = Math.pow(2, -dy * 0.01);
+                const factor = Math.pow(2, -dy * 0.003);
 
                 const domain = scaleData.yScale.domain();
                 const center = (domain[1] + domain[0]) / 2;

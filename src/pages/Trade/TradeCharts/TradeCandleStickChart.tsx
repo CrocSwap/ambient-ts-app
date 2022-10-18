@@ -15,6 +15,7 @@ import {
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { getPinnedPriceValuesFromDisplayPrices } from '../Range/rangeFunctions';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
+import * as d3 from 'd3';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -169,35 +170,49 @@ export default function TradeCandleStickChart(props: ChartData) {
         const liqSnapData: LiqSnap[] = [];
 
         if (props.liquidityData) {
+            const domainLeft = Math.min(
+                ...props.liquidityData.ranges.map((o: any) => {
+                    return o.activeLiq !== undefined ? parseFloat(o.activeLiq) : 0;
+                }),
+            );
+
+            const domainRight = Math.max(
+                ...props.liquidityData.ranges.map((o: any) => {
+                    return o.activeLiq !== undefined ? parseFloat(o.activeLiq) : 0;
+                }),
+            );
+
+            console.log({ domainLeft, domainRight });
+
+            const liquidityScale = d3.scaleLog().domain([domainLeft, domainRight]).range([0, 1000]);
+
             props.liquidityData.ranges.map((data: any) => {
-                if (data.upperBoundInvPriceDecimalCorrected > 1) {
-                    liqData.push({
+                liqData.push({
+                    activeLiq: liquidityScale(data.activeLiq),
+                    upperBoundPriceDecimalCorrected: denominationsInBase
+                        ? data.upperBoundInvPriceDecimalCorrected
+                        : data.upperBoundPriceDecimalCorrected,
+                });
+
+                const pinnedDisplayPrices = getPinnedPriceValuesFromDisplayPrices(
+                    denominationsInBase,
+                    baseTokenDecimals,
+                    quoteTokenDecimals,
+                    data.upperBoundInvPriceDecimalCorrected,
+                    data.lowerBoundInvPriceDecimalCorrected,
+                    lookupChain(chainId).gridSize,
+                );
+
+                if (!isNaN(parseFloat(pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated))) {
+                    liqSnapData.push({
                         activeLiq: data.activeLiq,
-                        upperBoundPriceDecimalCorrected: denominationsInBase
-                            ? data.upperBoundInvPriceDecimalCorrected
-                            : data.upperBoundPriceDecimalCorrected,
+                        pinnedMaxPriceDisplayTruncated: parseFloat(
+                            pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
+                        ),
+                        pinnedMinPriceDisplayTruncated: parseFloat(
+                            pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
+                        ),
                     });
-
-                    const pinnedDisplayPrices = getPinnedPriceValuesFromDisplayPrices(
-                        denominationsInBase,
-                        baseTokenDecimals,
-                        quoteTokenDecimals,
-                        data.upperBoundInvPriceDecimalCorrected,
-                        data.lowerBoundInvPriceDecimalCorrected,
-                        lookupChain(chainId).gridSize,
-                    );
-
-                    if (!isNaN(parseFloat(pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated))) {
-                        liqSnapData.push({
-                            activeLiq: data.activeLiq,
-                            pinnedMaxPriceDisplayTruncated: parseFloat(
-                                pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
-                            ),
-                            pinnedMinPriceDisplayTruncated: parseFloat(
-                                pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
-                            ),
-                        });
-                    }
                 }
             });
         }
