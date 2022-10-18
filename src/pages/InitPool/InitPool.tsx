@@ -91,9 +91,9 @@ export default function InitPool(props: InitPoolPropsIF) {
 
     const [tokenList, setTokenList] = useState<TokenIF[] | null>(null);
     const [tokenALocal, setTokenALocal] = useState<TokenIF | null | undefined>(null);
-    useEffect(() => console.log(tokenALocal), [tokenALocal]);
+    // useEffect(() => console.log(tokenALocal), [tokenALocal]);
     const [tokenBLocal, setTokenBLocal] = useState<TokenIF | null | undefined>(null);
-    useEffect(() => console.log(tokenBLocal), [tokenBLocal]);
+    // useEffect(() => console.log(tokenBLocal), [tokenBLocal]);
     useEffect(() => {
         tokenALocal && dispatch(setTokenA(tokenALocal));
         tokenBLocal && dispatch(setTokenB(tokenBLocal));
@@ -109,7 +109,7 @@ export default function InitPool(props: InitPoolPropsIF) {
                     (list: TokenListIF) => list.name === 'Ambient Token List',
                 );
                 const tokens = ambientList.tokens;
-                console.log(tokens);
+                // console.log(tokens);
                 setTokenList(tokens);
             } else {
                 setTimeout(check, 100);
@@ -119,17 +119,17 @@ export default function InitPool(props: InitPoolPropsIF) {
     }, []);
 
     useEffect(() => {
-        console.log(tokenList, baseAddr, quoteAddr);
+        // console.log(tokenList, baseAddr, quoteAddr);
         if (tokenList && baseAddr && quoteAddr) {
-            console.log('running!');
+            // console.log('running!');
             const findToken = (addr: string) =>
                 tokenList.find((tkn: TokenIF) => tkn.address.toLowerCase() === addr.toLowerCase());
 
-            console.log(tokenList);
-            console.log(baseAddr, quoteAddr);
+            // console.log(tokenList);
+            // console.log(baseAddr, quoteAddr);
             const dataTokenA = findToken(baseAddr);
             const dataTokenB = findToken(quoteAddr);
-            console.log(dataTokenA, dataTokenB);
+            // console.log(dataTokenA, dataTokenB);
             setTokenALocal(dataTokenA);
             setTokenBLocal(dataTokenB);
         }
@@ -180,7 +180,7 @@ export default function InitPool(props: InitPoolPropsIF) {
         return () => clearTimeout(timer);
     }, []);
 
-    // calculate price of gas for swap
+    // calculate price of gas for pool init
     useEffect(() => {
         if (gasPriceInGwei && ethMainnetUsdPrice) {
             const gasPriceInDollarsNum = gasPriceInGwei * 157922 * 1e-9 * ethMainnetUsdPrice;
@@ -198,7 +198,26 @@ export default function InitPool(props: InitPoolPropsIF) {
     const [isApprovalPending, setIsApprovalPending] = useState(false);
     const [isInitPending, setIsInitPending] = useState(false);
 
-    const [initialPrice, setInitialPrice] = useState(0);
+    const [initialPrice, setInitialPrice] = useState<number | undefined>();
+    const [initialPriceInBaseDenom, setInitialPriceInBaseDenom] = useState(0);
+
+    const { tokenA, tokenB, baseToken, quoteToken } = useAppSelector((state) => state.tradeData);
+
+    const [isDenomBase, setIsDenomBase] = useState(true);
+
+    const invertInitialPrice = () => {
+        if (initialPrice) setInitialPrice(1 / initialPrice);
+    };
+
+    useEffect(() => {
+        if (initialPrice) {
+            if (isDenomBase) {
+                setInitialPriceInBaseDenom(initialPrice);
+            } else {
+                setInitialPriceInBaseDenom(1 / initialPrice);
+            }
+        }
+    }, [isDenomBase, initialPrice]);
 
     const isTokenAAllowanceSufficient = parseFloat(tokenAAllowance) > 0;
     const isTokenBAllowanceSufficient = parseFloat(tokenBAllowance) > 0;
@@ -246,52 +265,57 @@ export default function InitPool(props: InitPoolPropsIF) {
 
     const sendInit = () => {
         console.log(`Initializing ${tokenPair.dataTokenA.symbol}-${tokenPair.dataTokenB.symbol} pool at 
-        an initial price of ${initialPrice}`);
-        (async () => {
-            let tx;
-            try {
-                setIsInitPending(true);
-                tx = await crocEnv
-                    ?.pool(tokenPair.dataTokenA.address, tokenPair.dataTokenB.address)
-                    .initPool(initialPrice);
-
-                if (tx) dispatch(addPendingTx(tx?.hash));
-
-                let receipt;
+        an initial price of ${initialPriceInBaseDenom}`);
+        if (initialPriceInBaseDenom) {
+            (async () => {
+                let tx;
                 try {
-                    if (tx) receipt = await tx.wait();
-                } catch (e) {
-                    const error = e as TransactionError;
-                    console.log({ error });
-                    // The user used "speed up" or something similar
-                    // in their client, but we now have the updated info
-                    if (isTransactionReplacedError(error)) {
-                        console.log('repriced');
-                        dispatch(removePendingTx(error.hash));
+                    setIsInitPending(true);
+                    tx = await crocEnv
+                        ?.pool(tokenPair.dataTokenA.address, tokenPair.dataTokenB.address)
+                        .initPool(initialPriceInBaseDenom);
 
-                        const newTransactionHash = error.replacement.hash;
-                        dispatch(addPendingTx(newTransactionHash));
+                    if (tx) dispatch(addPendingTx(tx?.hash));
 
-                        //    setNewSwapTransactionHash(newTransactionHash);
-                        console.log({ newTransactionHash });
-                        receipt = error.receipt;
-                    } else if (isTransactionFailedError(error)) {
-                        receipt = error.receipt;
+                    let receipt;
+                    try {
+                        if (tx) receipt = await tx.wait();
+                    } catch (e) {
+                        const error = e as TransactionError;
+                        console.log({ error });
+                        // The user used "speed up" or something similar
+                        // in their client, but we now have the updated info
+                        if (isTransactionReplacedError(error)) {
+                            console.log('repriced');
+                            dispatch(removePendingTx(error.hash));
+
+                            const newTransactionHash = error.replacement.hash;
+                            dispatch(addPendingTx(newTransactionHash));
+
+                            //    setNewSwapTransactionHash(newTransactionHash);
+                            console.log({ newTransactionHash });
+                            receipt = error.receipt;
+                        } else if (isTransactionFailedError(error)) {
+                            receipt = error.receipt;
+                        }
                     }
+                    if (receipt) {
+                        dispatch(addReceipt(JSON.stringify(receipt)));
+                        dispatch(removePendingTx(receipt.transactionHash));
+                        navigate(
+                            '/trade/range/chain=0x5&tokenA=' + baseAddr + '&tokenB=' + quoteAddr,
+                            {
+                                replace: true,
+                            },
+                        );
+                    }
+                } catch (error) {
+                    console.error({ error });
+                } finally {
+                    setIsInitPending(false);
                 }
-                if (receipt) {
-                    dispatch(addReceipt(JSON.stringify(receipt)));
-                    dispatch(removePendingTx(receipt.transactionHash));
-                    navigate('/trade/range/chain=0x5&tokenA=' + baseAddr + '&tokenB=' + quoteAddr, {
-                        replace: true,
-                    });
-                }
-            } catch (error) {
-                console.error({ error });
-            } finally {
-                setIsInitPending(false);
-            }
-        })();
+            })();
+        }
     };
 
     const tokenAApprovalButton = (
@@ -321,8 +345,6 @@ export default function InitPool(props: InitPoolPropsIF) {
             }}
         />
     );
-
-    const { tokenA, tokenB } = useAppSelector((state) => state.tradeData);
 
     return (
         <main
@@ -386,15 +408,16 @@ export default function InitPool(props: InitPoolPropsIF) {
                                         <input
                                             id={'initial-pool-price-quantity'}
                                             className={styles.currency_quantity}
-                                            placeholder={`e.g. 1500 (${tokenPair.dataTokenA.symbol}/${tokenPair.dataTokenB.symbol})`}
+                                            placeholder={`e.g. 1500 (${baseToken.symbol}/${quoteToken.symbol})`}
                                             type='string'
                                             onChange={(event) => {
-                                                setInitialPrice(
-                                                    parseFloat(event.target.value) > 0
-                                                        ? parseFloat(event.target.value)
-                                                        : 0,
-                                                );
+                                                if (parseFloat(event.target.value) > 0) {
+                                                    setInitialPrice(parseFloat(event.target.value));
+                                                } else if (event.target.value === '') {
+                                                    setInitialPrice(undefined);
+                                                }
                                             }}
+                                            value={initialPrice}
                                             inputMode='decimal'
                                             autoComplete='off'
                                             autoCorrect='off'
@@ -407,11 +430,17 @@ export default function InitPool(props: InitPoolPropsIF) {
                                 </div>
                                 <InitPoolExtraInfo
                                     initialPrice={initialPrice}
+                                    isDenomBase={isDenomBase}
                                     initGasPriceinDollars={initGasPriceinDollars}
-                                    tokenPair={tokenPair}
+                                    baseToken={baseToken}
+                                    quoteToken={quoteToken}
                                 />
                             </div>
-                            <InitPoolDenom />
+                            <InitPoolDenom
+                                isDenomBase={isDenomBase}
+                                setIsDenomBase={setIsDenomBase}
+                                invertInitialPrice={invertInitialPrice}
+                            />
                             <footer>
                                 {poolExists ? (
                                     <Button
@@ -424,7 +453,7 @@ export default function InitPool(props: InitPoolPropsIF) {
                                         tokenAApprovalButton
                                     ) : !isTokenBAllowanceSufficient ? (
                                         tokenBApprovalButton
-                                    ) : initialPrice <= 0 ? (
+                                    ) : initialPrice === undefined || initialPrice <= 0 ? (
                                         <Button
                                             title='Enter an Initial Price'
                                             disabled={true}

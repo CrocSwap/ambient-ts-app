@@ -6,26 +6,39 @@ import { useState } from 'react';
 // START: Import Local Files
 import styles from './InitPoolExtraInfo.module.css';
 import TooltipComponent from '../../Global/TooltipComponent/TooltipComponent';
-import { TokenPairIF } from '../../../utils/interfaces/TokenPairIF';
+import { TokenIF } from '../../../utils/interfaces/TokenIF';
+import { formatAmount } from '../../../utils/numbers';
 
 interface InitPriceExtraInfoProps {
     initGasPriceinDollars: string | undefined;
-    initialPrice: number;
-    tokenPair: TokenPairIF;
+    initialPrice: number | undefined;
+    isDenomBase: boolean;
+    baseToken: TokenIF;
+    quoteToken: TokenIF;
 }
 
 export default function InitPoolExtraInfo(props: InitPriceExtraInfoProps) {
-    const { initialPrice, initGasPriceinDollars, tokenPair } = props;
+    const { initialPrice, isDenomBase, initGasPriceinDollars, baseToken, quoteToken } = props;
 
     const [showExtraDetails] = useState<boolean>(true);
     // const [showExtraDetails, setShowExtraDetails] = useState<boolean>(true);
 
     const initialPriceLocaleString = initialPrice
-        ? initialPrice.toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-          })
+        ? initialPrice < 0.0001
+            ? initialPrice.toExponential(2)
+            : initialPrice < 2
+            ? initialPrice.toPrecision(3)
+            : initialPrice >= 100000
+            ? formatAmount(initialPrice)
+            : initialPrice.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+              })
         : '...';
+
+    const priceDisplayString = isDenomBase
+        ? `1 ${baseToken.symbol} = ${initialPriceLocaleString} ${quoteToken.symbol}`
+        : `1 ${quoteToken.symbol} = ${initialPriceLocaleString} ${baseToken.symbol}`;
 
     const extraInfoData = [
         {
@@ -34,7 +47,7 @@ export default function InitPoolExtraInfo(props: InitPriceExtraInfoProps) {
             // data: `${initialPrice || '...'} ${tokenPair.dataTokenB.symbol} per ${
             //     tokenPair.dataTokenA.symbol
             // }`,
-            data: `1 ${tokenPair.dataTokenA.symbol} = ${initialPriceLocaleString} ${tokenPair.dataTokenB.symbol}`,
+            data: priceDisplayString,
         },
         {
             title: 'Liquidity Provider Fee',
