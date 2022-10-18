@@ -338,8 +338,8 @@ export default function InitPool(props: InitPoolPropsIF) {
                 className={styles.init_pool_container}
                 style={{ marginLeft: showSidebar ? '15rem' : '' }}
             >
-                <div className={styles.back_button} onClick={() => navigate(-1)}>
-                    <VscClose size={30} />
+                <div className={styles.back_button}>
+                    <VscClose size={30} onClick={() => navigate(-1)} />
                 </div>
                 <div className={styles.top_content}>
                     <ContentContainer>
