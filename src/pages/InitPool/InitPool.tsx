@@ -24,6 +24,7 @@ import {
     isTransactionReplacedError,
     TransactionError,
 } from '../../utils/TransactionError';
+import InitPoolDenom from '../../components/InitPool/InitPoolDenom/InitPoolDenom';
 
 // interface for props
 interface InitPoolPropsIF {
@@ -336,7 +337,7 @@ export default function InitPool(props: InitPoolPropsIF) {
             )}
             <div
                 className={styles.init_pool_container}
-                style={{ marginLeft: showSidebar ? '15rem' : '' }}
+                style={{ marginLeft: showSidebar ? '18rem' : '' }}
             >
                 <div className={styles.back_button}>
                     <VscClose size={30} onClick={() => navigate(-1)} />
@@ -378,68 +379,71 @@ export default function InitPool(props: InitPoolPropsIF) {
                                 </div>
                                 {tokenB && <p>{tokenB.name}</p>}
                             </div>
-                            <div className={styles.pool_price_container}>
-                                <span>Initial Price</span>
-                                <section>
-                                    <input
-                                        id={'initial-pool-price-quantity'}
-                                        className={styles.currency_quantity}
-                                        placeholder={`e.g. 1500 (${tokenPair.dataTokenA.symbol}/${tokenPair.dataTokenB.symbol})`}
-                                        type='string'
-                                        onChange={(event) => {
-                                            setInitialPrice(
-                                                parseFloat(event.target.value) > 0
-                                                    ? parseFloat(event.target.value)
-                                                    : 0,
-                                            );
-                                        }}
-                                        inputMode='decimal'
-                                        autoComplete='off'
-                                        autoCorrect='off'
-                                        min='0'
-                                        minLength={1}
-                                        pattern='^[0-9]*[.,]?[0-9]*$'
-                                        required
-                                    />
-                                </section>
-                            </div>
-                            <InitPoolExtraInfo
-                                initialPrice={initialPrice}
-                                initGasPriceinDollars={initGasPriceinDollars}
-                                tokenPair={tokenPair}
-                            />
-                        </div>
-                        <footer>
-                            {poolExists ? (
-                                <Button
-                                    title='Pool Already Initialized'
-                                    disabled={true}
-                                    action={() => console.log('clicked')}
+                            <div className={styles.padding_center}>
+                                <div className={styles.pool_price_container}>
+                                    <span>Initial Price</span>
+                                    <section style={{ width: '100%%' }}>
+                                        <input
+                                            id={'initial-pool-price-quantity'}
+                                            className={styles.currency_quantity}
+                                            placeholder={`e.g. 1500 (${tokenPair.dataTokenA.symbol}/${tokenPair.dataTokenB.symbol})`}
+                                            type='string'
+                                            onChange={(event) => {
+                                                setInitialPrice(
+                                                    parseFloat(event.target.value) > 0
+                                                        ? parseFloat(event.target.value)
+                                                        : 0,
+                                                );
+                                            }}
+                                            inputMode='decimal'
+                                            autoComplete='off'
+                                            autoCorrect='off'
+                                            min='0'
+                                            minLength={1}
+                                            pattern='^[0-9]*[.,]?[0-9]*$'
+                                            required
+                                        />
+                                    </section>
+                                </div>
+                                <InitPoolExtraInfo
+                                    initialPrice={initialPrice}
+                                    initGasPriceinDollars={initGasPriceinDollars}
+                                    tokenPair={tokenPair}
                                 />
-                            ) : isUserLoggedIn || !connectButtonDelayElapsed ? (
-                                !isTokenAAllowanceSufficient ? (
-                                    tokenAApprovalButton
-                                ) : !isTokenBAllowanceSufficient ? (
-                                    tokenBApprovalButton
-                                ) : initialPrice <= 0 ? (
+                            </div>
+                            <InitPoolDenom />
+                            <footer>
+                                {poolExists ? (
                                     <Button
-                                        title='Enter an Initial Price'
+                                        title='Pool Already Initialized'
                                         disabled={true}
                                         action={() => console.log('clicked')}
                                     />
-                                ) : isInitPending === true ? (
-                                    <Button
-                                        title='Initialization Pending'
-                                        disabled={true}
-                                        action={() => console.log('clicked')}
-                                    />
+                                ) : isUserLoggedIn || !connectButtonDelayElapsed ? (
+                                    !isTokenAAllowanceSufficient ? (
+                                        tokenAApprovalButton
+                                    ) : !isTokenBAllowanceSufficient ? (
+                                        tokenBApprovalButton
+                                    ) : initialPrice <= 0 ? (
+                                        <Button
+                                            title='Enter an Initial Price'
+                                            disabled={true}
+                                            action={() => console.log('clicked')}
+                                        />
+                                    ) : isInitPending === true ? (
+                                        <Button
+                                            title='Initialization Pending'
+                                            disabled={true}
+                                            action={() => console.log('clicked')}
+                                        />
+                                    ) : (
+                                        <Button title='Open Confirmation' action={sendInit} />
+                                    )
                                 ) : (
-                                    <Button title='Open Confirmation' action={sendInit} />
-                                )
-                            ) : (
-                                <Button title='Login' action={openModalWallet} />
-                            )}
-                        </footer>
+                                    <Button title='Login' action={openModalWallet} />
+                                )}
+                            </footer>
+                        </div>
                     </ContentContainer>
                 </div>
             </div>
