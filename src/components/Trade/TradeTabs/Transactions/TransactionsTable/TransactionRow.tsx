@@ -44,6 +44,8 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
         ownerId,
         // isOrderFilled,
         truncatedDisplayPrice,
+        truncatedLowDisplayPrice,
+        truncatedHighDisplayPrice,
         sideType,
 
         type,
@@ -144,15 +146,34 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                     </p>
                 </li>
             )}
-            {!ipadView && (
-                <li onClick={openDetailsModal} data-label='price' className={sideTypeStyle}>
-                    {truncatedDisplayPrice}
-                </li>
-            )}
+            {!ipadView &&
+                (tx.entityType === 'liqchange' ? (
+                    tx.positionType === 'ambient' ? (
+                        <li onClick={openDetailsModal} data-label='price' className={sideTypeStyle}>
+                            ambient
+                        </li>
+                    ) : (
+                        <li
+                            onClick={openDetailsModal}
+                            data-label='price'
+                            className={sideTypeStyle}
+                            // style={{ display: 'flex', flexDirection: 'column' }}
+                        >
+                            <p>{truncatedLowDisplayPrice}-</p>
+                            <p>-{truncatedHighDisplayPrice}</p>
+                        </li>
+                    )
+                ) : (
+                    <li onClick={openDetailsModal} data-label='price' className={sideTypeStyle}>
+                        {truncatedDisplayPrice}
+                    </li>
+                ))}
 
             {!showColumns && (
                 <li onClick={openDetailsModal} data-label='side' className={sideTypeStyle}>
-                    {`${sideType} ${sideCharacter}`}
+                    {tx.entityType === 'liqchange' || tx.entityType === 'limitOrder'
+                        ? `${sideType}`
+                        : `${sideType} ${sideCharacter}`}
                 </li>
             )}
             {!showColumns && (
