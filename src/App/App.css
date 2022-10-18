@@ -39,11 +39,16 @@ html {
 
 svg {
     color: var(--text-grey-light);
+    transition: all var(--animation-speed) ease-in-out;
 }
 
 svg:hover {
     color: var(--text-grey-white);
-    transition: all var(--animation-speed) ease-in-out;
+ 
+}
+
+button, svg, a{
+    transition: all var(--animation-speed) ease-in-out
 }
 
 a {

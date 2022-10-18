@@ -35,7 +35,7 @@ input[type='checkbox'].ckb + label {
     align-items: center;
     user-select: none;
     cursor: pointer;
-    transition: all .3s;
+    transition: all var(--animation-speed) ease-in-out;
     color: #626981;
 }
 
@@ -44,7 +44,8 @@ input[type='checkbox'].ckb + label:hover {
 }
 
 input[type='checkbox'].ckb + label::before {
-    transition: all .3s;
+    transition: all var(--animation-speed) ease-in-out;
+
     content: '';
     display: inline-block;
     width: 1em;
@@ -61,7 +62,8 @@ input[type='checkbox'].ckb + label::before {
 }
 
 input[type='checkbox'].ckb:checked + label::before {
-    transition: all .3s;
+    transition: all var(--animation-speed) ease-in-out;
+
     border-color: var(--text-highlight);
     background-color: var(--text-highlight);
     background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3e%3cpath fill='%23fff' d='M6.564.75l-3.59 3.612-1.538-1.55L0 4.26 2.974 7.25 8 2.193z'/%3e%3c/svg%3e");

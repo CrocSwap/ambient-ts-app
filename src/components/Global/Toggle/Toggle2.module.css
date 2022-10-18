@@ -20,7 +20,7 @@
     right: 0;
     bottom: 0;
     left: 0;
-    transition: background-color 0.2s ease;
+    transition: background-color var(--animation-speed) ease-in-out;
 
     border: double 1px transparent;
 
@@ -37,7 +37,7 @@
     height: 16px;
     background-color: rgb(165, 0, 0);
     border-radius: 50%;
-    transition: transform 0.3s ease;
+    transition: transform var(--animation-speed) ease-in-out;
 
     border: double 2px transparent;
     border-radius: 50%;

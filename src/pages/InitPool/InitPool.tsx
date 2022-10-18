@@ -47,7 +47,7 @@ export default function InitPool(props: InitPoolPropsIF) {
         openModalWallet,
         isUserLoggedIn,
         crocEnv,
-        showSidebar,
+
         tokenPair,
         tokenAAllowance,
         tokenBAllowance,
@@ -325,20 +325,14 @@ export default function InitPool(props: InitPoolPropsIF) {
     const { tokenA, tokenB } = useAppSelector((state) => state.tradeData);
 
     return (
-        <main
-            className={styles.main}
-            style={{ justifyContent: showSidebar ? 'flex-start' : 'center' }}
-        >
+        <main className={styles.main}>
             {poolExists && (
                 <Navigate
                     to={'/trade/market/chain=0x5&tokenA=' + baseAddr + '&tokenB=' + quoteAddr}
                     replace={true}
                 />
             )}
-            <div
-                className={styles.init_pool_container}
-                style={{ marginLeft: showSidebar ? '18rem' : '' }}
-            >
+            <div className={styles.init_pool_container}>
                 <div className={styles.back_button}>
                     <VscClose size={30} onClick={() => navigate(-1)} />
                 </div>

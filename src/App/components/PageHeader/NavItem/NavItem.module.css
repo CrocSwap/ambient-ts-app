@@ -22,13 +22,13 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: filter var(--animation-speed);
+    transition: all var(--animation-speed) ease-in-out;
+
 }
 
 .icon_button:hover {
     filter: brightness(1.2);
     background: var(--dark3);
-    transition: all var(--animation-speed) ease;
 }
 
 .icon_button svg {

@@ -125,7 +125,7 @@
 
 .sellAllButton {
     cursor: pointer;
-    transition: all var(--animation-speed) ease-out;
+    transition: all var(--animation-speed) ease-in-out;
 
     color: green;
 }
