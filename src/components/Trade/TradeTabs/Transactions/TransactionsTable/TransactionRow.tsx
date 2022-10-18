@@ -5,7 +5,7 @@ import { useProcessTransaction } from '../../../../../utils/hooks/useProcessTran
 import TransactionsMenu from '../../../../Global/Tabs/TableMenu/TableMenuComponents/TransactionsMenu';
 import { DefaultTooltip } from '../../../../Global/StyledTooltip/StyledTooltip';
 import { NavLink } from 'react-router-dom';
-
+import { AiOutlineDash } from 'react-icons/ai';
 interface TransactionRowPropsIF {
     tx: ITransaction;
 
@@ -153,14 +153,11 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                             ambient
                         </li>
                     ) : (
-                        <li
-                            onClick={openDetailsModal}
-                            data-label='price'
-                            className={sideTypeStyle}
-                            // style={{ display: 'flex', flexDirection: 'column' }}
-                        >
-                            <p>{truncatedLowDisplayPrice}-</p>
-                            <p>-{truncatedHighDisplayPrice}</p>
+                        <li onClick={openDetailsModal} data-label='price' className={sideTypeStyle}>
+                            <p>
+                                {truncatedLowDisplayPrice} <AiOutlineDash />
+                            </p>
+                            <p>{truncatedHighDisplayPrice}</p>
                         </li>
                     )
                 ) : (
