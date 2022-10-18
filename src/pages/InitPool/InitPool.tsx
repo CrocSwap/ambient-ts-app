@@ -271,6 +271,12 @@ export default function InitPool(props: InitPoolPropsIF) {
                                     tokenAApprovalButton
                                 ) : !isTokenBAllowanceSufficient ? (
                                     tokenBApprovalButton
+                                ) : initialPrice <= 0 ? (
+                                    <Button
+                                        title='Enter an Initial Price'
+                                        disabled={true}
+                                        action={() => console.log('clicked')}
+                                    />
                                 ) : (
                                     <Button title='Open Confirmation' action={sendInit} />
                                 )
