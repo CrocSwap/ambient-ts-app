@@ -380,8 +380,6 @@ export default function TradeTabs2(props: ITabsProps) {
         expandTradeTable: expandTradeTable,
         setExpandTradeTable: setExpandTradeTable,
     };
-    const leaderboardData = <div>Leaderboard</div>;
-    const infoData = <div>Info</div>;
 
     // data for headings of each of the three tabs
     const tradeTabData = [
@@ -392,8 +390,8 @@ export default function TradeTabs2(props: ITabsProps) {
         },
         { label: 'Limit Orders', content: <Orders {...ordersProps} />, icon: openOrdersImage },
         { label: 'Ranges', content: <Ranges {...rangesProps} />, icon: rangePositionsImage },
-        { label: 'Leaderboard', content: leaderboardData, icon: rangePositionsImage },
-        { label: 'Info', content: infoData, icon: rangePositionsImage },
+        { label: 'Leaderboard', content: <Ranges {...rangesProps} />, icon: rangePositionsImage },
+        { label: 'Info', content: <Ranges {...rangesProps} />, icon: rangePositionsImage },
     ];
 
     // -------------------------------END OF DATA-----------------------------------------

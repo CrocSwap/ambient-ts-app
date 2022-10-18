@@ -107,30 +107,21 @@ footer {
     background: var(--dark3);
     height: calc(100vh - (var(--footer-height) + 2rem));
 
-    /* height: calc(100vh - 3.5rem);  */
-
-    /* display: flex;
-   justify-content: center;
-   align-items: center; */
+   
 }
 
 .footer_container {
-    /* display: flex;
-    flex-direction: column;
 
-    justify-content: flex-end;
-    align-items: flex-end; */
     color: white;
-    /* background: red; */
 
     position: fixed;
     display: flex;
     flex-direction: row;
     -webkit-box-align: center;
     align-items: center;
-    right: 0px;
+    right: 0;
     bottom: 0px;
-    /* background: var(--dark3); */
+
 }
 
 .primary_apr {
@@ -282,8 +273,7 @@ footer {
         background: var(--dark3);
     }
     .content-container-trade {
-        height: calc(100vh - var(--footer-height));
-        max-height: calc(100vh - var(--footer-height));
+        /* height: calc(100vh - var(--footer-height)); */
         overflow: hidden;
 
         background: var(--dark3);
