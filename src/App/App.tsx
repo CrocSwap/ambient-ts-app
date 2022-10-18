@@ -668,6 +668,9 @@ export default function App() {
 
                 setMainnetBaseTokenAddress(sortedMainnetTokens[0]);
                 setMainnetQuoteTokenAddress(sortedMainnetTokens[1]);
+            } else {
+                setMainnetBaseTokenAddress('');
+                setMainnetQuoteTokenAddress('');
             }
 
             setBaseTokenAddress(sortedTokens[0]);
