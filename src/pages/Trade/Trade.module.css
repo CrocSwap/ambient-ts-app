@@ -1,6 +1,7 @@
 .main_layout {
     transition: all var(--animation-speed) ease-in-out;
     border-top: 1px solid var(--dark3);
+   
 
 }
 
@@ -301,7 +302,7 @@ border: 1px solid var(--text-highlight);
 }
 @media (min-width: 320px) {
     .middle_content_style {
-        background: blue;
+      
         display: flex;
         flex-direction: column;
     }
@@ -330,9 +331,9 @@ border: 1px solid var(--text-highlight);
         /* background: red; */
     }
 
-    .trade_style {
+    /* .trade_style {
         height: 30%;
-    }
+    } */
 
     .hide_graph {
         display: none;
@@ -364,12 +365,12 @@ border: 1px solid var(--text-highlight);
 
     .middle_col,
     .right_col {
-        height: calc(100vh - 4rem);
+        height: calc(100vh - 3.7rem);
     }
 
     .middle_col {
         align-items: stretch;
-        display: flex;
+        /* display: flex; */
         flex-flow: column;
         gap: 40px;
         height: 100%;

@@ -101,13 +101,14 @@
     gap: 8px;
     position: relative;
     margin: 8px 0;
+    transition: all var(--animation-speed) ease-in-out;
 }
 
 .view_etherscan:hover {
     cursor: pointer;
     background: linear-gradient(90deg, #6361d7 0%, #b0a6db 49.48%, #6361d7 100%);
 
-    transition: all var(--animation-speed) ease-in-out;
+   
 }
 
 
