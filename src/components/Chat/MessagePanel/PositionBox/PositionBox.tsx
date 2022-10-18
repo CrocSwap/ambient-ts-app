@@ -44,7 +44,7 @@ export default function PositionBox(props: PositionBoxProps) {
     const [apy, setApy] = useState<any | undefined>();
 
     useEffect(() => {
-        if (message.includes('0x')) {
+        if (message && message.includes('0x')) {
             const hashMsg = message.split(' ').find((item) => item.includes('0x'));
             setPosition(transactionsData.find((item) => item.tx === hashMsg));
         } else {
@@ -53,7 +53,7 @@ export default function PositionBox(props: PositionBoxProps) {
     }, [message]);
 
     useEffect(() => {
-        if (message.includes('0x')) {
+        if (message && message.includes('0x')) {
             const hashMsg = message.split(' ').find((item) => item.includes('0x'));
             setSPosition(
                 sortedPositions.find((item: PositionIF) => item.positionStorageSlot === hashMsg),
@@ -196,7 +196,7 @@ export default function PositionBox(props: PositionBoxProps) {
             setOpenSnackbar={setOpenSnackbar}
             openSnackbar={openSnackbar}
         >
-            {trimString(message, 6, 4, '…')} copied
+            {message && trimString(message, 6, 4, '…')} copied
         </SnackbarComponent>
     );
     function handleCopyAddress() {

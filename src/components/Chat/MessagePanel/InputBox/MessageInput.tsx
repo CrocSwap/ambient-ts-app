@@ -4,7 +4,6 @@ import {
     receiveUsername,
     // host,
     sendMessageRoute,
-    socket,
 } from '../../Service/chatApi';
 import axios from 'axios';
 import { BsSlashSquare, BsEmojiSmileFill } from 'react-icons/bs';
@@ -19,6 +18,7 @@ import PositionBox from '../PositionBox/PositionBox';
 interface MessageInputProps {
     message: Message;
     room: string;
+    socket: any;
 }
 
 interface PortfolioBannerPropsIF {
@@ -29,7 +29,7 @@ interface PortfolioBannerPropsIF {
 }
 
 export default function MessageInput(props: MessageInputProps, prop: PortfolioBannerPropsIF) {
-    const _socket = socket;
+    const _socket = props.socket;
 
     useEffect(() => {
         _socket.connect();
@@ -64,7 +64,7 @@ export default function MessageInput(props: MessageInputProps, prop: PortfolioBa
     };
 
     const handleSendMsg = async (msg: string) => {
-        _socket.emit('send-msg', {
+        props.socket.emit('send-msg', {
             message: msg,
             roomInfo: props.room,
         });
@@ -103,11 +103,11 @@ export default function MessageInput(props: MessageInputProps, prop: PortfolioBa
                     type='text'
                     id='box'
                     placeholder={
-                        !isAuthenticated || !isWeb3Enabled
+                        isAuthenticated || isWeb3Enabled
                             ? 'Please log in to chat.'
                             : 'Type to chat. Enter to submit.'
                     }
-                    disabled={!isAuthenticated || !isWeb3Enabled}
+                    // disabled={!isAuthenticated || !isWeb3Enabled}
                     className={styles.input_text}
                     onKeyDown={_handleKeyDown}
                     value={message}
