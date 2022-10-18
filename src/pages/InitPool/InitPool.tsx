@@ -18,6 +18,12 @@ import NoTokenIcon from '../../components/Global/NoTokenIcon/NoTokenIcon';
 import { TokenIF, TokenListIF } from '../../utils/interfaces/exports';
 import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { setTokenA, setTokenB } from '../../utils/state/tradeDataSlice';
+import { addPendingTx, addReceipt, removePendingTx } from '../../utils/state/receiptDataSlice';
+import {
+    isTransactionFailedError,
+    isTransactionReplacedError,
+    TransactionError,
+} from '../../utils/TransactionError';
 
 // interface for props
 interface InitPoolPropsIF {
@@ -189,6 +195,7 @@ export default function InitPool(props: InitPoolPropsIF) {
     }, [gasPriceInGwei, ethMainnetUsdPrice]);
 
     const [isApprovalPending, setIsApprovalPending] = useState(false);
+    const [isInitPending, setIsInitPending] = useState(false);
 
     const [initialPrice, setInitialPrice] = useState(0);
 
@@ -216,9 +223,49 @@ export default function InitPool(props: InitPoolPropsIF) {
         console.log(`Initializing ${tokenPair.dataTokenA.symbol}-${tokenPair.dataTokenB.symbol} pool at 
         an initial price of ${initialPrice}`);
         (async () => {
-            await crocEnv
-                ?.pool(tokenPair.dataTokenA.address, tokenPair.dataTokenB.address)
-                .initPool(initialPrice);
+            let tx;
+            try {
+                setIsInitPending(true);
+                tx = await crocEnv
+                    ?.pool(tokenPair.dataTokenA.address, tokenPair.dataTokenB.address)
+                    .initPool(initialPrice);
+
+                if (tx) dispatch(addPendingTx(tx?.hash));
+
+                let receipt;
+                try {
+                    if (tx) receipt = await tx.wait();
+                } catch (e) {
+                    const error = e as TransactionError;
+                    console.log({ error });
+                    // The user used "speed up" or something similar
+                    // in their client, but we now have the updated info
+                    if (isTransactionReplacedError(error)) {
+                        console.log('repriced');
+                        dispatch(removePendingTx(error.hash));
+
+                        const newTransactionHash = error.replacement.hash;
+                        dispatch(addPendingTx(newTransactionHash));
+
+                        //    setNewSwapTransactionHash(newTransactionHash);
+                        console.log({ newTransactionHash });
+                        receipt = error.receipt;
+                    } else if (isTransactionFailedError(error)) {
+                        receipt = error.receipt;
+                    }
+                }
+                if (receipt) {
+                    dispatch(addReceipt(JSON.stringify(receipt)));
+                    dispatch(removePendingTx(receipt.transactionHash));
+                    navigate('/trade/range/chain=0x5&tokenA=' + baseAddr + '&tokenB=' + quoteAddr, {
+                        replace: true,
+                    });
+                }
+            } catch (error) {
+                console.error({ error });
+            } finally {
+                setIsInitPending(false);
+            }
         })();
     };
 
@@ -250,7 +297,7 @@ export default function InitPool(props: InitPoolPropsIF) {
         />
     );
 
-    const {tokenA, tokenB} = useAppSelector((state) => state.tradeData);
+    const { tokenA, tokenB } = useAppSelector((state) => state.tradeData);
 
     return (
         <main
@@ -353,6 +400,12 @@ export default function InitPool(props: InitPoolPropsIF) {
                                 ) : initialPrice <= 0 ? (
                                     <Button
                                         title='Enter an Initial Price'
+                                        disabled={true}
+                                        action={() => console.log('clicked')}
+                                    />
+                                ) : isInitPending === true ? (
+                                    <Button
+                                        title='Initialization Pending'
                                         disabled={true}
                                         action={() => console.log('clicked')}
                                     />
