@@ -218,6 +218,7 @@ export default function Chart(props: ChartData) {
                 .select('svg')
                 .append('g')
                 .attr('visibility', 'hidden');
+
             xAxisText
                 .append('rect')
                 .attr('width', '100')
@@ -225,6 +226,7 @@ export default function Chart(props: ChartData) {
                 .attr('fill', '#242F3F')
                 .attr('y', '15')
                 .attr('x', '-50');
+
             xAxisText
                 .append('text')
                 .attr('dy', '28px')
@@ -233,6 +235,12 @@ export default function Chart(props: ChartData) {
         }
 
         if (d3.select(d3Yaxis.current).select('svg').select('g').select('text').node() === null) {
+            // .decorate((s: any) =>{
+            //     s.enter()
+            //       .select('text')
+            //       .style('fill', 'red');}
+            //   );
+
             const yAxisText = d3
                 .select(d3Yaxis.current)
                 .select('svg')
@@ -460,30 +468,6 @@ export default function Chart(props: ChartData) {
                         };
                     }
 
-                    scaleData.xScale.domain(
-                        event.transform.rescaleX(scaleData.xScaleCopy).domain(),
-                    );
-
-                    // PANNING
-                    if (!rescale && event.sourceEvent && event.sourceEvent.type != 'wheel') {
-                        const domainY = scaleData.yScale.domain();
-                        const linearY = d3
-                            .scaleLinear()
-                            .domain(scaleData.yScale.range())
-                            .range([domainY[1] - domainY[0], 0]);
-
-                        const deltaY = linearY(t.y - lastY);
-
-                        scaleData.yScale.domain([domainY[0] + deltaY, domainY[1] + deltaY]);
-                    }
-
-                    relocationCrosshairText(event);
-
-                    lastY = t.y;
-
-                    render();
-                })
-                .on('end', (event: any) => {
                     if (rescale) {
                         const xmin = new Date(Math.floor(scaleData.xScale.domain()[0]));
                         const xmax = new Date(Math.floor(scaleData.xScale.domain()[1]));
@@ -504,11 +488,37 @@ export default function Chart(props: ChartData) {
                                     maxYBoundary + buffer,
                                 ]);
                             }
-
-                            render();
                         }
                     }
 
+                    scaleData.xScale.domain(
+                        event.transform.rescaleX(scaleData.xScaleCopy).domain(),
+                    );
+
+                    // PANNING
+                    if (!rescale && event.sourceEvent && event.sourceEvent.type != 'wheel') {
+                        const domainY = scaleData.yScale.domain();
+                        const linearY = d3
+                            .scaleLinear()
+                            .domain(scaleData.yScale.range())
+                            .range([domainY[1] - domainY[0], 0]);
+
+                        const deltaY = linearY(t.y - lastY);
+
+                        console.log('t.y ', t.y);
+                        console.log('Zoom Scale', scaleData.yScale.domain());
+                        console.log('linearY', [domainY[0] + deltaY, domainY[1] + deltaY]);
+
+                        scaleData.yScale.domain([domainY[0] + deltaY, domainY[1] + deltaY]);
+                    }
+
+                    relocationCrosshairText(event);
+
+                    lastY = t.y;
+
+                    render();
+                })
+                .on('end', (event: any) => {
                     if (event.sourceEvent && event.sourceEvent.type != 'wheel') {
                         d3.select(d3Container.current).style('cursor', 'default');
                     }
@@ -524,6 +534,8 @@ export default function Chart(props: ChartData) {
                 const center = (domain[1] + domain[0]) / 2;
                 const size = (domain[1] - domain[0]) / 2 / factor;
                 scaleData.yScale.domain([center - size, center + size]);
+
+                console.log(scaleData.yScale.domain());
 
                 setRescale(() => {
                     return false;
@@ -1786,6 +1798,7 @@ export default function Chart(props: ChartData) {
 
                 // axes
                 const xAxis = d3fc.axisBottom().scale(scaleData.xScale);
+
                 const yAxis = d3fc.axisRight().scale(scaleData.yScale);
 
                 const candlestick = d3fc
