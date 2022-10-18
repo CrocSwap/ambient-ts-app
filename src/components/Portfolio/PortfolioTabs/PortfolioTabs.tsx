@@ -53,7 +53,6 @@ interface PortfolioTabsPropsIF {
 export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
     const {
         crocEnv,
-        // provider,
         cachedFetchTokenPrice,
         importedTokens,
         connectedUserTokens,

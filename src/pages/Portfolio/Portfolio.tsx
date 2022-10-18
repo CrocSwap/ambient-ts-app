@@ -19,6 +19,7 @@ import {
 import { TokenPriceFn } from '../../App/functions/fetchTokenPrice';
 import NotFound from '../NotFound/NotFound';
 import ProfileSettings from '../../components/Portfolio/ProfileSettings/ProfileSettings';
+import { SoloTokenSelect } from '../../components/Global/TokenSelectContainer/SoloTokenSelect';
 // import { useModal } from '../../components/Global/Modal/useModal';
 // import Modal from '../../components/Global/Modal/Modal';
 // import { defaultTokens } from '../../utils/data/defaultTokens';
@@ -295,6 +296,8 @@ export default function Portfolio(props: PortfolioPropsIF) {
 
     const [showProfileSettings, setShowProfileSettings] = useState(false);
 
+
+
     return (
         <main data-testid={'portfolio'} className={styles.portfolio_container}>
             {userAccount && showProfileSettings && (
@@ -343,7 +346,7 @@ export default function Portfolio(props: PortfolioPropsIF) {
                 />
                 {connectedAccountActive && !fullLayoutActive ? exchangeBalanceComponent : null}
             </div>
-            {/* {modalOrNull} */}
+            <SoloTokenSelect />
         </main>
     );
 }
