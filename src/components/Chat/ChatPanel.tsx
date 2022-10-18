@@ -15,6 +15,7 @@ import { TokenIF } from '../../utils/interfaces/TokenIF';
 import { targetData } from '../../utils/state/tradeDataSlice';
 import { useMoralis } from 'react-moralis';
 import { id } from 'ethers/lib/utils';
+import $ from 'jquery';
 
 interface currentPoolInfo {
     tokenA: TokenIF;
@@ -90,10 +91,9 @@ export default function ChatPanel(props: ChatProps) {
 
     useEffect(() => {
         _socket.on('msg-recieve', (mostRecentMessages) => {
-            setMessages([...mostRecentMessages]);
+            setMessages([...mostRecentMessages].reverse());
             // if (scrollBottomControl) {
             scrollToBottom();
-            console.log('a');
             // }
         });
     }, [messages]);
@@ -113,7 +113,6 @@ export default function ChatPanel(props: ChatProps) {
 
     function handleCloseChatPanel() {
         props.setChatStatus(false);
-        console.log(getID());
     }
 
     const getMentionedMessage = async () => {
@@ -122,8 +121,18 @@ export default function ChatPanel(props: ChatProps) {
         // const mentionedMessage = await axios.get(receiveUsername+'/'+word
     };
 
+    const scrollTop = () => {
+        messageEnd.current?.scrollTo(
+            messageEnd.current?.scrollHeight,
+            messageEnd.current?.scrollHeight,
+        );
+    };
+
     const scrollToBottom = () => {
-        messageEnd.current?.scrollTo(0, messageEnd.current?.scrollHeight);
+        messageEnd.current?.scrollTo(
+            messageEnd.current?.scrollHeight,
+            messageEnd.current?.scrollHeight,
+        );
     };
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -133,6 +142,7 @@ export default function ChatPanel(props: ChatProps) {
                 e.target.scrollHeight - e.target.scrollTop <
                 e.target.clientHeight,
         );
+        console.log(socket.id);
     };
 
     useEffect(() => {
@@ -148,6 +158,33 @@ export default function ChatPanel(props: ChatProps) {
                 onClick={() => handleCloseChatPanel()}
             />
         </header>
+    );
+
+    // const [isFinish, setIsFinish] = useState(false);
+
+    // useEffect(() => {
+    //     setTimeout(async()=>{
+    //        await setIsFinish(true);
+    //         scrollToBottom();
+    //     },1000);
+    // }, []);
+
+    const messageList = (
+        <>
+            {messages.map((item) => (
+                <div key={item._id} style={{ width: '90%', marginBottom: 4 }}>
+                    {item.sender === currentUser ? (
+                        <>
+                            <DividerDark changeColor addMarginTop addMarginBottom />
+                            <SentMessagePanel message={item} />
+                        </>
+                    ) : (
+                        <IncomingMessage message={item} />
+                    )}
+                </div>
+            ))}
+            ;
+        </>
     );
 
     return (
@@ -184,6 +221,14 @@ export default function ChatPanel(props: ChatProps) {
                                 <DividerDark changeColor addMarginTop addMarginBottom />
                             </div>
 
+                            <div
+                                ref={messageEnd}
+                                className={styles.scrollable_div}
+                                onScroll={handleScroll}
+                                id='chatmessage'
+                            >
+                                {messageList}
+                            </div>
                             <MessageInput
                                 message={messages[0]}
                                 room={
@@ -193,29 +238,6 @@ export default function ChatPanel(props: ChatProps) {
                                         : room
                                 }
                             />
-
-                            <div
-                                className={styles.scrollable_div}
-                                ref={messageEnd}
-                                onScroll={handleScroll}
-                            >
-                                {messages.map((item) => (
-                                    <div key={item._id} style={{ width: '90%', marginBottom: 4 }}>
-                                        {item.sender === '63357aa477c38971c51c74f9' ? (
-                                            <>
-                                                <DividerDark
-                                                    changeColor
-                                                    addMarginTop
-                                                    addMarginBottom
-                                                />
-                                                <SentMessagePanel message={item} />
-                                            </>
-                                        ) : (
-                                            <IncomingMessage message={item} />
-                                        )}
-                                    </div>
-                                ))}
-                            </div>
                         </div>
                     </div>
                 </motion.div>

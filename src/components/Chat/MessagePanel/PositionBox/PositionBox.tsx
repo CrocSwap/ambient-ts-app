@@ -19,6 +19,7 @@ import SnackbarComponent from '../../../Global/SnackbarComponent/SnackbarCompone
 
 interface PositionBoxProps {
     message: string;
+    isInput: boolean;
 }
 
 export default function PositionBox(props: PositionBoxProps) {
@@ -26,6 +27,7 @@ export default function PositionBox(props: PositionBoxProps) {
     const [value, copy] = useCopyToClipboard();
     const [isPoolPriceChangePositive, setIsPoolPriceChangePositive] = useState<boolean>(false);
     const message = props.message;
+    const isInput = props.isInput;
     const [position, setPosition] = useState<ITransaction | undefined>(undefined);
     const [sPositions, setSPosition] = useState<PositionIF | undefined>(undefined);
     const [truncatedDisplayPrice, setTruncatedDisplayPrice] = useState<string | undefined>();
@@ -201,7 +203,7 @@ export default function PositionBox(props: PositionBoxProps) {
         copy(message);
         setOpenSnackbar(true);
     }
-    return position !== undefined ? (
+    return position !== undefined && !isInput ? (
         <motion.div
             className={styles.animate_position_box}
             key='content'
@@ -263,7 +265,111 @@ export default function PositionBox(props: PositionBoxProps) {
                 {snackbarContent}
             </div>
         </motion.div>
-    ) : sPositions ? (
+    ) : position !== undefined && isInput ? (
+        <motion.div
+            className={styles.animate_position_box}
+            key='content'
+            initial='collapsed'
+            animate='open'
+            exit='collapsed'
+            variants={{
+                open: { opacity: 1, height: 'auto' },
+                collapsed: { opacity: 0, height: 0 },
+            }}
+            transition={{ duration: 0.8, ease: [0.04, 0.62, 0.23, 0.98] }}
+        >
+            <div className={styles.position_main_box}>
+                <div className={styles.position_box}>
+                    <div className={styles.position_info}>
+                        <div className={styles.tokens_name}>
+                            {position.quoteSymbol} / {position.baseSymbol}
+                        </div>
+                        <div className={styles.address_box}>
+                            <span className={styles.address}>{getPositionAdress()}</span>
+                            <span>
+                                <HiOutlineExternalLink size={22} color='rgba(235, 235, 255, 0.4)' />
+                            </span>
+                            <span>
+                                <FiCopy onClick={handleCopyAddress} />
+                            </span>
+                        </div>
+                    </div>
+                    <div className={styles.position_info}>
+                        <span className={styles.tokens_name}>{sideType} Price</span>
+
+                        <span className={styles.price}>${truncatedDisplayPrice}</span>
+                    </div>
+                    {isPoolPriceChangePositive ? (
+                        <>
+                            <div className={styles.position_info}>
+                                <span className={styles.tokens_name}>Range</span>
+
+                                <span className={styles.range_price}>$2,950.00</span>
+                                <span className={styles.range}>$4,200.00</span>
+                            </div>
+                            <div className={styles.position_info}>
+                                <span className={styles.tokens_name}>APY</span>
+                                <span
+                                    className={
+                                        isPoolPriceChangePositive
+                                            ? styles.change_positive
+                                            : styles.change_negative
+                                    }
+                                >
+                                    36.65%
+                                </span>
+                            </div>
+                        </>
+                    ) : (
+                        <></>
+                    )}
+                </div>
+                {snackbarContent}
+            </div>
+        </motion.div>
+    ) : sPositions && !isInput ? (
+        <motion.div
+            className={styles.animate_position_box}
+            key='content'
+            initial='collapsed'
+            animate='open'
+            exit='collapsed'
+            // variants={{
+            //     open: { opacity: 1, height: 'auto' },
+            //     collapsed: { opacity: 0, height: 0 },
+            // }}
+            // transition={{ duration: 0.8, ease: [0.04, 0.62, 0.23, 0.98] }}
+        >
+            <div className={styles.position_main_box}>
+                {snackbarContent}
+                <div className={styles.position_box}>
+                    <div className={styles.position_info}>
+                        <div className={styles.tokens_name}>
+                            {sPositions.quoteSymbol} / {sPositions.baseSymbol}
+                        </div>
+                        <div className={styles.address_box}>
+                            <span className={styles.address}>{getPositionAdress()}</span>
+                            <span>
+                                <HiOutlineExternalLink size={22} color='rgba(235, 235, 255, 0.4)' />
+                            </span>
+                            <span>
+                                <FiCopy onClick={handleCopyAddress} />
+                            </span>
+                        </div>
+                    </div>
+                    <div className={styles.position_info}>
+                        <span className={styles.tokens_name}>Range</span>
+                        <span className={styles.tokens_min_price}>${minPrice}</span>
+                        <span className={styles.tokens_max_price}>${maxPrice}</span>
+                    </div>
+                    <div className={styles.position_info}>
+                        <span className={styles.tokens_name}>APY</span>
+                        <span className={styles.tokens_apy}>{financial(apy)}%</span>
+                    </div>
+                </div>
+            </div>
+        </motion.div>
+    ) : sPositions && isInput ? (
         <motion.div
             className={styles.animate_position_box}
             key='content'

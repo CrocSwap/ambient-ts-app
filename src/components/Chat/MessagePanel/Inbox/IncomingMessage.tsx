@@ -23,21 +23,6 @@ export default function IncomingMessage(props: IncomingMessageProps) {
         return strTime;
     };
 
-    async function getName() {
-        const response = await fetch('http://localhost:5000/api/auth/getUserByAccount/' + account, {
-            method: 'GET',
-        });
-        const data = await response.json();
-
-        return data;
-    }
-
-    useEffect(() => {
-        getName().then((res) => {
-            setName(res.userData.ensName);
-        });
-    }, [name]);
-
     return (
         <div className={styles.income_message}>
             <div className={styles.message_row}>
@@ -45,13 +30,12 @@ export default function IncomingMessage(props: IncomingMessageProps) {
                     <img src={noAvatarImage} alt='no avatar' />
                 </div>
                 <div className={styles.message_body}>
-                    <div className={styles.name}>{name}</div>
                     <p className={styles.message}>{props.message.message}</p>
                 </div>
 
                 <p className={styles.message_date}>{formatAMPM(props.message.createdAt)}</p>
             </div>
-            <PositionBox message={props.message.message} />
+            <PositionBox message={props.message.message} isInput={false} />
         </div>
     );
 }

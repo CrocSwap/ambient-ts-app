@@ -33,6 +33,7 @@ export default function MessageInput(props: MessageInputProps, prop: PortfolioBa
 
     useEffect(() => {
         _socket.connect();
+        console.log(_socket.id);
     }, [_socket]);
 
     const [message, setMessage] = useState('');
@@ -95,7 +96,7 @@ export default function MessageInput(props: MessageInputProps, prop: PortfolioBa
 
     return (
         <div className={styles.input_box}>
-            <PositionBox message={message} />
+            <PositionBox message={message} isInput={true} />
 
             <div className={styles.input}>
                 <input

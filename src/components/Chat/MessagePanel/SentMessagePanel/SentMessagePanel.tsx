@@ -40,7 +40,7 @@ export default function SentMessagePanel(props: SentMessageProps) {
 
     return (
         <div className={styles.sent_message_body}>
-            <PositionBox message={props.message.message} />
+            <PositionBox message={props.message.message} isInput={false} />
             <div className={styles.message_item}>
                 <p className={styles.message_date}>{formatAMPM(props.message.createdAt)}</p>
                 <p className={styles.message}>{props.message.message}</p>
