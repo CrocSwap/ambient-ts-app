@@ -150,5 +150,11 @@ export default function ClaimOrder(props: IClaimOrderProps) {
         showConfirmation,
         isRemovalDenied,
     ]);
+
+    const confirmationContent = (
+        <div className={styles.confirmation_container}>
+            <div className={styles.confirmation_content}>{currentConfirmationData}</div>
+        </div>
+    );
     return <div>claim</div>;
 }
