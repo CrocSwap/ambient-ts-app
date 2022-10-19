@@ -121,5 +121,13 @@ export default function ClaimOrder(props: IClaimOrderProps) {
             <p>Check the Metamask extension in your browser for notifications.</p>
         </div>
     );
+
+    const [currentConfirmationData, setCurrentConfirmationData] = useState(claimPending);
+
+    const transactionApproved = newClaimTransactionHash !== '';
+
+    const isRemovalDenied =
+        txErrorCode === 4001 &&
+        txErrorMessage === 'MetaMask Tx Signature: User denied transaction signature.';
     return <div>claim</div>;
 }
