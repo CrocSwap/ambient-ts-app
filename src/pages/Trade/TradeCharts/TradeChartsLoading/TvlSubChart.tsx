@@ -184,7 +184,7 @@ export default function TvlSubChart(props: TvlData) {
                     Math.abs(point.x - xScale(xValue(d))),
                 )[1];
 
-                if (nearest !== undefined) {
+                if (nearest) {
                     const newX = new Date(nearest.time.getTime());
                     const value = new Date(newX.setTime(newX.getTime()));
                     return [{ x: xScale(value), y: 0, value: nearest.value }];

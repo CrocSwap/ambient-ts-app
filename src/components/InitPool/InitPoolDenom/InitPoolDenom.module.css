@@ -9,6 +9,7 @@
     line-height: var(--body-lh);
     text-align: right;
     color: var(--text-grey-light);
+    padding: 0 1rem;
 }
 
 .denomination_switch button {
@@ -27,10 +28,15 @@
     transition: all var(--animation-speed) ease-in-out;
 }
 
-.denomination_switch button:hover {
+/* .denomination_switch button:hover{
     background: var(--title-gradient);
-    /* transition: all var(--animation-speed) ease-in-out; */
-    color: var(--dark2);
+    transition: all var(--animation-speed) ease-in-out;
+   
+} */
+.denomination_switch .non_active_button:hover {
+    box-shadow: 0px 0px 36px rgba(205, 193, 255, 0.2), 0px 0px 21px rgba(205, 193, 255, 0.2),
+        0px 0px 12px rgba(205, 193, 255, 0.2), 0px 0px 7px rgba(205, 193, 255, 0.2),
+        0px 0px 4px #cdc1ff, 0px 0px 2px rgba(205, 193, 255, 0.2);
 }
 
 .denomination_switch .active_button {

@@ -1,3 +1,5 @@
+// todo: SEE RETURN STATEMENT
+
 import Price from '../../../Global/Tabs/Price/Price';
 import TokenQty from '../../../Global/Tabs/TokenQty/TokenQty';
 import TransactionTypeSide from '../../../Global/Tabs/TypeAndSide/TransactionTypeSide/TransactionTypeSide';
@@ -496,13 +498,13 @@ export default function TransactionCard(props: TransactionProps) {
 
         //         <Value
         //             usdValue={
-        //                 totalFlowUSDTruncated !== undefined
-        //                     ? '$' + totalFlowUSDTruncated
-        //                     : totalValueUSDTruncated
-        //                     ? '$' + totalValueUSDTruncated
-        //                     : usdValueTruncated
-        //                     ? '$' + usdValueTruncated
-        //                     : '…'
+        // totalFlowUSDTruncated !== undefined
+        //     ? '$' + totalFlowUSDTruncated
+        //     : totalValueUSDTruncated
+        //     ? '$' + totalValueUSDTruncated
+        //     : usdValueTruncated
+        //     ? '$' + usdValueTruncated
+        //     : '…'
         //             }
         //         />
         //         <TokenQty

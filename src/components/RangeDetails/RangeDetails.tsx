@@ -78,6 +78,7 @@ export default function RangeDetails(props: IRangeDetailsProps) {
 
     useEffect(() => {
         const positionStatsCacheEndpoint = httpGraphCacheServerDomain + '/position_stats?';
+        const apyCacheEndpoint = httpGraphCacheServerDomain + '/position_apy?';
 
         const poolIndex = lookupChain(chainId).poolIndex;
         if (position.positionType) {
@@ -93,6 +94,7 @@ export default function RangeDetails(props: IRangeDetailsProps) {
                         chainId: chainId,
                         positionType: position.positionType,
                         addValue: 'true',
+                        omitAPY: 'true',
                     }),
             )
                 .then((response) => response?.json())
@@ -170,8 +172,33 @@ export default function RangeDetails(props: IRangeDetailsProps) {
                           });
                     setQuoteFeesDisplay(quoteFeesDisplayTruncated);
 
-                    if (positionStats.apy) {
-                        setUpdatedPositionApy(positionStats.apy);
+                    // if (positionStats.apy) {
+                    //     setUpdatedPositionApy(positionStats.apy);
+                    // }
+                })
+                .catch(console.log);
+
+            fetch(
+                apyCacheEndpoint +
+                    new URLSearchParams({
+                        user: user,
+                        bidTick: bidTick.toString(),
+                        askTick: askTick.toString(),
+                        base: baseTokenAddress,
+                        quote: quoteTokenAddress,
+                        poolIdx: poolIndex.toString(),
+                        chainId: chainId,
+                        positionType: position.positionType,
+                        concise: 'true',
+                    }),
+            )
+                .then((response) => response?.json())
+                .then((json) => {
+                    const results = json?.data.results;
+                    const apr = results.apy;
+
+                    if (apr) {
+                        setUpdatedPositionApy(apr);
                     }
                 })
                 .catch(console.log);

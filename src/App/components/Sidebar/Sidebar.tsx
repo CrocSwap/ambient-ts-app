@@ -28,11 +28,13 @@ import { MdClose } from 'react-icons/md';
 
 import closeSidebarImage from '../../../assets/images/sidebarImages/closeSidebar.svg';
 import { memoizePoolStats } from '../../functions/getPoolStats';
+import { tradeData } from '../../../utils/state/tradeDataSlice';
 
 const cachedPoolStatsFetch = memoizePoolStats();
 
 // interface for component props
 interface SidebarPropsIF {
+    tradeData: tradeData;
     isDenomBase: boolean;
     showSidebar: boolean;
     toggleSidebar: (event: MouseEvent<HTMLDivElement> | MouseEvent<HTMLLIElement>) => void;
@@ -57,6 +59,7 @@ interface SidebarPropsIF {
 
 export default function Sidebar(props: SidebarPropsIF) {
     const {
+        tradeData,
         isDenomBase,
         toggleSidebar,
         showSidebar,
@@ -103,6 +106,7 @@ export default function Sidebar(props: SidebarPropsIF) {
             icon: topPoolsImage,
             data: (
                 <TopPools
+                    tradeData={tradeData}
                     chainId={chainId}
                     cachedPoolStatsFetch={cachedPoolStatsFetch}
                     lastBlockNumber={lastBlockNumber}

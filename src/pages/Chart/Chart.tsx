@@ -535,7 +535,7 @@ export default function Chart(props: ChartData) {
     }, [parsedChartData?.chartData, scaleData, rescale]);
 
     const setMarketLineValue = () => {
-        const lastCandlePrice = parsedChartData?.chartData[0].close;
+        const lastCandlePrice = parsedChartData?.chartData[0]?.close;
 
         setMarket(() => {
             return [
@@ -708,7 +708,7 @@ export default function Chart(props: ChartData) {
 
     // Drag Type
     useEffect(() => {
-        if (scaleData !== undefined) {
+        if (scaleData) {
             const snap = (data: any, value: any) => {
                 if (value == undefined) return [];
 
@@ -1309,7 +1309,7 @@ export default function Chart(props: ChartData) {
         }
 
         const snap = (data: any, value: any) => {
-            if (value == undefined) return [];
+            if (!value) return [];
 
             const filtered =
                 data.length > 1

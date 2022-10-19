@@ -101,13 +101,14 @@
     gap: 8px;
     position: relative;
     margin: 8px 0;
+    transition: all var(--animation-speed) ease-in-out;
 }
 
 .view_etherscan:hover {
     cursor: pointer;
     background: linear-gradient(90deg, #6361d7 0%, #b0a6db 49.48%, #6361d7 100%);
 
-    transition: all var(--animation-speed) ease-in-out;
+   
 }
 
 
@@ -169,4 +170,54 @@
 		transform: rotate(360deg);
 		filter: hue-rotate(10deg)
 	}
+}
+
+/* gasless container */
+
+.gasless_container{
+    display: flex;
+    justify-content: space-between;
+    flex-direction: row;
+    align-items: center;
+   padding: 8px 0;
+
+}
+.gasless_container h3 {
+  
+        font-size: var(--body-size);
+        line-height: var(--body-lh);
+        color: var(--text-grey-light);
+    
+    
+}
+
+/* tooltip explanation */
+.explanation_details {
+
+    display: flex;
+    flex-direction: column;
+    border-radius: var(--border-radius);
+    border: 1px solid var(--dark3);
+
+    color: var(--text-grey-light);
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+    padding: 0.2rem 0.5rem;
+}
+
+.extra_row {
+    display: flex;
+   flex-direction: row;
+    padding: 5px 0;
+    justify-content: space-between;
+    align-items: center;
+   
+}
+
+.align_center {
+    display: flex;
+    flex-direction: row;
+
+    align-items: center;
+    gap: 5px;
 }

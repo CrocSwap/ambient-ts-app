@@ -97,7 +97,7 @@ export default function Range(props: RangePropsIF) {
         searchableTokens,
         mintSlippage,
         isPairStable,
-        provider,
+        // provider,
         baseTokenAddress,
         quoteTokenAddress,
         poolPriceDisplay,
@@ -1029,10 +1029,10 @@ export default function Range(props: RangePropsIF) {
     const [isApprovalPending, setIsApprovalPending] = useState(false);
 
     const approve = async (tokenAddress: string) => {
-        if (!provider) return;
+        if (!crocEnv) return;
         setIsApprovalPending(true);
         try {
-            const tx = await new CrocEnv(provider).token(tokenAddress).approve();
+            const tx = await crocEnv.token(tokenAddress).approve();
             if (tx) {
                 await tx.wait();
             }

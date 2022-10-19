@@ -3,7 +3,9 @@ import { ITransaction } from '../../../../../utils/state/graphDataSlice';
 import { Dispatch, SetStateAction, useEffect } from 'react';
 import { useProcessTransaction } from '../../../../../utils/hooks/useProcessTransaction';
 import TransactionsMenu from '../../../../Global/Tabs/TableMenu/TableMenuComponents/TransactionsMenu';
-
+import { DefaultTooltip } from '../../../../Global/StyledTooltip/StyledTooltip';
+import { NavLink } from 'react-router-dom';
+import { AiOutlineDash } from 'react-icons/ai';
 interface TransactionRowPropsIF {
     tx: ITransaction;
 
@@ -22,7 +24,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
         showColumns,
         ipadView,
         tx,
-        showSidebar,
+        // showSidebar,
         blockExplorer,
         // openGlobalModal,
         // closeGlobalModal,
@@ -32,14 +34,18 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
     } = props;
 
     const {
+        txHash,
         txHashTruncated,
         userNameToDisplay,
         quoteTokenLogo,
         baseTokenLogo,
         baseDisplay,
         quoteDisplay,
+        ownerId,
         // isOrderFilled,
         truncatedDisplayPrice,
+        truncatedLowDisplayPrice,
+        truncatedHighDisplayPrice,
         sideType,
 
         type,
@@ -48,8 +54,13 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
         quoteTokenSymbol,
         isOwnerActiveAccount,
         ensName,
+        baseTokenCharacter,
+        quoteTokenCharacter,
+        isDenomBase,
         // orderMatchesSelectedTokens,
     } = useProcessTransaction(tx);
+
+    const sideCharacter = isDenomBase ? baseTokenCharacter : quoteTokenCharacter;
 
     const sideTypeStyle = `${sideType}_style`;
 
@@ -75,6 +86,46 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
         tx.id === currentTxActiveInTransactions ? scrollToDiv() : null;
     }, [currentTxActiveInTransactions]);
 
+    const IDWithTooltip = (
+        <DefaultTooltip
+            interactive
+            title={txHash}
+            placement={'right'}
+            arrow
+            enterDelay={400}
+            leaveDelay={200}
+        >
+            <li onClick={openDetailsModal} data-label='id' className='base_color'>
+                {txHashTruncated}
+            </li>
+        </DefaultTooltip>
+    );
+
+    const walletWithTooltip = (
+        <DefaultTooltip
+            interactive
+            title={
+                <div>
+                    <p>{ownerId}</p>
+                    <NavLink to={`/${ownerId}`}>View Account</NavLink>
+                </div>
+            }
+            placement={'right'}
+            arrow
+            enterDelay={400}
+            leaveDelay={200}
+        >
+            <li
+                onClick={openDetailsModal}
+                data-label='wallet'
+                className={usernameStyle}
+                style={{ textTransform: 'lowercase' }}
+            >
+                {userNameToDisplay}
+            </li>
+        </DefaultTooltip>
+    );
+
     return (
         <ul
             className={`${styles.row_container} ${activeTransactionStyle} ${userPositionStyle}`}
@@ -85,31 +136,41 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
             }
             id={txDomId}
         >
-            {!showColumns && (
-                <li onClick={openDetailsModal} data-label='id' className='base_color'>
-                    {txHashTruncated}
-                </li>
-            )}
-            {!showColumns && (
-                <li onClick={openDetailsModal} data-label='wallet' className={usernameStyle}>
-                    {userNameToDisplay}
-                </li>
-            )}
+            {!showColumns && IDWithTooltip}
+            {!showColumns && walletWithTooltip}
             {showColumns && (
                 <li data-label='id'>
                     <p className='base_color'>{txHashTruncated}</p>{' '}
-                    <p className={usernameStyle}>{userNameToDisplay}</p>
+                    <p className={usernameStyle} style={{ textTransform: 'lowercase' }}>
+                        {userNameToDisplay}
+                    </p>
                 </li>
             )}
-            {!ipadView && (
-                <li onClick={openDetailsModal} data-label='price' className={sideTypeStyle}>
-                    {truncatedDisplayPrice}
-                </li>
-            )}
+            {!ipadView &&
+                (tx.entityType === 'liqchange' ? (
+                    tx.positionType === 'ambient' ? (
+                        <li onClick={openDetailsModal} data-label='price' className={sideTypeStyle}>
+                            ambient
+                        </li>
+                    ) : (
+                        <li onClick={openDetailsModal} data-label='price' className={sideTypeStyle}>
+                            <p>
+                                {truncatedLowDisplayPrice} <AiOutlineDash />
+                            </p>
+                            <p>{truncatedHighDisplayPrice}</p>
+                        </li>
+                    )
+                ) : (
+                    <li onClick={openDetailsModal} data-label='price' className={sideTypeStyle}>
+                        {truncatedDisplayPrice}
+                    </li>
+                ))}
 
             {!showColumns && (
                 <li onClick={openDetailsModal} data-label='side' className={sideTypeStyle}>
-                    {sideType}
+                    {tx.entityType === 'liqchange' || tx.entityType === 'limitOrder'
+                        ? `${sideType}`
+                        : `${sideType} ${sideCharacter}`}
                 </li>
             )}
             {!showColumns && (
@@ -128,12 +189,12 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                 {usdValue}
             </li>
 
-            {!showColumns && !showSidebar && (
+            {!showColumns && (
                 <li onClick={openDetailsModal} data-label={baseTokenSymbol} className='color_white'>
                     <p>{baseDisplay}</p>
                 </li>
             )}
-            {!showColumns && !showSidebar && (
+            {!showColumns && (
                 <li
                     onClick={openDetailsModal}
                     data-label={quoteTokenSymbol}
@@ -142,7 +203,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                     <p>{quoteDisplay}</p>
                 </li>
             )}
-            {(showColumns || showSidebar) && (
+            {showColumns && (
                 <li data-label={baseTokenSymbol + quoteTokenSymbol} className='color_white'>
                     <p className={styles.align_center}>
                         {' '}
@@ -158,12 +219,13 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                 </li>
             )}
 
-            <li data-label='menu' style={{ width: showColumns ? '50px' : '100px' }}>
+            <li data-label='menu'>
                 {/* <OrdersMenu limitOrder={limitOrder} {...orderMenuProps} /> */}
                 <TransactionsMenu
                     userPosition={userNameToDisplay === 'You'}
                     tx={tx}
                     blockExplorer={blockExplorer}
+                    showSidebar={props.showSidebar}
                 />
             </li>
         </ul>

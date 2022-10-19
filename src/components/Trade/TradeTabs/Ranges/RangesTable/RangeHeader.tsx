@@ -1,7 +1,7 @@
 import { Dispatch, SetStateAction, useMemo } from 'react';
 import { BsSortDown, BsSortUpAlt } from 'react-icons/bs';
 
-interface OrderHeaderPropsIF {
+interface RangeHeaderPropsIF {
     header: {
         name: string | JSX.Element;
         // className: string;
@@ -15,7 +15,7 @@ interface OrderHeaderPropsIF {
     reverseSort: boolean;
     setReverseSort: Dispatch<SetStateAction<boolean>>;
 }
-export default function OrderHeader(props: OrderHeaderPropsIF) {
+export default function RangeHeader(props: RangeHeaderPropsIF) {
     const { header, sortBy, setSortBy, reverseSort, setReverseSort } = props;
     const { name, show, slug, sortable } = header;
 
@@ -53,6 +53,7 @@ export default function OrderHeader(props: OrderHeaderPropsIF) {
             }
         }
     }, [sortBy, reverseSort, slug, sortable]);
+
     const activeSortStyle = sortBy === slug.toLocaleLowerCase() && sortable ? 'active_sort' : '';
 
     return (
@@ -60,8 +61,8 @@ export default function OrderHeader(props: OrderHeaderPropsIF) {
             {show && (
                 <li
                     style={{ cursor: sortable ? 'pointer' : 'default' }}
-                    className={activeSortStyle}
                     onClick={() => handleClick(slug.toLowerCase())}
+                    className={activeSortStyle}
                 >
                     {name} {arrow}
                 </li>

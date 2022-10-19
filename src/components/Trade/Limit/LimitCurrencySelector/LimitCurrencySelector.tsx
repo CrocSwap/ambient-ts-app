@@ -15,6 +15,7 @@ import Toggle2 from '../../../Global/Toggle/Toggle2';
 import IconWithTooltip from '../../../Global/IconWithTooltip/IconWithTooltip';
 import { MdAccountBalanceWallet } from 'react-icons/md';
 import ambientLogo from '../../../../assets/images/logos/ambient_logo.svg';
+import NoTokenIcon from '../../../Global/NoTokenIcon/NoTokenIcon';
 
 // interface for component props
 interface LimitCurrencySelectorProps {
@@ -115,12 +116,16 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
 
     const tokenSelect = (
         <div className={styles.token_select} onClick={openModal}>
-            <img
-                className={styles.token_list_img}
-                src={thisToken.logoURI}
-                alt={thisToken.name + 'token logo'}
-                width='30px'
-            />
+            {thisToken.logoURI ? (
+                <img
+                    className={styles.token_list_img}
+                    src={thisToken.logoURI}
+                    alt={thisToken.name + 'token logo'}
+                    width='30px'
+                />
+            ) : (
+                <NoTokenIcon tokenInitial={thisToken.symbol.charAt(0)} width='30px' />
+            )}
             <span className={styles.token_list_text}>{thisToken.symbol}</span>
             <RiArrowDownSLine size={27} />
         </div>
@@ -128,7 +133,7 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
 
     const WithdrawTokensContent = (
         <span className={styles.surplus_toggle}>
-            <IconWithTooltip title='Use Exchange Surplus' placement='bottom'>
+            <IconWithTooltip title='Use Exchange Balance' placement='bottom'>
                 <Toggle2
                     isOn={isWithdrawFromDexChecked}
                     handleToggle={() => setIsWithdrawFromDexChecked(!isWithdrawFromDexChecked)}
@@ -252,7 +257,7 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
                 </IconWithTooltip>
                 <IconWithTooltip
                     title={
-                        'Exchange Surplus'
+                        'Exchange Balance'
                         // userHasEnteredAmount
                         //     ? 'Exchange Surplus Balance After Swap'
                         //     : 'Current Exchange Surplus Balance'

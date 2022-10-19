@@ -1,3 +1,4 @@
+/* eslint-disable no-irregular-whitespace */
 // START: Import React and Dongles
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
 
@@ -18,6 +19,7 @@ import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import OrderHeader from './OrderTable/OrderHeader';
 import OrderRow from './OrderTable/OrderRow';
 import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
+import TableSkeletons from '../TableSkeletons/TableSkeletons';
 
 // import OrderAccordions from './OrderAccordions/OrderAccordions';
 
@@ -265,6 +267,26 @@ export default function Orders(props: propsIF) {
     //      </div>
     // )
 
+    // -----------------------------
+    const dataReceivedByPool = graphData?.changesByPool?.dataReceived;
+
+    const [isDataLoading, setIsDataLoading] = useState(true);
+    const [dataToDisplay, setDataToDisplay] = useState(false);
+    const [dataReceived] = useState(dataReceivedByPool);
+
+    function handleDataReceived() {
+        setIsDataLoading(false);
+        showAllOrUserPositions.length ? setDataToDisplay(true) : setDataToDisplay(false);
+    }
+
+    useEffect(() => {
+        // console.log({ dataReceived });
+        // console.log({ isDataLoading });
+        dataReceived ? handleDataReceived() : setIsDataLoading(true);
+    }, [graphData, showAllOrUserPositions, dataReceived]);
+
+    // -----------------------------
+
     const sidebarOpen = false;
 
     const ipadView = useMediaQuery('(max-width: 480px)');
@@ -294,8 +316,8 @@ export default function Orders(props: propsIF) {
     );
     const tokens = (
         <>
-            <p>{`${baseTokenSymbol} (${baseTokenCharacter})`}</p>
-            <p>{`${quoteTokenSymbol} (${quoteTokenCharacter})`}</p>
+            <p>{`${baseTokenSymbol} ( ${baseTokenCharacter} )`}</p>
+            <p>{`${quoteTokenSymbol} ( ${quoteTokenCharacter} )`}</p>
         </>
     );
     const headerColumns = [
@@ -321,7 +343,7 @@ export default function Orders(props: propsIF) {
             sortable: false,
         },
         {
-            name: `Price(${priceCharacter})`,
+            name: `Price ( ${priceCharacter} )`,
 
             show: !ipadView,
             slug: 'price',
@@ -349,35 +371,35 @@ export default function Orders(props: propsIF) {
             sortable: false,
         },
         {
-            name: 'Value($)',
+            name: 'Value ( $ )',
             className: 'value',
             show: true,
             slug: 'value',
             sortable: true,
         },
         {
-            name: `${baseTokenSymbol} (${baseTokenCharacter})`,
+            name: `${baseTokenSymbol} ( ${baseTokenCharacter} )`,
 
-            show: !showColumns && !showSidebar,
+            show: !showColumns,
             slug: baseTokenSymbol,
             sortable: false,
         },
         {
-            name: `${quoteTokenSymbol} (${quoteTokenCharacter})`,
+            name: `${quoteTokenSymbol} ( ${quoteTokenCharacter} )`,
 
-            show: !showColumns && !showSidebar,
+            show: !showColumns,
             slug: quoteTokenSymbol,
             sortable: false,
         },
         {
             name: tokens,
             className: 'tokens',
-            show: showColumns || showSidebar,
+            show: showColumns,
             slug: 'tokens',
             sortable: false,
         },
         {
-            name: '',
+            name: 'Status',
             className: '',
             show: !ipadView,
             slug: 'status',
@@ -424,18 +446,17 @@ export default function Orders(props: propsIF) {
         />
     ));
 
-    const newTrial = (
+    const orderDataOrNull = dataToDisplay ? rowItemContent : 'noData';
+
+    return (
         <main
             className={styles.main_list_container}
-            style={{ height: expandTradeTable ? '100%' : '170px' }}
+            style={{ height: expandTradeTable ? '100%' : '250px' }}
         >
-            {ipadView && <p>Ipad view</p>}
-            {desktopView && <p>desktop view</p>}
             {/* {header} */}
             {headerColumnsDisplay}
-            {rowItemContent}
+            {isDataLoading ? <TableSkeletons /> : orderDataOrNull}
+            {/* {rowItemContent} */}
         </main>
     );
-
-    return <>{newTrial}</>;
 }

@@ -6,6 +6,8 @@ import OrdersMenu from '../../../../Global/Tabs/TableMenu/TableMenuComponents/Or
 import OrderDetails from '../../../../OrderDetails/OrderDetails';
 import { Dispatch, SetStateAction, useEffect } from 'react';
 import { CrocEnv } from '@crocswap-libs/sdk';
+import { DefaultTooltip } from '../../../../Global/StyledTooltip/StyledTooltip';
+import { NavLink } from 'react-router-dom';
 
 interface OrderRowPropsIF {
     crocEnv: CrocEnv | undefined;
@@ -38,6 +40,8 @@ export default function OrderRow(props: OrderRowPropsIF) {
     } = props;
 
     const {
+        posHash,
+        ownerId,
         posHashTruncated,
         userNameToDisplay,
         quoteTokenLogo,
@@ -53,6 +57,10 @@ export default function OrderRow(props: OrderRowPropsIF) {
         isOwnerActiveAccount,
         ensName,
         orderMatchesSelectedTokens,
+
+        baseTokenCharacter,
+        quoteTokenCharacter,
+        isDenomBase,
     } = useProcessOrder(limitOrder);
 
     const orderMenuProps = {
@@ -61,6 +69,8 @@ export default function OrderRow(props: OrderRowPropsIF) {
         openGlobalModal: props.openGlobalModal,
         isOwnerActiveAccount: isOwnerActiveAccount,
     };
+
+    const sideCharacter = isDenomBase ? baseTokenCharacter : quoteTokenCharacter;
 
     const sellOrderStyle = side === 'sell' ? 'order_sell' : 'order_buy';
 
@@ -94,6 +104,46 @@ export default function OrderRow(props: OrderRowPropsIF) {
             ? styles.active_position_style
             : '';
 
+    const IDWithTooltip = (
+        <DefaultTooltip
+            interactive
+            title={posHash}
+            placement={'right'}
+            arrow
+            enterDelay={400}
+            leaveDelay={200}
+        >
+            <li onClick={openDetailsModal} data-label='id' className='base_color'>
+                {posHashTruncated}
+            </li>
+        </DefaultTooltip>
+    );
+
+    const walletWithTooltip = (
+        <DefaultTooltip
+            interactive
+            title={
+                <div>
+                    <p>{ownerId}</p>
+                    <NavLink to={`/${ownerId}`}>View Account</NavLink>
+                </div>
+            }
+            placement={'right'}
+            arrow
+            enterDelay={400}
+            leaveDelay={200}
+        >
+            <li
+                onClick={openDetailsModal}
+                data-label='wallet'
+                className={usernameStyle}
+                style={{ textTransform: 'lowercase' }}
+            >
+                {userNameToDisplay}
+            </li>
+        </DefaultTooltip>
+    );
+
     if (!orderMatchesSelectedTokens) return null;
     return (
         <ul
@@ -105,20 +155,14 @@ export default function OrderRow(props: OrderRowPropsIF) {
                     : setCurrentPositionActive('')
             }
         >
-            {!showColumns && (
-                <li onClick={openDetailsModal} data-label='id' className='base_color'>
-                    {posHashTruncated}
-                </li>
-            )}
-            {!showColumns && (
-                <li onClick={openDetailsModal} data-label='wallet' className={usernameStyle}>
-                    {userNameToDisplay}
-                </li>
-            )}
+            {!showColumns && IDWithTooltip}
+            {!showColumns && walletWithTooltip}
             {showColumns && (
                 <li data-label='id'>
                     <p className='base_color'>{posHashTruncated}</p>{' '}
-                    <p className={usernameStyle}>{userNameToDisplay}</p>
+                    <p className={usernameStyle} style={{ textTransform: 'lowercase' }}>
+                        {userNameToDisplay}
+                    </p>
                 </li>
             )}
             {!ipadView && (
@@ -129,7 +173,7 @@ export default function OrderRow(props: OrderRowPropsIF) {
 
             {!showColumns && (
                 <li onClick={openDetailsModal} data-label='side' className={sellOrderStyle}>
-                    {side}
+                    {`${side} ${sideCharacter}`}
                 </li>
             )}
             {!showColumns && (
@@ -148,12 +192,12 @@ export default function OrderRow(props: OrderRowPropsIF) {
                 {usdValue}
             </li>
 
-            {!showColumns && !showSidebar && (
+            {!showColumns && (
                 <li onClick={openDetailsModal} data-label={baseTokenSymbol} className='color_white'>
                     <p>{baseDisplay}</p>
                 </li>
             )}
-            {!showColumns && !showSidebar && (
+            {!showColumns && (
                 <li
                     onClick={openDetailsModal}
                     data-label={quoteTokenSymbol}
@@ -162,7 +206,7 @@ export default function OrderRow(props: OrderRowPropsIF) {
                     <p>{quoteDisplay}</p>
                 </li>
             )}
-            {(showColumns || showSidebar) && (
+            {showColumns && (
                 <li data-label={baseTokenSymbol + quoteTokenSymbol} className='color_white'>
                     <p className={styles.align_center}>
                         {' '}
@@ -183,8 +227,8 @@ export default function OrderRow(props: OrderRowPropsIF) {
                 </li>
             )}
 
-            <li data-label='menu' style={{ width: showColumns ? '50px' : '100px' }}>
-                <OrdersMenu limitOrder={limitOrder} {...orderMenuProps} />
+            <li data-label='menu'>
+                <OrdersMenu limitOrder={limitOrder} {...orderMenuProps} showSidebar={showSidebar} />
             </li>
         </ul>
     );

@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction } from 'react';
+import { Dispatch, SetStateAction, useState } from 'react';
 import styles from './RemoveOrderWidth.module.css';
 
 interface RemoveOrderWidthPropsIF {
@@ -58,10 +58,11 @@ export default function RemoveOrderWidth(props: RemoveOrderWidthPropsIF) {
             </div>
         </>
     );
+    const [showPartial, setShowPartial] = useState(true);
 
-    return (
-        <div className={styles.order_width_container}>
-            <span className={styles.title}>Removal Percentage</span>
+    const partialRemove = (
+        <>
+            {/* <span className={styles.title}>Removal Percentage</span> */}
             <div className={styles.order_width_content}>
                 {PercentageOptionContent}
                 <div className={styles.order_width_input}>
@@ -80,6 +81,43 @@ export default function RemoveOrderWidth(props: RemoveOrderWidthPropsIF) {
                 </div>
                 <div className={styles.percentage_container}></div>
             </div>
+        </>
+    );
+
+    return (
+        <div className={styles.order_width_container}>
+            <p
+                onClick={() => setShowPartial(!showPartial)}
+                style={{
+                    fontSize: '10px',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    padding: '1rem 0',
+                }}
+            >
+                Product Meeting Demo: Click to toggle partial control
+            </p>
+            {showPartial ? partialRemove : null}
+            {/* <span className={styles.title}>Removal Percentage</span>
+            <div className={styles.order_width_content}>
+                {PercentageOptionContent}
+                <div className={styles.order_width_input}>
+                    <input
+                        size={28}
+                        aria-labelledby='input slider'
+                        id='remove-order-slider'
+                        min='1'
+                        max='100'
+                        step='1'
+                        defaultValue={removalPercentage}
+                        type='range'
+                        className={styles.percentage_input}
+                        onChange={(e) => handlePercentageUpdate(parseInt(e.target.value))}
+                    />
+                </div>
+                <div className={styles.percentage_container}></div>
+            </div> */}
         </div>
     );
 }

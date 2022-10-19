@@ -24,6 +24,7 @@ interface ExtraInfoPropsIF {
     didUserFlipDenom: boolean;
     isTokenABase: boolean;
     isDenomBase: boolean;
+    isOnTradeRoute?: boolean;
 }
 
 // central react functional component
@@ -38,10 +39,13 @@ export default function ExtraInfo(props: ExtraInfoPropsIF) {
         swapGasPriceinDollars,
         // didUserFlipDenom,
         isTokenABase,
+        isOnTradeRoute,
         // isDenomBase,
     } = props;
 
-    const [showExtraDetails, setShowExtraDetails] = useState<boolean>(false);
+    const [showExtraDetails, setShowExtraDetails] = useState<boolean>(
+        isOnTradeRoute ? true : false,
+    );
 
     // const truncatedGasInGwei = gasPriceInGwei ? truncateDecimals(gasPriceInGwei, 2) : undefined;
 

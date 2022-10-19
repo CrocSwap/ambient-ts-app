@@ -1,3 +1,4 @@
+/* eslint-disable no-irregular-whitespace */
 import styles from './Transactions.module.css';
 
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
@@ -12,7 +13,7 @@ import {
 import { TokenIF } from '../../../../utils/interfaces/TokenIF';
 import { useAppDispatch, useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { Dispatch, SetStateAction, useState, useEffect, useMemo } from 'react';
-import TransactionsSkeletons from './TransactionsSkeletons/TransactionsSkeletons';
+import TransactionsSkeletons from '../TableSkeletons/TableSkeletons';
 import Pagination from '../../../Global/Pagination/Pagination';
 import { ChainSpec } from '@crocswap-libs/sdk';
 import useWebSocket from 'react-use-websocket';
@@ -338,8 +339,8 @@ export default function Transactions(props: TransactionsProps) {
     );
     const tokens = (
         <>
-            <p>{`${baseTokenSymbol} (${baseTokenCharacter})`}</p>
-            <p>{`${quoteTokenSymbol} (${quoteTokenCharacter})`}</p>
+            <p>{`${baseTokenSymbol} ( ${baseTokenCharacter} )`}</p>
+            <p>{`${quoteTokenSymbol} ( ${quoteTokenCharacter} )`}</p>
         </>
     );
     const headerColumns = [
@@ -365,7 +366,7 @@ export default function Transactions(props: TransactionsProps) {
             sortable: false,
         },
         {
-            name: `Price(${priceCharacter})`,
+            name: `Price ( ${priceCharacter} )`,
 
             show: !ipadView,
             slug: 'price',
@@ -393,30 +394,30 @@ export default function Transactions(props: TransactionsProps) {
             sortable: false,
         },
         {
-            name: 'Value($)',
+            name: 'Value ( $ )',
 
             show: true,
             slug: 'value',
             sortable: true,
         },
         {
-            name: `${baseTokenSymbol} (${baseTokenCharacter})`,
+            name: `${baseTokenSymbol} ( ${baseTokenCharacter} )`,
 
-            show: !showColumns && !showSidebar,
+            show: !showColumns,
             slug: baseTokenSymbol,
             sortable: false,
         },
         {
-            name: `${quoteTokenSymbol} (${quoteTokenCharacter})`,
+            name: `${quoteTokenSymbol} ( ${quoteTokenCharacter} )`,
 
-            show: !showColumns && !showSidebar,
+            show: !showColumns,
             slug: quoteTokenSymbol,
             sortable: false,
         },
         {
             name: tokens,
 
-            show: showColumns || showSidebar,
+            show: showColumns,
             slug: 'tokens',
             sortable: false,
         },
@@ -482,7 +483,7 @@ export default function Transactions(props: TransactionsProps) {
     return (
         <main
             className={`${styles.main_list_container} `}
-            style={{ height: expandTradeTable ? 'calc(100vh - 10rem)' : '170px' }}
+            style={{ height: expandTradeTable ? 'calc(100vh - 10rem)' : '250px' }}
         >
             {headerColumnsDisplay}
             {isDataLoading ? <TransactionsSkeletons /> : transactionDataOrNull}
