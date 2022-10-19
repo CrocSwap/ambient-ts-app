@@ -20,5 +20,29 @@ interface IClaimOrderProps {
 }
 
 export default function ClaimOrder(props: IClaimOrderProps) {
+    const { crocEnv, limitOrder, closeGlobalModal } = props;
+    const {
+        posLiqBaseDecimalCorrected,
+        posLiqQuoteDecimalCorrected,
+        // lowPriceDisplay,
+        // highPriceDisplay,
+        bidTick,
+        askTick,
+        // positionLiquidity,
+        positionLiqTotalUSD,
+        // userNameToDisplay,
+        baseTokenSymbol,
+        quoteTokenSymbol,
+        isOrderFilled,
+        isDenomBase,
+        baseTokenLogo,
+        quoteTokenLogo,
+        usdValue,
+        baseDisplayFrontend,
+        quoteDisplayFrontend,
+        baseDisplay,
+        quoteDisplay,
+    } = useProcessOrder(limitOrder);
+
     return <div>claim</div>;
 }
