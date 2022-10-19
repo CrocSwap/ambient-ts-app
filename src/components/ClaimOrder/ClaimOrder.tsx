@@ -84,7 +84,7 @@ export default function ClaimOrder(props: IClaimOrderProps) {
     // -------------END OF CLAIM FUNCTION TO BE REFACTORED
 
     // ----------------------------CONFIRMATION JSX------------------------------
-    const removalDenied = (
+    const claimDenied = (
         <div className={styles.removal_pending}>
             <CircleLoaderFailed />
             <p>
@@ -94,6 +94,6 @@ export default function ClaimOrder(props: IClaimOrderProps) {
             <Button title='Try Again' action={resetConfirmation} />
         </div>
     );
-
+    const etherscanLink = 'chainData.blockExplorer' + 'tx/' + newClaimTransactionHash;
     return <div>claim</div>;
 }
