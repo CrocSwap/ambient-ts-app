@@ -2136,7 +2136,6 @@ export default function App() {
                                     cachedFetchErc20TokenBalances={cachedFetchErc20TokenBalances}
                                     cachedFetchNativeTokenBalance={cachedFetchNativeTokenBalance}
                                     cachedFetchTokenPrice={cachedFetchTokenPrice}
-                                    importedTokens={importedTokens}
                                     ensName={ensName}
                                     lastBlockNumber={lastBlockNumber}
                                     connectedAccount={account ? account : ''}
@@ -2150,6 +2149,8 @@ export default function App() {
                                     userAccount={true}
                                     openGlobalModal={openGlobalModal}
                                     closeGlobalModal={closeGlobalModal}
+                                    importedTokens={importedTokens}
+                                    setImportedTokens={setImportedTokens}
                                 />
                             }
                         />
@@ -2162,7 +2163,6 @@ export default function App() {
                                     cachedFetchErc20TokenBalances={cachedFetchErc20TokenBalances}
                                     cachedFetchNativeTokenBalance={cachedFetchNativeTokenBalance}
                                     cachedFetchTokenPrice={cachedFetchTokenPrice}
-                                    importedTokens={importedTokens}
                                     ensName={ensName}
                                     lastBlockNumber={lastBlockNumber}
                                     connectedAccount={account ? account : ''}
@@ -2176,6 +2176,8 @@ export default function App() {
                                     userAccount={false}
                                     openGlobalModal={openGlobalModal}
                                     closeGlobalModal={closeGlobalModal}
+                                    importedTokens={importedTokens}
+                                    setImportedTokens={setImportedTokens}
                                 />
                             }
                         />
@@ -2199,7 +2201,6 @@ export default function App() {
                                     cachedFetchErc20TokenBalances={cachedFetchErc20TokenBalances}
                                     cachedFetchNativeTokenBalance={cachedFetchNativeTokenBalance}
                                     cachedFetchTokenPrice={cachedFetchTokenPrice}
-                                    importedTokens={importedTokens}
                                     ensName={ensName}
                                     lastBlockNumber={lastBlockNumber}
                                     connectedAccount={account ? account : ''}
@@ -2213,6 +2214,8 @@ export default function App() {
                                     userAccount={false}
                                     openGlobalModal={openGlobalModal}
                                     closeGlobalModal={closeGlobalModal}
+                                    importedTokens={importedTokens}
+                                    setImportedTokens={setImportedTokens}
                                 />
                             }
                         />

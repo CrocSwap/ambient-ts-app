@@ -14,18 +14,11 @@ import Modal from '../../components/Global/Modal/Modal';
 import { useModal } from '../../components/Global/Modal/useModal';
 
 import { Erc20TokenBalanceFn, nativeTokenBalanceFn } from '../../App/functions/fetchTokenBalances';
-import {
-    // useAppDispatch,
-    useAppSelector,
-} from '../../utils/hooks/reduxToolkit';
+import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { TokenPriceFn } from '../../App/functions/fetchTokenPrice';
 import NotFound from '../NotFound/NotFound';
 import ProfileSettings from '../../components/Portfolio/ProfileSettings/ProfileSettings';
 import { SoloTokenSelect } from '../../components/Global/TokenSelectContainer/SoloTokenSelect';
-// import { useModal } from '../../components/Global/Modal/useModal';
-// import Modal from '../../components/Global/Modal/Modal';
-// import { defaultTokens } from '../../utils/data/defaultTokens';
-// import { setToken } from '../../utils/state/temp';
 
 const mainnetProvider = new ethers.providers.WebSocketProvider(
     // 'wss://mainnet.infura.io/ws/v3/170b7b65781c422d82a94b8b289ca605',
@@ -33,6 +26,7 @@ const mainnetProvider = new ethers.providers.WebSocketProvider(
     'wss://mainnet.infura.io/ws/v3/e0aa879e36fc4c9e91b826ad961a36fd',
     // 'wss://mainnet.infura.io/ws/v3/4a162c75bd514925890174ca13cdb6a2',
 );
+// import { ambientTokenList } from '../../utils/data/ambientTokenList';
 
 interface PortfolioPropsIF {
     crocEnv: CrocEnv | undefined;
@@ -40,14 +34,12 @@ interface PortfolioPropsIF {
     cachedFetchNativeTokenBalance: nativeTokenBalanceFn;
     cachedFetchErc20TokenBalances: Erc20TokenBalanceFn;
     cachedFetchTokenPrice: TokenPriceFn;
-    importedTokens: TokenIF[];
     ensName: string;
     lastBlockNumber: number;
     connectedAccount: string;
     userImageData: string[];
     chainId: string;
     tokenMap: Map<string, TokenIF>;
-
     selectedOutsideTab: number;
     setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
     outsideControl: boolean;
@@ -55,6 +47,8 @@ interface PortfolioPropsIF {
     userAccount?: boolean;
     openGlobalModal: (content: React.ReactNode, title?: string) => void;
     closeGlobalModal: () => void;
+    importedTokens: TokenIF[];
+    setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
 }
 
 // const cachedFetchAddress = memoizePromiseFn(fetchAddress);
@@ -68,7 +62,6 @@ export default function Portfolio(props: PortfolioPropsIF) {
         cachedFetchNativeTokenBalance,
         cachedFetchErc20TokenBalances,
         cachedFetchTokenPrice,
-        importedTokens,
         ensName,
         lastBlockNumber,
         userImageData,
@@ -81,7 +74,9 @@ export default function Portfolio(props: PortfolioPropsIF) {
         outsideControl,
         setOutsideControl,
         selectedOutsideTab,
-        setSelectedOutsideTab
+        setSelectedOutsideTab,
+        importedTokens,
+        setImportedTokens
     } = props;
 
     const selectedToken: TokenIF = useAppSelector((state) => state.temp.token);
@@ -358,7 +353,11 @@ export default function Portfolio(props: PortfolioPropsIF) {
             showBackButton={true}
             footer={null}
         >
-            <SoloTokenSelect />
+            <SoloTokenSelect
+                closeModal={closeTokenModal}
+                tokensBank={importedTokens}
+                setImportedTokens={setImportedTokens}
+            />
         </Modal>}
         </main>
     );
