@@ -15,8 +15,10 @@ import { ILimitOrderState } from '../../../../../utils/state/graphDataSlice';
 import OrderDetails from '../../../../OrderDetails/OrderDetails';
 import OrderRemoval from '../../../../OrderRemoval/OrderRemoval';
 import UseOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
+import { CrocEnv } from '@crocswap-libs/sdk';
 // interface for React functional component props
 interface OrdersMenuIF {
+    crocEnv: CrocEnv | undefined;
     limitOrder: ILimitOrderState;
     openGlobalModal: (content: React.ReactNode, title?: string) => void;
     closeGlobalModal: () => void;
@@ -28,7 +30,7 @@ interface OrdersMenuIF {
 export default function OrdersMenu(props: OrdersMenuIF) {
     const menuItemRef = useRef<HTMLDivElement>(null);
 
-    const { limitOrder, openGlobalModal, isOwnerActiveAccount, closeGlobalModal } = props;
+    const { crocEnv, limitOrder, openGlobalModal, isOwnerActiveAccount, closeGlobalModal } = props;
     const [value, copy] = useCopyToClipboard();
     const [openSnackbar, setOpenSnackbar] = useState<boolean>(false);
 
@@ -72,7 +74,11 @@ export default function OrdersMenu(props: OrdersMenuIF) {
 
     const openRemoveModal = () =>
         openGlobalModal(
-            <OrderRemoval limitOrder={limitOrder} closeGlobalModal={closeGlobalModal} />,
+            <OrderRemoval
+                crocEnv={crocEnv}
+                limitOrder={limitOrder}
+                closeGlobalModal={closeGlobalModal}
+            />,
         );
 
     const openDetailsModal = () =>
@@ -110,9 +116,19 @@ export default function OrdersMenu(props: OrdersMenuIF) {
     //     </Link>
     // ) : null;
 
+    const removeButtonOnClick = () => {
+        setShowDropdownMenu(false);
+        openRemoveModal();
+    };
+
+    const detailsButtonOnClick = () => {
+        setShowDropdownMenu(false);
+        openDetailsModal();
+    };
+
     const removeButton =
         limitOrder && isOwnerActiveAccount ? (
-            <button className={styles.option_button} onClick={openRemoveModal}>
+            <button className={styles.option_button} onClick={removeButtonOnClick}>
                 Remove
             </button>
         ) : null;
@@ -122,7 +138,7 @@ export default function OrdersMenu(props: OrdersMenuIF) {
         </button>
     ) : null;
     const detailsButton = (
-        <button className={styles.option_button} onClick={openDetailsModal}>
+        <button className={styles.option_button} onClick={detailsButtonOnClick}>
             Details
         </button>
     );

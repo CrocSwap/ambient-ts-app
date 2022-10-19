@@ -12,16 +12,18 @@ import {
     setLimitOrdersByPool,
 } from '../../../../utils/state/graphDataSlice';
 import { fetchPoolLimitOrderStates } from '../../../../App/functions/fetchPoolLimitOrderStates';
-import { ChainSpec } from '@crocswap-libs/sdk';
+import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
 import useWebSocket from 'react-use-websocket';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import OrderHeader from './OrderTable/OrderHeader';
 import OrderRow from './OrderTable/OrderRow';
+import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
 
 // import OrderAccordions from './OrderAccordions/OrderAccordions';
 
 // interface for props for react functional component
 interface propsIF {
+    crocEnv: CrocEnv | undefined;
     expandTradeTable: boolean;
     chainData: ChainSpec;
     account: string;
@@ -38,13 +40,14 @@ interface propsIF {
 // main react functional component
 export default function Orders(props: propsIF) {
     const {
+        crocEnv,
         chainData,
         expandTradeTable,
         account,
         graphData,
         isShowAllEnabled,
-        // setCurrentPositionActive,
-        // currentPositionActive,
+        setCurrentPositionActive,
+        currentPositionActive,
         showSidebar,
     } = props;
 
@@ -53,6 +56,7 @@ export default function Orders(props: propsIF) {
 
     const tradeData = useAppSelector((state) => state.tradeData);
     const dispatch = useAppDispatch();
+    const isDenomBase = tradeData.isDenomBase;
 
     // const selectedBaseToken = tradeData.baseToken.address.toLowerCase();
     // const selectedQuoteToken = tradeData.quoteToken.address.toLowerCase();
@@ -108,10 +112,6 @@ export default function Orders(props: propsIF) {
 
     const [sortBy, setSortBy] = useState('default');
     const [reverseSort, setReverseSort] = useState(false);
-
-    // useEffect(() => {
-    //     console.log({ sortBy, reverseSort });
-    // }, [sortBy, reverseSort]);
 
     const [debouncedIsShowAllEnabled, setDebouncedIsShowAllEnabled] = useState(false);
 
@@ -245,12 +245,40 @@ export default function Orders(props: propsIF) {
     //     </div>
     // );
 
+    // const olderReturnData = (
+    //        <div className={styles.container}>
+
+    //          <OrderCardHeader
+    //              sortBy={sortBy}
+    //              setSortBy={setSortBy}
+    //              reverseSort={reverseSort}
+    //              setReverseSort={setReverseSort}
+    //              columnHeaders={columnHeaders}
+    //          />
+    //          <div
+    //              className={styles.item_container}
+    //              style={{ height: expandTradeTable ? '100%' : '170px' }}
+    //          >
+    //              {ItemContent}
+    //              {mobileAccordionDisplay}
+    //          </div>
+    //      </div>
+    // )
+
     const sidebarOpen = false;
 
     const ipadView = useMediaQuery('(max-width: 480px)');
     const desktopView = useMediaQuery('(max-width: 768px)');
 
     const showColumns = sidebarOpen || desktopView;
+
+    const quoteTokenSymbol = tradeData.quoteToken?.symbol;
+    const baseTokenSymbol = tradeData.baseToken?.symbol;
+
+    const baseTokenCharacter = baseTokenSymbol ? getUnicodeCharacter(baseTokenSymbol) : '';
+    const quoteTokenCharacter = quoteTokenSymbol ? getUnicodeCharacter(quoteTokenSymbol) : '';
+
+    const priceCharacter = isDenomBase ? quoteTokenCharacter : baseTokenCharacter;
 
     const walID = (
         <>
@@ -266,8 +294,8 @@ export default function Orders(props: propsIF) {
     );
     const tokens = (
         <>
-            <p>ETH</p>
-            <p>USDC</p>
+            <p>{`${baseTokenSymbol} (${baseTokenCharacter})`}</p>
+            <p>{`${quoteTokenSymbol} (${quoteTokenCharacter})`}</p>
         </>
     );
     const headerColumns = [
@@ -293,8 +321,8 @@ export default function Orders(props: propsIF) {
             sortable: false,
         },
         {
-            name: 'Price',
-            className: 'price',
+            name: `Price(${priceCharacter})`,
+
             show: !ipadView,
             slug: 'price',
             sortable: true,
@@ -321,24 +349,24 @@ export default function Orders(props: propsIF) {
             sortable: false,
         },
         {
-            name: 'Value',
+            name: 'Value($)',
             className: 'value',
             show: true,
             slug: 'value',
             sortable: true,
         },
         {
-            name: 'ETH',
-            className: 'eth',
+            name: `${baseTokenSymbol} (${baseTokenCharacter})`,
+
             show: !showColumns && !showSidebar,
-            slug: 'eth',
+            slug: baseTokenSymbol,
             sortable: false,
         },
         {
-            name: 'USDC',
-            className: 'usdc',
+            name: `${quoteTokenSymbol} (${quoteTokenCharacter})`,
+
             show: !showColumns && !showSidebar,
-            slug: 'usdc',
+            slug: quoteTokenSymbol,
             sortable: false,
         },
         {
@@ -381,6 +409,8 @@ export default function Orders(props: propsIF) {
 
     const rowItemContent = showAllOrUserPositions.map((order, idx) => (
         <OrderRow
+            crocEnv={crocEnv}
+            expandTradeTable={expandTradeTable}
             showSidebar={showSidebar}
             showColumns={showColumns}
             ipadView={ipadView}
@@ -388,6 +418,9 @@ export default function Orders(props: propsIF) {
             limitOrder={order}
             openGlobalModal={props.openGlobalModal}
             closeGlobalModal={props.closeGlobalModal}
+            currentPositionActive={currentPositionActive}
+            setCurrentPositionActive={setCurrentPositionActive}
+            isShowAllEnabled={isShowAllEnabled}
         />
     ));
 
@@ -404,24 +437,5 @@ export default function Orders(props: propsIF) {
         </main>
     );
 
-    return (
-        <>{newTrial}</>
-        // <div className={styles.container}>
-
-        //     <OrderCardHeader
-        //         sortBy={sortBy}
-        //         setSortBy={setSortBy}
-        //         reverseSort={reverseSort}
-        //         setReverseSort={setReverseSort}
-        //         columnHeaders={columnHeaders}
-        //     />
-        //     <div
-        //         className={styles.item_container}
-        //         style={{ height: expandTradeTable ? '100%' : '170px' }}
-        //     >
-        //         {ItemContent}
-        //         {mobileAccordionDisplay}
-        //     </div>
-        // </div>
-    );
+    return <>{newTrial}</>;
 }

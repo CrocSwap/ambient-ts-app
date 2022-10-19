@@ -1,6 +1,7 @@
 import styles from './Transactions.module.css';
-import TransactionCard from './TransactionCard';
-import TransactionCardHeader from './TransactionCardHeader';
+
+import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
+
 import {
     addChangesByPool,
     CandleData,
@@ -17,6 +18,9 @@ import { ChainSpec } from '@crocswap-libs/sdk';
 import useWebSocket from 'react-use-websocket';
 // import useDebounce from '../../../../App/hooks/useDebounce';
 import { fetchPoolRecentChanges } from '../../../../App/functions/fetchPoolRecentChanges';
+import TransactionHeader from './TransactionsTable/TransactionHeader';
+import TransactionRow from './TransactionsTable/TransactionRow';
+import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
 // import TransactionAccordions from './TransactionAccordions/TransactionAccordions';
 
 interface TransactionsProps {
@@ -36,6 +40,7 @@ interface TransactionsProps {
     filter: CandleData | undefined;
 
     openGlobalModal: (content: React.ReactNode) => void;
+    showSidebar: boolean;
     // setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
 }
 export default function Transactions(props: TransactionsProps) {
@@ -44,7 +49,7 @@ export default function Transactions(props: TransactionsProps) {
         account,
         changesInSelectedCandle,
         graphData,
-        tokenMap,
+
         chainData,
         blockExplorer,
         currentTxActiveInTransactions,
@@ -52,6 +57,8 @@ export default function Transactions(props: TransactionsProps) {
         expandTradeTable,
         isCandleSelected,
         filter,
+        showSidebar,
+        openGlobalModal,
         // setExpandTradeTable,
     } = props;
 
@@ -97,6 +104,8 @@ export default function Transactions(props: TransactionsProps) {
     // todoJr: Finish this loading logic
     const [isDataLoading, setIsDataLoading] = useState(true);
     const [dataToDisplay, setDataToDisplay] = useState(false);
+
+    // console.log({ transactionData });
 
     const [debouncedIsShowAllEnabled, setDebouncedIsShowAllEnabled] = useState(false);
 
@@ -150,9 +159,6 @@ export default function Transactions(props: TransactionsProps) {
     }, [graphData, transactionData, dataReceived]);
 
     const isDenomBase = tradeData.isDenomBase;
-
-    const tokenAAddress = tradeData.tokenA.address;
-    const tokenBAddress = tradeData.tokenB.address;
 
     const baseTokenAddress = tradeData.baseToken.address;
     const quoteTokenAddress = tradeData.quoteToken.address;
@@ -301,56 +307,149 @@ export default function Transactions(props: TransactionsProps) {
         }
     }, [lastPoolChangeMessage]);
 
-    const TransactionsDisplay = (
-        <div className={styles.desktop_transaction_display_container}>
-            {usePaginateDataOrNull?.map((tx, idx) => (
-                <TransactionCard
-                    key={idx}
-                    tx={tx}
-                    tokenMap={tokenMap}
-                    chainId={chainData.chainId}
-                    blockExplorer={blockExplorer}
-                    tokenAAddress={tokenAAddress}
-                    tokenBAddress={tokenBAddress}
-                    isDenomBase={isDenomBase}
-                    account={account}
-                    currentTxActiveInTransactions={currentTxActiveInTransactions}
-                    setCurrentTxActiveInTransactions={setCurrentTxActiveInTransactions}
-                    openGlobalModal={props.openGlobalModal}
-                />
-            ))}
-        </div>
-    );
     // const [expanded, setExpanded] = useState<false | number>(false);
 
-    const accordionsDisplay = (
-        <div className={styles.accordion_display_container}>
-            {/* {usePaginateDataOrNull?.map((tx, idx) => (
-                <TransactionAccordions
+    const sidebarOpen = false;
+
+    const ipadView = useMediaQuery('(max-width: 480px)');
+    const desktopView = useMediaQuery('(max-width: 768px)');
+
+    const showColumns = sidebarOpen || desktopView;
+
+    const quoteTokenSymbol = tradeData.quoteToken?.symbol;
+    const baseTokenSymbol = tradeData.baseToken?.symbol;
+
+    const baseTokenCharacter = baseTokenSymbol ? getUnicodeCharacter(baseTokenSymbol) : '';
+    const quoteTokenCharacter = quoteTokenSymbol ? getUnicodeCharacter(quoteTokenSymbol) : '';
+
+    const priceCharacter = isDenomBase ? quoteTokenCharacter : baseTokenCharacter;
+
+    const walID = (
+        <>
+            <p>ID</p>
+            <p>Wallet</p>
+        </>
+    );
+    const sideType = (
+        <>
+            <p>Side</p>
+            <p>Type</p>
+        </>
+    );
+    const tokens = (
+        <>
+            <p>{`${baseTokenSymbol} (${baseTokenCharacter})`}</p>
+            <p>{`${quoteTokenSymbol} (${quoteTokenCharacter})`}</p>
+        </>
+    );
+    const headerColumns = [
+        {
+            name: 'ID',
+
+            show: !showColumns,
+            slug: 'id',
+            sortable: true,
+        },
+        {
+            name: 'Wallet',
+
+            show: !showColumns,
+            slug: 'wallet',
+            sortable: true,
+        },
+        {
+            name: walID,
+
+            show: showColumns,
+            slug: 'walletid',
+            sortable: false,
+        },
+        {
+            name: `Price(${priceCharacter})`,
+
+            show: !ipadView,
+            slug: 'price',
+            sortable: true,
+        },
+        {
+            name: 'Side',
+
+            show: !showColumns,
+            slug: 'side',
+            sortable: true,
+        },
+        {
+            name: 'Type',
+
+            show: !showColumns,
+            slug: 'type',
+            sortable: true,
+        },
+        {
+            name: sideType,
+
+            show: showColumns && !ipadView,
+            slug: 'sidetype',
+            sortable: false,
+        },
+        {
+            name: 'Value($)',
+
+            show: true,
+            slug: 'value',
+            sortable: true,
+        },
+        {
+            name: `${baseTokenSymbol} (${baseTokenCharacter})`,
+
+            show: !showColumns && !showSidebar,
+            slug: baseTokenSymbol,
+            sortable: false,
+        },
+        {
+            name: `${quoteTokenSymbol} (${quoteTokenCharacter})`,
+
+            show: !showColumns && !showSidebar,
+            slug: quoteTokenSymbol,
+            sortable: false,
+        },
+        {
+            name: tokens,
+
+            show: showColumns || showSidebar,
+            slug: 'tokens',
+            sortable: false,
+        },
+
+        {
+            name: '',
+
+            show: true,
+            slug: 'menu',
+            sortable: false,
+        },
+    ];
+
+    const [sortBy, setSortBy] = useState('default');
+    const [reverseSort, setReverseSort] = useState(false);
+
+    const headerColumnsDisplay = (
+        <ul className={styles.header}>
+            {headerColumns.map((header, idx) => (
+                <TransactionHeader
                     key={idx}
-                    expanded={expanded}
-                    setExpanded={setExpanded}
-                    tx={tx}
-                    i={idx}
+                    sortBy={sortBy}
+                    setSortBy={setSortBy}
+                    reverseSort={reverseSort}
+                    setReverseSort={setReverseSort}
+                    header={header}
                 />
-            ))} */}
-            <p>Mobile Accordion here: Disabled for now</p>
-        </div>
+            ))}
+        </ul>
     );
 
-    const noData = <div className={styles.no_data}>No Data to Display</div>;
-    const transactionDataOrNull = dataToDisplay ? TransactionsDisplay : noData;
-
-    return (
-        <div className={styles.container}>
-            <TransactionCardHeader tradeData={tradeData} />
-            <div
-                className={`${styles.item_container} ${expandTradeTable && styles.expand_height}`}
-                // style={{ height: expandTradeTable ? '100%' : '170px' }}
-            >
-                {isDataLoading ? <TransactionsSkeletons /> : accordionsDisplay}
-                {isDataLoading ? <TransactionsSkeletons /> : transactionDataOrNull}
-            </div>
+    const footerDisplay = (
+        <div className={styles.footer}>
             {expandTradeTable && transactionData.length > 30 && (
                 <Pagination
                     itemsPerPage={transactionsPerPage}
@@ -360,5 +459,34 @@ export default function Transactions(props: TransactionsProps) {
                 />
             )}
         </div>
+    );
+
+    const rowItemContent = usePaginateDataOrNull?.map((tx, idx) => (
+        <TransactionRow
+            key={idx}
+            tx={tx}
+            currentTxActiveInTransactions={currentTxActiveInTransactions}
+            setCurrentTxActiveInTransactions={setCurrentTxActiveInTransactions}
+            openGlobalModal={openGlobalModal}
+            isShowAllEnabled={isShowAllEnabled}
+            ipadView={ipadView}
+            showColumns={showColumns}
+            showSidebar={showSidebar}
+            blockExplorer={blockExplorer}
+        />
+    ));
+
+    const noData = <div className={styles.no_data}>No Data to Display</div>;
+    const transactionDataOrNull = dataToDisplay ? rowItemContent : noData;
+
+    return (
+        <main
+            className={`${styles.main_list_container} `}
+            style={{ height: expandTradeTable ? 'calc(100vh - 10rem)' : '170px' }}
+        >
+            {headerColumnsDisplay}
+            {isDataLoading ? <TransactionsSkeletons /> : transactionDataOrNull}
+            {footerDisplay}
+        </main>
     );
 }

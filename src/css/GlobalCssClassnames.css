@@ -23,3 +23,17 @@
 .order_buy{
   color:  #7371FC  
 }
+
+/* transactions */
+.add_style{
+ color: #5FFFF2
+}
+.remove_style{
+  color: #5FA2FF;
+}
+.buy_style{
+  color: #7371FC
+}
+.sell_style{
+  color: #E480FF;
+}
