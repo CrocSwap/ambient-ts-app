@@ -10,6 +10,8 @@ import { useMoralis } from 'react-moralis';
 import { ethers } from 'ethers';
 import { TokenIF } from '../../utils/interfaces/TokenIF';
 import { CrocEnv, toDisplayQty } from '@crocswap-libs/sdk';
+import Modal from '../../components/Global/Modal/Modal';
+import { useModal } from '../../components/Global/Modal/useModal';
 
 import { Erc20TokenBalanceFn, nativeTokenBalanceFn } from '../../App/functions/fetchTokenBalances';
 import {
@@ -192,6 +194,8 @@ export default function Portfolio(props: PortfolioPropsIF) {
         console.log({ selectedToken });
     }, [selectedToken]);
 
+    const [isTokenModalOpen, openTokenModal, closeTokenModal] = useModal();
+
     const exchangeBalanceComponent = (
         <div className={styles.exchange_balance}>
             <ExchangeBalance
@@ -209,6 +213,7 @@ export default function Portfolio(props: PortfolioPropsIF) {
                 setRecheckTokenAllowance={setRecheckTokenAllowance}
                 setRecheckTokenBalances={setRecheckTokenBalances}
                 lastBlockNumber={lastBlockNumber}
+                openTokenModal={openTokenModal}
             />
         </div>
     );
@@ -296,8 +301,6 @@ export default function Portfolio(props: PortfolioPropsIF) {
 
     const [showProfileSettings, setShowProfileSettings] = useState(false);
 
-
-
     return (
         <main data-testid={'portfolio'} className={styles.portfolio_container}>
             {userAccount && showProfileSettings && (
@@ -343,10 +346,20 @@ export default function Portfolio(props: PortfolioPropsIF) {
                     setOutsideControl={setOutsideControl}
                     outsideControl={outsideControl}
                     rightTabOptions={false}
+                    openTokenModal={openTokenModal}
                 />
                 {connectedAccountActive && !fullLayoutActive ? exchangeBalanceComponent : null}
             </div>
+        {isTokenModalOpen && <Modal
+            onClose={closeTokenModal}
+            title='Select Token'
+            centeredTitle
+            handleBack={closeTokenModal}
+            showBackButton={true}
+            footer={null}
+        >
             <SoloTokenSelect />
+        </Modal>}
         </main>
     );
 }
