@@ -113,5 +113,13 @@ export default function ClaimOrder(props: IClaimOrderProps) {
             </a>
         </div>
     );
+
+    const claimPending = (
+        <div className={styles.removal_pending}>
+            <div className={styles.loader} />
+
+            <p>Check the Metamask extension in your browser for notifications.</p>
+        </div>
+    );
     return <div>claim</div>;
 }
