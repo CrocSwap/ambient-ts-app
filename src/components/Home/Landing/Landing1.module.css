@@ -53,7 +53,7 @@
     cursor: pointer;
     text-align: center;
 
-    transition: all var(--animation-speed) ease-out;
+    transition: all var(--animation-speed) ease-in-out;
     background: linear-gradient(
         270deg,
         #5a58c7,

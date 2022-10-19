@@ -84,7 +84,11 @@ color: rgba(235, 235, 255, 0.4);
 }
 .row_container{
     width: 100%;
+    transition: all var(--animation-speed) ease-in-out
    
+}
+.row_container:hover{
+  background: var(--dark2)
 }
 .row_container li{
     font-weight: 300;

@@ -390,6 +390,8 @@ export default function TradeTabs2(props: ITabsProps) {
         },
         { label: 'Limit Orders', content: <Orders {...ordersProps} />, icon: openOrdersImage },
         { label: 'Ranges', content: <Ranges {...rangesProps} />, icon: rangePositionsImage },
+        { label: 'Leaderboard', content: <Ranges {...rangesProps} />, icon: rangePositionsImage },
+        { label: 'Info', content: <Ranges {...rangesProps} />, icon: rangePositionsImage },
     ];
 
     // -------------------------------END OF DATA-----------------------------------------

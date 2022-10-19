@@ -3,14 +3,15 @@
     justify-content: flex-end;
     flex-direction: row;
     align-items: center;
-    /* margin-top: auto; */
-    /* padding: 16px 0; */
+
     height: var(--footer-height);
 
     font-size: var(--body-size);
     line-height: var(--body-lh);
     gap: var(--gap, 1rem);
     z-index: 999;
+
+ 
 }
 
 .footer svg {

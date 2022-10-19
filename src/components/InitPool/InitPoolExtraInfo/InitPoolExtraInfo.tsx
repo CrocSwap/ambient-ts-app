@@ -1,47 +1,65 @@
 // START: Import React and Dongles
 import { useState } from 'react';
-import { FaGasPump } from 'react-icons/fa';
-import { RiArrowDownSLine } from 'react-icons/ri';
+// import { FaGasPump } from 'react-icons/fa';
+// import { RiArrowDownSLine } from 'react-icons/ri';
 
 // START: Import Local Files
 import styles from './InitPoolExtraInfo.module.css';
 import TooltipComponent from '../../Global/TooltipComponent/TooltipComponent';
-import { TokenPairIF } from '../../../utils/interfaces/TokenPairIF';
+import { TokenIF } from '../../../utils/interfaces/TokenIF';
+import { formatAmount } from '../../../utils/numbers';
 
 interface InitPriceExtraInfoProps {
     initGasPriceinDollars: string | undefined;
-    initialPrice: number;
-    tokenPair: TokenPairIF;
+    initialPrice: number | undefined;
+    isDenomBase: boolean;
+    baseToken: TokenIF;
+    quoteToken: TokenIF;
 }
 
 export default function InitPoolExtraInfo(props: InitPriceExtraInfoProps) {
-    const { initialPrice, initGasPriceinDollars, tokenPair } = props;
+    const { initialPrice, isDenomBase, initGasPriceinDollars, baseToken, quoteToken } = props;
 
-    const [showExtraDetails, setShowExtraDetails] = useState<boolean>(false);
+    const [showExtraDetails] = useState<boolean>(true);
+    // const [showExtraDetails, setShowExtraDetails] = useState<boolean>(true);
+
+    const initialPriceLocaleString = initialPrice
+        ? initialPrice < 0.0001
+            ? initialPrice.toExponential(2)
+            : initialPrice < 2
+            ? initialPrice.toPrecision(3)
+            : initialPrice >= 100000
+            ? formatAmount(initialPrice)
+            : initialPrice.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+              })
+        : '...';
+
+    const priceDisplayString = isDenomBase
+        ? `1 ${baseToken.symbol} = ${initialPriceLocaleString} ${quoteToken.symbol}`
+        : `1 ${quoteToken.symbol} = ${initialPriceLocaleString} ${baseToken.symbol}`;
 
     const extraInfoData = [
         {
-            title: 'Initial Spot Price',
-            tooltipTitle: 'Additional liquidity can be minted after pool seeding.',
-            data: `${initialPrice || '...'} ${tokenPair.dataTokenB.symbol} per ${
-                tokenPair.dataTokenA.symbol
-            }`,
+            title: 'Price',
+            tooltipTitle: 'The initial price at which liquidity positions can be minted.',
+            // data: `${initialPrice || '...'} ${tokenPair.dataTokenB.symbol} per ${
+            //     tokenPair.dataTokenA.symbol
+            // }`,
+            data: priceDisplayString,
         },
         {
-            title: `Expected ${tokenPair.dataTokenA.symbol} Deposit`,
-            tooltipTitle: `Expected ${tokenPair.dataTokenA.symbol} Deposit`,
-            data: `0.000001 ${tokenPair.dataTokenA.symbol}`,
-        },
-        {
-            title: `Expected ${tokenPair.dataTokenB.symbol} Deposit`,
-            tooltipTitle: `Expected ${tokenPair.dataTokenB.symbol} Deposit`,
-            data: `0.000000000000387302 ${tokenPair.dataTokenB.symbol}`,
-        },
-        {
-            title: 'Additional liquidity can be minted after pool seeding.',
+            title: 'Liquidity Provider Fee',
             tooltipTitle: '',
-            data: '',
+            data: 'Dynamic',
         },
+        {
+            title: 'Network Fee',
+            tooltipTitle: 'Estimated network fee (i.e. gas cost) to initialize pool',
+            data: `${initGasPriceinDollars}`,
+        },
+
         // {
         //     title: 'Effective Conversion Rate',
         //     tooltipTitle: 'Conversion Rate After Swap Impact and Fees',
@@ -77,21 +95,21 @@ export default function InitPoolExtraInfo(props: InitPriceExtraInfoProps) {
 
     return (
         <>
-            <div
+            {/* <div
                 className={styles.extra_info_content}
                 onClick={() => setShowExtraDetails(!showExtraDetails)}
-            >
-                <div className={styles.gas_pump}>
-                    <FaGasPump size={15} /> {initGasPriceinDollars || '…'}
-                    {/* {truncatedGasInGwei ? `${truncatedGasInGwei} gwei` : '…'} */}
-                </div>
-                <div className={styles.token_amount}>
+            > */}
+            {/* <div className={styles.gas_pump}>
+                    <FaGasPump size={15} /> {initGasPriceinDollars || '…'} */}
+            {/* {truncatedGasInGwei ? `${truncatedGasInGwei} gwei` : '…'} */}
+            {/* </div> */}
+            {/* <div className={styles.token_amount}>
                     {`${initialPrice || '...'} ${tokenPair.dataTokenB.symbol} per ${
                         tokenPair.dataTokenA.symbol
                     }`}
                     <RiArrowDownSLine size={27} />{' '}
-                </div>
-            </div>
+                </div> */}
+            {/* </div> */}
             {extraDetailsOrNull}
         </>
     );

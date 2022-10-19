@@ -19,7 +19,7 @@ text {
 
 .annotation-line > .redline {
     stroke: rgba(235, 235, 255, 0.4);
-    stroke-width: 4;
+    stroke-width: 3;
     stroke-dasharray: 16 16;
     stroke-opacity: 0.4;
     border: 2px dashed rgba(235, 235, 255, 0.4);
@@ -44,24 +44,16 @@ text {
     background-color: #7371fc;
 }
 
-div.popup {
-    position: absolute;
-    text-align: center;
-    pointer-events: none;
-
-    background: rgba(10, 10, 19, 0.47);
-    padding: 6px;
-
-    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.47);
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
-    border-radius: var(--border-radius);
-}
 
 .popup {
     position: absolute;
     text-align: center;
     pointer-events: none;
+
+    top: 66%;
+    width: 60%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 
     background: rgba(10, 10, 19, 0.47);
     padding: 6px;
@@ -183,4 +175,72 @@ label {
     padding-left: 7px;
     padding-top: 2px;
     font-size: 12px;
+}
+
+
+#d3fc_group {
+    display: flex;
+    height:100%;
+    width: 100%;
+    flex-direction: column;
+}
+
+
+@media  (max-width: 1280px) and (min-width: 700px) {
+
+    #d3fc_group {
+        height:90%;
+        padding: 1%;
+    }
+
+    .popup {
+        top: 50%!important;
+        padding: 5px;
+        font-size: large;
+    }
+    
+}
+
+/* @media  (max-width: 1320px) and (min-width: 1320px) {
+    .popup {
+        font-size: medium;
+        top: 50%;
+    } 
+    
+
+} */
+
+
+@media only screen and (max-width: 1325px) {
+    .popup {
+        font-size: medium;
+        top: 66%;
+    } 
+    
+
+}
+
+@media only screen and (max-width: 700px) {
+    #d3fc_group {
+        height:85%;
+        padding: 0px 5% 0px 0px;
+
+    }
+    .popup {
+        font-size: medium;
+        width: 80%;
+        top: 49%;
+    }
+    
+
+}
+
+
+@media only screen and (max-width: 480px) {
+
+    #d3fc_group {
+        height:85%;
+        padding: 0px 5% 0px 0px;
+
+    }
 }

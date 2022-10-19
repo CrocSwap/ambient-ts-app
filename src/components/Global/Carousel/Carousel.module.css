@@ -3,7 +3,7 @@
 }
 .inner {
     white-space: nowrap;
-    transition: transform var(--animation-speed);
+    transition: transform var(--animation-speed) ease-in-out;
 }
 
 .indicators {

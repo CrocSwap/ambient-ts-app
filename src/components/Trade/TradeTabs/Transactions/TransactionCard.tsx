@@ -498,13 +498,13 @@ export default function TransactionCard(props: TransactionProps) {
 
         //         <Value
         //             usdValue={
-        //                 totalFlowUSDTruncated !== undefined
-        //                     ? '$' + totalFlowUSDTruncated
-        //                     : totalValueUSDTruncated
-        //                     ? '$' + totalValueUSDTruncated
-        //                     : usdValueTruncated
-        //                     ? '$' + usdValueTruncated
-        //                     : '…'
+        // totalFlowUSDTruncated !== undefined
+        //     ? '$' + totalFlowUSDTruncated
+        //     : totalValueUSDTruncated
+        //     ? '$' + totalValueUSDTruncated
+        //     : usdValueTruncated
+        //     ? '$' + usdValueTruncated
+        //     : '…'
         //             }
         //         />
         //         <TokenQty

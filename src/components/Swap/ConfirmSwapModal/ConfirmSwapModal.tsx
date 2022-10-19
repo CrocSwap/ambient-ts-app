@@ -6,10 +6,11 @@ import TransactionDenied from '../../Global/TransactionDenied/TransactionDenied'
 import Button from '../../Global/Button/Button';
 import { TokenPairIF } from '../../../utils/interfaces/exports';
 import { CrocImpact } from '@crocswap-libs/sdk';
-import { Dispatch, SetStateAction } from 'react';
+import { Dispatch, SetStateAction, useState } from 'react';
 import TokensArrow from '../../Global/TokensArrow/TokensArrow';
-import DenominationSwitch from '../DenominationSwitch/DenominationSwitch';
-import ConfirmationModalControl from '../../Global/ConfirmationModalControl/ConfirmationModalControl';
+// import DenominationSwitch from '../DenominationSwitch/DenominationSwitch';
+// import ConfirmationModalControl from '../../Global/ConfirmationModalControl/ConfirmationModalControl';
+import InitPoolDenom from '../../InitPool/InitPoolDenom/InitPoolDenom';
 
 interface ConfirmSwapModalProps {
     initiateSwapMethod: () => void;
@@ -26,12 +27,15 @@ interface ConfirmSwapModalProps {
     showConfirmation: boolean;
     setShowConfirmation: Dispatch<SetStateAction<boolean>>;
     resetConfirmation: () => void;
+    slippageTolerancePercentage: number;
+    effectivePrice: number;
+    isSellTokenBase: boolean;
 }
 
 export default function ConfirmSwapModal(props: ConfirmSwapModalProps) {
     const {
         initiateSwapMethod,
-        priceImpact,
+        // priceImpact,
         isDenomBase,
         poolPriceDisplay,
         baseTokenSymbol,
@@ -44,6 +48,9 @@ export default function ConfirmSwapModal(props: ConfirmSwapModalProps) {
         resetConfirmation,
         showConfirmation,
         setShowConfirmation,
+        slippageTolerancePercentage,
+        effectivePrice,
+        isSellTokenBase,
     } = props;
 
     const transactionApproved = newSwapTransactionHash !== '';
@@ -54,28 +61,54 @@ export default function ConfirmSwapModal(props: ConfirmSwapModalProps) {
     const sellTokenQty = (document.getElementById('sell-quantity') as HTMLInputElement)?.value;
     const buyTokenQty = (document.getElementById('buy-quantity') as HTMLInputElement)?.value;
 
-    const primarySwapInput = 'sell';
+    // const primarySwapInput = 'sell';
     const sellTokenData = tokenPair.dataTokenA;
 
     const buyTokenData = tokenPair.dataTokenB;
 
-    const explanationText =
-        primarySwapInput === 'sell' ? (
-            <div className={styles.confSwap_detail_note}>
-                Output is estimated. You will swap up to {sellTokenQty} {sellTokenData.symbol} for{' '}
-                {buyTokenData.symbol}. You may swap less than {sellTokenQty} {sellTokenData.symbol}{' '}
-                if the price moves beyond the price limit shown above. You can increase the
-                likelihood of swapping the full amount by increasing your slippage tolerance in
-                settings.
-            </div>
-        ) : (
-            <div className={styles.confSwap_detail_note}>
-                Input is estimated. You will swap {sellTokenData.symbol} for up to {buyTokenQty}{' '}
-                {buyTokenData.symbol}. You may swap less than {buyTokenQty} {buyTokenData.symbol} if
-                the price moves beyond the price limit shown above. You can increase the likelihood
-                of swapping the full amount by increasing your slippage tolerance in settings.
-            </div>
-        );
+    const [isDenomBaseLocal, setIsDenomBaseLocal] = useState(isDenomBase);
+
+    const isPriceInverted =
+        (isDenomBaseLocal && !isSellTokenBase) || (!isDenomBaseLocal && isSellTokenBase);
+
+    const effectivePriceWithDenom = effectivePrice
+        ? isPriceInverted
+            ? 1 / effectivePrice
+            : effectivePrice
+        : undefined;
+
+    const displayEffectivePriceString =
+        !effectivePriceWithDenom ||
+        effectivePriceWithDenom === Infinity ||
+        effectivePriceWithDenom === 0
+            ? '…'
+            : effectivePriceWithDenom < 2
+            ? effectivePriceWithDenom.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 6,
+              })
+            : effectivePriceWithDenom.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+              });
+
+    // const explanationText =
+    //     primarySwapInput === 'sell' ? (
+    //         <div className={styles.confSwap_detail_note}>
+    //             Output is estimated. You will swap up to {sellTokenQty} {sellTokenData.symbol} for{' '}
+    //             {buyTokenData.symbol}. You may swap less than {sellTokenQty} {sellTokenData.symbol}{' '}
+    //             if the price moves beyond the price limit shown above. You can increase the
+    //             likelihood of swapping the full amount by increasing your slippage tolerance in
+    //             settings.
+    //         </div>
+    //     ) : (
+    //         <div className={styles.confSwap_detail_note}>
+    //             Input is estimated. You will swap {sellTokenData.symbol} for up to {buyTokenQty}{' '}
+    //             {buyTokenData.symbol}. You may swap less than {buyTokenQty} {buyTokenData.symbol} if
+    //             the price moves beyond the price limit shown above. You can increase the likelihood
+    //             of swapping the full amount by increasing your slippage tolerance in settings.
+    //         </div>
+    //     );
 
     const displayPriceWithDenom = poolPriceDisplay
         ? isDenomBase
@@ -95,25 +128,25 @@ export default function ConfirmSwapModal(props: ConfirmSwapModalProps) {
               })
         : '...';
     // const displayConversionRate = parseFloat(buyTokenQty) / parseFloat(sellTokenQty);
-    const priceAfterImpact = priceImpact?.finalPrice;
+    // const priceAfterImpact = priceImpact?.finalPrice;
 
-    const priceAfterImpactWithDenom = priceAfterImpact
-        ? isDenomBase
-            ? priceAfterImpact
-            : 1 / priceAfterImpact
-        : undefined;
+    // const priceAfterImpactWithDenom = priceAfterImpact
+    //     ? isDenomBase
+    //         ? priceAfterImpact
+    //         : 1 / priceAfterImpact
+    //     : undefined;
 
-    const priceLimit = priceAfterImpactWithDenom
-        ? priceAfterImpactWithDenom < 2
-            ? priceAfterImpactWithDenom.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 6,
-              })
-            : priceAfterImpactWithDenom.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              })
-        : '...';
+    // const priceLimit = priceAfterImpactWithDenom
+    //     ? priceAfterImpactWithDenom < 2
+    //         ? priceAfterImpactWithDenom.toLocaleString(undefined, {
+    //               minimumFractionDigits: 2,
+    //               maximumFractionDigits: 6,
+    //           })
+    //         : priceAfterImpactWithDenom.toLocaleString(undefined, {
+    //               minimumFractionDigits: 2,
+    //               maximumFractionDigits: 2,
+    //           })
+    //     : '...';
 
     const buyCurrencyRow = (
         <div className={styles.currency_row_container}>
@@ -148,15 +181,14 @@ export default function ConfirmSwapModal(props: ConfirmSwapModalProps) {
             <div className={styles.row}>
                 <p>Effective Conversion Rate</p>
                 <p>
-                    {' '}
-                    {isDenomBase
-                        ? `${priceLimit} ${quoteTokenSymbol} / ${baseTokenSymbol}`
-                        : `${priceLimit} ${baseTokenSymbol} / ${quoteTokenSymbol}`}{' '}
+                    {isDenomBaseLocal
+                        ? `${displayEffectivePriceString} ${quoteTokenSymbol} per ${baseTokenSymbol}`
+                        : `${displayEffectivePriceString} ${baseTokenSymbol} per ${quoteTokenSymbol}`}
                 </p>
             </div>
             <div className={styles.row}>
-                <p>Slippage</p>
-                <p>0.3% </p>
+                <p>Slippage Tolerance</p>
+                <p>{slippageTolerancePercentage}% </p>
             </div>
         </div>
     );
@@ -169,13 +201,16 @@ export default function ConfirmSwapModal(props: ConfirmSwapModalProps) {
                 </div>
                 {buyCurrencyRow}
             </section>
-            <DenominationSwitch />
+            <InitPoolDenom setIsDenomBase={setIsDenomBaseLocal} isDenomBase={isDenomBaseLocal} />
 
             {extraInfoData}
-            {explanationText}
-            <ConfirmationModalControl />
+            {/* {explanationText} */}
+            {/* <ConfirmationModalControl /> */}
         </div>
     );
+
+    // TODO: add confirmation modal control to local storage, settings
+    // TODO: and re-enable <ConfirmationModalControl> above
 
     // const fullTxDetails = (
     //     <>

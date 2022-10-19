@@ -1,7 +1,8 @@
 .icon svg {
     color: #bdbdbd;
+    transition: all var(--animation-speed) ease-in-out;
 }
 .icon svg:hover {
     color: white;
-    transition: all var(--animation-speed) ease-in-out;
+   
 }

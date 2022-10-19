@@ -34,8 +34,6 @@ export const useUrlParams = () => {
         findParamValue('tokenB') as string,
     );
 
-    // console.log(baseAddr, quoteAddr)
-
     return {
         chain: findParamValue('chain'),
         baseAddr: baseAddr.toLowerCase(),
