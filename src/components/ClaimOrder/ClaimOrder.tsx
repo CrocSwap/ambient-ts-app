@@ -12,6 +12,13 @@ import { CrocEnv } from '@crocswap-libs/sdk';
 import { BigNumber } from 'ethers';
 import Toggle2 from '../Global/Toggle/Toggle2';
 import TooltipComponent from '../Global/TooltipComponent/TooltipComponent';
-export default function ClaimOrder() {
+
+interface IClaimOrderProps {
+    crocEnv: CrocEnv | undefined;
+    limitOrder: ILimitOrderState;
+    closeGlobalModal: () => void;
+}
+
+export default function ClaimOrder(props: IClaimOrderProps) {
     return <div>claim</div>;
 }
