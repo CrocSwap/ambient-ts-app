@@ -23,6 +23,7 @@ import TvlSubChart from '../Trade/TradeCharts/TradeChartsLoading/TvlSubChart';
 import VolumeSubChart from '../Trade/TradeCharts/TradeChartsLoading/VolumeSubChart';
 import { ChartUtils } from '../Trade/TradeCharts/TradeCandleStickChart';
 import './Chart.css';
+import BarSeries from './ChartUtils/ChartUtils';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -165,6 +166,7 @@ export default function Chart(props: ChartData) {
     const [crosshairHorizontal, setCrosshairHorizontal] = useState<any>();
     const [crosshairVertical, setCrosshairVertical] = useState<any>();
     const [candlestick, setCandlestick] = useState<any>();
+    const [barSeries, setBarSeries] = useState<any>();
 
     // Utils
     const [zoomUtils, setZoomUtils] = useState<any>();
@@ -1700,6 +1702,12 @@ export default function Chart(props: ChartData) {
         }
     }, [scaleData]);
 
+    useEffect(() => {
+        if (scaleData !== undefined) {
+            BarSeries(scaleData, props.liquidityData, setBarSeries);
+        }
+    }, [scaleData]);
+
     // Call drawChart()
     useEffect(() => {
         if (
@@ -1717,6 +1725,7 @@ export default function Chart(props: ChartData) {
             marketLine !== undefined &&
             marketJoin !== undefined &&
             candlestick !== undefined &&
+            barSeries !== undefined &&
             targetsJoin !== undefined
         ) {
             const targetData = {
@@ -1743,6 +1752,7 @@ export default function Chart(props: ChartData) {
                 crosshairHorizontal,
                 marketLine,
                 candlestick,
+                barSeries,
             );
         }
     }, [
@@ -1763,6 +1773,7 @@ export default function Chart(props: ChartData) {
         crosshairHorizontal,
         marketLine,
         candlestick,
+        barSeries,
     ]);
 
     const minimum = (data: any, accessor: any) => {
@@ -1798,6 +1809,7 @@ export default function Chart(props: ChartData) {
             crosshairHorizontal: any,
             marketLine: any,
             candlestick: any,
+            barSeries: any,
         ) => {
             if (chartData.length > 0) {
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -1828,39 +1840,6 @@ export default function Chart(props: ChartData) {
                 const xAxis = d3fc.axisBottom().scale(scaleData.xScale);
 
                 const yAxis = d3fc.axisRight().scale(scaleData.yScale);
-
-                const barSeries = d3fc
-                    .seriesSvgBar()
-                    .orient('horizontal')
-                    .align('center')
-                    .mainValue((d: any) => d.activeLiq)
-                    .crossValue((d: any) => d.upperBoundPriceDecimalCorrected)
-                    .xScale(scaleData.liquidityScale)
-                    .yScale(scaleData.yScale)
-                    .bandwidth(function (value: any, index: any) {
-                        if (index !== 0 && index < liquidityData.liqData.length - 1) {
-                            const diffBot =
-                                value.upperBoundPriceDecimalCorrected -
-                                liquidityData.liqData[index + 1].upperBoundPriceDecimalCorrected;
-                            const diffTop =
-                                liquidityData.liqData[index - 1].upperBoundPriceDecimalCorrected -
-                                value.upperBoundPriceDecimalCorrected;
-
-                            return (diffBot + diffTop) * 2;
-                        }
-
-                        return 30;
-                    })
-                    .decorate((selection: any) => {
-                        selection
-                            .enter()
-                            .select('.bar > path')
-                            .style('fill', (d: any) => {
-                                return d.upperBoundPriceDecimalCorrected > scaleData.barThreshold
-                                    ? 'rgba(115, 113, 252, 0.3)'
-                                    : 'rgba(205, 193, 255, 0.3)';
-                            });
-                    });
 
                 const candleJoin = d3fc.dataJoin('g', 'candle');
 
