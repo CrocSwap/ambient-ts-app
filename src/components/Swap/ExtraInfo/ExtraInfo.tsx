@@ -25,20 +25,22 @@ interface ExtraInfoPropsIF {
     isTokenABase: boolean;
     isDenomBase: boolean;
     isOnTradeRoute?: boolean;
+    displayEffectivePriceString: string;
 }
 
 // central react functional component
 export default function ExtraInfo(props: ExtraInfoPropsIF) {
     const {
         // tokenPair,
-        priceImpact,
+        // priceImpact,
+        displayEffectivePriceString,
         poolPriceDisplay,
         slippageTolerance,
         liquidityProviderFee,
         // quoteTokenIsBuy,
         swapGasPriceinDollars,
         // didUserFlipDenom,
-        isTokenABase,
+        // isTokenABase,
         isOnTradeRoute,
         // isDenomBase,
     } = props;
@@ -56,22 +58,6 @@ export default function ExtraInfo(props: ExtraInfoPropsIF) {
     const baseTokenSymbol = tradeData.baseToken.symbol;
     const quoteTokenSymbol = tradeData.quoteToken.symbol;
 
-    // let reverseSlippage: boolean;
-
-    // if (isDenomBase) {
-    //     if (isTokenABase) {
-    //         reverseSlippage = false;
-    //     } else {
-    //         reverseSlippage = true;
-    //     }
-    // } else {
-    //     if (isTokenABase) {
-    //         reverseSlippage = true;
-    //     } else {
-    //         reverseSlippage = false;
-    //     }
-    // }
-
     const displayPriceWithDenom = isDenomBase ? 1 / poolPriceDisplay : poolPriceDisplay;
 
     const displayPriceString =
@@ -86,69 +72,6 @@ export default function ExtraInfo(props: ExtraInfoPropsIF) {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
               });
-
-    // const priceLimitAfterSlippageAndFee = reverseSlippage
-    //     ? displayPriceWithDenom * (1 + slippageTolerance / 100) * (1 + liquidityProviderFee / 100)
-    //     : displayPriceWithDenom * (1 - slippageTolerance / 100) * (1 - liquidityProviderFee / 100);
-
-    // const priceAfterImpact = priceImpact?.finalPrice;
-
-    const effectivePrice =
-        parseFloat(priceImpact?.buyQty || '0') / parseFloat(priceImpact?.sellQty || '1');
-
-    const isPriceInverted = (isDenomBase && !isTokenABase) || (!isDenomBase && isTokenABase);
-    const effectivePriceWithDenom = effectivePrice
-        ? isPriceInverted
-            ? 1 / effectivePrice
-            : effectivePrice
-        : undefined;
-
-    // useEffect(() => {
-    //     console.log({ priceImpact });
-    //     console.log({ effectivePriceWithDenom });
-    // }, [priceImpact, effectivePriceWithDenom]);
-
-    // const priceLimitAfterImpactAndFee = priceAfterImpactWithDenom
-    //     ? reverseSlippage
-    //         ? priceAfterImpactWithDenom * (1 + liquidityProviderFee / 100)
-    //         : priceAfterImpactWithDenom * (1 - liquidityProviderFee / 100)
-    //     : undefined;
-
-    // const displayLimitPriceString =
-    //     displayPriceWithDenom === Infinity || displayPriceWithDenom === 0
-    //         ? '…'
-    //         : priceLimitAfterSlippageAndFee < 2
-    //         ? priceLimitAfterSlippageAndFee.toLocaleString(undefined, {
-    //               minimumFractionDigits: 2,
-    //               maximumFractionDigits: 6,
-    //           })
-    //         : priceLimitAfterSlippageAndFee.toLocaleString(undefined, {
-    //               minimumFractionDigits: 2,
-    //               maximumFractionDigits: 2,
-    //           });
-
-    const displayEffectivePriceString =
-        !effectivePriceWithDenom ||
-        effectivePriceWithDenom === Infinity ||
-        effectivePriceWithDenom === 0
-            ? '…'
-            : effectivePriceWithDenom < 2
-            ? effectivePriceWithDenom.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 6,
-              })
-            : effectivePriceWithDenom.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              });
-
-    // const priceDisplay = makePriceDisplay(
-    //     tokenPair.dataTokenA,
-    //     tokenPair.dataTokenB,
-    //     isTokenABase,
-    //     poolPriceDisplay,
-    //     didUserFlipDenom,
-    // );
 
     const extraInfoData = [
         {

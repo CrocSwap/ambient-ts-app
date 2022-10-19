@@ -328,6 +328,33 @@ export default function Swap(props: SwapPropsIF) {
         resetConfirmation();
     };
 
+    const effectivePrice =
+        parseFloat(priceImpact?.buyQty || '0') / parseFloat(priceImpact?.sellQty || '1');
+
+    const isPriceInverted =
+        (tradeData.isDenomBase && !isSellTokenBase) || (!tradeData.isDenomBase && isSellTokenBase);
+
+    const effectivePriceWithDenom = effectivePrice
+        ? isPriceInverted
+            ? 1 / effectivePrice
+            : effectivePrice
+        : undefined;
+
+    const displayEffectivePriceString =
+        !effectivePriceWithDenom ||
+        effectivePriceWithDenom === Infinity ||
+        effectivePriceWithDenom === 0
+            ? '…'
+            : effectivePriceWithDenom < 2
+            ? effectivePriceWithDenom.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 6,
+              })
+            : effectivePriceWithDenom.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+              });
+
     // TODO:  @Emily refactor this Modal and later elements such that
     // TODO:  ... tradeData is passed to directly instead of tokenPair
     const confirmSwapModalOrNull = isModalOpen ? (
@@ -347,6 +374,9 @@ export default function Swap(props: SwapPropsIF) {
                 showConfirmation={showConfirmation}
                 setShowConfirmation={setShowConfirmation}
                 resetConfirmation={resetConfirmation}
+                slippageTolerancePercentage={slippageTolerancePercentage}
+                effectivePrice={effectivePrice}
+                isSellTokenBase={isSellTokenBase}
             />
         </Modal>
     ) : null;
@@ -446,6 +476,7 @@ export default function Swap(props: SwapPropsIF) {
                         tokenPair={{ dataTokenA: tokenA, dataTokenB: tokenB }}
                         priceImpact={priceImpact}
                         isTokenABase={isSellTokenBase}
+                        displayEffectivePriceString={displayEffectivePriceString}
                         poolPriceDisplay={poolPriceDisplay || 0}
                         slippageTolerance={slippageTolerancePercentage}
                         liquidityProviderFee={0.3}
