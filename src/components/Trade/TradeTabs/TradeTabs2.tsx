@@ -23,6 +23,7 @@ import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
 import { fetchPoolRecentChanges } from '../../../App/functions/fetchPoolRecentChanges';
 
 import { fetchUserRecentChanges } from '../../../App/functions/fetchUserRecentChanges';
+import Leaderboard from './Ranges/Leaderboard';
 
 interface ITabsProps {
     isUserLoggedIn: boolean;
@@ -390,7 +391,11 @@ export default function TradeTabs2(props: ITabsProps) {
         },
         { label: 'Limit Orders', content: <Orders {...ordersProps} />, icon: openOrdersImage },
         { label: 'Ranges', content: <Ranges {...rangesProps} />, icon: rangePositionsImage },
-        { label: 'Leaderboard', content: <Ranges {...rangesProps} />, icon: rangePositionsImage },
+        {
+            label: 'Leaderboard',
+            content: <Leaderboard {...rangesProps} />,
+            icon: rangePositionsImage,
+        },
         { label: 'Info', content: <Ranges {...rangesProps} />, icon: rangePositionsImage },
     ];
 
