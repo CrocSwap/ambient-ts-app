@@ -70,5 +70,18 @@ export default function ClaimOrder(props: IClaimOrderProps) {
     const baseQty = limitOrder.positionLiqBaseDecimalCorrected;
     const quoteQty = limitOrder.positionLiqQuoteDecimalCorrected;
 
+    // ---------------CLAIM FUNCTION TO BE REFACTORED
+
+    const claimFn = async () => {
+        if (crocEnv) {
+            setShowConfirmation(true);
+            setShowSettings(false);
+            console.log({ limitOrder });
+        }
+        console.log('Order has been claimed');
+    };
+
+    // -------------END OF CLAIM FUNCTION TO BE REFACTORED
+
     return <div>claim</div>;
 }
