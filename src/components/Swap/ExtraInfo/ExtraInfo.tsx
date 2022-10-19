@@ -38,7 +38,7 @@ export default function ExtraInfo(props: ExtraInfoPropsIF) {
         // quoteTokenIsBuy,
         swapGasPriceinDollars,
         // didUserFlipDenom,
-        // isTokenABase,
+        isTokenABase,
         isOnTradeRoute,
         // isDenomBase,
     } = props;
@@ -96,8 +96,9 @@ export default function ExtraInfo(props: ExtraInfoPropsIF) {
     const effectivePrice =
         parseFloat(priceImpact?.buyQty || '0') / parseFloat(priceImpact?.sellQty || '1');
 
+    const isPriceInverted = (isDenomBase && !isTokenABase) || (!isDenomBase && isTokenABase);
     const effectivePriceWithDenom = effectivePrice
-        ? isDenomBase
+        ? isPriceInverted
             ? 1 / effectivePrice
             : effectivePrice
         : undefined;

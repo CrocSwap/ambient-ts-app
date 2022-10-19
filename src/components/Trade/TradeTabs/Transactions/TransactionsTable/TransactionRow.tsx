@@ -162,7 +162,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                     )
                 ) : (
                     <li onClick={openDetailsModal} data-label='price' className={sideTypeStyle}>
-                        {truncatedDisplayPrice}
+                        {truncatedDisplayPrice || '…'}
                     </li>
                 ))}
 
