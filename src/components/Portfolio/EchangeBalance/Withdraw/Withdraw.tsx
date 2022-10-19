@@ -5,7 +5,7 @@ import WithdrawButton from './WithdrawButton/WithdrawButton';
 import WithdrawCurrencySelector from './WithdrawCurrencySelector/WithdrawCurrencySelector';
 // import { defaultTokens } from '../../../../utils/data/defaultTokens';
 import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
-import { setToken } from '../../../../utils/state/temp';
+// import { setToken } from '../../../../utils/state/temp';
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
 import TransferAddressInput from '../Transfer/TransferAddressInput/TransferAddressInput';
 import Toggle from '../../../Global/Toggle/Toggle';
@@ -41,7 +41,7 @@ export default function Withdraw(props: PortfolioWithdrawProps) {
         crocEnv,
         connectedAccount,
         // openGlobalModal,
-        closeGlobalModal,
+        // closeGlobalModal,
         selectedToken,
         // tokenAllowance,
         tokenWalletBalance,
