@@ -47,13 +47,13 @@ interface PortfolioTabsPropsIF {
     outsideControl: boolean;
     setOutsideControl: Dispatch<SetStateAction<boolean>>;
     rightTabOptions: ReactNode;
+    openTokenModal: () => void;
 }
 
 // React functional component
 export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
     const {
         crocEnv,
-        // provider,
         cachedFetchTokenPrice,
         importedTokens,
         connectedUserTokens,
@@ -69,6 +69,7 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
         rightTabOptions,
         outsideControl,
         setOutsideControl,
+        openTokenModal
     } = props;
 
     const graphData = useAppSelector((state) => state?.graphData);
@@ -216,6 +217,7 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
         activeAccount: activeAccount,
         chainId: chainId,
         tokenMap: tokenMap,
+        openTokenModal: openTokenModal
     };
     // props for <Range/> React Element
     const rangeProps = {

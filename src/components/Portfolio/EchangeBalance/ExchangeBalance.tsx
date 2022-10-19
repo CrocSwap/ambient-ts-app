@@ -30,6 +30,7 @@ interface ExchangeBalanceProps {
     setRecheckTokenAllowance: Dispatch<SetStateAction<boolean>>;
     setRecheckTokenBalances: Dispatch<SetStateAction<boolean>>;
     lastBlockNumber: number;
+    openTokenModal: () => void;
 }
 
 export default function ExchangeBalance(props: ExchangeBalanceProps) {
@@ -48,6 +49,7 @@ export default function ExchangeBalance(props: ExchangeBalanceProps) {
         setRecheckTokenAllowance,
         setRecheckTokenBalances,
         lastBlockNumber,
+        openTokenModal
     } = props;
 
     const [sendToAddress, setSendToAddress] = useState<string | undefined>();
@@ -115,6 +117,7 @@ export default function ExchangeBalance(props: ExchangeBalanceProps) {
                     tokenDexBalance={tokenDexBalance}
                     setRecheckTokenAllowance={setRecheckTokenAllowance}
                     setRecheckTokenBalances={setRecheckTokenBalances}
+                    openTokenModal={openTokenModal}
                 />
             ),
             icon: depositImage,
@@ -136,6 +139,7 @@ export default function ExchangeBalance(props: ExchangeBalanceProps) {
                     resolvedAddress={resolvedAddress}
                     setSendToAddress={setSendToAddress}
                     secondaryEnsName={secondaryEnsName}
+                    openTokenModal={openTokenModal}
                 />
             ),
             icon: withdrawImage,
@@ -156,6 +160,7 @@ export default function ExchangeBalance(props: ExchangeBalanceProps) {
                     resolvedAddress={resolvedAddress}
                     setSendToAddress={setSendToAddress}
                     secondaryEnsName={secondaryEnsName}
+                    openTokenModal={openTokenModal}
                 />
             ),
             icon: transferImage,

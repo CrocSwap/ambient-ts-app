@@ -4,10 +4,10 @@ import styles from './Transfer.module.css';
 import TransferAddressInput from './TransferAddressInput/TransferAddressInput';
 import TransferButton from './TransferButton/TransferButton';
 import TransferCurrencySelector from './TransferCurrencySelector/TransferCurrencySelector';
-import { defaultTokens } from '../../../../utils/data/defaultTokens';
+// import { defaultTokens } from '../../../../utils/data/defaultTokens';
 import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
-import { setToken } from '../../../../utils/state/temp';
+// import { setToken } from '../../../../utils/state/temp';
 import {
     addPendingTx,
     addReceipt,
@@ -32,14 +32,16 @@ interface PortfolioTransferProps {
     resolvedAddress: string | undefined;
     setSendToAddress: Dispatch<SetStateAction<string | undefined>>;
     secondaryEnsName: string | undefined;
+    openTokenModal: () => void;
 }
 
 export default function Transfer(props: PortfolioTransferProps) {
     const {
         crocEnv,
-        openGlobalModal,
-        closeGlobalModal,
-        selectedToken, // tokenAllowance,
+        // openGlobalModal,
+        // closeGlobalModal,
+        selectedToken,
+        // tokenAllowance,
         tokenDexBalance,
         // setRecheckTokenAllowance,
         setRecheckTokenBalances,
@@ -48,6 +50,7 @@ export default function Transfer(props: PortfolioTransferProps) {
         resolvedAddress,
         setSendToAddress,
         secondaryEnsName,
+        openTokenModal
     } = props;
 
     const dispatch = useAppDispatch();
@@ -94,11 +97,11 @@ export default function Transfer(props: PortfolioTransferProps) {
     // const [isApprovalPending, setIsApprovalPending] = useState(false);
     const [isTransferPending, setIsTransferPending] = useState(false);
 
-    const chooseToken = (tok: TokenIF) => {
-        console.log(tok);
-        dispatch(setToken(tok));
-        closeGlobalModal();
-    };
+    // const chooseToken = (tok: TokenIF) => {
+    //     console.log(tok);
+    //     dispatch(setToken(tok));
+    //     closeGlobalModal();
+    // };
 
     useEffect(() => {
         // console.log({ isDepositQtyValid });
@@ -139,17 +142,46 @@ export default function Transfer(props: PortfolioTransferProps) {
         isResolvedAddressValid,
     ]);
 
-    const chooseTokenDiv = (
-        <div>
-            {defaultTokens
-                .filter((token: TokenIF) => token.chainId === parseInt('0x5'))
-                .map((token: TokenIF) => (
-                    <button key={'button_to_set_' + token.name} onClick={() => chooseToken(token)}>
-                        {token.name}
-                    </button>
-                ))}
-        </div>
-    );
+    // const chooseTokenDiv = (
+    //     <div>
+    //         {defaultTokens
+    //             .filter((token: TokenIF) => token.chainId === parseInt('0x5'))
+    //             .map((token: TokenIF) => (
+    //                 <button key={'button_to_set_' + token.name} onClick={() => chooseToken(token)}>
+    //                     {token.name}
+    //                 </button>
+    //             ))
+    //         }
+    //     </div>
+    // );
+/*
+    const tokenSelectModalOrNull = isModalOpen ? (
+        <Modal
+            onClose={closeModal}
+            title='Select Token'
+            centeredTitle
+            handleBack={() => setShowManageTokenListContent(false)}
+            showBackButton={showManageTokenListContent}
+            footer={footerOrNull}
+        >
+            <TokenSelectContainer
+                tokenPair={tokenPair}
+                tokensBank={tokensBank}
+                setImportedTokens={setImportedTokens}
+                searchableTokens={searchableTokens}
+                tokenToUpdate={tokenToUpdate}
+                chainId={chainId}
+                tokenList={tokensBank}
+                closeModal={closeModal}
+                reverseTokens={reverseTokens}
+                showManageTokenListContent={showManageTokenListContent}
+                setShowManageTokenListContent={setShowManageTokenListContent}
+                activeTokenListsChanged={activeTokenListsChanged}
+                indicateActiveTokenListsChanged={indicateActiveTokenListsChanged}
+            />
+        </Modal>
+    ) : null;
+*/
 
     const transfer = async (transferQty: number) => {
         if (crocEnv && transferQty && resolvedAddress) {
@@ -250,7 +282,7 @@ export default function Transfer(props: PortfolioTransferProps) {
             />
             <TransferCurrencySelector
                 fieldId='exchange-balance-transfer'
-                onClick={() => openGlobalModal(chooseTokenDiv)}
+                onClick={() => openTokenModal()}
                 selectedToken={selectedToken}
                 setTransferQty={setTransferQty}
             />
