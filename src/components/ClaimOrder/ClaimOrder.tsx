@@ -44,5 +44,11 @@ export default function ClaimOrder(props: IClaimOrderProps) {
         quoteDisplay,
     } = useProcessOrder(limitOrder);
 
+    const [showConfirmation, setShowConfirmation] = useState(false);
+    const [newClaimTransactionHash, setNewClaimTransactionHash] = useState('');
+    const [txErrorCode, setTxErrorCode] = useState(0);
+    const [txErrorMessage, setTxErrorMessage] = useState('');
+    const [showSettings, setShowSettings] = useState(false);
+
     return <div>claim</div>;
 }
