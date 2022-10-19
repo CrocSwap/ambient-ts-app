@@ -202,9 +202,36 @@ label {
 }
 
 
-@media only screen and (max-width: 1330px) {
+@media only screen and (max-width: 1280px) {
+
+    #d3fc_group {
+        height:90%;
+        padding: 1%;
+    }
+
+    .popup {
+        top: 59%;
+        padding: 5px;
+        width: 50%;
+        font-size: large;
+    }
+    
+}
+
+@media  (max-width: 1300px) and (min-width: 1280px) {
     .popup {
         font-size: medium;
+        top: 50%;
+    }
+    
+
+}
+
+
+@media only screen and (max-width: 1300px) {
+    .popup {
+        font-size: medium;
+        top: 50%;
     }
     
 
@@ -214,6 +241,7 @@ label {
     .popup {
         font-size: medium;
         width: 80%;
+        top: 49%;
     }
     
 
