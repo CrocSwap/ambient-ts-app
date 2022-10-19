@@ -50,5 +50,18 @@ export default function ClaimOrder(props: IClaimOrderProps) {
     const [txErrorMessage, setTxErrorMessage] = useState('');
     const [showSettings, setShowSettings] = useState(false);
 
+    const resetConfirmation = () => {
+        setShowConfirmation(false);
+        setNewClaimTransactionHash('');
+        setTxErrorCode(0);
+        setTxErrorMessage('');
+    };
+
+    useEffect(() => {
+        if (!showConfirmation) {
+            resetConfirmation();
+        }
+    }, [txErrorCode]);
+
     return <div>claim</div>;
 }
