@@ -182,8 +182,6 @@ export default function TradeCandleStickChart(props: ChartData) {
                 }),
             );
 
-            console.log({ domainLeft, domainRight });
-
             const liquidityScale = d3.scaleLog().domain([domainLeft, domainRight]).range([0, 1000]);
 
             props.liquidityData.ranges.map((data: any) => {

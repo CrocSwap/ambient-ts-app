@@ -164,6 +164,7 @@ export default function Chart(props: ChartData) {
     const [indicatorLine, setIndicatorLine] = useState<any>();
     const [crosshairHorizontal, setCrosshairHorizontal] = useState<any>();
     const [crosshairVertical, setCrosshairVertical] = useState<any>();
+    const [candlestick, setCandlestick] = useState<any>();
 
     // Utils
     const [zoomUtils, setZoomUtils] = useState<any>();
@@ -234,12 +235,6 @@ export default function Chart(props: ChartData) {
         }
 
         if (d3.select(d3Yaxis.current).select('svg').select('g').select('text').node() === null) {
-            // .decorate((s: any) =>{
-            //     s.enter()
-            //       .select('text')
-            //       .style('fill', 'red');}
-            //   );
-
             const yAxisText = d3
                 .select(d3Yaxis.current)
                 .select('svg')
@@ -375,17 +370,6 @@ export default function Chart(props: ChartData) {
             liquidityScale.domain(liquidityExtent(props.liquidityData.liqData));
             ghostScale.domain(ghostExtent(props.liquidityData.liqSnapData));
 
-            const liqScale = liquidityScale
-                .copy()
-                .range([
-                    Math.min(
-                        ...props.liquidityData.liqData.map((o: any) => parseFloat(o.activeLiq)),
-                    ) / 2.5,
-                    Math.max(
-                        ...props.liquidityData.liqData.map((o: any) => parseFloat(o.activeLiq)),
-                    ) * 2.5,
-                ]);
-
             setScaleData(() => {
                 return {
                     xScale: xScale,
@@ -393,7 +377,6 @@ export default function Chart(props: ChartData) {
                     yScaleIndicator: yScaleIndicator,
                     xScaleIndicator: xScaleIndicator,
                     liquidityScale: liquidityScale,
-                    liqScale: liqScale,
                     xScaleCopy: xScaleCopy,
                     yScaleCopy: yScaleCopy,
                     barThreshold: barThreshold,
@@ -444,78 +427,77 @@ export default function Chart(props: ChartData) {
                     }
                 })
                 .on('zoom', (event: any) => {
-                    const t = event.transform;
+                    if (event.sourceEvent && event.sourceEvent.type != 'dblclick') {
+                        const t = event.transform;
 
-                    if (
-                        event.transform.rescaleX(scaleData.xScaleCopy).domain()[0] <
-                        domainBoundary[0]
-                    ) {
-                        domainBoundary = scaleData.xScale.domain();
-                    }
+                        if (
+                            event.transform.rescaleX(scaleData.xScaleCopy).domain()[0] <
+                            domainBoundary[0]
+                        ) {
+                            domainBoundary = scaleData.xScale.domain();
+                        }
 
-                    if (
-                        domainBoundary[0] >
-                        event.transform.rescaleX(scaleData.xScaleCopy).domain()[0]
-                    ) {
-                        candleDomain = {
-                            lastCandleDate:
-                                parsedChartData?.chartData[parsedChartData?.chartData.length - 1]
-                                    .time,
-                            domainBoundry: new Date(
-                                event.transform.rescaleX(scaleData.xScaleCopy).domain()[0],
-                            ).getTime(),
-                        };
-                    }
+                        if (
+                            domainBoundary[0] >
+                            event.transform.rescaleX(scaleData.xScaleCopy).domain()[0]
+                        ) {
+                            candleDomain = {
+                                lastCandleDate:
+                                    parsedChartData?.chartData[
+                                        parsedChartData?.chartData.length - 1
+                                    ].time,
+                                domainBoundry: new Date(
+                                    event.transform.rescaleX(scaleData.xScaleCopy).domain()[0],
+                                ).getTime(),
+                            };
+                        }
 
-                    if (rescale) {
-                        const xmin = new Date(Math.floor(scaleData.xScale.domain()[0]));
-                        const xmax = new Date(Math.floor(scaleData.xScale.domain()[1]));
+                        if (rescale) {
+                            const xmin = new Date(Math.floor(scaleData.xScale.domain()[0]));
+                            const xmax = new Date(Math.floor(scaleData.xScale.domain()[1]));
 
-                        const filtered = parsedChartData?.chartData.filter(
-                            (data: any) => data.date >= xmin && data.date <= xmax,
-                        );
+                            const filtered = parsedChartData?.chartData.filter(
+                                (data: any) => data.date >= xmin && data.date <= xmax,
+                            );
 
-                        if (filtered !== undefined) {
-                            const minYBoundary = d3.min(filtered, (d) => d.low);
-                            const maxYBoundary = d3.max(filtered, (d) => d.high);
+                            if (filtered !== undefined) {
+                                const minYBoundary = d3.min(filtered, (d) => d.low);
+                                const maxYBoundary = d3.max(filtered, (d) => d.high);
 
-                            if (maxYBoundary !== undefined && minYBoundary !== undefined) {
-                                const buffer = Math.floor((maxYBoundary - minYBoundary) * 0.1);
+                                if (maxYBoundary !== undefined && minYBoundary !== undefined) {
+                                    const buffer = Math.floor((maxYBoundary - minYBoundary) * 0.1);
 
-                                scaleData.yScale.domain([
-                                    minYBoundary - buffer,
-                                    maxYBoundary + buffer,
-                                ]);
+                                    scaleData.yScale.domain([
+                                        minYBoundary - buffer,
+                                        maxYBoundary + buffer,
+                                    ]);
+                                }
                             }
                         }
+
+                        scaleData.xScale.domain(
+                            event.transform.rescaleX(scaleData.xScaleCopy).domain(),
+                        );
+
+                        // PANNING
+                        if (!rescale && event.sourceEvent && event.sourceEvent.type != 'wheel') {
+                            const domainY = scaleData.yScale.domain();
+                            const linearY = d3
+                                .scaleLinear()
+                                .domain(scaleData.yScale.range())
+                                .range([domainY[1] - domainY[0], 0]);
+
+                            const deltaY = linearY(t.y - lastY);
+
+                            scaleData.yScale.domain([domainY[0] + deltaY, domainY[1] + deltaY]);
+                        }
+
+                        relocationCrosshairText(event);
+
+                        lastY = t.y;
+
+                        render();
                     }
-
-                    scaleData.xScale.domain(
-                        event.transform.rescaleX(scaleData.xScaleCopy).domain(),
-                    );
-
-                    // PANNING
-                    if (!rescale && event.sourceEvent && event.sourceEvent.type != 'wheel') {
-                        const domainY = scaleData.yScale.domain();
-                        const linearY = d3
-                            .scaleLinear()
-                            .domain(scaleData.yScale.range())
-                            .range([domainY[1] - domainY[0], 0]);
-
-                        const deltaY = linearY(t.y - lastY);
-
-                        console.log('t.y ', t.y);
-                        console.log('Zoom Scale', scaleData.yScale.domain());
-                        console.log('linearY', [domainY[0] + deltaY, domainY[1] + deltaY]);
-
-                        scaleData.yScale.domain([domainY[0] + deltaY, domainY[1] + deltaY]);
-                    }
-
-                    relocationCrosshairText(event);
-
-                    lastY = t.y;
-
-                    render();
                 })
                 .on('end', (event: any) => {
                     if (event.sourceEvent && event.sourceEvent.type != 'wheel') {
@@ -533,8 +515,6 @@ export default function Chart(props: ChartData) {
                 const center = (domain[1] + domain[0]) / 2;
                 const size = (domain[1] - domain[0]) / 2 / factor;
                 scaleData.yScale.domain([center - size, center + size]);
-
-                console.log(scaleData.yScale.domain());
 
                 setRescale(() => {
                     return false;
@@ -1555,7 +1535,6 @@ export default function Chart(props: ChartData) {
                 .xScale(scaleData.xScaleIndicator)
                 .yScale(scaleData.yScale)
                 .decorate((selection: any) => {
-                    selection.enter().style('visibility', 'hidden');
                     selection.enter().select('line').attr('class', 'highlightedPrice');
                     selection
                         .enter()
@@ -1641,6 +1620,86 @@ export default function Chart(props: ChartData) {
         }
     }, [scaleData]);
 
+    useEffect(() => {
+        if (scaleData !== undefined) {
+            let selectedCandle: any;
+
+            const candlestick = d3fc
+                .autoBandwidth(d3fc.seriesSvgCandlestick())
+                .decorate((selection: any) => {
+                    selection
+                        .style('fill', (d: any) => (d.close > d.open ? upBodyColor : downBodyColor))
+                        .style('stroke', (d: any) =>
+                            d.close > d.open ? upBorderColor : downBorderColor,
+                        );
+                    selection
+                        .enter()
+                        .on('mouseover', (event: any) => {
+                            d3.select(event.currentTarget).style('cursor', 'pointer');
+                        })
+                        .on('click', (event: any) => {
+                            if (
+                                selectedCandle !== undefined &&
+                                event.currentTarget !== selectedCandle
+                            ) {
+                                d3.select(selectedCandle)
+                                    .style('fill', (d: any) =>
+                                        d.close > d.open ? upBodyColor : downBodyColor,
+                                    )
+                                    .style('stroke', (d: any) =>
+                                        d.close > d.open ? upBorderColor : downBorderColor,
+                                    );
+                            }
+                            if (event.currentTarget === selectedCandle) {
+                                d3.select('#transactionPopup').style('visibility', 'hidden');
+                                d3.select(event.currentTarget)
+                                    .style('fill', (d: any) =>
+                                        d.close > d.open ? upBodyColor : downBodyColor,
+                                    )
+                                    .style('stroke', (d: any) =>
+                                        d.close > d.open ? upBorderColor : downBorderColor,
+                                    );
+
+                                setIsChartSelected(false);
+                                selectedCandle = undefined;
+                                setSelectedCandleState(undefined);
+                            } else {
+                                selectedCandle = event.currentTarget;
+
+                                setSelectedCandleState(() => {
+                                    return event.currentTarget;
+                                });
+
+                                setIsChartSelected(true);
+                                setTransactionFilter(() => {
+                                    return event.target.__data__;
+                                });
+
+                                d3.select(event.currentTarget)
+                                    .style('fill', '#E480FF')
+                                    .style('stroke', '#E480FF');
+
+                                d3.select('#transactionPopup')
+                                    .style('visibility', 'visible')
+                                    .html(
+                                        '<p>Showing Transactions for <span style="color: #E480FF">' +
+                                            moment(event.target.__data__.date).format(
+                                                'DD MMM  HH:mm',
+                                            ) +
+                                            '</span> Candle</p>',
+                                    );
+                            }
+                        });
+                })
+                .xScale(scaleData.xScale)
+                .yScale(scaleData.yScale);
+
+            setCandlestick(() => {
+                return candlestick;
+            });
+        }
+    }, [scaleData]);
+
     // Call drawChart()
     useEffect(() => {
         if (
@@ -1657,6 +1716,7 @@ export default function Chart(props: ChartData) {
             limitLine !== undefined &&
             marketLine !== undefined &&
             marketJoin !== undefined &&
+            candlestick !== undefined &&
             targetsJoin !== undefined
         ) {
             const targetData = {
@@ -1670,10 +1730,6 @@ export default function Chart(props: ChartData) {
                 targetData,
                 scaleData,
                 props.liquidityData,
-                upBodyColor,
-                downBodyColor,
-                upBorderColor,
-                downBorderColor,
                 zoomUtils,
                 horizontalLine,
                 limitLine,
@@ -1686,6 +1742,7 @@ export default function Chart(props: ChartData) {
                 crosshairVertical,
                 crosshairHorizontal,
                 marketLine,
+                candlestick,
             );
         }
     }, [
@@ -1705,6 +1762,7 @@ export default function Chart(props: ChartData) {
         crosshairVertical,
         crosshairHorizontal,
         marketLine,
+        candlestick,
     ]);
 
     const minimum = (data: any, accessor: any) => {
@@ -1727,10 +1785,6 @@ export default function Chart(props: ChartData) {
             targets: any,
             scaleData: any,
             liquidityData: any,
-            upBodyColor: any,
-            downBodyColor: any,
-            upBorderColor: any,
-            downBorderColor: any,
             zoomUtils: any,
             horizontalLine: any,
             limitLine: any,
@@ -1743,10 +1797,9 @@ export default function Chart(props: ChartData) {
             crosshairVertical: any,
             crosshairHorizontal: any,
             marketLine: any,
+            candlestick: any,
         ) => {
             if (chartData.length > 0) {
-                let selectedCandle: any;
-
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 
                 const snap = (series: any, data: any, point: any) => {
@@ -1776,98 +1829,37 @@ export default function Chart(props: ChartData) {
 
                 const yAxis = d3fc.axisRight().scale(scaleData.yScale);
 
-                const candlestick = d3fc
-                    .autoBandwidth(d3fc.seriesSvgCandlestick())
-                    .decorate((selection: any) => {
-                        selection
-                            .enter()
-                            .style('fill', (d: any) =>
-                                d.close > d.open ? upBodyColor : downBodyColor,
-                            )
-                            .style('stroke', (d: any) =>
-                                d.close > d.open ? upBorderColor : downBorderColor,
-                            );
-                        selection
-                            .enter()
-                            .on('mouseover', (event: any) => {
-                                d3.select(event.currentTarget).style('cursor', 'pointer');
-                            })
-                            .on('click', (event: any) => {
-                                if (
-                                    selectedCandle !== undefined &&
-                                    event.currentTarget !== selectedCandle
-                                ) {
-                                    d3.select(selectedCandle)
-                                        .style('fill', (d: any) =>
-                                            d.close > d.open ? upBodyColor : downBodyColor,
-                                        )
-                                        .style('stroke', (d: any) =>
-                                            d.close > d.open ? upBorderColor : downBorderColor,
-                                        );
-                                }
-                                if (event.currentTarget === selectedCandle) {
-                                    d3.select('#transactionPopup').style('visibility', 'hidden');
-                                    d3.select(event.currentTarget)
-                                        .style('fill', (d: any) =>
-                                            d.close > d.open ? upBodyColor : downBodyColor,
-                                        )
-                                        .style('stroke', (d: any) =>
-                                            d.close > d.open ? upBorderColor : downBorderColor,
-                                        );
-
-                                    setIsChartSelected(false);
-                                    selectedCandle = undefined;
-                                    setSelectedCandleState(undefined);
-                                } else {
-                                    selectedCandle = event.currentTarget;
-
-                                    setSelectedCandleState(() => {
-                                        return event.currentTarget;
-                                    });
-
-                                    setIsChartSelected(true);
-                                    setTransactionFilter(() => {
-                                        return event.target.__data__;
-                                    });
-
-                                    d3.select(event.currentTarget)
-                                        .style('fill', '#E480FF')
-                                        .style('stroke', '#E480FF');
-
-                                    d3.select('#transactionPopup')
-                                        .style('visibility', 'visible')
-                                        .html(
-                                            '<p>Showing Transactions for <span style="color: #E480FF">' +
-                                                moment(event.target.__data__.date).format(
-                                                    'DD MMM  HH:mm',
-                                                ) +
-                                                '</span> Candle</p>',
-                                        );
-                                }
-                            });
-                    })
-                    .xScale(scaleData.xScale)
-                    .yScale(scaleData.yScale);
-
-                let firstRender = d3.select(d3Container.current).select('.bar').node() === null;
                 const barSeries = d3fc
                     .seriesSvgBar()
                     .orient('horizontal')
                     .align('center')
-                    .mainValue((d: any) => scaleData.liqScale.invert(parseFloat(d.activeLiq)))
+                    .mainValue((d: any) => d.activeLiq)
                     .crossValue((d: any) => d.upperBoundPriceDecimalCorrected)
                     .xScale(scaleData.liquidityScale)
                     .yScale(scaleData.yScale)
+                    .bandwidth(function (value: any, index: any) {
+                        if (index !== 0 && index < liquidityData.liqData.length - 1) {
+                            const diffBot =
+                                value.upperBoundPriceDecimalCorrected -
+                                liquidityData.liqData[index + 1].upperBoundPriceDecimalCorrected;
+                            const diffTop =
+                                liquidityData.liqData[index - 1].upperBoundPriceDecimalCorrected -
+                                value.upperBoundPriceDecimalCorrected;
+
+                            return (diffBot + diffTop) * 2;
+                        }
+
+                        return 30;
+                    })
                     .decorate((selection: any) => {
-                        if (firstRender) {
-                            selection.select('.bar > path').style('fill', (d: any) => {
+                        selection
+                            .enter()
+                            .select('.bar > path')
+                            .style('fill', (d: any) => {
                                 return d.upperBoundPriceDecimalCorrected > scaleData.barThreshold
                                     ? 'rgba(115, 113, 252, 0.3)'
                                     : 'rgba(205, 193, 255, 0.3)';
                             });
-
-                            firstRender = false;
-                        }
                     });
 
                 const candleJoin = d3fc.dataJoin('g', 'candle');
@@ -1891,7 +1883,10 @@ export default function Chart(props: ChartData) {
                         event.detail.width,
                     ]);
 
-                    scaleData.liquidityScale.range([event.detail.width, event.detail.width / 2]);
+                    scaleData.liquidityScale.range([
+                        event.detail.width,
+                        (event.detail.width / 10) * 8,
+                    ]);
                 });
 
                 d3.select(d3PlotArea.current).on('draw', function (event: any) {
@@ -2006,8 +2001,6 @@ export default function Chart(props: ChartData) {
                                 render();
                             })
                             .on('mouseleave', (event) => {
-                                firstRender = true;
-
                                 d3.select(event.currentTarget)
                                     .selectAll('.bar > path')
                                     .style('fill', (d: any) => {
@@ -2044,14 +2037,6 @@ export default function Chart(props: ChartData) {
                     scaleData.yScaleCopy.range([event.detail.height, 0]);
 
                     svg.call(zoomUtils.zoom);
-                });
-
-                d3.select(d3PlotArea.current).on('measure.bandwidth', function (event: any) {
-                    const { height } = event.detail;
-
-                    barSeries.bandwidth(
-                        scaleData.yScale(height) / (parsedChartData?.period < 8000 ? 110 : 150),
-                    );
                 });
 
                 d3.select(d3PlotArea.current).on('mousemove', function (event: any) {
