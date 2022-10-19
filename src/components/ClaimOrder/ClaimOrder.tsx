@@ -95,5 +95,23 @@ export default function ClaimOrder(props: IClaimOrderProps) {
         </div>
     );
     const etherscanLink = 'chainData.blockExplorer' + 'tx/' + newClaimTransactionHash;
+
+    const claimSuccess = (
+        <div className={styles.removal_pending}>
+            <div className={styles.completed_animation}>
+                <Animation animData={completed} loop={false} />
+            </div>
+            <p>Removal Transaction Successfully Submitted</p>
+            <a
+                href={etherscanLink}
+                target='_blank'
+                rel='noreferrer'
+                className={styles.view_etherscan}
+            >
+                View on Etherscan
+                <FiExternalLink size={20} color='black' />
+            </a>
+        </div>
+    );
     return <div>claim</div>;
 }
