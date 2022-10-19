@@ -431,7 +431,6 @@ export default function Chart(props: ChartData) {
 
                     if (date === undefined) {
                         date = parsedChartData?.chartData[0].date;
-                        date.setTime(date.getTime() - 100 * 60 * 60 * 1000);
                     }
                 })
                 .on('zoom', (event: any) => {
@@ -454,12 +453,14 @@ export default function Chart(props: ChartData) {
                                 domainBoundry: date.getTime(),
                             };
 
+                            console.log(event.transform.rescaleX(scaleData.xScaleCopy).domain()[0]);
+
                             if (event.transform.rescaleX(scaleData.xScaleCopy).domain()[0] < date) {
                                 date.setTime(
                                     new Date(
                                         event.transform.rescaleX(scaleData.xScaleCopy).domain()[0],
                                     ).getTime() -
-                                        parsedChartData?.period * 1000,
+                                        100 * parsedChartData?.period * 1000,
                                 );
 
                                 candleDomain = {
@@ -468,6 +469,8 @@ export default function Chart(props: ChartData) {
                                 };
 
                                 console.error('fetch new Candles');
+                                console.error(date);
+
                                 dispatch(setCandleDomains(candleDomain));
                             }
                         }
