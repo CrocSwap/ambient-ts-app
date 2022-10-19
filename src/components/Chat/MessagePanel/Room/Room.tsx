@@ -24,8 +24,6 @@ interface currentPoolInfo {
     slippageTolerance: number;
     activeChartPeriod: number;
     targetData: targetData[];
-    pinnedMaxPriceDisplayTruncated: number;
-    pinnedMinPriceDisplayTruncated: number;
 }
 
 interface RoomProps {

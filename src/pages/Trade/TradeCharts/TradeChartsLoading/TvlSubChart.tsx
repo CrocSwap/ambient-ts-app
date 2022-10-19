@@ -11,10 +11,12 @@ interface TvlData {
     crosshairData: any[];
     setsubChartValues: React.Dispatch<React.SetStateAction<any>>;
     xScale: any;
+    xScaleCopy: any;
+    render: any;
 }
 
 export default function TvlSubChart(props: TvlData) {
-    const { tvlData, period, xScale, crosshairData } = props;
+    const { tvlData, period, xScale, crosshairData, xScaleCopy } = props;
 
     const setsubChartValues = props.setsubChartValues;
 
@@ -65,6 +67,16 @@ export default function TvlSubChart(props: TvlData) {
                         .style('fill', 'white');
                 });
 
+            const zoom = d3
+                .zoom()
+                .scaleExtent([1, 10])
+                .on('zoom', (event: any) => {
+                    xScale.domain(event.transform.rescaleX(xScaleCopy).domain());
+
+                    render();
+                    props.render();
+                });
+
             const multi = d3fc
                 .seriesSvgMulti()
                 .series([lineSeries, areaSeries, crosshair])
@@ -104,6 +116,7 @@ export default function TvlSubChart(props: TvlData) {
                 .yTickFormat(formatDollarAmountAxis)
                 .decorate((selection: any) => {
                     selection.select('.x-axis').style('height', '1px');
+                    selection.enter().select('d3fc-svg.plot-area').call(zoom);
                 })
                 .svgPlotArea(multi);
 
@@ -189,6 +202,8 @@ export default function TvlSubChart(props: TvlData) {
                         .select('g.annotation-line.horizontal')
                         .attr('visibility', 'hidden');
                 });
+
+                crosshairData[0].y = -1;
                 render();
             });
         }
