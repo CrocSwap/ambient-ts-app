@@ -156,5 +156,24 @@ export default function ClaimOrder(props: IClaimOrderProps) {
             <div className={styles.confirmation_content}>{currentConfirmationData}</div>
         </div>
     );
+    // ----------------------------END OF CONFIRMATION JSX------------------------------
+
+    // ----------------------------- GASLESS TRANSACTION-----------------------
+
+    const gaslesssTransactionControl = (
+        <section className={styles.gasless_container}>
+            <h3>Enable Gasless Transaction</h3>
+
+            <Toggle2
+                isOn={false}
+                handleToggle={() => console.log('toggled')}
+                id='gasless_transaction_toggle_remove_order'
+                disabled={true}
+            />
+        </section>
+    );
+
+    // ----------------------------- END OF GASLESS TRANSACTION-----------------------
+
     return <div>claim</div>;
 }
