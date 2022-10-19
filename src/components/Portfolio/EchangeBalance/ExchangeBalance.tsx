@@ -160,6 +160,7 @@ export default function ExchangeBalance(props: ExchangeBalanceProps) {
                     resolvedAddress={resolvedAddress}
                     setSendToAddress={setSendToAddress}
                     secondaryEnsName={secondaryEnsName}
+                    openTokenModal={openTokenModal}
                 />
             ),
             icon: transferImage,
