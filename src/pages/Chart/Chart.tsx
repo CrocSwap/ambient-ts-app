@@ -605,7 +605,7 @@ export default function Chart(props: ChartData) {
     const setAdvancedLines = () => {
         if (rangeModuleTriggered) {
             const results: boolean[] = [];
-
+            console.error({ targetData });
             ranges.map((mapData) => {
                 targetData?.map((data) => {
                     if (mapData.name === data.name && mapData.value == data.value) {
@@ -657,6 +657,7 @@ export default function Chart(props: ChartData) {
                                         : 0,
                             },
                         ];
+
                         return chartTargets;
                     }
                     return [
@@ -1035,7 +1036,7 @@ export default function Chart(props: ChartData) {
             limitLine.decorate((selection: any) => {
                 selection
                     .enter()
-                    .style('visibility', 'hidden')
+                    .style('visibility', location.pathname.includes('limit') ? 'visible' : 'hidden')
                     .attr('id', (d: any) => d.name)
                     .select('g.left-handle')
                     .append('text')
@@ -1098,7 +1099,7 @@ export default function Chart(props: ChartData) {
                 selection
                     .enter()
                     .attr('id', (d: any) => d.name)
-                    .style('visibility', 'hidden')
+                    .style('visibility', location.pathname.includes('range') ? 'visible' : 'hidden')
                     .select('g.left-handle')
                     .append('text')
                     .attr('x', 5)
@@ -1543,7 +1544,6 @@ export default function Chart(props: ChartData) {
                 .xScale(scaleData.xScaleIndicator)
                 .yScale(scaleData.yScale)
                 .decorate((selection: any) => {
-                    selection.enter().style('visibility', 'hidden');
                     selection.enter().select('line').attr('class', 'highlightedPrice');
                     selection
                         .enter()
@@ -1885,6 +1885,7 @@ export default function Chart(props: ChartData) {
                     async function createElements() {
                         const svg = d3.select(event.target).select('svg');
 
+                        console.error('targets.ranges', targets.ranges);
                         targetsJoin(svg, [targets.ranges]).call(horizontalLine);
                         crosshairHorizontalJoin(svg, [crosshairData]).call(crosshairHorizontal);
                         crosshairVerticalJoin(svg, [crosshairData]).call(crosshairVertical);
@@ -1897,8 +1898,8 @@ export default function Chart(props: ChartData) {
                         );
                         indicatorLineJoin(svg, [indicatorLineData]).call(indicatorLine);
 
-                        barJoin(svg, [liquidityData.liqData]).call(barSeries);
                         candleJoin(svg, [chartData]).call(candlestick);
+                        barJoin(svg, [liquidityData.liqData]).call(barSeries);
 
                         setDragControl(true);
                     }
@@ -1963,7 +1964,7 @@ export default function Chart(props: ChartData) {
                                                 2 +
                                             'px',
                                     )
-                                    .style('left', event.offsetX - 50 + 'px');
+                                    .style('left', event.offsetX - 80 + 'px');
 
                                 d3.select(event.currentTarget)
                                     .selectAll('.horizontal  > path')
