@@ -175,5 +175,39 @@ export default function ClaimOrder(props: IClaimOrderProps) {
 
     // ----------------------------- END OF GASLESS TRANSACTION-----------------------
 
+    // ---------------------SLIPPAGE TOLERANCE DISPLAY-----------------------------
+
+    const tooltipExplanationData = [
+        {
+            title: 'Slippage Tolerance',
+            tooltipTitle: 'something here',
+            data: '0.5%',
+        },
+        {
+            title: 'Network Fee',
+            tooltipTitle: 'something here about network fee',
+            data: '-$3.69',
+            // data: isDenomBase
+            //     ? `${displayLimitPriceString} ${quoteTokenSymbol} per ${baseTokenSymbol}`
+            //     : `${displayLimitPriceString} ${baseTokenSymbol} per ${quoteTokenSymbol}`,
+        },
+    ];
+
+    const tooltipExplanationDataDisplay = (
+        <div className={styles.explanation_details}>
+            {tooltipExplanationData.map((item, idx) => (
+                <div className={styles.extra_row} key={idx}>
+                    <div className={styles.align_center}>
+                        <div>{item.title}</div>
+                        <TooltipComponent title={item.tooltipTitle} />
+                    </div>
+                    <div className={styles.data}>{item.data}</div>
+                </div>
+            ))}
+        </div>
+    );
+
+    // ---------------------SLIPPAGE TOLERANCE DISPLAY-----------------------------
+
     return <div>claim</div>;
 }
