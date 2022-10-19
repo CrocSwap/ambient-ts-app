@@ -38,7 +38,7 @@ export default function ExtraInfo(props: ExtraInfoPropsIF) {
         // quoteTokenIsBuy,
         swapGasPriceinDollars,
         // didUserFlipDenom,
-        isTokenABase,
+        // isTokenABase,
         isOnTradeRoute,
         // isDenomBase,
     } = props;
@@ -56,21 +56,21 @@ export default function ExtraInfo(props: ExtraInfoPropsIF) {
     const baseTokenSymbol = tradeData.baseToken.symbol;
     const quoteTokenSymbol = tradeData.quoteToken.symbol;
 
-    let reverseSlippage: boolean;
+    // let reverseSlippage: boolean;
 
-    if (isDenomBase) {
-        if (isTokenABase) {
-            reverseSlippage = false;
-        } else {
-            reverseSlippage = true;
-        }
-    } else {
-        if (isTokenABase) {
-            reverseSlippage = true;
-        } else {
-            reverseSlippage = false;
-        }
-    }
+    // if (isDenomBase) {
+    //     if (isTokenABase) {
+    //         reverseSlippage = false;
+    //     } else {
+    //         reverseSlippage = true;
+    //     }
+    // } else {
+    //     if (isTokenABase) {
+    //         reverseSlippage = true;
+    //     } else {
+    //         reverseSlippage = false;
+    //     }
+    // }
 
     const displayPriceWithDenom = isDenomBase ? 1 / poolPriceDisplay : poolPriceDisplay;
 
@@ -91,18 +91,27 @@ export default function ExtraInfo(props: ExtraInfoPropsIF) {
     //     ? displayPriceWithDenom * (1 + slippageTolerance / 100) * (1 + liquidityProviderFee / 100)
     //     : displayPriceWithDenom * (1 - slippageTolerance / 100) * (1 - liquidityProviderFee / 100);
 
-    const priceAfterImpact = priceImpact?.finalPrice;
-    const priceAfterImpactWithDenom = priceAfterImpact
+    // const priceAfterImpact = priceImpact?.finalPrice;
+
+    const effectivePrice =
+        parseFloat(priceImpact?.buyQty || '0') / parseFloat(priceImpact?.sellQty || '1');
+
+    const effectivePriceWithDenom = effectivePrice
         ? isDenomBase
-            ? priceAfterImpact
-            : 1 / priceAfterImpact
+            ? 1 / effectivePrice
+            : effectivePrice
         : undefined;
 
-    const priceLimitAfterImpactAndFee = priceAfterImpactWithDenom
-        ? reverseSlippage
-            ? priceAfterImpactWithDenom * (1 + liquidityProviderFee / 100)
-            : priceAfterImpactWithDenom * (1 - liquidityProviderFee / 100)
-        : undefined;
+    // useEffect(() => {
+    //     console.log({ priceImpact });
+    //     console.log({ effectivePriceWithDenom });
+    // }, [priceImpact, effectivePriceWithDenom]);
+
+    // const priceLimitAfterImpactAndFee = priceAfterImpactWithDenom
+    //     ? reverseSlippage
+    //         ? priceAfterImpactWithDenom * (1 + liquidityProviderFee / 100)
+    //         : priceAfterImpactWithDenom * (1 - liquidityProviderFee / 100)
+    //     : undefined;
 
     // const displayLimitPriceString =
     //     displayPriceWithDenom === Infinity || displayPriceWithDenom === 0
@@ -117,17 +126,17 @@ export default function ExtraInfo(props: ExtraInfoPropsIF) {
     //               maximumFractionDigits: 2,
     //           });
 
-    const displayPriceAfterImpactString =
-        !priceLimitAfterImpactAndFee ||
-        priceLimitAfterImpactAndFee === Infinity ||
-        priceLimitAfterImpactAndFee === 0
+    const displayEffectivePriceString =
+        !effectivePriceWithDenom ||
+        effectivePriceWithDenom === Infinity ||
+        effectivePriceWithDenom === 0
             ? '…'
-            : priceLimitAfterImpactAndFee < 2
-            ? priceLimitAfterImpactAndFee.toLocaleString(undefined, {
+            : effectivePriceWithDenom < 2
+            ? effectivePriceWithDenom.toLocaleString(undefined, {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 6,
               })
-            : priceLimitAfterImpactAndFee.toLocaleString(undefined, {
+            : effectivePriceWithDenom.toLocaleString(undefined, {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
               });
@@ -152,8 +161,8 @@ export default function ExtraInfo(props: ExtraInfoPropsIF) {
             title: 'Effective Conversion Rate',
             tooltipTitle: 'Conversion Rate After Swap Impact and Fees',
             data: isDenomBase
-                ? `${displayPriceAfterImpactString} ${quoteTokenSymbol} per ${baseTokenSymbol}`
-                : `${displayPriceAfterImpactString} ${baseTokenSymbol} per ${quoteTokenSymbol}`,
+                ? `${displayEffectivePriceString} ${quoteTokenSymbol} per ${baseTokenSymbol}`
+                : `${displayEffectivePriceString} ${baseTokenSymbol} per ${quoteTokenSymbol}`,
             // data: isDenomBase
             //     ? `${displayLimitPriceString} ${quoteTokenSymbol} per ${baseTokenSymbol}`
             //     : `${displayLimitPriceString} ${baseTokenSymbol} per ${quoteTokenSymbol}`,
