@@ -11,10 +11,12 @@ interface VolumeData {
     crosshairData: any[];
     setsubChartValues: React.Dispatch<React.SetStateAction<any>>;
     xScale: any;
+    xScaleCopy: any;
+    render: any;
 }
 
 export default function VolumeSubChart(props: VolumeData) {
-    const { volumeData, period, xScale, crosshairData } = props;
+    const { volumeData, period, xScale, crosshairData, xScaleCopy } = props;
 
     const setsubChartValues = props.setsubChartValues;
 
@@ -118,6 +120,16 @@ export default function VolumeSubChart(props: VolumeData) {
                         .style('fill', 'white');
                 });
 
+            const zoom = d3
+                .zoom()
+                .scaleExtent([1, 10])
+                .on('zoom', (event: any) => {
+                    xScale.domain(event.transform.rescaleX(xScaleCopy).domain());
+
+                    render();
+                    props.render();
+                });
+
             const multi = d3fc
                 .seriesSvgMulti()
                 .series([lineSeries, crosshair])
@@ -140,6 +152,7 @@ export default function VolumeSubChart(props: VolumeData) {
                 .yLabel('')
                 .decorate((selection: any) => {
                     selection.select('.x-axis').style('height', '1px');
+                    selection.enter().select('d3fc-svg.plot-area').call(zoom);
                 })
                 .svgPlotArea(multi);
 
@@ -161,6 +174,8 @@ export default function VolumeSubChart(props: VolumeData) {
                         .select('g.annotation-line.horizontal')
                         .attr('visibility', 'hidden');
                 });
+
+                crosshairData[0].y = -1;
                 render();
             });
 
