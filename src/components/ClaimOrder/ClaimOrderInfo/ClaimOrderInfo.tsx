@@ -20,10 +20,10 @@ interface IClaimOrderInfoProps {
     positionLiqTotalUSD: number | undefined;
     // feeLiqBaseDecimalCorrected: number | undefined;
     // feeLiqQuoteDecimalCorrected: number | undefined;
-    removalPercentage: number;
+    claimPercentage: number;
     positionLiquidity: string | undefined;
-    baseRemovalString: string;
-    quoteRemovalString: string;
+    baseClaimString: string;
+    quoteClaimString: string;
 }
 
 export default function ClaimOrderInfo(props: IClaimOrderInfoProps) {

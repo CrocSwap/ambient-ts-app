@@ -12,6 +12,11 @@ import { CrocEnv } from '@crocswap-libs/sdk';
 import { BigNumber } from 'ethers';
 import Toggle2 from '../Global/Toggle/Toggle2';
 import TooltipComponent from '../Global/TooltipComponent/TooltipComponent';
+import ClaimOrderSettings from './ClaimOrderSettings/ClaimOrderSettings';
+import ClaimOrderModalHeader from './ClaimOrderModalHeader/ClaimOrderModalHeader';
+import ClaimOrderTokenHeader from './ClaimOrderTokenHeader/ClaimOrderTokenHeader';
+import ClaimOrderInfo from './ClaimOrderInfo/ClaimOrderInfo';
+import ClaimOrderButton from './ClaimOrderButton/ClaimOrderButton';
 
 interface IClaimOrderProps {
     crocEnv: CrocEnv | undefined;
@@ -167,7 +172,7 @@ export default function ClaimOrder(props: IClaimOrderProps) {
             <Toggle2
                 isOn={false}
                 handleToggle={() => console.log('toggled')}
-                id='gasless_transaction_toggle_remove_order'
+                id='gasless_transaction_toggle_claim_order'
                 disabled={true}
             />
         </section>
@@ -209,5 +214,59 @@ export default function ClaimOrder(props: IClaimOrderProps) {
 
     // ---------------------SLIPPAGE TOLERANCE DISPLAY-----------------------------
 
-    return <div>claim</div>;
+    const showSettingsOrMainContent = showSettings ? (
+        <ClaimOrderSettings
+            showSettings={showSettings}
+            setShowSettings={setShowSettings}
+            onBackClick={resetConfirmation}
+        />
+    ) : (
+        <div>
+            <ClaimOrderModalHeader
+                onClose={closeGlobalModal}
+                title={showConfirmation ? '' : 'Remove Limit Order'}
+                showSettings={showSettings}
+                setShowSettings={setShowSettings}
+                onGoBack={showSettings ? () => setShowSettings(false) : null}
+            />
+
+            <ClaimOrderTokenHeader
+                isDenomBase={isDenomBase}
+                isOrderFilled={isOrderFilled}
+                baseTokenSymbol={baseTokenSymbol}
+                quoteTokenSymbol={quoteTokenSymbol}
+                baseTokenLogoURI={baseTokenLogo}
+                quoteTokenLogoURI={quoteTokenLogo}
+            />
+
+            <ClaimOrderInfo
+                baseTokenSymbol={baseTokenSymbol}
+                quoteTokenSymbol={quoteTokenSymbol}
+                baseTokenLogoURI={baseTokenLogo}
+                quoteTokenLogoURI={quoteTokenLogo}
+                posLiqBaseDecimalCorrected={posLiqBaseDecimalCorrected}
+                posLiqQuoteDecimalCorrected={posLiqQuoteDecimalCorrected}
+                claimPercentage={claimPercentage}
+                usdValue={usdValue}
+                bidTick={bidTick}
+                askTick={askTick}
+                baseDisplayFrontend={baseDisplayFrontend}
+                quoteDisplayFrontend={quoteDisplayFrontend}
+                baseDisplay={baseDisplay}
+                quoteDisplay={quoteDisplay}
+                positionLiqTotalUSD={positionLiqTotalUSD}
+                positionLiquidity={limitOrder.positionLiq.toString()}
+                baseClaimString={'2344'}
+                quoteClaimString={'4543'}
+            />
+            {gaslesssTransactionControl}
+            {tooltipExplanationDataDisplay}
+            <ClaimOrderButton claimFn={claimFn} disabled={false} title='Claim Limit Order' />
+        </div>
+    );
+
+    // --------------------------------------------------------------------------------------
+
+    if (showConfirmation) return confirmationContent;
+    return <>{showSettingsOrMainContent}</>;
 }

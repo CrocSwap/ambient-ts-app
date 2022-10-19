@@ -1,7 +1,7 @@
 import Button from '../../Global/Button/Button';
 import styles from './ClaimOrderButton.module.css';
 interface IClaimOrderButtonProps {
-    removeFn: () => void;
+    claimFn: () => void;
 
     title: string;
 
@@ -9,11 +9,11 @@ interface IClaimOrderButtonProps {
 }
 
 export default function ClaimOrderButton(props: IClaimOrderButtonProps) {
-    const { removeFn, title } = props;
+    const { claimFn, title } = props;
 
     return (
         <div className={styles.button_container}>
-            <Button title={title} disabled={props.disabled} action={removeFn} />
+            <Button title={title} disabled={props.disabled} action={claimFn} />
         </div>
     );
 }
