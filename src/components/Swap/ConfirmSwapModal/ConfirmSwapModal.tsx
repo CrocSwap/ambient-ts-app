@@ -9,7 +9,7 @@ import { CrocImpact } from '@crocswap-libs/sdk';
 import { Dispatch, SetStateAction, useState } from 'react';
 import TokensArrow from '../../Global/TokensArrow/TokensArrow';
 // import DenominationSwitch from '../DenominationSwitch/DenominationSwitch';
-import ConfirmationModalControl from '../../Global/ConfirmationModalControl/ConfirmationModalControl';
+// import ConfirmationModalControl from '../../Global/ConfirmationModalControl/ConfirmationModalControl';
 import InitPoolDenom from '../../InitPool/InitPoolDenom/InitPoolDenom';
 
 interface ConfirmSwapModalProps {
@@ -205,9 +205,12 @@ export default function ConfirmSwapModal(props: ConfirmSwapModalProps) {
 
             {extraInfoData}
             {/* {explanationText} */}
-            <ConfirmationModalControl />
+            {/* <ConfirmationModalControl /> */}
         </div>
     );
+
+    // TODO: add confirmation modal control to local storage, settings
+    // TODO: and re-enable <ConfirmationModalControl> above
 
     // const fullTxDetails = (
     //     <>
