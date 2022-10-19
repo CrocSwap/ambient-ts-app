@@ -63,5 +63,12 @@ export default function ClaimOrder(props: IClaimOrderProps) {
         }
     }, [txErrorCode]);
 
+    const [claimPercentage, setClaimPercentage] = useState(100);
+    const [baseQtyToBeClaimed, setBaseQtyToBeClaimed] = useState<string>('…');
+    const [quoteQtyToBeClaimed, setQuoteQtyToBeClaimed] = useState<string>('…');
+
+    const baseQty = limitOrder.positionLiqBaseDecimalCorrected;
+    const quoteQty = limitOrder.positionLiqQuoteDecimalCorrected;
+
     return <div>claim</div>;
 }
