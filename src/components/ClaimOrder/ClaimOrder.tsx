@@ -129,5 +129,26 @@ export default function ClaimOrder(props: IClaimOrderProps) {
     const isRemovalDenied =
         txErrorCode === 4001 &&
         txErrorMessage === 'MetaMask Tx Signature: User denied transaction signature.';
+
+    function handleConfirmationChange() {
+        setCurrentConfirmationData(claimPending);
+
+        if (transactionApproved) {
+            setCurrentConfirmationData(claimSuccess);
+        } else if (isRemovalDenied) {
+            setCurrentConfirmationData(claimDenied);
+        }
+    }
+
+    useEffect(() => {
+        handleConfirmationChange();
+    }, [
+        transactionApproved,
+
+        newClaimTransactionHash,
+        txErrorCode,
+        showConfirmation,
+        isRemovalDenied,
+    ]);
     return <div>claim</div>;
 }
