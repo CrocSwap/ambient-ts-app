@@ -16,6 +16,7 @@ interface TransactionRowPropsIF {
     ipadView: boolean;
     showColumns: boolean;
     blockExplorer: string | undefined;
+    closeGlobalModal: () => void;
 
     openGlobalModal: (content: React.ReactNode) => void;
 }
@@ -226,6 +227,8 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                     tx={tx}
                     blockExplorer={blockExplorer}
                     showSidebar={props.showSidebar}
+                    openGlobalModal={props.openGlobalModal}
+                    closeGlobalModal={props.closeGlobalModal}
                 />
             </li>
         </ul>

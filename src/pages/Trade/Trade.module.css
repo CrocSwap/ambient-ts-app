@@ -377,6 +377,11 @@ border: 1px solid var(--text-highlight);
         justify-content: flex-start;
         position: relative;
     }
+    @-moz-document url-prefix() {
+       .middle_col {
+            display: flex;
+        }
+    }
 
     .main__chart {
         flex: 1 0;
