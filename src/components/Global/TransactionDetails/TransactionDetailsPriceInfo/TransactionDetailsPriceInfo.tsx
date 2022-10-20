@@ -3,10 +3,9 @@ import Row from '../../../Global/Row/Row';
 import { ITransaction } from '../../../../utils/state/graphDataSlice';
 import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
 import { toggleDidUserFlipDenom } from '../../../../utils/state/tradeDataSlice';
-import Divider from '../../../Global/Divider/Divider';
 import { motion } from 'framer-motion';
-import { useProcessOrder } from '../../../../utils/hooks/useProcessOrder';
 import { useProcessTransaction } from '../../../../utils/hooks/useProcessTransaction';
+import { AiOutlineDash } from 'react-icons/ai';
 
 type ItemIF = {
     slug: string;
@@ -37,8 +36,28 @@ export default function TransactionDetailsPriceInfo(props: ITransactionDetailsPr
 
         baseDisplayFrontend,
         quoteDisplayFrontend,
+        truncatedLowDisplayPrice,
+        truncatedHighDisplayPrice,
         // positionLiquidity,
     } = useProcessTransaction(tx);
+
+    const tokenPairDetails = (
+        <div
+            className={styles.token_pair_details}
+            onClick={() => {
+                dispatch(toggleDidUserFlipDenom());
+            }}
+        >
+            <div className={styles.token_pair_images}>
+                <img src={isDenomBase ? baseTokenLogo : quoteTokenLogo} alt={baseTokenSymbol} />
+                <img src={isDenomBase ? quoteTokenLogo : baseTokenLogo} alt={quoteTokenSymbol} />
+            </div>
+            <p>
+                {isDenomBase ? baseTokenSymbol : quoteTokenSymbol} /{' '}
+                {isDenomBase ? quoteTokenSymbol : baseTokenSymbol}
+            </p>
+        </div>
+    );
 
     const totalValueContent = (
         <motion.div
@@ -69,9 +88,9 @@ export default function TransactionDetailsPriceInfo(props: ITransactionDetailsPr
         </motion.div>
     );
 
-    const tokenPairDetails = (
+    const transactionDetails = (
         <div
-            className={styles.token_pair_details_container}
+            className={styles.tx_details}
             onClick={() => {
                 dispatch(toggleDidUserFlipDenom());
             }}
@@ -79,7 +98,7 @@ export default function TransactionDetailsPriceInfo(props: ITransactionDetailsPr
             <Row>
                 <p>From:</p>
                 <div>
-                    1.69{' '}
+                    {baseDisplayFrontend}
                     <img
                         width='15px'
                         src={isDenomBase ? baseTokenLogo : quoteTokenLogo}
@@ -87,11 +106,11 @@ export default function TransactionDetailsPriceInfo(props: ITransactionDetailsPr
                     />
                 </div>
             </Row>
-
+            <span className={styles.divider}></span>
             <Row>
                 <p>To: </p>
                 <div>
-                    4,200.00{' '}
+                    {quoteDisplayFrontend}
                     <img
                         width='15px'
                         src={isDenomBase ? quoteTokenLogo : baseTokenLogo}
@@ -104,18 +123,12 @@ export default function TransactionDetailsPriceInfo(props: ITransactionDetailsPr
 
     const PriceDipslay = (
         <div className={styles.min_max_price}>
-            <div className={styles.min_max_content}>
-                Min Price
-                <span className={styles.min_price}>
-                    {/* {lowPriceDisplay ? parseFloat(lowPriceDisplay).toFixed(2) : 0} */}
-                </span>
-            </div>
-            <div className={styles.min_max_content}>
-                Max Price
-                <span className={styles.max_price}>
-                    {/* {highPriceDisplay ? parseFloat(highPriceDisplay).toFixed(2) : 'Infinity'} */}
-                </span>
-            </div>
+            <p>Price</p>
+
+            <span className={styles.min_price}>
+                {truncatedLowDisplayPrice} <AiOutlineDash />
+                {truncatedHighDisplayPrice}
+            </span>
         </div>
     );
     // console.log(controlItems);
@@ -126,6 +139,7 @@ export default function TransactionDetailsPriceInfo(props: ITransactionDetailsPr
                 {tokenPairDetails}
                 {controlItems[2] && totalValueContent}
                 {fillTimeContent}
+                {transactionDetails}
                 {PriceDipslay}
             </div>
         </div>

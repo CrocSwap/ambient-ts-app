@@ -2,9 +2,7 @@ import styles from './TransactionDetails.module.css';
 import { useState, useRef } from 'react';
 import { ITransaction } from '../../../utils/state/graphDataSlice';
 import printDomToImage from '../../../utils/functions/printDomToImage';
-import { useProcessTransaction } from '../../../utils/hooks/useProcessTransaction';
 import RangeDetailsControl from '../../RangeDetails/RangeDetailsControl/RangeDetailsControl';
-import TransactionDetailsControl from './TransactionDetailsControl/TransactionDetailsControl';
 import TransactionDetailsHeader from './TransactionDetailsHeader/TransactionDetailsHeader';
 import TransactionDetailsPriceInfo from './TransactionDetailsPriceInfo/TransactionDetailsPriceInfo';
 interface TransactionDetailsPropsIF {
@@ -52,7 +50,7 @@ export default function TransactionDetails(props: TransactionDetailsPropsIF) {
     ) : null;
 
     return (
-        <div className={styles.range_details_container}>
+        <div className={styles.tx_details_container}>
             <TransactionDetailsHeader
                 onClose={props.closeGlobalModal}
                 showSettings={showSettings}
