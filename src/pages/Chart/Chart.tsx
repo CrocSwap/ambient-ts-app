@@ -453,8 +453,6 @@ export default function Chart(props: ChartData) {
                                 domainBoundry: date.getTime(),
                             };
 
-                            console.log(event.transform.rescaleX(scaleData.xScaleCopy).domain()[0]);
-
                             if (event.transform.rescaleX(scaleData.xScaleCopy).domain()[0] < date) {
                                 date.setTime(
                                     new Date(
@@ -467,9 +465,6 @@ export default function Chart(props: ChartData) {
                                     lastCandleDate: parsedChartData?.chartData[0].time,
                                     domainBoundry: date.getTime(),
                                 };
-
-                                console.error('fetch new Candles');
-                                console.error(date);
 
                                 dispatch(setCandleDomains(candleDomain));
                             }
@@ -1651,10 +1646,18 @@ export default function Chart(props: ChartData) {
                 .autoBandwidth(d3fc.seriesSvgCandlestick())
                 .decorate((selection: any) => {
                     selection
-                        .style('fill', (d: any) => (d.close > d.open ? upBodyColor : downBodyColor))
-                        .style('stroke', (d: any) =>
-                            d.close > d.open ? upBorderColor : downBorderColor,
-                        );
+                        .style('fill', (d: any) => {
+                            if (selectedCandle !== undefined) {
+                                d3.select(selectedCandle).style('fill', '#E480FF');
+                            }
+                            return d.close > d.open ? upBodyColor : downBodyColor;
+                        })
+                        .style('stroke', (d: any) => {
+                            if (selectedCandle !== undefined) {
+                                d3.select(selectedCandle).style('stroke', '#E480FF');
+                            }
+                            return d.close > d.open ? upBorderColor : downBorderColor;
+                        });
                     selection
                         .on('mouseover', (event: any) => {
                             d3.select(event.currentTarget).style('cursor', 'pointer');
