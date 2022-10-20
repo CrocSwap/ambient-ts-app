@@ -177,6 +177,7 @@ export default function Chart(props: ChartData) {
 
     const valueFormatter = d3.format('.5f');
     const indicatorFormatter = d3.format('.6f');
+    const tooltipFormatter = d3.format('.3f');
 
     const setDefaultRangeData = () => {
         setRanges((prevState) => {
@@ -2128,8 +2129,13 @@ export default function Chart(props: ChartData) {
                 }
             });
 
+            const percentageValue =
+                (100 * liqTextData.totalValue) / parseFloat(props.liquidityData.totalLiq);
+
             liqTooltip.html(
-                '<p> % 0.1 </p>' +
+                '<p> % ' +
+                    tooltipFormatter(percentageValue) +
+                    ' </p>' +
                     '<p> $ ' +
                     formatDollarAmountAxis(liqTextData.totalValue) +
                     ' </p>',

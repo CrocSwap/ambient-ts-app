@@ -24,7 +24,7 @@ export default function BarSeries(
                         liquidityData.liqData[index - 1].upperBoundPriceDecimalCorrected -
                         value.upperBoundPriceDecimalCorrected;
 
-                    return scaleData.yScale(diffBot + diffTop) / 170;
+                    return scaleData.yScale(diffBot + diffTop) / 165;
                 }
 
                 return 30;
