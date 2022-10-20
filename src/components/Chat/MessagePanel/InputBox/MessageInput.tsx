@@ -4,6 +4,7 @@ import {
     receiveUsername,
     // host,
     sendMessageRoute,
+    socket,
 } from '../../Service/chatApi';
 import axios from 'axios';
 import { BsSlashSquare, BsEmojiSmileFill } from 'react-icons/bs';
@@ -29,16 +30,28 @@ interface PortfolioBannerPropsIF {
 }
 
 export default function MessageInput(props: MessageInputProps, prop: PortfolioBannerPropsIF) {
-    const _socket = props.socket;
-
-    useEffect(() => {
-        _socket.connect();
-        console.log(_socket.id);
-    }, [_socket]);
-
+    const [currentUser, setCurrentUser] = useState('');
     const [message, setMessage] = useState('');
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
     const { user, account, enableWeb3, isWeb3Enabled, isAuthenticated } = useMoralis();
+
+    async function getID() {
+        const response = await fetch('http://localhost:5000/api/auth/getUserByAccount/' + account, {
+            method: 'GET',
+        });
+        const data = await response.json();
+        if (data.status === 'OK') {
+            return data;
+        } else {
+            console.log(data);
+        }
+    }
+    useEffect(() => {
+        const result = getID();
+        result.then((res) => {
+            setCurrentUser(res._id);
+        });
+    }, []);
 
     const handleEmojiClick = (event: any, emoji: any) => {
         let msg = message;
@@ -65,9 +78,11 @@ export default function MessageInput(props: MessageInputProps, prop: PortfolioBa
 
     const handleSendMsg = async (msg: string) => {
         props.socket.emit('send-msg', {
+            from: currentUser,
             message: msg,
             roomInfo: props.room,
         });
+        console.error(msg);
     };
 
     const onChangeMessage = async (e: any) => {

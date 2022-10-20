@@ -50,6 +50,7 @@ export default function PositionBox(props: PositionBoxProps) {
         } else {
             setPosition(undefined);
         }
+        console.log(transactionsData);
     }, [message]);
 
     useEffect(() => {
@@ -206,15 +207,15 @@ export default function PositionBox(props: PositionBoxProps) {
     return position !== undefined && !isInput ? (
         <motion.div
             className={styles.animate_position_box}
-            key='content'
-            initial='collapsed'
-            animate='open'
-            exit='collapsed'
-            variants={{
+            // key='content'
+            // initial='collapsed'
+            //  animate='open'
+            //  exit='collapsed'
+            /*   variants={{
                 open: { opacity: 1, height: 'auto' },
                 collapsed: { opacity: 0, height: 0 },
             }}
-            transition={{ duration: 0.8, ease: [0.04, 0.62, 0.23, 0.98] }}
+            transition={{ duration: 0.8, ease: [0.04, 0.62, 0.23, 0.98] }}*/
         >
             <div className={styles.position_main_box}>
                 <div className={styles.position_box}>
@@ -235,7 +236,7 @@ export default function PositionBox(props: PositionBoxProps) {
                     <div className={styles.position_info}>
                         <span className={styles.tokens_name}>{sideType} Price</span>
 
-                        <span className={styles.price}>${truncatedDisplayPrice}</span>
+                        <span className={styles.price}>{truncatedDisplayPrice}</span>
                     </div>
                     {isPoolPriceChangePositive ? (
                         <>
@@ -297,7 +298,7 @@ export default function PositionBox(props: PositionBoxProps) {
                     <div className={styles.position_info}>
                         <span className={styles.tokens_name}>{sideType} Price</span>
 
-                        <span className={styles.price}>${truncatedDisplayPrice}</span>
+                        <span className={styles.price}>{truncatedDisplayPrice}</span>
                     </div>
                     {isPoolPriceChangePositive ? (
                         <>
@@ -330,10 +331,10 @@ export default function PositionBox(props: PositionBoxProps) {
     ) : sPositions && !isInput ? (
         <motion.div
             className={styles.animate_position_box}
-            key='content'
-            initial='collapsed'
-            animate='open'
-            exit='collapsed'
+            //  key='content'
+            //  initial='collapsed'
+            //   animate='open'
+            //   exit='collapsed'
             // variants={{
             //     open: { opacity: 1, height: 'auto' },
             //     collapsed: { opacity: 0, height: 0 },
