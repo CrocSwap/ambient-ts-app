@@ -35,6 +35,7 @@ interface propsIF {
     closeGlobalModal: () => void;
     currentPositionActive: string;
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
+    isOnPortfolioPage: boolean;
 
     showSidebar: boolean;
 }
@@ -51,6 +52,7 @@ export default function Orders(props: propsIF) {
         setCurrentPositionActive,
         currentPositionActive,
         showSidebar,
+        isOnPortfolioPage,
     } = props;
 
     const limitOrdersByUser = graphData.limitOrdersByUser.limitOrders;
@@ -322,6 +324,20 @@ export default function Orders(props: propsIF) {
     );
     const headerColumns = [
         {
+            name: '',
+            className: '',
+            show: isOnPortfolioPage,
+            slug: 'token_images',
+            sortable: false,
+        },
+        {
+            name: 'Pool',
+            className: '',
+            show: isOnPortfolioPage && !showSidebar,
+            slug: 'pool',
+            sortable: false,
+        },
+        {
             name: 'ID',
             className: 'ID',
             show: !showColumns,
@@ -443,6 +459,7 @@ export default function Orders(props: propsIF) {
             currentPositionActive={currentPositionActive}
             setCurrentPositionActive={setCurrentPositionActive}
             isShowAllEnabled={isShowAllEnabled}
+            isOnPortfolioPage={isOnPortfolioPage}
         />
     ));
 

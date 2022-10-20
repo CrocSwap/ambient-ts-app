@@ -5,7 +5,6 @@ import { useEffect, useState, Dispatch, SetStateAction, ReactNode } from 'react'
 import Wallet from '../../Global/Account/AccountTabs/Wallet/Wallet';
 import Exchange from '../../Global/Account/AccountTabs/Exchange/Exchange';
 import Range from '../../Global/Account/AccountTabs/Range/Range';
-import Order from '../../Global/Account/AccountTabs/Order/Order';
 import TransactionsTable from '../../Global/Account/AccountTabs/Transaction/TransactionsTable';
 import TabComponent from '../../Global/TabComponent/TabComponent';
 
@@ -78,8 +77,7 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
         outsideControl,
         setOutsideControl,
         openTokenModal,
-        openGlobalModal,
-        closeGlobalModal,
+
         account,
     } = props;
 
@@ -193,7 +191,7 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
     const activeAccountPositionData = connectedAccountActive
         ? connectedAccountPositionData
         : otherAccountPositionData;
-
+    // eslint-disable-next-line
     const activeAccountLimitOrderData = connectedAccountActive
         ? connectedAccountLimitOrderData
         : otherAccountLimitOrderData;
@@ -234,10 +232,7 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
     const rangeProps = {
         positions: activeAccountPositionData,
     };
-    // props for <Order/> React Element
-    const limitOrderProps = {
-        orders: activeAccountLimitOrderData,
-    };
+
     // props for <Transactions/> React Element
     const transactionsProps = {
         transactions: activeAccountTransactionData,
@@ -256,14 +251,9 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
         closeGlobalModal: props.closeGlobalModal,
         setCurrentPositionActive: props.setCurrentPositionActive,
         showSidebar: props.showSidebar,
+        isOnPortfolioPage: true,
     };
 
-    const accountOrdersContent = (
-        <div className={styles.table_container}>
-            <div className={styles.token_images}>Token IMage</div>
-            <Orders {...ordersProps} />
-        </div>
-    );
     const accountTabData = [
         {
             label: 'Transactions',

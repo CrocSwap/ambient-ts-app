@@ -83,7 +83,7 @@ export default function Portfolio(props: PortfolioPropsIF) {
         setSelectedOutsideTab,
         importedTokens,
         setImportedTokens,
-        account,
+
         showSidebar,
     } = props;
 

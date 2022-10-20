@@ -368,6 +368,7 @@ export default function TradeTabs2(props: ITabsProps) {
         closeGlobalModal: props.closeGlobalModal,
         setCurrentPositionActive: setCurrentPositionActive,
         showSidebar: showSidebar,
+        isOnPortfolioPage: false,
     };
     // props for <PositionsOnlyToggle/> React Element
 
