@@ -55,6 +55,12 @@ interface PortfolioPropsIF {
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
     account: string;
     showSidebar: boolean;
+    isUserLoggedIn: boolean;
+    isAuthenticated: boolean;
+    baseTokenBalance: string;
+    quoteTokenBalance: string;
+    baseTokenDexBalance: string;
+    quoteTokenDexBalance: string;
 }
 
 // const cachedFetchAddress = memoizePromiseFn(fetchAddress);
@@ -83,8 +89,14 @@ export default function Portfolio(props: PortfolioPropsIF) {
         setSelectedOutsideTab,
         importedTokens,
         setImportedTokens,
+        isAuthenticated,
+        baseTokenBalance,
+        quoteTokenBalance,
+        baseTokenDexBalance,
+        quoteTokenDexBalance,
 
         showSidebar,
+        isUserLoggedIn,
     } = props;
 
     const selectedToken: TokenIF = useAppSelector((state) => state.temp.token);
@@ -357,6 +369,12 @@ export default function Portfolio(props: PortfolioPropsIF) {
                     chainData={props.chainData}
                     currentPositionActive={props.currentPositionActive}
                     setCurrentPositionActive={props.setCurrentPositionActive}
+                    isUserLoggedIn={isUserLoggedIn}
+                    isAuthenticated={isAuthenticated}
+                    baseTokenBalance={baseTokenBalance}
+                    quoteTokenBalance={quoteTokenBalance}
+                    baseTokenDexBalance={baseTokenDexBalance}
+                    quoteTokenDexBalance={quoteTokenDexBalance}
                 />
                 {connectedAccountActive && !fullLayoutActive ? exchangeBalanceComponent : null}
             </div>

@@ -410,6 +410,7 @@ export default function Leaderboard(props: LeaderboardPropsIF) {
             baseTokenDexBalance={baseTokenDexBalance}
             quoteTokenDexBalance={quoteTokenDexBalance}
             lastBlockNumber={lastBlockNumber}
+            isOnPortfolioPage={false}
             // blockExplorer={blockExplorer}
         />
     ));

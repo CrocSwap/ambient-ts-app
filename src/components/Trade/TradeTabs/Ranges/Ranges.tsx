@@ -53,6 +53,7 @@ interface RangesPropsIF {
     openGlobalModal: (content: React.ReactNode) => void;
     closeGlobalModal: () => void;
     showSidebar: boolean;
+    isOnPortfolioPage: boolean;
 }
 
 // react functional component
@@ -75,6 +76,7 @@ export default function Ranges(props: RangesPropsIF) {
         currentPositionActive,
         setCurrentPositionActive,
         account,
+        isOnPortfolioPage,
 
         showSidebar,
     } = props;
@@ -281,6 +283,20 @@ export default function Ranges(props: RangesPropsIF) {
     );
     const headerColumns = [
         {
+            name: '',
+            className: '',
+            show: isOnPortfolioPage,
+            slug: 'token_images',
+            sortable: false,
+        },
+        {
+            name: 'Pool',
+            className: '',
+            show: isOnPortfolioPage && !showSidebar,
+            slug: 'pool',
+            sortable: false,
+        },
+        {
             name: 'ID',
             className: 'ID',
             show: !showColumns,
@@ -409,15 +425,18 @@ export default function Ranges(props: RangesPropsIF) {
             baseTokenDexBalance={baseTokenDexBalance}
             quoteTokenDexBalance={quoteTokenDexBalance}
             lastBlockNumber={lastBlockNumber}
+            isOnPortfolioPage={isOnPortfolioPage}
+
             // blockExplorer={blockExplorer}
         />
     ));
 
+    const expandStyle = expandTradeTable ? 'calc(100vh - 10rem)' : '250px';
+
+    const portfolioPageStyle = props.isOnPortfolioPage ? 'calc(100vh - 19.5rem)' : expandStyle;
+
     return (
-        <main
-            className={`${styles.main_list_container} `}
-            style={{ height: expandTradeTable ? 'calc(100vh - 10rem)' : '250px' }}
-        >
+        <main className={`${styles.main_list_container} `} style={{ height: portfolioPageStyle }}>
             {headerColumnsDisplay}
             {rowItemContent}
             {footerDisplay}

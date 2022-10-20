@@ -39,6 +39,7 @@ interface RangesRowPropsIF {
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
     openGlobalModal: (content: React.ReactNode) => void;
     closeGlobalModal: () => void;
+    isOnPortfolioPage: boolean;
 }
 
 export default function RangesRow(props: RangesRowPropsIF) {
@@ -51,6 +52,7 @@ export default function RangesRow(props: RangesRowPropsIF) {
         currentPositionActive,
         setCurrentPositionActive,
         openGlobalModal,
+        isOnPortfolioPage,
     } = props;
 
     const {
@@ -197,6 +199,22 @@ export default function RangesRow(props: RangesRowPropsIF) {
         </DefaultTooltip>
     );
 
+    // portfolio page li element ---------------
+    const accountTokenImages = (
+        <li className={styles.token_images_account}>
+            <img src={baseTokenLogo} alt='base token' />
+            <img src={quoteTokenLogo} alt='quote token' />
+            {/* <p>hello</p> */}
+        </li>
+    );
+
+    const poolName = (
+        <li className='base_color'>
+            {baseTokenSymbol} / {quoteTokenSymbol}
+        </li>
+    );
+    // end of portfolio page li element ---------------
+
     return (
         <ul
             className={`${styles.row_container} ${activePositionStyle} ${userPositionStyle}`}
@@ -207,6 +225,8 @@ export default function RangesRow(props: RangesRowPropsIF) {
             }
             id={positionDomId}
         >
+            {isOnPortfolioPage && accountTokenImages}
+            {isOnPortfolioPage && !props.showSidebar && poolName}
             {!showColumns && IDWithTooltip}
             {!showColumns && walletWithTooltip}
             {showColumns && (
