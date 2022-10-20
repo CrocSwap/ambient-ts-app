@@ -22,6 +22,7 @@ import {
     setAdvancedLowTick,
     setAdvancedMode,
     setRangeModuleTriggered,
+    setSimpleRangeWidth,
 } from '../../../../../utils/state/tradeDataSlice';
 
 // interface for React functional component props
@@ -104,15 +105,21 @@ export default function RangesMenu(props: RangesMenuIF) {
     const handleCopyClick = () => {
         // console.log('copy clicked');
         // console.log({ positionData });
+
         if (positionData.positionType === 'ambient') {
+            dispatch(setSimpleRangeWidth(100));
             dispatch(setAdvancedMode(false));
         } else {
+            dispatch(setAdvancedLowTick(positionData.bidTick));
+            dispatch(setAdvancedHighTick(positionData.askTick));
             dispatch(setAdvancedMode(true));
         }
-        dispatch(setAdvancedLowTick(positionData.bidTick));
-        dispatch(setAdvancedHighTick(positionData.askTick));
-        dispatch(setRangeModuleTriggered(true));
         setShowDropdownMenu(false);
+
+        // if (positionData.positionType === 'ambient') {
+        // } else {
+        // }
+        dispatch(setRangeModuleTriggered(true));
     };
 
     // -----------------SNACKBAR----------------

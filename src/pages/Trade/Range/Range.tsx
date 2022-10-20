@@ -4,7 +4,11 @@ import { useState, useEffect, useMemo, Dispatch, SetStateAction } from 'react';
 import { useMoralis } from 'react-moralis';
 import { ethers } from 'ethers';
 import { motion } from 'framer-motion';
-import { concDepositSkew, MIN_TICK, MAX_TICK, CrocEnv } from '@crocswap-libs/sdk';
+import {
+    concDepositSkew,
+    //  MIN_TICK, MAX_TICK,
+    CrocEnv,
+} from '@crocswap-libs/sdk';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 
 // START: Import JSX Elements
@@ -147,7 +151,6 @@ export default function Range(props: RangePropsIF) {
         dataTokenA: tradeData.tokenA,
         dataTokenB: tradeData.tokenB,
     };
-    const isAdvancedModeActive = tradeData.advancedMode;
 
     const denominationsInBase = tradeData.isDenomBase;
     const isTokenAPrimary = tradeData.isTokenAPrimaryRange;
@@ -230,15 +233,34 @@ export default function Range(props: RangePropsIF) {
     const defaultMinPriceDifferencePercentage = -15;
     const defaultMaxPriceDifferencePercentage = 15;
 
-    const defaultLowTick =
-        tradeData.advancedLowTick === 0
-            ? currentPoolPriceTick + defaultMinPriceDifferencePercentage * 100
-            : tradeData.advancedLowTick;
+    // const defaultLowTick =
+    //     tradeData.advancedLowTick === 0
+    //         ? currentPoolPriceTick + defaultMinPriceDifferencePercentage * 100
+    //         : tradeData.advancedLowTick;
 
-    const defaultHighTick =
-        tradeData.advancedHighTick === 0
-            ? currentPoolPriceTick + defaultMaxPriceDifferencePercentage * 100
-            : tradeData.advancedHighTick;
+    const defaultLowTick = useMemo(
+        () =>
+            tradeData.advancedLowTick === 0
+                ? currentPoolPriceTick + defaultMinPriceDifferencePercentage * 100
+                : tradeData.advancedLowTick,
+        [tradeData.advancedLowTick, currentPoolPriceTick],
+    );
+
+    // console.log({ defaultLowTick });
+
+    // const defaultHighTick =
+    //     tradeData.advancedHighTick === 0
+    //         ? currentPoolPriceTick + defaultMaxPriceDifferencePercentage * 100
+    //         : tradeData.advancedHighTick;
+
+    const defaultHighTick = useMemo(
+        () =>
+            tradeData.advancedHighTick === 0
+                ? currentPoolPriceTick + defaultMaxPriceDifferencePercentage * 100
+                : tradeData.advancedHighTick,
+        [tradeData.advancedHighTick, currentPoolPriceTick],
+    );
+    // console.log({ defaultHighTick });
 
     const [minPriceDifferencePercentage, setMinPriceDifferencePercentage] = useState(
         defaultMinPriceDifferencePercentage,
@@ -250,15 +272,17 @@ export default function Range(props: RangePropsIF) {
     const [isAmbient, setIsAmbient] = useState(false);
 
     useEffect(() => {
-        if (rangeWidthPercentage === 100 && !isAdvancedModeActive) {
+        if (rangeWidthPercentage === 100 && !tradeData.advancedMode) {
             setIsAmbient(true);
             // setRangeLowTick(MIN_TICK);
             // setRangeHighTick(MAX_TICK);
 
-            dispatch(setAdvancedLowTick(MIN_TICK));
-            dispatch(setAdvancedHighTick(MAX_TICK));
+            // dispatch(setAdvancedLowTick(MIN_TICK));
+            // dispatch(setAdvancedHighTick(MAX_TICK));
             setRangeLowBoundNonDisplayPrice(0);
             setRangeHighBoundNonDisplayPrice(Infinity);
+        } else if (tradeData.advancedMode) {
+            setIsAmbient(false);
         } else {
             setIsAmbient(false);
             const lowTick = currentPoolPriceTick - rangeWidthPercentage * 100;
@@ -293,7 +317,7 @@ export default function Range(props: RangePropsIF) {
 
             dispatch(setRangeModuleTriggered(true));
         }
-    }, [rangeWidthPercentage, isAdvancedModeActive, denominationsInBase]);
+    }, [rangeWidthPercentage, tradeData.advancedMode, denominationsInBase]);
 
     useEffect(() => {
         const lowTick = currentPoolPriceTick - rangeWidthPercentage * 100;
@@ -332,7 +356,7 @@ export default function Range(props: RangePropsIF) {
         } else {
             setRangeButtonErrorMessage('Enter an Amount');
         }
-    }, [isInvalidRange, poolPriceNonDisplay]);
+    }, [isInvalidRange, poolPriceNonDisplay, isUserLoggedIn]);
 
     const minimumSpan =
         rangeSpanAboveCurrentPrice < rangeSpanBelowCurrentPrice
@@ -401,7 +425,7 @@ export default function Range(props: RangePropsIF) {
     const [initializationComplete, setInitializationComplete] = useState(false);
 
     useEffect(() => {
-        if (isAdvancedModeActive) {
+        if (tradeData.advancedMode) {
             const rangeLowBoundDisplayField = document.getElementById(
                 'min-price-input-quantity',
             ) as HTMLInputElement;
@@ -415,10 +439,11 @@ export default function Range(props: RangePropsIF) {
                 setInitializationComplete(false);
             }
         }
-    }, [isAdvancedModeActive, rangeLowTick, rangeHighTick]);
+    }, [tradeData.advancedMode, tradeData.advancedLowTick, tradeData.advancedHighTick]);
 
     useEffect(() => {
-        if (!initializationComplete && isAdvancedModeActive) {
+        // console.log({ initializationComplete });
+        if (!initializationComplete && tradeData.advancedMode) {
             const pinnedDisplayPrices = getPinnedPriceValuesFromTicks(
                 denominationsInBase,
                 baseTokenDecimals,
@@ -487,7 +512,7 @@ export default function Range(props: RangePropsIF) {
     }, [
         currentPoolPriceTick,
         initializationComplete,
-        isAdvancedModeActive,
+        tradeData.advancedMode,
         denominationsInBase,
         baseTokenDecimals,
         quoteTokenDecimals,
@@ -670,7 +695,7 @@ export default function Range(props: RangePropsIF) {
 
     const daysInRangeEstimation: number = isAmbient
         ? 365
-        : isAdvancedModeActive
+        : tradeData.advancedMode
         ? advancedDaysInRangeEstimation
         : rangeWidthPercentage;
 
@@ -1178,7 +1203,7 @@ export default function Range(props: RangePropsIF) {
                     transition={{ duration: 0.5 }}
                 >
                     <DividerDark />
-                    {isAdvancedModeActive ? advancedModeContent : baseModeContent}
+                    {tradeData.advancedMode ? advancedModeContent : baseModeContent}
                 </motion.div>
                 {!isAuthenticated || !isWeb3Enabled ? (
                     loginButton
