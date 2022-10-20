@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { FiMoreHorizontal } from 'react-icons/fi';
 
@@ -16,11 +16,12 @@ import HarvestPosition from '../../../../HarvestPosition/HarvestPosition';
 import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
 import UseOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
-import { useAppDispatch, useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
+import { useAppDispatch } from '../../../../../utils/hooks/reduxToolkit';
 import {
     setAdvancedHighTick,
     setAdvancedLowTick,
     setAdvancedMode,
+    setRangeModuleTriggered,
 } from '../../../../../utils/state/tradeDataSlice';
 
 // interface for React functional component props
@@ -95,20 +96,18 @@ export default function RangesMenu(props: RangesMenuIF) {
         );
     };
 
-    const tradeData = useAppSelector((state) => state.tradeData);
+    // const tradeData = useAppSelector((state) => state.tradeData);
 
     // const isDenomBase = tradeData.isDenomBase
 
-    useEffect(() => {
-        console.log({ tradeData });
-    }, [tradeData]);
-
     const handleCopyClick = () => {
-        console.log('copy clicked');
-        console.log({ positionData });
+        // console.log('copy clicked');
+        // console.log({ positionData });
         dispatch(setAdvancedMode(true));
         dispatch(setAdvancedLowTick(positionData.bidTick));
         dispatch(setAdvancedHighTick(positionData.askTick));
+        dispatch(setRangeModuleTriggered(true));
+        setShowDropdownMenu(false);
     };
 
     // -----------------SNACKBAR----------------
