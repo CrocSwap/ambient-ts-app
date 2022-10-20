@@ -80,7 +80,7 @@ export default function ClaimOrderInfo(props: IClaimOrderInfoProps) {
                 {/* ---------------------------REMOVAL SUMMARY--------------------------------- */}
 
                 <Row>
-                    <span> Return Quantity</span>
+                    <span> Claimable Amount</span>
                     <div className={styles.token_price}>
                         4,200.00
                         <img src={quoteTokenLogoURI} alt='' />

@@ -26,6 +26,7 @@ interface OrdersMenuIF {
     closeGlobalModal: () => void;
     isOwnerActiveAccount?: boolean;
     showSidebar: boolean;
+    isOrderFilled: boolean;
     // orderDetailsProps: any;
 }
 
@@ -156,7 +157,7 @@ export default function OrdersMenu(props: OrdersMenuIF) {
             </button>
         ) : null;
     const claimButton =
-        limitOrder && isOwnerActiveAccount ? (
+        limitOrder && isOwnerActiveAccount && props.isOrderFilled ? (
             <button className={styles.option_button} onClick={claimButtonOnClick}>
                 Claim
             </button>

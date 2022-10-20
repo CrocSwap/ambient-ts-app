@@ -7,9 +7,9 @@ import Button from '../Global/Button/Button';
 import Animation from '../Global/Animation/Animation';
 import completed from '../../assets/animations/completed.json';
 import { FiExternalLink } from 'react-icons/fi';
-import { formatAmount } from '../../utils/numbers';
+// import { formatAmount } from '../../utils/numbers';
 import { CrocEnv } from '@crocswap-libs/sdk';
-import { BigNumber } from 'ethers';
+// import { BigNumber } from 'ethers';
 import Toggle2 from '../Global/Toggle/Toggle2';
 import TooltipComponent from '../Global/TooltipComponent/TooltipComponent';
 import ClaimOrderSettings from './ClaimOrderSettings/ClaimOrderSettings';
@@ -67,13 +67,13 @@ export default function ClaimOrder(props: IClaimOrderProps) {
             resetConfirmation();
         }
     }, [txErrorCode]);
-
+    // eslint-disable-next-line
     const [claimPercentage, setClaimPercentage] = useState(100);
-    const [baseQtyToBeClaimed, setBaseQtyToBeClaimed] = useState<string>('…');
-    const [quoteQtyToBeClaimed, setQuoteQtyToBeClaimed] = useState<string>('…');
+    // const [baseQtyToBeClaimed, setBaseQtyToBeClaimed] = useState<string>('…');
+    // const [quoteQtyToBeClaimed, setQuoteQtyToBeClaimed] = useState<string>('…');
 
-    const baseQty = limitOrder.positionLiqBaseDecimalCorrected;
-    const quoteQty = limitOrder.positionLiqQuoteDecimalCorrected;
+    // const baseQty = limitOrder.positionLiqBaseDecimalCorrected;
+    // const quoteQty = limitOrder.positionLiqQuoteDecimalCorrected;
 
     // ---------------CLAIM FUNCTION TO BE REFACTORED
 
@@ -180,14 +180,9 @@ export default function ClaimOrder(props: IClaimOrderProps) {
 
     // ----------------------------- END OF GASLESS TRANSACTION-----------------------
 
-    // ---------------------SLIPPAGE TOLERANCE DISPLAY-----------------------------
+    // ---------------------Explanation data DISPLAY-----------------------------
 
     const tooltipExplanationData = [
-        {
-            title: 'Slippage Tolerance',
-            tooltipTitle: 'something here',
-            data: '0.5%',
-        },
         {
             title: 'Network Fee',
             tooltipTitle: 'something here about network fee',
@@ -212,7 +207,7 @@ export default function ClaimOrder(props: IClaimOrderProps) {
         </div>
     );
 
-    // ---------------------SLIPPAGE TOLERANCE DISPLAY-----------------------------
+    // ---------------------Explanation data DISPLAY-----------------------------
 
     const showSettingsOrMainContent = showSettings ? (
         <ClaimOrderSettings
