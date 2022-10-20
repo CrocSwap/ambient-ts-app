@@ -9,7 +9,7 @@ import { fetchAddress } from '../../App/functions/fetchAddress';
 import { useMoralis } from 'react-moralis';
 import { ethers } from 'ethers';
 import { TokenIF } from '../../utils/interfaces/TokenIF';
-import { CrocEnv, toDisplayQty } from '@crocswap-libs/sdk';
+import { CrocEnv, toDisplayQty, ChainSpec } from '@crocswap-libs/sdk';
 import Modal from '../../components/Global/Modal/Modal';
 import { useModal } from '../../components/Global/Modal/useModal';
 
@@ -48,7 +48,13 @@ interface PortfolioPropsIF {
     openGlobalModal: (content: React.ReactNode, title?: string) => void;
     closeGlobalModal: () => void;
     importedTokens: TokenIF[];
+    chainData: ChainSpec;
+
     setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
+    currentPositionActive: string;
+    setCurrentPositionActive: Dispatch<SetStateAction<string>>;
+    account: string;
+    showSidebar: boolean;
 }
 
 // const cachedFetchAddress = memoizePromiseFn(fetchAddress);
@@ -77,6 +83,8 @@ export default function Portfolio(props: PortfolioPropsIF) {
         setSelectedOutsideTab,
         importedTokens,
         setImportedTokens,
+
+        showSidebar,
     } = props;
 
     const selectedToken: TokenIF = useAppSelector((state) => state.temp.token);
@@ -342,6 +350,13 @@ export default function Portfolio(props: PortfolioPropsIF) {
                     outsideControl={outsideControl}
                     rightTabOptions={false}
                     openTokenModal={openTokenModal}
+                    openGlobalModal={openGlobalModal}
+                    closeGlobalModal={closeGlobalModal}
+                    showSidebar={showSidebar}
+                    account={props.account}
+                    chainData={props.chainData}
+                    currentPositionActive={props.currentPositionActive}
+                    setCurrentPositionActive={props.setCurrentPositionActive}
                 />
                 {connectedAccountActive && !fullLayoutActive ? exchangeBalanceComponent : null}
             </div>

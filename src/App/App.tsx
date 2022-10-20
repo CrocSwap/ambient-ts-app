@@ -2215,6 +2215,11 @@ export default function App() {
                                     closeGlobalModal={closeGlobalModal}
                                     importedTokens={importedTokens}
                                     setImportedTokens={setImportedTokens}
+                                    chainData={chainData}
+                                    currentPositionActive={currentPositionActive}
+                                    setCurrentPositionActive={setCurrentPositionActive}
+                                    account={account ?? ''}
+                                    showSidebar={showSidebar}
                                 />
                             }
                         />
@@ -2242,6 +2247,11 @@ export default function App() {
                                     closeGlobalModal={closeGlobalModal}
                                     importedTokens={importedTokens}
                                     setImportedTokens={setImportedTokens}
+                                    chainData={chainData}
+                                    currentPositionActive={currentPositionActive}
+                                    setCurrentPositionActive={setCurrentPositionActive}
+                                    account={account ?? ''}
+                                    showSidebar={showSidebar}
                                 />
                             }
                         />
@@ -2280,6 +2290,11 @@ export default function App() {
                                     closeGlobalModal={closeGlobalModal}
                                     importedTokens={importedTokens}
                                     setImportedTokens={setImportedTokens}
+                                    chainData={chainData}
+                                    currentPositionActive={currentPositionActive}
+                                    setCurrentPositionActive={setCurrentPositionActive}
+                                    account={account ?? ''}
+                                    showSidebar={showSidebar}
                                 />
                             }
                         />

@@ -24,6 +24,7 @@ interface OrderRowPropsIF {
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
 
     isShowAllEnabled: boolean;
+    isOnPortfolioPage: boolean;
 }
 export default function OrderRow(props: OrderRowPropsIF) {
     const {
@@ -37,6 +38,7 @@ export default function OrderRow(props: OrderRowPropsIF) {
         currentPositionActive,
         setCurrentPositionActive,
         isShowAllEnabled,
+        isOnPortfolioPage,
     } = props;
 
     const {
@@ -69,6 +71,7 @@ export default function OrderRow(props: OrderRowPropsIF) {
         openGlobalModal: props.openGlobalModal,
         isOwnerActiveAccount: isOwnerActiveAccount,
         isOrderFilled: isOrderFilled,
+        isOnPortfolioPage: isOnPortfolioPage,
     };
 
     const sideCharacter = isDenomBase ? baseTokenCharacter : quoteTokenCharacter;
@@ -145,6 +148,22 @@ export default function OrderRow(props: OrderRowPropsIF) {
         </DefaultTooltip>
     );
 
+    // portfolio page li element ---------------
+    const accountTokenImages = (
+        <li className={styles.token_images_account}>
+            <img src={baseTokenLogo} alt='base token' />
+            <img src={quoteTokenLogo} alt='quote token' />
+            {/* <p>hello</p> */}
+        </li>
+    );
+
+    const poolName = (
+        <li className='base_color'>
+            {baseTokenSymbol} / {quoteTokenSymbol}
+        </li>
+    );
+    // end of portfolio page li element ---------------
+
     if (!orderMatchesSelectedTokens) return null;
     return (
         <ul
@@ -156,6 +175,8 @@ export default function OrderRow(props: OrderRowPropsIF) {
                     : setCurrentPositionActive('')
             }
         >
+            {isOnPortfolioPage && accountTokenImages}
+            {isOnPortfolioPage && !showSidebar && poolName}
             {!showColumns && IDWithTooltip}
             {!showColumns && walletWithTooltip}
             {showColumns && (
