@@ -87,10 +87,10 @@ export default function RangesMenu(props: RangesMenuIF) {
     };
 
     // -----------------SNACKBAR----------------
-    function handleCopyAddress() {
-        copy(posHash);
-        setOpenSnackbar(true);
-    }
+    // function handleCopyAddress() {
+    //     copy(posHash);
+    //     setOpenSnackbar(true);
+    // }
 
     const snackbarContent = (
         <SnackbarComponent
@@ -117,10 +117,13 @@ export default function RangesMenu(props: RangesMenuIF) {
     ) : null;
 
     const copyButton = isPositionInRange ? (
-        <button className={styles.option_button} onClick={handleCopyAddress}>
+        <Link className={styles.option_button} to={'/trade/range'}>
             Copy
-        </button>
-    ) : null;
+        </Link>
+    ) : // <button className={styles.option_button} onClick={handleCopyAddress}>
+    //     Copy
+    // </button>
+    null;
 
     const detailsButton = (
         <button className={styles.option_button} onClick={openDetailsModal}>
