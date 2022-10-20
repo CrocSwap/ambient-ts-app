@@ -325,7 +325,7 @@ export default function Leaderboard(props: LeaderboardPropsIF) {
             sortable: false,
         },
         {
-            name: 'Value ( $ )',
+            name: 'Value (USD)',
             className: 'value',
             show: true,
             slug: 'value',

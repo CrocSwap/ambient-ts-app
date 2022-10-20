@@ -371,7 +371,7 @@ export default function Orders(props: propsIF) {
             sortable: false,
         },
         {
-            name: 'Value ( $ )',
+            name: 'Value (USD)',
             className: 'value',
             show: true,
             slug: 'value',
