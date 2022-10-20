@@ -1,0 +1,21 @@
+ .main_content{
+
+    background: url(../../../assets/images/backgrounds/background.png) no-repeat ;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.control_display_container{
+    display: flex;
+    justify-content: center;
+    flex-direction: row;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.4rem 0;
+}

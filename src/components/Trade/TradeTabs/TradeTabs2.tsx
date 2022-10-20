@@ -350,6 +350,7 @@ export default function TradeTabs2(props: ITabsProps) {
 
         isCandleSelected: isCandleSelected,
         filter: filter,
+        closeGlobalModal: props.closeGlobalModal,
 
         openGlobalModal: props.openGlobalModal,
         showSidebar: showSidebar,
