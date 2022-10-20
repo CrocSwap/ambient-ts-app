@@ -224,7 +224,7 @@ export const updateApy = async (position: PositionIF): Promise<PositionIF> => {
                 base: position.base.length === 40 ? '0x' + position.base : position.base,
                 quote: position.quote.length === 40 ? '0x' + position.quote : position.quote,
                 poolIdx: position.poolIdx.toString(),
-                chainId: '0x5', // TODO: @ben
+                chainId: position.chainId,
                 // chainId: position.chainId,
                 positionType: position.positionType,
                 concise: 'true',

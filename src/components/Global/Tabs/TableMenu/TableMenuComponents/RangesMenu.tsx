@@ -16,7 +16,7 @@ import HarvestPosition from '../../../../HarvestPosition/HarvestPosition';
 import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
 import UseOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
-import { useAppDispatch } from '../../../../../utils/hooks/reduxToolkit';
+import { useAppDispatch, useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
 import {
     setAdvancedHighTick,
     setAdvancedLowTick,
@@ -52,7 +52,7 @@ export default function RangesMenu(props: RangesMenuIF) {
         rangeDetailsProps,
         posHash,
         positionData,
-        showSidebar,
+        // showSidebar,
         // eslint-disable-next-line
     } = props;
 
@@ -96,13 +96,14 @@ export default function RangesMenu(props: RangesMenuIF) {
         );
     };
 
-    // const tradeData = useAppSelector((state) => state.tradeData);
+    const isUserLoggedIn = useAppSelector((state) => state.userData).isLoggedIn;
 
+    const positionMatchesLoggedInUser = userMatchesConnectedAccount && isUserLoggedIn;
     // const isDenomBase = tradeData.isDenomBase
 
     const handleCopyClick = () => {
         // console.log('copy clicked');
-        console.log({ positionData });
+        // console.log({ positionData });
         if (positionData.positionType === 'ambient') {
             dispatch(setAdvancedMode(false));
         } else {
@@ -132,13 +133,13 @@ export default function RangesMenu(props: RangesMenuIF) {
     // -----------------END OF SNACKBAR----------------
 
     const repositionButton =
-        !isAmbient && userMatchesConnectedAccount && !isPositionInRange ? (
+        !isAmbient && positionMatchesLoggedInUser && !isPositionInRange ? (
             <Link className={styles.reposition_button} to={'/trade/reposition'}>
                 Reposition
             </Link>
         ) : null;
 
-    const removeButton = userMatchesConnectedAccount ? (
+    const removeButton = positionMatchesLoggedInUser ? (
         <button className={styles.option_button} onClick={openRemoveModal}>
             Remove
         </button>
@@ -163,13 +164,13 @@ export default function RangesMenu(props: RangesMenuIF) {
         </button>
     );
     const harvestButton =
-        !isAmbient && userMatchesConnectedAccount ? (
+        !isAmbient && positionMatchesLoggedInUser ? (
             <button className={styles.option_button} onClick={openHarvestModal}>
                 Harvest
             </button>
         ) : null;
 
-    const editButton = userMatchesConnectedAccount ? (
+    const editButton = positionMatchesLoggedInUser ? (
         <Link
             className={styles.option_button}
             to={`/trade/edit/${posHash}`}
@@ -182,13 +183,13 @@ export default function RangesMenu(props: RangesMenuIF) {
 
     // ----------------------
 
-    const noRespositionButton = !isAmbient && userMatchesConnectedAccount && !isPositionInRange;
+    const noRespositionButton = !isAmbient && positionMatchesLoggedInUser && !isPositionInRange;
 
     const view1 = useMediaQuery('(min-width: 1280px)');
     const view2 = useMediaQuery('(min-width: 1680px)');
     const view3 = useMediaQuery('(min-width: 2300px)');
 
-    const view1NoSidebar = useMediaQuery('(min-width: 1280px)') && !showSidebar;
+    // const view1NoSidebar = useMediaQuery('(min-width: 1280px)') && !showSidebar;
     // const view3WithNoSidebar = useMediaQuery('(min-width: 2300px)') && !showSidebar;
 
     // ----------------------
@@ -202,7 +203,7 @@ export default function RangesMenu(props: RangesMenuIF) {
             {duh && harvestButton}
             {view2 && removeButton}
             {view3 && detailsButton}
-            {view1NoSidebar && copyButton}
+            {view1 && copyButton}
         </div>
     );
 
