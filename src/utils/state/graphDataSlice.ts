@@ -4,6 +4,7 @@ export interface graphData {
     lastBlock: number;
     positionsByUser: PositionsByUser;
     positionsByPool: PositionsByPool;
+    leaderboardByPool: PositionsByPool;
     changesByUser: ChangesByUser;
     changesByPool: ChangesByPool;
     candlesForAllPools: CandlesForAllPools;
@@ -321,6 +322,7 @@ const initialState: graphData = {
     lastBlock: 0,
     positionsByUser: { dataReceived: false, positions: [] },
     positionsByPool: { dataReceived: false, positions: [] },
+    leaderboardByPool: { dataReceived: false, positions: [] },
     changesByUser: { dataReceived: false, changes: [] },
     changesByPool: { dataReceived: false, changes: [] },
     limitOrdersByUser: { dataReceived: false, limitOrders: [] },
@@ -359,6 +361,9 @@ export const graphDataSlice = createSlice({
         },
         setPositionsByPool: (state, action: PayloadAction<PositionsByPool>) => {
             state.positionsByPool = action.payload;
+        },
+        setLeaderboardByPool: (state, action: PayloadAction<PositionsByPool>) => {
+            state.leaderboardByPool = action.payload;
         },
         setLimitOrdersByUser: (state, action: PayloadAction<LimitOrdersByUser>) => {
             state.limitOrdersByUser = action.payload;
@@ -621,6 +626,7 @@ export const {
     setPositionsByUser,
     addPositionsByUser,
     setPositionsByPool,
+    setLeaderboardByPool,
     addPositionsByPool,
     setPoolVolumeSeries,
     setPoolTvlSeries,
