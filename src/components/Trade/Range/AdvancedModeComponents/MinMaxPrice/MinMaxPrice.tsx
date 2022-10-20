@@ -63,7 +63,6 @@ export default function MinMaxPrice(props: MinMaxPriceIF) {
                 )[0].value,
             },
         ];
-
         dispatch(setTargetData(newTargetData));
     };
 

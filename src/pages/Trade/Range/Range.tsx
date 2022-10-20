@@ -54,6 +54,7 @@ import {
     setRangeModuleTriggered,
     setRangeLowLineTriggered,
     setRangeHighLineTriggered,
+    targetData,
 } from '../../../utils/state/tradeDataSlice';
 import { addPendingTx, addReceipt, removePendingTx } from '../../../utils/state/receiptDataSlice';
 import getUnicodeCharacter from '../../../utils/functions/getUnicodeCharacter';
@@ -154,7 +155,7 @@ export default function Range(props: RangePropsIF) {
 
     const denominationsInBase = tradeData.isDenomBase;
     const isTokenAPrimary = tradeData.isTokenAPrimaryRange;
-    const targetData = tradeData.targetData;
+    // const targetData = tradeData.targetData;
 
     const rangeLowLineTriggered = tradeData.rangeLowLineTriggered;
     const rangeHighLineTriggered = tradeData.rangeHighLineTriggered;
@@ -463,6 +464,19 @@ export default function Range(props: RangePropsIF) {
             setPinnedMinPriceDisplayTruncated(pinnedDisplayPrices.pinnedMinPriceDisplayTruncated);
             setPinnedMaxPriceDisplayTruncated(pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated);
 
+            const newTargetData: targetData[] = [
+                {
+                    name: !tradeData.isDenomBase ? 'Min' : 'Max',
+                    value: parseFloat(pinnedDisplayPrices.pinnedMaxPriceDisplay),
+                },
+                {
+                    name: !tradeData.isDenomBase ? 'Max' : 'Min',
+                    value: parseFloat(pinnedDisplayPrices.pinnedMinPriceDisplay),
+                },
+            ];
+
+            dispatch(setTargetData(newTargetData));
+
             dispatch(setAdvancedLowTick(pinnedDisplayPrices.pinnedLowTick));
             dispatch(setAdvancedHighTick(pinnedDisplayPrices.pinnedHighTick));
 
@@ -522,14 +536,23 @@ export default function Range(props: RangePropsIF) {
         baseTokenDecimals,
         quoteTokenDecimals,
     ]);
+
     useEffect(() => {
         if (rangeLowBoundFieldBlurred || rangeLowLineTriggered) {
             const rangeLowBoundDisplayField = document.getElementById(
                 'min-price-input-quantity',
             ) as HTMLInputElement;
 
-            const targetMinValue = targetData.filter((target: any) => target.name === 'Min')[0]
-                .value;
+            // const targetDataIsDefined = targetData[0]?.value !== undefined;
+
+            // if (!targetDataIsDefined) {
+            //     console.log('target data not defined');
+            //     return;
+            // }
+
+            const targetMinValue = tradeData.targetData.filter(
+                (target: any) => target.name === 'Min',
+            )[0].value;
 
             const pinnedDisplayPrices = getPinnedPriceValuesFromDisplayPrices(
                 denominationsInBase,
@@ -550,13 +573,9 @@ export default function Range(props: RangePropsIF) {
                 ? dispatch(setAdvancedLowTick(pinnedDisplayPrices.pinnedLowTick))
                 : dispatch(setAdvancedHighTick(pinnedDisplayPrices.pinnedHighTick));
 
-            // !denominationsInBase
-            //     ? setRangeLowTick(pinnedDisplayPrices.pinnedLowTick)
-            //     : setRangeHighTick(pinnedDisplayPrices.pinnedHighTick);
-
-            // !denominationsInBase
-            //     ? dispatch(setPinnedMinPrice(pinnedDisplayPrices.pinnedLowTick))
-            //     : dispatch(setPinnedMaxPrice(pinnedDisplayPrices.pinnedHighTick));
+            !denominationsInBase
+                ? dispatch(setPinnedMinPrice(pinnedDisplayPrices.pinnedLowTick))
+                : dispatch(setPinnedMaxPrice(pinnedDisplayPrices.pinnedHighTick));
 
             const highGeometricDifferencePercentage = parseFloat(
                 truncateDecimals(
@@ -585,16 +604,17 @@ export default function Range(props: RangePropsIF) {
                 console.log('low bound field not found');
             }
 
-            const newTargetData: typeof targetData = [
+            const newTargetData: targetData[] = [
                 {
                     name: 'Min',
                     value: parseFloat(pinnedDisplayPrices.pinnedMinPriceDisplayTruncated),
                 },
                 {
                     name: 'Max',
-                    value: targetData.filter((target: any) => target.name === 'Max')[0].value,
+                    value: parseFloat(pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated),
                 },
             ];
+            console.log({ newTargetData });
 
             dispatch(setTargetData(newTargetData));
             setRangeLowBoundFieldBlurred(false);
@@ -608,8 +628,15 @@ export default function Range(props: RangePropsIF) {
                 'max-price-input-quantity',
             ) as HTMLInputElement;
 
-            const targetMaxValue = targetData.filter((target: any) => target.name === 'Max')[0]
-                .value;
+            // const targetDataIsDefined = targetData[1]?.value !== undefined;
+
+            // if (!targetDataIsDefined) {
+            //     console.log('target data not defined');
+            //     return;
+            // }
+            const targetMaxValue = tradeData.targetData.filter(
+                (target: any) => target.name === 'Max',
+            )[0].value;
 
             const pinnedDisplayPrices = getPinnedPriceValuesFromDisplayPrices(
                 denominationsInBase,
@@ -662,10 +689,10 @@ export default function Range(props: RangePropsIF) {
                 console.log('high bound field not found');
             }
 
-            const newTargetData: typeof targetData = [
+            const newTargetData: targetData[] = [
                 {
                     name: 'Min',
-                    value: targetData.filter((target: any) => target.name === 'Min')[0].value,
+                    value: parseFloat(pinnedDisplayPrices.pinnedMinPriceDisplayTruncated),
                 },
                 {
                     name: 'Max',
@@ -1061,7 +1088,7 @@ export default function Range(props: RangePropsIF) {
                     // setRangeHighTick={setRangeHighTick}
                     disable={isInvalidRange || !poolExists}
                     chainId={chainId.toString()}
-                    targetData={targetData}
+                    targetData={tradeData.targetData}
                 />
             </motion.div>
             <DividerDark addMarginTop />
