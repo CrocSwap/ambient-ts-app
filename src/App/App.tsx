@@ -868,7 +868,7 @@ export default function App() {
                     if (httpGraphCacheServerDomain) {
                         // console.log('fetching leaderboard positions');
                         const poolPositionsCacheEndpoint =
-                            httpGraphCacheServerDomain + '/pool_positions?';
+                            httpGraphCacheServerDomain + '/annotated_pool_positions?';
                         fetch(
                             poolPositionsCacheEndpoint +
                                 new URLSearchParams({
@@ -876,12 +876,10 @@ export default function App() {
                                     quote: sortedTokens[1].toLowerCase(),
                                     poolIdx: chainData.poolIndex.toString(),
                                     chainId: chainData.chainId,
-                                    annotate: 'true', // token quantities
                                     ensResolution: 'true',
                                     omitEmpty: 'true',
-                                    omitKnockout: 'true',
+                                    // omitKnockout: 'true',
                                     addValue: 'true',
-                                    addCachedAPY: 'true',
                                     sortByAPY: 'true',
                                     n: '10',
                                 }),
