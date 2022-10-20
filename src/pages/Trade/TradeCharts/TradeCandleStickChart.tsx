@@ -215,7 +215,11 @@ export default function TradeCandleStickChart(props: ChartData) {
             });
         }
 
-        return { liqData: liqData, liqSnapData: liqSnapData };
+        return {
+            liqData: liqData,
+            liqSnapData: liqSnapData,
+            totalLiq: props.liquidityData?.totals?.totalLiq,
+        };
     }, [props.liquidityData, denominationsInBase]);
 
     // cursor change----------------------------------------------
