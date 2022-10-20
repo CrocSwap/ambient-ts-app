@@ -4,7 +4,6 @@ import { useEffect, useState, Dispatch, SetStateAction, ReactNode } from 'react'
 // START: Import JSX Functional Components
 import Wallet from '../../Global/Account/AccountTabs/Wallet/Wallet';
 import Exchange from '../../Global/Account/AccountTabs/Exchange/Exchange';
-import Range from '../../Global/Account/AccountTabs/Range/Range';
 import TransactionsTable from '../../Global/Account/AccountTabs/Transaction/TransactionsTable';
 import TabComponent from '../../Global/TabComponent/TabComponent';
 
@@ -27,6 +26,7 @@ import { getLimitOrderData } from '../../../App/functions/getLimitOrderData';
 import { TokenPriceFn } from '../../../App/functions/fetchTokenPrice';
 import { fetchUserRecentChanges } from '../../../App/functions/fetchUserRecentChanges';
 import Orders from '../../Trade/TradeTabs/Orders/Orders';
+import Ranges from '../../Trade/TradeTabs/Ranges/Ranges';
 
 // interface for React functional component props
 interface PortfolioTabsPropsIF {
@@ -55,6 +55,12 @@ interface PortfolioTabsPropsIF {
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
     account: string;
     showSidebar: boolean;
+    isUserLoggedIn: boolean;
+    isAuthenticated: boolean;
+    baseTokenBalance: string;
+    quoteTokenBalance: string;
+    baseTokenDexBalance: string;
+    quoteTokenDexBalance: string;
 }
 
 // React functional component
@@ -77,6 +83,10 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
         outsideControl,
         setOutsideControl,
         openTokenModal,
+        baseTokenBalance,
+        quoteTokenBalance,
+        baseTokenDexBalance,
+        quoteTokenDexBalance,
 
         account,
     } = props;
@@ -230,7 +240,29 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
     };
     // props for <Range/> React Element
     const rangeProps = {
+        crocEnv: props.crocEnv,
+        expandTradeTable: false,
+        chainData: props.chainData,
+        isShowAllEnabled: false,
+        account: account,
+        graphData: graphData,
+        openGlobalModal: props.openGlobalModal,
+        currentPositionActive: props.currentPositionActive,
+        closeGlobalModal: props.closeGlobalModal,
+        setCurrentPositionActive: props.setCurrentPositionActive,
+        showSidebar: props.showSidebar,
         positions: activeAccountPositionData,
+        isOnPortfolioPage: true,
+        lastBlockNumber: lastBlockNumber,
+        chainId: chainId,
+        provider: props.provider,
+        isUserLoggedIn: props.isUserLoggedIn,
+        isAuthenticated: props.isAuthenticated,
+        importedTokens: importedTokens,
+        baseTokenBalance: baseTokenBalance,
+        quoteTokenBalance: quoteTokenBalance,
+        baseTokenDexBalance: baseTokenDexBalance,
+        quoteTokenDexBalance: quoteTokenDexBalance,
     };
 
     // props for <Transactions/> React Element
@@ -261,7 +293,7 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
             icon: recentTransactionsImage,
         },
         { label: 'Limit Orders', content: <Orders {...ordersProps} />, icon: openOrdersImage },
-        { label: 'Ranges', content: <Range {...rangeProps} />, icon: rangePositionsImage },
+        { label: 'Ranges', content: <Ranges {...rangeProps} />, icon: rangePositionsImage },
         {
             label: 'Exchange Balances',
             content: <Exchange {...exchangeProps} />,

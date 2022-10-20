@@ -465,11 +465,12 @@ export default function Orders(props: propsIF) {
 
     const orderDataOrNull = dataToDisplay ? rowItemContent : 'noData';
 
+    const expandStyle = expandTradeTable ? 'calc(100vh - 10rem)' : '250px';
+
+    const portfolioPageStyle = props.isOnPortfolioPage ? 'calc(100vh - 19.5rem)' : expandStyle;
+
     return (
-        <main
-            className={styles.main_list_container}
-            style={{ height: expandTradeTable ? '100%' : '250px' }}
-        >
+        <main className={styles.main_list_container} style={{ height: portfolioPageStyle }}>
             {/* {header} */}
             {headerColumnsDisplay}
             {isDataLoading ? <TableSkeletons /> : orderDataOrNull}

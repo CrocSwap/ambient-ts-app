@@ -2220,6 +2220,12 @@ export default function App() {
                                     setCurrentPositionActive={setCurrentPositionActive}
                                     account={account ?? ''}
                                     showSidebar={showSidebar}
+                                    isUserLoggedIn={isUserLoggedIn}
+                                    isAuthenticated={isAuthenticated}
+                                    baseTokenBalance={baseTokenBalance}
+                                    quoteTokenBalance={quoteTokenBalance}
+                                    baseTokenDexBalance={baseTokenDexBalance}
+                                    quoteTokenDexBalance={quoteTokenDexBalance}
                                 />
                             }
                         />
@@ -2252,6 +2258,12 @@ export default function App() {
                                     setCurrentPositionActive={setCurrentPositionActive}
                                     account={account ?? ''}
                                     showSidebar={showSidebar}
+                                    isUserLoggedIn={isUserLoggedIn}
+                                    isAuthenticated={isAuthenticated}
+                                    baseTokenBalance={baseTokenBalance}
+                                    quoteTokenBalance={quoteTokenBalance}
+                                    baseTokenDexBalance={baseTokenDexBalance}
+                                    quoteTokenDexBalance={quoteTokenDexBalance}
                                 />
                             }
                         />
@@ -2295,6 +2307,12 @@ export default function App() {
                                     setCurrentPositionActive={setCurrentPositionActive}
                                     account={account ?? ''}
                                     showSidebar={showSidebar}
+                                    isUserLoggedIn={isUserLoggedIn}
+                                    isAuthenticated={isAuthenticated}
+                                    baseTokenBalance={baseTokenBalance}
+                                    quoteTokenBalance={quoteTokenBalance}
+                                    baseTokenDexBalance={baseTokenDexBalance}
+                                    quoteTokenDexBalance={quoteTokenDexBalance}
                                 />
                             }
                         />
