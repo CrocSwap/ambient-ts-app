@@ -59,8 +59,8 @@ const initialState: tradeData = {
     slippageTolerance: 0.05,
     activeChartPeriod: 3600,
     targetData: [
-        { name: 'Max', value: undefined },
         { name: 'Min', value: undefined },
+        { name: 'Max', value: undefined },
     ],
     candleDomains: { lastCandleDate: undefined, domainBoundry: undefined },
     pinnedMaxPriceDisplayTruncated: undefined,

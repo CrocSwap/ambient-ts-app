@@ -289,6 +289,21 @@ export default function Range(props: RangePropsIF) {
         }
     }, [rangeWidthPercentage, isAdvancedModeActive, denominationsInBase]);
 
+    useEffect(() => {
+        const lowTick = currentPoolPriceTick - rangeWidthPercentage * 100;
+        const highTick = currentPoolPriceTick + rangeWidthPercentage * 100;
+        const pinnedDisplayPrices = getPinnedPriceValuesFromTicks(
+            denominationsInBase,
+            baseTokenDecimals,
+            quoteTokenDecimals,
+            lowTick,
+            highTick,
+            lookupChain(chainId).gridSize,
+        );
+        dispatch(setPinnedMinPrice(parseFloat(pinnedDisplayPrices.pinnedMinPriceDisplayTruncated)));
+        dispatch(setPinnedMaxPrice(parseFloat(pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated)));
+    }, []);
+
     const [rangeLowTick, setRangeLowTick] = useState(tradeData.advancedLowTick);
     const [rangeHighTick, setRangeHighTick] = useState(tradeData.advancedHighTick);
 
@@ -447,6 +462,13 @@ export default function Range(props: RangePropsIF) {
             } else {
                 // console.log('low bound field not found');
             }
+
+            dispatch(
+                setPinnedMinPrice(parseFloat(pinnedDisplayPrices.pinnedMinPriceDisplayTruncated)),
+            );
+            dispatch(
+                setPinnedMaxPrice(parseFloat(pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated)),
+            );
         }
     }, [
         currentPoolPriceTick,
@@ -521,12 +543,12 @@ export default function Range(props: RangePropsIF) {
 
             const newTargetData: typeof targetData = [
                 {
-                    name: 'Max',
-                    value: targetData.filter((target: any) => target.name === 'Max')[0].value,
-                },
-                {
                     name: 'Min',
                     value: parseFloat(pinnedDisplayPrices.pinnedMinPriceDisplayTruncated),
+                },
+                {
+                    name: 'Max',
+                    value: targetData.filter((target: any) => target.name === 'Max')[0].value,
                 },
             ];
 
@@ -598,12 +620,12 @@ export default function Range(props: RangePropsIF) {
 
             const newTargetData: typeof targetData = [
                 {
-                    name: 'Max',
-                    value: parseFloat(pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated),
-                },
-                {
                     name: 'Min',
                     value: targetData.filter((target: any) => target.name === 'Min')[0].value,
+                },
+                {
+                    name: 'Max',
+                    value: parseFloat(pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated),
                 },
             ];
 
