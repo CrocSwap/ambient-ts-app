@@ -184,6 +184,7 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
     useEffect(() => {
         isTokenAPrimaryLocal ? handleTokenAChangeEvent() : handleTokenBChangeEvent();
     }, [
+        poolExists,
         limitRateNumber,
         isSellTokenBase,
         isTokenAPrimaryLocal,
@@ -194,7 +195,8 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
     const handleLimitButtonMessage = (tokenAAmount: number) => {
         if (!poolExists) {
             setLimitAllowed(false);
-            setLimitButtonErrorMessage('Pool Not Initialized');
+            if (poolExists === null) setLimitButtonErrorMessage('...');
+            if (poolExists === false) setLimitButtonErrorMessage('Pool Not Initialized');
         } else if (isNaN(tokenAAmount) || tokenAAmount <= 0) {
             setLimitAllowed(false);
             setLimitButtonErrorMessage('Enter an Amount');

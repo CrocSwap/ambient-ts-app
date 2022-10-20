@@ -15,6 +15,7 @@
     padding: 10.5px 5px;
     border-radius: var(--border-radius);
     width: 80%;
+    transition: all var(--animation-speed) ease-in-out;
 }
 
 .star_icon,
@@ -25,6 +26,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    transition: all var(--animation-speed) ease-in-out;
 }
 
 /* .main_container:hover .delete_container{
@@ -33,11 +35,11 @@
 } */
 .close_icon_svg:hover {
     color: #f6385b;
-    transition: all var(--animation-speed) ease-in-out;
+   
 }
 .modal_content:hover {
     background: var(--dark2);
-    transition: all var(--animation-speed) ease-in-out;
+    
     cursor: pointer;
 }
 
@@ -58,12 +60,13 @@
 
 .star_svg {
     cursor: pointer;
+    transition: all var(--animation-speed) ease-in-out;
 }
 
 .star_svg:hover {
     fill: var(--text-grey-light);
     cursor: pointer;
-    transition: all var(--animation-speed) ease-in-out;
+  
 }
 
 .modal_token_symbol,
@@ -90,7 +93,7 @@
     background-color: var(--dark3);
     overflow: hidden;
     height: 100%;
-    transition: 0.5s ease;
+    transition: all var(--animation-speed) ease-in-out;
 
     display: flex;
     flex-direction: row;
@@ -164,6 +167,7 @@
 
 .confirm {
     cursor: pointer;
+    transition: all var(--animation-speed) ease;
 }
 .primary_style {
     color: var(--text-highlight);
@@ -175,5 +179,5 @@
 
 .confirm:hover {
     transform: scale(1.03);
-    transition: all var(--animation-speed) ease;
+   
 }

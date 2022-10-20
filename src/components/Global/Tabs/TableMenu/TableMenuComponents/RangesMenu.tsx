@@ -9,12 +9,13 @@ import RangeDetails from '../../../../RangeDetails/RangeDetails';
 import SnackbarComponent from '../../../../../components/Global/SnackbarComponent/SnackbarComponent';
 
 // START: Import Local Files
-import styles from './TableMenuComponents.module.css';
+import styles from './TableMenus.module.css';
 import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
 import { PositionIF } from '../../../../../utils/interfaces/PositionIF';
 import HarvestPosition from '../../../../HarvestPosition/HarvestPosition';
 import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
 import UseOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
+import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
 
 // interface for React functional component props
 interface RangesMenuIF {
@@ -30,6 +31,7 @@ interface RangesMenuIF {
     rangeDetailsProps: any;
     positionData: PositionIF;
     posHash: string;
+    showSidebar: boolean;
 }
 
 // React functional component
@@ -43,6 +45,7 @@ export default function RangesMenu(props: RangesMenuIF) {
         rangeDetailsProps,
         posHash,
         positionData,
+        showSidebar,
         // eslint-disable-next-line
     } = props;
 
@@ -66,16 +69,22 @@ export default function RangesMenu(props: RangesMenuIF) {
 
     // ---------------------MODAL FUNCTIONALITY----------------
 
-    const openRemoveModal = () =>
+    const openRemoveModal = () => {
+        setShowDropdownMenu(false);
         openGlobalModal(<RemoveRange position={positionData} {...rangeDetailsProps} />);
+    };
 
-    const openDetailsModal = () =>
+    const openDetailsModal = () => {
+        setShowDropdownMenu(false);
         openGlobalModal(<RangeDetails position={positionData} {...rangeDetailsProps} />);
+    };
 
-    const openHarvestModal = () =>
+    const openHarvestModal = () => {
+        setShowDropdownMenu(false);
         openGlobalModal(
             <HarvestPosition crocEnv={crocEnv} position={positionData} {...rangeDetailsProps} />,
         );
+    };
 
     // -----------------SNACKBAR----------------
     function handleCopyAddress() {
@@ -136,14 +145,29 @@ export default function RangesMenu(props: RangesMenuIF) {
         </Link>
     ) : null;
 
+    // ----------------------
+
+    const noRespositionButton = !isAmbient && userMatchesConnectedAccount && !isPositionInRange;
+
+    const view1 = useMediaQuery('(min-width: 1280px)');
+    const view2 = useMediaQuery('(min-width: 1680px)');
+    const view3 = useMediaQuery('(min-width: 2300px)');
+
+    const view1NoSidebar = useMediaQuery('(min-width: 1280px)') && !showSidebar;
+    // const view3WithNoSidebar = useMediaQuery('(min-width: 2300px)') && !showSidebar;
+
+    // ----------------------
+
+    const duh = false;
+
     const rangesMenu = (
         <div className={styles.actions_menu}>
-            {repositionButton}
-            {editButton}
-            {harvestButton}
-            {removeButton}
-            {detailsButton}
-            {copyButton}
+            {view1 && repositionButton}
+            {view1 && !noRespositionButton && editButton}
+            {duh && harvestButton}
+            {view2 && removeButton}
+            {view3 && detailsButton}
+            {view1NoSidebar && copyButton}
         </div>
     );
 
@@ -181,10 +205,10 @@ export default function RangesMenu(props: RangesMenuIF) {
     );
 
     return (
-        <>
+        <div className={styles.main_container}>
             {rangesMenu}
             {dropdownRangesMenu}
             {snackbarContent}
-        </>
+        </div>
     );
 }

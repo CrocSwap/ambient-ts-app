@@ -243,8 +243,6 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
 
         handleSecondaryTokenQty('B', value, qtyTokenB);
 
-        // handleRangeButtonMessageTokenB(qtyTokenB);
-
         const truncatedTokenBQty = truncateDecimals(
             qtyTokenB,
             tokenPair.dataTokenB.decimals > 10 ? 10 : tokenPair.dataTokenB.decimals,
@@ -262,10 +260,8 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
             setTokenBInputQty(truncatedTokenBQty);
         } else {
             tokenBQtyField.value = '';
-            // dispatch(setPrimaryQuantityRange('0'));
             setIsTokenAPrimaryLocal(true);
             setTokenBQtyLocal(0);
-            // setTokenBInputQty('0');
         }
     };
 
@@ -306,16 +302,13 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
             setTokenAInputQty(truncatedTokenAQty);
         } else {
             tokenAQtyField.value = '';
-            // dispatch(setPrimaryQuantityRange('0'));
             setIsTokenAPrimaryLocal(false);
             setTokenAQtyLocal(0);
-            // setTokenAInputQty('0');
         }
     };
     const navigate = useNavigate();
 
     const reverseTokens = (): void => {
-        // console.log('reversing tokens');
         dispatch(reverseTokensInRTK());
         resetTokenQuantities();
         navigate(
@@ -324,21 +317,6 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
                 '&tokenB=' +
                 tokenPair.dataTokenA.address,
         );
-        // if (!isTokenAPrimaryLocal) {
-        //     setTokenAQtyValue(tokenBQtyLocal);
-
-        //     const tokenAField = document.getElementById('A-range-quantity') as HTMLInputElement;
-        //     if (tokenAField) {
-        //         tokenAField.value = isNaN(tokenBQtyLocal) ? '' : tokenBQtyLocal.toString();
-        //     }
-        // } else {
-        //     setTokenBQtyValue(tokenAQtyLocal);
-        //     const tokenBField = document.getElementById('B-range-quantity') as HTMLInputElement;
-        //     if (tokenBField) {
-        //         tokenBField.value = isNaN(tokenAQtyLocal) ? '' : tokenAQtyLocal.toString();
-        //     }
-        // }
-
         setIsTokenAPrimaryLocal(!isTokenAPrimaryLocal);
         dispatch(setIsTokenAPrimaryRange(!isTokenAPrimaryLocal));
     };
@@ -633,12 +611,10 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
         primaryQuantityRange,
         isWithdrawTokenAFromDexChecked,
         isWithdrawTokenBFromDexChecked,
-        // tradeData.isTokenAPrimaryRange,
         tokenABalance,
         tokenBBalance,
         tokenADexBalance,
         tokenBDexBalance,
-        // JSON.stringify(tokenPair),
     ]);
 
     const tokenAQtyCoveredByWalletBalance = isWithdrawTokenAFromDexChecked
@@ -707,7 +683,6 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
     return (
         <section className={styles.currency_converter}>
             <div className={styles.title}> </div>
-            {/* <div className={styles.title}>Collateral:</div> */}
             <RangeCurrencySelector
                 fieldId='A'
                 updateOtherQuantity={(event) => handleTokenAQtyFieldUpdate(event)}

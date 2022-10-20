@@ -53,7 +53,7 @@
     .tabs_exchange_balance_container,
     .full_layout_container {
         /* I wish I had a logical answer to this calculation but it was through trial and error. The higher level containers of the app needs to be refactored to prevent this workflow */
-        height: calc(100vh - 20.2rem);
+        height: calc(100vh - 16rem);
 
         display: grid;
         transition: all var(--animation-speed) ease-in-out;

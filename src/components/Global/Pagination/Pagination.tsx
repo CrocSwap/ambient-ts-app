@@ -123,7 +123,7 @@ export default function Pagination(props: PaginationPropsIF) {
                     // onMouseLeave={() => setExpandPaginationContainer(false)}
                 >
                     {currentPage > 1 && leftButton}
-                    <ul
+                    <div
                         className={styles.pagination_content}
                         // onMouseEnter={() => setExpandPaginationContainer(true)}
                         ref={containerRef}
@@ -138,7 +138,7 @@ export default function Pagination(props: PaginationPropsIF) {
                                 <button onClick={() => handleNumberClick(number)}>{number}</button>
                             </li>
                         ))}
-                    </ul>
+                    </div>
                     {/* {expandPaginationContainer && (
                         <div className={styles.dot}>
                             <BiDotsHorizontal />

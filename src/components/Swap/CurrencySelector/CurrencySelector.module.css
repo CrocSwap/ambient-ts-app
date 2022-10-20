@@ -92,6 +92,10 @@
     max-width: 100%;
 }
 
+
+
+
+
 .token_list_text {
     padding: 1px;
     font-size: var(--header2-size);
@@ -121,7 +125,7 @@
 
 .sellAllButton {
     cursor: pointer;
-    transition: all var(--animation-speed) ease-out;
+    transition: all var(--animation-speed) ease-in-out;
 
     color: green;
 }

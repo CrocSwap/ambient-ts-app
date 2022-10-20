@@ -332,6 +332,7 @@ export default function TradeTabs2(props: ITabsProps) {
         openGlobalModal: props.openGlobalModal,
 
         closeGlobalModal: props.closeGlobalModal,
+        showSidebar: showSidebar,
     };
     // Props for <Transactions/> React Element
     const transactionsProps = {
@@ -350,9 +351,11 @@ export default function TradeTabs2(props: ITabsProps) {
         filter: filter,
 
         openGlobalModal: props.openGlobalModal,
+        showSidebar: showSidebar,
     };
     // Props for <Orders/> React Element
     const ordersProps = {
+        crocEnv: crocEnv,
         expandTradeTable: expandTradeTable,
         chainData: chainData,
         isShowAllEnabled: isShowAllEnabled,
@@ -387,6 +390,8 @@ export default function TradeTabs2(props: ITabsProps) {
         },
         { label: 'Limit Orders', content: <Orders {...ordersProps} />, icon: openOrdersImage },
         { label: 'Ranges', content: <Ranges {...rangesProps} />, icon: rangePositionsImage },
+        { label: 'Leaderboard', content: <Ranges {...rangesProps} />, icon: rangePositionsImage },
+        { label: 'Info', content: <Ranges {...rangesProps} />, icon: rangePositionsImage },
     ];
 
     // -------------------------------END OF DATA-----------------------------------------

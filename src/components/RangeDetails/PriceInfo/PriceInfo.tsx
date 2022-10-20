@@ -92,25 +92,25 @@ export default function PriceInfo(props: IPriceInfoProps) {
         </motion.div>
     );
 
-    const timesContent = (
-        <motion.div
-            layout
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className={styles.info_container}
-        >
-            <Row>
-                <span>Open Time</span>
-                <div className={styles.info_text}>25/08/22</div>
-            </Row>
+    // const timesContent = (
+    //     <motion.div
+    //         layout
+    //         initial={{ opacity: 0 }}
+    //         animate={{ opacity: 1 }}
+    //         exit={{ opacity: 0 }}
+    //         className={styles.info_container}
+    //     >
+    //         <Row>
+    //             <span>Open Time</span>
+    //             <div className={styles.info_text}>25/08/22</div>
+    //         </Row>
 
-            <Row>
-                <span>Close Time</span>
-                <div className={styles.info_text}>30/08/22</div>
-            </Row>
-        </motion.div>
-    );
+    //         <Row>
+    //             <span>Close Time</span>
+    //             <div className={styles.info_text}>30/08/22</div>
+    //         </Row>
+    //     </motion.div>
+    // );
 
     const totalValueContent = (
         <motion.div
@@ -170,9 +170,9 @@ export default function PriceInfo(props: IPriceInfoProps) {
         <div className={styles.main_container}>
             {/* <div className={styles.price_info_container}> */}
             {tokenPairDetails}
-            {controlItems[2].checked && totalValueContent}
-            {controlItems[0].checked && timesContent}
-            {controlItems[1].checked && collateralContent}
+            {controlItems[1].checked && totalValueContent}
+            {/* {controlItems[0].checked && timesContent} */}
+            {controlItems[0].checked && collateralContent}
             {minMaxPriceDipslay}
             {/* <div className={styles.graph_image_container}>
                     <img src={graphImage} alt='chart' />

@@ -39,7 +39,7 @@ export default function LimitExtraInfo(props: LimitExtraInfoPropsIF) {
         // isDenomBase,
         // limitRate,
     } = props;
-    const [showExtraDetails, setShowExtraDetails] = useState<boolean>(false);
+    const [showExtraDetails, setShowExtraDetails] = useState<boolean>(true);
 
     // const reverseDisplay = (isTokenABase && !isDenomBase) || (!isTokenABase && isDenomBase);
 

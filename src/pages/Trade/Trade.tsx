@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // START: Import React and Dongles
-import { Dispatch, SetStateAction, ReactNode, useState } from 'react';
+import { Dispatch, SetStateAction, ReactNode, useEffect, useState } from 'react';
 import { useParams, Outlet, useOutletContext, Link, NavLink, useNavigate } from 'react-router-dom';
 import { ethers } from 'ethers';
 import { motion, AnimateSharedLayout } from 'framer-motion';
-// import { SketchPicker } from 'react-color';
 import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
+import { VscClose } from 'react-icons/vsc';
 
 // START: Import JSX Components
 import TradeCharts from './TradeCharts/TradeCharts';
@@ -18,6 +18,7 @@ import { tradeData as TradeDataIF } from '../../utils/state/tradeDataSlice';
 import { CandleData, CandlesByPoolAndDuration } from '../../utils/state/graphDataSlice';
 import { PoolIF, TokenIF, TokenPairIF } from '../../utils/interfaces/exports';
 import { useUrlParams } from './useUrlParams';
+import NoTokenIcon from '../../components/Global/NoTokenIcon/NoTokenIcon';
 
 // interface for React functional component props
 interface TradePropsIF {
@@ -71,6 +72,7 @@ interface TradePropsIF {
     importedTokens: TokenIF[];
     poolExists: boolean | null;
     showSidebar: boolean;
+    setTokenPairLocal: Dispatch<SetStateAction<string[] | null>>;
 }
 
 // React functional component
@@ -108,10 +110,14 @@ export default function Trade(props: TradePropsIF) {
         currentTxActiveInTransactions,
         setCurrentTxActiveInTransactions,
         poolExists,
+        setTokenPairLocal,
         showSidebar,
     } = props;
 
-    useUrlParams(chainId, isInitialized);
+    const tokenPairFromParams = useUrlParams(chainId, isInitialized);
+    useEffect(() => {
+        setTokenPairLocal && setTokenPairLocal(tokenPairFromParams);
+    }, [tokenPairFromParams]);
     const { params } = useParams();
 
     const [isCandleSelected, setIsCandleSelected] = useState<boolean | undefined>();
@@ -147,6 +153,9 @@ export default function Trade(props: TradePropsIF) {
     } = tradeData;
     const baseTokenLogo = isDenomBase ? tradeData.baseToken.logoURI : tradeData.quoteToken.logoURI;
     const quoteTokenLogo = isDenomBase ? tradeData.quoteToken.logoURI : tradeData.baseToken.logoURI;
+
+    const baseTokenSymbol = isDenomBase ? tradeData.baseToken.symbol : tradeData.quoteToken.symbol;
+    const quoteTokenSymbol = isDenomBase ? tradeData.quoteToken.symbol : tradeData.baseToken.symbol;
 
     const indexOfPoolInLiqData = graphData?.liquidityForAllPools.pools.findIndex(
         (pool) =>
@@ -256,15 +265,27 @@ export default function Trade(props: TradePropsIF) {
         poolExists === false ? (
             <div className={styles.pool_not_initialialized_container}>
                 <div className={styles.pool_not_initialialized_content}>
-                    <div onClick={() => navigate(-1)}>X</div>
+                    <div className={styles.close_init} onClick={() => navigate(-1)}>
+                        <VscClose size={25} />
+                    </div>
                     <h2>This pool has not been initialized.</h2>
                     <h3>Do you want to initialize it?</h3>
                     <Link to={initLinkPath} className={styles.initialize_link}>
-                        <img src={baseTokenLogo} alt='base token' />
                         Initialize Pool
-                        <img src={quoteTokenLogo} alt=' quote token' />
+                        {baseTokenLogo ? (
+                            <img src={baseTokenLogo} alt={baseTokenSymbol} />
+                        ) : (
+                            <NoTokenIcon tokenInitial={baseTokenSymbol.charAt(0)} width='20px' />
+                        )}
+                        {quoteTokenLogo ? (
+                            <img src={quoteTokenLogo} alt={quoteTokenSymbol} />
+                        ) : (
+                            <NoTokenIcon tokenInitial={quoteTokenSymbol.charAt(0)} width='20px' />
+                        )}
                     </Link>
-                    <button onClick={() => navigate(-1)}>No Thank You</button>
+                    <button className={styles.no_thanks} onClick={() => navigate(-1)}>
+                        No, take me back.
+                    </button>
                 </div>
             </div>
         ) : null;

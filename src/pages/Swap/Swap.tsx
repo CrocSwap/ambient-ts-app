@@ -66,6 +66,7 @@ interface SwapPropsIF {
     openModalWallet: () => void;
     isInitialized: boolean;
     poolExists: boolean | null;
+    setTokenPairLocal?: Dispatch<SetStateAction<string[] | null>>;
 }
 
 export default function Swap(props: SwapPropsIF) {
@@ -80,7 +81,6 @@ export default function Swap(props: SwapPropsIF) {
         isPairStable,
         provider,
         isOnTradeRoute,
-        // nativeBalance,
         ethMainnetUsdPrice,
         gasPriceInGwei,
         baseTokenBalance,
@@ -98,13 +98,17 @@ export default function Swap(props: SwapPropsIF) {
         openModalWallet,
         isInitialized,
         poolExists,
+        setTokenPairLocal,
     } = props;
 
     const [isModalOpen, openModal, closeModal] = useModal();
 
     const dispatch = useAppDispatch();
 
-    useUrlParams(chainId, isInitialized);
+    const tokenPairFromParams = useUrlParams(chainId, isInitialized);
+    useEffect(() => {
+        setTokenPairLocal && setTokenPairLocal(tokenPairFromParams);
+    }, [tokenPairFromParams]);
 
     const [isRelativeModalOpen, closeRelativeModal] = useRelativeModal();
 
@@ -128,7 +132,7 @@ export default function Swap(props: SwapPropsIF) {
         ? parseFloat(swapSlippage.stable.value)
         : parseFloat(swapSlippage.volatile.value);
 
-    const loginButton = <Button title='Login' action={openModalWallet} />;
+    const loginButton = <Button title='Connect Wallet' action={openModalWallet} />;
 
     const [isApprovalPending, setIsApprovalPending] = useState(false);
 
@@ -169,7 +173,6 @@ export default function Swap(props: SwapPropsIF) {
     const [swapAllowed, setSwapAllowed] = useState<boolean>(false);
     const [swapButtonErrorMessage, setSwapButtonErrorMessage] = useState<string>('');
     const isTokenAPrimary = tradeData.isTokenAPrimary;
-    // console.log({ isTokenAPrimary });
     const [isWithdrawFromDexChecked, setIsWithdrawFromDexChecked] = useState(false);
     const [isSaveAsDexSurplusChecked, setIsSaveAsDexSurplusChecked] = useState(false);
     const [newSwapTransactionHash, setNewSwapTransactionHash] = useState('');
@@ -185,23 +188,20 @@ export default function Swap(props: SwapPropsIF) {
         setTxErrorMessage('');
     };
 
-    useEffect(() => {
-        if (poolPriceDisplay === undefined) {
-            setSwapAllowed(false);
-            setSwapButtonErrorMessage('…');
-        } else if (!poolExists) {
-            setSwapAllowed(false);
-            setSwapButtonErrorMessage('Pool Not Initialized');
-        }
-    }, [poolPriceDisplay]);
+    // useEffect(() =>
+    //     if (poolExists === null) {
+    //         setSwapAllowed(false);
+    //         setSwapButtonErrorMessage('...');
+    //     } else if (poolExists === false) {
+    //         setSwapAllowed(false);
+    //         setSwapButtonErrorMessage('Pool Not Initialized');
+    //     }
+    // }, [poolExists]);
 
     const [priceImpactExceedsTolerance, setPriceImpactExceedsTolerance] = useState(false);
 
     useEffect(() => {
-        console.log({ priceImpact });
         const priceImpactPercentChange = priceImpact?.percentChange;
-        // console.log({ priceImpactPercentChange });
-        // console.log({ slippageTolerancePercentage });
         if (priceImpactPercentChange) {
             if (Math.abs(priceImpactPercentChange) > slippageTolerancePercentage / 100) {
                 console.log('price impace exceeds slippage tolerance');
@@ -214,39 +214,14 @@ export default function Swap(props: SwapPropsIF) {
     }, [priceImpact, slippageTolerancePercentage]);
 
     async function initiateSwap() {
-        // if (!provider) return;
-
         resetConfirmation();
-
-        // if (!(provider as ethers.providers.WebSocketProvider).getSigner()) {
-        //     return;
-        // }
         if (!crocEnv) return;
-
         const sellTokenAddress = tokenA.address;
         const buyTokenAddress = tokenB.address;
         const sellTokenQty = (document.getElementById('sell-quantity') as HTMLInputElement)?.value;
         const buyTokenQty = (document.getElementById('buy-quantity') as HTMLInputElement)?.value;
         const qty = isTokenAPrimary ? sellTokenQty : buyTokenQty;
         const isQtySell = isTokenAPrimary;
-
-        console.log({ slippageTolerancePercentage });
-
-        // const env = new CrocEnv(provider);
-
-        // const impact = await calcImpact(
-        //     isQtySell,
-        //     env,
-        //     sellTokenAddress,
-        //     buyTokenAddress,
-        //     slippageTolerancePercentage,
-        //     qty,
-        // );
-
-        console.log({ priceImpact });
-        console.log({ isWithdrawFromDexChecked });
-        console.log({ isSaveAsDexSurplusChecked });
-
         let tx;
         try {
             (tx = await (isQtySell
@@ -337,7 +312,6 @@ export default function Swap(props: SwapPropsIF) {
                     );
                 }
             } else if (isTransactionFailedError(error)) {
-                // console.log({ error });
                 receipt = error.receipt;
             }
         }
@@ -351,8 +325,6 @@ export default function Swap(props: SwapPropsIF) {
     const handleModalClose = () => {
         closeModal();
         setNewSwapTransactionHash('');
-        // setTxErrorCode(0);
-        // setTxErrorMessage('');
         resetConfirmation();
     };
 
@@ -370,7 +342,6 @@ export default function Swap(props: SwapPropsIF) {
                 initiateSwapMethod={initiateSwap}
                 onClose={handleModalClose}
                 newSwapTransactionHash={newSwapTransactionHash}
-                // setNewSwapTransactionHash={setNewSwapTransactionHash}
                 txErrorCode={txErrorCode}
                 txErrorMessage={txErrorMessage}
                 showConfirmation={showConfirmation}
@@ -405,18 +376,26 @@ export default function Swap(props: SwapPropsIF) {
     const isTokenAAllowanceSufficient = parseFloat(tokenAAllowance) >= parseFloat(tokenAInputQty);
 
     const swapContainerStyle = pathname.startsWith('/swap') ? styles.swap_page_container : null;
+
     const swapPageStyle = pathname.startsWith('/swap') ? styles.swap_page : null;
+
+    const [connectButtonDelayElapsed, setConnectButtonDelayElapsed] = useState(false);
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setConnectButtonDelayElapsed(true);
+        }, 3000);
+        return () => clearTimeout(timer);
+    }, []);
+
     return (
         <main data-testid={'swap'} className={swapPageStyle}>
             <div className={`${swapContainerStyle}`}>
                 <ContentContainer isOnTradeRoute={isOnTradeRoute}>
                     <SwapHeader
-                        // tokenPair={{ dataTokenA: tokenA, dataTokenB: tokenB }}
                         swapSlippage={swapSlippage}
                         isPairStable={isPairStable}
                         isOnTradeRoute={isOnTradeRoute}
-                        // isDenomBase={tradeData.isDenomBase}
-                        // isTokenABase={isSellTokenBase}
                     />
                     <DividerDark addMarginTop />
                     {navigationMenu}
@@ -427,6 +406,7 @@ export default function Swap(props: SwapPropsIF) {
                     >
                         <CurrencyConverter
                             crocEnv={crocEnv}
+                            poolExists={poolExists}
                             isUserLoggedIn={isUserLoggedIn}
                             provider={provider}
                             slippageTolerancePercentage={slippageTolerancePercentage}
@@ -473,8 +453,10 @@ export default function Swap(props: SwapPropsIF) {
                         swapGasPriceinDollars={swapGasPriceinDollars}
                         didUserFlipDenom={tradeData.didUserFlipDenom}
                         isDenomBase={tradeData.isDenomBase}
+                        isOnTradeRoute={isOnTradeRoute}
                     />
-                    {isUserLoggedIn ? (
+                    {isUserLoggedIn || !connectButtonDelayElapsed ? (
+                        poolExists &&
                         !isTokenAAllowanceSufficient &&
                         parseFloat(tokenAInputQty) > 0 &&
                         tokenAInputQty !== 'Infinity' ? (
