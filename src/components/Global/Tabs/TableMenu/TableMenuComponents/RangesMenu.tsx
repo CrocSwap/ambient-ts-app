@@ -102,8 +102,12 @@ export default function RangesMenu(props: RangesMenuIF) {
 
     const handleCopyClick = () => {
         // console.log('copy clicked');
-        // console.log({ positionData });
-        dispatch(setAdvancedMode(true));
+        console.log({ positionData });
+        if (positionData.positionType === 'ambient') {
+            dispatch(setAdvancedMode(false));
+        } else {
+            dispatch(setAdvancedMode(true));
+        }
         dispatch(setAdvancedLowTick(positionData.bidTick));
         dispatch(setAdvancedHighTick(positionData.askTick));
         dispatch(setRangeModuleTriggered(true));
