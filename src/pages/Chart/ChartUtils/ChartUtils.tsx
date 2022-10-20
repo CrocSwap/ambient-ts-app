@@ -10,7 +10,7 @@ export default function BarSeries(
         const barSeries = d3fc
             .seriesSvgBar()
             .orient('horizontal')
-            .align('center')
+            .align('right')
             .mainValue((d: any) => d.activeLiq)
             .crossValue((d: any) => d.upperBoundPriceDecimalCorrected)
             .xScale(scaleData.liquidityScale)
@@ -23,6 +23,10 @@ export default function BarSeries(
                     const diffTop =
                         liquidityData.liqData[index - 1].upperBoundPriceDecimalCorrected -
                         value.upperBoundPriceDecimalCorrected;
+
+                    console.log('dif', scaleData.yScale(value.upperBoundPriceDecimalCorrected));
+                    console.log('diffBot ', scaleData.yScale(diffBot));
+                    console.log('diffTop ', scaleData.yScale(diffTop));
 
                     return (diffBot + diffTop) * 2;
                 }
