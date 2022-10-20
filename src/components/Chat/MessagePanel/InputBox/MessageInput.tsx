@@ -19,6 +19,7 @@ import PositionBox from '../PositionBox/PositionBox';
 interface MessageInputProps {
     message: Message;
     room: string;
+    socket: any;
 }
 
 interface PortfolioBannerPropsIF {
@@ -29,15 +30,28 @@ interface PortfolioBannerPropsIF {
 }
 
 export default function MessageInput(props: MessageInputProps, prop: PortfolioBannerPropsIF) {
-    const _socket = socket;
-
-    useEffect(() => {
-        _socket.connect();
-    }, [_socket]);
-
+    const [currentUser, setCurrentUser] = useState('');
     const [message, setMessage] = useState('');
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
     const { user, account, enableWeb3, isWeb3Enabled, isAuthenticated } = useMoralis();
+
+    async function getID() {
+        const response = await fetch('http://localhost:5000/api/auth/getUserByAccount/' + account, {
+            method: 'GET',
+        });
+        const data = await response.json();
+        if (data.status === 'OK') {
+            return data;
+        } else {
+            console.log(data);
+        }
+    }
+    useEffect(() => {
+        const result = getID();
+        result.then((res) => {
+            setCurrentUser(res._id);
+        });
+    }, []);
 
     const handleEmojiClick = (event: any, emoji: any) => {
         let msg = message;
@@ -63,10 +77,12 @@ export default function MessageInput(props: MessageInputProps, prop: PortfolioBa
     };
 
     const handleSendMsg = async (msg: string) => {
-        _socket.emit('send-msg', {
+        props.socket.emit('send-msg', {
+            from: currentUser,
             message: msg,
             roomInfo: props.room,
         });
+        console.error(msg);
     };
 
     const onChangeMessage = async (e: any) => {
@@ -95,18 +111,18 @@ export default function MessageInput(props: MessageInputProps, prop: PortfolioBa
 
     return (
         <div className={styles.input_box}>
-            <PositionBox message={message} />
+            <PositionBox message={message} isInput={true} />
 
             <div className={styles.input}>
                 <input
                     type='text'
                     id='box'
                     placeholder={
-                        !isAuthenticated || !isWeb3Enabled
+                        isAuthenticated || isWeb3Enabled
                             ? 'Please log in to chat.'
                             : 'Type to chat. Enter to submit.'
                     }
-                    disabled={!isAuthenticated || !isWeb3Enabled}
+                    // disabled={!isAuthenticated || !isWeb3Enabled}
                     className={styles.input_text}
                     onKeyDown={_handleKeyDown}
                     value={message}

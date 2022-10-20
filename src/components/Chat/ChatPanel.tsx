@@ -7,7 +7,7 @@ import IncomingMessage from './MessagePanel/Inbox/IncomingMessage';
 import Room from './MessagePanel/Room/Room';
 import { RiCloseFill } from 'react-icons/ri';
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
-import { receiveUsername, recieveMessageByRoomRoute, socket } from './Service/chatApi';
+import { receiveUsername, recieveMessageByRoomRoute } from './Service/chatApi';
 import axios from 'axios';
 import { Message } from './Model/MessageModel';
 import { PoolIF } from '../../utils/interfaces/PoolIF';
@@ -15,6 +15,7 @@ import { TokenIF } from '../../utils/interfaces/TokenIF';
 import { targetData } from '../../utils/state/tradeDataSlice';
 import { useMoralis } from 'react-moralis';
 import { id } from 'ethers/lib/utils';
+import { io } from 'socket.io-client';
 
 interface currentPoolInfo {
     tokenA: TokenIF;
@@ -51,7 +52,6 @@ interface ChatProps {
 export default function ChatPanel(props: ChatProps) {
     const { favePools, currentPool } = props;
     const messageEnd = useRef<HTMLInputElement | null>(null);
-    const _socket = socket;
     const [messages, setMessages] = useState<Message[]>([]);
     const [room, setRoom] = useState('Global');
     const [showChatPanel, setShowChatPanel] = useState(true);
@@ -64,10 +64,6 @@ export default function ChatPanel(props: ChatProps) {
     }, [props.isFullScreen]);
 
     const [scrollBottomControl, setScrollBottomControl] = useState(true);
-
-    useEffect(() => {
-        _socket.connect();
-    }, [_socket]);
 
     useEffect(() => {
         const result = getID();
@@ -88,32 +84,73 @@ export default function ChatPanel(props: ChatProps) {
         }
     }
 
+    const socket = io('http://localhost:5000');
+
+    const [isConnected, setIsConnected] = useState(socket.connected);
+
     useEffect(() => {
+        socket.on('connect', () => {
+            setIsConnected(true);
+            console.log('Connected ' + socket.id);
+        });
+
+        return () => {
+            // socket.disconnect();
+            console.log('Disconnected' + socket.id);
+            socket.off('connect');
+            //     // socket.off('disconnect');
+        };
+    }, []);
+
+    /*  useEffect(() => {
         _socket.on('msg-recieve', (mostRecentMessages) => {
-            setMessages([...mostRecentMessages]);
+            setMessages([...mostRecentMessages].reverse());
             // if (scrollBottomControl) {
             scrollToBottom();
-            console.log('a');
             // }
         });
+    }, []); */
+
+    //  const [socket] =useState<any>(io('http://localhost:5001'));
+
+    async function getMsg() {
+        await socket.on('msg-recieve', (data: any) => {
+            console.error('data', data);
+            setMessages(() => [messages, ...data]);
+        });
+    }
+    useEffect(() => {
+        getMsg();
+        /*  return () => {
+            socket.disconnect();
+          } */
+    }, [socket]);
+
+    useEffect(() => {
+        // 👇️ scroll to bottom every time messages change
+        messageEnd.current?.scrollIntoView({ behavior: 'smooth' });
     }, [messages]);
 
     useEffect(() => {
-        setRoomSocket();
-    }, [room, currentPool, props.chatStatus]);
-
-    const setRoomSocket = async () => {
-        _socket.emit('listen', {
+        socket.emit('join_room', {
             room:
                 room === 'Current Pool'
                     ? currentPool.baseToken.symbol + currentPool.quoteToken.symbol
                     : room,
         });
-    };
+        return () => {
+            socket.off('join_room');
+        };
+    }, [room, currentPool, props.chatStatus]);
+
+    useEffect(() => {
+        socket.emit('bye', {
+            room,
+        });
+    }, [props.chatStatus]);
 
     function handleCloseChatPanel() {
         props.setChatStatus(false);
-        console.log(getID());
     }
 
     const getMentionedMessage = async () => {
@@ -122,8 +159,18 @@ export default function ChatPanel(props: ChatProps) {
         // const mentionedMessage = await axios.get(receiveUsername+'/'+word
     };
 
+    const scrollTop = () => {
+        messageEnd.current?.scrollTo(
+            messageEnd.current?.scrollHeight,
+            messageEnd.current?.scrollHeight,
+        );
+    };
+
     const scrollToBottom = () => {
-        messageEnd.current?.scrollTo(0, messageEnd.current?.scrollHeight);
+        messageEnd.current?.scrollTo(
+            messageEnd.current?.scrollHeight,
+            messageEnd.current?.scrollHeight,
+        );
     };
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -148,6 +195,32 @@ export default function ChatPanel(props: ChatProps) {
                 onClick={() => handleCloseChatPanel()}
             />
         </header>
+    );
+
+    // const [isFinish, setIsFinish] = useState(false);
+
+    // useEffect(() => {
+    //     setTimeout(async()=>{
+    //        await setIsFinish(true);
+    //         scrollToBottom();
+    //     },1000);
+    // }, []);
+
+    const messageList = (
+        <>
+            {messages.map((item) => (
+                <div key={item._id} style={{ width: '90%', marginBottom: 4 }}>
+                    {item.sender === currentUser && currentUser !== undefined ? (
+                        <>
+                            <DividerDark changeColor addMarginTop addMarginBottom />
+                            <SentMessagePanel message={item} />
+                        </>
+                    ) : (
+                        <IncomingMessage message={item} />
+                    )}
+                </div>
+            ))}
+        </>
     );
 
     return (
@@ -184,7 +257,16 @@ export default function ChatPanel(props: ChatProps) {
                                 <DividerDark changeColor addMarginTop addMarginBottom />
                             </div>
 
+                            <div
+                                ref={messageEnd}
+                                className={styles.scrollable_div}
+                                onScroll={handleScroll}
+                                id='chatmessage'
+                            >
+                                {messageList}
+                            </div>
                             <MessageInput
+                                socket={socket}
                                 message={messages[0]}
                                 room={
                                     room === 'Current Pool'
@@ -193,29 +275,6 @@ export default function ChatPanel(props: ChatProps) {
                                         : room
                                 }
                             />
-
-                            <div
-                                className={styles.scrollable_div}
-                                ref={messageEnd}
-                                onScroll={handleScroll}
-                            >
-                                {messages.map((item) => (
-                                    <div key={item._id} style={{ width: '90%', marginBottom: 4 }}>
-                                        {item.sender === '63357aa477c38971c51c74f9' ? (
-                                            <>
-                                                <DividerDark
-                                                    changeColor
-                                                    addMarginTop
-                                                    addMarginBottom
-                                                />
-                                                <SentMessagePanel message={item} />
-                                            </>
-                                        ) : (
-                                            <IncomingMessage message={item} />
-                                        )}
-                                    </div>
-                                ))}
-                            </div>
                         </div>
                     </div>
                 </motion.div>
