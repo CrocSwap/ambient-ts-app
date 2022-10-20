@@ -189,7 +189,7 @@ export default function OrderRow(props: OrderRowPropsIF) {
             )}
             <li onClick={openDetailsModal} data-label='value' className='gradient_text'>
                 {' '}
-                {usdValue}
+                {'$' + usdValue}
             </li>
 
             {!showColumns && (

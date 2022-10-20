@@ -237,7 +237,7 @@ export default function RangesRow(props: RangesRowPropsIF) {
             )}
             <li onClick={openDetailsModal} data-label='value' className='gradient_text'>
                 {' '}
-                {usdValue}
+                {'$' + usdValue}
             </li>
 
             {!showColumns && (

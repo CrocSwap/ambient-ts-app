@@ -324,7 +324,7 @@ export default function Ranges(props: RangesPropsIF) {
             sortable: false,
         },
         {
-            name: 'Value ( $ )',
+            name: 'Value (USD)',
             className: 'value',
             show: true,
             slug: 'value',

@@ -394,7 +394,7 @@ export default function Transactions(props: TransactionsProps) {
             sortable: false,
         },
         {
-            name: 'Value ( $ )',
+            name: 'Value (USD)',
 
             show: true,
             slug: 'value',
