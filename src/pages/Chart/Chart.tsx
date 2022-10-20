@@ -177,6 +177,7 @@ export default function Chart(props: ChartData) {
 
     const valueFormatter = d3.format('.5f');
     const indicatorFormatter = d3.format('.6f');
+    const tooltipFormatter = d3.format('.3f');
 
     const setDefaultRangeData = () => {
         setRanges((prevState) => {
@@ -419,17 +420,22 @@ export default function Chart(props: ChartData) {
             let domainBoundary = scaleData.xScaleCopy.domain();
             let candleDomain: candleDomain;
             let lastY = 0;
+            let date: any | undefined = undefined;
 
             const zoom = d3
                 .zoom()
-                .scaleExtent([0, 10])
+                .scaleExtent([0.3, 5])
                 .on('start', (event: any) => {
                     if (event.sourceEvent && event.sourceEvent.type != 'wheel') {
                         d3.select(d3Container.current).style('cursor', 'grabbing');
                     }
+
+                    if (date === undefined) {
+                        date = parsedChartData?.chartData[0].date;
+                    }
                 })
                 .on('zoom', (event: any) => {
-                    if (event.sourceEvent && event.sourceEvent.type != 'dblclick') {
+                    if (event.sourceEvent && event.sourceEvent.type !== 'dblclick') {
                         const t = event.transform;
 
                         if (
@@ -444,14 +450,25 @@ export default function Chart(props: ChartData) {
                             event.transform.rescaleX(scaleData.xScaleCopy).domain()[0]
                         ) {
                             candleDomain = {
-                                lastCandleDate:
-                                    parsedChartData?.chartData[
-                                        parsedChartData?.chartData.length - 1
-                                    ].time,
-                                domainBoundry: new Date(
-                                    event.transform.rescaleX(scaleData.xScaleCopy).domain()[0],
-                                ).getTime(),
+                                lastCandleDate: parsedChartData?.chartData[0].time,
+                                domainBoundry: date.getTime(),
                             };
+
+                            if (event.transform.rescaleX(scaleData.xScaleCopy).domain()[0] < date) {
+                                date.setTime(
+                                    new Date(
+                                        event.transform.rescaleX(scaleData.xScaleCopy).domain()[0],
+                                    ).getTime() -
+                                        100 * parsedChartData?.period * 1000,
+                                );
+
+                                candleDomain = {
+                                    lastCandleDate: parsedChartData?.chartData[0].time,
+                                    domainBoundry: date.getTime(),
+                                };
+
+                                dispatch(setCandleDomains(candleDomain));
+                            }
                         }
 
                         if (rescale) {
@@ -506,7 +523,7 @@ export default function Chart(props: ChartData) {
                         d3.select(d3Container.current).style('cursor', 'default');
                     }
 
-                    dispatch(setCandleDomains(candleDomain));
+                    // dispatch(setCandleDomains(candleDomain));
                 }) as any;
 
             const yAxisDrag = d3.drag().on('drag', (event: any) => {
@@ -1630,12 +1647,19 @@ export default function Chart(props: ChartData) {
                 .autoBandwidth(d3fc.seriesSvgCandlestick())
                 .decorate((selection: any) => {
                     selection
-                        .style('fill', (d: any) => (d.close > d.open ? upBodyColor : downBodyColor))
-                        .style('stroke', (d: any) =>
-                            d.close > d.open ? upBorderColor : downBorderColor,
-                        );
+                        .style('fill', (d: any) => {
+                            if (selectedCandle !== undefined) {
+                                d3.select(selectedCandle).style('fill', '#E480FF');
+                            }
+                            return d.close > d.open ? upBodyColor : downBodyColor;
+                        })
+                        .style('stroke', (d: any) => {
+                            if (selectedCandle !== undefined) {
+                                d3.select(selectedCandle).style('stroke', '#E480FF');
+                            }
+                            return d.close > d.open ? upBorderColor : downBorderColor;
+                        });
                     selection
-                        .enter()
                         .on('mouseover', (event: any) => {
                             d3.select(event.currentTarget).style('cursor', 'pointer');
                         })
@@ -2105,8 +2129,13 @@ export default function Chart(props: ChartData) {
                 }
             });
 
+            const percentageValue =
+                (100 * liqTextData.totalValue) / parseFloat(props.liquidityData.totalLiq);
+
             liqTooltip.html(
-                '<p> % 0.1 </p>' +
+                '<p> % ' +
+                    tooltipFormatter(percentageValue) +
+                    ' </p>' +
                     '<p> $ ' +
                     formatDollarAmountAxis(liqTextData.totalValue) +
                     ' </p>',
