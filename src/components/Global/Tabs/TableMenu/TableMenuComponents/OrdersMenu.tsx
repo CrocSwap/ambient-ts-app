@@ -17,6 +17,7 @@ import OrderRemoval from '../../../../OrderRemoval/OrderRemoval';
 import UseOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 import { CrocEnv } from '@crocswap-libs/sdk';
 import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
+import ClaimOrder from '../../../../ClaimOrder/ClaimOrder';
 // interface for React functional component props
 interface OrdersMenuIF {
     crocEnv: CrocEnv | undefined;
@@ -25,6 +26,7 @@ interface OrdersMenuIF {
     closeGlobalModal: () => void;
     isOwnerActiveAccount?: boolean;
     showSidebar: boolean;
+    isOrderFilled: boolean;
     // orderDetailsProps: any;
 }
 
@@ -89,6 +91,14 @@ export default function OrdersMenu(props: OrdersMenuIF) {
                 closeGlobalModal={closeGlobalModal}
             />,
         );
+    const openClaimModal = () =>
+        openGlobalModal(
+            <ClaimOrder
+                crocEnv={crocEnv}
+                limitOrder={limitOrder}
+                closeGlobalModal={closeGlobalModal}
+            />,
+        );
 
     const openDetailsModal = () =>
         openGlobalModal(
@@ -130,6 +140,10 @@ export default function OrdersMenu(props: OrdersMenuIF) {
         setShowDropdownMenu(false);
         openRemoveModal();
     };
+    const claimButtonOnClick = () => {
+        setShowDropdownMenu(false);
+        openClaimModal();
+    };
 
     const detailsButtonOnClick = () => {
         setShowDropdownMenu(false);
@@ -140,6 +154,12 @@ export default function OrdersMenu(props: OrdersMenuIF) {
         limitOrder && isOwnerActiveAccount ? (
             <button className={styles.option_button} onClick={removeButtonOnClick}>
                 Remove
+            </button>
+        ) : null;
+    const claimButton =
+        limitOrder && isOwnerActiveAccount && props.isOrderFilled ? (
+            <button className={styles.option_button} onClick={claimButtonOnClick}>
+                Claim
             </button>
         ) : null;
     const copyButton = limitOrder ? (
@@ -165,6 +185,7 @@ export default function OrdersMenu(props: OrdersMenuIF) {
             {view1 && removeButton}
             {(view2 || view1NoSidebar) && copyButton}
             {(view3 || view2WithNoSidebar) && detailsButton}
+            {view3 && !showSidebar && claimButton}
         </div>
     );
 
@@ -174,6 +195,7 @@ export default function OrdersMenu(props: OrdersMenuIF) {
             {removeButton}
             {detailsButton}
             {copyButton}
+            {claimButton}
         </div>
     );
 

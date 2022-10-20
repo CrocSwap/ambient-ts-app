@@ -68,6 +68,7 @@ export default function OrderRow(props: OrderRowPropsIF) {
         closeGlobalModal: props.closeGlobalModal,
         openGlobalModal: props.openGlobalModal,
         isOwnerActiveAccount: isOwnerActiveAccount,
+        isOrderFilled: isOrderFilled,
     };
 
     const sideCharacter = isDenomBase ? baseTokenCharacter : quoteTokenCharacter;
