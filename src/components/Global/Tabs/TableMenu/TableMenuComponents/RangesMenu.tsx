@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { FiMoreHorizontal } from 'react-icons/fi';
 
@@ -10,12 +10,18 @@ import SnackbarComponent from '../../../../../components/Global/SnackbarComponen
 
 // START: Import Local Files
 import styles from './TableMenus.module.css';
-import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
+// import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
 import { PositionIF } from '../../../../../utils/interfaces/PositionIF';
 import HarvestPosition from '../../../../HarvestPosition/HarvestPosition';
 import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
 import UseOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
+import { useAppDispatch, useAppSelector } from '../../../../../utils/hooks/reduxToolkit';
+import {
+    setAdvancedHighTick,
+    setAdvancedLowTick,
+    setAdvancedMode,
+} from '../../../../../utils/state/tradeDataSlice';
 
 // interface for React functional component props
 interface RangesMenuIF {
@@ -52,10 +58,13 @@ export default function RangesMenu(props: RangesMenuIF) {
     const { openGlobalModal } = rangeDetailsProps;
 
     const currentLocation = location.pathname;
+
     const { isAmbient, isPositionInRange } = rangeDetailsProps;
     // eslint-disable-next-line
-    const [value, copy] = useCopyToClipboard();
+    // const [value, copy] = useCopyToClipboard();
     const [openSnackbar, setOpenSnackbar] = useState<boolean>(false);
+
+    const dispatch = useAppDispatch();
 
     // const feesGreaterThanZero =
     //     (positionData.feesLiqBaseDecimalCorrected || 0) +
@@ -84,6 +93,22 @@ export default function RangesMenu(props: RangesMenuIF) {
         openGlobalModal(
             <HarvestPosition crocEnv={crocEnv} position={positionData} {...rangeDetailsProps} />,
         );
+    };
+
+    const tradeData = useAppSelector((state) => state.tradeData);
+
+    // const isDenomBase = tradeData.isDenomBase
+
+    useEffect(() => {
+        console.log({ tradeData });
+    }, [tradeData]);
+
+    const handleCopyClick = () => {
+        console.log('copy clicked');
+        console.log({ positionData });
+        dispatch(setAdvancedMode(true));
+        dispatch(setAdvancedLowTick(positionData.bidTick));
+        dispatch(setAdvancedHighTick(positionData.askTick));
     };
 
     // -----------------SNACKBAR----------------
@@ -117,7 +142,11 @@ export default function RangesMenu(props: RangesMenuIF) {
     ) : null;
 
     const copyButton = isPositionInRange ? (
-        <Link className={styles.option_button} to={'/trade/range'}>
+        <Link
+            className={styles.option_button}
+            to={'/trade/range/' + currentLocation.slice(currentLocation.indexOf('chain'))}
+            onClick={handleCopyClick}
+        >
             Copy
         </Link>
     ) : // <button className={styles.option_button} onClick={handleCopyAddress}>
