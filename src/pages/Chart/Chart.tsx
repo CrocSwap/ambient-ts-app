@@ -202,6 +202,10 @@ export default function Chart(props: ChartData) {
         });
     };
 
+    useEffect(() => {
+        setDefaultRangeData();
+    }, []);
+
     const render = useCallback(() => {
         const nd = d3.select('#d3fc_group').node() as any;
         nd.requestRedraw();
@@ -599,7 +603,6 @@ export default function Chart(props: ChartData) {
     const setAdvancedLines = () => {
         if (rangeModuleTriggered) {
             const results: boolean[] = [];
-            console.error({ targetData });
             ranges.map((mapData) => {
                 targetData?.map((data) => {
                     if (mapData.name === data.name && mapData.value == data.value) {
@@ -610,9 +613,22 @@ export default function Chart(props: ChartData) {
 
             if (
                 targetData === undefined ||
-                (targetData[0].value === 0 && targetData[1].value === 0)
+                (targetData[0].value === undefined && targetData[1].value === undefined)
             ) {
-                setDefaultRangeData();
+                setRanges([
+                    {
+                        name: 'Min',
+                        value: tradeData.pinnedMinPriceDisplayTruncated
+                            ? tradeData.pinnedMinPriceDisplayTruncated
+                            : 0,
+                    },
+                    {
+                        name: 'Max',
+                        value: tradeData.pinnedMaxPriceDisplayTruncated
+                            ? tradeData.pinnedMaxPriceDisplayTruncated
+                            : 0,
+                    },
+                ]);
             } else if (results.length < 2) {
                 setRanges(() => {
                     let high = targetData?.filter((target: any) => target.name === 'Max')[0].value;
@@ -625,19 +641,6 @@ export default function Chart(props: ChartData) {
 
                         const chartTargets = [
                             {
-                                name: 'Max',
-                                value:
-                                    high !== undefined && high !== 0
-                                        ? high
-                                        : props.candleData !== undefined
-                                        ? Math.max(
-                                              ...props.candleData.chartData.map((o) => {
-                                                  return o.open !== undefined ? o.open : 0;
-                                              }),
-                                          )
-                                        : 0,
-                            },
-                            {
                                 name: 'Min',
                                 value:
                                     low !== undefined && low !== 0
@@ -646,6 +649,19 @@ export default function Chart(props: ChartData) {
                                         ? Math.min(
                                               ...props.candleData.chartData.map((o) => {
                                                   return o.close !== undefined ? o.close : Infinity;
+                                              }),
+                                          )
+                                        : 0,
+                            },
+                            {
+                                name: 'Max',
+                                value:
+                                    high !== undefined && high !== 0
+                                        ? high
+                                        : props.candleData !== undefined
+                                        ? Math.max(
+                                              ...props.candleData.chartData.map((o) => {
+                                                  return o.open !== undefined ? o.open : 0;
                                               }),
                                           )
                                         : 0,
@@ -898,31 +914,10 @@ export default function Chart(props: ChartData) {
                                 newTargets.filter((target: any) => target.name === 'Max')[0].value =
                                     snappedValue;
 
-                                d3.select(d3Container.current)
-                                    .select('.targets')
-                                    .select('#Max')
-                                    .select('g.left-handle text')
-                                    .text((d: any) => 'Min' + ' - ' + valueFormatter(d.value));
-
-                                d3.select(d3Container.current)
-                                    .select('.targets')
-                                    .select('#Current Market Price')
-                                    .select('g.left-handle text')
-                                    .text((d: any) => 'Min' + ' - ' + valueFormatter(d.value));
-
                                 setIsLineSwapped(true);
                             } else if (d.name === 'Min' && snappedValue > high) {
                                 newTargets.filter((target: any) => target.name === 'Min')[0].value =
                                     snappedValue;
-
-                                d3.select(d3Container.current)
-                                    .select('.targets')
-                                    .select('#Min')
-                                    .select('.left-handle')
-                                    .select('text')
-                                    .text(() => 'Max' + ' - ' + valueFormatter(snappedValue));
-
-                                setIsLineSwapped(true);
                             }
 
                             render();
@@ -1101,9 +1096,10 @@ export default function Chart(props: ChartData) {
                 selection
                     .enter()
                     .append('rect')
+                    .lower()
                     .attr('width', '100%')
-                    .attr('y', -20)
                     .attr('height', '8%')
+                    .attr('y', '-4%')
                     .attr('fill', 'transparent')
                     .attr('stroke', 'none');
 
@@ -1249,22 +1245,94 @@ export default function Chart(props: ChartData) {
                 const feMergeHorMinTag = horLineMin.append('feMerge');
                 feMergeHorMinTag.append('feMergeNode').attr('in', 'bg');
                 feMergeHorMinTag.append('feMergeNode').attr('in', 'SourceGraphic');
+
+                const linearGradientMax = svgmain
+                    .append('defs')
+                    .append('linearGradient')
+                    .attr('id', 'mygradMax')
+                    .attr('x1', '100%')
+                    .attr('x2', '100%')
+                    .attr('y1', '0%')
+                    .attr('y2', '100%');
+
+                linearGradientMax
+                    .append('stop')
+                    .attr('offset', '50%')
+                    .style('stop-color', '#171d27')
+                    .style('stop-opacity', 1);
+
+                linearGradientMax
+                    .append('stop')
+                    .attr('offset', '50%')
+                    .style('stop-color', '#7371FC1A')
+                    .style('stop-opacity', 0);
+
+                const linearGradientMin = svgmain
+                    .append('defs')
+                    .append('linearGradient')
+                    .attr('id', 'mygradMin')
+                    .attr('x1', '100%')
+                    .attr('x2', '100%')
+                    .attr('y1', '0%')
+                    .attr('y2', '100%');
+
+                linearGradientMin
+                    .append('stop')
+                    .attr('offset', '50%')
+                    .style('stop-color', '#7371FC1A')
+                    .style('stop-opacity', 0);
+                linearGradientMin
+                    .append('stop')
+                    .attr('offset', '50%')
+                    .style('stop-color', '#171d27')
+                    .style('stop-opacity', 1);
             }
+
             d3.select(d3PlotArea.current)
                 .select('.targets')
                 .style('filter', 'url(#targetsBackground)');
             d3.select(d3PlotArea.current)
                 .select('.targets')
                 .select('#Max')
-                .style('filter', 'url(#horLineMax)');
+                .select('rect')
+                .style('fill', 'url(#mygradMax)');
             d3.select(d3PlotArea.current)
                 .select('.targets')
                 .select('#Min')
-                .style('filter', 'url(#horLineMin)');
+                .select('rect')
+                .style('fill', 'url(#mygradMin)');
 
             addTriangle();
         }
     }, [dragControl, location]);
+
+    useEffect(() => {
+        const high = ranges.filter((target: any) => target.name === 'Max')[0].value;
+        const low = ranges.filter((target: any) => target.name === 'Min')[0].value;
+        if (low > high) {
+            d3.select(d3PlotArea.current)
+                .select('.targets')
+                .select('#Max')
+                .select('rect')
+                .style('fill', 'url(#mygradMin)');
+            d3.select(d3PlotArea.current)
+                .select('.targets')
+                .select('#Min')
+                .select('rect')
+                .style('fill', 'url(#mygradMax)');
+        } else {
+            d3.select(d3PlotArea.current)
+                .select('.targets')
+                .select('#Max')
+                .select('rect')
+                .style('fill', 'url(#mygradMax)');
+            d3.select(d3PlotArea.current)
+                .select('.targets')
+                .select('#Min')
+                .select('rect')
+                .style('fill', 'url(#mygradMin)');
+        }
+    }, [isLineSwapped]);
 
     // Line Rules
     useEffect(() => {
@@ -1872,8 +1940,6 @@ export default function Chart(props: ChartData) {
                 d3.select(d3PlotArea.current).on('draw', function (event: any) {
                     async function createElements() {
                         const svg = d3.select(event.target).select('svg');
-
-                        console.error('targets.ranges', targets.ranges);
                         targetsJoin(svg, [targets.ranges]).call(horizontalLine);
                         crosshairHorizontalJoin(svg, [crosshairData]).call(crosshairHorizontal);
                         crosshairVerticalJoin(svg, [crosshairData]).call(crosshairVertical);
@@ -2178,17 +2244,18 @@ export default function Chart(props: ChartData) {
                     dispatch(setSimpleRangeWidth(simpleRangeWidth ? simpleRangeWidth : 1));
                 }
             } else {
+                setIsLineSwapped(true);
                 const high = range.filter((target: any) => target.name === 'Max')[0].value;
                 const low = range.filter((target: any) => target.name === 'Min')[0].value;
 
                 const newTargetData: targetData[] = [
                     {
-                        name: 'Max',
-                        value: isLineSwapped ? low : high,
+                        name: 'Min',
+                        value: low > high ? high : low,
                     },
                     {
-                        name: 'Min',
-                        value: isLineSwapped ? high : low,
+                        name: 'Max',
+                        value: low > high ? low : high,
                     },
                 ];
 
