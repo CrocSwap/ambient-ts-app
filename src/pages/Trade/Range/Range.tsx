@@ -439,7 +439,12 @@ export default function Range(props: RangePropsIF) {
                 setInitializationComplete(false);
             }
         }
-    }, [tradeData.advancedMode, tradeData.advancedLowTick, tradeData.advancedHighTick]);
+    }, [
+        tradeData.advancedMode,
+        tradeData.advancedLowTick,
+        tradeData.advancedHighTick,
+        tradeData.isDenomBase,
+    ]);
 
     useEffect(() => {
         // console.log({ initializationComplete });
