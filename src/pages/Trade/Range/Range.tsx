@@ -320,7 +320,7 @@ export default function Range(props: RangePropsIF) {
     const rangeSpanBelowCurrentPrice = currentPoolPriceTick - rangeLowTick;
 
     const isOutOfRange = rangeSpanAboveCurrentPrice < 0 || rangeSpanBelowCurrentPrice < 0;
-    const isInvalidRange = rangeHighTick <= rangeLowTick;
+    const isInvalidRange = !isAmbient && rangeHighTick <= rangeLowTick;
 
     useEffect(() => {
         if (poolPriceNonDisplay === undefined) {
@@ -343,36 +343,41 @@ export default function Range(props: RangePropsIF) {
     const [isTokenBDisabled, setIsTokenBDisabled] = useState(false);
 
     useEffect(() => {
-        if (isTokenABase) {
-            if (rangeHighTick < currentPoolPriceTick) {
-                setIsTokenBDisabled(true);
-                if (rangeHighTick > rangeLowTick) {
+        if (!isAmbient) {
+            if (isTokenABase) {
+                if (rangeHighTick < currentPoolPriceTick) {
+                    setIsTokenBDisabled(true);
+                    if (rangeHighTick > rangeLowTick) {
+                        setIsTokenADisabled(false);
+                    } else setIsTokenADisabled(true);
+                } else if (rangeLowTick > currentPoolPriceTick) {
+                    setIsTokenADisabled(true);
+                    if (rangeLowTick < rangeHighTick) {
+                        setIsTokenBDisabled(false);
+                    } else setIsTokenBDisabled(true);
+                } else {
                     setIsTokenADisabled(false);
-                } else setIsTokenADisabled(true);
-            } else if (rangeLowTick > currentPoolPriceTick) {
-                setIsTokenADisabled(true);
-                if (rangeLowTick < rangeHighTick) {
                     setIsTokenBDisabled(false);
-                } else setIsTokenBDisabled(true);
+                }
             } else {
-                setIsTokenADisabled(false);
-                setIsTokenBDisabled(false);
+                if (rangeHighTick < currentPoolPriceTick) {
+                    setIsTokenADisabled(true);
+                    if (rangeHighTick > rangeLowTick) {
+                        setIsTokenBDisabled(false);
+                    } else setIsTokenBDisabled(true);
+                } else if (rangeLowTick > currentPoolPriceTick) {
+                    setIsTokenBDisabled(true);
+                    if (rangeLowTick < rangeHighTick) {
+                        setIsTokenADisabled(false);
+                    } else setIsTokenBDisabled(true);
+                } else {
+                    setIsTokenBDisabled(false);
+                    setIsTokenADisabled(false);
+                }
             }
         } else {
-            if (rangeHighTick < currentPoolPriceTick) {
-                setIsTokenADisabled(true);
-                if (rangeHighTick > rangeLowTick) {
-                    setIsTokenBDisabled(false);
-                } else setIsTokenBDisabled(true);
-            } else if (rangeLowTick > currentPoolPriceTick) {
-                setIsTokenBDisabled(true);
-                if (rangeLowTick < rangeHighTick) {
-                    setIsTokenADisabled(false);
-                } else setIsTokenBDisabled(true);
-            } else {
-                setIsTokenBDisabled(false);
-                setIsTokenADisabled(false);
-            }
+            setIsTokenBDisabled(false);
+            setIsTokenADisabled(false);
         }
     }, [currentPoolPriceTick, rangeLowTick, rangeHighTick, denominationsInBase]);
 
