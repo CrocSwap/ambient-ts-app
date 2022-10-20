@@ -227,6 +227,7 @@ export const updateApy = async (position: PositionIF): Promise<PositionIF> => {
                 chainId: '0x5', // TODO: @ben
                 // chainId: position.chainId,
                 positionType: position.positionType,
+                concise: 'true',
             }),
     )
         .then((response) => response?.json())
