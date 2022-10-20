@@ -113,6 +113,7 @@ export default function Ranges(props: RangesPropsIF) {
     // ];
 
     const [sortBy, setSortBy, reverseSort, setReverseSort, sortedPositions] = useSortedPositions(
+        'lastUpdate',
         isShowAllEnabled,
         positionsByUserMatchingSelectedTokens,
         graphData?.positionsByPool?.positions,

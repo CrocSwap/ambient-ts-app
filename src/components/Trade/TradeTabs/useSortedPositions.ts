@@ -2,6 +2,7 @@ import { Dispatch, SetStateAction, useMemo, useState } from 'react';
 import { PositionIF } from '../../../utils/interfaces/PositionIF';
 
 export const useSortedPositions = (
+    defaultSort: string,
     isShowAllEnabled: boolean,
     userPositions: PositionIF[],
     poolPositions: PositionIF[],
@@ -32,7 +33,7 @@ export const useSortedPositions = (
         [...unsortedData].sort((a, b) => b.positionLiqTotalUSD - a.positionLiqTotalUSD);
 
     // column the user wants the table sorted by
-    const [sortBy, setSortBy] = useState('default');
+    const [sortBy, setSortBy] = useState(defaultSort);
     // whether the sort should be ascending or descening
     const [reverseSort, setReverseSort] = useState(false);
 
@@ -48,13 +49,14 @@ export const useSortedPositions = (
                 break;
             // sort by APR
             case 'apy':
-                sortedData = sortByApy(data);
-                break;
             case 'apr':
                 sortedData = sortByApy(data);
                 break;
             case 'value':
                 sortedData = sortByValue(data);
+                break;
+            case 'lastUpdate':
+                sortedData = sortByUpdateTime(data);
                 break;
             // return data unsorted if user did not choose a sortable column
             default:

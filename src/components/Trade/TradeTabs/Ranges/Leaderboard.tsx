@@ -114,6 +114,7 @@ export default function Leaderboard(props: LeaderboardPropsIF) {
     // ];
 
     const [sortBy, setSortBy, reverseSort, setReverseSort, sortedPositions] = useSortedPositions(
+        'apr',
         true, // leaderboard is never limited to the user
         positionsByUserMatchingSelectedTokens,
         graphData?.leaderboardByPool?.positions,
