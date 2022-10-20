@@ -14,6 +14,7 @@ import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
 import { ITransaction } from '../../../../../utils/state/graphDataSlice';
 import UseOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
+import TransactionDetails from '../../../TransactionDetails/TransactionDetails';
 
 // interface for React functional component props
 interface TransactionMenuIF {
@@ -21,12 +22,15 @@ interface TransactionMenuIF {
     tx: ITransaction;
     blockExplorer?: string;
     showSidebar: boolean;
+    openGlobalModal: (content: React.ReactNode, title?: string) => void;
+    closeGlobalModal: () => void;
 }
 
 // React functional component
 export default function TransactionsMenu(props: TransactionMenuIF) {
     const menuItemRef = useRef<HTMLDivElement>(null);
-    const { userPosition, tx, blockExplorer, showSidebar } = props;
+    const { userPosition, tx, blockExplorer, showSidebar, openGlobalModal, closeGlobalModal } =
+        props;
 
     const [value, copy] = useCopyToClipboard();
     const [openSnackbar, setOpenSnackbar] = useState(false);
@@ -92,6 +96,9 @@ export default function TransactionsMenu(props: TransactionMenuIF) {
             break;
     }
 
+    const openDetailsModal = () =>
+        openGlobalModal(<TransactionDetails tx={tx} closeGlobalModal={closeGlobalModal} />);
+
     const mainModal = (
         <Modal onClose={closeModal} title={modalTitle}>
             {modalContent}
@@ -117,11 +124,11 @@ export default function TransactionsMenu(props: TransactionMenuIF) {
             <FiExternalLink size={15} color='white' style={{ marginLeft: '.5rem' }} />
         </button>
     );
-    // const detailsButton = (
-    //     <button className={styles.option_button} onClick={openDetailsModal}>
-    //         Details
-    //     </button>
-    // );
+    const detailsButton = (
+        <button className={styles.option_button} onClick={openDetailsModal}>
+            Details
+        </button>
+    );
     const harvestButton = userPosition ? (
         <button className={styles.option_button} onClick={openHarvestModal}>
             Harvest
@@ -150,7 +157,7 @@ export default function TransactionsMenu(props: TransactionMenuIF) {
             {notRelevantButton && editButton}
             {notRelevantButton && removeButton}
             {notRelevantButton && harvestButton}
-            {/* {detailsButton} */}
+            {detailsButton}
             {view1NoSidebar && explorerButton}
             {view1 && copyButton}
         </div>

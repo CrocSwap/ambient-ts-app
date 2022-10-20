@@ -1,6 +1,6 @@
 import styles from './TransactionDetailsHeader.module.css';
 import { Dispatch, SetStateAction, useState } from 'react';
-import ambientLogo from '../../../assets/images/logos/ambient_logo.svg';
+import ambientLogo from '../../../../assets/images/logos/ambient_logo.svg';
 import { FiSettings, FiCopy, FiDownload } from 'react-icons/fi';
 import { CgClose } from 'react-icons/cg';
 import useCopyToClipboard from '../../../../utils/hooks/useCopyToClipboard';
