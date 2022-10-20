@@ -17,7 +17,7 @@ import {
 import Pagination from '../../../Global/Pagination/Pagination';
 
 import { useAppDispatch, useAppSelector } from '../../../../utils/hooks/reduxToolkit';
-import { useSortedPositions } from './useSortedPositions';
+import { useSortedPositions } from '../useSortedPositions';
 import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
 import { PositionIF } from '../../../../utils/interfaces/PositionIF';
 import { updateApy } from '../../../../App/functions/getPositionData';
