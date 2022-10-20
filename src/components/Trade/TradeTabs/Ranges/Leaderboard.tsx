@@ -10,9 +10,10 @@ import { ethers } from 'ethers';
 // START: Import Local Files
 import styles from './Ranges.module.css';
 import {
-    addPositionsByPool,
-    addPositionsByUser,
+    // addPositionsByPool,
+    // addPositionsByUser,
     graphData,
+    updateLeaderboard,
 } from '../../../../utils/state/graphDataSlice';
 import Pagination from '../../../Global/Pagination/Pagination';
 
@@ -131,9 +132,9 @@ export default function Leaderboard(props: LeaderboardPropsIF) {
             )
                 .then((updatedPositions) => {
                     if (isShowAllEnabled) {
-                        dispatch(addPositionsByPool(updatedPositions));
+                        dispatch(updateLeaderboard(updatedPositions));
                     } else {
-                        dispatch(addPositionsByUser(updatedPositions));
+                        dispatch(updateLeaderboard(updatedPositions));
                     }
                 })
                 .catch(console.log);

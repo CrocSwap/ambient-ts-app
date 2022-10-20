@@ -387,6 +387,23 @@ export const graphDataSlice = createSlice({
                 }
             }
         },
+        updateLeaderboard: (state, action: PayloadAction<Array<PositionIF>>) => {
+            for (let index = 0; index < action.payload.length; index++) {
+                const updatedPosition = action.payload[index];
+                const positionIdToFind = updatedPosition.positionId.toLowerCase();
+                const indexOfPositionInState = state.leaderboardByPool.positions.findIndex(
+                    (position) => position.positionId.toLowerCase() === positionIdToFind,
+                );
+                if (indexOfPositionInState === -1) {
+                    state.leaderboardByPool.positions = [action.payload[index]].concat(
+                        state.leaderboardByPool.positions,
+                    );
+                } else {
+                    state.leaderboardByPool.positions[indexOfPositionInState] =
+                        action.payload[index];
+                }
+            }
+        },
         setPoolVolumeSeries: (state, action: PayloadAction<PoolVolumeSeries>) => {
             state.poolVolumeSeries = action.payload;
         },
@@ -627,6 +644,7 @@ export const {
     addPositionsByUser,
     setPositionsByPool,
     setLeaderboardByPool,
+    updateLeaderboard,
     addPositionsByPool,
     setPoolVolumeSeries,
     setPoolTvlSeries,
