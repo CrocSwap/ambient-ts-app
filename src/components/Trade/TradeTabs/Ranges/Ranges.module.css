@@ -117,7 +117,7 @@
         /* I commented this out to make the header align center with arrow */
         width: 100%;
    
-        padding:.5em 1em;
+        padding:.5em 0.4em;
         
      
       }
@@ -132,4 +132,9 @@
       flex-direction: row;
       align-items: center;
       gap: 4px;
+  }
+  .token_images_account img{
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
   }

@@ -23,6 +23,7 @@ import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
 import { fetchPoolRecentChanges } from '../../../App/functions/fetchPoolRecentChanges';
 
 import { fetchUserRecentChanges } from '../../../App/functions/fetchUserRecentChanges';
+import Leaderboard from './Ranges/Leaderboard';
 
 interface ITabsProps {
     isUserLoggedIn: boolean;
@@ -333,6 +334,7 @@ export default function TradeTabs2(props: ITabsProps) {
 
         closeGlobalModal: props.closeGlobalModal,
         showSidebar: showSidebar,
+        isOnPortfolioPage: false,
     };
     // Props for <Transactions/> React Element
     const transactionsProps = {
@@ -349,6 +351,7 @@ export default function TradeTabs2(props: ITabsProps) {
 
         isCandleSelected: isCandleSelected,
         filter: filter,
+        closeGlobalModal: props.closeGlobalModal,
 
         openGlobalModal: props.openGlobalModal,
         showSidebar: showSidebar,
@@ -366,6 +369,7 @@ export default function TradeTabs2(props: ITabsProps) {
         closeGlobalModal: props.closeGlobalModal,
         setCurrentPositionActive: setCurrentPositionActive,
         showSidebar: showSidebar,
+        isOnPortfolioPage: false,
     };
     // props for <PositionsOnlyToggle/> React Element
 
@@ -390,7 +394,11 @@ export default function TradeTabs2(props: ITabsProps) {
         },
         { label: 'Limit Orders', content: <Orders {...ordersProps} />, icon: openOrdersImage },
         { label: 'Ranges', content: <Ranges {...rangesProps} />, icon: rangePositionsImage },
-        { label: 'Leaderboard', content: <Ranges {...rangesProps} />, icon: rangePositionsImage },
+        {
+            label: 'Leaderboard',
+            content: <Leaderboard {...rangesProps} />,
+            icon: rangePositionsImage,
+        },
         { label: 'Info', content: <Ranges {...rangesProps} />, icon: rangePositionsImage },
     ];
 

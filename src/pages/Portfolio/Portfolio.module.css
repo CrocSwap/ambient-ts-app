@@ -62,6 +62,9 @@
     .tabs_exchange_balance_container {
         grid-template-columns: auto 380px;
         gap: 1rem;
+        max-height: calc(100vh - 20rem);
+
+        
     }
     .full_layout_container {
         grid-template-columns: auto;

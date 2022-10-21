@@ -25,20 +25,22 @@ interface ExtraInfoPropsIF {
     isTokenABase: boolean;
     isDenomBase: boolean;
     isOnTradeRoute?: boolean;
+    displayEffectivePriceString: string;
 }
 
 // central react functional component
 export default function ExtraInfo(props: ExtraInfoPropsIF) {
     const {
         // tokenPair,
-        priceImpact,
+        // priceImpact,
+        displayEffectivePriceString,
         poolPriceDisplay,
         slippageTolerance,
         liquidityProviderFee,
         // quoteTokenIsBuy,
         swapGasPriceinDollars,
         // didUserFlipDenom,
-        isTokenABase,
+        // isTokenABase,
         isOnTradeRoute,
         // isDenomBase,
     } = props;
@@ -56,22 +58,6 @@ export default function ExtraInfo(props: ExtraInfoPropsIF) {
     const baseTokenSymbol = tradeData.baseToken.symbol;
     const quoteTokenSymbol = tradeData.quoteToken.symbol;
 
-    let reverseSlippage: boolean;
-
-    if (isDenomBase) {
-        if (isTokenABase) {
-            reverseSlippage = false;
-        } else {
-            reverseSlippage = true;
-        }
-    } else {
-        if (isTokenABase) {
-            reverseSlippage = true;
-        } else {
-            reverseSlippage = false;
-        }
-    }
-
     const displayPriceWithDenom = isDenomBase ? 1 / poolPriceDisplay : poolPriceDisplay;
 
     const displayPriceString =
@@ -87,59 +73,6 @@ export default function ExtraInfo(props: ExtraInfoPropsIF) {
                   maximumFractionDigits: 2,
               });
 
-    // const priceLimitAfterSlippageAndFee = reverseSlippage
-    //     ? displayPriceWithDenom * (1 + slippageTolerance / 100) * (1 + liquidityProviderFee / 100)
-    //     : displayPriceWithDenom * (1 - slippageTolerance / 100) * (1 - liquidityProviderFee / 100);
-
-    const priceAfterImpact = priceImpact?.finalPrice;
-    const priceAfterImpactWithDenom = priceAfterImpact
-        ? isDenomBase
-            ? priceAfterImpact
-            : 1 / priceAfterImpact
-        : undefined;
-
-    const priceLimitAfterImpactAndFee = priceAfterImpactWithDenom
-        ? reverseSlippage
-            ? priceAfterImpactWithDenom * (1 + liquidityProviderFee / 100)
-            : priceAfterImpactWithDenom * (1 - liquidityProviderFee / 100)
-        : undefined;
-
-    // const displayLimitPriceString =
-    //     displayPriceWithDenom === Infinity || displayPriceWithDenom === 0
-    //         ? '…'
-    //         : priceLimitAfterSlippageAndFee < 2
-    //         ? priceLimitAfterSlippageAndFee.toLocaleString(undefined, {
-    //               minimumFractionDigits: 2,
-    //               maximumFractionDigits: 6,
-    //           })
-    //         : priceLimitAfterSlippageAndFee.toLocaleString(undefined, {
-    //               minimumFractionDigits: 2,
-    //               maximumFractionDigits: 2,
-    //           });
-
-    const displayPriceAfterImpactString =
-        !priceLimitAfterImpactAndFee ||
-        priceLimitAfterImpactAndFee === Infinity ||
-        priceLimitAfterImpactAndFee === 0
-            ? '…'
-            : priceLimitAfterImpactAndFee < 2
-            ? priceLimitAfterImpactAndFee.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 6,
-              })
-            : priceLimitAfterImpactAndFee.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              });
-
-    // const priceDisplay = makePriceDisplay(
-    //     tokenPair.dataTokenA,
-    //     tokenPair.dataTokenB,
-    //     isTokenABase,
-    //     poolPriceDisplay,
-    //     didUserFlipDenom,
-    // );
-
     const extraInfoData = [
         {
             title: 'Spot Price',
@@ -152,8 +85,8 @@ export default function ExtraInfo(props: ExtraInfoPropsIF) {
             title: 'Effective Conversion Rate',
             tooltipTitle: 'Conversion Rate After Swap Impact and Fees',
             data: isDenomBase
-                ? `${displayPriceAfterImpactString} ${quoteTokenSymbol} per ${baseTokenSymbol}`
-                : `${displayPriceAfterImpactString} ${baseTokenSymbol} per ${quoteTokenSymbol}`,
+                ? `${displayEffectivePriceString} ${quoteTokenSymbol} per ${baseTokenSymbol}`
+                : `${displayEffectivePriceString} ${baseTokenSymbol} per ${quoteTokenSymbol}`,
             // data: isDenomBase
             //     ? `${displayLimitPriceString} ${quoteTokenSymbol} per ${baseTokenSymbol}`
             //     : `${displayLimitPriceString} ${baseTokenSymbol} per ${quoteTokenSymbol}`,

@@ -41,6 +41,7 @@ interface TransactionsProps {
     filter: CandleData | undefined;
 
     openGlobalModal: (content: React.ReactNode) => void;
+    closeGlobalModal: () => void;
     showSidebar: boolean;
     // setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
 }
@@ -60,6 +61,7 @@ export default function Transactions(props: TransactionsProps) {
         filter,
         showSidebar,
         openGlobalModal,
+        closeGlobalModal,
         // setExpandTradeTable,
     } = props;
 
@@ -394,7 +396,7 @@ export default function Transactions(props: TransactionsProps) {
             sortable: false,
         },
         {
-            name: 'Value ( $ )',
+            name: 'Value (USD)',
 
             show: true,
             slug: 'value',
@@ -474,6 +476,7 @@ export default function Transactions(props: TransactionsProps) {
             showColumns={showColumns}
             showSidebar={showSidebar}
             blockExplorer={blockExplorer}
+            closeGlobalModal={closeGlobalModal}
         />
     ));
 

@@ -64,6 +64,11 @@
     background: var(--title-gradient)
   }
 
+  @-moz-document url-prefix() {
+    .main_list_container::-webkit-scrollbar-thumb {
+        background: blue;
+    }
+}
 
 .header{
  

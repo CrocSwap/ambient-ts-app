@@ -35,6 +35,7 @@ interface propsIF {
     closeGlobalModal: () => void;
     currentPositionActive: string;
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
+    isOnPortfolioPage: boolean;
 
     showSidebar: boolean;
 }
@@ -51,6 +52,7 @@ export default function Orders(props: propsIF) {
         setCurrentPositionActive,
         currentPositionActive,
         showSidebar,
+        isOnPortfolioPage,
     } = props;
 
     const limitOrdersByUser = graphData.limitOrdersByUser.limitOrders;
@@ -322,6 +324,20 @@ export default function Orders(props: propsIF) {
     );
     const headerColumns = [
         {
+            name: '',
+            className: '',
+            show: isOnPortfolioPage,
+            slug: 'token_images',
+            sortable: false,
+        },
+        {
+            name: 'Pool',
+            className: '',
+            show: isOnPortfolioPage && !showSidebar,
+            slug: 'pool',
+            sortable: false,
+        },
+        {
             name: 'ID',
             className: 'ID',
             show: !showColumns,
@@ -371,7 +387,7 @@ export default function Orders(props: propsIF) {
             sortable: false,
         },
         {
-            name: 'Value ( $ )',
+            name: 'Value (USD)',
             className: 'value',
             show: true,
             slug: 'value',
@@ -443,16 +459,18 @@ export default function Orders(props: propsIF) {
             currentPositionActive={currentPositionActive}
             setCurrentPositionActive={setCurrentPositionActive}
             isShowAllEnabled={isShowAllEnabled}
+            isOnPortfolioPage={isOnPortfolioPage}
         />
     ));
 
     const orderDataOrNull = dataToDisplay ? rowItemContent : 'noData';
 
+    const expandStyle = expandTradeTable ? 'calc(100vh - 10rem)' : '250px';
+
+    const portfolioPageStyle = props.isOnPortfolioPage ? 'calc(100vh - 19.5rem)' : expandStyle;
+
     return (
-        <main
-            className={styles.main_list_container}
-            style={{ height: expandTradeTable ? '100%' : '250px' }}
-        >
+        <main className={styles.main_list_container} style={{ height: portfolioPageStyle }}>
             {/* {header} */}
             {headerColumnsDisplay}
             {isDataLoading ? <TableSkeletons /> : orderDataOrNull}

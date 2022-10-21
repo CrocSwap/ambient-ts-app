@@ -22,6 +22,7 @@ export default function Reposition() {
     return (
         <div className={styles.repositionContainer}>
             <RepositionHeader />
+
             <div className={styles.reposition_content}>
                 <RepositionDenominationSwitch />
                 <DividerDark />

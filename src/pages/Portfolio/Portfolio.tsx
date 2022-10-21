@@ -9,27 +9,24 @@ import { fetchAddress } from '../../App/functions/fetchAddress';
 import { useMoralis } from 'react-moralis';
 import { ethers } from 'ethers';
 import { TokenIF } from '../../utils/interfaces/TokenIF';
-import { CrocEnv, toDisplayQty } from '@crocswap-libs/sdk';
+import { CrocEnv, toDisplayQty, ChainSpec } from '@crocswap-libs/sdk';
+import Modal from '../../components/Global/Modal/Modal';
+import { useModal } from '../../components/Global/Modal/useModal';
 
 import { Erc20TokenBalanceFn, nativeTokenBalanceFn } from '../../App/functions/fetchTokenBalances';
-import {
-    // useAppDispatch,
-    useAppSelector,
-} from '../../utils/hooks/reduxToolkit';
+import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { TokenPriceFn } from '../../App/functions/fetchTokenPrice';
 import NotFound from '../NotFound/NotFound';
 import ProfileSettings from '../../components/Portfolio/ProfileSettings/ProfileSettings';
-// import { useModal } from '../../components/Global/Modal/useModal';
-// import Modal from '../../components/Global/Modal/Modal';
-// import { defaultTokens } from '../../utils/data/defaultTokens';
-// import { setToken } from '../../utils/state/temp';
+import { SoloTokenSelect } from '../../components/Global/TokenSelectContainer/SoloTokenSelect';
 
 const mainnetProvider = new ethers.providers.WebSocketProvider(
+    'wss://mainnet.infura.io/ws/v3/cbb2856ea8804fc5ba59be0a2e8a9f88', // croc
     // 'wss://mainnet.infura.io/ws/v3/170b7b65781c422d82a94b8b289ca605',
-    // 'wss://mainnet.infura.io/ws/v3/cbb2856ea8804fc5ba59be0a2e8a9f88',
-    'wss://mainnet.infura.io/ws/v3/e0aa879e36fc4c9e91b826ad961a36fd',
+    // 'wss://mainnet.infura.io/ws/v3/e0aa879e36fc4c9e91b826ad961a36fd',
     // 'wss://mainnet.infura.io/ws/v3/4a162c75bd514925890174ca13cdb6a2',
 );
+// import { ambientTokenList } from '../../utils/data/ambientTokenList';
 
 interface PortfolioPropsIF {
     crocEnv: CrocEnv | undefined;
@@ -37,14 +34,12 @@ interface PortfolioPropsIF {
     cachedFetchNativeTokenBalance: nativeTokenBalanceFn;
     cachedFetchErc20TokenBalances: Erc20TokenBalanceFn;
     cachedFetchTokenPrice: TokenPriceFn;
-    importedTokens: TokenIF[];
     ensName: string;
     lastBlockNumber: number;
     connectedAccount: string;
     userImageData: string[];
     chainId: string;
     tokenMap: Map<string, TokenIF>;
-
     selectedOutsideTab: number;
     setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
     outsideControl: boolean;
@@ -52,6 +47,20 @@ interface PortfolioPropsIF {
     userAccount?: boolean;
     openGlobalModal: (content: React.ReactNode, title?: string) => void;
     closeGlobalModal: () => void;
+    importedTokens: TokenIF[];
+    chainData: ChainSpec;
+
+    setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
+    currentPositionActive: string;
+    setCurrentPositionActive: Dispatch<SetStateAction<string>>;
+    account: string;
+    showSidebar: boolean;
+    isUserLoggedIn: boolean;
+    isAuthenticated: boolean;
+    baseTokenBalance: string;
+    quoteTokenBalance: string;
+    baseTokenDexBalance: string;
+    quoteTokenDexBalance: string;
 }
 
 // const cachedFetchAddress = memoizePromiseFn(fetchAddress);
@@ -65,7 +74,6 @@ export default function Portfolio(props: PortfolioPropsIF) {
         cachedFetchNativeTokenBalance,
         cachedFetchErc20TokenBalances,
         cachedFetchTokenPrice,
-        importedTokens,
         ensName,
         lastBlockNumber,
         userImageData,
@@ -75,6 +83,20 @@ export default function Portfolio(props: PortfolioPropsIF) {
         openGlobalModal,
         closeGlobalModal,
         userAccount,
+        outsideControl,
+        setOutsideControl,
+        selectedOutsideTab,
+        setSelectedOutsideTab,
+        importedTokens,
+        setImportedTokens,
+        isAuthenticated,
+        baseTokenBalance,
+        quoteTokenBalance,
+        baseTokenDexBalance,
+        quoteTokenDexBalance,
+
+        showSidebar,
+        isUserLoggedIn,
     } = props;
 
     const selectedToken: TokenIF = useAppSelector((state) => state.temp.token);
@@ -187,14 +209,16 @@ export default function Portfolio(props: PortfolioPropsIF) {
         console.log({ selectedToken });
     }, [selectedToken]);
 
+    const [isTokenModalOpen, openTokenModal, closeTokenModal] = useModal();
+
     const exchangeBalanceComponent = (
         <div className={styles.exchange_balance}>
             <ExchangeBalance
                 crocEnv={crocEnv}
                 mainnetProvider={mainnetProvider}
                 connectedAccount={connectedAccount}
-                setSelectedOutsideTab={props.setSelectedOutsideTab}
-                setOutsideControl={props.setOutsideControl}
+                setSelectedOutsideTab={setSelectedOutsideTab}
+                setOutsideControl={setOutsideControl}
                 openGlobalModal={openGlobalModal}
                 closeGlobalModal={closeGlobalModal}
                 selectedToken={selectedToken}
@@ -204,6 +228,7 @@ export default function Portfolio(props: PortfolioPropsIF) {
                 setRecheckTokenAllowance={setRecheckTokenAllowance}
                 setRecheckTokenBalances={setRecheckTokenBalances}
                 lastBlockNumber={lastBlockNumber}
+                openTokenModal={openTokenModal}
             />
         </div>
     );
@@ -214,8 +239,8 @@ export default function Portfolio(props: PortfolioPropsIF) {
     }, [connectedAccountActive]);
 
     // useEffect(() => {
-    //     !props.userAccount ? setFullLayoutActive(true) : null;
-    // }, [props.userAccount]);
+    //     .userAccount ? setFullLayoutActive(true) : null;
+    // }, [userAccount]);
 
     const connectedUserNativeToken = useAppSelector((state) => state.userData.tokens.nativeToken);
     const connectedUserErc20Tokens = useAppSelector((state) => state.userData.tokens.erc20Tokens);
@@ -331,15 +356,44 @@ export default function Portfolio(props: PortfolioPropsIF) {
                     connectedAccountActive={connectedAccountActive}
                     chainId={chainId}
                     tokenMap={tokenMap}
-                    selectedOutsideTab={props.selectedOutsideTab}
-                    setSelectedOutsideTab={props.setSelectedOutsideTab}
-                    setOutsideControl={props.setOutsideControl}
-                    outsideControl={props.outsideControl}
+                    selectedOutsideTab={selectedOutsideTab}
+                    setSelectedOutsideTab={setSelectedOutsideTab}
+                    setOutsideControl={setOutsideControl}
+                    outsideControl={outsideControl}
                     rightTabOptions={false}
+                    openTokenModal={openTokenModal}
+                    openGlobalModal={openGlobalModal}
+                    closeGlobalModal={closeGlobalModal}
+                    showSidebar={showSidebar}
+                    account={props.account}
+                    chainData={props.chainData}
+                    currentPositionActive={props.currentPositionActive}
+                    setCurrentPositionActive={props.setCurrentPositionActive}
+                    isUserLoggedIn={isUserLoggedIn}
+                    isAuthenticated={isAuthenticated}
+                    baseTokenBalance={baseTokenBalance}
+                    quoteTokenBalance={quoteTokenBalance}
+                    baseTokenDexBalance={baseTokenDexBalance}
+                    quoteTokenDexBalance={quoteTokenDexBalance}
                 />
                 {connectedAccountActive && !fullLayoutActive ? exchangeBalanceComponent : null}
             </div>
-            {/* {modalOrNull} */}
+            {isTokenModalOpen && (
+                <Modal
+                    onClose={closeTokenModal}
+                    title='Select Token'
+                    centeredTitle
+                    handleBack={closeTokenModal}
+                    showBackButton={true}
+                    footer={null}
+                >
+                    <SoloTokenSelect
+                        closeModal={closeTokenModal}
+                        tokensBank={importedTokens}
+                        setImportedTokens={setImportedTokens}
+                    />
+                </Modal>
+            )}
         </main>
     );
 }

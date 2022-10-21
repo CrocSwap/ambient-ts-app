@@ -36,7 +36,7 @@ export const useProcessRange = (position: PositionIF) => {
     const isAmbient = position.positionType === 'ambient';
 
     const ensName = position.ensResolution ? position.ensResolution : null;
-    const ownerId = position.user;
+    const ownerId = position.user.length === 40 ? '0x' + position.user : position.user;
 
     const isOwnerActiveAccount = position.user.toLowerCase() === account?.toLowerCase();
 
@@ -44,10 +44,10 @@ export const useProcessRange = (position: PositionIF) => {
 
     let posHash;
     if (position.positionType == 'ambient') {
-        posHash = ambientPosSlot(position.user, position.base, position.quote, 36000);
+        posHash = ambientPosSlot(ownerId, position.base, position.quote, 36000);
     } else {
         posHash = concPosSlot(
-            position.user,
+            ownerId,
             position.base,
             position.quote,
             position.bidTick,

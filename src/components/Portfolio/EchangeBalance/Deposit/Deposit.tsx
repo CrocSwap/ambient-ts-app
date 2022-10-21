@@ -1,10 +1,10 @@
 import styles from './Deposit.module.css';
 import DepositButton from './DepositButton/DepositButton';
 import DepositCurrencySelector from './DepositCurrencySelector/DepositCurrencySelector';
-import { defaultTokens } from '../../../../utils/data/defaultTokens';
+// import { defaultTokens } from '../../../../utils/data/defaultTokens';
 import { TokenIF } from '../../../../utils/interfaces/TokenIF';
 import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
-import { setToken } from '../../../../utils/state/temp';
+// import { setToken } from '../../../../utils/state/temp';
 import { CrocEnv } from '@crocswap-libs/sdk';
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
 import {
@@ -28,6 +28,7 @@ interface PortfolioDepositProps {
     tokenDexBalance: string;
     setRecheckTokenAllowance: Dispatch<SetStateAction<boolean>>;
     setRecheckTokenBalances: Dispatch<SetStateAction<boolean>>;
+    openTokenModal: () => void;
 }
 
 export default function Deposit(props: PortfolioDepositProps) {
@@ -35,13 +36,14 @@ export default function Deposit(props: PortfolioDepositProps) {
         crocEnv,
         tokenAllowance,
         connectedAccount,
-        openGlobalModal,
-        closeGlobalModal,
+        // openGlobalModal,
+        // closeGlobalModal,
         selectedToken,
         tokenWalletBalance,
         tokenDexBalance,
         setRecheckTokenAllowance,
         setRecheckTokenBalances,
+        openTokenModal,
     } = props;
 
     const dispatch = useAppDispatch();
@@ -95,23 +97,23 @@ export default function Deposit(props: PortfolioDepositProps) {
         selectedToken.symbol,
     ]);
 
-    const chooseToken = (tok: TokenIF) => {
-        console.log(tok);
-        dispatch(setToken(tok));
-        closeGlobalModal();
-    };
+    // const chooseToken = (tok: TokenIF) => {
+    //     console.log(tok);
+    //     dispatch(setToken(tok));
+    //     closeGlobalModal();
+    // };
 
-    const chooseTokenDiv = (
-        <div>
-            {defaultTokens
-                .filter((token: TokenIF) => token.chainId === parseInt('0x5'))
-                .map((token: TokenIF) => (
-                    <button key={'button_to_set_' + token.name} onClick={() => chooseToken(token)}>
-                        {token.name}
-                    </button>
-                ))}
-        </div>
-    );
+    // const chooseTokenDiv = (
+    //     <div>
+    //         {defaultTokens
+    //             .filter((token: TokenIF) => token.chainId === parseInt('0x5'))
+    //             .map((token: TokenIF) => (
+    //                 <button key={'button_to_set_' + token.name} onClick={() => chooseToken(token)}>
+    //                     {token.name}
+    //                 </button>
+    //             ))}
+    //     </div>
+    // );
 
     const deposit = async (depositQty: number) => {
         if (crocEnv && depositQty) {
@@ -259,7 +261,7 @@ export default function Deposit(props: PortfolioDepositProps) {
             </div>
             <DepositCurrencySelector
                 fieldId='exchange-balance-deposit'
-                onClick={() => openGlobalModal(chooseTokenDiv)}
+                onClick={() => openTokenModal()}
                 selectedToken={selectedToken}
                 setDepositQty={setDepositQty}
             />

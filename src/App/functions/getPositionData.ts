@@ -18,8 +18,8 @@ export const getPositionData = async (
 ): Promise<PositionIF> => {
     const newPosition = { ...position };
 
-    const baseTokenAddress = position.base;
-    const quoteTokenAddress = position.quote;
+    const baseTokenAddress = position.base.length === 40 ? '0x' + position.base : position.base;
+    const quoteTokenAddress = position.quote.length === 40 ? '0x' + position.quote : position.quote;
 
     const poolPriceNonDisplay = await cachedQuerySpotPrice(
         crocEnv,
@@ -218,14 +218,16 @@ export const updateApy = async (position: PositionIF): Promise<PositionIF> => {
     const updatedPosition = await fetch(
         positionApyCacheEndpoint +
             new URLSearchParams({
-                user: position.user,
-                bidTick: position.bidTick.toString(),
+                user: position.user.length === 40 ? '0x' + position.user : position.user,
                 askTick: position.askTick.toString(),
-                base: position.base,
-                quote: position.quote,
+                bidTick: position.bidTick.toString(),
+                base: position.base.length === 40 ? '0x' + position.base : position.base,
+                quote: position.quote.length === 40 ? '0x' + position.quote : position.quote,
                 poolIdx: position.poolIdx.toString(),
                 chainId: position.chainId,
+                // chainId: position.chainId,
                 positionType: position.positionType,
+                concise: 'true',
             }),
     )
         .then((response) => response?.json())

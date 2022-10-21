@@ -28,6 +28,7 @@ import {
     setLastBlock,
     addLimitOrderChangesByUser,
     ITransaction,
+    setLeaderboardByPool,
     // ChangesByUser,
 } from '../utils/state/graphDataSlice';
 import { ethers } from 'ethers';
@@ -847,6 +848,68 @@ export default function App() {
                                             ) {
                                                 dispatch(
                                                     setPositionsByPool({
+                                                        dataReceived: true,
+                                                        positions: updatedPositions,
+                                                    }),
+                                                );
+                                            }
+                                        })
+                                        .catch(console.log);
+                                }
+                            })
+                            .catch(console.log);
+                    }
+                } catch (error) {
+                    console.log;
+                }
+
+                // retrieve positions for leaderboard
+                try {
+                    if (httpGraphCacheServerDomain) {
+                        // console.log('fetching leaderboard positions');
+                        const poolPositionsCacheEndpoint =
+                            httpGraphCacheServerDomain + '/annotated_pool_positions?';
+                        fetch(
+                            poolPositionsCacheEndpoint +
+                                new URLSearchParams({
+                                    base: sortedTokens[0].toLowerCase(),
+                                    quote: sortedTokens[1].toLowerCase(),
+                                    poolIdx: chainData.poolIndex.toString(),
+                                    chainId: chainData.chainId,
+                                    ensResolution: 'true',
+                                    omitEmpty: 'true',
+                                    // omitKnockout: 'true',
+                                    addValue: 'true',
+                                    sortByAPY: 'true',
+                                    n: '10',
+                                }),
+                        )
+                            .then((response) => response.json())
+                            .then((json) => {
+                                const leaderboardPositions = json.data;
+
+                                if (leaderboardPositions && crocEnv) {
+                                    // console.log({ poolPositions });
+                                    Promise.all(
+                                        leaderboardPositions.map((position: PositionIF) => {
+                                            return getPositionData(
+                                                position,
+                                                importedTokens,
+                                                crocEnv,
+                                                chainData.chainId,
+                                                lastBlockNumber,
+                                            );
+                                        }),
+                                    )
+                                        .then((updatedPositions) => {
+                                            // console.log({ updatedPositions });
+                                            if (
+                                                JSON.stringify(
+                                                    graphData.leaderboardByPool.positions,
+                                                ) !== JSON.stringify(updatedPositions)
+                                            ) {
+                                                dispatch(
+                                                    setLeaderboardByPool({
                                                         dataReceived: true,
                                                         positions: updatedPositions,
                                                     }),
@@ -2137,7 +2200,6 @@ export default function App() {
                                     cachedFetchErc20TokenBalances={cachedFetchErc20TokenBalances}
                                     cachedFetchNativeTokenBalance={cachedFetchNativeTokenBalance}
                                     cachedFetchTokenPrice={cachedFetchTokenPrice}
-                                    importedTokens={importedTokens}
                                     ensName={ensName}
                                     lastBlockNumber={lastBlockNumber}
                                     connectedAccount={account ? account : ''}
@@ -2151,6 +2213,19 @@ export default function App() {
                                     userAccount={true}
                                     openGlobalModal={openGlobalModal}
                                     closeGlobalModal={closeGlobalModal}
+                                    importedTokens={importedTokens}
+                                    setImportedTokens={setImportedTokens}
+                                    chainData={chainData}
+                                    currentPositionActive={currentPositionActive}
+                                    setCurrentPositionActive={setCurrentPositionActive}
+                                    account={account ?? ''}
+                                    showSidebar={showSidebar}
+                                    isUserLoggedIn={isUserLoggedIn}
+                                    isAuthenticated={isAuthenticated}
+                                    baseTokenBalance={baseTokenBalance}
+                                    quoteTokenBalance={quoteTokenBalance}
+                                    baseTokenDexBalance={baseTokenDexBalance}
+                                    quoteTokenDexBalance={quoteTokenDexBalance}
                                 />
                             }
                         />
@@ -2163,7 +2238,6 @@ export default function App() {
                                     cachedFetchErc20TokenBalances={cachedFetchErc20TokenBalances}
                                     cachedFetchNativeTokenBalance={cachedFetchNativeTokenBalance}
                                     cachedFetchTokenPrice={cachedFetchTokenPrice}
-                                    importedTokens={importedTokens}
                                     ensName={ensName}
                                     lastBlockNumber={lastBlockNumber}
                                     connectedAccount={account ? account : ''}
@@ -2177,6 +2251,19 @@ export default function App() {
                                     userAccount={false}
                                     openGlobalModal={openGlobalModal}
                                     closeGlobalModal={closeGlobalModal}
+                                    importedTokens={importedTokens}
+                                    setImportedTokens={setImportedTokens}
+                                    chainData={chainData}
+                                    currentPositionActive={currentPositionActive}
+                                    setCurrentPositionActive={setCurrentPositionActive}
+                                    account={account ?? ''}
+                                    showSidebar={showSidebar}
+                                    isUserLoggedIn={isUserLoggedIn}
+                                    isAuthenticated={isAuthenticated}
+                                    baseTokenBalance={baseTokenBalance}
+                                    quoteTokenBalance={quoteTokenBalance}
+                                    baseTokenDexBalance={baseTokenDexBalance}
+                                    quoteTokenDexBalance={quoteTokenDexBalance}
                                 />
                             }
                         />
@@ -2200,7 +2287,6 @@ export default function App() {
                                     cachedFetchErc20TokenBalances={cachedFetchErc20TokenBalances}
                                     cachedFetchNativeTokenBalance={cachedFetchNativeTokenBalance}
                                     cachedFetchTokenPrice={cachedFetchTokenPrice}
-                                    importedTokens={importedTokens}
                                     ensName={ensName}
                                     lastBlockNumber={lastBlockNumber}
                                     connectedAccount={account ? account : ''}
@@ -2214,6 +2300,19 @@ export default function App() {
                                     userAccount={false}
                                     openGlobalModal={openGlobalModal}
                                     closeGlobalModal={closeGlobalModal}
+                                    importedTokens={importedTokens}
+                                    setImportedTokens={setImportedTokens}
+                                    chainData={chainData}
+                                    currentPositionActive={currentPositionActive}
+                                    setCurrentPositionActive={setCurrentPositionActive}
+                                    account={account ?? ''}
+                                    showSidebar={showSidebar}
+                                    isUserLoggedIn={isUserLoggedIn}
+                                    isAuthenticated={isAuthenticated}
+                                    baseTokenBalance={baseTokenBalance}
+                                    quoteTokenBalance={quoteTokenBalance}
+                                    baseTokenDexBalance={baseTokenDexBalance}
+                                    quoteTokenDexBalance={quoteTokenDexBalance}
                                 />
                             }
                         />
