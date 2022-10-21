@@ -129,6 +129,7 @@ export default function RangesRow(props: RangesRowPropsIF) {
         quoteTokenBalance: props.quoteTokenBalance,
         baseTokenDexBalance: props.baseTokenDexBalance,
         quoteTokenDexBalance: props.quoteTokenDexBalance,
+        isOnPortfolioPage: props.isOnPortfolioPage,
     };
 
     const openDetailsModal = () => {
