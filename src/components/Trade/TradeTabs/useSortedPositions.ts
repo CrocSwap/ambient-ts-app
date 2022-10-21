@@ -26,6 +26,9 @@ export const useSortedPositions = (
     // default sort function
     const sortByUpdateTime = (unsortedData: PositionIF[]) =>
         [...unsortedData].sort((a, b) => b.latestUpdateTime - a.latestUpdateTime);
+    // sort by positionHash
+    const sortById = (unsortedData: PositionIF[]) =>
+        [...unsortedData].sort((a, b) => b.positionStorageSlot.localeCompare(a.positionStorageSlot));
     // sort functions for sortable columns
     const sortByWallet = (unsortedData: PositionIF[]) =>
         [...unsortedData].sort((a, b) => {
@@ -58,6 +61,9 @@ export const useSortedPositions = (
         let sortedData: PositionIF[];
         // router to apply a specific sort function
         switch (sortBy) {
+            case 'id':
+                sortedData = sortById(data);
+                break;
             // sort by wallet
             case 'wallet':
                 sortedData = sortByWallet(data);
@@ -69,7 +75,7 @@ export const useSortedPositions = (
                 break;
             case 'min':
                 sortedData = sortByMin(data);
-                sortedData.forEach((dat) => console.log(parseFloat(dat.lowRangeDisplayInBase)));
+                console.log({sortedData});
                 break;
             case 'max':
                 sortedData = sortByMax(data);
