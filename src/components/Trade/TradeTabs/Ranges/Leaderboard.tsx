@@ -101,18 +101,6 @@ export default function Leaderboard(props: LeaderboardPropsIF) {
         },
     );
 
-    // const columnHeaders = [
-    //     { name: 'ID', sortable: false, className: '' },
-    //     { name: 'Wallet', sortable: true, className: 'wallet' },
-    //     { name: ' Min', sortable: false, className: 'range_sing' },
-    //     { name: 'Max', sortable: false, className: 'range_sing' },
-    //     { name: 'Value', sortable: true, className: 'wallet' },
-    //     { name: tradeData.baseToken.symbol, sortable: false, className: 'token' },
-    //     { name: tradeData.quoteToken.symbol, sortable: false, className: 'token' },
-    //     { name: 'APR', sortable: true, className: '' },
-    //     { name: 'Status', sortable: false, className: '' },
-    // ];
-
     const [sortBy, setSortBy, reverseSort, setReverseSort, sortedPositions] = useSortedPositions(
         'apr',
         true, // leaderboard is never limited to the user

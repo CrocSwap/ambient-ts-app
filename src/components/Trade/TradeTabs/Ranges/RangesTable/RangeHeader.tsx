@@ -22,6 +22,10 @@ export default function RangeHeader(props: RangeHeaderPropsIF) {
     function handleClick(slug: string) {
         console.clear();
         console.log(slug);
+        // prevent action when user clicks a column which is not sortable
+        if (!header.sortable) return;
+        // determine which sort should be used
+        // accounts for the column clicked and mutliple clicks
         if (sortBy !== slug) {
             console.log('first click');
             setSortBy(slug);
