@@ -28,7 +28,7 @@ interface TransactionsProps {
     isShowAllEnabled: boolean;
     portfolio?: boolean;
     tokenMap: Map<string, TokenIF>;
-    changesInSelectedCandle: ITransaction[];
+    changesInSelectedCandle: ITransaction[] | undefined;
     graphData: graphData;
     chainData: ChainSpec;
     blockExplorer?: string;
@@ -38,11 +38,13 @@ interface TransactionsProps {
     expandTradeTable: boolean;
 
     isCandleSelected: boolean | undefined;
-    filter: CandleData | undefined;
+    filter?: CandleData | undefined;
 
     openGlobalModal: (content: React.ReactNode) => void;
     closeGlobalModal: () => void;
     showSidebar: boolean;
+    isOnPortfolioPage: boolean;
+
     // setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
 }
 export default function Transactions(props: TransactionsProps) {
@@ -62,6 +64,7 @@ export default function Transactions(props: TransactionsProps) {
         showSidebar,
         openGlobalModal,
         closeGlobalModal,
+        isOnPortfolioPage,
         // setExpandTradeTable,
     } = props;
 
@@ -136,7 +139,7 @@ export default function Transactions(props: TransactionsProps) {
     }
     // console.log({ isCandleSelected });
     useEffect(() => {
-        isCandleSelected
+        isCandleSelected && changesInSelectedCandle
             ? setTransactionData(changesInSelectedCandle)
             : // ? setTransactionData(
             //       changesByPool.filter((data) => {
@@ -347,6 +350,20 @@ export default function Transactions(props: TransactionsProps) {
     );
     const headerColumns = [
         {
+            name: '',
+            className: '',
+            show: isOnPortfolioPage,
+            slug: 'token_images',
+            sortable: false,
+        },
+        {
+            name: 'Pool',
+            className: '',
+            show: isOnPortfolioPage && !showSidebar,
+            slug: 'pool',
+            sortable: false,
+        },
+        {
             name: 'ID',
 
             show: !showColumns,
@@ -477,17 +494,19 @@ export default function Transactions(props: TransactionsProps) {
             showSidebar={showSidebar}
             blockExplorer={blockExplorer}
             closeGlobalModal={closeGlobalModal}
+            isOnPortfolioPage={isOnPortfolioPage}
         />
     ));
 
     const noData = <div className={styles.no_data}>No Data to Display</div>;
     const transactionDataOrNull = dataToDisplay ? rowItemContent : noData;
 
+    const expandStyle = expandTradeTable ? 'calc(100vh - 10rem)' : '250px';
+
+    const portfolioPageStyle = props.isOnPortfolioPage ? 'calc(100vh - 19.5rem)' : expandStyle;
+
     return (
-        <main
-            className={`${styles.main_list_container} `}
-            style={{ height: expandTradeTable ? 'calc(100vh - 10rem)' : '250px' }}
-        >
+        <main className={styles.main_list_container} style={{ height: portfolioPageStyle }}>
             {headerColumnsDisplay}
             {isDataLoading ? <TransactionsSkeletons /> : transactionDataOrNull}
             {footerDisplay}

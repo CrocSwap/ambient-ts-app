@@ -357,6 +357,8 @@ export default function TradeTabs2(props: ITabsProps) {
 
         openGlobalModal: props.openGlobalModal,
         showSidebar: showSidebar,
+
+        isOnPortfolioPage: false,
     };
     // Props for <Orders/> React Element
     const ordersProps = {

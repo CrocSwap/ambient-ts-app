@@ -19,19 +19,21 @@ interface TransactionRowPropsIF {
     closeGlobalModal: () => void;
 
     openGlobalModal: (content: React.ReactNode) => void;
+    isOnPortfolioPage: boolean;
 }
 export default function TransactionRow(props: TransactionRowPropsIF) {
     const {
         showColumns,
         ipadView,
         tx,
-        // showSidebar,
+        showSidebar,
         blockExplorer,
         // openGlobalModal,
         // closeGlobalModal,
         currentTxActiveInTransactions,
         setCurrentTxActiveInTransactions,
         isShowAllEnabled,
+        isOnPortfolioPage,
     } = props;
 
     const {
@@ -127,6 +129,21 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
         </DefaultTooltip>
     );
 
+    // portfolio page li element ---------------
+    const accountTokenImages = (
+        <li className={styles.token_images_account}>
+            <img src={baseTokenLogo} alt='base token' />
+            <img src={quoteTokenLogo} alt='quote token' />
+            {/* <p>hello</p> */}
+        </li>
+    );
+
+    const poolName = (
+        <li className='base_color'>
+            {baseTokenSymbol} / {quoteTokenSymbol}
+        </li>
+    );
+    // end of portfolio page li element ---------------
     return (
         <ul
             className={`${styles.row_container} ${activeTransactionStyle} ${userPositionStyle}`}
@@ -137,6 +154,8 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
             }
             id={txDomId}
         >
+            {isOnPortfolioPage && accountTokenImages}
+            {isOnPortfolioPage && !showSidebar && poolName}
             {!showColumns && IDWithTooltip}
             {!showColumns && walletWithTooltip}
             {showColumns && (
@@ -229,6 +248,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                     showSidebar={props.showSidebar}
                     openGlobalModal={props.openGlobalModal}
                     closeGlobalModal={props.closeGlobalModal}
+                    isOnPortfolioPage={props.isOnPortfolioPage}
                 />
             </li>
         </ul>
