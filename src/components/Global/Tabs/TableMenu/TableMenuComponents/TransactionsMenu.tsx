@@ -24,13 +24,21 @@ interface TransactionMenuIF {
     showSidebar: boolean;
     openGlobalModal: (content: React.ReactNode, title?: string) => void;
     closeGlobalModal: () => void;
+    isOnPortfolioPage: boolean;
 }
 
 // React functional component
 export default function TransactionsMenu(props: TransactionMenuIF) {
     const menuItemRef = useRef<HTMLDivElement>(null);
-    const { userPosition, tx, blockExplorer, showSidebar, openGlobalModal, closeGlobalModal } =
-        props;
+    const {
+        userPosition,
+        tx,
+        blockExplorer,
+        showSidebar,
+        openGlobalModal,
+        closeGlobalModal,
+        isOnPortfolioPage,
+    } = props;
 
     const [value, copy] = useCopyToClipboard();
     const [openSnackbar, setOpenSnackbar] = useState(false);
@@ -142,8 +150,8 @@ export default function TransactionsMenu(props: TransactionMenuIF) {
 
     // --------------------------------
 
-    const view1 = useMediaQuery('(min-width: 1280px)');
-    // const view2 = useMediaQuery('(min-width: 1680px)');
+    // const view1 = useMediaQuery('(min-width: 1280px)');
+    const view2 = useMediaQuery('(min-width: 1680px)');
     // const view3 = useMediaQuery('(min-width: 2300px)');
 
     const view1NoSidebar = useMediaQuery('(min-width: 1280px)') && !showSidebar;
@@ -158,8 +166,8 @@ export default function TransactionsMenu(props: TransactionMenuIF) {
             {notRelevantButton && removeButton}
             {notRelevantButton && harvestButton}
             {detailsButton}
-            {view1NoSidebar && explorerButton}
-            {view1 && copyButton}
+            {view2 && explorerButton}
+            {view1NoSidebar && !isOnPortfolioPage && copyButton}
         </div>
     );
 

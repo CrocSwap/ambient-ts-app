@@ -4,9 +4,7 @@ import { useEffect, useState, Dispatch, SetStateAction, ReactNode } from 'react'
 // START: Import JSX Functional Components
 import Wallet from '../../Global/Account/AccountTabs/Wallet/Wallet';
 import Exchange from '../../Global/Account/AccountTabs/Exchange/Exchange';
-import Range from '../../Global/Account/AccountTabs/Range/Range';
-import Order from '../../Global/Account/AccountTabs/Order/Order';
-import TransactionsTable from '../../Global/Account/AccountTabs/Transaction/TransactionsTable';
+// import TransactionsTable from '../../Global/Account/AccountTabs/Transaction/TransactionsTable';
 import TabComponent from '../../Global/TabComponent/TabComponent';
 
 // START: Import Local Files
@@ -20,13 +18,16 @@ import rangePositionsImage from '../../../assets/images/sidebarImages/rangePosit
 import recentTransactionsImage from '../../../assets/images/sidebarImages/recentTransactions.svg';
 import walletImage from '../../../assets/images/sidebarImages/wallet.svg';
 import exchangeImage from '../../../assets/images/sidebarImages/exchange.svg';
-import { CrocEnv } from '@crocswap-libs/sdk';
+import { CrocEnv, ChainSpec } from '@crocswap-libs/sdk';
 import { ethers } from 'ethers';
 import { ILimitOrderState, ITransaction } from '../../../utils/state/graphDataSlice';
 import { getLimitOrderData } from '../../../App/functions/getLimitOrderData';
 // import { getTransactionData } from '../../../App/functions/getTransactionData';
 import { TokenPriceFn } from '../../../App/functions/fetchTokenPrice';
 import { fetchUserRecentChanges } from '../../../App/functions/fetchUserRecentChanges';
+import Orders from '../../Trade/TradeTabs/Orders/Orders';
+import Ranges from '../../Trade/TradeTabs/Ranges/Ranges';
+import Transactions from '../../Trade/TradeTabs/Transactions/Transactions';
 
 // interface for React functional component props
 interface PortfolioTabsPropsIF {
@@ -48,6 +49,22 @@ interface PortfolioTabsPropsIF {
     setOutsideControl: Dispatch<SetStateAction<boolean>>;
     rightTabOptions: ReactNode;
     openTokenModal: () => void;
+    chainData: ChainSpec;
+    openGlobalModal: (content: React.ReactNode, title?: string) => void;
+    closeGlobalModal: () => void;
+    currentPositionActive: string;
+    setCurrentPositionActive: Dispatch<SetStateAction<string>>;
+    account: string;
+    showSidebar: boolean;
+    isUserLoggedIn: boolean;
+    isAuthenticated: boolean;
+    baseTokenBalance: string;
+    quoteTokenBalance: string;
+    baseTokenDexBalance: string;
+    quoteTokenDexBalance: string;
+
+    currentTxActiveInTransactions: string;
+    setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
 }
 
 // React functional component
@@ -69,7 +86,13 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
         rightTabOptions,
         outsideControl,
         setOutsideControl,
-        openTokenModal
+        openTokenModal,
+        baseTokenBalance,
+        quoteTokenBalance,
+        baseTokenDexBalance,
+        quoteTokenDexBalance,
+
+        account,
     } = props;
 
     const graphData = useAppSelector((state) => state?.graphData);
@@ -182,7 +205,7 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
     const activeAccountPositionData = connectedAccountActive
         ? connectedAccountPositionData
         : otherAccountPositionData;
-
+    // eslint-disable-next-line
     const activeAccountLimitOrderData = connectedAccountActive
         ? connectedAccountLimitOrderData
         : otherAccountLimitOrderData;
@@ -217,29 +240,84 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
         activeAccount: activeAccount,
         chainId: chainId,
         tokenMap: tokenMap,
-        openTokenModal: openTokenModal
+        openTokenModal: openTokenModal,
     };
     // props for <Range/> React Element
     const rangeProps = {
+        crocEnv: props.crocEnv,
+        expandTradeTable: false,
+        chainData: props.chainData,
+        isShowAllEnabled: false,
+        account: account,
+        graphData: graphData,
+        openGlobalModal: props.openGlobalModal,
+        currentPositionActive: props.currentPositionActive,
+        closeGlobalModal: props.closeGlobalModal,
+        setCurrentPositionActive: props.setCurrentPositionActive,
+        showSidebar: props.showSidebar,
         positions: activeAccountPositionData,
+        isOnPortfolioPage: true,
+        lastBlockNumber: lastBlockNumber,
+        chainId: chainId,
+        provider: props.provider,
+        isUserLoggedIn: props.isUserLoggedIn,
+        isAuthenticated: props.isAuthenticated,
+        importedTokens: importedTokens,
+        baseTokenBalance: baseTokenBalance,
+        quoteTokenBalance: quoteTokenBalance,
+        baseTokenDexBalance: baseTokenDexBalance,
+        quoteTokenDexBalance: quoteTokenDexBalance,
     };
-    // props for <Order/> React Element
-    const limitOrderProps = {
-        orders: activeAccountLimitOrderData,
-    };
+
     // props for <Transactions/> React Element
     const transactionsProps = {
         transactions: activeAccountTransactionData,
+
+        isShowAllEnabled: false,
+        changesInSelectedCandle: undefined,
+        tokenMap: tokenMap,
+        graphData: graphData,
+        chainData: props.chainData,
+        blockExplorer: props.chainData.blockExplorer || undefined,
+        currentTxActiveInTransactions: props.currentTxActiveInTransactions,
+        account: account,
+        setCurrentTxActiveInTransactions: props.setCurrentTxActiveInTransactions,
+        expandTradeTable: false,
+
+        isCandleSelected: false,
+        // filter: props.filter,
+        closeGlobalModal: props.closeGlobalModal,
+
+        openGlobalModal: props.openGlobalModal,
+        showSidebar: props.showSidebar,
+
+        isOnPortfolioPage: true,
+    };
+
+    // Props for <Orders/> React Element
+    const ordersProps = {
+        crocEnv: props.crocEnv,
+        expandTradeTable: false,
+        chainData: props.chainData,
+        isShowAllEnabled: false,
+        account: account,
+        graphData: graphData,
+        openGlobalModal: props.openGlobalModal,
+        currentPositionActive: props.currentPositionActive,
+        closeGlobalModal: props.closeGlobalModal,
+        setCurrentPositionActive: props.setCurrentPositionActive,
+        showSidebar: props.showSidebar,
+        isOnPortfolioPage: true,
     };
 
     const accountTabData = [
         {
             label: 'Transactions',
-            content: <TransactionsTable {...transactionsProps} />,
+            content: <Transactions {...transactionsProps} />,
             icon: recentTransactionsImage,
         },
-        { label: 'Limit Orders', content: <Order {...limitOrderProps} />, icon: openOrdersImage },
-        { label: 'Ranges', content: <Range {...rangeProps} />, icon: rangePositionsImage },
+        { label: 'Limit Orders', content: <Orders {...ordersProps} />, icon: openOrdersImage },
+        { label: 'Ranges', content: <Ranges {...rangeProps} />, icon: rangePositionsImage },
         {
             label: 'Exchange Balances',
             content: <Exchange {...exchangeProps} />,

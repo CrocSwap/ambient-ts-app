@@ -9,7 +9,7 @@ import { fetchAddress } from '../../App/functions/fetchAddress';
 import { useMoralis } from 'react-moralis';
 import { ethers } from 'ethers';
 import { TokenIF } from '../../utils/interfaces/TokenIF';
-import { CrocEnv, toDisplayQty } from '@crocswap-libs/sdk';
+import { CrocEnv, toDisplayQty, ChainSpec } from '@crocswap-libs/sdk';
 import Modal from '../../components/Global/Modal/Modal';
 import { useModal } from '../../components/Global/Modal/useModal';
 
@@ -48,7 +48,22 @@ interface PortfolioPropsIF {
     openGlobalModal: (content: React.ReactNode, title?: string) => void;
     closeGlobalModal: () => void;
     importedTokens: TokenIF[];
+    chainData: ChainSpec;
+
     setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
+    currentPositionActive: string;
+    setCurrentPositionActive: Dispatch<SetStateAction<string>>;
+    account: string;
+    showSidebar: boolean;
+    isUserLoggedIn: boolean;
+    isAuthenticated: boolean;
+    baseTokenBalance: string;
+    quoteTokenBalance: string;
+    baseTokenDexBalance: string;
+    quoteTokenDexBalance: string;
+
+    currentTxActiveInTransactions: string;
+    setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
 }
 
 // const cachedFetchAddress = memoizePromiseFn(fetchAddress);
@@ -77,6 +92,17 @@ export default function Portfolio(props: PortfolioPropsIF) {
         setSelectedOutsideTab,
         importedTokens,
         setImportedTokens,
+        isAuthenticated,
+        baseTokenBalance,
+        quoteTokenBalance,
+        baseTokenDexBalance,
+        quoteTokenDexBalance,
+
+        currentTxActiveInTransactions,
+        setCurrentTxActiveInTransactions,
+
+        showSidebar,
+        isUserLoggedIn,
     } = props;
 
     const selectedToken: TokenIF = useAppSelector((state) => state.temp.token);
@@ -342,6 +368,21 @@ export default function Portfolio(props: PortfolioPropsIF) {
                     outsideControl={outsideControl}
                     rightTabOptions={false}
                     openTokenModal={openTokenModal}
+                    openGlobalModal={openGlobalModal}
+                    closeGlobalModal={closeGlobalModal}
+                    showSidebar={showSidebar}
+                    account={props.account}
+                    chainData={props.chainData}
+                    currentPositionActive={props.currentPositionActive}
+                    setCurrentPositionActive={props.setCurrentPositionActive}
+                    isUserLoggedIn={isUserLoggedIn}
+                    isAuthenticated={isAuthenticated}
+                    baseTokenBalance={baseTokenBalance}
+                    quoteTokenBalance={quoteTokenBalance}
+                    baseTokenDexBalance={baseTokenDexBalance}
+                    quoteTokenDexBalance={quoteTokenDexBalance}
+                    currentTxActiveInTransactions={currentTxActiveInTransactions}
+                    setCurrentTxActiveInTransactions={setCurrentTxActiveInTransactions}
                 />
                 {connectedAccountActive && !fullLayoutActive ? exchangeBalanceComponent : null}
             </div>

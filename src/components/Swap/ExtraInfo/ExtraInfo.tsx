@@ -32,7 +32,7 @@ interface ExtraInfoPropsIF {
 export default function ExtraInfo(props: ExtraInfoPropsIF) {
     const {
         // tokenPair,
-        // priceImpact,
+        priceImpact,
         displayEffectivePriceString,
         poolPriceDisplay,
         slippageTolerance,
@@ -73,6 +73,25 @@ export default function ExtraInfo(props: ExtraInfoPropsIF) {
                   maximumFractionDigits: 2,
               });
 
+    // console.log({ priceImpact });
+
+    const finalPriceWithDenom = !isDenomBase
+        ? 1 / (priceImpact?.finalPrice || 1)
+        : priceImpact?.finalPrice || 1;
+
+    const finalPriceString =
+        finalPriceWithDenom === Infinity || finalPriceWithDenom === 1
+            ? '…'
+            : finalPriceWithDenom < 2
+            ? finalPriceWithDenom.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 6,
+              })
+            : finalPriceWithDenom.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+              });
+
     const extraInfoData = [
         {
             title: 'Spot Price',
@@ -80,6 +99,13 @@ export default function ExtraInfo(props: ExtraInfoPropsIF) {
             data: isDenomBase
                 ? `${displayPriceString} ${quoteTokenSymbol} per ${baseTokenSymbol}`
                 : `${displayPriceString} ${baseTokenSymbol} per ${quoteTokenSymbol}`,
+        },
+        {
+            title: 'Final Price',
+            tooltipTitle: 'Expected Price of the Selected Token Pool After Swap',
+            data: isDenomBase
+                ? `${finalPriceString} ${quoteTokenSymbol} per ${baseTokenSymbol}`
+                : `${finalPriceString} ${baseTokenSymbol} per ${quoteTokenSymbol}`,
         },
         {
             title: 'Effective Conversion Rate',
@@ -99,7 +125,7 @@ export default function ExtraInfo(props: ExtraInfoPropsIF) {
         {
             title: 'Liquidity Provider Fee',
             tooltipTitle: 'liquidity provider fee explanation',
-            data: `${liquidityProviderFee}%`,
+            data: `${liquidityProviderFee * 100}%`,
         },
     ];
     const extraInfoDetails = (

@@ -278,6 +278,8 @@ export default function TradeTabs2(props: ITabsProps) {
                 .then((selectedCandleChangesJson) => {
                     console.log({ selectedCandleChangesJson });
                     setChangesInSelectedCandle(selectedCandleChangesJson);
+                    setOutsideControl(true);
+                    setSelectedInsideTab(0);
                 })
                 .catch(console.log);
             // fetch(
@@ -334,6 +336,7 @@ export default function TradeTabs2(props: ITabsProps) {
 
         closeGlobalModal: props.closeGlobalModal,
         showSidebar: showSidebar,
+        isOnPortfolioPage: false,
     };
     // Props for <Transactions/> React Element
     const transactionsProps = {
@@ -354,6 +357,8 @@ export default function TradeTabs2(props: ITabsProps) {
 
         openGlobalModal: props.openGlobalModal,
         showSidebar: showSidebar,
+
+        isOnPortfolioPage: false,
     };
     // Props for <Orders/> React Element
     const ordersProps = {
@@ -368,6 +373,7 @@ export default function TradeTabs2(props: ITabsProps) {
         closeGlobalModal: props.closeGlobalModal,
         setCurrentPositionActive: setCurrentPositionActive,
         showSidebar: showSidebar,
+        isOnPortfolioPage: false,
     };
     // props for <PositionsOnlyToggle/> React Element
 
