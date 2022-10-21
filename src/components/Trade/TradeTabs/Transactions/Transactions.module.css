@@ -150,3 +150,9 @@ text-transform: capitalize;
     align-items: center;
     gap: 4px;
 }
+
+.token_images_account img{
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+}

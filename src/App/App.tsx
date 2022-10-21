@@ -2241,6 +2241,10 @@ export default function App() {
                                     quoteTokenBalance={quoteTokenBalance}
                                     baseTokenDexBalance={baseTokenDexBalance}
                                     quoteTokenDexBalance={quoteTokenDexBalance}
+                                    currentTxActiveInTransactions={currentTxActiveInTransactions}
+                                    setCurrentTxActiveInTransactions={
+                                        setCurrentTxActiveInTransactions
+                                    }
                                 />
                             }
                         />
@@ -2279,6 +2283,10 @@ export default function App() {
                                     quoteTokenBalance={quoteTokenBalance}
                                     baseTokenDexBalance={baseTokenDexBalance}
                                     quoteTokenDexBalance={quoteTokenDexBalance}
+                                    currentTxActiveInTransactions={currentTxActiveInTransactions}
+                                    setCurrentTxActiveInTransactions={
+                                        setCurrentTxActiveInTransactions
+                                    }
                                 />
                             }
                         />
@@ -2328,6 +2336,10 @@ export default function App() {
                                     quoteTokenBalance={quoteTokenBalance}
                                     baseTokenDexBalance={baseTokenDexBalance}
                                     quoteTokenDexBalance={quoteTokenDexBalance}
+                                    currentTxActiveInTransactions={currentTxActiveInTransactions}
+                                    setCurrentTxActiveInTransactions={
+                                        setCurrentTxActiveInTransactions
+                                    }
                                 />
                             }
                         />
