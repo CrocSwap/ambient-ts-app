@@ -29,7 +29,8 @@ export default function SlippageTolerance(props: TransactionSettingsPropsIF) {
                             }}
                             type='text'
                             value={slippageValue}
-                            placeholder={'slippage'}
+                            autoComplete={'off'}
+                            placeholder={'e.g. 0.3'}
                             onKeyDown={handleKeyDown}
                         />
                     </div>
