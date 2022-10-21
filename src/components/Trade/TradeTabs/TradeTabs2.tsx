@@ -341,6 +341,7 @@ export default function TradeTabs2(props: ITabsProps) {
     // Props for <Transactions/> React Element
     const transactionsProps = {
         isShowAllEnabled: isShowAllEnabled,
+
         changesInSelectedCandle: changesInSelectedCandle,
         tokenMap: tokenMap,
         graphData: graphData,
