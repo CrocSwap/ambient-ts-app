@@ -21,6 +21,7 @@ export default function RangeHeader(props: RangeHeaderPropsIF) {
 
     function handleClick(slug: string) {
         console.clear();
+        console.log(slug);
         if (sortBy !== slug) {
             console.log('first click');
             setSortBy(slug);

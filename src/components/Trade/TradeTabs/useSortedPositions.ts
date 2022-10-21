@@ -21,14 +21,29 @@ export const useSortedPositions = (
         return outputArray;
     }
 
+    console.log(poolPositions);
+
     // default sort function
     const sortByUpdateTime = (unsortedData: PositionIF[]) =>
         [...unsortedData].sort((a, b) => b.latestUpdateTime - a.latestUpdateTime);
     // sort functions for sortable columns
     const sortByWallet = (unsortedData: PositionIF[]) =>
-        [...unsortedData].sort((a, b) => a.user.localeCompare(b.user));
+        [...unsortedData].sort((a, b) => {
+            const usernameA: string = a.ensResolution ?? a.user;
+            const usernameB: string = b.ensResolution ?? b.user;
+            return usernameA.localeCompare(usernameB);
+        });
     const sortByApy = (unsortedData: PositionIF[]) =>
         [...unsortedData].sort((a, b) => b.apy - a.apy);
+    // TODO: for some reason sortByMin() is leaving the final value out of sequence?
+    const sortByMin = (unsortedData: PositionIF[]) => 
+        [...unsortedData].sort((a, b) =>
+            parseFloat(b.lowRangeDisplayInBase) - parseFloat(a.lowRangeDisplayInBase)
+        );
+    const sortByMax = (unsortedData: PositionIF[]) => 
+        [...unsortedData].sort((a, b) =>
+            parseFloat(b.highRangeDisplayInBase) - parseFloat(a.highRangeDisplayInBase)
+        );
     const sortByValue = (unsortedData: PositionIF[]) =>
         [...unsortedData].sort((a, b) => b.positionLiqTotalUSD - a.positionLiqTotalUSD);
 
@@ -51,6 +66,13 @@ export const useSortedPositions = (
             case 'apy':
             case 'apr':
                 sortedData = sortByApy(data);
+                break;
+            case 'min':
+                sortedData = sortByMin(data);
+                sortedData.forEach((dat) => console.log(parseFloat(dat.lowRangeDisplayInBase)));
+                break;
+            case 'max':
+                sortedData = sortByMax(data);
                 break;
             case 'value':
                 sortedData = sortByValue(data);
