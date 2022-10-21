@@ -1,7 +1,8 @@
 import { Dispatch, SetStateAction, useMemo, useState } from 'react';
-import { PositionIF } from '../../../../utils/interfaces/PositionIF';
+import { PositionIF } from '../../../utils/interfaces/PositionIF';
 
 export const useSortedPositions = (
+    defaultSort: string,
     isShowAllEnabled: boolean,
     userPositions: PositionIF[],
     poolPositions: PositionIF[],
@@ -23,16 +24,32 @@ export const useSortedPositions = (
     // default sort function
     const sortByUpdateTime = (unsortedData: PositionIF[]) =>
         [...unsortedData].sort((a, b) => b.latestUpdateTime - a.latestUpdateTime);
+    // sort by positionHash
+    const sortById = (unsortedData: PositionIF[]) =>
+        [...unsortedData].sort((a, b) => b.positionStorageSlot.localeCompare(a.positionStorageSlot));
     // sort functions for sortable columns
     const sortByWallet = (unsortedData: PositionIF[]) =>
-        [...unsortedData].sort((a, b) => a.user.localeCompare(b.user));
+        [...unsortedData].sort((a, b) => {
+            const usernameA: string = a.ensResolution ?? a.user;
+            const usernameB: string = b.ensResolution ?? b.user;
+            return usernameA.localeCompare(usernameB);
+        });
     const sortByApy = (unsortedData: PositionIF[]) =>
         [...unsortedData].sort((a, b) => b.apy - a.apy);
+    // TODO: for some reason sortByMin() is leaving the final value out of sequence?
+    const sortByMin = (unsortedData: PositionIF[]) => 
+        [...unsortedData].sort((a, b) =>
+            parseFloat(b.lowRangeDisplayInBase) - parseFloat(a.lowRangeDisplayInBase)
+        );
+    const sortByMax = (unsortedData: PositionIF[]) => 
+        [...unsortedData].sort((a, b) =>
+            parseFloat(b.highRangeDisplayInBase) - parseFloat(a.highRangeDisplayInBase)
+        );
     const sortByValue = (unsortedData: PositionIF[]) =>
         [...unsortedData].sort((a, b) => b.positionLiqTotalUSD - a.positionLiqTotalUSD);
 
     // column the user wants the table sorted by
-    const [sortBy, setSortBy] = useState('default');
+    const [sortBy, setSortBy] = useState(defaultSort);
     // whether the sort should be ascending or descening
     const [reverseSort, setReverseSort] = useState(false);
 
@@ -42,19 +59,29 @@ export const useSortedPositions = (
         let sortedData: PositionIF[];
         // router to apply a specific sort function
         switch (sortBy) {
+            case 'id':
+                sortedData = sortById(data);
+                break;
             // sort by wallet
             case 'wallet':
                 sortedData = sortByWallet(data);
                 break;
             // sort by APR
             case 'apy':
-                sortedData = sortByApy(data);
-                break;
             case 'apr':
                 sortedData = sortByApy(data);
                 break;
+            case 'min':
+                sortedData = sortByMin(data);
+                break;
+            case 'max':
+                sortedData = sortByMax(data);
+                break;
             case 'value':
                 sortedData = sortByValue(data);
+                break;
+            case 'lastUpdate':
+                sortedData = sortByUpdateTime(data);
                 break;
             // return data unsorted if user did not choose a sortable column
             default:

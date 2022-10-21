@@ -18,7 +18,7 @@ import {
 import Pagination from '../../../Global/Pagination/Pagination';
 
 import { useAppDispatch, useAppSelector } from '../../../../utils/hooks/reduxToolkit';
-import { useSortedPositions } from './useSortedPositions';
+import { useSortedPositions } from '../useSortedPositions';
 import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
 import { PositionIF } from '../../../../utils/interfaces/PositionIF';
 import { updateApy } from '../../../../App/functions/getPositionData';
@@ -101,19 +101,8 @@ export default function Leaderboard(props: LeaderboardPropsIF) {
         },
     );
 
-    // const columnHeaders = [
-    //     { name: 'ID', sortable: false, className: '' },
-    //     { name: 'Wallet', sortable: true, className: 'wallet' },
-    //     { name: ' Min', sortable: false, className: 'range_sing' },
-    //     { name: 'Max', sortable: false, className: 'range_sing' },
-    //     { name: 'Value', sortable: true, className: 'wallet' },
-    //     { name: tradeData.baseToken.symbol, sortable: false, className: 'token' },
-    //     { name: tradeData.quoteToken.symbol, sortable: false, className: 'token' },
-    //     { name: 'APR', sortable: true, className: '' },
-    //     { name: 'Status', sortable: false, className: '' },
-    // ];
-
     const [sortBy, setSortBy, reverseSort, setReverseSort, sortedPositions] = useSortedPositions(
+        'apr',
         true, // leaderboard is never limited to the user
         positionsByUserMatchingSelectedTokens,
         graphData?.leaderboardByPool?.positions,
@@ -148,73 +137,6 @@ export default function Leaderboard(props: LeaderboardPropsIF) {
         lastBlockNumber,
         isShowAllEnabled,
     ]);
-
-    // const [expanded, setExpanded] = useState<false | number>(false);
-
-    // const desktopDisplay = (
-    //     <div className={styles.desktop_ranges_display_container}>
-    //         {sortedPositions.map((position) => (
-    //             <RangeCard
-    //                 isUserLoggedIn={isUserLoggedIn}
-    //                 crocEnv={crocEnv}
-    //                 chainData={chainData}
-    //                 provider={provider}
-    //                 chainId={chainId}
-    //                 key={position.positionId}
-    //                 portfolio={portfolio}
-    //                 baseTokenBalance={baseTokenBalance}
-    //                 quoteTokenBalance={quoteTokenBalance}
-    //                 baseTokenDexBalance={baseTokenDexBalance}
-    //                 quoteTokenDexBalance={quoteTokenDexBalance}
-    //                 notOnTradeRoute={notOnTradeRoute}
-    //                 position={position}
-    //                 isAllPositionsEnabled={isShowAllEnabled}
-    //                 tokenAAddress={tradeData.tokenA.address}
-    //                 tokenBAddress={tradeData.tokenB.address}
-    //                 account={account ?? undefined}
-    //                 isAuthenticated={isAuthenticated}
-    //                 isDenomBase={tradeData.isDenomBase}
-    //                 lastBlockNumber={lastBlockNumber}
-    //                 currentPositionActive={currentPositionActive}
-    //                 setCurrentPositionActive={setCurrentPositionActive}
-    //                 openGlobalModal={props.openGlobalModal}
-    //                 closeGlobalModal={props.closeGlobalModal}
-    //             />
-    //         ))}
-    //     </div>
-    // );
-
-    // const oldReturn =
-    // return (
-    //     <div className={styles.container}>
-    //         {/* <header className={styles.row_container}>
-    //             {columnHeaders.map((header) => (
-    //                 <RangeCardHeader
-    //                     key={`rangeDataHeaderField${header.name}`}
-    //                     data={header}
-    //                     sortBy={sortBy}
-    //                     setSortBy={setSortBy}
-    //                     reverseSort={reverseSort}
-    //                     setReverseSort={setReverseSort}
-    //                     columnHeaders={columnHeaders}
-    //                 />
-    //             ))}
-    //         </header> */}
-    //         <RangeCardHeader
-    //             sortBy={sortBy}
-    //             setSortBy={setSortBy}
-    //             reverseSort={reverseSort}
-    //             setReverseSort={setReverseSort}
-    //             columnHeaders={columnHeaders}
-    //         />
-    //         <ol
-    //             className={styles.positions_list}
-    //             style={{ height: expandTradeTable ? '100%' : '220px' }}
-    //         >
-    //             {desktopDisplay}
-    //         </ol>
-    //     </div>
-    // );
 
     // ---------------------
     const [currentPage, setCurrentPage] = useState(1);
