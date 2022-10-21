@@ -28,9 +28,7 @@ export default function TransactionSettings(props: TransactionSettingsPropsIF) {
 
     const setSlippage = (input: string) => {
         setNewSlippage(input);
-        isPairStable
-            ? slippage.stable.setValue(newSlippage)
-            : slippage.volatile.setValue(newSlippage);
+        isPairStable ? slippage.stable.setValue(input) : slippage.volatile.setValue(input);
     };
 
     const handleClose = () => {

@@ -15,7 +15,7 @@ export default function SlippageTolerance(props: TransactionSettingsPropsIF) {
     const preset2 = module === 'Range Order' ? '2' : '0.3';
     const preset3 = module === 'Range Order' ? '3' : '0.5';
 
-    // console.log({ slippageValue });
+    console.log({ slippageValue });
 
     return (
         <div className={styles.slippage_tolerance_container}>
@@ -25,7 +25,10 @@ export default function SlippageTolerance(props: TransactionSettingsPropsIF) {
                     <div className={styles.input_container}>
                         <input
                             id='slippage_tolerance_input_field'
-                            onChange={(e) => setSlippage(e.target.value)}
+                            onChange={(e) => {
+                                console.log(e.target.value);
+                                setSlippage(e.target.value);
+                            }}
                             type='text'
                             value={slippageValue}
                             placeholder={'slippage'}
