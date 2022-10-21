@@ -214,6 +214,11 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
         ? connectedAccountTransactionData
         : otherAccountTransactionData;
 
+    // console.log({ connectedAccountActive });
+    // console.log({ connectedAccountTransactionData });
+    // console.log({ otherAccountTransactionData });
+    // console.log({ activeAccountTransactionData });
+
     // props for <Wallet/> React Element
     const walletProps = {
         crocEnv: crocEnv,
@@ -271,8 +276,8 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
 
     // props for <Transactions/> React Element
     const transactionsProps = {
-        transactions: activeAccountTransactionData,
-
+        activeAccountTransactionData: activeAccountTransactionData,
+        connectedAccountActive: connectedAccountActive,
         isShowAllEnabled: false,
         changesInSelectedCandle: undefined,
         tokenMap: tokenMap,

@@ -25,6 +25,8 @@ import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter
 // import TransactionAccordions from './TransactionAccordions/TransactionAccordions';
 
 interface TransactionsProps {
+    activeAccountTransactionData?: ITransaction[];
+    connectedAccountActive?: boolean;
     isShowAllEnabled: boolean;
     portfolio?: boolean;
     tokenMap: Map<string, TokenIF>;
@@ -49,6 +51,8 @@ interface TransactionsProps {
 }
 export default function Transactions(props: TransactionsProps) {
     const {
+        activeAccountTransactionData,
+        // connectedAccountActive,
         isShowAllEnabled,
         account,
         changesInSelectedCandle,
@@ -105,8 +109,24 @@ export default function Transactions(props: TransactionsProps) {
     const dataReceivedByUser = graphData?.changesByUser?.dataReceived;
     const dataReceivedByPool = graphData?.changesByPool?.dataReceived;
 
-    const [transactionData, setTransactionData] = useState(changesByPoolMatchingSelectedTokens);
-    const [dataReceived, setDataReceived] = useState(dataReceivedByPool);
+    const [transactionData, setTransactionData] = useState(
+        isOnPortfolioPage
+            ? activeAccountTransactionData || []
+            : changesByPoolMatchingSelectedTokens,
+    );
+
+    // console.log({ transactionData });
+
+    useEffect(() => {
+        // console.log({ isOnPortfolioPage });
+        if (isOnPortfolioPage && activeAccountTransactionData) {
+            // console.log({ activeAccountTransactionData });
+            setTransactionData(activeAccountTransactionData);
+            setDataReceived(true);
+        }
+    }, [isOnPortfolioPage, activeAccountTransactionData]);
+
+    const [dataReceived, setDataReceived] = useState(false);
     // todoJr: Finish this loading logic
     const [isDataLoading, setIsDataLoading] = useState(true);
     const [dataToDisplay, setDataToDisplay] = useState(false);
@@ -130,15 +150,22 @@ export default function Transactions(props: TransactionsProps) {
         transactionData.length ? setDataToDisplay(true) : setDataToDisplay(false);
     }
     function handleUserSelected() {
-        setTransactionData(changesByUserMatchingSelectedTokens);
-        setDataReceived(dataReceivedByUser);
+        // console.log({ changesByUserMatchingSelectedTokens });
+        if (!isOnPortfolioPage) {
+            setTransactionData(changesByUserMatchingSelectedTokens);
+            setDataReceived(dataReceivedByUser);
+        }
     }
     function handlePoolSelected() {
-        setTransactionData(changesByPoolMatchingSelectedTokens);
-        setDataReceived(dataReceivedByPool);
+        if (!isOnPortfolioPage) {
+            // console.log({ changesByPoolMatchingSelectedTokens });
+            setTransactionData(changesByPoolMatchingSelectedTokens);
+            setDataReceived(dataReceivedByPool);
+        }
     }
     // console.log({ isCandleSelected });
     useEffect(() => {
+        // console.log({ changesInSelectedCandle });
         isCandleSelected && changesInSelectedCandle
             ? setTransactionData(changesInSelectedCandle)
             : // ? setTransactionData(
