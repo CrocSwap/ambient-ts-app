@@ -125,7 +125,7 @@ export default function ExtraInfo(props: ExtraInfoPropsIF) {
         {
             title: 'Liquidity Provider Fee',
             tooltipTitle: 'liquidity provider fee explanation',
-            data: `${liquidityProviderFee}%`,
+            data: `${liquidityProviderFee * 100}%`,
         },
     ];
     const extraInfoDetails = (

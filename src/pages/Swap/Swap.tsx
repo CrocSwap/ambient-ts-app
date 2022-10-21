@@ -479,7 +479,7 @@ export default function Swap(props: SwapPropsIF) {
                         displayEffectivePriceString={displayEffectivePriceString}
                         poolPriceDisplay={poolPriceDisplay || 0}
                         slippageTolerance={slippageTolerancePercentage}
-                        liquidityProviderFee={0.3}
+                        liquidityProviderFee={tradeData.liquidityFee}
                         quoteTokenIsBuy={true}
                         swapGasPriceinDollars={swapGasPriceinDollars}
                         didUserFlipDenom={tradeData.didUserFlipDenom}
