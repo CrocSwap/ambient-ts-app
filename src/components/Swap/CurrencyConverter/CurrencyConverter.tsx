@@ -320,7 +320,8 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
                       )
                     : undefined;
 
-            impact ? setPriceImpact(impact) : null;
+            setPriceImpact(impact);
+            // impact ? setPriceImpact(impact) : null;
 
             rawTokenBQty = impact ? parseFloat(impact.buyQty) : undefined;
         } else {
@@ -339,7 +340,8 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
                       )
                     : undefined;
             // console.log({ impact });
-            impact ? setPriceImpact(impact) : null;
+            setPriceImpact(impact);
+            // impact ? setPriceImpact(impact) : null;
 
             rawTokenBQty = impact ? parseFloat(impact.buyQty) : undefined;
         }
@@ -387,7 +389,8 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
                           input,
                       )
                     : undefined;
-            impact ? setPriceImpact(impact) : null;
+            setPriceImpact(impact);
+            // impact ? setPriceImpact(impact) : null;
 
             rawTokenBQty = impact ? parseFloat(impact.buyQty) : undefined;
         } else {
@@ -404,7 +407,9 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
                           tokenAQtyLocal,
                       )
                     : undefined;
-            impact ? setPriceImpact(impact) : null;
+
+            setPriceImpact(impact);
+            // impact ? setPriceImpact(impact) : null;
 
             rawTokenBQty = impact ? parseFloat(impact.buyQty) : undefined;
         }
@@ -451,7 +456,9 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
                           input,
                       )
                     : undefined;
-            impact ? setPriceImpact(impact) : null;
+
+            setPriceImpact(impact);
+            // impact ? setPriceImpact(impact) : null;
 
             rawTokenAQty = impact ? parseFloat(impact.sellQty) : undefined;
 
@@ -468,7 +475,10 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
                           tokenBQtyLocal,
                       )
                     : undefined;
-            impact ? setPriceImpact(impact) : null;
+
+            setPriceImpact(impact);
+
+            // impact ? setPriceImpact(impact) : null;
 
             rawTokenAQty = impact ? parseFloat(impact.sellQty) : undefined;
             rawTokenAQty ? handleSwapButtonMessage(rawTokenAQty) : null;
