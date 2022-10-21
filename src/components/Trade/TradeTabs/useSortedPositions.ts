@@ -21,8 +21,6 @@ export const useSortedPositions = (
         return outputArray;
     }
 
-    console.log(poolPositions);
-
     // default sort function
     const sortByUpdateTime = (unsortedData: PositionIF[]) =>
         [...unsortedData].sort((a, b) => b.latestUpdateTime - a.latestUpdateTime);
@@ -75,7 +73,6 @@ export const useSortedPositions = (
                 break;
             case 'min':
                 sortedData = sortByMin(data);
-                console.log({sortedData});
                 break;
             case 'max':
                 sortedData = sortByMax(data);
