@@ -115,12 +115,12 @@ export default function Transactions(props: TransactionsProps) {
             : changesByPoolMatchingSelectedTokens,
     );
 
-    console.log({ transactionData });
+    // console.log({ transactionData });
 
     useEffect(() => {
-        console.log({ isOnPortfolioPage });
+        // console.log({ isOnPortfolioPage });
         if (isOnPortfolioPage && activeAccountTransactionData) {
-            console.log({ activeAccountTransactionData });
+            // console.log({ activeAccountTransactionData });
             setTransactionData(activeAccountTransactionData);
             setDataReceived(true);
         }
