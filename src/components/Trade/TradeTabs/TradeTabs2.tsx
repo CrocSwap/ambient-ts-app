@@ -278,6 +278,8 @@ export default function TradeTabs2(props: ITabsProps) {
                 .then((selectedCandleChangesJson) => {
                     console.log({ selectedCandleChangesJson });
                     setChangesInSelectedCandle(selectedCandleChangesJson);
+                    setOutsideControl(true);
+                    setSelectedInsideTab(0);
                 })
                 .catch(console.log);
             // fetch(
