@@ -4,6 +4,8 @@
     align-items: center;
     gap: 8px;
     min-height: 20px;
+    transition: var(--animation-speed) ease-in-out
+
 }
 
 .options_toggles {
@@ -38,5 +40,7 @@
 .disable_right{
     filter: blur(7px);
     pointer-events: none;
+    display: none;
+    transition: var(--animation-speed) ease-in-out
 
 }

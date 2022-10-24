@@ -456,6 +456,7 @@ export default function Ranges(props: RangesPropsIF) {
             quoteTokenDexBalance={quoteTokenDexBalance}
             lastBlockNumber={lastBlockNumber}
             isOnPortfolioPage={isOnPortfolioPage}
+            idx={idx}
 
             // blockExplorer={blockExplorer}
         />

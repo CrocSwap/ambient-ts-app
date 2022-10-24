@@ -9,6 +9,7 @@ import RangesMenu from '../../../../Global/Tabs/TableMenu/TableMenuComponents/Ra
 import RangeDetails from '../../../../RangeDetails/RangeDetails';
 import { DefaultTooltip } from '../../../../Global/StyledTooltip/StyledTooltip';
 import { NavLink } from 'react-router-dom';
+import Medal from '../../../../Global/Medal/Medal';
 
 interface RangesRowPropsIF {
     isUserLoggedIn: boolean;
@@ -40,6 +41,8 @@ interface RangesRowPropsIF {
     openGlobalModal: (content: React.ReactNode) => void;
     closeGlobalModal: () => void;
     isOnPortfolioPage: boolean;
+    isLeaderboard?: boolean;
+    idx: number;
 }
 
 export default function RangesRow(props: RangesRowPropsIF) {
@@ -53,6 +56,8 @@ export default function RangesRow(props: RangesRowPropsIF) {
         setCurrentPositionActive,
         openGlobalModal,
         isOnPortfolioPage,
+        isLeaderboard,
+        idx,
     } = props;
 
     const {
@@ -216,6 +221,13 @@ export default function RangesRow(props: RangesRowPropsIF) {
     );
     // end of portfolio page li element ---------------
 
+    // Leaderboard content--------------------------------
+
+    const idDisplay = !showColumns && IDWithTooltip;
+    const displayIDorRanking = isLeaderboard ? !showColumns && <Medal ranking={idx} /> : idDisplay;
+
+    // End of Leaderboard content--------------------------------
+
     return (
         <ul
             className={`${styles.row_container} ${activePositionStyle} ${userPositionStyle}`}
@@ -228,7 +240,7 @@ export default function RangesRow(props: RangesRowPropsIF) {
         >
             {isOnPortfolioPage && accountTokenImages}
             {isOnPortfolioPage && !props.showSidebar && poolName}
-            {!showColumns && IDWithTooltip}
+            {displayIDorRanking}
             {!showColumns && walletWithTooltip}
             {showColumns && (
                 <li data-label='id'>
