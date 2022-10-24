@@ -262,7 +262,6 @@ export default function Orders(props: propsIF) {
     //     ? limitOrdersByPool
     //     : limitOrdersByUser;
 
-    console.log({ limitOrderData });
     // const [expanded, setExpanded] = useState<false | number>(false);
     // const ItemContent = (
     //     <div className={styles.desktop_transaction_display_container}>
@@ -311,12 +310,10 @@ export default function Orders(props: propsIF) {
     // )
 
     // -----------------------------
-    const dataReceivedByPool = graphData?.changesByPool?.dataReceived;
-    console.log({ dataReceivedByPool });
+    // const dataReceivedByPool = graphData?.changesByPool?.dataReceived;
     const [isDataLoading, setIsDataLoading] = useState(true);
     const [dataToDisplay, setDataToDisplay] = useState(false);
     const [dataReceived] = useState(limitOrderData.length > 0);
-    console.log({ dataReceived });
 
     function handleDataReceived() {
         setIsDataLoading(false);

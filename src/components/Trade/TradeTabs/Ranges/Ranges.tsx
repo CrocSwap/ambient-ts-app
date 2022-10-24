@@ -30,6 +30,8 @@ import RangesRow from './RangesTable/RangesRow';
 
 // interface for props
 interface RangesPropsIF {
+    activeAccountPositionData?: PositionIF[];
+    connectedAccountActive?: boolean;
     isUserLoggedIn: boolean;
     crocEnv: CrocEnv | undefined;
     chainData: ChainSpec;
@@ -59,6 +61,8 @@ interface RangesPropsIF {
 // react functional component
 export default function Ranges(props: RangesPropsIF) {
     const {
+        activeAccountPositionData,
+        connectedAccountActive,
         isUserLoggedIn,
         crocEnv,
         chainData,
@@ -89,6 +93,8 @@ export default function Ranges(props: RangesPropsIF) {
     const baseTokenAddressLowerCase = tradeData.baseToken.address.toLowerCase();
     const quoteTokenAddressLowerCase = tradeData.quoteToken.address.toLowerCase();
 
+    const rangesByPool = graphData.positionsByPool?.positions;
+
     const positionsByUserMatchingSelectedTokens = graphData?.positionsByUser?.positions.filter(
         (position) => {
             if (
@@ -101,6 +107,24 @@ export default function Ranges(props: RangesPropsIF) {
             }
         },
     );
+
+    const [rangeData, setRangeData] = useState(
+        isOnPortfolioPage ? activeAccountPositionData || [] : rangesByPool,
+    );
+
+    useEffect(() => {
+        console.log({ rangeData });
+    }, [rangeData]);
+
+    useEffect(() => {
+        if (isOnPortfolioPage) {
+            setRangeData(activeAccountPositionData || []);
+        } else if (!isShowAllEnabled) {
+            setRangeData(positionsByUserMatchingSelectedTokens);
+        } else if (rangesByPool) {
+            setRangeData(rangesByPool);
+        }
+    }, [isShowAllEnabled, connectedAccountActive]);
 
     // const columnHeaders = [
     //     { name: 'ID', sortable: false, className: '' },
@@ -116,10 +140,15 @@ export default function Ranges(props: RangesPropsIF) {
 
     const [sortBy, setSortBy, reverseSort, setReverseSort, sortedPositions] = useSortedPositions(
         'lastUpdate',
-        isShowAllEnabled,
+        isShowAllEnabled || (isOnPortfolioPage && (!connectedAccountActive || false)),
         positionsByUserMatchingSelectedTokens,
-        graphData?.positionsByPool?.positions,
+        rangeData,
+        // connectedAccountActive || true,
     );
+
+    useEffect(() => {
+        console.log({ sortedPositions });
+    }, [sortedPositions]);
 
     const topThreePositions = sortedPositions.slice(0, 3);
 
