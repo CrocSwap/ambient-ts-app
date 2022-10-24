@@ -56,6 +56,9 @@ interface RangesPropsIF {
     closeGlobalModal: () => void;
     showSidebar: boolean;
     isOnPortfolioPage: boolean;
+
+    setLeader?: Dispatch<SetStateAction<string>>;
+    setLeaderOwnerId?: Dispatch<SetStateAction<string>>;
 }
 
 // react functional component
@@ -148,6 +151,9 @@ export default function Ranges(props: RangesPropsIF) {
     const dispatch = useAppDispatch();
 
     useEffect(() => {
+        // console.log({ isShowAllEnabled });
+        // console.log({ isOnPortfolioPage });
+        // console.log({ topThreePositions });
         if (topThreePositions) {
             Promise.all(
                 topThreePositions.map((position: PositionIF) => {
@@ -155,10 +161,18 @@ export default function Ranges(props: RangesPropsIF) {
                 }),
             )
                 .then((updatedPositions) => {
-                    if (isShowAllEnabled) {
-                        dispatch(addPositionsByPool(updatedPositions));
-                    } else {
-                        dispatch(addPositionsByUser(updatedPositions));
+                    if (!isOnPortfolioPage) {
+                        if (isShowAllEnabled) {
+                            dispatch(addPositionsByPool(updatedPositions));
+                        } else {
+                            dispatch(
+                                addPositionsByUser(
+                                    updatedPositions.filter(
+                                        (position) => position.user === account,
+                                    ),
+                                ),
+                            );
+                        }
                     }
                 })
                 .catch(console.log);
@@ -171,6 +185,7 @@ export default function Ranges(props: RangesPropsIF) {
         }),
         lastBlockNumber,
         isShowAllEnabled,
+        isOnPortfolioPage,
     ]);
 
     // ---------------------
@@ -303,14 +318,14 @@ export default function Ranges(props: RangesPropsIF) {
             sortable: true,
         },
         {
-            name: `${baseTokenSymbol} ( ${baseTokenCharacter} )`,
+            name: isOnPortfolioPage ? 'Token A' : `${baseTokenSymbol} ( ${baseTokenCharacter} )`,
 
             show: !showColumns,
             slug: baseTokenSymbol,
             sortable: false,
         },
         {
-            name: `${quoteTokenSymbol} ( ${quoteTokenCharacter} )`,
+            name: isOnPortfolioPage ? 'Token B' : `${quoteTokenSymbol} ( ${quoteTokenCharacter} )`,
 
             show: !showColumns,
             slug: quoteTokenSymbol,

@@ -121,6 +121,7 @@ import { fetchUserRecentChanges } from './functions/fetchUserRecentChanges';
 import { getTransactionData } from './functions/getTransactionData';
 import AppOverlay from '../components/Global/AppOverlay/AppOverlay';
 import { getLiquidityFee } from './functions/getLiquidityFee';
+import PhishingWarning from '../components/Global/PhisingWarning/PhishingWarning';
 
 const cachedFetchAddress = memoizeFetchAddress();
 const cachedFetchNativeTokenBalance = memoizeFetchNativeTokenBalance();
@@ -2079,6 +2080,7 @@ export default function App() {
                     isAppOverlayActive={isAppOverlayActive}
                     setIsAppOverlayActive={setIsAppOverlayActive}
                 />
+                {currentLocation == '/' && <PhishingWarning />}
 
                 {currentLocation !== '/404' && <PageHeader {...headerProps} />}
                 {/* <MobileSidebar/> */}

@@ -57,6 +57,9 @@ interface LeaderboardPropsIF {
     openGlobalModal: (content: React.ReactNode) => void;
     closeGlobalModal: () => void;
     showSidebar: boolean;
+
+    setLeader?: Dispatch<SetStateAction<string>>;
+    setLeaderOwnerId?: Dispatch<SetStateAction<string>>;
 }
 
 // react functional component
@@ -78,6 +81,9 @@ export default function Leaderboard(props: LeaderboardPropsIF) {
         currentPositionActive,
         setCurrentPositionActive,
         account,
+        // setLeader,
+        // setLeaderOwnerId,
+
         showSidebar,
     } = props;
 
@@ -174,7 +180,7 @@ export default function Leaderboard(props: LeaderboardPropsIF) {
 
     const walID = (
         <>
-            <p>ID</p>
+            <p></p>
             <p>Wallet</p>
         </>
     );
@@ -324,6 +330,7 @@ export default function Leaderboard(props: LeaderboardPropsIF) {
             isOnPortfolioPage={false}
             isLeaderboard={true}
             idx={idx + 1}
+
             // blockExplorer={blockExplorer}
         />
     ));
