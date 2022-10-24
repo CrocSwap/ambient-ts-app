@@ -85,26 +85,9 @@ export default function Leaderboard(props: LeaderboardPropsIF) {
     const baseTokenAddress = tradeData.baseToken.address;
     const quoteTokenAddress = tradeData.quoteToken.address;
 
-    const baseTokenAddressLowerCase = tradeData.baseToken.address.toLowerCase();
-    const quoteTokenAddressLowerCase = tradeData.quoteToken.address.toLowerCase();
-
-    const positionsByUserMatchingSelectedTokens = graphData?.positionsByUser?.positions.filter(
-        (position) => {
-            if (
-                position.base.toLowerCase() === baseTokenAddressLowerCase &&
-                position.quote.toLowerCase() === quoteTokenAddressLowerCase
-            ) {
-                return true;
-            } else {
-                return false;
-            }
-        },
-    );
-
     const [sortBy, setSortBy, reverseSort, setReverseSort, sortedPositions] = useSortedPositions(
         'apr',
         true, // leaderboard is never limited to the user
-        positionsByUserMatchingSelectedTokens,
         graphData?.leaderboardByPool?.positions,
     );
 

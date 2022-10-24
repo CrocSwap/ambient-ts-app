@@ -4,8 +4,7 @@ import { PositionIF } from '../../../utils/interfaces/PositionIF';
 export const useSortedPositions = (
     defaultSort: string,
     isShowAllEnabled: boolean,
-    userPositions: PositionIF[],
-    poolPositions: PositionIF[],
+    positions: PositionIF[]
 ): [
     string,
     Dispatch<SetStateAction<string>>,
@@ -95,8 +94,8 @@ export const useSortedPositions = (
 
     // array of positions sorted by the relevant column
     const sortedPositions = useMemo(
-        () => sortData(isShowAllEnabled ? poolPositions : userPositions),
-        [sortBy, reverseSort, isShowAllEnabled, poolPositions, userPositions],
+        () => sortData(positions),
+        [sortBy, reverseSort, isShowAllEnabled, positions],
     );
 
     return [sortBy, setSortBy, reverseSort, setReverseSort, sortedPositions];
