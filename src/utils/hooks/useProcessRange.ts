@@ -18,11 +18,11 @@ export const useProcessRange = (position: PositionIF) => {
     const baseQty = position.positionLiqBaseTruncated;
     const quoteQty = position.positionLiqQuoteTruncated;
 
-    const baseTokenSymbol = tradeData.baseToken.symbol;
-    const quoteTokenSymbol = tradeData.quoteToken.symbol;
+    const baseTokenSymbol = position.baseSymbol;
+    const quoteTokenSymbol = position.quoteSymbol;
 
-    const quoteTokenLogo = tradeData.quoteToken.logoURI;
-    const baseTokenLogo = tradeData.baseToken.logoURI;
+    const quoteTokenLogo = position.quoteTokenLogoURI;
+    const baseTokenLogo = position.baseTokenLogoURI;
 
     const apy = position.apy ?? undefined;
     const apyString = apy
