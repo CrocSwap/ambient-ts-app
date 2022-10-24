@@ -10,6 +10,7 @@ import { useAppDispatch, useAppSelector } from '../../../../utils/hooks/reduxToo
 import {
     addLimitOrderChangesByPool,
     graphData,
+    ILimitOrderState,
     setLimitOrdersByPool,
 } from '../../../../utils/state/graphDataSlice';
 import { fetchPoolLimitOrderStates } from '../../../../App/functions/fetchPoolLimitOrderStates';
@@ -25,6 +26,8 @@ import TableSkeletons from '../TableSkeletons/TableSkeletons';
 
 // interface for props for react functional component
 interface propsIF {
+    activeAccountLimitOrderData?: ILimitOrderState[];
+    connectedAccountActive?: boolean;
     crocEnv: CrocEnv | undefined;
     expandTradeTable: boolean;
     chainData: ChainSpec;
@@ -43,6 +46,8 @@ interface propsIF {
 // main react functional component
 export default function Orders(props: propsIF) {
     const {
+        activeAccountLimitOrderData,
+        // connectedAccountActive,
         crocEnv,
         chainData,
         expandTradeTable,
@@ -59,8 +64,28 @@ export default function Orders(props: propsIF) {
     const limitOrdersByPool = graphData.limitOrdersByPool.limitOrders;
 
     const tradeData = useAppSelector((state) => state.tradeData);
+
+    const baseTokenAddressLowerCase = tradeData.baseToken.address.toLowerCase();
+    const quoteTokenAddressLowerCase = tradeData.quoteToken.address.toLowerCase();
+
+    const changesByUserMatchingSelectedTokens = limitOrdersByUser.filter((tx) => {
+        if (
+            tx.base.toLowerCase() === baseTokenAddressLowerCase &&
+            tx.quote.toLowerCase() === quoteTokenAddressLowerCase
+        ) {
+            return true;
+        } else {
+            return false;
+        }
+    });
+
     const dispatch = useAppDispatch();
+
     const isDenomBase = tradeData.isDenomBase;
+
+    const [limitOrderData, setLimitOrderData] = useState(
+        isOnPortfolioPage ? activeAccountLimitOrderData || [] : limitOrdersByPool,
+    );
 
     // const selectedBaseToken = tradeData.baseToken.address.toLowerCase();
     // const selectedQuoteToken = tradeData.quoteToken.address.toLowerCase();
@@ -118,6 +143,16 @@ export default function Orders(props: propsIF) {
     const [reverseSort, setReverseSort] = useState(false);
 
     const [debouncedIsShowAllEnabled, setDebouncedIsShowAllEnabled] = useState(false);
+
+    useEffect(() => {
+        if (isOnPortfolioPage) {
+            setLimitOrderData(activeAccountLimitOrderData || []);
+        } else if (!isShowAllEnabled) {
+            setLimitOrderData(changesByUserMatchingSelectedTokens);
+        } else if (limitOrdersByPool) {
+            setLimitOrderData(limitOrdersByPool);
+        }
+    }, [isShowAllEnabled]);
 
     // wait 5 seconds to open a subscription to pool changes
     useEffect(() => {
@@ -221,7 +256,13 @@ export default function Orders(props: propsIF) {
         }
     }, [lastPoolLimitOrderChangeMessage]);
 
-    const showAllOrUserPositions = isShowAllEnabled ? limitOrdersByPool : limitOrdersByUser;
+    // const showAllOrUserPositions = activeAccountLimitOrderData
+    //     ? activeAccountLimitOrderData
+    //     : isShowAllEnabled
+    //     ? limitOrdersByPool
+    //     : limitOrdersByUser;
+
+    console.log({ limitOrderData });
     // const [expanded, setExpanded] = useState<false | number>(false);
     // const ItemContent = (
     //     <div className={styles.desktop_transaction_display_container}>
@@ -271,21 +312,22 @@ export default function Orders(props: propsIF) {
 
     // -----------------------------
     const dataReceivedByPool = graphData?.changesByPool?.dataReceived;
-
+    console.log({ dataReceivedByPool });
     const [isDataLoading, setIsDataLoading] = useState(true);
     const [dataToDisplay, setDataToDisplay] = useState(false);
-    const [dataReceived] = useState(dataReceivedByPool);
+    const [dataReceived] = useState(limitOrderData.length > 0);
+    console.log({ dataReceived });
 
     function handleDataReceived() {
         setIsDataLoading(false);
-        showAllOrUserPositions.length ? setDataToDisplay(true) : setDataToDisplay(false);
+        limitOrderData.length ? setDataToDisplay(true) : setDataToDisplay(false);
     }
 
     useEffect(() => {
         // console.log({ dataReceived });
         // console.log({ isDataLoading });
         dataReceived ? handleDataReceived() : setIsDataLoading(true);
-    }, [graphData, showAllOrUserPositions, dataReceived]);
+    }, [graphData, limitOrderData, dataReceived]);
 
     // -----------------------------
 
@@ -445,7 +487,7 @@ export default function Orders(props: propsIF) {
         </ul>
     );
 
-    const rowItemContent = showAllOrUserPositions.map((order, idx) => (
+    const rowItemContent = limitOrderData.map((order, idx) => (
         <OrderRow
             crocEnv={crocEnv}
             expandTradeTable={expandTradeTable}
