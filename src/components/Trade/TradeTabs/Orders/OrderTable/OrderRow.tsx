@@ -58,7 +58,7 @@ export default function OrderRow(props: OrderRowPropsIF) {
         quoteTokenSymbol,
         isOwnerActiveAccount,
         ensName,
-        orderMatchesSelectedTokens,
+        // orderMatchesSelectedTokens,
 
         baseTokenCharacter,
         quoteTokenCharacter,
@@ -164,7 +164,7 @@ export default function OrderRow(props: OrderRowPropsIF) {
     );
     // end of portfolio page li element ---------------
 
-    if (!orderMatchesSelectedTokens) return null;
+    // if (!orderMatchesSelectedTokens) return null;
     return (
         <ul
             className={`${styles.row_container} ${activePositionStyle} ${userPositionStyle}`}
