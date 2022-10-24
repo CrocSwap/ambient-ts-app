@@ -144,8 +144,12 @@ export default function Transactions(props: TransactionsProps) {
     // 0xdc31Ee1784292379Fbb2964b3B9C4124D8F89C60
 
     function handleDataReceived() {
-        setIsDataLoading(false);
-        transactionData.length ? setDataToDisplay(true) : setDataToDisplay(false);
+        if (transactionData.length) {
+            setIsDataLoading(false);
+            setDataToDisplay(true);
+        } else {
+            setDataToDisplay(false);
+        }
     }
     function handleUserSelected() {
         // console.log({ changesByUserMatchingSelectedTokens });
