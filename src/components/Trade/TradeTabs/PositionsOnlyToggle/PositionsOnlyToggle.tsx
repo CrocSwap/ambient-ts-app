@@ -16,6 +16,9 @@ interface PositionsOnlyToggleProps {
     expandTradeTable: boolean;
     setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
     currentTab?: string;
+
+    showPositionsOnlyToggle?: boolean;
+    setShowPositionsOnlyToggle?: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function PositionsOnlyToggle(props: PositionsOnlyToggleProps) {
@@ -29,6 +32,8 @@ export default function PositionsOnlyToggle(props: PositionsOnlyToggleProps) {
         setHasInitialized,
         expandTradeTable,
         setExpandTradeTable,
+        showPositionsOnlyToggle,
+        // setShowPositionsOnlyToggle
     } = props;
 
     // console.log(props);
@@ -41,7 +46,11 @@ export default function PositionsOnlyToggle(props: PositionsOnlyToggleProps) {
 
     return (
         <div className={styles.main_container}>
-            <div className={styles.options_toggle}>
+            <div
+                className={`${styles.options_toggle} ${
+                    !showPositionsOnlyToggle && styles.disable_right
+                }`}
+            >
                 {/* <p>{isShowAllEnabled ? 'All ' + label : 'My ' + label}</p> */}
 
                 <p>{`All ${props.currentTab}`}</p>

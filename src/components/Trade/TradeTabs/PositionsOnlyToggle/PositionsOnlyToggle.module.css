@@ -34,3 +34,9 @@
 .icon {
     cursor: pointer;
 }
+
+.disable_right{
+    filter: blur(7px);
+    pointer-events: none;
+
+}
