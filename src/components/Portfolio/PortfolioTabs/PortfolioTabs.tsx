@@ -108,6 +108,10 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
         [],
     );
 
+    useEffect(() => {
+        console.log({ connectedAccountPositionData });
+    }, [connectedAccountPositionData]);
+
     const httpGraphCacheServerDomain = 'https://809821320828123.de:5000';
 
     const userPositionsCacheEndpoint = httpGraphCacheServerDomain + '/user_positions?';

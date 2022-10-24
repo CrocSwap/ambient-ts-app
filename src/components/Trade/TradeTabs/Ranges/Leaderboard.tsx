@@ -333,13 +333,15 @@ export default function Leaderboard(props: LeaderboardPropsIF) {
             quoteTokenDexBalance={quoteTokenDexBalance}
             lastBlockNumber={lastBlockNumber}
             isOnPortfolioPage={false}
+            isLeaderboard={true}
+            idx={idx + 1}
             // blockExplorer={blockExplorer}
         />
     ));
 
     return (
         <main
-            className={`${styles.main_list_container} `}
+            className={`${styles.main_list_container} ${styles.leaderboard}`}
             style={{ height: expandTradeTable ? 'calc(100vh - 10rem)' : '250px' }}
         >
             {headerColumnsDisplay}

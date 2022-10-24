@@ -112,9 +112,9 @@ export default function Ranges(props: RangesPropsIF) {
         isOnPortfolioPage ? activeAccountPositionData || [] : rangesByPool,
     );
 
-    useEffect(() => {
-        console.log({ rangeData });
-    }, [rangeData]);
+    // useEffect(() => {
+    //     console.log({ rangeData });
+    // }, [rangeData]);
 
     useEffect(() => {
         if (isOnPortfolioPage) {
@@ -124,7 +124,7 @@ export default function Ranges(props: RangesPropsIF) {
         } else if (rangesByPool) {
             setRangeData(rangesByPool);
         }
-    }, [isShowAllEnabled, connectedAccountActive]);
+    }, [isShowAllEnabled, connectedAccountActive, activeAccountPositionData, rangesByPool]);
 
     // const columnHeaders = [
     //     { name: 'ID', sortable: false, className: '' },
@@ -141,14 +141,14 @@ export default function Ranges(props: RangesPropsIF) {
     const [sortBy, setSortBy, reverseSort, setReverseSort, sortedPositions] = useSortedPositions(
         'lastUpdate',
         isShowAllEnabled || (isOnPortfolioPage && (!connectedAccountActive || false)),
-        positionsByUserMatchingSelectedTokens,
+        rangeData,
         rangeData,
         // connectedAccountActive || true,
     );
 
-    useEffect(() => {
-        console.log({ sortedPositions });
-    }, [sortedPositions]);
+    // useEffect(() => {
+    //     console.log({ sortedPositions });
+    // }, [sortedPositions]);
 
     const topThreePositions = sortedPositions.slice(0, 3);
 
@@ -456,6 +456,7 @@ export default function Ranges(props: RangesPropsIF) {
             quoteTokenDexBalance={quoteTokenDexBalance}
             lastBlockNumber={lastBlockNumber}
             isOnPortfolioPage={isOnPortfolioPage}
+            idx={idx}
 
             // blockExplorer={blockExplorer}
         />

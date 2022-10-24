@@ -54,7 +54,7 @@ export default function RangesMenu(props: RangesMenuIF) {
         rangeDetailsProps,
         posHash,
         positionData,
-        // isOnPortfolioPage,
+        isOnPortfolioPage,
         // showSidebar,
         // eslint-disable-next-line
     } = props;
@@ -157,7 +157,17 @@ export default function RangesMenu(props: RangesMenuIF) {
     const copyButton = isPositionInRange ? (
         <Link
             className={styles.option_button}
-            to={'/trade/range/' + currentLocation.slice(currentLocation.indexOf('chain'))}
+            to={
+                '/trade/range/' +
+                (isOnPortfolioPage
+                    ? 'chain=' +
+                      positionData.chainId +
+                      '&tokenA=' +
+                      positionData.base +
+                      '&tokenB=' +
+                      positionData.quote
+                    : currentLocation.slice(currentLocation.indexOf('chain')))
+            }
             onClick={handleCopyClick}
         >
             Copy
