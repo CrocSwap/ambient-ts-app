@@ -9,6 +9,7 @@ import RangesMenu from '../../../../Global/Tabs/TableMenu/TableMenuComponents/Ra
 import RangeDetails from '../../../../RangeDetails/RangeDetails';
 import { DefaultTooltip } from '../../../../Global/StyledTooltip/StyledTooltip';
 import { NavLink } from 'react-router-dom';
+import Medal from '../../../../Global/Medal/Medal';
 
 interface RangesRowPropsIF {
     isUserLoggedIn: boolean;
@@ -222,6 +223,9 @@ export default function RangesRow(props: RangesRowPropsIF) {
 
     // Leaderboard content--------------------------------
 
+    const idDisplay = !showColumns && IDWithTooltip;
+    const displayIDorRanking = isLeaderboard ? !showColumns && <Medal ranking={idx} /> : idDisplay;
+
     // End of Leaderboard content--------------------------------
 
     return (
@@ -234,10 +238,9 @@ export default function RangesRow(props: RangesRowPropsIF) {
             }
             id={positionDomId}
         >
-            {idx}
             {isOnPortfolioPage && accountTokenImages}
             {isOnPortfolioPage && !props.showSidebar && poolName}
-            {!showColumns && IDWithTooltip}
+            {displayIDorRanking}
             {!showColumns && walletWithTooltip}
             {showColumns && (
                 <li data-label='id'>

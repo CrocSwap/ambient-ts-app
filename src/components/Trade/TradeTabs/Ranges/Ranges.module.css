@@ -138,15 +138,24 @@
     height: 25px;
     border-radius: 50%;
   }
+  .main_list_container > ul:nth-child(1){
+    z-index: 2;
+  }
 
   .leaderboard > ul:nth-child(2){
     background: linear-gradient(90deg, rgba(212, 175, 55, 0.65) 0%, rgba(255, 170, 0, 0.08) 54.69%, rgba(209, 142, 10, 0) 100%);
+    transition: background 0.5s ease-out;
+
 }
   
   .leaderboard > ul:nth-child(3){
     background: linear-gradient(90deg, rgba(224, 224, 224, 0.35) 0%, rgba(224, 224, 224, 0.08) 54.69%, rgba(224, 224, 224, 0) 100%);
+    transition: background 0.5s ease-out;
+
   }
   .leaderboard > ul:nth-child(4){
     background: linear-gradient(90deg, rgba(176, 141, 87, 0.35) 0%, rgba(255, 152, 56, 0.08) 54.69%, rgba(255, 152, 56, 0) 100%);
+    transition: background 0.5s ease-out;
+
   
   }
