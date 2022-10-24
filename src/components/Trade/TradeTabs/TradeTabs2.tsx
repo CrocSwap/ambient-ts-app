@@ -310,6 +310,10 @@ export default function TradeTabs2(props: ITabsProps) {
     }, [isCandleSelected, filter?.time, lastBlockNumber]);
 
     // -------------------------------DATA-----------------------------------------
+    const [leader, setLeader] = useState('');
+    const [leaderOwnerId, setLeaderOwnerId] = useState('');
+
+    console.log(leader);
 
     // Props for <Ranges/> React Element
     const rangesProps = {
@@ -337,6 +341,9 @@ export default function TradeTabs2(props: ITabsProps) {
         closeGlobalModal: props.closeGlobalModal,
         showSidebar: showSidebar,
         isOnPortfolioPage: false,
+
+        setLeader: setLeader,
+        setLeaderOwnerId: setLeaderOwnerId,
     };
     // Props for <Transactions/> React Element
     const transactionsProps = {
@@ -392,6 +399,8 @@ export default function TradeTabs2(props: ITabsProps) {
         setExpandTradeTable: setExpandTradeTable,
         showPositionsOnlyToggle: showPositionsOnlyToggle,
         setShowPositionsOnlyToggle: setShowPositionsOnlyToggle,
+        leader: leader,
+        leaderOwnerId: leaderOwnerId,
     };
     // data for headings of each of the three tabs
     const tradeTabData = [

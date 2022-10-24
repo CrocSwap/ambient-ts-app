@@ -44,3 +44,27 @@
     transition: var(--animation-speed) ease-in-out
 
 }
+
+.leader{
+    cursor: pointer;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 4px;
+    font-family: var(--font-logo);
+    transition: all var(--animation-speed) ease-in-out
+
+  
+}
+
+.leader h3{
+    /* background: var(--title-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text; */
+
+    font-size: 14px;
+    line-height: 12px;
+
+    color: #cdc1ff;
+}

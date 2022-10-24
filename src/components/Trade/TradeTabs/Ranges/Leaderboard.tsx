@@ -54,6 +54,9 @@ interface LeaderboardPropsIF {
     openGlobalModal: (content: React.ReactNode) => void;
     closeGlobalModal: () => void;
     showSidebar: boolean;
+
+    setLeader?: Dispatch<SetStateAction<string>>;
+    setLeaderOwnerId?: Dispatch<SetStateAction<string>>;
 }
 
 // react functional component
@@ -76,6 +79,8 @@ export default function Leaderboard(props: LeaderboardPropsIF) {
         currentPositionActive,
         setCurrentPositionActive,
         account,
+        setLeader,
+        setLeaderOwnerId,
 
         showSidebar,
     } = props;
@@ -124,6 +129,13 @@ export default function Leaderboard(props: LeaderboardPropsIF) {
                         dispatch(updateLeaderboard(updatedPositions));
                     } else {
                         dispatch(updateLeaderboard(updatedPositions));
+                        if (topThreePositions[0].ensResolution && setLeader)
+                            setLeader(topThreePositions[0].ensResolution);
+                        if (setLeaderOwnerId) {
+                            topThreePositions[0].user.length === 40
+                                ? setLeaderOwnerId('0x' + topThreePositions[0].user)
+                                : setLeaderOwnerId(topThreePositions[0].user);
+                        }
                     }
                 })
                 .catch(console.log);
@@ -186,7 +198,7 @@ export default function Leaderboard(props: LeaderboardPropsIF) {
 
     const walID = (
         <>
-            <p>ID</p>
+            <p></p>
             <p>Wallet</p>
         </>
     );
@@ -204,7 +216,7 @@ export default function Leaderboard(props: LeaderboardPropsIF) {
     );
     const headerColumns = [
         {
-            name: 'ID',
+            name: '',
             className: 'ID',
             show: !showColumns,
             slug: 'id',
@@ -335,6 +347,7 @@ export default function Leaderboard(props: LeaderboardPropsIF) {
             isOnPortfolioPage={false}
             isLeaderboard={true}
             idx={idx + 1}
+
             // blockExplorer={blockExplorer}
         />
     ));
