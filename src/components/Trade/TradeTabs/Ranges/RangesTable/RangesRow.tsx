@@ -40,6 +40,8 @@ interface RangesRowPropsIF {
     openGlobalModal: (content: React.ReactNode) => void;
     closeGlobalModal: () => void;
     isOnPortfolioPage: boolean;
+    isLeaderboard?: boolean;
+    idx: number;
 }
 
 export default function RangesRow(props: RangesRowPropsIF) {
@@ -53,6 +55,8 @@ export default function RangesRow(props: RangesRowPropsIF) {
         setCurrentPositionActive,
         openGlobalModal,
         isOnPortfolioPage,
+        isLeaderboard,
+        idx,
     } = props;
 
     const {
@@ -216,6 +220,10 @@ export default function RangesRow(props: RangesRowPropsIF) {
     );
     // end of portfolio page li element ---------------
 
+    // Leaderboard content--------------------------------
+
+    // End of Leaderboard content--------------------------------
+
     return (
         <ul
             className={`${styles.row_container} ${activePositionStyle} ${userPositionStyle}`}
@@ -226,6 +234,7 @@ export default function RangesRow(props: RangesRowPropsIF) {
             }
             id={positionDomId}
         >
+            {idx}
             {isOnPortfolioPage && accountTokenImages}
             {isOnPortfolioPage && !props.showSidebar && poolName}
             {!showColumns && IDWithTooltip}
