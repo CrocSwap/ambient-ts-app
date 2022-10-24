@@ -138,7 +138,6 @@ export default function Chart(props: ChartData) {
 
     // Rules
     const [isChartSelected, setIsChartSelected] = useState<boolean>(false);
-    const [isLineSwapped, setIsLineSwapped] = useState<boolean>(false);
     const [dragControl, setDragControl] = useState(false);
     const [rescale, setRescale] = useState(true);
 
@@ -158,6 +157,8 @@ export default function Chart(props: ChartData) {
     const [marketLine, setMarketLine] = useState<any>();
     const [limitLine, setLimitLine] = useState<any>();
     const [targetsJoin, setTargetsJoin] = useState<any>();
+    const [targetsAreaJoin, setTargetsAreaJoin] = useState<any>();
+
     const [marketJoin, setMarketJoin] = useState<any>();
     const [limitJoin, setLimitJoin] = useState<any>();
     const [liqTooltip, setLiqTooltip] = useState<any>();
@@ -265,6 +266,8 @@ export default function Chart(props: ChartData) {
                 .selectAll('.horizontal')
                 .style('visibility', 'visible');
 
+            d3.select(d3PlotArea.current).select('.targetsArea').style('visibility', 'visible');
+
             d3.select(d3PlotArea.current)
                 .select('.targets')
                 .select('.annotation-line')
@@ -282,6 +285,10 @@ export default function Chart(props: ChartData) {
         } else if (location.pathname.includes('limit')) {
             d3.select(d3PlotArea.current).select('.limit').style('visibility', 'visible');
             d3.select(d3PlotArea.current)
+                .select('.targetsArea')
+                .selectAll('.horizontal')
+                .style('visibility', 'hidden');
+            d3.select(d3PlotArea.current)
                 .select('.limit')
                 .select('.horizontal')
                 .style('visibility', 'visible');
@@ -295,9 +302,10 @@ export default function Chart(props: ChartData) {
                 });
 
             d3.select(d3Container.current)
-                .select('.targets')
+                .select('.targetsArea')
                 .style('visibility', 'hidden')
                 .style('filter', 'none');
+            d3.select(d3PlotArea.current).select('.targetsArea').style('visibility', 'hidden');
             d3.select(d3Container.current)
                 .select('.targets')
                 .selectAll('.horizontal')
@@ -311,9 +319,15 @@ export default function Chart(props: ChartData) {
                 .style('visibility', 'hidden');
 
             d3.select(d3Container.current)
-                .select('.targets')
+                .select('.targetsArea')
                 .style('visibility', 'hidden')
                 .style('filter', 'none');
+            d3.select(d3PlotArea.current).select('.targetsArea').style('visibility', 'hidden');
+            d3.select(d3PlotArea.current)
+                .select('.targetsArea')
+                .selectAll('.horizontal')
+                .style('visibility', 'hidden');
+
             d3.select(d3Container.current)
                 .select('.targets')
                 .selectAll('.horizontal')
@@ -921,17 +935,13 @@ export default function Chart(props: ChartData) {
                                 newTargets.filter(
                                     (target: any) => target.name === d.name,
                                 )[0].value = snappedValue;
-                                setIsLineSwapped(false);
                             } else if (d.name === 'Min' && snappedValue < high) {
                                 newTargets.filter(
                                     (target: any) => target.name === d.name,
                                 )[0].value = snappedValue;
-                                setIsLineSwapped(false);
                             } else if (d.name === 'Max' && snappedValue < low) {
                                 newTargets.filter((target: any) => target.name === 'Max')[0].value =
                                     snappedValue;
-
-                                setIsLineSwapped(true);
                             } else if (d.name === 'Min' && snappedValue > high) {
                                 newTargets.filter((target: any) => target.name === 'Min')[0].value =
                                     snappedValue;
@@ -940,6 +950,7 @@ export default function Chart(props: ChartData) {
                             render();
 
                             newRangeValue = newTargets;
+
                             return newTargets;
                         });
                         highLineMoved = true;
@@ -1110,15 +1121,6 @@ export default function Chart(props: ChartData) {
                     .append('text')
                     .attr('x', 5)
                     .attr('y', -5);
-                selection
-                    .enter()
-                    .append('rect')
-                    .lower()
-                    .attr('width', '100%')
-                    .attr('height', '8%')
-                    .attr('y', '-4%')
-                    .attr('fill', 'transparent')
-                    .attr('stroke', 'none');
 
                 selection.enter().select('g.right-handle').remove();
                 selection.enter().select('line').attr('class', 'redline');
@@ -1126,6 +1128,8 @@ export default function Chart(props: ChartData) {
             });
 
             const targetsJoin = d3fc.dataJoin('g', 'targets');
+            const targetsAreaJoin = d3fc.dataJoin('g', 'targetsArea');
+
             const limitJoin = d3fc.dataJoin('g', 'limit');
             const marketJoin = d3fc.dataJoin('g', 'market');
 
@@ -1141,6 +1145,10 @@ export default function Chart(props: ChartData) {
 
             setTargetsJoin(() => {
                 return targetsJoin;
+            });
+
+            setTargetsAreaJoin(() => {
+                return targetsAreaJoin;
             });
 
             setLimitJoin(() => {
@@ -1165,7 +1173,8 @@ export default function Chart(props: ChartData) {
         }
     }, [scaleData]);
 
-    async function addTriangle() {
+    // easy drag and triangle to horizontal lines for range
+    async function addTriangleAndRect() {
         await d3
             .select(d3PlotArea.current)
             .select('.targets')
@@ -1186,6 +1195,16 @@ export default function Chart(props: ChartData) {
                 .nodes();
 
             nodes.forEach((res) => {
+                if (d3.select(res).select('rect').node() === null) {
+                    d3.select(res)
+                        .append('rect')
+                        .attr('width', '100%')
+                        .attr('height', '8%')
+                        .attr('y', '-4%')
+                        .attr('fill', 'transparent')
+                        .attr('stroke', 'none');
+                }
+
                 if (d3.select(res).select('polygon').node() === null) {
                     d3.select(res)
                         .append('polygon')
@@ -1207,6 +1226,10 @@ export default function Chart(props: ChartData) {
 
     useEffect(() => {
         if (location.pathname.includes('range')) {
+            d3.select(d3PlotArea.current)
+                .select('.targetsArea')
+                .selectAll('annotation-line')
+                .style('visibility', 'hidden');
             const svgmain = d3.select(d3PlotArea.current).select('svg');
             if (svgmain.select('defs').node() === null) {
                 const lg = svgmain
@@ -1216,140 +1239,22 @@ export default function Chart(props: ChartData) {
                     .attr('y', 0)
                     .attr('height', 1)
                     .attr('width', 1)
-                    .attr('id', 'targetsBackground');
+                    .attr('id', 'targetsAreaBackground');
 
                 lg.append('feFlood').attr('flood-color', '#7371FC1A').attr('result', 'bg');
 
                 const feMergeTag = lg.append('feMerge');
                 feMergeTag.append('feMergeNode').attr('in', 'bg');
                 feMergeTag.append('feMergeNode').attr('in', 'SourceGraphic');
-
-                const horLineMax = svgmain
-                    .append('defs')
-                    .append('filter')
-                    .attr('x', -0.001)
-                    .attr('y', -0.01)
-                    .attr('height', 1)
-                    .attr('width', 1)
-                    .attr('id', 'horLineMax');
-
-                horLineMax
-                    .append('feFlood')
-                    .attr('flood-color', '#171d27')
-                    .attr('height', '26')
-                    .attr('result', 'bg');
-
-                const feMergeHorMaxTag = horLineMax.append('feMerge');
-                feMergeHorMaxTag.append('feMergeNode').attr('in', 'bg');
-                feMergeHorMaxTag.append('feMergeNode').attr('in', 'SourceGraphic');
-
-                const horLineMin = svgmain
-                    .append('defs')
-                    .append('filter')
-                    .attr('x', -0.001)
-                    .attr('y', 0.2)
-                    .attr('height', 1)
-                    .attr('width', 1)
-                    .attr('id', 'horLineMin');
-
-                horLineMin
-                    .append('feFlood')
-                    .attr('flood-color', '#171d27')
-                    .attr('y', 1)
-                    .attr('height', '30')
-                    .attr('result', 'bg');
-
-                const feMergeHorMinTag = horLineMin.append('feMerge');
-                feMergeHorMinTag.append('feMergeNode').attr('in', 'bg');
-                feMergeHorMinTag.append('feMergeNode').attr('in', 'SourceGraphic');
-
-                const linearGradientMax = svgmain
-                    .append('defs')
-                    .append('linearGradient')
-                    .attr('id', 'mygradMax')
-                    .attr('x1', '100%')
-                    .attr('x2', '100%')
-                    .attr('y1', '0%')
-                    .attr('y2', '100%');
-
-                linearGradientMax
-                    .append('stop')
-                    .attr('offset', '50%')
-                    .style('stop-color', '#171d27')
-                    .style('stop-opacity', 1);
-
-                linearGradientMax
-                    .append('stop')
-                    .attr('offset', '50%')
-                    .style('stop-color', '#7371FC1A')
-                    .style('stop-opacity', 0);
-
-                const linearGradientMin = svgmain
-                    .append('defs')
-                    .append('linearGradient')
-                    .attr('id', 'mygradMin')
-                    .attr('x1', '100%')
-                    .attr('x2', '100%')
-                    .attr('y1', '0%')
-                    .attr('y2', '100%');
-
-                linearGradientMin
-                    .append('stop')
-                    .attr('offset', '50%')
-                    .style('stop-color', '#7371FC1A')
-                    .style('stop-opacity', 0);
-                linearGradientMin
-                    .append('stop')
-                    .attr('offset', '50%')
-                    .style('stop-color', '#171d27')
-                    .style('stop-opacity', 1);
             }
 
             d3.select(d3PlotArea.current)
-                .select('.targets')
-                .style('filter', 'url(#targetsBackground)');
-            d3.select(d3PlotArea.current)
-                .select('.targets')
-                .select('#Max')
-                .select('rect')
-                .style('fill', 'url(#mygradMax)');
-            d3.select(d3PlotArea.current)
-                .select('.targets')
-                .select('#Min')
-                .select('rect')
-                .style('fill', 'url(#mygradMin)');
+                .select('.targetsArea')
+                .style('filter', 'url(#targetsAreaBackground)');
 
-            addTriangle();
+            addTriangleAndRect();
         }
     }, [dragControl, location]);
-
-    useEffect(() => {
-        const high = ranges.filter((target: any) => target.name === 'Max')[0].value;
-        const low = ranges.filter((target: any) => target.name === 'Min')[0].value;
-        if (low > high) {
-            d3.select(d3PlotArea.current)
-                .select('.targets')
-                .select('#Max')
-                .select('rect')
-                .style('fill', 'url(#mygradMin)');
-            d3.select(d3PlotArea.current)
-                .select('.targets')
-                .select('#Min')
-                .select('rect')
-                .style('fill', 'url(#mygradMax)');
-        } else {
-            d3.select(d3PlotArea.current)
-                .select('.targets')
-                .select('#Max')
-                .select('rect')
-                .style('fill', 'url(#mygradMax)');
-            d3.select(d3PlotArea.current)
-                .select('.targets')
-                .select('#Min')
-                .select('rect')
-                .style('fill', 'url(#mygradMin)');
-        }
-    }, [isLineSwapped]);
 
     // Line Rules
     useEffect(() => {
@@ -1565,12 +1470,10 @@ export default function Chart(props: ChartData) {
                                 newTargets.filter(
                                     (target: any) => target.name === lineToBeSet,
                                 )[0].value = snappedValue;
-                                setIsLineSwapped(false);
                             } else if (lineToBeSet === 'Min' && snappedValue < high) {
                                 newTargets.filter(
                                     (target: any) => target.name === lineToBeSet,
                                 )[0].value = snappedValue;
-                                setIsLineSwapped(false);
                             } else if (lineToBeSet === 'Max' && snappedValue < low) {
                                 newTargets.filter((target: any) => target.name === 'Max')[0].value =
                                     snappedValue;
@@ -1586,8 +1489,6 @@ export default function Chart(props: ChartData) {
                                     .select('#Current Market Price')
                                     .select('g.left-handle text')
                                     .text((d: any) => 'Min' + ' - ' + valueFormatter(d.value));
-
-                                setIsLineSwapped(true);
                             } else if (lineToBeSet === 'Min' && snappedValue > high) {
                                 newTargets.filter((target: any) => target.name === 'Min')[0].value =
                                     snappedValue;
@@ -1598,8 +1499,6 @@ export default function Chart(props: ChartData) {
                                     .select('.left-handle')
                                     .select('text')
                                     .text(() => 'Max' + ' - ' + valueFormatter(snappedValue));
-
-                                setIsLineSwapped(true);
                             }
 
                             render();
@@ -1819,7 +1718,8 @@ export default function Chart(props: ChartData) {
             marketJoin !== undefined &&
             candlestick !== undefined &&
             barSeries !== undefined &&
-            targetsJoin !== undefined
+            targetsJoin !== undefined &&
+            targetsAreaJoin !== undefined
         ) {
             const targetData = {
                 limit: limit,
@@ -1836,6 +1736,7 @@ export default function Chart(props: ChartData) {
                 horizontalLine,
                 limitLine,
                 targetsJoin,
+                targetsAreaJoin,
                 limitJoin,
                 marketJoin,
                 indicatorLine,
@@ -1893,6 +1794,7 @@ export default function Chart(props: ChartData) {
             horizontalLine: any,
             limitLine: any,
             targetsJoin: any,
+            targetsAreaJoin: any,
             limitJoin: any,
             marketJoin: any,
             indicatorLine: any,
@@ -1964,7 +1866,7 @@ export default function Chart(props: ChartData) {
                 d3.select(d3PlotArea.current).on('draw', function (event: any) {
                     async function createElements() {
                         const svg = d3.select(event.target).select('svg');
-                        targetsJoin(svg, [targets.ranges]).call(horizontalLine);
+                        targetsAreaJoin(svg, [targets.ranges]).call(horizontalLine);
                         crosshairHorizontalJoin(svg, [crosshairData]).call(crosshairHorizontal);
                         crosshairVerticalJoin(svg, [crosshairData]).call(crosshairVertical);
 
@@ -1978,6 +1880,7 @@ export default function Chart(props: ChartData) {
 
                         candleJoin(svg, [chartData]).call(candlestick);
                         barJoin(svg, [liquidityData.liqData]).call(barSeries);
+                        targetsJoin(svg, [targets.ranges]).call(horizontalLine);
 
                         setDragControl(true);
                     }
@@ -2273,7 +2176,6 @@ export default function Chart(props: ChartData) {
                     dispatch(setSimpleRangeWidth(simpleRangeWidth ? simpleRangeWidth : 1));
                 }
             } else {
-                setIsLineSwapped(true);
                 const high = range.filter((target: any) => target.name === 'Max')[0].value;
                 const low = range.filter((target: any) => target.name === 'Min')[0].value;
 
