@@ -68,7 +68,7 @@ export default function Orders(props: propsIF) {
     const baseTokenAddressLowerCase = tradeData.baseToken.address.toLowerCase();
     const quoteTokenAddressLowerCase = tradeData.quoteToken.address.toLowerCase();
 
-    const changesByUserMatchingSelectedTokens = limitOrdersByUser.filter((tx) => {
+    const ordersByUserMatchingSelectedTokens = limitOrdersByUser.filter((tx) => {
         if (
             tx.base.toLowerCase() === baseTokenAddressLowerCase &&
             tx.quote.toLowerCase() === quoteTokenAddressLowerCase
@@ -148,11 +148,15 @@ export default function Orders(props: propsIF) {
         if (isOnPortfolioPage) {
             setLimitOrderData(activeAccountLimitOrderData || []);
         } else if (!isShowAllEnabled) {
-            setLimitOrderData(changesByUserMatchingSelectedTokens);
+            setLimitOrderData(ordersByUserMatchingSelectedTokens);
         } else if (limitOrdersByPool) {
             setLimitOrderData(limitOrdersByPool);
         }
     }, [isShowAllEnabled, connectedAccountActive]);
+
+    useEffect(() => {
+        console.log({ activeAccountLimitOrderData });
+    }, [activeAccountLimitOrderData]);
 
     // wait 5 seconds to open a subscription to pool changes
     useEffect(() => {
