@@ -155,6 +155,9 @@ export default function Ranges(props: RangesPropsIF) {
     const dispatch = useAppDispatch();
 
     useEffect(() => {
+        // console.log({ isShowAllEnabled });
+        // console.log({ isOnPortfolioPage });
+        // console.log({ topThreePositions });
         if (topThreePositions) {
             Promise.all(
                 topThreePositions.map((position: PositionIF) => {
@@ -162,10 +165,18 @@ export default function Ranges(props: RangesPropsIF) {
                 }),
             )
                 .then((updatedPositions) => {
-                    if (isShowAllEnabled) {
-                        dispatch(addPositionsByPool(updatedPositions));
-                    } else {
-                        dispatch(addPositionsByUser(updatedPositions));
+                    if (!isOnPortfolioPage) {
+                        if (isShowAllEnabled) {
+                            dispatch(addPositionsByPool(updatedPositions));
+                        } else {
+                            dispatch(
+                                addPositionsByUser(
+                                    updatedPositions.filter(
+                                        (position) => position.user === account,
+                                    ),
+                                ),
+                            );
+                        }
                     }
                 })
                 .catch(console.log);
@@ -178,6 +189,7 @@ export default function Ranges(props: RangesPropsIF) {
         }),
         lastBlockNumber,
         isShowAllEnabled,
+        isOnPortfolioPage,
     ]);
 
     // const [expanded, setExpanded] = useState<false | number>(false);
