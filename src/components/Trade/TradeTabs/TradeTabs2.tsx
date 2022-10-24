@@ -378,6 +378,8 @@ export default function TradeTabs2(props: ITabsProps) {
     };
     // props for <PositionsOnlyToggle/> React Element
 
+    const [showPositionsOnlyToggle, setShowPositionsOnlyToggle] = useState(true);
+
     const positionsOnlyToggleProps = {
         isShowAllEnabled: isShowAllEnabled,
         isAuthenticated: isAuthenticated,
@@ -388,23 +390,41 @@ export default function TradeTabs2(props: ITabsProps) {
         setTransactionFilter: setTransactionFilter,
         expandTradeTable: expandTradeTable,
         setExpandTradeTable: setExpandTradeTable,
+        showPositionsOnlyToggle: showPositionsOnlyToggle,
+        setShowPositionsOnlyToggle: setShowPositionsOnlyToggle,
     };
-
     // data for headings of each of the three tabs
     const tradeTabData = [
         {
             label: 'Transactions',
             content: <Transactions {...transactionsProps} />,
             icon: recentTransactionsImage,
+            showRightSideOption: true,
         },
-        { label: 'Limit Orders', content: <Orders {...ordersProps} />, icon: openOrdersImage },
-        { label: 'Ranges', content: <Ranges {...rangesProps} />, icon: rangePositionsImage },
+        {
+            label: 'Limit Orders',
+            content: <Orders {...ordersProps} />,
+            icon: openOrdersImage,
+            showRightSideOption: true,
+        },
+        {
+            label: 'Ranges',
+            content: <Ranges {...rangesProps} />,
+            icon: rangePositionsImage,
+            showRightSideOption: true,
+        },
         {
             label: 'Leaderboard',
             content: <Leaderboard {...rangesProps} />,
             icon: rangePositionsImage,
+            showRightSideOption: false,
         },
-        { label: 'Info', content: <Ranges {...rangesProps} />, icon: rangePositionsImage },
+        {
+            label: 'Info',
+            content: <Ranges {...rangesProps} />,
+            icon: rangePositionsImage,
+            showRightSideOption: false,
+        },
     ];
 
     // -------------------------------END OF DATA-----------------------------------------
@@ -428,6 +448,8 @@ export default function TradeTabs2(props: ITabsProps) {
                     outsideControl={outsideControl}
                     setOutsideControl={setOutsideControl}
                     setSelectedInsideTab={setSelectedInsideTab}
+                    showPositionsOnlyToggle={showPositionsOnlyToggle}
+                    setShowPositionsOnlyToggle={setShowPositionsOnlyToggle}
                 />
             }
         </div>
