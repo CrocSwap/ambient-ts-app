@@ -92,7 +92,7 @@ export default function Transactions(props: TransactionsProps) {
         }
     });
 
-    const changesByPoolMatchingSelectedTokens = changesByPool.filter((tx) => {
+    const changesByPoolWithoutFills = changesByPool.filter((tx) => {
         if (
             tx.base.toLowerCase() === baseTokenAddressLowerCase &&
             tx.quote.toLowerCase() === quoteTokenAddressLowerCase &&
@@ -110,9 +110,7 @@ export default function Transactions(props: TransactionsProps) {
     const dataReceivedByPool = graphData?.changesByPool?.dataReceived;
 
     const [transactionData, setTransactionData] = useState(
-        isOnPortfolioPage
-            ? activeAccountTransactionData || []
-            : changesByPoolMatchingSelectedTokens,
+        isOnPortfolioPage ? activeAccountTransactionData || [] : changesByPoolWithoutFills,
     );
 
     // console.log({ transactionData });
@@ -158,8 +156,8 @@ export default function Transactions(props: TransactionsProps) {
     }
     function handlePoolSelected() {
         if (!isOnPortfolioPage) {
-            // console.log({ changesByPoolMatchingSelectedTokens });
-            setTransactionData(changesByPoolMatchingSelectedTokens);
+            // console.log({ changesByPoolWithoutFills });
+            setTransactionData(changesByPoolWithoutFills);
             setDataReceived(dataReceivedByPool);
         }
     }
@@ -182,7 +180,7 @@ export default function Transactions(props: TransactionsProps) {
         filter,
         changesInSelectedCandle,
         JSON.stringify(changesByUserMatchingSelectedTokens),
-        JSON.stringify(changesByPoolMatchingSelectedTokens),
+        JSON.stringify(changesByPoolWithoutFills),
     ]);
 
     useEffect(() => {

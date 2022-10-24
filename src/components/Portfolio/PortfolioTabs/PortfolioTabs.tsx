@@ -301,6 +301,8 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
 
     // Props for <Orders/> React Element
     const ordersProps = {
+        activeAccountLimitOrderData: activeAccountLimitOrderData,
+        connectedAccountActive: connectedAccountActive,
         crocEnv: props.crocEnv,
         expandTradeTable: false,
         chainData: props.chainData,
