@@ -154,9 +154,9 @@ export default function Orders(props: propsIF) {
         }
     }, [isShowAllEnabled, connectedAccountActive]);
 
-    useEffect(() => {
-        console.log({ activeAccountLimitOrderData });
-    }, [activeAccountLimitOrderData]);
+    // useEffect(() => {
+    //     console.log({ activeAccountLimitOrderData });
+    // }, [activeAccountLimitOrderData]);
 
     // wait 5 seconds to open a subscription to pool changes
     useEffect(() => {
@@ -437,14 +437,14 @@ export default function Orders(props: propsIF) {
             sortable: true,
         },
         {
-            name: `${baseTokenSymbol} ( ${baseTokenCharacter} )`,
+            name: isOnPortfolioPage ? 'Token A' : `${baseTokenSymbol} ( ${baseTokenCharacter} )`,
 
             show: !showColumns,
             slug: baseTokenSymbol,
             sortable: false,
         },
         {
-            name: `${quoteTokenSymbol} ( ${quoteTokenCharacter} )`,
+            name: isOnPortfolioPage ? 'Token B' : `${quoteTokenSymbol} ( ${quoteTokenCharacter} )`,
 
             show: !showColumns,
             slug: quoteTokenSymbol,

@@ -389,14 +389,14 @@ export default function Ranges(props: RangesPropsIF) {
             sortable: true,
         },
         {
-            name: `${baseTokenSymbol} ( ${baseTokenCharacter} )`,
+            name: isOnPortfolioPage ? 'Token A' : `${baseTokenSymbol} ( ${baseTokenCharacter} )`,
 
             show: !showColumns,
             slug: baseTokenSymbol,
             sortable: false,
         },
         {
-            name: `${quoteTokenSymbol} ( ${quoteTokenCharacter} )`,
+            name: isOnPortfolioPage ? 'Token B' : `${quoteTokenSymbol} ( ${quoteTokenCharacter} )`,
 
             show: !showColumns,
             slug: quoteTokenSymbol,
