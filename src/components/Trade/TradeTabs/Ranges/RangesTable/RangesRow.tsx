@@ -10,6 +10,7 @@ import RangeDetails from '../../../../RangeDetails/RangeDetails';
 import { DefaultTooltip } from '../../../../Global/StyledTooltip/StyledTooltip';
 import { NavLink } from 'react-router-dom';
 import Medal from '../../../../Global/Medal/Medal';
+import NoTokenIcon from '../../../../Global/NoTokenIcon/NoTokenIcon';
 
 interface RangesRowPropsIF {
     isUserLoggedIn: boolean;
@@ -205,11 +206,25 @@ export default function RangesRow(props: RangesRowPropsIF) {
         </DefaultTooltip>
     );
 
+    const baseTokenLogoComponent =
+        baseTokenLogo !== '' ? (
+            <img src={baseTokenLogo} alt='base token' width='15px' />
+        ) : (
+            <NoTokenIcon tokenInitial={position.baseSymbol.charAt(0)} width='30px' />
+        );
+
+    const quoteTokenLogoComponent =
+        quoteTokenLogo !== '' ? (
+            <img src={quoteTokenLogo} alt='quote token' width='15px' />
+        ) : (
+            <NoTokenIcon tokenInitial={position.quoteSymbol.charAt(0)} width='30px' />
+        );
+
     // portfolio page li element ---------------
     const accountTokenImages = (
         <li className={styles.token_images_account}>
-            <img src={baseTokenLogo} alt='base token' />
-            <img src={quoteTokenLogo} alt='quote token' />
+            {baseTokenLogoComponent}
+            {quoteTokenLogoComponent}
             {/* <p>hello</p> */}
         </li>
     );
@@ -288,12 +303,12 @@ export default function RangesRow(props: RangesRowPropsIF) {
                     <p className={styles.align_center}>
                         {' '}
                         <img src={baseTokenLogo} alt='' width='15px' />
-                        {baseDisplay}{' '}
+                        {baseTokenLogoComponent}
                     </p>
 
                     <p className={styles.align_center}>
                         {' '}
-                        <img src={quoteTokenLogo} alt='' width='15px' />
+                        {quoteTokenLogoComponent}
                         {quoteDisplay}
                     </p>
                 </li>
