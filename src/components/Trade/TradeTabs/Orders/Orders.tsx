@@ -47,7 +47,7 @@ interface propsIF {
 export default function Orders(props: propsIF) {
     const {
         activeAccountLimitOrderData,
-        // connectedAccountActive,
+        connectedAccountActive,
         crocEnv,
         chainData,
         expandTradeTable,
@@ -152,7 +152,7 @@ export default function Orders(props: propsIF) {
         } else if (limitOrdersByPool) {
             setLimitOrderData(limitOrdersByPool);
         }
-    }, [isShowAllEnabled]);
+    }, [isShowAllEnabled, connectedAccountActive]);
 
     // wait 5 seconds to open a subscription to pool changes
     useEffect(() => {
