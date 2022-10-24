@@ -13,15 +13,18 @@ import {
     // addPositionsByPool,
     // addPositionsByUser,
     graphData,
-    updateLeaderboard,
+    // updateLeaderboard,
 } from '../../../../utils/state/graphDataSlice';
 import Pagination from '../../../Global/Pagination/Pagination';
 
-import { useAppDispatch, useAppSelector } from '../../../../utils/hooks/reduxToolkit';
+import {
+    // useAppDispatch,
+    useAppSelector
+} from '../../../../utils/hooks/reduxToolkit';
 import { useSortedPositions } from '../useSortedPositions';
 import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
-import { PositionIF } from '../../../../utils/interfaces/PositionIF';
-import { updateApy } from '../../../../App/functions/getPositionData';
+// import { PositionIF } from '../../../../utils/interfaces/PositionIF';
+// import { updateApy } from '../../../../App/functions/getPositionData';
 import { TokenIF } from '../../../../utils/interfaces/TokenIF';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
@@ -63,7 +66,6 @@ export default function Leaderboard(props: LeaderboardPropsIF) {
         crocEnv,
         chainData,
         provider,
-
         chainId,
         isShowAllEnabled,
         baseTokenBalance,
@@ -76,7 +78,6 @@ export default function Leaderboard(props: LeaderboardPropsIF) {
         currentPositionActive,
         setCurrentPositionActive,
         account,
-
         showSidebar,
     } = props;
 
@@ -85,41 +86,45 @@ export default function Leaderboard(props: LeaderboardPropsIF) {
     const baseTokenAddress = tradeData.baseToken.address;
     const quoteTokenAddress = tradeData.quoteToken.address;
 
+    const positionsByApy: string[] = [...graphData?.leaderboardByPool?.positions]
+        .sort((a, b) => b.apy - a.apy)
+        .map(pos => pos.positionId) ?? [];
+
     const [sortBy, setSortBy, reverseSort, setReverseSort, sortedPositions] = useSortedPositions(
         'apr',
         true, // leaderboard is never limited to the user
         graphData?.leaderboardByPool?.positions,
     );
 
-    const topThreePositions = sortedPositions.slice(0, 3);
+    // const topThreePositions = sortedPositions.slice(0, 3);
 
-    const dispatch = useAppDispatch();
+    // const dispatch = useAppDispatch();
 
-    useEffect(() => {
-        if (topThreePositions) {
-            Promise.all(
-                topThreePositions.map((position: PositionIF) => {
-                    return updateApy(position);
-                }),
-            )
-                .then((updatedPositions) => {
-                    if (isShowAllEnabled) {
-                        dispatch(updateLeaderboard(updatedPositions));
-                    } else {
-                        dispatch(updateLeaderboard(updatedPositions));
-                    }
-                })
-                .catch(console.log);
-        }
-    }, [
-        JSON.stringify({
-            id0: topThreePositions[0]?.positionId,
-            id1: topThreePositions[1]?.positionId,
-            id2: topThreePositions[2]?.positionId,
-        }),
-        lastBlockNumber,
-        isShowAllEnabled,
-    ]);
+    // useEffect(() => {
+    //     if (topThreePositions) {
+    //         Promise.all(
+    //             topThreePositions.map((position: PositionIF) => {
+    //                 return updateApy(position);
+    //             }),
+    //         )
+    //             .then((updatedPositions) => {
+    //                 if (isShowAllEnabled) {
+    //                     dispatch(updateLeaderboard(updatedPositions));
+    //                 } else {
+    //                     dispatch(updateLeaderboard(updatedPositions));
+    //                 }
+    //             })
+    //             .catch(console.log);
+    //     }
+    // }, [
+    //     JSON.stringify({
+    //         id0: topThreePositions[0]?.positionId,
+    //         id1: topThreePositions[1]?.positionId,
+    //         id2: topThreePositions[2]?.positionId,
+    //     }),
+    //     lastBlockNumber,
+    //     isShowAllEnabled,
+    // ]);
 
     // ---------------------
     const [currentPage, setCurrentPage] = useState(1);
@@ -187,7 +192,7 @@ export default function Leaderboard(props: LeaderboardPropsIF) {
     );
     const headerColumns = [
         {
-            name: 'ID',
+            name: 'Rank',
             className: 'ID',
             show: !showColumns,
             slug: 'id',
@@ -297,6 +302,7 @@ export default function Leaderboard(props: LeaderboardPropsIF) {
         <RangesRow
             key={idx}
             position={position}
+            rank={positionsByApy.findIndex((posId) => posId === position.positionId) + 1}
             currentPositionActive={currentPositionActive}
             setCurrentPositionActive={setCurrentPositionActive}
             openGlobalModal={props.openGlobalModal}
