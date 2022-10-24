@@ -56,6 +56,9 @@ interface RangesPropsIF {
     closeGlobalModal: () => void;
     showSidebar: boolean;
     isOnPortfolioPage: boolean;
+
+    setLeader?: Dispatch<SetStateAction<string>>;
+    setLeaderOwnerId?: Dispatch<SetStateAction<string>>;
 }
 
 // react functional component
