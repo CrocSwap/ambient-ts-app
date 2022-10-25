@@ -1808,6 +1808,7 @@ export default function App() {
         isInitialized: isInitialized,
         poolExists: poolExists,
         setTokenPairLocal: setTokenPairLocal,
+        openGlobalModal: openGlobalModal,
     };
 
     // props for <Swap/> React element on trade route
@@ -1840,6 +1841,7 @@ export default function App() {
         openModalWallet: openModalWallet,
         isInitialized: isInitialized,
         poolExists: poolExists,
+        openGlobalModal: openGlobalModal,
     };
 
     // props for <Limit/> React element on trade route

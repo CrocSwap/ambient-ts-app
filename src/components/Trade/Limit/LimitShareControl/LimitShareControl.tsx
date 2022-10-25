@@ -11,8 +11,6 @@ interface LimitShareControlPropsIF {
 export default function LimitShareControl(props: LimitShareControlPropsIF) {
     const { option, handleShareOptionChange } = props;
 
-    console.log(option);
-
     return (
         <li className={styles.custom_control}>
             <input

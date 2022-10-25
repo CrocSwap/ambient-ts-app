@@ -34,7 +34,9 @@ import { useModal } from '../../components/Global/Modal/useModal';
 import { useRelativeModal } from '../../components/Global/RelativeModal/useRelativeModal';
 import { addPendingTx, addReceipt, removePendingTx } from '../../utils/state/receiptDataSlice';
 import { useUrlParams } from './useUrlParams';
+import SwapShareControl from '../../components/Swap/SwapShareControl/SwapShareControl';
 // import { calcImpact } from '../../App/functions/calcImpact';
+import { FiCopy } from 'react-icons/fi';
 
 interface SwapPropsIF {
     crocEnv: CrocEnv | undefined;
@@ -67,6 +69,8 @@ interface SwapPropsIF {
     isInitialized: boolean;
     poolExists: boolean | null;
     setTokenPairLocal?: Dispatch<SetStateAction<string[] | null>>;
+
+    openGlobalModal: (content: React.ReactNode) => void;
 }
 
 export default function Swap(props: SwapPropsIF) {
@@ -418,6 +422,53 @@ export default function Swap(props: SwapPropsIF) {
         return () => clearTimeout(timer);
     }, []);
 
+    // -------------------------Swap SHARE FUNCTIONALITY---------------------------
+    const [shareOptions, setShareOptions] = useState([
+        { slug: 'first', name: 'Include Swap 1', checked: false },
+        { slug: 'second', name: 'Include Swap 2', checked: false },
+        { slug: 'third', name: 'Include Swap 3', checked: false },
+        { slug: 'fourth', name: 'Include Swap 4', checked: false },
+    ]);
+
+    const handleShareOptionChange = (slug: string) => {
+        const copyShareOptions = [...shareOptions];
+        const modifiedShareOptions = copyShareOptions.map((option) => {
+            if (slug === option.slug) {
+                option.checked = !option.checked;
+            }
+
+            return option;
+        });
+
+        setShareOptions(modifiedShareOptions);
+    };
+
+    const shareOptionsDisplay = (
+        <div className={styles.option_control_container}>
+            <div className={styles.options_control_display_container}>
+                <p className={styles.control_title}>Options</p>
+                <ul>
+                    {shareOptions.map((option, idx) => (
+                        <SwapShareControl
+                            key={idx}
+                            option={option}
+                            handleShareOptionChange={handleShareOptionChange}
+                        />
+                    ))}
+                </ul>
+            </div>
+            <p className={styles.control_title}>URL:</p>
+            <p className={styles.url_link}>
+                https://ambient.finance/trade/market/0xaaaaaa/93bbbb
+                <div style={{ cursor: 'pointer' }}>
+                    <FiCopy color='#cdc1ff' />
+                </div>
+            </p>
+        </div>
+    );
+
+    // -------------------------END OF Swap SHARE FUNCTIONALITY---------------------------
+
     return (
         <main data-testid={'swap'} className={swapPageStyle}>
             <div className={`${swapContainerStyle}`}>
@@ -426,6 +477,8 @@ export default function Swap(props: SwapPropsIF) {
                         swapSlippage={swapSlippage}
                         isPairStable={isPairStable}
                         isOnTradeRoute={isOnTradeRoute}
+                        openGlobalModal={props.openGlobalModal}
+                        shareOptionsDisplay={shareOptionsDisplay}
                     />
                     <DividerDark addMarginTop />
                     {navigationMenu}

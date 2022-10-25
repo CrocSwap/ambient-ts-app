@@ -11,6 +11,7 @@ import { SlippagePairIF } from '../../../utils/interfaces/exports';
 import { useAppDispatch, useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { toggleDidUserFlipDenom } from '../../../utils/state/tradeDataSlice';
 import IconWithTooltip from '../../Global/IconWithTooltip/IconWithTooltip';
+import { AiOutlineShareAlt } from 'react-icons/ai';
 
 // interface for props
 interface SwapHeaderPropsIF {
@@ -18,13 +19,16 @@ interface SwapHeaderPropsIF {
     swapSlippage: SlippagePairIF;
     isPairStable: boolean;
     isOnTradeRoute?: boolean;
+    openGlobalModal: (content: React.ReactNode, title?: string) => void;
+
+    shareOptionsDisplay: JSX.Element;
     // isDenomBase: boolean;
     // isTokenABase: boolean;
 }
 
 // main react functional component
 export default function SwapHeader(props: SwapHeaderPropsIF) {
-    const { swapSlippage, isPairStable, isOnTradeRoute } = props;
+    const { swapSlippage, isPairStable, isOnTradeRoute, openGlobalModal } = props;
     const [isModalOpen, openModal, closeModal] = useModal();
 
     const dispatch = useAppDispatch();
@@ -49,7 +53,12 @@ export default function SwapHeader(props: SwapHeaderPropsIF) {
 
     const tradeRouteHeader = (
         <ContentHeader>
-            <span />
+            <div
+                className={styles.share_button}
+                onClick={() => openGlobalModal(props.shareOptionsDisplay, 'Share')}
+            >
+                <AiOutlineShareAlt />
+            </div>
             <div className={styles.token_info} onClick={() => dispatch(toggleDidUserFlipDenom())}>
                 {isDenomBase ? baseTokenSymbol : quoteTokenSymbol} /{' '}
                 {isDenomBase ? quoteTokenSymbol : baseTokenSymbol}
