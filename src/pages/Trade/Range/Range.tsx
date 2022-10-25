@@ -1213,7 +1213,7 @@ export default function Range(props: RangePropsIF) {
     // -------------------------END OF RANGE SHARE FUNCTIONALITY---------------------------
 
     return (
-        <section data-testid={'range'}>
+        <section data-testid={'range'} className={styles.scrollable_container}>
             <ContentContainer isOnTradeRoute>
                 <RangeHeader
                     chainId={chainId}

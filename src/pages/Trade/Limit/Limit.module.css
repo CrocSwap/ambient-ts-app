@@ -1,3 +1,15 @@
+
+.scrollable_container{
+
+    height: 100vh;
+    overflow-y: scroll;
+
+}
+
+.scrollable_container::-webkit-scrollbar {
+    display: none;
+}
+
 .header_container {
     /* background: blue; */
     display: flex;

@@ -39,7 +39,7 @@ export default function LimitExtraInfo(props: LimitExtraInfoPropsIF) {
         // isDenomBase,
         // limitRate,
     } = props;
-    const [showExtraDetails, setShowExtraDetails] = useState<boolean>(true);
+    const [showExtraDetails, setShowExtraDetails] = useState<boolean>(false);
 
     // const reverseDisplay = (isTokenABase && !isDenomBase) || (!isTokenABase && isDenomBase);
 
@@ -139,6 +139,26 @@ export default function LimitExtraInfo(props: LimitExtraInfoPropsIF) {
             data: isDenomBase
                 ? `${displayLimitPriceString} ${quoteTokenSymbol} per ${baseTokenSymbol}`
                 : `${displayLimitPriceString} ${baseTokenSymbol} per ${quoteTokenSymbol}`,
+        },
+        {
+            title: 'Fill Start',
+            tooltipTitle: 'Fill Start Explanation',
+            data: isDenomBase ? `${'...'}  ${baseTokenSymbol}` : `${'...'}  ${quoteTokenSymbol}`,
+        },
+        {
+            title: 'Fill End',
+            tooltipTitle: 'Fill End Explanation',
+            data: isDenomBase ? `${'...'}  ${baseTokenSymbol}` : `${'...'}  ${quoteTokenSymbol}`,
+        },
+        {
+            title: 'Minimum Rebate Rate',
+            tooltipTitle: 'Minimum Rebate Rate',
+            data: '0.05%',
+        },
+        {
+            title: 'Current Rebate Rate',
+            tooltipTitle: 'Current Rebate Rate',
+            data: '0.3%',
         },
         {
             title: 'Slippage Tolerance',
