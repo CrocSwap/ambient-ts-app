@@ -313,7 +313,7 @@ export default function TradeTabs2(props: ITabsProps) {
     const [leader, setLeader] = useState('');
     const [leaderOwnerId, setLeaderOwnerId] = useState('');
 
-    console.log(leader);
+    // console.log(leader);
 
     // Props for <Ranges/> React Element
     const rangesProps = {
