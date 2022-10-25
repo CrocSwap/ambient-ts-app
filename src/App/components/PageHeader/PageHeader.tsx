@@ -15,7 +15,7 @@ import Modal from '../../../components/Global/Modal/Modal';
 // START: Import Local Files
 import styles from './PageHeader.module.css';
 import trimString from '../../../utils/functions/trimString';
-import ambientLogo from '../../../assets/images/logos/ambient_logo.svg';
+// import ambientLogo from '../../../assets/images/logos/ambient_logo.svg';
 import headerLogo from '../../../assets/images/logos/header_logo.svg';
 import { useModal } from '../../../components/Global/Modal/useModal';
 import { useUrlParams } from './useUrlParams';
