@@ -40,6 +40,7 @@ interface RangesMenuIF {
     positionData: PositionIF;
     posHash: string;
     showSidebar: boolean;
+    isOnPortfolioPage: boolean;
 }
 
 // React functional component
@@ -53,6 +54,7 @@ export default function RangesMenu(props: RangesMenuIF) {
         rangeDetailsProps,
         posHash,
         positionData,
+        isOnPortfolioPage,
         // showSidebar,
         // eslint-disable-next-line
     } = props;
@@ -155,7 +157,17 @@ export default function RangesMenu(props: RangesMenuIF) {
     const copyButton = isPositionInRange ? (
         <Link
             className={styles.option_button}
-            to={'/trade/range/' + currentLocation.slice(currentLocation.indexOf('chain'))}
+            to={
+                '/trade/range/' +
+                (isOnPortfolioPage
+                    ? 'chain=' +
+                      positionData.chainId +
+                      '&tokenA=' +
+                      positionData.base +
+                      '&tokenB=' +
+                      positionData.quote
+                    : currentLocation.slice(currentLocation.indexOf('chain')))
+            }
             onClick={handleCopyClick}
         >
             Copy
@@ -201,16 +213,14 @@ export default function RangesMenu(props: RangesMenuIF) {
 
     // ----------------------
 
-    const duh = false;
-
     const rangesMenu = (
         <div className={styles.actions_menu}>
             {view1 && repositionButton}
             {view1 && !noRespositionButton && editButton}
-            {duh && harvestButton}
+            {view3 && harvestButton}
             {view2 && removeButton}
             {view3 && detailsButton}
-            {view1 && copyButton}
+            {view1 && !props.showSidebar && copyButton}
         </div>
     );
 

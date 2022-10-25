@@ -74,6 +74,7 @@ import {
     setAdvancedMode,
     setDenomInBase,
     setDidUserFlipDenom,
+    setLiquidityFee,
     setPrimaryQuantityRange,
     setSimpleRangeWidth,
 } from '../utils/state/tradeDataSlice';
@@ -119,6 +120,8 @@ import { fetchPoolRecentChanges } from './functions/fetchPoolRecentChanges';
 import { fetchUserRecentChanges } from './functions/fetchUserRecentChanges';
 import { getTransactionData } from './functions/getTransactionData';
 import AppOverlay from '../components/Global/AppOverlay/AppOverlay';
+import { getLiquidityFee } from './functions/getLiquidityFee';
+import PhishingWarning from '../components/Global/PhisingWarning/PhishingWarning';
 
 const cachedFetchAddress = memoizeFetchAddress();
 const cachedFetchNativeTokenBalance = memoizeFetchNativeTokenBalance();
@@ -684,6 +687,19 @@ export default function App() {
                 setBaseTokenDecimals(tokenPair.dataTokenB.decimals);
                 setQuoteTokenDecimals(tokenPair.dataTokenA.decimals);
             }
+
+            // retrieve pool liquidity provider fee
+
+            getLiquidityFee(
+                sortedTokens[0],
+                sortedTokens[1],
+                chainData.poolIndex,
+                chainData.chainId,
+            )
+                .then((liquidityFeeNum) => {
+                    if (liquidityFeeNum) dispatch(setLiquidityFee(liquidityFeeNum));
+                })
+                .catch(console.log);
 
             // retrieve pool TVL series
             getTvlSeries(
@@ -2064,6 +2080,7 @@ export default function App() {
                     isAppOverlayActive={isAppOverlayActive}
                     setIsAppOverlayActive={setIsAppOverlayActive}
                 />
+                {currentLocation == '/' && <PhishingWarning />}
 
                 {currentLocation !== '/404' && <PageHeader {...headerProps} />}
                 {/* <MobileSidebar/> */}
@@ -2226,6 +2243,10 @@ export default function App() {
                                     quoteTokenBalance={quoteTokenBalance}
                                     baseTokenDexBalance={baseTokenDexBalance}
                                     quoteTokenDexBalance={quoteTokenDexBalance}
+                                    currentTxActiveInTransactions={currentTxActiveInTransactions}
+                                    setCurrentTxActiveInTransactions={
+                                        setCurrentTxActiveInTransactions
+                                    }
                                 />
                             }
                         />
@@ -2264,6 +2285,10 @@ export default function App() {
                                     quoteTokenBalance={quoteTokenBalance}
                                     baseTokenDexBalance={baseTokenDexBalance}
                                     quoteTokenDexBalance={quoteTokenDexBalance}
+                                    currentTxActiveInTransactions={currentTxActiveInTransactions}
+                                    setCurrentTxActiveInTransactions={
+                                        setCurrentTxActiveInTransactions
+                                    }
                                 />
                             }
                         />
@@ -2313,6 +2338,10 @@ export default function App() {
                                     quoteTokenBalance={quoteTokenBalance}
                                     baseTokenDexBalance={baseTokenDexBalance}
                                     quoteTokenDexBalance={quoteTokenDexBalance}
+                                    currentTxActiveInTransactions={currentTxActiveInTransactions}
+                                    setCurrentTxActiveInTransactions={
+                                        setCurrentTxActiveInTransactions
+                                    }
                                 />
                             }
                         />

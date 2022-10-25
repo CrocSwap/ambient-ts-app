@@ -17,7 +17,7 @@ import {
 import Pagination from '../../../Global/Pagination/Pagination';
 
 import { useAppDispatch, useAppSelector } from '../../../../utils/hooks/reduxToolkit';
-import { useSortedPositions } from './useSortedPositions';
+import { useSortedPositions } from '../useSortedPositions';
 import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
 import { PositionIF } from '../../../../utils/interfaces/PositionIF';
 import { updateApy } from '../../../../App/functions/getPositionData';
@@ -30,6 +30,8 @@ import RangesRow from './RangesTable/RangesRow';
 
 // interface for props
 interface RangesPropsIF {
+    activeAccountPositionData?: PositionIF[];
+    connectedAccountActive?: boolean;
     isUserLoggedIn: boolean;
     crocEnv: CrocEnv | undefined;
     chainData: ChainSpec;
@@ -54,11 +56,16 @@ interface RangesPropsIF {
     closeGlobalModal: () => void;
     showSidebar: boolean;
     isOnPortfolioPage: boolean;
+
+    setLeader?: Dispatch<SetStateAction<string>>;
+    setLeaderOwnerId?: Dispatch<SetStateAction<string>>;
 }
 
 // react functional component
 export default function Ranges(props: RangesPropsIF) {
     const {
+        activeAccountPositionData,
+        connectedAccountActive,
         isUserLoggedIn,
         crocEnv,
         chainData,
@@ -89,6 +96,8 @@ export default function Ranges(props: RangesPropsIF) {
     const baseTokenAddressLowerCase = tradeData.baseToken.address.toLowerCase();
     const quoteTokenAddressLowerCase = tradeData.quoteToken.address.toLowerCase();
 
+    const rangesByPool = graphData.positionsByPool?.positions;
+
     const positionsByUserMatchingSelectedTokens = graphData?.positionsByUser?.positions.filter(
         (position) => {
             if (
@@ -101,6 +110,24 @@ export default function Ranges(props: RangesPropsIF) {
             }
         },
     );
+
+    const [rangeData, setRangeData] = useState(
+        isOnPortfolioPage ? activeAccountPositionData || [] : rangesByPool,
+    );
+
+    // useEffect(() => {
+    //     console.log({ rangeData });
+    // }, [rangeData]);
+
+    useEffect(() => {
+        if (isOnPortfolioPage) {
+            setRangeData(activeAccountPositionData || []);
+        } else if (!isShowAllEnabled) {
+            setRangeData(positionsByUserMatchingSelectedTokens);
+        } else if (rangesByPool) {
+            setRangeData(rangesByPool);
+        }
+    }, [isShowAllEnabled, connectedAccountActive, activeAccountPositionData, rangesByPool]);
 
     // const columnHeaders = [
     //     { name: 'ID', sortable: false, className: '' },
@@ -115,16 +142,25 @@ export default function Ranges(props: RangesPropsIF) {
     // ];
 
     const [sortBy, setSortBy, reverseSort, setReverseSort, sortedPositions] = useSortedPositions(
-        isShowAllEnabled,
-        positionsByUserMatchingSelectedTokens,
-        graphData?.positionsByPool?.positions,
+        'lastUpdate',
+        isShowAllEnabled || (isOnPortfolioPage && (!connectedAccountActive || false)),
+        rangeData,
+        rangeData,
+        // connectedAccountActive || true,
     );
+
+    // useEffect(() => {
+    //     console.log({ sortedPositions });
+    // }, [sortedPositions]);
 
     const topThreePositions = sortedPositions.slice(0, 3);
 
     const dispatch = useAppDispatch();
 
     useEffect(() => {
+        // console.log({ isShowAllEnabled });
+        // console.log({ isOnPortfolioPage });
+        // console.log({ topThreePositions });
         if (topThreePositions) {
             Promise.all(
                 topThreePositions.map((position: PositionIF) => {
@@ -132,10 +168,18 @@ export default function Ranges(props: RangesPropsIF) {
                 }),
             )
                 .then((updatedPositions) => {
-                    if (isShowAllEnabled) {
-                        dispatch(addPositionsByPool(updatedPositions));
-                    } else {
-                        dispatch(addPositionsByUser(updatedPositions));
+                    if (!isOnPortfolioPage) {
+                        if (isShowAllEnabled) {
+                            dispatch(addPositionsByPool(updatedPositions));
+                        } else {
+                            dispatch(
+                                addPositionsByUser(
+                                    updatedPositions.filter(
+                                        (position) => position.user === account,
+                                    ),
+                                ),
+                            );
+                        }
                     }
                 })
                 .catch(console.log);
@@ -148,6 +192,7 @@ export default function Ranges(props: RangesPropsIF) {
         }),
         lastBlockNumber,
         isShowAllEnabled,
+        isOnPortfolioPage,
     ]);
 
     // const [expanded, setExpanded] = useState<false | number>(false);
@@ -347,14 +392,14 @@ export default function Ranges(props: RangesPropsIF) {
             sortable: true,
         },
         {
-            name: `${baseTokenSymbol} ( ${baseTokenCharacter} )`,
+            name: isOnPortfolioPage ? 'Token A' : `${baseTokenSymbol} ( ${baseTokenCharacter} )`,
 
             show: !showColumns,
             slug: baseTokenSymbol,
             sortable: false,
         },
         {
-            name: `${quoteTokenSymbol} ( ${quoteTokenCharacter} )`,
+            name: isOnPortfolioPage ? 'Token B' : `${quoteTokenSymbol} ( ${quoteTokenCharacter} )`,
 
             show: !showColumns,
             slug: quoteTokenSymbol,
@@ -426,6 +471,7 @@ export default function Ranges(props: RangesPropsIF) {
             quoteTokenDexBalance={quoteTokenDexBalance}
             lastBlockNumber={lastBlockNumber}
             isOnPortfolioPage={isOnPortfolioPage}
+            idx={idx}
 
             // blockExplorer={blockExplorer}
         />
