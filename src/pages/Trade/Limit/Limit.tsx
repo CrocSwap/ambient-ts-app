@@ -31,6 +31,8 @@ import {
     isTransactionReplacedError,
     TransactionError,
 } from '../../../utils/TransactionError';
+import LimitShareControl from '../../../components/Trade/Limit/LimitShareControl/LimitShareControl';
+import { FiCopy } from 'react-icons/fi';
 
 interface LimitPropsIF {
     crocEnv: CrocEnv | undefined;
@@ -471,6 +473,53 @@ export default function Limit(props: LimitPropsIF) {
             }}
         />
     );
+
+    // -------------------------Limit SHARE FUNCTIONALITY---------------------------
+    const [shareOptions, setShareOptions] = useState([
+        { slug: 'first', name: 'Include Limit 1', checked: false },
+        { slug: 'second', name: 'Include Limit 2', checked: false },
+        { slug: 'third', name: 'Include Limit 3', checked: false },
+        { slug: 'fourth', name: 'Include Limit 4', checked: false },
+    ]);
+
+    const handleShareOptionChange = (slug: string) => {
+        const copyShareOptions = [...shareOptions];
+        const modifiedShareOptions = copyShareOptions.map((option) => {
+            if (slug === option.slug) {
+                option.checked = !option.checked;
+            }
+
+            return option;
+        });
+
+        setShareOptions(modifiedShareOptions);
+    };
+
+    const shareOptionsDisplay = (
+        <div className={styles.option_control_container}>
+            <div className={styles.options_control_display_container}>
+                <p className={styles.control_title}>Options</p>
+                <ul>
+                    {shareOptions.map((option, idx) => (
+                        <LimitShareControl
+                            key={idx}
+                            option={option}
+                            handleShareOptionChange={handleShareOptionChange}
+                        />
+                    ))}
+                </ul>
+            </div>
+            <p className={styles.control_title}>URL:</p>
+            <p className={styles.url_link}>
+                https://ambient.finance/trade/market/0xaaaaaa/93bbbb
+                <div style={{ cursor: 'pointer' }}>
+                    <FiCopy color='#cdc1ff' />
+                </div>
+            </p>
+        </div>
+    );
+
+    // -------------------------END OF Limit SHARE FUNCTIONALITY---------------------------
     return (
         <section>
             <ContentContainer isOnTradeRoute>
@@ -478,6 +527,8 @@ export default function Limit(props: LimitPropsIF) {
                     chainId={chainId}
                     mintSlippage={mintSlippage}
                     isPairStable={isPairStable}
+                    openGlobalModal={props.openGlobalModal}
+                    shareOptionsDisplay={shareOptionsDisplay}
                 />
                 <DividerDark addMarginTop />
                 {navigationMenu}
