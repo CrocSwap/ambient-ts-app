@@ -3,7 +3,14 @@ import { useState, useEffect, Dispatch, SetStateAction } from 'react';
 import { useMoralis } from 'react-moralis';
 import { ethers } from 'ethers';
 import { motion } from 'framer-motion';
-import { tickToPrice, CrocEnv, pinTickLower, pinTickUpper } from '@crocswap-libs/sdk';
+import {
+    tickToPrice,
+    CrocEnv,
+    pinTickLower,
+    pinTickUpper,
+    priceHalfBelowTick,
+    priceHalfAboveTick,
+} from '@crocswap-libs/sdk';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 
 // START: Import React Functional Components
@@ -128,7 +135,9 @@ export default function Limit(props: LimitPropsIF) {
     const slippageTolerancePercentage = tradeData.slippageTolerance;
 
     const [limitTick, setLimitTick] = useState<number>(0);
-    const [insideTickDisplayPrice, setInsideTickDisplayPrice] = useState<number>(0);
+    const [endDisplayPrice, setEndDisplayPrice] = useState<number>(0);
+    const [startDisplayPrice, setStartDisplayPrice] = useState<number>(0);
+    const [middleDisplayPrice, setMiddleDisplayPrice] = useState<number>(0);
     const [orderGasPriceInDollars, setOrderGasPriceInDollars] = useState<string | undefined>();
 
     const [initialLoad, setInitialLoad] = useState<boolean>(true);
@@ -166,7 +175,7 @@ export default function Limit(props: LimitPropsIF) {
             // setLimitRate(initialLimitRate.toString());
 
             const limitWei = pool.fromDisplayPrice(initialLimitRate);
-            const pinTick = limitWei.then((lw) =>
+            const pinTick: Promise<number> = limitWei.then((lw) =>
                 isDenomBase ? pinTickLower(lw, gridSize) : pinTickUpper(lw, gridSize),
             );
             // pinTick.then(setLimitTick);
@@ -177,8 +186,60 @@ export default function Limit(props: LimitPropsIF) {
             const tickPrice = pinTick.then(tickToPrice);
             const tickDispPrice = tickPrice.then((tp) => pool.toDisplayPrice(tp));
 
+            // tickDispPrice.then((initialPinnedPrice) => console.log({ initialPinnedPrice }));
+
+            const priceHalfBelow = pinTick
+                .then((pinnedTick) => priceHalfBelowTick(pinnedTick, gridSize))
+                .then((price) => {
+                    return pool.toDisplayPrice(price);
+                });
+
+            priceHalfBelow.then((priceHalfBelow) => {
+                if (!isDenomBase) {
+                    setMiddleDisplayPrice(priceHalfBelow);
+                }
+                // console.log({ priceHalfBelow });
+            });
+
+            const priceHalfAbove = pinTick
+                .then((pinnedTick) => priceHalfAboveTick(pinnedTick, gridSize))
+                .then((price) => {
+                    return pool.toDisplayPrice(price);
+                });
+
+            priceHalfAbove.then((priceHalfAbove) => {
+                if (isDenomBase) {
+                    setMiddleDisplayPrice(priceHalfAbove);
+                }
+                // console.log({ priceHalfAbove });
+            });
+
+            const priceFullTickBelow = pinTick.then((pinnedTick) => {
+                const price = tickToPrice(pinnedTick - gridSize);
+                return pool.toDisplayPrice(price);
+            });
+
+            priceFullTickBelow.then((priceFullTickBelow) => {
+                if (!isDenomBase) {
+                    setStartDisplayPrice(priceFullTickBelow);
+                }
+                // console.log({ priceFullTickBelow });
+            });
+
+            const priceFullTickAbove = pinTick.then((pinnedTick) => {
+                const price = tickToPrice(pinnedTick + gridSize);
+                return pool.toDisplayPrice(price);
+            });
+
+            priceFullTickAbove.then((priceFullTickAbove) => {
+                if (isDenomBase) {
+                    setStartDisplayPrice(priceFullTickAbove);
+                }
+                // console.log({ priceFullTickAbove });
+            });
+
             tickDispPrice.then((tp) => {
-                setInsideTickDisplayPrice(tp);
+                setEndDisplayPrice(tp);
                 // console.log({ tp });
                 dispatch(setLimitPrice(tp.toString()));
                 setInitialLoad(false);
@@ -222,8 +283,62 @@ export default function Limit(props: LimitPropsIF) {
             const tickPrice = pinTick.then(tickToPrice);
             const tickDispPrice = tickPrice.then((tp) => pool.toDisplayPrice(tp));
 
+            // tickDispPrice.then((pricePinnedInsideDesiredPrice) =>
+            //     console.log({ pricePinnedInsideDesiredPrice }),
+            // );
+
+            const priceHalfBelow = pinTick
+                .then((pinnedTick) => priceHalfBelowTick(pinnedTick, gridSize))
+                .then((price) => {
+                    return pool.toDisplayPrice(price);
+                });
+
+            priceHalfBelow.then((priceHalfBelow) => {
+                if (!isDenomBase) {
+                    setMiddleDisplayPrice(priceHalfBelow);
+                }
+                // console.log({ priceHalfBelow });
+            });
+
+            const priceHalfAbove = pinTick
+                .then((pinnedTick) => priceHalfAboveTick(pinnedTick, gridSize))
+                .then((price) => {
+                    return pool.toDisplayPrice(price);
+                });
+
+            priceHalfAbove.then((priceHalfAbove) => {
+                if (isDenomBase) {
+                    setMiddleDisplayPrice(priceHalfAbove);
+                }
+                // console.log({ priceHalfAbove });
+            });
+
+            const priceFullTickBelow = pinTick.then((pinnedTick) => {
+                const price = tickToPrice(pinnedTick - gridSize);
+                return pool.toDisplayPrice(price);
+            });
+
+            priceFullTickBelow.then((priceFullTickBelow) => {
+                if (!isDenomBase) {
+                    setStartDisplayPrice(priceFullTickBelow);
+                }
+                // console.log({ priceFullTickBelow });
+            });
+
+            const priceFullTickAbove = pinTick.then((pinnedTick) => {
+                const price = tickToPrice(pinnedTick + gridSize);
+                return pool.toDisplayPrice(price);
+            });
+
+            priceFullTickAbove.then((priceFullTickAbove) => {
+                if (isDenomBase) {
+                    setStartDisplayPrice(priceFullTickAbove);
+                }
+                // console.log({ priceFullTickAbove });
+            });
+
             tickDispPrice.then((tp) => {
-                setInsideTickDisplayPrice(tp);
+                setEndDisplayPrice(tp);
                 // dispatch(setLimitPrice(tp.toString()));
                 const limitRateTruncated =
                     tp < 2
@@ -412,7 +527,7 @@ export default function Limit(props: LimitPropsIF) {
                 tokenBInputQty={tokenBInputQty}
                 isTokenAPrimary={isTokenAPrimary}
                 // limitRate={limitRate}
-                insideTickDisplayPrice={insideTickDisplayPrice}
+                insideTickDisplayPrice={endDisplayPrice}
                 newLimitOrderTransactionHash={newLimitOrderTransactionHash}
                 txErrorCode={txErrorCode}
                 txErrorMessage={txErrorMessage}
@@ -560,7 +675,7 @@ export default function Limit(props: LimitPropsIF) {
                         setLimitButtonErrorMessage={setLimitButtonErrorMessage}
                         isWithdrawFromDexChecked={isWithdrawFromDexChecked}
                         setIsWithdrawFromDexChecked={setIsWithdrawFromDexChecked}
-                        insideTickDisplayPrice={insideTickDisplayPrice}
+                        insideTickDisplayPrice={endDisplayPrice}
                         isDenominationInBase={tradeData.isDenomBase}
                         activeTokenListsChanged={activeTokenListsChanged}
                         indicateActiveTokenListsChanged={indicateActiveTokenListsChanged}
@@ -582,6 +697,9 @@ export default function Limit(props: LimitPropsIF) {
                     isTokenABase={isSellTokenBase}
                     isDenomBase={isDenomBase}
                     limitRate={limitRate}
+                    startDisplayPrice={startDisplayPrice}
+                    middleDisplayPrice={middleDisplayPrice}
+                    endDisplayPrice={endDisplayPrice}
                 />
                 {isAuthenticated && isWeb3Enabled ? (
                     !isTokenAAllowanceSufficient && parseFloat(tokenAInputQty) > 0 ? (
