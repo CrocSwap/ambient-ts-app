@@ -521,7 +521,7 @@ export default function Limit(props: LimitPropsIF) {
 
     // -------------------------END OF Limit SHARE FUNCTIONALITY---------------------------
     return (
-        <section>
+        <section className={styles.scrollable_container}>
             <ContentContainer isOnTradeRoute>
                 <LimitHeader
                     chainId={chainId}
