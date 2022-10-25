@@ -61,6 +61,9 @@ interface PortfolioPropsIF {
     quoteTokenBalance: string;
     baseTokenDexBalance: string;
     quoteTokenDexBalance: string;
+
+    currentTxActiveInTransactions: string;
+    setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
 }
 
 // const cachedFetchAddress = memoizePromiseFn(fetchAddress);
@@ -94,6 +97,9 @@ export default function Portfolio(props: PortfolioPropsIF) {
         quoteTokenBalance,
         baseTokenDexBalance,
         quoteTokenDexBalance,
+
+        currentTxActiveInTransactions,
+        setCurrentTxActiveInTransactions,
 
         showSidebar,
         isUserLoggedIn,
@@ -375,6 +381,8 @@ export default function Portfolio(props: PortfolioPropsIF) {
                     quoteTokenBalance={quoteTokenBalance}
                     baseTokenDexBalance={baseTokenDexBalance}
                     quoteTokenDexBalance={quoteTokenDexBalance}
+                    currentTxActiveInTransactions={currentTxActiveInTransactions}
+                    setCurrentTxActiveInTransactions={setCurrentTxActiveInTransactions}
                 />
                 {connectedAccountActive && !fullLayoutActive ? exchangeBalanceComponent : null}
             </div>

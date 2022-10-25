@@ -125,7 +125,9 @@ text-transform: capitalize;
   /* } */
   
  
-
+  .main_list_container > ul:nth-child(1){
+    z-index: 2;
+  }
 
 .align_center{
     display: flex;

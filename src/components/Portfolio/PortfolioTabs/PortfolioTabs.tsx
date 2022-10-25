@@ -4,7 +4,7 @@ import { useEffect, useState, Dispatch, SetStateAction, ReactNode } from 'react'
 // START: Import JSX Functional Components
 import Wallet from '../../Global/Account/AccountTabs/Wallet/Wallet';
 import Exchange from '../../Global/Account/AccountTabs/Exchange/Exchange';
-import TransactionsTable from '../../Global/Account/AccountTabs/Transaction/TransactionsTable';
+// import TransactionsTable from '../../Global/Account/AccountTabs/Transaction/TransactionsTable';
 import TabComponent from '../../Global/TabComponent/TabComponent';
 
 // START: Import Local Files
@@ -27,6 +27,7 @@ import { TokenPriceFn } from '../../../App/functions/fetchTokenPrice';
 import { fetchUserRecentChanges } from '../../../App/functions/fetchUserRecentChanges';
 import Orders from '../../Trade/TradeTabs/Orders/Orders';
 import Ranges from '../../Trade/TradeTabs/Ranges/Ranges';
+import Transactions from '../../Trade/TradeTabs/Transactions/Transactions';
 
 // interface for React functional component props
 interface PortfolioTabsPropsIF {
@@ -61,6 +62,9 @@ interface PortfolioTabsPropsIF {
     quoteTokenBalance: string;
     baseTokenDexBalance: string;
     quoteTokenDexBalance: string;
+
+    currentTxActiveInTransactions: string;
+    setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
 }
 
 // React functional component
@@ -103,6 +107,10 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
     const [otherAccountTransactionData, setOtherAccountTransactionData] = useState<ITransaction[]>(
         [],
     );
+
+    // useEffect(() => {
+    //     console.log({ connectedAccountPositionData });
+    // }, [connectedAccountPositionData]);
 
     const httpGraphCacheServerDomain = 'https://809821320828123.de:5000';
 
@@ -210,6 +218,11 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
         ? connectedAccountTransactionData
         : otherAccountTransactionData;
 
+    // console.log({ connectedAccountActive });
+    // console.log({ connectedAccountTransactionData });
+    // console.log({ otherAccountTransactionData });
+    // console.log({ activeAccountTransactionData });
+
     // props for <Wallet/> React Element
     const walletProps = {
         crocEnv: crocEnv,
@@ -251,8 +264,9 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
         closeGlobalModal: props.closeGlobalModal,
         setCurrentPositionActive: props.setCurrentPositionActive,
         showSidebar: props.showSidebar,
-        positions: activeAccountPositionData,
+        activeAccountPositionData: activeAccountPositionData,
         isOnPortfolioPage: true,
+        connectedAccountActive: connectedAccountActive,
         lastBlockNumber: lastBlockNumber,
         chainId: chainId,
         provider: props.provider,
@@ -267,11 +281,33 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
 
     // props for <Transactions/> React Element
     const transactionsProps = {
-        transactions: activeAccountTransactionData,
+        activeAccountTransactionData: activeAccountTransactionData,
+        connectedAccountActive: connectedAccountActive,
+        isShowAllEnabled: false,
+        changesInSelectedCandle: undefined,
+        tokenMap: tokenMap,
+        graphData: graphData,
+        chainData: props.chainData,
+        blockExplorer: props.chainData.blockExplorer || undefined,
+        currentTxActiveInTransactions: props.currentTxActiveInTransactions,
+        account: account,
+        setCurrentTxActiveInTransactions: props.setCurrentTxActiveInTransactions,
+        expandTradeTable: false,
+
+        isCandleSelected: false,
+        // filter: props.filter,
+        closeGlobalModal: props.closeGlobalModal,
+
+        openGlobalModal: props.openGlobalModal,
+        showSidebar: props.showSidebar,
+
+        isOnPortfolioPage: true,
     };
 
     // Props for <Orders/> React Element
     const ordersProps = {
+        activeAccountLimitOrderData: activeAccountLimitOrderData,
+        connectedAccountActive: connectedAccountActive,
         crocEnv: props.crocEnv,
         expandTradeTable: false,
         chainData: props.chainData,
@@ -289,7 +325,7 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
     const accountTabData = [
         {
             label: 'Transactions',
-            content: <TransactionsTable {...transactionsProps} />,
+            content: <Transactions {...transactionsProps} />,
             icon: recentTransactionsImage,
         },
         { label: 'Limit Orders', content: <Orders {...ordersProps} />, icon: openOrdersImage },

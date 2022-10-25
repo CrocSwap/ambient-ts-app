@@ -15,11 +15,11 @@ export const useProcessOrder = (limitOrder: ILimitOrderState) => {
     const selectedBaseToken = tradeData.baseToken.address.toLowerCase();
     const selectedQuoteToken = tradeData.quoteToken.address.toLowerCase();
 
-    const quoteTokenLogo = tradeData.quoteToken.logoURI;
-    const baseTokenLogo = tradeData.baseToken.logoURI;
+    const baseTokenSymbol = limitOrder.baseSymbol;
+    const quoteTokenSymbol = limitOrder.quoteSymbol;
 
-    const baseTokenSymbol = tradeData.baseToken.symbol;
-    const quoteTokenSymbol = tradeData.quoteToken.symbol;
+    const quoteTokenLogo = limitOrder.quoteTokenLogoURI;
+    const baseTokenLogo = limitOrder.baseTokenLogoURI;
 
     const isOwnerActiveAccount = limitOrder.user.toLowerCase() === account?.toLowerCase();
     const isDenomBase = tradeData.isDenomBase;
