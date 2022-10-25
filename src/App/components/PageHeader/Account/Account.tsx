@@ -10,6 +10,7 @@ import DropdownMenu from '../NavbarDropdownMenu/NavbarDropdownMenu';
 import NavItem from '../NavItem/NavItem';
 import IconWithTooltip from '../../../../components/Global/IconWithTooltip/IconWithTooltip';
 import { MdAccountBalanceWallet } from 'react-icons/md';
+import { NavLink } from 'react-router-dom';
 
 interface AccountPropsIF {
     isUserLoggedIn: boolean;
@@ -68,10 +69,12 @@ export default function Account(props: AccountPropsIF) {
                 </span>
             </IconWithTooltip>
             {isUserLoggedIn && (
-                <div className={`${styles.title_gradient}`} onClick={handleCopyAddress}>
-                    <MdAccountBalanceWallet color='#ebebff' />
-                    <p>{ensName !== '' ? ensName : props.accountAddress}</p>
-                </div>
+                <NavLink to={`/${props.accountAddressFull}`}>
+                    <div className={`${styles.title_gradient}`} onClick={handleCopyAddress}>
+                        <MdAccountBalanceWallet color='#ebebff' />
+                        <p>{ensName !== '' ? ensName : props.accountAddress}</p>
+                    </div>
+                </NavLink>
             )}
             <NavItem
                 icon={<FiMoreHorizontal size={20} color='#CDC1FF' />}
