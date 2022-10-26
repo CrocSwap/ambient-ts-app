@@ -52,7 +52,8 @@ export const fetchNativeTokenBalance = async (
         .toString();
 
     const nativeDexBalanceDisplay = toDisplayQty(nativeDexBalanceNonDisplay, 18);
-    const nativeDexBalanceDisplayNum = parseFloat(nativeDexBalanceNonDisplay);
+    const nativeDexBalanceDisplayNum = parseFloat(nativeDexBalanceDisplay);
+    // const nativeDexBalanceDisplayNum = parseFloat(nativeDexBalanceNonDisplay);
     const nativeWalletBalanceDisplay = toDisplayQty(nativeWalletBalanceNonDisplay, 18);
     const nativeWalletBalanceDisplayNum = parseFloat(nativeWalletBalanceDisplay);
 

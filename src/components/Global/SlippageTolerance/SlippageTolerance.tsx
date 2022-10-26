@@ -3,19 +3,18 @@ import styles from './SlippageTolerance.module.css';
 
 interface TransactionSettingsPropsIF {
     slippageValue: string;
-    setSlippage: (input: string) => void;
+    setSlippageLocalState: (input: string) => void;
     module: string;
     // setNewSlippage: Dispatch<SetStateAction<string>>;
+    handleKeyDown: (event: { keyCode: number }) => void;
 }
 
 export default function SlippageTolerance(props: TransactionSettingsPropsIF) {
-    const { slippageValue, setSlippage, module } = props;
+    const { slippageValue, setSlippageLocalState, module, handleKeyDown } = props;
 
     const preset1 = module === 'Range Order' ? '1' : '0.1';
     const preset2 = module === 'Range Order' ? '2' : '0.3';
     const preset3 = module === 'Range Order' ? '3' : '0.5';
-
-    // console.log({ slippageValue });
 
     return (
         <div className={styles.slippage_tolerance_container}>
@@ -25,15 +24,19 @@ export default function SlippageTolerance(props: TransactionSettingsPropsIF) {
                     <div className={styles.input_container}>
                         <input
                             id='slippage_tolerance_input_field'
-                            onChange={(e) => setSlippage(e.target.value)}
+                            onChange={(e) => {
+                                setSlippageLocalState(e.target.value);
+                            }}
                             type='text'
                             value={slippageValue}
-                            placeholder={'slippage'}
+                            autoComplete={'off'}
+                            placeholder={'e.g. 0.3'}
+                            onKeyDown={handleKeyDown}
                         />
                     </div>
-                    <button onClick={() => setSlippage(preset1)}>{preset1}%</button>
-                    <button onClick={() => setSlippage(preset2)}>{preset2}%</button>
-                    <button onClick={() => setSlippage(preset3)}>{preset3}%</button>
+                    <button onClick={() => setSlippageLocalState(preset1)}>{preset1}%</button>
+                    <button onClick={() => setSlippageLocalState(preset2)}>{preset2}%</button>
+                    <button onClick={() => setSlippageLocalState(preset3)}>{preset3}%</button>
                     {/* <button onClick={() => setSlippage('0.5')}>0.5%</button>
                     <button onClick={() => setSlippage('1')}>1%</button> */}
                 </div>
