@@ -144,11 +144,11 @@ export default function ExtraInfo(props: ExtraInfoPropsIF) {
         {
             title: 'Slippage Tolerance',
             tooltipTitle: 'This can be changed in settings.',
-            data: `${slippageTolerance}%`,
+            data: `±${slippageTolerance}%`,
         },
         {
             title: 'Liquidity Provider Fee',
-            tooltipTitle: 'This is a dynamically set rate to reward liquidity providers.',
+            tooltipTitle: `This is a dynamically updated rate to reward ${baseTokenSymbol} / ${quoteTokenSymbol} liquidity providers.`,
             data: `${liquidityProviderFee * 100}%`,
         },
     ];
