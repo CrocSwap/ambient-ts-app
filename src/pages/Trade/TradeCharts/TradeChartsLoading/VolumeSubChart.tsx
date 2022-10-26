@@ -151,8 +151,10 @@ export default function VolumeSubChart(props: VolumeData) {
                 .xLabel('')
                 .yLabel('')
                 .decorate((selection: any) => {
-                    selection.select('.x-axis').style('height', '1px');
                     selection.enter().select('d3fc-svg.plot-area').call(zoom);
+                    selection.select('.x-axis').remove();
+
+                    console.log(selection.select('.y-axis').select('svg').node());
                 })
                 .svgPlotArea(multi);
 
@@ -181,7 +183,7 @@ export default function VolumeSubChart(props: VolumeData) {
 
             render();
         }
-    }, [volumeData, crosshairData, period]);
+    }, [xScale, volumeData, crosshairData, period]);
 
     return <div style={{ height: '10%', width: '100%' }} className='chart-volume'></div>;
 }

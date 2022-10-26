@@ -185,6 +185,10 @@ label {
     flex-direction: column;
 }
 
+.scroll {
+    box-shadow: 0 8px 32px 0 rgba(255, 255, 255, 0.47);
+}
+
 
 @media  (max-width: 1280px) and (min-width: 700px) {
 

@@ -75,7 +75,8 @@ export default function FeeRateSubChart(props: FreeRateData) {
                 .yTicks([2])
                 .yTickFormat(formatDollarAmountAxis)
                 .decorate((selection: any) => {
-                    selection.select('.x-axis').style('height', '3px');
+                    selection.select('.x-axis').remove();
+                    d3.select('.y-axis').select('svg').select('path').remove();
                 })
                 .svgPlotArea(multi);
 

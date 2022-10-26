@@ -141,6 +141,7 @@ export default function Chart(props: ChartData) {
     const [isLineSwapped, setIsLineSwapped] = useState<boolean>(false);
     const [dragControl, setDragControl] = useState(false);
     const [rescale, setRescale] = useState(true);
+    const [rescaleText, setRescaleText] = useState<any>();
 
     // Data
     const [crosshairData, setCrosshairData] = useState([{ x: 0, y: -1 }]);
@@ -148,7 +149,7 @@ export default function Chart(props: ChartData) {
     const [indicatorLineData] = useState([{ x: 0, y: 0 }]);
     const [liqTooltipSelectedLiqBar, setLiqTooltipSelectedLiqBar] = useState({
         activeLiq: 0,
-        upperBoundPriceDecimalCorrected: 0,
+        liqPrices: 0,
     });
 
     // d3
@@ -182,30 +183,12 @@ export default function Chart(props: ChartData) {
     const setDefaultRangeData = () => {
         setRanges((prevState) => {
             const newTargets = [...prevState];
-            newTargets.filter((target: any) => target.name === 'Max')[0].value =
-                props.candleData !== undefined
-                    ? Math.max(
-                          ...props.candleData.chartData.map((o) => {
-                              return o.open !== undefined ? o.open : 0;
-                          }),
-                      )
-                    : 0;
-            newTargets.filter((target: any) => target.name === 'Min')[0].value =
-                props.candleData !== undefined
-                    ? Math.min(
-                          ...props.candleData.chartData.map((o) => {
-                              return o.close !== undefined ? o.close : Infinity;
-                          }),
-                      )
-                    : 0;
+            newTargets.filter((target: any) => target.name === 'Max')[0].value = Infinity;
+            newTargets.filter((target: any) => target.name === 'Min')[0].value = 0;
 
             return newTargets;
         });
     };
-
-    useEffect(() => {
-        setDefaultRangeData();
-    }, []);
 
     const render = useCallback(() => {
         const nd = d3.select('#d3fc_group').node() as any;
@@ -335,7 +318,7 @@ export default function Chart(props: ChartData) {
                 .accessors([(d: any) => d.date])
                 .padUnit('domain')
                 // ensure that the scale is padded by one day in either direction
-                .pad([parsedChartData.period * 5000, (parsedChartData.period / 2) * 100000]);
+                .pad([parsedChartData.period * 1000, (parsedChartData.period / 2) * 80000]);
 
             const subChartxExtent = d3fc
                 .extentDate()
@@ -1029,6 +1012,58 @@ export default function Chart(props: ChartData) {
     useEffect(() => {
         setDragControl(false);
     }, [parsedChartData]);
+
+    useEffect(() => {
+        if (rescaleText !== undefined) {
+            rescaleText.text(() => (rescale ? 'AUTO' : 'MANUEL'));
+        }
+    }, [rescale]);
+
+    useEffect(() => {
+        if (d3.select(d3Xaxis.current).select('svg').select('#rescale').node() == null) {
+            const rescaleText = d3
+                .select(d3Xaxis.current)
+                .select('svg')
+                .append('text')
+                .attr('dx', '95%')
+                .attr('dy', '60%')
+                .attr('id', 'rescale')
+                .style('font-size', '14px')
+                .style('font-weight', 'bold')
+                .style('fill', '#3a3c6b')
+                .text('AUTO');
+
+            setRescaleText(() => {
+                return rescaleText;
+            });
+        }
+
+        if (d3.select(d3Xaxis.current).select('svg').select('#scroll').node() == null) {
+            d3.select(d3Xaxis.current)
+                .select('svg')
+                .append('circle')
+                .attr('id', 'scroll')
+                .attr('cx', '89%')
+                .attr('cy', '-50%')
+                .attr('r', 12)
+                .attr('fill', 'rgba(41,47,63,0.8)')
+                .attr('class', 'scroll')
+                .on('mouseover', (event: any) => {
+                    d3.select(event.currentTarget).style('cursor', 'pointer');
+                    d3.select(d3Xaxis.current)
+                        .select('svg')
+                        .select('#scroll')
+                        .attr('fill', 'rgba(41,47,63,1)');
+                })
+                .on('mouseleave', (event: any) => {
+                    d3.select(event.currentTarget).style('cursor', 'pointer');
+                    d3.select(d3Xaxis.current)
+                        .select('svg')
+                        .select('#scroll')
+                        .attr('fill', 'rgba(41,47,63,0.8)');
+                });
+        }
+    }, []);
 
     // Horizontal Lines
     useEffect(() => {
@@ -1797,7 +1832,27 @@ export default function Chart(props: ChartData) {
 
     useEffect(() => {
         if (scaleData !== undefined) {
-            BarSeries(scaleData, props.liquidityData, setBarSeries);
+            const domainTop = Math.max(
+                ...props.liquidityData.liqData.map((o: any) => {
+                    return o.width !== undefined ? o.width : 1;
+                }),
+            );
+
+            const domainBottom = Math.min(
+                ...props.liquidityData.liqData.map((o: any) => {
+                    return o.width !== undefined ? o.width : 1;
+                }),
+            );
+
+            const liquidityScale = d3.scaleLog().domain([domainTop, domainBottom]).range([0, 100]);
+
+            props.liquidityData.liqData.map((data: any) => {
+                if (data.width !== undefined) {
+                    console.log(liquidityScale(data.width));
+                }
+            });
+
+            BarSeries(scaleData, props.liquidityData, setBarSeries, liquidityScale);
         }
     }, [scaleData]);
 
@@ -1930,9 +1985,9 @@ export default function Chart(props: ChartData) {
                 };
 
                 // axes
-                const xAxis = d3fc.axisBottom().scale(scaleData.xScale);
+                const xAxis = d3fc.axisBottom().scale(scaleData.xScale).tickArguments([6]);
 
-                const yAxis = d3fc.axisRight().scale(scaleData.yScale);
+                const yAxis = d3fc.axisRight().scale(scaleData.yScale).tickArguments([5]);
 
                 const candleJoin = d3fc.dataJoin('g', 'candle');
 
@@ -1964,10 +2019,10 @@ export default function Chart(props: ChartData) {
                 d3.select(d3PlotArea.current).on('draw', function (event: any) {
                     async function createElements() {
                         const svg = d3.select(event.target).select('svg');
-                        targetsJoin(svg, [targets.ranges]).call(horizontalLine);
                         crosshairHorizontalJoin(svg, [crosshairData]).call(crosshairHorizontal);
                         crosshairVerticalJoin(svg, [crosshairData]).call(crosshairVertical);
 
+                        targetsJoin(svg, [targets.ranges]).call(horizontalLine);
                         marketJoin(svg, [targets.market]).call(marketLine);
                         limitJoin(svg, [targets.limit]).call(limitLine);
 
@@ -2011,18 +2066,16 @@ export default function Chart(props: ChartData) {
                                 const filtered =
                                     liquidityData.liqData.length > 1
                                         ? liquidityData.liqData.filter(
-                                              (d: any) => d.upperBoundPriceDecimalCorrected != null,
+                                              (d: any) => d.liqPrices != null,
                                           )
                                         : liquidityData.liqData;
 
                                 const nearest = filtered.reduce(function (prev: any, curr: any) {
                                     return Math.abs(
-                                        curr.upperBoundPriceDecimalCorrected -
-                                            scaleData.yScale.invert(event.offsetY),
+                                        curr.liqPrices - scaleData.yScale.invert(event.offsetY),
                                     ) <
                                         Math.abs(
-                                            prev.upperBoundPriceDecimalCorrected -
-                                                scaleData.yScale.invert(event.offsetY),
+                                            prev.liqPrices - scaleData.yScale.invert(event.offsetY),
                                         )
                                         ? curr
                                         : prev;
@@ -2048,22 +2101,17 @@ export default function Chart(props: ChartData) {
                                     .selectAll('.horizontal  > path')
                                     .style('fill', (d: any) => {
                                         if (
-                                            currentPriceData[0].value >
-                                                d.upperBoundPriceDecimalCorrected &&
-                                            d.upperBoundPriceDecimalCorrected >=
-                                                nearest.upperBoundPriceDecimalCorrected
+                                            currentPriceData[0].value > d.liqPrices &&
+                                            d.liqPrices >= nearest.liqPrices
                                         ) {
                                             return 'rgba(205, 193, 255, 0.8)';
                                         } else if (
-                                            currentPriceData[0].value <
-                                                d.upperBoundPriceDecimalCorrected &&
-                                            d.upperBoundPriceDecimalCorrected <=
-                                                nearest.upperBoundPriceDecimalCorrected
+                                            currentPriceData[0].value < d.liqPrices &&
+                                            d.liqPrices <= nearest.liqPrices
                                         ) {
                                             return 'rgba(115, 113, 252, 0.8)';
                                         } else {
-                                            return d.upperBoundPriceDecimalCorrected >
-                                                scaleData.barThreshold
+                                            return d.liqPrices > scaleData.barThreshold
                                                 ? 'rgba(115, 113, 252, 0.3)'
                                                 : 'rgba(205, 193, 255, 0.3)';
                                         }
@@ -2075,8 +2123,7 @@ export default function Chart(props: ChartData) {
                                 d3.select(event.currentTarget)
                                     .selectAll('.bar > path')
                                     .style('fill', (d: any) => {
-                                        return d.upperBoundPriceDecimalCorrected >
-                                            scaleData.barThreshold
+                                        return d.liqPrices > scaleData.barThreshold
                                             ? 'rgba(115, 113, 252, 0.3)'
                                             : 'rgba(205, 193, 255, 0.3)';
                                     });
@@ -2096,6 +2143,7 @@ export default function Chart(props: ChartData) {
 
                 d3.select(d3Xaxis.current).on('draw', function (event: any) {
                     d3.select(event.target).select('svg').call(xAxis);
+                    d3.select(d3Xaxis.current).select('svg').select('.domain').remove();
                 });
 
                 d3.select(d3Yaxis.current).on('draw', function (event: any) {
@@ -2176,33 +2224,28 @@ export default function Chart(props: ChartData) {
             const liqTextData = { volume: 0, totalValue: 0 };
 
             props.liquidityData.liqData.map((liqData: any) => {
-                if (liqTooltipSelectedLiqBar.upperBoundPriceDecimalCorrected < poolPriceDisplay) {
+                if (liqTooltipSelectedLiqBar.liqPrices < poolPriceDisplay) {
                     if (
-                        liqData.upperBoundPriceDecimalCorrected >=
-                            liqTooltipSelectedLiqBar.upperBoundPriceDecimalCorrected &&
-                        poolPriceDisplay > liqData.upperBoundPriceDecimalCorrected
+                        liqData.liqPrices >= liqTooltipSelectedLiqBar.liqPrices &&
+                        poolPriceDisplay > liqData.liqPrices
                     ) {
-                        liqTextData.totalValue =
-                            liqTextData.totalValue + liqData.upperBoundPriceDecimalCorrected;
+                        liqTextData.totalValue = liqTextData.totalValue + liqData.liqPrices;
                     }
                 } else {
                     if (
-                        liqData.upperBoundPriceDecimalCorrected <=
-                            liqTooltipSelectedLiqBar.upperBoundPriceDecimalCorrected &&
-                        poolPriceDisplay < liqData.upperBoundPriceDecimalCorrected
+                        liqData.liqPrices <= liqTooltipSelectedLiqBar.liqPrices &&
+                        poolPriceDisplay < liqData.liqPrices
                     ) {
-                        liqTextData.totalValue =
-                            liqTextData.totalValue + liqData.upperBoundPriceDecimalCorrected;
+                        liqTextData.totalValue = liqTextData.totalValue + liqData.liqPrices;
                     }
                 }
             });
 
-            const percentageValue =
-                (100 * liqTextData.totalValue) / parseFloat(props.liquidityData.totalLiq);
+            // const percentageValue = new BigNumber((100 * liqTextData.totalValue).toString()).div(new BigNumber(props.liquidityData.totalLiq.toString()));
 
             liqTooltip.html(
                 '<p> % ' +
-                    tooltipFormatter(percentageValue) +
+                    tooltipFormatter(0) +
                     ' </p>' +
                     '<p> $ ' +
                     formatDollarAmountAxis(liqTextData.totalValue) +
@@ -2330,7 +2373,7 @@ export default function Chart(props: ChartData) {
                         <d3fc-svg
                             className='y-axis'
                             ref={d3Yaxis}
-                            style={{ width: '5%' }}
+                            style={{ width: '3%' }}
                         ></d3fc-svg>
                     </div>
 
@@ -2404,10 +2447,11 @@ export default function Chart(props: ChartData) {
                         </>
                     )}
 
+                    <hr />
                     <d3fc-svg
                         ref={d3Xaxis}
                         className='x-axis'
-                        style={{ height: '2em', marginRight: '3em', width: '100%' }}
+                        style={{ height: '2em', width: '100%' }}
                     ></d3fc-svg>
                 </div>
             </d3fc-group>

@@ -115,7 +115,8 @@ export default function TvlSubChart(props: TvlData) {
                 .yTicks([2])
                 .yTickFormat(formatDollarAmountAxis)
                 .decorate((selection: any) => {
-                    selection.select('.x-axis').style('height', '1px');
+                    selection.select('.x-axis').remove();
+                    d3.select('.y-axis').select('svg').select('path').remove();
                     selection.enter().select('d3fc-svg.plot-area').call(zoom);
                 })
                 .svgPlotArea(multi);

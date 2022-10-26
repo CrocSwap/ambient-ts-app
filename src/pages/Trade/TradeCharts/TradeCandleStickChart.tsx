@@ -184,12 +184,29 @@ export default function TradeCandleStickChart(props: ChartData) {
 
             const liquidityScale = d3.scaleLog().domain([domainLeft, domainRight]).range([0, 1000]);
 
-            props.liquidityData.ranges.map((data: any) => {
+            props.liquidityData.ranges.map((data: any, index: any) => {
+                let width: any = undefined;
+
+                const liqPrices = denominationsInBase
+                    ? data.upperBoundInvPriceDecimalCorrected
+                    : data.upperBoundPriceDecimalCorrected;
+
+                if (index > 0 && index < props.liquidityData.ranges.length - 1) {
+                    const diffBot =
+                        parseFloat(liqPrices) -
+                        props.liquidityData.ranges[index - 1].upperBoundPriceDecimalCorrected;
+
+                    const diffTop =
+                        props.liquidityData.ranges[index + 1].upperBoundPriceDecimalCorrected -
+                        parseFloat(liqPrices);
+
+                    width = diffBot + diffTop;
+                }
+
                 liqData.push({
                     activeLiq: liquidityScale(data.activeLiq),
-                    upperBoundPriceDecimalCorrected: denominationsInBase
-                        ? data.upperBoundInvPriceDecimalCorrected
-                        : data.upperBoundPriceDecimalCorrected,
+                    liqPrices: liqPrices,
+                    width: isNaN(width) ? undefined : width,
                 });
 
                 const pinnedDisplayPrices = getPinnedPriceValuesFromDisplayPrices(
