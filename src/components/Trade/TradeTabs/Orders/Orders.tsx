@@ -21,6 +21,7 @@ import OrderHeader from './OrderTable/OrderHeader';
 import OrderRow from './OrderTable/OrderRow';
 import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
 import TableSkeletons from '../TableSkeletons/TableSkeletons';
+import { useSortedLimits } from '../useSortedLimits';
 
 // import OrderAccordions from './OrderAccordions/OrderAccordions';
 
@@ -65,6 +66,12 @@ export default function Orders(props: propsIF) {
 
     const tradeData = useAppSelector((state) => state.tradeData);
 
+    const [sortBy, setSortBy, reverseSort, setReverseSort, sortedLimits] = useSortedLimits(
+        'lastUpdate',
+        true, // leaderboard is never limited to the user
+        isShowAllEnabled ? limitOrdersByPool : limitOrdersByUser,
+    );
+
     const baseTokenAddressLowerCase = tradeData.baseToken.address.toLowerCase();
     const quoteTokenAddressLowerCase = tradeData.quoteToken.address.toLowerCase();
 
@@ -86,13 +93,6 @@ export default function Orders(props: propsIF) {
     const [limitOrderData, setLimitOrderData] = useState(
         isOnPortfolioPage ? activeAccountLimitOrderData || [] : limitOrdersByPool,
     );
-
-    // TODO:   currently the values to determine sort order are not
-    // TODO:   ... being used productively because there is only
-    // TODO:   ... placeholder data, we will revisit this later on
-
-    const [sortBy, setSortBy] = useState('default');
-    const [reverseSort, setReverseSort] = useState(false);
 
     const [debouncedIsShowAllEnabled, setDebouncedIsShowAllEnabled] = useState(false);
 

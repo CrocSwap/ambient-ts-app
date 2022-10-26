@@ -13,18 +13,18 @@ import {
     // addPositionsByPool,
     // addPositionsByUser,
     graphData,
-    // updateLeaderboard,
+    updateLeaderboard,
 } from '../../../../utils/state/graphDataSlice';
 import Pagination from '../../../Global/Pagination/Pagination';
 
 import {
-    // useAppDispatch,
+    useAppDispatch,
     useAppSelector
 } from '../../../../utils/hooks/reduxToolkit';
 import { useSortedPositions } from '../useSortedPositions';
 import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
-// import { PositionIF } from '../../../../utils/interfaces/PositionIF';
-// import { updateApy } from '../../../../App/functions/getPositionData';
+import { PositionIF } from '../../../../utils/interfaces/PositionIF';
+import { updateApy } from '../../../../App/functions/getPositionData';
 import { TokenIF } from '../../../../utils/interfaces/TokenIF';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
@@ -102,35 +102,35 @@ export default function Leaderboard(props: LeaderboardPropsIF) {
         graphData?.leaderboardByPool?.positions,
     );
 
-    // const topThreePositions = sortedPositions.slice(0, 3);
+    const topThreePositions = sortedPositions.slice(0, 3);
 
-    // const dispatch = useAppDispatch();
+    const dispatch = useAppDispatch();
 
-    // useEffect(() => {
-    //     if (topThreePositions) {
-    //         Promise.all(
-    //             topThreePositions.map((position: PositionIF) => {
-    //                 return updateApy(position);
-    //             }),
-    //         )
-    //             .then((updatedPositions) => {
-    //                 if (isShowAllEnabled) {
-    //                     dispatch(updateLeaderboard(updatedPositions));
-    //                 } else {
-    //                     dispatch(updateLeaderboard(updatedPositions));
-    //                 }
-    //             })
-    //             .catch(console.log);
-    //     }
-    // }, [
-    //     JSON.stringify({
-    //         id0: topThreePositions[0]?.positionId,
-    //         id1: topThreePositions[1]?.positionId,
-    //         id2: topThreePositions[2]?.positionId,
-    //     }),
-    //     lastBlockNumber,
-    //     isShowAllEnabled,
-    // ]);
+    useEffect(() => {
+        if (topThreePositions) {
+            Promise.all(
+                topThreePositions.map((position: PositionIF) => {
+                    return updateApy(position);
+                }),
+            )
+                .then((updatedPositions) => {
+                    if (isShowAllEnabled) {
+                        dispatch(updateLeaderboard(updatedPositions));
+                    } else {
+                        dispatch(updateLeaderboard(updatedPositions));
+                    }
+                })
+                .catch(console.log);
+        }
+    }, [
+        JSON.stringify({
+            id0: topThreePositions[0]?.positionId,
+            id1: topThreePositions[1]?.positionId,
+            id2: topThreePositions[2]?.positionId,
+        }),
+        lastBlockNumber,
+        isShowAllEnabled,
+    ]);
 
     // ---------------------
     const [currentPage, setCurrentPage] = useState(1);
