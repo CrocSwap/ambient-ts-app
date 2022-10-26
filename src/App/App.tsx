@@ -377,8 +377,8 @@ export default function App() {
     const [favePools, addPoolToFaves, removePoolFromFaves] = useFavePools();
 
     const isPairStable = useMemo(
-        () => checkIsStable(tradeData.tokenA.address, tradeData.tokenA.address, chainData.chainId),
-        [tradeData.tokenA.address, tradeData.tokenA.address, chainData.chainId],
+        () => checkIsStable(tradeData.tokenA.address, tradeData.tokenB.address, chainData.chainId),
+        [tradeData.tokenA.address, tradeData.tokenB.address, chainData.chainId],
     );
 
     // update local state with searchable tokens once after initial load of app
