@@ -1965,6 +1965,7 @@ export default function App() {
         isDenomBase: tradeData.isDenomBase,
         showSidebar: showSidebar,
         toggleSidebar: toggleSidebar,
+        setShowSidebar: setShowSidebar,
         chainId: chainData.chainId,
 
         currentTxActiveInTransactions: currentTxActiveInTransactions,

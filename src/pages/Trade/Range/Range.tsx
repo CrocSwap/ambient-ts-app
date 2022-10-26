@@ -1004,6 +1004,7 @@ export default function Range(props: RangePropsIF) {
         isAmbient: isAmbient,
         isTokenABase: isTokenABase,
         depositSkew: depositSkew,
+        gasPriceInGwei: gasPriceInGwei,
         baseTokenBalance,
         quoteTokenBalance,
         baseTokenDexBalance,

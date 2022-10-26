@@ -680,6 +680,7 @@ export default function Limit(props: LimitPropsIF) {
                         activeTokenListsChanged={activeTokenListsChanged}
                         indicateActiveTokenListsChanged={indicateActiveTokenListsChanged}
                         poolExists={poolExists}
+                        gasPriceInGwei={gasPriceInGwei}
                     />
                 </motion.div>
                 <div className={styles.header_container}>

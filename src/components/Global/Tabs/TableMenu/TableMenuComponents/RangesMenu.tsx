@@ -216,7 +216,7 @@ export default function RangesMenu(props: RangesMenuIF) {
     const rangesMenu = (
         <div className={styles.actions_menu}>
             {view1 && repositionButton}
-            {view1 && !noRespositionButton && editButton}
+            {view1 && !noRespositionButton && !isOnPortfolioPage && editButton}
             {view3 && harvestButton}
             {view2 && removeButton}
             {view3 && detailsButton}

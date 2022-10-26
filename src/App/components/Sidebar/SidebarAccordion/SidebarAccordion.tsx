@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { useState, MouseEvent, ReactNode } from 'react';
+import { useState, MouseEvent, ReactNode, Dispatch, SetStateAction } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MdPlayArrow } from 'react-icons/md';
 
@@ -15,6 +15,8 @@ import styles from '../Sidebar.module.css';
 interface SidebarAccordionPropsIF {
     children?: ReactNode;
     showSidebar: boolean;
+    setShowSidebar: Dispatch<SetStateAction<boolean>>;
+
     toggleSidebar: (event: MouseEvent<HTMLDivElement> | MouseEvent<HTMLLIElement>) => void;
     item: {
         name: string;
@@ -26,7 +28,7 @@ interface SidebarAccordionPropsIF {
 }
 
 export default function SidebarAccordion(props: SidebarAccordionPropsIF) {
-    const { showSidebar, idx, item, toggleSidebar } = props;
+    const { showSidebar, idx, item, setShowSidebar } = props;
 
     const [isOpen, setIsOpen] = useState(false);
 
@@ -59,12 +61,20 @@ export default function SidebarAccordion(props: SidebarAccordionPropsIF) {
     //     </div>
     // )
 
+    function handleAccordionOpen() {
+        setIsOpen(!isOpen);
+        setShowSidebar(true);
+    }
+
     return (
         <>
             <motion.li
                 key={idx}
                 className={styles.sidebar_item}
-                onClick={showSidebar ? () => setIsOpen(!isOpen) : toggleSidebar}
+                onClick={
+                    // showSidebar ? () => setIsOpen(!isOpen) : toggleSidebar
+                    () => handleAccordionOpen()
+                }
             >
                 <div>
                     <div className={styles.sidebar_link}>
