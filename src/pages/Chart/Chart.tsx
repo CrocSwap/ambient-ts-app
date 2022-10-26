@@ -206,6 +206,7 @@ export default function Chart(props: ChartData) {
 
     useEffect(() => {
         setDefaultRangeData();
+        addDefsStyle();
     }, []);
 
     const render = useCallback(() => {
@@ -218,6 +219,116 @@ export default function Chart(props: ChartData) {
 
         render();
     }, [props.chartItemStates, expandTradeTable, isCandleAdded]);
+
+    async function addMarketText(scale: any) {
+        await d3.select(d3Yaxis.current).select('svg').selectAll('#market').remove();
+
+        await d3
+            .select(d3Yaxis.current)
+            .select('svg')
+            .append('g')
+            .attr('id', 'market')
+            .append('text');
+        d3.select(d3Yaxis.current)
+            .select('svg')
+            .select('#market')
+            .select('text')
+            .attr('class', 'y_axis')
+            .text(market[0].value)
+            .style('transform', 'translateY(' + scale(market[0].value) + 'px)')
+            .attr('filter', 'url(#marketBg)');
+    }
+
+    async function addLimitText(scale: any) {
+        await d3.select(d3Yaxis.current).select('svg').selectAll('#limit').remove();
+
+        await d3
+            .select(d3Yaxis.current)
+            .select('svg')
+            .append('g')
+            .attr('id', 'limit')
+            .append('text');
+        d3.select(d3Yaxis.current)
+            .select('svg')
+            .select('#limit')
+            .select('text')
+            .attr('class', 'y_axis')
+            .text(limit[0].value)
+            .style('transform', 'translateY(' + scale(limit[0].value) + 'px)')
+            .attr('filter', 'url(#textBg)');
+    }
+
+    async function addText(scale: any) {
+        await d3.select(d3Yaxis.current).select('svg').selectAll('#yText').remove();
+        console.error(location.pathname);
+        if (!location.pathname.includes('market')) {
+            const textArray: any[] = location.pathname.includes('limit') ? limit : ranges;
+            textArray.forEach(async (element: any) => {
+                await d3
+                    .select(d3Yaxis.current)
+                    .select('svg')
+                    .append('g')
+                    .attr('id', 'yText')
+                    .append('text')
+                    .attr('id', element.name);
+                d3.select(d3Yaxis.current)
+                    .select('svg')
+                    .select('#' + element.name)
+                    .attr('class', 'y_axis')
+                    .text(element.value)
+                    .style('transform', 'translateY(' + scale(element.value) + 'px)')
+                    .attr('filter', 'url(#textBg)');
+            });
+        }
+
+        // const min = ranges?.filter((item) => item.name === 'Min')[0].value;
+        // const max = ranges?.filter((item) => item.name === 'Max')[0].value;
+
+        // await d3.select(d3Yaxis.current).select('svg').selectAll('#min').remove();
+        // await d3.select(d3Yaxis.current).select('svg').selectAll('#max').remove();
+
+        // await d3.select(d3Yaxis.current).select('svg').append('g').attr('id', 'min').append('text');
+
+        // await d3.select(d3Yaxis.current).select('svg').append('g').attr('id', 'max').append('text');
+
+        // d3.select(d3Yaxis.current)
+        //     .select('svg')
+        //     .select('#min')
+        //     .select('text')
+        //     .attr('class', 'y_axis')
+        //     .text(min)
+        //     .style('transform', 'translateY(' + scale(min) + 'px)')
+        //     .attr('filter', 'url(#textBg)');
+
+        // d3.select(d3Yaxis.current)
+        //     .select('svg')
+        //     .select('#max')
+        //     .select('text')
+        //     .attr('class', 'y_axis')
+        //     .text(max)
+        //     .style('transform', 'translateY(' + scale(max) + 'px)')
+        //     .attr('filter', 'url(#textBg)');
+    }
+
+    useEffect(() => {
+        if (scaleData) {
+            addMarketText(scaleData.yScale);
+            addText(scaleData.yScale);
+
+            // location.pathname.includes('limit')
+            //     ? addLimitText(scaleData.yScale)
+            //     : addText(scaleData.scale);
+        }
+    }, [
+        dragControl,
+        location,
+        limit,
+        ranges,
+        scaleData,
+        d3.select(d3Yaxis.current) &&
+            (d3.select(d3Yaxis.current).select('svg').node() as any) &&
+            (d3.select(d3Yaxis.current).select('svg').node() as any).getBBox().height,
+    ]);
 
     useEffect(() => {
         if (d3.select(d3Xaxis.current).select('svg').select('g').select('text').node() === null) {
@@ -242,11 +353,12 @@ export default function Chart(props: ChartData) {
                 .style('letter-spacing', '1px');
         }
 
-        if (d3.select(d3Yaxis.current).select('svg').select('g').select('text').node() === null) {
+        if (d3.select(d3Yaxis.current).select('svg').select('#yCrossHair').node() === null) {
             const yAxisText = d3
                 .select(d3Yaxis.current)
                 .select('svg')
                 .append('g')
+                .attr('id', 'yCrossHair')
                 .attr('visibility', 'hidden');
             yAxisText
                 .append('rect')
@@ -428,7 +540,7 @@ export default function Chart(props: ChartData) {
 
         d3.select(d3Yaxis.current)
             .select('svg')
-            .select('g')
+            .select('#yCrossHair')
             .style('transform', 'translateY(' + scaleData.yScale(crosshairData[0].y) + 'px)');
     };
 
@@ -530,7 +642,9 @@ export default function Chart(props: ChartData) {
                         }
 
                         relocationCrosshairText(event);
-
+                        addMarketText(scaleData.yScale);
+                        // addLimitText(scaleData.yScale);
+                        addText(scaleData.yScale);
                         lastY = t.y;
 
                         render();
@@ -544,14 +658,17 @@ export default function Chart(props: ChartData) {
                     // dispatch(setCandleDomains(candleDomain));
                 }) as any;
 
-            const yAxisDrag = d3.drag().on('drag', (event: any) => {
+            const yAxisDrag = d3.drag().on('drag', async (event: any) => {
                 const dy = event.dy;
                 const factor = Math.pow(2, -dy * 0.003);
 
                 const domain = scaleData.yScale.domain();
                 const center = (domain[1] + domain[0]) / 2;
                 const size = (domain[1] - domain[0]) / 2 / factor;
-                scaleData.yScale.domain([center - size, center + size]);
+                await scaleData.yScale.domain([center - size, center + size]);
+                addMarketText(scaleData.yScale);
+                // addLimitText(scaleData.yScale);
+                addText(scaleData.yScale);
 
                 setRescale(() => {
                     return false;
@@ -1056,7 +1173,6 @@ export default function Chart(props: ChartData) {
                     .style('visibility', location.pathname.includes('limit') ? 'visible' : 'hidden')
                     .attr('id', (d: any) => d.name)
                     .select('g.left-handle')
-                    .append('text')
                     .attr('x', 5)
                     .attr('y', -5);
                 selection
@@ -1070,12 +1186,6 @@ export default function Chart(props: ChartData) {
 
                 selection.enter().select('g.right-handle').remove();
                 selection.enter().select('line').attr('class', 'redline');
-                selection
-                    .select('g.left-handle text')
-                    .text((d: any) => d.name + ' - ' + valueFormatter(d.value))
-                    .style('transform', (d: any) =>
-                        d.name == 'Min' ? ' translate(0px, 25px)' : 'translate(0px, -5px)',
-                    );
             });
 
             const marketLine = d3fc
@@ -1092,14 +1202,6 @@ export default function Chart(props: ChartData) {
                     .append('text')
                     .attr('x', 5)
                     .attr('y', -5);
-                selection
-                    .enter()
-                    .append('rect')
-                    .attr('width', '100%')
-                    .attr('y', -20)
-                    .attr('height', '8%')
-                    .attr('fill', 'transparent')
-                    .attr('stroke', 'none');
 
                 selection.enter().select('g.right-handle').remove();
                 selection.enter().select('line').attr('class', 'marketLine');
@@ -1224,34 +1326,64 @@ export default function Chart(props: ChartData) {
         }
     }
 
+    function addDefsStyle() {
+        const svgmain = d3.select(d3PlotArea.current).select('svg');
+        if (svgmain.select('defs').node() === null) {
+            const lg = svgmain
+                .append('defs')
+                .append('filter')
+                .attr('x', 0)
+                .attr('y', 0)
+                .attr('height', 1)
+                .attr('width', 1)
+                .attr('id', 'targetsAreaBackground');
+
+            lg.append('feFlood').attr('flood-color', '#7371FC1A').attr('result', 'bg');
+
+            const feMergeTag = lg.append('feMerge');
+            feMergeTag.append('feMergeNode').attr('in', 'bg');
+            feMergeTag.append('feMergeNode').attr('in', 'SourceGraphic');
+
+            const marketDefs = svgmain
+                .append('defs')
+                .append('filter')
+                .attr('x', 0)
+                .attr('y', 0)
+                .attr('height', 1)
+                .attr('width', 1)
+                .attr('id', 'marketBg');
+
+            marketDefs.append('feFlood').attr('flood-color', '#FFFFFF').attr('result', 'bg');
+            const feMergeTagMarket = marketDefs.append('feMerge');
+            feMergeTagMarket.append('feMergeNode').attr('in', 'bg');
+            feMergeTagMarket.append('feMergeNode').attr('in', 'SourceGraphic');
+
+            const yAxisText = svgmain
+                .append('defs')
+                .append('filter')
+                .attr('x', 0)
+                .attr('y', 0)
+                .attr('height', 1)
+                .attr('width', 1)
+                .attr('id', 'textBg');
+
+            yAxisText.append('feFlood').attr('flood-color', '#7772FE').attr('result', 'bg');
+            const feMergeTagYaxisText = yAxisText.append('feMerge');
+            feMergeTagYaxisText.append('feMergeNode').attr('in', 'bg');
+            feMergeTagYaxisText.append('feMergeNode').attr('in', 'SourceGraphic');
+        }
+    }
+
     useEffect(() => {
         if (location.pathname.includes('range')) {
             d3.select(d3PlotArea.current)
                 .select('.targetsArea')
                 .selectAll('annotation-line')
                 .style('visibility', 'hidden');
-            const svgmain = d3.select(d3PlotArea.current).select('svg');
-            if (svgmain.select('defs').node() === null) {
-                const lg = svgmain
-                    .append('defs')
-                    .append('filter')
-                    .attr('x', 0)
-                    .attr('y', 0)
-                    .attr('height', 1)
-                    .attr('width', 1)
-                    .attr('id', 'targetsAreaBackground');
-
-                lg.append('feFlood').attr('flood-color', '#7371FC1A').attr('result', 'bg');
-
-                const feMergeTag = lg.append('feMerge');
-                feMergeTag.append('feMergeNode').attr('in', 'bg');
-                feMergeTag.append('feMergeNode').attr('in', 'SourceGraphic');
-            }
 
             d3.select(d3PlotArea.current)
                 .select('.targetsArea')
                 .style('filter', 'url(#targetsAreaBackground)');
-
             addTriangleAndRect();
         }
     }, [dragControl, location]);
@@ -2033,7 +2165,7 @@ export default function Chart(props: ChartData) {
                     const yAxisText = d3
                         .select(d3Yaxis.current)
                         .select('svg')
-                        .select('g')
+                        .select('#yCrossHair')
                         .style('visibility', 'visible')
                         .style('transform', 'translateY(' + valueIndcLocation + 'px)');
 

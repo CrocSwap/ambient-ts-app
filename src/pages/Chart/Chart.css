@@ -9,6 +9,11 @@ text {
     fill: #bdbdbd;
 }
 
+
+text.y_axis {
+    stroke: black;
+    font-size: 13px ;
+}
 .domain,
 .tick > path,
 .gridline-y,
