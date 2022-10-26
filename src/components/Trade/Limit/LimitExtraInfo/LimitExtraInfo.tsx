@@ -23,6 +23,9 @@ interface LimitExtraInfoPropsIF {
     isTokenABase: boolean;
     isDenomBase: boolean;
     limitRate: string;
+    startDisplayPrice: number;
+    middleDisplayPrice: number;
+    endDisplayPrice: number;
 }
 
 // central react functional component
@@ -35,11 +38,14 @@ export default function LimitExtraInfo(props: LimitExtraInfoPropsIF) {
         slippageTolerance,
         liquidityProviderFee,
         // didUserFlipDenom,
-        isTokenABase,
+        // isTokenABase,
         // isDenomBase,
         // limitRate,
+        startDisplayPrice,
+        middleDisplayPrice,
+        endDisplayPrice,
     } = props;
-    const [showExtraDetails, setShowExtraDetails] = useState<boolean>(true);
+    const [showExtraDetails, setShowExtraDetails] = useState<boolean>(false);
 
     // const reverseDisplay = (isTokenABase && !isDenomBase) || (!isTokenABase && isDenomBase);
 
@@ -49,21 +55,21 @@ export default function LimitExtraInfo(props: LimitExtraInfoPropsIF) {
     const baseTokenSymbol = tradeData.baseToken.symbol;
     const quoteTokenSymbol = tradeData.quoteToken.symbol;
 
-    let reverseSlippage: boolean;
+    // let reverseSlippage: boolean;
 
-    if (isDenomBase) {
-        if (isTokenABase) {
-            reverseSlippage = false;
-        } else {
-            reverseSlippage = true;
-        }
-    } else {
-        if (isTokenABase) {
-            reverseSlippage = true;
-        } else {
-            reverseSlippage = false;
-        }
-    }
+    // if (isDenomBase) {
+    //     if (isTokenABase) {
+    //         reverseSlippage = false;
+    //     } else {
+    //         reverseSlippage = true;
+    //     }
+    // } else {
+    //     if (isTokenABase) {
+    //         reverseSlippage = true;
+    //     } else {
+    //         reverseSlippage = false;
+    //     }
+    // }
 
     const displayPriceWithDenom = isDenomBase ? 1 / poolPriceDisplay : poolPriceDisplay;
 
@@ -80,28 +86,64 @@ export default function LimitExtraInfo(props: LimitExtraInfoPropsIF) {
                   maximumFractionDigits: 2,
               });
 
+    const startPriceString = !startDisplayPrice
+        ? '…'
+        : startDisplayPrice < 2
+        ? startDisplayPrice.toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 6,
+          })
+        : startDisplayPrice.toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+          });
+
+    const middlePriceString = !middleDisplayPrice
+        ? '…'
+        : middleDisplayPrice < 2
+        ? middleDisplayPrice.toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 6,
+          })
+        : middleDisplayPrice.toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+          });
+
+    const endPriceString = !endDisplayPrice
+        ? '…'
+        : endDisplayPrice < 2
+        ? endDisplayPrice.toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 6,
+          })
+        : endDisplayPrice.toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+          });
+
     // const limitRateString = truncateDecimals(parseFloat(limitRate), 2);
 
     // const displayPriceString = isDenomBase
     //     ? truncateDecimals(1 / poolPriceDisplay, 2)
     //     : truncateDecimals(poolPriceDisplay, 2);
 
-    const priceLimitAfterSlippageAndFee = reverseSlippage
-        ? displayPriceWithDenom * (1 + slippageTolerance / 100) * (1 + liquidityProviderFee / 100)
-        : displayPriceWithDenom * (1 - slippageTolerance / 100) * (1 - liquidityProviderFee / 100);
+    // const priceLimitAfterSlippageAndFee = reverseSlippage
+    //     ? displayPriceWithDenom * (1 + slippageTolerance / 100) * (1 + liquidityProviderFee / 100)
+    //     : displayPriceWithDenom * (1 - slippageTolerance / 100) * (1 - liquidityProviderFee / 100);
 
-    const displayLimitPriceString =
-        displayPriceWithDenom === Infinity || displayPriceWithDenom === 0
-            ? '…'
-            : priceLimitAfterSlippageAndFee < 2
-            ? priceLimitAfterSlippageAndFee.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 6,
-              })
-            : priceLimitAfterSlippageAndFee.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              });
+    // const displayLimitPriceString =
+    //     displayPriceWithDenom === Infinity || displayPriceWithDenom === 0
+    //         ? '…'
+    //         : priceLimitAfterSlippageAndFee < 2
+    //         ? priceLimitAfterSlippageAndFee.toLocaleString(undefined, {
+    //               minimumFractionDigits: 2,
+    //               maximumFractionDigits: 6,
+    //           })
+    //         : priceLimitAfterSlippageAndFee.toLocaleString(undefined, {
+    //               minimumFractionDigits: 2,
+    //               maximumFractionDigits: 2,
+    //           });
     // const priceLimitAfterSlippageAndFee = reverseSlippage
     //     ? truncateDecimals(
     //           parseFloat(limitRateString) *
@@ -134,11 +176,35 @@ export default function LimitExtraInfo(props: LimitExtraInfoPropsIF) {
         //         : `${limitRateNum} ${tokenPair.dataTokenB.symbol} per ${tokenPair.dataTokenA.symbol}`,
         // },
         {
-            title: 'Limit Price',
-            tooltipTitle: 'Price Limit After Maximum Slippage',
+            title: 'Fill Start',
+            tooltipTitle: 'Fill Start Explanation',
             data: isDenomBase
-                ? `${displayLimitPriceString} ${quoteTokenSymbol} per ${baseTokenSymbol}`
-                : `${displayLimitPriceString} ${baseTokenSymbol} per ${quoteTokenSymbol}`,
+                ? `${startPriceString} ${quoteTokenSymbol} per ${baseTokenSymbol}`
+                : `${startPriceString} ${baseTokenSymbol} per ${quoteTokenSymbol}`,
+        },
+        {
+            title: 'Fill Middle',
+            tooltipTitle: 'Fill Middle Explanation',
+            data: isDenomBase
+                ? `${middlePriceString} ${quoteTokenSymbol} per ${baseTokenSymbol}`
+                : `${middlePriceString} ${baseTokenSymbol} per ${quoteTokenSymbol}`,
+        },
+        {
+            title: 'Fill End',
+            tooltipTitle: 'Fill End Explanation',
+            data: isDenomBase
+                ? `${endPriceString} ${quoteTokenSymbol} per ${baseTokenSymbol}`
+                : `${endPriceString} ${baseTokenSymbol} per ${quoteTokenSymbol}`,
+        },
+        {
+            title: 'Minimum Rebate Rate',
+            tooltipTitle: 'Minimum Rebate Rate',
+            data: '0.05%',
+        },
+        {
+            title: 'Current Rebate Rate',
+            tooltipTitle: 'Current Rebate Rate',
+            data: '0.3%',
         },
         {
             title: 'Slippage Tolerance',

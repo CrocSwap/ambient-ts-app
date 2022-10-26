@@ -15,7 +15,8 @@ import Modal from '../../../components/Global/Modal/Modal';
 // START: Import Local Files
 import styles from './PageHeader.module.css';
 import trimString from '../../../utils/functions/trimString';
-import ambientLogo from '../../../assets/images/logos/ambient_logo.svg';
+// import ambientLogo from '../../../assets/images/logos/ambient_logo.svg';
+import headerLogo from '../../../assets/images/logos/header_logo.svg';
 import { useModal } from '../../../components/Global/Modal/useModal';
 import { useUrlParams } from './useUrlParams';
 import MobileSidebar from '../../../components/Global/MobileSidebar/MobileSidebar';
@@ -235,8 +236,8 @@ export default function PageHeader(props: HeaderPropsIF) {
     return (
         <header data-testid={'page-header'} className={styles.primary_header}>
             <Link to='/' className={styles.logo_container}>
-                <img src={ambientLogo} alt='ambient' />
-                <h1>ambient</h1>
+                <img src={headerLogo} alt='ambient' />
+                {/* <h1>ambient</h1> */}
             </Link>
             {/* <div
                 className={styles.mobile_nav_toggle}
