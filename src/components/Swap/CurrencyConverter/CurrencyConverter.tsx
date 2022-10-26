@@ -49,6 +49,7 @@ interface CurrencyConverterPropsIF {
     setSwapButtonErrorMessage: Dispatch<SetStateAction<string>>;
     activeTokenListsChanged: boolean;
     indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
+    gasPriceInGwei: number | undefined;
 }
 
 export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
@@ -81,6 +82,7 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
         setTokenBInputQty,
         activeTokenListsChanged,
         indicateActiveTokenListsChanged,
+        gasPriceInGwei,
     } = props;
 
     // TODO: update name of functions with 'handle' verbiage
@@ -370,6 +372,7 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
         }
         if (value) {
             const input = value;
+            console.log({ input });
             setTokenAQtyLocal(input);
             setTokenAInputQty(input);
             setIsTokenAPrimaryLocal(true);
@@ -537,6 +540,7 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
                 reverseTokens={reverseTokens}
                 activeTokenListsChanged={activeTokenListsChanged}
                 indicateActiveTokenListsChanged={indicateActiveTokenListsChanged}
+                gasPriceInGwei={gasPriceInGwei}
             />
             <div className={styles.arrow_container} onClick={reverseTokens}>
                 {isLiq ? null : (
@@ -574,6 +578,7 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
                 setIsSaveAsDexSurplusChecked={setIsSaveAsDexSurplusChecked}
                 activeTokenListsChanged={activeTokenListsChanged}
                 indicateActiveTokenListsChanged={indicateActiveTokenListsChanged}
+                gasPriceInGwei={gasPriceInGwei}
             />
         </section>
     );
