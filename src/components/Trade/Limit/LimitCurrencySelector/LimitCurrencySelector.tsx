@@ -47,6 +47,7 @@ interface LimitCurrencySelectorProps {
     setIsSaveAsDexSurplusChecked: Dispatch<SetStateAction<boolean>>;
     activeTokenListsChanged: boolean;
     indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
+    gasPriceInGwei: number | undefined;
 }
 
 // central react functional component
@@ -76,6 +77,7 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
         tokenASurplusMinusTokenARemainderNum,
         activeTokenListsChanged,
         indicateActiveTokenListsChanged,
+        gasPriceInGwei,
         handleChangeClick,
     } = props;
 
@@ -148,7 +150,12 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
     const isWithdrawFromDexDisabled = parseFloat(tokenADexBalance || '0') <= 0;
     const isWithdrawFromWalletDisabled = parseFloat(tokenABalance || '0') <= 0;
 
-    const walletBalanceNonLocaleString = tokenABalance ? tokenABalance : '';
+    const walletBalanceNonLocaleString =
+        tokenABalance && gasPriceInGwei
+            ? isSellTokenEth
+                ? (parseFloat(tokenABalance) - gasPriceInGwei * 3000000 * 1e-9).toFixed(18)
+                : tokenABalance
+            : '';
 
     const walletBalanceLocaleString = tokenABalance
         ? parseFloat(tokenABalance).toLocaleString(undefined, {
@@ -157,9 +164,12 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
           })
         : '...';
 
-    const surplusBalanceNonLocaleString = tokenADexBalance
-        ? parseFloat(tokenADexBalance).toString()
-        : '';
+    const surplusBalanceNonLocaleString =
+        tokenADexBalance && gasPriceInGwei
+            ? isSellTokenEth
+                ? (parseFloat(tokenADexBalance) - gasPriceInGwei * 3000000 * 1e-9).toFixed(18)
+                : tokenADexBalance
+            : '';
 
     const surplusBalanceLocaleString = tokenADexBalance
         ? parseFloat(tokenADexBalance).toLocaleString(undefined, {
