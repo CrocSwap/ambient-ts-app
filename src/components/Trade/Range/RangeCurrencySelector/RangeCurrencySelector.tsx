@@ -14,6 +14,7 @@ import NoTokenIcon from '../../../Global/NoTokenIcon/NoTokenIcon';
 
 interface RangeCurrencySelectorProps {
     isUserLoggedIn: boolean;
+    gasPriceInGwei: number | undefined;
     resetTokenQuantities: () => void;
     fieldId: string;
     chainId: string;
@@ -58,6 +59,7 @@ interface RangeCurrencySelectorProps {
 export default function RangeCurrencySelector(props: RangeCurrencySelectorProps) {
     const {
         isUserLoggedIn,
+        gasPriceInGwei,
         resetTokenQuantities,
         tokenPair,
         tokensBank,
@@ -167,11 +169,15 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
     );
 
     const walletBalanceNonLocaleString = isTokenASelector
-        ? tokenABalance
-            ? parseFloat(tokenABalance).toString()
+        ? tokenABalance && gasPriceInGwei
+            ? isTokenAEth
+                ? (parseFloat(tokenABalance) - gasPriceInGwei * 500000 * 1e-9).toFixed(18)
+                : tokenABalance
             : ''
-        : tokenBBalance
-        ? parseFloat(tokenBBalance).toString()
+        : tokenBBalance && gasPriceInGwei
+        ? isTokenBEth
+            ? (parseFloat(tokenBBalance) - gasPriceInGwei * 500000 * 1e-9).toFixed(18)
+            : tokenBBalance
         : '';
 
     const walletBalanceLocaleString = isTokenASelector
@@ -189,11 +195,15 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
         : '...';
 
     const surplusBalanceNonLocaleString = isTokenASelector
-        ? tokenADexBalance
-            ? parseFloat(tokenADexBalance).toString()
+        ? tokenADexBalance && gasPriceInGwei
+            ? isTokenAEth
+                ? (parseFloat(tokenADexBalance) - gasPriceInGwei * 500000 * 1e-9).toFixed(18)
+                : tokenADexBalance
             : ''
-        : tokenBDexBalance
-        ? parseFloat(tokenBDexBalance).toString()
+        : tokenBDexBalance && gasPriceInGwei
+        ? isTokenBEth
+            ? (parseFloat(tokenBDexBalance) - gasPriceInGwei * 500000 * 1e-9).toFixed(18)
+            : tokenBDexBalance
         : '';
 
     const surplusBalanceLocaleString = isTokenASelector
