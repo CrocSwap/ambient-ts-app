@@ -519,6 +519,7 @@ export default function Swap(props: SwapPropsIF) {
                             setSwapButtonErrorMessage={setSwapButtonErrorMessage}
                             activeTokenListsChanged={activeTokenListsChanged}
                             indicateActiveTokenListsChanged={indicateActiveTokenListsChanged}
+                            gasPriceInGwei={gasPriceInGwei}
                         />
                     </motion.div>
                     <div className={styles.header_container}>

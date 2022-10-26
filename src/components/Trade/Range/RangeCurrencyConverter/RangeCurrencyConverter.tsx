@@ -55,12 +55,14 @@ interface RangeCurrencyConverterPropsIF {
     rangeSpanBelowCurrentPrice: number;
     activeTokenListsChanged: boolean;
     indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
+    gasPriceInGwei: number | undefined;
 }
 
 // central React functional component
 export default function RangeCurrencyConverter(props: RangeCurrencyConverterPropsIF) {
     const {
         isUserLoggedIn,
+        gasPriceInGwei,
         chainId,
         isLiq,
         tokensBank,
@@ -644,6 +646,7 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
 
     // props for <RangeCurrencyConverter/> React element
     const rangeCurrencySelectorCommonProps = {
+        gasPriceInGwei: gasPriceInGwei,
         isUserLoggedIn: isUserLoggedIn,
         resetTokenQuantities: resetTokenQuantities,
         chainId: chainId,
