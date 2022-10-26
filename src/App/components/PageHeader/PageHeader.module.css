@@ -90,14 +90,16 @@
 } */
 
 .logo_container {
+    height: 100%;
     display: flex;
-    flex-direction: row;
+    justify-content: center;
     align-items: center;
-    gap: var(--gap, 1rem);
-    margin-left: 2rem;
+    /* flex-direction: row; */
+    /* gap: var(--gap, 1rem); */
+    /* margin-left: 2rem; */
 }
 
-.logo_container h1 {
+/* .logo_container h1 {
     background: var(--title-gradient);
     font-family: var(--font-logo);
     -webkit-background-clip: text;
@@ -110,7 +112,7 @@
     background-size: 200% auto;
     animation: shine 3s linear infinite;
 
-}
+} */
 
 
 
