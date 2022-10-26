@@ -153,7 +153,7 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
     const walletBalanceNonLocaleString =
         tokenABalance && gasPriceInGwei
             ? isSellTokenEth
-                ? (parseFloat(tokenABalance) - gasPriceInGwei * 3000000 * 1e-9).toFixed(18)
+                ? (parseFloat(tokenABalance) - gasPriceInGwei * 400000 * 1e-9).toFixed(18)
                 : tokenABalance
             : '';
 
@@ -167,7 +167,7 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
     const surplusBalanceNonLocaleString =
         tokenADexBalance && gasPriceInGwei
             ? isSellTokenEth
-                ? (parseFloat(tokenADexBalance) - gasPriceInGwei * 3000000 * 1e-9).toFixed(18)
+                ? (parseFloat(tokenADexBalance) - gasPriceInGwei * 400000 * 1e-9).toFixed(18)
                 : tokenADexBalance
             : '';
 
