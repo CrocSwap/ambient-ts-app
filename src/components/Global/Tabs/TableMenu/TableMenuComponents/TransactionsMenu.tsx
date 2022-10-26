@@ -165,7 +165,7 @@ export default function TransactionsMenu(props: TransactionMenuIF) {
             {notRelevantButton && editButton}
             {notRelevantButton && removeButton}
             {notRelevantButton && harvestButton}
-            {detailsButton}
+            {(isOnPortfolioPage && !showSidebar) || (!isOnPortfolioPage && detailsButton)}
             {view2 && explorerButton}
             {view1NoSidebar && !isOnPortfolioPage && copyButton}
         </div>
