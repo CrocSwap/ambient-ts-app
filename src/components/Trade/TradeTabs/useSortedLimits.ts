@@ -47,24 +47,10 @@ export const useSortedLimits = (
         let sortedData: ILimitOrderState[];
         // router to apply a specific sort function
         switch (sortBy) {
-            // case 'id':
-                // sortedData = sortById(data);
-                // break;
             // sort by wallet
             case 'wallet':
                 sortedData = sortByWallet(data);
                 break;
-            // sort by APR
-            // case 'apy':
-            // case 'apr':
-                // sortedData = sortByApy(data);
-                // break;
-            // case 'min':
-                // sortedData = sortByMin(data);
-                // break;
-            // case 'max':
-                // sortedData = sortByMax(data);
-                // break;
             case 'price':
                 sortedData = sortByPrice(data);
                 break;
