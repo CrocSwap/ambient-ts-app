@@ -17,6 +17,85 @@
     border-radius: 24px;
 
     padding: 1rem;
+    position: relative;
+}
+
+.settings_container{
+    position: absolute;
+    top: 10px;
+    right: 20px;
+
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+}
+
+.settings_container button{
+    box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
+
+    cursor: pointer;
+    outline: none;
+    border: none;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 5px 8px;
+    gap: 4px;
+    font-weight: 300;
+font-size: 12px;
+line-height: 15px;
+
+border-radius: 50px;
+transition: all var(--animation-speed) ease-in-out
+}
+
+/* .settings_container button:hover{
+    box-shadow: 0px 0px 36px rgba(205, 193, 255, 0.2), 0px 0px 21px rgba(205, 193, 255, 0.2), 0px 0px 12px rgba(205, 193, 255, 0.2), 0px 0px 7px rgba(205, 193, 255, 0.2), 0px 0px 4px #CDC1FF, 0px 0px 2px rgba(205, 193, 255, 0.2);
+} */
+
+.button_following{
+    background: linear-gradient(90deg, #7371FC 0%, #CDC1FF 49.48%, #7371FC 100%);
+    padding: 3px;
+
+}
+
+.button_following:hover{
+    box-shadow: 0px 0px 36px rgba(205, 193, 255, 0.2), 0px 0px 21px rgba(205, 193, 255, 0.2), 0px 0px 12px rgba(205, 193, 255, 0.2), 0px 0px 7px rgba(205, 193, 255, 0.2), 0px 0px 4px #CDC1FF, 0px 0px 2px rgba(205, 193, 255, 0.2);
+
+    box-shadow: 0px 15px 20px rgba(77, 6, 112, 0.4);
+    transform: translateY(-3px);
+
+}
+
+.button_not_following{
+    background: transparent;
+    
+
+    color: #cdc1ff;
+   
+    transition: all var(--animation-speed) ease-in-out;
+    background: linear-gradient(
+        270deg,
+        #7371fc,
+        #cdc1ff,
+        #7371fc,
+        rgba(34, 34, 34, 0),
+        rgba(34, 34, 34, 0)
+    );
+    background-position: 1% 50%;
+    background-size: 180% 300%;
+    text-decoration: none;
+    border: 1px solid #7371fc;
+    
+}
+
+.button_not_following:hover{
+    color: black;
+    border: 1px solid rgba(223, 190, 106, 0);
+    background-position: 99% 50%;
+    box-shadow: 0px 15px 20px rgba(77, 6, 112, 0.4);
+   
 }
 
 /* .background{
