@@ -1,12 +1,12 @@
-import { ILimitOrderState } from '../../utils/state/graphDataSlice';
 import { useMoralis } from 'react-moralis';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { useState, useEffect } from 'react';
 import getUnicodeCharacter from '../../utils/functions/getUnicodeCharacter';
 import { formatAmount } from '../../utils/numbers';
 import trimString from '../../utils/functions/trimString';
+import { LimitOrderIF } from '../interfaces/exports';
 
-export const useProcessOrder = (limitOrder: ILimitOrderState) => {
+export const useProcessOrder = (limitOrder: LimitOrderIF) => {
     const { account } = useMoralis();
     const tradeData = useAppSelector((state) => state.tradeData);
     // eslint-disable-next-line

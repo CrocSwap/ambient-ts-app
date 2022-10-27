@@ -1,12 +1,11 @@
 import styles from './PriceInfo.module.css';
 import Row from '../../Global/Row/Row';
-import { ILimitOrderState } from '../../../utils/state/graphDataSlice';
-
 import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
 import { toggleDidUserFlipDenom } from '../../../utils/state/tradeDataSlice';
 import Divider from '../../Global/Divider/Divider';
 import { motion } from 'framer-motion';
 import { useProcessOrder } from '../../../utils/hooks/useProcessOrder';
+import { LimitOrderIF } from '../../../utils/interfaces/exports';
 
 type ItemIF = {
     slug: string;
@@ -15,7 +14,7 @@ type ItemIF = {
 };
 interface IPriceInfoProps {
     // usdValue: number | undefined;
-    limitOrder: ILimitOrderState;
+    limitOrder: LimitOrderIF;
     // lowRangeDisplay: string;
     // highRangeDisplay: string;
     // baseCollateralDisplay: string | undefined;

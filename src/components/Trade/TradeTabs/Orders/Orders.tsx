@@ -10,7 +10,6 @@ import { useAppDispatch, useAppSelector } from '../../../../utils/hooks/reduxToo
 import {
     addLimitOrderChangesByPool,
     graphData,
-    ILimitOrderState,
     setLimitOrdersByPool,
 } from '../../../../utils/state/graphDataSlice';
 import { fetchPoolLimitOrderStates } from '../../../../App/functions/fetchPoolLimitOrderStates';
@@ -21,12 +20,14 @@ import OrderHeader from './OrderTable/OrderHeader';
 import OrderRow from './OrderTable/OrderRow';
 import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
 import TableSkeletons from '../TableSkeletons/TableSkeletons';
+import { useSortedLimits } from '../useSortedLimits';
+import { LimitOrderIF } from '../../../../utils/interfaces/exports';
 
 // import OrderAccordions from './OrderAccordions/OrderAccordions';
 
 // interface for props for react functional component
 interface propsIF {
-    activeAccountLimitOrderData?: ILimitOrderState[];
+    activeAccountLimitOrderData?: LimitOrderIF[];
     connectedAccountActive?: boolean;
     crocEnv: CrocEnv | undefined;
     expandTradeTable: boolean;
@@ -65,6 +66,17 @@ export default function Orders(props: propsIF) {
 
     const tradeData = useAppSelector((state) => state.tradeData);
 
+    const [
+        sortBy,
+        setSortBy,
+        reverseSort,
+        setReverseSort,
+        sortedLimits
+    ] = useSortedLimits(
+        'lastUpdate',
+        isShowAllEnabled ? limitOrdersByPool : limitOrdersByUser,
+    );
+
     const baseTokenAddressLowerCase = tradeData.baseToken.address.toLowerCase();
     const quoteTokenAddressLowerCase = tradeData.quoteToken.address.toLowerCase();
 
@@ -87,61 +99,6 @@ export default function Orders(props: propsIF) {
         isOnPortfolioPage ? activeAccountLimitOrderData || [] : limitOrdersByPool,
     );
 
-    // const selectedBaseToken = tradeData.baseToken.address.toLowerCase();
-    // const selectedQuoteToken = tradeData.quoteToken.address.toLowerCase();
-
-    // const isDenomBase = tradeData.isDenomBase;
-
-    // const columnHeaders = [
-    //     {
-    //         name: 'ID',
-    //         sortable: true,
-    //         className: '',
-    //     },
-    //     {
-    //         name: 'Wallet',
-    //         sortable: true,
-    //         className: 'wallet',
-    //     },
-    //     {
-    //         name: 'Price',
-    //         sortable: true,
-    //         className: 'price',
-    //     },
-    //     {
-    //         name: 'Side',
-    //         sortable: true,
-    //         className: 'side',
-    //     },
-    //     {
-    //         name: 'Type',
-    //         sortable: true,
-    //         className: 'type',
-    //     },
-    //     {
-    //         name: 'Value',
-    //         sortable: true,
-    //         className: '',
-    //     },
-    //     {
-    //         name: tradeData.baseToken.symbol,
-    //         sortable: false,
-    //         className: 'token',
-    //     },
-    //     {
-    //         name: tradeData.quoteToken.symbol,
-    //         sortable: false,
-    //         className: 'token',
-    //     },
-    // ];
-
-    // TODO:   currently the values to determine sort order are not
-    // TODO:   ... being used productively because there is only
-    // TODO:   ... placeholder data, we will revisit this later on
-
-    const [sortBy, setSortBy] = useState('default');
-    const [reverseSort, setReverseSort] = useState(false);
-
     const [debouncedIsShowAllEnabled, setDebouncedIsShowAllEnabled] = useState(false);
 
     useEffect(() => {
@@ -153,10 +110,6 @@ export default function Orders(props: propsIF) {
             setLimitOrderData(limitOrdersByPool);
         }
     }, [isShowAllEnabled, connectedAccountActive]);
-
-    // useEffect(() => {
-    //     console.log({ activeAccountLimitOrderData });
-    // }, [activeAccountLimitOrderData]);
 
     // wait 5 seconds to open a subscription to pool changes
     useEffect(() => {
@@ -260,58 +213,7 @@ export default function Orders(props: propsIF) {
         }
     }, [lastPoolLimitOrderChangeMessage]);
 
-    // const showAllOrUserPositions = activeAccountLimitOrderData
-    //     ? activeAccountLimitOrderData
-    //     : isShowAllEnabled
-    //     ? limitOrdersByPool
-    //     : limitOrdersByUser;
-
-    // const [expanded, setExpanded] = useState<false | number>(false);
-    // const ItemContent = (
-    //     <div className={styles.desktop_transaction_display_container}>
-    //         {showAllOrUserPositions.map((order, idx) => (
-    //             <OrderCard
-    //                 key={idx}
-    //                 account={account}
-    //                 limitOrder={order}
-    //                 isDenomBase={isDenomBase}
-    //                 selectedBaseToken={selectedBaseToken}
-    //                 selectedQuoteToken={selectedQuoteToken}
-    //                 openGlobalModal={props.openGlobalModal}
-    //                 closeGlobalModal={props.closeGlobalModal}
-    //                 currentPositionActive={currentPositionActive}
-    //                 setCurrentPositionActive={setCurrentPositionActive}
-    //             />
-    //         ))}
-    //     </div>
-    // );
-
-    // const mobileAccordionDisplay = (
-    //     <div className={styles.accordion_display_container}>
-
-    //         <p>Mobile Accordion here: Disabled for now</p>
-    //     </div>
-    // );
-
-    // const olderReturnData = (
-    //        <div className={styles.container}>
-
-    //          <OrderCardHeader
-    //              sortBy={sortBy}
-    //              setSortBy={setSortBy}
-    //              reverseSort={reverseSort}
-    //              setReverseSort={setReverseSort}
-    //              columnHeaders={columnHeaders}
-    //          />
-    //          <div
-    //              className={styles.item_container}
-    //              style={{ height: expandTradeTable ? '100%' : '170px' }}
-    //          >
-    //              {ItemContent}
-    //              {mobileAccordionDisplay}
-    //          </div>
-    //      </div>
-    // )
+    console.log({ limitOrderData });
 
     // -----------------------------
     // const dataReceivedByPool = graphData?.changesByPool?.dataReceived;
@@ -325,8 +227,6 @@ export default function Orders(props: propsIF) {
     }
 
     useEffect(() => {
-        // console.log({ dataReceived });
-        // console.log({ isDataLoading });
         dataReceived ? handleDataReceived() : setIsDataLoading(true);
     }, [graphData, limitOrderData, dataReceived]);
 
@@ -488,7 +388,7 @@ export default function Orders(props: propsIF) {
         </ul>
     );
 
-    const rowItemContent = limitOrderData.map((order, idx) => (
+    const rowItemContent = sortedLimits.map((order, idx) => (
         <OrderRow
             crocEnv={crocEnv}
             expandTradeTable={expandTradeTable}
@@ -514,10 +414,8 @@ export default function Orders(props: propsIF) {
 
     return (
         <main className={styles.main_list_container} style={{ height: portfolioPageStyle }}>
-            {/* {header} */}
             {headerColumnsDisplay}
             {isDataLoading ? <TableSkeletons /> : orderDataOrNull}
-            {/* {rowItemContent} */}
         </main>
     );
 }

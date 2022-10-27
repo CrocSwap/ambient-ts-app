@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { PositionIF } from '../interfaces/PositionIF';
+import { LimitOrderIF, PositionIF } from '../interfaces/exports';
+
 export interface graphData {
     lastBlock: number;
     positionsByUser: PositionsByUser;
@@ -17,67 +18,13 @@ export interface graphData {
 
 export interface LimitOrdersByUser {
     dataReceived: boolean;
-    limitOrders: Array<ILimitOrderState>;
+    limitOrders: LimitOrderIF[];
 }
 export interface LimitOrdersByPool {
     dataReceived: boolean;
-    limitOrders: Array<ILimitOrderState>;
+    limitOrders: LimitOrderIF[];
 }
 
-export interface ILimitOrderState {
-    id: string;
-    limitOrderIdentifier: string;
-    tx: string;
-    positionId: string;
-    source: string;
-    network: string;
-    block: number;
-    time: number;
-    user: string;
-    base: string;
-    quote: string;
-    poolIdx: number;
-    poolHash: string;
-    bidTick: number;
-    askTick: number;
-    isBid: boolean;
-    price: number;
-    deflator: number;
-    concGrowth: number;
-    positionLiq: string;
-    positionLiqBase: string;
-    baseFlowDecimalCorrected: number;
-    quoteFlowDecimalCorrected: number;
-    positionLiqBaseDecimalCorrected: number;
-    positionLiqQuoteDecimalCorrected: number;
-    positionLiqQuote: string;
-    updateType: string;
-    latestUpdateBlock: number;
-    latestUpdateTime: number;
-    latestCrossBlock: number;
-    latestCrossTime: number;
-    latestCrossTransaction: string;
-    knockoutChanges: number;
-    baseSymbol: string;
-    baseDecimals: number;
-    baseTokenLogoURI: string;
-    quoteSymbol: string;
-    quoteDecimals: number;
-    quoteTokenLogoURI: string;
-    limitPrice: number;
-    invLimitPrice: number;
-    limitPriceDecimalCorrected: number;
-    invLimitPriceDecimalCorrected: number;
-    ensResolution: string;
-    ensResolutionAge: number;
-    basePrice: number;
-    quotePrice: number;
-    positionLiqBaseUSD: number;
-    positionLiqQuoteUSD: number;
-    positionLiqTotalUSD: number;
-    totalValueUSD: number;
-    chainId: string;
-}
 export interface PoolVolumeSeries {
     dataReceived: boolean;
     pools: Array<VolumeSeriesByPool>;
@@ -429,7 +376,7 @@ export const graphDataSlice = createSlice({
                 }
             }
         },
-        addLimitOrderChangesByUser: (state, action: PayloadAction<Array<ILimitOrderState>>) => {
+        addLimitOrderChangesByUser: (state, action: PayloadAction<LimitOrderIF[]>) => {
             for (let index = 0; index < action.payload.length; index++) {
                 const updatedTx = action.payload[index];
                 const idToFind = updatedTx.limitOrderIdentifier.toLowerCase();
@@ -446,7 +393,7 @@ export const graphDataSlice = createSlice({
                 }
             }
         },
-        addLimitOrderChangesByPool: (state, action: PayloadAction<Array<ILimitOrderState>>) => {
+        addLimitOrderChangesByPool: (state, action: PayloadAction<LimitOrderIF[]>) => {
             for (let index = 0; index < action.payload.length; index++) {
                 const updatedTx = action.payload[index];
                 const idToFind = updatedTx.limitOrderIdentifier.toLowerCase();
