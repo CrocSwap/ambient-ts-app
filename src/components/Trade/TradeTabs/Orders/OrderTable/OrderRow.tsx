@@ -1,4 +1,3 @@
-import { ILimitOrderState } from '../../../../../utils/state/graphDataSlice';
 import styles from '../Orders.module.css';
 import { useProcessOrder } from '../../../../../utils/hooks/useProcessOrder';
 import OpenOrderStatus from '../../../../Global/OpenOrderStatus/OpenOrderStatus';
@@ -9,13 +8,14 @@ import { CrocEnv } from '@crocswap-libs/sdk';
 import { DefaultTooltip } from '../../../../Global/StyledTooltip/StyledTooltip';
 import { NavLink } from 'react-router-dom';
 import NoTokenIcon from '../../../../Global/NoTokenIcon/NoTokenIcon';
+import { LimitOrderIF } from '../../../../../utils/interfaces/exports';
 
 interface OrderRowPropsIF {
     crocEnv: CrocEnv | undefined;
     expandTradeTable: boolean;
     showColumns: boolean;
     ipadView: boolean;
-    limitOrder: ILimitOrderState;
+    limitOrder: LimitOrderIF;
     showSidebar: boolean;
 
     openGlobalModal: (content: React.ReactNode) => void;

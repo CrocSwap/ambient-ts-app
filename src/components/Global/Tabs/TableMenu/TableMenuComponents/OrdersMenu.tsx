@@ -11,17 +11,18 @@ import Modal from '../../../../Global/Modal/Modal';
 import styles from './TableMenus.module.css';
 import { useModal } from '../../../../Global/Modal/useModal';
 import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
-import { ILimitOrderState } from '../../../../../utils/state/graphDataSlice';
 import OrderDetails from '../../../../OrderDetails/OrderDetails';
 import OrderRemoval from '../../../../OrderRemoval/OrderRemoval';
 import UseOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 import { CrocEnv } from '@crocswap-libs/sdk';
 import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
 import ClaimOrder from '../../../../ClaimOrder/ClaimOrder';
+import { LimitOrderIF } from '../../../../../utils/interfaces/exports';
+
 // interface for React functional component props
 interface OrdersMenuIF {
     crocEnv: CrocEnv | undefined;
-    limitOrder: ILimitOrderState;
+    limitOrder: LimitOrderIF;
     openGlobalModal: (content: React.ReactNode, title?: string) => void;
     closeGlobalModal: () => void;
     isOwnerActiveAccount?: boolean;
@@ -55,18 +56,7 @@ export default function OrdersMenu(props: OrdersMenuIF) {
 
     // ---------------------MODAL FUNCTIONALITY----------------
     let modalContent: ReactNode;
-
     let modalTitle;
-
-    // function openRemoveModal() {
-    //     setCurrentModal('remove');
-    //     openModal();
-    // }
-
-    // function openDetailsModal() {
-    //     setCurrentModal('details');
-    //     openModal();
-    // }
 
     // -----------------SNACKBAR----------------
     function handleCopyAddress() {
@@ -106,20 +96,6 @@ export default function OrdersMenu(props: OrdersMenuIF) {
         openGlobalModal(
             <OrderDetails limitOrder={limitOrder} closeGlobalModal={closeGlobalModal} />,
         );
-
-    // switch (currentModal) {
-    //     case 'remove':
-    //         // modalContent = <RemoveRange {...removeRangeProps} />;
-    //         modalContent = removalContent;
-    //         modalTitle = 'Limit Order Removal';
-    //         break;
-
-    //     case 'details':
-    //         // modalContent = <RangeDetails {...removeRangeProps} />;
-    //         modalContent = detailsContent;
-    //         modalTitle = 'Limit Order Details';
-    //         break;
-    // }
 
     const mainModal = (
         <Modal onClose={closeModal} title={modalTitle}>
@@ -174,16 +150,9 @@ export default function OrdersMenu(props: OrdersMenuIF) {
             Details
         </button>
     );
-    // const editButton = userlimitOrder ? (
-    //     <Link className={styles.option_button} to={'/trade/edit'}>
-    //         Edit
-    //     </Link>
-    // ) : null;
 
     const ordersMenu = (
         <div className={styles.actions_menu}>
-            {/* {relimitOrderButton}
-            {editButton} */}
             {view1 && !isOnPortfolioPage && removeButton}
             {(view2 || (view1NoSidebar && !isOnPortfolioPage)) && copyButton}
             {(view3 || view2WithNoSidebar) && detailsButton}
@@ -193,7 +162,6 @@ export default function OrdersMenu(props: OrdersMenuIF) {
 
     const menuContent = (
         <div className={styles.menu_column}>
-            {/* {editButton} */}
             {removeButton}
             {detailsButton}
             {copyButton}

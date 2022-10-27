@@ -12,7 +12,7 @@ import styles from './PortfolioTabs.module.css';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { getPositionData } from '../../../App/functions/getPositionData';
 import { PositionIF } from '../../../utils/interfaces/PositionIF';
-import { TokenIF } from '../../../utils/interfaces/TokenIF';
+import { LimitOrderIF, TokenIF } from '../../../utils/interfaces/exports';
 import openOrdersImage from '../../../assets/images/sidebarImages/openOrders.svg';
 import rangePositionsImage from '../../../assets/images/sidebarImages/rangePositions.svg';
 import recentTransactionsImage from '../../../assets/images/sidebarImages/recentTransactions.svg';
@@ -20,7 +20,7 @@ import walletImage from '../../../assets/images/sidebarImages/wallet.svg';
 import exchangeImage from '../../../assets/images/sidebarImages/exchange.svg';
 import { CrocEnv, ChainSpec } from '@crocswap-libs/sdk';
 import { ethers } from 'ethers';
-import { ILimitOrderState, ITransaction } from '../../../utils/state/graphDataSlice';
+import { ITransaction } from '../../../utils/state/graphDataSlice';
 import { getLimitOrderData } from '../../../App/functions/getLimitOrderData';
 // import { getTransactionData } from '../../../App/functions/getTransactionData';
 import { TokenPriceFn } from '../../../App/functions/fetchTokenPrice';
@@ -102,7 +102,7 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
 
     const [otherAccountPositionData, setOtherAccountPositionData] = useState<PositionIF[]>([]);
     const [otherAccountLimitOrderData, setOtherAccountLimitOrderData] = useState<
-        ILimitOrderState[]
+    LimitOrderIF[]
     >([]);
     const [otherAccountTransactionData, setOtherAccountTransactionData] = useState<ITransaction[]>(
         [],
@@ -167,7 +167,7 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
                 const userLimitOrderStates = json?.data;
                 if (userLimitOrderStates) {
                     Promise.all(
-                        userLimitOrderStates.map((limitOrder: ILimitOrderState) => {
+                        userLimitOrderStates.map((limitOrder: LimitOrderIF) => {
                             return getLimitOrderData(limitOrder, importedTokens);
                         }),
                     ).then((updatedLimitOrderStates) => {

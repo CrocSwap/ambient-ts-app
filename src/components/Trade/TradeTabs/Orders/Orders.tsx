@@ -10,7 +10,6 @@ import { useAppDispatch, useAppSelector } from '../../../../utils/hooks/reduxToo
 import {
     addLimitOrderChangesByPool,
     graphData,
-    ILimitOrderState,
     setLimitOrdersByPool,
 } from '../../../../utils/state/graphDataSlice';
 import { fetchPoolLimitOrderStates } from '../../../../App/functions/fetchPoolLimitOrderStates';
@@ -22,12 +21,13 @@ import OrderRow from './OrderTable/OrderRow';
 import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
 import TableSkeletons from '../TableSkeletons/TableSkeletons';
 import { useSortedLimits } from '../useSortedLimits';
+import { LimitOrderIF } from '../../../../utils/interfaces/exports';
 
 // import OrderAccordions from './OrderAccordions/OrderAccordions';
 
 // interface for props for react functional component
 interface propsIF {
-    activeAccountLimitOrderData?: ILimitOrderState[];
+    activeAccountLimitOrderData?: LimitOrderIF[];
     connectedAccountActive?: boolean;
     crocEnv: CrocEnv | undefined;
     expandTradeTable: boolean;
@@ -110,10 +110,6 @@ export default function Orders(props: propsIF) {
             setLimitOrderData(limitOrdersByPool);
         }
     }, [isShowAllEnabled, connectedAccountActive]);
-
-    // useEffect(() => {
-    //     console.log({ activeAccountLimitOrderData });
-    // }, [activeAccountLimitOrderData]);
 
     // wait 5 seconds to open a subscription to pool changes
     useEffect(() => {

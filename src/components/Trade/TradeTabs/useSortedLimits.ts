@@ -1,31 +1,31 @@
 import { Dispatch, SetStateAction, useMemo, useState } from 'react';
-import { ILimitOrderState } from '../../../utils/state/graphDataSlice';
+import { LimitOrderIF } from '../../../utils/interfaces/LimitOrderIF';
 
 export const useSortedLimits = (
     defaultSort: string,
-    limitOrders: ILimitOrderState[]
+    limitOrders: LimitOrderIF[]
 ): [
     string,
     Dispatch<SetStateAction<string>>,
     boolean,
     Dispatch<SetStateAction<boolean>>,
-    ILimitOrderState[],
+    LimitOrderIF[],
 ] => {
     // default sort function
-    const sortByUpdateTime = (unsortedData: ILimitOrderState[]) =>
+    const sortByUpdateTime = (unsortedData: LimitOrderIF[]) =>
         [...unsortedData].sort((a, b) => b.latestUpdateTime - a.latestUpdateTime);
     // sort by wallet or ens address
-    const sortByWallet = (unsortedData: ILimitOrderState[]) =>
+    const sortByWallet = (unsortedData: LimitOrderIF[]) =>
         [...unsortedData].sort((a, b) => {
             const usernameA: string = a.ensResolution ?? a.user;
             const usernameB: string = b.ensResolution ?? b.user;
             return usernameA.localeCompare(usernameB);
         });
     // sort by limit price
-    const sortByPrice = (unsortedData: ILimitOrderState[]) =>
+    const sortByPrice = (unsortedData: LimitOrderIF[]) =>
         [...unsortedData].sort((a, b) => b.limitPrice - a.limitPrice);
     // sort by value of limit order
-    const sortByValue = (unsortedData: ILimitOrderState[]) =>
+    const sortByValue = (unsortedData: LimitOrderIF[]) =>
         [...unsortedData].sort((a, b) => b.totalValueUSD - a.totalValueUSD);
 
     // column the user wants the table sorted by
@@ -35,9 +35,9 @@ export const useSortedLimits = (
     const [reverseSort, setReverseSort] = useState(false);
 
     // router to pass data through the appropriate sort function
-    const sortData = (data: ILimitOrderState[]) => {
+    const sortData = (data: LimitOrderIF[]) => {
         // variable to hold output
-        let sortedData: ILimitOrderState[];
+        let sortedData: LimitOrderIF[];
         // router to apply a specific sort function
         switch (sortBy) {
             case 'wallet':
