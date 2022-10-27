@@ -123,7 +123,7 @@ export default function Ranges(props: RangesPropsIF) {
         return topThree;
     }, [rangeData]);
 
-    useEffect(() => console.log(top3Positions), [top3Positions]);
+    useEffect(() => {false && console.log(top3Positions)}, [top3Positions]);
 
     useEffect(() => {
         if (isOnPortfolioPage) {
