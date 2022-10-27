@@ -1,10 +1,10 @@
-import { ILimitOrderState } from '../../../../../utils/state/graphDataSlice';
+import { LimitOrderIF } from '../../../../../utils/interfaces/exports';
 import styles from './Order.module.css';
 import OrderCard from './OrderCard';
 import OrderCardHeader from './OrderCardHeader';
 
 interface OrderTabPropsIF {
-    orders: ILimitOrderState[];
+    orders: LimitOrderIF[];
 }
 
 export default function Order(props: OrderTabPropsIF) {

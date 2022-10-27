@@ -37,6 +37,7 @@ interface RangesRowPropsIF {
     // blockExplorer: string | undefined;
     isShowAllEnabled: boolean;
     position: PositionIF;
+    rank?: number;
     currentPositionActive: string;
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
     openGlobalModal: (content: React.ReactNode) => void;
@@ -58,7 +59,7 @@ export default function RangesRow(props: RangesRowPropsIF) {
         openGlobalModal,
         isOnPortfolioPage,
         isLeaderboard,
-        idx,
+        // idx,
     } = props;
 
     const {
@@ -239,7 +240,7 @@ export default function RangesRow(props: RangesRowPropsIF) {
     // Leaderboard content--------------------------------
 
     const idDisplay = !showColumns && IDWithTooltip;
-    const displayIDorRanking = isLeaderboard ? !showColumns && <Medal ranking={idx} /> : idDisplay;
+    const displayIDorRanking = isLeaderboard ? !showColumns && <Medal ranking={props.rank ?? 80} /> : idDisplay;
 
     // End of Leaderboard content--------------------------------
 

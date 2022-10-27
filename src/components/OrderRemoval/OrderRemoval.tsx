@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { useProcessOrder } from '../../utils/hooks/useProcessOrder';
-import { ILimitOrderState } from '../../utils/state/graphDataSlice';
 import RemoveOrderButton from './RemoveOrderButton/RemoveOrderButton';
 import RemoveOrderTokenHeader from './RemoveOrderTokenHeader/RemoveOrderTokenHeader';
 import RemoveOrderInfo from './RemoveOrderInfo/RemoveOrderInfo';
@@ -18,9 +17,11 @@ import { CrocEnv } from '@crocswap-libs/sdk';
 import { BigNumber } from 'ethers';
 import Toggle2 from '../Global/Toggle/Toggle2';
 import TooltipComponent from '../Global/TooltipComponent/TooltipComponent';
+import { LimitOrderIF } from '../../utils/interfaces/exports';
+
 interface IOrderRemovalProps {
     crocEnv: CrocEnv | undefined;
-    limitOrder: ILimitOrderState;
+    limitOrder: LimitOrderIF;
     closeGlobalModal: () => void;
 }
 

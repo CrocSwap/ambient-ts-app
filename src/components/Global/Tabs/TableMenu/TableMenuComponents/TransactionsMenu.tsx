@@ -1,6 +1,6 @@
 // START: Import React and Dongles
 import { useState, ReactNode, useRef } from 'react';
-import { Link } from 'react-router-dom';
+// import { Link } from 'react-router-dom';
 import { FiExternalLink, FiMoreHorizontal } from 'react-icons/fi';
 
 // START: Import JSX Functional Components
@@ -142,11 +142,11 @@ export default function TransactionsMenu(props: TransactionMenuIF) {
             Harvest
         </button>
     ) : null;
-    const editButton = userPosition ? (
-        <Link className={styles.option_button} to={'/trade/edit'}>
-            Edit
-        </Link>
-    ) : null;
+    // const editButton = userPosition ? (
+    //     <Link className={styles.option_button} to={'/trade/edit'}>
+    //         Edit
+    //     </Link>
+    // ) : null;
 
     // --------------------------------
 
@@ -162,7 +162,7 @@ export default function TransactionsMenu(props: TransactionMenuIF) {
     const notRelevantButton = false;
     const transactionsMenu = (
         <div className={styles.actions_menu}>
-            {notRelevantButton && editButton}
+            {/* {notRelevantButton && editButton} */}
             {notRelevantButton && removeButton}
             {notRelevantButton && harvestButton}
             {(isOnPortfolioPage && !showSidebar) || (!isOnPortfolioPage && detailsButton)}
@@ -173,7 +173,7 @@ export default function TransactionsMenu(props: TransactionMenuIF) {
 
     const menuContent = (
         <div className={styles.menu_column}>
-            {editButton}
+            {/* {editButton} */}
             {removeButton}
             {harvestButton}
             {/* {detailsButton} */}

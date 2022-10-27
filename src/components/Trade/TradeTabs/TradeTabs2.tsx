@@ -24,6 +24,7 @@ import { fetchPoolRecentChanges } from '../../../App/functions/fetchPoolRecentCh
 
 import { fetchUserRecentChanges } from '../../../App/functions/fetchUserRecentChanges';
 import Leaderboard from './Ranges/Leaderboard';
+import PoolInfo from './PoolInfo/PoolInfo';
 
 interface ITabsProps {
     isUserLoggedIn: boolean;
@@ -345,6 +346,11 @@ export default function TradeTabs2(props: ITabsProps) {
         setLeader: setLeader,
         setLeaderOwnerId: setLeaderOwnerId,
     };
+    // Props for <Ranges/> React Element
+    const poolInfoProps = {
+        chainData: chainData,
+        lastBlockNumber: lastBlockNumber,
+    };
     // Props for <Transactions/> React Element
     const transactionsProps = {
         isShowAllEnabled: isShowAllEnabled,
@@ -411,7 +417,7 @@ export default function TradeTabs2(props: ITabsProps) {
             showRightSideOption: true,
         },
         {
-            label: 'Orders',
+            label: 'Limits',
             content: <Orders {...ordersProps} />,
             icon: openOrdersImage,
             showRightSideOption: true,
@@ -430,7 +436,7 @@ export default function TradeTabs2(props: ITabsProps) {
         },
         {
             label: 'Info',
-            content: <Ranges {...rangesProps} />,
+            content: <PoolInfo {...poolInfoProps} />,
             icon: rangePositionsImage,
             showRightSideOption: false,
         },
