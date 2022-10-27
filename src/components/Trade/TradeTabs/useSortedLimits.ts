@@ -29,6 +29,7 @@ export const useSortedLimits = (
         [...unsortedData].sort((a, b) => b.totalValueUSD - a.totalValueUSD);
 
     // column the user wants the table sorted by
+    // this is set when the user clicks a sortable column header
     const [sortBy, setSortBy] = useState(defaultSort);
     // whether the sort should be ascending or descening
     const [reverseSort, setReverseSort] = useState(false);
@@ -39,7 +40,6 @@ export const useSortedLimits = (
         let sortedData: ILimitOrderState[];
         // router to apply a specific sort function
         switch (sortBy) {
-            // sort by wallet
             case 'wallet':
                 sortedData = sortByWallet(data);
                 break;
@@ -50,9 +50,6 @@ export const useSortedLimits = (
                 sortedData = sortByValue(data);
                 break;
             case 'lastUpdate':
-                sortedData = sortByUpdateTime(data);
-                break;
-            // return data unsorted if user did not choose a sortable column
             default:
                 return sortByUpdateTime(data);
         }

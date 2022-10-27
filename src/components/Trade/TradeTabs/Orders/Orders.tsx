@@ -66,7 +66,13 @@ export default function Orders(props: propsIF) {
 
     const tradeData = useAppSelector((state) => state.tradeData);
 
-    const [sortBy, setSortBy, reverseSort, setReverseSort, sortedLimits] = useSortedLimits(
+    const [
+        sortBy,
+        setSortBy,
+        reverseSort,
+        setReverseSort,
+        sortedLimits
+    ] = useSortedLimits(
         'lastUpdate',
         isShowAllEnabled ? limitOrdersByPool : limitOrdersByUser,
     );
