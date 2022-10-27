@@ -28,6 +28,15 @@ export default function PoolInfo(props: PoolInfoPropsIF) {
     const [poolFees, setPoolFees] = useState<string | undefined>();
     const [poolAPR, setPoolAPR] = useState<string | undefined>();
 
+    useEffect(() => {
+        setPoolVolume(undefined);
+        setPoolTvl(undefined);
+        setPoolFees(undefined);
+        setPoolAPR(undefined);
+    }, [
+        JSON.stringify({ base: tradeData.baseToken.address, quote: tradeData.quoteToken.address }),
+    ]);
+
     const fetchPoolStats = () => {
         (async () => {
             const poolStatsFresh = await cachedPoolStatsFetch(
@@ -54,7 +63,10 @@ export default function PoolInfo(props: PoolInfoPropsIF) {
 
     useEffect(() => {
         fetchPoolStats();
-    }, [lastBlockNumber]);
+    }, [
+        lastBlockNumber,
+        JSON.stringify({ base: tradeData.baseToken.address, quote: tradeData.quoteToken.address }),
+    ]);
 
     return (
         <main>
@@ -64,10 +76,10 @@ export default function PoolInfo(props: PoolInfoPropsIF) {
             <p>
                 {quoteTokenSymbol}: {quoteTokenAddress}
             </p>
-            <p>24h Swap Volume: {poolVolume}</p>
-            <p>Total Value Locked (TVL): {poolTvl}</p>
-            <p>Total Fees: {poolFees}</p>
-            <p>Total APR: {poolAPR}</p>
+            <p>24h Swap Volume: {poolVolume || '...'}</p>
+            <p>Total Value Locked (TVL): {poolTvl || '...'}</p>
+            <p>Total Fees: {poolFees || '...'}</p>
+            <p>Total APR: {poolAPR || '...'}</p>
         </main>
     );
 }
