@@ -23,29 +23,19 @@ export const useSortedLimits = (
     // default sort function
     const sortByUpdateTime = (unsortedData: ILimitOrderState[]) =>
         [...unsortedData].sort((a, b) => b.latestUpdateTime - a.latestUpdateTime);
-    // sort by positionHash
-    // const sortById = (unsortedData: ILimitOrderState[]) =>
-    //     [...unsortedData].sort((a, b) => b.positionStorageSlot.localeCompare(a.positionStorageSlot));
-    // sort functions for sortable columns
+    // sort by wallet or ens address
     const sortByWallet = (unsortedData: ILimitOrderState[]) =>
         [...unsortedData].sort((a, b) => {
             const usernameA: string = a.ensResolution ?? a.user;
             const usernameB: string = b.ensResolution ?? b.user;
             return usernameA.localeCompare(usernameB);
         });
-    // const sortByApy = (unsortedData: ILimitOrderState[]) =>
-    //     [...unsortedData].sort((a, b) => b.apy - a.apy);
-    // TODO: for some reason sortByMin() is leaving the final value out of sequence?
-    // const sortByMin = (unsortedData: ILimitOrderState[]) => 
-    //     [...unsortedData].sort((a, b) =>
-    //         parseFloat(b.lowRangeDisplayInBase) - parseFloat(a.lowRangeDisplayInBase)
-    //     );
-    // const sortByMax = (unsortedData: ILimitOrderState[]) => 
-    //     [...unsortedData].sort((a, b) =>
-    //         parseFloat(b.highRangeDisplayInBase) - parseFloat(a.highRangeDisplayInBase)
-    //     );
+    // sort by limit price
+    const sortByPrice = (unsortedData: ILimitOrderState[]) =>
+        [...unsortedData].sort((a, b) => b.limitPrice - a.limitPrice);
+    // sort by value of limit order
     const sortByValue = (unsortedData: ILimitOrderState[]) =>
-        [...unsortedData].sort((a, b) => b.positionLiqTotalUSD - a.positionLiqTotalUSD);
+        [...unsortedData].sort((a, b) => b.totalValueUSD - a.totalValueUSD);
 
     // column the user wants the table sorted by
     const [sortBy, setSortBy] = useState(defaultSort);
@@ -76,6 +66,9 @@ export const useSortedLimits = (
             // case 'max':
                 // sortedData = sortByMax(data);
                 // break;
+            case 'price':
+                sortedData = sortByPrice(data);
+                break;
             case 'value':
                 sortedData = sortByValue(data);
                 break;
