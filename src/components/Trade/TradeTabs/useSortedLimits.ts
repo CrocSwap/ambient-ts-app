@@ -31,7 +31,7 @@ export const useSortedLimits = (
     // column the user wants the table sorted by
     // this is set when the user clicks a sortable column header
     const [sortBy, setSortBy] = useState(defaultSort);
-    // whether the sort should be ascending or descening
+    // whether the sort should be ascending or descending
     const [reverseSort, setReverseSort] = useState(false);
 
     // router to pass data through the appropriate sort function
