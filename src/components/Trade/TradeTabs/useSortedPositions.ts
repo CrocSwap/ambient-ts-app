@@ -3,7 +3,6 @@ import { PositionIF } from '../../../utils/interfaces/PositionIF';
 
 export const useSortedPositions = (
     defaultSort: string,
-    isShowAllEnabled: boolean,
     positions: PositionIF[]
 ): [
     string,
@@ -87,7 +86,7 @@ export const useSortedPositions = (
     // array of positions sorted by the relevant column
     const sortedPositions = useMemo(
         () => sortData(positions),
-        [sortBy, reverseSort, isShowAllEnabled, positions],
+        [sortBy, reverseSort, positions],
     );
 
     return [sortBy, setSortBy, reverseSort, setReverseSort, sortedPositions];

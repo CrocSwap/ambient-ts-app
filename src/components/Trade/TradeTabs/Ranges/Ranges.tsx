@@ -120,7 +120,6 @@ export default function Ranges(props: RangesPropsIF) {
             [...unsortedData].sort((a, b) => b.apy - a.apy);
         const dataByApy = sortByApy(rangeData);
         const topThree = dataByApy.slice(0, 3).map(data => data.positionId);
-        console.log(topThree);
         return topThree;
     }, [rangeData]);
 
@@ -138,7 +137,6 @@ export default function Ranges(props: RangesPropsIF) {
 
     const [sortBy, setSortBy, reverseSort, setReverseSort, sortedPositions] = useSortedPositions(
         'lastUpdate',
-        isShowAllEnabled || (isOnPortfolioPage && (!connectedAccountActive || false)),
         rangeData
     );
 
