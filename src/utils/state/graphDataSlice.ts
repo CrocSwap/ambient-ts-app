@@ -44,13 +44,13 @@ export interface ILimitOrderState {
     price: number;
     deflator: number;
     concGrowth: number;
-    positionLiq: number;
-    positionLiqBase: number;
+    positionLiq: string;
+    positionLiqBase: string;
     baseFlowDecimalCorrected: number;
     quoteFlowDecimalCorrected: number;
     positionLiqBaseDecimalCorrected: number;
     positionLiqQuoteDecimalCorrected: number;
-    positionLiqQuote: number;
+    positionLiqQuote: string;
     updateType: string;
     latestUpdateBlock: number;
     latestUpdateTime: number;

@@ -160,7 +160,19 @@ export default function ExtraInfo(props: ExtraInfoPropsIF) {
                         <div>{item.title}</div>
                         <TooltipComponent title={item.tooltipTitle} />
                     </div>
-                    <div className={styles.data}>{item.data}</div>
+                    <div
+                        className={styles.data}
+                        style={{
+                            color:
+                                item.title === 'Price Impact' && priceImpactNum
+                                    ? Math.abs(priceImpactNum) > 2
+                                        ? '#f6385b'
+                                        : '#15be67'
+                                    : '#bdbdbd',
+                        }}
+                    >
+                        {item.data}
+                    </div>
                 </div>
             ))}
         </div>
