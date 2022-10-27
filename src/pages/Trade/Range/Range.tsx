@@ -1004,6 +1004,7 @@ export default function Range(props: RangePropsIF) {
         isAmbient: isAmbient,
         isTokenABase: isTokenABase,
         depositSkew: depositSkew,
+        gasPriceInGwei: gasPriceInGwei,
         baseTokenBalance,
         quoteTokenBalance,
         baseTokenDexBalance,
@@ -1174,7 +1175,6 @@ export default function Range(props: RangePropsIF) {
     ]);
 
     const handleShareOptionChange = (slug: string) => {
-        console.log('Clicked');
         const copyShareOptions = [...shareOptions];
         const modifiedShareOptions = copyShareOptions.map((option) => {
             if (slug === option.slug) {
@@ -1185,7 +1185,6 @@ export default function Range(props: RangePropsIF) {
         });
 
         setShareOptions(modifiedShareOptions);
-        console.log('I am clicked');
     };
 
     const shareOptionsDisplay = (
@@ -1205,7 +1204,7 @@ export default function Range(props: RangePropsIF) {
             <p className={styles.control_title}>URL:</p>
             <p className={styles.url_link}>
                 https://ambient.finance/trade/market/0xaaaaaa/93bbbb
-                <div>
+                <div style={{ cursor: 'pointer' }}>
                     <FiCopy color='#cdc1ff' />
                 </div>
             </p>
@@ -1215,7 +1214,7 @@ export default function Range(props: RangePropsIF) {
     // -------------------------END OF RANGE SHARE FUNCTIONALITY---------------------------
 
     return (
-        <section data-testid={'range'}>
+        <section data-testid={'range'} className={styles.scrollable_container}>
             <ContentContainer isOnTradeRoute>
                 <RangeHeader
                     chainId={chainId}

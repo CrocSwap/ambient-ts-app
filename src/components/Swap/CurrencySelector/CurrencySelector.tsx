@@ -49,6 +49,7 @@ interface CurrencySelectorProps {
     reverseTokens: () => void;
     activeTokenListsChanged: boolean;
     indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
+    gasPriceInGwei: number | undefined;
 }
 
 export default function CurrencySelector(props: CurrencySelectorProps) {
@@ -82,6 +83,7 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
         reverseTokens,
         activeTokenListsChanged,
         indicateActiveTokenListsChanged,
+        gasPriceInGwei,
     } = props;
 
     const [isModalOpen, openModal, closeModal] = useModal();
@@ -166,8 +168,10 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
     ) : null;
 
     const walletBalanceNonLocaleString = props.sellToken
-        ? tokenABalance
-            ? tokenABalance
+        ? tokenABalance && gasPriceInGwei
+            ? isSellTokenEth
+                ? (parseFloat(tokenABalance) - gasPriceInGwei * 400000 * 1e-9).toFixed(18)
+                : tokenABalance
             : ''
         : tokenBBalance
         ? tokenBBalance
@@ -188,8 +192,10 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
         : '...';
 
     const surplusBalanceNonLocaleString = props.sellToken
-        ? tokenADexBalance
-            ? parseFloat(tokenADexBalance).toString()
+        ? tokenADexBalance && gasPriceInGwei
+            ? isSellTokenEth
+                ? (parseFloat(tokenADexBalance) - gasPriceInGwei * 400000 * 1e-9).toFixed(18)
+                : tokenADexBalance
             : ''
         : tokenBDexBalance
         ? parseFloat(tokenBDexBalance).toString()
