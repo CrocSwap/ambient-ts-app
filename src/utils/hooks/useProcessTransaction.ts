@@ -30,8 +30,11 @@ export const useProcessTransaction = (tx: ITransaction) => {
     const tokenAAddressLowerCase = tokenAAddress.toLowerCase();
     const tokenBAddressLowerCase = tokenBAddress.toLowerCase();
 
-    const quoteTokenLogo = tradeData.quoteToken.logoURI;
-    const baseTokenLogo = tradeData.baseToken.logoURI;
+    const baseTokenSymbol = tx.baseSymbol;
+    const quoteTokenSymbol = tx.quoteSymbol;
+
+    const quoteTokenLogo = tx.quoteTokenLogoURI;
+    const baseTokenLogo = tx.baseTokenLogoURI;
 
     const transactionMatchesSelectedTokens =
         (transactionBaseAddressLowerCase === tokenAAddressLowerCase ||
@@ -55,9 +58,6 @@ export const useProcessTransaction = (tx: ITransaction) => {
 
     const baseTokenCharacter = tx.baseSymbol ? getUnicodeCharacter(tx.baseSymbol) : '';
     const quoteTokenCharacter = tx.quoteSymbol ? getUnicodeCharacter(tx.quoteSymbol) : '';
-
-    const baseTokenSymbol = tradeData.baseToken.symbol;
-    const quoteTokenSymbol = tradeData.quoteToken.symbol;
 
     useEffect(() => {
         // setTruncatedDisplayPrice(undefined);

@@ -18,6 +18,7 @@ export interface tradeData {
     tokenB: TokenIF;
     baseToken: TokenIF;
     quoteToken: TokenIF;
+    liquidityFee: number;
     didUserFlipDenom: boolean;
     isDenomBase: boolean;
     advancedMode: boolean;
@@ -45,6 +46,7 @@ const initialState: tradeData = {
     tokenB: goerliUSDC,
     baseToken: goerliETH,
     quoteToken: goerliUSDC,
+    liquidityFee: 0,
     didUserFlipDenom: false,
     isDenomBase: true,
     advancedMode: false,
@@ -101,6 +103,9 @@ export const tradeDataSlice = createSlice({
                 state.quoteToken = action.payload;
                 state.baseToken = state.tokenA;
             }
+        },
+        setLiquidityFee: (state, action: PayloadAction<number>) => {
+            state.liquidityFee = action.payload;
         },
         setDidUserFlipDenom: (state, action: PayloadAction<boolean>) => {
             state.didUserFlipDenom = action.payload;
@@ -193,6 +198,7 @@ export const tradeDataSlice = createSlice({
 export const {
     setTokenA,
     setTokenB,
+    setLiquidityFee,
     setDidUserFlipDenom,
     toggleDidUserFlipDenom,
     setDenomInBase,

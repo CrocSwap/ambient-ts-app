@@ -1,14 +1,14 @@
-import styles from './RangeShareControl.module.css';
+import styles from './LimitShareControl.module.css';
 type OptionIF = {
     slug: string;
     name: string;
     checked: boolean;
 };
-interface RangeShareControlPropsIF {
+interface LimitShareControlPropsIF {
     option: OptionIF;
     handleShareOptionChange: (option: string) => void;
 }
-export default function RangeShareControl(props: RangeShareControlPropsIF) {
+export default function LimitShareControl(props: LimitShareControlPropsIF) {
     const { option, handleShareOptionChange } = props;
 
     return (

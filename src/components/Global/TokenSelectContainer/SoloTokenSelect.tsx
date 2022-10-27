@@ -27,7 +27,7 @@ export const SoloTokenSelect = (props: propsIF) => {
     const chooseToken = (tkn: TokenIF) => {
         dispatch(setToken(tkn));
         closeModal();
-    }
+    };
 
     const tokenButtons = tokensBank
         .filter((token: TokenIF) => token.chainId === parseInt('0x5'))
@@ -40,13 +40,9 @@ export const SoloTokenSelect = (props: propsIF) => {
                 chainId='0x5'
                 setImportedTokens={setImportedTokens}
                 chooseToken={chooseToken}
+                isOnPortfolio={true}
             />
-        )
-    );
+        ));
 
-    return (
-        <>
-        {tokenButtons}
-        </>
-    );
-}
+    return <>{tokenButtons}</>;
+};

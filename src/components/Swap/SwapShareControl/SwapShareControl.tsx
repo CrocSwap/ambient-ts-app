@@ -1,14 +1,14 @@
-import styles from './RangeShareControl.module.css';
+import styles from './SwapShareControl.module.css';
 type OptionIF = {
     slug: string;
     name: string;
     checked: boolean;
 };
-interface RangeShareControlPropsIF {
+interface SwapShareControlPropsIF {
     option: OptionIF;
     handleShareOptionChange: (option: string) => void;
 }
-export default function RangeShareControl(props: RangeShareControlPropsIF) {
+export default function SwapShareControl(props: SwapShareControlPropsIF) {
     const { option, handleShareOptionChange } = props;
 
     return (

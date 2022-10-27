@@ -37,6 +37,7 @@ interface SidebarPropsIF {
     tradeData: tradeData;
     isDenomBase: boolean;
     showSidebar: boolean;
+    setShowSidebar: Dispatch<SetStateAction<boolean>>;
     toggleSidebar: (event: MouseEvent<HTMLDivElement> | MouseEvent<HTMLLIElement>) => void;
     chainId: string;
 
@@ -77,6 +78,7 @@ export default function Sidebar(props: SidebarPropsIF) {
         tokenMap,
         lastBlockNumber,
         favePools,
+        setShowSidebar,
     } = props;
 
     const graphData = useAppSelector((state) => state.graphData);
@@ -241,37 +243,35 @@ export default function Sidebar(props: SidebarPropsIF) {
     }, [searchInput]);
     // ------------------------------------------
     const searchContainer = (
-        <div className={styles.main_search_container}>
-            <div className={styles.search_container}>
-                <div className={styles.search__icon} onClick={toggleSidebar}>
-                    <BiSearch size={18} color='#CDC1FF' />
-                </div>
-                <input
-                    type='text'
-                    id='search_input'
-                    ref={searchInputRef}
-                    placeholder='Search anything...'
-                    className={styles.search__box}
-                    onFocus={() => setSearchMode(true)}
-                    onBlur={() => setSearchMode(false)}
-                    onChange={(e) => searchInputChangeHandler(e.target.value)}
-                />
-                {searchInput && searchInput.length > 0 && (
-                    <div onClick={handleInputClear}>
-                        <MdClose size={18} color='#ebebeb66' />{' '}
-                    </div>
-                )}
+        <div className={styles.search_container}>
+            <div className={styles.search__icon} onClick={toggleSidebar}>
+                <BiSearch size={18} color='#CDC1FF' />
             </div>
+            <input
+                type='text'
+                id='search_input'
+                ref={searchInputRef}
+                placeholder='Search anything...'
+                className={styles.search__box}
+                onFocus={() => setSearchMode(true)}
+                onBlur={() => setSearchMode(false)}
+                onChange={(e) => searchInputChangeHandler(e.target.value)}
+            />
+            {searchInput && searchInput.length > 0 && (
+                <div onClick={handleInputClear} className={styles.close_icon}>
+                    <MdClose size={18} color='#ebebeb66' />{' '}
+                </div>
+            )}
         </div>
     );
 
     // console.log(searchInput);
 
     const searchContainerDisplay = (
-        <div className={`${styles.sidebar_link} ${styles.sidebar_link_search}`}>
+        <div className={` ${styles.sidebar_link_search} ${styles.main_search_container}`}>
             {searchContainer}
 
-            <div>
+            <div style={{ cursor: 'pointer' }}>
                 <img src={closeSidebarImage} alt='close sidebar' onClick={toggleSidebar} />
             </div>
         </div>
@@ -294,6 +294,7 @@ export default function Sidebar(props: SidebarPropsIF) {
                     item={item}
                     toggleSidebar={toggleSidebar}
                     key={idx}
+                    setShowSidebar={setShowSidebar}
 
                     // mostRecent={mostRecentPositions}
                 />
@@ -305,6 +306,7 @@ export default function Sidebar(props: SidebarPropsIF) {
                     item={item}
                     toggleSidebar={toggleSidebar}
                     key={idx}
+                    setShowSidebar={setShowSidebar}
                     // mostRecent={['should open automatically']}
                 />
             ))}
@@ -320,6 +322,7 @@ export default function Sidebar(props: SidebarPropsIF) {
                     idx={idx}
                     item={item}
                     key={idx}
+                    setShowSidebar={setShowSidebar}
                     // mostRecent={mostRecentTransactions}
                 />
             ))}{' '}
@@ -330,6 +333,7 @@ export default function Sidebar(props: SidebarPropsIF) {
                     idx={idx}
                     item={item}
                     key={idx}
+                    setShowSidebar={setShowSidebar}
                 />
             ))}{' '}
             {rangePositions.map((item, idx) => (
@@ -339,6 +343,7 @@ export default function Sidebar(props: SidebarPropsIF) {
                     idx={idx}
                     item={item}
                     key={idx}
+                    setShowSidebar={setShowSidebar}
                     // mostRecent={positionsByUser}
                 />
             ))}
@@ -349,6 +354,7 @@ export default function Sidebar(props: SidebarPropsIF) {
                     idx={idx}
                     item={item}
                     key={idx}
+                    setShowSidebar={setShowSidebar}
                 />
             ))}
         </div>

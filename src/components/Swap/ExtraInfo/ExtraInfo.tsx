@@ -32,7 +32,7 @@ interface ExtraInfoPropsIF {
 export default function ExtraInfo(props: ExtraInfoPropsIF) {
     const {
         // tokenPair,
-        // priceImpact,
+        priceImpact,
         displayEffectivePriceString,
         poolPriceDisplay,
         slippageTolerance,
@@ -73,6 +73,44 @@ export default function ExtraInfo(props: ExtraInfoPropsIF) {
                   maximumFractionDigits: 2,
               });
 
+    // console.log({ priceImpact });
+
+    const finalPriceWithDenom = !isDenomBase
+        ? 1 / (priceImpact?.finalPrice || 1)
+        : priceImpact?.finalPrice || 1;
+
+    const finalPriceString =
+        finalPriceWithDenom === Infinity || finalPriceWithDenom === 1
+            ? '…'
+            : finalPriceWithDenom < 2
+            ? finalPriceWithDenom.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 6,
+              })
+            : finalPriceWithDenom.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+              });
+
+    const priceImpactNum = !priceImpact?.percentChange
+        ? undefined
+        : isDenomBase
+        ? priceImpact.percentChange * 100
+        : -1 * priceImpact.percentChange * 100;
+
+    const priceImpactString = !priceImpactNum
+        ? '…'
+        : priceImpactNum > 0
+        ? '+' +
+          priceImpactNum.toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 3,
+          })
+        : priceImpactNum.toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 3,
+          });
+
     const extraInfoData = [
         {
             title: 'Spot Price',
@@ -92,14 +130,26 @@ export default function ExtraInfo(props: ExtraInfoPropsIF) {
             //     : `${displayLimitPriceString} ${baseTokenSymbol} per ${quoteTokenSymbol}`,
         },
         {
+            title: 'Final Price',
+            tooltipTitle: 'Expected Price of the Selected Token Pool After Swap',
+            data: isDenomBase
+                ? `${finalPriceString} ${quoteTokenSymbol} per ${baseTokenSymbol}`
+                : `${finalPriceString} ${baseTokenSymbol} per ${quoteTokenSymbol}`,
+        },
+        {
+            title: 'Price Impact',
+            tooltipTitle: 'Percentage difference between spot price and final price',
+            data: `${priceImpactString}%`,
+        },
+        {
             title: 'Slippage Tolerance',
-            tooltipTitle: 'slippage tolerance explanation',
-            data: `${slippageTolerance}%`,
+            tooltipTitle: 'This can be changed in settings.',
+            data: `±${slippageTolerance}%`,
         },
         {
             title: 'Liquidity Provider Fee',
-            tooltipTitle: 'liquidity provider fee explanation',
-            data: `${liquidityProviderFee}%`,
+            tooltipTitle: `This is a dynamically updated rate to reward ${baseTokenSymbol} / ${quoteTokenSymbol} liquidity providers.`,
+            data: `${liquidityProviderFee * 100}%`,
         },
     ];
     const extraInfoDetails = (
@@ -110,7 +160,19 @@ export default function ExtraInfo(props: ExtraInfoPropsIF) {
                         <div>{item.title}</div>
                         <TooltipComponent title={item.tooltipTitle} />
                     </div>
-                    <div className={styles.data}>{item.data}</div>
+                    <div
+                        className={styles.data}
+                        style={{
+                            color:
+                                item.title === 'Price Impact' && priceImpactNum
+                                    ? Math.abs(priceImpactNum) > 2
+                                        ? '#f6385b'
+                                        : '#15be67'
+                                    : '#bdbdbd',
+                        }}
+                    >
+                        {item.data}
+                    </div>
                 </div>
             ))}
         </div>

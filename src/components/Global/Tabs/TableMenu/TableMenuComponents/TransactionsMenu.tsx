@@ -24,13 +24,21 @@ interface TransactionMenuIF {
     showSidebar: boolean;
     openGlobalModal: (content: React.ReactNode, title?: string) => void;
     closeGlobalModal: () => void;
+    isOnPortfolioPage: boolean;
 }
 
 // React functional component
 export default function TransactionsMenu(props: TransactionMenuIF) {
     const menuItemRef = useRef<HTMLDivElement>(null);
-    const { userPosition, tx, blockExplorer, showSidebar, openGlobalModal, closeGlobalModal } =
-        props;
+    const {
+        userPosition,
+        tx,
+        blockExplorer,
+        showSidebar,
+        openGlobalModal,
+        closeGlobalModal,
+        isOnPortfolioPage,
+    } = props;
 
     const [value, copy] = useCopyToClipboard();
     const [openSnackbar, setOpenSnackbar] = useState(false);
@@ -157,9 +165,9 @@ export default function TransactionsMenu(props: TransactionMenuIF) {
             {notRelevantButton && editButton}
             {notRelevantButton && removeButton}
             {notRelevantButton && harvestButton}
-            {detailsButton}
+            {(isOnPortfolioPage && !showSidebar) || (!isOnPortfolioPage && detailsButton)}
             {view2 && explorerButton}
-            {view1NoSidebar && copyButton}
+            {view1NoSidebar && !isOnPortfolioPage && copyButton}
         </div>
     );
 

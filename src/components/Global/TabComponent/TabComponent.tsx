@@ -19,6 +19,7 @@ type tabData = {
     label: string;
     content: ReactNode;
     icon?: string;
+    showRightSideOption?: boolean;
 };
 
 interface TabPropsIF {
@@ -29,6 +30,8 @@ interface TabPropsIF {
     setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
     outsideControl: boolean;
     setOutsideControl: Dispatch<SetStateAction<boolean>>;
+    showPositionsOnlyToggle?: boolean;
+    setShowPositionsOnlyToggle?: Dispatch<SetStateAction<boolean>>;
     // this props is for components that do not need outside control such as exchange balance
 }
 
@@ -40,6 +43,8 @@ export default function TabComponent(props: TabPropsIF) {
         rightTabOptions,
         outsideControl,
         setOutsideControl,
+        // showPositionsOnlyToggle,
+        setShowPositionsOnlyToggle,
     } = props;
 
     const [selectedTab, setSelectedTab] = useState(data[0]);
@@ -68,6 +73,12 @@ export default function TabComponent(props: TabPropsIF) {
     useEffect(() => {
         const currentTabData = data.find((item) => item.label === selectedTab.label);
         if (currentTabData) setSelectedTab(currentTabData);
+
+        if (!currentTabData?.showRightSideOption && setShowPositionsOnlyToggle) {
+            setShowPositionsOnlyToggle(false);
+        } else if (currentTabData?.showRightSideOption && setShowPositionsOnlyToggle) {
+            setShowPositionsOnlyToggle(true);
+        }
     }, [data, outsideControl]);
 
     function handleOutside2() {

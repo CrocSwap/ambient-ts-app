@@ -344,7 +344,7 @@ border: 1px solid var(--text-highlight);
     }
 }
 
-@media (min-width: 1280px) {
+@media (min-width: 600px) {
     .main_layout {
         display: grid;
         grid-template-columns: auto 380px;

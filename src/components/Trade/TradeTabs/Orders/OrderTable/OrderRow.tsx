@@ -8,6 +8,7 @@ import { Dispatch, SetStateAction, useEffect } from 'react';
 import { CrocEnv } from '@crocswap-libs/sdk';
 import { DefaultTooltip } from '../../../../Global/StyledTooltip/StyledTooltip';
 import { NavLink } from 'react-router-dom';
+import NoTokenIcon from '../../../../Global/NoTokenIcon/NoTokenIcon';
 
 interface OrderRowPropsIF {
     crocEnv: CrocEnv | undefined;
@@ -58,7 +59,7 @@ export default function OrderRow(props: OrderRowPropsIF) {
         quoteTokenSymbol,
         isOwnerActiveAccount,
         ensName,
-        orderMatchesSelectedTokens,
+        // orderMatchesSelectedTokens,
 
         baseTokenCharacter,
         quoteTokenCharacter,
@@ -148,11 +149,25 @@ export default function OrderRow(props: OrderRowPropsIF) {
         </DefaultTooltip>
     );
 
+    const baseTokenLogoComponent =
+        baseTokenLogo !== '' ? (
+            <img src={baseTokenLogo} alt='base token' width='15px' />
+        ) : (
+            <NoTokenIcon tokenInitial={limitOrder.baseSymbol.charAt(0)} width='30px' />
+        );
+
+    const quoteTokenLogoComponent =
+        quoteTokenLogo !== '' ? (
+            <img src={quoteTokenLogo} alt='quote token' width='15px' />
+        ) : (
+            <NoTokenIcon tokenInitial={limitOrder.quoteSymbol.charAt(0)} width='30px' />
+        );
+
     // portfolio page li element ---------------
     const accountTokenImages = (
         <li className={styles.token_images_account}>
-            <img src={baseTokenLogo} alt='base token' />
-            <img src={quoteTokenLogo} alt='quote token' />
+            {baseTokenLogoComponent}
+            {quoteTokenLogoComponent}
             {/* <p>hello</p> */}
         </li>
     );
@@ -164,7 +179,7 @@ export default function OrderRow(props: OrderRowPropsIF) {
     );
     // end of portfolio page li element ---------------
 
-    if (!orderMatchesSelectedTokens) return null;
+    // if (!orderMatchesSelectedTokens) return null;
     return (
         <ul
             className={`${styles.row_container} ${activePositionStyle} ${userPositionStyle}`}
@@ -232,13 +247,13 @@ export default function OrderRow(props: OrderRowPropsIF) {
                 <li data-label={baseTokenSymbol + quoteTokenSymbol} className='color_white'>
                     <p className={styles.align_center}>
                         {' '}
-                        <img src={baseTokenLogo} alt='' width='15px' />
+                        {baseTokenLogoComponent}
                         {baseDisplay}{' '}
                     </p>
 
                     <p className={styles.align_center}>
                         {' '}
-                        <img src={quoteTokenLogo} alt='' width='15px' />
+                        {quoteTokenLogoComponent}
                         {quoteDisplay}
                     </p>
                 </li>
