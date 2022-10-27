@@ -122,10 +122,6 @@ text-transform: capitalize;
     
     }
 
-    .main_list_container a{
-      color: red;
-    }
-    
 
     
     .main_list_container ul > li {
@@ -138,6 +134,12 @@ text-transform: capitalize;
       
    
     }
+
+    /* .main_list_container ul li{
+      
+      text-align: center;
+    } */
+
     
   /* } */
   
