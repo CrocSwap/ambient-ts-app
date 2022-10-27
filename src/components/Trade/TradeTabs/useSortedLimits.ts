@@ -3,7 +3,6 @@ import { ILimitOrderState } from '../../../utils/state/graphDataSlice';
 
 export const useSortedLimits = (
     defaultSort: string,
-    isShowAllEnabled: boolean,
     positions: ILimitOrderState[]
 ): [
     string,
@@ -88,7 +87,7 @@ export const useSortedLimits = (
     // array of positions sorted by the relevant column
     const sortedPositions = useMemo(
         () => sortData(positions),
-        [sortBy, reverseSort, isShowAllEnabled, positions],
+        [sortBy, reverseSort, positions],
     );
 
     return [sortBy, setSortBy, reverseSort, setReverseSort, sortedPositions];

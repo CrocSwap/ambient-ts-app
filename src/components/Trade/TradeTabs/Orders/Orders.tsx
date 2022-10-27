@@ -68,7 +68,6 @@ export default function Orders(props: propsIF) {
 
     const [sortBy, setSortBy, reverseSort, setReverseSort, sortedLimits] = useSortedLimits(
         'lastUpdate',
-        true, // leaderboard is never limited to the user
         isShowAllEnabled ? limitOrdersByPool : limitOrdersByUser,
     );
 
