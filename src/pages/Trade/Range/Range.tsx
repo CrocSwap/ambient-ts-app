@@ -247,13 +247,6 @@ export default function Range(props: RangePropsIF) {
         [tradeData.advancedLowTick, currentPoolPriceTick],
     );
 
-    // console.log({ defaultLowTick });
-
-    // const defaultHighTick =
-    //     tradeData.advancedHighTick === 0
-    //         ? currentPoolPriceTick + defaultMaxPriceDifferencePercentage * 100
-    //         : tradeData.advancedHighTick;
-
     const defaultHighTick = useMemo(
         () =>
             tradeData.advancedHighTick === 0
@@ -261,7 +254,6 @@ export default function Range(props: RangePropsIF) {
                 : tradeData.advancedHighTick,
         [tradeData.advancedHighTick, currentPoolPriceTick],
     );
-    // console.log({ defaultHighTick });
 
     const [minPriceDifferencePercentage, setMinPriceDifferencePercentage] = useState(
         defaultMinPriceDifferencePercentage,
@@ -344,7 +336,11 @@ export default function Range(props: RangePropsIF) {
     const rangeSpanAboveCurrentPrice = rangeHighTick - currentPoolPriceTick;
     const rangeSpanBelowCurrentPrice = currentPoolPriceTick - rangeLowTick;
 
-    const isOutOfRange = rangeSpanAboveCurrentPrice < 0 || rangeSpanBelowCurrentPrice < 0;
+    const isOutOfRange =
+        tradeData.simpleRangeWidth === 100
+            ? false
+            : rangeSpanAboveCurrentPrice < 0 || rangeSpanBelowCurrentPrice < 0;
+
     const isInvalidRange = !isAmbient && rangeHighTick <= rangeLowTick;
 
     useEffect(() => {
@@ -404,7 +400,14 @@ export default function Range(props: RangePropsIF) {
             setIsTokenBDisabled(false);
             setIsTokenADisabled(false);
         }
-    }, [currentPoolPriceTick, rangeLowTick, rangeHighTick, denominationsInBase]);
+    }, [
+        isAmbient,
+        isTokenABase,
+        currentPoolPriceTick,
+        rangeLowTick,
+        rangeHighTick,
+        denominationsInBase,
+    ]);
 
     const [rangeLowBoundNonDisplayPrice, setRangeLowBoundNonDisplayPrice] = useState(0);
     const [rangeHighBoundNonDisplayPrice, setRangeHighBoundNonDisplayPrice] = useState(0);
@@ -563,7 +566,7 @@ export default function Range(props: RangePropsIF) {
                 lookupChain(chainId).gridSize,
             );
 
-            console.log({ pinnedDisplayPrices });
+            // console.log({ pinnedDisplayPrices });
 
             !denominationsInBase
                 ? setRangeLowBoundNonDisplayPrice(pinnedDisplayPrices.pinnedMinPriceNonDisplay)
@@ -892,9 +895,14 @@ export default function Range(props: RangePropsIF) {
         </div>
     );
 
-    const [isTokenAPrimaryLocal, setIsTokenAPrimaryLocal] = useState<boolean>(
-        tradeData.isTokenAPrimaryRange,
-    );
+    const isTokenAPrimaryLocal = tradeData.isTokenAPrimaryRange;
+    // const [isTokenAPrimaryLocal, setIsTokenAPrimaryLocal] = useState<boolean>(
+    //     tradeData.isTokenAPrimaryRange,
+    // );
+
+    // useEffect(() => {
+    //     console.log({ isTokenAPrimaryLocal });
+    // }, [isTokenAPrimaryLocal]);
 
     // props for <RangePriceInfo/> React element
     const rangePriceInfoProps = {
@@ -1010,7 +1018,7 @@ export default function Range(props: RangePropsIF) {
         baseTokenDexBalance,
         quoteTokenDexBalance,
         isTokenAPrimaryLocal: isTokenAPrimaryLocal,
-        setIsTokenAPrimaryLocal: setIsTokenAPrimaryLocal,
+        // setIsTokenAPrimaryLocal: setIsTokenAPrimaryLocal,
         isWithdrawTokenAFromDexChecked: isWithdrawTokenAFromDexChecked,
         setIsWithdrawTokenAFromDexChecked: setIsWithdrawTokenAFromDexChecked,
         isWithdrawTokenBFromDexChecked: isWithdrawTokenBFromDexChecked,
