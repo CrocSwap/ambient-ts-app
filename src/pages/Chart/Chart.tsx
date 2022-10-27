@@ -24,6 +24,7 @@ import VolumeSubChart from '../Trade/TradeCharts/TradeChartsLoading/VolumeSubCha
 import { ChartUtils } from '../Trade/TradeCharts/TradeCandleStickChart';
 import './Chart.css';
 import BarSeries from './ChartUtils/ChartUtils';
+import { BigNumber } from 'ethers';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -1745,12 +1746,6 @@ export default function Chart(props: ChartData) {
 
             const liquidityScale = d3.scaleLog().domain([domainTop, domainBottom]).range([0, 100]);
 
-            props.liquidityData.liqData.map((data: any) => {
-                if (data.width !== undefined) {
-                    console.log(liquidityScale(data.width));
-                }
-            });
-
             BarSeries(scaleData, props.liquidityData, setBarSeries, liquidityScale);
         }
     }, [scaleData]);
@@ -2145,11 +2140,17 @@ export default function Chart(props: ChartData) {
                 }
             });
 
-            // const percentageValue = new BigNumber((100 * liqTextData.totalValue).toString()).div(new BigNumber(props.liquidityData.totalLiq.toString()));
+            const perc = (100 * liqTextData.totalValue).toString();
+
+            const percentageValue = BigNumber.from(props.liquidityData.totalLiq.toString()).div(
+                BigNumber.from('6546546'),
+            );
+
+            console.log(percentageValue.toNumber());
 
             liqTooltip.html(
                 '<p> % ' +
-                    tooltipFormatter(0) +
+                    percentageValue.toNumber().toFixed(3) +
                     ' </p>' +
                     '<p> $ ' +
                     formatDollarAmountAxis(liqTextData.totalValue) +
