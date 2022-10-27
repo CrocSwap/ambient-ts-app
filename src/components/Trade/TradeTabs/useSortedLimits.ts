@@ -11,14 +11,6 @@ export const useSortedLimits = (
     Dispatch<SetStateAction<boolean>>,
     ILimitOrderState[],
 ] => {
-    // function to reverse an array of postion objects
-    // we can't use .reverse() bc it sorts an array in place
-    function reverseArray(inputArray: ILimitOrderState[]) {
-        const outputArray: ILimitOrderState[] = [];
-        inputArray.forEach((elem) => outputArray.unshift(elem));
-        return outputArray;
-    }
-
     // default sort function
     const sortByUpdateTime = (unsortedData: ILimitOrderState[]) =>
         [...unsortedData].sort((a, b) => b.latestUpdateTime - a.latestUpdateTime);
@@ -65,10 +57,10 @@ export const useSortedLimits = (
                 return sortByUpdateTime(data);
         }
         // return reversed data if user wants data reversed
-        return reverseSort ? reverseArray(sortedData) : sortedData;
+        return reverseSort
+            ? [...sortedData].reverse()
+            : sortedData;
     };
-
-    // TODO: new user positions reset table sort, new pool positions retains sort
 
     // array of positions sorted by the relevant column
     const sortedPositions = useMemo(
