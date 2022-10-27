@@ -348,7 +348,8 @@ export default function TradeTabs2(props: ITabsProps) {
     };
     // Props for <Ranges/> React Element
     const poolInfoProps = {
-        foo: true,
+        chainData: chainData,
+        lastBlockNumber: lastBlockNumber,
     };
     // Props for <Transactions/> React Element
     const transactionsProps = {
