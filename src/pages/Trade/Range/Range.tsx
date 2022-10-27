@@ -400,7 +400,14 @@ export default function Range(props: RangePropsIF) {
             setIsTokenBDisabled(false);
             setIsTokenADisabled(false);
         }
-    }, [currentPoolPriceTick, rangeLowTick, rangeHighTick, denominationsInBase]);
+    }, [
+        isAmbient,
+        isTokenABase,
+        currentPoolPriceTick,
+        rangeLowTick,
+        rangeHighTick,
+        denominationsInBase,
+    ]);
 
     const [rangeLowBoundNonDisplayPrice, setRangeLowBoundNonDisplayPrice] = useState(0);
     const [rangeHighBoundNonDisplayPrice, setRangeHighBoundNonDisplayPrice] = useState(0);
