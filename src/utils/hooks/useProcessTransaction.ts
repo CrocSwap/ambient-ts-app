@@ -262,11 +262,10 @@ export const useProcessTransaction = (tx: ITransaction) => {
                           minimumFractionDigits: 2,
                           maximumFractionDigits: 2,
                       });
-            const baseFlowDisplayString = isBaseFlowPositive
-                ? // (isBaseFlowNegative && tx.entityType !== 'liqchange') ||
-                  // (!isBaseFlowNegative && tx.entityType === 'liqchange')
-                  `(${baseFlowDisplayTruncated})`
-                : baseFlowDisplayTruncated;
+            const baseFlowDisplayString =
+                tx.entityType !== 'liqchange' && isBaseFlowPositive
+                    ? `(${baseFlowDisplayTruncated})`
+                    : baseFlowDisplayTruncated;
             setBaseFlowDisplay(baseFlowDisplayString);
         }
         if (tx.quoteFlowDecimalCorrected !== undefined && tx.quoteFlowDecimalCorrected !== null) {
@@ -287,11 +286,12 @@ export const useProcessTransaction = (tx: ITransaction) => {
                           minimumFractionDigits: 2,
                           maximumFractionDigits: 2,
                       });
-            const quoteFlowDisplayString = isQuoteFlowPositive
-                ? // (isQuoteFlowNegative && tx.entityType !== 'liqchange') ||
-                  // (!isQuoteFlowNegative && tx.entityType === 'liqchange')
-                  `(${quoteFlowDisplayTruncated})`
-                : quoteFlowDisplayTruncated;
+            const quoteFlowDisplayString =
+                tx.entityType !== 'liqchange' && isQuoteFlowPositive
+                    ? // (isQuoteFlowNegative && tx.entityType !== 'liqchange') ||
+                      // (!isQuoteFlowNegative && tx.entityType === 'liqchange')
+                      `(${quoteFlowDisplayTruncated})`
+                    : quoteFlowDisplayTruncated;
             setQuoteFlowDisplay(quoteFlowDisplayString);
         }
     }, [JSON.stringify(tx), isDenomBase]);
