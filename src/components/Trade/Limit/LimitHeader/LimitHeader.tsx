@@ -13,6 +13,7 @@ import { useModal } from '../../../../components/Global/Modal/useModal';
 import { useAppDispatch, useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { toggleDidUserFlipDenom } from '../../../../utils/state/tradeDataSlice';
 import IconWithTooltip from '../../../Global/IconWithTooltip/IconWithTooltip';
+import { AiOutlineShareAlt } from 'react-icons/ai';
 
 // interface for component props
 interface LimitHeaderPropsIF {
@@ -20,13 +21,17 @@ interface LimitHeaderPropsIF {
     // tokenPair: TokenPairIF;
     mintSlippage: SlippagePairIF;
     isPairStable: boolean;
+
+    openGlobalModal: (content: React.ReactNode, title?: string) => void;
+
+    shareOptionsDisplay: JSX.Element;
     // isDenomBase: boolean;
     // isTokenABase: boolean;
 }
 
 // central react functional component
 export default function LimitHeader(props: LimitHeaderPropsIF) {
-    const { mintSlippage, isPairStable } = props;
+    const { mintSlippage, isPairStable, openGlobalModal } = props;
 
     const [isModalOpen, openModal, closeModal] = useModal();
 
@@ -50,7 +55,12 @@ export default function LimitHeader(props: LimitHeaderPropsIF) {
 
     return (
         <ContentHeader>
-            <span />
+            <div
+                className={styles.share_button}
+                onClick={() => openGlobalModal(props.shareOptionsDisplay, 'Share')}
+            >
+                <AiOutlineShareAlt />
+            </div>
             <div className={styles.token_info} onClick={() => dispatch(toggleDidUserFlipDenom())}>
                 {isDenomBase ? baseTokenSymbol : quoteTokenSymbol} /{' '}
                 {isDenomBase ? quoteTokenSymbol : baseTokenSymbol}
