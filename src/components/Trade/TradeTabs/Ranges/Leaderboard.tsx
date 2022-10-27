@@ -202,14 +202,14 @@ export default function Leaderboard(props: LeaderboardPropsIF) {
             className: 'ID',
             show: !showColumns,
             slug: 'id',
-            sortable: true,
+            sortable: false,
         },
         {
             name: 'Wallet',
             className: 'wallet',
             show: !showColumns,
             slug: 'wallet',
-            sortable: true,
+            sortable: false,
         },
         {
             name: walID,
@@ -220,17 +220,16 @@ export default function Leaderboard(props: LeaderboardPropsIF) {
         },
         {
             name: 'Min',
-
             show: !showColumns,
             slug: 'min',
-            sortable: true,
+            sortable: false,
         },
         {
             name: 'Max',
             className: 'side',
             show: !showColumns,
             slug: 'max',
-            sortable: true,
+            sortable: false,
         },
 
         {
@@ -245,7 +244,7 @@ export default function Leaderboard(props: LeaderboardPropsIF) {
             className: 'value',
             show: true,
             slug: 'value',
-            sortable: true,
+            sortable: false,
         },
         {
             name: `${baseTokenSymbol} ( ${baseTokenCharacter} )`,
@@ -273,7 +272,7 @@ export default function Leaderboard(props: LeaderboardPropsIF) {
             className: 'apr',
             show: true,
             slug: 'apr',
-            sortable: true,
+            sortable: false,
         },
         {
             name: 'Status',
