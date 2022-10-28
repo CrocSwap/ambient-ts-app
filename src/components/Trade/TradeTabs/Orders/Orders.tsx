@@ -66,13 +66,7 @@ export default function Orders(props: propsIF) {
 
     const tradeData = useAppSelector((state) => state.tradeData);
 
-    const [
-        sortBy,
-        setSortBy,
-        reverseSort,
-        setReverseSort,
-        sortedLimits
-    ] = useSortedLimits(
+    const [sortBy, setSortBy, reverseSort, setReverseSort, sortedLimits] = useSortedLimits(
         'lastUpdate',
         isShowAllEnabled ? limitOrdersByPool : limitOrdersByUser,
     );
@@ -213,7 +207,7 @@ export default function Orders(props: propsIF) {
         }
     }, [lastPoolLimitOrderChangeMessage]);
 
-    console.log({ limitOrderData });
+    // console.log({ limitOrderData });
 
     // -----------------------------
     // const dataReceivedByPool = graphData?.changesByPool?.dataReceived;
