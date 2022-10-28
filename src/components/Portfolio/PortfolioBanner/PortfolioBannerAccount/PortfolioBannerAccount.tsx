@@ -1,4 +1,4 @@
-import noAvatarImage from '../../../assets/images/icons/avatar.svg';
+import noAvatarImage from '../../../../assets/images/icons/avatar.svg';
 
 interface IPortfolioBannerAccountPropsIF {
     imageData: string[];
