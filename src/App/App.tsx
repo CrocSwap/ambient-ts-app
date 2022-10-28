@@ -942,6 +942,7 @@ export default function App() {
 
                 // retrieve pool recent changes
                 fetchPoolRecentChanges({
+                    importedTokens: importedTokens,
                     base: sortedTokens[0],
                     quote: sortedTokens[1],
                     poolIdx: chainData.poolIndex,

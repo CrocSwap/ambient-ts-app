@@ -263,6 +263,7 @@ export default function TradeTabs2(props: ITabsProps) {
             // const poolSwapsCacheEndpoint = httpGraphCacheServerDomain + '/pool_recent_changes?';
 
             fetchPoolRecentChanges({
+                importedTokens: importedTokens,
                 base: selectedBase,
                 quote: selectedQuote,
                 poolIdx: chainData.poolIndex,
@@ -278,7 +279,8 @@ export default function TradeTabs2(props: ITabsProps) {
             })
                 .then((selectedCandleChangesJson) => {
                     console.log({ selectedCandleChangesJson });
-                    setChangesInSelectedCandle(selectedCandleChangesJson);
+                    if (selectedCandleChangesJson)
+                        setChangesInSelectedCandle(selectedCandleChangesJson);
                     setOutsideControl(true);
                     setSelectedInsideTab(0);
                 })
@@ -354,6 +356,7 @@ export default function TradeTabs2(props: ITabsProps) {
     // Props for <Transactions/> React Element
     const transactionsProps = {
         isShowAllEnabled: isShowAllEnabled,
+        importedTokens: importedTokens,
 
         changesInSelectedCandle: changesInSelectedCandle,
         tokenMap: tokenMap,
