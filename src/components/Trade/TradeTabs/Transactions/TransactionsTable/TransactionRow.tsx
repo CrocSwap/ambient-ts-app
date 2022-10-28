@@ -94,7 +94,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
         <DefaultTooltip
             interactive
             title={txHash}
-            placement={'right'}
+            placement={'right-end'}
             arrow
             enterDelay={400}
             leaveDelay={200}
@@ -114,7 +114,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                     <NavLink to={`/${ownerId}`}>View Account</NavLink>
                 </div>
             }
-            placement={'right'}
+            placement={'right-end'}
             arrow
             enterDelay={400}
             leaveDelay={200}
@@ -132,16 +132,72 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
 
     const baseTokenLogoComponent =
         baseTokenLogo !== '' ? (
-            <img src={baseTokenLogo} alt='base token' width='15px' />
+            <DefaultTooltip
+                interactive
+                title={
+                    <div>
+                        <p>{baseTokenSymbol}</p>
+                        {/* <NavLink to={`/${ownerId}`}>View Account</NavLink> */}
+                    </div>
+                }
+                placement={'top'}
+                arrow
+                enterDelay={400}
+                leaveDelay={200}
+            >
+                <img src={baseTokenLogo} alt='base token' width='15px' />
+            </DefaultTooltip>
         ) : (
-            <NoTokenIcon tokenInitial={tx.baseSymbol.charAt(0)} width='30px' />
+            <DefaultTooltip
+                interactive
+                title={
+                    <div>
+                        <p>{baseTokenSymbol}</p>
+                        {/* <NavLink to={`/${ownerId}`}>View Account</NavLink> */}
+                    </div>
+                }
+                placement={'top'}
+                arrow
+                enterDelay={400}
+                leaveDelay={200}
+            >
+                <NoTokenIcon tokenInitial={tx.baseSymbol.charAt(0)} width='30px' />
+            </DefaultTooltip>
         );
 
     const quoteTokenLogoComponent =
         quoteTokenLogo !== '' ? (
-            <img src={quoteTokenLogo} alt='quote token' width='15px' />
+            <DefaultTooltip
+                interactive
+                title={
+                    <div>
+                        <p>{quoteTokenSymbol}</p>
+                        {/* <NavLink to={`/${ownerId}`}>View Account</NavLink> */}
+                    </div>
+                }
+                placement={'top'}
+                arrow
+                enterDelay={400}
+                leaveDelay={200}
+            >
+                <img src={quoteTokenLogo} alt='quote token' width='15px' />
+            </DefaultTooltip>
         ) : (
-            <NoTokenIcon tokenInitial={tx.quoteSymbol.charAt(0)} width='30px' />
+            <DefaultTooltip
+                interactive
+                title={
+                    <div>
+                        <p>{quoteTokenSymbol}</p>
+                        {/* <NavLink to={`/${ownerId}`}>View Account</NavLink> */}
+                    </div>
+                }
+                placement={'top'}
+                arrow
+                enterDelay={400}
+                leaveDelay={200}
+            >
+                <NoTokenIcon tokenInitial={tx.quoteSymbol.charAt(0)} width='30px' />
+            </DefaultTooltip>
         );
 
     // portfolio page li element ---------------
