@@ -66,11 +66,6 @@ export default function Orders(props: propsIF) {
 
     const tradeData = useAppSelector((state) => state.tradeData);
 
-    const [sortBy, setSortBy, reverseSort, setReverseSort, sortedLimits] = useSortedLimits(
-        'lastUpdate',
-        isShowAllEnabled ? limitOrdersByPool : limitOrdersByUser,
-    );
-
     const baseTokenAddressLowerCase = tradeData.baseToken.address.toLowerCase();
     const quoteTokenAddressLowerCase = tradeData.quoteToken.address.toLowerCase();
 
@@ -111,6 +106,10 @@ export default function Orders(props: propsIF) {
         return () => clearTimeout(handler);
     }, [isShowAllEnabled]);
 
+    const [sortBy, setSortBy, reverseSort, setReverseSort, sortedLimits] = useSortedLimits(
+        'lastUpdate',
+        isShowAllEnabled ? limitOrdersByPool : limitOrderData,
+    );
     useEffect(() => {
         if (isShowAllEnabled) {
             fetchPoolLimitOrderStates({
