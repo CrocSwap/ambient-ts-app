@@ -7,6 +7,7 @@ import { DefaultTooltip } from '../../../../Global/StyledTooltip/StyledTooltip';
 import { NavLink } from 'react-router-dom';
 // import { AiOutlineDash } from 'react-icons/ai';
 import NoTokenIcon from '../../../../Global/NoTokenIcon/NoTokenIcon';
+import IconWithTooltip from '../../../../Global/IconWithTooltip/IconWithTooltip';
 interface TransactionRowPropsIF {
     tx: ITransaction;
 
@@ -105,7 +106,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                     {txHash}
                 </div>
             }
-            placement={'right'}
+            placement={'right-end'}
             arrow
             enterDelay={400}
             leaveDelay={200}
@@ -125,7 +126,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                     <NavLink to={`/${ownerId}`}>View Account</NavLink>
                 </div>
             }
-            placement={'right'}
+            placement={'right-end'}
             arrow
             enterDelay={400}
             leaveDelay={200}
@@ -143,14 +144,44 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
 
     const baseTokenLogoComponent =
         baseTokenLogo !== '' ? (
-            <img src={baseTokenLogo} alt='base token' width='15px' />
+            <DefaultTooltip
+                interactive
+                title={
+                    <div>
+                        <p>{baseTokenSymbol}</p>
+                        {/* <NavLink to={`/${ownerId}`}>View Account</NavLink> */}
+                    </div>
+                }
+                placement={'top'}
+                arrow
+                enterDelay={400}
+                leaveDelay={200}
+            >
+                <img src={baseTokenLogo} alt='base token' width='15px' />
+            </DefaultTooltip>
         ) : (
-            <NoTokenIcon tokenInitial={tx.baseSymbol.charAt(0)} width='30px' />
+            <IconWithTooltip title={`${baseTokenSymbol}`} placement='bottom'>
+                <NoTokenIcon tokenInitial={tx.baseSymbol.charAt(0)} width='30px' />
+            </IconWithTooltip>
         );
 
     const quoteTokenLogoComponent =
         quoteTokenLogo !== '' ? (
-            <img src={quoteTokenLogo} alt='quote token' width='15px' />
+            <DefaultTooltip
+                interactive
+                title={
+                    <div>
+                        <p>{quoteTokenSymbol}</p>
+                        {/* <NavLink to={`/${ownerId}`}>View Account</NavLink> */}
+                    </div>
+                }
+                placement={'top'}
+                arrow
+                enterDelay={400}
+                leaveDelay={200}
+            >
+                <img src={quoteTokenLogo} alt='quote token' width='15px' />
+            </DefaultTooltip>
         ) : (
             <NoTokenIcon tokenInitial={tx.quoteSymbol.charAt(0)} width='25px' />
         );
