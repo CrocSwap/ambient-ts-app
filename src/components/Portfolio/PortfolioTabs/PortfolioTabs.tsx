@@ -101,9 +101,9 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
     const connectedAccountTransactionData = graphData.changesByUser.changes;
 
     const [otherAccountPositionData, setOtherAccountPositionData] = useState<PositionIF[]>([]);
-    const [otherAccountLimitOrderData, setOtherAccountLimitOrderData] = useState<
-    LimitOrderIF[]
-    >([]);
+    const [otherAccountLimitOrderData, setOtherAccountLimitOrderData] = useState<LimitOrderIF[]>(
+        [],
+    );
     const [otherAccountTransactionData, setOtherAccountTransactionData] = useState<ITransaction[]>(
         [],
     );
@@ -281,6 +281,7 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
 
     // props for <Transactions/> React Element
     const transactionsProps = {
+        importedTokens: importedTokens,
         activeAccountTransactionData: activeAccountTransactionData,
         connectedAccountActive: connectedAccountActive,
         isShowAllEnabled: false,

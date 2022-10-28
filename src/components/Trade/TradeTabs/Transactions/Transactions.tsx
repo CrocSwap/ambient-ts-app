@@ -25,6 +25,8 @@ import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter
 // import TransactionAccordions from './TransactionAccordions/TransactionAccordions';
 
 interface TransactionsProps {
+    importedTokens: TokenIF[];
+
     activeAccountTransactionData?: ITransaction[];
     connectedAccountActive?: boolean;
     isShowAllEnabled: boolean;
@@ -51,6 +53,7 @@ interface TransactionsProps {
 }
 export default function Transactions(props: TransactionsProps) {
     const {
+        importedTokens,
         activeAccountTransactionData,
         // connectedAccountActive,
         isShowAllEnabled,
@@ -240,6 +243,7 @@ export default function Transactions(props: TransactionsProps) {
     useEffect(() => {
         if (isShowAllEnabled) {
             fetchPoolRecentChanges({
+                importedTokens: importedTokens,
                 base: baseTokenAddress,
                 quote: quoteTokenAddress,
                 poolIdx: chainData.poolIndex,
@@ -299,6 +303,7 @@ export default function Transactions(props: TransactionsProps) {
                 // repeat fetch with the interval of 30 seconds
                 const timerId = setInterval(() => {
                     fetchPoolRecentChanges({
+                        importedTokens: importedTokens,
                         base: baseTokenAddress,
                         quote: quoteTokenAddress,
                         poolIdx: chainData.poolIndex,
