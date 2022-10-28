@@ -1,6 +1,7 @@
 import noAvatarImage from '../../../../assets/images/icons/avatar.svg';
 import { useState } from 'react';
 import { motion } from 'framer-motion';
+import { exampleFollowers, exampleFollowing } from './exampleAccounts';
 interface IPortfolioBannerAccountPropsIF {
     imageData: string[];
     ensName: string;
@@ -11,6 +12,7 @@ interface IPortfolioBannerAccountPropsIF {
 }
 
 import styles from './PortfolioBannerAccount.module.css';
+import FollowDisplay from './FollowDisplay/FollowDisplay';
 
 export default function PortfolioBannerAccount(props: IPortfolioBannerAccountPropsIF) {
     const [showAccountDetails, setShowAccountDetails] = useState(false);
@@ -99,7 +101,12 @@ export default function PortfolioBannerAccount(props: IPortfolioBannerAccountPro
                     </span>
                 </div>
             </div>
-            {showAccountDetails && accountDetails}
+            {showAccountDetails && (
+                <FollowDisplay
+                    exampleFollowers={exampleFollowers}
+                    exampleFollowing={exampleFollowing}
+                />
+            )}
         </motion.main>
     );
 }
