@@ -7,6 +7,7 @@ import styles from './PoolInfo.module.css';
 import { BsArrowUpRight, BsStars } from 'react-icons/bs';
 import trimString from '../../../../utils/functions/trimString';
 import { DefaultTooltip } from '../../../Global/StyledTooltip/StyledTooltip';
+import { ZERO_ADDRESS } from '../../../../constants';
 // interface for props
 interface PoolInfoPropsIF {
     chainData: ChainSpec;
@@ -138,7 +139,11 @@ export default function PoolInfo(props: PoolInfoPropsIF) {
                     <a
                         target='_blank'
                         rel='noreferrer'
-                        href={`https://etherscan.io/address/${baseTokenAddress}`}
+                        href={
+                            baseTokenAddress === ZERO_ADDRESS
+                                ? 'https://goerli.etherscan.io/address/0xfafcd1f5530827e7398b6d3c509f450b1b24a209'
+                                : `https://goerli.etherscan.io/token/${baseTokenAddress}`
+                        }
                         className={styles.token_display}
                     >
                         {/* <img src="https://cryptologos.cc/logos/usd-coin-usdc-logo.png" alt=""  /> */}
@@ -153,7 +158,7 @@ export default function PoolInfo(props: PoolInfoPropsIF) {
                     <a
                         target='_blank'
                         rel='noreferrer'
-                        href={`https://etherscan.io/address/${quoteTokenAddress}`}
+                        href={`https://goerli.etherscan.io/token/${quoteTokenAddress}`}
                         className={styles.token_display}
                     >
                         {/* <img src="https://cryptologos.cc/logos/usd-coin-usdc-logo.png" alt=""  /> */}
