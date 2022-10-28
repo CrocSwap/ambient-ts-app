@@ -2,6 +2,8 @@ export interface LimitOrderIF {
     id: string;
     limitOrderIdentifier: string;
     tx: string;
+    pivotTime: number;
+    latestCrossPivotTime: number;
     positionId: string;
     source: string;
     network: string;

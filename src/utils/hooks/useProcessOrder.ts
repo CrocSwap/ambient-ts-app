@@ -27,7 +27,7 @@ export const useProcessOrder = (limitOrder: LimitOrderIF) => {
     const ownerId = limitOrder.ensResolution ? limitOrder.ensResolution : limitOrder.user;
     const ensName = limitOrder.ensResolution ? limitOrder.ensResolution : null;
 
-    const isOrderFilled = limitOrder.positionLiq === '0';
+    const isOrderFilled = !!limitOrder.latestCrossPivotTime;
 
     const posHash = limitOrder.limitOrderIdentifier.slice(42);
     const [truncatedDisplayPrice, setTruncatedDisplayPrice] = useState<string | undefined>();

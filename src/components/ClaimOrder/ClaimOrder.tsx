@@ -76,10 +76,23 @@ export default function ClaimOrder(props: IClaimOrderProps) {
     // ---------------CLAIM FUNCTION TO BE REFACTORED
 
     const claimFn = async () => {
-        if (crocEnv) {
+        if (crocEnv && limitOrder.latestCrossPivotTime) {
             setShowConfirmation(true);
             setShowSettings(false);
             console.log({ limitOrder });
+            if (limitOrder.isBid === true) {
+                crocEnv
+                    .sell(limitOrder.base, 0)
+                    .atLimit(limitOrder.quote, limitOrder.askTick)
+                    .recoverPost(limitOrder.latestCrossPivotTime, { surplus: false });
+            } else {
+                crocEnv
+                    .sell(limitOrder.quote, 0)
+                    .atLimit(limitOrder.base, limitOrder.bidTick)
+                    .recoverPost(limitOrder.latestCrossPivotTime, { surplus: false });
+
+                // .burnLiq(BigNumber.from(positionLiquidity));
+            }
         }
         console.log('Order has been claimed');
     };
@@ -217,7 +230,7 @@ export default function ClaimOrder(props: IClaimOrderProps) {
         <div>
             <ClaimOrderModalHeader
                 onClose={closeGlobalModal}
-                title={showConfirmation ? '' : 'Remove Limit Order'}
+                title={showConfirmation ? '' : 'Claim Limit Order'}
                 showSettings={showSettings}
                 setShowSettings={setShowSettings}
                 onGoBack={showSettings ? () => setShowSettings(false) : null}
@@ -233,6 +246,7 @@ export default function ClaimOrder(props: IClaimOrderProps) {
             />
 
             <ClaimOrderInfo
+                pivotTime={limitOrder.pivotTime}
                 baseTokenSymbol={baseTokenSymbol}
                 quoteTokenSymbol={quoteTokenSymbol}
                 baseTokenLogoURI={baseTokenLogo}
