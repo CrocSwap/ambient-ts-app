@@ -3,6 +3,7 @@ import { TokenListIF, TokenIF } from '../../../utils/interfaces/exports';
 import TokenSelect from '../TokenSelect/TokenSelect';
 import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
 import { setToken } from '../../../utils/state/temp';
+import { useSoloSearch } from './useSoloSearch';
 
 interface propsIF {
     tokensBank: TokenIF[];
@@ -13,6 +14,8 @@ interface propsIF {
 export const SoloTokenSelect = (props: propsIF) => {
     const { tokensBank, setImportedTokens, closeModal } = props;
     console.log(tokensBank);
+
+    useSoloSearch();
 
     const dispatch = useAppDispatch();
 
