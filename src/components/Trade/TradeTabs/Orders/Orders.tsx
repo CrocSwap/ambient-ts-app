@@ -206,7 +206,7 @@ export default function Orders(props: propsIF) {
         }
     }, [lastPoolLimitOrderChangeMessage]);
 
-    console.log({ limitOrderData });
+    // console.log({ limitOrderData });
 
     // -----------------------------
     // const dataReceivedByPool = graphData?.changesByPool?.dataReceived;

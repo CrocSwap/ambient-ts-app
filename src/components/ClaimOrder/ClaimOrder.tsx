@@ -217,7 +217,7 @@ export default function ClaimOrder(props: IClaimOrderProps) {
         <div>
             <ClaimOrderModalHeader
                 onClose={closeGlobalModal}
-                title={showConfirmation ? '' : 'Remove Limit Order'}
+                title={showConfirmation ? '' : 'Claim Limit Order'}
                 showSettings={showSettings}
                 setShowSettings={setShowSettings}
                 onGoBack={showSettings ? () => setShowSettings(false) : null}
@@ -233,6 +233,7 @@ export default function ClaimOrder(props: IClaimOrderProps) {
             />
 
             <ClaimOrderInfo
+                pivotTime={limitOrder.pivotTime}
                 baseTokenSymbol={baseTokenSymbol}
                 quoteTokenSymbol={quoteTokenSymbol}
                 baseTokenLogoURI={baseTokenLogo}

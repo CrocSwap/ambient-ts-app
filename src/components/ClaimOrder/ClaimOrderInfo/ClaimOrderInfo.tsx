@@ -24,10 +24,12 @@ interface IClaimOrderInfoProps {
     positionLiquidity: string | undefined;
     baseClaimString: string;
     quoteClaimString: string;
+    pivotTime: number;
 }
 
 export default function ClaimOrderInfo(props: IClaimOrderInfoProps) {
     const {
+        pivotTime,
         // baseTokenSymbol,
         // quoteTokenSymbol,
         baseTokenLogoURI,
@@ -79,6 +81,10 @@ export default function ClaimOrderInfo(props: IClaimOrderInfoProps) {
 
                 {/* ---------------------------REMOVAL SUMMARY--------------------------------- */}
 
+                <Row>
+                    <span>Fill Time</span>
+                    <div className={styles.token_price}>{pivotTime}</div>
+                </Row>
                 <Row>
                     <span> Claimable Amount</span>
                     <div className={styles.token_price}>
