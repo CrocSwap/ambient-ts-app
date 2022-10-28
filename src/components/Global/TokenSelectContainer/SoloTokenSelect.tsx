@@ -15,7 +15,7 @@ export const SoloTokenSelect = (props: propsIF) => {
     const { tokensBank, setImportedTokens, closeModal } = props;
     console.log(tokensBank);
 
-    useSoloSearch();
+    const [ setInput ] = useSoloSearch();
 
     const dispatch = useAppDispatch();
 
@@ -47,5 +47,14 @@ export const SoloTokenSelect = (props: propsIF) => {
             />
         ));
 
-    return <>{tokenButtons}</>;
+    return (
+        <>
+            <input
+                type='text'
+                placeholder='Enter an Address'
+                onChange={(e) => setInput(e.target.value)}
+            />
+            {tokenButtons}
+        </>
+    );
 };
