@@ -7,6 +7,7 @@ import { DefaultTooltip } from '../../../../Global/StyledTooltip/StyledTooltip';
 import { NavLink } from 'react-router-dom';
 // import { AiOutlineDash } from 'react-icons/ai';
 import NoTokenIcon from '../../../../Global/NoTokenIcon/NoTokenIcon';
+import IconWithTooltip from '../../../../Global/IconWithTooltip/IconWithTooltip';
 interface TransactionRowPropsIF {
     tx: ITransaction;
 
@@ -148,21 +149,9 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                 <img src={baseTokenLogo} alt='base token' width='15px' />
             </DefaultTooltip>
         ) : (
-            <DefaultTooltip
-                interactive
-                title={
-                    <div>
-                        <p>{baseTokenSymbol}</p>
-                        {/* <NavLink to={`/${ownerId}`}>View Account</NavLink> */}
-                    </div>
-                }
-                placement={'top'}
-                arrow
-                enterDelay={400}
-                leaveDelay={200}
-            >
+            <IconWithTooltip title={`${baseTokenSymbol}`} placement='bottom'>
                 <NoTokenIcon tokenInitial={tx.baseSymbol.charAt(0)} width='30px' />
-            </DefaultTooltip>
+            </IconWithTooltip>
         );
 
     const quoteTokenLogoComponent =
@@ -183,21 +172,9 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                 <img src={quoteTokenLogo} alt='quote token' width='15px' />
             </DefaultTooltip>
         ) : (
-            <DefaultTooltip
-                interactive
-                title={
-                    <div>
-                        <p>{quoteTokenSymbol}</p>
-                        {/* <NavLink to={`/${ownerId}`}>View Account</NavLink> */}
-                    </div>
-                }
-                placement={'top'}
-                arrow
-                enterDelay={400}
-                leaveDelay={200}
-            >
+            <IconWithTooltip title={`${quoteTokenSymbol}`} placement='bottom'>
                 <NoTokenIcon tokenInitial={tx.quoteSymbol.charAt(0)} width='30px' />
-            </DefaultTooltip>
+            </IconWithTooltip>
         );
 
     // portfolio page li element ---------------
