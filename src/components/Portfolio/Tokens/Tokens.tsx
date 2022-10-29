@@ -12,12 +12,12 @@ export default function Tokens(props: propsIF) {
     const { chainId } = props;
     false && chainId;
 
-    const [activeTokens, setActiveTokens] = useState('imported');
-    false && setActiveTokens('');
-    const [tkns, setTkns] = useState<TokenIF[]>([]);
+    const [tokenSource, setTokenSource] = useState('imported');
+    false && setTokenSource('');
+    const [tokensInDOM, setTokensInDOM] = useState<TokenIF[]>([]);
     useEffect(() => {
         let tokens: TokenIF[];
-        switch (activeTokens) {
+        switch (tokenSource) {
             case 'imported':
                 tokens = JSON.parse(localStorage.getItem('user') as string).tokens;
                 break;
@@ -25,15 +25,24 @@ export default function Tokens(props: propsIF) {
                 tokens = JSON.parse(localStorage.getItem('user') as string).tokens;
         }
         console.log(tokens);
-        setTkns(tokens);
-    }, [activeTokens]);
+        setTokensInDOM(tokens);
+    }, [tokenSource]);
 
     return (
         <div className={styles.container}>
+            <div className={styles.listPicker}>
+                <select
+                    name='lists'
+                    onChange={(e) => console.log(e.target.value)}
+                >
+                    <option value='imported'>My Tokens</option>
+                    <option value='ambient'>Ambient</option>
+                </select>
+            </div>
             <TokensHeader />
             <ol className={styles.item_container}>
             {
-                tkns.map((tkn) =>
+                tokensInDOM.map((tkn) =>
                     <TokenCard
                         key={JSON.stringify(tkn)}
                         token={tkn}
