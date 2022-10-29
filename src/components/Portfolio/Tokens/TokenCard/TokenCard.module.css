@@ -9,21 +9,33 @@
     display: flex;
     align-items: center;
     flex-direction: row;
-    gap: 4px;
+    width: 30px;
+    height: 30px;
 }
 
-.exchange_row {
+.token_card {
     display: grid;
     color: white;
-    grid-template-columns: 2fr 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
     align-items: center;
     height: 48px;
-}
-
-.exchange_row {
     font-size: var(--body-size);
     line-height: var(--body-lh);
     color: rgba(235, 235, 255, 0.4);
+}
+
+.token_card > * {
+    /* outline: 2px solid red; */
+}
+
+.token_name {
+    display: flex;
+    flex-direction: row;
+}
+
+.token_name > div {
+    display: flex;
+    flex-direction: column;
 }
 
 .token_key,
@@ -41,4 +53,8 @@
 .amount {
     display: flex;
     justify-content: flex-end;
+}
+
+.address {
+    font-family: monospace;
 }

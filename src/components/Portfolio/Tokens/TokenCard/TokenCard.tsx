@@ -15,11 +15,20 @@ export default function TokenCard(props: propsIF) {
     false && chainId;
 
     return (
-        <div className={styles.exchange_row}>
-            <p>{token.name}</p>
-            <p>{token.symbol}</p>
+        <li className={styles.token_card}>
+            <div className={styles.token_name}>
+                <img
+                    className={styles.token_icon}
+                    src={token.logoURI}
+                    alt={`logo for ${token.name}`}
+                />
+                <div>
+                    <h5>{token.name}</h5>
+                    <h5>{token.symbol}</h5>
+                </div>
+            </div>
             <p>{token.chainId}</p>
-            <p>{token.address}</p>
-        </div>
+            <p className={styles.address}>{token.address}</p>
+        </li>
     );
 }

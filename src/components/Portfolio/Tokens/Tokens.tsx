@@ -31,7 +31,7 @@ export default function Tokens(props: propsIF) {
     return (
         <div className={styles.container}>
             <TokensHeader />
-            <div className={styles.item_container}>
+            <ol className={styles.item_container}>
             {
                 tkns.map((tkn) =>
                     <TokenCard
@@ -41,7 +41,7 @@ export default function Tokens(props: propsIF) {
                     />
                 )
             }
-            </div>
+            </ol>
         </div>
     );
 }
