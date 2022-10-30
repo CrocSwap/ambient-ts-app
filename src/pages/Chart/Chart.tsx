@@ -180,6 +180,15 @@ export default function Chart(props: ChartData) {
     const indicatorFormatter = d3.format('.6f');
     const tooltipFormatter = d3.format('.3f');
 
+    function formattedTextData(data: number): string {
+        return data
+            ? data.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+              })
+            : '';
+    }
+
     const setDefaultRangeData = () => {
         setRanges((prevState) => {
             const newTargets = [...prevState];
@@ -233,34 +242,14 @@ export default function Chart(props: ChartData) {
             .select('svg')
             .select('#market')
             .select('text')
-            .attr('class', 'y_axis')
-            .text(market[0].value)
-            .style('transform', 'translateY(' + scale(market[0].value) + 'px)')
+            .attr('class', 'market')
+            .text(formattedTextData(market[0].value))
+            .style('transform', 'translateY(' + (scale(market[0].value) + 5) + 'px)')
             .attr('filter', 'url(#marketBg)');
-    }
-
-    async function addLimitText(scale: any) {
-        await d3.select(d3Yaxis.current).select('svg').selectAll('#limit').remove();
-
-        await d3
-            .select(d3Yaxis.current)
-            .select('svg')
-            .append('g')
-            .attr('id', 'limit')
-            .append('text');
-        d3.select(d3Yaxis.current)
-            .select('svg')
-            .select('#limit')
-            .select('text')
-            .attr('class', 'y_axis')
-            .text(limit[0].value)
-            .style('transform', 'translateY(' + scale(limit[0].value) + 'px)')
-            .attr('filter', 'url(#textBg)');
     }
 
     async function addText(scale: any) {
         await d3.select(d3Yaxis.current).select('svg').selectAll('#yText').remove();
-        console.error(location.pathname);
         if (!location.pathname.includes('market')) {
             const textArray: any[] = location.pathname.includes('limit') ? limit : ranges;
             textArray.forEach(async (element: any) => {
@@ -275,60 +264,27 @@ export default function Chart(props: ChartData) {
                     .select('svg')
                     .select('#' + element.name)
                     .attr('class', 'y_axis')
-                    .text(element.value)
-                    .style('transform', 'translateY(' + scale(element.value) + 'px)')
+                    .text(formattedTextData(element.value))
+                    .style('transform', 'translateY(' + (scale(element.value) + 5) + 'px)')
                     .attr('filter', 'url(#textBg)');
             });
         }
-
-        // const min = ranges?.filter((item) => item.name === 'Min')[0].value;
-        // const max = ranges?.filter((item) => item.name === 'Max')[0].value;
-
-        // await d3.select(d3Yaxis.current).select('svg').selectAll('#min').remove();
-        // await d3.select(d3Yaxis.current).select('svg').selectAll('#max').remove();
-
-        // await d3.select(d3Yaxis.current).select('svg').append('g').attr('id', 'min').append('text');
-
-        // await d3.select(d3Yaxis.current).select('svg').append('g').attr('id', 'max').append('text');
-
-        // d3.select(d3Yaxis.current)
-        //     .select('svg')
-        //     .select('#min')
-        //     .select('text')
-        //     .attr('class', 'y_axis')
-        //     .text(min)
-        //     .style('transform', 'translateY(' + scale(min) + 'px)')
-        //     .attr('filter', 'url(#textBg)');
-
-        // d3.select(d3Yaxis.current)
-        //     .select('svg')
-        //     .select('#max')
-        //     .select('text')
-        //     .attr('class', 'y_axis')
-        //     .text(max)
-        //     .style('transform', 'translateY(' + scale(max) + 'px)')
-        //     .attr('filter', 'url(#textBg)');
     }
+
+    const [heightPlot, setHeightPlot] = useState(0);
+
+    useEffect(() => {
+        (d3.select('#plotAreaDiv').node() as any) &&
+            setHeightPlot((d3.select('#plotAreaDiv').select('svg').node() as any).getBBox().height);
+    }, [showFeeRate, showTvl, showVolume, d3Yaxis.current]);
 
     useEffect(() => {
         if (scaleData) {
-            addMarketText(scaleData.yScale);
             addText(scaleData.yScale);
-
-            // location.pathname.includes('limit')
-            //     ? addLimitText(scaleData.yScale)
-            //     : addText(scaleData.scale);
+            addMarketText(scaleData.yScale);
+            render();
         }
-    }, [
-        dragControl,
-        location,
-        limit,
-        ranges,
-        scaleData,
-        d3.select(d3Yaxis.current) &&
-            (d3.select(d3Yaxis.current).select('svg').node() as any) &&
-            (d3.select(d3Yaxis.current).select('svg').node() as any).getBBox().height,
-    ]);
+    }, [dragControl, limit, ranges, scaleData, location, heightPlot]);
 
     useEffect(() => {
         if (d3.select(d3Xaxis.current).select('svg').select('g').select('text').node() === null) {
@@ -360,13 +316,6 @@ export default function Chart(props: ChartData) {
                 .append('g')
                 .attr('id', 'yCrossHair')
                 .attr('visibility', 'hidden');
-            yAxisText
-                .append('rect')
-                .attr('width', '100')
-                .attr('height', '17')
-                .attr('fill', '#242F3F')
-                .attr('y', '-10')
-                .attr('x', '0');
 
             yAxisText.append('text').attr('dx', '5px').attr('dy', '2px').style('font-size', '13px');
         }
@@ -642,9 +591,9 @@ export default function Chart(props: ChartData) {
                         }
 
                         relocationCrosshairText(event);
-                        addMarketText(scaleData.yScale);
                         // addLimitText(scaleData.yScale);
                         addText(scaleData.yScale);
+                        addMarketText(scaleData.yScale);
                         lastY = t.y;
 
                         render();
@@ -666,9 +615,8 @@ export default function Chart(props: ChartData) {
                 const center = (domain[1] + domain[0]) / 2;
                 const size = (domain[1] - domain[0]) / 2 / factor;
                 await scaleData.yScale.domain([center - size, center + size]);
-                addMarketText(scaleData.yScale);
-                // addLimitText(scaleData.yScale);
                 addText(scaleData.yScale);
+                addMarketText(scaleData.yScale);
 
                 setRescale(() => {
                     return false;
@@ -684,7 +632,7 @@ export default function Chart(props: ChartData) {
                 };
             });
         }
-    }, [parsedChartData?.chartData, scaleData, rescale]);
+    }, [parsedChartData?.chartData, scaleData, rescale, location]);
 
     const setMarketLineValue = () => {
         const lastCandlePrice = parsedChartData?.chartData[0]?.close;
@@ -2171,7 +2119,7 @@ export default function Chart(props: ChartData) {
 
                     yAxisText
                         .select('text')
-                        .text(indicatorFormatter(scaleData.yScale.invert(event.offsetY)));
+                        .text(formattedTextData(scaleData.yScale.invert(event.offsetY)));
 
                     render();
                 });
@@ -2349,6 +2297,7 @@ export default function Chart(props: ChartData) {
                 <div className='popup' id='transactionPopup' style={{ visibility: 'hidden' }}></div>
                 <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
                     <div
+                        id='plotAreaDiv'
                         style={{
                             flex: 1,
                             display: 'flex',
@@ -2359,12 +2308,12 @@ export default function Chart(props: ChartData) {
                         <d3fc-svg
                             ref={d3PlotArea}
                             className='plot-area'
-                            style={{ flex: 1, overflow: 'hidden' }}
+                            style={{ flex: 1, flexGrow: 20, overflow: 'hidden' }}
                         ></d3fc-svg>
                         <d3fc-svg
                             className='y-axis'
                             ref={d3Yaxis}
-                            style={{ width: '5%' }}
+                            style={{ flexGrow: 1.5 }}
                         ></d3fc-svg>
                     </div>
 

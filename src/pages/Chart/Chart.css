@@ -9,9 +9,15 @@ text {
     fill: #bdbdbd;
 }
 
+text.market{
+    stroke: black;
+    font-size: 13px ;
+
+}
+
 
 text.y_axis {
-    stroke: black;
+    stroke: #bdbdbd;
     font-size: 13px ;
 }
 .domain,
