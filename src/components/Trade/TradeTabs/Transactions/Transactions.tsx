@@ -22,6 +22,7 @@ import { fetchPoolRecentChanges } from '../../../../App/functions/fetchPoolRecen
 import TransactionHeader from './TransactionsTable/TransactionHeader';
 import TransactionRow from './TransactionsTable/TransactionRow';
 import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
+import { useSortedTransactions } from '../useSortedTxs';
 // import TransactionAccordions from './TransactionAccordions/TransactionAccordions';
 
 interface TransactionsProps {
@@ -136,6 +137,9 @@ export default function Transactions(props: TransactionsProps) {
 
     const [debouncedIsShowAllEnabled, setDebouncedIsShowAllEnabled] = useState(false);
 
+    const [sortBy, setSortBy, reverseSort, setReverseSort, sortedTransactions] =
+        useSortedTransactions('time', isShowAllEnabled ? changesByPool : transactionData);
+
     // check to see if data is received
     // if it is, set data is loading to false
     // check to see if we have items to display
@@ -213,7 +217,7 @@ export default function Transactions(props: TransactionsProps) {
     // Get current transactions
     const indexOfLastTransaction = currentPage * transactionsPerPage;
     const indexOfFirstTransaction = indexOfLastTransaction - transactionsPerPage;
-    const currentTransactions = transactionData?.slice(
+    const currentTransactions = sortedTransactions?.slice(
         indexOfFirstTransaction,
         indexOfLastTransaction,
     );
@@ -230,7 +234,7 @@ export default function Transactions(props: TransactionsProps) {
         setCurrentPage(pageNumber);
     };
 
-    const usePaginateDataOrNull = expandTradeTable ? currentTransactions : transactionData;
+    const usePaginateDataOrNull = expandTradeTable ? currentTransactions : sortedTransactions;
 
     // console.log({ transactionData });
 
@@ -402,14 +406,14 @@ export default function Transactions(props: TransactionsProps) {
 
             show: !showColumns,
             slug: 'id',
-            sortable: true,
+            sortable: false,
         },
         {
             name: 'Wallet',
 
             show: !showColumns,
             slug: 'wallet',
-            sortable: true,
+            sortable: false,
         },
         {
             name: walID,
@@ -423,21 +427,21 @@ export default function Transactions(props: TransactionsProps) {
 
             show: !ipadView,
             slug: 'price',
-            sortable: true,
+            sortable: false,
         },
         {
             name: 'Side',
 
             show: !showColumns,
             slug: 'side',
-            sortable: true,
+            sortable: false,
         },
         {
             name: 'Type',
 
             show: !showColumns,
             slug: 'type',
-            sortable: true,
+            sortable: false,
         },
         {
             name: sideType,
@@ -483,9 +487,6 @@ export default function Transactions(props: TransactionsProps) {
             sortable: false,
         },
     ];
-
-    const [sortBy, setSortBy] = useState('default');
-    const [reverseSort, setReverseSort] = useState(false);
 
     const headerColumnsDisplay = (
         <ul className={styles.header}>
