@@ -73,8 +73,8 @@ export const useProcessOrder = (limitOrder: LimitOrderIF) => {
                       });
 
             const truncatedDisplayPrice = isDenomBase
-                ? invertedPriceTruncated
-                : nonInvertedPriceTruncated;
+                ? `${quoteTokenCharacter}${invertedPriceTruncated}`
+                : `${baseTokenCharacter}${nonInvertedPriceTruncated}`;
 
             setTruncatedDisplayPrice(truncatedDisplayPrice);
         } else {

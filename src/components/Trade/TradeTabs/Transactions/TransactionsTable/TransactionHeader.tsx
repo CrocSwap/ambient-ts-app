@@ -19,7 +19,6 @@ export default function TransactionHeader(props: TransactionHeaderPropsIF) {
     const { header, sortBy, setSortBy, reverseSort, setReverseSort } = props;
     const { name, show, slug, sortable } = header;
 
-    console.log({ header });
     function handleClick(slug: string) {
         if (sortable) {
             console.clear();

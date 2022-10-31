@@ -244,10 +244,15 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                         <li onClick={openDetailsModal} data-label='price' className={sideTypeStyle}>
                             ambient
                         </li>
-                    ) : (
+                    ) : isDenomBase ? (
                         <li onClick={openDetailsModal} data-label='price' className={sideTypeStyle}>
                             <p>{truncatedLowDisplayPrice}</p>
                             <p>{truncatedHighDisplayPrice}</p>
+                        </li>
+                    ) : (
+                        <li onClick={openDetailsModal} data-label='price' className={sideTypeStyle}>
+                            <p>{truncatedHighDisplayPrice}</p>
+                            <p>{truncatedLowDisplayPrice}</p>
                         </li>
                     )
                 ) : (
