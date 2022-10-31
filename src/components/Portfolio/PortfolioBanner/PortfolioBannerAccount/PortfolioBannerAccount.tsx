@@ -2,6 +2,7 @@ import noAvatarImage from '../../../../assets/images/icons/avatar.svg';
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { exampleFollowers, exampleFollowing } from './exampleAccounts';
+import { IoMdArrowDropdown } from 'react-icons/io';
 interface IPortfolioBannerAccountPropsIF {
     imageData: string[];
     ensName: string;
@@ -28,7 +29,7 @@ export default function PortfolioBannerAccount(props: IPortfolioBannerAccountPro
             // padding: '24px'
         },
         closed: {
-            width: '280px',
+            width: 'auto',
             height: '56px',
             borderRadius: '99px',
             background: '',
@@ -38,14 +39,14 @@ export default function PortfolioBannerAccount(props: IPortfolioBannerAccountPro
 
     const iconVariants = {
         open: {
-            width: '48px',
-            height: '48px',
-            borderRadius: '12px',
+            width: '56px',
+            height: '56px',
+            // borderRadius: '12px',
         },
         closed: {
-            width: '48px',
-            height: '48px',
-            borderRadius: '50%',
+            width: '56px',
+            height: '56px',
+            // borderRadius: '50%',
         },
     };
     const {
@@ -89,9 +90,7 @@ export default function PortfolioBannerAccount(props: IPortfolioBannerAccountPro
                             : resolvedAddress
                             ? activeAccount
                             : truncatedAccountAddress}
-                        {/* <div onClick={() => setShowProfileSettings(true)}>
-                    <FiEdit size={17} />
-                </div> */}
+                        <IoMdArrowDropdown />
                     </span>
                     <span className={styles.hash}>
                         {resolvedAddress
