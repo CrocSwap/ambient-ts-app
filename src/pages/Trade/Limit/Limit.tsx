@@ -164,7 +164,7 @@ export default function Limit(props: LimitPropsIF) {
             // if (!provider) return;
             if (!poolPriceNonDisplay) return;
 
-            console.log({ isDenomBase });
+            // console.log({ isDenomBase });
 
             const gridSize = lookupChain(chainId).gridSize;
 
