@@ -4,8 +4,8 @@
     gap: 8px;
     z-index: 5;
     position:absolute;
-    top: 3rem;
-    padding: 1rem;
+    top: 5px;
+    padding: 3px 1rem;
 }
 .account_container {
     display: flex;
@@ -22,6 +22,9 @@
     border-radius: 50%;
     background: var(--title-gradient);
     padding: 2px;
+
+    display: flex;
+    justify-content: center;
 }
 .account_container img {
     max-width: 100%;
