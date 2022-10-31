@@ -413,7 +413,7 @@ export default function Transactions(props: TransactionsProps) {
 
             show: !showColumns,
             slug: 'wallet',
-            sortable: false,
+            sortable: isShowAllEnabled,
         },
         {
             name: walID,

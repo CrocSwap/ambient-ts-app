@@ -119,11 +119,13 @@ export default function Ranges(props: RangesPropsIF) {
         const sortByApy = (unsortedData: PositionIF[]) =>
             [...unsortedData].sort((a, b) => b.apy - a.apy);
         const dataByApy = sortByApy(rangeData);
-        const topThree = dataByApy.slice(0, 3).map(data => data.positionId);
+        const topThree = dataByApy.slice(0, 3).map((data) => data.positionId);
         return topThree;
     }, [rangeData]);
 
-    useEffect(() => {false && console.log(top3Positions)}, [top3Positions]);
+    useEffect(() => {
+        false && console.log(top3Positions);
+    }, [top3Positions]);
 
     useEffect(() => {
         if (isOnPortfolioPage) {
@@ -137,7 +139,7 @@ export default function Ranges(props: RangesPropsIF) {
 
     const [sortBy, setSortBy, reverseSort, setReverseSort, sortedPositions] = useSortedPositions(
         'lastUpdate',
-        rangeData
+        rangeData,
     );
 
     // useEffect(() => {
@@ -270,35 +272,35 @@ export default function Ranges(props: RangesPropsIF) {
             className: 'ID',
             show: !showColumns,
             slug: 'id',
-            sortable: true,
+            sortable: false,
         },
         {
             name: 'Wallet',
             className: 'wallet',
             show: !showColumns,
             slug: 'wallet',
-            sortable: true,
+            sortable: isShowAllEnabled,
         },
         {
             name: walID,
             className: 'wallet_id',
             show: showColumns,
             slug: 'walletid',
-            sortable: false,
+            sortable: isShowAllEnabled,
         },
         {
             name: 'Min',
 
             show: !showColumns,
             slug: 'min',
-            sortable: true,
+            sortable: false,
         },
         {
             name: 'Max',
             className: 'side',
             show: !showColumns,
             slug: 'max',
-            sortable: true,
+            sortable: false,
         },
 
         {
