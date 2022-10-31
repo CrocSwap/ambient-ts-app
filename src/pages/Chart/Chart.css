@@ -9,6 +9,17 @@ text {
     fill: #bdbdbd;
 }
 
+text.market{
+    stroke: black;
+    font-size: 13px ;
+
+}
+
+
+text.y_axis {
+    stroke: #bdbdbd;
+    font-size: 13px ;
+}
 .domain,
 .tick > path,
 .gridline-y,

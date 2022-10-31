@@ -180,6 +180,15 @@ export default function Chart(props: ChartData) {
     const indicatorFormatter = d3.format('.6f');
     const tooltipFormatter = d3.format('.3f');
 
+    function formattedTextData(data: number): string {
+        return data
+            ? data.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+              })
+            : '';
+    }
+
     const setDefaultRangeData = () => {
         setRanges((prevState) => {
             const newTargets = [...prevState];
@@ -189,6 +198,11 @@ export default function Chart(props: ChartData) {
             return newTargets;
         });
     };
+
+    useEffect(() => {
+        setDefaultRangeData();
+        addDefsStyle();
+    }, []);
 
     const render = useCallback(() => {
         const nd = d3.select('#d3fc_group').node() as any;
@@ -200,6 +214,63 @@ export default function Chart(props: ChartData) {
 
         render();
     }, [props.chartItemStates, expandTradeTable, isCandleAdded]);
+
+    async function addMarketText(scale: any) {
+        await d3.select(d3Yaxis.current).select('svg').selectAll('#market').remove();
+
+        await d3
+            .select(d3Yaxis.current)
+            .select('svg')
+            .append('g')
+            .attr('id', 'market')
+            .append('text');
+        d3.select(d3Yaxis.current)
+            .select('svg')
+            .select('#market')
+            .select('text')
+            .attr('class', 'market')
+            .text(formattedTextData(market[0].value))
+            .style('transform', 'translateY(' + (scale(market[0].value) + 5) + 'px)')
+            .attr('filter', 'url(#marketBg)');
+    }
+
+    async function addText(scale: any) {
+        await d3.select(d3Yaxis.current).select('svg').selectAll('#yText').remove();
+        if (!location.pathname.includes('market')) {
+            const textArray: any[] = location.pathname.includes('limit') ? limit : ranges;
+            textArray.forEach(async (element: any) => {
+                await d3
+                    .select(d3Yaxis.current)
+                    .select('svg')
+                    .append('g')
+                    .attr('id', 'yText')
+                    .append('text')
+                    .attr('id', element.name);
+                d3.select(d3Yaxis.current)
+                    .select('svg')
+                    .select('#' + element.name)
+                    .attr('class', 'y_axis')
+                    .text(formattedTextData(element.value))
+                    .style('transform', 'translateY(' + (scale(element.value) + 5) + 'px)')
+                    .attr('filter', 'url(#textBg)');
+            });
+        }
+    }
+
+    const [heightPlot, setHeightPlot] = useState(0);
+
+    useEffect(() => {
+        (d3.select('#plotAreaDiv').node() as any) &&
+            setHeightPlot((d3.select('#plotAreaDiv').select('svg').node() as any).getBBox().height);
+    }, [showFeeRate, showTvl, showVolume, d3Yaxis.current]);
+
+    useEffect(() => {
+        if (scaleData) {
+            addText(scaleData.yScale);
+            addMarketText(scaleData.yScale);
+            render();
+        }
+    }, [dragControl, limit, ranges, scaleData, location, heightPlot]);
 
     useEffect(() => {
         if (d3.select(d3Xaxis.current).select('svg').select('g').select('text').node() === null) {
@@ -224,19 +295,13 @@ export default function Chart(props: ChartData) {
                 .style('letter-spacing', '1px');
         }
 
-        if (d3.select(d3Yaxis.current).select('svg').select('g').select('text').node() === null) {
+        if (d3.select(d3Yaxis.current).select('svg').select('#yCrossHair').node() === null) {
             const yAxisText = d3
                 .select(d3Yaxis.current)
                 .select('svg')
                 .append('g')
+                .attr('id', 'yCrossHair')
                 .attr('visibility', 'hidden');
-            yAxisText
-                .append('rect')
-                .attr('width', '100')
-                .attr('height', '17')
-                .attr('fill', '#242F3F')
-                .attr('y', '-10')
-                .attr('x', '0');
 
             yAxisText.append('text').attr('dx', '5px').attr('dy', '2px').style('font-size', '13px');
         }
@@ -410,7 +475,7 @@ export default function Chart(props: ChartData) {
 
         d3.select(d3Yaxis.current)
             .select('svg')
-            .select('g')
+            .select('#yCrossHair')
             .style('transform', 'translateY(' + scaleData.yScale(crosshairData[0].y) + 'px)');
     };
 
@@ -512,7 +577,9 @@ export default function Chart(props: ChartData) {
                         }
 
                         relocationCrosshairText(event);
-
+                        // addLimitText(scaleData.yScale);
+                        addText(scaleData.yScale);
+                        addMarketText(scaleData.yScale);
                         lastY = t.y;
 
                         render();
@@ -526,14 +593,16 @@ export default function Chart(props: ChartData) {
                     // dispatch(setCandleDomains(candleDomain));
                 }) as any;
 
-            const yAxisDrag = d3.drag().on('drag', (event: any) => {
+            const yAxisDrag = d3.drag().on('drag', async (event: any) => {
                 const dy = event.dy;
                 const factor = Math.pow(2, -dy * 0.003);
 
                 const domain = scaleData.yScale.domain();
                 const center = (domain[1] + domain[0]) / 2;
                 const size = (domain[1] - domain[0]) / 2 / factor;
-                scaleData.yScale.domain([center - size, center + size]);
+                await scaleData.yScale.domain([center - size, center + size]);
+                addText(scaleData.yScale);
+                addMarketText(scaleData.yScale);
 
                 setRescale(() => {
                     return false;
@@ -549,7 +618,7 @@ export default function Chart(props: ChartData) {
                 };
             });
         }
-    }, [parsedChartData?.chartData, scaleData, rescale]);
+    }, [parsedChartData?.chartData, scaleData, rescale, location]);
 
     const setMarketLineValue = () => {
         const lastCandlePrice = parsedChartData?.chartData[0]?.close;
@@ -1090,7 +1159,6 @@ export default function Chart(props: ChartData) {
                     .style('visibility', location.pathname.includes('limit') ? 'visible' : 'hidden')
                     .attr('id', (d: any) => d.name)
                     .select('g.left-handle')
-                    .append('text')
                     .attr('x', 5)
                     .attr('y', -5);
                 selection
@@ -1104,12 +1172,6 @@ export default function Chart(props: ChartData) {
 
                 selection.enter().select('g.right-handle').remove();
                 selection.enter().select('line').attr('class', 'redline');
-                selection
-                    .select('g.left-handle text')
-                    .text((d: any) => d.name + ' - ' + valueFormatter(d.value))
-                    .style('transform', (d: any) =>
-                        d.name == 'Min' ? ' translate(0px, 25px)' : 'translate(0px, -5px)',
-                    );
             });
 
             const marketLine = d3fc
@@ -1126,14 +1188,6 @@ export default function Chart(props: ChartData) {
                     .append('text')
                     .attr('x', 5)
                     .attr('y', -5);
-                selection
-                    .enter()
-                    .append('rect')
-                    .attr('width', '100%')
-                    .attr('y', -20)
-                    .attr('height', '8%')
-                    .attr('fill', 'transparent')
-                    .attr('stroke', 'none');
 
                 selection.enter().select('g.right-handle').remove();
                 selection.enter().select('line').attr('class', 'marketLine');
@@ -1258,34 +1312,64 @@ export default function Chart(props: ChartData) {
         }
     }
 
+    function addDefsStyle() {
+        const svgmain = d3.select(d3PlotArea.current).select('svg');
+        if (svgmain.select('defs').node() === null) {
+            const lg = svgmain
+                .append('defs')
+                .append('filter')
+                .attr('x', 0)
+                .attr('y', 0)
+                .attr('height', 1)
+                .attr('width', 1)
+                .attr('id', 'targetsAreaBackground');
+
+            lg.append('feFlood').attr('flood-color', '#7371FC1A').attr('result', 'bg');
+
+            const feMergeTag = lg.append('feMerge');
+            feMergeTag.append('feMergeNode').attr('in', 'bg');
+            feMergeTag.append('feMergeNode').attr('in', 'SourceGraphic');
+
+            const marketDefs = svgmain
+                .append('defs')
+                .append('filter')
+                .attr('x', 0)
+                .attr('y', 0)
+                .attr('height', 1)
+                .attr('width', 1)
+                .attr('id', 'marketBg');
+
+            marketDefs.append('feFlood').attr('flood-color', '#FFFFFF').attr('result', 'bg');
+            const feMergeTagMarket = marketDefs.append('feMerge');
+            feMergeTagMarket.append('feMergeNode').attr('in', 'bg');
+            feMergeTagMarket.append('feMergeNode').attr('in', 'SourceGraphic');
+
+            const yAxisText = svgmain
+                .append('defs')
+                .append('filter')
+                .attr('x', 0)
+                .attr('y', 0)
+                .attr('height', 1)
+                .attr('width', 1)
+                .attr('id', 'textBg');
+
+            yAxisText.append('feFlood').attr('flood-color', '#7772FE').attr('result', 'bg');
+            const feMergeTagYaxisText = yAxisText.append('feMerge');
+            feMergeTagYaxisText.append('feMergeNode').attr('in', 'bg');
+            feMergeTagYaxisText.append('feMergeNode').attr('in', 'SourceGraphic');
+        }
+    }
+
     useEffect(() => {
         if (location.pathname.includes('range')) {
             d3.select(d3PlotArea.current)
                 .select('.targetsArea')
                 .selectAll('annotation-line')
                 .style('visibility', 'hidden');
-            const svgmain = d3.select(d3PlotArea.current).select('svg');
-            if (svgmain.select('defs').node() === null) {
-                const lg = svgmain
-                    .append('defs')
-                    .append('filter')
-                    .attr('x', 0)
-                    .attr('y', 0)
-                    .attr('height', 1)
-                    .attr('width', 1)
-                    .attr('id', 'targetsAreaBackground');
-
-                lg.append('feFlood').attr('flood-color', '#7371FC1A').attr('result', 'bg');
-
-                const feMergeTag = lg.append('feMerge');
-                feMergeTag.append('feMergeNode').attr('in', 'bg');
-                feMergeTag.append('feMergeNode').attr('in', 'SourceGraphic');
-            }
 
             d3.select(d3PlotArea.current)
                 .select('.targetsArea')
                 .style('filter', 'url(#targetsAreaBackground)');
-
             addTriangleAndRect();
         }
     }, [dragControl, location]);
@@ -2148,13 +2232,13 @@ export default function Chart(props: ChartData) {
                     const yAxisText = d3
                         .select(d3Yaxis.current)
                         .select('svg')
-                        .select('g')
+                        .select('#yCrossHair')
                         .style('visibility', 'visible')
                         .style('transform', 'translateY(' + valueIndcLocation + 'px)');
 
                     yAxisText
                         .select('text')
-                        .text(indicatorFormatter(scaleData.yScale.invert(event.offsetY)));
+                        .text(formattedTextData(scaleData.yScale.invert(event.offsetY)));
 
                     render();
                 });
@@ -2331,6 +2415,7 @@ export default function Chart(props: ChartData) {
                 <div className='popup' id='transactionPopup' style={{ visibility: 'hidden' }}></div>
                 <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
                     <div
+                        id='plotAreaDiv'
                         style={{
                             flex: 1,
                             display: 'flex',
@@ -2341,12 +2426,12 @@ export default function Chart(props: ChartData) {
                         <d3fc-svg
                             ref={d3PlotArea}
                             className='plot-area'
-                            style={{ flex: 1, overflow: 'hidden' }}
+                            style={{ flex: 1, flexGrow: 20, overflow: 'hidden' }}
                         ></d3fc-svg>
                         <d3fc-svg
                             className='y-axis'
                             ref={d3Yaxis}
-                            style={{ width: '3%' }}
+                            style={{ flexGrow: 1.5 }}
                         ></d3fc-svg>
                     </div>
 
