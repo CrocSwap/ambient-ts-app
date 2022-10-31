@@ -5,6 +5,10 @@ import TokenCard from '../Tokens/TokenCard/TokenCard';
 import { TokenIF, TokenListIF } from '../../../utils/interfaces/exports';
 import Pagination from '../../Global/Pagination/Pagination';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import { useSearch } from '../../../utils/hooks/useSearch';
+import searchNotFound from '../../../assets/animations/searchNotFound.json';
+import Animation from '../../Global/Animation/Animation';
+
 interface propsIF {
     chainId: string;
 }
@@ -39,7 +43,7 @@ export default function Tokens(props: propsIF) {
     const largeScreen = useMediaQuery('(min-width: 1680px)');
 
     const [currentPage, setCurrentPage] = useState(1);
-    const [tokensPerPage] = useState(largeScreen ? 10 : 8);
+    const [tokensPerPage] = useState(largeScreen ? 9 : 8);
 
     useEffect(() => {
         setCurrentPage(1);
@@ -57,20 +61,23 @@ export default function Tokens(props: propsIF) {
 
     // end of pagination
 
-    const [searchTerm, setSearchTerm] = useState('');
+    const { searchTerm, onSearchChange, filteredData } = useSearch<TokenIF>('symbol', tokensInDOM);
 
-    const searchDataReturn = tokensInDOM.filter((val) => {
-        if (searchTerm === '') {
-            return val;
-        } else if (
-            val.symbol.toLocaleLowerCase().includes(searchTerm.toLocaleLowerCase()) ||
-            val.name.toLocaleLowerCase().includes(searchTerm.toLocaleLowerCase())
-        ) {
-            return val;
-        }
-    });
+    const filteredDataOrNull = filteredData.length ? (
+        filteredData.map((tkn, idx) => (
+            <TokenCard key={JSON.stringify(tkn) + idx} token={tkn} chainId={chainId} />
+        ))
+    ) : (
+        <div className={styles.none_found}>
+            <Animation animData={searchNotFound} loop={true} />
 
-    const dataToUse = searchTerm === '' ? currentTokens : searchDataReturn;
+            <h1>{`${searchTerm} not found`}</h1>
+        </div>
+    );
+
+    const currentTokensOrNull = currentTokens.map((tkn, idx) => (
+        <TokenCard key={JSON.stringify(tkn) + idx} token={tkn} chainId={chainId} />
+    ));
 
     return (
         <div className={styles.container}>
@@ -90,18 +97,15 @@ export default function Tokens(props: propsIF) {
                     className={styles.search_input}
                     placeholder='Search tokens'
                     type='text'
-                    onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                        setSearchTerm(event.target.value);
-                    }}
+                    value={searchTerm}
+                    onChange={onSearchChange}
                 />
             </div>
             <ol
                 className={styles.item_container}
-                style={{ minHeight: largeScreen ? '480px' : '370px' }}
+                style={{ minHeight: largeScreen ? '470px' : '370px' }}
             >
-                {dataToUse?.map((tkn, idx) => (
-                    <TokenCard key={JSON.stringify(tkn) + idx} token={tkn} chainId={chainId} />
-                ))}
+                {searchTerm === '' ? currentTokensOrNull : filteredDataOrNull}
             </ol>
             {searchTerm === '' && (
                 <Pagination
