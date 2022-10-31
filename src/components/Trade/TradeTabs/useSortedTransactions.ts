@@ -38,7 +38,7 @@ export const useSortedTransactions = (
                 ? b.totalValueUSD
                 : b.valueUSD;
 
-            return valueB - valueA;
+            return Math.abs(valueB) - Math.abs(valueA);
         });
 
     // column the user wants the table sorted by
