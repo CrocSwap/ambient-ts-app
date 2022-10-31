@@ -5,7 +5,6 @@ export default function BarSeries(
     scaleData: any,
     liquidityData: any,
     setBarSeries: React.Dispatch<React.SetStateAction<any>>,
-    liquidityScale: any,
 ) {
     if (scaleData !== undefined && liquidityData !== undefined) {
         const barSeries = d3fc

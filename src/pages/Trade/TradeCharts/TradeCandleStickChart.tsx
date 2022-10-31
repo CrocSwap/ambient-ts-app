@@ -167,9 +167,13 @@ export default function TradeCandleStickChart(props: ChartData) {
     // Parse liquidtiy data
     const liquidityData = useMemo(() => {
         const liqData: LiquidityData[] = [];
+
+        const liqAskData: LiquidityData[] = [];
+        const liqBidData: LiquidityData[] = [];
+
         const liqSnapData: LiqSnap[] = [];
 
-        if (props.liquidityData) {
+        if (props.poolPriceDisplay !== undefined && props.liquidityData) {
             const domainLeft = Math.min(
                 ...props.liquidityData.ranges.map((o: any) => {
                     return o.activeLiq !== undefined ? parseFloat(o.activeLiq) : 0;
@@ -182,7 +186,7 @@ export default function TradeCandleStickChart(props: ChartData) {
                 }),
             );
 
-            const liquidityScale = d3.scaleLog().domain([domainLeft, domainRight]).range([0, 1000]);
+            const liquidityScale = d3.scaleLog().domain([domainLeft, domainRight]).range([1, 1000]);
 
             props.liquidityData.ranges.map((data: any, index: any) => {
                 let width: any = undefined;
@@ -209,6 +213,23 @@ export default function TradeCandleStickChart(props: ChartData) {
                     width: isNaN(width) ? undefined : width,
                 });
 
+                const barThreshold =
+                    props.poolPriceDisplay !== undefined ? props.poolPriceDisplay : 0;
+
+                if (liqPrices > barThreshold) {
+                    liqBidData.push({
+                        activeLiq: liquidityScale(data.activeLiq),
+                        liqPrices: liqPrices,
+                        width: isNaN(width) ? undefined : width,
+                    });
+                } else {
+                    liqAskData.push({
+                        activeLiq: liquidityScale(data.activeLiq),
+                        liqPrices: liqPrices,
+                        width: isNaN(width) ? undefined : width,
+                    });
+                }
+
                 const pinnedDisplayPrices = getPinnedPriceValuesFromDisplayPrices(
                     denominationsInBase,
                     baseTokenDecimals,
@@ -234,7 +255,10 @@ export default function TradeCandleStickChart(props: ChartData) {
 
         return {
             liqData: liqData,
+            liqAskData: liqAskData,
+            liqBidData: liqBidData,
             liqSnapData: liqSnapData,
+            liqHighligtedSeries: [],
             totalLiq: props.liquidityData?.totals?.totalLiq,
         };
     }, [props.liquidityData, denominationsInBase]);
