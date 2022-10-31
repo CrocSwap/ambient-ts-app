@@ -1,0 +1,18 @@
+.search_input_container{
+    display: flex;
+    justify-content: center;
+    padding: 1rem 0;
+}
+
+.search_input{
+    /* outline: none; */
+    border: none;
+    outline: 1px solid var(--text-grey-dark);
+    background: var(--dark2);
+    border-radius: 4px;
+    padding: 4px 5rem;
+
+    color: var(--text-grey-white)
+
+    
+}
