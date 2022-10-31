@@ -15,6 +15,8 @@ text.market{
 
 }
 
+.y-axis-extra path { opacity: 0; }
+
 
 text.y_axis {
     stroke: #bdbdbd;
