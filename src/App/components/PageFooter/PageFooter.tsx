@@ -20,7 +20,7 @@ interface currentPoolInfo {
     primaryQuantity: string;
     isTokenAPrimaryRange: boolean;
     primaryQuantityRange: string;
-    limitPrice: string;
+    limitTick: number;
     advancedLowTick: number;
     advancedHighTick: number;
     simpleRangeWidth: number;
