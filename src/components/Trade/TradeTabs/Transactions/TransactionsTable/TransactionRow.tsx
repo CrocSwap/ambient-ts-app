@@ -91,10 +91,21 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
         tx.id === currentTxActiveInTransactions ? scrollToDiv() : null;
     }, [currentTxActiveInTransactions]);
 
+    function handleOpenExplorer() {
+        if (tx && blockExplorer) {
+            const explorerUrl = `${blockExplorer}tx/${tx.tx}`;
+            window.open(explorerUrl);
+        }
+    }
+
     const IDWithTooltip = (
         <DefaultTooltip
             interactive
-            title={txHash}
+            title={
+                <div onClick={handleOpenExplorer} style={{ cursor: 'pointer' }}>
+                    {txHash}
+                </div>
+            }
             placement={'right-end'}
             arrow
             enterDelay={400}
@@ -172,16 +183,29 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                 <img src={quoteTokenLogo} alt='quote token' width='15px' />
             </DefaultTooltip>
         ) : (
-            <IconWithTooltip title={`${quoteTokenSymbol}`} placement='bottom'>
-                <NoTokenIcon tokenInitial={tx.quoteSymbol.charAt(0)} width='30px' />
-            </IconWithTooltip>
+            <NoTokenIcon tokenInitial={tx.quoteSymbol.charAt(0)} width='25px' />
         );
+
+    const tokensTogether = (
+        <div
+            style={{
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: '4px',
+            }}
+        >
+            {baseTokenLogoComponent}
+            {quoteTokenLogoComponent}
+        </div>
+    );
 
     // portfolio page li element ---------------
     const accountTokenImages = (
         <li className={styles.token_images_account}>
-            {baseTokenLogoComponent}
-            {quoteTokenLogoComponent}
+            {/* {baseTokenLogoComponent}
+            {quoteTokenLogoComponent} */}
+            {tokensTogether}
             {/* <p>hello</p> */}
         </li>
     );

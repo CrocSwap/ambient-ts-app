@@ -341,6 +341,7 @@ export default function Portfolio(props: PortfolioPropsIF) {
                 activeAccount={address ?? connectedAccount}
                 imageData={connectedAccountActive ? userImageData : secondaryImageData}
                 setShowProfileSettings={setShowProfileSettings}
+                connectedAccountActive={connectedAccountActive}
             />
             <div
                 className={

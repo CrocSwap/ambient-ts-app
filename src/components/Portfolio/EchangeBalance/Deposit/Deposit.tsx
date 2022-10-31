@@ -210,28 +210,6 @@ export default function Deposit(props: PortfolioDepositProps) {
 
                     console.log({ newTransactionHash });
                     receipt = error.receipt;
-
-                    //  if (newTransactionHash) {
-                    //      fetch(
-                    //          newSwapCacheEndpoint +
-                    //              new URLSearchParams({
-                    //                  tx: newTransactionHash,
-                    //                  user: account ?? '',
-                    //                  base: isSellTokenBase ? sellTokenAddress : buyTokenAddress,
-                    //                  quote: isSellTokenBase
-                    //                      ? buyTokenAddress
-                    //                      : sellTokenAddress,
-                    //                  poolIdx: (await env.context).chain.poolIndex.toString(),
-                    //                  isBuy: isSellTokenBase.toString(),
-                    //                  inBaseQty: inBaseQty.toString(),
-                    //                  qty: crocQty.toString(),
-                    //                  override: 'false',
-                    //                  chainId: chainId,
-                    //                  limitPrice: '0',
-                    //                  minOut: '0',
-                    //              }),
-                    //      );
-                    //  }
                 } else if (isTransactionFailedError(error)) {
                     // console.log({ error });
                     receipt = error.receipt;

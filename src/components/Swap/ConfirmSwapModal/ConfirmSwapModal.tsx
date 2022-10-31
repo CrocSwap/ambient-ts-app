@@ -11,6 +11,7 @@ import TokensArrow from '../../Global/TokensArrow/TokensArrow';
 // import DenominationSwitch from '../DenominationSwitch/DenominationSwitch';
 // import ConfirmationModalControl from '../../Global/ConfirmationModalControl/ConfirmationModalControl';
 import InitPoolDenom from '../../InitPool/InitPoolDenom/InitPoolDenom';
+import NoTokenIcon from '../../Global/NoTokenIcon/NoTokenIcon';
 
 interface ConfirmSwapModalProps {
     initiateSwapMethod: () => void;
@@ -153,7 +154,12 @@ export default function ConfirmSwapModal(props: ConfirmSwapModalProps) {
             <h2>{buyTokenQty}</h2>
 
             <div className={styles.logo_display}>
-                <img src={buyTokenData.logoURI} alt={buyTokenData.symbol} />
+                {buyTokenData.logoURI ? (
+                    <img src={buyTokenData.logoURI} alt={buyTokenData.symbol} />
+                ) : (
+                    <NoTokenIcon tokenInitial={buyTokenData.symbol.charAt(0)} width='30px' />
+                )}
+
                 <h2>{buyTokenData.symbol}</h2>
             </div>
         </div>
@@ -164,7 +170,12 @@ export default function ConfirmSwapModal(props: ConfirmSwapModalProps) {
             <h2>{sellTokenQty}</h2>
 
             <div className={styles.logo_display}>
-                <img src={sellTokenData.logoURI} alt={sellTokenData.symbol} />
+                {sellTokenData.logoURI ? (
+                    <img src={sellTokenData.logoURI} alt={sellTokenData.symbol} />
+                ) : (
+                    <NoTokenIcon tokenInitial={sellTokenData.symbol.charAt(0)} width='30px' />
+                )}
+
                 <h2>{sellTokenData.symbol}</h2>
             </div>
         </div>

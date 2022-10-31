@@ -43,7 +43,7 @@ export default function OrdersMenu(props: OrdersMenuIF) {
         isOwnerActiveAccount,
         closeGlobalModal,
         showSidebar,
-        isOnPortfolioPage,
+        // isOnPortfolioPage,
     } = props;
     const [value, copy] = useCopyToClipboard();
     const [openSnackbar, setOpenSnackbar] = useState<boolean>(false);
@@ -108,10 +108,10 @@ export default function OrdersMenu(props: OrdersMenuIF) {
     // ------------------  END OF MODAL FUNCTIONALITY-----------------
 
     const view1 = useMediaQuery('(min-width: 1280px)');
-    const view2 = useMediaQuery('(min-width: 1680px)');
+    // const view2 = useMediaQuery('(min-width: 1680px)');
     const view3 = useMediaQuery('(min-width: 2300px)');
 
-    const view1NoSidebar = useMediaQuery('(min-width: 1200px)') && !showSidebar;
+    // const view1NoSidebar = useMediaQuery('(min-width: 1200px)') && !showSidebar;
     const view2WithNoSidebar = useMediaQuery('(min-width: 1680px)') && !showSidebar;
 
     const removeButtonOnClick = () => {
@@ -129,7 +129,7 @@ export default function OrdersMenu(props: OrdersMenuIF) {
     };
 
     const removeButton =
-        limitOrder && isOwnerActiveAccount ? (
+        limitOrder && isOwnerActiveAccount && !props.isOrderFilled ? (
             <button className={styles.option_button} onClick={removeButtonOnClick}>
                 Remove
             </button>
@@ -153,18 +153,18 @@ export default function OrdersMenu(props: OrdersMenuIF) {
 
     const ordersMenu = (
         <div className={styles.actions_menu}>
-            {view1 && !isOnPortfolioPage && removeButton}
-            {(view2 || (view1NoSidebar && !isOnPortfolioPage)) && copyButton}
+            {view1 && claimButton}
+            {/* {view1 && removeButton} */}
+            {/* {(view2 || (view1NoSidebar && !isOnPortfolioPage)) && copyButton} */}
             {(view3 || view2WithNoSidebar) && detailsButton}
-            {view3 && !showSidebar && claimButton}
         </div>
     );
 
     const menuContent = (
         <div className={styles.menu_column}>
-            {removeButton}
             {detailsButton}
             {copyButton}
+            {removeButton}
             {claimButton}
         </div>
     );
