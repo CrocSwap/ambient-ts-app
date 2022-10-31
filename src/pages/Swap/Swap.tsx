@@ -141,17 +141,39 @@ export default function Swap(props: SwapPropsIF) {
     const [isApprovalPending, setIsApprovalPending] = useState(false);
 
     const approve = async (tokenAddress: string) => {
-        // if (!provider) return;
         if (!crocEnv) return;
-        setIsApprovalPending(true);
         try {
+            setIsApprovalPending(true);
             const tx = await crocEnv.token(tokenAddress).approve();
-            // const tx = await new CrocEnv(provider).token(tokenAddress).approve();
-            if (tx) {
-                await tx.wait();
+            if (tx) dispatch(addPendingTx(tx?.hash));
+            let receipt;
+            try {
+                if (tx) receipt = await tx.wait();
+            } catch (e) {
+                const error = e as TransactionError;
+                console.log({ error });
+                // The user used "speed up" or something similar
+                // in their client, but we now have the updated info
+                if (isTransactionReplacedError(error)) {
+                    console.log('repriced');
+                    dispatch(removePendingTx(error.hash));
+
+                    const newTransactionHash = error.replacement.hash;
+                    dispatch(addPendingTx(newTransactionHash));
+
+                    console.log({ newTransactionHash });
+                    receipt = error.receipt;
+                } else if (isTransactionFailedError(error)) {
+                    // console.log({ error });
+                    receipt = error.receipt;
+                }
+            }
+            if (receipt) {
+                dispatch(addReceipt(JSON.stringify(receipt)));
+                dispatch(removePendingTx(receipt.transactionHash));
             }
         } catch (error) {
-            console.warn({ error });
+            console.log({ error });
         } finally {
             setIsApprovalPending(false);
             setRecheckTokenAApproval(true);
