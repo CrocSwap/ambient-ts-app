@@ -9,14 +9,17 @@
     display: flex;
     align-items: center;
     flex-direction: row;
+  
     width: 30px;
     height: 30px;
+    border-radius: 50%;
 }
 
 .token_card {
     display: grid;
     color: white;
     grid-template-columns: 1fr 1fr 1fr 1fr;
+
     align-items: center;
     height: 48px;
     font-size: var(--body-size);
@@ -31,6 +34,8 @@
 .token_name {
     display: flex;
     flex-direction: row;
+    align-items: center;
+    gap: 8px;
 }
 
 .token_name > div {
