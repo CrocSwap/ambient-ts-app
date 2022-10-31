@@ -573,6 +573,11 @@ export default function App() {
         dataTokenB: tradeData.tokenB,
     };
 
+    const pool = useMemo(
+        () => crocEnv?.pool(tradeData.baseToken.address, tradeData.quoteToken.address),
+        [crocEnv, tradeData.baseToken.address, tradeData.quoteToken.address],
+    );
+
     // value for whether a pool exists on current chain and token pair
     // ... true => pool exists
     // ... false => pool does not exist
@@ -1813,6 +1818,7 @@ export default function App() {
 
     // props for <Swap/> React element on trade route
     const swapPropsTrade = {
+        pool: pool,
         crocEnv: crocEnv,
         isUserLoggedIn: isUserLoggedIn,
         account: account,
@@ -1846,6 +1852,7 @@ export default function App() {
 
     // props for <Limit/> React element on trade route
     const limitPropsTrade = {
+        pool: pool,
         crocEnv: crocEnv,
         isUserLoggedIn: isUserLoggedIn,
         importedTokens: importedTokens,
@@ -2073,6 +2080,7 @@ export default function App() {
                             path='trade'
                             element={
                                 <Trade
+                                    pool={pool}
                                     isUserLoggedIn={isUserLoggedIn}
                                     crocEnv={crocEnv}
                                     provider={provider}
