@@ -163,11 +163,26 @@ export default function OrderRow(props: OrderRowPropsIF) {
             <NoTokenIcon tokenInitial={limitOrder.quoteSymbol.charAt(0)} width='30px' />
         );
 
+    const tokensTogether = (
+        <div
+            style={{
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: '4px',
+            }}
+        >
+            {baseTokenLogoComponent}
+            {quoteTokenLogoComponent}
+        </div>
+    );
+
     // portfolio page li element ---------------
     const accountTokenImages = (
         <li className={styles.token_images_account}>
-            {baseTokenLogoComponent}
-            {quoteTokenLogoComponent}
+            {/* {baseTokenLogoComponent}
+                {quoteTokenLogoComponent} */}
+            {tokensTogether}
             {/* <p>hello</p> */}
         </li>
     );
