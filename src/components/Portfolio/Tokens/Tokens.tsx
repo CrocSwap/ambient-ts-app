@@ -5,7 +5,6 @@ import TokenCard from '../Tokens/TokenCard/TokenCard';
 import { TokenIF, TokenListIF } from '../../../utils/interfaces/exports';
 import Pagination from '../../Global/Pagination/Pagination';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
-
 interface propsIF {
     chainId: string;
 }
@@ -58,6 +57,21 @@ export default function Tokens(props: propsIF) {
 
     // end of pagination
 
+    const [searchTerm, setSearchTerm] = useState('');
+
+    const searchDataReturn = tokensInDOM.filter((val) => {
+        if (searchTerm === '') {
+            return val;
+        } else if (
+            val.symbol.toLocaleLowerCase().includes(searchTerm.toLocaleLowerCase()) ||
+            val.name.toLocaleLowerCase().includes(searchTerm.toLocaleLowerCase())
+        ) {
+            return val;
+        }
+    });
+
+    const dataToUse = searchTerm === '' ? currentTokens : searchDataReturn;
+
     return (
         <div className={styles.container}>
             <div className={styles.listPicker}>
@@ -71,21 +85,32 @@ export default function Tokens(props: propsIF) {
                 </select>
             </div>
             <TokensHeader />
+            <div className={styles.search_input_container}>
+                <input
+                    className={styles.search_input}
+                    placeholder='Search tokens'
+                    type='text'
+                    onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                        setSearchTerm(event.target.value);
+                    }}
+                />
+            </div>
             <ol
                 className={styles.item_container}
-                style={{ minHeight: largeScreen ? '500px' : '400px' }}
+                style={{ minHeight: largeScreen ? '480px' : '370px' }}
             >
-                {currentTokens?.map((tkn, idx) => (
+                {dataToUse?.map((tkn, idx) => (
                     <TokenCard key={JSON.stringify(tkn) + idx} token={tkn} chainId={chainId} />
                 ))}
             </ol>
-
-            <Pagination
-                itemsPerPage={tokensPerPage}
-                totalItems={tokensInDOM.length}
-                paginate={paginate}
-                currentPage={currentPage}
-            />
+            {searchTerm === '' && (
+                <Pagination
+                    itemsPerPage={tokensPerPage}
+                    totalItems={tokensInDOM.length}
+                    paginate={paginate}
+                    currentPage={currentPage}
+                />
+            )}
         </div>
     );
 }
