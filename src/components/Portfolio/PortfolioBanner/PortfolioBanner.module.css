@@ -178,13 +178,19 @@ transition: all var(--animation-speed) ease-in-out
 }
 
 .nft_container {
+    /* position: relative;
+    right: 0;
+    bottom: 0; */
+    width: 100%;
     display: flex;
+    justify-content: flex-end;
     gap: 1rem;
     z-index: 2;
+    display: none;
 }
 
 .nft_container img {
-    width: 50px;
+    width: 30px;
     aspect-ratio: 1;
     border-radius: 24px;
 }
@@ -193,15 +199,20 @@ transition: all var(--animation-speed) ease-in-out
 @media only screen and (min-width: 500px) {
     .rectangle_container {
         display: flex;
+     
     }
     .nft_container img {
         width: 50px;
         aspect-ratio: 1;
-        border-radius: 24px;
+        border-radius: 4px;
     }
 }
 @media only screen and (min-width: 720px) {
+
+    .nft_container{
+        display: flex;
+    }
     .nft_container img {
-        width: 100px;
+        width: 60px;
     }
 }
