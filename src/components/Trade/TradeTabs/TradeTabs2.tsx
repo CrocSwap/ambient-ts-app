@@ -420,7 +420,7 @@ export default function TradeTabs2(props: ITabsProps) {
             showRightSideOption: true,
         },
         {
-            label: 'Limits',
+            label: 'Limit Orders',
             content: <Orders {...ordersProps} />,
             icon: openOrdersImage,
             showRightSideOption: true,
