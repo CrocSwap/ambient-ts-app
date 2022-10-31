@@ -221,11 +221,26 @@ export default function RangesRow(props: RangesRowPropsIF) {
             <NoTokenIcon tokenInitial={position.quoteSymbol.charAt(0)} width='30px' />
         );
 
+    const tokensTogether = (
+        <div
+            style={{
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: '4px',
+            }}
+        >
+            {baseTokenLogoComponent}
+            {quoteTokenLogoComponent}
+        </div>
+    );
+
     // portfolio page li element ---------------
     const accountTokenImages = (
         <li className={styles.token_images_account}>
-            {baseTokenLogoComponent}
-            {quoteTokenLogoComponent}
+            {/* {baseTokenLogoComponent}
+            {quoteTokenLogoComponent} */}
+            {tokensTogether}
             {/* <p>hello</p> */}
         </li>
     );
@@ -240,7 +255,9 @@ export default function RangesRow(props: RangesRowPropsIF) {
     // Leaderboard content--------------------------------
 
     const idDisplay = !showColumns && IDWithTooltip;
-    const displayIDorRanking = isLeaderboard ? !showColumns && <Medal ranking={props.rank ?? 80} /> : idDisplay;
+    const displayIDorRanking = isLeaderboard
+        ? !showColumns && <Medal ranking={props.rank ?? 80} />
+        : idDisplay;
 
     // End of Leaderboard content--------------------------------
 
