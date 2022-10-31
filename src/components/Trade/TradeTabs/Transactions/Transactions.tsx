@@ -22,7 +22,7 @@ import { fetchPoolRecentChanges } from '../../../../App/functions/fetchPoolRecen
 import TransactionHeader from './TransactionsTable/TransactionHeader';
 import TransactionRow from './TransactionsTable/TransactionRow';
 import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
-import { useSortedTransactions } from '../useSortedTransactions';
+import { useSortedTransactions } from '../useSortedTxs';
 // import TransactionAccordions from './TransactionAccordions/TransactionAccordions';
 
 interface TransactionsProps {

@@ -32,11 +32,13 @@ export const useSortedTransactions = (
                 : a.totalValueUSD
                 ? a.totalValueUSD
                 : a.valueUSD;
-            const valueB = b.totalFlowUSD
+            const valueB: number = b.totalFlowUSD
                 ? b.totalFlowUSD
                 : b.totalValueUSD
                 ? b.totalValueUSD
                 : b.valueUSD;
+
+            if (!valueB) return -1;
 
             return Math.abs(valueB) - Math.abs(valueA);
         });
