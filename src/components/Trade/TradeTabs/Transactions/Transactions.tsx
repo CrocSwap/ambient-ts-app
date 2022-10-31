@@ -196,7 +196,7 @@ export default function Transactions(props: TransactionsProps) {
         dataReceived ? handleDataReceived() : setIsDataLoading(true);
     }, [graphData, transactionData, dataReceived]);
 
-    const isDenomBase = tradeData.isDenomBase;
+    // const isDenomBase = tradeData.isDenomBase;
 
     const baseTokenAddress = tradeData.baseToken.address;
     const quoteTokenAddress = tradeData.quoteToken.address;
@@ -362,7 +362,7 @@ export default function Transactions(props: TransactionsProps) {
     const baseTokenCharacter = baseTokenSymbol ? getUnicodeCharacter(baseTokenSymbol) : '';
     const quoteTokenCharacter = quoteTokenSymbol ? getUnicodeCharacter(quoteTokenSymbol) : '';
 
-    const priceCharacter = isDenomBase ? quoteTokenCharacter : baseTokenCharacter;
+    // const priceCharacter = isDenomBase ? quoteTokenCharacter : baseTokenCharacter;
 
     const walID = (
         <>
@@ -419,7 +419,7 @@ export default function Transactions(props: TransactionsProps) {
             sortable: false,
         },
         {
-            name: `Price ( ${priceCharacter} )`,
+            name: 'Price',
 
             show: !ipadView,
             slug: 'price',
