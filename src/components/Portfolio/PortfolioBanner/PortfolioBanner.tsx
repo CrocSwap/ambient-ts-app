@@ -1,6 +1,5 @@
 import styles from './PortfolioBanner.module.css';
 import trimString from '../../../utils/functions/trimString';
-import noAvatarImage from '../../../assets/images/icons/avatar.svg';
 import { AiOutlineSetting } from 'react-icons/ai';
 import { FiPlus } from 'react-icons/fi';
 import { IoMdCheckmark } from 'react-icons/io';
@@ -14,10 +13,18 @@ interface PortfolioBannerPropsIF {
     imageData: string[];
     resolvedAddress: string;
     setShowProfileSettings: Dispatch<SetStateAction<boolean>>;
+    connectedAccountActive: boolean;
 }
 
 export default function PortfolioBanner(props: PortfolioBannerPropsIF) {
-    const { ensName, activeAccount, imageData, resolvedAddress, setShowProfileSettings } = props;
+    const {
+        ensName,
+        activeAccount,
+        imageData,
+        resolvedAddress,
+        setShowProfileSettings,
+        connectedAccountActive,
+    } = props;
     const ensNameAvailable = ensName !== '';
 
     const truncatedAccountAddress = trimString(activeAccount, 6, 6, '…');
@@ -70,6 +77,7 @@ export default function PortfolioBanner(props: PortfolioBannerPropsIF) {
                 resolvedAddress={resolvedAddress}
                 activeAccount={activeAccount}
                 truncatedAccountAddress={truncatedAccountAddress}
+                connectedAccountActive={connectedAccountActive}
             />
             <div className={styles.nft_container}>
                 {imageData[1] ? <img src={imageData[1]} alt='nft' /> : null}

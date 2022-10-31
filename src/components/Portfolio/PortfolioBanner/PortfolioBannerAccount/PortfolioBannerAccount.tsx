@@ -9,6 +9,7 @@ interface IPortfolioBannerAccountPropsIF {
     activeAccount: string;
     truncatedAccountAddress: string;
     ensNameAvailable: boolean;
+    connectedAccountActive: boolean;
 }
 
 import styles from './PortfolioBannerAccount.module.css';
@@ -22,12 +23,16 @@ export default function PortfolioBannerAccount(props: IPortfolioBannerAccountPro
             width: '500px',
             height: 'auto',
             borderRadius: '20px',
-            background: 'black',
+            background: '#12171f',
+            boxShadow: '0px 45px 20px rgba(0, 0, 0, 0.9)',
+            // padding: '24px'
         },
         closed: {
             width: '280px',
             height: '56px',
             borderRadius: '99px',
+            background: '',
+            // padding: '8px 16px'
         },
     };
 
@@ -50,26 +55,22 @@ export default function PortfolioBannerAccount(props: IPortfolioBannerAccountPro
         activeAccount,
         truncatedAccountAddress,
         ensNameAvailable,
+        connectedAccountActive,
     } = props;
 
-    const accountDetails = (
-        <div>
-            Lorem ipsum dolor sit, amet consectetur adipisicing elit. Consectetur illo quibusdam
-            voluptate quod corporis. Facere ipsa quos rerum nihil a perspiciatis minima delectus
-            quaerat sed voluptatem labore deserunt, atque veniam exercitationem iure, quidem ex
-            dolore animi suscipit consectetur fuga illum tempora facilis corporis! Nobis eaque
-            sapiente ducimus facere praesentium dolor!
-        </div>
-    );
     return (
         <motion.main
+            // style={{padding: showAccountDetails ? '24px' : '8px 16px'}}
             className={styles.main_container}
             animate={showAccountDetails ? 'open' : 'closed'}
             variants={variants}
-            onClick={() => setShowAccountDetails(!showAccountDetails)}
+
             // style={{ background: showAccountDetails ? 'black' : '' }}
         >
-            <div className={styles.account_container}>
+            <div
+                className={styles.account_container}
+                onClick={() => setShowAccountDetails(!showAccountDetails)}
+            >
                 <motion.div
                     className={styles.avatar_image}
                     animate={showAccountDetails ? 'open' : 'closed'}
@@ -105,6 +106,8 @@ export default function PortfolioBannerAccount(props: IPortfolioBannerAccountPro
                 <FollowDisplay
                     exampleFollowers={exampleFollowers}
                     exampleFollowing={exampleFollowing}
+                    showAccountDetails={showAccountDetails}
+                    connectedAccountActive={connectedAccountActive}
                 />
             )}
         </motion.main>

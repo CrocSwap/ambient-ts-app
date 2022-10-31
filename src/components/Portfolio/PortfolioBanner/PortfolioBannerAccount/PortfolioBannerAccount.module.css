@@ -1,9 +1,10 @@
 .main_container{
     display: flex;
     flex-direction: column;
+    gap: 8px;
     z-index: 5;
     position:absolute;
-    top: 3rem;
+    /* top: 3rem; */
     padding: 1rem;
 }
 .account_container {
@@ -11,6 +12,7 @@
     flex-direction: row;
     gap: 1.375em;
     z-index: 2;
+    cursor: pointer;
 }
 
 .avatar_image {

@@ -21,6 +21,14 @@
     line-height: var(--header2-lh);
     color: var(--text-grey-white);
 }
+
+.follow_card_container .name_display h3 span{
+    font-size: 12px;
+    color: var(--text-grey-dark);
+    background: var(--dark3);
+    padding: 4px;
+    border-radius: 4px;
+}
 .follow_card_container .name_display p{
     font-size: var(--body-size);
     line-height: var(--body-lh);
@@ -108,11 +116,55 @@ transition: all var(--animation-speed) ease-in-out
 
 /* ----------------------- */
 
+.main_container{
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
 .followers_display_container{
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 8px;
 
     height: 500px;
     overflow-y: scroll;
+    overflow-x: hidden;
 }
+
+.tab_header ul{
+    display: flex;
+    width: 100%;
+}
+
+.tab_header ul li{
+    border-radius: 4px;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    width: 100%;
+    padding: 12px 15px;
+    position: relative;
+    background: var(--dark3);
+    cursor: pointer;
+   
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex: 1;
+    min-width: 0;
+    position: relative;
+    user-select: none; 
+}
+
+.underline {
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: blue;
+  }
+  
+  .header_active{
+    background: var(--dark2)
+  }
