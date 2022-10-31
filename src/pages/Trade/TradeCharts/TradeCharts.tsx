@@ -108,8 +108,6 @@ export interface LiquidityData {
     activeLiq: any;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     liqPrices: any;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    width: any;
 }
 
 export interface LiqSnap {

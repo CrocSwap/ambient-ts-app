@@ -173,6 +173,8 @@ export default function TradeCandleStickChart(props: ChartData) {
 
         const liqSnapData: LiqSnap[] = [];
 
+        let indexBen = 0;
+
         if (props.poolPriceDisplay !== undefined && props.liquidityData) {
             const domainLeft = Math.min(
                 ...props.liquidityData.ranges.map((o: any) => {
@@ -189,29 +191,19 @@ export default function TradeCandleStickChart(props: ChartData) {
             const liquidityScale = d3.scaleLog().domain([domainLeft, domainRight]).range([1, 1000]);
 
             props.liquidityData.ranges.map((data: any, index: any) => {
-                let width: any = undefined;
-
                 const liqPrices = denominationsInBase
                     ? data.upperBoundInvPriceDecimalCorrected
                     : data.upperBoundPriceDecimalCorrected;
 
-                if (index > 0 && index < props.liquidityData.ranges.length - 1) {
-                    const diffBot =
-                        parseFloat(liqPrices) -
-                        props.liquidityData.ranges[index - 1].upperBoundPriceDecimalCorrected;
-
-                    const diffTop =
-                        props.liquidityData.ranges[index + 1].upperBoundPriceDecimalCorrected -
-                        parseFloat(liqPrices);
-
-                    width = diffBot + diffTop;
-                }
-
                 liqData.push({
                     activeLiq: liquidityScale(data.activeLiq),
                     liqPrices: liqPrices,
-                    width: isNaN(width) ? undefined : width,
                 });
+
+                if (liquidityScale(data.activeLiq) === 1000) {
+                    console.log(index);
+                    indexBen = index;
+                }
 
                 const barThreshold =
                     props.poolPriceDisplay !== undefined ? props.poolPriceDisplay : 0;
@@ -220,13 +212,11 @@ export default function TradeCandleStickChart(props: ChartData) {
                     liqBidData.push({
                         activeLiq: liquidityScale(data.activeLiq),
                         liqPrices: liqPrices,
-                        width: isNaN(width) ? undefined : width,
                     });
                 } else {
                     liqAskData.push({
                         activeLiq: liquidityScale(data.activeLiq),
                         liqPrices: liqPrices,
-                        width: isNaN(width) ? undefined : width,
                     });
                 }
 
@@ -252,6 +242,12 @@ export default function TradeCandleStickChart(props: ChartData) {
                 }
             });
         }
+
+        liqAskData.splice(indexBen, 1);
+        liqBidData.splice(indexBen, 1);
+        liqData.splice(indexBen, 1);
+
+        console.log({ liqAskData });
 
         return {
             liqData: liqData,
