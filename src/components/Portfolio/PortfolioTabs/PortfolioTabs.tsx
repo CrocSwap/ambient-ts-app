@@ -6,6 +6,7 @@ import Wallet from '../../Global/Account/AccountTabs/Wallet/Wallet';
 import Exchange from '../../Global/Account/AccountTabs/Exchange/Exchange';
 // import TransactionsTable from '../../Global/Account/AccountTabs/Transaction/TransactionsTable';
 import TabComponent from '../../Global/TabComponent/TabComponent';
+import Tokens from '../Tokens/Tokens';
 
 // START: Import Local Files
 import styles from './PortfolioTabs.module.css';
@@ -294,14 +295,10 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
         account: account,
         setCurrentTxActiveInTransactions: props.setCurrentTxActiveInTransactions,
         expandTradeTable: false,
-
         isCandleSelected: false,
-        // filter: props.filter,
         closeGlobalModal: props.closeGlobalModal,
-
         openGlobalModal: props.openGlobalModal,
         showSidebar: props.showSidebar,
-
         isOnPortfolioPage: true,
     };
 
@@ -323,6 +320,10 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
         isOnPortfolioPage: true,
     };
 
+    const tokensProps = {
+        chainId: chainId,
+    };
+
     const accountTabData = [
         {
             label: 'Transactions',
@@ -337,6 +338,7 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
             icon: exchangeImage,
         },
         { label: 'Wallet Balances', content: <Wallet {...walletProps} />, icon: walletImage },
+        { label: 'Tokens', content: <Tokens {...tokensProps} />, icon: walletImage },
     ];
 
     return (
