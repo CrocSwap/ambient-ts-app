@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import styles from './Tokens.module.css';
 import TokensHeader from './TokensHeader/TokensHeader';
 import TokenCard from '../Tokens/TokenCard/TokenCard';
-import { TokenIF } from '../../../utils/interfaces/exports';
+import { TokenIF, TokenListIF } from '../../../utils/interfaces/exports';
 
 interface propsIF {
     chainId: string;
@@ -10,41 +10,57 @@ interface propsIF {
 
 export default function Tokens(props: propsIF) {
     const { chainId } = props;
-    false && chainId;
+
+    const [tokenLists, setTokenLists] = useState<TokenListIF[]>();
+    const [importedTokens, setImportedTokens] = useState<TokenIF[]|null>(null);
+    importedTokens ?? setImportedTokens(
+        JSON.parse(localStorage.getItem('user') as string).tokens
+    );
 
     const [tokenSource, setTokenSource] = useState('imported');
-    false && setTokenSource('');
     const [tokensInDOM, setTokensInDOM] = useState<TokenIF[]>([]);
+
     useEffect(() => {
-        let tokens: TokenIF[];
-        switch (tokenSource) {
-            case 'imported':
-                tokens = JSON.parse(localStorage.getItem('user') as string).tokens;
-                break;
-            default:
-                tokens = JSON.parse(localStorage.getItem('user') as string).tokens;
+        if (tokenSource === 'imported') {
+            const tokens = JSON.parse(localStorage.getItem('user') as string).tokens;
+            setTokensInDOM(tokens);
+        } else {
+            setTokensInDOM(
+                tokenLists?.find((list) => list.name === tokenSource)?.tokens as TokenIF[]
+            );
         }
-        console.log(tokens);
-        setTokensInDOM(tokens);
     }, [tokenSource]);
+
+    useEffect(() => {
+        setTokenLists(JSON.parse(localStorage.getItem('allTokenLists') as string));
+    }, []);
 
     return (
         <div className={styles.container}>
             <div className={styles.listPicker}>
                 <select
                     name='lists'
-                    onChange={(e) => console.log(e.target.value)}
+                    onChange={(e) => setTokenSource(e.target.value)}
                 >
                     <option value='imported'>My Tokens</option>
-                    <option value='ambient'>Ambient</option>
+                    {
+                        tokenLists?.map((list) => (
+                            <option
+                                key={JSON.stringify(list)}
+                                value={list.name}
+                            >
+                                {list.name}
+                            </option>
+                        ))
+                    }
                 </select>
             </div>
             <TokensHeader />
             <ol className={styles.item_container}>
             {
-                tokensInDOM.map((tkn) =>
+                tokensInDOM.map((tkn, idx) =>
                     <TokenCard
-                        key={JSON.stringify(tkn)}
+                        key={JSON.stringify(tkn) + idx}
                         token={tkn}
                         chainId={chainId}
                     />
