@@ -181,12 +181,14 @@ export default function PageHeader(props: HeaderPropsIF) {
     useEffect(() => {
         // console.log({ location });
         // console.log({ urlParams });
-        if (location.pathname.includes('swap') || location.pathname.includes('trade')) {
+        if (location.pathname.includes('account')) {
+            document.title = 'account - ambient.finance';
+        } else if (location.pathname.includes('swap') || location.pathname.includes('trade')) {
             document.title = isDenomBase
-                ? `ambient.finance (${baseSymbol} / ${quoteSymbol})`
-                : `ambient.finance (${quoteSymbol} / ${baseSymbol})`;
+                ? `${baseSymbol}/${quoteSymbol} - ambient.finance`
+                : `${quoteSymbol}/${baseSymbol} - ambient.finance`;
         } else {
-            document.title = 'ambient.finance (alpha)';
+            document.title = 'ambient.finance';
         }
     }, [baseSymbol, quoteSymbol, isDenomBase, location]);
 

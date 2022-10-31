@@ -1,22 +1,30 @@
 import styles from './PortfolioBanner.module.css';
 import trimString from '../../../utils/functions/trimString';
-import noAvatarImage from '../../../assets/images/icons/avatar.svg';
 import { AiOutlineSetting } from 'react-icons/ai';
 import { FiPlus } from 'react-icons/fi';
 import { IoMdCheckmark } from 'react-icons/io';
 import { Dispatch, SetStateAction, useState } from 'react';
 import SnackbarComponent from '../../../components/Global/SnackbarComponent/SnackbarComponent';
 import { motion } from 'framer-motion';
+import PortfolioBannerAccount from './PortfolioBannerAccount/PortfolioBannerAccount';
 interface PortfolioBannerPropsIF {
     ensName: string;
     activeAccount: string;
     imageData: string[];
     resolvedAddress: string;
     setShowProfileSettings: Dispatch<SetStateAction<boolean>>;
+    connectedAccountActive: boolean;
 }
 
 export default function PortfolioBanner(props: PortfolioBannerPropsIF) {
-    const { ensName, activeAccount, imageData, resolvedAddress, setShowProfileSettings } = props;
+    const {
+        ensName,
+        activeAccount,
+        imageData,
+        resolvedAddress,
+        setShowProfileSettings,
+        connectedAccountActive,
+    } = props;
     const ensNameAvailable = ensName !== '';
 
     const truncatedAccountAddress = trimString(activeAccount, 6, 6, '…');
@@ -62,34 +70,15 @@ export default function PortfolioBanner(props: PortfolioBannerPropsIF) {
                     <AiOutlineSetting size={20} color='#bdbdbd' />{' '}
                 </div>
             </div>
-            <div className={styles.account_container}>
-                <div className={styles.avatar_image}>
-                    {imageData[0] ? (
-                        <img src={imageData[0]} alt='avatar' />
-                    ) : (
-                        <img src={noAvatarImage} alt='no avatar' />
-                    )}
-                </div>
-                <div className={styles.account_names}>
-                    <span className={styles.name}>
-                        {ensNameAvailable
-                            ? ensName
-                            : resolvedAddress
-                            ? activeAccount
-                            : truncatedAccountAddress}
-                        {/* <div onClick={() => setShowProfileSettings(true)}>
-                            <FiEdit size={17} />
-                        </div> */}
-                    </span>
-                    <span className={styles.hash}>
-                        {resolvedAddress
-                            ? resolvedAddress
-                            : ensNameAvailable
-                            ? truncatedAccountAddress
-                            : activeAccount}
-                    </span>
-                </div>
-            </div>
+            <PortfolioBannerAccount
+                imageData={imageData}
+                ensName={ensName}
+                ensNameAvailable={ensNameAvailable}
+                resolvedAddress={resolvedAddress}
+                activeAccount={activeAccount}
+                truncatedAccountAddress={truncatedAccountAddress}
+                connectedAccountActive={connectedAccountActive}
+            />
             <div className={styles.nft_container}>
                 {imageData[1] ? <img src={imageData[1]} alt='nft' /> : null}
                 {imageData[2] ? <img src={imageData[2]} alt='nft' /> : null}

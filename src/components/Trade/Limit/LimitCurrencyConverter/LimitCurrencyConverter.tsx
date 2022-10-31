@@ -21,9 +21,12 @@ import TokensArrow from '../../../Global/TokensArrow/TokensArrow';
 import DividerDark from '../../../Global/DividerDark/DividerDark';
 import IconWithTooltip from '../../../Global/IconWithTooltip/IconWithTooltip';
 import { ZERO_ADDRESS } from '../../../../constants';
+import { CrocPoolView } from '@crocswap-libs/sdk';
 
 // interface for component props
 interface LimitCurrencyConverterProps {
+    pool: CrocPoolView | undefined;
+    setPriceInputFieldBlurred: Dispatch<SetStateAction<boolean>>;
     isUserLoggedIn: boolean;
     tokenPair: TokenPairIF;
     tokensBank: Array<TokenIF>;
@@ -31,7 +34,7 @@ interface LimitCurrencyConverterProps {
     searchableTokens: Array<TokenIF>;
     chainId: string;
     poolPriceNonDisplay: number | undefined;
-    insideTickDisplayPrice: number;
+    limitTickDisplayPrice: number;
     setIsSellTokenPrimary?: Dispatch<SetStateAction<boolean>>;
     setLimitAllowed: Dispatch<SetStateAction<boolean>>;
     isSellTokenBase: boolean;
@@ -59,6 +62,8 @@ interface LimitCurrencyConverterProps {
 // central react functional component
 export default function LimitCurrencyConverter(props: LimitCurrencyConverterProps) {
     const {
+        pool,
+        setPriceInputFieldBlurred,
         isUserLoggedIn,
         tokenPair,
         tokensBank,
@@ -66,7 +71,7 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
         searchableTokens,
         chainId,
         poolPriceNonDisplay,
-        insideTickDisplayPrice,
+        limitTickDisplayPrice,
         setLimitAllowed,
         isSellTokenBase,
         baseTokenBalance,
@@ -89,8 +94,6 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
     } = props;
 
     const dispatch = useAppDispatch();
-
-    const limitRateNumber = insideTickDisplayPrice;
 
     const tradeData = useAppSelector((state) => state.tradeData);
 
@@ -187,7 +190,7 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
         isTokenAPrimaryLocal ? handleTokenAChangeEvent() : handleTokenBChangeEvent();
     }, [
         poolExists,
-        limitRateNumber,
+        limitTickDisplayPrice,
         isSellTokenBase,
         isTokenAPrimaryLocal,
         tokenABalance,
@@ -264,24 +267,24 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
 
             if (!isDenominationInBase) {
                 rawTokenBQty = isSellTokenBase
-                    ? (1 / limitRateNumber) * parseFloat(input)
-                    : limitRateNumber * parseFloat(input);
+                    ? (1 / limitTickDisplayPrice) * parseFloat(input)
+                    : limitTickDisplayPrice * parseFloat(input);
             } else {
                 rawTokenBQty = !isSellTokenBase
-                    ? (1 / limitRateNumber) * parseFloat(input)
-                    : limitRateNumber * parseFloat(input);
+                    ? (1 / limitTickDisplayPrice) * parseFloat(input)
+                    : limitTickDisplayPrice * parseFloat(input);
             }
 
             handleLimitButtonMessage(parseFloat(input));
         } else {
             if (!isDenominationInBase) {
                 rawTokenBQty = isSellTokenBase
-                    ? (1 / limitRateNumber) * parseFloat(tokenAQtyLocal)
-                    : limitRateNumber * parseFloat(tokenAQtyLocal);
+                    ? (1 / limitTickDisplayPrice) * parseFloat(tokenAQtyLocal)
+                    : limitTickDisplayPrice * parseFloat(tokenAQtyLocal);
             } else {
                 rawTokenBQty = !isSellTokenBase
-                    ? (1 / limitRateNumber) * parseFloat(tokenAQtyLocal)
-                    : limitRateNumber * parseFloat(tokenAQtyLocal);
+                    ? (1 / limitTickDisplayPrice) * parseFloat(tokenAQtyLocal)
+                    : limitTickDisplayPrice * parseFloat(tokenAQtyLocal);
             }
 
             handleLimitButtonMessage(parseFloat(tokenAQtyLocal));
@@ -316,12 +319,12 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
 
         if (!isDenominationInBase) {
             rawTokenBQty = isSellTokenBase
-                ? (1 / limitRateNumber) * parseFloat(input)
-                : limitRateNumber * parseFloat(input);
+                ? (1 / limitTickDisplayPrice) * parseFloat(input)
+                : limitTickDisplayPrice * parseFloat(input);
         } else {
             rawTokenBQty = !isSellTokenBase
-                ? (1 / limitRateNumber) * parseFloat(input)
-                : limitRateNumber * parseFloat(input);
+                ? (1 / limitTickDisplayPrice) * parseFloat(input)
+                : limitTickDisplayPrice * parseFloat(input);
         }
 
         handleLimitButtonMessage(parseFloat(input));
@@ -355,26 +358,26 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
 
             if (!isDenominationInBase) {
                 rawTokenAQty = isSellTokenBase
-                    ? limitRateNumber * parseFloat(input)
-                    : (1 / limitRateNumber) * parseFloat(input);
+                    ? limitTickDisplayPrice * parseFloat(input)
+                    : (1 / limitTickDisplayPrice) * parseFloat(input);
             } else {
                 rawTokenAQty = !isSellTokenBase
-                    ? limitRateNumber * parseFloat(input)
-                    : (1 / limitRateNumber) * parseFloat(input);
+                    ? limitTickDisplayPrice * parseFloat(input)
+                    : (1 / limitTickDisplayPrice) * parseFloat(input);
             }
 
             // rawTokenAQty = isDenominationInBase
-            //     ? (1 / limitRateNumber) * parseFloat(input)
-            //     : limitRateNumber * parseFloat(input);
+            //     ? (1 / limitTickDisplayPrice) * parseFloat(input)
+            //     : limitTickDisplayPrice * parseFloat(input);
         } else {
             if (!isDenominationInBase) {
                 rawTokenAQty = isSellTokenBase
-                    ? limitRateNumber * parseFloat(tokenBQtyLocal)
-                    : (1 / limitRateNumber) * parseFloat(tokenBQtyLocal);
+                    ? limitTickDisplayPrice * parseFloat(tokenBQtyLocal)
+                    : (1 / limitTickDisplayPrice) * parseFloat(tokenBQtyLocal);
             } else {
                 rawTokenAQty = !isSellTokenBase
-                    ? limitRateNumber * parseFloat(tokenBQtyLocal)
-                    : (1 / limitRateNumber) * parseFloat(tokenBQtyLocal);
+                    ? limitTickDisplayPrice * parseFloat(tokenBQtyLocal)
+                    : (1 / limitTickDisplayPrice) * parseFloat(tokenBQtyLocal);
             }
         }
         handleLimitButtonMessage(rawTokenAQty);
@@ -476,6 +479,8 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
             />
             <DividerDark addMarginTop />
             <LimitRate
+                pool={pool}
+                setPriceInputFieldBlurred={setPriceInputFieldBlurred}
                 tokenPair={tokenPair}
                 tokensBank={tokensBank}
                 chainId={chainId}
@@ -483,7 +488,7 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
                 reverseTokens={reverseTokens}
                 // onBlur={priceInputOnBlur}
                 poolPriceNonDisplay={poolPriceNonDisplay}
-                insideTickDisplayPrice={insideTickDisplayPrice}
+                limitTickDisplayPrice={limitTickDisplayPrice}
             />
         </section>
     );
