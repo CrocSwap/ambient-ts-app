@@ -36,8 +36,8 @@ export default function LimitRate(props: LimitRatePropsIF) {
 
         limitNonDisplay?.then((limit) => {
             const limitPriceInTick = Math.log(limit) / Math.log(1.0001);
-            console.log({ limitPriceInTick });
-            console.log({ isDenomBase });
+            // console.log({ limitPriceInTick });
+            // console.log({ isDenomBase });
             dispatch(setLimitTick(limitPriceInTick));
             setPriceInputFieldBlurred(true);
         });
@@ -59,7 +59,7 @@ export default function LimitRate(props: LimitRatePropsIF) {
                 placeholder='0.0'
                 // onChange={(event) => handleLimitChange(event.target.value)}
                 onBlur={(event) => {
-                    console.log('blurred');
+                    // console.log('blurred');
                     handleLimitChange(event.target.value);
                 }}
                 type='string'

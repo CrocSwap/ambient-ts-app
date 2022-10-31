@@ -173,7 +173,7 @@ export default function Limit(props: LimitPropsIF) {
             const initialLimitRateNonDisplay =
                 poolPriceNonDisplay * (isSellTokenBase ? 0.985 : 1.015);
 
-            console.log({ initialLimitRateNonDisplay });
+            // console.log({ initialLimitRateNonDisplay });
             // const initialLimitRateWithDenom = isDenomBase
             //     ? 1 / initialLimitRateNonInverted
             //     : initialLimitRateNonInverted;
@@ -186,7 +186,7 @@ export default function Limit(props: LimitPropsIF) {
                 : pinTickUpper(initialLimitRateNonDisplay, gridSize);
             // pinTick.then(setLimitTick);
             // pinTick.then((newTick) => {
-            console.log({ pinnedTick });
+            // console.log({ pinnedTick });
 
             dispatch(setLimitTick(pinnedTick));
             // });
@@ -199,7 +199,7 @@ export default function Limit(props: LimitPropsIF) {
             tickDispPrice.then((tp) => {
                 const displayPriceWithDenom = isDenomBase ? tp : 1 / tp;
                 setEndDisplayPrice(displayPriceWithDenom);
-                console.log({ displayPriceWithDenom });
+                // console.log({ displayPriceWithDenom });
                 // dispatch(setLimitPrice(isDenomBase ? (1 / tp).toString() : tp.toString()));
                 setInitialLoad(false);
                 const limitRateTruncated =
@@ -212,7 +212,7 @@ export default function Limit(props: LimitPropsIF) {
                               minimumFractionDigits: 2,
                               maximumFractionDigits: 2,
                           });
-                console.log({ limitRateTruncated });
+                // console.log({ limitRateTruncated });
                 const limitRateInputField = document.getElementById('limit-rate-quantity');
                 if (limitRateInputField)
                     (limitRateInputField as HTMLInputElement).value = limitRateTruncated;
@@ -306,7 +306,7 @@ export default function Limit(props: LimitPropsIF) {
                               minimumFractionDigits: 2,
                               maximumFractionDigits: 2,
                           });
-                console.log({ limitRateTruncated });
+                // console.log({ limitRateTruncated });
                 const limitRateInputField = document.getElementById('limit-rate-quantity');
                 if (limitRateInputField)
                     (limitRateInputField as HTMLInputElement).value = limitRateTruncated;
