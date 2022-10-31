@@ -392,7 +392,11 @@ export default function Limit(props: LimitPropsIF) {
             if (await ko.willMintFail()) {
                 // console.log('Cannot send limit order: Knockout price inside spread');
                 setLimitButtonErrorMessage(
-                    `Limit ${isSellTokenBase ? 'Below' : 'Above'} Market Price`,
+                    `Limit ${
+                        (isSellTokenBase && !isDenomBase) || (!isSellTokenBase && isDenomBase)
+                            ? 'Above'
+                            : 'Below'
+                    } Market Price`,
                 );
                 setIsOrderValid(false);
                 return;
