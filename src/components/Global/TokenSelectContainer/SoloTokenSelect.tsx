@@ -7,14 +7,15 @@ import { useSoloSearch } from './useSoloSearch';
 
 interface propsIF {
     tokensBank: TokenIF[];
+    chainId: string;
     setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
     closeModal: () => void;
 }
 
 export const SoloTokenSelect = (props: propsIF) => {
-    const { tokensBank, setImportedTokens, closeModal } = props;
+    const { tokensBank, chainId, setImportedTokens, closeModal } = props;
 
-    const [ searchedToken, setInput ] = useSoloSearch('0x5');
+    const [ searchedToken, setInput ] = useSoloSearch(chainId);
     false && searchedToken;
 
     const dispatch = useAppDispatch();
@@ -33,7 +34,7 @@ export const SoloTokenSelect = (props: propsIF) => {
     };
 
     const importedTokenButtons = tokensBank
-        .filter((token: TokenIF) => token.chainId === parseInt('0x5'))
+        .filter((token: TokenIF) => token.chainId === parseInt(chainId))
         .filter((token: TokenIF) => (searchedToken ? searchedToken.address === token.address : true))
         .map((token: TokenIF) => (
             <TokenSelect
@@ -41,7 +42,7 @@ export const SoloTokenSelect = (props: propsIF) => {
                 token={token}
                 tokensBank={tokensBank}
                 undeletableTokens={undeletableTokens}
-                chainId='0x5'
+                chainId={chainId}
                 setImportedTokens={setImportedTokens}
                 chooseToken={chooseToken}
                 isOnPortfolio={true}
