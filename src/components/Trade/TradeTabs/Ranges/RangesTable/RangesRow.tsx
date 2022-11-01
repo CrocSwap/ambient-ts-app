@@ -312,12 +312,22 @@ export default function RangesRow(props: RangesRowPropsIF) {
             </li>
 
             {!showColumns && (
-                <li onClick={openDetailsModal} data-label={baseTokenSymbol} className='base_color'>
+                <li
+                    onClick={openDetailsModal}
+                    data-label={baseTokenSymbol}
+                    className='base_color'
+                    style={{ textAlign: 'right', fontFamily: 'monospace' }}
+                >
                     <p>{baseDisplay}</p>
                 </li>
             )}
             {!showColumns && (
-                <li onClick={openDetailsModal} data-label={quoteTokenSymbol} className='base_color'>
+                <li
+                    onClick={openDetailsModal}
+                    data-label={quoteTokenSymbol}
+                    className='base_color'
+                    style={{ textAlign: 'right', fontFamily: 'monospace' }}
+                >
                     <p>{quoteDisplay}</p>
                 </li>
             )}

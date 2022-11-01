@@ -313,7 +313,12 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
             </li>
 
             {!showColumns && (
-                <li onClick={openDetailsModal} data-label={baseTokenSymbol} className='color_white'>
+                <li
+                    onClick={openDetailsModal}
+                    data-label={baseTokenSymbol}
+                    className='color_white'
+                    style={{ textAlign: 'right', fontFamily: 'monospace' }}
+                >
                     <p>{baseDisplay}</p>
                 </li>
             )}
@@ -322,6 +327,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                     onClick={openDetailsModal}
                     data-label={quoteTokenSymbol}
                     className='color_white'
+                    style={{ textAlign: 'right', fontFamily: 'monospace' }}
                 >
                     <p>{quoteDisplay}</p>
                 </li>
