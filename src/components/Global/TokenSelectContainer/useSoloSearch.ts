@@ -59,12 +59,17 @@ export const useSoloSearch = (
             localStorage.allTokenLists &&
             !isTokenFound
         ) {
-            const coinGeckoTokens = JSON.parse(localStorage.getItem('allTokenLists') as string).find((list: TokenListIF) => list.name === 'CoinGecko').tokens;
+            const coinGeckoTokens = JSON.parse(localStorage.getItem('allTokenLists') as string)
+                .find((list: TokenListIF) => list.name === 'CoinGecko')
+                .tokens;
             const tkn = findToken(coinGeckoTokens) as TokenIF;
             tkn && setIsTokenFound(true);
             tkn && setToken(tkn);
         }
         // TODO: if not found pull data from on-chain
     }, [validatedInput]);
+
+    // token === token data object or null
+    // setInput === useState setter function for raw input
     return [token, setInput];
 }
