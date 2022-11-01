@@ -54,6 +54,7 @@ export const useSoloSearch = (
             (token) => token.address === input && token.chainId === parseInt(chainId)
         );
 
+        // fn to update local state if a token is found
         const updateToken = (tkn: TokenIF) => {
             setIsTokenFound(true);
             setToken(tkn);
@@ -61,7 +62,9 @@ export const useSoloSearch = (
 
         // first check ambient list
         if (validatedInput && ambientTokenList) {
+            // find token in the ambient token list
             const tkn = findToken(ambientTokenList.tokens) as TokenIF;
+            // update local state if a token is found
             tkn && updateToken(tkn);
         }
 
@@ -77,11 +80,12 @@ export const useSoloSearch = (
                 .tokens;
             // find token in CoinGecko token list
             const tkn = findToken(coinGeckoTokens) as TokenIF;
-            // if token is found, flip gatekeeping variable
+            // update local state if a token is found
             tkn && updateToken(tkn);
         }
 
         // TODO: if not found pull data from on-chain
+
     // run hook when validated user input changes
     // this prevents queries without valid input
     }, [validatedInput]);
