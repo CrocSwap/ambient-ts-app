@@ -62,6 +62,7 @@ export default function OrderRow(props: OrderRowPropsIF) {
         isOwnerActiveAccount,
         ensName,
         // orderMatchesSelectedTokens,
+        truncatedDisplayPriceDenomByMoneyness,
 
         baseTokenCharacter,
         quoteTokenCharacter,
@@ -224,7 +225,9 @@ export default function OrderRow(props: OrderRowPropsIF) {
                     className={sellOrderStyle}
                     style={{ textAlign: 'right', fontFamily: 'monospace' }}
                 >
-                    {truncatedDisplayPrice}
+                    {isOnPortfolioPage
+                        ? truncatedDisplayPriceDenomByMoneyness || '…'
+                        : truncatedDisplayPrice || '…'}
                 </li>
             )}
             {!showColumns && (
