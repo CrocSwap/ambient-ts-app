@@ -1,6 +1,5 @@
 import styles from './OrderAccordions.module.css';
 import { Dispatch, SetStateAction } from 'react';
-import { ILimitOrderState } from '../../../../../utils/state/graphDataSlice';
 import { useProcessOrder } from '../../../../../utils/hooks/useProcessOrder';
 import { BiWallet } from 'react-icons/bi';
 import OpenOrderStatus from '../../../../Global/OpenOrderStatus/OpenOrderStatus';
@@ -8,11 +7,13 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { IoMdArrowDropdown } from 'react-icons/io';
 import { RiArrowUpSFill } from 'react-icons/ri';
 import OrderAccordionContent from './OrderAccordionContent';
+import { LimitOrderIF } from '../../../../../utils/interfaces/exports';
+
 interface OrderAccordionsPropsIF {
     i: number;
     expanded: number | boolean;
     setExpanded: Dispatch<SetStateAction<number | false>>;
-    limitOrder: ILimitOrderState;
+    limitOrder: LimitOrderIF;
 }
 export default function OrderAccordions(props: OrderAccordionsPropsIF) {
     const { i, expanded, setExpanded, limitOrder } = props;

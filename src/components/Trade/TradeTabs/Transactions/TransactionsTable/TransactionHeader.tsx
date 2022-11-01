@@ -18,24 +18,27 @@ interface TransactionHeaderPropsIF {
 export default function TransactionHeader(props: TransactionHeaderPropsIF) {
     const { header, sortBy, setSortBy, reverseSort, setReverseSort } = props;
     const { name, show, slug, sortable } = header;
+
     function handleClick(slug: string) {
-        console.clear();
-        if (sortBy !== slug) {
-            console.log('first click');
-            setSortBy(slug);
-        } else if (!reverseSort) {
-            console.log('second click');
-            setReverseSort(true);
-        } else if (sortBy === slug && reverseSort) {
-            console.log('third click');
-            setSortBy('default');
-            setReverseSort(false);
-        } else {
-            console.warn(
-                'Problem in click handler control flow. Refer to RangeCardHeader.tsx for troubleshooting. Resetting sort parameters to default as fallback action.',
-            );
-            setSortBy('default');
-            setReverseSort(false);
+        if (sortable) {
+            console.clear();
+            if (sortBy !== slug) {
+                console.log('first click');
+                setSortBy(slug);
+            } else if (!reverseSort) {
+                console.log('second click');
+                setReverseSort(true);
+            } else if (sortBy === slug && reverseSort) {
+                console.log('third click');
+                setSortBy('default');
+                setReverseSort(false);
+            } else {
+                console.warn(
+                    'Problem in click handler control flow. Refer to RangeCardHeader.tsx for troubleshooting. Resetting sort parameters to default as fallback action.',
+                );
+                setSortBy('default');
+                setReverseSort(false);
+            }
         }
     }
 

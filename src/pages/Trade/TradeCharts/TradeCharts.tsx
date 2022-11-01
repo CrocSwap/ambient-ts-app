@@ -39,9 +39,11 @@ import { PoolIF, TokenIF } from '../../../utils/interfaces/exports';
 import { get24hChange } from '../../../App/functions/getPoolStats';
 import TradeChartsLoading from './TradeChartsLoading/TradeChartsLoading';
 import NoTokenIcon from '../../../components/Global/NoTokenIcon/NoTokenIcon';
+import { CrocPoolView } from '@crocswap-libs/sdk';
 
 // interface for React functional component props
 interface TradeChartsPropsIF {
+    pool: CrocPoolView | undefined;
     chainId: string;
     lastBlockNumber: number;
     poolPriceDisplay: number;
@@ -52,7 +54,7 @@ interface TradeChartsPropsIF {
     setFullScreenChart: Dispatch<SetStateAction<boolean>>;
     changeState: (isOpen: boolean | undefined, candleData: CandleData | undefined) => void;
     candleData: CandlesByPoolAndDuration | undefined;
-    limitPrice: string | undefined;
+    limitTick: number;
     favePools: PoolIF[];
     addPoolToFaves: (tokenA: TokenIF, tokenB: TokenIF, chainId: string, poolId: number) => void;
     removePoolFromFaves: (
@@ -122,6 +124,7 @@ export interface LiqSnap {
 // React functional component
 export default function TradeCharts(props: TradeChartsPropsIF) {
     const {
+        pool,
         isTokenABase,
         poolPriceDisplay,
         fullScreenChart,
@@ -664,6 +667,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
             ) : (
                 <div style={{ width: '100%', height: '100%' }} ref={canvasRef}>
                     <TradeCandleStickChart
+                        pool={pool}
                         // tvlData={formattedTvlData}
                         expandTradeTable={expandTradeTable}
                         // volumeData={formattedVolumeData}
@@ -671,7 +675,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
                         candleData={props.candleData}
                         changeState={props.changeState}
                         chartItemStates={chartItemStates}
-                        limitPrice={props.limitPrice}
+                        limitTick={props.limitTick}
                         liquidityData={props.liquidityData}
                         isAdvancedModeActive={props.isAdvancedModeActive}
                         simpleRangeWidth={props.simpleRangeWidth}

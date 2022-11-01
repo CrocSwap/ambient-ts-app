@@ -6,6 +6,7 @@ import { toggleDidUserFlipDenom } from '../../../../utils/state/tradeDataSlice';
 import { motion } from 'framer-motion';
 import { useProcessTransaction } from '../../../../utils/hooks/useProcessTransaction';
 import { AiOutlineDash } from 'react-icons/ai';
+import NoTokenIcon from '../../NoTokenIcon/NoTokenIcon';
 
 type ItemIF = {
     slug: string;
@@ -38,6 +39,7 @@ export default function TransactionDetailsPriceInfo(props: ITransactionDetailsPr
         quoteDisplayFrontend,
         truncatedLowDisplayPrice,
         truncatedHighDisplayPrice,
+        truncatedDisplayPrice,
         // positionLiquidity,
     } = useProcessTransaction(tx);
 
@@ -49,8 +51,18 @@ export default function TransactionDetailsPriceInfo(props: ITransactionDetailsPr
             }}
         >
             <div className={styles.token_pair_images}>
-                <img src={isDenomBase ? baseTokenLogo : quoteTokenLogo} alt={baseTokenSymbol} />
-                <img src={isDenomBase ? quoteTokenLogo : baseTokenLogo} alt={quoteTokenSymbol} />
+                {/* <img src={baseTokenLogo} alt={baseTokenSymbol} /> */}
+                {/* <img src={isDenomBase ? baseTokenLogo : quoteTokenLogo} alt={baseTokenSymbol} /> */}
+                {baseTokenLogo ? (
+                    <img src={baseTokenLogo} alt={baseTokenSymbol} />
+                ) : (
+                    <NoTokenIcon tokenInitial={baseTokenSymbol.charAt(0)} width='30px' />
+                )}
+                {quoteTokenLogo ? (
+                    <img src={quoteTokenLogo} alt={quoteTokenSymbol} />
+                ) : (
+                    <NoTokenIcon tokenInitial={quoteTokenSymbol.charAt(0)} width='30px' />
+                )}
             </div>
             <p>
                 {isDenomBase ? baseTokenSymbol : quoteTokenSymbol} /{' '}
@@ -99,11 +111,12 @@ export default function TransactionDetailsPriceInfo(props: ITransactionDetailsPr
                 <p>From:</p>
                 <div>
                     {baseDisplayFrontend}
-                    <img
-                        width='15px'
-                        src={isDenomBase ? baseTokenLogo : quoteTokenLogo}
-                        alt={baseTokenSymbol}
-                    />
+
+                    {baseTokenLogo ? (
+                        <img width='15px' src={baseTokenLogo} alt={baseTokenSymbol} />
+                    ) : (
+                        <NoTokenIcon tokenInitial={baseTokenSymbol.charAt(0)} width='15px' />
+                    )}
                 </div>
             </Row>
             <span className={styles.divider}></span>
@@ -111,11 +124,12 @@ export default function TransactionDetailsPriceInfo(props: ITransactionDetailsPr
                 <p>To: </p>
                 <div>
                     {quoteDisplayFrontend}
-                    <img
-                        width='15px'
-                        src={isDenomBase ? quoteTokenLogo : baseTokenLogo}
-                        alt={quoteTokenSymbol}
-                    />
+
+                    {quoteTokenLogo ? (
+                        <img width='15px' src={quoteTokenLogo} alt={quoteTokenSymbol} />
+                    ) : (
+                        <NoTokenIcon tokenInitial={quoteTokenSymbol.charAt(0)} width='15px' />
+                    )}
                 </div>
             </Row>
         </div>
@@ -126,8 +140,10 @@ export default function TransactionDetailsPriceInfo(props: ITransactionDetailsPr
             <p>Price</p>
 
             <span className={styles.min_price}>
-                {truncatedLowDisplayPrice} <AiOutlineDash />
-                {truncatedHighDisplayPrice}
+                {truncatedDisplayPrice ? truncatedDisplayPrice : null}
+                {truncatedLowDisplayPrice ? truncatedLowDisplayPrice : null}
+                {!truncatedDisplayPrice ? <AiOutlineDash /> : null}
+                {truncatedHighDisplayPrice ? truncatedHighDisplayPrice : null}
             </span>
         </div>
     );

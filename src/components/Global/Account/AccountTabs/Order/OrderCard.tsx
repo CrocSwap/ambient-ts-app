@@ -1,6 +1,5 @@
 import getUnicodeCharacter from '../../../../../utils/functions/getUnicodeCharacter';
 import { formatAmount } from '../../../../../utils/numbers';
-import { ILimitOrderState } from '../../../../../utils/state/graphDataSlice';
 // import OpenOrderStatus from '../../../../Global/OpenOrderStatus/OpenOrderStatus';
 // import Price from '../../../../Global/Tabs/Price/Price';
 import TokenQty from '../../../../Global/Tabs/TokenQty/TokenQty';
@@ -17,20 +16,17 @@ import Price from '../../../Tabs/Price/Price';
 // import OrdersMenu from '../../../Tabs/TableMenu/TableMenuComponents/OrdersMenu';
 import OrderTypeSide from '../../../Tabs/TypeAndSide/OrderTypeAndSide/OrderTypeSide';
 import Value from '../../../Tabs/Value/Value';
+import { LimitOrderIF } from '../../../../../utils/interfaces/exports';
 
 import styles from './OrderCard.module.css';
 
 interface OrderCardProps {
-    limitOrder: ILimitOrderState;
+    limitOrder: LimitOrderIF;
     isDenomBase: boolean;
 }
 
 export default function OrderCard(props: OrderCardProps) {
     const { limitOrder, isDenomBase } = props;
-    // console.log({ limitOrder });
-
-    // const tempOwnerId = '0xa2b398145b7fc8fd9a01142698f15d329ebb5ff5090cfcc8caae440867ab9919';
-    // const tempPosHash = '0x01e650abfc761c6a0fc60f62a4e4b3832bb1178b';
 
     const baseTokenLogoURI = limitOrder.baseTokenLogoURI;
     const quoteTokenLogoURI = limitOrder.quoteTokenLogoURI;
@@ -66,11 +62,6 @@ export default function OrderCard(props: OrderCardProps) {
     const priceType = !limitOrder.isBid ? 'priceBuy' : 'priceSell';
 
     const sideType = !limitOrder.isBid ? 'buy' : 'sell';
-
-    // const baseTokenAddressLowerCase = limitOrder.base.toLowerCase();
-    // const quoteTokenAddressLowerCase = limitOrder.quote.toLowerCase();
-
-    // if (!limitOrder.positionLiq) return null;
 
     const liqBaseNum = limitOrder.positionLiqBaseDecimalCorrected;
     const liqQuoteNum = limitOrder.positionLiqQuoteDecimalCorrected;
@@ -154,10 +145,6 @@ export default function OrderCard(props: OrderCardProps) {
                 <div className={styles.status}>
                     <OpenOrderStatus isFilled={!limitOrder.positionLiq} />
                 </div>
-
-                {/* <div className={styles.menu_container}>
-                    <OrdersMenu userPosition={false} />
-                </div> */}
             </div>
         </div>
     );

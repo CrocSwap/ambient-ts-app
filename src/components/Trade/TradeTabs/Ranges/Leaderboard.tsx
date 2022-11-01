@@ -66,7 +66,6 @@ export default function Leaderboard(props: LeaderboardPropsIF) {
         crocEnv,
         chainData,
         provider,
-
         chainId,
         isShowAllEnabled,
         baseTokenBalance,
@@ -79,8 +78,8 @@ export default function Leaderboard(props: LeaderboardPropsIF) {
         currentPositionActive,
         setCurrentPositionActive,
         account,
-        setLeader,
-        setLeaderOwnerId,
+        // setLeader,
+        // setLeaderOwnerId,
 
         showSidebar,
     } = props;
@@ -90,26 +89,13 @@ export default function Leaderboard(props: LeaderboardPropsIF) {
     const baseTokenAddress = tradeData.baseToken.address;
     const quoteTokenAddress = tradeData.quoteToken.address;
 
-    const baseTokenAddressLowerCase = tradeData.baseToken.address.toLowerCase();
-    const quoteTokenAddressLowerCase = tradeData.quoteToken.address.toLowerCase();
-
-    const positionsByUserMatchingSelectedTokens = graphData?.positionsByUser?.positions.filter(
-        (position) => {
-            if (
-                position.base.toLowerCase() === baseTokenAddressLowerCase &&
-                position.quote.toLowerCase() === quoteTokenAddressLowerCase
-            ) {
-                return true;
-            } else {
-                return false;
-            }
-        },
-    );
+    const positionsByApy: string[] =
+        [...graphData?.leaderboardByPool?.positions]
+            .sort((a, b) => b.apy - a.apy)
+            .map((pos) => pos.positionId) ?? [];
 
     const [sortBy, setSortBy, reverseSort, setReverseSort, sortedPositions] = useSortedPositions(
         'apr',
-        true, // leaderboard is never limited to the user
-        positionsByUserMatchingSelectedTokens,
         graphData?.leaderboardByPool?.positions,
     );
 
@@ -129,13 +115,6 @@ export default function Leaderboard(props: LeaderboardPropsIF) {
                         dispatch(updateLeaderboard(updatedPositions));
                     } else {
                         dispatch(updateLeaderboard(updatedPositions));
-                        if (topThreePositions[0].ensResolution && setLeader)
-                            setLeader(topThreePositions[0].ensResolution);
-                        if (setLeaderOwnerId) {
-                            topThreePositions[0].user.length === 40
-                                ? setLeaderOwnerId('0x' + topThreePositions[0].user)
-                                : setLeaderOwnerId(topThreePositions[0].user);
-                        }
                     }
                 })
                 .catch(console.log);
@@ -216,18 +195,18 @@ export default function Leaderboard(props: LeaderboardPropsIF) {
     );
     const headerColumns = [
         {
-            name: '',
+            name: 'Rank',
             className: 'ID',
             show: !showColumns,
             slug: 'id',
-            sortable: true,
+            sortable: false,
         },
         {
             name: 'Wallet',
             className: 'wallet',
             show: !showColumns,
             slug: 'wallet',
-            sortable: true,
+            sortable: false,
         },
         {
             name: walID,
@@ -238,17 +217,16 @@ export default function Leaderboard(props: LeaderboardPropsIF) {
         },
         {
             name: 'Min',
-
             show: !showColumns,
             slug: 'min',
-            sortable: true,
+            sortable: false,
         },
         {
             name: 'Max',
             className: 'side',
             show: !showColumns,
             slug: 'max',
-            sortable: true,
+            sortable: false,
         },
 
         {
@@ -263,7 +241,7 @@ export default function Leaderboard(props: LeaderboardPropsIF) {
             className: 'value',
             show: true,
             slug: 'value',
-            sortable: true,
+            sortable: false,
         },
         {
             name: `${baseTokenSymbol} ( ${baseTokenCharacter} )`,
@@ -291,7 +269,7 @@ export default function Leaderboard(props: LeaderboardPropsIF) {
             className: 'apr',
             show: true,
             slug: 'apr',
-            sortable: true,
+            sortable: false,
         },
         {
             name: 'Status',
@@ -326,6 +304,7 @@ export default function Leaderboard(props: LeaderboardPropsIF) {
         <RangesRow
             key={idx}
             position={position}
+            rank={positionsByApy.findIndex((posId) => posId === position.positionId) + 1}
             currentPositionActive={currentPositionActive}
             setCurrentPositionActive={setCurrentPositionActive}
             openGlobalModal={props.openGlobalModal}

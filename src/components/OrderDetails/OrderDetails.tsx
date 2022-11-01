@@ -1,6 +1,5 @@
 import { useState, useRef } from 'react';
 
-import { ILimitOrderState } from '../../utils/state/graphDataSlice';
 import styles from './OrderDetails.module.css';
 import OrderDetailsHeader from './OrderDetailsHeader/OrderDetailsHeader';
 import printDomToImage from '../../utils/functions/printDomToImage';
@@ -9,10 +8,10 @@ import OrderGraphDisplay from './OrderGraphDisplay/OrderGraphDisplay';
 import { useProcessOrder } from '../../utils/hooks/useProcessOrder';
 import OrderDetailsControl from './OderDetailsControl/OrderDetailsControl';
 import OrderDetailsActions from '../RangeDetails/OrderDetailsActions/OrderDetailsActions';
+import { LimitOrderIF } from '../../utils/interfaces/exports';
 
 interface IOrderDetailsProps {
-    limitOrder: ILimitOrderState;
-
+    limitOrder: LimitOrderIF;
     closeGlobalModal: () => void;
 }
 
@@ -38,10 +37,7 @@ export default function OrderDetails(props: IOrderDetailsProps) {
     const handleChange = (slug: string) => {
         const copyControlItems = [...controlItems];
         const modifiedControlItems = copyControlItems.map((item) => {
-            if (slug === item.slug) {
-                item.checked = !item.checked;
-            }
-
+            if (slug === item.slug) item.checked = !item.checked;
             return item;
         });
 

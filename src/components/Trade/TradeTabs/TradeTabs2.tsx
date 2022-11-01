@@ -24,6 +24,7 @@ import { fetchPoolRecentChanges } from '../../../App/functions/fetchPoolRecentCh
 
 import { fetchUserRecentChanges } from '../../../App/functions/fetchUserRecentChanges';
 import Leaderboard from './Ranges/Leaderboard';
+import PoolInfo from './PoolInfo/PoolInfo';
 
 interface ITabsProps {
     isUserLoggedIn: boolean;
@@ -262,6 +263,7 @@ export default function TradeTabs2(props: ITabsProps) {
             // const poolSwapsCacheEndpoint = httpGraphCacheServerDomain + '/pool_recent_changes?';
 
             fetchPoolRecentChanges({
+                importedTokens: importedTokens,
                 base: selectedBase,
                 quote: selectedQuote,
                 poolIdx: chainData.poolIndex,
@@ -277,7 +279,8 @@ export default function TradeTabs2(props: ITabsProps) {
             })
                 .then((selectedCandleChangesJson) => {
                     console.log({ selectedCandleChangesJson });
-                    setChangesInSelectedCandle(selectedCandleChangesJson);
+                    if (selectedCandleChangesJson)
+                        setChangesInSelectedCandle(selectedCandleChangesJson);
                     setOutsideControl(true);
                     setSelectedInsideTab(0);
                 })
@@ -345,9 +348,15 @@ export default function TradeTabs2(props: ITabsProps) {
         setLeader: setLeader,
         setLeaderOwnerId: setLeaderOwnerId,
     };
+    // Props for <Ranges/> React Element
+    const poolInfoProps = {
+        chainData: chainData,
+        lastBlockNumber: lastBlockNumber,
+    };
     // Props for <Transactions/> React Element
     const transactionsProps = {
         isShowAllEnabled: isShowAllEnabled,
+        importedTokens: importedTokens,
 
         changesInSelectedCandle: changesInSelectedCandle,
         tokenMap: tokenMap,
@@ -411,7 +420,7 @@ export default function TradeTabs2(props: ITabsProps) {
             showRightSideOption: true,
         },
         {
-            label: 'Orders',
+            label: 'Limit Orders',
             content: <Orders {...ordersProps} />,
             icon: openOrdersImage,
             showRightSideOption: true,
@@ -430,7 +439,7 @@ export default function TradeTabs2(props: ITabsProps) {
         },
         {
             label: 'Info',
-            content: <Ranges {...rangesProps} />,
+            content: <PoolInfo {...poolInfoProps} />,
             icon: rangePositionsImage,
             showRightSideOption: false,
         },

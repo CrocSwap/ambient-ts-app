@@ -1,3 +1,4 @@
+import { LimitOrderIF } from './LimitOrderIF';
 import { PoolIF } from './PoolIF';
 import { PositionIF } from './PositionIF';
 import { SlippageIF } from './SlippageIF';
@@ -8,6 +9,7 @@ import { TokenPairIF } from './TokenPairIF';
 import { UserIF } from './UserIF';
 
 export type {
+    LimitOrderIF,
     PoolIF,
     PositionIF,
     SlippageIF,

@@ -22,7 +22,6 @@ import {
     setLimitOrdersByPool,
     CandlesByPoolAndDuration,
     CandleData,
-    ILimitOrderState,
     // ITransaction,
     addChangesByUser,
     setLastBlock,
@@ -64,7 +63,7 @@ import './App.css';
 import { useAppDispatch, useAppSelector } from '../utils/hooks/reduxToolkit';
 import { defaultTokens } from '../utils/data/defaultTokens';
 import initializeUserLocalStorage from './functions/initializeUserLocalStorage';
-import { TokenIF, TokenListIF, PositionIF } from '../utils/interfaces/exports';
+import { LimitOrderIF, TokenIF, TokenListIF, PositionIF } from '../utils/interfaces/exports';
 import { fetchTokenLists } from './functions/fetchTokenLists';
 import {
     resetTokens,
@@ -121,7 +120,7 @@ import { fetchUserRecentChanges } from './functions/fetchUserRecentChanges';
 import { getTransactionData } from './functions/getTransactionData';
 import AppOverlay from '../components/Global/AppOverlay/AppOverlay';
 import { getLiquidityFee } from './functions/getLiquidityFee';
-import PhishingWarning from '../components/Global/PhisingWarning/PhishingWarning';
+// import PhishingWarning from '../components/Global/PhisingWarning/PhishingWarning';
 
 const cachedFetchAddress = memoizeFetchAddress();
 const cachedFetchNativeTokenBalance = memoizeFetchNativeTokenBalance();
@@ -574,6 +573,11 @@ export default function App() {
         dataTokenB: tradeData.tokenB,
     };
 
+    const pool = useMemo(
+        () => crocEnv?.pool(tradeData.baseToken.address, tradeData.quoteToken.address),
+        [crocEnv, tradeData.baseToken.address, tradeData.quoteToken.address],
+    );
+
     // value for whether a pool exists on current chain and token pair
     // ... true => pool exists
     // ... false => pool does not exist
@@ -943,6 +947,7 @@ export default function App() {
 
                 // retrieve pool recent changes
                 fetchPoolRecentChanges({
+                    importedTokens: importedTokens,
                     base: sortedTokens[0],
                     quote: sortedTokens[1],
                     poolIdx: chainData.poolIndex,
@@ -1642,7 +1647,7 @@ export default function App() {
 
                         if (userLimitOrderStates) {
                             Promise.all(
-                                userLimitOrderStates.map((limitOrder: ILimitOrderState) => {
+                                userLimitOrderStates.map((limitOrder: LimitOrderIF) => {
                                     return getLimitOrderData(limitOrder, importedTokens);
                                 }),
                             ).then((updatedLimitOrderStates) => {
@@ -1813,6 +1818,7 @@ export default function App() {
 
     // props for <Swap/> React element on trade route
     const swapPropsTrade = {
+        pool: pool,
         crocEnv: crocEnv,
         isUserLoggedIn: isUserLoggedIn,
         account: account,
@@ -1846,6 +1852,7 @@ export default function App() {
 
     // props for <Limit/> React element on trade route
     const limitPropsTrade = {
+        pool: pool,
         crocEnv: crocEnv,
         isUserLoggedIn: isUserLoggedIn,
         importedTokens: importedTokens,
@@ -1921,39 +1928,6 @@ export default function App() {
         setShowSidebar(!showSidebar);
         setSidebarManuallySet(true);
     }
-
-    // function handleTabChangedBasedOnRoute() {
-    //     const onTradeRoute = location.pathname.includes('trade');
-
-    //     const marketTabBasedOnRoute = onTradeRoute ? 0 : 0;
-    //     const orderTabBasedOnRoute = onTradeRoute ? 1 : 0;
-    //     const rangeTabBasedOnRoute = onTradeRoute ? 2 : 0;
-    //     setOutsideControl(true);
-    //     if (location.pathname === '/trade/market') {
-    //         setSelectedOutsideTab(marketTabBasedOnRoute);
-    //     } else if (location.pathname === '/trade/limit') {
-    //         setSelectedOutsideTab(orderTabBasedOnRoute);
-    //     } else if (
-    //         location.pathname === '/trade/range' ||
-    //         location.pathname.includes('/trade/edit/')
-    //     ) {
-    //         setSelectedOutsideTab(rangeTabBasedOnRoute);
-    //     } else {
-    //         setSelectedOutsideTab(0);
-    //     }
-    // }
-
-    // useEffect(() => {
-    //     if (location.pathname.includes('account') || location.pathname.includes('analytics')) {
-    //         setShowSidebar(false);
-    //     }
-
-    //     // handleTabChangedBasedOnRoute();
-    // }, [location.pathname]);
-
-    // market - /trade/market
-    // limit - /trade/limit
-    // range - /trade/range
 
     const [selectedOutsideTab, setSelectedOutsideTab] = useState(0);
     const [outsideControl, setOutsideControl] = useState(false);
@@ -2083,7 +2057,7 @@ export default function App() {
                     isAppOverlayActive={isAppOverlayActive}
                     setIsAppOverlayActive={setIsAppOverlayActive}
                 />
-                {currentLocation == '/' && <PhishingWarning />}
+                {/* {currentLocation == '/' && <PhishingWarning />} */}
 
                 {currentLocation !== '/404' && <PageHeader {...headerProps} />}
                 {/* <MobileSidebar/> */}
@@ -2106,6 +2080,7 @@ export default function App() {
                             path='trade'
                             element={
                                 <Trade
+                                    pool={pool}
                                     isUserLoggedIn={isUserLoggedIn}
                                     crocEnv={crocEnv}
                                     provider={provider}

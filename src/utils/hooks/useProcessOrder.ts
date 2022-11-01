@@ -1,12 +1,12 @@
-import { ILimitOrderState } from '../../utils/state/graphDataSlice';
 import { useMoralis } from 'react-moralis';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { useState, useEffect } from 'react';
 import getUnicodeCharacter from '../../utils/functions/getUnicodeCharacter';
 import { formatAmount } from '../../utils/numbers';
 import trimString from '../../utils/functions/trimString';
+import { LimitOrderIF } from '../interfaces/exports';
 
-export const useProcessOrder = (limitOrder: ILimitOrderState) => {
+export const useProcessOrder = (limitOrder: LimitOrderIF) => {
     const { account } = useMoralis();
     const tradeData = useAppSelector((state) => state.tradeData);
     // eslint-disable-next-line
@@ -27,7 +27,7 @@ export const useProcessOrder = (limitOrder: ILimitOrderState) => {
     const ownerId = limitOrder.ensResolution ? limitOrder.ensResolution : limitOrder.user;
     const ensName = limitOrder.ensResolution ? limitOrder.ensResolution : null;
 
-    const isOrderFilled = !limitOrder.positionLiq;
+    const isOrderFilled = !!limitOrder.latestCrossPivotTime;
 
     const posHash = limitOrder.limitOrderIdentifier.slice(42);
     const [truncatedDisplayPrice, setTruncatedDisplayPrice] = useState<string | undefined>();
@@ -73,8 +73,8 @@ export const useProcessOrder = (limitOrder: ILimitOrderState) => {
                       });
 
             const truncatedDisplayPrice = isDenomBase
-                ? invertedPriceTruncated
-                : nonInvertedPriceTruncated;
+                ? `${quoteTokenCharacter}${invertedPriceTruncated}`
+                : `${baseTokenCharacter}${nonInvertedPriceTruncated}`;
 
             setTruncatedDisplayPrice(truncatedDisplayPrice);
         } else {

@@ -3,9 +3,7 @@ import { PositionIF } from '../../../utils/interfaces/PositionIF';
 
 export const useSortedPositions = (
     defaultSort: string,
-    isShowAllEnabled: boolean,
-    userPositions: PositionIF[],
-    poolPositions: PositionIF[],
+    positions: PositionIF[],
 ): [
     string,
     Dispatch<SetStateAction<string>>,
@@ -13,14 +11,6 @@ export const useSortedPositions = (
     Dispatch<SetStateAction<boolean>>,
     PositionIF[],
 ] => {
-    // function to reverse an array of postion objects
-    // we can't use .reverse() bc it sorts an array in place
-    function reverseArray(inputArray: PositionIF[]) {
-        const outputArray: PositionIF[] = [];
-        inputArray.forEach((elem) => outputArray.unshift(elem));
-        return outputArray;
-    }
-
     // default sort function
     const sortByUpdateTime = (unsortedData: PositionIF[]) =>
         [...unsortedData].sort((a, b) => b.latestUpdateTime - a.latestUpdateTime);
@@ -90,16 +80,13 @@ export const useSortedPositions = (
                 return sortByUpdateTime(data);
         }
         // return reversed data if user wants data reversed
-        return reverseSort ? reverseArray(sortedData) : sortedData;
+        return reverseSort ? [...sortedData].reverse() : sortedData;
     };
 
     // TODO: new user positions reset table sort, new pool positions retains sort
 
     // array of positions sorted by the relevant column
-    const sortedPositions = useMemo(
-        () => sortData(isShowAllEnabled ? poolPositions : userPositions),
-        [sortBy, reverseSort, isShowAllEnabled, poolPositions, userPositions],
-    );
+    const sortedPositions = useMemo(() => sortData(positions), [sortBy, reverseSort, positions]);
 
     return [sortBy, setSortBy, reverseSort, setReverseSort, sortedPositions];
 };
