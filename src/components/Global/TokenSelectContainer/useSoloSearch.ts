@@ -43,6 +43,7 @@ export const useSoloSearch = (
 
     useEffect(() => {
         setIsTokenFound(false);
+        validatedInput || setToken(null);
         const findToken = (tokens: TokenIF[]) => tokens.find(
             (token) => token.address === input && token.chainId === parseInt(chainId)
         );
