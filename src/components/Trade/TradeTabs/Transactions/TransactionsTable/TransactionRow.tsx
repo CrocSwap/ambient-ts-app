@@ -306,7 +306,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                 onClick={openDetailsModal}
                 data-label='value'
                 className='gradient_text'
-                style={{ textAlign: 'right' }}
+                style={{ textAlign: 'right', fontFamily: 'monospace' }}
             >
                 {' '}
                 {usdValue}

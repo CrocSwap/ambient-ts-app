@@ -243,7 +243,7 @@ export default function OrderRow(props: OrderRowPropsIF) {
                 onClick={openDetailsModal}
                 data-label='value'
                 className='gradient_text'
-                style={{ textAlign: 'right' }}
+                style={{ textAlign: 'right', fontFamily: 'monospace' }}
             >
                 {' '}
                 {'$' + usdValue}

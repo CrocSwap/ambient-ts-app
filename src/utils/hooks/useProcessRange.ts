@@ -97,14 +97,14 @@ export const useProcessRange = (position: PositionIF) => {
     const usdValueTruncated = !usdValueNum
         ? undefined
         : usdValueNum < 0.001
-        ? usdValueNum.toExponential(2) + '  '
-        : usdValueNum >= 1000000
+        ? usdValueNum.toExponential(2) + ' '
+        : usdValueNum >= 100000
         ? formatAmount(usdValueNum)
         : // ? baseLiqDisplayNum.toExponential(2)
           usdValueNum.toLocaleString(undefined, {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
-          }) + '  ';
+          }) + ' ';
 
     const quantitiesAvailable = baseQty !== undefined || quoteQty !== undefined;
 

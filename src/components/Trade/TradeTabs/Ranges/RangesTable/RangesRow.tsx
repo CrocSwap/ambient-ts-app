@@ -305,7 +305,7 @@ export default function RangesRow(props: RangesRowPropsIF) {
                 onClick={openDetailsModal}
                 data-label='value'
                 className='gradient_text'
-                style={{ textAlign: 'right' }}
+                style={{ textAlign: 'right', fontFamily: 'monospace' }}
             >
                 {' '}
                 {'$' + usdValue}

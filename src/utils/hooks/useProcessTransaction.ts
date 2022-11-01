@@ -406,26 +406,26 @@ export const useProcessTransaction = (tx: ITransaction) => {
     const usdValueTruncated = !usdValueNum
         ? undefined
         : usdValueNum < 0.01
-        ? usdValueNum.toExponential(2) + '  '
-        : usdValueNum >= 1000000
+        ? usdValueNum.toExponential(2) + ' '
+        : usdValueNum >= 100000
         ? formatAmount(usdValueNum, 2)
         : // ? baseLiqDisplayNum.toExponential(2)
           usdValueNum.toLocaleString(undefined, {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
-          }) + '  ';
+          }) + ' ';
 
     const totalValueUSDTruncated = !totalValueUSD
         ? undefined
         : totalValueUSD < 0.01
-        ? totalValueUSD.toExponential(2) + '  '
-        : totalValueUSD >= 1000000
+        ? totalValueUSD.toExponential(2) + ' '
+        : totalValueUSD >= 100000
         ? formatAmount(totalValueUSD, 2)
         : // ? baseLiqDisplayNum.toExponential(2)
           totalValueUSD.toLocaleString(undefined, {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
-          }) + '  ';
+          }) + ' ';
 
     const totalFlowUSDTruncated =
         totalFlowAbsNum === undefined
@@ -433,14 +433,14 @@ export const useProcessTransaction = (tx: ITransaction) => {
             : totalFlowAbsNum === 0
             ? '0.00'
             : totalFlowAbsNum < 0.01
-            ? totalFlowAbsNum.toExponential(2) + '  '
-            : totalFlowAbsNum >= 1000000
+            ? totalFlowAbsNum.toExponential(2) + ' '
+            : totalFlowAbsNum >= 100000
             ? formatAmount(totalFlowAbsNum, 2)
             : // ? baseLiqDisplayNum.toExponential(2)
               totalFlowAbsNum.toLocaleString(undefined, {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
-              }) + '  ';
+              }) + ' ';
     // --------------------------------------------------------
 
     const quantitiesAvailable = baseFlowDisplay !== undefined || quoteFlowDisplay !== undefined;
