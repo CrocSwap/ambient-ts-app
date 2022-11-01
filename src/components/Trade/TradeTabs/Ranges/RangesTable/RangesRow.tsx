@@ -286,13 +286,23 @@ export default function RangesRow(props: RangesRowPropsIF) {
                 </li>
             )}
             {!showColumns && (
-                <li onClick={openDetailsModal} data-label='min price' className='color_white'>
+                <li
+                    onClick={openDetailsModal}
+                    data-label='min price'
+                    className='color_white'
+                    style={{ textAlign: 'right', fontFamily: 'monospace' }}
+                >
                     {ambientMinOrNull}
                 </li>
             )}
 
             {!showColumns && (
-                <li onClick={openDetailsModal} data-label='max price' className='color_white'>
+                <li
+                    onClick={openDetailsModal}
+                    data-label='max price'
+                    className='color_white'
+                    style={{ textAlign: 'right', fontFamily: 'monospace' }}
+                >
                     {ambientMaxOrNull}
                 </li>
             )}
@@ -340,7 +350,12 @@ export default function RangesRow(props: RangesRowPropsIF) {
             )}
             <li onClick={openDetailsModal} data-label='value'>
                 {' '}
-                <p className={apyClassname}>{apyString}</p>
+                <p
+                    style={{ textAlign: 'center', fontFamily: 'monospace' }}
+                    className={apyClassname}
+                >
+                    {apyString}
+                </p>
             </li>
             <li onClick={openDetailsModal} data-label='status' className='gradient_text'>
                 <RangeStatus isInRange={isPositionInRange} isAmbient={isAmbient} justSymbol />
