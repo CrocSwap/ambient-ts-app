@@ -11,9 +11,10 @@ export const useSoloSearch = (
     const [input, setInput] = useState('');
 
     const validatedInput = useMemo(() => {
-        const fixedInput = input.startsWith('0x')
-            ? input.trim().toLowerCase()
-            : '0x' + input.trim().toLowerCase();
+        const cleanInput = input.trim().toLowerCase();
+        const fixedInput = cleanInput.startsWith('0x')
+            ? cleanInput
+            : '0x' + cleanInput;
         let output = '';
         if (
             fixedInput.length === 42 &&
