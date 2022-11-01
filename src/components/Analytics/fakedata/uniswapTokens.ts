@@ -7845,6 +7845,7 @@ export const uniswapTokens = [
     },
 ];
 
+// eslint-disable-next-line
 function spliceIntoChunks(arr: any, chunkSize: number) {
     const res = [];
     while (arr.length > 0) {

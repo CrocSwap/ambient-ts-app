@@ -2,6 +2,7 @@ import styles from './TopPoolsCard.module.css';
 
 interface TopPoolsCardProp {
     number: number;
+    // eslint-disable-next-line
     pair: any;
 }
 export default function TopPoolsCard(props: TopPoolsCardProp) {
