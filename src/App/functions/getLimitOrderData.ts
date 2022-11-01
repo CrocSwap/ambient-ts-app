@@ -1,13 +1,11 @@
-import { TokenIF } from '../../utils/interfaces/TokenIF';
-
-import { ILimitOrderState } from '../../utils/state/graphDataSlice';
+import { LimitOrderIF, TokenIF } from '../../utils/interfaces/exports';
 
 // import { fetchAddress } from './fetchAddress';
 
 export const getLimitOrderData = async (
-    order: ILimitOrderState,
+    order: LimitOrderIF,
     importedTokens: TokenIF[],
-): Promise<ILimitOrderState> => {
+): Promise<LimitOrderIF> => {
     const baseTokenAddress = order.base;
     const quoteTokenAddress = order.quote;
 

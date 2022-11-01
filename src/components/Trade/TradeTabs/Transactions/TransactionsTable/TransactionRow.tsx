@@ -5,8 +5,9 @@ import { useProcessTransaction } from '../../../../../utils/hooks/useProcessTran
 import TransactionsMenu from '../../../../Global/Tabs/TableMenu/TableMenuComponents/TransactionsMenu';
 import { DefaultTooltip } from '../../../../Global/StyledTooltip/StyledTooltip';
 import { NavLink } from 'react-router-dom';
-import { AiOutlineDash } from 'react-icons/ai';
+// import { AiOutlineDash } from 'react-icons/ai';
 import NoTokenIcon from '../../../../Global/NoTokenIcon/NoTokenIcon';
+import IconWithTooltip from '../../../../Global/IconWithTooltip/IconWithTooltip';
 interface TransactionRowPropsIF {
     tx: ITransaction;
 
@@ -90,11 +91,22 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
         tx.id === currentTxActiveInTransactions ? scrollToDiv() : null;
     }, [currentTxActiveInTransactions]);
 
+    function handleOpenExplorer() {
+        if (tx && blockExplorer) {
+            const explorerUrl = `${blockExplorer}tx/${tx.tx}`;
+            window.open(explorerUrl);
+        }
+    }
+
     const IDWithTooltip = (
         <DefaultTooltip
             interactive
-            title={txHash}
-            placement={'right'}
+            title={
+                <div onClick={handleOpenExplorer} style={{ cursor: 'pointer' }}>
+                    {txHash}
+                </div>
+            }
+            placement={'right-end'}
             arrow
             enterDelay={400}
             leaveDelay={200}
@@ -114,7 +126,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                     <NavLink to={`/${ownerId}`}>View Account</NavLink>
                 </div>
             }
-            placement={'right'}
+            placement={'right-end'}
             arrow
             enterDelay={400}
             leaveDelay={200}
@@ -132,23 +144,68 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
 
     const baseTokenLogoComponent =
         baseTokenLogo !== '' ? (
-            <img src={baseTokenLogo} alt='base token' width='15px' />
+            <DefaultTooltip
+                interactive
+                title={
+                    <div>
+                        <p>{baseTokenSymbol}</p>
+                        {/* <NavLink to={`/${ownerId}`}>View Account</NavLink> */}
+                    </div>
+                }
+                placement={'top'}
+                arrow
+                enterDelay={400}
+                leaveDelay={200}
+            >
+                <img src={baseTokenLogo} alt='base token' width='15px' />
+            </DefaultTooltip>
         ) : (
-            <NoTokenIcon tokenInitial={tx.baseSymbol.charAt(0)} width='30px' />
+            <IconWithTooltip title={`${baseTokenSymbol}`} placement='bottom'>
+                <NoTokenIcon tokenInitial={tx.baseSymbol.charAt(0)} width='30px' />
+            </IconWithTooltip>
         );
 
     const quoteTokenLogoComponent =
         quoteTokenLogo !== '' ? (
-            <img src={quoteTokenLogo} alt='quote token' width='15px' />
+            <DefaultTooltip
+                interactive
+                title={
+                    <div>
+                        <p>{quoteTokenSymbol}</p>
+                        {/* <NavLink to={`/${ownerId}`}>View Account</NavLink> */}
+                    </div>
+                }
+                placement={'top'}
+                arrow
+                enterDelay={400}
+                leaveDelay={200}
+            >
+                <img src={quoteTokenLogo} alt='quote token' width='15px' />
+            </DefaultTooltip>
         ) : (
-            <NoTokenIcon tokenInitial={tx.quoteSymbol.charAt(0)} width='30px' />
+            <NoTokenIcon tokenInitial={tx.quoteSymbol.charAt(0)} width='25px' />
         );
+
+    const tokensTogether = (
+        <div
+            style={{
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: '4px',
+            }}
+        >
+            {baseTokenLogoComponent}
+            {quoteTokenLogoComponent}
+        </div>
+    );
 
     // portfolio page li element ---------------
     const accountTokenImages = (
         <li className={styles.token_images_account}>
-            {baseTokenLogoComponent}
-            {quoteTokenLogoComponent}
+            {/* {baseTokenLogoComponent}
+            {quoteTokenLogoComponent} */}
+            {tokensTogether}
             {/* <p>hello</p> */}
         </li>
     );
@@ -187,12 +244,15 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                         <li onClick={openDetailsModal} data-label='price' className={sideTypeStyle}>
                             ambient
                         </li>
+                    ) : isDenomBase ? (
+                        <li onClick={openDetailsModal} data-label='price' className={sideTypeStyle}>
+                            <p>{truncatedLowDisplayPrice}</p>
+                            <p>{truncatedHighDisplayPrice}</p>
+                        </li>
                     ) : (
                         <li onClick={openDetailsModal} data-label='price' className={sideTypeStyle}>
-                            <p>
-                                {truncatedLowDisplayPrice} <AiOutlineDash />
-                            </p>
                             <p>{truncatedHighDisplayPrice}</p>
+                            <p>{truncatedLowDisplayPrice}</p>
                         </li>
                     )
                 ) : (

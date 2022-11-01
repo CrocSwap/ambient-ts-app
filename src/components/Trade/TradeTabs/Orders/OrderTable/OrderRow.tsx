@@ -1,4 +1,3 @@
-import { ILimitOrderState } from '../../../../../utils/state/graphDataSlice';
 import styles from '../Orders.module.css';
 import { useProcessOrder } from '../../../../../utils/hooks/useProcessOrder';
 import OpenOrderStatus from '../../../../Global/OpenOrderStatus/OpenOrderStatus';
@@ -9,13 +8,14 @@ import { CrocEnv } from '@crocswap-libs/sdk';
 import { DefaultTooltip } from '../../../../Global/StyledTooltip/StyledTooltip';
 import { NavLink } from 'react-router-dom';
 import NoTokenIcon from '../../../../Global/NoTokenIcon/NoTokenIcon';
+import { LimitOrderIF } from '../../../../../utils/interfaces/exports';
 
 interface OrderRowPropsIF {
     crocEnv: CrocEnv | undefined;
     expandTradeTable: boolean;
     showColumns: boolean;
     ipadView: boolean;
-    limitOrder: ILimitOrderState;
+    limitOrder: LimitOrderIF;
     showSidebar: boolean;
 
     openGlobalModal: (content: React.ReactNode) => void;
@@ -163,11 +163,26 @@ export default function OrderRow(props: OrderRowPropsIF) {
             <NoTokenIcon tokenInitial={limitOrder.quoteSymbol.charAt(0)} width='30px' />
         );
 
+    const tokensTogether = (
+        <div
+            style={{
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: '4px',
+            }}
+        >
+            {baseTokenLogoComponent}
+            {quoteTokenLogoComponent}
+        </div>
+    );
+
     // portfolio page li element ---------------
     const accountTokenImages = (
         <li className={styles.token_images_account}>
-            {baseTokenLogoComponent}
-            {quoteTokenLogoComponent}
+            {/* {baseTokenLogoComponent}
+                {quoteTokenLogoComponent} */}
+            {tokensTogether}
             {/* <p>hello</p> */}
         </li>
     );

@@ -172,6 +172,26 @@ export default function PageHeader(props: HeaderPropsIF) {
 
     const urlParams = useUrlParams();
 
+    const tradeData = useAppSelector((state) => state.tradeData);
+
+    const baseSymbol = tradeData.baseToken.symbol;
+    const quoteSymbol = tradeData.quoteToken.symbol;
+    const isDenomBase = tradeData.isDenomBase;
+
+    useEffect(() => {
+        // console.log({ location });
+        // console.log({ urlParams });
+        if (location.pathname.includes('account')) {
+            document.title = 'account - ambient.finance';
+        } else if (location.pathname.includes('swap') || location.pathname.includes('trade')) {
+            document.title = isDenomBase
+                ? `${baseSymbol}/${quoteSymbol} - ambient.finance`
+                : `${quoteSymbol}/${baseSymbol} - ambient.finance`;
+        } else {
+            document.title = 'ambient.finance';
+        }
+    }, [baseSymbol, quoteSymbol, isDenomBase, location]);
+
     const tradeDestination = location.pathname.includes('trade/market')
         ? '/trade/market'
         : location.pathname.includes('trade/limit')

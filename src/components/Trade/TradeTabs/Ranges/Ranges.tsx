@@ -2,7 +2,7 @@
 // todo: Commented out code were commented out on 10/14/2022 for a new refactor. If not uncommented by 12/14/2022, they can be safely removed from the file. -Jr
 
 // START: Import React and Dongles
-import { Dispatch, SetStateAction, useEffect, useState } from 'react';
+import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
 import { ethers } from 'ethers';
 
 // START: Import JSX Components
@@ -115,9 +115,17 @@ export default function Ranges(props: RangesPropsIF) {
         isOnPortfolioPage ? activeAccountPositionData || [] : rangesByPool,
     );
 
-    // useEffect(() => {
-    //     console.log({ rangeData });
-    // }, [rangeData]);
+    const top3Positions = useMemo(() => {
+        const sortByApy = (unsortedData: PositionIF[]) =>
+            [...unsortedData].sort((a, b) => b.apy - a.apy);
+        const dataByApy = sortByApy(rangeData);
+        const topThree = dataByApy.slice(0, 3).map((data) => data.positionId);
+        return topThree;
+    }, [rangeData]);
+
+    useEffect(() => {
+        false && console.log(top3Positions);
+    }, [top3Positions]);
 
     useEffect(() => {
         if (isOnPortfolioPage) {
@@ -129,24 +137,9 @@ export default function Ranges(props: RangesPropsIF) {
         }
     }, [isShowAllEnabled, connectedAccountActive, activeAccountPositionData, rangesByPool]);
 
-    // const columnHeaders = [
-    //     { name: 'ID', sortable: false, className: '' },
-    //     { name: 'Wallet', sortable: true, className: 'wallet' },
-    //     { name: ' Min', sortable: false, className: 'range_sing' },
-    //     { name: 'Max', sortable: false, className: 'range_sing' },
-    //     { name: 'Value', sortable: true, className: 'wallet' },
-    //     { name: tradeData.baseToken.symbol, sortable: false, className: 'token' },
-    //     { name: tradeData.quoteToken.symbol, sortable: false, className: 'token' },
-    //     { name: 'APR', sortable: true, className: '' },
-    //     { name: 'Status', sortable: false, className: '' },
-    // ];
-
     const [sortBy, setSortBy, reverseSort, setReverseSort, sortedPositions] = useSortedPositions(
         'lastUpdate',
-        isShowAllEnabled || (isOnPortfolioPage && (!connectedAccountActive || false)),
         rangeData,
-        rangeData,
-        // connectedAccountActive || true,
     );
 
     // useEffect(() => {
@@ -194,73 +187,6 @@ export default function Ranges(props: RangesPropsIF) {
         isShowAllEnabled,
         isOnPortfolioPage,
     ]);
-
-    // const [expanded, setExpanded] = useState<false | number>(false);
-
-    // const desktopDisplay = (
-    //     <div className={styles.desktop_ranges_display_container}>
-    //         {sortedPositions.map((position) => (
-    //             <RangeCard
-    //                 isUserLoggedIn={isUserLoggedIn}
-    //                 crocEnv={crocEnv}
-    //                 chainData={chainData}
-    //                 provider={provider}
-    //                 chainId={chainId}
-    //                 key={position.positionId}
-    //                 portfolio={portfolio}
-    //                 baseTokenBalance={baseTokenBalance}
-    //                 quoteTokenBalance={quoteTokenBalance}
-    //                 baseTokenDexBalance={baseTokenDexBalance}
-    //                 quoteTokenDexBalance={quoteTokenDexBalance}
-    //                 notOnTradeRoute={notOnTradeRoute}
-    //                 position={position}
-    //                 isAllPositionsEnabled={isShowAllEnabled}
-    //                 tokenAAddress={tradeData.tokenA.address}
-    //                 tokenBAddress={tradeData.tokenB.address}
-    //                 account={account ?? undefined}
-    //                 isAuthenticated={isAuthenticated}
-    //                 isDenomBase={tradeData.isDenomBase}
-    //                 lastBlockNumber={lastBlockNumber}
-    //                 currentPositionActive={currentPositionActive}
-    //                 setCurrentPositionActive={setCurrentPositionActive}
-    //                 openGlobalModal={props.openGlobalModal}
-    //                 closeGlobalModal={props.closeGlobalModal}
-    //             />
-    //         ))}
-    //     </div>
-    // );
-
-    // const oldReturn =
-    // return (
-    //     <div className={styles.container}>
-    //         {/* <header className={styles.row_container}>
-    //             {columnHeaders.map((header) => (
-    //                 <RangeCardHeader
-    //                     key={`rangeDataHeaderField${header.name}`}
-    //                     data={header}
-    //                     sortBy={sortBy}
-    //                     setSortBy={setSortBy}
-    //                     reverseSort={reverseSort}
-    //                     setReverseSort={setReverseSort}
-    //                     columnHeaders={columnHeaders}
-    //                 />
-    //             ))}
-    //         </header> */}
-    //         <RangeCardHeader
-    //             sortBy={sortBy}
-    //             setSortBy={setSortBy}
-    //             reverseSort={reverseSort}
-    //             setReverseSort={setReverseSort}
-    //             columnHeaders={columnHeaders}
-    //         />
-    //         <ol
-    //             className={styles.positions_list}
-    //             style={{ height: expandTradeTable ? '100%' : '220px' }}
-    //         >
-    //             {desktopDisplay}
-    //         </ol>
-    //     </div>
-    // );
 
     // ---------------------
     const [currentPage, setCurrentPage] = useState(1);
@@ -346,35 +272,35 @@ export default function Ranges(props: RangesPropsIF) {
             className: 'ID',
             show: !showColumns,
             slug: 'id',
-            sortable: true,
+            sortable: false,
         },
         {
             name: 'Wallet',
             className: 'wallet',
             show: !showColumns,
             slug: 'wallet',
-            sortable: true,
+            sortable: isShowAllEnabled,
         },
         {
             name: walID,
             className: 'wallet_id',
             show: showColumns,
             slug: 'walletid',
-            sortable: false,
+            sortable: isShowAllEnabled,
         },
         {
             name: 'Min',
 
             show: !showColumns,
             slug: 'min',
-            sortable: true,
+            sortable: false,
         },
         {
             name: 'Max',
             className: 'side',
             show: !showColumns,
             slug: 'max',
-            sortable: true,
+            sortable: false,
         },
 
         {

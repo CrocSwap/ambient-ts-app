@@ -1,15 +1,12 @@
 import styles from './ClaimOrder.module.css';
 import { useState, useEffect } from 'react';
 import { useProcessOrder } from '../../utils/hooks/useProcessOrder';
-import { ILimitOrderState } from '../../utils/state/graphDataSlice';
 import { CircleLoaderFailed } from '../Global/LoadingAnimations/CircleLoader/CircleLoader';
 import Button from '../Global/Button/Button';
 import Animation from '../Global/Animation/Animation';
 import completed from '../../assets/animations/completed.json';
 import { FiExternalLink } from 'react-icons/fi';
-// import { formatAmount } from '../../utils/numbers';
 import { CrocEnv } from '@crocswap-libs/sdk';
-// import { BigNumber } from 'ethers';
 import Toggle2 from '../Global/Toggle/Toggle2';
 import TooltipComponent from '../Global/TooltipComponent/TooltipComponent';
 import ClaimOrderSettings from './ClaimOrderSettings/ClaimOrderSettings';
@@ -17,10 +14,11 @@ import ClaimOrderModalHeader from './ClaimOrderModalHeader/ClaimOrderModalHeader
 import ClaimOrderTokenHeader from './ClaimOrderTokenHeader/ClaimOrderTokenHeader';
 import ClaimOrderInfo from './ClaimOrderInfo/ClaimOrderInfo';
 import ClaimOrderButton from './ClaimOrderButton/ClaimOrderButton';
+import { LimitOrderIF } from '../../utils/interfaces/exports';
 
 interface IClaimOrderProps {
     crocEnv: CrocEnv | undefined;
-    limitOrder: ILimitOrderState;
+    limitOrder: LimitOrderIF;
     closeGlobalModal: () => void;
 }
 
@@ -78,10 +76,23 @@ export default function ClaimOrder(props: IClaimOrderProps) {
     // ---------------CLAIM FUNCTION TO BE REFACTORED
 
     const claimFn = async () => {
-        if (crocEnv) {
+        if (crocEnv && limitOrder.latestCrossPivotTime) {
             setShowConfirmation(true);
             setShowSettings(false);
             console.log({ limitOrder });
+            if (limitOrder.isBid === true) {
+                crocEnv
+                    .sell(limitOrder.base, 0)
+                    .atLimit(limitOrder.quote, limitOrder.askTick)
+                    .recoverPost(limitOrder.latestCrossPivotTime, { surplus: false });
+            } else {
+                crocEnv
+                    .sell(limitOrder.quote, 0)
+                    .atLimit(limitOrder.base, limitOrder.bidTick)
+                    .recoverPost(limitOrder.latestCrossPivotTime, { surplus: false });
+
+                // .burnLiq(BigNumber.from(positionLiquidity));
+            }
         }
         console.log('Order has been claimed');
     };
@@ -219,7 +230,7 @@ export default function ClaimOrder(props: IClaimOrderProps) {
         <div>
             <ClaimOrderModalHeader
                 onClose={closeGlobalModal}
-                title={showConfirmation ? '' : 'Remove Limit Order'}
+                title={showConfirmation ? '' : 'Claim Limit Order'}
                 showSettings={showSettings}
                 setShowSettings={setShowSettings}
                 onGoBack={showSettings ? () => setShowSettings(false) : null}
@@ -235,6 +246,7 @@ export default function ClaimOrder(props: IClaimOrderProps) {
             />
 
             <ClaimOrderInfo
+                pivotTime={limitOrder.pivotTime}
                 baseTokenSymbol={baseTokenSymbol}
                 quoteTokenSymbol={quoteTokenSymbol}
                 baseTokenLogoURI={baseTokenLogo}

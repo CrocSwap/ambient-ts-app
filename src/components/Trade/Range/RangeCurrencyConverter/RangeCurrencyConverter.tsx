@@ -35,7 +35,7 @@ interface RangeCurrencyConverterPropsIF {
     isAdvancedMode: boolean;
     tokenPair: TokenPairIF;
     isTokenAPrimaryLocal: boolean;
-    setIsTokenAPrimaryLocal: Dispatch<SetStateAction<boolean>>;
+    // setIsTokenAPrimaryLocal: Dispatch<SetStateAction<boolean>>;
     isTokenABase: boolean;
     isAmbient: boolean;
     depositSkew: number;
@@ -72,7 +72,7 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
         tokenPair,
         isTokenABase,
         isTokenAPrimaryLocal,
-        setIsTokenAPrimaryLocal,
+        // setIsTokenAPrimaryLocal,
         isAmbient,
         depositSkew,
         isWithdrawTokenAFromDexChecked,
@@ -174,10 +174,10 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
     useEffect(() => {
         if (tradeData.isTokenAPrimaryRange !== isTokenAPrimaryLocal) {
             if (tradeData.isTokenAPrimaryRange === true) {
-                setIsTokenAPrimaryLocal(true);
+                dispatch(setIsTokenAPrimaryRange(true));
                 dispatch(setPrimaryQuantityRange(tokenAQtyLocal.toString()));
             } else {
-                setIsTokenAPrimaryLocal(false);
+                dispatch(setIsTokenAPrimaryRange(false));
                 dispatch(setPrimaryQuantityRange(tokenBQtyLocal.toString()));
             }
         }
@@ -220,11 +220,6 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
         }
     }, []);
 
-    // useEffect(() => {
-    //     console.log({ isTokenAPrimaryLocal });
-    //     console.log({ isOutOfRange });
-    // }, [tradeData.isTokenAPrimaryRange, isTokenAPrimaryLocal, isOutOfRange]);
-
     const setTokenAQtyValue = (value: number) => {
         setTokenAQtyLocal(parseFloat(truncateDecimals(value, tokenPair.dataTokenA.decimals)));
         setTokenAInputQty(truncateDecimals(value, tokenPair.dataTokenA.decimals));
@@ -257,12 +252,12 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
             if (primaryQuantityRange !== value.toString()) {
                 dispatch(setPrimaryQuantityRange(value.toString()));
             }
-            setIsTokenAPrimaryLocal(true);
+            dispatch(setIsTokenAPrimaryRange(true));
             setTokenBQtyLocal(parseFloat(truncatedTokenBQty));
             setTokenBInputQty(truncatedTokenBQty);
         } else {
             tokenBQtyField.value = '';
-            setIsTokenAPrimaryLocal(true);
+            dispatch(setIsTokenAPrimaryRange(true));
             setTokenBQtyLocal(0);
         }
     };
@@ -299,12 +294,13 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
             if (primaryQuantityRange !== value.toString()) {
                 dispatch(setPrimaryQuantityRange(value.toString()));
             }
-            setIsTokenAPrimaryLocal(false);
+            dispatch(setIsTokenAPrimaryRange(false));
+
             setTokenAQtyLocal(parseFloat(truncatedTokenAQty));
             setTokenAInputQty(truncatedTokenAQty);
         } else {
             tokenAQtyField.value = '';
-            setIsTokenAPrimaryLocal(false);
+            dispatch(setIsTokenAPrimaryRange(false));
             setTokenAQtyLocal(0);
         }
     };
@@ -319,7 +315,6 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
                 '&tokenB=' +
                 tokenPair.dataTokenA.address,
         );
-        setIsTokenAPrimaryLocal(!isTokenAPrimaryLocal);
         dispatch(setIsTokenAPrimaryRange(!isTokenAPrimaryLocal));
     };
 
@@ -461,13 +456,15 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
             } else {
                 setTokenAQtyValue(parseFloat(input));
             }
-            setIsTokenAPrimaryLocal(true);
             dispatch(setIsTokenAPrimaryRange(true));
             dispatch(setPrimaryQuantityRange(input));
             handleRangeButtonMessageTokenA(parseFloat(input));
         } else {
             if (!isOutOfRange) {
-                if (tokenAQtyLocal) setTokenAQtyValue(tokenAQtyLocal);
+                if (tokenAQtyLocal === 0 && tokenBQtyLocal === 0) {
+                    setTokenAAllowed(false);
+                    setTokenBAllowed(false);
+                } else if (tokenAQtyLocal) setTokenAQtyValue(tokenAQtyLocal);
             } else {
                 if (rangeSpanAboveCurrentPrice < 0) {
                     if (isTokenABase) {
@@ -518,7 +515,6 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
         } else {
             setTokenAQtyValue(parseFloat(input));
         }
-        setIsTokenAPrimaryLocal(true);
         dispatch(setIsTokenAPrimaryRange(true));
         dispatch(setPrimaryQuantityRange(input));
         const tokenAField = document.getElementById('A-range-quantity') as HTMLInputElement;
@@ -535,7 +531,6 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
         } else {
             setTokenBQtyValue(parseFloat(input));
         }
-        setIsTokenAPrimaryLocal(false);
         dispatch(setIsTokenAPrimaryRange(false));
         dispatch(setPrimaryQuantityRange(input));
         const tokenBField = document.getElementById('B-range-quantity') as HTMLInputElement;
@@ -554,13 +549,15 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
             } else {
                 setTokenBQtyValue(parseFloat(input));
             }
-            setIsTokenAPrimaryLocal(false);
             dispatch(setIsTokenAPrimaryRange(false));
             dispatch(setPrimaryQuantityRange(input));
             handleRangeButtonMessageTokenB(parseFloat(input));
         } else {
             if (!isOutOfRange) {
-                if (tokenBQtyLocal) setTokenBQtyValue(tokenBQtyLocal);
+                if (tokenAQtyLocal === 0 && tokenBQtyLocal === 0) {
+                    setTokenAAllowed(false);
+                    setTokenBAllowed(false);
+                } else if (tokenBQtyLocal) setTokenBQtyValue(tokenBQtyLocal);
             } else {
                 if (rangeSpanAboveCurrentPrice < 0) {
                     if (isTokenABase) {

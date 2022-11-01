@@ -6,13 +6,14 @@ import Wallet from '../../Global/Account/AccountTabs/Wallet/Wallet';
 import Exchange from '../../Global/Account/AccountTabs/Exchange/Exchange';
 // import TransactionsTable from '../../Global/Account/AccountTabs/Transaction/TransactionsTable';
 import TabComponent from '../../Global/TabComponent/TabComponent';
+import Tokens from '../Tokens/Tokens';
 
 // START: Import Local Files
 import styles from './PortfolioTabs.module.css';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { getPositionData } from '../../../App/functions/getPositionData';
 import { PositionIF } from '../../../utils/interfaces/PositionIF';
-import { TokenIF } from '../../../utils/interfaces/TokenIF';
+import { LimitOrderIF, TokenIF } from '../../../utils/interfaces/exports';
 import openOrdersImage from '../../../assets/images/sidebarImages/openOrders.svg';
 import rangePositionsImage from '../../../assets/images/sidebarImages/rangePositions.svg';
 import recentTransactionsImage from '../../../assets/images/sidebarImages/recentTransactions.svg';
@@ -20,7 +21,7 @@ import walletImage from '../../../assets/images/sidebarImages/wallet.svg';
 import exchangeImage from '../../../assets/images/sidebarImages/exchange.svg';
 import { CrocEnv, ChainSpec } from '@crocswap-libs/sdk';
 import { ethers } from 'ethers';
-import { ILimitOrderState, ITransaction } from '../../../utils/state/graphDataSlice';
+import { ITransaction } from '../../../utils/state/graphDataSlice';
 import { getLimitOrderData } from '../../../App/functions/getLimitOrderData';
 // import { getTransactionData } from '../../../App/functions/getTransactionData';
 import { TokenPriceFn } from '../../../App/functions/fetchTokenPrice';
@@ -101,9 +102,9 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
     const connectedAccountTransactionData = graphData.changesByUser.changes;
 
     const [otherAccountPositionData, setOtherAccountPositionData] = useState<PositionIF[]>([]);
-    const [otherAccountLimitOrderData, setOtherAccountLimitOrderData] = useState<
-        ILimitOrderState[]
-    >([]);
+    const [otherAccountLimitOrderData, setOtherAccountLimitOrderData] = useState<LimitOrderIF[]>(
+        [],
+    );
     const [otherAccountTransactionData, setOtherAccountTransactionData] = useState<ITransaction[]>(
         [],
     );
@@ -167,7 +168,7 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
                 const userLimitOrderStates = json?.data;
                 if (userLimitOrderStates) {
                     Promise.all(
-                        userLimitOrderStates.map((limitOrder: ILimitOrderState) => {
+                        userLimitOrderStates.map((limitOrder: LimitOrderIF) => {
                             return getLimitOrderData(limitOrder, importedTokens);
                         }),
                     ).then((updatedLimitOrderStates) => {
@@ -281,6 +282,7 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
 
     // props for <Transactions/> React Element
     const transactionsProps = {
+        importedTokens: importedTokens,
         activeAccountTransactionData: activeAccountTransactionData,
         connectedAccountActive: connectedAccountActive,
         isShowAllEnabled: false,
@@ -293,14 +295,10 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
         account: account,
         setCurrentTxActiveInTransactions: props.setCurrentTxActiveInTransactions,
         expandTradeTable: false,
-
         isCandleSelected: false,
-        // filter: props.filter,
         closeGlobalModal: props.closeGlobalModal,
-
         openGlobalModal: props.openGlobalModal,
         showSidebar: props.showSidebar,
-
         isOnPortfolioPage: true,
     };
 
@@ -322,6 +320,10 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
         isOnPortfolioPage: true,
     };
 
+    const tokensProps = {
+        chainId: chainId,
+    };
+
     const accountTabData = [
         {
             label: 'Transactions',
@@ -336,6 +338,7 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
             icon: exchangeImage,
         },
         { label: 'Wallet Balances', content: <Wallet {...walletProps} />, icon: walletImage },
+        { label: 'Tokens', content: <Tokens {...tokensProps} />, icon: walletImage },
     ];
 
     return (

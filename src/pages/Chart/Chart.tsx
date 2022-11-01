@@ -7,7 +7,7 @@ import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { formatDollarAmountAxis } from '../../utils/numbers';
 import { CandleData } from '../../utils/state/graphDataSlice';
 import {
-    setLimitPrice,
+    setLimitTick,
     setRangeHighLineTriggered,
     setRangeLowLineTriggered,
     setRangeModuleTriggered,
@@ -24,6 +24,7 @@ import VolumeSubChart from '../Trade/TradeCharts/TradeChartsLoading/VolumeSubCha
 import { ChartUtils } from '../Trade/TradeCharts/TradeCandleStickChart';
 import './Chart.css';
 import BarSeries from './ChartUtils/ChartUtils';
+import { CrocPoolView, tickToPrice } from '@crocswap-libs/sdk';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -43,12 +44,13 @@ type chartItemStates = {
     showFeeRate: boolean;
 };
 interface ChartData {
+    pool: CrocPoolView | undefined;
     expandTradeTable: boolean;
     candleData: ChartUtils | undefined;
     liquidityData: any;
     changeState: (isOpen: boolean | undefined, candleData: CandleData | undefined) => void;
     denomInBase: boolean;
-    limitPrice: string | undefined;
+    limitTick: number;
     isAdvancedModeActive: boolean | undefined;
     simpleRangeWidth: number | undefined;
     pinnedMinPriceDisplayTruncated: number | undefined;
@@ -67,6 +69,7 @@ interface ChartData {
 
 export default function Chart(props: ChartData) {
     const {
+        pool,
         denomInBase,
         isAdvancedModeActive,
         pinnedMinPriceDisplayTruncated,
@@ -582,17 +585,20 @@ export default function Chart(props: ChartData) {
         });
     };
 
+    const limitDisplayPrice = denomInBase
+        ? pool?.toDisplayPrice(tickToPrice(tradeData.limitTick))
+        : pool?.toDisplayPrice(tickToPrice(tradeData.limitTick));
+
     const setLimitLineValue = () => {
-        setLimit(() => {
-            return [
+        async () => {
+            setLimit([
                 {
                     name: 'Limit',
-                    value: parseFloat(props.limitPrice !== undefined ? props.limitPrice : '0'),
+                    value: (await limitDisplayPrice) || 0,
                 },
-            ];
-        });
+            ]);
+        };
     };
-
     const setBalancedLines = () => {
         if (simpleRangeWidth === 100 || rangeModuleTriggered) {
             const results: boolean[] = [];
@@ -725,7 +731,7 @@ export default function Chart(props: ChartData) {
         }
     }, [
         location,
-        props.limitPrice,
+        props.limitTick,
         targetData,
         denomInBase,
         isAdvancedModeActive,
@@ -1024,6 +1030,7 @@ export default function Chart(props: ChartData) {
                         .selectAll('.horizontal')
                         .remove();
 
+                    console.log({ newLimitValue });
                     onBlurlimitRate(newLimitValue);
                 });
 
@@ -1326,6 +1333,7 @@ export default function Chart(props: ChartData) {
             d3.select(d3PlotArea.current).on('click', (event: any) => {
                 if ((event.target.__data__ as CandleChartData) === undefined) {
                     const newLimitValue = scaleData.yScale.invert(d3.pointer(event)[1]);
+                    console.log({ newLimitValue });
 
                     const snapResponse = snap(props.liquidityData.liqSnapData, newLimitValue);
 
@@ -2198,7 +2206,17 @@ export default function Chart(props: ChartData) {
     };
 
     const onBlurlimitRate = (newLimitValue: any) => {
-        dispatch(setLimitPrice(newLimitValue.toString()));
+        console.log({ newLimitValue });
+        const limitNonDisplay = pool?.fromDisplayPrice(parseFloat(newLimitValue));
+        // const limitNonDisplay = denomInBase
+        //     ? pool?.fromDisplayPrice(parseFloat(newLimitValue))
+        //     : pool?.fromDisplayPrice(1 / parseFloat(newLimitValue));
+
+        limitNonDisplay?.then((limit) => {
+            const limitTick = Math.log(limit) / Math.log(1.0001);
+            console.log({ limitTick });
+            dispatch(setLimitTick(limitTick));
+        });
     };
 
     useEffect(() => {
