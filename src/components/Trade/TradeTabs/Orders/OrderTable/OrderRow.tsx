@@ -151,19 +151,17 @@ export default function OrderRow(props: OrderRowPropsIF) {
         </DefaultTooltip>
     );
 
-    const baseTokenLogoComponent =
-        baseTokenLogo !== '' ? (
-            <img src={baseTokenLogo} alt='base token' width='15px' />
-        ) : (
-            <NoTokenIcon tokenInitial={limitOrder.baseSymbol.charAt(0)} width='30px' />
-        );
+    const baseTokenLogoComponent = baseTokenLogo ? (
+        <img src={baseTokenLogo} alt='base token' width='15px' />
+    ) : (
+        <NoTokenIcon tokenInitial={limitOrder.baseSymbol.charAt(0)} width='15px' />
+    );
 
-    const quoteTokenLogoComponent =
-        quoteTokenLogo !== '' ? (
-            <img src={quoteTokenLogo} alt='quote token' width='15px' />
-        ) : (
-            <NoTokenIcon tokenInitial={limitOrder.quoteSymbol.charAt(0)} width='30px' />
-        );
+    const quoteTokenLogoComponent = quoteTokenLogo ? (
+        <img src={quoteTokenLogo} alt='quote token' width='15px' />
+    ) : (
+        <NoTokenIcon tokenInitial={limitOrder.quoteSymbol.charAt(0)} width='15px' />
+    );
 
     const tokensTogether = (
         <div

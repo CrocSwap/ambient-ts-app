@@ -338,7 +338,7 @@ export default function RangesRow(props: RangesRowPropsIF) {
                     <p className={styles.align_center}>
                         {' '}
                         <img src={baseTokenLogo} alt='' width='15px' />
-                        {baseTokenLogoComponent}
+                        {baseDisplay}
                     </p>
 
                     <p className={styles.align_center}>
