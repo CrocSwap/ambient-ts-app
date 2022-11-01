@@ -48,13 +48,17 @@ export const useSoloSearch = (
             (token) => token.address === input && token.chainId === parseInt(chainId)
         );
         // first check ambient list
-        if (ambientTokenList) {
+        if (validatedInput && ambientTokenList) {
             const tkn = findToken(ambientTokenList.tokens) as TokenIF;
             tkn && setIsTokenFound(true);
             tkn && setToken(tkn);
         }
         // if not found check CoinGecko
-        if (localStorage.allTokenLists && !isTokenFound) {
+        if (
+            validatedInput &&
+            localStorage.allTokenLists &&
+            !isTokenFound
+        ) {
             const coinGeckoTokens = JSON.parse(localStorage.getItem('allTokenLists') as string).find((list: TokenListIF) => list.name === 'CoinGecko').tokens;
             const tkn = findToken(coinGeckoTokens) as TokenIF;
             tkn && setIsTokenFound(true);
