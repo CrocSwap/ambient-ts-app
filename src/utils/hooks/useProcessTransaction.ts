@@ -296,8 +296,6 @@ export const useProcessTransaction = (tx: ITransaction) => {
                     ? '0.00'
                     : baseFlowAbsNum < 0.0001
                     ? baseFlowAbsNum.toExponential(2)
-                    : baseFlowAbsNum < 2
-                    ? baseFlowAbsNum.toPrecision(3)
                     : baseFlowAbsNum >= 1000000
                     ? formatAmount(baseFlowAbsNum)
                     : // ? baseLiqDisplayNum.toExponential(2)
@@ -308,7 +306,7 @@ export const useProcessTransaction = (tx: ITransaction) => {
             const baseFlowDisplayString =
                 tx.entityType !== 'liqchange' && isBaseFlowPositive
                     ? `(${baseFlowDisplayTruncated})`
-                    : baseFlowDisplayTruncated;
+                    : baseFlowDisplayTruncated + ' ';
             setBaseFlowDisplay(baseFlowDisplayString);
         }
         if (tx.quoteFlowDecimalCorrected !== undefined && tx.quoteFlowDecimalCorrected !== null) {
@@ -320,8 +318,6 @@ export const useProcessTransaction = (tx: ITransaction) => {
                     ? '0.00'
                     : quoteFlowAbsNum < 0.0001
                     ? quoteFlowAbsNum.toExponential(2)
-                    : quoteFlowAbsNum < 2
-                    ? quoteFlowAbsNum.toPrecision(3)
                     : quoteFlowAbsNum >= 1000000
                     ? formatAmount(quoteFlowAbsNum)
                     : // ? quoteLiqDisplayNum.toExponential(2)
@@ -334,7 +330,7 @@ export const useProcessTransaction = (tx: ITransaction) => {
                     ? // (isQuoteFlowNegative && tx.entityType !== 'liqchange') ||
                       // (!isQuoteFlowNegative && tx.entityType === 'liqchange')
                       `(${quoteFlowDisplayTruncated})`
-                    : quoteFlowDisplayTruncated;
+                    : quoteFlowDisplayTruncated + ' ';
             setQuoteFlowDisplay(quoteFlowDisplayString);
         }
     }, [JSON.stringify(tx), isDenomBase, isBaseTokenMoneynessGreaterOrEqual]);
@@ -431,7 +427,7 @@ export const useProcessTransaction = (tx: ITransaction) => {
         totalFlowAbsNum === undefined
             ? undefined
             : totalFlowAbsNum === 0
-            ? '0.00'
+            ? '0.00' + ' '
             : totalFlowAbsNum < 0.01
             ? totalFlowAbsNum.toExponential(2) + ' '
             : totalFlowAbsNum >= 100000

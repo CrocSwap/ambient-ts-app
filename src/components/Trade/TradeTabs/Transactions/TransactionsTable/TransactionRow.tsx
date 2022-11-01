@@ -46,6 +46,8 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
         baseTokenLogo,
         baseDisplay,
         quoteDisplay,
+        // baseDisplayFrontend,
+        // quoteDisplayFrontend,
         ownerId,
         // isOrderFilled,
         truncatedDisplayPrice,
@@ -251,12 +253,12 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                     ) : (isDenomBase && !isOnPortfolioPage) ||
                       (!isBaseTokenMoneynessGreaterOrEqual && isOnPortfolioPage) ? (
                         <li onClick={openDetailsModal} data-label='price' className={sideTypeStyle}>
-                            <p>
+                            <p style={{ textAlign: 'right', fontFamily: 'monospace' }}>
                                 {isOnPortfolioPage
                                     ? truncatedLowDisplayPriceDenomByMoneyness
                                     : truncatedLowDisplayPrice}
                             </p>
-                            <p>
+                            <p style={{ textAlign: 'right', fontFamily: 'monospace' }}>
                                 {isOnPortfolioPage
                                     ? truncatedHighDisplayPriceDenomByMoneyness
                                     : truncatedHighDisplayPrice}
@@ -264,12 +266,12 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                         </li>
                     ) : (
                         <li onClick={openDetailsModal} data-label='price' className={sideTypeStyle}>
-                            <p>
+                            <p style={{ textAlign: 'right', fontFamily: 'monospace' }}>
                                 {isOnPortfolioPage
                                     ? truncatedHighDisplayPriceDenomByMoneyness
                                     : truncatedHighDisplayPrice}
                             </p>
-                            <p>
+                            <p style={{ textAlign: 'right', fontFamily: 'monospace' }}>
                                 {isOnPortfolioPage
                                     ? truncatedLowDisplayPriceDenomByMoneyness
                                     : truncatedLowDisplayPrice}
@@ -277,7 +279,12 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                         </li>
                     )
                 ) : (
-                    <li onClick={openDetailsModal} data-label='price' className={sideTypeStyle}>
+                    <li
+                        onClick={openDetailsModal}
+                        data-label='price'
+                        className={sideTypeStyle}
+                        style={{ textAlign: 'right', fontFamily: 'monospace' }}
+                    >
                         {isOnPortfolioPage
                             ? truncatedDisplayPriceDenomByMoneyness || '…'
                             : truncatedDisplayPrice || '…'}
@@ -285,7 +292,12 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                 ))}
 
             {!showColumns && (
-                <li onClick={openDetailsModal} data-label='side' className={sideTypeStyle}>
+                <li
+                    onClick={openDetailsModal}
+                    data-label='side'
+                    className={sideTypeStyle}
+                    style={{ textAlign: 'center' }}
+                >
                     {tx.entityType === 'liqchange' || tx.entityType === 'limitOrder'
                         ? `${sideType}`
                         : `${sideType} ${sideCharacter}`}
@@ -314,7 +326,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
 
             {!showColumns && (
                 <li onClick={openDetailsModal} data-label={baseTokenSymbol} className='color_white'>
-                    <p>{baseDisplay}</p>
+                    <p style={{ textAlign: 'right', fontFamily: 'monospace' }}>{baseDisplay}</p>
                 </li>
             )}
             {!showColumns && (
@@ -323,7 +335,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                     data-label={quoteTokenSymbol}
                     className='color_white'
                 >
-                    <p>{quoteDisplay}</p>
+                    <p style={{ textAlign: 'right', fontFamily: 'monospace' }}>{quoteDisplay}</p>
                 </li>
             )}
             {showColumns && (
