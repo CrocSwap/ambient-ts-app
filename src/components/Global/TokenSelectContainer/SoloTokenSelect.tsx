@@ -32,7 +32,7 @@ export const SoloTokenSelect = (props: propsIF) => {
         closeModal();
     };
 
-    const tokenButtons = tokensBank
+    const importedTokenButtons = tokensBank
         .filter((token: TokenIF) => token.chainId === parseInt('0x5'))
         .map((token: TokenIF) => (
             <TokenSelect
@@ -54,7 +54,7 @@ export const SoloTokenSelect = (props: propsIF) => {
                 placeholder='Enter an Address'
                 onChange={(e) => setInput(e.target.value)}
             />
-            {tokenButtons}
+            {importedTokenButtons}
         </>
     );
 };
