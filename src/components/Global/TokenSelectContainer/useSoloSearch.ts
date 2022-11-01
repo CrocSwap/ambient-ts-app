@@ -42,31 +42,48 @@ export const useSoloSearch = (
     const [isTokenFound, setIsTokenFound] = useState(false);
 
     useEffect(() => {
+        // reset value to false used to gatekeep queries
         setIsTokenFound(false);
+
+        // make sure raw user input has been validated
+        // if not, set token data object to null
         validatedInput || setToken(null);
+
+        // fn to find token in an array of tokens by address and chain ID
         const findToken = (tokens: TokenIF[]) => tokens.find(
             (token) => token.address === input && token.chainId === parseInt(chainId)
         );
+
+        const updateToken = (tkn: TokenIF) => {
+            setIsTokenFound(true);
+            setToken(tkn);
+        }
+
         // first check ambient list
         if (validatedInput && ambientTokenList) {
             const tkn = findToken(ambientTokenList.tokens) as TokenIF;
-            tkn && setIsTokenFound(true);
-            tkn && setToken(tkn);
+            tkn && updateToken(tkn);
         }
+
         // if not found check CoinGecko
         if (
             validatedInput &&
             localStorage.allTokenLists &&
             !isTokenFound
         ) {
+            // get tokens array from CoinGecko list in local storage
             const coinGeckoTokens = JSON.parse(localStorage.getItem('allTokenLists') as string)
                 .find((list: TokenListIF) => list.name === 'CoinGecko')
                 .tokens;
+            // find token in CoinGecko token list
             const tkn = findToken(coinGeckoTokens) as TokenIF;
-            tkn && setIsTokenFound(true);
-            tkn && setToken(tkn);
+            // if token is found, flip gatekeeping variable
+            tkn && updateToken(tkn);
         }
+
         // TODO: if not found pull data from on-chain
+    // run hook when validated user input changes
+    // this prevents queries without valid input
     }, [validatedInput]);
 
     // token === token data object or null
