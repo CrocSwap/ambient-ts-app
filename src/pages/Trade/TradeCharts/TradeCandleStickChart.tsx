@@ -16,6 +16,7 @@ import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { getPinnedPriceValuesFromDisplayPrices } from '../Range/rangeFunctions';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import * as d3 from 'd3';
+import { CrocPoolView } from '@crocswap-libs/sdk';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -30,6 +31,7 @@ declare global {
 }
 
 interface ChartData {
+    pool: CrocPoolView | undefined;
     expandTradeTable: boolean;
     // tvlData: any[];
     // volumeData: any[];
@@ -37,7 +39,7 @@ interface ChartData {
     candleData: CandlesByPoolAndDuration | undefined;
     changeState: (isOpen: boolean | undefined, candleData: CandleData | undefined) => void;
     chartItemStates: chartItemStates;
-    limitPrice: string | undefined;
+    limitTick: number;
     liquidityData: any;
     isAdvancedModeActive: boolean | undefined;
     simpleRangeWidth: number | undefined;
@@ -72,7 +74,7 @@ type chartItemStates = {
 };
 
 export default function TradeCandleStickChart(props: ChartData) {
-    const { baseTokenAddress, chainId /* poolPriceNonDisplay */ } = props;
+    const { pool, baseTokenAddress, chainId /* poolPriceNonDisplay */ } = props;
 
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [isCandleAdded, setIsCandleAdded] = useState<boolean>(false);
@@ -260,11 +262,12 @@ export default function TradeCandleStickChart(props: ChartData) {
             <div style={{ height: '100%', width: '100%' }}>
                 {!isLoading && parsedChartData !== undefined ? (
                     <Chart
+                        pool={pool}
                         candleData={parsedChartData}
                         expandTradeTable={expandTradeTable}
                         liquidityData={liquidityData}
                         changeState={props.changeState}
-                        limitPrice={props.limitPrice}
+                        limitTick={props.limitTick}
                         denomInBase={denominationsInBase}
                         isAdvancedModeActive={props.isAdvancedModeActive}
                         simpleRangeWidth={props.simpleRangeWidth}

@@ -46,6 +46,8 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
         baseTokenLogo,
         baseDisplay,
         quoteDisplay,
+        // baseDisplayFrontend,
+        // quoteDisplayFrontend,
         ownerId,
         // isOrderFilled,
         truncatedDisplayPrice,
@@ -62,6 +64,10 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
         baseTokenCharacter,
         quoteTokenCharacter,
         isDenomBase,
+        truncatedDisplayPriceDenomByMoneyness,
+        truncatedLowDisplayPriceDenomByMoneyness,
+        truncatedHighDisplayPriceDenomByMoneyness,
+        isBaseTokenMoneynessGreaterOrEqual,
         // orderMatchesSelectedTokens,
     } = useProcessTransaction(tx);
 
@@ -241,23 +247,62 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
             {!ipadView &&
                 (tx.entityType === 'liqchange' ? (
                     tx.positionType === 'ambient' ? (
-                        <li onClick={openDetailsModal} data-label='price' className={sideTypeStyle}>
+                        <li
+                            onClick={openDetailsModal}
+                            data-label='price'
+                            className={sideTypeStyle}
+                            style={{ textAlign: 'right' }}
+                        >
                             ambient
+                        </li>
+                    ) : (isDenomBase && !isOnPortfolioPage) ||
+                      (!isBaseTokenMoneynessGreaterOrEqual && isOnPortfolioPage) ? (
+                        <li onClick={openDetailsModal} data-label='price' className={sideTypeStyle}>
+                            <p style={{ textAlign: 'right', fontFamily: 'monospace' }}>
+                                {isOnPortfolioPage
+                                    ? truncatedLowDisplayPriceDenomByMoneyness
+                                    : truncatedLowDisplayPrice}
+                            </p>
+                            <p style={{ textAlign: 'right', fontFamily: 'monospace' }}>
+                                {isOnPortfolioPage
+                                    ? truncatedHighDisplayPriceDenomByMoneyness
+                                    : truncatedHighDisplayPrice}
+                            </p>
                         </li>
                     ) : (
                         <li onClick={openDetailsModal} data-label='price' className={sideTypeStyle}>
-                            <p>{truncatedLowDisplayPrice}</p>
-                            <p>{truncatedHighDisplayPrice}</p>
+                            <p style={{ textAlign: 'right', fontFamily: 'monospace' }}>
+                                {isOnPortfolioPage
+                                    ? truncatedHighDisplayPriceDenomByMoneyness
+                                    : truncatedHighDisplayPrice}
+                            </p>
+                            <p style={{ textAlign: 'right', fontFamily: 'monospace' }}>
+                                {isOnPortfolioPage
+                                    ? truncatedLowDisplayPriceDenomByMoneyness
+                                    : truncatedLowDisplayPrice}
+                            </p>
                         </li>
                     )
                 ) : (
-                    <li onClick={openDetailsModal} data-label='price' className={sideTypeStyle}>
-                        {truncatedDisplayPrice || '…'}
+                    <li
+                        onClick={openDetailsModal}
+                        data-label='price'
+                        className={sideTypeStyle}
+                        style={{ textAlign: 'right', fontFamily: 'monospace' }}
+                    >
+                        {isOnPortfolioPage
+                            ? truncatedDisplayPriceDenomByMoneyness || '…'
+                            : truncatedDisplayPrice || '…'}
                     </li>
                 ))}
 
             {!showColumns && (
-                <li onClick={openDetailsModal} data-label='side' className={sideTypeStyle}>
+                <li
+                    onClick={openDetailsModal}
+                    data-label='side'
+                    className={sideTypeStyle}
+                    style={{ textAlign: 'center' }}
+                >
                     {tx.entityType === 'liqchange' || tx.entityType === 'limitOrder'
                         ? `${sideType}`
                         : `${sideType} ${sideCharacter}`}
@@ -274,14 +319,19 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                     <p>{type}</p>
                 </li>
             )}
-            <li onClick={openDetailsModal} data-label='value' className='gradient_text'>
+            <li
+                onClick={openDetailsModal}
+                data-label='value'
+                className='gradient_text'
+                style={{ textAlign: 'right', fontFamily: 'monospace' }}
+            >
                 {' '}
                 {usdValue}
             </li>
 
             {!showColumns && (
                 <li onClick={openDetailsModal} data-label={baseTokenSymbol} className='color_white'>
-                    <p>{baseDisplay}</p>
+                    <p style={{ textAlign: 'right', fontFamily: 'monospace' }}>{baseDisplay}</p>
                 </li>
             )}
             {!showColumns && (
@@ -290,7 +340,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                     data-label={quoteTokenSymbol}
                     className='color_white'
                 >
-                    <p>{quoteDisplay}</p>
+                    <p style={{ textAlign: 'right', fontFamily: 'monospace' }}>{quoteDisplay}</p>
                 </li>
             )}
             {showColumns && (

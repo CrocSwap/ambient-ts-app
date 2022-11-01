@@ -179,7 +179,7 @@ export default function PageHeader(props: HeaderPropsIF) {
     const isDenomBase = tradeData.isDenomBase;
 
     useEffect(() => {
-        console.log({ location });
+        // console.log({ location });
         // console.log({ urlParams });
         if (location.pathname.includes('account')) {
             document.title = 'account - ambient.finance';

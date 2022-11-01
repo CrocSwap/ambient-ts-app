@@ -4,6 +4,10 @@ import GraphContainer from '../../components/Analytics/GraphContainer/GraphConta
 import { SetStateAction, Dispatch } from 'react';
 import { PoolIF } from '../../utils/interfaces/PoolIF';
 import { TokenIF } from '../../utils/interfaces/TokenIF';
+import TopTokens from '../../components/Analytics/TopTokens/TopTokens';
+import TopPools from '../../components/Analytics/TopPools/TopPools';
+import TrendingPools from '../../components/Analytics/TrendingPools/TrendingPools';
+import TopRanges from '../../components/Analytics/TopRanges/TopRanges';
 
 interface AnalyticsProps {
     setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
@@ -29,6 +33,10 @@ export default function Analytics(props: AnalyticsProps) {
                 removePoolFromFaves={props.removePoolFromFaves}
                 addPoolToFaves={props.addPoolToFaves}
             />
+            <TopTokens />
+            <TopPools />
+            <TopRanges />
+            <TrendingPools />
         </main>
     );
 }

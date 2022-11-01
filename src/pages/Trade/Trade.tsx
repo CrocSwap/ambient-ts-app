@@ -4,7 +4,7 @@ import { Dispatch, SetStateAction, ReactNode, useEffect, useState } from 'react'
 import { useParams, Outlet, useOutletContext, Link, NavLink, useNavigate } from 'react-router-dom';
 import { ethers } from 'ethers';
 import { motion, AnimateSharedLayout } from 'framer-motion';
-import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
+import { ChainSpec, CrocEnv, CrocPoolView } from '@crocswap-libs/sdk';
 import { VscClose } from 'react-icons/vsc';
 
 // START: Import JSX Components
@@ -22,6 +22,7 @@ import NoTokenIcon from '../../components/Global/NoTokenIcon/NoTokenIcon';
 
 // interface for React functional component props
 interface TradePropsIF {
+    pool: CrocPoolView | undefined;
     isUserLoggedIn: boolean;
     crocEnv: CrocEnv | undefined;
     provider: ethers.providers.Provider | undefined;
@@ -78,6 +79,7 @@ interface TradePropsIF {
 // React functional component
 export default function Trade(props: TradePropsIF) {
     const {
+        pool,
         isUserLoggedIn,
         crocEnv,
         candleData,
@@ -144,7 +146,7 @@ export default function Trade(props: TradePropsIF) {
     const { tradeData, graphData } = useAppSelector((state) => state);
     const {
         isDenomBase,
-        limitPrice,
+        limitTick,
         advancedMode,
         simpleRangeWidth,
 
@@ -471,6 +473,7 @@ export default function Trade(props: TradePropsIF) {
                             }`}
                         >
                             <TradeCharts
+                                pool={pool}
                                 poolPriceDisplay={poolPriceDisplayWithDenom}
                                 expandTradeTable={expandTradeTable}
                                 setExpandTradeTable={setExpandTradeTable}
@@ -482,7 +485,7 @@ export default function Trade(props: TradePropsIF) {
                                 liquidityData={liquidityData}
                                 lastBlockNumber={lastBlockNumber}
                                 chainId={chainId}
-                                limitPrice={limitPrice}
+                                limitTick={limitTick}
                                 favePools={favePools}
                                 addPoolToFaves={addPoolToFaves}
                                 removePoolFromFaves={removePoolFromFaves}

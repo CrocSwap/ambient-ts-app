@@ -48,7 +48,7 @@ interface PortfolioTabsPropsIF {
     setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
     outsideControl: boolean;
     setOutsideControl: Dispatch<SetStateAction<boolean>>;
-    rightTabOptions: ReactNode;
+
     openTokenModal: () => void;
     chainData: ChainSpec;
     openGlobalModal: (content: React.ReactNode, title?: string) => void;
@@ -84,7 +84,7 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
         tokenMap,
         selectedOutsideTab,
         setSelectedOutsideTab,
-        rightTabOptions,
+
         outsideControl,
         setOutsideControl,
         openTokenModal,
@@ -345,7 +345,7 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
         <div className={styles.tabs_container}>
             <TabComponent
                 data={accountTabData}
-                rightTabOptions={rightTabOptions}
+                rightTabOptions={false}
                 selectedOutsideTab={selectedOutsideTab}
                 setSelectedOutsideTab={setSelectedOutsideTab}
                 outsideControl={outsideControl}

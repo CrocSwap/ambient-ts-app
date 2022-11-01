@@ -82,7 +82,7 @@ export default function Orders(props: propsIF) {
 
     const dispatch = useAppDispatch();
 
-    const isDenomBase = tradeData.isDenomBase;
+    // const isDenomBase = tradeData.isDenomBase;
 
     const [limitOrderData, setLimitOrderData] = useState(
         isOnPortfolioPage ? activeAccountLimitOrderData || [] : limitOrdersByPool,
@@ -238,7 +238,7 @@ export default function Orders(props: propsIF) {
     const baseTokenCharacter = baseTokenSymbol ? getUnicodeCharacter(baseTokenSymbol) : '';
     const quoteTokenCharacter = quoteTokenSymbol ? getUnicodeCharacter(quoteTokenSymbol) : '';
 
-    const priceCharacter = isDenomBase ? quoteTokenCharacter : baseTokenCharacter;
+    // const priceCharacter = isDenomBase ? quoteTokenCharacter : baseTokenCharacter;
 
     const walID = (
         <>
@@ -278,14 +278,14 @@ export default function Orders(props: propsIF) {
             className: 'ID',
             show: !showColumns,
             slug: 'id',
-            sortable: true,
+            sortable: false,
         },
         {
             name: 'Wallet',
             className: 'wallet',
             show: !showColumns,
             slug: 'wallet',
-            sortable: true,
+            sortable: isShowAllEnabled,
         },
         {
             name: walID,
@@ -295,7 +295,7 @@ export default function Orders(props: propsIF) {
             sortable: false,
         },
         {
-            name: `Price ( ${priceCharacter} )`,
+            name: 'Price',
 
             show: !ipadView,
             slug: 'price',
@@ -330,14 +330,16 @@ export default function Orders(props: propsIF) {
             sortable: true,
         },
         {
-            name: isOnPortfolioPage ? 'Qty A' : `${baseTokenSymbol} ( ${baseTokenCharacter} )`,
+            name: isOnPortfolioPage ? 'Qty A' : `${baseTokenSymbol}`,
+            // name: isOnPortfolioPage ? 'Qty A' : `${baseTokenSymbol} ( ${baseTokenCharacter} )`,
 
             show: !showColumns,
             slug: baseTokenSymbol,
             sortable: false,
         },
         {
-            name: isOnPortfolioPage ? 'Qty B' : `${quoteTokenSymbol} ( ${quoteTokenCharacter} )`,
+            name: isOnPortfolioPage ? 'Qty B' : `${quoteTokenSymbol}`,
+            // name: isOnPortfolioPage ? 'Qty B' : `${quoteTokenSymbol} ( ${quoteTokenCharacter} )`,
 
             show: !showColumns,
             slug: quoteTokenSymbol,
