@@ -134,17 +134,15 @@ export const useProcessOrder = (limitOrder: LimitOrderIF) => {
     const usdValueNum = limitOrder.positionLiqTotalUSD;
     const usdValueTruncated = !usdValueNum
         ? undefined
-        : usdValueNum < 0.0001
-        ? usdValueNum.toExponential(2)
-        : usdValueNum < 2
-        ? usdValueNum.toPrecision(3)
-        : usdValueNum >= 100000
+        : usdValueNum < 0.001
+        ? usdValueNum.toExponential(2) + '  '
+        : usdValueNum >= 1000000
         ? formatAmount(usdValueNum)
         : // ? baseLiqDisplayNum.toExponential(2)
           usdValueNum.toLocaleString(undefined, {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
-          });
+          }) + '  ';
 
     // -----------------------------------------------------------------------------------------
     // eslint-disable-next-line

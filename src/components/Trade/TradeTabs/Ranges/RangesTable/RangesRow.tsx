@@ -301,7 +301,12 @@ export default function RangesRow(props: RangesRowPropsIF) {
                     <p>{ambientMaxOrNull}</p>
                 </li>
             )}
-            <li onClick={openDetailsModal} data-label='value' className='gradient_text'>
+            <li
+                onClick={openDetailsModal}
+                data-label='value'
+                className='gradient_text'
+                style={{ textAlign: 'right' }}
+            >
                 {' '}
                 {'$' + usdValue}
             </li>
