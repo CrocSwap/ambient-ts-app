@@ -427,7 +427,7 @@ export const useProcessTransaction = (tx: ITransaction) => {
         totalFlowAbsNum === undefined
             ? undefined
             : totalFlowAbsNum === 0
-            ? '0.00'
+            ? '0.00' + ' '
             : totalFlowAbsNum < 0.01
             ? totalFlowAbsNum.toExponential(2) + ' '
             : totalFlowAbsNum >= 100000

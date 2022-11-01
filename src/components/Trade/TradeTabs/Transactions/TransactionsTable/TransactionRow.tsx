@@ -253,12 +253,12 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                     ) : (isDenomBase && !isOnPortfolioPage) ||
                       (!isBaseTokenMoneynessGreaterOrEqual && isOnPortfolioPage) ? (
                         <li onClick={openDetailsModal} data-label='price' className={sideTypeStyle}>
-                            <p>
+                            <p style={{ textAlign: 'right', fontFamily: 'monospace' }}>
                                 {isOnPortfolioPage
                                     ? truncatedLowDisplayPriceDenomByMoneyness
                                     : truncatedLowDisplayPrice}
                             </p>
-                            <p>
+                            <p style={{ textAlign: 'right', fontFamily: 'monospace' }}>
                                 {isOnPortfolioPage
                                     ? truncatedHighDisplayPriceDenomByMoneyness
                                     : truncatedHighDisplayPrice}
@@ -266,12 +266,12 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                         </li>
                     ) : (
                         <li onClick={openDetailsModal} data-label='price' className={sideTypeStyle}>
-                            <p>
+                            <p style={{ textAlign: 'right', fontFamily: 'monospace' }}>
                                 {isOnPortfolioPage
                                     ? truncatedHighDisplayPriceDenomByMoneyness
                                     : truncatedHighDisplayPrice}
                             </p>
-                            <p>
+                            <p style={{ textAlign: 'right', fontFamily: 'monospace' }}>
                                 {isOnPortfolioPage
                                     ? truncatedLowDisplayPriceDenomByMoneyness
                                     : truncatedLowDisplayPrice}
@@ -279,7 +279,12 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                         </li>
                     )
                 ) : (
-                    <li onClick={openDetailsModal} data-label='price' className={sideTypeStyle}>
+                    <li
+                        onClick={openDetailsModal}
+                        data-label='price'
+                        className={sideTypeStyle}
+                        style={{ textAlign: 'right', fontFamily: 'monospace' }}
+                    >
                         {isOnPortfolioPage
                             ? truncatedDisplayPriceDenomByMoneyness || '…'
                             : truncatedDisplayPrice || '…'}
@@ -287,7 +292,12 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                 ))}
 
             {!showColumns && (
-                <li onClick={openDetailsModal} data-label='side' className={sideTypeStyle}>
+                <li
+                    onClick={openDetailsModal}
+                    data-label='side'
+                    className={sideTypeStyle}
+                    style={{ textAlign: 'center' }}
+                >
                     {tx.entityType === 'liqchange' || tx.entityType === 'limitOrder'
                         ? `${sideType}`
                         : `${sideType} ${sideCharacter}`}

@@ -218,12 +218,22 @@ export default function OrderRow(props: OrderRowPropsIF) {
                 </li>
             )}
             {!ipadView && (
-                <li onClick={openDetailsModal} data-label='price' className={sellOrderStyle}>
+                <li
+                    onClick={openDetailsModal}
+                    data-label='price'
+                    className={sellOrderStyle}
+                    style={{ textAlign: 'right', fontFamily: 'monospace' }}
+                >
                     {truncatedDisplayPrice}
                 </li>
             )}
             {!showColumns && (
-                <li onClick={openDetailsModal} data-label='side' className={sellOrderStyle}>
+                <li
+                    style={{ textAlign: 'center' }}
+                    onClick={openDetailsModal}
+                    data-label='side'
+                    className={sellOrderStyle}
+                >
                     {`${side} ${sideCharacter}`}
                 </li>
             )}
