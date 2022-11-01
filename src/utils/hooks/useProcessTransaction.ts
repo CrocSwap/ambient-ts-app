@@ -1,11 +1,12 @@
 import { ITransaction } from '../../utils/state/graphDataSlice';
 import { useMoralis } from 'react-moralis';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import getUnicodeCharacter from '../../utils/functions/getUnicodeCharacter';
 import { formatAmount } from '../../utils/numbers';
 import { useAppChain } from '../../App/hooks/useAppChain';
 import trimString from '../../utils/functions/trimString';
+import { getMoneynessRank } from '../functions/getMoneynessRank';
 
 export const useProcessTransaction = (tx: ITransaction) => {
     const [chainData] = useAppChain('0x5');
@@ -23,12 +24,36 @@ export const useProcessTransaction = (tx: ITransaction) => {
 
     const tokenAAddress = tradeData.tokenA.address;
     const tokenBAddress = tradeData.tokenB.address;
+    const baseAddress = tradeData.baseToken.address;
+    const quoteAddress = tradeData.quoteToken.address;
 
     const transactionBaseAddressLowerCase = tx.base.toLowerCase();
     const transactionQuoteAddressLowerCase = tx.quote.toLowerCase();
 
     const tokenAAddressLowerCase = tokenAAddress.toLowerCase();
     const tokenBAddressLowerCase = tokenBAddress.toLowerCase();
+    const baseAddressLowerCase = baseAddress.toLowerCase();
+    const quoteAddressLowerCase = quoteAddress.toLowerCase();
+
+    const isBaseTokenMoneynessGreaterOrEqual = useMemo(
+        () =>
+            getMoneynessRank(baseAddressLowerCase + '_' + chainData.chainId) -
+                getMoneynessRank(quoteAddressLowerCase + '_' + chainData.chainId) >=
+            0,
+        [baseAddressLowerCase, quoteAddressLowerCase, chainData.chainId],
+    );
+
+    // const baseMoneyness = getMoneynessRank(baseAddressLowerCase + '_' + chainData.chainId);
+    // useEffect(() => {
+    //     console.log({ isBaseTokenMoneynessGreaterOrEqual });
+    // }, [isBaseTokenMoneynessGreaterOrEqual]);
+    // useEffect(() => {
+    //     console.log({ baseMoneyness });
+    // }, [baseMoneyness]);
+    // const quoteMoneyness = getMoneynessRank(quoteAddressLowerCase + '_' + chainData.chainId);
+    // useEffect(() => {
+    //     console.log({ quoteMoneyness });
+    // }, [quoteMoneyness]);
 
     const baseTokenSymbol = tx.baseSymbol;
     const quoteTokenSymbol = tx.quoteSymbol;
@@ -45,6 +70,8 @@ export const useProcessTransaction = (tx: ITransaction) => {
             transactionQuoteAddressLowerCase === tokenBAddressLowerCase);
 
     const [truncatedDisplayPrice, setTruncatedDisplayPrice] = useState<string | undefined>();
+    const [truncatedDisplayPriceDenomByMoneyness, setTruncatedDisplayPriceDenomByMoneyness] =
+        useState<string | undefined>();
     const [truncatedLowDisplayPrice, setTruncatedLowDisplayPrice] = useState<string | undefined>();
     const [truncatedHighDisplayPrice, setTruncatedHighDisplayPrice] = useState<
         string | undefined
@@ -96,12 +123,16 @@ export const useProcessTransaction = (tx: ITransaction) => {
                               maximumFractionDigits: 2,
                           });
 
+                const truncatedDisplayPriceDenomByMoneyness = isBaseTokenMoneynessGreaterOrEqual
+                    ? baseTokenCharacter + nonInvertedPriceTruncated
+                    : quoteTokenCharacter + invertedPriceTruncated;
+
                 const truncatedDisplayPrice = isDenomBase
                     ? quoteTokenCharacter + invertedPriceTruncated
                     : baseTokenCharacter + nonInvertedPriceTruncated;
 
                 setTruncatedDisplayPrice(truncatedDisplayPrice);
-                setTruncatedDisplayPrice(truncatedDisplayPrice);
+                setTruncatedDisplayPriceDenomByMoneyness(truncatedDisplayPriceDenomByMoneyness);
             } else {
                 setTruncatedDisplayPrice(undefined);
             }
@@ -221,11 +252,16 @@ export const useProcessTransaction = (tx: ITransaction) => {
                               maximumFractionDigits: 2,
                           });
 
+                const truncatedDisplayPriceDenomByMoneyness = isBaseTokenMoneynessGreaterOrEqual
+                    ? baseTokenCharacter + nonInvertedPriceTruncated
+                    : quoteTokenCharacter + invertedPriceTruncated;
+
                 const truncatedDisplayPrice = isDenomBase
                     ? quoteTokenCharacter + invertedPriceTruncated
                     : baseTokenCharacter + nonInvertedPriceTruncated;
 
                 setTruncatedDisplayPrice(truncatedDisplayPrice);
+                setTruncatedDisplayPriceDenomByMoneyness(truncatedDisplayPriceDenomByMoneyness);
             } else {
                 setTruncatedDisplayPrice(undefined);
             }
@@ -281,7 +317,7 @@ export const useProcessTransaction = (tx: ITransaction) => {
                     : quoteFlowDisplayTruncated;
             setQuoteFlowDisplay(quoteFlowDisplayString);
         }
-    }, [JSON.stringify(tx), isDenomBase]);
+    }, [JSON.stringify(tx), isDenomBase, isBaseTokenMoneynessGreaterOrEqual]);
 
     // useEffect(() => {
     //     // console.log({ tx });
@@ -534,6 +570,7 @@ export const useProcessTransaction = (tx: ITransaction) => {
         // Price and Price type data
         priceType,
         truncatedDisplayPrice,
+        truncatedDisplayPriceDenomByMoneyness,
         truncatedLowDisplayPrice,
         truncatedHighDisplayPrice,
         // Transaction type and side data

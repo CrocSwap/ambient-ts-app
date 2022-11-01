@@ -62,6 +62,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
         baseTokenCharacter,
         quoteTokenCharacter,
         isDenomBase,
+        truncatedDisplayPriceDenomByMoneyness,
         // orderMatchesSelectedTokens,
     } = useProcessTransaction(tx);
 
@@ -257,7 +258,9 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                     )
                 ) : (
                     <li onClick={openDetailsModal} data-label='price' className={sideTypeStyle}>
-                        {truncatedDisplayPrice || '…'}
+                        {isOnPortfolioPage
+                            ? truncatedDisplayPriceDenomByMoneyness || '…'
+                            : truncatedDisplayPrice || '…'}
                     </li>
                 ))}
 
