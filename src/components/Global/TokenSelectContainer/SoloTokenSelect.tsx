@@ -13,7 +13,6 @@ interface propsIF {
 
 export const SoloTokenSelect = (props: propsIF) => {
     const { tokensBank, setImportedTokens, closeModal } = props;
-    console.log(tokensBank);
 
     const [ token, setInput ] = useSoloSearch('0x5');
     false && token;
