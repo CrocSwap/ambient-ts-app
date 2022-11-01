@@ -221,11 +221,11 @@ export const useProcessTransaction = (tx: ITransaction) => {
                     : `${baseTokenCharacter}${nonInvertedBidPriceTruncated}`;
 
                 const truncatedLowDisplayPriceDenomByMoneyness = isBaseTokenMoneynessGreaterOrEqual
-                    ? `${quoteTokenCharacter}${invertedAskPriceTruncated}`
-                    : `${baseTokenCharacter}${nonInvertedAskPriceTruncated}`;
+                    ? `${nonInvertedAskPriceTruncated}`
+                    : `${invertedAskPriceTruncated}`;
                 const truncatedHighDisplayPriceDenomByMoneyness = isBaseTokenMoneynessGreaterOrEqual
-                    ? `${quoteTokenCharacter}${invertedBidPriceTruncated}`
-                    : `${baseTokenCharacter}${nonInvertedBidPriceTruncated}`;
+                    ? `${nonInvertedBidPriceTruncated}`
+                    : `${invertedBidPriceTruncated}`;
 
                 setTruncatedLowDisplayPrice(truncatedLowDisplayPrice);
                 setTruncatedHighDisplayPrice(truncatedHighDisplayPrice);
