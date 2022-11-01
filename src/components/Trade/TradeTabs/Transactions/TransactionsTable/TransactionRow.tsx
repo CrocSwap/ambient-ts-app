@@ -63,6 +63,9 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
         quoteTokenCharacter,
         isDenomBase,
         truncatedDisplayPriceDenomByMoneyness,
+        truncatedLowDisplayPriceDenomByMoneyness,
+        truncatedHighDisplayPriceDenomByMoneyness,
+        isBaseTokenMoneynessGreaterOrEqual,
         // orderMatchesSelectedTokens,
     } = useProcessTransaction(tx);
 
@@ -245,15 +248,32 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                         <li onClick={openDetailsModal} data-label='price' className={sideTypeStyle}>
                             ambient
                         </li>
-                    ) : isDenomBase ? (
+                    ) : (isDenomBase && !isOnPortfolioPage) ||
+                      (!isBaseTokenMoneynessGreaterOrEqual && isOnPortfolioPage) ? (
                         <li onClick={openDetailsModal} data-label='price' className={sideTypeStyle}>
-                            <p>{truncatedLowDisplayPrice}</p>
-                            <p>{truncatedHighDisplayPrice}</p>
+                            <p>
+                                {isOnPortfolioPage
+                                    ? truncatedLowDisplayPriceDenomByMoneyness
+                                    : truncatedLowDisplayPrice}
+                            </p>
+                            <p>
+                                {isOnPortfolioPage
+                                    ? truncatedHighDisplayPriceDenomByMoneyness
+                                    : truncatedHighDisplayPrice}
+                            </p>
                         </li>
                     ) : (
                         <li onClick={openDetailsModal} data-label='price' className={sideTypeStyle}>
-                            <p>{truncatedHighDisplayPrice}</p>
-                            <p>{truncatedLowDisplayPrice}</p>
+                            <p>
+                                {isOnPortfolioPage
+                                    ? truncatedHighDisplayPriceDenomByMoneyness
+                                    : truncatedHighDisplayPrice}
+                            </p>
+                            <p>
+                                {isOnPortfolioPage
+                                    ? truncatedLowDisplayPriceDenomByMoneyness
+                                    : truncatedLowDisplayPrice}
+                            </p>
                         </li>
                     )
                 ) : (

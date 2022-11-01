@@ -76,6 +76,12 @@ export const useProcessTransaction = (tx: ITransaction) => {
     const [truncatedHighDisplayPrice, setTruncatedHighDisplayPrice] = useState<
         string | undefined
     >();
+    const [truncatedLowDisplayPriceDenomByMoneyness, setTruncatedLowDisplayPriceDenomByMoneyness] =
+        useState<string | undefined>();
+    const [
+        truncatedHighDisplayPriceDenomByMoneyness,
+        setTruncatedHighDisplayPriceDenomByMoneyness,
+    ] = useState<string | undefined>();
 
     const [baseFlowDisplay, setBaseFlowDisplay] = useState<string | undefined>(undefined);
     const [quoteFlowDisplay, setQuoteFlowDisplay] = useState<string | undefined>(undefined);
@@ -213,8 +219,22 @@ export const useProcessTransaction = (tx: ITransaction) => {
                 const truncatedHighDisplayPrice = isDenomBase
                     ? `${quoteTokenCharacter}${invertedBidPriceTruncated}`
                     : `${baseTokenCharacter}${nonInvertedBidPriceTruncated}`;
+
+                const truncatedLowDisplayPriceDenomByMoneyness = isBaseTokenMoneynessGreaterOrEqual
+                    ? `${baseTokenCharacter}${nonInvertedAskPriceTruncated}`
+                    : `${quoteTokenCharacter}${invertedAskPriceTruncated}`;
+                const truncatedHighDisplayPriceDenomByMoneyness = isBaseTokenMoneynessGreaterOrEqual
+                    ? `${baseTokenCharacter}${nonInvertedBidPriceTruncated}`
+                    : `${quoteTokenCharacter}${invertedBidPriceTruncated}`;
+
                 setTruncatedLowDisplayPrice(truncatedLowDisplayPrice);
                 setTruncatedHighDisplayPrice(truncatedHighDisplayPrice);
+                setTruncatedLowDisplayPriceDenomByMoneyness(
+                    truncatedLowDisplayPriceDenomByMoneyness,
+                );
+                setTruncatedHighDisplayPriceDenomByMoneyness(
+                    truncatedHighDisplayPriceDenomByMoneyness,
+                );
             } else {
                 setTruncatedLowDisplayPrice(undefined);
                 setTruncatedHighDisplayPrice(undefined);
@@ -573,6 +593,8 @@ export const useProcessTransaction = (tx: ITransaction) => {
         truncatedDisplayPriceDenomByMoneyness,
         truncatedLowDisplayPrice,
         truncatedHighDisplayPrice,
+        truncatedLowDisplayPriceDenomByMoneyness,
+        truncatedHighDisplayPriceDenomByMoneyness,
         // Transaction type and side data
         sideType,
         transactionTypeSide,
@@ -601,5 +623,6 @@ export const useProcessTransaction = (tx: ITransaction) => {
 
         // transaction matches select token data
         transactionMatchesSelectedTokens,
+        isBaseTokenMoneynessGreaterOrEqual,
     } as const;
 };
