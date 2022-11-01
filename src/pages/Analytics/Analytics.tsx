@@ -4,6 +4,7 @@ import GraphContainer from '../../components/Analytics/GraphContainer/GraphConta
 import { SetStateAction, Dispatch } from 'react';
 import { PoolIF } from '../../utils/interfaces/PoolIF';
 import { TokenIF } from '../../utils/interfaces/TokenIF';
+import TopTokens from '../../components/Analytics/TopTokens/TopTokens';
 
 interface AnalyticsProps {
     setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
@@ -22,13 +23,14 @@ export default function Analytics(props: AnalyticsProps) {
     return (
         <main data-testid={'analytics'} className={styles.analytics_container}>
             <GraphContainer />
-            <AnalyticsTabs
+            <TopTokens />
+            {/* <AnalyticsTabs
                 setOutsideControl={props.setOutsideControl}
                 setSelectedOutsideTab={props.setSelectedOutsideTab}
                 favePools={props.favePools}
                 removePoolFromFaves={props.removePoolFromFaves}
                 addPoolToFaves={props.addPoolToFaves}
-            />
+            /> */}
         </main>
     );
 }
