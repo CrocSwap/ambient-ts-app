@@ -5,6 +5,7 @@ import { SetStateAction, Dispatch } from 'react';
 import { PoolIF } from '../../utils/interfaces/PoolIF';
 import { TokenIF } from '../../utils/interfaces/TokenIF';
 import TopTokens from '../../components/Analytics/TopTokens/TopTokens';
+import TopPools from '../../components/Analytics/TopPools/TopPools';
 
 interface AnalyticsProps {
     setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
@@ -24,6 +25,7 @@ export default function Analytics(props: AnalyticsProps) {
         <main data-testid={'analytics'} className={styles.analytics_container}>
             <GraphContainer />
             <TopTokens />
+            <TopPools />
             {/* <AnalyticsTabs
                 setOutsideControl={props.setOutsideControl}
                 setSelectedOutsideTab={props.setSelectedOutsideTab}

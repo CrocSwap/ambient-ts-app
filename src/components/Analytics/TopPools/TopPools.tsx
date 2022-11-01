@@ -6,14 +6,14 @@ import { uniswapPools } from '../fakedata/uniswapTokens';
 export default function TopPools() {
     const container = (
         <div className={styles.item_container}>
-            {uniswapPools.map((pair, idx) => (
+            {uniswapPools.slice(0, 10).map((pair, idx) => (
                 <TopPoolsCard pair={pair} key={idx} number={idx + 1} />
             ))}
         </div>
     );
     return (
         <div className={styles.main_container}>
-            <p>Trending Pools</p>
+            {/* <p>Trending Pools</p> */}
             <p>All Pools</p>
             <TopPoolsHeader />
 
