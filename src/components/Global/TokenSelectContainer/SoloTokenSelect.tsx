@@ -15,7 +15,8 @@ export const SoloTokenSelect = (props: propsIF) => {
     const { tokensBank, setImportedTokens, closeModal } = props;
     console.log(tokensBank);
 
-    const [ setInput ] = useSoloSearch();
+    const [ token, setInput ] = useSoloSearch('0x5');
+    false && token;
 
     const dispatch = useAppDispatch();
 
