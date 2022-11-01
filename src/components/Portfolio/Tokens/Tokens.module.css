@@ -1,20 +1,30 @@
+.container{
+    padding: 0 8px;
+}
+
 .search_input_container{
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
+    align-items: center;
     padding: 1rem 0;
 }
 
 .search_input{
     /* outline: none; */
     border: none;
-    outline: 1px solid var(--text-grey-dark);
-    background: var(--dark2);
+    outline: 1px solid rgb(33, 32, 32);
+    background: var(--dark3);
     border-radius: 4px;
-    padding: 4px 5rem;
+    padding: 2px 3rem;
 
-    color: var(--text-grey-white)
+    color: var(--text-grey-white);
+    transition: all var(--animation-speed) ease-in-out
 
     
+}
+
+.search_input:focus{
+  outline: 1px solid var(--text-highlight)
 }
 
 .none_found{
@@ -29,3 +39,88 @@
     line-height: var(--header2-lh);
     color: var(--text-grey-light)
 }
+
+.listPicker{
+    display: flex;
+    justify-content: flex-end;
+}
+
+/* dropdown */
+
+.menu {
+    filter: drop-shadow(1px 1px 1px #1c1624);
+    width: 200px;
+
+    position: relative
+  }
+
+
+  
+  .menu ul {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background: var(--dark3);
+  }
+  
+  .menu li {
+    color: var(--text-grey-light);
+    transition: all var(--animation-speed) ease-in-out;
+    cursor: pointer;
+    /* display: block; */
+  }
+
+  .menu li:hover{
+    color: var(--text-grey-white)
+  }
+
+  .menu ul{
+      z-index: 5;
+      top: 3rem;
+    position: absolute;
+    width: 100%;
+  }
+  
+  .menu ul,
+  .menu li {
+    list-style: none;
+    margin: 0;
+    padding: 10px;
+
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+
+  }
+  
+  .menu button {
+    -webkit-appearance: button;
+    background: var(--dark3);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 5px 20px;
+    font-size: 14px;
+    line-height: var(--header2-lh);
+    color: var(--text-grey-light);
+
+    cursor: pointer;
+    width: 100%;
+    text-align: left;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+  }
+  
+  .menu button:hover{
+    color: var(--text-grey-white)
+  }
+  .menu  button path {
+    fill: var(--text-grey-light);
+    transition: all var(--animation-speed) ease-in-out
+  }
+
+  .menu button:hover > .menu  button path {
+fill: var(--text-grey-white)
+  }
+  
