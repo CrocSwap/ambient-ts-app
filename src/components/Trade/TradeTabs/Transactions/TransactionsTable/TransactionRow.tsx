@@ -302,7 +302,12 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                     <p>{type}</p>
                 </li>
             )}
-            <li onClick={openDetailsModal} data-label='value' className='gradient_text'>
+            <li
+                onClick={openDetailsModal}
+                data-label='value'
+                className='gradient_text'
+                style={{ textAlign: 'right', fontFamily: 'monospace' }}
+            >
                 {' '}
                 {usdValue}
             </li>

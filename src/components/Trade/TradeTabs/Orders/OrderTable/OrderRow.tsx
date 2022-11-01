@@ -222,7 +222,6 @@ export default function OrderRow(props: OrderRowPropsIF) {
                     {truncatedDisplayPrice}
                 </li>
             )}
-
             {!showColumns && (
                 <li onClick={openDetailsModal} data-label='side' className={sellOrderStyle}>
                     {`${side} ${sideCharacter}`}
@@ -239,11 +238,16 @@ export default function OrderRow(props: OrderRowPropsIF) {
                     <p>Order</p>
                 </li>
             )}
-            <li onClick={openDetailsModal} data-label='value' className='gradient_text'>
+
+            <li
+                onClick={openDetailsModal}
+                data-label='value'
+                className='gradient_text'
+                style={{ textAlign: 'right', fontFamily: 'monospace' }}
+            >
                 {' '}
                 {'$' + usdValue}
             </li>
-
             {!showColumns && (
                 <li onClick={openDetailsModal} data-label={baseTokenSymbol} className='color_white'>
                     <p>{baseDisplay}</p>
@@ -278,7 +282,6 @@ export default function OrderRow(props: OrderRowPropsIF) {
                     <OpenOrderStatus isFilled={isOrderFilled} />
                 </li>
             )}
-
             <li data-label='menu'>
                 <OrdersMenu limitOrder={limitOrder} {...orderMenuProps} showSidebar={showSidebar} />
             </li>
