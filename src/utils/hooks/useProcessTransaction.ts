@@ -24,33 +24,33 @@ export const useProcessTransaction = (tx: ITransaction) => {
 
     const tokenAAddress = tradeData.tokenA.address;
     const tokenBAddress = tradeData.tokenB.address;
-    const baseAddress = tradeData.baseToken.address;
-    const quoteAddress = tradeData.quoteToken.address;
+    // const baseAddress = tradeData.baseToken.address;
+    // const quoteAddress = tradeData.quoteToken.address;
 
     const transactionBaseAddressLowerCase = tx.base.toLowerCase();
     const transactionQuoteAddressLowerCase = tx.quote.toLowerCase();
 
     const tokenAAddressLowerCase = tokenAAddress.toLowerCase();
     const tokenBAddressLowerCase = tokenBAddress.toLowerCase();
-    const baseAddressLowerCase = baseAddress.toLowerCase();
-    const quoteAddressLowerCase = quoteAddress.toLowerCase();
+    // const baseAddressLowerCase = baseAddress.toLowerCase();
+    // const quoteAddressLowerCase = quoteAddress.toLowerCase();
 
     const isBaseTokenMoneynessGreaterOrEqual = useMemo(
         () =>
-            getMoneynessRank(baseAddressLowerCase + '_' + chainData.chainId) -
-                getMoneynessRank(quoteAddressLowerCase + '_' + chainData.chainId) >=
+            getMoneynessRank(tx.base.toLowerCase() + '_' + tx.chainId) -
+                getMoneynessRank(tx.quote.toLowerCase() + '_' + tx.chainId) >=
             0,
-        [baseAddressLowerCase, quoteAddressLowerCase, chainData.chainId],
+        [tx.base, tx.base, tx.chainId],
     );
 
-    // const baseMoneyness = getMoneynessRank(baseAddressLowerCase + '_' + chainData.chainId);
     // useEffect(() => {
     //     console.log({ isBaseTokenMoneynessGreaterOrEqual });
     // }, [isBaseTokenMoneynessGreaterOrEqual]);
+    // const baseMoneyness = getMoneynessRank(tx.base.toLowerCase() + '_' + tx.chainId);
     // useEffect(() => {
     //     console.log({ baseMoneyness });
     // }, [baseMoneyness]);
-    // const quoteMoneyness = getMoneynessRank(quoteAddressLowerCase + '_' + chainData.chainId);
+    // const quoteMoneyness = getMoneynessRank(tx.quote.toLowerCase() + '_' + tx.chainId);
     // useEffect(() => {
     //     console.log({ quoteMoneyness });
     // }, [quoteMoneyness]);
@@ -130,8 +130,8 @@ export const useProcessTransaction = (tx: ITransaction) => {
                           });
 
                 const truncatedDisplayPriceDenomByMoneyness = isBaseTokenMoneynessGreaterOrEqual
-                    ? baseTokenCharacter + nonInvertedPriceTruncated
-                    : quoteTokenCharacter + invertedPriceTruncated;
+                    ? nonInvertedPriceTruncated
+                    : invertedPriceTruncated;
 
                 const truncatedDisplayPrice = isDenomBase
                     ? quoteTokenCharacter + invertedPriceTruncated
@@ -221,11 +221,11 @@ export const useProcessTransaction = (tx: ITransaction) => {
                     : `${baseTokenCharacter}${nonInvertedBidPriceTruncated}`;
 
                 const truncatedLowDisplayPriceDenomByMoneyness = isBaseTokenMoneynessGreaterOrEqual
-                    ? `${baseTokenCharacter}${nonInvertedAskPriceTruncated}`
-                    : `${quoteTokenCharacter}${invertedAskPriceTruncated}`;
+                    ? `${quoteTokenCharacter}${invertedAskPriceTruncated}`
+                    : `${baseTokenCharacter}${nonInvertedAskPriceTruncated}`;
                 const truncatedHighDisplayPriceDenomByMoneyness = isBaseTokenMoneynessGreaterOrEqual
-                    ? `${baseTokenCharacter}${nonInvertedBidPriceTruncated}`
-                    : `${quoteTokenCharacter}${invertedBidPriceTruncated}`;
+                    ? `${quoteTokenCharacter}${invertedBidPriceTruncated}`
+                    : `${baseTokenCharacter}${nonInvertedBidPriceTruncated}`;
 
                 setTruncatedLowDisplayPrice(truncatedLowDisplayPrice);
                 setTruncatedHighDisplayPrice(truncatedHighDisplayPrice);
@@ -273,8 +273,8 @@ export const useProcessTransaction = (tx: ITransaction) => {
                           });
 
                 const truncatedDisplayPriceDenomByMoneyness = isBaseTokenMoneynessGreaterOrEqual
-                    ? baseTokenCharacter + nonInvertedPriceTruncated
-                    : quoteTokenCharacter + invertedPriceTruncated;
+                    ? nonInvertedPriceTruncated
+                    : invertedPriceTruncated;
 
                 const truncatedDisplayPrice = isDenomBase
                     ? quoteTokenCharacter + invertedPriceTruncated

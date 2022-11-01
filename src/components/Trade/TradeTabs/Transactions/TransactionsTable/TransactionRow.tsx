@@ -247,7 +247,12 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
             {!ipadView &&
                 (tx.entityType === 'liqchange' ? (
                     tx.positionType === 'ambient' ? (
-                        <li onClick={openDetailsModal} data-label='price' className={sideTypeStyle}>
+                        <li
+                            onClick={openDetailsModal}
+                            data-label='price'
+                            className={sideTypeStyle}
+                            style={{ textAlign: 'right' }}
+                        >
                             ambient
                         </li>
                     ) : (isDenomBase && !isOnPortfolioPage) ||
