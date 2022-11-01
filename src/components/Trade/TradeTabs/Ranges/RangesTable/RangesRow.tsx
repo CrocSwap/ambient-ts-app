@@ -70,9 +70,9 @@ export default function RangesRow(props: RangesRowPropsIF) {
         quoteTokenLogo,
         baseTokenLogo,
         baseDisplay,
-        baseDisplayFrontend,
         quoteDisplay,
-        quoteDisplayFrontend,
+        // baseDisplayFrontend,
+        // quoteDisplayFrontend,
         userMatchesConnectedAccount,
         // isOrderFilled,
 
@@ -314,23 +314,13 @@ export default function RangesRow(props: RangesRowPropsIF) {
             </li>
 
             {!showColumns && (
-                <li
-                    onClick={openDetailsModal}
-                    data-label={baseTokenSymbol}
-                    className='base_color'
-                    style={{ textAlign: 'right', fontFamily: 'monospace' }}
-                >
-                    <p>{baseDisplayFrontend}</p>
+                <li onClick={openDetailsModal} data-label={baseTokenSymbol} className='base_color'>
+                    <p style={{ textAlign: 'right', fontFamily: 'monospace' }}>{baseDisplay}</p>
                 </li>
             )}
             {!showColumns && (
-                <li
-                    onClick={openDetailsModal}
-                    data-label={quoteTokenSymbol}
-                    className='base_color'
-                    style={{ textAlign: 'right', fontFamily: 'monospace' }}
-                >
-                    <p>{quoteDisplayFrontend}</p>
+                <li onClick={openDetailsModal} data-label={quoteTokenSymbol} className='base_color'>
+                    <p style={{ textAlign: 'right', fontFamily: 'monospace' }}>{quoteDisplay}</p>
                 </li>
             )}
             {showColumns && (
