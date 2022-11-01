@@ -70,7 +70,9 @@ export default function RangesRow(props: RangesRowPropsIF) {
         quoteTokenLogo,
         baseTokenLogo,
         baseDisplay,
+        baseDisplayFrontend,
         quoteDisplay,
+        quoteDisplayFrontend,
         userMatchesConnectedAccount,
         // isOrderFilled,
 
@@ -318,7 +320,7 @@ export default function RangesRow(props: RangesRowPropsIF) {
                     className='base_color'
                     style={{ textAlign: 'right', fontFamily: 'monospace' }}
                 >
-                    <p>{baseDisplay}</p>
+                    <p>{baseDisplayFrontend}</p>
                 </li>
             )}
             {!showColumns && (
@@ -328,7 +330,7 @@ export default function RangesRow(props: RangesRowPropsIF) {
                     className='base_color'
                     style={{ textAlign: 'right', fontFamily: 'monospace' }}
                 >
-                    <p>{quoteDisplay}</p>
+                    <p>{quoteDisplayFrontend}</p>
                 </li>
             )}
             {showColumns && (

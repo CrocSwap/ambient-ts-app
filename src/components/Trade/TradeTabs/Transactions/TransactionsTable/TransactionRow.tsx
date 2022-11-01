@@ -46,6 +46,8 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
         baseTokenLogo,
         baseDisplay,
         quoteDisplay,
+        baseDisplayFrontend,
+        quoteDisplayFrontend,
         ownerId,
         // isOrderFilled,
         truncatedDisplayPrice,
@@ -319,7 +321,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                     className='color_white'
                     style={{ textAlign: 'right', fontFamily: 'monospace' }}
                 >
-                    <p>{baseDisplay}</p>
+                    <p>{baseDisplayFrontend}</p>
                 </li>
             )}
             {!showColumns && (
@@ -329,7 +331,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                     className='color_white'
                     style={{ textAlign: 'right', fontFamily: 'monospace' }}
                 >
-                    <p>{quoteDisplay}</p>
+                    <p>{quoteDisplayFrontend}</p>
                 </li>
             )}
             {showColumns && (

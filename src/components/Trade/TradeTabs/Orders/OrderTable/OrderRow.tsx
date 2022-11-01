@@ -51,6 +51,8 @@ export default function OrderRow(props: OrderRowPropsIF) {
         baseTokenLogo,
         baseDisplay,
         quoteDisplay,
+        baseDisplayFrontend,
+        quoteDisplayFrontend,
         isOrderFilled,
         truncatedDisplayPrice,
         side,
@@ -249,8 +251,13 @@ export default function OrderRow(props: OrderRowPropsIF) {
                 {'$' + usdValue}
             </li>
             {!showColumns && (
-                <li onClick={openDetailsModal} data-label={baseTokenSymbol} className='color_white'>
-                    <p>{baseDisplay}</p>
+                <li
+                    onClick={openDetailsModal}
+                    data-label={baseTokenSymbol}
+                    className='color_white'
+                    style={{ textAlign: 'right', fontFamily: 'monospace' }}
+                >
+                    <p>{baseDisplayFrontend}</p>
                 </li>
             )}
             {!showColumns && (
@@ -258,8 +265,9 @@ export default function OrderRow(props: OrderRowPropsIF) {
                     onClick={openDetailsModal}
                     data-label={quoteTokenSymbol}
                     className='color_white'
+                    style={{ textAlign: 'right', fontFamily: 'monospace' }}
                 >
-                    <p>{quoteDisplay}</p>
+                    <p>{quoteDisplayFrontend}</p>
                 </li>
             )}
             {showColumns && (
