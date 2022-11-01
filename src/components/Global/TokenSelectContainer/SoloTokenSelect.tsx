@@ -14,8 +14,8 @@ interface propsIF {
 export const SoloTokenSelect = (props: propsIF) => {
     const { tokensBank, setImportedTokens, closeModal } = props;
 
-    const [ token, setInput ] = useSoloSearch('0x5');
-    false && token;
+    const [ searchedToken, setInput ] = useSoloSearch('0x5');
+    false && searchedToken;
 
     const dispatch = useAppDispatch();
 
@@ -34,6 +34,7 @@ export const SoloTokenSelect = (props: propsIF) => {
 
     const importedTokenButtons = tokensBank
         .filter((token: TokenIF) => token.chainId === parseInt('0x5'))
+        .filter((token: TokenIF) => (searchedToken ? searchedToken.address === token.address : true))
         .map((token: TokenIF) => (
             <TokenSelect
                 key={JSON.stringify(token)}
