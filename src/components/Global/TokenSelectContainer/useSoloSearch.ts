@@ -64,7 +64,7 @@ export const useSoloSearch = (
             tkn && setIsTokenFound(true);
             tkn && setToken(tkn);
         }
-        // if not found pull data from on-chain
+        // TODO: if not found pull data from on-chain
     }, [validatedInput]);
     return [token, setInput];
 }
