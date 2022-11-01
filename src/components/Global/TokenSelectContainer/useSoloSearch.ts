@@ -12,6 +12,7 @@ export const useSoloSearch = (
     chainId: string
 ): [
     TokenIF | null,
+    string,
     Dispatch<SetStateAction<string>>
 ] => {
     // raw input from the user
@@ -97,6 +98,11 @@ export const useSoloSearch = (
     }, [validatedInput]);
 
     // token === token data object or null
+    // input === raw input from the user
     // setInput === useState setter function for raw input
-    return [token, setInput];
+    return [
+        token,
+        input.trim(),
+        setInput
+    ];
 }

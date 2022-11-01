@@ -15,8 +15,7 @@ interface propsIF {
 export const SoloTokenSelect = (props: propsIF) => {
     const { tokensBank, chainId, setImportedTokens, closeModal } = props;
 
-    const [ searchedToken, setInput ] = useSoloSearch(chainId);
-    false && searchedToken;
+    const [ searchedToken, input, setInput ] = useSoloSearch(chainId);
 
     const dispatch = useAppDispatch();
 
@@ -30,6 +29,18 @@ export const SoloTokenSelect = (props: propsIF) => {
 
     const chooseToken = (tkn: TokenIF) => {
         dispatch(setToken(tkn));
+        if (searchedToken) {
+            const tokenIsImported = tokensBank.some(
+                (tk: TokenIF) => tk.address === searchedToken.address
+            );
+            if (tokenIsImported) {
+                const userDataFromLocalStorage = JSON.parse(
+                    localStorage.getItem('user') as string
+                );
+                userDataFromLocalStorage.tokens = [searchedToken, ...tokensBank];
+                localStorage.setItem('user', JSON.stringify(userDataFromLocalStorage));
+            }
+        }
         closeModal();
     };
 
@@ -56,7 +67,7 @@ export const SoloTokenSelect = (props: propsIF) => {
                 placeholder='Enter an Address'
                 onChange={(e) => setInput(e.target.value)}
             />
-            {importedTokenButtons}
+            {(input && !searchedToken) ? <p>Could not find a matching token on-chain, please recheck your input and try again.</p> : importedTokenButtons}
         </>
     );
 };
