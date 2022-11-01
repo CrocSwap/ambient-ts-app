@@ -91,6 +91,9 @@ export default function RangesRow(props: RangesRowPropsIF) {
         ambientMinOrNull,
         ambientMaxOrNull,
         isDenomBase,
+        minRangeDenomByMoneyness,
+        maxRangeDenomByMoneyness,
+        // isBaseTokenMoneynessGreaterOrEqual,
         // orderMatchesSelectedTokens,
     } = useProcessRange(position);
 
@@ -292,7 +295,7 @@ export default function RangesRow(props: RangesRowPropsIF) {
                     className='color_white'
                     style={{ textAlign: 'right', fontFamily: 'monospace' }}
                 >
-                    {ambientMinOrNull}
+                    {isOnPortfolioPage ? minRangeDenomByMoneyness || '…' : ambientMinOrNull || '…'}
                 </li>
             )}
 
@@ -303,7 +306,7 @@ export default function RangesRow(props: RangesRowPropsIF) {
                     className='color_white'
                     style={{ textAlign: 'right', fontFamily: 'monospace' }}
                 >
-                    {ambientMaxOrNull}
+                    {isOnPortfolioPage ? maxRangeDenomByMoneyness || '…' : ambientMaxOrNull || '…'}
                 </li>
             )}
 

@@ -6,6 +6,8 @@ import getUnicodeCharacter from '../../utils/functions/getUnicodeCharacter';
 import { formatAmount } from '../../utils/numbers';
 import { PositionIF } from '../../utils/interfaces/PositionIF';
 import trimString from '../../utils/functions/trimString';
+import { useMemo } from 'react';
+import { getMoneynessRank } from '../functions/getMoneynessRank';
 
 export const useProcessRange = (position: PositionIF) => {
     const { account } = useMoralis();
@@ -14,6 +16,14 @@ export const useProcessRange = (position: PositionIF) => {
 
     const tokenAAddress = tradeData.tokenA.address;
     const tokenBAddress = tradeData.tokenB.address;
+
+    const isBaseTokenMoneynessGreaterOrEqual = useMemo(
+        () =>
+            getMoneynessRank(position.base.toLowerCase() + '_' + position.chainId) -
+                getMoneynessRank(position.quote.toLowerCase() + '_' + position.chainId) >=
+            0,
+        [position.base, position.base, position.chainId],
+    );
 
     const baseQty = position.positionLiqBaseTruncated;
     const quoteQty = position.positionLiqQuoteTruncated;
@@ -85,6 +95,15 @@ export const useProcessRange = (position: PositionIF) => {
     const minRange = isDenomBase
         ? quoteTokenCharacter + position.lowRangeDisplayInBase
         : baseTokenCharacter + position.lowRangeDisplayInQuote;
+
+    const minRangeDenomByMoneyness = isBaseTokenMoneynessGreaterOrEqual
+        ? position.lowRangeDisplayInQuote
+        : position.lowRangeDisplayInBase;
+
+    const maxRangeDenomByMoneyness = isBaseTokenMoneynessGreaterOrEqual
+        ? position.highRangeDisplayInQuote
+        : position.highRangeDisplayInBase;
+
     const maxRange = isDenomBase
         ? quoteTokenCharacter + position.highRangeDisplayInBase
         : baseTokenCharacter + position.highRangeDisplayInQuote;
@@ -173,5 +192,8 @@ export const useProcessRange = (position: PositionIF) => {
         // position matches select token data
         positionMatchesSelectedTokens,
         isDenomBase,
+        minRangeDenomByMoneyness,
+        maxRangeDenomByMoneyness,
+        isBaseTokenMoneynessGreaterOrEqual,
     };
 };

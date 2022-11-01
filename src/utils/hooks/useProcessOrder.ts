@@ -1,10 +1,11 @@
 import { useMoralis } from 'react-moralis';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import getUnicodeCharacter from '../../utils/functions/getUnicodeCharacter';
 import { formatAmount } from '../../utils/numbers';
 import trimString from '../../utils/functions/trimString';
 import { LimitOrderIF } from '../interfaces/exports';
+import { getMoneynessRank } from '../functions/getMoneynessRank';
 
 export const useProcessOrder = (limitOrder: LimitOrderIF) => {
     const { account } = useMoralis();
@@ -32,12 +33,24 @@ export const useProcessOrder = (limitOrder: LimitOrderIF) => {
     const posHash = limitOrder.limitOrderIdentifier.slice(42);
     const [truncatedDisplayPrice, setTruncatedDisplayPrice] = useState<string | undefined>();
 
+    const [truncatedDisplayPriceDenomByMoneyness, setTruncatedDisplayPriceDenomByMoneyness] =
+        useState<string | undefined>();
+
     const baseTokenCharacter = limitOrder.baseSymbol
         ? getUnicodeCharacter(limitOrder.baseSymbol)
         : '';
     const quoteTokenCharacter = limitOrder.quoteSymbol
         ? getUnicodeCharacter(limitOrder.quoteSymbol)
         : '';
+
+    const isBaseTokenMoneynessGreaterOrEqual = useMemo(
+        () =>
+            getMoneynessRank(limitOrder.base.toLowerCase() + '_' + limitOrder.chainId) -
+                getMoneynessRank(limitOrder.quote.toLowerCase() + '_' + limitOrder.chainId) >=
+            0,
+        [limitOrder.base, limitOrder.base, limitOrder.chainId],
+    );
+
     useEffect(() => {
         // console.log({ limitOrder });
         if (limitOrder.limitPriceDecimalCorrected && limitOrder.invLimitPriceDecimalCorrected) {
@@ -72,11 +85,16 @@ export const useProcessOrder = (limitOrder: LimitOrderIF) => {
                           maximumFractionDigits: 2,
                       });
 
+            const truncatedDisplayPriceDenomByMoneyness = isBaseTokenMoneynessGreaterOrEqual
+                ? nonInvertedPriceTruncated
+                : invertedPriceTruncated;
+
             const truncatedDisplayPrice = isDenomBase
                 ? `${quoteTokenCharacter}${invertedPriceTruncated}`
                 : `${baseTokenCharacter}${nonInvertedPriceTruncated}`;
 
             setTruncatedDisplayPrice(truncatedDisplayPrice);
+            setTruncatedDisplayPriceDenomByMoneyness(truncatedDisplayPriceDenomByMoneyness);
         } else {
             setTruncatedDisplayPrice(undefined);
         }
@@ -264,6 +282,7 @@ export const useProcessOrder = (limitOrder: LimitOrderIF) => {
         // Price and Price type data
         priceType,
         truncatedDisplayPrice,
+        truncatedDisplayPriceDenomByMoneyness,
 
         // Order type and side data
         side,
