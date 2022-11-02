@@ -16,7 +16,7 @@ import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { getPinnedPriceValuesFromDisplayPrices } from '../Range/rangeFunctions';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import * as d3 from 'd3';
-import { CrocPoolView } from '@crocswap-libs/sdk';
+import { ChainSpec, CrocPoolView } from '@crocswap-libs/sdk';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -32,6 +32,7 @@ declare global {
 
 interface ChartData {
     pool: CrocPoolView | undefined;
+    chainData: ChainSpec;
     expandTradeTable: boolean;
     // tvlData: any[];
     // volumeData: any[];
@@ -74,7 +75,7 @@ type chartItemStates = {
 };
 
 export default function TradeCandleStickChart(props: ChartData) {
-    const { pool, baseTokenAddress, chainId /* poolPriceNonDisplay */ } = props;
+    const { pool, chainData, baseTokenAddress, chainId /* poolPriceNonDisplay */ } = props;
 
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [isCandleAdded, setIsCandleAdded] = useState<boolean>(false);
@@ -263,6 +264,8 @@ export default function TradeCandleStickChart(props: ChartData) {
                 {!isLoading && parsedChartData !== undefined ? (
                     <Chart
                         pool={pool}
+                        chainData={chainData}
+                        isTokenABase={isTokenABase}
                         candleData={parsedChartData}
                         expandTradeTable={expandTradeTable}
                         liquidityData={liquidityData}
