@@ -175,3 +175,19 @@
   
   }
 
+
+  .header li:nth-of-type(3), 
+  .header li:nth-of-type(4),
+  .header li:nth-of-type(5),
+  .header li:nth-of-type(6), 
+  .header li:nth-of-type(7), 
+  .header li:nth-of-type(8){
+
+    text-align: right;
+   
+  }
+  
+  /* .header li:nth-of-type(4){
+    text-align: center;
+    
+  } */
