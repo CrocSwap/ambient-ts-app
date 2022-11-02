@@ -2,18 +2,20 @@ import styles from './LimitRate.module.css';
 import { useAppDispatch, useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { TokenIF, TokenPairIF } from '../../../../utils/interfaces/exports';
 import { setLimitTick } from '../../../../utils/state/tradeDataSlice';
-import { CrocPoolView } from '@crocswap-libs/sdk';
+import { CrocPoolView, pinTickLower, pinTickUpper } from '@crocswap-libs/sdk';
 import { Dispatch, SetStateAction } from 'react';
 // import { tickToPrice, toDisplayPrice } from '@crocswap-libs/sdk';
 
 interface LimitRatePropsIF {
     setPriceInputFieldBlurred: Dispatch<SetStateAction<boolean>>;
+    gridSize: number;
     pool: CrocPoolView | undefined;
     tokenPair: TokenPairIF;
     tokensBank: Array<TokenIF>;
     fieldId: string;
     chainId: string;
     sellToken?: boolean;
+    isSellTokenBase: boolean;
     disable?: boolean;
     reverseTokens: () => void;
     // onBlur: () => void;
@@ -22,23 +24,35 @@ interface LimitRatePropsIF {
 }
 
 export default function LimitRate(props: LimitRatePropsIF) {
-    const { pool, setPriceInputFieldBlurred, fieldId, disable, limitTickDisplayPrice } = props;
+    const {
+        pool,
+        gridSize,
+        isSellTokenBase,
+        setPriceInputFieldBlurred,
+        fieldId,
+        disable,
+        limitTickDisplayPrice,
+    } = props;
 
     const dispatch = useAppDispatch();
     const isDenomBase = useAppSelector((state) => state.tradeData).isDenomBase;
     // const limitTick = useAppSelector((state) => state.tradeData).limitTick;
 
     const handleLimitChange = (value: string) => {
+        console.log({ value });
         // const limitNonDisplay = pool?.fromDisplayPrice(parseFloat(value));
         const limitNonDisplay = isDenomBase
             ? pool?.fromDisplayPrice(parseFloat(value))
             : pool?.fromDisplayPrice(1 / parseFloat(value));
 
         limitNonDisplay?.then((limit) => {
-            const limitPriceInTick = Math.log(limit) / Math.log(1.0001);
+            // const limitPriceInTick = Math.log(limit) / Math.log(1.0001);
+            const pinnedTick: number = isSellTokenBase
+                ? pinTickLower(limit, gridSize)
+                : pinTickUpper(limit, gridSize);
             // console.log({ limitPriceInTick });
             // console.log({ isDenomBase });
-            dispatch(setLimitTick(limitPriceInTick));
+            dispatch(setLimitTick(pinnedTick));
             setPriceInputFieldBlurred(true);
         });
     };

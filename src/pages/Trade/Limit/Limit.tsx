@@ -11,6 +11,7 @@ import {
     priceHalfBelowTick,
     priceHalfAboveTick,
     CrocPoolView,
+    ChainSpec,
 } from '@crocswap-libs/sdk';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 
@@ -74,6 +75,7 @@ interface LimitPropsIF {
     openGlobalModal: (content: React.ReactNode) => void;
     closeGlobalModal: () => void;
     poolExists: boolean | null;
+    chainData: ChainSpec;
 }
 
 export default function Limit(props: LimitPropsIF) {
@@ -99,6 +101,7 @@ export default function Limit(props: LimitPropsIF) {
         tokenAAllowance,
         setRecheckTokenAApproval,
         chainId,
+        chainData,
         activeTokenListsChanged,
         indicateActiveTokenListsChanged,
         openModalWallet,
@@ -153,6 +156,7 @@ export default function Limit(props: LimitPropsIF) {
     }, [
         JSON.stringify({
             isDenomBase: isDenomBase,
+            isSellTokenBase: isSellTokenBase,
             // tokenA: tradeData.tokenA.address,
             // tokenB: tradeData.tokenB.address,
             isPoolPriceZero: poolPriceNonDisplay === 0, // force re-initialization when tokens are changed
@@ -419,6 +423,8 @@ export default function Limit(props: LimitPropsIF) {
         // }
         resetConfirmation();
 
+        console.log({ limitTick });
+
         const sellToken = tradeData.tokenA.address;
         const buyToken = tradeData.tokenB.address;
         const sellQty = tokenAInputQty;
@@ -446,6 +452,7 @@ export default function Limit(props: LimitPropsIF) {
             dispatch(addPendingTx(tx?.hash));
             setNewLimitOrderTransactionHash(tx.hash);
         } catch (error) {
+            console.log({ error });
             setTxErrorCode(error?.code);
             setTxErrorMessage(error?.message);
         }
@@ -687,6 +694,7 @@ export default function Limit(props: LimitPropsIF) {
                     <LimitCurrencyConverter
                         setPriceInputFieldBlurred={setPriceInputFieldBlurred}
                         pool={pool}
+                        gridSize={chainData.gridSize}
                         isUserLoggedIn={isUserLoggedIn}
                         tokenPair={tokenPair}
                         searchableTokens={searchableTokens}

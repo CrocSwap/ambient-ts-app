@@ -1857,6 +1857,7 @@ export default function App() {
     const limitPropsTrade = {
         pool: pool,
         crocEnv: crocEnv,
+        chainData: chainData,
         isUserLoggedIn: isUserLoggedIn,
         importedTokens: importedTokens,
         setImportedTokens: setImportedTokens,
