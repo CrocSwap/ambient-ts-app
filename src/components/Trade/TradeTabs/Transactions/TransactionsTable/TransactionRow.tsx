@@ -132,8 +132,12 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
             interactive
             title={
                 <div>
-                    <p>{ownerId}</p>
-                    <NavLink to={`/${ownerId}`}>View Account</NavLink>
+                    <p>{ensName ? ensName : ownerId}</p>
+                    <NavLink
+                        to={`/${isOwnerActiveAccount ? 'account' : ensName ? ensName : ownerId}`}
+                    >
+                        View Account
+                    </NavLink>
                 </div>
             }
             placement={'right-end'}
