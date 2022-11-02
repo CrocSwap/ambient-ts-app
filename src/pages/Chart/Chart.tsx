@@ -141,6 +141,7 @@ export default function Chart(props: ChartData) {
     const [isChartSelected, setIsChartSelected] = useState<boolean>(false);
     const [dragControl, setDragControl] = useState(false);
     const [rescale, setRescale] = useState(true);
+    const [zoomAndYdragControl, setZoomAndYdragControl] = useState();
 
     // Data
     const [crosshairData] = useState([{ x: 0, y: -1 }]);
@@ -222,44 +223,62 @@ export default function Chart(props: ChartData) {
         render();
     }, [props.chartItemStates, expandTradeTable, isCandleAdded]);
 
-    useEffect(() => {
-        const nodes = d3.select(d3Yaxis.current).select('svg').selectAll('.tick').nodes();
-        nodes.forEach((res) => {
-            if (d3.select(res).text() === formatAmountChartData(market[0].value)) {
-                d3.select(res)
-                    .attr('filter', 'url(#marketBg)')
-                    .select('text')
-                    .attr('class', 'market');
-            } else if (
-                d3.select(res).text() === formatAmountChartData(limit[0].value) ||
-                d3.select(res).text() === formatAmountChartData(ranges[0].value) ||
-                d3.select(res).text() === formatAmountChartData(ranges[1].value)
-            ) {
-                d3.select(res)
-                    .attr('id', 'yText')
-                    .attr('filter', 'url(#textBg)')
-                    .select('text')
-                    .attr('class', 'y_axis');
-            } else {
-                d3.select(res).attr('id', '').select('text').attr('class', '').attr('filter', '');
-            }
-        });
-    }, [scaleData && scaleData.yScale.ticks()]);
-
     function addText(scale: any) {
         if (location.pathname.includes('market')) {
             yAxis.tickValues([...scale.ticks(), ...[market[0].value]]);
-        } else {
-            if (location.pathname.includes('limit')) {
-                yAxis.tickValues([...scale.ticks(), ...[limit[0].value, market[0].value]]);
-            }
 
-            if (location.pathname.includes('range')) {
-                yAxis.tickValues([
-                    ...scale.ticks(),
-                    ...[ranges[0].value, ranges[1].value, market[0].value],
-                ]);
-            }
+            yAxis.decorate((selection: any) => {
+                selection
+                    .attr('filter', (d: any) => {
+                        if (d === market[0].value) {
+                            return 'url(#marketBg)';
+                        }
+                    })
+                    .select('text')
+                    .attr('class', (d: any) => {
+                        if (d === market[0].value) {
+                            return 'market';
+                        }
+                    });
+            });
+        } else {
+            location.pathname.includes('limit')
+                ? yAxis.tickValues([...scale.ticks(), ...[limit[0].value, market[0].value]])
+                : yAxis.tickValues([
+                      ...scale.ticks(),
+                      ...[ranges[0].value, ranges[1].value, market[0].value],
+                  ]);
+
+            yAxis.decorate((selection: any) => {
+                selection
+                    .attr('filter', (d: any) => {
+                        if (
+                            location.pathname.includes('limit')
+                                ? d === limit[0].value
+                                : d === ranges[0].value || d === ranges[1].value
+                        ) {
+                            return 'url(#textBg)';
+                        }
+                        if (d === market[0].value) {
+                            return 'url(#marketBg)';
+                        }
+                    })
+                    .select('text')
+                    .attr('class', (d: any) => {
+                        if (d === market[0].value) {
+                            return 'market';
+                        }
+
+                        if (
+                            location.pathname.includes('limit')
+                                ? d === limit[0].value
+                                : d === ranges[0].value || d === ranges[1].value
+                        ) {
+                            return 'y_axis';
+                        }
+                    });
+            });
+            // }
         }
     }
 
@@ -267,7 +286,16 @@ export default function Chart(props: ChartData) {
         if (scaleData && yAxis) {
             addText(scaleData.yScale);
         }
-    }, [dragControl, scaleData, location, scaleData && scaleData.yScale.domain()]);
+    }, [
+        dragControl,
+        scaleData,
+        location,
+        scaleData && scaleData.yScale.domain(),
+        zoomAndYdragControl,
+        ranges,
+        limit,
+        market,
+    ]);
 
     useEffect(() => {
         if (d3.select(d3Xaxis.current).select('svg').select('g').select('text').node() === null) {
@@ -562,6 +590,8 @@ export default function Chart(props: ChartData) {
                             scaleData.yScale.domain([domainY[0] + deltaY, domainY[1] + deltaY]);
                         }
 
+                        setZoomAndYdragControl(event);
+
                         relocationCrosshairText(event);
                         lastY = t.y;
 
@@ -579,11 +609,11 @@ export default function Chart(props: ChartData) {
             const yAxisDrag = d3.drag().on('drag', async (event: any) => {
                 const dy = event.dy;
                 const factor = Math.pow(2, -dy * 0.003);
-
                 const domain = scaleData.yScale.domain();
                 const center = (domain[1] + domain[0]) / 2;
                 const size = (domain[1] - domain[0]) / 2 / factor;
                 await scaleData.yScale.domain([center - size, center + size]);
+                setZoomAndYdragControl(event);
                 setRescale(() => {
                     return false;
                 });
