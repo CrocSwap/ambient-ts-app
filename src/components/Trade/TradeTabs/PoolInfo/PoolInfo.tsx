@@ -8,6 +8,7 @@ import { BsArrowUpRight } from 'react-icons/bs';
 import trimString from '../../../../utils/functions/trimString';
 import { DefaultTooltip } from '../../../Global/StyledTooltip/StyledTooltip';
 import { ZERO_ADDRESS } from '../../../../constants';
+import { motion, AnimateSharedLayout } from 'framer-motion';
 // interface for props
 interface PoolInfoPropsIF {
     chainData: ChainSpec;
@@ -206,28 +207,108 @@ export default function PoolInfo(props: PoolInfoPropsIF) {
         </section>
     );
 
-    return (
-        <main className={styles.container} style={{ height: '250px' }}>
-            <div className={styles.content}>
-                {baseTokenDisplay}
-                {quoteTokenDisplay}
-                <section className={styles.right_container}>
-                    <div className={styles.right_container_top}>
-                        <PoolInfoCard title='Market Cap:' data={'$69m' || '...'} />
-                        <PoolInfoCard title='FDV:' data={'$690m' || '...'} />
-                        <PoolInfoCard title='24h Swap Volume:' data={poolVolume || '...'} />
-                        <PoolInfoCard title='Total Fees:' data={poolFees || '...'} />
-                        <PoolInfoCard title='TVL:' data={poolTvl || '...'} />
-                        <PoolInfoCard title='Tick Liquidity:' data={'$500k' || '...'} />
-                        <PoolInfoCard title='OOR Liquidity:' data={'20%' || '...'} />
-                        <PoolInfoCard title='Pool Created:' data={'15/07/2022' || '...'} />
-                    </div>
-                    <div>
-                        Lorem ipsum dolor sit amet consectetur, adipisicing elit. Velit consequuntur
-                        dolorum corrupti voluptate soluta modi dicta debitis ullam aliquam rerum?
-                    </div>
-                </section>
+    const timeDisplay = (
+        <div className={styles.time_display}>
+            <div className={styles.time_display_content}>
+                <p>TXS</p>
+                <h6>69</h6>
             </div>
-        </main>
+            <div className={styles.time_display_content}>
+                <p>Buys</p>
+                <h6>69</h6>
+            </div>
+            <div className={styles.time_display_content}>
+                <p>Sells</p>
+                <h6>69</h6>
+            </div>
+            <div className={styles.time_display_content}>
+                <p>Volume</p>
+                <h6>69</h6>
+            </div>
+        </div>
+    );
+
+    const timeTabData = [
+        {
+            label: '5m',
+            content: timeDisplay,
+
+            timeData: [{ txs: '23' }, { Buys: '23' }, { Sells: '23' }, { Volume: '23' }],
+        },
+        {
+            label: 'Limit Orders',
+            content: timeDisplay,
+
+            timeData: [{ txs: '24' }, { Buys: '24' }, { Sells: '24' }, { Volume: '24' }],
+        },
+        {
+            label: 'Ranges',
+            content: timeDisplay,
+
+            timeData: [{ txs: '25' }, { Buys: '25' }, { Sells: '25' }, { Volume: '25' }],
+        },
+        {
+            label: 'Leaderboard',
+            content: timeDisplay,
+            timeData: [{ txs: '26' }, { Buys: '26' }, { Sells: '26' }, { Volume: '26' }],
+        },
+    ];
+    const [selectedTab, setSelectedTab] = useState(timeTabData[0]);
+
+    const timeTabDisplay = (
+        <div className={styles.time_tab_container}>
+            <nav>
+                <ul>
+                    {timeTabData.map((item) => (
+                        <li
+                            key={item.label}
+                            className={item.label === selectedTab.label ? styles.selected : ''}
+                            onClick={() => setSelectedTab(item)}
+                        >
+                            {` ${item.label}`}
+                            {item.label === selectedTab.label ? (
+                                <motion.div className={styles.underline} layoutId='underline' />
+                            ) : null}
+                        </li>
+                    ))}
+                </ul>
+            </nav>
+            <section>
+                <AnimateSharedLayout>
+                    <motion.div
+                        key={selectedTab ? selectedTab.label : '"empty"'}
+                        initial={{ y: 10, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        exit={{ y: -10, opacity: 0 }}
+                        transition={{ duration: 0.2 }}
+                    >
+                        {selectedTab ? selectedTab.content : ''}
+                    </motion.div>
+                </AnimateSharedLayout>
+            </section>
+        </div>
+    );
+
+    return (
+        // <main className={styles.container} style={{ height: '250px' }}>
+        //     <div className={styles.content}>
+        //         {baseTokenDisplay}
+        //         {quoteTokenDisplay}
+        //         <section className={styles.right_container}>
+        //             <div className={styles.right_container_top}>
+        //                 <PoolInfoCard title='Market Cap:' data={'$69m' || '...'} />
+        //                 <PoolInfoCard title='FDV:' data={'$690m' || '...'} />
+        //                 <PoolInfoCard title='24h Swap Volume:' data={poolVolume || '...'} />
+        //                 <PoolInfoCard title='Total Fees:' data={poolFees || '...'} />
+        //                 <PoolInfoCard title='TVL:' data={poolTvl || '...'} />
+        //                 <PoolInfoCard title='Tick Liquidity:' data={'$500k' || '...'} />
+        //                 <PoolInfoCard title='OOR Liquidity:' data={'20%' || '...'} />
+        //                 <PoolInfoCard title='Pool Created:' data={'15/07/2022' || '...'} />
+        //             </div>
+        //             {/* {timeTabDisplay} */}
+        //         </section>
+        //     </div>
+        // </main>
+        <>{timeTabDisplay}</>
     );
 }

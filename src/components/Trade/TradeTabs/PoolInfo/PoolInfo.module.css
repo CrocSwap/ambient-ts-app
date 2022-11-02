@@ -162,3 +162,97 @@ border-radius: 4px;
     text-align: end;
 }
 
+/* tab */
+.time_tab_container{
+    background: rgba(23, 29, 39, 0.3);
+
+
+backdrop-filter: blur(10px);
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.time_tab_container nav{
+
+  
+    height: 23px;
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+    color: var(--text-grey-light);
+}
+
+.time_tab_container main{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-grow: 1;
+    user-select: none;
+}
+
+.time_tab_container  ul {
+    /* display: flex; */
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(126px, 1fr));
+   
+  }
+  
+  .time_tab_container li {
+  
+    width: 100%;
+    position: relative;
+
+    cursor: pointer;
+    /* height: 23px; */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex: 1;
+
+    position: relative;
+    user-select: none;
+  }
+  
+  .underline {
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: var(--text-highlight);
+  }
+  
+ .selected {
+color: var(--text-highlight);
+position: relative;
+  }
+  
+  /* time display */
+
+  .time_display{
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(126px, 1fr));
+  }
+
+  .time_display .time_display_content{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .time_display .time_display_content p{
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+    color: var(--text-grey-light);
+
+  }
+  .time_display .time_display_content h6{
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+    color: var(--text-grey-white);
+
+  }
