@@ -4,7 +4,7 @@ import moment from 'moment';
 import { DetailedHTMLProps, HTMLAttributes, useCallback, useEffect, useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
-import { formatDollarAmountAxis } from '../../utils/numbers';
+import { formatAmountChartData, formatDollarAmountAxis } from '../../utils/numbers';
 import { CandleData } from '../../utils/state/graphDataSlice';
 import {
     setLimitPrice,
@@ -236,15 +236,15 @@ export default function Chart(props: ChartData) {
     useEffect(() => {
         const nodes = d3.select(d3Yaxis.current).select('svg').selectAll('.tick').nodes();
         nodes.forEach((res) => {
-            if (d3.select(res).text() === formattedTextData(market[0].value)) {
+            if (d3.select(res).text() === formatAmountChartData(market[0].value)) {
                 d3.select(res)
                     .attr('filter', 'url(#marketBg)')
                     .select('text')
                     .attr('class', 'market');
             } else if (
-                d3.select(res).text() === formattedTextData(limit[0].value) ||
-                d3.select(res).text() === formattedTextData(ranges[0].value) ||
-                d3.select(res).text() === formattedTextData(ranges[1].value)
+                d3.select(res).text() === formatAmountChartData(limit[0].value) ||
+                d3.select(res).text() === formatAmountChartData(ranges[0].value) ||
+                d3.select(res).text() === formatAmountChartData(ranges[1].value)
             ) {
                 d3.select(res)
                     .attr('id', 'yText')
@@ -1089,7 +1089,7 @@ export default function Chart(props: ChartData) {
             const _yAxis = d3fc
                 .axisRight()
                 .scale(scaleData.yScale)
-                .tickFormat((d: any) => formattedTextData(d));
+                .tickFormat((d: any) => formatAmountChartData(d));
 
             setYaxis(() => {
                 return _yAxis;
@@ -2131,7 +2131,7 @@ export default function Chart(props: ChartData) {
                     yAxisText
                         .append('text')
                         .attr('class', 'yCrossHairText')
-                        .text(formattedTextData(scaleData.yScale.invert(event.offsetY)));
+                        .text(formatAmountChartData(scaleData.yScale.invert(event.offsetY)));
 
                     render();
                 });
