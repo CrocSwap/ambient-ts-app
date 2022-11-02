@@ -1,23 +1,21 @@
-
-
-
-.active_position_style, .active_transaction_style{
+.active_position_style,
+.active_transaction_style {
     /* background: var(--dark3); */
-  
-    background-image: linear-gradient(to right, rgba(255,255,255,0) 50%, #171d27 50%);
+
+    background-image: linear-gradient(to right, rgba(255, 255, 255, 0) 50%, #171d27 50%);
     background-position: -0% 0;
     background-size: 200% auto;
     transition: background-position 0.5s ease-out;
-  
+
     background-position: -99.99% 0;
-  }
-  
-  .border_left{
+}
+
+.border_left {
     border-left: 1px solid var(--text-grey-white);
-  }
-  
-  .main_list_container{
-      /* width: 100%;
+}
+
+.main_list_container {
+    /* width: 100%;
       overflow: auto;
       overflow-y: scroll;
     max-height: 90%; */
@@ -26,168 +24,147 @@
     overflow-y: scroll;
     overflow-x: hidden;
     /* padding: 0 8px; */
-      position: relative;
-  
-      
-     
-  
-    }
-  
-  
-  
-    .header{
-      background: #012B39;
-      position: sticky;
-      top: 0; /* Don't forget this, required for the stickiness */
-      box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4);
-    }
-    
-    .footer{
-        position: sticky;
-        bottom: 0;
-        box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4);
-    }
-  /* width */
-  .main_list_container::-webkit-scrollbar {
-      width: 4px;
-      height: 4px;
-    }
-    
-    /* Track */
-    .main_list_container::-webkit-scrollbar-track {
-      border-radius: 100vh;
-      background: #1f2937;
-    }
-    
-    /* Handle */
-    .main_list_container::-webkit-scrollbar-thumb {
-      background: var(--title-gradient)
-    }
-  
-  
-  .header{
-   
-      position: sticky;
-      top: 0; /* Don't forget this, required for the stickiness */
-      /* box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4); */
-  
-      background: var(--dark1);
-      border-bottom: 1px solid var(--dark3);
-  }
-  
-  .header li{
-      font-weight: 300;
-  font-size: 10px;
-  line-height: 13px;
-  
-  color: rgba(235, 235, 255, 0.4);
-  }
-  .row_container:hover{
-    background: var(--dark2)
-  }
-  .row_container li{
-      font-weight: 300;
-  font-size: var(--body-size);
-  line-height: var(--body-lh);
-  text-transform: capitalize;
-  
-  
-  
-  
-  }
-  
-  
-      
-  
-     
-      .main_list_container ul {
-        width: 100%;
-        /* table row was living space at end so I changed it to table and added a fixed table layout*/
-        display:table-row;
-        table-layout: fixed;
-        display: table;
-      
-      }
-      
-  
-      
-      .main_list_container ul > li {
-        display:table-cell;
-   
-        /* I commented this out to make the header align center with arrow */
-        width: 100%;
-   
-        padding:.5em 0.4em;
-        
-     
-      }
-      
-    /* } */
-    
-   
-  
-  
-  .align_center{
-      display: flex;
-      flex-direction: row;
-      align-items: center;
-      gap: 4px;
-  }
-  .token_images_account{
+    position: relative;
+}
 
+.header {
+    background: #012b39;
+    position: sticky;
+    top: 0; /* Don't forget this, required for the stickiness */
+    box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4);
+}
+
+.footer {
+    position: sticky;
+    bottom: 0;
+    box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4);
+}
+/* width */
+.main_list_container::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+}
+
+/* Track */
+.main_list_container::-webkit-scrollbar-track {
+    border-radius: 100vh;
+    background: #1f2937;
+}
+
+/* Handle */
+.main_list_container::-webkit-scrollbar-thumb {
+    background: var(--title-gradient);
+}
+
+.header {
+    position: sticky;
+    top: 0; /* Don't forget this, required for the stickiness */
+    /* box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4); */
+
+    background: var(--dark1);
+    border-bottom: 1px solid var(--dark3);
+}
+
+.header li {
+    font-weight: 300;
+    font-size: 10px;
+    line-height: 13px;
+
+    color: rgba(235, 235, 255, 0.4);
+}
+.row_container:hover {
+    background: var(--dark2);
+}
+.row_container li {
+    font-weight: 300;
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+    text-transform: capitalize;
+}
+
+.main_list_container ul {
+    width: 100%;
+    /* table row was living space at end so I changed it to table and added a fixed table layout*/
+    display: table-row;
+    table-layout: fixed;
+    display: table;
+}
+
+.main_list_container ul > li {
+    display: table-cell;
+
+    /* I commented this out to make the header align center with arrow */
+    width: 100%;
+
+    padding: 0.5em 0.4em;
+}
+
+/* } */
+
+.align_center {
     display: flex;
     flex-direction: row;
     align-items: center;
-  
-    
-  }
-  
-  
-  
-  .token_images_account img{
+    gap: 4px;
+}
+.token_images_account {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.token_images_account img {
     width: 25px;
     height: 25px;
     border-radius: 50%;
     margin: 0 2px;
-  
-  
-    
-  }
-  .main_list_container > ul:nth-child(1){
-    z-index: 2;
-  }
-
-  .leaderboard > ul:nth-child(2){
-    background: linear-gradient(90deg, rgba(212, 175, 55, 0.65) 0%, rgba(255, 170, 0, 0.08) 20%, rgba(209, 142, 10, 0) 100%);
-    transition: background 0.5s ease-out;
-
 }
-  
-  .leaderboard > ul:nth-child(3){
-    background: linear-gradient(90deg, rgba(224, 224, 224, 0.35) 0%, rgba(224, 224, 224, 0.08) 20%, rgba(224, 224, 224, 0) 100%);
+.main_list_container > ul:nth-child(1) {
+    z-index: 2;
+}
+
+.leaderboard > ul:nth-child(2) {
+    background: linear-gradient(
+        90deg,
+        rgba(212, 175, 55, 0.65) 0%,
+        rgba(255, 170, 0, 0.08) 20%,
+        rgba(209, 142, 10, 0) 100%
+    );
     transition: background 0.5s ease-out;
+}
 
-  }
-  .leaderboard > ul:nth-child(4){
-    background: linear-gradient(90deg, rgba(176, 141, 87, 0.35) 0%, rgba(255, 152, 56, 0.08) 20%, rgba(255, 152, 56, 0) 100%);
+.leaderboard > ul:nth-child(3) {
+    background: linear-gradient(
+        90deg,
+        rgba(224, 224, 224, 0.35) 0%,
+        rgba(224, 224, 224, 0.08) 20%,
+        rgba(224, 224, 224, 0) 100%
+    );
     transition: background 0.5s ease-out;
+}
+.leaderboard > ul:nth-child(4) {
+    background: linear-gradient(
+        90deg,
+        rgba(176, 141, 87, 0.35) 0%,
+        rgba(255, 152, 56, 0.08) 20%,
+        rgba(255, 152, 56, 0) 100%
+    );
+    transition: background 0.5s ease-out;
+}
 
-  
-  }
-
-
-  .header li:nth-of-type(3), 
-  .header li:nth-of-type(4),
-  .header li:nth-of-type(5),
-  .header li:nth-of-type(6), 
-  .header li:nth-of-type(7), 
-  .header li:nth-of-type(8){
-
+.header li:nth-of-type(3),
+.header li:nth-of-type(4),
+.header li:nth-of-type(5),
+.header li:nth-of-type(6),
+.header li:nth-of-type(7) {
     text-align: right;
-   
-  }
-  
-  /* .header li:nth-of-type(4){
+}
+
+.header li:nth-of-type(8) {
+    text-align: center;
+}
+
+/* .header li:nth-of-type(4){
     text-align: center;
     
   } */
