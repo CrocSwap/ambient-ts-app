@@ -1,9 +1,14 @@
 import styles from './LimitRate.module.css';
 import { useAppDispatch, useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { TokenIF, TokenPairIF } from '../../../../utils/interfaces/exports';
-import { setLimitPrice } from '../../../../utils/state/tradeDataSlice';
+import { setLimitTick } from '../../../../utils/state/tradeDataSlice';
+import { CrocPoolView } from '@crocswap-libs/sdk';
+import { Dispatch, SetStateAction } from 'react';
+// import { tickToPrice, toDisplayPrice } from '@crocswap-libs/sdk';
 
 interface LimitRatePropsIF {
+    setPriceInputFieldBlurred: Dispatch<SetStateAction<boolean>>;
+    pool: CrocPoolView | undefined;
     tokenPair: TokenPairIF;
     tokensBank: Array<TokenIF>;
     fieldId: string;
@@ -13,19 +18,32 @@ interface LimitRatePropsIF {
     reverseTokens: () => void;
     // onBlur: () => void;
     poolPriceNonDisplay: number | undefined;
-    insideTickDisplayPrice: number;
+    limitTickDisplayPrice: number;
 }
 
 export default function LimitRate(props: LimitRatePropsIF) {
-    const { fieldId, disable } = props;
+    const { pool, setPriceInputFieldBlurred, fieldId, disable, limitTickDisplayPrice } = props;
 
     const dispatch = useAppDispatch();
-    const limitPrice = useAppSelector((state) => state.tradeData).limitPrice;
+    const isDenomBase = useAppSelector((state) => state.tradeData).isDenomBase;
+    // const limitTick = useAppSelector((state) => state.tradeData).limitTick;
 
     const handleLimitChange = (value: string) => {
-        dispatch(setLimitPrice(value));
-        // setLimitRate(value);
+        // const limitNonDisplay = pool?.fromDisplayPrice(parseFloat(value));
+        const limitNonDisplay = isDenomBase
+            ? pool?.fromDisplayPrice(parseFloat(value))
+            : pool?.fromDisplayPrice(1 / parseFloat(value));
+
+        limitNonDisplay?.then((limit) => {
+            const limitPriceInTick = Math.log(limit) / Math.log(1.0001);
+            // console.log({ limitPriceInTick });
+            // console.log({ isDenomBase });
+            dispatch(setLimitTick(limitPriceInTick));
+            setPriceInputFieldBlurred(true);
+        });
     };
+
+    //    onFocusPriceDisplay;
 
     const rateInput = (
         <div className={styles.token_amount}>
@@ -34,12 +52,16 @@ export default function LimitRate(props: LimitRatePropsIF) {
                 onFocus={() => {
                     const limitRateInputField = document.getElementById('limit-rate-quantity');
                     if (limitRateInputField)
-                        (limitRateInputField as HTMLInputElement).value = limitPrice;
+                        (limitRateInputField as HTMLInputElement).value =
+                            limitTickDisplayPrice.toString();
                 }}
                 className={styles.currency_quantity}
                 placeholder='0.0'
                 // onChange={(event) => handleLimitChange(event.target.value)}
-                onBlur={(event) => handleLimitChange(event.target.value)}
+                onBlur={(event) => {
+                    // console.log('blurred');
+                    handleLimitChange(event.target.value);
+                }}
                 type='string'
                 inputMode='decimal'
                 autoComplete='off'

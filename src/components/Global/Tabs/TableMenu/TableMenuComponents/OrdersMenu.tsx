@@ -11,20 +11,24 @@ import Modal from '../../../../Global/Modal/Modal';
 import styles from './TableMenus.module.css';
 import { useModal } from '../../../../Global/Modal/useModal';
 import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
-import { ILimitOrderState } from '../../../../../utils/state/graphDataSlice';
 import OrderDetails from '../../../../OrderDetails/OrderDetails';
 import OrderRemoval from '../../../../OrderRemoval/OrderRemoval';
 import UseOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 import { CrocEnv } from '@crocswap-libs/sdk';
 import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
+import ClaimOrder from '../../../../ClaimOrder/ClaimOrder';
+import { LimitOrderIF } from '../../../../../utils/interfaces/exports';
+
 // interface for React functional component props
 interface OrdersMenuIF {
     crocEnv: CrocEnv | undefined;
-    limitOrder: ILimitOrderState;
+    limitOrder: LimitOrderIF;
     openGlobalModal: (content: React.ReactNode, title?: string) => void;
     closeGlobalModal: () => void;
     isOwnerActiveAccount?: boolean;
     showSidebar: boolean;
+    isOrderFilled: boolean;
+    isOnPortfolioPage: boolean;
     // orderDetailsProps: any;
 }
 
@@ -39,6 +43,7 @@ export default function OrdersMenu(props: OrdersMenuIF) {
         isOwnerActiveAccount,
         closeGlobalModal,
         showSidebar,
+        // isOnPortfolioPage,
     } = props;
     const [value, copy] = useCopyToClipboard();
     const [openSnackbar, setOpenSnackbar] = useState<boolean>(false);
@@ -51,18 +56,7 @@ export default function OrdersMenu(props: OrdersMenuIF) {
 
     // ---------------------MODAL FUNCTIONALITY----------------
     let modalContent: ReactNode;
-
     let modalTitle;
-
-    // function openRemoveModal() {
-    //     setCurrentModal('remove');
-    //     openModal();
-    // }
-
-    // function openDetailsModal() {
-    //     setCurrentModal('details');
-    //     openModal();
-    // }
 
     // -----------------SNACKBAR----------------
     function handleCopyAddress() {
@@ -89,25 +83,19 @@ export default function OrdersMenu(props: OrdersMenuIF) {
                 closeGlobalModal={closeGlobalModal}
             />,
         );
+    const openClaimModal = () =>
+        openGlobalModal(
+            <ClaimOrder
+                crocEnv={crocEnv}
+                limitOrder={limitOrder}
+                closeGlobalModal={closeGlobalModal}
+            />,
+        );
 
     const openDetailsModal = () =>
         openGlobalModal(
             <OrderDetails limitOrder={limitOrder} closeGlobalModal={closeGlobalModal} />,
         );
-
-    // switch (currentModal) {
-    //     case 'remove':
-    //         // modalContent = <RemoveRange {...removeRangeProps} />;
-    //         modalContent = removalContent;
-    //         modalTitle = 'Limit Order Removal';
-    //         break;
-
-    //     case 'details':
-    //         // modalContent = <RangeDetails {...removeRangeProps} />;
-    //         modalContent = detailsContent;
-    //         modalTitle = 'Limit Order Details';
-    //         break;
-    // }
 
     const mainModal = (
         <Modal onClose={closeModal} title={modalTitle}>
@@ -120,15 +108,19 @@ export default function OrdersMenu(props: OrdersMenuIF) {
     // ------------------  END OF MODAL FUNCTIONALITY-----------------
 
     const view1 = useMediaQuery('(min-width: 1280px)');
-    const view2 = useMediaQuery('(min-width: 1680px)');
+    // const view2 = useMediaQuery('(min-width: 1680px)');
     const view3 = useMediaQuery('(min-width: 2300px)');
 
-    const view1NoSidebar = useMediaQuery('(min-width: 1200px)') && !showSidebar;
+    // const view1NoSidebar = useMediaQuery('(min-width: 1200px)') && !showSidebar;
     const view2WithNoSidebar = useMediaQuery('(min-width: 1680px)') && !showSidebar;
 
     const removeButtonOnClick = () => {
         setShowDropdownMenu(false);
         openRemoveModal();
+    };
+    const claimButtonOnClick = () => {
+        setShowDropdownMenu(false);
+        openClaimModal();
     };
 
     const detailsButtonOnClick = () => {
@@ -137,9 +129,15 @@ export default function OrdersMenu(props: OrdersMenuIF) {
     };
 
     const removeButton =
-        limitOrder && isOwnerActiveAccount ? (
+        limitOrder && isOwnerActiveAccount && !props.isOrderFilled ? (
             <button className={styles.option_button} onClick={removeButtonOnClick}>
                 Remove
+            </button>
+        ) : null;
+    const claimButton =
+        limitOrder && isOwnerActiveAccount && props.isOrderFilled ? (
+            <button className={styles.option_button} onClick={claimButtonOnClick}>
+                Claim
             </button>
         ) : null;
     const copyButton = limitOrder ? (
@@ -152,28 +150,22 @@ export default function OrdersMenu(props: OrdersMenuIF) {
             Details
         </button>
     );
-    // const editButton = userlimitOrder ? (
-    //     <Link className={styles.option_button} to={'/trade/edit'}>
-    //         Edit
-    //     </Link>
-    // ) : null;
 
     const ordersMenu = (
         <div className={styles.actions_menu}>
-            {/* {relimitOrderButton}
-            {editButton} */}
-            {view1 && removeButton}
-            {(view2 || view1NoSidebar) && copyButton}
+            {view1 && claimButton}
+            {/* {view1 && removeButton} */}
+            {/* {(view2 || (view1NoSidebar && !isOnPortfolioPage)) && copyButton} */}
             {(view3 || view2WithNoSidebar) && detailsButton}
         </div>
     );
 
     const menuContent = (
         <div className={styles.menu_column}>
-            {/* {editButton} */}
-            {removeButton}
             {detailsButton}
             {copyButton}
+            {removeButton}
+            {claimButton}
         </div>
     );
 

@@ -117,7 +117,7 @@ text-transform: capitalize;
       /* I commented this out to make the header align center with arrow */
       width: 100%;
  
-      padding:.2em 1em;
+      padding:.2em 0.5em;
       
    
     }
@@ -125,11 +125,39 @@ text-transform: capitalize;
   /* } */
   
  
-
+  .main_list_container > ul:nth-child(1){
+    z-index: 2;
+  }
 
 .align_center{
     display: flex;
     flex-direction: row;
     align-items: center;
     gap: 4px;
+}
+/* .token_images_account{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 4px;
+} */
+.token_images_account{
+
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+
+  
+}
+
+
+
+.token_images_account img{
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  margin: 0 2px;
+
+
+  
 }

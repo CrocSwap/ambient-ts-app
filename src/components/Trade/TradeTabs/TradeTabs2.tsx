@@ -23,6 +23,8 @@ import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
 import { fetchPoolRecentChanges } from '../../../App/functions/fetchPoolRecentChanges';
 
 import { fetchUserRecentChanges } from '../../../App/functions/fetchUserRecentChanges';
+import Leaderboard from './Ranges/Leaderboard';
+import PoolInfo from './PoolInfo/PoolInfo';
 
 interface ITabsProps {
     isUserLoggedIn: boolean;
@@ -261,6 +263,7 @@ export default function TradeTabs2(props: ITabsProps) {
             // const poolSwapsCacheEndpoint = httpGraphCacheServerDomain + '/pool_recent_changes?';
 
             fetchPoolRecentChanges({
+                importedTokens: importedTokens,
                 base: selectedBase,
                 quote: selectedQuote,
                 poolIdx: chainData.poolIndex,
@@ -276,7 +279,10 @@ export default function TradeTabs2(props: ITabsProps) {
             })
                 .then((selectedCandleChangesJson) => {
                     console.log({ selectedCandleChangesJson });
-                    setChangesInSelectedCandle(selectedCandleChangesJson);
+                    if (selectedCandleChangesJson)
+                        setChangesInSelectedCandle(selectedCandleChangesJson);
+                    setOutsideControl(true);
+                    setSelectedInsideTab(0);
                 })
                 .catch(console.log);
             // fetch(
@@ -307,6 +313,10 @@ export default function TradeTabs2(props: ITabsProps) {
     }, [isCandleSelected, filter?.time, lastBlockNumber]);
 
     // -------------------------------DATA-----------------------------------------
+    const [leader, setLeader] = useState('');
+    const [leaderOwnerId, setLeaderOwnerId] = useState('');
+
+    // console.log(leader);
 
     // Props for <Ranges/> React Element
     const rangesProps = {
@@ -333,10 +343,21 @@ export default function TradeTabs2(props: ITabsProps) {
 
         closeGlobalModal: props.closeGlobalModal,
         showSidebar: showSidebar,
+        isOnPortfolioPage: false,
+
+        setLeader: setLeader,
+        setLeaderOwnerId: setLeaderOwnerId,
+    };
+    // Props for <Ranges/> React Element
+    const poolInfoProps = {
+        chainData: chainData,
+        lastBlockNumber: lastBlockNumber,
     };
     // Props for <Transactions/> React Element
     const transactionsProps = {
         isShowAllEnabled: isShowAllEnabled,
+        importedTokens: importedTokens,
+
         changesInSelectedCandle: changesInSelectedCandle,
         tokenMap: tokenMap,
         graphData: graphData,
@@ -349,9 +370,12 @@ export default function TradeTabs2(props: ITabsProps) {
 
         isCandleSelected: isCandleSelected,
         filter: filter,
+        closeGlobalModal: props.closeGlobalModal,
 
         openGlobalModal: props.openGlobalModal,
         showSidebar: showSidebar,
+
+        isOnPortfolioPage: false,
     };
     // Props for <Orders/> React Element
     const ordersProps = {
@@ -366,8 +390,11 @@ export default function TradeTabs2(props: ITabsProps) {
         closeGlobalModal: props.closeGlobalModal,
         setCurrentPositionActive: setCurrentPositionActive,
         showSidebar: showSidebar,
+        isOnPortfolioPage: false,
     };
     // props for <PositionsOnlyToggle/> React Element
+
+    const [showPositionsOnlyToggle, setShowPositionsOnlyToggle] = useState(true);
 
     const positionsOnlyToggleProps = {
         isShowAllEnabled: isShowAllEnabled,
@@ -379,19 +406,43 @@ export default function TradeTabs2(props: ITabsProps) {
         setTransactionFilter: setTransactionFilter,
         expandTradeTable: expandTradeTable,
         setExpandTradeTable: setExpandTradeTable,
+        showPositionsOnlyToggle: showPositionsOnlyToggle,
+        setShowPositionsOnlyToggle: setShowPositionsOnlyToggle,
+        leader: leader,
+        leaderOwnerId: leaderOwnerId,
     };
-
     // data for headings of each of the three tabs
     const tradeTabData = [
         {
             label: 'Transactions',
             content: <Transactions {...transactionsProps} />,
             icon: recentTransactionsImage,
+            showRightSideOption: true,
         },
-        { label: 'Limit Orders', content: <Orders {...ordersProps} />, icon: openOrdersImage },
-        { label: 'Ranges', content: <Ranges {...rangesProps} />, icon: rangePositionsImage },
-        { label: 'Leaderboard', content: <Ranges {...rangesProps} />, icon: rangePositionsImage },
-        { label: 'Info', content: <Ranges {...rangesProps} />, icon: rangePositionsImage },
+        {
+            label: 'Limit Orders',
+            content: <Orders {...ordersProps} />,
+            icon: openOrdersImage,
+            showRightSideOption: true,
+        },
+        {
+            label: 'Ranges',
+            content: <Ranges {...rangesProps} />,
+            icon: rangePositionsImage,
+            showRightSideOption: true,
+        },
+        {
+            label: 'Leaderboard',
+            content: <Leaderboard {...rangesProps} />,
+            icon: rangePositionsImage,
+            showRightSideOption: false,
+        },
+        {
+            label: 'Info',
+            content: <PoolInfo {...poolInfoProps} />,
+            icon: rangePositionsImage,
+            showRightSideOption: false,
+        },
     ];
 
     // -------------------------------END OF DATA-----------------------------------------
@@ -415,6 +466,8 @@ export default function TradeTabs2(props: ITabsProps) {
                     outsideControl={outsideControl}
                     setOutsideControl={setOutsideControl}
                     setSelectedInsideTab={setSelectedInsideTab}
+                    showPositionsOnlyToggle={showPositionsOnlyToggle}
+                    setShowPositionsOnlyToggle={setShowPositionsOnlyToggle}
                 />
             }
         </div>

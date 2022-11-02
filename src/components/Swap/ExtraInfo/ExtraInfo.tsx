@@ -25,6 +25,7 @@ interface ExtraInfoPropsIF {
     isTokenABase: boolean;
     isDenomBase: boolean;
     isOnTradeRoute?: boolean;
+    displayEffectivePriceString: string;
 }
 
 // central react functional component
@@ -32,13 +33,14 @@ export default function ExtraInfo(props: ExtraInfoPropsIF) {
     const {
         // tokenPair,
         priceImpact,
+        displayEffectivePriceString,
         poolPriceDisplay,
         slippageTolerance,
         liquidityProviderFee,
         // quoteTokenIsBuy,
         swapGasPriceinDollars,
         // didUserFlipDenom,
-        isTokenABase,
+        // isTokenABase,
         isOnTradeRoute,
         // isDenomBase,
     } = props;
@@ -56,22 +58,6 @@ export default function ExtraInfo(props: ExtraInfoPropsIF) {
     const baseTokenSymbol = tradeData.baseToken.symbol;
     const quoteTokenSymbol = tradeData.quoteToken.symbol;
 
-    let reverseSlippage: boolean;
-
-    if (isDenomBase) {
-        if (isTokenABase) {
-            reverseSlippage = false;
-        } else {
-            reverseSlippage = true;
-        }
-    } else {
-        if (isTokenABase) {
-            reverseSlippage = true;
-        } else {
-            reverseSlippage = false;
-        }
-    }
-
     const displayPriceWithDenom = isDenomBase ? 1 / poolPriceDisplay : poolPriceDisplay;
 
     const displayPriceString =
@@ -87,58 +73,43 @@ export default function ExtraInfo(props: ExtraInfoPropsIF) {
                   maximumFractionDigits: 2,
               });
 
-    // const priceLimitAfterSlippageAndFee = reverseSlippage
-    //     ? displayPriceWithDenom * (1 + slippageTolerance / 100) * (1 + liquidityProviderFee / 100)
-    //     : displayPriceWithDenom * (1 - slippageTolerance / 100) * (1 - liquidityProviderFee / 100);
+    // console.log({ priceImpact });
 
-    const priceAfterImpact = priceImpact?.finalPrice;
-    const priceAfterImpactWithDenom = priceAfterImpact
-        ? isDenomBase
-            ? priceAfterImpact
-            : 1 / priceAfterImpact
-        : undefined;
+    const finalPriceWithDenom = !isDenomBase
+        ? 1 / (priceImpact?.finalPrice || 1)
+        : priceImpact?.finalPrice || 1;
 
-    const priceLimitAfterImpactAndFee = priceAfterImpactWithDenom
-        ? reverseSlippage
-            ? priceAfterImpactWithDenom * (1 + liquidityProviderFee / 100)
-            : priceAfterImpactWithDenom * (1 - liquidityProviderFee / 100)
-        : undefined;
-
-    // const displayLimitPriceString =
-    //     displayPriceWithDenom === Infinity || displayPriceWithDenom === 0
-    //         ? '…'
-    //         : priceLimitAfterSlippageAndFee < 2
-    //         ? priceLimitAfterSlippageAndFee.toLocaleString(undefined, {
-    //               minimumFractionDigits: 2,
-    //               maximumFractionDigits: 6,
-    //           })
-    //         : priceLimitAfterSlippageAndFee.toLocaleString(undefined, {
-    //               minimumFractionDigits: 2,
-    //               maximumFractionDigits: 2,
-    //           });
-
-    const displayPriceAfterImpactString =
-        !priceLimitAfterImpactAndFee ||
-        priceLimitAfterImpactAndFee === Infinity ||
-        priceLimitAfterImpactAndFee === 0
+    const finalPriceString =
+        finalPriceWithDenom === Infinity || finalPriceWithDenom === 1
             ? '…'
-            : priceLimitAfterImpactAndFee < 2
-            ? priceLimitAfterImpactAndFee.toLocaleString(undefined, {
+            : finalPriceWithDenom < 2
+            ? finalPriceWithDenom.toLocaleString(undefined, {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 6,
               })
-            : priceLimitAfterImpactAndFee.toLocaleString(undefined, {
+            : finalPriceWithDenom.toLocaleString(undefined, {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
               });
 
-    // const priceDisplay = makePriceDisplay(
-    //     tokenPair.dataTokenA,
-    //     tokenPair.dataTokenB,
-    //     isTokenABase,
-    //     poolPriceDisplay,
-    //     didUserFlipDenom,
-    // );
+    const priceImpactNum = !priceImpact?.percentChange
+        ? undefined
+        : isDenomBase
+        ? priceImpact.percentChange * 100
+        : -1 * priceImpact.percentChange * 100;
+
+    const priceImpactString = !priceImpactNum
+        ? '…'
+        : priceImpactNum > 0
+        ? '+' +
+          priceImpactNum.toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 3,
+          })
+        : priceImpactNum.toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 3,
+          });
 
     const extraInfoData = [
         {
@@ -152,21 +123,33 @@ export default function ExtraInfo(props: ExtraInfoPropsIF) {
             title: 'Effective Conversion Rate',
             tooltipTitle: 'Conversion Rate After Swap Impact and Fees',
             data: isDenomBase
-                ? `${displayPriceAfterImpactString} ${quoteTokenSymbol} per ${baseTokenSymbol}`
-                : `${displayPriceAfterImpactString} ${baseTokenSymbol} per ${quoteTokenSymbol}`,
+                ? `${displayEffectivePriceString} ${quoteTokenSymbol} per ${baseTokenSymbol}`
+                : `${displayEffectivePriceString} ${baseTokenSymbol} per ${quoteTokenSymbol}`,
             // data: isDenomBase
             //     ? `${displayLimitPriceString} ${quoteTokenSymbol} per ${baseTokenSymbol}`
             //     : `${displayLimitPriceString} ${baseTokenSymbol} per ${quoteTokenSymbol}`,
         },
         {
+            title: 'Final Price',
+            tooltipTitle: 'Expected Price of the Selected Token Pool After Swap',
+            data: isDenomBase
+                ? `${finalPriceString} ${quoteTokenSymbol} per ${baseTokenSymbol}`
+                : `${finalPriceString} ${baseTokenSymbol} per ${quoteTokenSymbol}`,
+        },
+        {
+            title: 'Price Impact',
+            tooltipTitle: 'Percentage difference between spot price and final price',
+            data: `${priceImpactString}%`,
+        },
+        {
             title: 'Slippage Tolerance',
-            tooltipTitle: 'slippage tolerance explanation',
-            data: `${slippageTolerance}%`,
+            tooltipTitle: 'This can be changed in settings.',
+            data: `±${slippageTolerance}%`,
         },
         {
             title: 'Liquidity Provider Fee',
-            tooltipTitle: 'liquidity provider fee explanation',
-            data: `${liquidityProviderFee}%`,
+            tooltipTitle: `This is a dynamically updated rate to reward ${baseTokenSymbol} / ${quoteTokenSymbol} liquidity providers.`,
+            data: `${liquidityProviderFee * 100}%`,
         },
     ];
     const extraInfoDetails = (
@@ -177,7 +160,19 @@ export default function ExtraInfo(props: ExtraInfoPropsIF) {
                         <div>{item.title}</div>
                         <TooltipComponent title={item.tooltipTitle} />
                     </div>
-                    <div className={styles.data}>{item.data}</div>
+                    <div
+                        className={styles.data}
+                        style={{
+                            color:
+                                item.title === 'Price Impact' && priceImpactNum
+                                    ? Math.abs(priceImpactNum) > 2
+                                        ? '#f6385b'
+                                        : '#15be67'
+                                    : '#bdbdbd',
+                        }}
+                    >
+                        {item.data}
+                    </div>
                 </div>
             ))}
         </div>

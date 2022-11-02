@@ -53,6 +53,9 @@
     --animation-speed: 300ms;
     /* sizes */
     --footer-height: 24px;
+
+
+    
 }
 
 [data-theme='light'] {

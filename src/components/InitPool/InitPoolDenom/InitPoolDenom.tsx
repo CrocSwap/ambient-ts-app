@@ -9,7 +9,7 @@ import { Dispatch, SetStateAction } from 'react';
 interface InitPoolDenomPropsIF {
     setIsDenomBase: Dispatch<SetStateAction<boolean>>;
     isDenomBase: boolean;
-    invertInitialPrice: () => void;
+    invertInitialPrice?: () => void;
     // tokenPair: TokenPairIF;
     // denominationsInBase: boolean;
     // poolPriceDisplay: number | undefined;
@@ -42,7 +42,7 @@ export default function InitPoolDenom(props: InitPoolDenomPropsIF) {
             <button
                 className={!isDenomBase ? styles.active_button : styles.non_active_button}
                 onClick={() => {
-                    invertInitialPrice();
+                    invertInitialPrice ? invertInitialPrice() : null;
                     setIsDenomBase(!isDenomBase);
                 }}
             >
@@ -51,7 +51,7 @@ export default function InitPoolDenom(props: InitPoolDenomPropsIF) {
             <button
                 className={isDenomBase ? styles.active_button : styles.non_active_button}
                 onClick={() => {
-                    invertInitialPrice();
+                    invertInitialPrice ? invertInitialPrice() : null;
                     setIsDenomBase(!isDenomBase);
                 }}
             >

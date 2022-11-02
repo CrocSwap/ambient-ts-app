@@ -22,13 +22,18 @@ import { fetchPoolRecentChanges } from '../../../../App/functions/fetchPoolRecen
 import TransactionHeader from './TransactionsTable/TransactionHeader';
 import TransactionRow from './TransactionsTable/TransactionRow';
 import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
+import { useSortedTransactions } from '../useSortedTxs';
 // import TransactionAccordions from './TransactionAccordions/TransactionAccordions';
 
 interface TransactionsProps {
+    importedTokens: TokenIF[];
+
+    activeAccountTransactionData?: ITransaction[];
+    connectedAccountActive?: boolean;
     isShowAllEnabled: boolean;
     portfolio?: boolean;
     tokenMap: Map<string, TokenIF>;
-    changesInSelectedCandle: ITransaction[];
+    changesInSelectedCandle: ITransaction[] | undefined;
     graphData: graphData;
     chainData: ChainSpec;
     blockExplorer?: string;
@@ -38,14 +43,20 @@ interface TransactionsProps {
     expandTradeTable: boolean;
 
     isCandleSelected: boolean | undefined;
-    filter: CandleData | undefined;
+    filter?: CandleData | undefined;
 
     openGlobalModal: (content: React.ReactNode) => void;
+    closeGlobalModal: () => void;
     showSidebar: boolean;
+    isOnPortfolioPage: boolean;
+
     // setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
 }
 export default function Transactions(props: TransactionsProps) {
     const {
+        importedTokens,
+        activeAccountTransactionData,
+        // connectedAccountActive,
         isShowAllEnabled,
         account,
         changesInSelectedCandle,
@@ -60,6 +71,8 @@ export default function Transactions(props: TransactionsProps) {
         filter,
         showSidebar,
         openGlobalModal,
+        closeGlobalModal,
+        isOnPortfolioPage,
         // setExpandTradeTable,
     } = props;
 
@@ -83,7 +96,7 @@ export default function Transactions(props: TransactionsProps) {
         }
     });
 
-    const changesByPoolMatchingSelectedTokens = changesByPool.filter((tx) => {
+    const changesByPoolWithoutFills = changesByPool.filter((tx) => {
         if (
             tx.base.toLowerCase() === baseTokenAddressLowerCase &&
             tx.quote.toLowerCase() === quoteTokenAddressLowerCase &&
@@ -100,8 +113,22 @@ export default function Transactions(props: TransactionsProps) {
     const dataReceivedByUser = graphData?.changesByUser?.dataReceived;
     const dataReceivedByPool = graphData?.changesByPool?.dataReceived;
 
-    const [transactionData, setTransactionData] = useState(changesByPoolMatchingSelectedTokens);
-    const [dataReceived, setDataReceived] = useState(dataReceivedByPool);
+    const [transactionData, setTransactionData] = useState(
+        isOnPortfolioPage ? activeAccountTransactionData || [] : changesByPoolWithoutFills,
+    );
+
+    // console.log({ transactionData });
+
+    useEffect(() => {
+        // console.log({ isOnPortfolioPage });
+        if (isOnPortfolioPage && activeAccountTransactionData) {
+            // console.log({ activeAccountTransactionData });
+            setTransactionData(activeAccountTransactionData);
+            setDataReceived(true);
+        }
+    }, [isOnPortfolioPage, activeAccountTransactionData]);
+
+    const [dataReceived, setDataReceived] = useState(false);
     // todoJr: Finish this loading logic
     const [isDataLoading, setIsDataLoading] = useState(true);
     const [dataToDisplay, setDataToDisplay] = useState(false);
@@ -109,6 +136,9 @@ export default function Transactions(props: TransactionsProps) {
     // console.log({ transactionData });
 
     const [debouncedIsShowAllEnabled, setDebouncedIsShowAllEnabled] = useState(false);
+
+    const [sortBy, setSortBy, reverseSort, setReverseSort, sortedTransactions] =
+        useSortedTransactions('time', isShowAllEnabled ? changesByPool : transactionData);
 
     // check to see if data is received
     // if it is, set data is loading to false
@@ -121,20 +151,31 @@ export default function Transactions(props: TransactionsProps) {
     // 0xdc31Ee1784292379Fbb2964b3B9C4124D8F89C60
 
     function handleDataReceived() {
-        setIsDataLoading(false);
-        transactionData.length ? setDataToDisplay(true) : setDataToDisplay(false);
+        if (transactionData.length) {
+            setIsDataLoading(false);
+            setDataToDisplay(true);
+        } else {
+            setDataToDisplay(false);
+        }
     }
     function handleUserSelected() {
-        setTransactionData(changesByUserMatchingSelectedTokens);
-        setDataReceived(dataReceivedByUser);
+        // console.log({ changesByUserMatchingSelectedTokens });
+        if (!isOnPortfolioPage) {
+            setTransactionData(changesByUserMatchingSelectedTokens);
+            setDataReceived(dataReceivedByUser);
+        }
     }
     function handlePoolSelected() {
-        setTransactionData(changesByPoolMatchingSelectedTokens);
-        setDataReceived(dataReceivedByPool);
+        if (!isOnPortfolioPage) {
+            // console.log({ changesByPoolWithoutFills });
+            setTransactionData(changesByPoolWithoutFills);
+            setDataReceived(dataReceivedByPool);
+        }
     }
     // console.log({ isCandleSelected });
     useEffect(() => {
-        isCandleSelected
+        // console.log({ changesInSelectedCandle });
+        isCandleSelected && changesInSelectedCandle
             ? setTransactionData(changesInSelectedCandle)
             : // ? setTransactionData(
             //       changesByPool.filter((data) => {
@@ -150,7 +191,7 @@ export default function Transactions(props: TransactionsProps) {
         filter,
         changesInSelectedCandle,
         JSON.stringify(changesByUserMatchingSelectedTokens),
-        JSON.stringify(changesByPoolMatchingSelectedTokens),
+        JSON.stringify(changesByPoolWithoutFills),
     ]);
 
     useEffect(() => {
@@ -159,7 +200,7 @@ export default function Transactions(props: TransactionsProps) {
         dataReceived ? handleDataReceived() : setIsDataLoading(true);
     }, [graphData, transactionData, dataReceived]);
 
-    const isDenomBase = tradeData.isDenomBase;
+    // const isDenomBase = tradeData.isDenomBase;
 
     const baseTokenAddress = tradeData.baseToken.address;
     const quoteTokenAddress = tradeData.quoteToken.address;
@@ -176,7 +217,7 @@ export default function Transactions(props: TransactionsProps) {
     // Get current transactions
     const indexOfLastTransaction = currentPage * transactionsPerPage;
     const indexOfFirstTransaction = indexOfLastTransaction - transactionsPerPage;
-    const currentTransactions = transactionData?.slice(
+    const currentTransactions = sortedTransactions?.slice(
         indexOfFirstTransaction,
         indexOfLastTransaction,
     );
@@ -193,7 +234,7 @@ export default function Transactions(props: TransactionsProps) {
         setCurrentPage(pageNumber);
     };
 
-    const usePaginateDataOrNull = expandTradeTable ? currentTransactions : transactionData;
+    const usePaginateDataOrNull = expandTradeTable ? currentTransactions : sortedTransactions;
 
     // console.log({ transactionData });
 
@@ -206,6 +247,7 @@ export default function Transactions(props: TransactionsProps) {
     useEffect(() => {
         if (isShowAllEnabled) {
             fetchPoolRecentChanges({
+                importedTokens: importedTokens,
                 base: baseTokenAddress,
                 quote: quoteTokenAddress,
                 poolIdx: chainData.poolIndex,
@@ -265,6 +307,7 @@ export default function Transactions(props: TransactionsProps) {
                 // repeat fetch with the interval of 30 seconds
                 const timerId = setInterval(() => {
                     fetchPoolRecentChanges({
+                        importedTokens: importedTokens,
                         base: baseTokenAddress,
                         quote: quoteTokenAddress,
                         poolIdx: chainData.poolIndex,
@@ -323,7 +366,7 @@ export default function Transactions(props: TransactionsProps) {
     const baseTokenCharacter = baseTokenSymbol ? getUnicodeCharacter(baseTokenSymbol) : '';
     const quoteTokenCharacter = quoteTokenSymbol ? getUnicodeCharacter(quoteTokenSymbol) : '';
 
-    const priceCharacter = isDenomBase ? quoteTokenCharacter : baseTokenCharacter;
+    // const priceCharacter = isDenomBase ? quoteTokenCharacter : baseTokenCharacter;
 
     const walID = (
         <>
@@ -345,18 +388,32 @@ export default function Transactions(props: TransactionsProps) {
     );
     const headerColumns = [
         {
+            name: '',
+            className: '',
+            show: isOnPortfolioPage,
+            slug: 'token_images',
+            sortable: false,
+        },
+        {
+            name: 'Pool',
+            className: '',
+            show: isOnPortfolioPage && !showSidebar,
+            slug: 'pool',
+            sortable: false,
+        },
+        {
             name: 'ID',
 
             show: !showColumns,
             slug: 'id',
-            sortable: true,
+            sortable: false,
         },
         {
             name: 'Wallet',
 
             show: !showColumns,
             slug: 'wallet',
-            sortable: true,
+            sortable: isShowAllEnabled,
         },
         {
             name: walID,
@@ -366,25 +423,25 @@ export default function Transactions(props: TransactionsProps) {
             sortable: false,
         },
         {
-            name: `Price ( ${priceCharacter} )`,
+            name: 'Price',
 
             show: !ipadView,
             slug: 'price',
-            sortable: true,
+            sortable: false,
         },
         {
             name: 'Side',
 
             show: !showColumns,
             slug: 'side',
-            sortable: true,
+            sortable: false,
         },
         {
             name: 'Type',
 
             show: !showColumns,
             slug: 'type',
-            sortable: true,
+            sortable: false,
         },
         {
             name: sideType,
@@ -394,21 +451,21 @@ export default function Transactions(props: TransactionsProps) {
             sortable: false,
         },
         {
-            name: 'Value ( $ )',
+            name: 'Value (USD)',
 
             show: true,
             slug: 'value',
             sortable: true,
         },
         {
-            name: `${baseTokenSymbol} ( ${baseTokenCharacter} )`,
+            name: isOnPortfolioPage ? 'Qty A' : `${baseTokenSymbol} ( ${baseTokenCharacter} )`,
 
             show: !showColumns,
             slug: baseTokenSymbol,
             sortable: false,
         },
         {
-            name: `${quoteTokenSymbol} ( ${quoteTokenCharacter} )`,
+            name: isOnPortfolioPage ? 'Qty B' : `${quoteTokenSymbol} ( ${quoteTokenCharacter} )`,
 
             show: !showColumns,
             slug: quoteTokenSymbol,
@@ -430,9 +487,6 @@ export default function Transactions(props: TransactionsProps) {
             sortable: false,
         },
     ];
-
-    const [sortBy, setSortBy] = useState('default');
-    const [reverseSort, setReverseSort] = useState(false);
 
     const headerColumnsDisplay = (
         <ul className={styles.header}>
@@ -474,17 +528,20 @@ export default function Transactions(props: TransactionsProps) {
             showColumns={showColumns}
             showSidebar={showSidebar}
             blockExplorer={blockExplorer}
+            closeGlobalModal={closeGlobalModal}
+            isOnPortfolioPage={isOnPortfolioPage}
         />
     ));
 
     const noData = <div className={styles.no_data}>No Data to Display</div>;
     const transactionDataOrNull = dataToDisplay ? rowItemContent : noData;
 
+    const expandStyle = expandTradeTable ? 'calc(100vh - 10rem)' : '250px';
+
+    const portfolioPageStyle = props.isOnPortfolioPage ? 'calc(100vh - 19.5rem)' : expandStyle;
+
     return (
-        <main
-            className={`${styles.main_list_container} `}
-            style={{ height: expandTradeTable ? 'calc(100vh - 10rem)' : '250px' }}
-        >
+        <main className={styles.main_list_container} style={{ height: portfolioPageStyle }}>
             {headerColumnsDisplay}
             {isDataLoading ? <TransactionsSkeletons /> : transactionDataOrNull}
             {footerDisplay}

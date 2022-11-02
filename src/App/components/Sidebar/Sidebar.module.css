@@ -1,7 +1,10 @@
+
+
+
 .sidebar {
     position: fixed;
     background-color: var(--dark1);
-    transition: width var(--animation-speed) ease;
+    transition: all var(--animation-speed) ease-in-out;
 
     overflow: scroll;
     padding: 0 4px;
@@ -32,7 +35,7 @@
     margin: 0;
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    /* gap: 1rem; */
     align-items: center;
     /* height: calc(100% - 4rem); */
 }
@@ -49,13 +52,18 @@
 
 .sidebar_link {
     display: flex;
+  
     align-items: center;
     height: 28px;
-    /* padding: 4px 0; */
     border-bottom: 1px solid #171d27;
-
+    /* padding: 4px 0; */
+    
     cursor: pointer;
 }
+
+
+
+
 
 .align_center {
     display: flex;
@@ -131,7 +139,7 @@
     width: 100%;
 }
 
-.logo {
+/* .logo {
     margin-bottom: 1rem;
     text-align: center;
     color: var(--text-secondary);
@@ -141,9 +149,9 @@
 
     display: flex;
     justify-content: center;
-}
+} */
 
-.logo svg {
+/* .logo svg {
     transform: rotate(0deg);
     transition: all var(--animation-speed) ease-in-out;
 }
@@ -155,7 +163,7 @@
 .sidebar_active .logo {
     display: flex;
     justify-content: flex-end;
-}
+} */
 
 /* SEARCH CONTAINER */
 
@@ -201,9 +209,7 @@
         z-index: 2;
     }
 
-    .logo {
-        display: none;
-    }
+ 
 
     .sidebar_nav {
         flex-direction: row;
@@ -216,9 +222,7 @@
         display: none;
     }
 
-    main {
-        margin: 0;
-    }
+  
 }
 
 /* Large screens */
@@ -249,7 +253,7 @@
     .sidebar_active .search_container {
         background-color: var(--dark3);
         border-radius: var(--border-radius);
-        height: 24px;
+        height: 28px;
     }
     .sidebar_active .search__box {
         width: 100%;
@@ -267,13 +271,8 @@
         display: inline;
     }
 
-    .sidebar_active .logo svg {
-        margin-left: 11rem;
-    }
 
-    .sidebar_active .logo_text {
-        left: 0px;
-    }
+
 
     .sidebar:hover .search_container {
         background-color: var(--dark3);
@@ -302,11 +301,12 @@
         height: calc(100% - 56px);
     }
     .main_search_container {
+       
         display: flex;
         flex-direction: row;
-        gap: 4px;
         align-items: center;
-        /* background: red; */
+        gap: 4px;
+ 
     }
 
     .sidebar_active .search_container {
@@ -314,7 +314,9 @@
 
         justify-content: center;
         align-items: center;
+        gap: 4px;
     }
+  
 
     .sidebar_item_content {
         width: 100%;

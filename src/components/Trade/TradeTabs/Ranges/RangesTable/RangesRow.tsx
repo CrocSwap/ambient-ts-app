@@ -9,6 +9,8 @@ import RangesMenu from '../../../../Global/Tabs/TableMenu/TableMenuComponents/Ra
 import RangeDetails from '../../../../RangeDetails/RangeDetails';
 import { DefaultTooltip } from '../../../../Global/StyledTooltip/StyledTooltip';
 import { NavLink } from 'react-router-dom';
+import Medal from '../../../../Global/Medal/Medal';
+import NoTokenIcon from '../../../../Global/NoTokenIcon/NoTokenIcon';
 
 interface RangesRowPropsIF {
     isUserLoggedIn: boolean;
@@ -35,10 +37,14 @@ interface RangesRowPropsIF {
     // blockExplorer: string | undefined;
     isShowAllEnabled: boolean;
     position: PositionIF;
+    rank?: number;
     currentPositionActive: string;
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
     openGlobalModal: (content: React.ReactNode) => void;
     closeGlobalModal: () => void;
+    isOnPortfolioPage: boolean;
+    isLeaderboard?: boolean;
+    idx: number;
 }
 
 export default function RangesRow(props: RangesRowPropsIF) {
@@ -51,6 +57,9 @@ export default function RangesRow(props: RangesRowPropsIF) {
         currentPositionActive,
         setCurrentPositionActive,
         openGlobalModal,
+        isOnPortfolioPage,
+        isLeaderboard,
+        // idx,
     } = props;
 
     const {
@@ -127,6 +136,7 @@ export default function RangesRow(props: RangesRowPropsIF) {
         quoteTokenBalance: props.quoteTokenBalance,
         baseTokenDexBalance: props.baseTokenDexBalance,
         quoteTokenDexBalance: props.quoteTokenDexBalance,
+        isOnPortfolioPage: props.isOnPortfolioPage,
     };
 
     const openDetailsModal = () => {
@@ -197,6 +207,60 @@ export default function RangesRow(props: RangesRowPropsIF) {
         </DefaultTooltip>
     );
 
+    const baseTokenLogoComponent =
+        baseTokenLogo !== '' ? (
+            <img src={baseTokenLogo} alt='base token' width='15px' />
+        ) : (
+            <NoTokenIcon tokenInitial={position.baseSymbol.charAt(0)} width='30px' />
+        );
+
+    const quoteTokenLogoComponent =
+        quoteTokenLogo !== '' ? (
+            <img src={quoteTokenLogo} alt='quote token' width='15px' />
+        ) : (
+            <NoTokenIcon tokenInitial={position.quoteSymbol.charAt(0)} width='30px' />
+        );
+
+    const tokensTogether = (
+        <div
+            style={{
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: '4px',
+            }}
+        >
+            {baseTokenLogoComponent}
+            {quoteTokenLogoComponent}
+        </div>
+    );
+
+    // portfolio page li element ---------------
+    const accountTokenImages = (
+        <li className={styles.token_images_account}>
+            {/* {baseTokenLogoComponent}
+            {quoteTokenLogoComponent} */}
+            {tokensTogether}
+            {/* <p>hello</p> */}
+        </li>
+    );
+
+    const poolName = (
+        <li className='base_color'>
+            {baseTokenSymbol} / {quoteTokenSymbol}
+        </li>
+    );
+    // end of portfolio page li element ---------------
+
+    // Leaderboard content--------------------------------
+
+    const idDisplay = !showColumns && IDWithTooltip;
+    const displayIDorRanking = isLeaderboard
+        ? !showColumns && <Medal ranking={props.rank ?? 80} />
+        : idDisplay;
+
+    // End of Leaderboard content--------------------------------
+
     return (
         <ul
             className={`${styles.row_container} ${activePositionStyle} ${userPositionStyle}`}
@@ -207,7 +271,9 @@ export default function RangesRow(props: RangesRowPropsIF) {
             }
             id={positionDomId}
         >
-            {!showColumns && IDWithTooltip}
+            {isOnPortfolioPage && accountTokenImages}
+            {isOnPortfolioPage && !props.showSidebar && poolName}
+            {displayIDorRanking}
             {!showColumns && walletWithTooltip}
             {showColumns && (
                 <li data-label='id'>
@@ -237,7 +303,7 @@ export default function RangesRow(props: RangesRowPropsIF) {
             )}
             <li onClick={openDetailsModal} data-label='value' className='gradient_text'>
                 {' '}
-                {usdValue}
+                {'$' + usdValue}
             </li>
 
             {!showColumns && (
@@ -255,12 +321,12 @@ export default function RangesRow(props: RangesRowPropsIF) {
                     <p className={styles.align_center}>
                         {' '}
                         <img src={baseTokenLogo} alt='' width='15px' />
-                        {baseDisplay}{' '}
+                        {baseTokenLogoComponent}
                     </p>
 
                     <p className={styles.align_center}>
                         {' '}
-                        <img src={quoteTokenLogo} alt='' width='15px' />
+                        {quoteTokenLogoComponent}
                         {quoteDisplay}
                     </p>
                 </li>

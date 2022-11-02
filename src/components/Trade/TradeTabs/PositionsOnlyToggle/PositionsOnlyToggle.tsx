@@ -3,7 +3,8 @@ import { Dispatch, SetStateAction } from 'react';
 import Toggle2 from '../../../Global/Toggle/Toggle2';
 import { MdExpand, MdCloseFullscreen } from 'react-icons/md';
 import { CandleData } from '../../../../utils/state/graphDataSlice';
-
+import { GiLaurelsTrophy } from 'react-icons/gi';
+import { NavLink } from 'react-router-dom';
 interface PositionsOnlyToggleProps {
     isShowAllEnabled: boolean;
     isAuthenticated: boolean;
@@ -16,6 +17,11 @@ interface PositionsOnlyToggleProps {
     expandTradeTable: boolean;
     setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
     currentTab?: string;
+
+    showPositionsOnlyToggle?: boolean;
+    setShowPositionsOnlyToggle?: Dispatch<SetStateAction<boolean>>;
+    leader: string;
+    leaderOwnerId: string;
 }
 
 export default function PositionsOnlyToggle(props: PositionsOnlyToggleProps) {
@@ -29,6 +35,10 @@ export default function PositionsOnlyToggle(props: PositionsOnlyToggleProps) {
         setHasInitialized,
         expandTradeTable,
         setExpandTradeTable,
+        showPositionsOnlyToggle,
+        leader,
+        leaderOwnerId,
+        // setShowPositionsOnlyToggle
     } = props;
 
     // console.log(props);
@@ -38,10 +48,25 @@ export default function PositionsOnlyToggle(props: PositionsOnlyToggleProps) {
             {expandTradeTable ? <MdCloseFullscreen /> : <MdExpand />}
         </div>
     );
+    // <NavLink to={`/${ownerId}`}>View Account</NavLink>
+
+    // console.log(leaderOwnerId);
+    const leaderName = (
+        <NavLink to={`/${leaderOwnerId}`} className={styles.leader}>
+            <h3>{leader}</h3>
+            <GiLaurelsTrophy size={25} color='#d4af37' />
+        </NavLink>
+    );
+
+    if (leader !== '' && !showPositionsOnlyToggle) return leaderName;
 
     return (
         <div className={styles.main_container}>
-            <div className={styles.options_toggle}>
+            <div
+                className={`${styles.options_toggle} ${
+                    !showPositionsOnlyToggle && styles.disable_right
+                }`}
+            >
                 {/* <p>{isShowAllEnabled ? 'All ' + label : 'My ' + label}</p> */}
 
                 <p>{`All ${props.currentTab}`}</p>

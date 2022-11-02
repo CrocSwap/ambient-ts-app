@@ -22,12 +22,12 @@ import {
     setLimitOrdersByPool,
     CandlesByPoolAndDuration,
     CandleData,
-    ILimitOrderState,
     // ITransaction,
     addChangesByUser,
     setLastBlock,
     addLimitOrderChangesByUser,
     ITransaction,
+    setLeaderboardByPool,
     // ChangesByUser,
 } from '../utils/state/graphDataSlice';
 import { ethers } from 'ethers';
@@ -63,7 +63,7 @@ import './App.css';
 import { useAppDispatch, useAppSelector } from '../utils/hooks/reduxToolkit';
 import { defaultTokens } from '../utils/data/defaultTokens';
 import initializeUserLocalStorage from './functions/initializeUserLocalStorage';
-import { TokenIF, TokenListIF, PositionIF } from '../utils/interfaces/exports';
+import { LimitOrderIF, TokenIF, TokenListIF, PositionIF } from '../utils/interfaces/exports';
 import { fetchTokenLists } from './functions/fetchTokenLists';
 import {
     resetTokens,
@@ -73,6 +73,7 @@ import {
     setAdvancedMode,
     setDenomInBase,
     setDidUserFlipDenom,
+    setLiquidityFee,
     setPrimaryQuantityRange,
     setSimpleRangeWidth,
 } from '../utils/state/tradeDataSlice';
@@ -118,6 +119,8 @@ import { fetchPoolRecentChanges } from './functions/fetchPoolRecentChanges';
 import { fetchUserRecentChanges } from './functions/fetchUserRecentChanges';
 import { getTransactionData } from './functions/getTransactionData';
 import AppOverlay from '../components/Global/AppOverlay/AppOverlay';
+import { getLiquidityFee } from './functions/getLiquidityFee';
+// import PhishingWarning from '../components/Global/PhisingWarning/PhishingWarning';
 
 const cachedFetchAddress = memoizeFetchAddress();
 const cachedFetchNativeTokenBalance = memoizeFetchNativeTokenBalance();
@@ -373,8 +376,8 @@ export default function App() {
     const [favePools, addPoolToFaves, removePoolFromFaves] = useFavePools();
 
     const isPairStable = useMemo(
-        () => checkIsStable(tradeData.tokenA.address, tradeData.tokenA.address, chainData.chainId),
-        [tradeData.tokenA.address, tradeData.tokenA.address, chainData.chainId],
+        () => checkIsStable(tradeData.tokenA.address, tradeData.tokenB.address, chainData.chainId),
+        [tradeData.tokenA.address, tradeData.tokenB.address, chainData.chainId],
     );
 
     // update local state with searchable tokens once after initial load of app
@@ -570,6 +573,11 @@ export default function App() {
         dataTokenB: tradeData.tokenB,
     };
 
+    const pool = useMemo(
+        () => crocEnv?.pool(tradeData.baseToken.address, tradeData.quoteToken.address),
+        [crocEnv, tradeData.baseToken.address, tradeData.quoteToken.address],
+    );
+
     // value for whether a pool exists on current chain and token pair
     // ... true => pool exists
     // ... false => pool does not exist
@@ -683,6 +691,19 @@ export default function App() {
                 setBaseTokenDecimals(tokenPair.dataTokenB.decimals);
                 setQuoteTokenDecimals(tokenPair.dataTokenA.decimals);
             }
+
+            // retrieve pool liquidity provider fee
+
+            getLiquidityFee(
+                sortedTokens[0],
+                sortedTokens[1],
+                chainData.poolIndex,
+                chainData.chainId,
+            )
+                .then((liquidityFeeNum) => {
+                    if (liquidityFeeNum) dispatch(setLiquidityFee(liquidityFeeNum));
+                })
+                .catch(console.log);
 
             // retrieve pool TVL series
             getTvlSeries(
@@ -862,8 +883,71 @@ export default function App() {
                     console.log;
                 }
 
+                // retrieve positions for leaderboard
+                try {
+                    if (httpGraphCacheServerDomain) {
+                        // console.log('fetching leaderboard positions');
+                        const poolPositionsCacheEndpoint =
+                            httpGraphCacheServerDomain + '/annotated_pool_positions?';
+                        fetch(
+                            poolPositionsCacheEndpoint +
+                                new URLSearchParams({
+                                    base: sortedTokens[0].toLowerCase(),
+                                    quote: sortedTokens[1].toLowerCase(),
+                                    poolIdx: chainData.poolIndex.toString(),
+                                    chainId: chainData.chainId,
+                                    ensResolution: 'true',
+                                    omitEmpty: 'true',
+                                    // omitKnockout: 'true',
+                                    addValue: 'true',
+                                    sortByAPY: 'true',
+                                    n: '10',
+                                }),
+                        )
+                            .then((response) => response.json())
+                            .then((json) => {
+                                const leaderboardPositions = json.data;
+
+                                if (leaderboardPositions && crocEnv) {
+                                    // console.log({ poolPositions });
+                                    Promise.all(
+                                        leaderboardPositions.map((position: PositionIF) => {
+                                            return getPositionData(
+                                                position,
+                                                importedTokens,
+                                                crocEnv,
+                                                chainData.chainId,
+                                                lastBlockNumber,
+                                            );
+                                        }),
+                                    )
+                                        .then((updatedPositions) => {
+                                            // console.log({ updatedPositions });
+                                            if (
+                                                JSON.stringify(
+                                                    graphData.leaderboardByPool.positions,
+                                                ) !== JSON.stringify(updatedPositions)
+                                            ) {
+                                                dispatch(
+                                                    setLeaderboardByPool({
+                                                        dataReceived: true,
+                                                        positions: updatedPositions,
+                                                    }),
+                                                );
+                                            }
+                                        })
+                                        .catch(console.log);
+                                }
+                            })
+                            .catch(console.log);
+                    }
+                } catch (error) {
+                    console.log;
+                }
+
                 // retrieve pool recent changes
                 fetchPoolRecentChanges({
+                    importedTokens: importedTokens,
                     base: sortedTokens[0],
                     quote: sortedTokens[1],
                     poolIdx: chainData.poolIndex,
@@ -1563,7 +1647,7 @@ export default function App() {
 
                         if (userLimitOrderStates) {
                             Promise.all(
-                                userLimitOrderStates.map((limitOrder: ILimitOrderState) => {
+                                userLimitOrderStates.map((limitOrder: LimitOrderIF) => {
                                     return getLimitOrderData(limitOrder, importedTokens);
                                 }),
                             ).then((updatedLimitOrderStates) => {
@@ -1729,10 +1813,12 @@ export default function App() {
         isInitialized: isInitialized,
         poolExists: poolExists,
         setTokenPairLocal: setTokenPairLocal,
+        openGlobalModal: openGlobalModal,
     };
 
     // props for <Swap/> React element on trade route
     const swapPropsTrade = {
+        pool: pool,
         crocEnv: crocEnv,
         isUserLoggedIn: isUserLoggedIn,
         account: account,
@@ -1761,10 +1847,12 @@ export default function App() {
         openModalWallet: openModalWallet,
         isInitialized: isInitialized,
         poolExists: poolExists,
+        openGlobalModal: openGlobalModal,
     };
 
     // props for <Limit/> React element on trade route
     const limitPropsTrade = {
+        pool: pool,
         crocEnv: crocEnv,
         isUserLoggedIn: isUserLoggedIn,
         importedTokens: importedTokens,
@@ -1841,39 +1929,6 @@ export default function App() {
         setSidebarManuallySet(true);
     }
 
-    // function handleTabChangedBasedOnRoute() {
-    //     const onTradeRoute = location.pathname.includes('trade');
-
-    //     const marketTabBasedOnRoute = onTradeRoute ? 0 : 0;
-    //     const orderTabBasedOnRoute = onTradeRoute ? 1 : 0;
-    //     const rangeTabBasedOnRoute = onTradeRoute ? 2 : 0;
-    //     setOutsideControl(true);
-    //     if (location.pathname === '/trade/market') {
-    //         setSelectedOutsideTab(marketTabBasedOnRoute);
-    //     } else if (location.pathname === '/trade/limit') {
-    //         setSelectedOutsideTab(orderTabBasedOnRoute);
-    //     } else if (
-    //         location.pathname === '/trade/range' ||
-    //         location.pathname.includes('/trade/edit/')
-    //     ) {
-    //         setSelectedOutsideTab(rangeTabBasedOnRoute);
-    //     } else {
-    //         setSelectedOutsideTab(0);
-    //     }
-    // }
-
-    // useEffect(() => {
-    //     if (location.pathname.includes('account') || location.pathname.includes('analytics')) {
-    //         setShowSidebar(false);
-    //     }
-
-    //     // handleTabChangedBasedOnRoute();
-    // }, [location.pathname]);
-
-    // market - /trade/market
-    // limit - /trade/limit
-    // range - /trade/range
-
     const [selectedOutsideTab, setSelectedOutsideTab] = useState(0);
     const [outsideControl, setOutsideControl] = useState(false);
     const [chatStatus, setChatStatus] = useState(false);
@@ -1884,6 +1939,7 @@ export default function App() {
         isDenomBase: tradeData.isDenomBase,
         showSidebar: showSidebar,
         toggleSidebar: toggleSidebar,
+        setShowSidebar: setShowSidebar,
         chainId: chainData.chainId,
 
         currentTxActiveInTransactions: currentTxActiveInTransactions,
@@ -2001,6 +2057,7 @@ export default function App() {
                     isAppOverlayActive={isAppOverlayActive}
                     setIsAppOverlayActive={setIsAppOverlayActive}
                 />
+                {/* {currentLocation == '/' && <PhishingWarning />} */}
 
                 {currentLocation !== '/404' && <PageHeader {...headerProps} />}
                 {/* <MobileSidebar/> */}
@@ -2023,6 +2080,7 @@ export default function App() {
                             path='trade'
                             element={
                                 <Trade
+                                    pool={pool}
                                     isUserLoggedIn={isUserLoggedIn}
                                     crocEnv={crocEnv}
                                     provider={provider}
@@ -2137,7 +2195,6 @@ export default function App() {
                                     cachedFetchErc20TokenBalances={cachedFetchErc20TokenBalances}
                                     cachedFetchNativeTokenBalance={cachedFetchNativeTokenBalance}
                                     cachedFetchTokenPrice={cachedFetchTokenPrice}
-                                    importedTokens={importedTokens}
                                     ensName={ensName}
                                     lastBlockNumber={lastBlockNumber}
                                     connectedAccount={account ? account : ''}
@@ -2151,6 +2208,23 @@ export default function App() {
                                     userAccount={true}
                                     openGlobalModal={openGlobalModal}
                                     closeGlobalModal={closeGlobalModal}
+                                    importedTokens={importedTokens}
+                                    setImportedTokens={setImportedTokens}
+                                    chainData={chainData}
+                                    currentPositionActive={currentPositionActive}
+                                    setCurrentPositionActive={setCurrentPositionActive}
+                                    account={account ?? ''}
+                                    showSidebar={showSidebar}
+                                    isUserLoggedIn={isUserLoggedIn}
+                                    isAuthenticated={isAuthenticated}
+                                    baseTokenBalance={baseTokenBalance}
+                                    quoteTokenBalance={quoteTokenBalance}
+                                    baseTokenDexBalance={baseTokenDexBalance}
+                                    quoteTokenDexBalance={quoteTokenDexBalance}
+                                    currentTxActiveInTransactions={currentTxActiveInTransactions}
+                                    setCurrentTxActiveInTransactions={
+                                        setCurrentTxActiveInTransactions
+                                    }
                                 />
                             }
                         />
@@ -2163,7 +2237,6 @@ export default function App() {
                                     cachedFetchErc20TokenBalances={cachedFetchErc20TokenBalances}
                                     cachedFetchNativeTokenBalance={cachedFetchNativeTokenBalance}
                                     cachedFetchTokenPrice={cachedFetchTokenPrice}
-                                    importedTokens={importedTokens}
                                     ensName={ensName}
                                     lastBlockNumber={lastBlockNumber}
                                     connectedAccount={account ? account : ''}
@@ -2177,6 +2250,23 @@ export default function App() {
                                     userAccount={false}
                                     openGlobalModal={openGlobalModal}
                                     closeGlobalModal={closeGlobalModal}
+                                    importedTokens={importedTokens}
+                                    setImportedTokens={setImportedTokens}
+                                    chainData={chainData}
+                                    currentPositionActive={currentPositionActive}
+                                    setCurrentPositionActive={setCurrentPositionActive}
+                                    account={account ?? ''}
+                                    showSidebar={showSidebar}
+                                    isUserLoggedIn={isUserLoggedIn}
+                                    isAuthenticated={isAuthenticated}
+                                    baseTokenBalance={baseTokenBalance}
+                                    quoteTokenBalance={quoteTokenBalance}
+                                    baseTokenDexBalance={baseTokenDexBalance}
+                                    quoteTokenDexBalance={quoteTokenDexBalance}
+                                    currentTxActiveInTransactions={currentTxActiveInTransactions}
+                                    setCurrentTxActiveInTransactions={
+                                        setCurrentTxActiveInTransactions
+                                    }
                                 />
                             }
                         />
@@ -2200,7 +2290,6 @@ export default function App() {
                                     cachedFetchErc20TokenBalances={cachedFetchErc20TokenBalances}
                                     cachedFetchNativeTokenBalance={cachedFetchNativeTokenBalance}
                                     cachedFetchTokenPrice={cachedFetchTokenPrice}
-                                    importedTokens={importedTokens}
                                     ensName={ensName}
                                     lastBlockNumber={lastBlockNumber}
                                     connectedAccount={account ? account : ''}
@@ -2214,6 +2303,23 @@ export default function App() {
                                     userAccount={false}
                                     openGlobalModal={openGlobalModal}
                                     closeGlobalModal={closeGlobalModal}
+                                    importedTokens={importedTokens}
+                                    setImportedTokens={setImportedTokens}
+                                    chainData={chainData}
+                                    currentPositionActive={currentPositionActive}
+                                    setCurrentPositionActive={setCurrentPositionActive}
+                                    account={account ?? ''}
+                                    showSidebar={showSidebar}
+                                    isUserLoggedIn={isUserLoggedIn}
+                                    isAuthenticated={isAuthenticated}
+                                    baseTokenBalance={baseTokenBalance}
+                                    quoteTokenBalance={quoteTokenBalance}
+                                    baseTokenDexBalance={baseTokenDexBalance}
+                                    quoteTokenDexBalance={quoteTokenDexBalance}
+                                    currentTxActiveInTransactions={currentTxActiveInTransactions}
+                                    setCurrentTxActiveInTransactions={
+                                        setCurrentTxActiveInTransactions
+                                    }
                                 />
                             }
                         />
