@@ -148,18 +148,20 @@ export default function Limit(props: LimitPropsIF) {
     const isDenomBase = tradeData.isDenomBase;
 
     useEffect(() => {
-        setInitialLoad(true);
+        if (poolPriceNonDisplay !== 0) setInitialLoad(true);
     }, [
         JSON.stringify({
             isDenomBase: isDenomBase,
-            tokenA: tradeData.tokenA.address,
-            tokenB: tradeData.tokenB.address,
+            // tokenA: tradeData.tokenA.address,
+            // tokenB: tradeData.tokenB.address,
+            isPoolPriceZero: poolPriceNonDisplay === 0, // force re-initialization when tokens are changed
         }),
     ]);
 
     useEffect(() => {
         if (initialLoad) {
-            // console.log({ initialLoad });
+            console.log({ initialLoad });
+            console.log({ poolPriceNonDisplay });
             if (!pool) return;
             // if (!provider) return;
             if (!poolPriceNonDisplay) return;
@@ -359,10 +361,11 @@ export default function Limit(props: LimitPropsIF) {
             setPriceInputFieldBlurred(false);
         }
     }, [
+        pool,
         initialLoad,
         chainId,
         limitTick,
-        poolPriceDisplay,
+        poolPriceNonDisplay,
         isSellTokenBase,
         isDenomBase,
         priceInputFieldBlurred,

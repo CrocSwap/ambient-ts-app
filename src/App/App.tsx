@@ -1457,7 +1457,8 @@ export default function App() {
                 // const viewProvider = provider
                 //     ? provider
                 //     : (await new CrocEnv(chainData.chainId).context).provider;
-
+                setPoolPriceNonDisplay(0);
+                setPoolPriceDisplay(0);
                 const spotPrice = await cachedQuerySpotPrice(
                     crocEnv,
                     baseTokenAddress,
@@ -1474,8 +1475,6 @@ export default function App() {
                         quoteTokenDecimals,
                     );
                     setPoolPriceDisplay(displayPrice);
-                } else {
-                    setPoolPriceDisplay(0);
                 }
             })();
         }
