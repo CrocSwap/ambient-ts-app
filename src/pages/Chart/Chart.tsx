@@ -2526,7 +2526,7 @@ export default function Chart(props: ChartData) {
                         <d3fc-svg
                             className='y-axis'
                             ref={d3Yaxis}
-                            style={{ flexGrow: 1.5 }}
+                            style={{ flexGrow: 1 }}
                         ></d3fc-svg>
                     </div>
 
