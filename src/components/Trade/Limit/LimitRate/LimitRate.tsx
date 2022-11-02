@@ -68,6 +68,7 @@ export default function LimitRate(props: LimitRatePropsIF) {
                     if (limitRateInputField)
                         (limitRateInputField as HTMLInputElement).value =
                             limitTickDisplayPrice.toString();
+                    (limitRateInputField as HTMLInputElement).select();
                 }}
                 className={styles.currency_quantity}
                 placeholder='0.0'
