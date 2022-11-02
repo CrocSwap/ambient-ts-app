@@ -35,7 +35,7 @@ export default function LimitExtraInfo(props: LimitExtraInfoPropsIF) {
         orderGasPriceInDollars,
         // quoteTokenIsBuy,
         poolPriceDisplay,
-        slippageTolerance,
+        // slippageTolerance,
         liquidityProviderFee,
         // didUserFlipDenom,
         // isTokenABase,
@@ -198,24 +198,26 @@ export default function LimitExtraInfo(props: LimitExtraInfoPropsIF) {
         },
         {
             title: 'Minimum Rebate Rate',
-            tooltipTitle: 'Minimum Rebate Rate',
+            tooltipTitle:
+                'The minimum provider fee for market orders in this pool. Provider fees are effectively rebated for limit orders.',
             data: '0.05%',
         },
         {
             title: 'Current Rebate Rate',
-            tooltipTitle: 'Current Rebate Rate',
-            data: '0.3%',
-        },
-        {
-            title: 'Slippage Tolerance',
-            tooltipTitle: 'slippage tolerance explanation',
-            data: `${slippageTolerance}%`,
-        },
-        {
-            title: 'Liquidity Provider Fee',
-            tooltipTitle: 'liquidity provider fee explanation',
+            tooltipTitle:
+                'The current provider fee for market orders. Provider fees are effectively rebated for limit orders.',
             data: `${liquidityProviderFee}%`,
         },
+        // {
+        //     title: 'Slippage Tolerance',
+        //     tooltipTitle: 'slippage tolerance explanation',
+        //     data: `${slippageTolerance}%`,
+        // },
+        // {
+        //     title: 'Liquidity Provider Fee',
+        //     tooltipTitle: 'liquidity provider fee explanation',
+        //     data: `${liquidityProviderFee}%`,
+        // },
     ];
 
     const limitExtraInfoDetails = (

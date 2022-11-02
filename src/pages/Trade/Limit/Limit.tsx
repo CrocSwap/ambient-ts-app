@@ -722,7 +722,7 @@ export default function Limit(props: LimitPropsIF) {
                     orderGasPriceInDollars={orderGasPriceInDollars}
                     poolPriceDisplay={poolPriceDisplay || 0}
                     slippageTolerance={slippageTolerancePercentage}
-                    liquidityProviderFee={0}
+                    liquidityProviderFee={tradeData.liquidityFee * 100}
                     quoteTokenIsBuy={true}
                     didUserFlipDenom={tradeData.didUserFlipDenom}
                     isTokenABase={isSellTokenBase}
