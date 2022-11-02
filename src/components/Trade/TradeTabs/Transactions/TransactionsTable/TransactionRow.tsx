@@ -8,6 +8,7 @@ import { NavLink } from 'react-router-dom';
 // import { AiOutlineDash } from 'react-icons/ai';
 import NoTokenIcon from '../../../../Global/NoTokenIcon/NoTokenIcon';
 import IconWithTooltip from '../../../../Global/IconWithTooltip/IconWithTooltip';
+import TransactionDetails from '../../../../Global/TransactionDetails/TransactionDetails';
 interface TransactionRowPropsIF {
     tx: ITransaction;
 
@@ -36,6 +37,8 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
         setCurrentTxActiveInTransactions,
         isShowAllEnabled,
         isOnPortfolioPage,
+        closeGlobalModal,
+        openGlobalModal,
     } = props;
 
     const {
@@ -75,7 +78,8 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
 
     const sideTypeStyle = `${sideType}_style`;
 
-    const openDetailsModal = () => console.log('opening detail modal');
+    const openDetailsModal = () =>
+        openGlobalModal(<TransactionDetails tx={tx} closeGlobalModal={closeGlobalModal} />);
 
     const activeTransactionStyle =
         tx.id === currentTxActiveInTransactions ? styles.active_transaction_style : '';

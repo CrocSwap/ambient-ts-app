@@ -37,7 +37,7 @@ export default function TransactionsMenu(props: TransactionMenuIF) {
         showSidebar,
         openGlobalModal,
         closeGlobalModal,
-        isOnPortfolioPage,
+        // isOnPortfolioPage,
     } = props;
 
     const [value, copy] = useCopyToClipboard();
@@ -165,9 +165,10 @@ export default function TransactionsMenu(props: TransactionMenuIF) {
             {/* {notRelevantButton && editButton} */}
             {/* {notRelevantButton && removeButton} */}
             {/* {notRelevantButton && harvestButton} */}
-            {(isOnPortfolioPage && !showSidebar) || (!isOnPortfolioPage && detailsButton)}
+            {/* {(isOnPortfolioPage && !showSidebar) || (!isOnPortfolioPage && detailsButton)} */}
             {view2 && explorerButton}
-            {(!showSidebar && !isOnPortfolioPage) || (view2 && copyButton)}
+            {/* {(!showSidebar && !isOnPortfolioPage) || (view2 && copyButton)} */}
+            {copyButton}
         </div>
     );
 
@@ -176,9 +177,9 @@ export default function TransactionsMenu(props: TransactionMenuIF) {
             {/* {editButton} */}
             {/* {removeButton} */}
             {/* {harvestButton} */}
-            {/* {detailsButton} */}
+            {detailsButton}
             {explorerButton}
-            {copyButton}
+            {/* {copyButton} */}
         </div>
     );
 
