@@ -74,6 +74,5 @@ export const formatAmount = (num: number | undefined, digits = 2) => {
             billion: 'B',
         },
     });
-    console.error({ a });
     return a;
 };
