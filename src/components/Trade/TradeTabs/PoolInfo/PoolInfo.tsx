@@ -71,6 +71,8 @@ export default function PoolInfo(props: PoolInfoPropsIF) {
     const quoteTokenAddress = tradeData.quoteToken.address;
     const baseTokenSymbol = tradeData.baseToken.symbol;
     const quoteTokenSymbol = tradeData.quoteToken.symbol;
+    const baseTokenlogo = tradeData.baseToken.logoURI;
+    const quoteTokenlogo = tradeData.quoteToken.logoURI;
 
     const [poolVolume, setPoolVolume] = useState<string | undefined>();
     const [poolTvl, setPoolTvl] = useState<string | undefined>();
@@ -200,24 +202,58 @@ export default function PoolInfo(props: PoolInfoPropsIF) {
         </div>
     );
 
+    const baseTokenDisplay = (
+        <section className={styles.token_display_container}>
+            <div className={styles.token_info}>
+                <img src={baseTokenlogo} alt={baseTokenSymbol} />
+                <h3>{baseTokenSymbol}</h3>
+                <p>Ethereum</p>
+            </div>
+            <a
+                target='_blank'
+                rel='noreferrer'
+                href={
+                    baseTokenAddress === ZERO_ADDRESS
+                        ? 'https://goerli.etherscan.io/address/0xfafcd1f5530827e7398b6d3c509f450b1b24a209'
+                        : `https://goerli.etherscan.io/token/${baseTokenAddress}`
+                }
+            >
+                <p> {baseAddressWithTooltip}</p>
+                <BsArrowUpRight size={10} />
+            </a>
+            <p>Balance</p>
+            <h3>169.00</h3>
+            <p>Value</p>
+            <h3>$420,000</h3>
+        </section>
+    );
+
     return (
-        <main className={styles.container}>
-            {/* <p>
-                {baseTokenSymbol}: {baseTokenAddress}
-            </p>
-            <p>
-                {quoteTokenSymbol}: {quoteTokenAddress}
-            </p> */}
-            {/* <p>24h Swap Volume: {poolVolume || '...'}</p>
-            <p>Total Value Locked (TVL): {poolTvl || '...'}</p> */}
-            {/* <p>Total Fees: {poolFees || '...'}</p> */}
-            {/* <p>Total APR: {poolAPR || '...'}</p> */}
-            {poolComposition}
+        <main className={styles.container} style={{ height: '250px' }}>
+            {/* {poolComposition} */}
             <div className={styles.content}>
-                <PoolInfoCard title='24h Swap Volume:' data={poolVolume || '...'} />
+                {/* <PoolInfoCard title='24h Swap Volume:' data={poolVolume || '...'} />
                 <PoolInfoCard title='24h Fees:' data={poolFees || '...'} />
                 <PoolInfoCard title='TVL:' data={poolTvl || '...'} />
-                <PoolInfoCard title={aprTitle} data={poolAPR || '...'} />
+                <PoolInfoCard title={aprTitle} data={poolAPR || '...'} /> */}
+                <section>first card</section>
+                <section>seconf card</section>
+                <section className={styles.right_container}>
+                    <div className={styles.right_container_top}>
+                        <PoolInfoCard title='24h Fees:' data={poolFees || '...'} />
+                        <PoolInfoCard title='24h Fees:' data={poolFees || '...'} />
+                        <PoolInfoCard title='24h Fees:' data={poolFees || '...'} />
+                        <PoolInfoCard title='24h Fees:' data={poolFees || '...'} />
+                        <PoolInfoCard title='24h Fees:' data={poolFees || '...'} />
+                        <PoolInfoCard title='24h Fees:' data={poolFees || '...'} />
+                        <PoolInfoCard title='24h Fees:' data={poolFees || '...'} />
+                        <PoolInfoCard title='24h Fees:' data={poolFees || '...'} />
+                    </div>
+                    <div>
+                        Lorem ipsum dolor sit amet consectetur, adipisicing elit. Velit consequuntur
+                        dolorum corrupti voluptate soluta modi dicta debitis ullam aliquam rerum?
+                    </div>
+                </section>
             </div>
         </main>
     );
