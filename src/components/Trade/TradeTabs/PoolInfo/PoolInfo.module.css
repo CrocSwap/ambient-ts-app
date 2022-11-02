@@ -1,14 +1,13 @@
 .container{
     display: flex;
     flex-direction: column;
-    /* justify-content: center;
-    align-items: center; */
+
     gap: 4px;
     width: 100%;
 
   max-height: 90%;
   overflow-y: scroll;
-  overflow-x: hidden;
+
   background: url('../../../../assets/images/backgrounds/background.png') no-repeat ;
   -webkit-background-size: cover;
   -moz-background-size: cover;
@@ -17,22 +16,37 @@
 
   padding: 0.5rem 1rem;
 
+
 }
 
 .container .content{
-    /* --auto-grid-min-size: 10rem;
-    display: grid;
-    grid-gap: 2rem;
-    grid-template-columns: repeat(auto-fill, minmax(var(--auto-grid-min-size), 1fr)); */
 
-width: 100%;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    gap: 1rem;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(2, 215px) auto;
+    gap: 8px;
+
   
+}
+
+
+
+.content section{
+   
+    width: 100%;
+ min-height: 237px;
+}
+.right_container{
+    display: flex;
+    flex-direction: column;
+    gap: 8px
+}
+
+.right_container_top{
+    padding: 0 4px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 8px;
+
 }
 
 .card_container{
@@ -44,9 +58,41 @@ width: 100%;
    
     padding: 0.5rem 1rem;
     border-radius: 4px;
-    /* width: 16rem; */
-    width: 10rem;
 
+
+}
+
+.token_display_container{
+    display: flex;
+flex-direction: column;
+padding: 8px 16px;
+gap: 8px;
+background: rgba(23, 29, 39, 0.3);
+
+backdrop-filter: blur(10px);
+border-radius: 4px;
+}
+.token_display_container .token_info{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 4px;
+}
+.token_display_container  img{
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+}
+.token_display_container  h3{
+    font-weight: 200;
+    font-size: var(--header2-size);
+    line-height: var(--header2-lh);
+    color: var(--text-grey-white)
+}
+.token_display_container  p{
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+    color: var(--text-grey-light);
 }
 
 .card_container .title{
@@ -115,3 +161,4 @@ width: 100%;
 .right{
     text-align: end;
 }
+
