@@ -1,5 +1,6 @@
 export const tokenListURIs = {
     ambient: '/ambient-token-list.json',
+    testnet: '/testnet-token-list.json',
     // broken: '/broken-list.json',
     uniswap: 'https://tokens.uniswap.org',
     // coinmarketcap: 'https://api.coinmarketcap.com/data-api/v3/uniswap/all.json',
