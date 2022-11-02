@@ -59,7 +59,7 @@ export const useSoloSearch = (
 
         // fn to find token in an array of tokens by address and chain ID
         const findToken = (tokens: TokenIF[]) => tokens.find(
-            (token) => token.address === input && token.chainId === parseInt(chainId)
+            (token) => token.address.toLowerCase() === validatedInput && token.chainId === parseInt(chainId)
         );
 
         // fn to update local state if a token is found

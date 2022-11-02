@@ -1,4 +1,4 @@
-import { useMemo, Dispatch, SetStateAction } from 'react';
+import { useMemo, Dispatch, SetStateAction, useEffect } from 'react';
 import { TokenListIF, TokenIF } from '../../../utils/interfaces/exports';
 import TokenSelect from '../TokenSelect/TokenSelect';
 import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
@@ -46,8 +46,10 @@ export const SoloTokenSelect = (props: propsIF) => {
 
     const importedTokenButtons = tokensBank
         .filter((token: TokenIF) => token.chainId === parseInt(chainId))
-        .filter((token: TokenIF) => (searchedToken ? searchedToken.address === token.address : true))
-        .map((token: TokenIF) => (
+        .filter((token: TokenIF) => (
+            searchedToken
+                ? searchedToken.address.toLowerCase() === token.address.toLowerCase() : true
+        )).map((token: TokenIF) => (
             <TokenSelect
                 key={JSON.stringify(token)}
                 token={token}
@@ -59,6 +61,8 @@ export const SoloTokenSelect = (props: propsIF) => {
                 isOnPortfolio={true}
             />
         ));
+    
+    useEffect(() => console.log(importedTokenButtons), [importedTokenButtons]);
 
     return (
         <>
