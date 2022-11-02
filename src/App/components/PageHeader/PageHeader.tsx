@@ -22,6 +22,7 @@ import { useUrlParams } from './useUrlParams';
 import MobileSidebar from '../../../components/Global/MobileSidebar/MobileSidebar';
 import NotificationCenter from '../../../components/Global/NotificationCenter/NotificationCenter';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
+import { shortenAddress } from '../../../utils';
 
 interface HeaderPropsIF {
     isUserLoggedIn: boolean;
@@ -179,10 +180,25 @@ export default function PageHeader(props: HeaderPropsIF) {
     const isDenomBase = tradeData.isDenomBase;
 
     useEffect(() => {
-        // console.log({ location });
-        // console.log({ urlParams });
-        if (location.pathname.includes('account')) {
-            document.title = 'account - ambient.finance';
+        const path = location.pathname;
+
+        const pathNoLeadingSlash = path.slice(1);
+        // console.log({ pathNoLeadingSlash });
+
+        const isAddressEns = pathNoLeadingSlash?.endsWith('.eth');
+        const isAddressHex =
+            pathNoLeadingSlash?.startsWith('0x') && pathNoLeadingSlash?.length == 42;
+
+        const isPathValidAddress = path && (isAddressEns || isAddressHex);
+        // console.log({ isPathValidAddress });
+
+        if (pathNoLeadingSlash === 'account') {
+            document.title = 'my account - ambient.finance';
+        } else if (isPathValidAddress) {
+            if (isAddressEns) {
+                document.title = `${pathNoLeadingSlash} - ambient.finance`;
+            } else if (isAddressHex)
+                document.title = `${shortenAddress(pathNoLeadingSlash, 5)} - ambient.finance`;
         } else if (location.pathname.includes('swap') || location.pathname.includes('trade')) {
             document.title = isDenomBase
                 ? `${baseSymbol}/${quoteSymbol} - ambient.finance`
