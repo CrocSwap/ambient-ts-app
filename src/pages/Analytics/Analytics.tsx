@@ -8,6 +8,7 @@ import TopTokens from '../../components/Analytics/TopTokens/TopTokens';
 import TopPools from '../../components/Analytics/TopPools/TopPools';
 import TrendingPools from '../../components/Analytics/TrendingPools/TrendingPools';
 import TopRanges from '../../components/Analytics/TopRanges/TopRanges';
+import AnalyticsTransactions from '../../components/Analytics/AnalyticsTransactions/AnalyticsTransactions';
 
 interface AnalyticsProps {
     setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
@@ -37,6 +38,7 @@ export default function Analytics(props: AnalyticsProps) {
             <TopPools />
             <TopRanges />
             <TrendingPools />
+            <AnalyticsTransactions />
         </main>
     );
 }
