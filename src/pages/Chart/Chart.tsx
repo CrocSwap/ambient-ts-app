@@ -4,7 +4,7 @@ import moment from 'moment';
 import { DetailedHTMLProps, HTMLAttributes, useCallback, useEffect, useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
-import { formatAmount, formatDollarAmountAxis } from '../../utils/numbers';
+import { formatAmount, formatAmountChartData, formatDollarAmountAxis } from '../../utils/numbers';
 import { CandleData } from '../../utils/state/graphDataSlice';
 import {
     setLimitTick,
@@ -93,7 +93,6 @@ export default function Chart(props: ChartData) {
 
     const d3Xaxis = useRef(null);
     const d3Yaxis = useRef(null);
-
     const dispatch = useAppDispatch();
 
     const location = useLocation();
@@ -142,10 +141,9 @@ export default function Chart(props: ChartData) {
     const [isChartSelected, setIsChartSelected] = useState<boolean>(false);
     const [dragControl, setDragControl] = useState(false);
     const [rescale, setRescale] = useState(true);
-    const [rescaleText, setRescaleText] = useState<any>();
 
     // Data
-    const [crosshairData, setCrosshairData] = useState([{ x: 0, y: -1 }]);
+    const [crosshairData] = useState([{ x: 0, y: -1 }]);
     const [currentPriceData] = useState([{ value: -1 }]);
     const [indicatorLineData] = useState([{ x: 0, y: 0 }]);
     const [liqTooltipSelectedLiqBar, setLiqTooltipSelectedLiqBar] = useState({
@@ -187,6 +185,7 @@ export default function Chart(props: ChartData) {
     const [areaBidJoin, setAreaBidJoin] = useState<any>();
     const [liqHighligtedAskJoin, setLiqHighligtedAskJoin] = useState<any>();
     const [liqHighligtedBidJoin, setLiqHighligtedBidJoin] = useState<any>();
+    const [yAxis, setYaxis] = useState<any>();
 
     // Utils
     const [zoomUtils, setZoomUtils] = useState<any>();
@@ -196,17 +195,6 @@ export default function Chart(props: ChartData) {
     const [selectedCandleState, setSelectedCandleState] = useState<any>();
 
     const valueFormatter = d3.format('.5f');
-    const indicatorFormatter = d3.format('.6f');
-    const tooltipFormatter = d3.format('.3f');
-
-    function formattedTextData(data: number): string {
-        return data
-            ? data.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              })
-            : '';
-    }
 
     const setDefaultRangeData = () => {
         setRanges((prevState) => {
@@ -234,62 +222,52 @@ export default function Chart(props: ChartData) {
         render();
     }, [props.chartItemStates, expandTradeTable, isCandleAdded]);
 
-    async function addMarketText(scale: any) {
-        await d3.select(d3Yaxis.current).select('svg').selectAll('#market').remove();
-
-        await d3
-            .select(d3Yaxis.current)
-            .select('svg')
-            .append('g')
-            .attr('id', 'market')
-            .append('text');
-        d3.select(d3Yaxis.current)
-            .select('svg')
-            .select('#market')
-            .select('text')
-            .attr('class', 'market')
-            .text(formattedTextData(market[0].value))
-            .style('transform', 'translateY(' + (scale(market[0].value) + 5) + 'px)')
-            .attr('filter', 'url(#marketBg)');
-    }
-
-    async function addText(scale: any) {
-        await d3.select(d3Yaxis.current).select('svg').selectAll('#yText').remove();
-        if (!location.pathname.includes('market')) {
-            const textArray: any[] = location.pathname.includes('limit') ? limit : ranges;
-            textArray.forEach(async (element: any) => {
-                await d3
-                    .select(d3Yaxis.current)
-                    .select('svg')
-                    .append('g')
+    useEffect(() => {
+        const nodes = d3.select(d3Yaxis.current).select('svg').selectAll('.tick').nodes();
+        nodes.forEach((res) => {
+            if (d3.select(res).text() === formatAmountChartData(market[0].value)) {
+                d3.select(res)
+                    .attr('filter', 'url(#marketBg)')
+                    .select('text')
+                    .attr('class', 'market');
+            } else if (
+                d3.select(res).text() === formatAmountChartData(limit[0].value) ||
+                d3.select(res).text() === formatAmountChartData(ranges[0].value) ||
+                d3.select(res).text() === formatAmountChartData(ranges[1].value)
+            ) {
+                d3.select(res)
                     .attr('id', 'yText')
-                    .append('text')
-                    .attr('id', element.name);
-                d3.select(d3Yaxis.current)
-                    .select('svg')
-                    .select('#' + element.name)
-                    .attr('class', 'y_axis')
-                    .text(formattedTextData(element.value))
-                    .style('transform', 'translateY(' + (scale(element.value) + 5) + 'px)')
-                    .attr('filter', 'url(#textBg)');
-            });
+                    .attr('filter', 'url(#textBg)')
+                    .select('text')
+                    .attr('class', 'y_axis');
+            } else {
+                d3.select(res).attr('id', '').select('text').attr('class', '').attr('filter', '');
+            }
+        });
+    }, [scaleData && scaleData.yScale.ticks()]);
+
+    function addText(scale: any) {
+        if (location.pathname.includes('market')) {
+            yAxis.tickValues([...scale.ticks(), ...[market[0].value]]);
+        } else {
+            if (location.pathname.includes('limit')) {
+                yAxis.tickValues([...scale.ticks(), ...[limit[0].value, market[0].value]]);
+            }
+
+            if (location.pathname.includes('range')) {
+                yAxis.tickValues([
+                    ...scale.ticks(),
+                    ...[ranges[0].value, ranges[1].value, market[0].value],
+                ]);
+            }
         }
     }
 
-    const [heightPlot, setHeightPlot] = useState(0);
-
     useEffect(() => {
-        (d3.select('#plotAreaDiv').node() as any) &&
-            setHeightPlot((d3.select('#plotAreaDiv').select('svg').node() as any).getBBox().height);
-    }, [showFeeRate, showTvl, showVolume, d3Yaxis.current]);
-
-    useEffect(() => {
-        if (scaleData) {
+        if (scaleData && yAxis) {
             addText(scaleData.yScale);
-            addMarketText(scaleData.yScale);
-            render();
         }
-    }, [dragControl, limit, ranges, scaleData, location, heightPlot]);
+    }, [dragControl, scaleData, location, scaleData && scaleData.yScale.domain()]);
 
     useEffect(() => {
         if (d3.select(d3Xaxis.current).select('svg').select('g').select('text').node() === null) {
@@ -312,17 +290,6 @@ export default function Chart(props: ChartData) {
                 .attr('dy', '28px')
                 .style('font-size', '13px')
                 .style('letter-spacing', '1px');
-        }
-
-        if (d3.select(d3Yaxis.current).select('svg').select('#yCrossHair').node() === null) {
-            const yAxisText = d3
-                .select(d3Yaxis.current)
-                .select('svg')
-                .append('g')
-                .attr('id', 'yCrossHair')
-                .attr('visibility', 'hidden');
-
-            yAxisText.append('text').attr('dx', '5px').attr('dy', '2px').style('font-size', '13px');
         }
 
         if (location.pathname.includes('range')) {
@@ -485,7 +452,7 @@ export default function Chart(props: ChartData) {
             Math.abs(event.sourceEvent.offsetX - scaleData.xScale(d.date)),
         )[1];
 
-        setCrosshairData([{ x: scaleData.xScale(nearest.date), y: -1 }]);
+        // setCrosshairData([{ x: scaleData.xScale(nearest.date), y: -1 }]);
 
         d3.select(d3Xaxis.current)
             .select('svg')
@@ -596,9 +563,6 @@ export default function Chart(props: ChartData) {
                         }
 
                         relocationCrosshairText(event);
-                        // addLimitText(scaleData.yScale);
-                        addText(scaleData.yScale);
-                        addMarketText(scaleData.yScale);
                         lastY = t.y;
 
                         render();
@@ -620,9 +584,6 @@ export default function Chart(props: ChartData) {
                 const center = (domain[1] + domain[0]) / 2;
                 const size = (domain[1] - domain[0]) / 2 / factor;
                 await scaleData.yScale.domain([center - size, center + size]);
-                addText(scaleData.yScale);
-                addMarketText(scaleData.yScale);
-
                 setRescale(() => {
                     return false;
                 });
@@ -1114,57 +1075,19 @@ export default function Chart(props: ChartData) {
         setDragControl(false);
     }, [parsedChartData]);
 
+    // y Axis
     useEffect(() => {
-        if (rescaleText !== undefined) {
-            rescaleText.text(() => (rescale ? 'AUTO' : 'MANUEL'));
-        }
-    }, [rescale]);
+        if (scaleData) {
+            const _yAxis = d3fc
+                .axisRight()
+                .scale(scaleData.yScale)
+                .tickFormat((d: any) => formatAmountChartData(d));
 
-    useEffect(() => {
-        if (d3.select(d3Xaxis.current).select('svg').select('#rescale').node() == null) {
-            const rescaleText = d3
-                .select(d3Xaxis.current)
-                .select('svg')
-                .append('text')
-                .attr('dx', '95%')
-                .attr('dy', '60%')
-                .attr('id', 'rescale')
-                .style('font-size', '14px')
-                .style('font-weight', 'bold')
-                .style('fill', '#3a3c6b')
-                .text('AUTO');
-
-            setRescaleText(() => {
-                return rescaleText;
+            setYaxis(() => {
+                return _yAxis;
             });
         }
-
-        if (d3.select(d3Xaxis.current).select('svg').select('#scroll').node() == null) {
-            d3.select(d3Xaxis.current)
-                .select('svg')
-                .append('circle')
-                .attr('id', 'scroll')
-                .attr('cx', '89%')
-                .attr('cy', '-50%')
-                .attr('r', 12)
-                .attr('fill', 'rgba(41,47,63,0.8)')
-                .attr('class', 'scroll')
-                .on('mouseover', (event: any) => {
-                    d3.select(event.currentTarget).style('cursor', 'pointer');
-                    d3.select(d3Xaxis.current)
-                        .select('svg')
-                        .select('#scroll')
-                        .attr('fill', 'rgba(41,47,63,1)');
-                })
-                .on('mouseleave', (event: any) => {
-                    d3.select(event.currentTarget).style('cursor', 'pointer');
-                    d3.select(d3Xaxis.current)
-                        .select('svg')
-                        .select('#scroll')
-                        .attr('fill', 'rgba(41,47,63,0.8)');
-                });
-        }
-    }, []);
+    }, [scaleData]);
 
     // Horizontal Lines
     useEffect(() => {
@@ -1351,6 +1274,20 @@ export default function Chart(props: ChartData) {
             const feMergeTag = lg.append('feMerge');
             feMergeTag.append('feMergeNode').attr('in', 'bg');
             feMergeTag.append('feMergeNode').attr('in', 'SourceGraphic');
+
+            const crosshairDefs = svgmain
+                .append('defs')
+                .append('filter')
+                .attr('x', 0)
+                .attr('y', 0)
+                .attr('height', 1)
+                .attr('width', 1)
+                .attr('id', 'crossHairBg');
+
+            crosshairDefs.append('feFlood').attr('flood-color', '#242F3F').attr('result', 'bg');
+            const feMergeTagCrossHair = crosshairDefs.append('feMerge');
+            feMergeTagCrossHair.append('feMergeNode').attr('in', 'bg');
+            feMergeTagCrossHair.append('feMergeNode').attr('in', 'SourceGraphic');
 
             const marketDefs = svgmain
                 .append('defs')
@@ -1987,6 +1924,7 @@ export default function Chart(props: ChartData) {
                 liqHighligtedBidJoin,
                 liqHighligtedAskSeries,
                 liqHighligtedBidSeries,
+                yAxis,
             );
         }
     }, [
@@ -2015,6 +1953,7 @@ export default function Chart(props: ChartData) {
         liqHighligtedBidJoin,
         liqHighligtedAskSeries,
         liqHighligtedBidSeries,
+        yAxis,
     ]);
 
     const minimum = (data: any, accessor: any) => {
@@ -2059,6 +1998,7 @@ export default function Chart(props: ChartData) {
             liqHighligtedBidJoin: any,
             liqHighligtedAskSeries: any,
             liqHighligtedBidSeries: any,
+            yAxis: any,
         ) => {
             if (chartData.length > 0) {
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -2074,7 +2014,7 @@ export default function Chart(props: ChartData) {
                         Math.abs(point.offsetX - xScale(xValue(d))),
                     )[1];
 
-                    setCrosshairData([{ x: scaleData.xScale(nearest?.date), y: -1 }]);
+                    //        setCrosshairData([{ x: scaleData.xScale(nearest?.date), y: -1 }]);
 
                     props.setCurrentData(nearest);
                     return [
@@ -2087,8 +2027,6 @@ export default function Chart(props: ChartData) {
 
                 // axes
                 const xAxis = d3fc.axisBottom().scale(scaleData.xScale).tickArguments([6]);
-
-                const yAxis = d3fc.axisRight().scale(scaleData.yScale).tickArguments([5]);
 
                 const candleJoin = d3fc.dataJoin('g', 'candle');
 
@@ -2324,7 +2262,7 @@ export default function Chart(props: ChartData) {
                     svg.call(zoomUtils.zoom);
                 });
 
-                d3.select(d3PlotArea.current).on('mousemove', function (event: any) {
+                d3.select(d3PlotArea.current).on('mousemove', async function (event: any) {
                     crosshairData[0] = snap(candlestick, chartData, event)[0];
 
                     const dateIndcLocation = scaleData.xScale(crosshairData[0].x);
@@ -2341,16 +2279,22 @@ export default function Chart(props: ChartData) {
                         .select('text')
                         .text(moment(crosshairData[0].x).format('DD MMM  HH:mm'));
 
+                    await d3
+                        .select(d3Yaxis.current)
+                        .select('svg')
+                        .selectAll('#yCrossHair')
+                        .remove();
                     const yAxisText = d3
                         .select(d3Yaxis.current)
                         .select('svg')
-                        .select('#yCrossHair')
-                        .style('visibility', 'visible')
+                        .append('g')
+                        .attr('id', 'yCrossHair')
                         .style('transform', 'translateY(' + valueIndcLocation + 'px)');
 
                     yAxisText
-                        .select('text')
-                        .text(formattedTextData(scaleData.yScale.invert(event.offsetY)));
+                        .append('text')
+                        .attr('class', 'yCrossHairText')
+                        .text(formatAmountChartData(scaleData.yScale.invert(event.offsetY)));
 
                     render();
                 });

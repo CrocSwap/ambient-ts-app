@@ -16,6 +16,13 @@ text.market{
 }
 
 
+text.yCrossHairText {
+    filter: url(#crossHairBg);
+    stroke: #bdbdbd;
+    font-size: 13px ;
+
+}
+
 text.y_axis {
     stroke: #bdbdbd;
     font-size: 13px ;
