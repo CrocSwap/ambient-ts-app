@@ -9,6 +9,17 @@ text {
     fill: #bdbdbd;
 }
 
+text.market{
+    stroke: black;
+    font-size: 13px ;
+
+}
+
+
+text.y_axis {
+    stroke: #bdbdbd;
+    font-size: 13px ;
+}
 .domain,
 .tick > path,
 .gridline-y,
@@ -183,6 +194,10 @@ label {
     height:100%;
     width: 100%;
     flex-direction: column;
+}
+
+.scroll {
+    box-shadow: 0 8px 32px 0 rgba(255, 255, 255, 0.47);
 }
 
 

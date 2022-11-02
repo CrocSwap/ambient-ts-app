@@ -17,10 +17,7 @@ import {
 } from '../../../../utils/state/graphDataSlice';
 import Pagination from '../../../Global/Pagination/Pagination';
 
-import {
-    useAppDispatch,
-    useAppSelector
-} from '../../../../utils/hooks/reduxToolkit';
+import { useAppDispatch, useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { useSortedPositions } from '../useSortedPositions';
 import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
 import { PositionIF } from '../../../../utils/interfaces/PositionIF';
@@ -92,9 +89,10 @@ export default function Leaderboard(props: LeaderboardPropsIF) {
     const baseTokenAddress = tradeData.baseToken.address;
     const quoteTokenAddress = tradeData.quoteToken.address;
 
-    const positionsByApy: string[] = [...graphData?.leaderboardByPool?.positions]
-        .sort((a, b) => b.apy - a.apy)
-        .map(pos => pos.positionId) ?? [];
+    const positionsByApy: string[] =
+        [...graphData?.leaderboardByPool?.positions]
+            .sort((a, b) => b.apy - a.apy)
+            .map((pos) => pos.positionId) ?? [];
 
     const [sortBy, setSortBy, reverseSort, setReverseSort, sortedPositions] = useSortedPositions(
         'apr',
