@@ -148,6 +148,7 @@ export default function Limit(props: LimitPropsIF) {
     const isDenomBase = tradeData.isDenomBase;
 
     useEffect(() => {
+        console.log({ poolPriceNonDisplay });
         if (poolPriceNonDisplay !== 0) setInitialLoad(true);
     }, [
         JSON.stringify({

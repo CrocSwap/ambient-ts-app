@@ -1443,6 +1443,11 @@ export default function App() {
     const [poolPriceNonDisplay, setPoolPriceNonDisplay] = useState<number | undefined>(undefined);
     const [poolPriceDisplay, setPoolPriceDisplay] = useState<number | undefined>(undefined);
 
+    useEffect(() => {
+        setPoolPriceNonDisplay(0);
+        setPoolPriceDisplay(0);
+    }, [JSON.stringify({ base: baseTokenAddress, quote: quoteTokenAddress })]);
+
     // useEffect to get spot price when tokens change and block updates
     useEffect(() => {
         if (
@@ -1457,8 +1462,7 @@ export default function App() {
                 // const viewProvider = provider
                 //     ? provider
                 //     : (await new CrocEnv(chainData.chainId).context).provider;
-                setPoolPriceNonDisplay(0);
-                setPoolPriceDisplay(0);
+
                 const spotPrice = await cachedQuerySpotPrice(
                     crocEnv,
                     baseTokenAddress,
