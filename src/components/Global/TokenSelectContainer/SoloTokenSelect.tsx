@@ -61,8 +61,6 @@ export const SoloTokenSelect = (props: propsIF) => {
                 isOnPortfolio={true}
             />
         ));
-    
-    useEffect(() => console.log(importedTokenButtons), [importedTokenButtons]);
 
     return (
         <>

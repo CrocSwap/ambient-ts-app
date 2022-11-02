@@ -44,7 +44,6 @@ export const useSoloSearch = (
 
     // data object for token matching user query
     const [token, setToken] = useState<TokenIF|null>(null);
-    useEffect(() => console.log(token), [token]);
 
     // control flow to gatekeep secondary and tertiary calls
     const [isTokenFound, setIsTokenFound] = useState(false);
