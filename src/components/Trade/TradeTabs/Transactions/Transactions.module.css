@@ -27,6 +27,7 @@
   overflow-x: hidden;
   /* padding: 0 8px; */
     position: relative;
+  
 
     
    
@@ -172,5 +173,24 @@ text-transform: capitalize;
   margin: 0 2px;
 
 
+  
+}
+
+.align_right{
+  text-align: right;
+}
+
+.mono_font{
+  font-family: monospace;
+}
+
+.header li:nth-of-type(3), .header li:nth-of-type(6), .header li:nth-of-type(7), .header li:nth-of-type(8){
+
+  text-align: right;
+ 
+}
+
+.header li:nth-of-type(4){
+  text-align: center;
   
 }

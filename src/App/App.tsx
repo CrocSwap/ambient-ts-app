@@ -1443,6 +1443,11 @@ export default function App() {
     const [poolPriceNonDisplay, setPoolPriceNonDisplay] = useState<number | undefined>(undefined);
     const [poolPriceDisplay, setPoolPriceDisplay] = useState<number | undefined>(undefined);
 
+    useEffect(() => {
+        setPoolPriceNonDisplay(0);
+        setPoolPriceDisplay(0);
+    }, [JSON.stringify({ base: baseTokenAddress, quote: quoteTokenAddress })]);
+
     // useEffect to get spot price when tokens change and block updates
     useEffect(() => {
         if (
@@ -1474,8 +1479,6 @@ export default function App() {
                         quoteTokenDecimals,
                     );
                     setPoolPriceDisplay(displayPrice);
-                } else {
-                    setPoolPriceDisplay(0);
                 }
             })();
         }
@@ -1854,6 +1857,7 @@ export default function App() {
     const limitPropsTrade = {
         pool: pool,
         crocEnv: crocEnv,
+        chainData: chainData,
         isUserLoggedIn: isUserLoggedIn,
         importedTokens: importedTokens,
         setImportedTokens: setImportedTokens,

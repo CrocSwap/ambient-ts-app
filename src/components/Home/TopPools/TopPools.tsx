@@ -9,6 +9,7 @@ import { topPools } from '../../../App/mockData';
 import { TokenIF } from '../../../utils/interfaces/TokenIF';
 import { CrocEnv } from '@crocswap-libs/sdk';
 import { SpotPriceFn } from '../../../App/functions/querySpotPrice';
+import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 
 interface TopPoolsProps {
     crocEnv?: CrocEnv;
@@ -26,6 +27,8 @@ export default function TopPools(props: TopPoolsProps) {
     // @Junior  please remove the NavLink wrapper or refactor PoolCard.tsx
     // @Junior  ... so it returns a NavLink element
 
+    const tradeData = useAppSelector((state) => state.tradeData);
+
     return (
         <motion.div
             className={styles.container}
@@ -40,6 +43,7 @@ export default function TopPools(props: TopPoolsProps) {
                     <NavLink key={idx} to='/trade/market'>
                         <PoolCard
                             crocEnv={crocEnv}
+                            tradeData={tradeData}
                             cachedQuerySpotPrice={cachedQuerySpotPrice}
                             name={pool.name}
                             tokenA={pool.base}

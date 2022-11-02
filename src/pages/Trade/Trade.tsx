@@ -474,6 +474,7 @@ export default function Trade(props: TradePropsIF) {
                         >
                             <TradeCharts
                                 pool={pool}
+                                chainData={chainData}
                                 poolPriceDisplay={poolPriceDisplayWithDenom}
                                 expandTradeTable={expandTradeTable}
                                 setExpandTradeTable={setExpandTradeTable}

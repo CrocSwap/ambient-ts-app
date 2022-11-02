@@ -26,6 +26,7 @@ import { CrocPoolView } from '@crocswap-libs/sdk';
 // interface for component props
 interface LimitCurrencyConverterProps {
     pool: CrocPoolView | undefined;
+    gridSize: number;
     setPriceInputFieldBlurred: Dispatch<SetStateAction<boolean>>;
     isUserLoggedIn: boolean;
     tokenPair: TokenPairIF;
@@ -63,6 +64,7 @@ interface LimitCurrencyConverterProps {
 export default function LimitCurrencyConverter(props: LimitCurrencyConverterProps) {
     const {
         pool,
+        gridSize,
         setPriceInputFieldBlurred,
         isUserLoggedIn,
         tokenPair,
@@ -480,6 +482,8 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
             <DividerDark addMarginTop />
             <LimitRate
                 pool={pool}
+                gridSize={gridSize}
+                isSellTokenBase={isSellTokenBase}
                 setPriceInputFieldBlurred={setPriceInputFieldBlurred}
                 tokenPair={tokenPair}
                 tokensBank={tokensBank}

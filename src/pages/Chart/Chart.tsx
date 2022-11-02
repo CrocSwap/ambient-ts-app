@@ -24,7 +24,13 @@ import VolumeSubChart from '../Trade/TradeCharts/TradeChartsLoading/VolumeSubCha
 import { ChartUtils } from '../Trade/TradeCharts/TradeCandleStickChart';
 import './Chart.css';
 import BarSeries from './ChartUtils/ChartUtils';
-import { CrocPoolView, tickToPrice } from '@crocswap-libs/sdk';
+import {
+    ChainSpec,
+    CrocPoolView,
+    pinTickLower,
+    pinTickUpper,
+    tickToPrice,
+} from '@crocswap-libs/sdk';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -45,6 +51,8 @@ type chartItemStates = {
 };
 interface ChartData {
     pool: CrocPoolView | undefined;
+    chainData: ChainSpec;
+    isTokenABase: boolean;
     expandTradeTable: boolean;
     candleData: ChartUtils | undefined;
     liquidityData: any;
@@ -70,6 +78,8 @@ interface ChartData {
 export default function Chart(props: ChartData) {
     const {
         pool,
+        chainData,
+        isTokenABase,
         denomInBase,
         isAdvancedModeActive,
         pinnedMinPriceDisplayTruncated,
@@ -1430,15 +1440,35 @@ export default function Chart(props: ChartData) {
                     const newLimitValue = scaleData.yScale.invert(d3.pointer(event)[1]);
                     console.log({ newLimitValue });
 
-                    const snapResponse = snap(props.liquidityData.liqSnapData, newLimitValue);
+                    // const snapResponse = snap(props.liquidityData.liqSnapData, newLimitValue);
 
-                    const snappedValue = Math.round(snapResponse[0].value * 100) / 100;
+                    // const snappedValue = Math.round(snapResponse[0].value * 100) / 100;
 
-                    setLimit(() => {
-                        return [{ name: 'Limit', value: snappedValue }];
+                    const limitNonDisplay = denomInBase
+                        ? pool?.fromDisplayPrice(parseFloat(newLimitValue))
+                        : pool?.fromDisplayPrice(1 / parseFloat(newLimitValue));
+
+                    limitNonDisplay?.then((limit) => {
+                        console.log({ limit });
+                        // const limitPriceInTick = Math.log(limit) / Math.log(1.0001);
+                        const pinnedTick: number = isTokenABase
+                            ? pinTickLower(limit, chainData.gridSize)
+                            : pinTickUpper(limit, chainData.gridSize);
+
+                        console.log({ pinnedTick });
+                        dispatch(setLimitTick(pinnedTick));
+
+                        const newLimitDisplay = denomInBase
+                            ? pool?.toDisplayPrice(1 / tickToPrice(pinnedTick))
+                            : pool?.toDisplayPrice(tickToPrice(pinnedTick));
+
+                        newLimitDisplay?.then((newLimitNum) => {
+                            setLimit(() => {
+                                return [{ name: 'Limit', value: newLimitNum }];
+                            });
+                            // onBlurlimitRate(newLimitNum);
+                        });
                     });
-
-                    onBlurlimitRate(snappedValue);
                 }
             });
         }
@@ -2305,15 +2335,20 @@ export default function Chart(props: ChartData) {
 
     const onBlurlimitRate = (newLimitValue: any) => {
         console.log({ newLimitValue });
-        const limitNonDisplay = pool?.fromDisplayPrice(parseFloat(newLimitValue));
-        // const limitNonDisplay = denomInBase
-        //     ? pool?.fromDisplayPrice(parseFloat(newLimitValue))
-        //     : pool?.fromDisplayPrice(1 / parseFloat(newLimitValue));
+        // const limitNonDisplay = pool?.fromDisplayPrice(parseFloat(newLimitValue));
+        const limitNonDisplay = denomInBase
+            ? pool?.fromDisplayPrice(parseFloat(newLimitValue))
+            : pool?.fromDisplayPrice(1 / parseFloat(newLimitValue));
 
         limitNonDisplay?.then((limit) => {
-            const limitTick = Math.log(limit) / Math.log(1.0001);
-            console.log({ limitTick });
-            dispatch(setLimitTick(limitTick));
+            console.log({ limit });
+            // const limitPriceInTick = Math.log(limit) / Math.log(1.0001);
+            const pinnedTick: number = isTokenABase
+                ? pinTickLower(limit, chainData.gridSize)
+                : pinTickUpper(limit, chainData.gridSize);
+            // console.log({ limitPriceInTick });
+            // console.log({ isDenomBase });
+            dispatch(setLimitTick(pinnedTick));
         });
     };
 
