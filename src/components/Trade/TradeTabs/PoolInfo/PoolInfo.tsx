@@ -73,6 +73,8 @@ export default function PoolInfo(props: PoolInfoPropsIF) {
     const quoteTokenSymbol = tradeData.quoteToken.symbol;
     const baseTokenlogo = tradeData.baseToken.logoURI;
     const quoteTokenlogo = tradeData.quoteToken.logoURI;
+    const baseTokenName = tradeData.baseToken.name;
+    const quoteTokenName = tradeData.quoteToken.name;
 
     const [poolVolume, setPoolVolume] = useState<string | undefined>();
     const [poolTvl, setPoolTvl] = useState<string | undefined>();
@@ -207,7 +209,7 @@ export default function PoolInfo(props: PoolInfoPropsIF) {
             <div className={styles.token_info}>
                 <img src={baseTokenlogo} alt={baseTokenSymbol} />
                 <h3>{baseTokenSymbol}</h3>
-                <p>Ethereum</p>
+                <p>{baseTokenName}</p>
             </div>
             <a
                 target='_blank'
@@ -217,8 +219,31 @@ export default function PoolInfo(props: PoolInfoPropsIF) {
                         ? 'https://goerli.etherscan.io/address/0xfafcd1f5530827e7398b6d3c509f450b1b24a209'
                         : `https://goerli.etherscan.io/token/${baseTokenAddress}`
                 }
+                style={{ display: 'flex', gap: '4px' }}
             >
                 <p> {baseAddressWithTooltip}</p>
+                <BsArrowUpRight size={10} />
+            </a>
+            <p>Balance</p>
+            <h3>169.00</h3>
+            <p>Value</p>
+            <h3>$420,000</h3>
+        </section>
+    );
+    const quoteTokenDisplay = (
+        <section className={styles.token_display_container}>
+            <div className={styles.token_info}>
+                <img src={quoteTokenlogo} alt={quoteTokenSymbol} />
+                <h3>{quoteTokenSymbol}</h3>
+                <p>{quoteTokenName}</p>
+            </div>
+            <a
+                target='_blank'
+                rel='noreferrer'
+                href={`https://goerli.etherscan.io/token/${quoteTokenAddress}`}
+                style={{ display: 'flex', gap: '4px' }}
+            >
+                <p> {quoteAdressWithTooltip}</p>
                 <BsArrowUpRight size={10} />
             </a>
             <p>Balance</p>
@@ -236,18 +261,18 @@ export default function PoolInfo(props: PoolInfoPropsIF) {
                 <PoolInfoCard title='24h Fees:' data={poolFees || '...'} />
                 <PoolInfoCard title='TVL:' data={poolTvl || '...'} />
                 <PoolInfoCard title={aprTitle} data={poolAPR || '...'} /> */}
-                <section>first card</section>
-                <section>seconf card</section>
+                {baseTokenDisplay}
+                {quoteTokenDisplay}
                 <section className={styles.right_container}>
                     <div className={styles.right_container_top}>
-                        <PoolInfoCard title='24h Fees:' data={poolFees || '...'} />
-                        <PoolInfoCard title='24h Fees:' data={poolFees || '...'} />
-                        <PoolInfoCard title='24h Fees:' data={poolFees || '...'} />
-                        <PoolInfoCard title='24h Fees:' data={poolFees || '...'} />
-                        <PoolInfoCard title='24h Fees:' data={poolFees || '...'} />
-                        <PoolInfoCard title='24h Fees:' data={poolFees || '...'} />
-                        <PoolInfoCard title='24h Fees:' data={poolFees || '...'} />
-                        <PoolInfoCard title='24h Fees:' data={poolFees || '...'} />
+                        <PoolInfoCard title='Market Cap:' data={'$69m' || '...'} />
+                        <PoolInfoCard title='FDV:' data={'$690m' || '...'} />
+                        <PoolInfoCard title='24h Swap Volume:' data={poolVolume || '...'} />
+                        <PoolInfoCard title='Total Fees:' data={poolFees || '...'} />
+                        <PoolInfoCard title='TVL:' data={poolTvl || '...'} />
+                        <PoolInfoCard title='Tick Liquidity:' data={'$500k' || '...'} />
+                        <PoolInfoCard title='OOR Liquidity:' data={'20%' || '...'} />
+                        <PoolInfoCard title='Pool Created:' data={'15/07/2022' || '...'} />
                     </div>
                     <div>
                         Lorem ipsum dolor sit amet consectetur, adipisicing elit. Velit consequuntur

@@ -23,7 +23,7 @@
 
     display: grid;
     grid-template-columns: repeat(2, 215px) auto;
-    gap: 4px;
+    gap: 8px;
 
   
 }
@@ -31,22 +31,21 @@
 
 
 .content section{
-    background: green;
+   
     width: 100%;
  min-height: 237px;
 }
 .right_container{
     display: flex;
     flex-direction: column;
-    gap: 4px
+    gap: 8px
 }
 
 .right_container_top{
     padding: 0 4px;
-    background: blue;
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-    gap: 4px;
+    gap: 8px;
 
 }
 
@@ -59,8 +58,7 @@
    
     padding: 0.5rem 1rem;
     border-radius: 4px;
-    /* width: 16rem; */
-    /* width: 10rem; */
+
 
 }
 
