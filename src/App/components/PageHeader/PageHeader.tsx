@@ -183,14 +183,14 @@ export default function PageHeader(props: HeaderPropsIF) {
         const path = location.pathname;
 
         const pathNoLeadingSlash = path.slice(1);
-        console.log({ pathNoLeadingSlash });
+        // console.log({ pathNoLeadingSlash });
 
         const isAddressEns = pathNoLeadingSlash?.endsWith('.eth');
         const isAddressHex =
             pathNoLeadingSlash?.startsWith('0x') && pathNoLeadingSlash?.length == 42;
 
         const isPathValidAddress = path && (isAddressEns || isAddressHex);
-        console.log({ isPathValidAddress });
+        // console.log({ isPathValidAddress });
 
         if (pathNoLeadingSlash === 'account') {
             document.title = 'my account - ambient.finance';
