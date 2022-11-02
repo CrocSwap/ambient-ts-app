@@ -32,6 +32,7 @@ interface TabPropsIF {
     setOutsideControl: Dispatch<SetStateAction<boolean>>;
     showPositionsOnlyToggle?: boolean;
     setShowPositionsOnlyToggle?: Dispatch<SetStateAction<boolean>>;
+
     // this props is for components that do not need outside control such as exchange balance
 }
 

@@ -8,10 +8,10 @@ import { useEffect, useState, Dispatch, SetStateAction } from 'react';
 import { fetchAddress } from '../../App/functions/fetchAddress';
 import { useMoralis } from 'react-moralis';
 import { ethers } from 'ethers';
-import { TokenIF } from '../../utils/interfaces/TokenIF';
 import { CrocEnv, toDisplayQty, ChainSpec } from '@crocswap-libs/sdk';
 import Modal from '../../components/Global/Modal/Modal';
 import { useModal } from '../../components/Global/Modal/useModal';
+import { TokenIF } from '../../utils/interfaces/exports';
 
 import { Erc20TokenBalanceFn, nativeTokenBalanceFn } from '../../App/functions/fetchTokenBalances';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
@@ -367,7 +367,6 @@ export default function Portfolio(props: PortfolioPropsIF) {
                     setSelectedOutsideTab={setSelectedOutsideTab}
                     setOutsideControl={setOutsideControl}
                     outsideControl={outsideControl}
-                    rightTabOptions={false}
                     openTokenModal={openTokenModal}
                     openGlobalModal={openGlobalModal}
                     closeGlobalModal={closeGlobalModal}

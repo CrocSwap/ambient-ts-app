@@ -71,6 +71,8 @@ export default function RangesRow(props: RangesRowPropsIF) {
         baseTokenLogo,
         baseDisplay,
         quoteDisplay,
+        // baseDisplayFrontend,
+        // quoteDisplayFrontend,
         userMatchesConnectedAccount,
         // isOrderFilled,
 
@@ -89,6 +91,9 @@ export default function RangesRow(props: RangesRowPropsIF) {
         ambientMinOrNull,
         ambientMaxOrNull,
         isDenomBase,
+        minRangeDenomByMoneyness,
+        maxRangeDenomByMoneyness,
+        // isBaseTokenMoneynessGreaterOrEqual,
         // orderMatchesSelectedTokens,
     } = useProcessRange(position);
 
@@ -284,14 +289,24 @@ export default function RangesRow(props: RangesRowPropsIF) {
                 </li>
             )}
             {!showColumns && (
-                <li onClick={openDetailsModal} data-label='min price' className='color_white'>
-                    {ambientMinOrNull}
+                <li
+                    onClick={openDetailsModal}
+                    data-label='min price'
+                    className='color_white'
+                    style={{ textAlign: 'right', fontFamily: 'monospace' }}
+                >
+                    {isOnPortfolioPage ? minRangeDenomByMoneyness || '…' : ambientMinOrNull || '…'}
                 </li>
             )}
 
             {!showColumns && (
-                <li onClick={openDetailsModal} data-label='max price' className='color_white'>
-                    {ambientMaxOrNull}
+                <li
+                    onClick={openDetailsModal}
+                    data-label='max price'
+                    className='color_white'
+                    style={{ textAlign: 'right', fontFamily: 'monospace' }}
+                >
+                    {isOnPortfolioPage ? maxRangeDenomByMoneyness || '…' : ambientMaxOrNull || '…'}
                 </li>
             )}
 
@@ -301,19 +316,24 @@ export default function RangesRow(props: RangesRowPropsIF) {
                     <p>{ambientMaxOrNull}</p>
                 </li>
             )}
-            <li onClick={openDetailsModal} data-label='value' className='gradient_text'>
+            <li
+                onClick={openDetailsModal}
+                data-label='value'
+                className='gradient_text'
+                style={{ textAlign: 'right', fontFamily: 'monospace' }}
+            >
                 {' '}
                 {'$' + usdValue}
             </li>
 
             {!showColumns && (
                 <li onClick={openDetailsModal} data-label={baseTokenSymbol} className='base_color'>
-                    <p>{baseDisplay}</p>
+                    <p style={{ textAlign: 'right', fontFamily: 'monospace' }}>{baseDisplay}</p>
                 </li>
             )}
             {!showColumns && (
                 <li onClick={openDetailsModal} data-label={quoteTokenSymbol} className='base_color'>
-                    <p>{quoteDisplay}</p>
+                    <p style={{ textAlign: 'right', fontFamily: 'monospace' }}>{quoteDisplay}</p>
                 </li>
             )}
             {showColumns && (
@@ -321,7 +341,7 @@ export default function RangesRow(props: RangesRowPropsIF) {
                     <p className={styles.align_center}>
                         {' '}
                         <img src={baseTokenLogo} alt='' width='15px' />
-                        {baseTokenLogoComponent}
+                        {baseDisplay}
                     </p>
 
                     <p className={styles.align_center}>
@@ -333,7 +353,12 @@ export default function RangesRow(props: RangesRowPropsIF) {
             )}
             <li onClick={openDetailsModal} data-label='value'>
                 {' '}
-                <p className={apyClassname}>{apyString}</p>
+                <p
+                    style={{ textAlign: 'center', fontFamily: 'monospace' }}
+                    className={apyClassname}
+                >
+                    {apyString}
+                </p>
             </li>
             <li onClick={openDetailsModal} data-label='status' className='gradient_text'>
                 <RangeStatus isInRange={isPositionInRange} isAmbient={isAmbient} justSymbol />

@@ -11,6 +11,7 @@ import {
     priceHalfBelowTick,
     priceHalfAboveTick,
     CrocPoolView,
+    ChainSpec,
 } from '@crocswap-libs/sdk';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 
@@ -74,6 +75,7 @@ interface LimitPropsIF {
     openGlobalModal: (content: React.ReactNode) => void;
     closeGlobalModal: () => void;
     poolExists: boolean | null;
+    chainData: ChainSpec;
 }
 
 export default function Limit(props: LimitPropsIF) {
@@ -99,6 +101,7 @@ export default function Limit(props: LimitPropsIF) {
         tokenAAllowance,
         setRecheckTokenAApproval,
         chainId,
+        chainData,
         activeTokenListsChanged,
         indicateActiveTokenListsChanged,
         openModalWallet,
@@ -148,18 +151,22 @@ export default function Limit(props: LimitPropsIF) {
     const isDenomBase = tradeData.isDenomBase;
 
     useEffect(() => {
-        setInitialLoad(true);
+        console.log({ poolPriceNonDisplay });
+        if (poolPriceNonDisplay !== 0) setInitialLoad(true);
     }, [
         JSON.stringify({
             isDenomBase: isDenomBase,
-            tokenA: tradeData.tokenA.address,
-            tokenB: tradeData.tokenB.address,
+            isSellTokenBase: isSellTokenBase,
+            // tokenA: tradeData.tokenA.address,
+            // tokenB: tradeData.tokenB.address,
+            isPoolPriceZero: poolPriceNonDisplay === 0, // force re-initialization when tokens are changed
         }),
     ]);
 
     useEffect(() => {
         if (initialLoad) {
-            // console.log({ initialLoad });
+            console.log({ initialLoad });
+            console.log({ poolPriceNonDisplay });
             if (!pool) return;
             // if (!provider) return;
             if (!poolPriceNonDisplay) return;
@@ -359,10 +366,11 @@ export default function Limit(props: LimitPropsIF) {
             setPriceInputFieldBlurred(false);
         }
     }, [
+        pool,
         initialLoad,
         chainId,
         limitTick,
-        poolPriceDisplay,
+        poolPriceNonDisplay,
         isSellTokenBase,
         isDenomBase,
         priceInputFieldBlurred,
@@ -415,6 +423,8 @@ export default function Limit(props: LimitPropsIF) {
         // }
         resetConfirmation();
 
+        console.log({ limitTick });
+
         const sellToken = tradeData.tokenA.address;
         const buyToken = tradeData.tokenB.address;
         const sellQty = tokenAInputQty;
@@ -442,6 +452,7 @@ export default function Limit(props: LimitPropsIF) {
             dispatch(addPendingTx(tx?.hash));
             setNewLimitOrderTransactionHash(tx.hash);
         } catch (error) {
+            console.log({ error });
             setTxErrorCode(error?.code);
             setTxErrorMessage(error?.message);
         }
@@ -683,6 +694,7 @@ export default function Limit(props: LimitPropsIF) {
                     <LimitCurrencyConverter
                         setPriceInputFieldBlurred={setPriceInputFieldBlurred}
                         pool={pool}
+                        gridSize={chainData.gridSize}
                         isUserLoggedIn={isUserLoggedIn}
                         tokenPair={tokenPair}
                         searchableTokens={searchableTokens}
@@ -722,7 +734,7 @@ export default function Limit(props: LimitPropsIF) {
                     orderGasPriceInDollars={orderGasPriceInDollars}
                     poolPriceDisplay={poolPriceDisplay || 0}
                     slippageTolerance={slippageTolerancePercentage}
-                    liquidityProviderFee={0}
+                    liquidityProviderFee={tradeData.liquidityFee * 100}
                     quoteTokenIsBuy={true}
                     didUserFlipDenom={tradeData.didUserFlipDenom}
                     isTokenABase={isSellTokenBase}
