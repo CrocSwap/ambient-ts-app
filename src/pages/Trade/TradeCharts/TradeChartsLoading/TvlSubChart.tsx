@@ -38,7 +38,7 @@ export default function TvlSubChart(props: TvlData) {
                 .mainValue((d: any) => d.value)
                 .crossValue((d: any) => d.time)
                 .decorate((selection: any) => {
-                    selection.style('fill', () => {
+                    selection.enter().style('fill', () => {
                         return 'url(#mygrad)';
                     });
                 });
@@ -72,7 +72,6 @@ export default function TvlSubChart(props: TvlData) {
                 .scaleExtent([1, 10])
                 .on('zoom', (event: any) => {
                     xScale.domain(event.transform.rescaleX(xScaleCopy).domain());
-
                     render();
                     props.render();
                 });
@@ -117,7 +116,7 @@ export default function TvlSubChart(props: TvlData) {
                 .decorate((selection: any) => {
                     selection.select('.x-axis').remove();
                     d3.select('.y-axis').select('svg').select('path').remove();
-                    selection.enter().select('d3fc-svg.plot-area').call(zoom);
+                    selection.select('d3fc-svg.plot-area').call(zoom);
                 })
                 .svgPlotArea(multi);
 

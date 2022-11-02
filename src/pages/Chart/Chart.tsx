@@ -2542,7 +2542,9 @@ export default function Chart(props: ChartData) {
                                 )}
                             </label>
                             <FeeRateSubChart
-                                feeData={parsedChartData?.feeChartData}
+                                feeData={parsedChartData?.feeChartData.sort(
+                                    (a, b) => b.time - a.time,
+                                )}
                                 period={parsedChartData?.period}
                                 crosshairData={crosshairData}
                                 setsubChartValues={setsubChartValues}
@@ -2562,7 +2564,9 @@ export default function Chart(props: ChartData) {
                                 )}
                             </label>
                             <TvlSubChart
-                                tvlData={parsedChartData?.tvlChartData}
+                                tvlData={parsedChartData?.tvlChartData.sort(
+                                    (a, b) => b.time - a.time,
+                                )}
                                 period={parsedChartData?.period}
                                 crosshairData={crosshairData}
                                 setsubChartValues={setsubChartValues}
