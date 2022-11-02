@@ -24,7 +24,13 @@ import VolumeSubChart from '../Trade/TradeCharts/TradeChartsLoading/VolumeSubCha
 import { ChartUtils } from '../Trade/TradeCharts/TradeCandleStickChart';
 import './Chart.css';
 import BarSeries from './ChartUtils/ChartUtils';
-import { CrocPoolView, tickToPrice } from '@crocswap-libs/sdk';
+import {
+    ChainSpec,
+    CrocPoolView,
+    pinTickLower,
+    pinTickUpper,
+    tickToPrice,
+} from '@crocswap-libs/sdk';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -45,6 +51,8 @@ type chartItemStates = {
 };
 interface ChartData {
     pool: CrocPoolView | undefined;
+    chainData: ChainSpec;
+    isTokenABase: boolean;
     expandTradeTable: boolean;
     candleData: ChartUtils | undefined;
     liquidityData: any;
@@ -70,6 +78,8 @@ interface ChartData {
 export default function Chart(props: ChartData) {
     const {
         pool,
+        chainData,
+        isTokenABase,
         denomInBase,
         isAdvancedModeActive,
         pinnedMinPriceDisplayTruncated,
@@ -2311,9 +2321,13 @@ export default function Chart(props: ChartData) {
         //     : pool?.fromDisplayPrice(1 / parseFloat(newLimitValue));
 
         limitNonDisplay?.then((limit) => {
-            const limitTick = Math.log(limit) / Math.log(1.0001);
-            console.log({ limitTick });
-            dispatch(setLimitTick(limitTick));
+            // const limitPriceInTick = Math.log(limit) / Math.log(1.0001);
+            const pinnedTick: number = isTokenABase
+                ? pinTickLower(limit, chainData.gridSize)
+                : pinTickUpper(limit, chainData.gridSize);
+            // console.log({ limitPriceInTick });
+            // console.log({ isDenomBase });
+            dispatch(setLimitTick(pinnedTick));
         });
     };
 
