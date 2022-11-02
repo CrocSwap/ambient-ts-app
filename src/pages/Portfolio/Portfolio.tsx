@@ -397,6 +397,7 @@ export default function Portfolio(props: PortfolioPropsIF) {
                 >
                     <SoloTokenSelect
                         closeModal={closeTokenModal}
+                        chainId={chainId}
                         tokensBank={importedTokens}
                         setImportedTokens={setImportedTokens}
                     />
