@@ -1440,15 +1440,35 @@ export default function Chart(props: ChartData) {
                     const newLimitValue = scaleData.yScale.invert(d3.pointer(event)[1]);
                     console.log({ newLimitValue });
 
-                    const snapResponse = snap(props.liquidityData.liqSnapData, newLimitValue);
+                    // const snapResponse = snap(props.liquidityData.liqSnapData, newLimitValue);
 
-                    const snappedValue = Math.round(snapResponse[0].value * 100) / 100;
+                    // const snappedValue = Math.round(snapResponse[0].value * 100) / 100;
 
-                    setLimit(() => {
-                        return [{ name: 'Limit', value: snappedValue }];
+                    const limitNonDisplay = denomInBase
+                        ? pool?.fromDisplayPrice(parseFloat(newLimitValue))
+                        : pool?.fromDisplayPrice(1 / parseFloat(newLimitValue));
+
+                    limitNonDisplay?.then((limit) => {
+                        console.log({ limit });
+                        // const limitPriceInTick = Math.log(limit) / Math.log(1.0001);
+                        const pinnedTick: number = isTokenABase
+                            ? pinTickLower(limit, chainData.gridSize)
+                            : pinTickUpper(limit, chainData.gridSize);
+
+                        console.log({ pinnedTick });
+                        dispatch(setLimitTick(pinnedTick));
+
+                        const newLimitDisplay = denomInBase
+                            ? pool?.toDisplayPrice(1 / tickToPrice(pinnedTick))
+                            : pool?.toDisplayPrice(tickToPrice(pinnedTick));
+
+                        newLimitDisplay?.then((newLimitNum) => {
+                            setLimit(() => {
+                                return [{ name: 'Limit', value: newLimitNum }];
+                            });
+                            // onBlurlimitRate(newLimitNum);
+                        });
                     });
-
-                    onBlurlimitRate(snappedValue);
                 }
             });
         }
@@ -2315,12 +2335,13 @@ export default function Chart(props: ChartData) {
 
     const onBlurlimitRate = (newLimitValue: any) => {
         console.log({ newLimitValue });
-        const limitNonDisplay = pool?.fromDisplayPrice(parseFloat(newLimitValue));
-        // const limitNonDisplay = denomInBase
-        //     ? pool?.fromDisplayPrice(parseFloat(newLimitValue))
-        //     : pool?.fromDisplayPrice(1 / parseFloat(newLimitValue));
+        // const limitNonDisplay = pool?.fromDisplayPrice(parseFloat(newLimitValue));
+        const limitNonDisplay = denomInBase
+            ? pool?.fromDisplayPrice(parseFloat(newLimitValue))
+            : pool?.fromDisplayPrice(1 / parseFloat(newLimitValue));
 
         limitNonDisplay?.then((limit) => {
+            console.log({ limit });
             // const limitPriceInTick = Math.log(limit) / Math.log(1.0001);
             const pinnedTick: number = isTokenABase
                 ? pinTickLower(limit, chainData.gridSize)
