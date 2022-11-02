@@ -153,8 +153,6 @@ export default function VolumeSubChart(props: VolumeData) {
                 .decorate((selection: any) => {
                     selection.enter().select('d3fc-svg.plot-area').call(zoom);
                     selection.select('.x-axis').remove();
-
-                    console.log(selection.select('.y-axis').select('svg').node());
                 })
                 .svgPlotArea(multi);
 
