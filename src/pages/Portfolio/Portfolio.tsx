@@ -21,8 +21,8 @@ import ProfileSettings from '../../components/Portfolio/ProfileSettings/ProfileS
 import { SoloTokenSelect } from '../../components/Global/TokenSelectContainer/SoloTokenSelect';
 
 const mainnetProvider = new ethers.providers.WebSocketProvider(
-    // 'wss://mainnet.infura.io/ws/v3/cbb2856ea8804fc5ba59be0a2e8a9f88', // croc
-    'wss://mainnet.infura.io/ws/v3/4a162c75bd514925890174ca13cdb6a2', // benwolski@gmail.com
+    'wss://mainnet.infura.io/ws/v3/cbb2856ea8804fc5ba59be0a2e8a9f88', // croc
+    // 'wss://mainnet.infura.io/ws/v3/4a162c75bd514925890174ca13cdb6a2', // benwolski@gmail.com
     // 'wss://mainnet.infura.io/ws/v3/170b7b65781c422d82a94b8b289ca605',
     // 'wss://mainnet.infura.io/ws/v3/e0aa879e36fc4c9e91b826ad961a36fd',
 );
@@ -397,6 +397,7 @@ export default function Portfolio(props: PortfolioPropsIF) {
                 >
                     <SoloTokenSelect
                         closeModal={closeTokenModal}
+                        chainId={chainId}
                         tokensBank={importedTokens}
                         setImportedTokens={setImportedTokens}
                     />

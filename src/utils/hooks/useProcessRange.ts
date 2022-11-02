@@ -188,6 +188,7 @@ export const useProcessRange = (position: PositionIF) => {
         // range status
         isPositionInRange,
         isAmbient,
+        isOwnerActiveAccount,
 
         // position matches select token data
         positionMatchesSelectedTokens,

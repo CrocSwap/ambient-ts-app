@@ -79,7 +79,7 @@ export default function RangesRow(props: RangesRowPropsIF) {
         usdValue,
         baseTokenSymbol,
         quoteTokenSymbol,
-        // isOwnerActiveAccount,
+        isOwnerActiveAccount,
         ensName,
 
         apyString,
@@ -192,8 +192,12 @@ export default function RangesRow(props: RangesRowPropsIF) {
             interactive
             title={
                 <div>
-                    <p>{ownerId}</p>
-                    <NavLink to={`/${ownerId}`}>View Account</NavLink>
+                    <p>{ensName ? ensName : ownerId}</p>
+                    <NavLink
+                        to={`/${isOwnerActiveAccount ? 'account' : ensName ? ensName : ownerId}`}
+                    >
+                        View Account
+                    </NavLink>
                 </div>
             }
             placement={'right'}

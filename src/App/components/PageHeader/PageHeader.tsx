@@ -179,10 +179,27 @@ export default function PageHeader(props: HeaderPropsIF) {
     const isDenomBase = tradeData.isDenomBase;
 
     useEffect(() => {
-        // console.log({ location });
-        // console.log({ urlParams });
-        if (location.pathname.includes('account')) {
-            document.title = 'account - ambient.finance';
+        const path = location.pathname;
+
+        const pathNoLeadingSlash = path.slice(1);
+        // console.log({ pathNoLeadingSlash });
+
+        const isAddressEns = pathNoLeadingSlash?.endsWith('.eth');
+        const isAddressHex =
+            pathNoLeadingSlash?.startsWith('0x') && pathNoLeadingSlash?.length == 42;
+
+        const isPathValidAddress = path && (isAddressEns || isAddressHex);
+        // console.log({ isPathValidAddress });
+
+        if (pathNoLeadingSlash === 'account') {
+            document.title = 'my account - ambient.finance';
+        } else if (isPathValidAddress) {
+            const ensNameOrAddressTruncated = isAddressEns
+                ? pathNoLeadingSlash.length > 15
+                    ? trimString(pathNoLeadingSlash, 10, 3, '…')
+                    : pathNoLeadingSlash
+                : trimString(pathNoLeadingSlash, 6, 0, '…');
+            document.title = `${ensNameOrAddressTruncated} - ambient.finance`;
         } else if (location.pathname.includes('swap') || location.pathname.includes('trade')) {
             document.title = isDenomBase
                 ? `${baseSymbol}/${quoteSymbol} - ambient.finance`
