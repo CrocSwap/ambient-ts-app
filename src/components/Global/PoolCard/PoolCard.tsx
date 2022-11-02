@@ -10,11 +10,13 @@ import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { get24hChange, memoizePoolStats } from '../../../App/functions/getPoolStats';
 import { formatAmount } from '../../../utils/numbers';
 import PoolCardSkeleton from './PoolCardSkeleton/PoolCardSkeleton';
+import { tradeData } from '../../../utils/state/tradeDataSlice';
 
 const cachedPoolStatsFetch = memoizePoolStats();
 
 interface PoolCardProps {
     crocEnv?: CrocEnv;
+    tradeData: tradeData;
     cachedQuerySpotPrice: SpotPriceFn;
     name: string;
     tokenMap: Map<string, TokenIF>;
@@ -25,8 +27,16 @@ interface PoolCardProps {
 }
 
 export default function PoolCard(props: PoolCardProps) {
-    const { crocEnv, tokenMap, tokenA, tokenB, lastBlockNumber, chainId, cachedQuerySpotPrice } =
-        props;
+    const {
+        crocEnv,
+        tradeData,
+        tokenMap,
+        tokenA,
+        tokenB,
+        lastBlockNumber,
+        chainId,
+        cachedQuerySpotPrice,
+    } = props;
 
     const tokenAAddress = tokenA.address;
     const tokenBAddress = tokenB.address;
@@ -258,8 +268,17 @@ export default function PoolCard(props: PoolCardProps) {
 
     if (!tokenA || !tokenB) return <PoolCardSkeleton />;
 
-    const linkpath =
-        '/trade/market/chain=0x5&tokenA=' + tokenA.address + '&tokenB=' + tokenB.address;
+    const tokenAString =
+        tokenA.address.toLowerCase() === tradeData.tokenB.address.toLowerCase()
+            ? tokenB.address
+            : tokenA.address;
+
+    const tokenBString =
+        tokenA.address.toLowerCase() === tradeData.tokenB.address.toLowerCase()
+            ? tokenA.address
+            : tokenB.address;
+
+    const linkpath = '/trade/market/chain=0x5&tokenA=' + tokenAString + '&tokenB=' + tokenBString;
 
     return (
         <Link className={styles.pool_card} to={linkpath}>
