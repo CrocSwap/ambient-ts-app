@@ -21,10 +21,10 @@ import ProfileSettings from '../../components/Portfolio/ProfileSettings/ProfileS
 import { SoloTokenSelect } from '../../components/Global/TokenSelectContainer/SoloTokenSelect';
 
 const mainnetProvider = new ethers.providers.WebSocketProvider(
-    'wss://mainnet.infura.io/ws/v3/cbb2856ea8804fc5ba59be0a2e8a9f88', // croc
+    // 'wss://mainnet.infura.io/ws/v3/cbb2856ea8804fc5ba59be0a2e8a9f88', // croc
+    'wss://mainnet.infura.io/ws/v3/4a162c75bd514925890174ca13cdb6a2', // benwolski@gmail.com
     // 'wss://mainnet.infura.io/ws/v3/170b7b65781c422d82a94b8b289ca605',
     // 'wss://mainnet.infura.io/ws/v3/e0aa879e36fc4c9e91b826ad961a36fd',
-    // 'wss://mainnet.infura.io/ws/v3/4a162c75bd514925890174ca13cdb6a2',
 );
 // import { ambientTokenList } from '../../utils/data/ambientTokenList';
 
@@ -61,6 +61,9 @@ interface PortfolioPropsIF {
     quoteTokenBalance: string;
     baseTokenDexBalance: string;
     quoteTokenDexBalance: string;
+
+    currentTxActiveInTransactions: string;
+    setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
 }
 
 // const cachedFetchAddress = memoizePromiseFn(fetchAddress);
@@ -94,6 +97,9 @@ export default function Portfolio(props: PortfolioPropsIF) {
         quoteTokenBalance,
         baseTokenDexBalance,
         quoteTokenDexBalance,
+
+        currentTxActiveInTransactions,
+        setCurrentTxActiveInTransactions,
 
         showSidebar,
         isUserLoggedIn,
@@ -335,6 +341,7 @@ export default function Portfolio(props: PortfolioPropsIF) {
                 activeAccount={address ?? connectedAccount}
                 imageData={connectedAccountActive ? userImageData : secondaryImageData}
                 setShowProfileSettings={setShowProfileSettings}
+                connectedAccountActive={connectedAccountActive}
             />
             <div
                 className={
@@ -375,6 +382,8 @@ export default function Portfolio(props: PortfolioPropsIF) {
                     quoteTokenBalance={quoteTokenBalance}
                     baseTokenDexBalance={baseTokenDexBalance}
                     quoteTokenDexBalance={quoteTokenDexBalance}
+                    currentTxActiveInTransactions={currentTxActiveInTransactions}
+                    setCurrentTxActiveInTransactions={setCurrentTxActiveInTransactions}
                 />
                 {connectedAccountActive && !fullLayoutActive ? exchangeBalanceComponent : null}
             </div>

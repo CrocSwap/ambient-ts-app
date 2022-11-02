@@ -26,20 +26,27 @@ export default function TransactionSettings(props: TransactionSettingsPropsIF) {
         isPairStable ? slippage.stable.value : slippage.volatile.value,
     );
 
-    const setSlippage = (input: string) => {
+    const setSlippageLocalState = (input: string) => {
         setNewSlippage(input);
-        isPairStable
-            ? slippage.stable.setValue(newSlippage)
-            : slippage.volatile.setValue(newSlippage);
     };
 
-    const handleClose = () => {
+    const setSlippageLocalStorage = (saveInput: string) => {
+        isPairStable ? slippage.stable.setValue(saveInput) : slippage.volatile.setValue(saveInput);
+    };
+
+    const handleSubmit = () => {
         // dispatch(setSlippageTolerance(parseInt(newSlippage)));
         // isPairStable
         //     ? slippage.stable.setValue(newSlippage)
         //     : slippage.volatile.setValue(newSlippage);
-        setSlippage(newSlippage);
+        setSlippageLocalStorage(newSlippage);
         onClose();
+    };
+
+    const handleKeyDown = (event: { keyCode: number }) => {
+        if (event.keyCode === 13) {
+            handleSubmit();
+        }
     };
 
     const shouldDisplaySlippageTolerance = module !== 'Limit Order';
@@ -50,13 +57,14 @@ export default function TransactionSettings(props: TransactionSettingsPropsIF) {
             {shouldDisplaySlippageTolerance ? (
                 <SlippageTolerance
                     slippageValue={newSlippage}
-                    setSlippage={setSlippage}
+                    setSlippageLocalState={setSlippageLocalState}
                     module={module}
+                    handleKeyDown={handleKeyDown}
                 />
             ) : null}
             <div className={styles.button_container}>
                 {shouldDisplaySlippageTolerance ? (
-                    <Button title='Submit' action={handleClose} />
+                    <Button title='Submit' action={handleSubmit} />
                 ) : null}
             </div>
         </div>

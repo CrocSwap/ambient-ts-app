@@ -4,10 +4,10 @@ import moment from 'moment';
 import { DetailedHTMLProps, HTMLAttributes, useCallback, useEffect, useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
-import { formatAmountChartData, formatDollarAmountAxis } from '../../utils/numbers';
+import { formatAmount, formatAmountChartData, formatDollarAmountAxis } from '../../utils/numbers';
 import { CandleData } from '../../utils/state/graphDataSlice';
 import {
-    setLimitPrice,
+    setLimitTick,
     setRangeHighLineTriggered,
     setRangeLowLineTriggered,
     setRangeModuleTriggered,
@@ -23,7 +23,7 @@ import TvlSubChart from '../Trade/TradeCharts/TradeChartsLoading/TvlSubChart';
 import VolumeSubChart from '../Trade/TradeCharts/TradeChartsLoading/VolumeSubChart';
 import { ChartUtils } from '../Trade/TradeCharts/TradeCandleStickChart';
 import './Chart.css';
-import BarSeries from './ChartUtils/ChartUtils';
+import { CrocPoolView, tickToPrice } from '@crocswap-libs/sdk';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -43,12 +43,13 @@ type chartItemStates = {
     showFeeRate: boolean;
 };
 interface ChartData {
+    pool: CrocPoolView | undefined;
     expandTradeTable: boolean;
     candleData: ChartUtils | undefined;
     liquidityData: any;
     changeState: (isOpen: boolean | undefined, candleData: CandleData | undefined) => void;
     denomInBase: boolean;
-    limitPrice: string | undefined;
+    limitTick: number;
     isAdvancedModeActive: boolean | undefined;
     simpleRangeWidth: number | undefined;
     pinnedMinPriceDisplayTruncated: number | undefined;
@@ -67,6 +68,7 @@ interface ChartData {
 
 export default function Chart(props: ChartData) {
     const {
+        pool,
         denomInBase,
         isAdvancedModeActive,
         pinnedMinPriceDisplayTruncated,
@@ -141,32 +143,48 @@ export default function Chart(props: ChartData) {
     const [rescale, setRescale] = useState(true);
 
     // Data
-    const [crosshairData, setCrosshairData] = useState([{ x: 0, y: -1 }]);
+    const [crosshairData] = useState([{ x: 0, y: -1 }]);
     const [currentPriceData] = useState([{ value: -1 }]);
     const [indicatorLineData] = useState([{ x: 0, y: 0 }]);
     const [liqTooltipSelectedLiqBar, setLiqTooltipSelectedLiqBar] = useState({
         activeLiq: 0,
-        upperBoundPriceDecimalCorrected: 0,
+        liqPrices: 0,
     });
 
     // d3
     const [transactionFilter, setTransactionFilter] = useState<CandleData>();
-    const [ghostLines, setGhostLines] = useState<any>();
-    const [horizontalLine, setHorizontalLine] = useState<any>();
-    const [marketLine, setMarketLine] = useState<any>();
-    const [limitLine, setLimitLine] = useState<any>();
-    const [targetsJoin, setTargetsJoin] = useState<any>();
-    const [targetsAreaJoin, setTargetsAreaJoin] = useState<any>();
 
-    const [marketJoin, setMarketJoin] = useState<any>();
-    const [limitJoin, setLimitJoin] = useState<any>();
+    // Crosshairs
     const [liqTooltip, setLiqTooltip] = useState<any>();
     const [highlightedCurrentPriceLine, setHighlightedCurrentPriceLine] = useState<any>();
     const [indicatorLine, setIndicatorLine] = useState<any>();
     const [crosshairHorizontal, setCrosshairHorizontal] = useState<any>();
     const [crosshairVertical, setCrosshairVertical] = useState<any>();
     const [candlestick, setCandlestick] = useState<any>();
-    const [barSeries, setBarSeries] = useState<any>();
+
+    // Line Series
+    const [ghostLines, setGhostLines] = useState<any>();
+    const [horizontalLine, setHorizontalLine] = useState<any>();
+    const [marketLine, setMarketLine] = useState<any>();
+    const [limitLine, setLimitLine] = useState<any>();
+
+    // Line Joins
+    const [targetsJoin, setTargetsJoin] = useState<any>();
+    const [targetsAreaJoin, setTargetsAreaJoin] = useState<any>();
+    const [marketJoin, setMarketJoin] = useState<any>();
+    const [limitJoin, setLimitJoin] = useState<any>();
+
+    // Liq Series
+    const [liqAskSeries, setLiqAskSeries] = useState<any>();
+    const [liqBidSeries, setLiqBidSeries] = useState<any>();
+    const [liqHighligtedAskSeries, setLiqHighligtedAskSeries] = useState<any>();
+    const [liqHighligtedBidSeries, setLiqHighligtedBidSeries] = useState<any>();
+
+    // Liq Joins
+    const [areaAskJoin, setAreaAskJoin] = useState<any>();
+    const [areaBidJoin, setAreaBidJoin] = useState<any>();
+    const [liqHighligtedAskJoin, setLiqHighligtedAskJoin] = useState<any>();
+    const [liqHighligtedBidJoin, setLiqHighligtedBidJoin] = useState<any>();
     const [yAxis, setYaxis] = useState<any>();
 
     // Utils
@@ -177,41 +195,12 @@ export default function Chart(props: ChartData) {
     const [selectedCandleState, setSelectedCandleState] = useState<any>();
 
     const valueFormatter = d3.format('.5f');
-    const indicatorFormatter = d3.format('.6f');
-    const tooltipFormatter = d3.format('.3f');
-
-    function formattedTextData(
-        data: number,
-        minimumFractionDigits = 2,
-        maximumFractionDigits = 2,
-    ): string {
-        return data
-            ? data.toLocaleString(undefined, {
-                  minimumFractionDigits: minimumFractionDigits,
-                  maximumFractionDigits: maximumFractionDigits,
-              })
-            : '';
-    }
 
     const setDefaultRangeData = () => {
         setRanges((prevState) => {
             const newTargets = [...prevState];
-            newTargets.filter((target: any) => target.name === 'Max')[0].value =
-                props.candleData !== undefined
-                    ? Math.max(
-                          ...props.candleData.chartData.map((o) => {
-                              return o.open !== undefined ? o.open : 0;
-                          }),
-                      )
-                    : 0;
-            newTargets.filter((target: any) => target.name === 'Min')[0].value =
-                props.candleData !== undefined
-                    ? Math.min(
-                          ...props.candleData.chartData.map((o) => {
-                              return o.close !== undefined ? o.close : Infinity;
-                          }),
-                      )
-                    : 0;
+            newTargets.filter((target: any) => target.name === 'Max')[0].value = Infinity;
+            newTargets.filter((target: any) => target.name === 'Min')[0].value = 0;
 
             return newTargets;
         });
@@ -393,7 +382,7 @@ export default function Chart(props: ChartData) {
                 .accessors([(d: any) => d.date])
                 .padUnit('domain')
                 // ensure that the scale is padded by one day in either direction
-                .pad([parsedChartData.period * 5000, (parsedChartData.period / 2) * 100000]);
+                .pad([parsedChartData.period * 1000, (parsedChartData.period / 2) * 80000]);
 
             const subChartxExtent = d3fc
                 .extentDate()
@@ -624,17 +613,20 @@ export default function Chart(props: ChartData) {
         });
     };
 
+    const limitDisplayPrice = denomInBase
+        ? pool?.toDisplayPrice(tickToPrice(tradeData.limitTick))
+        : pool?.toDisplayPrice(tickToPrice(tradeData.limitTick));
+
     const setLimitLineValue = () => {
-        setLimit(() => {
-            return [
+        async () => {
+            setLimit([
                 {
                     name: 'Limit',
-                    value: parseFloat(props.limitPrice !== undefined ? props.limitPrice : '0'),
+                    value: (await limitDisplayPrice) || 0,
                 },
-            ];
-        });
+            ]);
+        };
     };
-
     const setBalancedLines = () => {
         if (simpleRangeWidth === 100 || rangeModuleTriggered) {
             const results: boolean[] = [];
@@ -767,7 +759,7 @@ export default function Chart(props: ChartData) {
         }
     }, [
         location,
-        props.limitPrice,
+        props.limitTick,
         targetData,
         denomInBase,
         isAdvancedModeActive,
@@ -1336,6 +1328,11 @@ export default function Chart(props: ChartData) {
 
             d3.select(d3PlotArea.current)
                 .select('.targetsArea')
+                .selectAll('annotation-line')
+                .style('visibility', 'hidden');
+
+            d3.select(d3PlotArea.current)
+                .select('.targetsArea')
                 .style('filter', 'url(#targetsAreaBackground)');
             addTriangleAndRect();
         }
@@ -1779,11 +1776,92 @@ export default function Chart(props: ChartData) {
         }
     }, [scaleData]);
 
+    // Liq Series
     useEffect(() => {
         if (scaleData !== undefined) {
-            BarSeries(scaleData, props.liquidityData, setBarSeries);
+            const liqAskSeries = d3fc
+                .seriesSvgArea()
+                .orient('horizontal')
+                .curve(d3.curveStep)
+                .mainValue((d: any) => d.activeLiq)
+                .crossValue((d: any) => d.liqPrices)
+                .xScale(scaleData.liquidityScale)
+                .yScale(scaleData.yScale)
+                .decorate((selection: any) => {
+                    selection.style('fill', 'rgba(205, 193, 255, 0.3)');
+                });
+
+            setLiqAskSeries(() => {
+                return liqAskSeries;
+            });
+
+            const liqBidSeries = d3fc
+                .seriesSvgArea()
+                .orient('horizontal')
+                .curve(d3.curveStep)
+                .mainValue((d: any) => d.activeLiq)
+                .crossValue((d: any) => d.liqPrices)
+                .xScale(scaleData.liquidityScale)
+                .yScale(scaleData.yScale)
+                .decorate((selection: any) => {
+                    selection.style('fill', 'rgba(115, 113, 252, 0.3)');
+                });
+
+            setLiqBidSeries(() => {
+                return liqBidSeries;
+            });
+
+            const liqHighligtedAskSeries = d3fc
+                .seriesSvgArea()
+                .orient('horizontal')
+                .curve(d3.curveStep)
+                .mainValue((d: any) => d.activeLiq)
+                .crossValue((d: any) => d.liqPrices)
+                .xScale(scaleData.liquidityScale)
+                .yScale(scaleData.yScale)
+                .decorate((selection: any) => {
+                    selection.style('fill', 'rgba(205, 193, 255, 0.3)');
+                });
+
+            setLiqHighligtedAskSeries(() => {
+                return liqHighligtedAskSeries;
+            });
+
+            const liqHighligtedBidSeries = d3fc
+                .seriesSvgArea()
+                .orient('horizontal')
+                .curve(d3.curveStep)
+                .mainValue((d: any) => d.activeLiq)
+                .crossValue((d: any) => d.liqPrices)
+                .xScale(scaleData.liquidityScale)
+                .yScale(scaleData.yScale)
+                .decorate((selection: any) => {
+                    selection.style('fill', 'rgba(115, 113, 252, 0.6)');
+                });
+
+            setLiqHighligtedBidSeries(() => {
+                return liqHighligtedBidSeries;
+            });
+
+            const areaAskJoin = d3fc.dataJoin('g', 'areaAsk');
+            const areaBidJoin = d3fc.dataJoin('g', 'areaBid');
+            const liqHighligtedAskJoin = d3fc.dataJoin('g', 'liqHighligtedAsk');
+            const liqHighligtedBidJoin = d3fc.dataJoin('g', 'liqHighligtedBid');
+
+            setAreaAskJoin(() => {
+                return areaAskJoin;
+            });
+            setAreaBidJoin(() => {
+                return areaBidJoin;
+            });
+            setLiqHighligtedAskJoin(() => {
+                return liqHighligtedAskJoin;
+            });
+            setLiqHighligtedBidJoin(() => {
+                return liqHighligtedBidJoin;
+            });
         }
-    }, [scaleData]);
+    }, [scaleData, props.liquidityData]);
 
     // Call drawChart()
     useEffect(() => {
@@ -1802,8 +1880,15 @@ export default function Chart(props: ChartData) {
             marketLine !== undefined &&
             marketJoin !== undefined &&
             candlestick !== undefined &&
-            barSeries !== undefined &&
             targetsJoin !== undefined &&
+            liqAskSeries !== undefined &&
+            liqAskSeries !== undefined &&
+            areaAskJoin !== undefined &&
+            areaBidJoin !== undefined &&
+            liqHighligtedAskJoin !== undefined &&
+            liqHighligtedBidJoin !== undefined &&
+            liqHighligtedAskSeries !== undefined &&
+            liqHighligtedBidSeries !== undefined &&
             targetsAreaJoin !== undefined
         ) {
             const targetData = {
@@ -1831,7 +1916,14 @@ export default function Chart(props: ChartData) {
                 crosshairHorizontal,
                 marketLine,
                 candlestick,
-                barSeries,
+                liqAskSeries,
+                liqBidSeries,
+                areaAskJoin,
+                areaBidJoin,
+                liqHighligtedAskJoin,
+                liqHighligtedBidJoin,
+                liqHighligtedAskSeries,
+                liqHighligtedBidSeries,
                 yAxis,
             );
         }
@@ -1853,7 +1945,14 @@ export default function Chart(props: ChartData) {
         crosshairHorizontal,
         marketLine,
         candlestick,
-        barSeries,
+        liqAskSeries,
+        liqBidSeries,
+        areaAskJoin,
+        areaBidJoin,
+        liqHighligtedAskJoin,
+        liqHighligtedBidJoin,
+        liqHighligtedAskSeries,
+        liqHighligtedBidSeries,
         yAxis,
     ]);
 
@@ -1891,7 +1990,14 @@ export default function Chart(props: ChartData) {
             crosshairHorizontal: any,
             marketLine: any,
             candlestick: any,
-            barSeries: any,
+            liqAskSeries: any,
+            liqBidSeries: any,
+            areaAskJoin: any,
+            areaBidJoin: any,
+            liqHighligtedAskJoin: any,
+            liqHighligtedBidJoin: any,
+            liqHighligtedAskSeries: any,
+            liqHighligtedBidSeries: any,
             yAxis: any,
         ) => {
             if (chartData.length > 0) {
@@ -1920,11 +2026,10 @@ export default function Chart(props: ChartData) {
                 };
 
                 // axes
-                const xAxis = d3fc.axisBottom().scale(scaleData.xScale);
+                const xAxis = d3fc.axisBottom().scale(scaleData.xScale).tickArguments([6]);
 
                 const candleJoin = d3fc.dataJoin('g', 'candle');
 
-                const barJoin = d3fc.dataJoin('g', 'bar');
                 const crosshairHorizontalJoin = d3fc.dataJoin('g', 'crosshairHorizontal');
                 const crosshairVerticalJoin = d3fc.dataJoin('g', 'crosshairVertical');
                 const highlightedCurrentPriceLineJoin = d3fc.dataJoin(
@@ -1956,6 +2061,7 @@ export default function Chart(props: ChartData) {
                         crosshairHorizontalJoin(svg, [crosshairData]).call(crosshairHorizontal);
                         crosshairVerticalJoin(svg, [crosshairData]).call(crosshairVertical);
 
+                        targetsJoin(svg, [targets.ranges]).call(horizontalLine);
                         marketJoin(svg, [targets.market]).call(marketLine);
                         limitJoin(svg, [targets.limit]).call(limitLine);
 
@@ -1964,16 +2070,39 @@ export default function Chart(props: ChartData) {
                         );
                         indicatorLineJoin(svg, [indicatorLineData]).call(indicatorLine);
 
-                        candleJoin(svg, [chartData]).call(candlestick);
-                        barJoin(svg, [liquidityData.liqData]).call(barSeries);
                         targetsJoin(svg, [targets.ranges]).call(horizontalLine);
 
+                        candleJoin(svg, [chartData]).call(candlestick);
+                        liqHighligtedAskJoin(svg, [liquidityData.liqHighligtedAskSeries]).call(
+                            liqHighligtedAskSeries,
+                        );
+                        liqHighligtedBidJoin(svg, [liquidityData.liqHighligtedBidSeries]).call(
+                            liqHighligtedBidSeries,
+                        );
+
+                        areaAskJoin(svg, [liquidityData.liqAskData]).call(liqAskSeries);
+                        areaBidJoin(svg, [liquidityData.liqBidData]).call(liqBidSeries);
                         setDragControl(true);
                     }
 
+                    const mouseOutFunc = () => {
+                        liquidityData.liqHighligtedBidSeries = [];
+                        liquidityData.liqHighligtedAskSeries = [];
+
+                        d3.select(d3PlotArea.current)
+                            .select('.highlightedCurrentPriceLine')
+                            .style('visibility', 'hidden');
+
+                        d3.select(d3PlotArea.current)
+                            .select('.indicatorLine')
+                            .style('visibility', 'hidden');
+
+                        liqTooltip.style('visibility', 'hidden');
+                    };
+
                     createElements().then(() => {
                         d3.select(d3PlotArea.current)
-                            .select('.bar')
+                            .select('.areaAsk')
                             .on('mousemove', (event: any) => {
                                 indicatorLineData[0] = {
                                     x: scaleData.xScale.invert(event.offsetX),
@@ -1998,20 +2127,18 @@ export default function Chart(props: ChartData) {
                                     .style('visibility', 'visible');
 
                                 const filtered =
-                                    liquidityData.liqData.length > 1
-                                        ? liquidityData.liqData.filter(
-                                              (d: any) => d.upperBoundPriceDecimalCorrected != null,
+                                    liquidityData.liqAskData.length > 1
+                                        ? liquidityData.liqAskData.filter(
+                                              (d: any) => d.liqPrices != null,
                                           )
-                                        : liquidityData.liqData;
+                                        : liquidityData.liqAskData;
 
                                 const nearest = filtered.reduce(function (prev: any, curr: any) {
                                     return Math.abs(
-                                        curr.upperBoundPriceDecimalCorrected -
-                                            scaleData.yScale.invert(event.offsetY),
+                                        curr.liqPrices - scaleData.yScale.invert(event.offsetY),
                                     ) <
                                         Math.abs(
-                                            prev.upperBoundPriceDecimalCorrected -
-                                                scaleData.yScale.invert(event.offsetY),
+                                            prev.liqPrices - scaleData.yScale.invert(event.offsetY),
                                         )
                                         ? curr
                                         : prev;
@@ -2033,58 +2160,94 @@ export default function Chart(props: ChartData) {
                                     )
                                     .style('left', event.offsetX - 80 + 'px');
 
-                                d3.select(event.currentTarget)
-                                    .selectAll('.horizontal  > path')
-                                    .style('fill', (d: any) => {
-                                        if (
-                                            currentPriceData[0].value >
-                                                d.upperBoundPriceDecimalCorrected &&
-                                            d.upperBoundPriceDecimalCorrected >=
-                                                nearest.upperBoundPriceDecimalCorrected
-                                        ) {
-                                            return 'rgba(205, 193, 255, 0.8)';
-                                        } else if (
-                                            currentPriceData[0].value <
-                                                d.upperBoundPriceDecimalCorrected &&
-                                            d.upperBoundPriceDecimalCorrected <=
-                                                nearest.upperBoundPriceDecimalCorrected
-                                        ) {
-                                            return 'rgba(115, 113, 252, 0.8)';
-                                        } else {
-                                            return d.upperBoundPriceDecimalCorrected >
-                                                scaleData.barThreshold
-                                                ? 'rgba(115, 113, 252, 0.3)'
-                                                : 'rgba(205, 193, 255, 0.3)';
-                                        }
-                                    });
+                                liquidityData.liqHighligtedBidSeries = [];
+
+                                liquidityData.liqHighligtedAskSeries =
+                                    liquidityData.liqAskData.filter(
+                                        (d: any) =>
+                                            d.liqPrices > scaleData.yScale.invert(event.offsetY),
+                                    );
 
                                 render();
                             })
-                            .on('mouseleave', (event) => {
-                                d3.select(event.currentTarget)
-                                    .selectAll('.bar > path')
-                                    .style('fill', (d: any) => {
-                                        return d.upperBoundPriceDecimalCorrected >
-                                            scaleData.barThreshold
-                                            ? 'rgba(115, 113, 252, 0.3)'
-                                            : 'rgba(205, 193, 255, 0.3)';
-                                    });
+                            .on('mouseleave', mouseOutFunc);
+
+                        d3.select(d3PlotArea.current)
+                            .select('.areaBid')
+                            .on('mousemove', (event: any) => {
+                                indicatorLineData[0] = {
+                                    x: scaleData.xScale.invert(event.offsetX),
+                                    y: event.offsetY,
+                                };
+
+                                currentPriceData[0] = {
+                                    value: poolPriceDisplay !== undefined ? poolPriceDisplay : 0,
+                                };
+
+                                scaleData.yScaleIndicator.range([
+                                    event.offsetY,
+                                    scaleData.yScale(poolPriceDisplay),
+                                ]);
 
                                 d3.select(d3PlotArea.current)
                                     .select('.highlightedCurrentPriceLine')
-                                    .style('visibility', 'hidden');
+                                    .style('visibility', 'visible');
 
                                 d3.select(d3PlotArea.current)
                                     .select('.indicatorLine')
-                                    .style('visibility', 'hidden');
+                                    .style('visibility', 'visible');
 
-                                liqTooltip.style('visibility', 'hidden');
-                            });
+                                const filtered =
+                                    liquidityData.liqBidData.length > 1
+                                        ? liquidityData.liqBidData.filter(
+                                              (d: any) => d.liqPrices != null,
+                                          )
+                                        : liquidityData.liqBidData;
+
+                                const nearest = filtered.reduce(function (prev: any, curr: any) {
+                                    return Math.abs(
+                                        curr.liqPrices - scaleData.yScale.invert(event.offsetY),
+                                    ) <
+                                        Math.abs(
+                                            prev.liqPrices - scaleData.yScale.invert(event.offsetY),
+                                        )
+                                        ? curr
+                                        : prev;
+                                });
+
+                                setLiqTooltipSelectedLiqBar(() => {
+                                    return nearest;
+                                });
+
+                                liqTooltip
+                                    .style('visibility', 'visible')
+                                    .style(
+                                        'top',
+                                        event.y -
+                                            80 -
+                                            (event.offsetY - scaleData.yScale(poolPriceDisplay)) /
+                                                2 +
+                                            'px',
+                                    )
+                                    .style('left', event.offsetX - 80 + 'px');
+
+                                liquidityData.liqHighligtedAskSeries = [];
+
+                                liquidityData.liqHighligtedBidSeries =
+                                    liquidityData.liqBidData.filter(
+                                        (d: any) =>
+                                            scaleData.yScale.invert(event.offsetY) > d.liqPrices,
+                                    );
+
+                                render();
+                            })
+                            .on('mouseleave', mouseOutFunc);
                     });
                 });
 
                 d3.select(d3Xaxis.current).on('draw', function (event: any) {
                     d3.select(event.target).select('svg').call(xAxis);
+                    d3.select(d3Xaxis.current).select('svg').select('.domain').remove();
                 });
 
                 d3.select(d3Yaxis.current).on('draw', function (event: any) {
@@ -2145,10 +2308,15 @@ export default function Chart(props: ChartData) {
                 render();
 
                 d3.select(d3PlotArea.current).on('mouseleave', () => {
+                    liquidityData.liqHighligtedBidSeries = [];
+                    liquidityData.liqHighligtedAskSeries = [];
+
                     d3.select(d3PlotArea.current)
                         .select('svg')
                         .select('.crosshairVertical')
                         .style('visibility', 'hidden');
+
+                    render();
                 });
 
                 d3.select(d3PlotArea.current).on('mouseenter', () => {
@@ -2168,39 +2336,36 @@ export default function Chart(props: ChartData) {
             liqTooltipSelectedLiqBar !== undefined &&
             poolPriceDisplay !== undefined
         ) {
-            const liqTextData = { volume: 0, totalValue: 0 };
+            const liqTextData = { totalValue: 0 };
 
             props.liquidityData.liqData.map((liqData: any) => {
-                if (liqTooltipSelectedLiqBar.upperBoundPriceDecimalCorrected < poolPriceDisplay) {
+                if (liqTooltipSelectedLiqBar.liqPrices < poolPriceDisplay) {
                     if (
-                        liqData.upperBoundPriceDecimalCorrected >=
-                            liqTooltipSelectedLiqBar.upperBoundPriceDecimalCorrected &&
-                        poolPriceDisplay > liqData.upperBoundPriceDecimalCorrected
+                        liqData.liqPrices >= liqTooltipSelectedLiqBar.liqPrices &&
+                        poolPriceDisplay > liqData.liqPrices
                     ) {
-                        liqTextData.totalValue =
-                            liqTextData.totalValue + liqData.upperBoundPriceDecimalCorrected;
+                        liqTextData.totalValue = liqTextData.totalValue + liqData.liqPrices;
                     }
                 } else {
                     if (
-                        liqData.upperBoundPriceDecimalCorrected <=
-                            liqTooltipSelectedLiqBar.upperBoundPriceDecimalCorrected &&
-                        poolPriceDisplay < liqData.upperBoundPriceDecimalCorrected
+                        liqData.liqPrices <= liqTooltipSelectedLiqBar.liqPrices &&
+                        poolPriceDisplay < liqData.liqPrices
                     ) {
-                        liqTextData.totalValue =
-                            liqTextData.totalValue + liqData.upperBoundPriceDecimalCorrected;
+                        liqTextData.totalValue = liqTextData.totalValue + liqData.liqPrices;
                     }
                 }
             });
 
-            const percentageValue =
-                (100 * liqTextData.totalValue) / parseFloat(props.liquidityData.totalLiq);
+            const difference = Math.abs(poolPriceDisplay - liqTooltipSelectedLiqBar.liqPrices);
+
+            const percentage = (difference * 100) / poolPriceDisplay;
 
             liqTooltip.html(
                 '<p> % ' +
-                    tooltipFormatter(percentageValue) +
+                    percentage.toFixed(3) +
                     ' </p>' +
                     '<p> $ ' +
-                    formatDollarAmountAxis(liqTextData.totalValue) +
+                    formatAmount(liqTextData.totalValue) +
                     ' </p>',
             );
         }
@@ -2290,7 +2455,13 @@ export default function Chart(props: ChartData) {
     };
 
     const onBlurlimitRate = (newLimitValue: any) => {
-        dispatch(setLimitPrice(newLimitValue.toString()));
+        const limitNonDisplay = pool?.fromDisplayPrice(parseFloat(newLimitValue));
+
+        limitNonDisplay?.then((limit) => {
+            const limitTick = Math.log(limit) / Math.log(1.0001);
+            console.log({ limitTick });
+            dispatch(setLimitTick(limitTick));
+        });
     };
 
     useEffect(() => {
@@ -2399,10 +2570,11 @@ export default function Chart(props: ChartData) {
                         </>
                     )}
 
+                    <hr />
                     <d3fc-svg
                         ref={d3Xaxis}
                         className='x-axis'
-                        style={{ height: '2em', marginRight: '3em', width: '100%' }}
+                        style={{ height: '2em', width: '100%' }}
                     ></d3fc-svg>
                 </div>
             </d3fc-group>

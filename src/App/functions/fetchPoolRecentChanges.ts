@@ -1,4 +1,9 @@
+import { TokenIF } from '../../utils/interfaces/TokenIF';
+import { ITransaction } from '../../utils/state/graphDataSlice';
+import { getTransactionData } from './getTransactionData';
+
 interface IFetchPoolRecentChangesProps {
+    importedTokens: TokenIF[];
     base: string;
     quote: string;
     poolIdx: number;
@@ -16,6 +21,7 @@ interface IFetchPoolRecentChangesProps {
 
 export const fetchPoolRecentChanges = (props: IFetchPoolRecentChangesProps) => {
     const {
+        importedTokens,
         base,
         quote,
         poolIdx,
@@ -71,8 +77,16 @@ export const fetchPoolRecentChanges = (props: IFetchPoolRecentChangesProps) => {
     )
         .then((response) => response?.json())
         .then((json) => {
-            const poolChangesJsonData = json?.data;
-            return poolChangesJsonData;
+            const userTransactions = json?.data;
+
+            const updatedTransactions = Promise.all(
+                userTransactions.map((tx: ITransaction) => {
+                    return getTransactionData(tx, importedTokens);
+                }),
+            ).then((updatedTransactions) => {
+                return updatedTransactions;
+            });
+            return updatedTransactions;
         })
         .catch(console.log);
 

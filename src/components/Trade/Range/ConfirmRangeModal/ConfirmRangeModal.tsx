@@ -19,6 +19,7 @@ import SelectedRange from './SelectedRange/SelectedRange';
 import { TokenPairIF } from '../../../../utils/interfaces/exports';
 import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
 import ConfirmationModalControl from '../../../Global/ConfirmationModalControl/ConfirmationModalControl';
+import NoTokenIcon from '../../../Global/NoTokenIcon/NoTokenIcon';
 
 interface ConfirmRangeModalPropsIF {
     sendTransaction: () => void;
@@ -87,8 +88,16 @@ export default function ConfirmRangeModal(props: ConfirmRangeModalPropsIF) {
         <section className={styles.position_display}>
             <div className={styles.token_display}>
                 <div className={styles.tokens}>
-                    <img src={dataTokenB.logoURI} alt={dataTokenB.name} />
-                    <img src={dataTokenA.logoURI} alt={dataTokenA.name} />
+                    {dataTokenA.logoURI ? (
+                        <img src={dataTokenA.logoURI} alt={dataTokenA.name} />
+                    ) : (
+                        <NoTokenIcon tokenInitial={dataTokenA.symbol.charAt(0)} width='30px' />
+                    )}
+                    {dataTokenB.logoURI ? (
+                        <img src={dataTokenB.logoURI} alt={dataTokenB.name} />
+                    ) : (
+                        <NoTokenIcon tokenInitial={dataTokenB.symbol.charAt(0)} width='30px' />
+                    )}
                 </div>
                 <span className={styles.token_symbol}>
                     {dataTokenA.symbol}/{dataTokenB.symbol}
@@ -106,14 +115,22 @@ export default function ConfirmRangeModal(props: ConfirmRangeModalPropsIF) {
             <div className={styles.fee_tier_container}>
                 <div className={styles.detail_line}>
                     <div>
-                        <img src={dataTokenA.logoURI} alt={dataTokenA.name} />
+                        {dataTokenA.logoURI ? (
+                            <img src={dataTokenA.logoURI} alt={dataTokenA.name} />
+                        ) : (
+                            <NoTokenIcon tokenInitial={dataTokenA.symbol.charAt(0)} width='20px' />
+                        )}
                         <span>{dataTokenA.symbol}</span>
                     </div>
                     <span>{tokenAQty !== '' ? tokenACharacter + tokenAQty : '0'}</span>
                 </div>
                 <div className={styles.detail_line}>
                     <div>
-                        <img src={dataTokenB.logoURI} alt={dataTokenB.name} />
+                        {dataTokenB.logoURI ? (
+                            <img src={dataTokenB.logoURI} alt={dataTokenB.name} />
+                        ) : (
+                            <NoTokenIcon tokenInitial={dataTokenB.symbol.charAt(0)} width='20px' />
+                        )}
                         <span>{dataTokenB.symbol}</span>
                     </div>
                     <span>{tokenBQty !== '' ? tokenBCharacter + tokenBQty : '0'}</span>

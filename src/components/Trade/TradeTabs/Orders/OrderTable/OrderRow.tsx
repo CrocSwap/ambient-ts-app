@@ -1,4 +1,3 @@
-import { ILimitOrderState } from '../../../../../utils/state/graphDataSlice';
 import styles from '../Orders.module.css';
 import { useProcessOrder } from '../../../../../utils/hooks/useProcessOrder';
 import OpenOrderStatus from '../../../../Global/OpenOrderStatus/OpenOrderStatus';
@@ -8,13 +7,15 @@ import { Dispatch, SetStateAction, useEffect } from 'react';
 import { CrocEnv } from '@crocswap-libs/sdk';
 import { DefaultTooltip } from '../../../../Global/StyledTooltip/StyledTooltip';
 import { NavLink } from 'react-router-dom';
+import NoTokenIcon from '../../../../Global/NoTokenIcon/NoTokenIcon';
+import { LimitOrderIF } from '../../../../../utils/interfaces/exports';
 
 interface OrderRowPropsIF {
     crocEnv: CrocEnv | undefined;
     expandTradeTable: boolean;
     showColumns: boolean;
     ipadView: boolean;
-    limitOrder: ILimitOrderState;
+    limitOrder: LimitOrderIF;
     showSidebar: boolean;
 
     openGlobalModal: (content: React.ReactNode) => void;
@@ -58,7 +59,7 @@ export default function OrderRow(props: OrderRowPropsIF) {
         quoteTokenSymbol,
         isOwnerActiveAccount,
         ensName,
-        orderMatchesSelectedTokens,
+        // orderMatchesSelectedTokens,
 
         baseTokenCharacter,
         quoteTokenCharacter,
@@ -148,11 +149,40 @@ export default function OrderRow(props: OrderRowPropsIF) {
         </DefaultTooltip>
     );
 
+    const baseTokenLogoComponent =
+        baseTokenLogo !== '' ? (
+            <img src={baseTokenLogo} alt='base token' width='15px' />
+        ) : (
+            <NoTokenIcon tokenInitial={limitOrder.baseSymbol.charAt(0)} width='30px' />
+        );
+
+    const quoteTokenLogoComponent =
+        quoteTokenLogo !== '' ? (
+            <img src={quoteTokenLogo} alt='quote token' width='15px' />
+        ) : (
+            <NoTokenIcon tokenInitial={limitOrder.quoteSymbol.charAt(0)} width='30px' />
+        );
+
+    const tokensTogether = (
+        <div
+            style={{
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: '4px',
+            }}
+        >
+            {baseTokenLogoComponent}
+            {quoteTokenLogoComponent}
+        </div>
+    );
+
     // portfolio page li element ---------------
     const accountTokenImages = (
         <li className={styles.token_images_account}>
-            <img src={baseTokenLogo} alt='base token' />
-            <img src={quoteTokenLogo} alt='quote token' />
+            {/* {baseTokenLogoComponent}
+                {quoteTokenLogoComponent} */}
+            {tokensTogether}
             {/* <p>hello</p> */}
         </li>
     );
@@ -164,7 +194,7 @@ export default function OrderRow(props: OrderRowPropsIF) {
     );
     // end of portfolio page li element ---------------
 
-    if (!orderMatchesSelectedTokens) return null;
+    // if (!orderMatchesSelectedTokens) return null;
     return (
         <ul
             className={`${styles.row_container} ${activePositionStyle} ${userPositionStyle}`}
@@ -232,13 +262,13 @@ export default function OrderRow(props: OrderRowPropsIF) {
                 <li data-label={baseTokenSymbol + quoteTokenSymbol} className='color_white'>
                     <p className={styles.align_center}>
                         {' '}
-                        <img src={baseTokenLogo} alt='' width='15px' />
+                        {baseTokenLogoComponent}
                         {baseDisplay}{' '}
                     </p>
 
                     <p className={styles.align_center}>
                         {' '}
-                        <img src={quoteTokenLogo} alt='' width='15px' />
+                        {quoteTokenLogoComponent}
                         {quoteDisplay}
                     </p>
                 </li>

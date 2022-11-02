@@ -18,7 +18,7 @@ import {
 import Pagination from '../../../Global/Pagination/Pagination';
 
 import { useAppDispatch, useAppSelector } from '../../../../utils/hooks/reduxToolkit';
-import { useSortedPositions } from './useSortedPositions';
+import { useSortedPositions } from '../useSortedPositions';
 import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
 import { PositionIF } from '../../../../utils/interfaces/PositionIF';
 import { updateApy } from '../../../../App/functions/getPositionData';
@@ -54,6 +54,9 @@ interface LeaderboardPropsIF {
     openGlobalModal: (content: React.ReactNode) => void;
     closeGlobalModal: () => void;
     showSidebar: boolean;
+
+    setLeader?: Dispatch<SetStateAction<string>>;
+    setLeaderOwnerId?: Dispatch<SetStateAction<string>>;
 }
 
 // react functional component
@@ -63,7 +66,6 @@ export default function Leaderboard(props: LeaderboardPropsIF) {
         crocEnv,
         chainData,
         provider,
-
         chainId,
         isShowAllEnabled,
         baseTokenBalance,
@@ -76,6 +78,8 @@ export default function Leaderboard(props: LeaderboardPropsIF) {
         currentPositionActive,
         setCurrentPositionActive,
         account,
+        // setLeader,
+        // setLeaderOwnerId,
 
         showSidebar,
     } = props;
@@ -85,37 +89,13 @@ export default function Leaderboard(props: LeaderboardPropsIF) {
     const baseTokenAddress = tradeData.baseToken.address;
     const quoteTokenAddress = tradeData.quoteToken.address;
 
-    const baseTokenAddressLowerCase = tradeData.baseToken.address.toLowerCase();
-    const quoteTokenAddressLowerCase = tradeData.quoteToken.address.toLowerCase();
-
-    const positionsByUserMatchingSelectedTokens = graphData?.positionsByUser?.positions.filter(
-        (position) => {
-            if (
-                position.base.toLowerCase() === baseTokenAddressLowerCase &&
-                position.quote.toLowerCase() === quoteTokenAddressLowerCase
-            ) {
-                return true;
-            } else {
-                return false;
-            }
-        },
-    );
-
-    // const columnHeaders = [
-    //     { name: 'ID', sortable: false, className: '' },
-    //     { name: 'Wallet', sortable: true, className: 'wallet' },
-    //     { name: ' Min', sortable: false, className: 'range_sing' },
-    //     { name: 'Max', sortable: false, className: 'range_sing' },
-    //     { name: 'Value', sortable: true, className: 'wallet' },
-    //     { name: tradeData.baseToken.symbol, sortable: false, className: 'token' },
-    //     { name: tradeData.quoteToken.symbol, sortable: false, className: 'token' },
-    //     { name: 'APR', sortable: true, className: '' },
-    //     { name: 'Status', sortable: false, className: '' },
-    // ];
+    const positionsByApy: string[] =
+        [...graphData?.leaderboardByPool?.positions]
+            .sort((a, b) => b.apy - a.apy)
+            .map((pos) => pos.positionId) ?? [];
 
     const [sortBy, setSortBy, reverseSort, setReverseSort, sortedPositions] = useSortedPositions(
-        true, // leaderboard is never limited to the user
-        positionsByUserMatchingSelectedTokens,
+        'apr',
         graphData?.leaderboardByPool?.positions,
     );
 
@@ -148,73 +128,6 @@ export default function Leaderboard(props: LeaderboardPropsIF) {
         lastBlockNumber,
         isShowAllEnabled,
     ]);
-
-    // const [expanded, setExpanded] = useState<false | number>(false);
-
-    // const desktopDisplay = (
-    //     <div className={styles.desktop_ranges_display_container}>
-    //         {sortedPositions.map((position) => (
-    //             <RangeCard
-    //                 isUserLoggedIn={isUserLoggedIn}
-    //                 crocEnv={crocEnv}
-    //                 chainData={chainData}
-    //                 provider={provider}
-    //                 chainId={chainId}
-    //                 key={position.positionId}
-    //                 portfolio={portfolio}
-    //                 baseTokenBalance={baseTokenBalance}
-    //                 quoteTokenBalance={quoteTokenBalance}
-    //                 baseTokenDexBalance={baseTokenDexBalance}
-    //                 quoteTokenDexBalance={quoteTokenDexBalance}
-    //                 notOnTradeRoute={notOnTradeRoute}
-    //                 position={position}
-    //                 isAllPositionsEnabled={isShowAllEnabled}
-    //                 tokenAAddress={tradeData.tokenA.address}
-    //                 tokenBAddress={tradeData.tokenB.address}
-    //                 account={account ?? undefined}
-    //                 isAuthenticated={isAuthenticated}
-    //                 isDenomBase={tradeData.isDenomBase}
-    //                 lastBlockNumber={lastBlockNumber}
-    //                 currentPositionActive={currentPositionActive}
-    //                 setCurrentPositionActive={setCurrentPositionActive}
-    //                 openGlobalModal={props.openGlobalModal}
-    //                 closeGlobalModal={props.closeGlobalModal}
-    //             />
-    //         ))}
-    //     </div>
-    // );
-
-    // const oldReturn =
-    // return (
-    //     <div className={styles.container}>
-    //         {/* <header className={styles.row_container}>
-    //             {columnHeaders.map((header) => (
-    //                 <RangeCardHeader
-    //                     key={`rangeDataHeaderField${header.name}`}
-    //                     data={header}
-    //                     sortBy={sortBy}
-    //                     setSortBy={setSortBy}
-    //                     reverseSort={reverseSort}
-    //                     setReverseSort={setReverseSort}
-    //                     columnHeaders={columnHeaders}
-    //                 />
-    //             ))}
-    //         </header> */}
-    //         <RangeCardHeader
-    //             sortBy={sortBy}
-    //             setSortBy={setSortBy}
-    //             reverseSort={reverseSort}
-    //             setReverseSort={setReverseSort}
-    //             columnHeaders={columnHeaders}
-    //         />
-    //         <ol
-    //             className={styles.positions_list}
-    //             style={{ height: expandTradeTable ? '100%' : '220px' }}
-    //         >
-    //             {desktopDisplay}
-    //         </ol>
-    //     </div>
-    // );
 
     // ---------------------
     const [currentPage, setCurrentPage] = useState(1);
@@ -264,7 +177,7 @@ export default function Leaderboard(props: LeaderboardPropsIF) {
 
     const walID = (
         <>
-            <p>ID</p>
+            <p></p>
             <p>Wallet</p>
         </>
     );
@@ -282,18 +195,18 @@ export default function Leaderboard(props: LeaderboardPropsIF) {
     );
     const headerColumns = [
         {
-            name: 'ID',
+            name: 'Rank',
             className: 'ID',
             show: !showColumns,
             slug: 'id',
-            sortable: true,
+            sortable: false,
         },
         {
             name: 'Wallet',
             className: 'wallet',
             show: !showColumns,
             slug: 'wallet',
-            sortable: true,
+            sortable: false,
         },
         {
             name: walID,
@@ -304,17 +217,16 @@ export default function Leaderboard(props: LeaderboardPropsIF) {
         },
         {
             name: 'Min',
-
             show: !showColumns,
             slug: 'min',
-            sortable: true,
+            sortable: false,
         },
         {
             name: 'Max',
             className: 'side',
             show: !showColumns,
             slug: 'max',
-            sortable: true,
+            sortable: false,
         },
 
         {
@@ -329,7 +241,7 @@ export default function Leaderboard(props: LeaderboardPropsIF) {
             className: 'value',
             show: true,
             slug: 'value',
-            sortable: true,
+            sortable: false,
         },
         {
             name: `${baseTokenSymbol} ( ${baseTokenCharacter} )`,
@@ -357,7 +269,7 @@ export default function Leaderboard(props: LeaderboardPropsIF) {
             className: 'apr',
             show: true,
             slug: 'apr',
-            sortable: true,
+            sortable: false,
         },
         {
             name: 'Status',
@@ -392,6 +304,7 @@ export default function Leaderboard(props: LeaderboardPropsIF) {
         <RangesRow
             key={idx}
             position={position}
+            rank={positionsByApy.findIndex((posId) => posId === position.positionId) + 1}
             currentPositionActive={currentPositionActive}
             setCurrentPositionActive={setCurrentPositionActive}
             openGlobalModal={props.openGlobalModal}
@@ -411,13 +324,16 @@ export default function Leaderboard(props: LeaderboardPropsIF) {
             quoteTokenDexBalance={quoteTokenDexBalance}
             lastBlockNumber={lastBlockNumber}
             isOnPortfolioPage={false}
+            isLeaderboard={true}
+            idx={idx + 1}
+
             // blockExplorer={blockExplorer}
         />
     ));
 
     return (
         <main
-            className={`${styles.main_list_container} `}
+            className={`${styles.main_list_container} ${styles.leaderboard}`}
             style={{ height: expandTradeTable ? 'calc(100vh - 10rem)' : '250px' }}
         >
             {headerColumnsDisplay}

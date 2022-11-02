@@ -2,8 +2,7 @@ import styles from './SidebarLimitOrders.module.css';
 import SidebarLimitOrdersCard from './SidebarLimitOrdersCard';
 import { SetStateAction, Dispatch } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { ILimitOrderState } from '../../../../utils/state/graphDataSlice';
-import { TokenIF } from '../../../../utils/interfaces/TokenIF';
+import { LimitOrderIF, TokenIF } from '../../../../utils/interfaces/exports';
 
 interface SidebarLimitOrdersProps {
     tokenMap: Map<string, TokenIF>;
@@ -12,7 +11,7 @@ interface SidebarLimitOrdersProps {
     setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
     outsideControl: boolean;
     setOutsideControl: Dispatch<SetStateAction<boolean>>;
-    limitOrderByUser?: ILimitOrderState[];
+    limitOrderByUser?: LimitOrderIF[];
     isShowAllEnabled: boolean;
     setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;

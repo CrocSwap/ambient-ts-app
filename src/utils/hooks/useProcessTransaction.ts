@@ -30,8 +30,13 @@ export const useProcessTransaction = (tx: ITransaction) => {
     const tokenAAddressLowerCase = tokenAAddress.toLowerCase();
     const tokenBAddressLowerCase = tokenBAddress.toLowerCase();
 
-    const quoteTokenLogo = tradeData.quoteToken.logoURI;
-    const baseTokenLogo = tradeData.baseToken.logoURI;
+    const baseTokenSymbol = tx.baseSymbol;
+    const quoteTokenSymbol = tx.quoteSymbol;
+
+    const quoteTokenLogo = tx.quoteTokenLogoURI;
+    const baseTokenLogo = tx.baseTokenLogoURI;
+    // console.log({ quoteTokenLogo });
+    // console.log({ baseTokenLogo });
 
     const transactionMatchesSelectedTokens =
         (transactionBaseAddressLowerCase === tokenAAddressLowerCase ||
@@ -55,9 +60,6 @@ export const useProcessTransaction = (tx: ITransaction) => {
 
     const baseTokenCharacter = tx.baseSymbol ? getUnicodeCharacter(tx.baseSymbol) : '';
     const quoteTokenCharacter = tx.quoteSymbol ? getUnicodeCharacter(tx.quoteSymbol) : '';
-
-    const baseTokenSymbol = tradeData.baseToken.symbol;
-    const quoteTokenSymbol = tradeData.quoteToken.symbol;
 
     useEffect(() => {
         // setTruncatedDisplayPrice(undefined);
@@ -117,17 +119,12 @@ export const useProcessTransaction = (tx: ITransaction) => {
                 const nonInvertedBidPriceTruncated =
                     bidTickPriceDecimalCorrected === 1000000000000
                         ? '∞'
-                        : bidTickPriceDecimalCorrected === 0 ||
-                          bidTickPriceDecimalCorrected === 1e-12
+                        : bidTickPriceDecimalCorrected === 0
                         ? '0.00'
-                        : bidTickPriceDecimalCorrected < 0.001
-                        ? bidTickPriceDecimalCorrected.toExponential(1)
+                        : bidTickPriceDecimalCorrected < 0.0001
+                        ? bidTickPriceDecimalCorrected.toExponential(2)
                         : bidTickPriceDecimalCorrected < 2
-                        ? // ? bidTickPriceDecimalCorrected.toPrecision(2)
-                          bidTickPriceDecimalCorrected.toLocaleString(undefined, {
-                              minimumFractionDigits: 2,
-                              maximumFractionDigits: 2,
-                          })
+                        ? bidTickPriceDecimalCorrected.toPrecision(3)
                         : bidTickPriceDecimalCorrected >= 100000
                         ? formatAmount(bidTickPriceDecimalCorrected, 1)
                         : bidTickPriceDecimalCorrected.toLocaleString(undefined, {
@@ -139,13 +136,10 @@ export const useProcessTransaction = (tx: ITransaction) => {
                         ? '∞'
                         : bidTickInvPriceDecimalCorrected === 0
                         ? '0.00'
-                        : bidTickInvPriceDecimalCorrected < 0.001
-                        ? bidTickInvPriceDecimalCorrected.toExponential(1)
+                        : bidTickInvPriceDecimalCorrected < 0.0001
+                        ? bidTickInvPriceDecimalCorrected.toExponential(2)
                         : bidTickInvPriceDecimalCorrected < 2
-                        ? bidTickInvPriceDecimalCorrected.toLocaleString(undefined, {
-                              minimumFractionDigits: 2,
-                              maximumFractionDigits: 2,
-                          })
+                        ? bidTickInvPriceDecimalCorrected.toPrecision(3)
                         : bidTickInvPriceDecimalCorrected >= 100000
                         ? formatAmount(bidTickInvPriceDecimalCorrected, 1)
                         : bidTickInvPriceDecimalCorrected.toLocaleString(undefined, {
@@ -157,13 +151,10 @@ export const useProcessTransaction = (tx: ITransaction) => {
                         ? '∞'
                         : askTickPriceDecimalCorrected === 0
                         ? '0.00'
-                        : askTickPriceDecimalCorrected < 0.001
-                        ? askTickPriceDecimalCorrected.toExponential(1)
+                        : askTickPriceDecimalCorrected < 0.0001
+                        ? askTickPriceDecimalCorrected.toExponential(2)
                         : askTickPriceDecimalCorrected < 2
-                        ? askTickPriceDecimalCorrected.toLocaleString(undefined, {
-                              minimumFractionDigits: 2,
-                              maximumFractionDigits: 2,
-                          })
+                        ? askTickPriceDecimalCorrected.toPrecision(3)
                         : askTickPriceDecimalCorrected >= 100000
                         ? formatAmount(askTickPriceDecimalCorrected, 1)
                         : askTickPriceDecimalCorrected.toLocaleString(undefined, {
@@ -175,14 +166,10 @@ export const useProcessTransaction = (tx: ITransaction) => {
                         ? '0.00'
                         : askTickInvPriceDecimalCorrected === 0
                         ? '∞'
-                        : askTickInvPriceDecimalCorrected < 0.001
-                        ? askTickInvPriceDecimalCorrected.toExponential(1)
+                        : askTickInvPriceDecimalCorrected < 0.0001
+                        ? askTickInvPriceDecimalCorrected.toExponential(2)
                         : askTickInvPriceDecimalCorrected < 2
-                        ? // ? askTickInvPriceDecimalCorrected.toPrecision(2)
-                          askTickInvPriceDecimalCorrected.toLocaleString(undefined, {
-                              minimumFractionDigits: 2,
-                              maximumFractionDigits: 2,
-                          })
+                        ? askTickInvPriceDecimalCorrected.toPrecision(3)
                         : askTickInvPriceDecimalCorrected >= 100000
                         ? formatAmount(askTickInvPriceDecimalCorrected, 1)
                         : askTickInvPriceDecimalCorrected.toLocaleString(undefined, {
@@ -209,7 +196,7 @@ export const useProcessTransaction = (tx: ITransaction) => {
                 const nonInvertedPriceTruncated =
                     priceDecimalCorrected === 0
                         ? '0.00'
-                        : priceDecimalCorrected < 0.001
+                        : priceDecimalCorrected < 0.0001
                         ? priceDecimalCorrected.toExponential(2)
                         : priceDecimalCorrected < 2
                         ? priceDecimalCorrected.toPrecision(3)
@@ -223,7 +210,7 @@ export const useProcessTransaction = (tx: ITransaction) => {
                 const invertedPriceTruncated =
                     invPriceDecimalCorrected === 0
                         ? '0.00'
-                        : invPriceDecimalCorrected < 0.001
+                        : invPriceDecimalCorrected < 0.0001
                         ? invPriceDecimalCorrected.toExponential(2)
                         : invPriceDecimalCorrected < 2
                         ? invPriceDecimalCorrected.toPrecision(3)
@@ -251,7 +238,7 @@ export const useProcessTransaction = (tx: ITransaction) => {
             const baseFlowDisplayTruncated =
                 baseFlowAbsNum === 0
                     ? '0.00'
-                    : baseFlowAbsNum < 0.001
+                    : baseFlowAbsNum < 0.0001
                     ? baseFlowAbsNum.toExponential(2)
                     : baseFlowAbsNum < 2
                     ? baseFlowAbsNum.toPrecision(3)
@@ -262,11 +249,10 @@ export const useProcessTransaction = (tx: ITransaction) => {
                           minimumFractionDigits: 2,
                           maximumFractionDigits: 2,
                       });
-            const baseFlowDisplayString = isBaseFlowPositive
-                ? // (isBaseFlowNegative && tx.entityType !== 'liqchange') ||
-                  // (!isBaseFlowNegative && tx.entityType === 'liqchange')
-                  `(${baseFlowDisplayTruncated})`
-                : baseFlowDisplayTruncated;
+            const baseFlowDisplayString =
+                tx.entityType !== 'liqchange' && isBaseFlowPositive
+                    ? `(${baseFlowDisplayTruncated})`
+                    : baseFlowDisplayTruncated;
             setBaseFlowDisplay(baseFlowDisplayString);
         }
         if (tx.quoteFlowDecimalCorrected !== undefined && tx.quoteFlowDecimalCorrected !== null) {
@@ -276,7 +262,7 @@ export const useProcessTransaction = (tx: ITransaction) => {
             const quoteFlowDisplayTruncated =
                 quoteFlowAbsNum === 0
                     ? '0.00'
-                    : quoteFlowAbsNum < 0.001
+                    : quoteFlowAbsNum < 0.0001
                     ? quoteFlowAbsNum.toExponential(2)
                     : quoteFlowAbsNum < 2
                     ? quoteFlowAbsNum.toPrecision(3)
@@ -287,11 +273,12 @@ export const useProcessTransaction = (tx: ITransaction) => {
                           minimumFractionDigits: 2,
                           maximumFractionDigits: 2,
                       });
-            const quoteFlowDisplayString = isQuoteFlowPositive
-                ? // (isQuoteFlowNegative && tx.entityType !== 'liqchange') ||
-                  // (!isQuoteFlowNegative && tx.entityType === 'liqchange')
-                  `(${quoteFlowDisplayTruncated})`
-                : quoteFlowDisplayTruncated;
+            const quoteFlowDisplayString =
+                tx.entityType !== 'liqchange' && isQuoteFlowPositive
+                    ? // (isQuoteFlowNegative && tx.entityType !== 'liqchange') ||
+                      // (!isQuoteFlowNegative && tx.entityType === 'liqchange')
+                      `(${quoteFlowDisplayTruncated})`
+                    : quoteFlowDisplayTruncated;
             setQuoteFlowDisplay(quoteFlowDisplayString);
         }
     }, [JSON.stringify(tx), isDenomBase]);

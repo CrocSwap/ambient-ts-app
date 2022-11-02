@@ -34,7 +34,9 @@ import { useModal } from '../../components/Global/Modal/useModal';
 import { useRelativeModal } from '../../components/Global/RelativeModal/useRelativeModal';
 import { addPendingTx, addReceipt, removePendingTx } from '../../utils/state/receiptDataSlice';
 import { useUrlParams } from './useUrlParams';
+import SwapShareControl from '../../components/Swap/SwapShareControl/SwapShareControl';
 // import { calcImpact } from '../../App/functions/calcImpact';
+import { FiCopy } from 'react-icons/fi';
 
 interface SwapPropsIF {
     crocEnv: CrocEnv | undefined;
@@ -67,6 +69,8 @@ interface SwapPropsIF {
     isInitialized: boolean;
     poolExists: boolean | null;
     setTokenPairLocal?: Dispatch<SetStateAction<string[] | null>>;
+
+    openGlobalModal: (content: React.ReactNode) => void;
 }
 
 export default function Swap(props: SwapPropsIF) {
@@ -137,17 +141,39 @@ export default function Swap(props: SwapPropsIF) {
     const [isApprovalPending, setIsApprovalPending] = useState(false);
 
     const approve = async (tokenAddress: string) => {
-        // if (!provider) return;
         if (!crocEnv) return;
-        setIsApprovalPending(true);
         try {
+            setIsApprovalPending(true);
             const tx = await crocEnv.token(tokenAddress).approve();
-            // const tx = await new CrocEnv(provider).token(tokenAddress).approve();
-            if (tx) {
-                await tx.wait();
+            if (tx) dispatch(addPendingTx(tx?.hash));
+            let receipt;
+            try {
+                if (tx) receipt = await tx.wait();
+            } catch (e) {
+                const error = e as TransactionError;
+                console.log({ error });
+                // The user used "speed up" or something similar
+                // in their client, but we now have the updated info
+                if (isTransactionReplacedError(error)) {
+                    console.log('repriced');
+                    dispatch(removePendingTx(error.hash));
+
+                    const newTransactionHash = error.replacement.hash;
+                    dispatch(addPendingTx(newTransactionHash));
+
+                    console.log({ newTransactionHash });
+                    receipt = error.receipt;
+                } else if (isTransactionFailedError(error)) {
+                    // console.log({ error });
+                    receipt = error.receipt;
+                }
+            }
+            if (receipt) {
+                dispatch(addReceipt(JSON.stringify(receipt)));
+                dispatch(removePendingTx(receipt.transactionHash));
             }
         } catch (error) {
-            console.warn({ error });
+            console.log({ error });
         } finally {
             setIsApprovalPending(false);
             setRecheckTokenAApproval(true);
@@ -418,6 +444,53 @@ export default function Swap(props: SwapPropsIF) {
         return () => clearTimeout(timer);
     }, []);
 
+    // -------------------------Swap SHARE FUNCTIONALITY---------------------------
+    const [shareOptions, setShareOptions] = useState([
+        { slug: 'first', name: 'Include Swap 1', checked: false },
+        { slug: 'second', name: 'Include Swap 2', checked: false },
+        { slug: 'third', name: 'Include Swap 3', checked: false },
+        { slug: 'fourth', name: 'Include Swap 4', checked: false },
+    ]);
+
+    const handleShareOptionChange = (slug: string) => {
+        const copyShareOptions = [...shareOptions];
+        const modifiedShareOptions = copyShareOptions.map((option) => {
+            if (slug === option.slug) {
+                option.checked = !option.checked;
+            }
+
+            return option;
+        });
+
+        setShareOptions(modifiedShareOptions);
+    };
+
+    const shareOptionsDisplay = (
+        <div className={styles.option_control_container}>
+            <div className={styles.options_control_display_container}>
+                <p className={styles.control_title}>Options</p>
+                <ul>
+                    {shareOptions.map((option, idx) => (
+                        <SwapShareControl
+                            key={idx}
+                            option={option}
+                            handleShareOptionChange={handleShareOptionChange}
+                        />
+                    ))}
+                </ul>
+            </div>
+            <p className={styles.control_title}>URL:</p>
+            <p className={styles.url_link}>
+                https://ambient.finance/trade/market/0xaaaaaa/93bbbb
+                <div style={{ cursor: 'pointer' }}>
+                    <FiCopy color='#cdc1ff' />
+                </div>
+            </p>
+        </div>
+    );
+
+    // -------------------------END OF Swap SHARE FUNCTIONALITY---------------------------
+
     return (
         <main data-testid={'swap'} className={swapPageStyle}>
             <div className={`${swapContainerStyle}`}>
@@ -426,6 +499,8 @@ export default function Swap(props: SwapPropsIF) {
                         swapSlippage={swapSlippage}
                         isPairStable={isPairStable}
                         isOnTradeRoute={isOnTradeRoute}
+                        openGlobalModal={props.openGlobalModal}
+                        shareOptionsDisplay={shareOptionsDisplay}
                     />
                     <DividerDark addMarginTop />
                     {navigationMenu}
@@ -466,6 +541,7 @@ export default function Swap(props: SwapPropsIF) {
                             setSwapButtonErrorMessage={setSwapButtonErrorMessage}
                             activeTokenListsChanged={activeTokenListsChanged}
                             indicateActiveTokenListsChanged={indicateActiveTokenListsChanged}
+                            gasPriceInGwei={gasPriceInGwei}
                         />
                     </motion.div>
                     <div className={styles.header_container}>
@@ -479,7 +555,7 @@ export default function Swap(props: SwapPropsIF) {
                         displayEffectivePriceString={displayEffectivePriceString}
                         poolPriceDisplay={poolPriceDisplay || 0}
                         slippageTolerance={slippageTolerancePercentage}
-                        liquidityProviderFee={0.3}
+                        liquidityProviderFee={tradeData.liquidityFee}
                         quoteTokenIsBuy={true}
                         swapGasPriceinDollars={swapGasPriceinDollars}
                         didUserFlipDenom={tradeData.didUserFlipDenom}

@@ -3,7 +3,6 @@
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
 import { formatAmount } from '../../../../utils/numbers';
-import { ILimitOrderState } from '../../../../utils/state/graphDataSlice';
 import OpenOrderStatus from '../../../Global/OpenOrderStatus/OpenOrderStatus';
 import Price from '../../../Global/Tabs/Price/Price';
 import OrdersMenu from '../../../Global/Tabs/TableMenu/TableMenuComponents/OrdersMenu';
@@ -12,10 +11,11 @@ import OrderTypeSide from '../../../Global/Tabs/TypeAndSide/OrderTypeAndSide/Ord
 import Value from '../../../Global/Tabs/Value/Value';
 import WalletAndId from '../../../Global/Tabs/WalletAndID/WalletAndId';
 import styles from './OrderCard.module.css';
+import { LimitOrderIF } from '../../../../utils/interfaces/exports';
 
 interface OrderCardProps {
     account: string;
-    limitOrder: ILimitOrderState;
+    limitOrder: LimitOrderIF;
     isDenomBase: boolean;
     selectedBaseToken: string;
     selectedQuoteToken: string;

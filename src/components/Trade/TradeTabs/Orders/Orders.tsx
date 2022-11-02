@@ -20,11 +20,15 @@ import OrderHeader from './OrderTable/OrderHeader';
 import OrderRow from './OrderTable/OrderRow';
 import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
 import TableSkeletons from '../TableSkeletons/TableSkeletons';
+import { useSortedLimits } from '../useSortedLimits';
+import { LimitOrderIF } from '../../../../utils/interfaces/exports';
 
 // import OrderAccordions from './OrderAccordions/OrderAccordions';
 
 // interface for props for react functional component
 interface propsIF {
+    activeAccountLimitOrderData?: LimitOrderIF[];
+    connectedAccountActive?: boolean;
     crocEnv: CrocEnv | undefined;
     expandTradeTable: boolean;
     chainData: ChainSpec;
@@ -43,6 +47,8 @@ interface propsIF {
 // main react functional component
 export default function Orders(props: propsIF) {
     const {
+        activeAccountLimitOrderData,
+        connectedAccountActive,
         crocEnv,
         chainData,
         expandTradeTable,
@@ -59,65 +65,40 @@ export default function Orders(props: propsIF) {
     const limitOrdersByPool = graphData.limitOrdersByPool.limitOrders;
 
     const tradeData = useAppSelector((state) => state.tradeData);
-    const dispatch = useAppDispatch();
-    const isDenomBase = tradeData.isDenomBase;
 
-    // const selectedBaseToken = tradeData.baseToken.address.toLowerCase();
-    // const selectedQuoteToken = tradeData.quoteToken.address.toLowerCase();
+    const baseTokenAddressLowerCase = tradeData.baseToken.address.toLowerCase();
+    const quoteTokenAddressLowerCase = tradeData.quoteToken.address.toLowerCase();
+
+    const ordersByUserMatchingSelectedTokens = limitOrdersByUser.filter((tx) => {
+        if (
+            tx.base.toLowerCase() === baseTokenAddressLowerCase &&
+            tx.quote.toLowerCase() === quoteTokenAddressLowerCase
+        ) {
+            return true;
+        } else {
+            return false;
+        }
+    });
+
+    const dispatch = useAppDispatch();
 
     // const isDenomBase = tradeData.isDenomBase;
 
-    // const columnHeaders = [
-    //     {
-    //         name: 'ID',
-    //         sortable: true,
-    //         className: '',
-    //     },
-    //     {
-    //         name: 'Wallet',
-    //         sortable: true,
-    //         className: 'wallet',
-    //     },
-    //     {
-    //         name: 'Price',
-    //         sortable: true,
-    //         className: 'price',
-    //     },
-    //     {
-    //         name: 'Side',
-    //         sortable: true,
-    //         className: 'side',
-    //     },
-    //     {
-    //         name: 'Type',
-    //         sortable: true,
-    //         className: 'type',
-    //     },
-    //     {
-    //         name: 'Value',
-    //         sortable: true,
-    //         className: '',
-    //     },
-    //     {
-    //         name: tradeData.baseToken.symbol,
-    //         sortable: false,
-    //         className: 'token',
-    //     },
-    //     {
-    //         name: tradeData.quoteToken.symbol,
-    //         sortable: false,
-    //         className: 'token',
-    //     },
-    // ];
-
-    // TODO:   currently the values to determine sort order are not
-    // TODO:   ... being used productively because there is only
-    // TODO:   ... placeholder data, we will revisit this later on
-
-    const [sortBy, setSortBy] = useState('default');
-    const [reverseSort, setReverseSort] = useState(false);
+    const [limitOrderData, setLimitOrderData] = useState(
+        isOnPortfolioPage ? activeAccountLimitOrderData || [] : limitOrdersByPool,
+    );
 
     const [debouncedIsShowAllEnabled, setDebouncedIsShowAllEnabled] = useState(false);
+
+    useEffect(() => {
+        if (isOnPortfolioPage) {
+            setLimitOrderData(activeAccountLimitOrderData || []);
+        } else if (!isShowAllEnabled) {
+            setLimitOrderData(ordersByUserMatchingSelectedTokens);
+        } else if (limitOrdersByPool) {
+            setLimitOrderData(limitOrdersByPool);
+        }
+    }, [isShowAllEnabled, connectedAccountActive]);
 
     // wait 5 seconds to open a subscription to pool changes
     useEffect(() => {
@@ -125,6 +106,10 @@ export default function Orders(props: propsIF) {
         return () => clearTimeout(handler);
     }, [isShowAllEnabled]);
 
+    const [sortBy, setSortBy, reverseSort, setReverseSort, sortedLimits] = useSortedLimits(
+        'lastUpdate',
+        isShowAllEnabled ? limitOrdersByPool : limitOrderData,
+    );
     useEffect(() => {
         if (isShowAllEnabled) {
             fetchPoolLimitOrderStates({
@@ -221,71 +206,22 @@ export default function Orders(props: propsIF) {
         }
     }, [lastPoolLimitOrderChangeMessage]);
 
-    const showAllOrUserPositions = isShowAllEnabled ? limitOrdersByPool : limitOrdersByUser;
-    // const [expanded, setExpanded] = useState<false | number>(false);
-    // const ItemContent = (
-    //     <div className={styles.desktop_transaction_display_container}>
-    //         {showAllOrUserPositions.map((order, idx) => (
-    //             <OrderCard
-    //                 key={idx}
-    //                 account={account}
-    //                 limitOrder={order}
-    //                 isDenomBase={isDenomBase}
-    //                 selectedBaseToken={selectedBaseToken}
-    //                 selectedQuoteToken={selectedQuoteToken}
-    //                 openGlobalModal={props.openGlobalModal}
-    //                 closeGlobalModal={props.closeGlobalModal}
-    //                 currentPositionActive={currentPositionActive}
-    //                 setCurrentPositionActive={setCurrentPositionActive}
-    //             />
-    //         ))}
-    //     </div>
-    // );
-
-    // const mobileAccordionDisplay = (
-    //     <div className={styles.accordion_display_container}>
-
-    //         <p>Mobile Accordion here: Disabled for now</p>
-    //     </div>
-    // );
-
-    // const olderReturnData = (
-    //        <div className={styles.container}>
-
-    //          <OrderCardHeader
-    //              sortBy={sortBy}
-    //              setSortBy={setSortBy}
-    //              reverseSort={reverseSort}
-    //              setReverseSort={setReverseSort}
-    //              columnHeaders={columnHeaders}
-    //          />
-    //          <div
-    //              className={styles.item_container}
-    //              style={{ height: expandTradeTable ? '100%' : '170px' }}
-    //          >
-    //              {ItemContent}
-    //              {mobileAccordionDisplay}
-    //          </div>
-    //      </div>
-    // )
+    // console.log({ limitOrderData });
 
     // -----------------------------
-    const dataReceivedByPool = graphData?.changesByPool?.dataReceived;
-
+    // const dataReceivedByPool = graphData?.changesByPool?.dataReceived;
     const [isDataLoading, setIsDataLoading] = useState(true);
     const [dataToDisplay, setDataToDisplay] = useState(false);
-    const [dataReceived] = useState(dataReceivedByPool);
+    const [dataReceived] = useState(limitOrderData.length > 0);
 
     function handleDataReceived() {
         setIsDataLoading(false);
-        showAllOrUserPositions.length ? setDataToDisplay(true) : setDataToDisplay(false);
+        limitOrderData.length ? setDataToDisplay(true) : setDataToDisplay(false);
     }
 
     useEffect(() => {
-        // console.log({ dataReceived });
-        // console.log({ isDataLoading });
         dataReceived ? handleDataReceived() : setIsDataLoading(true);
-    }, [graphData, showAllOrUserPositions, dataReceived]);
+    }, [graphData, limitOrderData, dataReceived]);
 
     // -----------------------------
 
@@ -302,7 +238,7 @@ export default function Orders(props: propsIF) {
     const baseTokenCharacter = baseTokenSymbol ? getUnicodeCharacter(baseTokenSymbol) : '';
     const quoteTokenCharacter = quoteTokenSymbol ? getUnicodeCharacter(quoteTokenSymbol) : '';
 
-    const priceCharacter = isDenomBase ? quoteTokenCharacter : baseTokenCharacter;
+    // const priceCharacter = isDenomBase ? quoteTokenCharacter : baseTokenCharacter;
 
     const walID = (
         <>
@@ -342,14 +278,14 @@ export default function Orders(props: propsIF) {
             className: 'ID',
             show: !showColumns,
             slug: 'id',
-            sortable: true,
+            sortable: false,
         },
         {
             name: 'Wallet',
             className: 'wallet',
             show: !showColumns,
             slug: 'wallet',
-            sortable: true,
+            sortable: isShowAllEnabled,
         },
         {
             name: walID,
@@ -359,7 +295,7 @@ export default function Orders(props: propsIF) {
             sortable: false,
         },
         {
-            name: `Price ( ${priceCharacter} )`,
+            name: 'Price',
 
             show: !ipadView,
             slug: 'price',
@@ -394,14 +330,14 @@ export default function Orders(props: propsIF) {
             sortable: true,
         },
         {
-            name: `${baseTokenSymbol} ( ${baseTokenCharacter} )`,
+            name: isOnPortfolioPage ? 'Qty A' : `${baseTokenSymbol} ( ${baseTokenCharacter} )`,
 
             show: !showColumns,
             slug: baseTokenSymbol,
             sortable: false,
         },
         {
-            name: `${quoteTokenSymbol} ( ${quoteTokenCharacter} )`,
+            name: isOnPortfolioPage ? 'Qty B' : `${quoteTokenSymbol} ( ${quoteTokenCharacter} )`,
 
             show: !showColumns,
             slug: quoteTokenSymbol,
@@ -445,7 +381,7 @@ export default function Orders(props: propsIF) {
         </ul>
     );
 
-    const rowItemContent = showAllOrUserPositions.map((order, idx) => (
+    const rowItemContent = sortedLimits.map((order, idx) => (
         <OrderRow
             crocEnv={crocEnv}
             expandTradeTable={expandTradeTable}
@@ -471,10 +407,8 @@ export default function Orders(props: propsIF) {
 
     return (
         <main className={styles.main_list_container} style={{ height: portfolioPageStyle }}>
-            {/* {header} */}
             {headerColumnsDisplay}
             {isDataLoading ? <TableSkeletons /> : orderDataOrNull}
-            {/* {rowItemContent} */}
         </main>
     );
 }
