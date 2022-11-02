@@ -2227,8 +2227,23 @@ export default function Chart(props: ChartData) {
                                 liquidityData.liqHighligtedAskSeries =
                                     liquidityData.liqAskData.filter(
                                         (d: any) =>
-                                            d.liqPrices > scaleData.yScale.invert(event.offsetY),
+                                            d.liqPrices >= scaleData.yScale.invert(event.offsetY),
                                     );
+                                const index = filtered.findIndex(
+                                    (liqData: any) => liqData === nearest,
+                                );
+
+                                let activeLiq = nearest.activeLiq;
+                                if (scaleData.yScale.invert(event.offsetY) < nearest.liqPrices) {
+                                    activeLiq = filtered[index + 1].activeLiq;
+                                }
+
+                                const mouseArea = {
+                                    activeLiq: activeLiq,
+                                    liqPrices: scaleData.yScale.invert(event.offsetY),
+                                };
+
+                                liquidityData.liqHighligtedAskSeries.push(mouseArea);
 
                                 render();
                             })
@@ -2298,8 +2313,24 @@ export default function Chart(props: ChartData) {
                                 liquidityData.liqHighligtedBidSeries =
                                     liquidityData.liqBidData.filter(
                                         (d: any) =>
-                                            scaleData.yScale.invert(event.offsetY) > d.liqPrices,
+                                            scaleData.yScale.invert(event.offsetY) >= d.liqPrices,
                                     );
+
+                                const index = filtered.findIndex(
+                                    (liqData: any) => liqData === nearest,
+                                );
+
+                                let activeLiq = nearest.activeLiq;
+                                if (scaleData.yScale.invert(event.offsetY) > nearest.liqPrices) {
+                                    activeLiq = filtered[index - 1].activeLiq;
+                                }
+
+                                const mouseArea = {
+                                    activeLiq: activeLiq,
+                                    liqPrices: scaleData.yScale.invert(event.offsetY),
+                                };
+
+                                liquidityData.liqHighligtedBidSeries.unshift(mouseArea);
 
                                 render();
                             })
