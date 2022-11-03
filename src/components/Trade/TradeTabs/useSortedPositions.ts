@@ -3,7 +3,7 @@ import { PositionIF } from '../../../utils/interfaces/PositionIF';
 
 export const useSortedPositions = (
     defaultSort: string,
-    positions: PositionIF[]
+    positions: PositionIF[],
 ): [
     string,
     Dispatch<SetStateAction<string>>,
@@ -16,7 +16,9 @@ export const useSortedPositions = (
         [...unsortedData].sort((a, b) => b.latestUpdateTime - a.latestUpdateTime);
     // sort by positionHash
     const sortById = (unsortedData: PositionIF[]) =>
-        [...unsortedData].sort((a, b) => b.positionStorageSlot.localeCompare(a.positionStorageSlot));
+        [...unsortedData].sort((a, b) =>
+            b.positionStorageSlot.localeCompare(a.positionStorageSlot),
+        );
     // sort functions for sortable columns
     const sortByWallet = (unsortedData: PositionIF[]) =>
         [...unsortedData].sort((a, b) => {
@@ -27,13 +29,13 @@ export const useSortedPositions = (
     const sortByApy = (unsortedData: PositionIF[]) =>
         [...unsortedData].sort((a, b) => b.apy - a.apy);
     // TODO: for some reason sortByMin() is leaving the final value out of sequence?
-    const sortByMin = (unsortedData: PositionIF[]) => 
-        [...unsortedData].sort((a, b) =>
-            parseFloat(b.lowRangeDisplayInBase) - parseFloat(a.lowRangeDisplayInBase)
+    const sortByMin = (unsortedData: PositionIF[]) =>
+        [...unsortedData].sort(
+            (a, b) => parseFloat(b.lowRangeDisplayInBase) - parseFloat(a.lowRangeDisplayInBase),
         );
-    const sortByMax = (unsortedData: PositionIF[]) => 
-        [...unsortedData].sort((a, b) =>
-            parseFloat(b.highRangeDisplayInBase) - parseFloat(a.highRangeDisplayInBase)
+    const sortByMax = (unsortedData: PositionIF[]) =>
+        [...unsortedData].sort(
+            (a, b) => parseFloat(b.highRangeDisplayInBase) - parseFloat(a.highRangeDisplayInBase),
         );
     const sortByValue = (unsortedData: PositionIF[]) =>
         [...unsortedData].sort((a, b) => b.positionLiqTotalUSD - a.positionLiqTotalUSD);
@@ -84,10 +86,7 @@ export const useSortedPositions = (
     // TODO: new user positions reset table sort, new pool positions retains sort
 
     // array of positions sorted by the relevant column
-    const sortedPositions = useMemo(
-        () => sortData(positions),
-        [sortBy, reverseSort, positions],
-    );
+    const sortedPositions = useMemo(() => sortData(positions), [sortBy, reverseSort, positions]);
 
     return [sortBy, setSortBy, reverseSort, setReverseSort, sortedPositions];
 };
