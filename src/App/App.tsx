@@ -2056,6 +2056,7 @@ export default function App() {
                                     ensName={ensName}
                                     connectedAccount={account ? account : ''}
                                     fullScreen={true}
+                                    favePools={favePools}
                                 />
                             }
                         />
@@ -2171,7 +2172,7 @@ export default function App() {
                         chatStatus={chatStatus}
                     />
                 )}
-                {currentLocation !== '/app/chat' && (
+                {/* {currentLocation !== '/app/chat' && (
                     <Chat
                         ensName={ensName}
                         connectedAccount={account ? account : ''}
@@ -2184,9 +2185,9 @@ export default function App() {
                         connectedAccount={account ? account : ''}
                         fullScreen={false}
                     />
-                )}
+                )} */}
 
-                {currentLocation !== '/app/chat' && (
+                {currentLocation !== '/' && currentLocation !== '/app/chat' && (
                     <ChatPanel
                         chatStatus={chatStatus}
                         onClose={() => {

@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction, useState } from 'react';
+import React, { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import styles from './ProfileSettings.module.css';
 import { BiArrowBack } from 'react-icons/bi';
 import ProfileSettingsTheme from './ProfileSettingsTheme/ProfileSettingsTheme';
@@ -7,6 +7,8 @@ import noAvatarImage from '../../../assets/images/icons/avatar.svg';
 
 import { motion } from 'framer-motion';
 import { useMoralis } from 'react-moralis';
+import useChatApi from '../../Chat/Service/ChatApi';
+import SnackbarComponent from '../../Global/SnackbarComponent/SnackbarComponent';
 
 const pageVariant3D = {
     initial: {
@@ -40,9 +42,11 @@ interface ProfileSettingsPropsIF {
 }
 
 export default function ProfileSettings(props: ProfileSettingsPropsIF) {
-    const { user, account, enableWeb3, isWeb3Enabled, isAuthenticated } = useMoralis();
+    const { account } = useMoralis();
     const [name, setName] = useState('');
-    const { setShowProfileSettings, ensName, imageData, openGlobalModal } = props;
+    const [id, setId] = useState('');
+    const { setShowProfileSettings, imageData, openGlobalModal } = props;
+    const [openSnackbar, setOpenSnackbar] = useState(false);
     const onChangeName = async (e: any) => {
         setName(e.target.value);
     };
@@ -53,7 +57,7 @@ export default function ProfileSettings(props: ProfileSettingsPropsIF) {
                 type='text'
                 onChange={(e) => setName(e.target.value)}
                 value={name}
-                placeholder={'Name'}
+                placeholder={name ? name : 'Name'}
             />
         </div>
     );
@@ -124,19 +128,59 @@ export default function ProfileSettings(props: ProfileSettingsPropsIF) {
             <ProfileSettingsSkin />
         </div>
     );
-    async function saveUser() {
-        const response = await fetch('http://localhost:5000/api/auth/saveUser', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ ensName: name, walletID: account }),
+
+    const snackbarContent = (
+        <SnackbarComponent
+            severity='info'
+            setOpenSnackbar={setOpenSnackbar}
+            openSnackbar={openSnackbar}
+        >
+            {name} has been set as a name.
+        </SnackbarComponent>
+    );
+
+    const { getID } = useChatApi();
+
+    useEffect(() => {
+        getID().then((result) => {
+            setId(result._id);
+            setName(result.ensName);
         });
-        const data = await response.json();
-        if (data.status === 'OK') {
-            console.log(data.status);
+    }, []);
+
+    async function saveUser() {
+        if (name === '') {
+            const response = await fetch('http://localhost:5000/api/auth/saveUser', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ ensName: name, walletID: account }),
+            });
+
+            const data = await response.json();
+            if (data.status === 'OK') {
+                console.log(data.status);
+                setOpenSnackbar(true);
+            } else {
+                console.log(data.status);
+            }
         } else {
-            console.log(data.status);
+            const response = await fetch('http://localhost:5000/api/auth/updateUser', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ ensName: name, _id: id }),
+            });
+
+            const data = await response.json();
+            if (data.status === 'OK') {
+                console.log('aaaa', data);
+                setOpenSnackbar(true);
+            } else {
+                console.log('bbb', data.status);
+            }
         }
     }
 
@@ -165,6 +209,7 @@ export default function ProfileSettings(props: ProfileSettingsPropsIF) {
                     <button className={styles.save_button} onClick={() => saveUser()}>
                         Save
                     </button>
+                    {snackbarContent}
                 </div>
             </div>
         </motion.div>

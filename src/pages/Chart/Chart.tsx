@@ -1,6 +1,5 @@
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
-import { constants } from 'ethers';
 import moment from 'moment';
 import { DetailedHTMLProps, HTMLAttributes, useCallback, useEffect, useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';

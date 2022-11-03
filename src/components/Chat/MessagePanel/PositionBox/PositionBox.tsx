@@ -50,7 +50,6 @@ export default function PositionBox(props: PositionBoxProps) {
         } else {
             setPosition(undefined);
         }
-        console.log(transactionsData);
     }, [message]);
 
     useEffect(() => {

@@ -35,8 +35,8 @@
 
 .message {
 
-    min-width: 158px;
-    min-height: 45px;
+    width: 80%;
+    height: 80%;
 
     bottom: -100%;
 
@@ -57,7 +57,6 @@
     color: #EBEBFF;
     white-space: pre-line;
     align-self: stretch;
-    margin-left: 62px
 }
 
 .right_image_box {
@@ -72,18 +71,29 @@
 }
 
 .sent_message_body {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    padding: 5px;
-    grid-template-columns: 1fr 1fr;
-    width: 100%;
+flex-grow: 5 !important;
+display: flex;
+flex-direction: row;
+align-items: flex-end;
+gap: 0px;
+
+height: 100%;
+width:  100%;
+height: auto;
+ min-height: 53%;
+padding: 0px 4px 8px;
+
+box-sizing: border-box;
+flex: none;
+order: 4;
+align-self: stretch;
 }
 
 .message_item {
     cursor: default;
     display: flex;
     flex-direction: row;
+    flex-grow: 4;
 }
 
 p {

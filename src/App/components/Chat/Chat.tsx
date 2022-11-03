@@ -9,10 +9,14 @@ import { devpun } from './devpun';
 import notificationSound from '../../../assets/audio/message.wav';
 import MessageItem from './MessageItem/MessageItem';
 import ChatButton from './ChatButton/ChatButton';
+import ChatPanel from '../../../components/Chat/ChatPanel';
+import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
+
 interface ChatPropsIF {
     ensName: string;
     connectedAccount: string;
     fullScreen?: boolean;
+    favePools: any;
 }
 
 type MessageType = {
@@ -27,6 +31,7 @@ export default function Chat(props: ChatPropsIF) {
     const [messagesArray, setMessagesArray] = useState<MessageType[]>([]);
     const [aiMessageIsAJoke, setAiMessageIsAJoke] = useState(false);
     const [soundIsMuted, setSoundIsMuted] = useState(false);
+    const [chatStatus, setChatStatus] = useState(false);
 
     useEffect(() => {
         props.fullScreen ? setShowChatBot(true) : null;
@@ -174,20 +179,28 @@ export default function Chat(props: ChatPropsIF) {
 
     const wrapperStyleFull = styles.chat_wrapper_full;
     const wrapperStyle = showChatBot ? styles.chat_wrapper_active : styles.chat_wrapper;
-
+    // current configurations of trade as specified by the user
+    const tradeData = useAppSelector((state) => state.tradeData);
+    const currentPoolInfo = tradeData;
     return (
         <div className={styles.chat}>
             <div className={styles.chat_container}>
                 {/* {showWelcomeBack && !showChatBot && welcomeBack} */}
-                {props.fullScreen ? null : (
-                    <>
-                        <ChatButton showChatBot={showChatBot} setShowChatBot={setShowChatBot} />
-                    </>
-                )}
+
                 <div className={props.fullScreen ? wrapperStyleFull : wrapperStyle}>
-                    {chatHeader}
+                    <ChatPanel
+                        chatStatus={true}
+                        onClose={() => {
+                            console.error('Function not implemented.');
+                        }}
+                        favePools={props.favePools}
+                        currentPool={currentPoolInfo}
+                        setChatStatus={setChatStatus}
+                        isFullScreen={true}
+                    />
+                    {/* {chatHeader}
                     {messagesDisplay}
-                    {chatInput}
+                    {chatInput} */}
                 </div>
             </div>
         </div>
