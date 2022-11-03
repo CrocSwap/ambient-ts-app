@@ -158,6 +158,7 @@ export default function Chart(props: ChartData) {
     const [zoomAndYdragControl, setZoomAndYdragControl] = useState();
     const [rescaleText, setRescaleText] = useState<any>();
     const [isMouseMoveCrosshair, setIsMouseMoveCrosshair] = useState(false);
+    const [crosshairForSubChart, setCrosshairForSubChart] = useState([{ x: 0, y: -1 }]);
 
     // Data
     const [crosshairData, setCrosshairData] = useState([{ x: 0, y: -1 }]);
@@ -2160,7 +2161,7 @@ export default function Chart(props: ChartData) {
                         Math.abs(point.offsetX - xScale(xValue(d))),
                     )[1];
 
-                    //        setCrosshairData([{ x: scaleData.xScale(nearest?.date), y: -1 }]);
+                    setCrosshairForSubChart([{ x: scaleData.xScale(nearest?.date), y: -1 }]);
 
                     props.setCurrentData(nearest);
                     return [
@@ -2714,8 +2715,9 @@ export default function Chart(props: ChartData) {
                                     (a, b) => b.time - a.time,
                                 )}
                                 period={parsedChartData?.period}
-                                crosshairData={crosshairData}
+                                crosshairData={crosshairForSubChart}
                                 setsubChartValues={setsubChartValues}
+                                setZoomAndYdragControl={setZoomAndYdragControl}
                                 xScale={scaleData !== undefined ? scaleData.xScale : undefined}
                             />
                         </>
@@ -2736,12 +2738,13 @@ export default function Chart(props: ChartData) {
                                     (a, b) => b.time - a.time,
                                 )}
                                 period={parsedChartData?.period}
-                                crosshairData={crosshairData}
+                                crosshairData={crosshairForSubChart}
                                 setsubChartValues={setsubChartValues}
                                 xScale={scaleData !== undefined ? scaleData.xScale : undefined}
                                 xScaleCopy={
                                     scaleData !== undefined ? scaleData.xScaleCopy : undefined
                                 }
+                                setZoomAndYdragControl={setZoomAndYdragControl}
                                 render={render}
                             />
                         </>
@@ -2761,7 +2764,7 @@ export default function Chart(props: ChartData) {
                             <VolumeSubChart
                                 volumeData={parsedChartData?.volumeChartData}
                                 period={parsedChartData?.period}
-                                crosshairData={crosshairData}
+                                crosshairData={crosshairForSubChart}
                                 setsubChartValues={setsubChartValues}
                                 setSelectedVolume={setSelectedVolume}
                                 candlestick={candlestick}
@@ -2769,6 +2772,7 @@ export default function Chart(props: ChartData) {
                                 xScaleCopy={
                                     scaleData !== undefined ? scaleData.xScaleCopy : undefined
                                 }
+                                setZoomAndYdragControl={setZoomAndYdragControl}
                                 render={render}
                             />
                         </>
