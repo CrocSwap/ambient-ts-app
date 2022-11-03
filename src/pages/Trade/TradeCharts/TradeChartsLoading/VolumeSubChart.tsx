@@ -10,6 +10,7 @@ interface VolumeData {
     period: number | undefined;
     crosshairData: any[];
     setsubChartValues: React.Dispatch<React.SetStateAction<any>>;
+    setSelectedVolume: React.Dispatch<React.SetStateAction<any>>;
     candlestick: any;
     xScale: any;
     xScaleCopy: any;
@@ -20,6 +21,8 @@ export default function VolumeSubChart(props: VolumeData) {
     const { volumeData, period, xScale, crosshairData, xScaleCopy, candlestick } = props;
 
     const setsubChartValues = props.setsubChartValues;
+
+    let selectedVolume: any | undefined = undefined;
 
     // Volume Chart
     useEffect(() => {
@@ -109,9 +112,38 @@ export default function VolumeSubChart(props: VolumeData) {
                 .crossValue((d: any) => d.time)
                 .mainValue((d: any) => d.value)
                 .decorate((selection: any) => {
-                    selection.enter().style('fill', 'rgba(115,113,252, 0.6)');
+                    selection.style('fill', (d: any) =>
+                        selectedVolume !== undefined && selectedVolume === d.time
+                            ? '#E480FF'
+                            : 'rgba(115,113,252, 0.6)',
+                    );
+                    selection.style('stroke', (d: any) =>
+                        selectedVolume !== undefined && selectedVolume === d.time
+                            ? '#E480FF'
+                            : 'rgba(115,113,252, 0.6)',
+                    );
                     selection.on('mouseover', (event: any) => {
                         d3.select(event.currentTarget).style('cursor', 'pointer');
+                    });
+                    selection.on('click', (event: any) => {
+                        if (
+                            selectedVolume === undefined ||
+                            selectedVolume !== event.target.__data__.time
+                        ) {
+                            d3.select(event.currentTarget)
+                                .style('fill', '#E480FF')
+                                .style('stroke', '#E480FF');
+
+                            props.setSelectedVolume(() => {
+                                selectedVolume = event.target.__data__.time;
+                                return event.target.__data__.time;
+                            });
+                        } else {
+                            props.setSelectedVolume(() => {
+                                selectedVolume = undefined;
+                                return undefined;
+                            });
+                        }
                     });
                 });
 

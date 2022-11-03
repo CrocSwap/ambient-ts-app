@@ -170,6 +170,7 @@ export default function Chart(props: ChartData) {
 
     // d3
     const [transactionFilter, setTransactionFilter] = useState<CandleData>();
+    const [selectedVolume, setSelectedVolume] = useState<any>();
 
     // Crosshairs
     const [liqTooltip, setLiqTooltip] = useState<any>();
@@ -2329,6 +2330,10 @@ export default function Chart(props: ChartData) {
 
                                 liquidityData.liqHighligtedAskSeries.push(mouseArea);
 
+                                liquidityData.liqHighligtedAskSeries.sort(
+                                    (a: any, b: any) => b.liqPrices - a.liqPrices,
+                                );
+
                                 render();
                             })
                             .on('mouseleave', mouseOutFunc);
@@ -2417,7 +2422,11 @@ export default function Chart(props: ChartData) {
                                     liqPrices: scaleData.yScale.invert(event.offsetY),
                                 };
 
-                                liquidityData.liqHighligtedBidSeries.unshift(mouseArea);
+                                liquidityData.liqHighligtedBidSeries.push(mouseArea);
+
+                                liquidityData.liqHighligtedBidSeries.sort(
+                                    (a: any, b: any) => b.liqPrices - a.liqPrices,
+                                );
 
                                 render();
                             })
@@ -2551,6 +2560,30 @@ export default function Chart(props: ChartData) {
             props.changeState(isChartSelected, transactionFilter);
         }
     }, [isChartSelected, transactionFilter]);
+
+    useEffect(() => {
+        if (selectedVolume !== undefined) {
+            const candle = parsedChartData?.chartData.find(
+                (candle: any) => candle.date.toString() === selectedVolume.toString(),
+            ) as any;
+
+            if (candle !== undefined) {
+                d3.select('#transactionPopup')
+                    .style('visibility', 'visible')
+                    .html(
+                        '<p>Showing Transactions for <span style="color: #E480FF">' +
+                            moment(candle.date).format('DD MMM  HH:mm') +
+                            '</span> Candle</p>',
+                    );
+
+                props.changeState(true, candle);
+            }
+        } else {
+            d3.select('#transactionPopup').style('visibility', 'hidden');
+
+            props.changeState(false, undefined);
+        }
+    }, [selectedVolume]);
 
     const onBlurRange = (range: any, highLineMoved: boolean, lowLineMoved: boolean) => {
         const results: boolean[] = [];
@@ -2730,6 +2763,7 @@ export default function Chart(props: ChartData) {
                                 period={parsedChartData?.period}
                                 crosshairData={crosshairData}
                                 setsubChartValues={setsubChartValues}
+                                setSelectedVolume={setSelectedVolume}
                                 candlestick={candlestick}
                                 xScale={scaleData !== undefined ? scaleData.xScale : undefined}
                                 xScaleCopy={
