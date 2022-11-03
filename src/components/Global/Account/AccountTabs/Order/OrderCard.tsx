@@ -1,5 +1,5 @@
 import getUnicodeCharacter from '../../../../../utils/functions/getUnicodeCharacter';
-import { formatAmount } from '../../../../../utils/numbers';
+import { formatAmountOld } from '../../../../../utils/numbers';
 // import OpenOrderStatus from '../../../../Global/OpenOrderStatus/OpenOrderStatus';
 // import Price from '../../../../Global/Tabs/Price/Price';
 import TokenQty from '../../../../Global/Tabs/TokenQty/TokenQty';
@@ -51,7 +51,7 @@ export default function OrderCard(props: OrderCardProps) {
             : invPriceDecimalCorrected < 2
             ? invPriceDecimalCorrected.toPrecision(3)
             : invPriceDecimalCorrected >= 100000
-            ? formatAmount(invPriceDecimalCorrected)
+            ? formatAmountOld(invPriceDecimalCorrected)
             : invPriceDecimalCorrected.toLocaleString(undefined, {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
@@ -74,7 +74,7 @@ export default function OrderCard(props: OrderCardProps) {
             : liqBaseNum < 2
             ? liqBaseNum.toPrecision(3)
             : liqBaseNum >= 100000
-            ? formatAmount(liqBaseNum)
+            ? formatAmountOld(liqBaseNum)
             : // ? baseLiqDisplayNum.toExponential(2)
               liqBaseNum.toLocaleString(undefined, {
                   minimumFractionDigits: 2,
@@ -88,7 +88,7 @@ export default function OrderCard(props: OrderCardProps) {
             : liqQuoteNum < 2
             ? liqQuoteNum.toPrecision(3)
             : liqQuoteNum >= 100000
-            ? formatAmount(liqQuoteNum)
+            ? formatAmountOld(liqQuoteNum)
             : // ? baseLiqDisplayNum.toExponential(2)
               liqQuoteNum.toLocaleString(undefined, {
                   minimumFractionDigits: 2,
@@ -103,7 +103,7 @@ export default function OrderCard(props: OrderCardProps) {
         : usdValueNum < 2
         ? usdValueNum.toPrecision(3)
         : usdValueNum >= 10000
-        ? formatAmount(usdValueNum, 1)
+        ? formatAmountOld(usdValueNum, 1)
         : // ? baseLiqDisplayNum.toExponential(2)
           usdValueNum.toLocaleString(undefined, {
               minimumFractionDigits: 2,

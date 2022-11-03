@@ -5,7 +5,7 @@ import { TokenIF } from '../../../../../utils/interfaces/TokenIF';
 import { useEffect, useState } from 'react';
 import { ZERO_ADDRESS } from '../../../../../constants';
 import { TokenPriceFn } from '../../../../../App/functions/fetchTokenPrice';
-// import { formatAmount } from '../../../../../utils/numbers';
+// import { formatAmountOld } from '../../../../../utils/numbers';
 interface ExchangeCardPropsIF {
     cachedFetchTokenPrice: TokenPriceFn;
     token?: TokenIF;
@@ -69,7 +69,7 @@ export default function ExchangeCard(props: ExchangeCardPropsIF) {
     //         : tokenBalanceNum < 2
     //         ? tokenBalanceNum.toPrecision(3)
     //         : tokenBalanceNum >= 1000000
-    //         ? formatAmount(tokenBalanceNum)
+    //         ? formatAmountOld(tokenBalanceNum)
     //         : // ? quoteLiqDisplayNum.toExponential(2)
     //           tokenBalanceNum.toLocaleString(undefined, {
     //               minimumFractionDigits: 2,

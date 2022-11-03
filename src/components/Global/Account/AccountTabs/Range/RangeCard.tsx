@@ -12,7 +12,7 @@ import AccountPoolDisplay from '../../../Tabs/AccountPoolDisplay/AccountPoolDisp
 import AccountTokensDisplay from '../../../Tabs/AccountTokensDisplay/AccountTokensDisplay';
 import getUnicodeCharacter from '../../../../../utils/functions/getUnicodeCharacter';
 import Value from '../../../Tabs/Value/Value';
-import { formatAmount } from '../../../../../utils/numbers';
+import { formatAmountOld } from '../../../../../utils/numbers';
 
 interface RangeCardPropsIF {
     position: PositionIF;
@@ -41,7 +41,7 @@ export default function RangeCard(props: RangeCardPropsIF) {
         : usdValueNum < 2
         ? usdValueNum.toPrecision(3)
         : usdValueNum >= 10000
-        ? formatAmount(usdValueNum, 1)
+        ? formatAmountOld(usdValueNum, 1)
         : // ? baseLiqDisplayNum.toExponential(2)
           usdValueNum.toLocaleString(undefined, {
               minimumFractionDigits: 2,

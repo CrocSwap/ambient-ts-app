@@ -12,7 +12,7 @@ import { removeToken } from '../../Global/TokenSelectContainer/removeToken';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 // import { toDisplayQty } from '@crocswap-libs/sdk';
 // import { ZERO_ADDRESS } from '../../../constants';
-// import { formatAmount } from '../../../utils/numbers';
+// import { formatAmountOld } from '../../../utils/numbers';
 // import truncateDecimals from '../../../utils/data/truncateDecimals';
 // import { tokenData } from '../../../utils/state/tokenDataSlice';
 

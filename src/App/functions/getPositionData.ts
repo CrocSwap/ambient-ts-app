@@ -2,7 +2,7 @@ import { CrocEnv, tickToPrice, toDisplayPrice } from '@crocswap-libs/sdk';
 // import truncateDecimals from '../../utils/data/truncateDecimals';
 import { TokenIF } from '../../utils/interfaces/TokenIF';
 import { PositionIF } from '../../utils/interfaces/PositionIF';
-import { formatAmount } from '../../utils/numbers';
+import { formatAmountOld } from '../../utils/numbers';
 // import { ethers } from 'ethers';
 import { memoizeQuerySpotPrice } from './querySpotPrice';
 
@@ -177,7 +177,7 @@ export const getPositionData = async (
                 : liqBaseNum < 2
                 ? liqBaseNum.toPrecision(3)
                 : liqBaseNum >= 100000
-                ? formatAmount(liqBaseNum)
+                ? formatAmountOld(liqBaseNum)
                 : // ? baseLiqDisplayNum.toExponential(2)
                   liqBaseNum.toLocaleString(undefined, {
                       minimumFractionDigits: 2,
@@ -197,7 +197,7 @@ export const getPositionData = async (
                 : liqQuoteNum < 2
                 ? liqQuoteNum.toPrecision(3)
                 : liqQuoteNum >= 100000
-                ? formatAmount(liqQuoteNum)
+                ? formatAmountOld(liqQuoteNum)
                 : // ? quoteLiqDisplayNum.toExponential(2)
                   liqQuoteNum.toLocaleString(undefined, {
                       minimumFractionDigits: 2,
