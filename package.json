@@ -4,7 +4,7 @@
     "private": true,
     "dependencies": {
         "@apollo/client": "^3.6.8",
-        "@crocswap-libs/sdk": "^0.2.39-16",
+        "@crocswap-libs/sdk": "^0.2.39-17",
         "@d3fc/d3fc-extent": "^4.0.2",
         "@emotion/react": "^11.9.0",
         "@emotion/style": "^0.8.0",
@@ -53,6 +53,7 @@
         "react-dom": "^18.1.0",
         "react-i18next": "^11.18.3",
         "react-icons": "^4.3.1",
+        "react-idle-timer": "^5.4.2",
         "react-lottie-player": "^1.4.3",
         "react-moralis": "^1.4.2",
         "react-redux": "^8.0.1",

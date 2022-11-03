@@ -170,9 +170,13 @@ export default function TradeCandleStickChart(props: ChartData) {
     // Parse liquidtiy data
     const liquidityData = useMemo(() => {
         const liqData: LiquidityData[] = [];
+
+        const liqAskData: LiquidityData[] = [];
+        const liqBidData: LiquidityData[] = [];
+
         const liqSnapData: LiqSnap[] = [];
 
-        if (props.liquidityData) {
+        if (props.poolPriceDisplay !== undefined && props.liquidityData) {
             const domainLeft = Math.min(
                 ...props.liquidityData.ranges.map((o: any) => {
                     return o.activeLiq !== undefined ? parseFloat(o.activeLiq) : 0;
@@ -187,13 +191,31 @@ export default function TradeCandleStickChart(props: ChartData) {
 
             const liquidityScale = d3.scaleLog().domain([domainLeft, domainRight]).range([0, 1000]);
 
+            const barThreshold = props.poolPriceDisplay !== undefined ? props.poolPriceDisplay : 0;
+
             props.liquidityData.ranges.map((data: any) => {
-                liqData.push({
-                    activeLiq: liquidityScale(data.activeLiq),
-                    upperBoundPriceDecimalCorrected: denominationsInBase
-                        ? data.upperBoundInvPriceDecimalCorrected
-                        : data.upperBoundPriceDecimalCorrected,
-                });
+                const liqPrices = denominationsInBase
+                    ? data.upperBoundInvPriceDecimalCorrected
+                    : data.upperBoundPriceDecimalCorrected;
+
+                if (liqPrices !== Infinity && liqPrices !== '+inf' && barThreshold !== undefined) {
+                    liqData.push({
+                        activeLiq: liquidityScale(data.activeLiq),
+                        liqPrices: liqPrices,
+                    });
+
+                    if (liqPrices > barThreshold) {
+                        liqBidData.push({
+                            activeLiq: liquidityScale(data.activeLiq),
+                            liqPrices: liqPrices,
+                        });
+                    } else {
+                        liqAskData.push({
+                            activeLiq: liquidityScale(data.activeLiq),
+                            liqPrices: liqPrices,
+                        });
+                    }
+                }
 
                 const pinnedDisplayPrices = getPinnedPriceValuesFromDisplayPrices(
                     denominationsInBase,
@@ -218,9 +240,15 @@ export default function TradeCandleStickChart(props: ChartData) {
             });
         }
 
+        // console.log({ liqAskData, liqBidData });
+
         return {
             liqData: liqData,
+            liqAskData: liqAskData,
+            liqBidData: liqBidData,
             liqSnapData: liqSnapData,
+            liqHighligtedAskSeries: [],
+            liqHighligtedBidSeries: [],
             totalLiq: props.liquidityData?.totals?.totalLiq,
         };
     }, [props.liquidityData, denominationsInBase]);

@@ -1529,10 +1529,10 @@
     exec-sh "^0.3.2"
     minimist "^1.2.0"
 
-"@crocswap-libs/sdk@^0.2.39-16":
-  version "0.2.39-16"
-  resolved "https://registry.yarnpkg.com/@crocswap-libs/sdk/-/sdk-0.2.39-16.tgz#0587bc0444d19fcaf3e31e4f7ff77c6bfba3c686"
-  integrity sha512-pHLbkL72wy8lQu1B0lWbzyffxTxOWsYB1kWVZ6sTZBiMUSNDCTMsK1Q1Ij4yUwlnYLOS8UcaPPVIDeds5PQonQ==
+"@crocswap-libs/sdk@^0.2.39-17":
+  version "0.2.39-17"
+  resolved "https://registry.yarnpkg.com/@crocswap-libs/sdk/-/sdk-0.2.39-17.tgz#4057ad57f8c24835c202fb203a4e9a340a9370af"
+  integrity sha512-yganYxn+qGdSF2Sla3UqKFmVzIzk3HSz57z5V2iPdLTLmfmsAuDdkrvW19I/MRx4YitW6dcdxXEf/q6cnGxHnA==
   dependencies:
     ethers "^5.5.3"
 
@@ -14396,6 +14396,11 @@ react-icons@^4.3.1:
   version "4.3.1"
   resolved "https://registry.yarnpkg.com/react-icons/-/react-icons-4.3.1.tgz#2fa92aebbbc71f43d2db2ed1aed07361124e91ca"
   integrity sha512-cB10MXLTs3gVuXimblAdI71jrJx8njrJZmNMEMC+sQu5B/BIOmlsAjskdqpn81y8UBVEGuHODd7/ci5DvoSzTQ==
+
+react-idle-timer@^5.4.2:
+  version "5.4.2"
+  resolved "https://registry.yarnpkg.com/react-idle-timer/-/react-idle-timer-5.4.2.tgz#69e20044cf2ecc421aef99cd82298c526d8acf37"
+  integrity sha512-ofCS/qpFjm6ZguEyePvtf9YMDnLj7zZfeLXRWGRpsC6Ga47H4dm7EvoUW8MsozGEGy8zCvPK0Sk6YuAnwLEzRQ==
 
 react-is@^16.13.1, react-is@^16.7.0:
   version "16.13.1"
