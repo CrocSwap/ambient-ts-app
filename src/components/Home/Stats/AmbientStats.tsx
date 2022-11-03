@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { getDexStatsFresh } from '../../../utils/functions/getDexStats';
-import { formatAmount } from '../../../utils/numbers';
+import { formatAmountOld } from '../../../utils/numbers';
 import { userData } from '../../../utils/state/userDataSlice';
 import styles from './Stats.module.css';
 
@@ -40,9 +40,9 @@ export default function Stats(props: StatsProps) {
     useEffect(() => {
         if (!isUserIdle)
             getDexStatsFresh().then((dexStats) => {
-                if (dexStats.tvl) setTotalTvlString('$' + formatAmount(dexStats.tvl));
-                if (dexStats.volume) setTotalVolumeString('$' + formatAmount(dexStats.volume));
-                if (dexStats.fees) setTotalFeesString('$' + formatAmount(dexStats.fees));
+                if (dexStats.tvl) setTotalTvlString('$' + formatAmountOld(dexStats.tvl));
+                if (dexStats.volume) setTotalVolumeString('$' + formatAmountOld(dexStats.volume));
+                if (dexStats.fees) setTotalFeesString('$' + formatAmountOld(dexStats.fees));
             });
     }, [isUserIdle, lastBlockNumber]);
 

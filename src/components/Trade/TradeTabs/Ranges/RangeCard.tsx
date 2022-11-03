@@ -9,10 +9,10 @@ import { ambientPosSlot, ChainSpec, concPosSlot, CrocEnv } from '@crocswap-libs/
 import RangesMenu from '../../../Global/Tabs/TableMenu/TableMenuComponents/RangesMenu';
 import { ethers } from 'ethers';
 import { useEffect, Dispatch, SetStateAction } from 'react';
-// import { formatAmount } from '../../../../utils/numbers';
+// import { formatAmountOld } from '../../../../utils/numbers';
 import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
 import Value from '../../../Global/Tabs/Value/Value';
-import { formatAmount } from '../../../../utils/numbers';
+import { formatAmountOld } from '../../../../utils/numbers';
 
 interface RangeCardProps {
     isUserLoggedIn: boolean;
@@ -192,7 +192,7 @@ export default function RangeCard(props: RangeCardProps) {
         : usdValueNum < 2
         ? usdValueNum.toPrecision(3)
         : usdValueNum >= 10000
-        ? formatAmount(usdValueNum, 1)
+        ? formatAmountOld(usdValueNum, 1)
         : // ? baseLiqDisplayNum.toExponential(2)
           usdValueNum.toLocaleString(undefined, {
               minimumFractionDigits: 2,

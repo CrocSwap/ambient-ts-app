@@ -3,7 +3,7 @@ import styles from './TopPoolsCard.module.css';
 import { PoolIF } from '../../../../utils/interfaces/exports';
 import { PoolStatsFn } from '../../../../App/functions/getPoolStats';
 import { useEffect, useState, useMemo } from 'react';
-import { formatAmount } from '../../../../utils/numbers';
+import { formatAmountOld } from '../../../../utils/numbers';
 import { tradeData } from '../../../../utils/state/tradeDataSlice';
 interface TopPoolsCardProps {
     tradeData: tradeData;
@@ -46,10 +46,10 @@ export default function TopPoolsCard(props: TopPoolsCardProps) {
                 Math.floor(lastBlockNumber / 4),
             );
             const volume = poolStatsFresh?.volume;
-            const volumeString = volume ? '$' + formatAmount(volume) : undefined;
+            const volumeString = volume ? '$' + formatAmountOld(volume) : undefined;
             setPoolVolume(volumeString);
             const tvl = poolStatsFresh?.tvl;
-            const tvlString = tvl ? '$' + formatAmount(tvl) : undefined;
+            const tvlString = tvl ? '$' + formatAmountOld(tvl) : undefined;
             setPoolTvl(tvlString);
         })();
     };

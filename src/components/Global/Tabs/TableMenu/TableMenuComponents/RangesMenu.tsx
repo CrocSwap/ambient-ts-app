@@ -205,7 +205,7 @@ export default function RangesMenu(props: RangesMenuIF) {
     const noRespositionButton = !isAmbient && positionMatchesLoggedInUser && !isPositionInRange;
 
     const view1 = useMediaQuery('(min-width: 1280px)');
-    const view2 = useMediaQuery('(min-width: 1680px)');
+    // const view2 = useMediaQuery('(min-width: 1680px)');
     const view3 = useMediaQuery('(min-width: 2300px)');
 
     // const view1NoSidebar = useMediaQuery('(min-width: 1280px)') && !showSidebar;
@@ -218,9 +218,10 @@ export default function RangesMenu(props: RangesMenuIF) {
             {view1 && repositionButton}
             {view1 && !noRespositionButton && !isOnPortfolioPage && editButton}
             {view3 && harvestButton}
-            {view2 && removeButton}
+            {/* {view2 && removeButton} */}
             {view3 && detailsButton}
-            {view1 && !props.showSidebar && copyButton}
+            {copyButton}
+            {/* {view1 && !props.showSidebar && copyButton} */}
         </div>
     );
 
@@ -233,7 +234,7 @@ export default function RangesMenu(props: RangesMenuIF) {
             {harvestButton}
             {removeButton}
             {detailsButton}
-            {copyButton}
+            {/* {copyButton} */}
         </div>
     );
 

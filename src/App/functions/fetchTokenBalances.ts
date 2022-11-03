@@ -7,7 +7,7 @@ import { BigNumber } from 'ethers';
 import Moralis from 'moralis-v1';
 import { ZERO_ADDRESS } from '../../constants';
 import { TokenIF } from '../../utils/interfaces/TokenIF';
-import { formatAmount } from '../../utils/numbers';
+import { formatAmountOld } from '../../utils/numbers';
 import { memoizePromiseFn } from './memoizePromiseFn';
 
 interface IMoralisTokenBalance {
@@ -66,7 +66,7 @@ export const fetchNativeTokenBalance = async (
             : combinedBalanceDisplayNum < 2
             ? combinedBalanceDisplayNum.toPrecision(3)
             : combinedBalanceDisplayNum >= 100000
-            ? formatAmount(nativeWalletBalanceDisplayNum)
+            ? formatAmountOld(nativeWalletBalanceDisplayNum)
             : combinedBalanceDisplayNum.toLocaleString(undefined, {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
@@ -79,7 +79,7 @@ export const fetchNativeTokenBalance = async (
             : nativeDexBalanceDisplayNum < 2
             ? nativeDexBalanceDisplayNum.toPrecision(3)
             : nativeDexBalanceDisplayNum >= 100000
-            ? formatAmount(nativeDexBalanceDisplayNum)
+            ? formatAmountOld(nativeDexBalanceDisplayNum)
             : nativeDexBalanceDisplayNum.toLocaleString(undefined, {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
@@ -92,7 +92,7 @@ export const fetchNativeTokenBalance = async (
             : nativeWalletBalanceDisplayNum < 2
             ? nativeWalletBalanceDisplayNum.toPrecision(3)
             : nativeWalletBalanceDisplayNum >= 100000
-            ? formatAmount(nativeWalletBalanceDisplayNum)
+            ? formatAmountOld(nativeWalletBalanceDisplayNum)
             : nativeWalletBalanceDisplayNum.toLocaleString(undefined, {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
@@ -130,7 +130,7 @@ export const fetchNativeTokenBalance = async (
     //                 : moralisNativeBalanceDisplayNum < 2
     //                 ? moralisNativeBalanceDisplayNum.toPrecision(3)
     //                 : moralisNativeBalanceDisplayNum >= 100000
-    //                 ? formatAmount(moralisNativeBalanceDisplayNum)
+    //                 ? formatAmountOld(moralisNativeBalanceDisplayNum)
     //                 : moralisNativeBalanceDisplayNum.toLocaleString(undefined, {
     //                       minimumFractionDigits: 2,
     //                       maximumFractionDigits: 2,
@@ -148,7 +148,7 @@ export const fetchNativeTokenBalance = async (
     //         : nativeDexBalanceDisplayNum < 2
     //         ? nativeDexBalanceDisplayNum.toPrecision(3)
     //         : nativeDexBalanceDisplayNum >= 100000
-    //         ? formatAmount(nativeDexBalanceDisplayNum)
+    //         ? formatAmountOld(nativeDexBalanceDisplayNum)
     //         : nativeDexBalanceDisplayNum.toLocaleString(undefined, {
     //               minimumFractionDigits: 2,
     //               maximumFractionDigits: 2,
@@ -168,7 +168,7 @@ export const fetchNativeTokenBalance = async (
     //                 : combinedBalanceDisplayNum < 2
     //                 ? combinedBalanceDisplayNum.toPrecision(3)
     //                 : combinedBalanceDisplayNum >= 100000
-    //                 ? formatAmount(combinedBalanceDisplayNum)
+    //                 ? formatAmountOld(combinedBalanceDisplayNum)
     //                 : combinedBalanceDisplayNum.toLocaleString(undefined, {
     //                       minimumFractionDigits: 2,
     //                       maximumFractionDigits: 2,
@@ -214,7 +214,7 @@ export const fetchErc20TokenBalances = async (
                 : erc20DexBalanceDisplayNum < 2
                 ? erc20DexBalanceDisplayNum.toPrecision(3)
                 : erc20DexBalanceDisplayNum >= 100000
-                ? formatAmount(erc20DexBalanceDisplayNum)
+                ? formatAmountOld(erc20DexBalanceDisplayNum)
                 : erc20DexBalanceDisplayNum.toLocaleString(undefined, {
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 2,
@@ -230,7 +230,7 @@ export const fetchErc20TokenBalances = async (
                 : moralisErc20BalanceDisplayNum < 2
                 ? moralisErc20BalanceDisplayNum.toPrecision(3)
                 : moralisErc20BalanceDisplayNum >= 100000
-                ? formatAmount(moralisErc20BalanceDisplayNum)
+                ? formatAmountOld(moralisErc20BalanceDisplayNum)
                 : moralisErc20BalanceDisplayNum.toLocaleString(undefined, {
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 2,
@@ -252,7 +252,7 @@ export const fetchErc20TokenBalances = async (
                 : combinedBalanceDisplayNum < 2
                 ? combinedBalanceDisplayNum.toPrecision(3)
                 : combinedBalanceDisplayNum >= 100000
-                ? formatAmount(combinedBalanceDisplayNum)
+                ? formatAmountOld(combinedBalanceDisplayNum)
                 : combinedBalanceDisplayNum.toLocaleString(undefined, {
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 2,

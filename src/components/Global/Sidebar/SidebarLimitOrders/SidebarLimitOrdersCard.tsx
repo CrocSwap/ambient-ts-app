@@ -5,7 +5,7 @@ import { LimitOrderIF, TokenIF } from '../../../../utils/interfaces/exports';
 // import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
 // import { setTokenA, setTokenB } from '../../../../utils/state/tradeDataSlice';
 import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
-import { formatAmount } from '../../../../utils/numbers';
+import { formatAmountOld } from '../../../../utils/numbers';
 
 interface SidebarLimitOrdersCardProps {
     isDenomBase: boolean;
@@ -96,7 +96,7 @@ export default function SidebarLimitOrdersCard(props: SidebarLimitOrdersCardProp
         : usdValueNum < 2
         ? usdValueNum.toPrecision(3)
         : usdValueNum >= 10000
-        ? formatAmount(usdValueNum, 1)
+        ? formatAmountOld(usdValueNum, 1)
         : // ? baseLiqDisplayNum.toExponential(2)
           usdValueNum.toLocaleString(undefined, {
               minimumFractionDigits: 2,
