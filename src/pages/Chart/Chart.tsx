@@ -2269,21 +2269,6 @@ export default function Chart(props: ChartData) {
 
                                 liquidityData.liqHighligtedAskSeries.push(mouseArea);
 
-                                let activeLiq = nearest.activeLiq;
-                                if (scaleData.yScale.invert(event.offsetY) < nearest.liqPrices) {
-                                    activeLiq =
-                                        filtered[index + 1] !== undefined
-                                            ? filtered[index + 1].activeLiq
-                                            : nearest.activeLiq;
-                                }
-
-                                const mouseArea = {
-                                    activeLiq: activeLiq,
-                                    liqPrices: scaleData.yScale.invert(event.offsetY),
-                                };
-
-                                liquidityData.liqHighligtedAskSeries.push(mouseArea);
-
                                 render();
                             })
                             .on('mouseleave', mouseOutFunc);
