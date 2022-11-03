@@ -2,6 +2,8 @@
 import { useEffect, useState, useMemo } from 'react';
 import { Routes, Route, useLocation, Navigate } from 'react-router-dom';
 
+import { useIdleTimer } from 'react-idle-timer';
+
 import {
     resetUserGraphData,
     setPositionsByPool,
@@ -95,6 +97,7 @@ import {
     resetTokenData,
     setErc20Tokens,
     setIsLoggedIn,
+    setIsUserIdle,
     setNativeToken,
 } from '../utils/state/userDataSlice';
 import { checkIsStable } from '../utils/data/stablePairs';
@@ -148,8 +151,53 @@ export default function App() {
         enableWeb3,
     } = useMoralis();
 
+    const onIdle = () => {
+        dispatch(setIsUserIdle(true));
+    };
+
+    const onActive = () => {
+        // const onActive = (event: Event | undefined) => {
+        // console.log({ event });
+        dispatch(setIsUserIdle(false));
+    };
+
+    useIdleTimer({
+        //    onPrompt,
+        onIdle,
+        onActive,
+        //    onAction,
+        timeout: 1000 * 60 * 1, // set user to idle after 1 minute
+        promptTimeout: 0,
+        events: [
+            'mousemove',
+            'keydown',
+            'wheel',
+            'DOMMouseScroll',
+            'mousewheel',
+            'mousedown',
+            'touchstart',
+            'touchmove',
+            'MSPointerDown',
+            'MSPointerMove',
+            'visibilitychange',
+        ],
+        immediateEvents: [],
+        debounce: 0,
+        throttle: 0,
+        eventsThrottle: 200,
+        element: document,
+        startOnMount: true,
+        startManually: false,
+        stopOnIdle: false,
+        crossTab: false,
+        name: 'idle-timer',
+        syncTimers: 0,
+        leaderElection: false,
+    });
+
     const userData = useAppSelector((state) => state.userData);
     const isUserLoggedIn = userData.isLoggedIn;
+    const isUserIdle = userData.isUserIdle;
 
     useEffect(() => {
         const isLoggedIn = isAuthenticated && isWeb3Enabled;
@@ -1451,6 +1499,7 @@ export default function App() {
     // useEffect to get spot price when tokens change and block updates
     useEffect(() => {
         if (
+            !isUserIdle &&
             crocEnv &&
             baseTokenAddress &&
             quoteTokenAddress &&
@@ -1483,6 +1532,7 @@ export default function App() {
             })();
         }
     }, [
+        isUserIdle,
         lastBlockNumber,
         baseTokenAddress,
         quoteTokenAddress,
@@ -2336,6 +2386,7 @@ export default function App() {
             <div className='footer_container'>
                 {currentLocation !== '/' && (
                     <PageFooter
+                        isUserIdle={isUserIdle}
                         lastBlockNumber={lastBlockNumber}
                         userIsOnline={userIsOnline}
                         favePools={favePools}
