@@ -352,6 +352,7 @@ export default function TradeTabs2(props: ITabsProps) {
     const poolInfoProps = {
         chainData: chainData,
         lastBlockNumber: lastBlockNumber,
+        showSidebar: showSidebar,
     };
     // Props for <Transactions/> React Element
     const transactionsProps = {
