@@ -53,6 +53,7 @@
         "react-dom": "^18.1.0",
         "react-i18next": "^11.18.3",
         "react-icons": "^4.3.1",
+        "react-idle-timer": "^5.4.2",
         "react-lottie-player": "^1.4.3",
         "react-moralis": "^1.4.2",
         "react-redux": "^8.0.1",

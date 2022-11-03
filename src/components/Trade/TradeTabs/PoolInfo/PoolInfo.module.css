@@ -33,7 +33,7 @@
 .content section{
    
     width: 100%;
- min-height: 237px;
+
 }
 .right_container{
     display: flex;
@@ -68,6 +68,7 @@ flex-direction: column;
 padding: 8px 16px;
 gap: 8px;
 background: rgba(23, 29, 39, 0.3);
+height: 237px;
 
 backdrop-filter: blur(10px);
 border-radius: 4px;
@@ -162,3 +163,118 @@ border-radius: 4px;
     text-align: end;
 }
 
+/* tab */
+.time_tab_container{
+    background: rgba(23, 29, 39, 0.3);
+
+gap: 8px;
+backdrop-filter: blur(10px);
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.time_tab_container nav{
+
+  
+    height: 23px;
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+    color: var(--text-grey-light);
+}
+
+.time_tab_container main{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-grow: 1;
+    user-select: none;
+}
+
+.time_tab_container  ul, .time_display {
+    /* display: flex; */
+    width: 100%;
+    /* display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(50px, 1fr)); */
+   
+  }
+  
+  .time_tab_container li {
+  
+    width: 100%;
+    position: relative;
+
+    cursor: pointer;
+    /* height: 23px; */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex: 1;
+
+    position: relative;
+    user-select: none;
+  }
+  
+  .underline {
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: var(--text-highlight);
+  }
+  
+ .selected {
+color: var(--text-highlight);
+position: relative;
+  }
+  
+  /* time display */
+
+  /* .time_display{
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(126px, 1fr));
+  } */
+
+  .time_display .time_display_content{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    gap: 4px;
+    height: 74px;
+  }
+
+  .time_display .time_display_content p{
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+    color: var(--text-grey-light);
+
+  }
+  .time_display .time_display_content h6{
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+    color: var(--text-grey-white);
+
+  }
+
+
+  .small_screen{
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(50px, 1fr));
+  }
+
+  .large_screen{
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(126px, 1fr));
+  }
+  /* @media only screen and (min-width: 900px) {
+
+    .time_display, .time_tab_container  ul{
+
+        grid-template-columns: repeat(auto-fit, minmax(126px, 1fr));
+      }
+  } */

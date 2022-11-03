@@ -348,8 +348,8 @@ export default function Ranges(props: RangesPropsIF) {
             sortable: true,
         },
         {
-            name: 'Status',
-            className: '',
+            name: ' ',
+            className: 'status',
             show: !ipadView,
             slug: 'status',
             sortable: false,
