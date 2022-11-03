@@ -9,6 +9,24 @@ text {
     fill: #bdbdbd;
 }
 
+text.market{
+    font-size: 13px ;
+    font-weight: bold;
+    fill: black;
+}
+
+
+text.crossHairText {
+    filter: url(#crossHairBg);
+    font-size: 13px ;
+    font-weight: bold;
+
+}
+
+text.y_axis {
+    font-size: 13px ;
+    font-weight: bold;
+}
 .domain,
 .tick > path,
 .gridline-y,
@@ -183,6 +201,10 @@ label {
     height:100%;
     width: 100%;
     flex-direction: column;
+}
+
+.scroll {
+    box-shadow: 0 8px 32px 0 rgba(255, 255, 255, 0.47);
 }
 
 

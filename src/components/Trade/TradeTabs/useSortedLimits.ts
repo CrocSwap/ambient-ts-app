@@ -3,7 +3,7 @@ import { LimitOrderIF } from '../../../utils/interfaces/LimitOrderIF';
 
 export const useSortedLimits = (
     defaultSort: string,
-    limitOrders: LimitOrderIF[]
+    limitOrders: LimitOrderIF[],
 ): [
     string,
     Dispatch<SetStateAction<string>>,
@@ -54,9 +54,7 @@ export const useSortedLimits = (
                 return sortByUpdateTime(data);
         }
         // return reversed data if user wants data reversed
-        return reverseSort
-            ? [...sortedData].reverse()
-            : sortedData;
+        return reverseSort ? [...sortedData].reverse() : sortedData;
     };
 
     // array of positions sorted by the relevant column
