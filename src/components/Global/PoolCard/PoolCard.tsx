@@ -8,7 +8,7 @@ import { SpotPriceFn } from '../../../App/functions/querySpotPrice';
 import getUnicodeCharacter from '../../../utils/functions/getUnicodeCharacter';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { get24hChange, memoizePoolStats } from '../../../App/functions/getPoolStats';
-import { formatAmount } from '../../../utils/numbers';
+import { formatAmountOld } from '../../../utils/numbers';
 import PoolCardSkeleton from './PoolCardSkeleton/PoolCardSkeleton';
 import { tradeData } from '../../../utils/state/tradeDataSlice';
 
@@ -131,11 +131,11 @@ export default function PoolCard(props: PoolCardProps) {
                 const apyResult = poolStats?.apy;
 
                 if (tvlResult) {
-                    const tvlString = formatAmount(tvlResult);
+                    const tvlString = formatAmountOld(tvlResult);
                     setPoolTvl(tvlString);
                 }
                 if (volumeResult) {
-                    const volumeString = formatAmount(volumeResult);
+                    const volumeString = formatAmountOld(volumeResult);
                     setPoolVolume(volumeString);
                 }
                 if (apyResult) {
