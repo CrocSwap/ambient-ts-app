@@ -9,16 +9,25 @@ import trimString from '../../../../utils/functions/trimString';
 import { DefaultTooltip } from '../../../Global/StyledTooltip/StyledTooltip';
 import { ZERO_ADDRESS } from '../../../../constants';
 import { motion, AnimateSharedLayout } from 'framer-motion';
+import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 // interface for props
 interface PoolInfoPropsIF {
     chainData: ChainSpec;
     lastBlockNumber: number;
+    showSidebar: boolean;
 }
 interface PoolInfoCardPropsIF {
     // eslint-disable-next-line
     title: any;
     // eslint-disable-next-line
     data: any;
+}
+interface timeDataCardPropsIF {
+    txs: number;
+    buys: number;
+    sells: number;
+    volume: number;
+    smallScreen: boolean;
 }
 
 const cachedPoolStatsFetch = memoizePoolStats();
@@ -63,6 +72,39 @@ export default function PoolInfo(props: PoolInfoPropsIF) {
     }
 
     // end of pool info card--------------------
+
+    // time data card---------------------------
+
+    function TimeDataCard(props: timeDataCardPropsIF) {
+        const { txs, buys, sells, volume, smallScreen } = props;
+
+        return (
+            <div
+                className={`${styles.time_display} ${
+                    smallScreen ? styles.small_screen : styles.large_screen
+                }`}
+            >
+                <div className={styles.time_display_content}>
+                    <p>TXS</p>
+                    <h6>{txs}</h6>
+                </div>
+                <div className={styles.time_display_content}>
+                    <p>Buys</p>
+                    <h6>{buys}</h6>
+                </div>
+                <div className={styles.time_display_content}>
+                    <p>Sells</p>
+                    <h6>{sells}</h6>
+                </div>
+                <div className={styles.time_display_content}>
+                    <p>Volume</p>
+                    <h6>{volume}</h6>
+                </div>
+            </div>
+        );
+    }
+
+    // end of time data card---------------------------
 
     const { chainData, lastBlockNumber } = props;
 
@@ -206,59 +248,43 @@ export default function PoolInfo(props: PoolInfoPropsIF) {
             <h3>$420,000</h3>
         </section>
     );
-
-    const timeDisplay = (
-        <div className={styles.time_display}>
-            <div className={styles.time_display_content}>
-                <p>TXS</p>
-                <h6>69</h6>
-            </div>
-            <div className={styles.time_display_content}>
-                <p>Buys</p>
-                <h6>69</h6>
-            </div>
-            <div className={styles.time_display_content}>
-                <p>Sells</p>
-                <h6>69</h6>
-            </div>
-            <div className={styles.time_display_content}>
-                <p>Volume</p>
-                <h6>69</h6>
-            </div>
-        </div>
-    );
+    const smallScreen =
+        (useMediaQuery('(max-width: 1600px)') && props.showSidebar) ||
+        useMediaQuery('(max-width: 1300px)');
+    console.log({ smallScreen });
 
     const timeTabData = [
         {
             label: '5m',
-            content: timeDisplay,
-
-            timeData: [{ txs: '23' }, { Buys: '23' }, { Sells: '23' }, { Volume: '23' }],
+            content: (
+                <TimeDataCard txs={23} buys={23} sells={23} volume={23} smallScreen={smallScreen} />
+            ),
         },
         {
-            label: 'Limit Orders',
-            content: timeDisplay,
-
-            timeData: [{ txs: '24' }, { Buys: '24' }, { Sells: '24' }, { Volume: '24' }],
+            label: '1h',
+            content: (
+                <TimeDataCard txs={24} buys={24} sells={24} volume={24} smallScreen={smallScreen} />
+            ),
         },
         {
-            label: 'Ranges',
-            content: timeDisplay,
-
-            timeData: [{ txs: '25' }, { Buys: '25' }, { Sells: '25' }, { Volume: '25' }],
+            label: '4h',
+            content: (
+                <TimeDataCard txs={25} buys={25} sells={25} volume={25} smallScreen={smallScreen} />
+            ),
         },
         {
-            label: 'Leaderboard',
-            content: timeDisplay,
-            timeData: [{ txs: '26' }, { Buys: '26' }, { Sells: '26' }, { Volume: '26' }],
+            label: '24h',
+            content: (
+                <TimeDataCard txs={26} buys={26} sells={26} volume={26} smallScreen={smallScreen} />
+            ),
         },
     ];
     const [selectedTab, setSelectedTab] = useState(timeTabData[0]);
 
     const timeTabDisplay = (
-        <div className={styles.time_tab_container}>
+        <div className={`${styles.time_tab_container} `}>
             <nav>
-                <ul>
+                <ul className={smallScreen ? styles.small_screen : styles.large_screen}>
                     {timeTabData.map((item) => (
                         <li
                             key={item.label}
@@ -290,25 +316,24 @@ export default function PoolInfo(props: PoolInfoPropsIF) {
     );
 
     return (
-        // <main className={styles.container} style={{ height: '250px' }}>
-        //     <div className={styles.content}>
-        //         {baseTokenDisplay}
-        //         {quoteTokenDisplay}
-        //         <section className={styles.right_container}>
-        //             <div className={styles.right_container_top}>
-        //                 <PoolInfoCard title='Market Cap:' data={'$69m' || '...'} />
-        //                 <PoolInfoCard title='FDV:' data={'$690m' || '...'} />
-        //                 <PoolInfoCard title='24h Swap Volume:' data={poolVolume || '...'} />
-        //                 <PoolInfoCard title='Total Fees:' data={poolFees || '...'} />
-        //                 <PoolInfoCard title='TVL:' data={poolTvl || '...'} />
-        //                 <PoolInfoCard title='Tick Liquidity:' data={'$500k' || '...'} />
-        //                 <PoolInfoCard title='OOR Liquidity:' data={'20%' || '...'} />
-        //                 <PoolInfoCard title='Pool Created:' data={'15/07/2022' || '...'} />
-        //             </div>
-        //             {/* {timeTabDisplay} */}
-        //         </section>
-        //     </div>
-        // </main>
-        <>{timeTabDisplay}</>
+        <main className={styles.container} style={{ height: '250px' }}>
+            <div className={styles.content}>
+                {baseTokenDisplay}
+                {quoteTokenDisplay}
+                <section className={styles.right_container}>
+                    <div className={styles.right_container_top}>
+                        <PoolInfoCard title='Market Cap:' data={'...'} />
+                        <PoolInfoCard title='FDV:' data={'...'} />
+                        <PoolInfoCard title='24h Swap Volume:' data={poolVolume || '...'} />
+                        <PoolInfoCard title='Total Fees:' data={poolFees || '...'} />
+                        <PoolInfoCard title='TVL:' data={poolTvl || '...'} />
+                        <PoolInfoCard title='Tick Liquidity:' data={'...'} />
+                        <PoolInfoCard title='OOR Liquidity:' data={'...'} />
+                        <PoolInfoCard title='Pool Created:' data={'...'} />
+                    </div>
+                    {timeTabDisplay}
+                </section>
+            </div>
+        </main>
     );
 }
