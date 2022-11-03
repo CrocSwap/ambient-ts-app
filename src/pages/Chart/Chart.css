@@ -10,22 +10,22 @@ text {
 }
 
 text.market{
-    stroke: black;
     font-size: 13px ;
-
+    font-weight: bold;
+    fill: black;
 }
 
 
-text.yCrossHairText {
+text.crossHairText {
     filter: url(#crossHairBg);
-    stroke: #bdbdbd;
     font-size: 13px ;
+    font-weight: bold;
 
 }
 
 text.y_axis {
-    stroke: #bdbdbd;
     font-size: 13px ;
+    font-weight: bold;
 }
 .domain,
 .tick > path,
