@@ -7,7 +7,7 @@ export default function AnalyticsHeader() {
     return (
         <div className={styles.container}>
             <NavLink
-                to='/analytics/overview'
+                to='/analytics2/overview'
                 style={({ isActive }) => ({
                     color: isActive ? 'black' : '#545e6f',
                     background: isActive ? gradientBackground : '',
@@ -16,7 +16,7 @@ export default function AnalyticsHeader() {
                 Overview
             </NavLink>
             <NavLink
-                to='/analytics/pools'
+                to='/analytics2/pools'
                 style={({ isActive }) => ({
                     color: isActive ? 'black' : '#545e6f',
                     background: isActive ? gradientBackground : '',
@@ -24,12 +24,12 @@ export default function AnalyticsHeader() {
             >
                 All Pools
             </NavLink>
-            {/* <NavLink to='/analytics/trendingpools'style={({ isActive }) => ({
+            {/* <NavLink to='/analytics2/trendingpools'style={({ isActive }) => ({
             color: isActive ? 'black' : '#545e6f',
             background: isActive ? gradientBackground : ''
         })}>Trending Pools</NavLink> */}
             <NavLink
-                to='/analytics/tokens'
+                to='/analytics2/tokens'
                 style={({ isActive }) => ({
                     color: isActive ? 'black' : '#545e6f',
                     background: isActive ? gradientBackground : '',
@@ -38,7 +38,7 @@ export default function AnalyticsHeader() {
                 All Tokens
             </NavLink>
             <NavLink
-                to='/analytics/ranges/top'
+                to='/analytics2/ranges/top'
                 style={({ isActive }) => ({
                     color: isActive ? 'black' : '#545e6f',
                     background: isActive ? gradientBackground : '',
@@ -47,7 +47,7 @@ export default function AnalyticsHeader() {
                 Top Ranges
             </NavLink>
             <NavLink
-                to='/analytics/transactions'
+                to='/analytics2/transactions'
                 style={({ isActive }) => ({
                     color: isActive ? 'black' : '#545e6f',
                     background: isActive ? gradientBackground : '',
