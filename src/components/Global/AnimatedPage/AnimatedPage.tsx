@@ -1,20 +1,20 @@
 import { motion } from 'framer-motion';
 
-// const pageVariants = {
-//     in: {
-//         opacity: 1,
-//         y: 0
-//     },
-//     out: {
-//         opacity: 0,
-//         y: '-100vh'
-//     }
-// }
-// const animations = {
-//   initial: { opacity: 0, x: 100 },
-//   animate: { opacity: 1, x: 0 },
-//   exit: { opacity: 0, x: -100 },
-// };
+const pageVariants = {
+    in: {
+        opacity: 1,
+        y: 0,
+    },
+    out: {
+        opacity: 0,
+        y: '-100vh',
+    },
+};
+const animations = {
+    initial: { opacity: 0, x: 100 },
+    animate: { opacity: 1, x: 0 },
+    exit: { opacity: 0, x: -100 },
+};
 
 const pageVariant3D = {
     initial: {
@@ -50,17 +50,17 @@ interface AnimatedPageProps {
 const AnimatedPage = (props: AnimatedPageProps) => {
     return (
         <motion.div
-            //   variants={animations}
-            //   initial="initial"
-            //   animate="animate"
-            //   exit="exit"
-            //       transition={{ duration: 1 }}
-
+            variants={animations}
             initial='initial'
-            animate='in'
-            exit='out'
-            variants={pageVariant3D}
-            transition={pageTransition}
+            animate='animate'
+            exit='exit'
+            transition={{ duration: 0.3 }}
+
+            // initial='initial'
+            // animate='in'
+            // exit='out'
+            // variants={pageVariant3D}
+            // transition={pageTransition}
         >
             {props.children}
         </motion.div>

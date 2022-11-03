@@ -4,23 +4,22 @@ import TopRanges from '../TopRanges/TopRanges';
 import TopTokens from '../TopTokens/TopTokens';
 import AnalyticsTransactions from '../AnalyticsTransactions/AnalyticsTransactions';
 import TrendingPools from '../TrendingPools/TrendingPools';
-import AnimatedPage from '../../Global/AnimatedPage/AnimatedPage';
+import { AnimatePresence, motion } from 'framer-motion';
+
 export default function AnalyticsOverview() {
     return (
-        <div className={styles.container}>
-            <AnimatedPage>
+        <AnimatePresence exitBeforeEnter>
+            <motion.div className={styles.container}>
                 <TopTokens />
-            </AnimatedPage>
-            <AnimatedPage>
+
                 <TrendingPools />
-            </AnimatedPage>
-            <AnimatedPage>
+
                 <TopRanges />
-            </AnimatedPage>
-            <AnimatedPage>
+
                 <AnalyticsTransactions />
-            </AnimatedPage>
-            {/* <TopPools /> */}
-        </div>
+
+                {/* <TopPools /> */}
+            </motion.div>
+        </AnimatePresence>
     );
 }
