@@ -97,6 +97,7 @@ import {
     resetTokenData,
     setErc20Tokens,
     setIsLoggedIn,
+    setIsUserIdle,
     setNativeToken,
 } from '../utils/state/userDataSlice';
 import { checkIsStable } from '../utils/data/stablePairs';
@@ -150,16 +151,14 @@ export default function App() {
         enableWeb3,
     } = useMoralis();
 
-    const [isUserIdle, setIsUserIdle] = useState(false);
-
     const onIdle = () => {
-        setIsUserIdle(true);
+        dispatch(setIsUserIdle(true));
     };
 
     const onActive = () => {
         // const onActive = (event: Event | undefined) => {
         // console.log({ event });
-        setIsUserIdle(false);
+        dispatch(setIsUserIdle(false));
     };
 
     useIdleTimer({
@@ -198,6 +197,7 @@ export default function App() {
 
     const userData = useAppSelector((state) => state.userData);
     const isUserLoggedIn = userData.isLoggedIn;
+    const isUserIdle = userData.isUserIdle;
 
     useEffect(() => {
         const isLoggedIn = isAuthenticated && isWeb3Enabled;
