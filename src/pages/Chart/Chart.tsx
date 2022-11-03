@@ -23,7 +23,6 @@ import TvlSubChart from '../Trade/TradeCharts/TradeChartsLoading/TvlSubChart';
 import VolumeSubChart from '../Trade/TradeCharts/TradeChartsLoading/VolumeSubChart';
 import { ChartUtils } from '../Trade/TradeCharts/TradeCandleStickChart';
 import './Chart.css';
-import BarSeries from './ChartUtils/ChartUtils';
 import {
     ChainSpec,
     CrocPoolView,
@@ -148,15 +147,20 @@ export default function Chart(props: ChartData) {
         },
     ]);
 
+    // Axes
+    const [yAxis, setYaxis] = useState<any>();
+    const [xAxis, setXaxis] = useState<any>();
+
     // Rules
     const [isChartSelected, setIsChartSelected] = useState<boolean>(false);
     const [dragControl, setDragControl] = useState(false);
     const [rescale, setRescale] = useState(true);
     const [zoomAndYdragControl, setZoomAndYdragControl] = useState();
     const [rescaleText, setRescaleText] = useState<any>();
+    const [isMouseMoveCrosshair, setIsMouseMoveCrosshair] = useState(false);
 
     // Data
-    const [crosshairData] = useState([{ x: 0, y: -1 }]);
+    const [crosshairData, setCrosshairData] = useState([{ x: 0, y: -1 }]);
     const [currentPriceData] = useState([{ value: -1 }]);
     const [indicatorLineData] = useState([{ x: 0, y: 0 }]);
     const [liqTooltipSelectedLiqBar, setLiqTooltipSelectedLiqBar] = useState({
@@ -198,7 +202,6 @@ export default function Chart(props: ChartData) {
     const [areaBidJoin, setAreaBidJoin] = useState<any>();
     const [liqHighligtedAskJoin, setLiqHighligtedAskJoin] = useState<any>();
     const [liqHighligtedBidJoin, setLiqHighligtedBidJoin] = useState<any>();
-    const [yAxis, setYaxis] = useState<any>();
 
     // Utils
     const [zoomUtils, setZoomUtils] = useState<any>();
@@ -237,17 +240,26 @@ export default function Chart(props: ChartData) {
 
     function addText(scale: any) {
         if (location.pathname.includes('market')) {
-            yAxis.tickValues([...scale.ticks(), ...[market[0].value]]);
+            yAxis.tickValues([
+                ...scale.ticks(),
+                ...[market[0].value, isMouseMoveCrosshair ? crosshairData[0].y : 0],
+            ]);
 
             yAxis.decorate((selection: any) => {
                 selection
                     .attr('filter', (d: any) => {
+                        if (isMouseMoveCrosshair && d === crosshairData[0].y) {
+                            return 'url(#crossHairBg)';
+                        }
                         if (d === market[0].value) {
                             return 'url(#marketBg)';
                         }
                     })
                     .select('text')
                     .attr('class', (d: any) => {
+                        if (isMouseMoveCrosshair && d === crosshairData[0].y) {
+                            return 'crossHairText';
+                        }
                         if (d === market[0].value) {
                             return 'market';
                         }
@@ -255,15 +267,31 @@ export default function Chart(props: ChartData) {
             });
         } else {
             location.pathname.includes('limit')
-                ? yAxis.tickValues([...scale.ticks(), ...[limit[0].value, market[0].value]])
+                ? yAxis.tickValues([
+                      ...scale.ticks(),
+                      ...[
+                          limit[0].value,
+                          market[0].value,
+                          isMouseMoveCrosshair ? crosshairData[0].y : 0,
+                      ],
+                  ])
                 : yAxis.tickValues([
                       ...scale.ticks(),
-                      ...[ranges[0].value, ranges[1].value, market[0].value],
+                      ...[
+                          ranges[0].value,
+                          ranges[1].value,
+                          market[0].value,
+                          isMouseMoveCrosshair ? crosshairData[0].y : 0,
+                      ],
                   ]);
 
             yAxis.decorate((selection: any) => {
                 selection
                     .attr('filter', (d: any) => {
+                        if (isMouseMoveCrosshair && d === crosshairData[0].y) {
+                            return 'url(#crossHairBg)';
+                        }
+
                         if (
                             location.pathname.includes('limit')
                                 ? d === limit[0].value
@@ -280,7 +308,9 @@ export default function Chart(props: ChartData) {
                         if (d === market[0].value) {
                             return 'market';
                         }
-
+                        if (isMouseMoveCrosshair && d === crosshairData[0].y) {
+                            return 'crossHairText';
+                        }
                         if (
                             location.pathname.includes('limit')
                                 ? d === limit[0].value
@@ -293,6 +323,38 @@ export default function Chart(props: ChartData) {
             // }
         }
     }
+
+    // crosshair x text
+    useEffect(() => {
+        if (scaleData && xAxis) {
+            if (isMouseMoveCrosshair) {
+                xAxis
+                    .tickValues([...scaleData.xScale.ticks(), ...[crosshairData[0].x]])
+                    .tickFormat((d: any) => {
+                        if (d === crosshairData[0].x) {
+                            return moment(d).format('DD MMM  HH:mm');
+                        }
+
+                        return d3.timeFormat('%d/%m/%y')(d);
+                    });
+
+                xAxis.decorate((selection: any) => {
+                    selection
+                        .attr('filter', (d: any) => {
+                            if (isMouseMoveCrosshair && d === crosshairData[0].x) {
+                                return 'url(#crossHairBg)';
+                            }
+                        })
+                        .select('text')
+                        .attr('class', (d: any) => {
+                            if (isMouseMoveCrosshair && d === crosshairData[0].x) {
+                                return 'crossHairText';
+                            }
+                        });
+                });
+            }
+        }
+    }, [crosshairData, isMouseMoveCrosshair, zoomAndYdragControl]);
 
     useEffect(() => {
         if (scaleData && yAxis) {
@@ -307,31 +369,11 @@ export default function Chart(props: ChartData) {
         ranges,
         limit,
         market,
+        crosshairData,
+        isMouseMoveCrosshair,
     ]);
 
     useEffect(() => {
-        if (d3.select(d3Xaxis.current).select('svg').select('g').select('text').node() === null) {
-            const xAxisText = d3
-                .select(d3Xaxis.current)
-                .select('svg')
-                .append('g')
-                .attr('visibility', 'hidden');
-
-            xAxisText
-                .append('rect')
-                .attr('width', '100')
-                .attr('height', '17')
-                .attr('fill', '#242F3F')
-                .attr('y', '15')
-                .attr('x', '-50');
-
-            xAxisText
-                .append('text')
-                .attr('dy', '28px')
-                .style('font-size', '13px')
-                .style('letter-spacing', '1px');
-        }
-
         if (location.pathname.includes('range')) {
             d3.select(d3PlotArea.current).select('.targets').style('visibility', 'visible');
             d3.select(d3PlotArea.current)
@@ -481,30 +523,6 @@ export default function Chart(props: ChartData) {
         }
     }, [parsedChartData?.period, denomInBase]);
 
-    const relocationCrosshairText = (event: any) => {
-        const filtered = parsedChartData
-            ? parsedChartData.chartData.length > 1
-                ? parsedChartData?.chartData.filter((d: any) => d.date != null)
-                : parsedChartData?.chartData
-            : [];
-
-        const nearest = minimum(filtered, (d: any) =>
-            Math.abs(event.sourceEvent.offsetX - scaleData.xScale(d.date)),
-        )[1];
-
-        // setCrosshairData([{ x: scaleData.xScale(nearest.date), y: -1 }]);
-
-        d3.select(d3Xaxis.current)
-            .select('svg')
-            .select('g')
-            .style('transform', 'translateX(' + scaleData.xScale(nearest.date) + 'px)');
-
-        d3.select(d3Yaxis.current)
-            .select('svg')
-            .select('#yCrossHair')
-            .style('transform', 'translateY(' + scaleData.yScale(crosshairData[0].y) + 'px)');
-    };
-
     // Zoom
     useEffect(() => {
         if (scaleData !== undefined) {
@@ -604,7 +622,6 @@ export default function Chart(props: ChartData) {
 
                         setZoomAndYdragControl(event);
 
-                        relocationCrosshairText(event);
                         lastY = t.y;
 
                         render();
@@ -1179,6 +1196,16 @@ export default function Chart(props: ChartData) {
 
             setYaxis(() => {
                 return _yAxis;
+            });
+
+            const _xAxis = d3fc
+                .axisBottom()
+                .scale(scaleData.xScale)
+                .tickArguments([6])
+                .tickFormat((d: any) => d3.timeFormat('%d/%m/%y')(d));
+
+            setXaxis(() => {
+                return _xAxis;
             });
         }
     }, [scaleData]);
@@ -2040,6 +2067,7 @@ export default function Chart(props: ChartData) {
                 liqHighligtedAskSeries,
                 liqHighligtedBidSeries,
                 yAxis,
+                xAxis,
             );
         }
     }, [
@@ -2069,6 +2097,7 @@ export default function Chart(props: ChartData) {
         liqHighligtedAskSeries,
         liqHighligtedBidSeries,
         yAxis,
+        xAxis,
     ]);
 
     const minimum = (data: any, accessor: any) => {
@@ -2114,6 +2143,7 @@ export default function Chart(props: ChartData) {
             liqHighligtedAskSeries: any,
             liqHighligtedBidSeries: any,
             yAxis: any,
+            xAxis: any,
         ) => {
             if (chartData.length > 0) {
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -2139,9 +2169,6 @@ export default function Chart(props: ChartData) {
                         },
                     ];
                 };
-
-                // axes
-                const xAxis = d3fc.axisBottom().scale(scaleData.xScale).tickArguments([6]);
 
                 const candleJoin = d3fc.dataJoin('g', 'candle');
 
@@ -2173,6 +2200,7 @@ export default function Chart(props: ChartData) {
                     async function createElements() {
                         const svg = d3.select(event.target).select('svg');
                         targetsAreaJoin(svg, [targets.ranges]).call(horizontalLine);
+
                         crosshairHorizontalJoin(svg, [crosshairData]).call(crosshairHorizontal);
                         crosshairVerticalJoin(svg, [crosshairData]).call(crosshairVertical);
 
@@ -2416,37 +2444,11 @@ export default function Chart(props: ChartData) {
 
                 d3.select(d3PlotArea.current).on('mousemove', async function (event: any) {
                     crosshairData[0] = snap(candlestick, chartData, event)[0];
+                    setIsMouseMoveCrosshair(true);
 
-                    const dateIndcLocation = scaleData.xScale(crosshairData[0].x);
-                    const valueIndcLocation = event.offsetY;
-
-                    const xAxisText = d3
-                        .select(d3Xaxis.current)
-                        .select('svg')
-                        .select('g')
-                        .style('visibility', 'visible')
-                        .style('transform', 'translateX(' + dateIndcLocation + 'px)');
-
-                    xAxisText
-                        .select('text')
-                        .text(moment(crosshairData[0].x).format('DD MMM  HH:mm'));
-
-                    await d3
-                        .select(d3Yaxis.current)
-                        .select('svg')
-                        .selectAll('#yCrossHair')
-                        .remove();
-                    const yAxisText = d3
-                        .select(d3Yaxis.current)
-                        .select('svg')
-                        .append('g')
-                        .attr('id', 'yCrossHair')
-                        .style('transform', 'translateY(' + valueIndcLocation + 'px)');
-
-                    yAxisText
-                        .append('text')
-                        .attr('class', 'yCrossHairText')
-                        .text(formatAmountChartData(scaleData.yScale.invert(event.offsetY)));
+                    setCrosshairData([
+                        { x: crosshairData[0].x, y: scaleData.yScale.invert(event.offsetY) },
+                    ]);
 
                     render();
                 });
@@ -2467,6 +2469,8 @@ export default function Chart(props: ChartData) {
                         .select('svg')
                         .select('.crosshairVertical')
                         .style('visibility', 'hidden');
+
+                    setIsMouseMoveCrosshair(false);
 
                     render();
                 });
