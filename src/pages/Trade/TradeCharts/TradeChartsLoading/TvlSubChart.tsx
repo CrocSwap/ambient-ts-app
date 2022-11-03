@@ -10,6 +10,7 @@ interface TvlData {
     period: number | undefined;
     crosshairData: any[];
     setsubChartValues: React.Dispatch<React.SetStateAction<any>>;
+    setZoomAndYdragControl: React.Dispatch<React.SetStateAction<any>>;
     xScale: any;
     xScaleCopy: any;
     render: any;
@@ -72,6 +73,7 @@ export default function TvlSubChart(props: TvlData) {
                 .scaleExtent([1, 10])
                 .on('zoom', (event: any) => {
                     xScale.domain(event.transform.rescaleX(xScaleCopy).domain());
+                    props.setZoomAndYdragControl(event);
                     render();
                     props.render();
                 });

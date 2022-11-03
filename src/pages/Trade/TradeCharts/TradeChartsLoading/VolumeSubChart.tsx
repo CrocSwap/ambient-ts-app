@@ -13,6 +13,7 @@ interface VolumeData {
     candlestick: any;
     xScale: any;
     xScaleCopy: any;
+    setZoomAndYdragControl: React.Dispatch<React.SetStateAction<any>>;
     render: any;
 }
 
@@ -135,7 +136,7 @@ export default function VolumeSubChart(props: VolumeData) {
                 .scaleExtent([1, 10])
                 .on('zoom', (event: any) => {
                     xScale.domain(event.transform.rescaleX(xScaleCopy).domain());
-
+                    props.setZoomAndYdragControl(event);
                     render();
                     props.render();
                 });
