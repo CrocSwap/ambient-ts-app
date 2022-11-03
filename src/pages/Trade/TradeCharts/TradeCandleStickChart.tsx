@@ -240,8 +240,6 @@ export default function TradeCandleStickChart(props: ChartData) {
             });
         }
 
-        console.log({ liqAskData, liqBidData });
-
         return {
             liqData: liqData,
             liqAskData: liqAskData,

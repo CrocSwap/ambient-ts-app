@@ -196,8 +196,6 @@ export default function Chart(props: ChartData) {
     const [selectedCandleState, setSelectedCandleState] = useState<any>();
 
     const valueFormatter = d3.format('.5f');
-    const indicatorFormatter = d3.format('.6f');
-    const tooltipFormatter = d3.format('.3f');
 
     function formattedTextData(data: number): string {
         return data
@@ -2235,7 +2233,10 @@ export default function Chart(props: ChartData) {
 
                                 let activeLiq = nearest.activeLiq;
                                 if (scaleData.yScale.invert(event.offsetY) < nearest.liqPrices) {
-                                    activeLiq = filtered[index + 1].activeLiq;
+                                    activeLiq =
+                                        filtered[index + 1] !== undefined
+                                            ? filtered[index + 1].activeLiq
+                                            : nearest.activeLiq;
                                 }
 
                                 const mouseArea = {
@@ -2322,7 +2323,10 @@ export default function Chart(props: ChartData) {
 
                                 let activeLiq = nearest.activeLiq;
                                 if (scaleData.yScale.invert(event.offsetY) > nearest.liqPrices) {
-                                    activeLiq = filtered[index - 1].activeLiq;
+                                    activeLiq =
+                                        filtered[index - 1] !== undefined
+                                            ? filtered[index - 1].activeLiq
+                                            : nearest.activeLiq;
                                 }
 
                                 const mouseArea = {
@@ -2448,10 +2452,10 @@ export default function Chart(props: ChartData) {
             const percentage = (difference * 100) / poolPriceDisplay;
 
             liqTooltip.html(
-                '<p> % ' +
-                    percentage.toFixed(3) +
-                    ' </p>' +
-                    '<p> $ ' +
+                '<p>' +
+                    percentage.toFixed(1) +
+                    '%</p>' +
+                    '<p> $' +
                     formatAmount(liqTextData.totalValue) +
                     ' </p>',
             );
@@ -2632,7 +2636,7 @@ export default function Chart(props: ChartData) {
                         </>
                     )}
 
-                    {showVolume === true && (
+                    {showVolume === true && candlestick !== undefined && (
                         <>
                             <hr />
                             <label>
@@ -2648,6 +2652,7 @@ export default function Chart(props: ChartData) {
                                 period={parsedChartData?.period}
                                 crosshairData={crosshairData}
                                 setsubChartValues={setsubChartValues}
+                                candlestick={candlestick}
                                 xScale={scaleData !== undefined ? scaleData.xScale : undefined}
                                 xScaleCopy={
                                     scaleData !== undefined ? scaleData.xScaleCopy : undefined

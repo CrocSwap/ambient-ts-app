@@ -10,21 +10,27 @@ interface VolumeData {
     period: number | undefined;
     crosshairData: any[];
     setsubChartValues: React.Dispatch<React.SetStateAction<any>>;
+    candlestick: any;
     xScale: any;
     xScaleCopy: any;
     render: any;
 }
 
 export default function VolumeSubChart(props: VolumeData) {
-    const { volumeData, period, xScale, crosshairData, xScaleCopy } = props;
+    const { volumeData, period, xScale, crosshairData, xScaleCopy, candlestick } = props;
 
     const setsubChartValues = props.setsubChartValues;
 
     // Volume Chart
     useEffect(() => {
-        if (volumeData !== undefined && period !== undefined && xScale !== undefined) {
+        if (
+            volumeData !== undefined &&
+            period !== undefined &&
+            xScale !== undefined &&
+            candlestick !== undefined
+        ) {
             const chartData = {
-                lineseries: volumeData,
+                barSeries: volumeData,
                 crosshairDataLocal: crosshairData,
             };
 
@@ -46,8 +52,8 @@ export default function VolumeSubChart(props: VolumeData) {
                 setsubChartValues((prevState: any) => {
                     const newTargets = [...prevState];
                     newTargets.filter((target: any) => target.name === 'volume')[0].value = snap(
-                        lineSeries,
-                        chartData.lineseries,
+                        barSeries,
+                        chartData.barSeries,
                         crosshairData[0],
                     );
 
@@ -94,15 +100,19 @@ export default function VolumeSubChart(props: VolumeData) {
 
             const yExtent = d3fc.extentLinear().accessors([(d: any) => d.value]);
             const yScale = d3.scaleLinear();
-            yScale.domain(yExtent(chartData.lineseries));
+            yScale.domain(yExtent(chartData.barSeries));
 
-            const lineSeries = d3fc
-                .autoBandwidth(d3fc.seriesSvgBar())
+            const barSeries = d3fc
+                .seriesSvgBar()
                 .align('center')
+                .bandwidth(candlestick.bandwidth())
                 .crossValue((d: any) => d.time)
                 .mainValue((d: any) => d.value)
                 .decorate((selection: any) => {
-                    selection.enter().style('fill', '#7371FC');
+                    selection.enter().style('fill', 'rgba(115,113,252, 0.6)');
+                    selection.on('mouseover', (event: any) => {
+                        d3.select(event.currentTarget).style('cursor', 'pointer');
+                    });
                 });
 
             const crosshair = d3fc
@@ -132,13 +142,13 @@ export default function VolumeSubChart(props: VolumeData) {
 
             const multi = d3fc
                 .seriesSvgMulti()
-                .series([lineSeries, crosshair])
+                .series([crosshair, barSeries])
                 .mapping((volumeData: any, index: any, series: any) => {
                     switch (series[index]) {
                         case crosshair:
                             return chartData.crosshairDataLocal;
                         default:
-                            return volumeData.lineseries;
+                            return volumeData.barSeries;
                     }
                 });
 
@@ -146,7 +156,7 @@ export default function VolumeSubChart(props: VolumeData) {
                 .chartCartesian({ xScale, yScale })
                 .xTicks([0])
                 .yTicks([2])
-                // .yTickValues([Math.min(...chartData.lineseries.map((o) => o.value)), Math.max(...chartData.lineseries.map((o) => o.value))])
+                // .yTickValues([Math.min(...chartData.barSeries.map((o) => o.value)), Math.max(...chartData.barSeries.map((o) => o.value))])
                 .yTickFormat(formatDollarAmountAxis)
                 .xLabel('')
                 .yLabel('')
