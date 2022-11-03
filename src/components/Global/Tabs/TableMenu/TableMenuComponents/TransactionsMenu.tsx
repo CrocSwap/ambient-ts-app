@@ -65,7 +65,8 @@ export default function TransactionsMenu(props: TransactionMenuIF) {
 
     // -----------------SNACKBAR----------------
     function handleCopyAddress() {
-        copy('example data');
+        copy('Not Yet Implemented');
+
         setOpenSnackbar(true);
     }
 
@@ -82,7 +83,7 @@ export default function TransactionsMenu(props: TransactionMenuIF) {
             setOpenSnackbar={setOpenSnackbar}
             openSnackbar={openSnackbar}
         >
-            {value} copied
+            {value}
         </SnackbarComponent>
     );
     // -----------------END OF SNACKBAR----------------
