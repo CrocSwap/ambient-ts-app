@@ -227,7 +227,13 @@ export default function GraphContainer() {
     );
 
     const graphData = (
-        <div className={styles.graph_data}>
+        <motion.div
+            className={styles.graph_data}
+            initial={{ y: 10, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: -10, opacity: 0 }}
+            transition={{ duration: 0.3 }}
+        >
             <div className={styles.graph_container}>
                 <div className={styles.title}>Total Value Locked</div>
 
@@ -283,11 +289,17 @@ export default function GraphContainer() {
                     )}
                 </div>
             </div>
-        </div>
+        </motion.div>
     );
 
     const analyticsInfo = (
-        <div className={styles.info_container}>
+        <motion.div
+            className={styles.info_container}
+            initial={{ y: 10, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: -10, opacity: 0 }}
+            transition={{ duration: 0.4 }}
+        >
             <div className={styles.info_content}>
                 <div className={styles.info_title}>Total TVL</div>
                 <div className={styles.info_value}>
@@ -307,7 +319,7 @@ export default function GraphContainer() {
                 <div className={styles.info_value}>{totalFeesString || '...'}</div>
                 {/* <div className={styles.info_value}>{formatDollarAmount(protocolData?.feesUSD)}</div> */}
             </div>
-        </div>
+        </motion.div>
     );
     return (
         <div className={styles.GraphContainers}>

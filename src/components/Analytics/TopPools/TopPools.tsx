@@ -2,7 +2,7 @@ import styles from './TopPools.module.css';
 import TopPoolsCard from './TopPoolsCard/TopPoolsCard';
 import TopPoolsHeader from './TopPoolsHeader/TopPoolsHeader';
 import { uniswapPools } from '../fakedata/uniswapTokens';
-
+import { motion } from 'framer-motion';
 export default function TopPools() {
     const container = (
         <div className={styles.item_container}>
@@ -12,12 +12,18 @@ export default function TopPools() {
         </div>
     );
     return (
-        <div className={styles.main_container}>
+        <motion.div
+            className={styles.main_container}
+            initial={{ y: 10, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: -10, opacity: 0 }}
+            transition={{ duration: 0.5 }}
+        >
             {/* <p>Trending Pools</p> */}
             <p>All Pools</p>
             <TopPoolsHeader />
 
             {container}
-        </div>
+        </motion.div>
     );
 }
