@@ -1,5 +1,5 @@
 import styles from './AnalyticsOverview.module.css';
-import TopPools from '../TopPools/TopPools';
+// import TopPools from '../TopPools/TopPools';
 import TopRanges from '../TopRanges/TopRanges';
 import TopTokens from '../TopTokens/TopTokens';
 import AnalyticsTransactions from '../AnalyticsTransactions/AnalyticsTransactions';
