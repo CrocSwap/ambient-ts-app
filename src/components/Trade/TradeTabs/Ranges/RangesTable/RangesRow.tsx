@@ -179,7 +179,7 @@ export default function RangesRow(props: RangesRowPropsIF) {
             title={posHash.toString()}
             placement={'right'}
             arrow
-            enterDelay={400}
+            enterDelay={750}
             leaveDelay={200}
         >
             <li onClick={openDetailsModal} data-label='id' className='base_color'>
@@ -194,7 +194,7 @@ export default function RangesRow(props: RangesRowPropsIF) {
             title={'$' + usdValueLocaleString}
             placement={'right'}
             arrow
-            enterDelay={400}
+            enterDelay={750}
             leaveDelay={200}
         >
             <li
@@ -224,7 +224,7 @@ export default function RangesRow(props: RangesRowPropsIF) {
             }
             placement={'right'}
             arrow
-            enterDelay={400}
+            enterDelay={750}
             leaveDelay={200}
         >
             <li

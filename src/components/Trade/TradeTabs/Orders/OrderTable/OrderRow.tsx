@@ -119,7 +119,7 @@ export default function OrderRow(props: OrderRowPropsIF) {
             title={posHash}
             placement={'right'}
             arrow
-            enterDelay={400}
+            enterDelay={750}
             leaveDelay={200}
         >
             <li onClick={openDetailsModal} data-label='id' className='base_color'>
@@ -134,7 +134,7 @@ export default function OrderRow(props: OrderRowPropsIF) {
             title={'$' + usdValueLocaleString}
             placement={'right'}
             arrow
-            enterDelay={400}
+            enterDelay={750}
             leaveDelay={200}
         >
             <li
@@ -164,7 +164,7 @@ export default function OrderRow(props: OrderRowPropsIF) {
             }
             placement={'right'}
             arrow
-            enterDelay={400}
+            enterDelay={750}
             leaveDelay={200}
         >
             <li

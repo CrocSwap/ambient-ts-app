@@ -119,7 +119,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
             }
             placement={'right-end'}
             arrow
-            enterDelay={400}
+            enterDelay={750}
             leaveDelay={200}
         >
             <li onClick={openDetailsModal} data-label='id' className='base_color'>
@@ -134,7 +134,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
             title={txUsdValueLocaleString}
             placement={'right-end'}
             arrow
-            enterDelay={400}
+            enterDelay={750}
             leaveDelay={200}
         >
             <li
@@ -164,7 +164,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
             }
             placement={'right-end'}
             arrow
-            enterDelay={400}
+            enterDelay={750}
             leaveDelay={200}
         >
             <li
@@ -190,7 +190,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                 }
                 placement={'top'}
                 arrow
-                enterDelay={400}
+                enterDelay={750}
                 leaveDelay={200}
             >
                 <img src={baseTokenLogo} alt='base token' width='15px' />
@@ -213,7 +213,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                 }
                 placement={'top'}
                 arrow
-                enterDelay={400}
+                enterDelay={750}
                 leaveDelay={200}
             >
                 <img src={quoteTokenLogo} alt='quote token' width='15px' />
