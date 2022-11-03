@@ -330,14 +330,16 @@ export default function Orders(props: propsIF) {
             sortable: true,
         },
         {
-            name: isOnPortfolioPage ? 'Qty A' : `${baseTokenSymbol} ( ${baseTokenCharacter} )`,
+            name: isOnPortfolioPage ? 'Qty A' : `${baseTokenSymbol}`,
+            // name: isOnPortfolioPage ? 'Qty A' : `${baseTokenSymbol} ( ${baseTokenCharacter} )`,
 
             show: !showColumns,
             slug: baseTokenSymbol,
             sortable: false,
         },
         {
-            name: isOnPortfolioPage ? 'Qty B' : `${quoteTokenSymbol} ( ${quoteTokenCharacter} )`,
+            name: isOnPortfolioPage ? 'Qty B' : `${quoteTokenSymbol}`,
+            // name: isOnPortfolioPage ? 'Qty B' : `${quoteTokenSymbol} ( ${quoteTokenCharacter} )`,
 
             show: !showColumns,
             slug: quoteTokenSymbol,

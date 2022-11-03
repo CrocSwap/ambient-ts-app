@@ -244,14 +244,14 @@ export default function Leaderboard(props: LeaderboardPropsIF) {
             sortable: false,
         },
         {
-            name: `${baseTokenSymbol} ( ${baseTokenCharacter} )`,
+            name: `${baseTokenSymbol}`,
 
             show: !showColumns,
             slug: baseTokenSymbol,
             sortable: false,
         },
         {
-            name: `${quoteTokenSymbol} ( ${quoteTokenCharacter} )`,
+            name: `${quoteTokenSymbol}`,
 
             show: !showColumns,
             slug: quoteTokenSymbol,

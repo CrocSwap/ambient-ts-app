@@ -39,11 +39,12 @@ import { PoolIF, TokenIF } from '../../../utils/interfaces/exports';
 import { get24hChange } from '../../../App/functions/getPoolStats';
 import TradeChartsLoading from './TradeChartsLoading/TradeChartsLoading';
 import NoTokenIcon from '../../../components/Global/NoTokenIcon/NoTokenIcon';
-import { CrocPoolView } from '@crocswap-libs/sdk';
+import { ChainSpec, CrocPoolView } from '@crocswap-libs/sdk';
 
 // interface for React functional component props
 interface TradeChartsPropsIF {
     pool: CrocPoolView | undefined;
+    chainData: ChainSpec;
     chainId: string;
     lastBlockNumber: number;
     poolPriceDisplay: number;
@@ -125,6 +126,7 @@ export interface LiqSnap {
 export default function TradeCharts(props: TradeChartsPropsIF) {
     const {
         pool,
+        chainData,
         isTokenABase,
         poolPriceDisplay,
         fullScreenChart,
@@ -668,6 +670,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
                 <div style={{ width: '100%', height: '100%' }} ref={canvasRef}>
                     <TradeCandleStickChart
                         pool={pool}
+                        chainData={chainData}
                         // tvlData={formattedTvlData}
                         expandTradeTable={expandTradeTable}
                         // volumeData={formattedVolumeData}

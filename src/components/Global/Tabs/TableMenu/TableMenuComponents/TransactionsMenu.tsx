@@ -37,7 +37,7 @@ export default function TransactionsMenu(props: TransactionMenuIF) {
         showSidebar,
         openGlobalModal,
         closeGlobalModal,
-        isOnPortfolioPage,
+        // isOnPortfolioPage,
     } = props;
 
     const [value, copy] = useCopyToClipboard();
@@ -153,7 +153,7 @@ export default function TransactionsMenu(props: TransactionMenuIF) {
     // const view1 = useMediaQuery('(min-width: 1280px)');
     const view2 = useMediaQuery('(min-width: 1680px)');
     // const view3 = useMediaQuery('(min-width: 2300px)');
-
+    // eslint-disable-next-line
     const view1NoSidebar = useMediaQuery('(min-width: 1280px)') && !showSidebar;
     // const view3WithNoSidebar = useMediaQuery('(min-width: 2300px)') && !showSidebar;
     // const view2WithNoSidebar = useMediaQuery('(min-width: 1680px)') && !showSidebar;
@@ -165,9 +165,10 @@ export default function TransactionsMenu(props: TransactionMenuIF) {
             {/* {notRelevantButton && editButton} */}
             {/* {notRelevantButton && removeButton} */}
             {/* {notRelevantButton && harvestButton} */}
-            {(isOnPortfolioPage && !showSidebar) || (!isOnPortfolioPage && detailsButton)}
+            {/* {(isOnPortfolioPage && !showSidebar) || (!isOnPortfolioPage && detailsButton)} */}
             {view2 && explorerButton}
-            {view1NoSidebar && !isOnPortfolioPage && copyButton}
+            {/* {(!showSidebar && !isOnPortfolioPage) || (view2 && copyButton)} */}
+            {copyButton}
         </div>
     );
 
@@ -176,9 +177,9 @@ export default function TransactionsMenu(props: TransactionMenuIF) {
             {/* {editButton} */}
             {/* {removeButton} */}
             {/* {harvestButton} */}
-            {/* {detailsButton} */}
+            {detailsButton}
             {explorerButton}
-            {copyButton}
+            {/* {copyButton} */}
         </div>
     );
 

@@ -4,7 +4,7 @@ import { memoizePoolStats } from '../../../../App/functions/getPoolStats';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { formatAmount } from '../../../../utils/numbers';
 import styles from './PoolInfo.module.css';
-import { BsArrowUpRight, BsStars } from 'react-icons/bs';
+import { BsArrowUpRight } from 'react-icons/bs';
 import trimString from '../../../../utils/functions/trimString';
 import { DefaultTooltip } from '../../../Global/StyledTooltip/StyledTooltip';
 import { ZERO_ADDRESS } from '../../../../constants';
@@ -26,12 +26,12 @@ const cachedPoolStatsFetch = memoizePoolStats();
 export default function PoolInfo(props: PoolInfoPropsIF) {
     // pool info card--------------------
 
-    const aprTitle = (
-        <p>
-            Avg. APR
-            <BsStars color='#d4af37' />
-        </p>
-    );
+    // const aprTitle = (
+    //     <p>
+    //         Avg. APR
+    //         <BsStars color='#d4af37' />
+    //     </p>
+    // );
 
     function PoolInfoCard(props: PoolInfoCardPropsIF) {
         return (
@@ -71,10 +71,15 @@ export default function PoolInfo(props: PoolInfoPropsIF) {
     const quoteTokenAddress = tradeData.quoteToken.address;
     const baseTokenSymbol = tradeData.baseToken.symbol;
     const quoteTokenSymbol = tradeData.quoteToken.symbol;
+    const baseTokenlogo = tradeData.baseToken.logoURI;
+    const quoteTokenlogo = tradeData.quoteToken.logoURI;
+    const baseTokenName = tradeData.baseToken.name;
+    const quoteTokenName = tradeData.quoteToken.name;
 
     const [poolVolume, setPoolVolume] = useState<string | undefined>();
     const [poolTvl, setPoolTvl] = useState<string | undefined>();
     const [poolFees, setPoolFees] = useState<string | undefined>();
+    // eslint-disable-next-line
     const [poolAPR, setPoolAPR] = useState<string | undefined>();
 
     useEffect(() => {
@@ -152,72 +157,76 @@ export default function PoolInfo(props: PoolInfoPropsIF) {
         </DefaultTooltip>
     );
 
-    const poolComposition = (
-        <div className={styles.pool_composition_container}>
-            <p className={styles.title}>Pool Composition</p>
-            <div className={styles.pool_composition}>
-                <div className={`${styles.composition_row} ${styles.composition_row_header}`}>
-                    <p>Token</p>
-                    <p className={styles.right}>Balance</p>
-                    <p className={styles.right}>Value</p>
-                </div>
-                <div className={styles.composition_row}>
-                    <a
-                        target='_blank'
-                        rel='noreferrer'
-                        href={
-                            baseTokenAddress === ZERO_ADDRESS
-                                ? 'https://goerli.etherscan.io/address/0xfafcd1f5530827e7398b6d3c509f450b1b24a209'
-                                : `https://goerli.etherscan.io/token/${baseTokenAddress}`
-                        }
-                        className={styles.token_display}
-                    >
-                        {/* <img src="https://cryptologos.cc/logos/usd-coin-usdc-logo.png" alt=""  /> */}
-                        <p>{baseTokenSymbol} </p>
-                        <p> {baseAddressWithTooltip}</p>
-                        <BsArrowUpRight size={10} />
-                    </a>
-                    <p className={styles.right}>...</p>
-                    <p className={styles.right}>$...</p>
-                </div>
-                <div className={styles.composition_row}>
-                    <a
-                        target='_blank'
-                        rel='noreferrer'
-                        href={`https://goerli.etherscan.io/token/${quoteTokenAddress}`}
-                        className={styles.token_display}
-                    >
-                        {/* <img src="https://cryptologos.cc/logos/usd-coin-usdc-logo.png" alt=""  /> */}
-                        <p>{quoteTokenSymbol} </p>
-                        <p>{quoteAdressWithTooltip}</p>
-                        <BsArrowUpRight size={10} />
-                    </a>
-
-                    <p className={styles.right}>...</p>
-                    <p className={styles.right}>$...</p>
-                </div>
+    const baseTokenDisplay = (
+        <section className={styles.token_display_container}>
+            <div className={styles.token_info}>
+                <img src={baseTokenlogo} alt={baseTokenSymbol} />
+                <h3>{baseTokenSymbol}</h3>
+                <p>{baseTokenName}</p>
             </div>
-        </div>
+            <a
+                target='_blank'
+                rel='noreferrer'
+                href={
+                    baseTokenAddress === ZERO_ADDRESS
+                        ? 'https://goerli.etherscan.io/address/0xfafcd1f5530827e7398b6d3c509f450b1b24a209'
+                        : `https://goerli.etherscan.io/token/${baseTokenAddress}`
+                }
+                style={{ display: 'flex', gap: '4px' }}
+            >
+                <p> {baseAddressWithTooltip}</p>
+                <BsArrowUpRight size={10} />
+            </a>
+            <p>Balance</p>
+            <h3>169.00</h3>
+            <p>Value</p>
+            <h3>$420,000</h3>
+        </section>
+    );
+    const quoteTokenDisplay = (
+        <section className={styles.token_display_container}>
+            <div className={styles.token_info}>
+                <img src={quoteTokenlogo} alt={quoteTokenSymbol} />
+                <h3>{quoteTokenSymbol}</h3>
+                <p>{quoteTokenName}</p>
+            </div>
+            <a
+                target='_blank'
+                rel='noreferrer'
+                href={`https://goerli.etherscan.io/token/${quoteTokenAddress}`}
+                style={{ display: 'flex', gap: '4px' }}
+            >
+                <p> {quoteAdressWithTooltip}</p>
+                <BsArrowUpRight size={10} />
+            </a>
+            <p>Balance</p>
+            <h3>169.00</h3>
+            <p>Value</p>
+            <h3>$420,000</h3>
+        </section>
     );
 
     return (
-        <main className={styles.container}>
-            {/* <p>
-                {baseTokenSymbol}: {baseTokenAddress}
-            </p>
-            <p>
-                {quoteTokenSymbol}: {quoteTokenAddress}
-            </p> */}
-            {/* <p>24h Swap Volume: {poolVolume || '...'}</p>
-            <p>Total Value Locked (TVL): {poolTvl || '...'}</p> */}
-            {/* <p>Total Fees: {poolFees || '...'}</p> */}
-            {/* <p>Total APR: {poolAPR || '...'}</p> */}
-            {poolComposition}
+        <main className={styles.container} style={{ height: '250px' }}>
             <div className={styles.content}>
-                <PoolInfoCard title='24h Swap Volume:' data={poolVolume || '...'} />
-                <PoolInfoCard title='24h Fees:' data={poolFees || '...'} />
-                <PoolInfoCard title='TVL:' data={poolTvl || '...'} />
-                <PoolInfoCard title={aprTitle} data={poolAPR || '...'} />
+                {baseTokenDisplay}
+                {quoteTokenDisplay}
+                <section className={styles.right_container}>
+                    <div className={styles.right_container_top}>
+                        <PoolInfoCard title='Market Cap:' data={'$69m' || '...'} />
+                        <PoolInfoCard title='FDV:' data={'$690m' || '...'} />
+                        <PoolInfoCard title='24h Swap Volume:' data={poolVolume || '...'} />
+                        <PoolInfoCard title='Total Fees:' data={poolFees || '...'} />
+                        <PoolInfoCard title='TVL:' data={poolTvl || '...'} />
+                        <PoolInfoCard title='Tick Liquidity:' data={'$500k' || '...'} />
+                        <PoolInfoCard title='OOR Liquidity:' data={'20%' || '...'} />
+                        <PoolInfoCard title='Pool Created:' data={'15/07/2022' || '...'} />
+                    </div>
+                    <div>
+                        Lorem ipsum dolor sit amet consectetur, adipisicing elit. Velit consequuntur
+                        dolorum corrupti voluptate soluta modi dicta debitis ullam aliquam rerum?
+                    </div>
+                </section>
             </div>
         </main>
     );

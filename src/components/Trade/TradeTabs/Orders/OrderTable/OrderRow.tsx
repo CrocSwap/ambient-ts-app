@@ -51,6 +51,8 @@ export default function OrderRow(props: OrderRowPropsIF) {
         baseTokenLogo,
         baseDisplay,
         quoteDisplay,
+        // baseDisplayFrontend,
+        // quoteDisplayFrontend,
         isOrderFilled,
         truncatedDisplayPrice,
         side,
@@ -60,6 +62,7 @@ export default function OrderRow(props: OrderRowPropsIF) {
         isOwnerActiveAccount,
         ensName,
         // orderMatchesSelectedTokens,
+        truncatedDisplayPriceDenomByMoneyness,
 
         baseTokenCharacter,
         quoteTokenCharacter,
@@ -129,8 +132,12 @@ export default function OrderRow(props: OrderRowPropsIF) {
             interactive
             title={
                 <div>
-                    <p>{ownerId}</p>
-                    <NavLink to={`/${ownerId}`}>View Account</NavLink>
+                    <p>{ensName ? ensName : ownerId}</p>
+                    <NavLink
+                        to={`/${isOwnerActiveAccount ? 'account' : ensName ? ensName : ownerId}`}
+                    >
+                        View Account
+                    </NavLink>
                 </div>
             }
             placement={'right'}
@@ -149,19 +156,17 @@ export default function OrderRow(props: OrderRowPropsIF) {
         </DefaultTooltip>
     );
 
-    const baseTokenLogoComponent =
-        baseTokenLogo !== '' ? (
-            <img src={baseTokenLogo} alt='base token' width='15px' />
-        ) : (
-            <NoTokenIcon tokenInitial={limitOrder.baseSymbol.charAt(0)} width='30px' />
-        );
+    const baseTokenLogoComponent = baseTokenLogo ? (
+        <img src={baseTokenLogo} alt='base token' width='15px' />
+    ) : (
+        <NoTokenIcon tokenInitial={limitOrder.baseSymbol.charAt(0)} width='15px' />
+    );
 
-    const quoteTokenLogoComponent =
-        quoteTokenLogo !== '' ? (
-            <img src={quoteTokenLogo} alt='quote token' width='15px' />
-        ) : (
-            <NoTokenIcon tokenInitial={limitOrder.quoteSymbol.charAt(0)} width='30px' />
-        );
+    const quoteTokenLogoComponent = quoteTokenLogo ? (
+        <img src={quoteTokenLogo} alt='quote token' width='15px' />
+    ) : (
+        <NoTokenIcon tokenInitial={limitOrder.quoteSymbol.charAt(0)} width='15px' />
+    );
 
     const tokensTogether = (
         <div
@@ -218,13 +223,24 @@ export default function OrderRow(props: OrderRowPropsIF) {
                 </li>
             )}
             {!ipadView && (
-                <li onClick={openDetailsModal} data-label='price' className={sellOrderStyle}>
-                    {truncatedDisplayPrice}
+                <li
+                    onClick={openDetailsModal}
+                    data-label='price'
+                    className={sellOrderStyle}
+                    style={{ textAlign: 'right', fontFamily: 'monospace' }}
+                >
+                    {isOnPortfolioPage
+                        ? truncatedDisplayPriceDenomByMoneyness || '…'
+                        : truncatedDisplayPrice || '…'}
                 </li>
             )}
-
             {!showColumns && (
-                <li onClick={openDetailsModal} data-label='side' className={sellOrderStyle}>
+                <li
+                    style={{ textAlign: 'center' }}
+                    onClick={openDetailsModal}
+                    data-label='side'
+                    className={sellOrderStyle}
+                >
                     {`${side} ${sideCharacter}`}
                 </li>
             )}
@@ -239,14 +255,19 @@ export default function OrderRow(props: OrderRowPropsIF) {
                     <p>Order</p>
                 </li>
             )}
-            <li onClick={openDetailsModal} data-label='value' className='gradient_text'>
+
+            <li
+                onClick={openDetailsModal}
+                data-label='value'
+                className='gradient_text'
+                style={{ textAlign: 'right', fontFamily: 'monospace' }}
+            >
                 {' '}
                 {'$' + usdValue}
             </li>
-
             {!showColumns && (
                 <li onClick={openDetailsModal} data-label={baseTokenSymbol} className='color_white'>
-                    <p>{baseDisplay}</p>
+                    <p style={{ textAlign: 'right', fontFamily: 'monospace' }}>{baseDisplay}</p>
                 </li>
             )}
             {!showColumns && (
@@ -255,7 +276,7 @@ export default function OrderRow(props: OrderRowPropsIF) {
                     data-label={quoteTokenSymbol}
                     className='color_white'
                 >
-                    <p>{quoteDisplay}</p>
+                    <p style={{ textAlign: 'right', fontFamily: 'monospace' }}>{quoteDisplay}</p>
                 </li>
             )}
             {showColumns && (
@@ -278,7 +299,6 @@ export default function OrderRow(props: OrderRowPropsIF) {
                     <OpenOrderStatus isFilled={isOrderFilled} />
                 </li>
             )}
-
             <li data-label='menu'>
                 <OrdersMenu limitOrder={limitOrder} {...orderMenuProps} showSidebar={showSidebar} />
             </li>
