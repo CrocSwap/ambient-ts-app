@@ -123,6 +123,13 @@ import { fetchUserRecentChanges } from './functions/fetchUserRecentChanges';
 import { getTransactionData } from './functions/getTransactionData';
 import AppOverlay from '../components/Global/AppOverlay/AppOverlay';
 import { getLiquidityFee } from './functions/getLiquidityFee';
+import Analytics2 from '../pages/Analytics/Analytics2';
+import AnalyticsOverview from '../components/Analytics/AnalyticsOverview/AnalyticsOverview';
+import TopPools from '../components/Analytics/TopPools/TopPools';
+import TrendingPools from '../components/Analytics/TrendingPools/TrendingPools';
+import TopRanges from '../components/Analytics/TopRanges/TopRanges';
+import TopTokens from '../components/Analytics/TopTokens/TopTokens';
+import AnalyticsTransactions from '../components/Analytics/AnalyticsTransactions/AnalyticsTransactions';
 // import PhishingWarning from '../components/Global/PhisingWarning/PhishingWarning';
 
 const cachedFetchAddress = memoizeFetchAddress();
@@ -2210,6 +2217,19 @@ export default function App() {
                             <Route path='edit/' element={<Navigate to='/trade/market' replace />} />
                         </Route>
                         <Route path='analytics' element={<Analytics {...analyticsProps} />} />
+                        <Route path='analytics2' element={<Analytics2 />}>
+                            <Route
+                                path=''
+                                element={<Navigate to='/analytics2/overview' replace />}
+                            />
+
+                            <Route path='overview' element={<AnalyticsOverview />} />
+                            <Route path='pools' element={<TopPools />} />
+                            <Route path='trendingpools' element={<TrendingPools />} />
+                            <Route path='ranges/top' element={<TopRanges />} />
+                            <Route path='tokens' element={<TopTokens />} />
+                            <Route path='transactions' element={<AnalyticsTransactions />} />
+                        </Route>
                         <Route
                             path='app/chat'
                             element={

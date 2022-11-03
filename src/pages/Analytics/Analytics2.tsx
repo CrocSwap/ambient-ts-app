@@ -1,4 +1,6 @@
-import styles from './Analytics.module.css';
+import styles from './Analytics2.module.css';
+import { Outlet } from 'react-router-dom';
+
 import AnalyticsTabs from '../../components/Analytics/AnalyticsTabs/AnalyticsTabs';
 import GraphContainer from '../../components/Analytics/GraphContainer/GraphContainer';
 import { SetStateAction, Dispatch } from 'react';
@@ -10,30 +12,17 @@ import TrendingPools from '../../components/Analytics/TrendingPools/TrendingPool
 import TopRanges from '../../components/Analytics/TopRanges/TopRanges';
 import AnalyticsTransactions from '../../components/Analytics/AnalyticsTransactions/AnalyticsTransactions';
 
-interface AnalyticsProps {
-    setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
-    setOutsideControl: Dispatch<SetStateAction<boolean>>;
-    favePools: PoolIF[];
-    addPoolToFaves: (tokenA: TokenIF, tokenB: TokenIF, chainId: string, poolId: number) => void;
-    removePoolFromFaves: (
-        tokenA: TokenIF,
-        tokenB: TokenIF,
-        chainId: string,
-        poolId: number,
-    ) => void;
-}
-
-export default function Analytics(props: AnalyticsProps) {
+export default function Analytics2() {
     return (
         <main data-testid={'analytics'} className={styles.analytics_container}>
             <GraphContainer />
-            <AnalyticsTabs
-                setOutsideControl={props.setOutsideControl}
-                setSelectedOutsideTab={props.setSelectedOutsideTab}
-                favePools={props.favePools}
-                removePoolFromFaves={props.removePoolFromFaves}
-                addPoolToFaves={props.addPoolToFaves}
-            />
+            <Outlet />
+
+            {/* <TopTokens />
+            <TopPools />
+            <TopRanges />
+            <TrendingPools />
+            <AnalyticsTransactions /> */}
         </main>
     );
 }
