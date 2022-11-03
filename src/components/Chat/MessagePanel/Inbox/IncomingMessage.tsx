@@ -1,16 +1,14 @@
 import styles from './IncomingMessage.module.css';
 import noAvatarImage from '../../../../assets/images/icons/avatar.svg';
 import { Message } from '../../Model/MessageModel';
-import { useMoralis } from 'react-moralis';
-import { useEffect, useState } from 'react';
 import PositionBox from '../PositionBox/PositionBox';
 
 export interface IncomingMessageProps {
     message: Message;
+    name: string;
 }
+
 export default function IncomingMessage(props: IncomingMessageProps) {
-    const { user, account, enableWeb3, isWeb3Enabled, isAuthenticated } = useMoralis();
-    const [name, setName] = useState('');
     const formatAMPM = (str: any) => {
         const date = new Date(str);
         let hours = date.getHours();
@@ -25,15 +23,17 @@ export default function IncomingMessage(props: IncomingMessageProps) {
 
     return (
         <div className={styles.income_message}>
-            <div className={styles.message_row}>
+            <div className={styles.message_body}>
                 <div className={styles.avatar_image}>
                     <img src={noAvatarImage} alt='no avatar' />
                 </div>
-                <div className={styles.message_body}>
+
+                <div className={styles.message_message}>
+                    <div className={styles.name}>{props.name}</div>
                     <p className={styles.message}>{props.message.message}</p>
                 </div>
 
-                <p className={styles.message_date}>{formatAMPM(props.message.createdAt)}</p>
+                <div className={styles.message_date}>{formatAMPM(props.message.createdAt)}</div>
             </div>
             <PositionBox message={props.message.message} isInput={false} />
         </div>

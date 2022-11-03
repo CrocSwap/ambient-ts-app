@@ -7,6 +7,7 @@ import { useMoralis } from 'react-moralis';
 
 interface SentMessageProps {
     message: Message;
+    name: string;
 }
 
 export default function SentMessagePanel(props: SentMessageProps) {
@@ -41,13 +42,13 @@ export default function SentMessagePanel(props: SentMessageProps) {
     return (
         <div className={styles.sent_message_body}>
             <PositionBox message={props.message.message} isInput={false} />
+
+            <p className={styles.message_date}>{formatAMPM(props.message.createdAt)}</p>
             <div className={styles.message_item}>
-                <p className={styles.message_date}>{formatAMPM(props.message.createdAt)}</p>
                 <p className={styles.message}>{props.message.message}</p>
-                <div className={styles.avatar_image}>
-                    <div className={styles.name}>{name}</div>
-                    <img src={noAvatarImage} alt='no avatar' />
-                </div>
+            </div>
+            <div className={styles.avatar_image}>
+                <img src={noAvatarImage} alt='no avatar' />
             </div>
         </div>
     );

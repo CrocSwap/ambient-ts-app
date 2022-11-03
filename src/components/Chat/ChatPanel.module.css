@@ -26,22 +26,17 @@
   box-shadow: 2px 1000px 1px #171D27 inset;
   transition: box-shadow var(--animation-speed) ease-in-out;
   cursor: pointer;
-  height: 100%;
-  width: 50rlh;
+  height: 479px;
+  width: 424px;
   bottom: -100%;
   border-radius: var(--border-radius);
   color: white;
   position: absolute;
   aspect-ratio: 5/6;
-  margin-left: -182%;
-  margin-bottom: 30% !important;
-  resize: horizontal;
+  margin-left: -195%;
+  margin-bottom: 49% !important;
   overflow: auto;
   transform: rotate(-180deg);
-  max-width: 460px;
-  max-height: 570px;
-  min-width: 304px;
-  min-height: 508px;
 
 
 
@@ -53,7 +48,7 @@
 
 
 .main_body {
-    width: 50%;
+    width: 90%;
     margin-bottom: 20%;
     display: flex;
     flex-direction: row;
@@ -110,6 +105,37 @@
     color: var(--text-grey-light);
     cursor: pointer;
 }
+.open_full_button {
+    color: var(--text-grey-light);
+    margin-left: 254px;
+}
+
+.chat_wrapper_full {
+    display: flex;
+    flex-direction: column-reverse;
+    border: solid 1px transparent;
+    background-origin: border-box;
+    background-clip: content-box, border-box;
+    box-shadow: 2px 1000px 1px #171d27 inset;
+    transition: box-shadow var(--animation-speed) ease-in-out;
+    cursor: pointer;
+    height: 89%;
+    width: 83% !important;
+    /* bottom: -100%; */
+    border-radius: var(--border-radius);
+    color: white;
+    position: absolute;
+    aspect-ratio: 5/6;
+    /* margin-left: -195%; */
+    margin-bottom: 2% !important;
+    margin-top: 0;
+    overflow: auto;
+    transform: rotate(-180deg);
+    /* min-height: 80vh;
+}
+
+
+
 
 .modal_footer {
     /* padding: 10px; */

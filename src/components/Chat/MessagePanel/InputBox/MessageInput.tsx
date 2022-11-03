@@ -1,57 +1,76 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useMoralis } from 'react-moralis';
-import {
+import useSocket, {
     receiveUsername,
     // host,
     sendMessageRoute,
-    socket,
-} from '../../Service/chatApi';
+} from '../../Service/useSocket';
 import axios from 'axios';
 import { BsSlashSquare, BsEmojiSmileFill } from 'react-icons/bs';
 import { Message } from '../../Model/MessageModel';
 import Picker from 'emoji-picker-react';
 import styles from './MessageInput.module.css';
-import { useEffect, useState } from 'react';
+import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { ITransaction } from '../../../../utils/state/graphDataSlice';
 import PositionBox from '../PositionBox/PositionBox';
+import { PoolIF } from '../../../../utils/interfaces/PoolIF';
+import { TokenIF } from '../../../../utils/interfaces/TokenIF';
+import { targetData } from '../../../../utils/state/tradeDataSlice';
+import useChatApi from '../../Service/ChatApi';
 
 interface MessageInputProps {
-    message: Message;
+    message?: Message;
     room: string;
-    socket: any;
+    currentUser: string;
+}
+interface currentPoolInfo {
+    tokenA: TokenIF;
+    tokenB: TokenIF;
+    baseToken: TokenIF;
+    quoteToken: TokenIF;
+    didUserFlipDenom: boolean;
+    isDenomBase: boolean;
+    advancedMode: boolean;
+    isTokenAPrimary: boolean;
+    primaryQuantity: string;
+    isTokenAPrimaryRange: boolean;
+    primaryQuantityRange: string;
+    limitPrice: string;
+    advancedLowTick: number;
+    advancedHighTick: number;
+    simpleRangeWidth: number;
+    slippageTolerance: number;
+    activeChartPeriod: number;
+    targetData: targetData[];
+    pinnedMaxPriceDisplayTruncated: number;
+    pinnedMinPriceDisplayTruncated: number;
 }
 
-interface PortfolioBannerPropsIF {
-    ensName: string;
-    activeAccount: string;
-    imageData: string[];
-    resolvedAddress: string;
+export interface ChatProps {
+    chatStatus: boolean;
+    onClose: () => void;
+    favePools: PoolIF[];
+    currentPool: currentPoolInfo;
+    isFullScreen?: boolean;
+    setChatStatus: Dispatch<SetStateAction<boolean>>;
 }
 
-export default function MessageInput(props: MessageInputProps, prop: PortfolioBannerPropsIF) {
-    const [currentUser, setCurrentUser] = useState('');
+export default function MessageInput(props: MessageInputProps, prop: ChatProps) {
+    const { favePools, currentPool } = prop;
     const [message, setMessage] = useState('');
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
     const { user, account, enableWeb3, isWeb3Enabled, isAuthenticated } = useMoralis();
+    const [currentUser, setCurrentUser] = useState('');
+    // const { roomId } = props.match.params;
 
-    async function getID() {
-        const response = await fetch('http://localhost:5000/api/auth/getUserByAccount/' + account, {
-            method: 'GET',
-        });
-        const data = await response.json();
-        if (data.status === 'OK') {
-            return data;
-        } else {
-            console.log(data);
-        }
-    }
-    useEffect(() => {
-        const result = getID();
-        result.then((res) => {
-            setCurrentUser(res._id);
-        });
-    }, []);
+    const { messages, getMsg, sendMsg } = useSocket(props.room);
+    const { getID } = useChatApi();
+
+    const roomId =
+        props.room === 'Current Pool'
+            ? prop.currentPool.baseToken.symbol + prop.currentPool.quoteToken.symbol
+            : props.room;
 
     const handleEmojiClick = (event: any, emoji: any) => {
         let msg = message;
@@ -70,19 +89,15 @@ export default function MessageInput(props: MessageInputProps, prop: PortfolioBa
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const _handleKeyDown = (e: any) => {
         if (e.key === 'Enter') {
-            handleSendMsg(e.target.value);
+            handleSendMsg(e.target.value, roomId);
             setMessage('');
             dontShowEmojiPanel();
         }
     };
 
-    const handleSendMsg = async (msg: string) => {
-        props.socket.emit('send-msg', {
-            from: currentUser,
-            message: msg,
-            roomInfo: props.room,
-        });
-        console.error(msg);
+    const handleSendMsg = async (msg: string, roomId: any) => {
+        console.log('Current user is ', currentUser);
+        sendMsg(props.currentUser, message, roomId);
     };
 
     const onChangeMessage = async (e: any) => {

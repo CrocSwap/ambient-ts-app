@@ -1,30 +1,34 @@
 .income_message {
-    box-sizing: border-box;
+    /* Type=Tagged */
 
-    /* Auto layout */
 
-    display: flex;
-    flex-direction: column-reverse;
-    align-items: flex-start;
-    padding: 0px 4px 8px;
-    gap: 7px;
+box-sizing: border-box;
 
-    width: 100%;
-    height: 100%;
-    /* dark/tertiary */
+/* Auto layout */
 
-    background: #242F3F;
-    /* accent/primary */
+display: flex;
+flex-direction: row;
+align-items: flex-end;
+padding: 8px 4px 8px;
+gap: 7px;
 
-    border-left: 1px solid #7371FC;
-    border-radius: 0px 0px 4px 4px;
+width: 100%;
+height: 100%;
 
-    /* Inside auto layout */
+/* dark/tertiary */
 
-    flex: none;
-    order: 5;
-    align-self: stretch;
-    flex-grow: 0;
+background: #242F3F;
+/* accent/primary */
+
+border-left: 1px solid #7371FC;
+border-radius: 0px 0px 4px 4px;
+
+/* Inside auto layout */
+
+flex: none;
+order: 3;
+align-self: stretch;
+flex-grow: 0;
 }
 
 .avatar_image {
@@ -36,6 +40,7 @@
     flex-grow: 1;
     align-self: flex-end;
     margin-bottom: 8px;
+    flex-grow: 2;
 
 
 }
@@ -51,7 +56,6 @@
     white-space: pre-line;
     align-self: stretch;
     padding: 9px 4px 0px;
-    width: 261%;
     margin-left: 5px;
 
 
@@ -81,15 +85,26 @@
     flex: none;
     order: 0;
     flex-grow: 0;
+    margin-left: 5px
 }
 
 .message_body {
     flex-grow: 5 !important;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     height: auto;
     min-height: 53%;
     padding: -2px 0px 27px;
+}
+
+.message_message {
+    
+    display: flex;
+    flex-direction: column;
+    height: auto;
+    min-height: 53%;
+    flex-grow: 3;
+    
 }
 
 .message_date {
@@ -111,8 +126,9 @@
 
     /* Inside auto layout */
     order: 0;
-    margin-left: 200px;
-
+    display: flex;
+    flex-direction: row;
+    
 
 }
 
