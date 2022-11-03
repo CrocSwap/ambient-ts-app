@@ -57,6 +57,7 @@ export default function OrderRow(props: OrderRowPropsIF) {
         truncatedDisplayPrice,
         side,
         usdValue,
+        usdValueLocaleString,
         baseTokenSymbol,
         quoteTokenSymbol,
         isOwnerActiveAccount,
@@ -123,6 +124,27 @@ export default function OrderRow(props: OrderRowPropsIF) {
         >
             <li onClick={openDetailsModal} data-label='id' className='base_color'>
                 {posHashTruncated}
+            </li>
+        </DefaultTooltip>
+    );
+
+    const ValueWithTooltip = (
+        <DefaultTooltip
+            interactive
+            title={'$' + usdValueLocaleString}
+            placement={'right'}
+            arrow
+            enterDelay={400}
+            leaveDelay={200}
+        >
+            <li
+                onClick={openDetailsModal}
+                data-label='value'
+                className='gradient_text'
+                style={{ textAlign: 'right', fontFamily: 'monospace' }}
+            >
+                {' '}
+                {'$' + usdValue}
             </li>
         </DefaultTooltip>
     );
@@ -256,15 +278,7 @@ export default function OrderRow(props: OrderRowPropsIF) {
                 </li>
             )}
 
-            <li
-                onClick={openDetailsModal}
-                data-label='value'
-                className='gradient_text'
-                style={{ textAlign: 'right', fontFamily: 'monospace' }}
-            >
-                {' '}
-                {'$' + usdValue}
-            </li>
+            {ValueWithTooltip}
             {!showColumns && (
                 <li onClick={openDetailsModal} data-label={baseTokenSymbol} className='color_white'>
                     <p style={{ textAlign: 'right', fontFamily: 'monospace' }}>{baseDisplay}</p>

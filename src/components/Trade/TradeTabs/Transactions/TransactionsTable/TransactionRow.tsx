@@ -60,6 +60,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
 
         type,
         usdValue,
+        txUsdValueLocaleString,
         baseTokenSymbol,
         quoteTokenSymbol,
         isOwnerActiveAccount,
@@ -123,6 +124,27 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
         >
             <li onClick={openDetailsModal} data-label='id' className='base_color'>
                 {txHashTruncated}
+            </li>
+        </DefaultTooltip>
+    );
+
+    const usdValueWithTooltip = (
+        <DefaultTooltip
+            interactive
+            title={txUsdValueLocaleString}
+            placement={'right-end'}
+            arrow
+            enterDelay={400}
+            leaveDelay={200}
+        >
+            <li
+                onClick={openDetailsModal}
+                data-label='value'
+                className='gradient_text'
+                style={{ textAlign: 'right', fontFamily: 'monospace' }}
+            >
+                {' '}
+                {usdValue}
             </li>
         </DefaultTooltip>
     );
@@ -330,15 +352,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                     <p>{type}</p>
                 </li>
             )}
-            <li
-                onClick={openDetailsModal}
-                data-label='value'
-                className='gradient_text'
-                style={{ textAlign: 'right', fontFamily: 'monospace' }}
-            >
-                {' '}
-                {usdValue}
-            </li>
+            {usdValueWithTooltip}
 
             {!showColumns && (
                 <li onClick={openDetailsModal} data-label={baseTokenSymbol} className='color_white'>
