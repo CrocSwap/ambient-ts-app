@@ -38,19 +38,41 @@ export const formatDollarAmountAxis = (num: number | undefined) => {
 };
 
 // using a currency library here in case we want to add more in future
-export const formatAmount = (num: number | undefined, digits = 2) => {
+export const formatAmountChartData = (num: number | undefined, digits = 2) => {
     if (num === 0) return '0';
     if (!num) return '-';
-    if (num < 0.001) {
-        return '<0.001';
-    }
-    return numbro(num).format({
-        average: true,
-        mantissa: num > 1000 ? 2 : num < 100 ? 5 : digits,
+
+    const a = numbro(num).format({
+        average: num > 0 || num < 10000 ? false : true,
+        mantissa: num > 1000 ? 2 : num < 1 ? 7 : num < 100 ? 5 : digits,
+
         // mantissa: num > 1000 ? 2 : digits,
         abbreviations: {
             million: 'M',
             billion: 'B',
         },
     });
+    return a;
+};
+
+// using a currency library here in case we want to add more in future
+export const formatAmount = (num: number | undefined, digits = 2) => {
+    if (num === 0) return '0';
+    if (!num) return '-';
+    if (num < 0.001) {
+        return '<0.001';
+    }
+
+    const a = numbro(num).format({
+        average: num > 1000 ? false : num < 100 ? true : false,
+        mantissa: num > 1000 ? 2 : num < 100 ? 5 : digits,
+        thousandSeparated: true,
+
+        // mantissa: num > 1000 ? 2 : digits,
+        abbreviations: {
+            million: 'M',
+            billion: 'B',
+        },
+    });
+    return a;
 };

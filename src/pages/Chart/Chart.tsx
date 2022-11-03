@@ -4,7 +4,7 @@ import moment from 'moment';
 import { DetailedHTMLProps, HTMLAttributes, useCallback, useEffect, useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
-import { formatAmount, formatDollarAmountAxis } from '../../utils/numbers';
+import { formatAmount, formatAmountChartData, formatDollarAmountAxis } from '../../utils/numbers';
 import { CandleData } from '../../utils/state/graphDataSlice';
 import {
     setLimitTick,
@@ -93,7 +93,6 @@ export default function Chart(props: ChartData) {
 
     const d3Xaxis = useRef(null);
     const d3Yaxis = useRef(null);
-
     const dispatch = useAppDispatch();
 
     const location = useLocation();
@@ -142,10 +141,11 @@ export default function Chart(props: ChartData) {
     const [isChartSelected, setIsChartSelected] = useState<boolean>(false);
     const [dragControl, setDragControl] = useState(false);
     const [rescale, setRescale] = useState(true);
+    const [zoomAndYdragControl, setZoomAndYdragControl] = useState();
     const [rescaleText, setRescaleText] = useState<any>();
 
     // Data
-    const [crosshairData, setCrosshairData] = useState([{ x: 0, y: -1 }]);
+    const [crosshairData] = useState([{ x: 0, y: -1 }]);
     const [currentPriceData] = useState([{ value: -1 }]);
     const [indicatorLineData] = useState([{ x: 0, y: 0 }]);
     const [liqTooltipSelectedLiqBar, setLiqTooltipSelectedLiqBar] = useState({
@@ -187,6 +187,7 @@ export default function Chart(props: ChartData) {
     const [areaBidJoin, setAreaBidJoin] = useState<any>();
     const [liqHighligtedAskJoin, setLiqHighligtedAskJoin] = useState<any>();
     const [liqHighligtedBidJoin, setLiqHighligtedBidJoin] = useState<any>();
+    const [yAxis, setYaxis] = useState<any>();
 
     // Utils
     const [zoomUtils, setZoomUtils] = useState<any>();
@@ -196,15 +197,6 @@ export default function Chart(props: ChartData) {
     const [selectedCandleState, setSelectedCandleState] = useState<any>();
 
     const valueFormatter = d3.format('.5f');
-
-    function formattedTextData(data: number): string {
-        return data
-            ? data.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              })
-            : '';
-    }
 
     const setDefaultRangeData = () => {
         setRanges((prevState) => {
@@ -232,62 +224,79 @@ export default function Chart(props: ChartData) {
         render();
     }, [props.chartItemStates, expandTradeTable, isCandleAdded]);
 
-    async function addMarketText(scale: any) {
-        await d3.select(d3Yaxis.current).select('svg').selectAll('#market').remove();
+    function addText(scale: any) {
+        if (location.pathname.includes('market')) {
+            yAxis.tickValues([...scale.ticks(), ...[market[0].value]]);
 
-        await d3
-            .select(d3Yaxis.current)
-            .select('svg')
-            .append('g')
-            .attr('id', 'market')
-            .append('text');
-        d3.select(d3Yaxis.current)
-            .select('svg')
-            .select('#market')
-            .select('text')
-            .attr('class', 'market')
-            .text(formattedTextData(market[0].value))
-            .style('transform', 'translateY(' + (scale(market[0].value) + 5) + 'px)')
-            .attr('filter', 'url(#marketBg)');
-    }
-
-    async function addText(scale: any) {
-        await d3.select(d3Yaxis.current).select('svg').selectAll('#yText').remove();
-        if (!location.pathname.includes('market')) {
-            const textArray: any[] = location.pathname.includes('limit') ? limit : ranges;
-            textArray.forEach(async (element: any) => {
-                await d3
-                    .select(d3Yaxis.current)
-                    .select('svg')
-                    .append('g')
-                    .attr('id', 'yText')
-                    .append('text')
-                    .attr('id', element.name);
-                d3.select(d3Yaxis.current)
-                    .select('svg')
-                    .select('#' + element.name)
-                    .attr('class', 'y_axis')
-                    .text(formattedTextData(element.value))
-                    .style('transform', 'translateY(' + (scale(element.value) + 5) + 'px)')
-                    .attr('filter', 'url(#textBg)');
+            yAxis.decorate((selection: any) => {
+                selection
+                    .attr('filter', (d: any) => {
+                        if (d === market[0].value) {
+                            return 'url(#marketBg)';
+                        }
+                    })
+                    .select('text')
+                    .attr('class', (d: any) => {
+                        if (d === market[0].value) {
+                            return 'market';
+                        }
+                    });
             });
+        } else {
+            location.pathname.includes('limit')
+                ? yAxis.tickValues([...scale.ticks(), ...[limit[0].value, market[0].value]])
+                : yAxis.tickValues([
+                      ...scale.ticks(),
+                      ...[ranges[0].value, ranges[1].value, market[0].value],
+                  ]);
+
+            yAxis.decorate((selection: any) => {
+                selection
+                    .attr('filter', (d: any) => {
+                        if (
+                            location.pathname.includes('limit')
+                                ? d === limit[0].value
+                                : d === ranges[0].value || d === ranges[1].value
+                        ) {
+                            return 'url(#textBg)';
+                        }
+                        if (d === market[0].value) {
+                            return 'url(#marketBg)';
+                        }
+                    })
+                    .select('text')
+                    .attr('class', (d: any) => {
+                        if (d === market[0].value) {
+                            return 'market';
+                        }
+
+                        if (
+                            location.pathname.includes('limit')
+                                ? d === limit[0].value
+                                : d === ranges[0].value || d === ranges[1].value
+                        ) {
+                            return 'y_axis';
+                        }
+                    });
+            });
+            // }
         }
     }
 
-    const [heightPlot, setHeightPlot] = useState(0);
-
     useEffect(() => {
-        (d3.select('#plotAreaDiv').node() as any) &&
-            setHeightPlot((d3.select('#plotAreaDiv').select('svg').node() as any).getBBox().height);
-    }, [showFeeRate, showTvl, showVolume, d3Yaxis.current]);
-
-    useEffect(() => {
-        if (scaleData) {
+        if (scaleData && yAxis) {
             addText(scaleData.yScale);
-            addMarketText(scaleData.yScale);
-            render();
         }
-    }, [dragControl, limit, ranges, scaleData, location, heightPlot]);
+    }, [
+        dragControl,
+        scaleData,
+        location,
+        scaleData && scaleData.yScale.domain(),
+        zoomAndYdragControl,
+        ranges,
+        limit,
+        market,
+    ]);
 
     useEffect(() => {
         if (d3.select(d3Xaxis.current).select('svg').select('g').select('text').node() === null) {
@@ -310,17 +319,6 @@ export default function Chart(props: ChartData) {
                 .attr('dy', '28px')
                 .style('font-size', '13px')
                 .style('letter-spacing', '1px');
-        }
-
-        if (d3.select(d3Yaxis.current).select('svg').select('#yCrossHair').node() === null) {
-            const yAxisText = d3
-                .select(d3Yaxis.current)
-                .select('svg')
-                .append('g')
-                .attr('id', 'yCrossHair')
-                .attr('visibility', 'hidden');
-
-            yAxisText.append('text').attr('dx', '5px').attr('dy', '2px').style('font-size', '13px');
         }
 
         if (location.pathname.includes('range')) {
@@ -483,7 +481,7 @@ export default function Chart(props: ChartData) {
             Math.abs(event.sourceEvent.offsetX - scaleData.xScale(d.date)),
         )[1];
 
-        setCrosshairData([{ x: scaleData.xScale(nearest.date), y: -1 }]);
+        // setCrosshairData([{ x: scaleData.xScale(nearest.date), y: -1 }]);
 
         d3.select(d3Xaxis.current)
             .select('svg')
@@ -593,10 +591,9 @@ export default function Chart(props: ChartData) {
                             scaleData.yScale.domain([domainY[0] + deltaY, domainY[1] + deltaY]);
                         }
 
+                        setZoomAndYdragControl(event);
+
                         relocationCrosshairText(event);
-                        // addLimitText(scaleData.yScale);
-                        addText(scaleData.yScale);
-                        addMarketText(scaleData.yScale);
                         lastY = t.y;
 
                         render();
@@ -613,14 +610,11 @@ export default function Chart(props: ChartData) {
             const yAxisDrag = d3.drag().on('drag', async (event: any) => {
                 const dy = event.dy;
                 const factor = Math.pow(2, -dy * 0.003);
-
                 const domain = scaleData.yScale.domain();
                 const center = (domain[1] + domain[0]) / 2;
                 const size = (domain[1] - domain[0]) / 2 / factor;
                 await scaleData.yScale.domain([center - size, center + size]);
-                addText(scaleData.yScale);
-                addMarketText(scaleData.yScale);
-
+                setZoomAndYdragControl(event);
                 setRescale(() => {
                     return false;
                 });
@@ -1164,6 +1158,20 @@ export default function Chart(props: ChartData) {
         }
     }, []);
 
+    // y Axis
+    useEffect(() => {
+        if (scaleData) {
+            const _yAxis = d3fc
+                .axisRight()
+                .scale(scaleData.yScale)
+                .tickFormat((d: any) => formatAmountChartData(d));
+
+            setYaxis(() => {
+                return _yAxis;
+            });
+        }
+    }, [scaleData]);
+
     // Horizontal Lines
     useEffect(() => {
         if (scaleData !== undefined) {
@@ -1349,6 +1357,20 @@ export default function Chart(props: ChartData) {
             const feMergeTag = lg.append('feMerge');
             feMergeTag.append('feMergeNode').attr('in', 'bg');
             feMergeTag.append('feMergeNode').attr('in', 'SourceGraphic');
+
+            const crosshairDefs = svgmain
+                .append('defs')
+                .append('filter')
+                .attr('x', 0)
+                .attr('y', 0)
+                .attr('height', 1)
+                .attr('width', 1)
+                .attr('id', 'crossHairBg');
+
+            crosshairDefs.append('feFlood').attr('flood-color', '#242F3F').attr('result', 'bg');
+            const feMergeTagCrossHair = crosshairDefs.append('feMerge');
+            feMergeTagCrossHair.append('feMergeNode').attr('in', 'bg');
+            feMergeTagCrossHair.append('feMergeNode').attr('in', 'SourceGraphic');
 
             const marketDefs = svgmain
                 .append('defs')
@@ -1985,6 +2007,7 @@ export default function Chart(props: ChartData) {
                 liqHighligtedBidJoin,
                 liqHighligtedAskSeries,
                 liqHighligtedBidSeries,
+                yAxis,
             );
         }
     }, [
@@ -2013,6 +2036,7 @@ export default function Chart(props: ChartData) {
         liqHighligtedBidJoin,
         liqHighligtedAskSeries,
         liqHighligtedBidSeries,
+        yAxis,
     ]);
 
     const minimum = (data: any, accessor: any) => {
@@ -2057,6 +2081,7 @@ export default function Chart(props: ChartData) {
             liqHighligtedBidJoin: any,
             liqHighligtedAskSeries: any,
             liqHighligtedBidSeries: any,
+            yAxis: any,
         ) => {
             if (chartData.length > 0) {
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -2072,7 +2097,7 @@ export default function Chart(props: ChartData) {
                         Math.abs(point.offsetX - xScale(xValue(d))),
                     )[1];
 
-                    setCrosshairData([{ x: scaleData.xScale(nearest?.date), y: -1 }]);
+                    //        setCrosshairData([{ x: scaleData.xScale(nearest?.date), y: -1 }]);
 
                     props.setCurrentData(nearest);
                     return [
@@ -2085,8 +2110,6 @@ export default function Chart(props: ChartData) {
 
                 // axes
                 const xAxis = d3fc.axisBottom().scale(scaleData.xScale).tickArguments([6]);
-
-                const yAxis = d3fc.axisRight().scale(scaleData.yScale).tickArguments([5]);
 
                 const candleJoin = d3fc.dataJoin('g', 'candle');
 
@@ -2246,6 +2269,21 @@ export default function Chart(props: ChartData) {
 
                                 liquidityData.liqHighligtedAskSeries.push(mouseArea);
 
+                                let activeLiq = nearest.activeLiq;
+                                if (scaleData.yScale.invert(event.offsetY) < nearest.liqPrices) {
+                                    activeLiq =
+                                        filtered[index + 1] !== undefined
+                                            ? filtered[index + 1].activeLiq
+                                            : nearest.activeLiq;
+                                }
+
+                                const mouseArea = {
+                                    activeLiq: activeLiq,
+                                    liqPrices: scaleData.yScale.invert(event.offsetY),
+                                };
+
+                                liquidityData.liqHighligtedAskSeries.push(mouseArea);
+
                                 render();
                             })
                             .on('mouseleave', mouseOutFunc);
@@ -2359,7 +2397,7 @@ export default function Chart(props: ChartData) {
                     svg.call(zoomUtils.zoom);
                 });
 
-                d3.select(d3PlotArea.current).on('mousemove', function (event: any) {
+                d3.select(d3PlotArea.current).on('mousemove', async function (event: any) {
                     crosshairData[0] = snap(candlestick, chartData, event)[0];
 
                     const dateIndcLocation = scaleData.xScale(crosshairData[0].x);
@@ -2376,16 +2414,22 @@ export default function Chart(props: ChartData) {
                         .select('text')
                         .text(moment(crosshairData[0].x).format('DD MMM  HH:mm'));
 
+                    await d3
+                        .select(d3Yaxis.current)
+                        .select('svg')
+                        .selectAll('#yCrossHair')
+                        .remove();
                     const yAxisText = d3
                         .select(d3Yaxis.current)
                         .select('svg')
-                        .select('#yCrossHair')
-                        .style('visibility', 'visible')
+                        .append('g')
+                        .attr('id', 'yCrossHair')
                         .style('transform', 'translateY(' + valueIndcLocation + 'px)');
 
                     yAxisText
-                        .select('text')
-                        .text(formattedTextData(scaleData.yScale.invert(event.offsetY)));
+                        .append('text')
+                        .attr('class', 'yCrossHairText')
+                        .text(formatAmountChartData(scaleData.yScale.invert(event.offsetY)));
 
                     render();
                 });
@@ -2587,7 +2631,7 @@ export default function Chart(props: ChartData) {
                         <d3fc-svg
                             className='y-axis'
                             ref={d3Yaxis}
-                            style={{ flexGrow: 1.5 }}
+                            style={{ flexGrow: 1 }}
                         ></d3fc-svg>
                     </div>
 
@@ -2603,7 +2647,9 @@ export default function Chart(props: ChartData) {
                                 )}
                             </label>
                             <FeeRateSubChart
-                                feeData={parsedChartData?.feeChartData}
+                                feeData={parsedChartData?.feeChartData.sort(
+                                    (a, b) => b.time - a.time,
+                                )}
                                 period={parsedChartData?.period}
                                 crosshairData={crosshairData}
                                 setsubChartValues={setsubChartValues}
@@ -2623,7 +2669,9 @@ export default function Chart(props: ChartData) {
                                 )}
                             </label>
                             <TvlSubChart
-                                tvlData={parsedChartData?.tvlChartData}
+                                tvlData={parsedChartData?.tvlChartData.sort(
+                                    (a, b) => b.time - a.time,
+                                )}
                                 period={parsedChartData?.period}
                                 crosshairData={crosshairData}
                                 setsubChartValues={setsubChartValues}
