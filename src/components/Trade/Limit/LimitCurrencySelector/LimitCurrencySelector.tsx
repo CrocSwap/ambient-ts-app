@@ -15,6 +15,7 @@ import Toggle2 from '../../../Global/Toggle/Toggle2';
 import IconWithTooltip from '../../../Global/IconWithTooltip/IconWithTooltip';
 import { MdAccountBalanceWallet } from 'react-icons/md';
 import ambientLogo from '../../../../assets/images/logos/ambient_logo.svg';
+import NoTokenIcon from '../../../Global/NoTokenIcon/NoTokenIcon';
 
 // interface for component props
 interface LimitCurrencySelectorProps {
@@ -46,6 +47,7 @@ interface LimitCurrencySelectorProps {
     setIsSaveAsDexSurplusChecked: Dispatch<SetStateAction<boolean>>;
     activeTokenListsChanged: boolean;
     indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
+    gasPriceInGwei: number | undefined;
 }
 
 // central react functional component
@@ -75,6 +77,7 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
         tokenASurplusMinusTokenARemainderNum,
         activeTokenListsChanged,
         indicateActiveTokenListsChanged,
+        gasPriceInGwei,
         handleChangeClick,
     } = props;
 
@@ -115,12 +118,16 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
 
     const tokenSelect = (
         <div className={styles.token_select} onClick={openModal}>
-            <img
-                className={styles.token_list_img}
-                src={thisToken.logoURI}
-                alt={thisToken.name + 'token logo'}
-                width='30px'
-            />
+            {thisToken.logoURI ? (
+                <img
+                    className={styles.token_list_img}
+                    src={thisToken.logoURI}
+                    alt={thisToken.name + 'token logo'}
+                    width='30px'
+                />
+            ) : (
+                <NoTokenIcon tokenInitial={thisToken.symbol.charAt(0)} width='30px' />
+            )}
             <span className={styles.token_list_text}>{thisToken.symbol}</span>
             <RiArrowDownSLine size={27} />
         </div>
@@ -128,7 +135,7 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
 
     const WithdrawTokensContent = (
         <span className={styles.surplus_toggle}>
-            <IconWithTooltip title='Use Exchange Surplus' placement='bottom'>
+            <IconWithTooltip title='Use Exchange Balance' placement='bottom'>
                 <Toggle2
                     isOn={isWithdrawFromDexChecked}
                     handleToggle={() => setIsWithdrawFromDexChecked(!isWithdrawFromDexChecked)}
@@ -143,7 +150,12 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
     const isWithdrawFromDexDisabled = parseFloat(tokenADexBalance || '0') <= 0;
     const isWithdrawFromWalletDisabled = parseFloat(tokenABalance || '0') <= 0;
 
-    const walletBalanceNonLocaleString = tokenABalance ? tokenABalance : '';
+    const walletBalanceNonLocaleString =
+        tokenABalance && gasPriceInGwei
+            ? isSellTokenEth
+                ? (parseFloat(tokenABalance) - gasPriceInGwei * 400000 * 1e-9).toFixed(18)
+                : tokenABalance
+            : '';
 
     const walletBalanceLocaleString = tokenABalance
         ? parseFloat(tokenABalance).toLocaleString(undefined, {
@@ -152,9 +164,12 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
           })
         : '...';
 
-    const surplusBalanceNonLocaleString = tokenADexBalance
-        ? parseFloat(tokenADexBalance).toString()
-        : '';
+    const surplusBalanceNonLocaleString =
+        tokenADexBalance && gasPriceInGwei
+            ? isSellTokenEth
+                ? (parseFloat(tokenADexBalance) - gasPriceInGwei * 400000 * 1e-9).toFixed(18)
+                : tokenADexBalance
+            : '';
 
     const surplusBalanceLocaleString = tokenADexBalance
         ? parseFloat(tokenADexBalance).toLocaleString(undefined, {
@@ -252,7 +267,7 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
                 </IconWithTooltip>
                 <IconWithTooltip
                     title={
-                        'Exchange Surplus'
+                        'Exchange Balance'
                         // userHasEnteredAmount
                         //     ? 'Exchange Surplus Balance After Swap'
                         //     : 'Current Exchange Surplus Balance'

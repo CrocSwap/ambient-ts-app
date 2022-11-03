@@ -5,6 +5,7 @@ import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
 import { toggleDidUserFlipDenom } from '../../../utils/state/tradeDataSlice';
 import Divider from '../../Global/Divider/Divider';
 import { motion } from 'framer-motion';
+import NoTokenIcon from '../../Global/NoTokenIcon/NoTokenIcon';
 
 type ItemIF = {
     slug: string;
@@ -60,7 +61,11 @@ export default function PriceInfo(props: IPriceInfoProps) {
                 <span>Pooled {baseTokenSymbol}</span>
                 <div className={styles.info_text}>
                     {baseCollateralDisplay || '…'}
-                    <img src={baseTokenLogoURI} alt='' />
+                    {baseTokenLogoURI ? (
+                        <img src={baseTokenLogoURI} alt={baseTokenSymbol} />
+                    ) : (
+                        <NoTokenIcon tokenInitial={baseTokenSymbol.charAt(0)} width='15px' />
+                    )}
                 </div>
             </Row>
             {/*  */}
@@ -68,7 +73,12 @@ export default function PriceInfo(props: IPriceInfoProps) {
                 <span>Pooled {quoteTokenSymbol}</span>
                 <div className={styles.info_text}>
                     {quoteCollateralDisplay || '…'}
-                    <img src={quoteTokenLogoURI} alt='' />
+                    {/* <img src={quoteTokenLogoURI} alt='' /> */}
+                    {quoteTokenLogoURI ? (
+                        <img src={quoteTokenLogoURI} alt={quoteTokenSymbol} />
+                    ) : (
+                        <NoTokenIcon tokenInitial={quoteTokenSymbol.charAt(0)} width='15px' />
+                    )}
                 </div>
             </Row>
             {/*  */}
@@ -78,7 +88,11 @@ export default function PriceInfo(props: IPriceInfoProps) {
                 <span> Earned {baseTokenSymbol}</span>
                 <div className={styles.info_text}>
                     {baseFeesDisplay || '…'}
-                    <img src={baseTokenLogoURI} alt='' />
+                    {baseTokenLogoURI ? (
+                        <img src={baseTokenLogoURI} alt={baseTokenSymbol} />
+                    ) : (
+                        <NoTokenIcon tokenInitial={baseTokenSymbol.charAt(0)} width='15px' />
+                    )}
                 </div>
             </Row>
             {/*  */}
@@ -86,31 +100,35 @@ export default function PriceInfo(props: IPriceInfoProps) {
                 <span>Earned {quoteTokenSymbol} </span>
                 <div className={styles.info_text}>
                     {quoteFeesDisplay || '…'}
-                    <img src={quoteTokenLogoURI} alt='' />
+                    {quoteTokenLogoURI ? (
+                        <img src={quoteTokenLogoURI} alt={quoteTokenSymbol} />
+                    ) : (
+                        <NoTokenIcon tokenInitial={quoteTokenSymbol.charAt(0)} width='15px' />
+                    )}
                 </div>
             </Row>
         </motion.div>
     );
 
-    const timesContent = (
-        <motion.div
-            layout
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className={styles.info_container}
-        >
-            <Row>
-                <span>Open Time</span>
-                <div className={styles.info_text}>25/08/22</div>
-            </Row>
+    // const timesContent = (
+    //     <motion.div
+    //         layout
+    //         initial={{ opacity: 0 }}
+    //         animate={{ opacity: 1 }}
+    //         exit={{ opacity: 0 }}
+    //         className={styles.info_container}
+    //     >
+    //         <Row>
+    //             <span>Open Time</span>
+    //             <div className={styles.info_text}>25/08/22</div>
+    //         </Row>
 
-            <Row>
-                <span>Close Time</span>
-                <div className={styles.info_text}>30/08/22</div>
-            </Row>
-        </motion.div>
-    );
+    //         <Row>
+    //             <span>Close Time</span>
+    //             <div className={styles.info_text}>30/08/22</div>
+    //         </Row>
+    //     </motion.div>
+    // );
 
     const totalValueContent = (
         <motion.div
@@ -135,14 +153,17 @@ export default function PriceInfo(props: IPriceInfoProps) {
             }}
         >
             <div className={styles.token_pair_images}>
-                <img
-                    src={isDenomBase ? baseTokenLogoURI : quoteTokenLogoURI}
-                    alt={baseTokenSymbol}
-                />
-                <img
-                    src={isDenomBase ? quoteTokenLogoURI : baseTokenLogoURI}
-                    alt={quoteTokenSymbol}
-                />
+                {baseTokenLogoURI ? (
+                    <img src={baseTokenLogoURI} alt={baseTokenSymbol} />
+                ) : (
+                    <NoTokenIcon tokenInitial={baseTokenSymbol.charAt(0)} width='30px' />
+                )}
+
+                {quoteTokenLogoURI ? (
+                    <img src={quoteTokenLogoURI} alt={quoteTokenSymbol} />
+                ) : (
+                    <NoTokenIcon tokenInitial={quoteTokenSymbol.charAt(0)} width='30px' />
+                )}
             </div>
             <p>
                 {' '}
@@ -170,9 +191,9 @@ export default function PriceInfo(props: IPriceInfoProps) {
         <div className={styles.main_container}>
             {/* <div className={styles.price_info_container}> */}
             {tokenPairDetails}
-            {controlItems[2].checked && totalValueContent}
-            {controlItems[0].checked && timesContent}
-            {controlItems[1].checked && collateralContent}
+            {controlItems[1].checked && totalValueContent}
+            {/* {controlItems[0].checked && timesContent} */}
+            {controlItems[0].checked && collateralContent}
             {minMaxPriceDipslay}
             {/* <div className={styles.graph_image_container}>
                     <img src={graphImage} alt='chart' />

@@ -15,6 +15,8 @@ import {
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { getPinnedPriceValuesFromDisplayPrices } from '../Range/rangeFunctions';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
+import * as d3 from 'd3';
+import { ChainSpec, CrocPoolView } from '@crocswap-libs/sdk';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -29,6 +31,8 @@ declare global {
 }
 
 interface ChartData {
+    pool: CrocPoolView | undefined;
+    chainData: ChainSpec;
     expandTradeTable: boolean;
     // tvlData: any[];
     // volumeData: any[];
@@ -36,7 +40,7 @@ interface ChartData {
     candleData: CandlesByPoolAndDuration | undefined;
     changeState: (isOpen: boolean | undefined, candleData: CandleData | undefined) => void;
     chartItemStates: chartItemStates;
-    limitPrice: string | undefined;
+    limitTick: number;
     liquidityData: any;
     isAdvancedModeActive: boolean | undefined;
     simpleRangeWidth: number | undefined;
@@ -57,6 +61,7 @@ interface ChartData {
 
 export interface ChartUtils {
     period: any;
+    bandwidth: any;
     chartData: CandleChartData[];
     tvlChartData: TvlChartData[];
     feeChartData: FeeChartData[];
@@ -70,7 +75,7 @@ type chartItemStates = {
 };
 
 export default function TradeCandleStickChart(props: ChartData) {
-    const { baseTokenAddress, chainId /* poolPriceNonDisplay */ } = props;
+    const { pool, chainData, baseTokenAddress, chainId /* poolPriceNonDisplay */ } = props;
 
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [isCandleAdded, setIsCandleAdded] = useState<boolean>(false);
@@ -150,6 +155,7 @@ export default function TradeCandleStickChart(props: ChartData) {
 
         const chartUtils: ChartUtils = {
             period: props.candleData?.duration,
+            bandwidth: 0,
             chartData: chartData,
             tvlChartData: tvlChartData,
             volumeChartData: volumeChartData,
@@ -164,43 +170,86 @@ export default function TradeCandleStickChart(props: ChartData) {
     // Parse liquidtiy data
     const liquidityData = useMemo(() => {
         const liqData: LiquidityData[] = [];
+
+        const liqAskData: LiquidityData[] = [];
+        const liqBidData: LiquidityData[] = [];
+
         const liqSnapData: LiqSnap[] = [];
 
-        if (props.liquidityData) {
+        if (props.poolPriceDisplay !== undefined && props.liquidityData) {
+            const domainLeft = Math.min(
+                ...props.liquidityData.ranges.map((o: any) => {
+                    return o.activeLiq !== undefined ? parseFloat(o.activeLiq) : 0;
+                }),
+            );
+
+            const domainRight = Math.max(
+                ...props.liquidityData.ranges.map((o: any) => {
+                    return o.activeLiq !== undefined ? parseFloat(o.activeLiq) : 0;
+                }),
+            );
+
+            const liquidityScale = d3.scaleLog().domain([domainLeft, domainRight]).range([1, 1000]);
+
             props.liquidityData.ranges.map((data: any) => {
-                if (data.upperBoundInvPriceDecimalCorrected > 1) {
+                const liqPrices = denominationsInBase
+                    ? data.upperBoundInvPriceDecimalCorrected
+                    : data.upperBoundPriceDecimalCorrected;
+
+                if (liqPrices !== Infinity && liqPrices !== '+inf') {
                     liqData.push({
-                        activeLiq: data.activeLiq,
-                        upperBoundPriceDecimalCorrected: denominationsInBase
-                            ? data.upperBoundInvPriceDecimalCorrected
-                            : data.upperBoundInvPriceDecimalCorrected,
+                        activeLiq: liquidityScale(data.activeLiq),
+                        liqPrices: liqPrices,
                     });
 
-                    const pinnedDisplayPrices = getPinnedPriceValuesFromDisplayPrices(
-                        denominationsInBase,
-                        baseTokenDecimals,
-                        quoteTokenDecimals,
-                        data.upperBoundInvPriceDecimalCorrected,
-                        data.lowerBoundInvPriceDecimalCorrected,
-                        lookupChain(chainId).gridSize,
-                    );
+                    const barThreshold =
+                        props.poolPriceDisplay !== undefined ? props.poolPriceDisplay : 0;
 
-                    if (!isNaN(parseFloat(pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated))) {
-                        liqSnapData.push({
-                            activeLiq: data.activeLiq,
-                            pinnedMaxPriceDisplayTruncated: parseFloat(
-                                pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
-                            ),
-                            pinnedMinPriceDisplayTruncated: parseFloat(
-                                pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
-                            ),
+                    if (liqPrices > barThreshold) {
+                        liqBidData.push({
+                            activeLiq: liquidityScale(data.activeLiq),
+                            liqPrices: liqPrices,
+                        });
+                    } else {
+                        liqAskData.push({
+                            activeLiq: liquidityScale(data.activeLiq),
+                            liqPrices: liqPrices,
                         });
                     }
+                }
+
+                const pinnedDisplayPrices = getPinnedPriceValuesFromDisplayPrices(
+                    denominationsInBase,
+                    baseTokenDecimals,
+                    quoteTokenDecimals,
+                    data.upperBoundInvPriceDecimalCorrected,
+                    data.lowerBoundInvPriceDecimalCorrected,
+                    lookupChain(chainId).gridSize,
+                );
+
+                if (!isNaN(parseFloat(pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated))) {
+                    liqSnapData.push({
+                        activeLiq: data.activeLiq,
+                        pinnedMaxPriceDisplayTruncated: parseFloat(
+                            pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
+                        ),
+                        pinnedMinPriceDisplayTruncated: parseFloat(
+                            pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
+                        ),
+                    });
                 }
             });
         }
 
-        return { liqData: liqData, liqSnapData: liqSnapData };
+        return {
+            liqData: liqData,
+            liqAskData: liqAskData,
+            liqBidData: liqBidData,
+            liqSnapData: liqSnapData,
+            liqHighligtedAskSeries: [],
+            liqHighligtedBidSeries: [],
+            totalLiq: props.liquidityData?.totals?.totalLiq,
+        };
     }, [props.liquidityData, denominationsInBase]);
 
     // cursor change----------------------------------------------
@@ -241,11 +290,14 @@ export default function TradeCandleStickChart(props: ChartData) {
             <div style={{ height: '100%', width: '100%' }}>
                 {!isLoading && parsedChartData !== undefined ? (
                     <Chart
+                        pool={pool}
+                        chainData={chainData}
+                        isTokenABase={isTokenABase}
                         candleData={parsedChartData}
                         expandTradeTable={expandTradeTable}
                         liquidityData={liquidityData}
                         changeState={props.changeState}
-                        limitPrice={props.limitPrice}
+                        limitTick={props.limitTick}
                         denomInBase={denominationsInBase}
                         isAdvancedModeActive={props.isAdvancedModeActive}
                         simpleRangeWidth={props.simpleRangeWidth}

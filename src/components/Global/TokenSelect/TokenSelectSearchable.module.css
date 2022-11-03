@@ -6,11 +6,12 @@
     padding: 10.5px 5px;
     border-radius: var(--border-radius);
     width: 100%;
+    transition: all var(--animation-speed) ease-in-out;
 }
 
 .modal_content:hover {
     background: var(--dark2);
-    transition: all var(--animation-speed) ease-in-out;
+  
     cursor: pointer;
 }
 

@@ -11,8 +11,6 @@ interface RangeShareControlPropsIF {
 export default function RangeShareControl(props: RangeShareControlPropsIF) {
     const { option, handleShareOptionChange } = props;
 
-    console.log(option);
-
     return (
         <li className={styles.custom_control}>
             <input

@@ -33,13 +33,13 @@ export default function AdvancedPriceInfo(props: AdvancedPriceInfoIF) {
         </div>
     );
 
-    // JSX frag to display the estimated APY of the position
-    const estimatedAPY = (
+    // JSX frag to display the estimated APR of the position
+    const estimatedAPR = (
         <div
-            className={isOutOfRange ? styles.apy_display_out_of_range : styles.apy_display_in_range}
+            className={isOutOfRange ? styles.apr_display_out_of_range : styles.apr_display_in_range}
         >
             <div>
-                Est. APY | {isOutOfRange ? 0 : truncateDecimals(100 - minimumSpan / 100 + 10, 0)}%
+                Est. APR | {isOutOfRange ? 0 : truncateDecimals(100 - minimumSpan / 100 + 10, 0)}%
             </div>
         </div>
     );
@@ -48,7 +48,7 @@ export default function AdvancedPriceInfo(props: AdvancedPriceInfoIF) {
         <div className={styles.price_info_container}>
             <div className={styles.price_info_content}>
                 {currentPrice}
-                {estimatedAPY}
+                {estimatedAPR}
             </div>
         </div>
     );

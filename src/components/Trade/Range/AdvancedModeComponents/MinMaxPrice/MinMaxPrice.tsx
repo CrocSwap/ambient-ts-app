@@ -25,8 +25,8 @@ interface MinMaxPriceIF {
     highBoundOnBlur: () => void;
     rangeLowTick: number;
     rangeHighTick: number;
-    setRangeLowTick: Dispatch<SetStateAction<number>>;
-    setRangeHighTick: Dispatch<SetStateAction<number>>;
+    // setRangeLowTick: Dispatch<SetStateAction<number>>;
+    // setRangeHighTick: Dispatch<SetStateAction<number>>;
     chainId: string;
     targetData: targetData[];
 }
@@ -43,8 +43,8 @@ export default function MinMaxPrice(props: MinMaxPriceIF) {
         highBoundOnBlur,
         rangeLowTick,
         rangeHighTick,
-        setRangeLowTick,
-        setRangeHighTick,
+        // setRangeLowTick,
+        // setRangeHighTick,
         chainId,
         targetData,
     } = props;
@@ -63,7 +63,6 @@ export default function MinMaxPrice(props: MinMaxPriceIF) {
                 )[0].value,
             },
         ];
-
         dispatch(setTargetData(newTargetData));
     };
 
@@ -128,19 +127,20 @@ export default function MinMaxPrice(props: MinMaxPriceIF) {
     const tickSize = lookupChain(chainId).gridSize;
 
     const increaseLowTick = () => {
-        setRangeLowTick(rangeLowTick + tickSize);
+        // setRangeLowTick(rangeLowTick + tickSize);
+
         dispatch(setAdvancedLowTick(rangeLowTick + tickSize));
     };
     const increaseHighTick = () => {
-        setRangeHighTick(rangeHighTick + tickSize);
+        // setRangeHighTick(rangeHighTick + tickSize);
         dispatch(setAdvancedHighTick(rangeHighTick + tickSize));
     };
     const decreaseLowTick = () => {
-        setRangeLowTick(rangeLowTick - tickSize);
+        // setRangeLowTick(rangeLowTick - tickSize);
         dispatch(setAdvancedLowTick(rangeLowTick - tickSize));
     };
     const decreaseHighTick = () => {
-        setRangeHighTick(rangeHighTick - tickSize);
+        // setRangeHighTick(rangeHighTick - tickSize);
         dispatch(setAdvancedHighTick(rangeHighTick - tickSize));
     };
 

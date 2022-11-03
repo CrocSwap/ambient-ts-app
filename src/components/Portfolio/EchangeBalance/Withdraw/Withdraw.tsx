@@ -3,9 +3,9 @@ import { TokenIF } from '../../../../utils/interfaces/TokenIF';
 import styles from './Withdraw.module.css';
 import WithdrawButton from './WithdrawButton/WithdrawButton';
 import WithdrawCurrencySelector from './WithdrawCurrencySelector/WithdrawCurrencySelector';
-import { defaultTokens } from '../../../../utils/data/defaultTokens';
+// import { defaultTokens } from '../../../../utils/data/defaultTokens';
 import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
-import { setToken } from '../../../../utils/state/temp';
+// import { setToken } from '../../../../utils/state/temp';
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
 import TransferAddressInput from '../Transfer/TransferAddressInput/TransferAddressInput';
 import Toggle from '../../../Global/Toggle/Toggle';
@@ -33,14 +33,15 @@ interface PortfolioWithdrawProps {
     resolvedAddress: string | undefined;
     setSendToAddress: Dispatch<SetStateAction<string | undefined>>;
     secondaryEnsName: string | undefined;
+    openTokenModal: () => void;
 }
 
 export default function Withdraw(props: PortfolioWithdrawProps) {
     const {
         crocEnv,
         connectedAccount,
-        openGlobalModal,
-        closeGlobalModal,
+        // openGlobalModal,
+        // closeGlobalModal,
         selectedToken,
         // tokenAllowance,
         tokenWalletBalance,
@@ -52,6 +53,7 @@ export default function Withdraw(props: PortfolioWithdrawProps) {
         resolvedAddress,
         setSendToAddress,
         secondaryEnsName,
+        openTokenModal
     } = props;
 
     const dispatch = useAppDispatch();
@@ -112,11 +114,11 @@ export default function Withdraw(props: PortfolioWithdrawProps) {
     // const [isApprovalPending, setIsApprovalPending] = useState(false);
     const [isWithdrawPending, setIsWithdrawPending] = useState(false);
 
-    const chooseToken = (tok: TokenIF) => {
-        console.log(tok);
-        dispatch(setToken(tok));
-        closeGlobalModal();
-    };
+    // const chooseToken = (tok: TokenIF) => {
+    //     console.log(tok);
+    //     dispatch(setToken(tok));
+    //     closeGlobalModal();
+    // };
 
     useEffect(() => {
         // console.log({ isDepositQtyValid });
@@ -157,17 +159,17 @@ export default function Withdraw(props: PortfolioWithdrawProps) {
         isSendToAddressChecked,
     ]);
 
-    const chooseTokenDiv = (
-        <div>
-            {defaultTokens
-                .filter((token: TokenIF) => token.chainId === parseInt('0x5'))
-                .map((token: TokenIF) => (
-                    <button key={'button_to_set_' + token.name} onClick={() => chooseToken(token)}>
-                        {token.name}
-                    </button>
-                ))}
-        </div>
-    );
+    // const chooseTokenDiv = (
+    //     <div>
+    //         {defaultTokens
+    //             .filter((token: TokenIF) => token.chainId === parseInt('0x5'))
+    //             .map((token: TokenIF) => (
+    //                 <button key={'button_to_set_' + token.name} onClick={() => chooseToken(token)}>
+    //                     {token.name}
+    //                 </button>
+    //             ))}
+    //     </div>
+    // );
 
     const withdraw = async (withdrawQty: number) => {
         if (crocEnv && withdrawQty) {
@@ -314,7 +316,7 @@ export default function Withdraw(props: PortfolioWithdrawProps) {
             {transferAddressOrNull}
             <WithdrawCurrencySelector
                 fieldId='exchange-balance-withdraw'
-                onClick={() => openGlobalModal(chooseTokenDiv)}
+                onClick={() => openTokenModal()}
                 selectedToken={selectedToken}
                 setWithdrawQty={setWithdrawQty}
                 isSendToAddressChecked={isSendToAddressChecked}

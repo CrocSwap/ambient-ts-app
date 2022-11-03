@@ -11,10 +11,12 @@ interface TvlData {
     crosshairData: any[];
     setsubChartValues: React.Dispatch<React.SetStateAction<any>>;
     xScale: any;
+    xScaleCopy: any;
+    render: any;
 }
 
 export default function TvlSubChart(props: TvlData) {
-    const { tvlData, period, xScale, crosshairData } = props;
+    const { tvlData, period, xScale, crosshairData, xScaleCopy } = props;
 
     const setsubChartValues = props.setsubChartValues;
 
@@ -36,7 +38,7 @@ export default function TvlSubChart(props: TvlData) {
                 .mainValue((d: any) => d.value)
                 .crossValue((d: any) => d.time)
                 .decorate((selection: any) => {
-                    selection.style('fill', () => {
+                    selection.enter().style('fill', () => {
                         return 'url(#mygrad)';
                     });
                 });
@@ -63,6 +65,15 @@ export default function TvlSubChart(props: TvlData) {
                         .selectAll('.point>path')
                         .attr('transform', 'scale(0.2)')
                         .style('fill', 'white');
+                });
+
+            const zoom = d3
+                .zoom()
+                .scaleExtent([1, 10])
+                .on('zoom', (event: any) => {
+                    xScale.domain(event.transform.rescaleX(xScaleCopy).domain());
+                    render();
+                    props.render();
                 });
 
             const multi = d3fc
@@ -103,7 +114,9 @@ export default function TvlSubChart(props: TvlData) {
                 .yTicks([2])
                 .yTickFormat(formatDollarAmountAxis)
                 .decorate((selection: any) => {
-                    selection.select('.x-axis').style('height', '1px');
+                    selection.select('.x-axis').remove();
+                    d3.select('.y-axis').select('svg').select('path').remove();
+                    selection.select('d3fc-svg.plot-area').call(zoom);
                 })
                 .svgPlotArea(multi);
 
@@ -171,7 +184,7 @@ export default function TvlSubChart(props: TvlData) {
                     Math.abs(point.x - xScale(xValue(d))),
                 )[1];
 
-                if (nearest !== undefined) {
+                if (nearest) {
                     const newX = new Date(nearest.time.getTime());
                     const value = new Date(newX.setTime(newX.getTime()));
                     return [{ x: xScale(value), y: 0, value: nearest.value }];
@@ -189,6 +202,8 @@ export default function TvlSubChart(props: TvlData) {
                         .select('g.annotation-line.horizontal')
                         .attr('visibility', 'hidden');
                 });
+
+                crosshairData[0].y = -1;
                 render();
             });
         }

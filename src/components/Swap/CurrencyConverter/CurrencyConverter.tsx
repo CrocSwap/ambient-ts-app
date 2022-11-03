@@ -18,6 +18,7 @@ import IconWithTooltip from '../../Global/IconWithTooltip/IconWithTooltip';
 import { ZERO_ADDRESS } from '../../../constants';
 interface CurrencyConverterPropsIF {
     crocEnv: CrocEnv | undefined;
+    poolExists: boolean | null;
     isUserLoggedIn: boolean;
     provider: ethers.providers.Provider | undefined;
     slippageTolerancePercentage: number;
@@ -48,11 +49,13 @@ interface CurrencyConverterPropsIF {
     setSwapButtonErrorMessage: Dispatch<SetStateAction<string>>;
     activeTokenListsChanged: boolean;
     indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
+    gasPriceInGwei: number | undefined;
 }
 
 export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
     const {
         crocEnv,
+        poolExists,
         isUserLoggedIn,
         // provider,
         slippageTolerancePercentage,
@@ -79,6 +82,7 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
         setTokenBInputQty,
         activeTokenListsChanged,
         indicateActiveTokenListsChanged,
+        gasPriceInGwei,
     } = props;
 
     // TODO: update name of functions with 'handle' verbiage
@@ -218,6 +222,7 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
         isTokenAPrimaryLocal ? handleTokenAChangeEvent() : handleTokenBChangeEvent();
     }, [
         crocEnv,
+        poolExists,
         poolPriceDisplay,
         isSellTokenBase,
         isTokenAPrimaryLocal,
@@ -225,11 +230,15 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
         isWithdrawFromDexChecked,
         tokenPair.dataTokenA.address,
         tokenPair.dataTokenB.address,
-        // isSellTokenEth,
+        slippageTolerancePercentage,
     ]);
 
     const handleSwapButtonMessage = (tokenAAmount: number) => {
-        if (poolPriceDisplay === 0 || poolPriceDisplay === Infinity) {
+        if (!poolExists) {
+            setSwapAllowed(false);
+            if (poolExists === null) setSwapButtonErrorMessage('...');
+            if (poolExists === false) setSwapButtonErrorMessage('Pool Not Initialized');
+        } else if (poolPriceDisplay === 0 || poolPriceDisplay === Infinity) {
             setSwapAllowed(false);
             setSwapButtonErrorMessage('Invalid Token Pair');
         } else if (isNaN(tokenAAmount) || tokenAAmount <= 0) {
@@ -313,7 +322,8 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
                       )
                     : undefined;
 
-            impact ? setPriceImpact(impact) : null;
+            setPriceImpact(impact);
+            // impact ? setPriceImpact(impact) : null;
 
             rawTokenBQty = impact ? parseFloat(impact.buyQty) : undefined;
         } else {
@@ -332,7 +342,8 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
                       )
                     : undefined;
             // console.log({ impact });
-            impact ? setPriceImpact(impact) : null;
+            setPriceImpact(impact);
+            // impact ? setPriceImpact(impact) : null;
 
             rawTokenBQty = impact ? parseFloat(impact.buyQty) : undefined;
         }
@@ -361,6 +372,7 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
         }
         if (value) {
             const input = value;
+            console.log({ input });
             setTokenAQtyLocal(input);
             setTokenAInputQty(input);
             setIsTokenAPrimaryLocal(true);
@@ -380,7 +392,8 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
                           input,
                       )
                     : undefined;
-            impact ? setPriceImpact(impact) : null;
+            setPriceImpact(impact);
+            // impact ? setPriceImpact(impact) : null;
 
             rawTokenBQty = impact ? parseFloat(impact.buyQty) : undefined;
         } else {
@@ -397,7 +410,9 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
                           tokenAQtyLocal,
                       )
                     : undefined;
-            impact ? setPriceImpact(impact) : null;
+
+            setPriceImpact(impact);
+            // impact ? setPriceImpact(impact) : null;
 
             rawTokenBQty = impact ? parseFloat(impact.buyQty) : undefined;
         }
@@ -444,7 +459,9 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
                           input,
                       )
                     : undefined;
-            impact ? setPriceImpact(impact) : null;
+
+            setPriceImpact(impact);
+            // impact ? setPriceImpact(impact) : null;
 
             rawTokenAQty = impact ? parseFloat(impact.sellQty) : undefined;
 
@@ -461,7 +478,10 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
                           tokenBQtyLocal,
                       )
                     : undefined;
-            impact ? setPriceImpact(impact) : null;
+
+            setPriceImpact(impact);
+
+            // impact ? setPriceImpact(impact) : null;
 
             rawTokenAQty = impact ? parseFloat(impact.sellQty) : undefined;
             rawTokenAQty ? handleSwapButtonMessage(rawTokenAQty) : null;
@@ -520,6 +540,7 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
                 reverseTokens={reverseTokens}
                 activeTokenListsChanged={activeTokenListsChanged}
                 indicateActiveTokenListsChanged={indicateActiveTokenListsChanged}
+                gasPriceInGwei={gasPriceInGwei}
             />
             <div className={styles.arrow_container} onClick={reverseTokens}>
                 {isLiq ? null : (
@@ -557,6 +578,7 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
                 setIsSaveAsDexSurplusChecked={setIsSaveAsDexSurplusChecked}
                 activeTokenListsChanged={activeTokenListsChanged}
                 indicateActiveTokenListsChanged={indicateActiveTokenListsChanged}
+                gasPriceInGwei={gasPriceInGwei}
             />
         </section>
     );

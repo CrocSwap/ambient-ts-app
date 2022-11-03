@@ -14,11 +14,11 @@ export default function Apy(props: ApyProps) {
           }) + '%'
         : undefined;
 
-    const apyColor = styles.apy_green;
-    // const apyColor =
-    //     amount !== undefined ? (amount > 0 ? styles.apy_green : styles.apy_red) : styles.apy_green;
+    const aprColor = styles.apr_green;
+    // const aprColor =
+    //     amount !== undefined ? (amount > 0 ? styles.apr_green : styles.apr_red) : styles.apr_green;
     return (
-        <section className={`${styles.apy} ${apyColor}`}>
+        <section className={`${styles.apr} ${aprColor}`}>
             <p>{amountString ? amountString : '…'}</p>
         </section>
     );

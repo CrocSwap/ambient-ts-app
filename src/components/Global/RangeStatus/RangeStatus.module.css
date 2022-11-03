@@ -20,39 +20,43 @@
 }
 
 .range_container {
-    width: 10.5px;
-    height: 10.5px;
+    width: 21.5px;
+    height: 21.5px;
     background: #555555;
     padding: 1px;
     border-radius: 50%;
     display: flex;
     justify-content: center;
     align-items: center;
+    color: var(--text-grey-white);
+
 }
+
+
 .range_text_positive {
-    width: 9px;
-    height: 9px;
+    width: 18px;
+    height: 18px;
     background: #15be6f;
     border-radius: 50%;
 }
 .range_text_negative {
-    width: 9px;
-    height: 9px;
+    width: 18px;
+    height: 18px;
 
     background: #f7385b;
     border-radius: 50%;
 }
 .range_text_ambient {
-    width: 9px;
-    height: 9px;
+    width: 18px;
+    height: 18px;;
 
     background: var(--title-gradient);
     border-radius: 50%;
 }
 .in_range_display {
-    display: none;
+    display: flex;
 }
-
+/* 
 @media only screen and (min-width: 1200px) {
     .in_range_display {
         display: flex;
@@ -60,4 +64,4 @@
     .symbol_only_display {
         display: none;
     }
-}
+} */

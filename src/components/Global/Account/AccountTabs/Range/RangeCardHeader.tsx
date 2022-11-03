@@ -13,7 +13,7 @@ export default function RangeCardHeader() {
                 <p className={styles.range_sing}>Value</p>
                 <p className={styles.token}>Token A Qty</p>
                 <p className={styles.token}>Token B Qty</p>
-                <p>APY</p>
+                <p>APR</p>
                 <p>Status</p>
             </div>
 

@@ -9,4 +9,9 @@
     /* min-height: 86vh; */
     padding: 2rem;
     background: var(--dark3);
+
+    height: calc(100vh - 4rem);
+    overflow-y: scroll;
+    
+
 }

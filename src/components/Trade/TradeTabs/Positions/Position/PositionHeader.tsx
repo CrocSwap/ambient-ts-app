@@ -20,7 +20,7 @@ export default function PositionHeader() {
                 <p>ETH</p>
                 <p>USDC</p>
             </div>
-            <p className={styles.apy}>APY</p>
+            <p className={styles.apr}>APR</p>
 
             <p className={styles.full_range}>Status</p>
             <p className={styles.range_icon}></p>

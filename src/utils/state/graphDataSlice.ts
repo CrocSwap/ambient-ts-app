@@ -1,9 +1,11 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { PositionIF } from '../interfaces/PositionIF';
+import { LimitOrderIF, PositionIF } from '../interfaces/exports';
+
 export interface graphData {
     lastBlock: number;
     positionsByUser: PositionsByUser;
     positionsByPool: PositionsByPool;
+    leaderboardByPool: PositionsByPool;
     changesByUser: ChangesByUser;
     changesByPool: ChangesByPool;
     candlesForAllPools: CandlesForAllPools;
@@ -16,67 +18,13 @@ export interface graphData {
 
 export interface LimitOrdersByUser {
     dataReceived: boolean;
-    limitOrders: Array<ILimitOrderState>;
+    limitOrders: LimitOrderIF[];
 }
 export interface LimitOrdersByPool {
     dataReceived: boolean;
-    limitOrders: Array<ILimitOrderState>;
+    limitOrders: LimitOrderIF[];
 }
 
-export interface ILimitOrderState {
-    id: string;
-    limitOrderIdentifier: string;
-    tx: string;
-    positionId: string;
-    source: string;
-    network: string;
-    block: number;
-    time: number;
-    user: string;
-    base: string;
-    quote: string;
-    poolIdx: number;
-    poolHash: string;
-    bidTick: number;
-    askTick: number;
-    isBid: boolean;
-    price: number;
-    deflator: number;
-    concGrowth: number;
-    positionLiq: number;
-    positionLiqBase: number;
-    baseFlowDecimalCorrected: number;
-    quoteFlowDecimalCorrected: number;
-    positionLiqBaseDecimalCorrected: number;
-    positionLiqQuoteDecimalCorrected: number;
-    positionLiqQuote: number;
-    updateType: string;
-    latestUpdateBlock: number;
-    latestUpdateTime: number;
-    latestCrossBlock: number;
-    latestCrossTime: number;
-    latestCrossTransaction: string;
-    knockoutChanges: number;
-    baseSymbol: string;
-    baseDecimals: number;
-    baseTokenLogoURI: string;
-    quoteSymbol: string;
-    quoteDecimals: number;
-    quoteTokenLogoURI: string;
-    limitPrice: number;
-    invLimitPrice: number;
-    limitPriceDecimalCorrected: number;
-    invLimitPriceDecimalCorrected: number;
-    ensResolution: string;
-    ensResolutionAge: number;
-    basePrice: number;
-    quotePrice: number;
-    positionLiqBaseUSD: number;
-    positionLiqQuoteUSD: number;
-    positionLiqTotalUSD: number;
-    totalValueUSD: number;
-    chainId: string;
-}
 export interface PoolVolumeSeries {
     dataReceived: boolean;
     pools: Array<VolumeSeriesByPool>;
@@ -321,6 +269,7 @@ const initialState: graphData = {
     lastBlock: 0,
     positionsByUser: { dataReceived: false, positions: [] },
     positionsByPool: { dataReceived: false, positions: [] },
+    leaderboardByPool: { dataReceived: false, positions: [] },
     changesByUser: { dataReceived: false, changes: [] },
     changesByPool: { dataReceived: false, changes: [] },
     limitOrdersByUser: { dataReceived: false, limitOrders: [] },
@@ -342,38 +291,26 @@ export const graphDataSlice = createSlice({
             state.positionsByUser = action.payload;
         },
         addPositionsByUser: (state, action: PayloadAction<Array<PositionIF>>) => {
-            if (action.payload[0].positionType === 'knockout') {
-                const slotToFind = action.payload[0].merkleStorageSlot?.toLowerCase();
-                const indexOfSlot = state.positionsByUser.positions
-                    .map((position) =>
-                        position.positionType === 'knockout'
-                            ? position.merkleStorageSlot?.toLowerCase()
-                            : false,
-                    )
-                    .findIndex((slot) => slot === slotToFind);
-                if (indexOfSlot === -1) {
-                    state.positionsByUser.positions = action.payload.concat(
+            for (let index = 0; index < action.payload.length; index++) {
+                const updatedPosition = action.payload[index];
+                const positionIdToFind = updatedPosition.positionId.toLowerCase();
+                const indexOfPositionInState = state.positionsByUser.positions.findIndex(
+                    (position) => position.positionId.toLowerCase() === positionIdToFind,
+                );
+                if (indexOfPositionInState === -1) {
+                    state.positionsByUser.positions = [action.payload[index]].concat(
                         state.positionsByUser.positions,
                     );
                 } else {
-                    state.positionsByUser.positions[indexOfSlot] = action.payload[0];
-                }
-            } else {
-                const slotToFind = action.payload[0].positionStorageSlot?.toLowerCase();
-                const indexOfSlot = state.positionsByUser.positions
-                    .map((position) => position.positionStorageSlot?.toLowerCase())
-                    .findIndex((slot) => slot === slotToFind);
-                if (indexOfSlot === -1) {
-                    state.positionsByUser.positions = action.payload.concat(
-                        state.positionsByUser.positions,
-                    );
-                } else {
-                    state.positionsByUser.positions[indexOfSlot] = action.payload[0];
+                    state.positionsByUser.positions[indexOfPositionInState] = action.payload[index];
                 }
             }
         },
         setPositionsByPool: (state, action: PayloadAction<PositionsByPool>) => {
             state.positionsByPool = action.payload;
+        },
+        setLeaderboardByPool: (state, action: PayloadAction<PositionsByPool>) => {
+            state.leaderboardByPool = action.payload;
         },
         setLimitOrdersByUser: (state, action: PayloadAction<LimitOrdersByUser>) => {
             state.limitOrdersByUser = action.payload;
@@ -382,29 +319,35 @@ export const graphDataSlice = createSlice({
             state.limitOrdersByPool = action.payload;
         },
         addPositionsByPool: (state, action: PayloadAction<Array<PositionIF>>) => {
-            if (action.payload[0].positionType === 'knockout') {
-                const slotToFind = action.payload[0].merkleStorageSlot?.toLowerCase();
-                const indexOfSlot = state.positionsByPool.positions
-                    .map((position) => position.merkleStorageSlot?.toLowerCase())
-                    .findIndex((slot) => slot === slotToFind);
-                if (indexOfSlot === -1) {
-                    state.positionsByPool.positions = action.payload.concat(
+            for (let index = 0; index < action.payload.length; index++) {
+                const updatedPosition = action.payload[index];
+                const positionIdToFind = updatedPosition.positionId.toLowerCase();
+                const indexOfPositionInState = state.positionsByPool.positions.findIndex(
+                    (position) => position.positionId.toLowerCase() === positionIdToFind,
+                );
+                if (indexOfPositionInState === -1) {
+                    state.positionsByPool.positions = [action.payload[index]].concat(
                         state.positionsByPool.positions,
                     );
                 } else {
-                    state.positionsByPool.positions[indexOfSlot] = action.payload[0];
+                    state.positionsByPool.positions[indexOfPositionInState] = action.payload[index];
                 }
-            } else {
-                const slotToFind = action.payload[0].positionStorageSlot?.toLowerCase();
-                const indexOfSlot = state.positionsByPool.positions
-                    .map((position) => position.positionStorageSlot?.toLowerCase())
-                    .findIndex((slot) => slot === slotToFind);
-                if (indexOfSlot === -1) {
-                    state.positionsByPool.positions = action.payload.concat(
-                        state.positionsByPool.positions,
+            }
+        },
+        updateLeaderboard: (state, action: PayloadAction<Array<PositionIF>>) => {
+            for (let index = 0; index < action.payload.length; index++) {
+                const updatedPosition = action.payload[index];
+                const positionIdToFind = updatedPosition.positionId.toLowerCase();
+                const indexOfPositionInState = state.leaderboardByPool.positions.findIndex(
+                    (position) => position.positionId.toLowerCase() === positionIdToFind,
+                );
+                if (indexOfPositionInState === -1) {
+                    state.leaderboardByPool.positions = [action.payload[index]].concat(
+                        state.leaderboardByPool.positions,
                     );
                 } else {
-                    state.positionsByPool.positions[indexOfSlot] = action.payload[0];
+                    state.leaderboardByPool.positions[indexOfPositionInState] =
+                        action.payload[index];
                 }
             }
         },
@@ -425,7 +368,7 @@ export const graphDataSlice = createSlice({
                     (tx) => tx.tx.toLowerCase() === txToFind,
                 );
                 if (indexOfTxInState === -1) {
-                    state.changesByUser.changes = action.payload.concat(
+                    state.changesByUser.changes = [action.payload[index]].concat(
                         state.changesByUser.changes,
                     );
                 } else {
@@ -433,7 +376,7 @@ export const graphDataSlice = createSlice({
                 }
             }
         },
-        addLimitOrderChangesByUser: (state, action: PayloadAction<Array<ILimitOrderState>>) => {
+        addLimitOrderChangesByUser: (state, action: PayloadAction<LimitOrderIF[]>) => {
             for (let index = 0; index < action.payload.length; index++) {
                 const updatedTx = action.payload[index];
                 const idToFind = updatedTx.limitOrderIdentifier.toLowerCase();
@@ -441,7 +384,7 @@ export const graphDataSlice = createSlice({
                     (order) => order.limitOrderIdentifier.toLowerCase() === idToFind,
                 );
                 if (indexOfOrderInState === -1) {
-                    state.limitOrdersByUser.limitOrders = action.payload.concat(
+                    state.limitOrdersByUser.limitOrders = [action.payload[index]].concat(
                         state.limitOrdersByUser.limitOrders,
                     );
                 } else {
@@ -450,7 +393,7 @@ export const graphDataSlice = createSlice({
                 }
             }
         },
-        addLimitOrderChangesByPool: (state, action: PayloadAction<Array<ILimitOrderState>>) => {
+        addLimitOrderChangesByPool: (state, action: PayloadAction<LimitOrderIF[]>) => {
             for (let index = 0; index < action.payload.length; index++) {
                 const updatedTx = action.payload[index];
                 const idToFind = updatedTx.limitOrderIdentifier.toLowerCase();
@@ -458,7 +401,7 @@ export const graphDataSlice = createSlice({
                     (order) => order.limitOrderIdentifier.toLowerCase() === idToFind,
                 );
                 if (indexOfOrderInState === -1) {
-                    state.limitOrdersByPool.limitOrders = action.payload.concat(
+                    state.limitOrdersByPool.limitOrders = [action.payload[index]].concat(
                         state.limitOrdersByPool.limitOrders,
                     );
                 } else {
@@ -478,7 +421,7 @@ export const graphDataSlice = createSlice({
                     (tx) => tx.tx.toLowerCase() === txToFind,
                 );
                 if (indexOfTxInState === -1) {
-                    state.changesByPool.changes = action.payload.concat(
+                    state.changesByPool.changes = [action.payload[index]].concat(
                         state.changesByPool.changes,
                     );
                 } else {
@@ -647,6 +590,8 @@ export const {
     setPositionsByUser,
     addPositionsByUser,
     setPositionsByPool,
+    setLeaderboardByPool,
+    updateLeaderboard,
     addPositionsByPool,
     setPoolVolumeSeries,
     setPoolTvlSeries,

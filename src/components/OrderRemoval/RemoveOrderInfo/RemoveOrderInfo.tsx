@@ -14,30 +14,36 @@ interface IRemoveOrderInfoProps {
     bidTick: number | undefined;
     askTick: number | undefined;
     baseDisplayFrontend: string;
+    baseDisplay: string;
+    quoteDisplay: string;
     quoteDisplayFrontend: string;
     positionLiqTotalUSD: number | undefined;
     // feeLiqBaseDecimalCorrected: number | undefined;
     // feeLiqQuoteDecimalCorrected: number | undefined;
     removalPercentage: number;
     positionLiquidity: string | undefined;
-    // baseRemovalNum: number;
-    // quoteRemovalNum: number;
+    baseRemovalString: string;
+    quoteRemovalString: string;
 }
 
 export default function RemoveOrderInfo(props: IRemoveOrderInfoProps) {
     const {
-        baseTokenSymbol,
-        quoteTokenSymbol,
+        // baseTokenSymbol,
+        // quoteTokenSymbol,
         baseTokenLogoURI,
         quoteTokenLogoURI,
         usdValue,
-        bidTick,
-        askTick,
+        baseDisplay,
+        quoteDisplay,
+        // bidTick,
+        // askTick,
 
-        baseDisplayFrontend,
-        quoteDisplayFrontend,
-        positionLiqTotalUSD,
-        positionLiquidity,
+        // baseDisplayFrontend,
+        // quoteDisplayFrontend,
+        // baseRemovalString,
+        // quoteRemovalString,
+        // positionLiqTotalUSD,
+        // positionLiquidity,
     } = props;
 
     return (
@@ -49,65 +55,34 @@ export default function RemoveOrderInfo(props: IRemoveOrderInfoProps) {
                     <div className={styles.token_price}>{usdValue}</div>
                 </Row>
                 <DividerDark />
-                {/* -----------------TICK----------------------------------- */}
-                <Row>
-                    <span>Bid Tick</span>
-                    <div className={styles.info_text}>{bidTick}</div>
-                </Row>
 
-                <Row>
-                    <span>Ask Tick</span>
-                    <div className={styles.info_text}>{askTick}</div>
-                </Row>
-                <DividerDark />
                 {/* ----------------------------LIQUIDITY------------------------------ */}
                 <div className={styles.info_container}>
-                    <p>Liquidity</p>
                     <Row>
+                        <span>Token Quantity</span>
                         <div className={styles.align_center}>
+                            <p className={styles.info_text}>{baseDisplay}</p>
                             <img src={baseTokenLogoURI} alt='' width='15px' />
-                            {baseTokenSymbol}
                         </div>
-
-                        <div className={styles.info_text}>{baseDisplayFrontend}</div>
                     </Row>
                     {/*  */}
                     <Row>
+                        <span>Limit Order Price</span>
                         <div className={styles.align_center}>
+                            <div className={styles.info_text}>{quoteDisplay}</div>
                             <img src={quoteTokenLogoURI} alt='' width='15px' />
-                            {quoteTokenSymbol}
                         </div>
-                        <div className={styles.info_text}>{quoteDisplayFrontend}</div>
                     </Row>
                     {/*  */}
-
-                    <Row>
-                        <span> Total Liquidity</span>
-                        <div className={styles.info_text}>
-                            {positionLiqTotalUSD ? positionLiqTotalUSD.toFixed(2) : '...'}
-                        </div>
-                    </Row>
-                    <Row>
-                        <span> Liquidity Wei </span>
-                        <div className={styles.info_text}>
-                            {positionLiquidity ? parseFloat(positionLiquidity).toFixed(2) : '...'}
-                        </div>
-                    </Row>
                 </div>
                 <DividerDark />
 
                 {/* ---------------------------REMOVAL SUMMARY--------------------------------- */}
+
                 <Row>
-                    <span>{baseTokenSymbol} Removal Summary</span>
+                    <span> Return Quantity</span>
                     <div className={styles.token_price}>
-                        {'baseRemovalString' !== undefined ? ' baseRemovalString' : '…'}
-                        <img src={baseTokenLogoURI} alt='' />
-                    </div>
-                </Row>
-                <Row>
-                    <span>{quoteTokenSymbol} Removal Summary</span>
-                    <div className={styles.token_price}>
-                        {'quoteRemovalString' !== undefined ? 'quoteRemovalString' : '…'}
+                        4,200.00
                         <img src={quoteTokenLogoURI} alt='' />
                     </div>
                 </Row>

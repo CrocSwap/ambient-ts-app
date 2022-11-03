@@ -1,27 +1,27 @@
-.non_filled {
-    width: 15px;
-    height: 15px;
-    border-radius: 50%;
-    border: 1px solid var(--text-grey-light);
-    background: transparent;
-}
-.filled {
-    width: 15px;
-    height: 15px;
-    border-radius: 50%;
-    border: 1px solid #41d18e;
-    background: transparent;
 
+.filled, .non_filled{
     display: flex;
     justify-content: center;
     align-items: center;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background: transparent;
+}
+.non_filled {
+  
+    border: 1px solid var(--text-grey-light);
+}
+.filled {
+  
+    border: 1px solid #41d18e;  
 }
 
 /* Desktop screen Sizes */
 @media only screen and (min-width: 992px) {
     .filled,
     .non_filled {
-        width: 24px;
-        height: 24px;
+        width: 21px;
+        height: 21px;
     }
 }

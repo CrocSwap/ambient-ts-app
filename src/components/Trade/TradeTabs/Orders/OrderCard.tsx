@@ -1,7 +1,8 @@
+// todo: SEE RETURN STATEMENT
+
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
 import { formatAmount } from '../../../../utils/numbers';
-import { ILimitOrderState } from '../../../../utils/state/graphDataSlice';
 import OpenOrderStatus from '../../../Global/OpenOrderStatus/OpenOrderStatus';
 import Price from '../../../Global/Tabs/Price/Price';
 import OrdersMenu from '../../../Global/Tabs/TableMenu/TableMenuComponents/OrdersMenu';
@@ -10,10 +11,11 @@ import OrderTypeSide from '../../../Global/Tabs/TypeAndSide/OrderTypeAndSide/Ord
 import Value from '../../../Global/Tabs/Value/Value';
 import WalletAndId from '../../../Global/Tabs/WalletAndID/WalletAndId';
 import styles from './OrderCard.module.css';
+import { LimitOrderIF } from '../../../../utils/interfaces/exports';
 
 interface OrderCardProps {
     account: string;
-    limitOrder: ILimitOrderState;
+    limitOrder: LimitOrderIF;
     isDenomBase: boolean;
     selectedBaseToken: string;
     selectedQuoteToken: string;
@@ -215,54 +217,59 @@ export default function OrderCard(props: OrderCardProps) {
 
     // console.log(limitOrder);
     return (
-        <li
-            className={`${styles.main_container} ${activePositionStyle}`}
-            onClick={() =>
-                limitOrder.limitOrderIdentifier === currentPositionActive
-                    ? null
-                    : setCurrentPositionActive('')
-            }
-            id={orderDomId}
-        >
-            <div className={styles.main_container}>
-                <div className={styles.row_container}>
-                    {/* ------------------------------------------------------ */}
+        // <li
+        //     className={`${styles.main_container} ${activePositionStyle}`}
+        //     onClick={() =>
+        //         limitOrder.limitOrderIdentifier === currentPositionActive
+        //             ? null
+        //             : setCurrentPositionActive('')
+        //     }
+        //     id={orderDomId}
+        // >
+        //     <div className={styles.main_container}>
+        //         <div className={styles.row_container}>
+        //             {/* ------------------------------------------------------ */}
 
-                    <WalletAndId
-                        ownerId={ownerIdDisplay}
-                        posHash={limitOrder.limitOrderIdentifier.slice(42)}
-                        ensName={limitOrder.ensResolution ? limitOrder.ensResolution : null}
-                        isOwnerActiveAccount={isOwnerActiveAccount}
-                    />
+        //             <WalletAndId
+        //                 ownerId={ownerIdDisplay}
+        //                 posHash={limitOrder.limitOrderIdentifier.slice(42)}
+        //                 ensName={limitOrder.ensResolution ? limitOrder.ensResolution : null}
+        //                 isOwnerActiveAccount={isOwnerActiveAccount}
+        //             />
 
-                    {/* ------------------------------------------------------ */}
-                    <Price priceType={priceType} displayPrice={truncatedDisplayPrice} />
-                    {/* ------------------------------------------------------ */}
-                    <OrderTypeSide
-                        type='order'
-                        side={sideType}
-                        isDenomBase={isDenomBase}
-                        baseTokenCharacter={baseTokenCharacter}
-                        quoteTokenCharacter={quoteTokenCharacter}
-                    />
-                    {/* ------------------------------------------------------ */}
-                    <Value usdValue={usdValueTruncated ? '$' + usdValueTruncated : '…'} />
-                    <TokenQty
-                        baseQty={baseQtyTruncated}
-                        quoteQty={quoteQtyTruncated}
-                        baseTokenCharacter={baseTokenCharacter}
-                        quoteTokenCharacter={quoteTokenCharacter}
-                    />
-                    {/* ------------------------------------------------------ */}
-                    <div className={styles.status}>
-                        <OpenOrderStatus isFilled={isOrderFilled} />
-                    </div>
-                </div>
+        //             {/* ------------------------------------------------------ */}
+        //             <Price priceType={priceType} displayPrice={truncatedDisplayPrice} />
+        //             {/* ------------------------------------------------------ */}
+        //             <OrderTypeSide
+        //                 type='order'
+        //                 side={sideType}
+        //                 isDenomBase={isDenomBase}
+        //                 baseTokenCharacter={baseTokenCharacter}
+        //                 quoteTokenCharacter={quoteTokenCharacter}
+        //             />
+        //             {/* ------------------------------------------------------ */}
+        //             <Value usdValue={usdValueTruncated ? '$' + usdValueTruncated : '…'} />
+        //             <TokenQty
+        //                 baseQty={baseQtyTruncated}
+        //                 quoteQty={quoteQtyTruncated}
+        //                 baseTokenCharacter={baseTokenCharacter}
+        //                 quoteTokenCharacter={quoteTokenCharacter}
+        //             />
+        //             {/* ------------------------------------------------------ */}
+        //             <div className={styles.status}>
+        //                 <OpenOrderStatus isFilled={isOrderFilled} />
+        //             </div>
+        //         </div>
 
-                <div className={styles.menu_container}>
-                    <OrdersMenu limitOrder={limitOrder} {...orderMenuProps} />
-                </div>
-            </div>
-        </li>
+        //         <div className={styles.menu_container}>
+        //             <OrdersMenu limitOrder={limitOrder} {...orderMenuProps} />
+        //         </div>
+        //     </div>
+        // </li>
+        <p>
+            This file has been refactored and updated to OrderRow.tsx on 10/13/2022. It is no longer
+            in use. If not uncommented by 12/13/2022, it can be safely deleted, along with
+            OrderCard.module.css. -Jr
+        </p>
     );
 }

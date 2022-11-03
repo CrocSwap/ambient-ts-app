@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // START: Import React and Dongles
-import { Dispatch, SetStateAction, ReactNode, useState } from 'react';
-import { useParams, Outlet, useOutletContext, Link, NavLink } from 'react-router-dom';
+import { Dispatch, SetStateAction, ReactNode, useEffect, useState } from 'react';
+import { useParams, Outlet, useOutletContext, Link, NavLink, useNavigate } from 'react-router-dom';
 import { ethers } from 'ethers';
 import { motion, AnimateSharedLayout } from 'framer-motion';
-import { SketchPicker } from 'react-color';
-import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
+import { ChainSpec, CrocEnv, CrocPoolView } from '@crocswap-libs/sdk';
+import { VscClose } from 'react-icons/vsc';
 
 // START: Import JSX Components
 import TradeCharts from './TradeCharts/TradeCharts';
@@ -18,9 +18,11 @@ import { tradeData as TradeDataIF } from '../../utils/state/tradeDataSlice';
 import { CandleData, CandlesByPoolAndDuration } from '../../utils/state/graphDataSlice';
 import { PoolIF, TokenIF, TokenPairIF } from '../../utils/interfaces/exports';
 import { useUrlParams } from './useUrlParams';
+import NoTokenIcon from '../../components/Global/NoTokenIcon/NoTokenIcon';
 
 // interface for React functional component props
 interface TradePropsIF {
+    pool: CrocPoolView | undefined;
     isUserLoggedIn: boolean;
     crocEnv: CrocEnv | undefined;
     provider: ethers.providers.Provider | undefined;
@@ -70,11 +72,14 @@ interface TradePropsIF {
     poolPriceNonDisplay: number | undefined;
     importedTokens: TokenIF[];
     poolExists: boolean | null;
+    showSidebar: boolean;
+    setTokenPairLocal: Dispatch<SetStateAction<string[] | null>>;
 }
 
 // React functional component
 export default function Trade(props: TradePropsIF) {
     const {
+        pool,
         isUserLoggedIn,
         crocEnv,
         candleData,
@@ -101,28 +106,26 @@ export default function Trade(props: TradePropsIF) {
         setIsShowAllEnabled,
         isTokenABase,
         poolPriceNonDisplay,
-
         account,
         isAuthenticated,
         isWeb3Enabled,
         currentTxActiveInTransactions,
         setCurrentTxActiveInTransactions,
-        // selectedOutsideTab,
-        // setSelectedOutsideTab,
-        // outsideControl,
-        // setOutsideControl,
-        // currentPositionActive,
-        // setCurrentPositionActive,
-        // openGlobalModal,
-        // closeGlobalModal,
         poolExists,
+        setTokenPairLocal,
+        showSidebar,
     } = props;
 
-    useUrlParams(chainId, isInitialized);
+    const tokenPairFromParams = useUrlParams(chainId, isInitialized);
+    useEffect(() => {
+        setTokenPairLocal && setTokenPairLocal(tokenPairFromParams);
+    }, [tokenPairFromParams]);
     const { params } = useParams();
 
     const [isCandleSelected, setIsCandleSelected] = useState<boolean | undefined>();
     const [transactionFilter, setTransactionFilter] = useState<CandleData>();
+
+    const navigate = useNavigate();
 
     const routes = [
         {
@@ -143,7 +146,7 @@ export default function Trade(props: TradePropsIF) {
     const { tradeData, graphData } = useAppSelector((state) => state);
     const {
         isDenomBase,
-        limitPrice,
+        limitTick,
         advancedMode,
         simpleRangeWidth,
 
@@ -153,6 +156,9 @@ export default function Trade(props: TradePropsIF) {
     const baseTokenLogo = isDenomBase ? tradeData.baseToken.logoURI : tradeData.quoteToken.logoURI;
     const quoteTokenLogo = isDenomBase ? tradeData.quoteToken.logoURI : tradeData.baseToken.logoURI;
 
+    const baseTokenSymbol = isDenomBase ? tradeData.baseToken.symbol : tradeData.quoteToken.symbol;
+    const quoteTokenSymbol = isDenomBase ? tradeData.quoteToken.symbol : tradeData.baseToken.symbol;
+
     const indexOfPoolInLiqData = graphData?.liquidityForAllPools.pools.findIndex(
         (pool) =>
             pool.pool.baseAddress.toLowerCase() === tradeData.baseToken.address.toLowerCase() &&
@@ -161,19 +167,8 @@ export default function Trade(props: TradePropsIF) {
             pool.pool.chainId === chainData.chainId,
     );
 
-    // const liqData = graphData?.liquidityForAllPools.pools;
-    // console.log({ liqData });
-    // console.log({ tradeData });
-    // console.log({ chainData });
-    // console.log({ indexOfPoolInLiqData });
-
     const activePoolLiquidityData = graphData?.liquidityForAllPools?.pools[indexOfPoolInLiqData];
-    // console.log({ activePoolLiquidityData });
     const liquidityData = activePoolLiquidityData?.liquidityData;
-
-    // const denomInBase = tradeData.isDenomBase;
-
-    // const isAdvancedModeActive = tradeData.advancedMode;
 
     const poolPriceDisplayWithDenom = poolPriceDisplay
         ? isDenomBase
@@ -205,28 +200,38 @@ export default function Trade(props: TradePropsIF) {
         setTransactionFilter(candleData);
     };
 
-    const [upBodyColorPicker, setUpBodyColorPicker] = useState<boolean>(false);
-    const [upBorderColorPicker, setUpBorderColorPicker] = useState<boolean>(false);
-    const [downBodyColorPicker, setDownBodyColorPicker] = useState<boolean>(false);
-    const [downBorderColorPicker, setDownBorderColorPicker] = useState<boolean>(false);
+    // const [upBodyColorPicker, setUpBodyColorPicker] = useState<boolean>(false);
+    // const [upBorderColorPicker, setUpBorderColorPicker] = useState<boolean>(false);
+    // const [downBodyColorPicker, setDownBodyColorPicker] = useState<boolean>(false);
+    // const [downBorderColorPicker, setDownBorderColorPicker] = useState<boolean>(false);
 
-    const [upBodyColor, setUpBodyColor] = useState<string>('#7371FC');
-    const [upBorderColor, setUpBorderColor] = useState<string>('#7371FC');
-    const [downBodyColor, setDownBodyColor] = useState<string>('#CDC1FF');
-    const [downBorderColor, setDownBorderColor] = useState<string>('#CDC1FF');
+    const [upBodyColor] = useState<string>('#CDC1FF');
+    const [upBorderColor] = useState<string>('#CDC1FF');
+    const [downBodyColor] = useState<string>('#171D27');
+    // const [downBodyColor] = useState<string>('#24243e');
+    const [downBorderColor] = useState<string>('#7371FC');
+    // const [upBodyColor, setUpBodyColor] = useState<string>('#CDC1FF');
+    // const [upBorderColor, setUpBorderColor] = useState<string>('#CDC1FF');
+    // const [downBodyColor, setDownBodyColor] = useState<string>('#24243e');
+    // const [downBorderColor, setDownBorderColor] = useState<string>('#7371FC');
 
-    const handleBodyColorPickerChange = (color: any) => {
-        setUpBodyColor(color.hex);
-    };
-    const handleBorderColorPickerChange = (color: any) => {
-        setUpBorderColor(color.hex);
-    };
-    const handleDownBodyColorPickerChange = (color: any) => {
-        setDownBodyColor(color.hex);
-    };
-    const handleDownBorderColorPickerChange = (color: any) => {
-        setDownBorderColor(color.hex);
-    };
+    // console.log({ upBodyColor });
+    // console.log({ upBorderColor });
+    // console.log({ downBodyColor });
+    // console.log({ downBorderColor });
+
+    // const handleBodyColorPickerChange = (color: any) => {
+    //     setUpBodyColor(color.hex);
+    // };
+    // const handleBorderColorPickerChange = (color: any) => {
+    //     setUpBorderColor(color.hex);
+    // };
+    // const handleDownBodyColorPickerChange = (color: any) => {
+    //     setDownBodyColor(color.hex);
+    // };
+    // const handleDownBorderColorPickerChange = (color: any) => {
+    //     setDownBorderColor(color.hex);
+    // };
 
     const [showChartAndNotTab, setShowChartAndNotTab] = useState(false);
 
@@ -256,26 +261,36 @@ export default function Trade(props: TradePropsIF) {
     );
 
     const initLinkPath =
-        '/initpool/chain=0x5&base=' + baseTokenAddress + '&quote=' + quoteTokenAddress;
+        '/initpool/chain=0x5&tokenA=' + baseTokenAddress + '&tokenB=' + quoteTokenAddress;
 
-    const poolNotInitializedContent = poolExists ? null : (
-        <div className={styles.pool_not_initialialized_container}>
-            <div className={styles.pool_not_initialialized_content}>
-                <h2>This pool has not been initialized.</h2>
-                <h3>Do you want to initialize it?</h3>
-
-                <Link to={initLinkPath} className={styles.initialize_link}>
-                    <img src={baseTokenLogo} alt='base token' />
-                    Initialize Pool
-                    <img src={quoteTokenLogo} alt=' quote token' />
-                </Link>
+    const poolNotInitializedContent =
+        poolExists === false ? (
+            <div className={styles.pool_not_initialialized_container}>
+                <div className={styles.pool_not_initialialized_content}>
+                    <div className={styles.close_init} onClick={() => navigate(-1)}>
+                        <VscClose size={25} />
+                    </div>
+                    <h2>This pool has not been initialized.</h2>
+                    <h3>Do you want to initialize it?</h3>
+                    <Link to={initLinkPath} className={styles.initialize_link}>
+                        Initialize Pool
+                        {baseTokenLogo ? (
+                            <img src={baseTokenLogo} alt={baseTokenSymbol} />
+                        ) : (
+                            <NoTokenIcon tokenInitial={baseTokenSymbol.charAt(0)} width='20px' />
+                        )}
+                        {quoteTokenLogo ? (
+                            <img src={quoteTokenLogo} alt={quoteTokenSymbol} />
+                        ) : (
+                            <NoTokenIcon tokenInitial={quoteTokenSymbol.charAt(0)} width='20px' />
+                        )}
+                    </Link>
+                    <button className={styles.no_thanks} onClick={() => navigate(-1)}>
+                        No, take me back.
+                    </button>
+                </div>
             </div>
-        </div>
-    );
-    // if (poolExists === false) {
-    //     console.log({ poolExists });
-    //     return poolNotInitializedContent;
-    // }
+        ) : null;
 
     return (
         <AnimateSharedLayout>
@@ -284,7 +299,7 @@ export default function Trade(props: TradePropsIF) {
                     {poolNotInitializedContent}
                     {mobileDataToggle}
                     <div className={` ${expandGraphStyle} ${fullScreenStyle}`}>
-                        <div style={{ textAlign: 'center', display: 'flex' }}>
+                        {/* <div style={{ textAlign: 'center', display: 'flex' }}>
                             <label style={{ padding: '0px' }}>Up</label>
                             <div style={{ marginLeft: '4px' }}>
                                 <div
@@ -443,7 +458,7 @@ export default function Trade(props: TradePropsIF) {
                                     </div>
                                 ) : null}
                             </div>
-                        </div>
+                        </div> */}
 
                         <motion.div
                             initial={{ opacity: 0, scale: 0.5 }}
@@ -458,6 +473,8 @@ export default function Trade(props: TradePropsIF) {
                             }`}
                         >
                             <TradeCharts
+                                pool={pool}
+                                chainData={chainData}
                                 poolPriceDisplay={poolPriceDisplayWithDenom}
                                 expandTradeTable={expandTradeTable}
                                 setExpandTradeTable={setExpandTradeTable}
@@ -469,7 +486,7 @@ export default function Trade(props: TradePropsIF) {
                                 liquidityData={liquidityData}
                                 lastBlockNumber={lastBlockNumber}
                                 chainId={chainId}
-                                limitPrice={limitPrice}
+                                limitTick={limitTick}
                                 favePools={favePools}
                                 addPoolToFaves={addPoolToFaves}
                                 removePoolFromFaves={removePoolFromFaves}
@@ -533,6 +550,7 @@ export default function Trade(props: TradePropsIF) {
                                 openGlobalModal={props.openGlobalModal}
                                 closeGlobalModal={props.closeGlobalModal}
                                 importedTokens={importedTokens}
+                                showSidebar={showSidebar}
                             />
                         </div>
                     </motion.div>

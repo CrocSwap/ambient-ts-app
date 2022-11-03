@@ -10,9 +10,11 @@ import Toggle2 from '../../../Global/Toggle/Toggle2';
 import ambientLogo from '../../../../assets/images/logos/ambient_logo.svg';
 import { MdAccountBalanceWallet } from 'react-icons/md';
 import IconWithTooltip from '../../../Global/IconWithTooltip/IconWithTooltip';
+import NoTokenIcon from '../../../Global/NoTokenIcon/NoTokenIcon';
 
 interface RangeCurrencySelectorProps {
     isUserLoggedIn: boolean;
+    gasPriceInGwei: number | undefined;
     resetTokenQuantities: () => void;
     fieldId: string;
     chainId: string;
@@ -57,6 +59,7 @@ interface RangeCurrencySelectorProps {
 export default function RangeCurrencySelector(props: RangeCurrencySelectorProps) {
     const {
         isUserLoggedIn,
+        gasPriceInGwei,
         resetTokenQuantities,
         tokenPair,
         tokensBank,
@@ -139,7 +142,7 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
 
     const DexBalanceContent = (
         <span className={styles.surplus_toggle}>
-            <IconWithTooltip title='Use Exchange Surplus' placement='bottom'>
+            <IconWithTooltip title='Use Exchange Balance' placement='bottom'>
                 {isTokenASelector ? (
                     <Toggle2
                         isOn={isWithdrawTokenAFromDexChecked}
@@ -166,11 +169,15 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
     );
 
     const walletBalanceNonLocaleString = isTokenASelector
-        ? tokenABalance
-            ? parseFloat(tokenABalance).toString()
+        ? tokenABalance && gasPriceInGwei
+            ? isTokenAEth
+                ? (parseFloat(tokenABalance) - gasPriceInGwei * 500000 * 1e-9).toFixed(18)
+                : tokenABalance
             : ''
-        : tokenBBalance
-        ? parseFloat(tokenBBalance).toString()
+        : tokenBBalance && gasPriceInGwei
+        ? isTokenBEth
+            ? (parseFloat(tokenBBalance) - gasPriceInGwei * 500000 * 1e-9).toFixed(18)
+            : tokenBBalance
         : '';
 
     const walletBalanceLocaleString = isTokenASelector
@@ -188,11 +195,15 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
         : '...';
 
     const surplusBalanceNonLocaleString = isTokenASelector
-        ? tokenADexBalance
-            ? parseFloat(tokenADexBalance).toString()
+        ? tokenADexBalance && gasPriceInGwei
+            ? isTokenAEth
+                ? (parseFloat(tokenADexBalance) - gasPriceInGwei * 500000 * 1e-9).toFixed(18)
+                : tokenADexBalance
             : ''
-        : tokenBDexBalance
-        ? parseFloat(tokenBDexBalance).toString()
+        : tokenBDexBalance && gasPriceInGwei
+        ? isTokenBEth
+            ? (parseFloat(tokenBDexBalance) - gasPriceInGwei * 500000 * 1e-9).toFixed(18)
+            : tokenBDexBalance
         : '';
 
     const surplusBalanceLocaleString = isTokenASelector
@@ -267,12 +278,16 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
                     />
                 </div>
                 <div className={styles.token_select} onClick={openModal}>
-                    <img
-                        className={styles.token_list_img}
-                        src={thisToken.logoURI}
-                        alt={`${thisToken.name} logo`}
-                        width='30px'
-                    />
+                    {thisToken.logoURI ? (
+                        <img
+                            className={styles.token_list_img}
+                            src={thisToken.logoURI}
+                            alt={thisToken.name + 'token logo'}
+                            width='30px'
+                        />
+                    ) : (
+                        <NoTokenIcon tokenInitial={thisToken.symbol.charAt(0)} width='30px' />
+                    )}
                     <span className={styles.token_list_text}>{thisToken.symbol}</span>
                     <RiArrowDownSLine size={27} />
                 </div>
@@ -345,7 +360,7 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
                             </div>
                         </div>{' '}
                     </IconWithTooltip>
-                    <IconWithTooltip title='Exchange Surplus' placement='bottom'>
+                    <IconWithTooltip title='Exchange Balance' placement='bottom'>
                         <div
                             className={`${styles.balance_with_pointer} ${
                                 (isTokenASelector && isWithdrawTokenAFromDexChecked) ||

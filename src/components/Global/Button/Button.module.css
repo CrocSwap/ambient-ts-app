@@ -17,7 +17,7 @@
 
     color: #cdc1ff;
     border-radius: 4px;
-    transition: all var(--animation-speed) ease-out;
+    transition: all var(--animation-speed) ease-in-out;
     background: linear-gradient(
         270deg,
         #7371fc,
@@ -51,7 +51,7 @@
     border: none;
 
     cursor: pointer;
-    transition: color var(--animation-speed) ease-in;
+    transition: color var(--animation-speed) ease-in-out;
     text-align: center;
 
     border-radius: var(--border-radius);

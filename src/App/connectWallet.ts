@@ -5,6 +5,7 @@ import { Provider } from '@ethersproject/providers';
 export const connectWallet = async (provider: Provider) => {
     const { Moralis, chainId, isWeb3Enabled, account } = useMoralis();
     async function getStuff() {
+        console.error('this should not run');
         let nativeEthBalance = null;
         if (isWeb3Enabled && account !== null) {
             // this conditional is important because it prevents a TS error

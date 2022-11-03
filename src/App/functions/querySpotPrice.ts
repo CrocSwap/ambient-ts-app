@@ -12,6 +12,8 @@ export const querySpotPrice = async (
     _lastBlockNumber: number,
 ) => {
     if (!crocEnv) return;
+    console.log('querying spot price');
+
     // console.log('Query spot price ' + baseTokenAddress + ' ' + quoteTokenAddress);
     // console.log({ provider });
     // console.log(
@@ -21,7 +23,7 @@ export const querySpotPrice = async (
     return crocEnv.pool(baseTokenAddress, quoteTokenAddress).spotPrice();
 };
 
-type SpotPriceFn = (
+export type SpotPriceFn = (
     crocEnv: CrocEnv,
     baseToken: string,
     quoteToken: string,

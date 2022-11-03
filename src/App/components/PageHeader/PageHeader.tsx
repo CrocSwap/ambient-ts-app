@@ -15,7 +15,8 @@ import Modal from '../../../components/Global/Modal/Modal';
 // START: Import Local Files
 import styles from './PageHeader.module.css';
 import trimString from '../../../utils/functions/trimString';
-import ambientLogo from '../../../assets/images/logos/ambient_logo.svg';
+// import ambientLogo from '../../../assets/images/logos/ambient_logo.svg';
+import headerLogo from '../../../assets/images/logos/header_logo.svg';
 import { useModal } from '../../../components/Global/Modal/useModal';
 import { useUrlParams } from './useUrlParams';
 import MobileSidebar from '../../../components/Global/MobileSidebar/MobileSidebar';
@@ -171,6 +172,43 @@ export default function PageHeader(props: HeaderPropsIF) {
 
     const urlParams = useUrlParams();
 
+    const tradeData = useAppSelector((state) => state.tradeData);
+
+    const baseSymbol = tradeData.baseToken.symbol;
+    const quoteSymbol = tradeData.quoteToken.symbol;
+    const isDenomBase = tradeData.isDenomBase;
+
+    useEffect(() => {
+        const path = location.pathname;
+
+        const pathNoLeadingSlash = path.slice(1);
+        // console.log({ pathNoLeadingSlash });
+
+        const isAddressEns = pathNoLeadingSlash?.endsWith('.eth');
+        const isAddressHex =
+            pathNoLeadingSlash?.startsWith('0x') && pathNoLeadingSlash?.length == 42;
+
+        const isPathValidAddress = path && (isAddressEns || isAddressHex);
+        // console.log({ isPathValidAddress });
+
+        if (pathNoLeadingSlash === 'account') {
+            document.title = 'my account - ambient.finance';
+        } else if (isPathValidAddress) {
+            const ensNameOrAddressTruncated = isAddressEns
+                ? pathNoLeadingSlash.length > 15
+                    ? trimString(pathNoLeadingSlash, 10, 3, '…')
+                    : pathNoLeadingSlash
+                : trimString(pathNoLeadingSlash, 6, 0, '…');
+            document.title = `${ensNameOrAddressTruncated} - ambient.finance`;
+        } else if (location.pathname.includes('swap') || location.pathname.includes('trade')) {
+            document.title = isDenomBase
+                ? `${baseSymbol}/${quoteSymbol} - ambient.finance`
+                : `${quoteSymbol}/${baseSymbol} - ambient.finance`;
+        } else {
+            document.title = 'ambient.finance';
+        }
+    }, [baseSymbol, quoteSymbol, isDenomBase, location]);
+
     const tradeDestination = location.pathname.includes('trade/market')
         ? '/trade/market'
         : location.pathname.includes('trade/limit')
@@ -235,8 +273,8 @@ export default function PageHeader(props: HeaderPropsIF) {
     return (
         <header data-testid={'page-header'} className={styles.primary_header}>
             <Link to='/' className={styles.logo_container}>
-                <img src={ambientLogo} alt='ambient' />
-                <h1>ambient</h1>
+                <img src={headerLogo} alt='ambient' />
+                {/* <h1>ambient</h1> */}
             </Link>
             {/* <div
                 className={styles.mobile_nav_toggle}

@@ -44,10 +44,11 @@
     line-height: var(--body-lh);
     color: #71b5fc;
     cursor: pointer;
+    transition: all var(--animation-speed) ease-in-out;
 }
 .view_more:hover {
     color: #7371fc;
-    transition: all var(--animation-speed) ease-in-out;
+   
 }
 
 .content::-webkit-scrollbar {

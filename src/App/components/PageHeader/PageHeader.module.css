@@ -42,6 +42,8 @@
 .active,
 .inactive:hover {
     color: var(--text-grey-white);
+    transition: opacity var(--animation-speed) ease-in-out;
+
 }
 
 /* .inactive::after, .active::after{
@@ -64,9 +66,11 @@
 .active::after{
     opacity: 1;
 } */
+
+
 .inactive:hover:after {
     opacity: 1;
-    transition: opacity var(--animation-speed) ease-in-out;
+   
 }
 
 .underline {
@@ -86,14 +90,16 @@
 } */
 
 .logo_container {
+    height: 100%;
     display: flex;
-    flex-direction: row;
+    justify-content: center;
     align-items: center;
-    gap: var(--gap, 1rem);
-    margin-left: 2rem;
+    /* flex-direction: row; */
+    /* gap: var(--gap, 1rem); */
+    /* margin-left: 2rem; */
 }
 
-.logo_container h1 {
+/* .logo_container h1 {
     background: var(--title-gradient);
     font-family: var(--font-logo);
     -webkit-background-clip: text;
@@ -104,9 +110,9 @@
     font-weight: 100;
     line-height: 2.81rem;
     background-size: 200% auto;
-    animation: shine 4s linear infinite;
+    animation: shine 3s linear infinite;
 
-}
+} */
 
 
 
@@ -133,10 +139,11 @@
     border-radius: var(--border-radius);
     width: 155px;
     height: 25px;
+    transition: box-shadow var(--animation-speed) ease-in-out;
+
 }
 
 .authenticate_button:hover {
-    transition: box-shadow var(--animation-speed) ease-in-out;
     box-shadow: 0px 0px 36px rgba(205, 193, 255, 0.2), 0px 0px 21px rgba(205, 193, 255, 0.2),
         0px 0px 12px rgba(205, 193, 255, 0.2), 0px 0px 7px rgba(205, 193, 255, 0.2),
         0px 0px 4px #cdc1ff, 0px 0px 2px rgba(205, 193, 255, 0.2);

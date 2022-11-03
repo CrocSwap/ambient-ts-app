@@ -9,6 +9,7 @@ import TransactionDenied from '../../../Global/TransactionDenied/TransactionDeni
 import TokensArrow from '../../../Global/TokensArrow/TokensArrow';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import ConfirmationModalControl from '../../../Global/ConfirmationModalControl/ConfirmationModalControl';
+import NoTokenIcon from '../../../Global/NoTokenIcon/NoTokenIcon';
 
 interface ConfirmLimitModalProps {
     onClose: () => void;
@@ -107,7 +108,11 @@ export default function ConfirmLimitModal(props: ConfirmLimitModalProps) {
             <h2>{buyTokenQty}</h2>
 
             <div className={styles.logo_display}>
-                <img src={buyTokenData.logoURI} alt={buyTokenData.symbol} />
+                {buyTokenData.logoURI ? (
+                    <img src={buyTokenData.logoURI} alt={buyTokenData.symbol} />
+                ) : (
+                    <NoTokenIcon tokenInitial={buyTokenData.symbol.charAt(0)} width='35px' />
+                )}
                 <h2>{buyTokenData.symbol}</h2>
             </div>
         </div>
@@ -117,7 +122,11 @@ export default function ConfirmLimitModal(props: ConfirmLimitModalProps) {
             <h2>{sellTokenQty}</h2>
 
             <div className={styles.logo_display}>
-                <img src={sellTokenData.logoURI} alt={sellTokenData.symbol} />
+                {sellTokenData.logoURI ? (
+                    <img src={sellTokenData.logoURI} alt={sellTokenData.symbol} />
+                ) : (
+                    <NoTokenIcon tokenInitial={sellTokenData.symbol.charAt(0)} width='35px' />
+                )}
                 <h2>{sellTokenData.symbol}</h2>
             </div>
         </div>
@@ -184,7 +193,11 @@ export default function ConfirmLimitModal(props: ConfirmLimitModalProps) {
     // const currentTxHash = 'i am hash number';
     const confirmSendMessage = (
         <WaitingConfirmation
-            content={` Submitting Limit Order to Swap ${sellTokenQty} ${sellTokenData.symbol} for ${buyTokenQty} ${buyTokenData.symbol}`}
+            content={` Submitting Limit Order to Swap ${sellTokenQty} ${
+                sellTokenData.symbol
+            } for ${buyTokenQty} ${
+                buyTokenData.symbol
+            }. Please check the ${'Metamask'} extension in your browser for notifications.`}
         />
     );
 

@@ -38,9 +38,13 @@ import TradeCandleStickChart from './TradeCandleStickChart';
 import { PoolIF, TokenIF } from '../../../utils/interfaces/exports';
 import { get24hChange } from '../../../App/functions/getPoolStats';
 import TradeChartsLoading from './TradeChartsLoading/TradeChartsLoading';
+import NoTokenIcon from '../../../components/Global/NoTokenIcon/NoTokenIcon';
+import { ChainSpec, CrocPoolView } from '@crocswap-libs/sdk';
 
 // interface for React functional component props
 interface TradeChartsPropsIF {
+    pool: CrocPoolView | undefined;
+    chainData: ChainSpec;
     chainId: string;
     lastBlockNumber: number;
     poolPriceDisplay: number;
@@ -51,7 +55,7 @@ interface TradeChartsPropsIF {
     setFullScreenChart: Dispatch<SetStateAction<boolean>>;
     changeState: (isOpen: boolean | undefined, candleData: CandleData | undefined) => void;
     candleData: CandlesByPoolAndDuration | undefined;
-    limitPrice: string | undefined;
+    limitTick: number;
     favePools: PoolIF[];
     addPoolToFaves: (tokenA: TokenIF, tokenB: TokenIF, chainId: string, poolId: number) => void;
     removePoolFromFaves: (
@@ -106,7 +110,7 @@ export interface LiquidityData {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     activeLiq: any;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    upperBoundPriceDecimalCorrected: any;
+    liqPrices: any;
 }
 
 export interface LiqSnap {
@@ -121,6 +125,8 @@ export interface LiqSnap {
 // React functional component
 export default function TradeCharts(props: TradeChartsPropsIF) {
     const {
+        pool,
+        chainData,
         isTokenABase,
         poolPriceDisplay,
         fullScreenChart,
@@ -487,6 +493,11 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
         </motion.div>
     );
 
+    const baseTokenLogo = denomInBase ? tradeData.baseToken.logoURI : tradeData.quoteToken.logoURI;
+    const quoteTokenLogo = denomInBase ? tradeData.quoteToken.logoURI : tradeData.baseToken.logoURI;
+
+    const baseTokenSymbol = denomInBase ? tradeData.baseToken.symbol : tradeData.quoteToken.symbol;
+    const quoteTokenSymbol = denomInBase ? tradeData.quoteToken.symbol : tradeData.baseToken.symbol;
     const tokenInfo = (
         <div className={styles.token_info_container}>
             <div className={styles.tokens_info}>
@@ -495,20 +506,17 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
                     className={styles.tokens_images}
                     onClick={() => dispatch(toggleDidUserFlipDenom())}
                 >
-                    <img
-                        src={
-                            denomInBase ? tradeData.baseToken.logoURI : tradeData.quoteToken.logoURI
-                        }
-                        alt='token'
-                        width='30px'
-                    />
-                    <img
-                        src={
-                            denomInBase ? tradeData.quoteToken.logoURI : tradeData.baseToken.logoURI
-                        }
-                        alt='token'
-                        width='30px'
-                    />
+                    {baseTokenLogo ? (
+                        <img src={baseTokenLogo} alt={baseTokenSymbol} width='30px' />
+                    ) : (
+                        <NoTokenIcon tokenInitial={baseTokenSymbol.charAt(0)} width='30px' />
+                    )}
+
+                    {quoteTokenLogo ? (
+                        <img src={quoteTokenLogo} alt={quoteTokenSymbol} width='30px' />
+                    ) : (
+                        <NoTokenIcon tokenInitial={quoteTokenSymbol.charAt(0)} width='30px' />
+                    )}
                 </div>
                 <span
                     className={styles.tokens_name}
@@ -661,6 +669,8 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
             ) : (
                 <div style={{ width: '100%', height: '100%' }} ref={canvasRef}>
                     <TradeCandleStickChart
+                        pool={pool}
+                        chainData={chainData}
                         // tvlData={formattedTvlData}
                         expandTradeTable={expandTradeTable}
                         // volumeData={formattedVolumeData}
@@ -668,7 +678,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
                         candleData={props.candleData}
                         changeState={props.changeState}
                         chartItemStates={chartItemStates}
-                        limitPrice={props.limitPrice}
+                        limitTick={props.limitTick}
                         liquidityData={props.liquidityData}
                         isAdvancedModeActive={props.isAdvancedModeActive}
                         simpleRangeWidth={props.simpleRangeWidth}

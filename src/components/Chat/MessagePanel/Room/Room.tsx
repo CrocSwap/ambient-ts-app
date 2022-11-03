@@ -19,15 +19,13 @@ interface currentPoolInfo {
     primaryQuantity: string;
     isTokenAPrimaryRange: boolean;
     primaryQuantityRange: string;
-    limitPrice: string;
+    limitTick: number;
     advancedLowTick: number;
     advancedHighTick: number;
     simpleRangeWidth: number;
     slippageTolerance: number;
     activeChartPeriod: number;
     targetData: targetData[];
-    pinnedMaxPriceDisplayTruncated: number;
-    pinnedMinPriceDisplayTruncated: number;
 }
 
 interface RoomProps {
