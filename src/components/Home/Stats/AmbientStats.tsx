@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { getDexStatsFresh } from '../../../utils/functions/getDexStats';
 import { formatAmount } from '../../../utils/numbers';
+import { userData } from '../../../utils/state/userDataSlice';
 import styles from './Stats.module.css';
 
 interface StatCardProps {
@@ -10,8 +11,10 @@ interface StatCardProps {
 }
 
 interface StatsProps {
+    userData: userData;
     lastBlockNumber: number;
 }
+
 function StatCard(props: StatCardProps) {
     const { title, value } = props;
 
@@ -24,7 +27,9 @@ function StatCard(props: StatCardProps) {
 }
 
 export default function Stats(props: StatsProps) {
-    const { lastBlockNumber } = props;
+    const { userData, lastBlockNumber } = props;
+
+    const isUserIdle = userData.isUserIdle;
 
     const { t } = useTranslation();
 
@@ -33,12 +38,13 @@ export default function Stats(props: StatsProps) {
     const [totalFeesString, setTotalFeesString] = useState<string | undefined>();
 
     useEffect(() => {
-        getDexStatsFresh().then((dexStats) => {
-            if (dexStats.tvl) setTotalTvlString('$' + formatAmount(dexStats.tvl));
-            if (dexStats.volume) setTotalVolumeString('$' + formatAmount(dexStats.volume));
-            if (dexStats.fees) setTotalFeesString('$' + formatAmount(dexStats.fees));
-        });
-    }, [lastBlockNumber]);
+        if (!isUserIdle)
+            getDexStatsFresh().then((dexStats) => {
+                if (dexStats.tvl) setTotalTvlString('$' + formatAmount(dexStats.tvl));
+                if (dexStats.volume) setTotalVolumeString('$' + formatAmount(dexStats.volume));
+                if (dexStats.fees) setTotalFeesString('$' + formatAmount(dexStats.fees));
+            });
+    }, [isUserIdle, lastBlockNumber]);
 
     const statCardData = [
         {

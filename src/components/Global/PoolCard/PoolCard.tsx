@@ -15,6 +15,7 @@ import { tradeData } from '../../../utils/state/tradeDataSlice';
 const cachedPoolStatsFetch = memoizePoolStats();
 
 interface PoolCardProps {
+    isUserIdle: boolean;
     crocEnv?: CrocEnv;
     tradeData: tradeData;
     cachedQuerySpotPrice: SpotPriceFn;
@@ -28,6 +29,7 @@ interface PoolCardProps {
 
 export default function PoolCard(props: PoolCardProps) {
     const {
+        isUserIdle,
         crocEnv,
         tradeData,
         tokenMap,
@@ -56,6 +58,7 @@ export default function PoolCard(props: PoolCardProps) {
     // useEffect to get spot price when tokens change and block updates
     useEffect(() => {
         if (
+            !isUserIdle &&
             crocEnv &&
             tokenAAddress &&
             tokenBAddress &&
@@ -103,7 +106,7 @@ export default function PoolCard(props: PoolCardProps) {
                 }
             })();
         }
-    }, [lastBlockNumber, tokenA, tokenB, chainId, crocEnv]);
+    }, [isUserIdle, lastBlockNumber, tokenA, tokenB, chainId, crocEnv]);
 
     const [poolVolume, setPoolVolume] = useState<string | undefined>(undefined);
     const [poolTvl, setPoolTvl] = useState<string | undefined>(undefined);
@@ -185,8 +188,9 @@ export default function PoolCard(props: PoolCardProps) {
     };
 
     useEffect(() => {
-        fetchPoolStats();
-    }, [lastBlockNumber]);
+        // console.log({ isUserIdle });
+        if (!isUserIdle) fetchPoolStats();
+    }, [isUserIdle, lastBlockNumber]);
 
     const tokenImagesDisplay = (
         <div className={styles.token_images}>

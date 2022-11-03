@@ -152,12 +152,14 @@ export default function App() {
     } = useMoralis();
 
     const onIdle = () => {
+        console.log('user is idle');
         dispatch(setIsUserIdle(true));
     };
 
     const onActive = () => {
         // const onActive = (event: Event | undefined) => {
         // console.log({ event });
+        console.log('user is active');
         dispatch(setIsUserIdle(false));
     };
 
