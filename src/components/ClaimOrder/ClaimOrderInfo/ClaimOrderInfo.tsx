@@ -1,7 +1,7 @@
 import styles from './ClaimOrderInfo.module.css';
 import Row from '../../Global/Row/Row';
 import DividerDark from '../../Global/DividerDark/DividerDark';
-// import { formatAmount } from '../../../utils/numbers';
+// import { formatAmountOld } from '../../../utils/numbers';
 
 interface IClaimOrderInfoProps {
     baseTokenSymbol: string;

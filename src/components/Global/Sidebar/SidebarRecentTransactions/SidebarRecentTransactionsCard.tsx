@@ -3,7 +3,7 @@ import { ITransaction } from '../../../../utils/state/graphDataSlice';
 import { useLocation, useNavigate } from 'react-router-dom';
 import styles from './SidebarRecentTransactionsCard.module.css';
 import { Dispatch, SetStateAction, useMemo } from 'react';
-import { formatAmount } from '../../../../utils/numbers';
+import { formatAmountOld } from '../../../../utils/numbers';
 
 interface TransactionProps {
     tx: ITransaction;
@@ -65,7 +65,7 @@ export default function SidebarRecentTransactionsCard(props: TransactionProps) {
 
     // useEffect(() => {
     //     if (tx.valueUSD) {
-    //         setValueUSD(formatAmount(tx.valueUSD));
+    //         setValueUSD(formatAmountOld(tx.valueUSD));
     //     } else {
     //         setValueUSD(undefined);
     //     }
@@ -83,7 +83,7 @@ export default function SidebarRecentTransactionsCard(props: TransactionProps) {
         : usdValueNum < 2
         ? usdValueNum.toPrecision(3)
         : usdValueNum >= 10000
-        ? formatAmount(usdValueNum, 1)
+        ? formatAmountOld(usdValueNum, 1)
         : // ? baseLiqDisplayNum.toExponential(2)
           usdValueNum.toLocaleString(undefined, {
               minimumFractionDigits: 2,
@@ -97,7 +97,7 @@ export default function SidebarRecentTransactionsCard(props: TransactionProps) {
         : totalValueUSD < 2
         ? totalValueUSD.toPrecision(3)
         : totalValueUSD >= 10000
-        ? formatAmount(totalValueUSD, 1)
+        ? formatAmountOld(totalValueUSD, 1)
         : // ? baseLiqDisplayNum.toExponential(2)
           totalValueUSD.toLocaleString(undefined, {
               minimumFractionDigits: 2,
@@ -114,7 +114,7 @@ export default function SidebarRecentTransactionsCard(props: TransactionProps) {
             : totalFlowAbsNum < 2
             ? totalFlowAbsNum.toPrecision(3)
             : totalFlowAbsNum >= 10000
-            ? formatAmount(totalFlowAbsNum, 1)
+            ? formatAmountOld(totalFlowAbsNum, 1)
             : // ? baseLiqDisplayNum.toExponential(2)
               totalFlowAbsNum.toLocaleString(undefined, {
                   minimumFractionDigits: 2,
