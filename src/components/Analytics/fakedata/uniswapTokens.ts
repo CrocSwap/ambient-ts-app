@@ -7850,7 +7850,7 @@ function spliceIntoChunks(arr: any, chunkSize: number) {
     const res = [];
     while (arr.length > 0) {
         const chunk = arr.splice(0, chunkSize);
-        console.log(chunk);
+        // console.log(chunk);
         res.push(chunk);
     }
 
