@@ -5,8 +5,15 @@
     align-items: center;
     grid-template-columns: 20px 3fr repeat(4, 1fr);
     /* background: rgb(49, 49, 49); */
-    color: white;
+    color: var(--text-grey-white);
+    
+    padding: 0.5rem 0;
+    transition: all var(--animation-speed) ease-in-out
    
+}
+
+.container:hover{
+    background: var(--dark2)
 }
 .container > *:not(:first-child, :nth-child(2)){
     text-align: end;

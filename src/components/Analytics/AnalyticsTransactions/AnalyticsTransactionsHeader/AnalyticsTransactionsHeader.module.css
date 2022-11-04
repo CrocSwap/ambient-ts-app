@@ -4,9 +4,10 @@
     -webkit-box-align: center;
     align-items: center;
     grid-template-columns: 1.5fr repeat(5, 1fr);
-    color: white;
+    color: var(--text-grey-light);
     border-bottom: 1px solid rgb(45, 43, 43);
     padding: 1rem 0;
+    
    
 }
 .container > *:not(:first-child, :nth-child(2)){
