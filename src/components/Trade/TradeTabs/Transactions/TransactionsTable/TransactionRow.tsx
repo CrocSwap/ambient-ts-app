@@ -84,12 +84,12 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
     const valueArrows = sideType !== 'add' && sideType !== 'remove';
 
     const baseFlowArrow =
-        valueArrows && baseDisplay !== '0.00' ? (isBaseFlowPositive ? '↑' : '↓') : null;
+        valueArrows && baseDisplay !== '0.00' ? (!isBaseFlowPositive ? '↑' : '↓') : null;
     const quoteFlowArrow =
-        valueArrows && quoteDisplay == '0.00' ? (isQuoteFlowPositive ? '↑' : '↓') : null;
+        valueArrows && quoteDisplay !== '0.00' ? (!isQuoteFlowPositive ? '↑' : '↓') : null;
 
-    const posOrNegativeBase = isBaseFlowPositive ? styles.positive_value : styles.negative_value;
-    const posOrNegativeQuote = isQuoteFlowPositive ? styles.positive_value : styles.negative_value;
+    const posOrNegativeBase = !isBaseFlowPositive ? styles.positive_value : styles.negative_value;
+    const posOrNegativeQuote = !isQuoteFlowPositive ? styles.positive_value : styles.negative_value;
 
     const baseDisplayStyle =
         baseDisplay == '0.00' || !valueArrows ? styles.light_grey : posOrNegativeBase;
