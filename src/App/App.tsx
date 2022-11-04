@@ -349,8 +349,8 @@ export default function App() {
     }, [chainData.chainId]);
 
     useEffect(() => {
-        console.log({ isUserLoggedIn });
-        console.log({ account });
+        // console.log({ isUserLoggedIn });
+        // console.log({ account });
         if (!isUserLoggedIn) {
             dispatch(resetTokenData());
         } else if (account) {

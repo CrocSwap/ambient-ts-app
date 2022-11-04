@@ -96,7 +96,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
     const quoteDisplayStyle =
         quoteDisplay == '0.00' || !valueArrows ? styles.light_grey : posOrNegativeQuote;
 
-    console.log(baseDisplay);
+    // console.log(baseDisplay);
 
     const openDetailsModal = () =>
         openGlobalModal(<TransactionDetails tx={tx} closeGlobalModal={closeGlobalModal} />);
