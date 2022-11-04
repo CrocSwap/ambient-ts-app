@@ -24,6 +24,7 @@ import { DefaultTooltip } from '../../../components/Global/StyledTooltip/StyledT
 
 // START: Import Local Files
 import styles from './TradeCharts.module.css';
+import { BsSuitHeart, BsSuitHeartFill } from 'react-icons/bs';
 import printDomToImage from '../../../utils/functions/printDomToImage';
 import getUnicodeCharacter from '../../../utils/functions/getUnicodeCharacter';
 import {
@@ -305,6 +306,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
     ];
 
     const chartOverlayButtonData2 = [
+        { name: 'Off', selected: false, action: exampleAction },
         { name: 'Curve', selected: true, action: exampleAction },
         { name: 'Depth', selected: false, action: exampleAction },
     ];
@@ -464,33 +466,13 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
             : addPoolToFaves(tradeData.quoteToken, tradeData.baseToken, chainId, 36000);
 
     const favButton = (
-        <motion.div
-            whileTap={{ scale: 3 }}
-            transition={{ duration: 0.5 }}
-            onClick={handleFavButton}
-            className={styles.fav_button}
-            style={{
-                cursor: 'pointer',
-            }}
-        >
-            <svg
-                width='23'
-                height='23'
-                viewBox='0 0 23 23'
-                fill='none'
-                xmlns='http://www.w3.org/2000/svg'
-            >
-                <path
-                    d='M11.5 1.58301L14.7187 8.10384L21.9166 9.15593L16.7083 14.2288L17.9375 21.3955L11.5 18.0101L5.06248 21.3955L6.29165 14.2288L1.08331 9.15593L8.28123 8.10384L11.5 1.58301Z'
-                    stroke='#ebebff'
-                    fill={isButtonFavorited ? '#ebebff' : 'none'}
-                    strokeWidth='2'
-                    strokeLinecap='round'
-                    strokeLinejoin='round'
-                    className={styles.star_svg}
-                />
-            </svg>
-        </motion.div>
+        <button className={styles.favorite_button} onClick={handleFavButton}>
+            {isButtonFavorited ? (
+                <BsSuitHeartFill color='#cdc1ff' size={30} />
+            ) : (
+                <BsSuitHeart size={30} />
+            )}
+        </button>
     );
 
     const baseTokenLogo = denomInBase ? tradeData.baseToken.logoURI : tradeData.quoteToken.logoURI;
@@ -498,6 +480,37 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
 
     const baseTokenSymbol = denomInBase ? tradeData.baseToken.symbol : tradeData.quoteToken.symbol;
     const quoteTokenSymbol = denomInBase ? tradeData.quoteToken.symbol : tradeData.baseToken.symbol;
+
+    // TIME FRAME CONTENT--------------------------------------------------------------
+
+    const currencyCharacter = denomInBase
+        ? // denom in a, return token b character
+          getUnicodeCharacter(tradeData.quoteToken.symbol)
+        : // denom in b, return token a character
+          getUnicodeCharacter(tradeData.baseToken.symbol);
+
+    // ------------MIDDLE TOP HEADER OF TRADE CHARTS
+    const currentAmountDisplay = (
+        <span className={styles.amount}>
+            {poolPriceDisplay === Infinity || poolPriceDisplay === 0
+                ? '…'
+                : `${currencyCharacter}${truncatedPoolPrice}`}
+        </span>
+    );
+
+    const poolPriceChange = (
+        <span
+            className={isPoolPriceChangePositive ? styles.change_positive : styles.change_negative}
+        >
+            {poolPriceChangePercent === undefined ? '…' : poolPriceChangePercent + ' | 24h'}
+        </span>
+    );
+
+    const tvlDisplay = <p className={styles.tvl_display}>TVL: ...</p>;
+    const tvlTickDisplay = <p className={styles.tvl_display}>TVL at Tick: ...</p>;
+
+    // ------------  END OF MIDDLE TOP HEADER OF TRADE CHARTS
+
     const tokenInfo = (
         <div className={styles.token_info_container}>
             <div className={styles.tokens_info}>
@@ -526,42 +539,23 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
                     {denomInBase ? tradeData.quoteToken.symbol : tradeData.baseToken.symbol}
                 </span>
             </div>
+            {currentAmountDisplay}
+            {poolPriceChange}
+            {tvlDisplay}
+            {tvlTickDisplay}
 
-            <div className={styles.chart_overlay_container}>{chartOverlayButtons1}</div>
-            <div className={styles.chart_overlay_container}>{chartOverlayButtons2}</div>
+            {/* <div className={styles.chart_overlay_container}>{chartOverlayButtons1}</div>
+            <div className={styles.chart_overlay_container}>{chartOverlayButtons2}</div> */}
         </div>
     );
     // END OF TOKEN INFO----------------------------------------------------------------
 
-    // TIME FRAME CONTENT--------------------------------------------------------------
-
-    const currencyCharacter = denomInBase
-        ? // denom in a, return token b character
-          getUnicodeCharacter(tradeData.quoteToken.symbol)
-        : // denom in b, return token a character
-          getUnicodeCharacter(tradeData.baseToken.symbol);
-
     // console.log({ poolPriceChangePercent });
     const timeFrameContent = (
         <div className={styles.time_frame_container}>
-            <div className={styles.left_side}>
-                <span className={styles.amount}>
-                    {poolPriceDisplay === Infinity || poolPriceDisplay === 0
-                        ? '…'
-                        : `${currencyCharacter}${truncatedPoolPrice}`}
-                </span>
-                <span
-                    className={
-                        isPoolPriceChangePositive ? styles.change_positive : styles.change_negative
-                    }
-                >
-                    {poolPriceChangePercent === undefined ? '…' : poolPriceChangePercent + ' | 24h'}
-                </span>
-            </div>
-            <div className={styles.right_side}>
-                {/* <span>Timeframe</span> */}
-                {activeTimeFrameDisplay}
-            </div>
+            <div className={styles.chart_overlay_container}>{activeTimeFrameDisplay}</div>
+            <div className={styles.chart_overlay_container}>{chartOverlayButtons1}</div>
+            <div className={styles.chart_overlay_container}>{chartOverlayButtons2}</div>
         </div>
     );
 
