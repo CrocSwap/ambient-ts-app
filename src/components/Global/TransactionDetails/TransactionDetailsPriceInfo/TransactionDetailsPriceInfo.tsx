@@ -7,6 +7,8 @@ import { motion } from 'framer-motion';
 import { useProcessTransaction } from '../../../../utils/hooks/useProcessTransaction';
 import { AiOutlineDash } from 'react-icons/ai';
 import NoTokenIcon from '../../NoTokenIcon/NoTokenIcon';
+import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
+import { useMemo } from 'react';
 
 type ItemIF = {
     slug: string;
@@ -42,6 +44,10 @@ export default function TransactionDetailsPriceInfo(props: ITransactionDetailsPr
         truncatedLowDisplayPrice,
         truncatedHighDisplayPrice,
         truncatedDisplayPrice,
+        truncatedLowDisplayPriceDenomByMoneyness,
+        truncatedHighDisplayPriceDenomByMoneyness,
+        truncatedDisplayPriceDenomByMoneyness,
+        isBaseTokenMoneynessGreaterOrEqual,
         // positionLiquidity,
     } = useProcessTransaction(tx);
 
@@ -189,16 +195,42 @@ export default function TransactionDetailsPriceInfo(props: ITransactionDetailsPr
         </div>
     );
 
+    const baseCharacter = useMemo(() => getUnicodeCharacter(tx.baseSymbol), [tx.baseSymbol]);
+    const quoteCharacter = useMemo(() => getUnicodeCharacter(tx.quoteSymbol), [tx.quoteSymbol]);
+
     const PriceDisplay = (
         <div className={styles.min_max_price}>
             <p>{tx.entityType === 'liqchange' ? 'Price Range' : 'Price'}</p>
 
-            <span className={styles.min_price}>
-                {truncatedDisplayPrice ? truncatedDisplayPrice : null}
-                {truncatedLowDisplayPrice ? truncatedLowDisplayPrice : null}
-                {!truncatedDisplayPrice ? <AiOutlineDash /> : null}
-                {truncatedHighDisplayPrice ? truncatedHighDisplayPrice : null}
-            </span>
+            {isBaseTokenMoneynessGreaterOrEqual ? (
+                <span className={styles.min_price}>
+                    {truncatedDisplayPriceDenomByMoneyness
+                        ? baseCharacter + truncatedDisplayPriceDenomByMoneyness
+                        : null}
+
+                    {truncatedHighDisplayPriceDenomByMoneyness
+                        ? baseCharacter + truncatedHighDisplayPriceDenomByMoneyness
+                        : null}
+                    {!truncatedDisplayPrice ? <AiOutlineDash /> : null}
+                    {truncatedLowDisplayPriceDenomByMoneyness
+                        ? baseCharacter + truncatedLowDisplayPriceDenomByMoneyness
+                        : null}
+                </span>
+            ) : (
+                <span className={styles.min_price}>
+                    {truncatedDisplayPriceDenomByMoneyness
+                        ? quoteCharacter + truncatedDisplayPriceDenomByMoneyness
+                        : null}
+
+                    {truncatedLowDisplayPriceDenomByMoneyness
+                        ? quoteCharacter + truncatedLowDisplayPriceDenomByMoneyness
+                        : null}
+                    {!truncatedDisplayPrice ? <AiOutlineDash /> : null}
+                    {truncatedHighDisplayPriceDenomByMoneyness
+                        ? quoteCharacter + truncatedHighDisplayPriceDenomByMoneyness
+                        : null}
+                </span>
+            )}
         </div>
     );
     // console.log(controlItems);
