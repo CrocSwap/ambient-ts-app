@@ -14,7 +14,7 @@ export default function RangeCurrencyQuantity(props: RangeCurrencyQuantityProps)
 
     const disabledContent = (
         <div className={styles.overlay_container}>
-            <GoCircleSlash size={15} />
+            {/* <GoCircleSlash size={15} /> */}
             <div className={styles.disabled_text}>
                 The market is outside your specified range.
                 <div className={styles.warning_text}>Single-asset deposit only.</div>
