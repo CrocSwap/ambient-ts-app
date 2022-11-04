@@ -248,10 +248,9 @@ export default function PoolInfo(props: PoolInfoPropsIF) {
             <h3>$420,000</h3>
         </section>
     );
-    const smallScreen =
-        (useMediaQuery('(max-width: 1600px)') && props.showSidebar) ||
-        useMediaQuery('(max-width: 1300px)');
-    console.log({ smallScreen });
+    const smallScreen = useMediaQuery('(max-width: 1600px)') && props.showSidebar;
+    // ||
+    // useMediaQuery('(max-width: 1300px)');
 
     const timeTabData = [
         {
