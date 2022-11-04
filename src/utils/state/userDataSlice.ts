@@ -3,6 +3,7 @@ import { TokenIF } from '../interfaces/TokenIF';
 
 export interface userData {
     isLoggedIn: boolean;
+    isUserIdle: boolean;
     tokens: tokenData;
 }
 
@@ -13,6 +14,7 @@ export interface tokenData {
 
 const initialState: userData = {
     isLoggedIn: false,
+    isUserIdle: false,
     tokens: {
         nativeToken: undefined,
         erc20Tokens: undefined,
@@ -25,6 +27,9 @@ export const userDataSlice = createSlice({
     reducers: {
         setIsLoggedIn: (state, action: PayloadAction<boolean>) => {
             state.isLoggedIn = action.payload;
+        },
+        setIsUserIdle: (state, action: PayloadAction<boolean>) => {
+            state.isUserIdle = action.payload;
         },
         setNativeToken: (state, action: PayloadAction<TokenIF>) => {
             state.tokens.nativeToken = action.payload;
@@ -41,6 +46,7 @@ export const userDataSlice = createSlice({
 // action creators are generated for each case reducer function
 export const {
     setIsLoggedIn,
+    setIsUserIdle,
     setNativeToken,
     setErc20Tokens,
     //  addNativeBalance,

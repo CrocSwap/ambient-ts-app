@@ -272,7 +272,7 @@ export default function Leaderboard(props: LeaderboardPropsIF) {
             sortable: false,
         },
         {
-            name: 'Status',
+            name: ' ',
             className: '',
             show: !ipadView,
             slug: 'status',
