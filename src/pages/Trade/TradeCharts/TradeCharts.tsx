@@ -539,8 +539,16 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
                     {denomInBase ? tradeData.quoteToken.symbol : tradeData.baseToken.symbol}
                 </span>
             </div>
-            {currentAmountDisplay}
-            {poolPriceChange}
+            <div
+                style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                }}
+            >
+                {currentAmountDisplay}
+                {poolPriceChange}
+            </div>
             {tvlDisplay}
             {tvlTickDisplay}
 
