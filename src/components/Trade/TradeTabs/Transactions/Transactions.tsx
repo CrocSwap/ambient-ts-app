@@ -457,26 +457,24 @@ export default function Transactions(props: TransactionsProps) {
             slug: 'value',
             sortable: true,
         },
-        {
-            name: isOnPortfolioPage ? 'Qty A' : `${baseTokenSymbol}`,
-            // name: isOnPortfolioPage ? 'Qty A' : `${baseTokenSymbol} ( ${baseTokenCharacter} )`,
+        // {
+        //     name: isOnPortfolioPage ? 'Qty A' : `${baseTokenSymbol}`,
 
-            show: !showColumns,
-            slug: baseTokenSymbol,
-            sortable: false,
-        },
-        {
-            name: isOnPortfolioPage ? 'Qty B' : `${quoteTokenSymbol}`,
-            // name: isOnPortfolioPage ? 'Qty B' : `${quoteTokenSymbol} ( ${quoteTokenCharacter} )`,
+        //     show: !showColumns,
+        //     slug: baseTokenSymbol,
+        //     sortable: false,
+        // },
+        // {
+        //     name: isOnPortfolioPage ? 'Qty B' : `${quoteTokenSymbol}`,
 
-            show: !showColumns,
-            slug: quoteTokenSymbol,
-            sortable: false,
-        },
+        //     show: !showColumns,
+        //     slug: quoteTokenSymbol,
+        //     sortable: false,
+        // },
         {
             name: tokens,
 
-            show: showColumns,
+            show: true,
             slug: 'tokens',
             sortable: false,
         },

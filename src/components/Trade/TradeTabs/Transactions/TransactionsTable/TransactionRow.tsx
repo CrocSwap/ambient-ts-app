@@ -49,6 +49,8 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
         baseTokenLogo,
         baseDisplay,
         quoteDisplay,
+        isBaseFlowPositive,
+        isQuoteFlowPositive,
         // baseDisplayFrontend,
         // quoteDisplayFrontend,
         ownerId,
@@ -78,6 +80,23 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
     const sideCharacter = isDenomBase ? baseTokenCharacter : quoteTokenCharacter;
 
     const sideTypeStyle = `${sideType}_style`;
+
+    const valueArrows = sideType !== 'add' && sideType !== 'remove';
+
+    const baseFlowArrow =
+        valueArrows && baseDisplay !== '0.00' ? (isBaseFlowPositive ? '↑' : '↓') : null;
+    const quoteFlowArrow =
+        valueArrows && quoteDisplay == '0.00' ? (isQuoteFlowPositive ? '↑' : '↓') : null;
+
+    const posOrNegativeBase = isBaseFlowPositive ? styles.positive_value : styles.negative_value;
+    const posOrNegativeQuote = isQuoteFlowPositive ? styles.positive_value : styles.negative_value;
+
+    const baseDisplayStyle =
+        baseDisplay == '0.00' || !valueArrows ? styles.light_grey : posOrNegativeBase;
+    const quoteDisplayStyle =
+        quoteDisplay == '0.00' || !valueArrows ? styles.light_grey : posOrNegativeQuote;
+
+    console.log(baseDisplay);
 
     const openDetailsModal = () =>
         openGlobalModal(<TransactionDetails tx={tx} closeGlobalModal={closeGlobalModal} />);
@@ -122,7 +141,12 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
             enterDelay={750}
             leaveDelay={200}
         >
-            <li onClick={openDetailsModal} data-label='id' className='base_color'>
+            <li
+                onClick={openDetailsModal}
+                data-label='id'
+                className='base_color'
+                style={{ textAlign: 'center' }}
+            >
                 {txHashTruncated}
             </li>
         </DefaultTooltip>
@@ -171,7 +195,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                 onClick={openDetailsModal}
                 data-label='wallet'
                 className={usernameStyle}
-                style={{ textTransform: 'lowercase' }}
+                style={{ textTransform: 'lowercase', textAlign: 'center' }}
             >
                 {userNameToDisplay}
             </li>
@@ -268,8 +292,13 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
             {!showColumns && walletWithTooltip}
             {showColumns && (
                 <li data-label='id'>
-                    <p className='base_color'>{txHashTruncated}</p>{' '}
-                    <p className={usernameStyle} style={{ textTransform: 'lowercase' }}>
+                    <p className='base_color' style={{ textAlign: 'center' }}>
+                        {txHashTruncated}
+                    </p>{' '}
+                    <p
+                        className={usernameStyle}
+                        style={{ textTransform: 'lowercase', textAlign: 'center' }}
+                    >
                         {userNameToDisplay}
                     </p>
                 </li>
@@ -354,7 +383,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
             )}
             {usdValueWithTooltip}
 
-            {!showColumns && (
+            {/* {!showColumns && (
                 <li onClick={openDetailsModal} data-label={baseTokenSymbol} className='color_white'>
                     <p style={{ textAlign: 'right', fontFamily: 'monospace' }}>{baseDisplay}</p>
                 </li>
@@ -367,22 +396,27 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                 >
                     <p style={{ textAlign: 'right', fontFamily: 'monospace' }}>{quoteDisplay}</p>
                 </li>
-            )}
-            {showColumns && (
-                <li data-label={baseTokenSymbol + quoteTokenSymbol} className='color_white'>
-                    <p className={styles.align_center}>
-                        {' '}
+            )} */}
+            {
+                <li
+                    data-label={baseTokenSymbol + quoteTokenSymbol}
+                    className='color_white'
+                    style={{ textAlign: 'right' }}
+                >
+                    <p className={`${styles.token_qty} ${baseDisplayStyle}`}>
+                        {baseDisplay}
+                        {baseFlowArrow}
                         {baseTokenLogoComponent}
-                        {baseDisplay}{' '}
                     </p>
 
-                    <p className={styles.align_center}>
+                    <p className={`${styles.token_qty} ${quoteDisplayStyle}`}>
                         {' '}
-                        {quoteTokenLogoComponent}
                         {quoteDisplay}
+                        {quoteFlowArrow}
+                        {quoteTokenLogoComponent}
                     </p>
                 </li>
-            )}
+            }
 
             <li data-label='menu'>
                 {/* <OrdersMenu limitOrder={limitOrder} {...orderMenuProps} /> */}
