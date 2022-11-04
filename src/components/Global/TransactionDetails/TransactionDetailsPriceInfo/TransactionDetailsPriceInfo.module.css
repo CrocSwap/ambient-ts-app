@@ -8,17 +8,15 @@
     display: flex;
     flex-direction: column;
     gap: 1rem;
-  
 }
 
 .info_container {
-
     width: 100%;
     background: rgba(23, 29, 39, 0.3);
-backdrop-filter: blur(20px);
-/* Note: backdrop-filter has minimal browser support */
-/* background: red; */
-border-radius: 4px;
+    backdrop-filter: blur(20px);
+    /* Note: backdrop-filter has minimal browser support */
+    /* background: red; */
+    border-radius: 4px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -33,20 +31,20 @@ border-radius: 4px;
     line-height: var(--body-lh);
 }
 
-.divider{
+.divider {
     height: 1px;
     margin: 1rem 0;
 
-/* dark/secondary */
+    /* dark/secondary */
 
-background: #171D27;
-
+    background: #171d27;
 }
 .info_text {
     display: flex;
     flex-direction: row;
     align-items: center;
     gap: 1.125em;
+    text-transform: capitalize;
 }
 
 .info_text img {
@@ -63,10 +61,10 @@ background: #171D27;
     flex-direction: column;
     gap: 4px;
     align-items: center;
- background: var(--dark2)
+    background: var(--dark2);
 }
 
-.min_max_price p{
+.min_max_price p {
     font-weight: 300;
     color: var(--text-grey-white);
     font-size: var(--body-size);
@@ -98,9 +96,8 @@ background: #171D27;
     color: #cdc1ff;
 }
 
-
 /* TOKEN PAIR DETAILS */
-.token_pair_details{
+.token_pair_details {
     display: flex;
     flex-direction: row;
     justify-content: center;
@@ -108,24 +105,23 @@ background: #171D27;
     align-items: center;
 }
 
-.token_pair_details p{
+.token_pair_details p {
     font-size: var(--header2-size);
     line-height: var(--header2-lh);
     color: var(--text-grey-white);
     font-weight: 100;
 }
-.tx_details{
+.tx_details {
     background: var(--dark2);
-    cursor: pointer;
+    /* cursor: pointer; */
     display: flex;
     flex-direction: column;
-   
+
     padding: 0 1rem;
 
-   
     /* gap: 8px; */
 }
-.tx_details div{
+.tx_details div {
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -134,25 +130,24 @@ background: #171D27;
     line-height: var(--body-lh);
     color: var(--text-grey-white);
 }
-.tx_details p{
+.tx_details p {
     color: var(--text-grey-white);
     font-size: var(--body-size);
     line-height: var(--body-lh);
     font-weight: 300;
-
 }
 
-.token_pair_images{
+.token_pair_images {
     display: flex;
     flex-direction: row;
     align-items: center;
     gap: 8px;
 }
-.token_pair_images img{
-width: 30px;
+.token_pair_images img {
+    width: 30px;
 }
 
-.align_center{
+.align_center {
     display: flex;
     flex-direction: row;
     align-items: center;
