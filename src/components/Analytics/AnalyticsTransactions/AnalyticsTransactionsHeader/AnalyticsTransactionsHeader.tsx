@@ -32,7 +32,7 @@ export default function AnalyticsTransactionsHeader(props: AnalyticsTransactions
     );
     return (
         <div className={styles.container}>
-            <div>actions</div>
+            {tabsControl}
             <p>Total Value</p>
             <p>Token Amount</p>
             <p>Token Amount</p>

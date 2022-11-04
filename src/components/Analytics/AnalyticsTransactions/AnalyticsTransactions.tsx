@@ -6,22 +6,24 @@ import { useState } from 'react';
 export default function AnalyticsTransactions() {
     const items = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
-    const container = (
-        <div className={styles.item_container}>
-            {items.map((item, idx) => (
-                <AnalyticsTransactionsCard key={idx} number={item + 1} />
-            ))}
-        </div>
-    );
-
     const tabControlData = [
-        { label: 'All', data: 'All' },
+        { label: 'All', data: 'Some action' },
         { label: 'Swaps', data: 'Swap' },
         { label: 'Adds', data: 'Add' },
         { label: 'Removes', data: 'Remove' },
     ];
-
     const [currentTransactions, setCurrentTransactions] = useState(tabControlData[0]);
+    const container = (
+        <div className={styles.item_container}>
+            {items.map((item, idx) => (
+                <AnalyticsTransactionsCard
+                    key={idx}
+                    number={item + 1}
+                    currentTransactions={currentTransactions}
+                />
+            ))}
+        </div>
+    );
 
     return (
         <motion.div
