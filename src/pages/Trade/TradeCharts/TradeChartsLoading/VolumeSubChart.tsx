@@ -8,18 +8,19 @@ import { VolumeChartData } from '../TradeCharts';
 interface VolumeData {
     volumeData: VolumeChartData[] | undefined;
     period: number | undefined;
-    crosshairData: any[];
+    crosshairXForSubChart: number;
     setsubChartValues: React.Dispatch<React.SetStateAction<any>>;
     setSelectedVolume: React.Dispatch<React.SetStateAction<any>>;
     candlestick: any;
     xScale: any;
     xScaleCopy: any;
     setZoomAndYdragControl: React.Dispatch<React.SetStateAction<any>>;
+    setCrosshairXForSubChart: React.Dispatch<React.SetStateAction<any>>;
     render: any;
 }
 
 export default function VolumeSubChart(props: VolumeData) {
-    const { volumeData, period, xScale, crosshairData, xScaleCopy, candlestick } = props;
+    const { volumeData, period, xScale, crosshairXForSubChart, xScaleCopy, candlestick } = props;
 
     const setsubChartValues = props.setsubChartValues;
 
@@ -35,7 +36,7 @@ export default function VolumeSubChart(props: VolumeData) {
         ) {
             const chartData = {
                 barSeries: volumeData,
-                crosshairDataLocal: crosshairData,
+                crosshairDataLocal: [{ x: crosshairXForSubChart, y: -1 }],
             };
 
             const render = () => {
@@ -58,7 +59,7 @@ export default function VolumeSubChart(props: VolumeData) {
                     newTargets.filter((target: any) => target.name === 'volume')[0].value = snap(
                         barSeries,
                         chartData.barSeries,
-                        crosshairData[0],
+                        { x: xScale(crosshairXForSubChart), y: -1 },
                     );
 
                     return newTargets;
@@ -67,7 +68,11 @@ export default function VolumeSubChart(props: VolumeData) {
                 const pointer = d3fc.pointer().on('point', (event: any) => {
                     if (event[0] !== undefined) {
                         chartData.crosshairDataLocal[0].y = event[0].y;
+                        chartData.crosshairDataLocal[0].x = event[0].x;
+
+                        props.setCrosshairXForSubChart(chartData.crosshairDataLocal[0].x);
                         render();
+                        props.render();
                     }
                 });
                 d3.select('.chart-volume').call(pointer);
@@ -218,13 +223,12 @@ export default function VolumeSubChart(props: VolumeData) {
                         .attr('visibility', 'hidden');
                 });
 
-                crosshairData[0].y = -1;
                 render();
             });
 
             render();
         }
-    }, [xScale, volumeData, crosshairData, period]);
+    }, [xScale, volumeData, crosshairXForSubChart, period]);
 
     return <div style={{ height: '10%', width: '100%' }} className='chart-volume'></div>;
 }

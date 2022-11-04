@@ -158,7 +158,7 @@ export default function Chart(props: ChartData) {
     const [zoomAndYdragControl, setZoomAndYdragControl] = useState();
     const [rescaleText, setRescaleText] = useState<any>();
     const [isMouseMoveCrosshair, setIsMouseMoveCrosshair] = useState(false);
-    const [crosshairForSubChart, setCrosshairForSubChart] = useState([{ x: 0, y: -1 }]);
+    const [crosshairXForSubChart, setCrosshairXForSubChart] = useState(0);
 
     // Data
     const [crosshairData, setCrosshairData] = useState([{ x: 0, y: -1 }]);
@@ -2100,6 +2100,7 @@ export default function Chart(props: ChartData) {
         liqHighligtedBidSeries,
         yAxis,
         xAxis,
+        crosshairXForSubChart,
     ]);
 
     const minimum = (data: any, accessor: any) => {
@@ -2148,6 +2149,7 @@ export default function Chart(props: ChartData) {
             xAxis: any,
         ) => {
             if (chartData.length > 0) {
+                console.error('öf', crosshairData[0].y);
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 
                 const snap = (series: any, data: any, point: any) => {
@@ -2161,7 +2163,7 @@ export default function Chart(props: ChartData) {
                         Math.abs(point.offsetX - xScale(xValue(d))),
                     )[1];
 
-                    setCrosshairForSubChart([{ x: scaleData.xScale(nearest?.date), y: -1 }]);
+                    setCrosshairXForSubChart(scaleData.xScale(nearest?.date));
 
                     props.setCurrentData(nearest);
                     return [
@@ -2673,6 +2675,13 @@ export default function Chart(props: ChartData) {
         }
     }, [isCandleSelected]);
 
+    useEffect(() => {
+        //   setCrosshairXForSubChart(crosshairXForSubChart);
+        setCrosshairData([
+            { x: scaleData.xScale.invert(crosshairXForSubChart), y: crosshairData[0].y },
+        ]);
+    }, [crosshairXForSubChart]);
+
     return (
         <div ref={d3Container} className='main_layout_chart' data-testid={'chart'}>
             <d3fc-group id='d3fc_group' auto-resize>
@@ -2715,7 +2724,7 @@ export default function Chart(props: ChartData) {
                                     (a, b) => b.time - a.time,
                                 )}
                                 period={parsedChartData?.period}
-                                crosshairData={crosshairForSubChart}
+                                crosshairData={crosshairData}
                                 setsubChartValues={setsubChartValues}
                                 setZoomAndYdragControl={setZoomAndYdragControl}
                                 xScale={scaleData !== undefined ? scaleData.xScale : undefined}
@@ -2738,7 +2747,7 @@ export default function Chart(props: ChartData) {
                                     (a, b) => b.time - a.time,
                                 )}
                                 period={parsedChartData?.period}
-                                crosshairData={crosshairForSubChart}
+                                crosshairData={crosshairData}
                                 setsubChartValues={setsubChartValues}
                                 xScale={scaleData !== undefined ? scaleData.xScale : undefined}
                                 xScaleCopy={
@@ -2750,7 +2759,7 @@ export default function Chart(props: ChartData) {
                         </>
                     )}
 
-                    {showVolume === true && candlestick !== undefined && (
+                    {showVolume === false && candlestick !== undefined && (
                         <>
                             <hr />
                             <label>
@@ -2764,7 +2773,8 @@ export default function Chart(props: ChartData) {
                             <VolumeSubChart
                                 volumeData={parsedChartData?.volumeChartData}
                                 period={parsedChartData?.period}
-                                crosshairData={crosshairForSubChart}
+                                crosshairXForSubChart={crosshairXForSubChart}
+                                setCrosshairXForSubChart={setCrosshairXForSubChart}
                                 setsubChartValues={setsubChartValues}
                                 setSelectedVolume={setSelectedVolume}
                                 candlestick={candlestick}
