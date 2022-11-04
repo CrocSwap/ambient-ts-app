@@ -1,6 +1,6 @@
 import { ChangeEvent } from 'react';
 import styles from './RangeCurrencyQuantity.module.css';
-import { GoCircleSlash } from 'react-icons/go';
+// import { GoCircleSlash } from 'react-icons/go';
 
 interface RangeCurrencyQuantityProps {
     disable?: boolean;
