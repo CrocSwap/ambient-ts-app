@@ -2,6 +2,7 @@ import styles from './AnalyticsTransactions.module.css';
 import AnalyticsTransactionsCard from './AnalyticsTransactionsCard/AnalyticsTransactionsCard';
 import AnalyticsTransactionsHeader from './AnalyticsTransactionsHeader/AnalyticsTransactionsHeader';
 import { motion } from 'framer-motion';
+import { useState } from 'react';
 export default function AnalyticsTransactions() {
     const items = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
@@ -12,6 +13,16 @@ export default function AnalyticsTransactions() {
             ))}
         </div>
     );
+
+    const tabControlData = [
+        { label: 'All', data: 'All' },
+        { label: 'Swaps', data: 'Swap' },
+        { label: 'Adds', data: 'Add' },
+        { label: 'Removes', data: 'Remove' },
+    ];
+
+    const [currentTransactions, setCurrentTransactions] = useState(tabControlData[0]);
+
     return (
         <motion.div
             className={styles.main_container}
@@ -22,7 +33,11 @@ export default function AnalyticsTransactions() {
         >
             <p> Transactions</p>
 
-            <AnalyticsTransactionsHeader />
+            <AnalyticsTransactionsHeader
+                currentTransactions={currentTransactions}
+                setCurrentTransactions={setCurrentTransactions}
+                tabControlData={tabControlData}
+            />
             {container}
         </motion.div>
     );

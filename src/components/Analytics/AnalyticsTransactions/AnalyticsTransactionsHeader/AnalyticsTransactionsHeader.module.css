@@ -48,3 +48,21 @@
     display: none;
 }
 }
+
+
+.tabs_container button{
+    outline: none;
+    border: none;
+    background: transparent;
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+    cursor: pointer;
+    transition:   all var(--animation-speed) ease-in-out
+}
+
+.tabs_container  .active_tx_control_button{
+color: var(--text-grey-white)
+}
+.tabs_container  .tx_control_button{
+color: var(--text-grey-light)
+}
