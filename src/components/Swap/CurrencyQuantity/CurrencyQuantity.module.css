@@ -18,6 +18,8 @@
 
     transition: border-color var(--animation-speed) ease-in-out,
         box-shadow var(--animation-speed) ease-in-out;
+
+        font-family: monospace;
 }
 .currency_quantity::placeholder {
     color: var(--text-grey-dark);

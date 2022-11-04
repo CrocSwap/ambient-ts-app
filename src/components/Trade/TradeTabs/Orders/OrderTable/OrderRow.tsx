@@ -295,12 +295,12 @@ export default function OrderRow(props: OrderRowPropsIF) {
             )} */}
             {
                 <li data-label={baseTokenSymbol + quoteTokenSymbol} className='color_white'>
-                    <p className={styles.token_qty}>
+                    <p className={styles.token_qty} style={{ fontFamily: 'monospace' }}>
                         {' '}
                         {baseDisplay} {baseTokenLogoComponent}
                     </p>
 
-                    <p className={styles.token_qty}>
+                    <p className={styles.token_qty} style={{ fontFamily: 'monospace' }}>
                         {' '}
                         {quoteDisplay}
                         {quoteTokenLogoComponent}

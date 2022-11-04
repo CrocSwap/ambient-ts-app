@@ -357,12 +357,12 @@ export default function RangesRow(props: RangesRowPropsIF) {
                     className='base_color'
                     style={{ textAlign: 'end' }}
                 >
-                    <p className={styles.token_qty}>
+                    <p className={styles.token_qty} style={{ fontFamily: 'monospace' }}>
                         {baseDisplay}
                         <img src={baseTokenLogo} alt='' width='15px' />
                     </p>
 
-                    <p className={styles.token_qty}>
+                    <p className={styles.token_qty} style={{ fontFamily: 'monospace' }}>
                         {' '}
                         {quoteDisplay}
                         {quoteTokenLogoComponent}
