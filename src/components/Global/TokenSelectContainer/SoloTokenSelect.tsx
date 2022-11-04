@@ -31,7 +31,7 @@ export const SoloTokenSelect = (props: propsIF) => {
         dispatch(setToken(tkn));
         if (searchedToken) {
             const tokenIsImported = tokensBank.some(
-                (tk: TokenIF) => tk.address === searchedToken.address
+                (tk: TokenIF) => tk.address === searchedToken[0].address
             );
             if (tokenIsImported) {
                 const userDataFromLocalStorage = JSON.parse(
@@ -44,11 +44,15 @@ export const SoloTokenSelect = (props: propsIF) => {
         closeModal();
     };
 
-    const importedTokenButtons = tokensBank
+    const tokensOnChain = tokensBank
         .filter((token: TokenIF) => token.chainId === parseInt(chainId))
-        .filter((token: TokenIF) => (
+
+
+    console.log(searchedToken);
+
+    const importedTokenButtons = tokensOnChain.filter((token: TokenIF) => (
             searchedToken
-                ? searchedToken.address.toLowerCase() === token.address.toLowerCase() : true
+                ? searchedToken[0].address.toLowerCase() === token.address.toLowerCase() : true
         )).map((token: TokenIF) => (
             <TokenSelect
                 key={JSON.stringify(token)}
