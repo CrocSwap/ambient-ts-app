@@ -85,6 +85,8 @@ export const useProcessTransaction = (tx: ITransaction) => {
 
     const [baseFlowDisplay, setBaseFlowDisplay] = useState<string | undefined>(undefined);
     const [quoteFlowDisplay, setQuoteFlowDisplay] = useState<string | undefined>(undefined);
+    const [isBaseFlowPositive, setIsBaseFlowPositive] = useState(false);
+    const [isQuoteFlowPositive, setIsQuoteFlowPositive] = useState(false);
 
     useEffect(() => {
         setBaseFlowDisplay(undefined);
@@ -291,6 +293,7 @@ export const useProcessTransaction = (tx: ITransaction) => {
             const baseFlowDisplayNum = tx.baseFlowDecimalCorrected;
             const baseFlowAbsNum = Math.abs(baseFlowDisplayNum);
             const isBaseFlowPositive = baseFlowDisplayNum > 0;
+            setIsBaseFlowPositive(isBaseFlowPositive);
             const baseFlowDisplayTruncated =
                 baseFlowAbsNum === 0
                     ? '0.00'
@@ -305,14 +308,15 @@ export const useProcessTransaction = (tx: ITransaction) => {
                       });
             const baseFlowDisplayString =
                 tx.entityType !== 'liqchange' && isBaseFlowPositive
-                    ? `(${baseFlowDisplayTruncated})`
-                    : baseFlowDisplayTruncated + ' ';
+                    ? `${baseFlowDisplayTruncated}  `
+                    : `${baseFlowDisplayTruncated} `;
             setBaseFlowDisplay(baseFlowDisplayString);
         }
         if (tx.quoteFlowDecimalCorrected !== undefined && tx.quoteFlowDecimalCorrected !== null) {
             const quoteFlowDisplayNum = tx.quoteFlowDecimalCorrected;
             const quoteFlowAbsNum = Math.abs(quoteFlowDisplayNum);
             const isQuoteFlowPositive = quoteFlowDisplayNum > 0;
+            setIsQuoteFlowPositive(isQuoteFlowPositive);
             const quoteFlowDisplayTruncated =
                 quoteFlowAbsNum === 0
                     ? '0.00'
@@ -329,8 +333,8 @@ export const useProcessTransaction = (tx: ITransaction) => {
                 tx.entityType !== 'liqchange' && isQuoteFlowPositive
                     ? // (isQuoteFlowNegative && tx.entityType !== 'liqchange') ||
                       // (!isQuoteFlowNegative && tx.entityType === 'liqchange')
-                      `(${quoteFlowDisplayTruncated})`
-                    : quoteFlowDisplayTruncated + ' ';
+                      `${quoteFlowDisplayTruncated}  `
+                    : `${quoteFlowDisplayTruncated} `;
             setQuoteFlowDisplay(quoteFlowDisplayString);
         }
     }, [JSON.stringify(tx), isDenomBase, isBaseTokenMoneynessGreaterOrEqual]);
@@ -552,6 +556,8 @@ export const useProcessTransaction = (tx: ITransaction) => {
         quoteDisplayFrontend,
         quoteTokenLogo,
         baseTokenLogo,
+        isBaseFlowPositive,
+        isQuoteFlowPositive,
 
         // block explorer data
         blockExplorer,

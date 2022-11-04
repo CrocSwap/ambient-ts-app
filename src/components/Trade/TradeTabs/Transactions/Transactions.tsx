@@ -24,7 +24,6 @@ import TransactionRow from './TransactionsTable/TransactionRow';
 import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
 import { useSortedTransactions } from '../useSortedTxs';
 // import TransactionAccordions from './TransactionAccordions/TransactionAccordions';
-
 interface TransactionsProps {
     importedTokens: TokenIF[];
 
@@ -48,6 +47,7 @@ interface TransactionsProps {
     openGlobalModal: (content: React.ReactNode) => void;
     closeGlobalModal: () => void;
     showSidebar: boolean;
+
     isOnPortfolioPage: boolean;
 
     // setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
@@ -457,26 +457,24 @@ export default function Transactions(props: TransactionsProps) {
             slug: 'value',
             sortable: true,
         },
-        {
-            name: isOnPortfolioPage ? 'Qty A' : `${baseTokenSymbol}`,
-            // name: isOnPortfolioPage ? 'Qty A' : `${baseTokenSymbol} ( ${baseTokenCharacter} )`,
+        // {
+        //     name: isOnPortfolioPage ? 'Qty A' : `${baseTokenSymbol}`,
 
-            show: !showColumns,
-            slug: baseTokenSymbol,
-            sortable: false,
-        },
-        {
-            name: isOnPortfolioPage ? 'Qty B' : `${quoteTokenSymbol}`,
-            // name: isOnPortfolioPage ? 'Qty B' : `${quoteTokenSymbol} ( ${quoteTokenCharacter} )`,
+        //     show: !showColumns,
+        //     slug: baseTokenSymbol,
+        //     sortable: false,
+        // },
+        // {
+        //     name: isOnPortfolioPage ? 'Qty B' : `${quoteTokenSymbol}`,
 
-            show: !showColumns,
-            slug: quoteTokenSymbol,
-            sortable: false,
-        },
+        //     show: !showColumns,
+        //     slug: quoteTokenSymbol,
+        //     sortable: false,
+        // },
         {
             name: tokens,
 
-            show: showColumns,
+            show: true,
             slug: 'tokens',
             sortable: false,
         },
@@ -490,8 +488,10 @@ export default function Transactions(props: TransactionsProps) {
         },
     ];
 
+    const headerStyle = isOnPortfolioPage ? styles.portfolio_header : styles.trade_header;
+
     const headerColumnsDisplay = (
-        <ul className={styles.header}>
+        <ul className={`${styles.header} ${headerStyle}`}>
             {headerColumns.map((header, idx) => (
                 <TransactionHeader
                     key={idx}
