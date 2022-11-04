@@ -136,17 +136,12 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                     {txHash}
                 </div>
             }
-            placement={'right-end'}
+            placement={'right'}
             arrow
             enterDelay={750}
             leaveDelay={200}
         >
-            <li
-                onClick={openDetailsModal}
-                data-label='id'
-                className='base_color'
-                style={{ textAlign: 'center' }}
-            >
+            <li onClick={openDetailsModal} data-label='id' className='base_color'>
                 {txHashTruncated}
             </li>
         </DefaultTooltip>
@@ -186,7 +181,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                     </NavLink>
                 </div>
             }
-            placement={'right-end'}
+            placement={'right'}
             arrow
             enterDelay={750}
             leaveDelay={200}
@@ -195,7 +190,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                 onClick={openDetailsModal}
                 data-label='wallet'
                 className={usernameStyle}
-                style={{ textTransform: 'lowercase', textAlign: 'center' }}
+                style={{ textTransform: 'lowercase' }}
             >
                 {userNameToDisplay}
             </li>

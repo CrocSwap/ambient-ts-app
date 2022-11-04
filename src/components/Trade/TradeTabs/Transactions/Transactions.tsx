@@ -24,7 +24,6 @@ import TransactionRow from './TransactionsTable/TransactionRow';
 import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
 import { useSortedTransactions } from '../useSortedTxs';
 // import TransactionAccordions from './TransactionAccordions/TransactionAccordions';
-import { useLocation } from 'react-router-dom';
 interface TransactionsProps {
     importedTokens: TokenIF[];
 

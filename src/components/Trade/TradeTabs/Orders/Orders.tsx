@@ -329,26 +329,24 @@ export default function Orders(props: propsIF) {
             slug: 'value',
             sortable: true,
         },
-        {
-            name: isOnPortfolioPage ? 'Qty A' : `${baseTokenSymbol}`,
-            // name: isOnPortfolioPage ? 'Qty A' : `${baseTokenSymbol} ( ${baseTokenCharacter} )`,
+        // {
+        //     name: isOnPortfolioPage ? 'Qty A' : `${baseTokenSymbol}`,
 
-            show: !showColumns,
-            slug: baseTokenSymbol,
-            sortable: false,
-        },
-        {
-            name: isOnPortfolioPage ? 'Qty B' : `${quoteTokenSymbol}`,
-            // name: isOnPortfolioPage ? 'Qty B' : `${quoteTokenSymbol} ( ${quoteTokenCharacter} )`,
+        //     show: !showColumns,
+        //     slug: baseTokenSymbol,
+        //     sortable: false,
+        // },
+        // {
+        //     name: isOnPortfolioPage ? 'Qty B' : `${quoteTokenSymbol}`,
 
-            show: !showColumns,
-            slug: quoteTokenSymbol,
-            sortable: false,
-        },
+        //     show: !showColumns,
+        //     slug: quoteTokenSymbol,
+        //     sortable: false,
+        // },
         {
             name: tokens,
             className: 'tokens',
-            show: showColumns,
+            show: true,
             slug: 'tokens',
             sortable: false,
         },
@@ -367,9 +365,10 @@ export default function Orders(props: propsIF) {
             sortable: false,
         },
     ];
+    const headerStyle = isOnPortfolioPage ? styles.portfolio_header : styles.trade_header;
 
     const headerColumnsDisplay = (
-        <ul className={styles.header}>
+        <ul className={`${styles.header} ${headerStyle}`}>
             {headerColumns.map((header, idx) => (
                 <OrderHeader
                     key={idx}

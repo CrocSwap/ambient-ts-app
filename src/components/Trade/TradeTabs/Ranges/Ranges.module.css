@@ -167,14 +167,13 @@
 }
 
 .portfolio_header li:nth-of-type(4),
-.portfolio_header li:nth-of-type(5),
-.portfolio_header li:nth-of-type(6),
-.portfolio_header li:nth-of-type(7) {
+.portfolio_header li:nth-of-type(7),
+.portfolio_header li:nth-of-type(8) {
     text-align: right;
 }
-.portfolio_header li:nth-of-type(8){
+/* .portfolio_header li:nth-of-type(8){
     text-align: center;
-}
+} */
 
 .portfolio_header li:nth-of-type(9) {
     text-align: center;
