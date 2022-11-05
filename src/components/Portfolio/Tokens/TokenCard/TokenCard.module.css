@@ -61,5 +61,4 @@
 }
 
 .address {
-    font-family: monospace;
-}
+    font-family: var(--mono);}

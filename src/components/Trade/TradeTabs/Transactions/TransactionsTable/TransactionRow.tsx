@@ -398,13 +398,19 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                     className='color_white'
                     style={{ textAlign: 'right' }}
                 >
-                    <p className={`${styles.token_qty} ${baseDisplayStyle}`}>
+                    <p
+                        className={`${styles.token_qty} ${baseDisplayStyle}`}
+                        style={{ fontFamily: 'monospace' }}
+                    >
                         {baseDisplay}
                         {baseFlowArrow}
                         {baseTokenLogoComponent}
                     </p>
 
-                    <p className={`${styles.token_qty} ${quoteDisplayStyle}`}>
+                    <p
+                        className={`${styles.token_qty} ${quoteDisplayStyle}`}
+                        style={{ fontFamily: 'monospace' }}
+                    >
                         {' '}
                         {quoteDisplay}
                         {quoteFlowArrow}
