@@ -32,7 +32,11 @@ import {
     toggleDidUserFlipDenom,
     setActiveChartPeriod,
 } from '../../../utils/state/tradeDataSlice';
-import { CandleData, CandlesByPoolAndDuration } from '../../../utils/state/graphDataSlice';
+import {
+    CandleData,
+    CandlesByPoolAndDuration,
+    liquidityData,
+} from '../../../utils/state/graphDataSlice';
 // import { usePoolChartData } from '../../../state/pools/hooks';
 import { useAppSelector, useAppDispatch } from '../../../utils/hooks/reduxToolkit';
 import TradeCandleStickChart from './TradeCandleStickChart';
@@ -67,8 +71,7 @@ interface TradeChartsPropsIF {
         chainId: string,
         poolId: number,
     ) => void;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    liquidityData: any;
+    liquidityData: liquidityData;
     isAdvancedModeActive: boolean | undefined;
     simpleRangeWidth: number | undefined;
     pinnedMinPriceDisplayTruncated: number | undefined;
@@ -129,6 +132,7 @@ export interface LiqSnap {
 export default function TradeCharts(props: TradeChartsPropsIF) {
     const {
         pool,
+        liquidityData,
         chainData,
         isTokenABase,
         poolPriceDisplay,
@@ -245,6 +249,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
     const [isPoolPriceChangePositive, setIsPoolPriceChangePositive] = useState<boolean>(true);
 
     const [poolTvl, setPoolTvl] = useState<string | undefined>();
+    const [tvlAtTick, setTvlAtTick] = useState<string | undefined>();
 
     const baseTokenAddress = isTokenABase ? tokenAAddress : tokenBAddress;
     const quoteTokenAddress = isTokenABase ? tokenBAddress : tokenAAddress;
@@ -317,6 +322,20 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
             }
         })();
     }, [baseTokenAddress, quoteTokenAddress, Math.floor(lastBlockNumber / 4)]);
+
+    useEffect(() => {
+        if (liquidityData) {
+            const currentTick = liquidityData?.currentTick;
+            const currentRangeData = liquidityData.ranges.filter(
+                (range) => range.lowerBound === currentTick,
+            );
+            const currentTickAverageUSD = currentRangeData[0]?.deltaAverageUSD;
+            const currentTickAverageUSDString = currentTickAverageUSD
+                ? '$' + formatAmountOld(currentTickAverageUSD)
+                : undefined;
+            setTvlAtTick(currentTickAverageUSDString);
+        }
+    }, [liquidityData?.currentTick]);
 
     // ---------------------------ACTIVE OVERLAY BUTTON FUNCTIONALITY-------------------------------
 
@@ -535,8 +554,10 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
         </span>
     );
 
-    const tvlDisplay = <p className={styles.tvl_display}>TVL: {poolTvl || '...'}</p>;
-    const tvlTickDisplay = <p className={styles.tvl_display}>TVL at Tick: {'...'}</p>;
+    const tvlDisplay = <p className={styles.tvl_display}>Pool TVL: {poolTvl || '...'}</p>;
+    const tvlTickDisplay = (
+        <p className={styles.tvl_display}>TVL at Current Price: {tvlAtTick || '...'}</p>
+    );
 
     // ------------  END OF MIDDLE TOP HEADER OF TRADE CHARTS
 
