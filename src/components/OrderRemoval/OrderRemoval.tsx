@@ -12,7 +12,7 @@ import completed from '../../assets/animations/completed.json';
 import { FiExternalLink } from 'react-icons/fi';
 import RemoveOrderModalHeader from './RemoveOrderModalHeader/RemoveOrderModalHeader';
 import RemoveOrderSettings from './RemoveOrderSettings/RemoveOrderSettings';
-import { formatAmount } from '../../utils/numbers';
+import { formatAmountOld } from '../../utils/numbers';
 import { CrocEnv } from '@crocswap-libs/sdk';
 import { BigNumber } from 'ethers';
 import Toggle2 from '../Global/Toggle/Toggle2';
@@ -89,7 +89,7 @@ export default function OrderRemoval(props: IOrderRemovalProps) {
                 : baseRemovalNum < 2
                 ? baseRemovalNum.toPrecision(3)
                 : baseRemovalNum >= 100000
-                ? formatAmount(baseRemovalNum)
+                ? formatAmountOld(baseRemovalNum)
                 : // ? baseLiqDisplayNum.toExponential(2)
                   baseRemovalNum.toLocaleString(undefined, {
                       minimumFractionDigits: 2,
@@ -106,7 +106,7 @@ export default function OrderRemoval(props: IOrderRemovalProps) {
                 : quoteRemovalNum < 2
                 ? quoteRemovalNum.toPrecision(3)
                 : quoteRemovalNum >= 100000
-                ? formatAmount(quoteRemovalNum)
+                ? formatAmountOld(quoteRemovalNum)
                 : quoteRemovalNum.toLocaleString(undefined, {
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 2,

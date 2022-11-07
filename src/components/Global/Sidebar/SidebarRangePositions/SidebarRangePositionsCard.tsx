@@ -3,7 +3,7 @@ import { PositionIF, TokenIF } from '../../../../utils/interfaces/exports';
 import { useMemo, SetStateAction, Dispatch } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
-import { formatAmount } from '../../../../utils/numbers';
+import { formatAmountOld } from '../../../../utils/numbers';
 
 interface SidebarRangePositionsProps {
     isDenomBase: boolean;
@@ -77,7 +77,7 @@ export default function SidebarRangePositionsCard(props: SidebarRangePositionsPr
         : usdValueNum < 2
         ? usdValueNum.toPrecision(3)
         : usdValueNum >= 10000
-        ? formatAmount(usdValueNum, 1)
+        ? formatAmountOld(usdValueNum, 1)
         : // ? baseLiqDisplayNum.toExponential(2)
           usdValueNum.toLocaleString(undefined, {
               minimumFractionDigits: 2,

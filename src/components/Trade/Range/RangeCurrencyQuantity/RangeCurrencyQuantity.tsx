@@ -1,6 +1,6 @@
 import { ChangeEvent } from 'react';
 import styles from './RangeCurrencyQuantity.module.css';
-import { GoCircleSlash } from 'react-icons/go';
+// import { GoCircleSlash } from 'react-icons/go';
 
 interface RangeCurrencyQuantityProps {
     disable?: boolean;
@@ -14,7 +14,7 @@ export default function RangeCurrencyQuantity(props: RangeCurrencyQuantityProps)
 
     const disabledContent = (
         <div className={styles.overlay_container}>
-            <GoCircleSlash size={15} />
+            {/* <GoCircleSlash size={15} /> */}
             <div className={styles.disabled_text}>
                 The market is outside your specified range.
                 <div className={styles.warning_text}>Single-asset deposit only.</div>

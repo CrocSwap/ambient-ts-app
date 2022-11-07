@@ -9,9 +9,12 @@ import { topPools } from '../../../App/mockData';
 import { TokenIF } from '../../../utils/interfaces/TokenIF';
 import { CrocEnv } from '@crocswap-libs/sdk';
 import { SpotPriceFn } from '../../../App/functions/querySpotPrice';
-import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
+import { userData } from '../../../utils/state/userDataSlice';
+import { tradeData } from '../../../utils/state/tradeDataSlice';
 
 interface TopPoolsProps {
+    tradeData: tradeData;
+    userData: userData;
     crocEnv?: CrocEnv;
     cachedQuerySpotPrice: SpotPriceFn;
     tokenMap: Map<string, TokenIF>;
@@ -20,14 +23,22 @@ interface TopPoolsProps {
 }
 
 export default function TopPools(props: TopPoolsProps) {
-    const { tokenMap, lastBlockNumber, crocEnv, chainId, cachedQuerySpotPrice } = props;
+    const {
+        tradeData,
+        userData,
+        tokenMap,
+        lastBlockNumber,
+        crocEnv,
+        chainId,
+        cachedQuerySpotPrice,
+    } = props;
 
     const { t } = useTranslation();
 
     // @Junior  please remove the NavLink wrapper or refactor PoolCard.tsx
     // @Junior  ... so it returns a NavLink element
 
-    const tradeData = useAppSelector((state) => state.tradeData);
+    const isUserIdle = userData.isUserIdle;
 
     return (
         <motion.div
@@ -42,6 +53,7 @@ export default function TopPools(props: TopPoolsProps) {
                 {topPools.map((pool, idx) => (
                     <NavLink key={idx} to='/trade/market'>
                         <PoolCard
+                            isUserIdle={isUserIdle}
                             crocEnv={crocEnv}
                             tradeData={tradeData}
                             cachedQuerySpotPrice={cachedQuerySpotPrice}

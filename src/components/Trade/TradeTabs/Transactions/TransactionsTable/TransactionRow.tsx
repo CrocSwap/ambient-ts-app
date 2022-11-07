@@ -60,6 +60,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
 
         type,
         usdValue,
+        txUsdValueLocaleString,
         baseTokenSymbol,
         quoteTokenSymbol,
         isOwnerActiveAccount,
@@ -118,11 +119,32 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
             }
             placement={'right-end'}
             arrow
-            enterDelay={400}
+            enterDelay={750}
             leaveDelay={200}
         >
             <li onClick={openDetailsModal} data-label='id' className='base_color'>
                 {txHashTruncated}
+            </li>
+        </DefaultTooltip>
+    );
+
+    const usdValueWithTooltip = (
+        <DefaultTooltip
+            interactive
+            title={txUsdValueLocaleString}
+            placement={'right-end'}
+            arrow
+            enterDelay={750}
+            leaveDelay={200}
+        >
+            <li
+                onClick={openDetailsModal}
+                data-label='value'
+                className='gradient_text'
+                style={{ textAlign: 'right', fontFamily: 'monospace' }}
+            >
+                {' '}
+                {usdValue}
             </li>
         </DefaultTooltip>
     );
@@ -142,7 +164,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
             }
             placement={'right-end'}
             arrow
-            enterDelay={400}
+            enterDelay={750}
             leaveDelay={200}
         >
             <li
@@ -168,7 +190,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                 }
                 placement={'top'}
                 arrow
-                enterDelay={400}
+                enterDelay={750}
                 leaveDelay={200}
             >
                 <img src={baseTokenLogo} alt='base token' width='15px' />
@@ -191,7 +213,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                 }
                 placement={'top'}
                 arrow
-                enterDelay={400}
+                enterDelay={750}
                 leaveDelay={200}
             >
                 <img src={quoteTokenLogo} alt='quote token' width='15px' />
@@ -330,15 +352,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                     <p>{type}</p>
                 </li>
             )}
-            <li
-                onClick={openDetailsModal}
-                data-label='value'
-                className='gradient_text'
-                style={{ textAlign: 'right', fontFamily: 'monospace' }}
-            >
-                {' '}
-                {usdValue}
-            </li>
+            {usdValueWithTooltip}
 
             {!showColumns && (
                 <li onClick={openDetailsModal} data-label={baseTokenSymbol} className='color_white'>

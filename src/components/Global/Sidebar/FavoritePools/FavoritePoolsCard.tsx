@@ -3,7 +3,7 @@ import { PoolIF } from '../../../../utils/interfaces/exports';
 import { PoolStatsFn } from '../../../../App/functions/getPoolStats';
 import { useEffect, useMemo, useState } from 'react';
 import { useLocation, Link } from 'react-router-dom';
-import { formatAmount } from '../../../../utils/numbers';
+import { formatAmountOld } from '../../../../utils/numbers';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 
 interface FavoritePoolsCardIF {
@@ -50,10 +50,10 @@ export default function FavoritePoolsCard(props: FavoritePoolsCardIF) {
                 Math.floor(lastBlockNumber / 4),
             );
             const volume = poolStatsFresh?.volume;
-            const volumeString = volume ? '$' + formatAmount(volume) : undefined;
+            const volumeString = volume ? '$' + formatAmountOld(volume) : undefined;
             setPoolVolume(volumeString);
             const tvl = poolStatsFresh?.tvl;
-            const tvlString = tvl ? '$' + formatAmount(tvl) : undefined;
+            const tvlString = tvl ? '$' + formatAmountOld(tvl) : undefined;
             setPoolTvl(tvlString);
         })();
     };

@@ -192,7 +192,7 @@ export default function PageHeader(props: HeaderPropsIF) {
         // console.log({ isPathValidAddress });
 
         if (pathNoLeadingSlash === 'account') {
-            document.title = 'my account - ambient.finance';
+            document.title = 'My Account - ambient.finance';
         } else if (isPathValidAddress) {
             const ensNameOrAddressTruncated = isAddressEns
                 ? pathNoLeadingSlash.length > 15

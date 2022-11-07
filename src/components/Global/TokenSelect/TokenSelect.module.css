@@ -181,3 +181,11 @@
     transform: scale(1.03);
    
 }
+
+
+.token_list_data{
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+    width: 100%;
+    text-align: end;
+}
