@@ -66,6 +66,8 @@ interface PortfolioTabsPropsIF {
 
     currentTxActiveInTransactions: string;
     setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
+
+    fullLayoutToggle: JSX.Element;
 }
 
 // React functional component
@@ -92,6 +94,7 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
         quoteTokenBalance,
         baseTokenDexBalance,
         quoteTokenDexBalance,
+        fullLayoutToggle,
 
         account,
     } = props;
@@ -345,7 +348,7 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
         <div className={styles.tabs_container}>
             <TabComponent
                 data={accountTabData}
-                rightTabOptions={false}
+                rightTabOptions={connectedAccountActive ? fullLayoutToggle : false}
                 selectedOutsideTab={selectedOutsideTab}
                 setSelectedOutsideTab={setSelectedOutsideTab}
                 outsideControl={outsideControl}
