@@ -172,6 +172,10 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
         if (!isTokenAPrimaryLocal) {
             setTokenAQtyLocal(tokenBQtyLocal);
             setTokenAInputQty(tokenBQtyLocal);
+            const buyQtyField = document.getElementById('buy-limit-quantity') as HTMLInputElement;
+            if (buyQtyField) {
+                buyQtyField.value = '';
+            }
             const sellQtyField = document.getElementById('sell-limit-quantity') as HTMLInputElement;
             if (sellQtyField) {
                 sellQtyField.value = tokenBQtyLocal === 'NaN' ? '' : tokenBQtyLocal;
@@ -179,6 +183,10 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
         } else {
             setTokenBQtyLocal(tokenAQtyLocal);
             setTokenBInputQty(tokenAQtyLocal);
+            const sellQtyField = document.getElementById('sell-limit-quantity') as HTMLInputElement;
+            if (sellQtyField) {
+                sellQtyField.value = '';
+            }
             const buyQtyField = document.getElementById('buy-limit-quantity') as HTMLInputElement;
             if (buyQtyField) {
                 buyQtyField.value = tokenAQtyLocal === 'NaN' ? '' : tokenAQtyLocal;

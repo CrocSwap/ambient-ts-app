@@ -198,6 +198,7 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
     }, [pathname, tokenPair.dataTokenB.address, tokenPair.dataTokenA.address]);
 
     const [switchBoxes, setSwitchBoxes] = useState(false);
+
     const reverseTokens = (): void => {
         setSwitchBoxes(!switchBoxes);
         dispatch(reverseTokensInRTK());
@@ -206,6 +207,10 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
             console.log('setting token a');
             setTokenAQtyLocal(tokenBQtyLocal);
             setTokenAInputQty(tokenBQtyLocal);
+            const buyQtyField = document.getElementById('buy-quantity') as HTMLInputElement;
+            if (buyQtyField) {
+                buyQtyField.value = '';
+            }
             const sellQtyField = document.getElementById('sell-quantity') as HTMLInputElement;
             if (sellQtyField) {
                 sellQtyField.value = tokenBQtyLocal === 'NaN' ? '' : tokenBQtyLocal;
@@ -214,6 +219,10 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
             console.log('setting token a');
             setTokenBQtyLocal(tokenAQtyLocal);
             setTokenBInputQty(tokenAQtyLocal);
+            const sellQtyField = document.getElementById('sell-quantity') as HTMLInputElement;
+            if (sellQtyField) {
+                sellQtyField.value = '';
+            }
             const buyQtyField = document.getElementById('buy-quantity') as HTMLInputElement;
             if (buyQtyField) {
                 buyQtyField.value = tokenAQtyLocal === 'NaN' ? '' : tokenAQtyLocal;
@@ -224,6 +233,7 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
     };
 
     useEffect(() => {
+        console.log({ isTokenAPrimary });
         isTokenAPrimary ? handleTokenAChangeEvent() : handleTokenBChangeEvent();
     }, [
         crocEnv,
