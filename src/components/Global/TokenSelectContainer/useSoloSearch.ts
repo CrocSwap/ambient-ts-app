@@ -77,6 +77,7 @@ export const useSoloSearch = (
                 return [tkn];
             } else if (searchType === 'nameOrSymbol') {
                 const outputTokens:TokenIF[] = [];
+                // TODO: refactor this as a .filter()
                 tokens.forEach((token) => {
                     if (
                         token.name.includes(validatedInput) ||
