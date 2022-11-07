@@ -47,13 +47,15 @@ export const SoloTokenSelect = (props: propsIF) => {
     const tokensOnChain = tokensBank
         .filter((token: TokenIF) => token.chainId === parseInt(chainId))
 
-
     console.log(searchedToken);
 
-    const importedTokenButtons = tokensOnChain.filter((token: TokenIF) => (
-            searchedToken && searchedToken.length
-                ? searchedToken[0].address.toLowerCase() === token.address.toLowerCase() : true
-        )).map((token: TokenIF) => (
+    const filterByAddress = (tokens: TokenIF[]) => tokens.filter((token: TokenIF) => (
+        searchedToken && searchedToken.length
+            ? searchedToken[0].address.toLowerCase() === token.address.toLowerCase() : true
+    ));
+
+    const importedTokenButtons = filterByAddress(tokensOnChain)
+        .map((token: TokenIF) => (
             <TokenSelect
                 key={JSON.stringify(token)}
                 token={token}
