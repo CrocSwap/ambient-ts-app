@@ -21,6 +21,7 @@ import {
     setAdvancedLowTick,
     setAdvancedMode,
     setIsTokenAPrimary,
+    setLimitTick,
     setPrimaryQuantity,
     setShouldSwapConverterUpdate,
     setSimpleRangeWidth,
@@ -110,7 +111,17 @@ export default function TransactionsMenu(props: TransactionMenuIF) {
             console.log('swap copy clicked');
         } else if (tx.entityType === 'limitOrder') {
             console.log('limit order copy clicked');
-            dispatch(setAdvancedLowTick(tx.bidTick));
+            dispatch(setLimitTick(tx.isBid ? tx.bidTick : tx.askTick));
+            dispatch(
+                setIsTokenAPrimary((tx.isBid && tx.inBaseQty) || (!tx.isBid && !tx.inBaseQty)),
+            );
+            dispatch(
+                setPrimaryQuantity(
+                    tx.inBaseQty
+                        ? Math.abs(tx.baseFlowDecimalCorrected).toString()
+                        : Math.abs(tx.quoteFlowDecimalCorrected).toString(),
+                ),
+            );
         }
         setShowDropdownMenu(false);
 
