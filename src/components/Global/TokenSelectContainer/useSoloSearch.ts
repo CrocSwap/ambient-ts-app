@@ -80,8 +80,8 @@ export const useSoloSearch = (
                 // TODO: refactor this as a .filter()
                 tokens.forEach((token) => {
                     if (
-                        token.name.includes(validatedInput) ||
-                        token.symbol.includes(validatedInput)
+                        token.name.toLowerCase().includes(validatedInput) ||
+                        token.symbol.toLowerCase().includes(validatedInput)
                     ) {
                         outputTokens.push(token);
                     }
