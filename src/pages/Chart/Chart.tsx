@@ -2747,6 +2747,7 @@ export default function Chart(props: ChartData) {
                                 setCrosshairXForSubChart={setCrosshairXForSubChart}
                                 setsubChartValues={setsubChartValues}
                                 setSelectedVolume={setSelectedVolume}
+                                selectedVolume={selectedVolume}
                                 candlestick={candlestick}
                                 xScale={scaleData !== undefined ? scaleData.xScale : undefined}
                                 xScaleCopy={
