@@ -10,7 +10,7 @@ import { ITransaction } from '../../../../utils/state/graphDataSlice';
 import { PositionIF } from '../../../../utils/interfaces/PositionIF';
 import styles from './PositionBox.module.css';
 import { motion } from 'framer-motion';
-import { useSortedPositions } from '../../../Trade/TradeTabs/Ranges/useSortedPositions';
+import { useSortedPositions } from '../../../Trade/TradeTabs/useSortedPositions';
 import { ambientPosSlot, concPosSlot } from '@crocswap-libs/sdk';
 import { applyMiddleware } from '@reduxjs/toolkit';
 import { FiCopy } from 'react-icons/fi';
