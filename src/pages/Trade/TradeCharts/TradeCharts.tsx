@@ -111,6 +111,10 @@ export interface LiquidityData {
     activeLiq: any;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     liqPrices: any;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    deltaAverageUSD: any;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    cumAverageUSD: any;
 }
 
 export interface LiqSnap {

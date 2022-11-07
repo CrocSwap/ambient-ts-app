@@ -76,6 +76,26 @@ export const formatAmount = (num: number | undefined, digits = 2) => {
     });
     return a;
 };
+export const formatAmountWithoutDigit = (num: number | undefined, digits = 2) => {
+    if (num === 0) return '0';
+    if (!num) return '-';
+    if (num < 0.001) {
+        return '<0.001';
+    }
+
+    const a = numbro(num).format({
+        average: num > 1000 ? false : num < 100 ? true : false,
+        mantissa: digits,
+        thousandSeparated: true,
+
+        // mantissa: num > 1000 ? 2 : digits,
+        abbreviations: {
+            million: 'M',
+            billion: 'B',
+        },
+    });
+    return a;
+};
 
 export const formatAmountOld = (num: number | undefined, digits = 2) => {
     if (num === 0) return '0';
