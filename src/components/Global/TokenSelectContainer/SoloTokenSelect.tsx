@@ -51,7 +51,7 @@ export const SoloTokenSelect = (props: propsIF) => {
     console.log(searchedToken);
 
     const importedTokenButtons = tokensOnChain.filter((token: TokenIF) => (
-            searchedToken
+            searchedToken && searchedToken.length
                 ? searchedToken[0].address.toLowerCase() === token.address.toLowerCase() : true
         )).map((token: TokenIF) => (
             <TokenSelect

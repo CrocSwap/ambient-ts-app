@@ -35,7 +35,7 @@ export const useSoloSearch = (
             ? cleanInput
             : '0x' + cleanInput;
         // declare an output variable
-        let output = '';
+        let output = cleanInput;
         // check if string is a correctly-formed contract address
         if (
             // check if string has 42 characters
@@ -64,18 +64,31 @@ export const useSoloSearch = (
         // if not, set token data object to null
         validatedInput || setTokens(null);
 
+        // TODO:  @Emily refactor this a switch (case)
         // fn to find token in an array of tokens by address and chain ID
         const findToken = (
             tokens: TokenIF[],
             searchType: string
         ) => {
-            console.log(searchType);
-            console.log(tokens);
             if (searchType === 'address') {
                 const tkn = tokens.find((token) =>
                     token.address.toLowerCase() === validatedInput && token.chainId === parseInt(chainId)
                 );
                 return [tkn];
+            } else if (searchType === 'nameOrSymbol') {
+                const outputTokens:TokenIF[] = [];
+                tokens.forEach((token) => {
+                    if (
+                        token.name.includes(validatedInput) ||
+                        token.symbol.includes(validatedInput)
+                    ) {
+                        outputTokens.push(token);
+                    }
+                })
+                return outputTokens;
+            } else {
+                console.warn(`Error in fn findToken() in useSoloSearch.ts file.  Did not receive a valid value for parameter <<searchType>>. Acceptable values include <<'address'>> and <<'nameOrSymbol'>> of type <<string>>, received value <<${searchType}>> of type <<${typeof searchType}>>. Fn will return an empty array.`);
+                return [];
             }
         };
 
@@ -90,8 +103,8 @@ export const useSoloSearch = (
             // find token in the ambient token list
             const tkns = findToken(ambientTokenList.tokens, searchAs) as TokenIF[];
             // update local state if a token is found
-            console.log(tkns)
             tkns && updateToken(tkns);
+            // next line prevents the app from running subsequent searches
             return;
         }
 
