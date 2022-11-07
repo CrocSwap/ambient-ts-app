@@ -144,8 +144,6 @@ export const useSoloSearch = (
     // this prevents queries without valid input
     }, [validatedInput]);
 
-    console.log({tokens})
-
     // token === token data object or null
     // input === raw input from the user
     // setInput === useState setter function for raw input
