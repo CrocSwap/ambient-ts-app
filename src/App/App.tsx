@@ -136,6 +136,7 @@ import TopRanges from '../components/Analytics/TopRanges/TopRanges';
 import TopTokens from '../components/Analytics/TopTokens/TopTokens';
 import AnalyticsTransactions from '../components/Analytics/AnalyticsTransactions/AnalyticsTransactions';
 import trimString from '../utils/functions/trimString';
+// import { memoizeQuerySpotTick } from './functions/querySpotTick';
 // import PhishingWarning from '../components/Global/PhisingWarning/PhishingWarning';
 
 const cachedFetchAddress = memoizeFetchAddress();
@@ -143,6 +144,7 @@ const cachedFetchNativeTokenBalance = memoizeFetchNativeTokenBalance();
 const cachedFetchErc20TokenBalances = memoizeFetchErc20TokenBalances();
 const cachedFetchTokenPrice = memoizeTokenPrice();
 const cachedQuerySpotPrice = memoizeQuerySpotPrice();
+// const cachedQuerySpotTick = memoizeQuerySpotTick();
 
 const httpGraphCacheServerDomain = 'https://809821320828123.de:5000';
 const wssGraphCacheServerDomain = 'wss://809821320828123.de:5000';
@@ -1532,12 +1534,14 @@ export default function App() {
     const [baseTokenDexBalance, setBaseTokenDexBalance] = useState<string>('');
     const [quoteTokenDexBalance, setQuoteTokenDexBalance] = useState<string>('');
 
-    const [poolPriceNonDisplay, setPoolPriceNonDisplay] = useState<number | undefined>(undefined);
-    const [poolPriceDisplay, setPoolPriceDisplay] = useState<number | undefined>(undefined);
+    // const [poolPriceTick, setPoolPriceTick] = useState<number | undefined>();
+    const [poolPriceNonDisplay, setPoolPriceNonDisplay] = useState<number | undefined>();
+    const [poolPriceDisplay, setPoolPriceDisplay] = useState<number | undefined>();
 
     useEffect(() => {
         setPoolPriceNonDisplay(0);
         setPoolPriceDisplay(0);
+        // setPoolPriceTick(undefined);
     }, [JSON.stringify({ base: baseTokenAddress, quote: quoteTokenAddress })]);
 
     // useEffect to get spot price when tokens change and block updates
@@ -1552,9 +1556,15 @@ export default function App() {
             lastBlockNumber !== 0
         ) {
             (async () => {
-                // const viewProvider = provider
-                //     ? provider
-                //     : (await new CrocEnv(chainData.chainId).context).provider;
+                // const spotTick = await cachedQuerySpotTick(
+                //     crocEnv,
+                //     baseTokenAddress,
+                //     quoteTokenAddress,
+                //     chainData.chainId,
+                //     lastBlockNumber,
+                // );
+
+                // setPoolPriceTick(spotTick);
 
                 const spotPrice = await cachedQuerySpotPrice(
                     crocEnv,
@@ -2181,6 +2191,7 @@ export default function App() {
                             element={
                                 <Trade
                                     pool={pool}
+                                    // poolPriceTick={poolPriceTick}
                                     isUserLoggedIn={isUserLoggedIn}
                                     crocEnv={crocEnv}
                                     provider={provider}

@@ -37,14 +37,16 @@ import { CandleData, CandlesByPoolAndDuration } from '../../../utils/state/graph
 import { useAppSelector, useAppDispatch } from '../../../utils/hooks/reduxToolkit';
 import TradeCandleStickChart from './TradeCandleStickChart';
 import { PoolIF, TokenIF } from '../../../utils/interfaces/exports';
-import { get24hChange } from '../../../App/functions/getPoolStats';
+import { get24hChange, getPoolTVL } from '../../../App/functions/getPoolStats';
 import TradeChartsLoading from './TradeChartsLoading/TradeChartsLoading';
 import NoTokenIcon from '../../../components/Global/NoTokenIcon/NoTokenIcon';
 import { ChainSpec, CrocPoolView } from '@crocswap-libs/sdk';
+import { formatAmountOld } from '../../../utils/numbers';
 
 // interface for React functional component props
 interface TradeChartsPropsIF {
     pool: CrocPoolView | undefined;
+    // poolPriceTick: number | undefined;
     chainData: ChainSpec;
     chainId: string;
     lastBlockNumber: number;
@@ -239,10 +241,10 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
 
     // END OF GRAPH SETTINGS CONTENT------------------------------------------------------
 
-    const [poolPriceChangePercent, setPoolPriceChangePercent] = useState<string | undefined>(
-        undefined,
-    );
+    const [poolPriceChangePercent, setPoolPriceChangePercent] = useState<string | undefined>();
     const [isPoolPriceChangePositive, setIsPoolPriceChangePositive] = useState<boolean>(true);
+
+    const [poolTvl, setPoolTvl] = useState<string | undefined>();
 
     const baseTokenAddress = isTokenABase ? tokenAAddress : tokenBAddress;
     const quoteTokenAddress = isTokenABase ? tokenBAddress : tokenAAddress;
@@ -288,6 +290,33 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
             }
         })();
     }, [denomInBase, baseTokenAddress, quoteTokenAddress, lastBlockNumber]);
+
+    useEffect(() => {
+        (async () => {
+            if (tokenAAddress && tokenBAddress) {
+                try {
+                    const poolTvlResult = await getPoolTVL(
+                        baseTokenAddress,
+                        quoteTokenAddress,
+                        poolIndex,
+                        chainId,
+                    );
+
+                    if (poolTvlResult) {
+                        const tvlString = poolTvlResult
+                            ? '$' + formatAmountOld(poolTvlResult)
+                            : undefined;
+
+                        setPoolTvl(tvlString);
+                    } else {
+                        setPoolTvl(undefined);
+                    }
+                } catch (error) {
+                    setPoolTvl(undefined);
+                }
+            }
+        })();
+    }, [baseTokenAddress, quoteTokenAddress, Math.floor(lastBlockNumber / 4)]);
 
     // ---------------------------ACTIVE OVERLAY BUTTON FUNCTIONALITY-------------------------------
 
@@ -506,8 +535,8 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
         </span>
     );
 
-    const tvlDisplay = <p className={styles.tvl_display}>TVL: ...</p>;
-    const tvlTickDisplay = <p className={styles.tvl_display}>TVL at Tick: ...</p>;
+    const tvlDisplay = <p className={styles.tvl_display}>TVL: {poolTvl || '...'}</p>;
+    const tvlTickDisplay = <p className={styles.tvl_display}>TVL at Tick: {'...'}</p>;
 
     // ------------  END OF MIDDLE TOP HEADER OF TRADE CHARTS
 
