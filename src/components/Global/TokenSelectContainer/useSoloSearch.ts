@@ -25,7 +25,7 @@ export const useSoloSearch = (
     const validatedInput = useMemo(() => {
         // trim string and make it lower case
         const cleanInput = input.trim().toLowerCase();
-        // add '0x' to the front of the cleaned string if not present
+        // action if input appears to be a contract address
         if (
             cleanInput.length === (42) ||
             (
@@ -34,13 +34,16 @@ export const useSoloSearch = (
             )
         ) {
             setSearchAs('address');
-        } else if (cleanInput.length >= 3) {
+        // if not an apparent token address search name and symbol
+        } else if (cleanInput.length >= 2) {
             setSearchAs('nameOrSymbol');
             return cleanInput;
+        // otherwise treat as if there is no input entered
         } else {
             setSearchAs('');
             return '';
         }
+        // add '0x' to the front of the cleaned string if not present
         const fixedInput = cleanInput.startsWith('0x')
             ? cleanInput
             : '0x' + cleanInput;
