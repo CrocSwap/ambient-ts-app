@@ -217,7 +217,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
             </DefaultTooltip>
         ) : (
             <IconWithTooltip title={`${baseTokenSymbol}`} placement='bottom'>
-                <NoTokenIcon tokenInitial={tx.baseSymbol.charAt(0)} width='30px' />
+                <NoTokenIcon tokenInitial={tx.baseSymbol.charAt(0)} width='15px' />
             </IconWithTooltip>
         );
 
@@ -239,7 +239,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                 <img src={quoteTokenLogo} alt='quote token' width='15px' />
             </DefaultTooltip>
         ) : (
-            <NoTokenIcon tokenInitial={tx.quoteSymbol.charAt(0)} width='25px' />
+            <NoTokenIcon tokenInitial={tx.quoteSymbol.charAt(0)} width='15px' />
         );
 
     const tokensTogether = (
