@@ -9,6 +9,7 @@ import TopPools from '../../components/Home/TopPools/TopPools';
 import { TokenIF } from '../../utils/interfaces/TokenIF';
 import styles from './Home.module.css';
 import { SpotPriceFn } from '../../App/functions/querySpotPrice';
+import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 
 interface HomeProps {
     crocEnv?: CrocEnv;
@@ -20,6 +21,9 @@ interface HomeProps {
 export default function Home(props: HomeProps) {
     const { tokenMap, lastBlockNumber, crocEnv, chainId, cachedQuerySpotPrice } = props;
 
+    const tradeData = useAppSelector((state) => state.tradeData);
+    const userData = useAppSelector((state) => state.userData);
+
     return (
         <>
             <main data-testid={'home'} className={styles.home_container}>
@@ -29,6 +33,8 @@ export default function Home(props: HomeProps) {
 
                 <div className={styles.pools_container}>
                     <TopPools
+                        tradeData={tradeData}
+                        userData={userData}
                         crocEnv={crocEnv}
                         cachedQuerySpotPrice={cachedQuerySpotPrice}
                         tokenMap={tokenMap}
@@ -36,7 +42,7 @@ export default function Home(props: HomeProps) {
                         chainId={chainId}
                     />
                     <DividerDark />
-                    <Stats lastBlockNumber={lastBlockNumber} />
+                    <Stats lastBlockNumber={lastBlockNumber} userData={userData} />
                 </div>
                 <DividerDark />
 

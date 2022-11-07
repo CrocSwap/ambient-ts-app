@@ -12,7 +12,7 @@ import { removeToken } from '../../Global/TokenSelectContainer/removeToken';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 // import { toDisplayQty } from '@crocswap-libs/sdk';
 // import { ZERO_ADDRESS } from '../../../constants';
-// import { formatAmount } from '../../../utils/numbers';
+// import { formatAmountOld } from '../../../utils/numbers';
 // import truncateDecimals from '../../../utils/data/truncateDecimals';
 // import { tokenData } from '../../../utils/state/tokenDataSlice';
 
@@ -119,41 +119,44 @@ export default function TokenSelect(props: TokenSelectPropsIF) {
     const deleteStateStyle = !showDelete ? styles.delete_active : styles.delete_inactive;
 
     return (
-        <div className={styles.main_container}>
-            {!props.isOnPortfolio && (
-                <div className={`${styles.delete_container} ${deleteStateStyle}`}>
-                    Remove {token.symbol} from your list
-                    {toggleButtons}
-                </div>
-            )}
-            <div className={styles.star_icon}>{starIcon}</div>
-            <div className={styles.modal_content} onClick={() => chooseToken(token)}>
-                <div className={styles.modal_tokens_info}>
-                    {token.logoURI ? (
-                        <img
-                            src={uriToHttp(token.logoURI)}
-                            alt={`logo for token ${token.name}`}
-                            width='27px'
-                        />
-                    ) : (
-                        noTokenImage
-                    )}
-                    <span className={styles.modal_token_symbol}>{token.symbol}</span>
-                    <span className={styles.modal_token_name}>{token.name}</span>
-                </div>
-                <div className={styles.modal_tokens_amount}>
-                    {isUserLoggedIn
-                        ? combinedBalanceDisplayTruncated === undefined
-                            ? connectedUserErc20Tokens !== undefined
+        <>
+            <div className={styles.main_container}>
+                {!props.isOnPortfolio && (
+                    <div className={`${styles.delete_container} ${deleteStateStyle}`}>
+                        Remove {token.symbol} from your list
+                        {toggleButtons}
+                    </div>
+                )}
+                <div className={styles.star_icon}>{starIcon}</div>
+                <div className={styles.modal_content} onClick={() => chooseToken(token)}>
+                    <div className={styles.modal_tokens_info}>
+                        {token.logoURI ? (
+                            <img
+                                src={uriToHttp(token.logoURI)}
+                                alt={`logo for token ${token.name}`}
+                                width='27px'
+                            />
+                        ) : (
+                            noTokenImage
+                        )}
+                        <span className={styles.modal_token_symbol}>{token.symbol}</span>
+                        <span className={styles.modal_token_name}>{token.name}</span>
+                    </div>
+                    <div className={styles.modal_tokens_amount}>
+                        {isUserLoggedIn
+                            ? combinedBalanceDisplayTruncated === undefined
+                                ? connectedUserErc20Tokens !== undefined
+                                    ? '0'
+                                    : '...'
+                                : tokenIsEth && parseFloat(combinedBalanceDisplayTruncated) === 0
                                 ? '0'
-                                : '...'
-                            : tokenIsEth && parseFloat(combinedBalanceDisplayTruncated) === 0
-                            ? '0'
-                            : combinedBalanceDisplayTruncated
-                        : ''}
+                                : combinedBalanceDisplayTruncated
+                            : ''}
+                    </div>
                 </div>
+                {undeletableTokens.includes(token.address) || deleteIcon}
             </div>
-            {undeletableTokens.includes(token.address) || deleteIcon}
-        </div>
+            <p className={styles.token_list_data}>lorem ipsum ipsum</p>
+        </>
     );
 }

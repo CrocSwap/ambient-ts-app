@@ -189,21 +189,20 @@ export default function TradeCandleStickChart(props: ChartData) {
                 }),
             );
 
-            const liquidityScale = d3.scaleLog().domain([domainLeft, domainRight]).range([1, 1000]);
+            const liquidityScale = d3.scaleLog().domain([domainLeft, domainRight]).range([0, 1000]);
+
+            const barThreshold = props.poolPriceDisplay !== undefined ? props.poolPriceDisplay : 0;
 
             props.liquidityData.ranges.map((data: any) => {
                 const liqPrices = denominationsInBase
                     ? data.upperBoundInvPriceDecimalCorrected
                     : data.upperBoundPriceDecimalCorrected;
 
-                if (liqPrices !== Infinity && liqPrices !== '+inf') {
+                if (liqPrices !== Infinity && liqPrices !== '+inf' && barThreshold !== undefined) {
                     liqData.push({
                         activeLiq: liquidityScale(data.activeLiq),
                         liqPrices: liqPrices,
                     });
-
-                    const barThreshold =
-                        props.poolPriceDisplay !== undefined ? props.poolPriceDisplay : 0;
 
                     if (liqPrices > barThreshold) {
                         liqBidData.push({
@@ -240,6 +239,8 @@ export default function TradeCandleStickChart(props: ChartData) {
                 }
             });
         }
+
+        // console.log({ liqAskData, liqBidData });
 
         return {
             liqData: liqData,

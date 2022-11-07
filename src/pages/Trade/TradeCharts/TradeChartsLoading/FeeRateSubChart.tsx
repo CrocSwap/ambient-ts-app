@@ -10,6 +10,7 @@ interface FreeRateData {
     period: number | undefined;
     crosshairData: any[];
     setsubChartValues: React.Dispatch<React.SetStateAction<any>>;
+    setZoomAndYdragControl: React.Dispatch<React.SetStateAction<any>>;
     xScale: any;
 }
 

@@ -65,7 +65,8 @@ export default function TransactionsMenu(props: TransactionMenuIF) {
 
     // -----------------SNACKBAR----------------
     function handleCopyAddress() {
-        copy('example data');
+        copy('Not Yet Implemented');
+
         setOpenSnackbar(true);
     }
 
@@ -82,7 +83,7 @@ export default function TransactionsMenu(props: TransactionMenuIF) {
             setOpenSnackbar={setOpenSnackbar}
             openSnackbar={openSnackbar}
         >
-            {value} copied
+            {value}
         </SnackbarComponent>
     );
     // -----------------END OF SNACKBAR----------------
@@ -151,7 +152,7 @@ export default function TransactionsMenu(props: TransactionMenuIF) {
     // --------------------------------
 
     // const view1 = useMediaQuery('(min-width: 1280px)');
-    const view2 = useMediaQuery('(min-width: 1680px)');
+    // const view2 = useMediaQuery('(min-width: 1680px)');
     // const view3 = useMediaQuery('(min-width: 2300px)');
     // eslint-disable-next-line
     const view1NoSidebar = useMediaQuery('(min-width: 1280px)') && !showSidebar;
@@ -166,7 +167,7 @@ export default function TransactionsMenu(props: TransactionMenuIF) {
             {/* {notRelevantButton && removeButton} */}
             {/* {notRelevantButton && harvestButton} */}
             {/* {(isOnPortfolioPage && !showSidebar) || (!isOnPortfolioPage && detailsButton)} */}
-            {view2 && explorerButton}
+            {/* {view2 && explorerButton} */}
             {/* {(!showSidebar && !isOnPortfolioPage) || (view2 && copyButton)} */}
             {copyButton}
         </div>

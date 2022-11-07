@@ -2,6 +2,8 @@
 import { useEffect, useState, useMemo } from 'react';
 import { Routes, Route, useLocation, Navigate } from 'react-router-dom';
 
+import { useIdleTimer } from 'react-idle-timer';
+
 import {
     resetUserGraphData,
     setPositionsByPool,
@@ -93,8 +95,14 @@ import { useFavePools } from './hooks/useFavePools';
 import { useAppChain } from './hooks/useAppChain';
 import {
     resetTokenData,
+    resetUserAddresses,
+    setAddressAtLogin,
+    setAddressCurrent,
+    setEnsNameCurrent,
+    setEnsOrAddressTruncated,
     setErc20Tokens,
     setIsLoggedIn,
+    setIsUserIdle,
     setNativeToken,
 } from '../utils/state/userDataSlice';
 import { checkIsStable } from '../utils/data/stablePairs';
@@ -120,6 +128,14 @@ import { fetchUserRecentChanges } from './functions/fetchUserRecentChanges';
 import { getTransactionData } from './functions/getTransactionData';
 import AppOverlay from '../components/Global/AppOverlay/AppOverlay';
 import { getLiquidityFee } from './functions/getLiquidityFee';
+import Analytics2 from '../pages/Analytics/Analytics2';
+import AnalyticsOverview from '../components/Analytics/AnalyticsOverview/AnalyticsOverview';
+import TopPools from '../components/Analytics/TopPools/TopPools';
+import TrendingPools from '../components/Analytics/TrendingPools/TrendingPools';
+import TopRanges from '../components/Analytics/TopRanges/TopRanges';
+import TopTokens from '../components/Analytics/TopTokens/TopTokens';
+import AnalyticsTransactions from '../components/Analytics/AnalyticsTransactions/AnalyticsTransactions';
+import trimString from '../utils/functions/trimString';
 // import PhishingWarning from '../components/Global/PhisingWarning/PhishingWarning';
 import useChatApi from '../components/Chat/Service/ChatApi';
 
@@ -149,18 +165,69 @@ export default function App() {
         enableWeb3,
     } = useMoralis();
 
+    const onIdle = () => {
+        console.log('user is idle');
+        dispatch(setIsUserIdle(true));
+    };
+
+    const onActive = () => {
+        // const onActive = (event: Event | undefined) => {
+        // console.log({ event });
+        console.log('user is active');
+        dispatch(setIsUserIdle(false));
+    };
+
+    useIdleTimer({
+        //    onPrompt,
+        onIdle,
+        onActive,
+        //    onAction,
+        timeout: 1000 * 60 * 1, // set user to idle after 1 minute
+        promptTimeout: 0,
+        events: [
+            'mousemove',
+            'keydown',
+            'wheel',
+            'DOMMouseScroll',
+            'mousewheel',
+            'mousedown',
+            'touchstart',
+            'touchmove',
+            'MSPointerDown',
+            'MSPointerMove',
+            'visibilitychange',
+        ],
+        immediateEvents: [],
+        debounce: 0,
+        throttle: 0,
+        eventsThrottle: 200,
+        element: document,
+        startOnMount: true,
+        startManually: false,
+        stopOnIdle: false,
+        crossTab: false,
+        name: 'idle-timer',
+        syncTimers: 0,
+        leaderElection: false,
+    });
+
     const userData = useAppSelector((state) => state.userData);
     const isUserLoggedIn = userData.isLoggedIn;
+    const isUserIdle = userData.isUserIdle;
 
     const { getID } = useChatApi();
 
     useEffect(() => {
         const isLoggedIn = isAuthenticated && isWeb3Enabled;
 
-        if (userData.isLoggedIn !== isLoggedIn) {
+        if (isLoggedIn && userData.isLoggedIn !== isLoggedIn && account) {
             dispatch(setIsLoggedIn(isLoggedIn));
+            dispatch(setAddressAtLogin(account));
+        } else if (!isLoggedIn && userData.isLoggedIn !== isLoggedIn) {
+            dispatch(setIsLoggedIn(isLoggedIn));
+            dispatch(resetUserAddresses());
         }
-    }, [isAuthenticated, isWeb3Enabled, isUserLoggedIn]);
+    }, [isAuthenticated, isWeb3Enabled, isUserLoggedIn, account]);
 
     useEffect(() => {
         const isLoggedIn = isAuthenticated && isWeb3Enabled;
@@ -296,8 +363,16 @@ export default function App() {
     }, [chainData.chainId]);
 
     useEffect(() => {
-        dispatch(resetTokenData());
-    }, [account]);
+        console.log({ isUserLoggedIn });
+        console.log({ account });
+        if (!isUserLoggedIn) {
+            dispatch(resetTokenData());
+        } else if (account) {
+            dispatch(setAddressCurrent(account));
+        } else {
+            dispatch(setAddressCurrent(undefined));
+        }
+    }, [isUserLoggedIn, account]);
 
     const dispatch = useAppDispatch();
 
@@ -482,22 +557,39 @@ export default function App() {
         })();
     }, [window.ethereum, account]);
 
-    const [ensName, setEnsName] = useState('');
+    // const [ensName, setEnsName] = useState('');
+    const ensName = userData.ensNameCurrent || '';
 
     // check for ENS name account changes
     useEffect(() => {
         (async () => {
-            if (account && provider) {
+            if (isUserLoggedIn && account && provider) {
                 try {
                     const ensName = await cachedFetchAddress(provider, account, chainData.chainId);
-                    if (ensName) setEnsName(ensName);
-                    else setEnsName('');
+                    if (ensName) {
+                        // setEnsName(ensName);
+                        dispatch(setEnsNameCurrent(ensName));
+                        if (ensName.length > 15) {
+                            dispatch(setEnsOrAddressTruncated(trimString(ensName, 10, 3, '…')));
+                        } else {
+                            dispatch(setEnsOrAddressTruncated(ensName));
+                        }
+                    } else {
+                        dispatch(setEnsNameCurrent(undefined));
+                        // setEnsName('');
+
+                        dispatch(setEnsOrAddressTruncated(trimString(account, 5, 3, '…')));
+                    }
                 } catch (error) {
-                    setEnsName('');
+                    dispatch(setEnsNameCurrent(undefined));
+                    // setEnsName('');
+                    dispatch(setEnsOrAddressTruncated(trimString(account, 5, 3, '…')));
                 }
+            } else if (!isUserLoggedIn || !account) {
+                dispatch(setEnsOrAddressTruncated(undefined));
             }
         })();
-    }, [account, chainData.chainId]);
+    }, [isUserLoggedIn, account, chainData.chainId]);
 
     const connectedUserTokens = useAppSelector((state) => state.userData.tokens);
     const connectedUserNativeToken = connectedUserTokens.nativeToken;
@@ -1467,6 +1559,7 @@ export default function App() {
     // useEffect to get spot price when tokens change and block updates
     useEffect(() => {
         if (
+            !isUserIdle &&
             crocEnv &&
             baseTokenAddress &&
             quoteTokenAddress &&
@@ -1499,6 +1592,7 @@ export default function App() {
             })();
         }
     }, [
+        isUserIdle,
         lastBlockNumber,
         baseTokenAddress,
         quoteTokenAddress,
@@ -1750,6 +1844,8 @@ export default function App() {
         dispatch(resetUserGraphData());
         dispatch(resetReceiptData());
         dispatch(resetTokenData());
+        dispatch(resetUserAddresses());
+
         await logout();
     };
 
@@ -2176,6 +2272,19 @@ export default function App() {
                             <Route path='edit/' element={<Navigate to='/trade/market' replace />} />
                         </Route>
                         <Route path='analytics' element={<Analytics {...analyticsProps} />} />
+                        <Route path='analytics2' element={<Analytics2 />}>
+                            <Route
+                                path=''
+                                element={<Navigate to='/analytics2/overview' replace />}
+                            />
+
+                            <Route path='overview' element={<AnalyticsOverview />} />
+                            <Route path='pools' element={<TopPools />} />
+                            <Route path='trendingpools' element={<TrendingPools />} />
+                            <Route path='ranges/top' element={<TopRanges />} />
+                            <Route path='tokens' element={<TopTokens />} />
+                            <Route path='transactions' element={<AnalyticsTransactions />} />
+                        </Route>
                         <Route
                             path='app/chat'
                             element={
@@ -2353,6 +2462,7 @@ export default function App() {
             <div className='footer_container'>
                 {currentLocation !== '/' && (
                     <PageFooter
+                        isUserIdle={isUserIdle}
                         lastBlockNumber={lastBlockNumber}
                         userIsOnline={userIsOnline}
                         favePools={favePools}

@@ -2,22 +2,32 @@ import { ChainSpec } from '@crocswap-libs/sdk';
 import { useEffect, useState } from 'react';
 import { memoizePoolStats } from '../../../../App/functions/getPoolStats';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
-import { formatAmount } from '../../../../utils/numbers';
+import { formatAmountOld } from '../../../../utils/numbers';
 import styles from './PoolInfo.module.css';
 import { BsArrowUpRight } from 'react-icons/bs';
 import trimString from '../../../../utils/functions/trimString';
 import { DefaultTooltip } from '../../../Global/StyledTooltip/StyledTooltip';
 import { ZERO_ADDRESS } from '../../../../constants';
+import { motion, AnimateSharedLayout } from 'framer-motion';
+import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 // interface for props
 interface PoolInfoPropsIF {
     chainData: ChainSpec;
     lastBlockNumber: number;
+    showSidebar: boolean;
 }
 interface PoolInfoCardPropsIF {
     // eslint-disable-next-line
     title: any;
     // eslint-disable-next-line
     data: any;
+}
+interface timeDataCardPropsIF {
+    txs: number;
+    buys: number;
+    sells: number;
+    volume: number;
+    smallScreen: boolean;
 }
 
 const cachedPoolStatsFetch = memoizePoolStats();
@@ -63,6 +73,39 @@ export default function PoolInfo(props: PoolInfoPropsIF) {
 
     // end of pool info card--------------------
 
+    // time data card---------------------------
+
+    function TimeDataCard(props: timeDataCardPropsIF) {
+        const { txs, buys, sells, volume, smallScreen } = props;
+
+        return (
+            <div
+                className={`${styles.time_display} ${
+                    smallScreen ? styles.small_screen : styles.large_screen
+                }`}
+            >
+                <div className={styles.time_display_content}>
+                    <p>TXS</p>
+                    <h6>{txs}</h6>
+                </div>
+                <div className={styles.time_display_content}>
+                    <p>Buys</p>
+                    <h6>{buys}</h6>
+                </div>
+                <div className={styles.time_display_content}>
+                    <p>Sells</p>
+                    <h6>{sells}</h6>
+                </div>
+                <div className={styles.time_display_content}>
+                    <p>Volume</p>
+                    <h6>{volume}</h6>
+                </div>
+            </div>
+        );
+    }
+
+    // end of time data card---------------------------
+
     const { chainData, lastBlockNumber } = props;
 
     const tradeData = useAppSelector((state) => state.tradeData);
@@ -101,16 +144,16 @@ export default function PoolInfo(props: PoolInfoPropsIF) {
                 Math.floor(lastBlockNumber / 4),
             );
             const volume = poolStatsFresh?.volume;
-            const volumeString = volume ? '$' + formatAmount(volume) : undefined;
+            const volumeString = volume ? '$' + formatAmountOld(volume) : undefined;
             setPoolVolume(volumeString);
             const tvl = poolStatsFresh?.tvl;
-            const tvlString = tvl ? '$' + formatAmount(tvl) : undefined;
+            const tvlString = tvl ? '$' + formatAmountOld(tvl) : undefined;
             setPoolTvl(tvlString);
             const fees = poolStatsFresh?.fees;
-            const feesString = fees ? '$' + formatAmount(fees) : undefined;
+            const feesString = fees ? '$' + formatAmountOld(fees) : undefined;
             setPoolFees(feesString);
             const apr = poolStatsFresh?.apy;
-            const aprString = apr ? formatAmount(apr) + '%' : undefined;
+            const aprString = apr ? formatAmountOld(apr) + '%' : undefined;
             setPoolAPR(aprString);
         })();
     };
@@ -205,6 +248,71 @@ export default function PoolInfo(props: PoolInfoPropsIF) {
             <h3>$420,000</h3>
         </section>
     );
+    const smallScreen = useMediaQuery('(max-width: 1600px)') && props.showSidebar;
+    // ||
+    // useMediaQuery('(max-width: 1300px)');
+
+    const timeTabData = [
+        {
+            label: '5m',
+            content: (
+                <TimeDataCard txs={23} buys={23} sells={23} volume={23} smallScreen={smallScreen} />
+            ),
+        },
+        {
+            label: '1h',
+            content: (
+                <TimeDataCard txs={24} buys={24} sells={24} volume={24} smallScreen={smallScreen} />
+            ),
+        },
+        {
+            label: '4h',
+            content: (
+                <TimeDataCard txs={25} buys={25} sells={25} volume={25} smallScreen={smallScreen} />
+            ),
+        },
+        {
+            label: '24h',
+            content: (
+                <TimeDataCard txs={26} buys={26} sells={26} volume={26} smallScreen={smallScreen} />
+            ),
+        },
+    ];
+    const [selectedTab, setSelectedTab] = useState(timeTabData[0]);
+
+    const timeTabDisplay = (
+        <div className={`${styles.time_tab_container} `}>
+            <nav>
+                <ul className={smallScreen ? styles.small_screen : styles.large_screen}>
+                    {timeTabData.map((item) => (
+                        <li
+                            key={item.label}
+                            className={item.label === selectedTab.label ? styles.selected : ''}
+                            onClick={() => setSelectedTab(item)}
+                        >
+                            {` ${item.label}`}
+                            {item.label === selectedTab.label ? (
+                                <motion.div className={styles.underline} layoutId='underline' />
+                            ) : null}
+                        </li>
+                    ))}
+                </ul>
+            </nav>
+            <section>
+                <AnimateSharedLayout>
+                    <motion.div
+                        key={selectedTab ? selectedTab.label : '"empty"'}
+                        initial={{ y: 10, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        exit={{ y: -10, opacity: 0 }}
+                        transition={{ duration: 0.2 }}
+                    >
+                        {selectedTab ? selectedTab.content : ''}
+                    </motion.div>
+                </AnimateSharedLayout>
+            </section>
+        </div>
+    );
 
     return (
         <main className={styles.container} style={{ height: '250px' }}>
@@ -213,19 +321,16 @@ export default function PoolInfo(props: PoolInfoPropsIF) {
                 {quoteTokenDisplay}
                 <section className={styles.right_container}>
                     <div className={styles.right_container_top}>
-                        <PoolInfoCard title='Market Cap:' data={'$69m' || '...'} />
-                        <PoolInfoCard title='FDV:' data={'$690m' || '...'} />
+                        <PoolInfoCard title='Market Cap:' data={'...'} />
+                        <PoolInfoCard title='FDV:' data={'...'} />
                         <PoolInfoCard title='24h Swap Volume:' data={poolVolume || '...'} />
                         <PoolInfoCard title='Total Fees:' data={poolFees || '...'} />
                         <PoolInfoCard title='TVL:' data={poolTvl || '...'} />
-                        <PoolInfoCard title='Tick Liquidity:' data={'$500k' || '...'} />
-                        <PoolInfoCard title='OOR Liquidity:' data={'20%' || '...'} />
-                        <PoolInfoCard title='Pool Created:' data={'15/07/2022' || '...'} />
+                        <PoolInfoCard title='Tick Liquidity:' data={'...'} />
+                        <PoolInfoCard title='OOR Liquidity:' data={'...'} />
+                        <PoolInfoCard title='Pool Created:' data={'...'} />
                     </div>
-                    <div>
-                        Lorem ipsum dolor sit amet consectetur, adipisicing elit. Velit consequuntur
-                        dolorum corrupti voluptate soluta modi dicta debitis ullam aliquam rerum?
-                    </div>
+                    {timeTabDisplay}
                 </section>
             </div>
         </main>

@@ -2,7 +2,7 @@ import styles from './TopTokens.module.css';
 import TopTokensCard from './TopTokensCard/TopTokensCard';
 import TopTokensHeader from './TopTokensHeader/TopTokensHeader';
 import { uniswapTokens } from '../fakedata/uniswapTokens';
-
+import { motion } from 'framer-motion';
 const tokenData = uniswapTokens[0].tokens;
 
 export default function TopTokens() {
@@ -20,11 +20,17 @@ export default function TopTokens() {
         </div>
     );
     return (
-        <div className={styles.main_container}>
+        <motion.div
+            className={styles.main_container}
+            initial={{ y: 10, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: -10, opacity: 0 }}
+            transition={{ duration: 0.5 }}
+        >
             <p>All Tokens</p>
 
             <TopTokensHeader />
             {container}
-        </div>
+        </motion.div>
     );
 }

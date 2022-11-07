@@ -353,7 +353,7 @@ export default function Orders(props: propsIF) {
             sortable: false,
         },
         {
-            name: 'Status',
+            name: ' ',
             className: '',
             show: !ipadView,
             slug: 'status',

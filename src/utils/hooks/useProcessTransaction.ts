@@ -3,7 +3,7 @@ import { useMoralis } from 'react-moralis';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { useState, useEffect, useMemo } from 'react';
 import getUnicodeCharacter from '../../utils/functions/getUnicodeCharacter';
-import { formatAmount } from '../../utils/numbers';
+import { formatAmountOld } from '../../utils/numbers';
 import { useAppChain } from '../../App/hooks/useAppChain';
 import trimString from '../../utils/functions/trimString';
 import { getMoneynessRank } from '../functions/getMoneynessRank';
@@ -109,7 +109,7 @@ export const useProcessTransaction = (tx: ITransaction) => {
                         : priceDecimalCorrected < 2
                         ? priceDecimalCorrected.toPrecision(3)
                         : priceDecimalCorrected >= 100000
-                        ? formatAmount(priceDecimalCorrected)
+                        ? formatAmountOld(priceDecimalCorrected)
                         : priceDecimalCorrected.toLocaleString(undefined, {
                               minimumFractionDigits: 2,
                               maximumFractionDigits: 2,
@@ -123,7 +123,7 @@ export const useProcessTransaction = (tx: ITransaction) => {
                         : invPriceDecimalCorrected < 2
                         ? invPriceDecimalCorrected.toPrecision(3)
                         : invPriceDecimalCorrected >= 100000
-                        ? formatAmount(invPriceDecimalCorrected)
+                        ? formatAmountOld(invPriceDecimalCorrected)
                         : invPriceDecimalCorrected.toLocaleString(undefined, {
                               minimumFractionDigits: 2,
                               maximumFractionDigits: 2,
@@ -163,7 +163,7 @@ export const useProcessTransaction = (tx: ITransaction) => {
                         : bidTickPriceDecimalCorrected < 2
                         ? bidTickPriceDecimalCorrected.toPrecision(3)
                         : bidTickPriceDecimalCorrected >= 100000
-                        ? formatAmount(bidTickPriceDecimalCorrected, 1)
+                        ? formatAmountOld(bidTickPriceDecimalCorrected, 1)
                         : bidTickPriceDecimalCorrected.toLocaleString(undefined, {
                               minimumFractionDigits: 2,
                               maximumFractionDigits: 2,
@@ -178,7 +178,7 @@ export const useProcessTransaction = (tx: ITransaction) => {
                         : bidTickInvPriceDecimalCorrected < 2
                         ? bidTickInvPriceDecimalCorrected.toPrecision(3)
                         : bidTickInvPriceDecimalCorrected >= 100000
-                        ? formatAmount(bidTickInvPriceDecimalCorrected, 1)
+                        ? formatAmountOld(bidTickInvPriceDecimalCorrected, 1)
                         : bidTickInvPriceDecimalCorrected.toLocaleString(undefined, {
                               minimumFractionDigits: 2,
                               maximumFractionDigits: 2,
@@ -193,7 +193,7 @@ export const useProcessTransaction = (tx: ITransaction) => {
                         : askTickPriceDecimalCorrected < 2
                         ? askTickPriceDecimalCorrected.toPrecision(3)
                         : askTickPriceDecimalCorrected >= 100000
-                        ? formatAmount(askTickPriceDecimalCorrected, 1)
+                        ? formatAmountOld(askTickPriceDecimalCorrected, 1)
                         : askTickPriceDecimalCorrected.toLocaleString(undefined, {
                               minimumFractionDigits: 2,
                               maximumFractionDigits: 2,
@@ -208,7 +208,7 @@ export const useProcessTransaction = (tx: ITransaction) => {
                         : askTickInvPriceDecimalCorrected < 2
                         ? askTickInvPriceDecimalCorrected.toPrecision(3)
                         : askTickInvPriceDecimalCorrected >= 100000
-                        ? formatAmount(askTickInvPriceDecimalCorrected, 1)
+                        ? formatAmountOld(askTickInvPriceDecimalCorrected, 1)
                         : askTickInvPriceDecimalCorrected.toLocaleString(undefined, {
                               minimumFractionDigits: 2,
                               maximumFractionDigits: 2,
@@ -252,7 +252,7 @@ export const useProcessTransaction = (tx: ITransaction) => {
                         : priceDecimalCorrected < 2
                         ? priceDecimalCorrected.toPrecision(3)
                         : priceDecimalCorrected >= 100000
-                        ? formatAmount(priceDecimalCorrected)
+                        ? formatAmountOld(priceDecimalCorrected)
                         : priceDecimalCorrected.toLocaleString(undefined, {
                               minimumFractionDigits: 2,
                               maximumFractionDigits: 2,
@@ -266,7 +266,7 @@ export const useProcessTransaction = (tx: ITransaction) => {
                         : invPriceDecimalCorrected < 2
                         ? invPriceDecimalCorrected.toPrecision(3)
                         : invPriceDecimalCorrected >= 100000
-                        ? formatAmount(invPriceDecimalCorrected)
+                        ? formatAmountOld(invPriceDecimalCorrected)
                         : invPriceDecimalCorrected.toLocaleString(undefined, {
                               minimumFractionDigits: 2,
                               maximumFractionDigits: 2,
@@ -297,7 +297,7 @@ export const useProcessTransaction = (tx: ITransaction) => {
                     : baseFlowAbsNum < 0.0001
                     ? baseFlowAbsNum.toExponential(2)
                     : baseFlowAbsNum >= 1000000
-                    ? formatAmount(baseFlowAbsNum)
+                    ? formatAmountOld(baseFlowAbsNum)
                     : // ? baseLiqDisplayNum.toExponential(2)
                       baseFlowAbsNum.toLocaleString(undefined, {
                           minimumFractionDigits: 2,
@@ -319,7 +319,7 @@ export const useProcessTransaction = (tx: ITransaction) => {
                     : quoteFlowAbsNum < 0.0001
                     ? quoteFlowAbsNum.toExponential(2)
                     : quoteFlowAbsNum >= 1000000
-                    ? formatAmount(quoteFlowAbsNum)
+                    ? formatAmountOld(quoteFlowAbsNum)
                     : // ? quoteLiqDisplayNum.toExponential(2)
                       quoteFlowAbsNum.toLocaleString(undefined, {
                           minimumFractionDigits: 2,
@@ -404,24 +404,44 @@ export const useProcessTransaction = (tx: ITransaction) => {
         : usdValueNum < 0.01
         ? usdValueNum.toExponential(2) + ' '
         : usdValueNum >= 100000
-        ? formatAmount(usdValueNum, 2)
+        ? formatAmountOld(usdValueNum, 2)
         : // ? baseLiqDisplayNum.toExponential(2)
           usdValueNum.toLocaleString(undefined, {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
           }) + ' ';
 
+    const usdValueLocaleString = !usdValueNum
+        ? undefined
+        : usdValueNum < 0.01
+        ? usdValueNum.toPrecision(3)
+        : // ? baseLiqDisplayNum.toExponential(2)
+          usdValueNum.toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+          });
+
     const totalValueUSDTruncated = !totalValueUSD
         ? undefined
         : totalValueUSD < 0.01
         ? totalValueUSD.toExponential(2) + ' '
         : totalValueUSD >= 100000
-        ? formatAmount(totalValueUSD, 2)
+        ? formatAmountOld(totalValueUSD, 2)
         : // ? baseLiqDisplayNum.toExponential(2)
           totalValueUSD.toLocaleString(undefined, {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
           }) + ' ';
+
+    const totalValueUSDLocaleString = !totalValueUSD
+        ? undefined
+        : totalValueUSD < 0.01
+        ? totalValueUSD.toPrecision(3)
+        : // ? baseLiqDisplayNum.toExponential(2)
+          totalValueUSD.toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+          });
 
     const totalFlowUSDTruncated =
         totalFlowAbsNum === undefined
@@ -431,12 +451,22 @@ export const useProcessTransaction = (tx: ITransaction) => {
             : totalFlowAbsNum < 0.01
             ? totalFlowAbsNum.toExponential(2) + ' '
             : totalFlowAbsNum >= 100000
-            ? formatAmount(totalFlowAbsNum, 2)
+            ? formatAmountOld(totalFlowAbsNum, 2)
             : // ? baseLiqDisplayNum.toExponential(2)
               totalFlowAbsNum.toLocaleString(undefined, {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
               }) + ' ';
+
+    const totalFlowUSDLocaleString = !totalFlowAbsNum
+        ? undefined
+        : totalFlowAbsNum < 0.01
+        ? totalFlowAbsNum.toPrecision(3)
+        : totalFlowAbsNum.toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+          });
+
     // --------------------------------------------------------
 
     const quantitiesAvailable = baseFlowDisplay !== undefined || quoteFlowDisplay !== undefined;
@@ -463,6 +493,14 @@ export const useProcessTransaction = (tx: ITransaction) => {
             : usdValueTruncated
             ? '$' + usdValueTruncated
             : '…';
+
+    const txUsdValueLocaleString = totalFlowUSDLocaleString
+        ? '$' + totalFlowUSDLocaleString
+        : totalValueUSDLocaleString
+        ? '$' + totalValueUSDLocaleString
+        : usdValueLocaleString
+        ? '$' + usdValueLocaleString
+        : '…';
     // --------------------OWNER AND ID WALLET DATA
 
     const ensNameOrOwnerTruncated = ensName
@@ -499,6 +537,7 @@ export const useProcessTransaction = (tx: ITransaction) => {
 
         // Value data
         usdValue,
+        txUsdValueLocaleString,
 
         // Token Qty data
         baseTokenCharacter,

@@ -30,6 +30,7 @@ interface currentPoolInfo {
 }
 
 interface IFooterProps {
+    isUserIdle: boolean;
     lastBlockNumber: number;
     userIsOnline: boolean;
     favePools: PoolIF[];
@@ -41,11 +42,12 @@ interface IFooterProps {
 const pageBlockSign = <div className={styles.page_block_sign} />;
 
 export default function PageFooter(props: IFooterProps) {
-    const { userIsOnline, lastBlockNumber } = props;
+    const { isUserIdle, userIsOnline, lastBlockNumber } = props;
 
     return (
         <footer data-testid={'page-footer'} className={styles.footer}>
             {userIsOnline ? '' : 'Offline'}
+            {isUserIdle ? 'Idle' : ''}
 
             <a href='#'>
                 <AiFillTwitterCircle size={15} />
