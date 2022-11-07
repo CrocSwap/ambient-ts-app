@@ -99,9 +99,7 @@ export const SoloTokenSelect = (props: propsIF) => {
                 placeholder='Enter an Address'
                 onChange={(e) => setInput(e.target.value)}
             />
-            {
-                importedTokenButtons
-            }
+            {importedTokenButtons}
         </>
     );
 };
