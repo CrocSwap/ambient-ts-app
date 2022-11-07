@@ -2,6 +2,7 @@ import styles from './IncomingMessage.module.css';
 import noAvatarImage from '../../../../assets/images/icons/avatar.svg';
 import { Message } from '../../Model/MessageModel';
 import PositionBox from '../PositionBox/PositionBox';
+import { useState } from 'react';
 
 export interface IncomingMessageProps {
     message: Message;
@@ -9,6 +10,7 @@ export interface IncomingMessageProps {
 }
 
 export default function IncomingMessage(props: IncomingMessageProps) {
+    const [isPosition, setIsPosition] = useState(false);
     const formatAMPM = (str: any) => {
         const date = new Date(str);
         let hours = date.getHours();
@@ -30,12 +32,17 @@ export default function IncomingMessage(props: IncomingMessageProps) {
 
                 <div className={styles.message_message}>
                     <div className={styles.name}>{props.name}</div>
-                    <p className={styles.message}>{props.message.message}</p>
+                    {!isPosition && <p className={styles.message}>{props.message.message}</p>}
                 </div>
 
                 <div className={styles.message_date}>{formatAMPM(props.message.createdAt)}</div>
             </div>
-            <PositionBox message={props.message.message} isInput={false} />
+            <PositionBox
+                message={props.message.message}
+                isInput={false}
+                isPosition={isPosition}
+                setIsPosition={setIsPosition}
+            />
         </div>
     );
 }

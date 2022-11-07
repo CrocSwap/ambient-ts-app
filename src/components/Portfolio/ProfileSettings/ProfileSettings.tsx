@@ -148,39 +148,21 @@ export default function ProfileSettings(props: ProfileSettingsPropsIF) {
         });
     }, []);
 
-    async function saveUser() {
-        if (name === '') {
-            const response = await fetch('http://localhost:5000/api/auth/saveUser', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ ensName: name, walletID: account }),
-            });
+    async function updateUser() {
+        const response = await fetch('http://localhost:5000/api/auth/updateUser', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ ensName: name, _id: id }),
+        });
 
-            const data = await response.json();
-            if (data.status === 'OK') {
-                console.log(data.status);
-                setOpenSnackbar(true);
-            } else {
-                console.log(data.status);
-            }
+        const data = await response.json();
+        if (data.status === 'OK') {
+            console.log('aaaa', data);
+            setOpenSnackbar(true);
         } else {
-            const response = await fetch('http://localhost:5000/api/auth/updateUser', {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ ensName: name, _id: id }),
-            });
-
-            const data = await response.json();
-            if (data.status === 'OK') {
-                console.log('aaaa', data);
-                setOpenSnackbar(true);
-            } else {
-                console.log('bbb', data.status);
-            }
+            console.log('bbb', data.status);
         }
     }
 
@@ -206,7 +188,7 @@ export default function ProfileSettings(props: ProfileSettingsPropsIF) {
                         {themeDisplay}
                         {skinDisplay}
                     </section>
-                    <button className={styles.save_button} onClick={() => saveUser()}>
+                    <button className={styles.save_button} onClick={() => updateUser()}>
                         Save
                     </button>
                     {snackbarContent}

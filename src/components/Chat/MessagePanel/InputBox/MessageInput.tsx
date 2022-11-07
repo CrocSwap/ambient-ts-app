@@ -23,6 +23,7 @@ interface MessageInputProps {
     message?: Message;
     room: string;
     currentUser: string;
+    ensName: string;
 }
 interface currentPoolInfo {
     tokenA: TokenIF;
@@ -62,6 +63,7 @@ export default function MessageInput(props: MessageInputProps, prop: ChatProps) 
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
     const { user, account, enableWeb3, isWeb3Enabled, isAuthenticated } = useMoralis();
     const [currentUser, setCurrentUser] = useState('');
+    const [isPosition, setIsPosition] = useState(false);
     // const { roomId } = props.match.params;
 
     const { messages, getMsg, sendMsg } = useSocket(props.room);
@@ -97,7 +99,7 @@ export default function MessageInput(props: MessageInputProps, prop: ChatProps) 
 
     const handleSendMsg = async (msg: string, roomId: any) => {
         console.log('Current user is ', currentUser);
-        sendMsg(props.currentUser, message, roomId);
+        sendMsg(props.currentUser, message, roomId, props.ensName, account);
     };
 
     const onChangeMessage = async (e: any) => {
@@ -126,7 +128,12 @@ export default function MessageInput(props: MessageInputProps, prop: ChatProps) 
 
     return (
         <div className={styles.input_box}>
-            <PositionBox message={message} isInput={true} />
+            <PositionBox
+                message={message}
+                isInput={true}
+                isPosition={isPosition}
+                setIsPosition={setIsPosition}
+            />
 
             <div className={styles.input}>
                 <input
@@ -134,10 +141,10 @@ export default function MessageInput(props: MessageInputProps, prop: ChatProps) 
                     id='box'
                     placeholder={
                         isAuthenticated || isWeb3Enabled
-                            ? 'Please log in to chat.'
-                            : 'Type to chat. Enter to submit.'
+                            ? 'Type to chat. Enter to submit.'
+                            : 'Please log in to chat.'
                     }
-                    // disabled={!isAuthenticated || !isWeb3Enabled}
+                    disabled={!isAuthenticated || !isWeb3Enabled}
                     className={styles.input_text}
                     onKeyDown={_handleKeyDown}
                     value={message}

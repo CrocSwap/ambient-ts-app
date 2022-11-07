@@ -56,13 +56,26 @@ const useChatApi = () => {
             );
             const data = await response.json();
             if (data.status === 'OK') {
-                return data.userData;
+                return data;
             } else {
                 console.error('else', data);
+                return data;
             }
         }
     }
 
-    return { getID };
+    async function getNameOrWallet(_id: string) {
+        const response = await fetch('http://localhost:5000/api/auth/getUserByAccount/' + _id, {
+            method: 'GET',
+        });
+        const data = await response.json();
+        if (data.ensName === '') {
+            return data.walletID;
+        } else {
+            return data.ensName;
+        }
+    }
+
+    return { getID, getNameOrWallet };
 };
 export default useChatApi;
