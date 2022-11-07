@@ -53,10 +53,11 @@
     color: var(--text-grey-light);
     border: none;
     outline: none;
+    transition: all var(--animation-speed) ease-in-out;
 }
 .search_input button:hover {
     color: var(--text-grey-white);
-    transition: all var(--animation-speed) ease-in-out;
+  
 }
 
 .header_container {
@@ -100,7 +101,7 @@
     color: var(--text-grey-light);
     cursor: pointer;
     background: linear-gradient(#7371fc 0 0) var(--p, 0) / var(--p, 0) no-repeat;
-    transition: var(--animation-speed), background-position 0s;
+    transition: all var(--animation-speed) ease-in-out;
     padding: 0 5px;
 }
 .clear_all_button:hover {

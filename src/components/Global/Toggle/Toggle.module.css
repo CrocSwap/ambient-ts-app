@@ -11,7 +11,7 @@
     display: flex;
 
     cursor: pointer;
-    transition: background-color 0.2s;
+    transition: background-color 0.2s ease-in-out;
 
     border-radius: 100px;
     /* width: 50px;
@@ -43,7 +43,7 @@
     left: 2px;
 
     content: '';
-    transition: all var(--animation-speed) ease;
+    transition: all var(--animation-speed) ease-in-out;
     /* width: 20px;
       height: 20px; */
 

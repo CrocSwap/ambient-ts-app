@@ -20,9 +20,9 @@ export default function WaitingConfirmation(props: WaitingConfirmationPropsIF) {
             <span className={styles.waiting_detail}>
                 <h4>{content}</h4>
             </span>
-            <span className={styles.waiting_detail}>
+            {/* <span className={styles.waiting_detail}>
                 <p>Please confirm this transaction in your wallet</p>
-            </span>
+            </span> */}
         </div>
     );
 }

@@ -8,11 +8,17 @@ export interface targetData {
     value: number | undefined;
 }
 
+export interface candleDomain {
+    lastCandleDate: number | undefined;
+    domainBoundry: number | undefined;
+}
+
 export interface tradeData {
     tokenA: TokenIF;
     tokenB: TokenIF;
     baseToken: TokenIF;
     quoteToken: TokenIF;
+    liquidityFee: number;
     didUserFlipDenom: boolean;
     isDenomBase: boolean;
     advancedMode: boolean;
@@ -20,18 +26,19 @@ export interface tradeData {
     primaryQuantity: string;
     isTokenAPrimaryRange: boolean;
     primaryQuantityRange: string;
-    limitPrice: string;
+    limitTick: number;
     advancedLowTick: number;
     advancedHighTick: number;
     simpleRangeWidth: number;
     slippageTolerance: number;
     activeChartPeriod: number;
     targetData: targetData[];
-    pinnedMaxPriceDisplayTruncated: number;
-    pinnedMinPriceDisplayTruncated: number;
+    pinnedMaxPriceDisplayTruncated: number | undefined;
+    pinnedMinPriceDisplayTruncated: number | undefined;
     rangeModuleTriggered: boolean;
     rangeLowLineTriggered: boolean;
     rangeHighLineTriggered: boolean;
+    candleDomains: candleDomain;
 }
 
 const initialState: tradeData = {
@@ -39,6 +46,7 @@ const initialState: tradeData = {
     tokenB: goerliUSDC,
     baseToken: goerliETH,
     quoteToken: goerliUSDC,
+    liquidityFee: 0,
     didUserFlipDenom: false,
     isDenomBase: true,
     advancedMode: false,
@@ -46,18 +54,19 @@ const initialState: tradeData = {
     primaryQuantity: '',
     isTokenAPrimaryRange: true,
     primaryQuantityRange: '',
-    limitPrice: '',
+    limitTick: 0,
     advancedLowTick: 0,
     advancedHighTick: 0,
     simpleRangeWidth: 100,
     slippageTolerance: 0.05,
     activeChartPeriod: 3600,
     targetData: [
-        { name: 'Max', value: 0 },
-        { name: 'Min', value: 0 },
+        { name: 'Min', value: undefined },
+        { name: 'Max', value: undefined },
     ],
-    pinnedMaxPriceDisplayTruncated: 0,
-    pinnedMinPriceDisplayTruncated: 0,
+    candleDomains: { lastCandleDate: undefined, domainBoundry: undefined },
+    pinnedMaxPriceDisplayTruncated: undefined,
+    pinnedMinPriceDisplayTruncated: undefined,
     rangeModuleTriggered: false,
     rangeLowLineTriggered: false,
     rangeHighLineTriggered: false,
@@ -95,6 +104,9 @@ export const tradeDataSlice = createSlice({
                 state.baseToken = state.tokenA;
             }
         },
+        setLiquidityFee: (state, action: PayloadAction<number>) => {
+            state.liquidityFee = action.payload;
+        },
         setDidUserFlipDenom: (state, action: PayloadAction<boolean>) => {
             state.didUserFlipDenom = action.payload;
         },
@@ -128,8 +140,8 @@ export const tradeDataSlice = createSlice({
         setPrimaryQuantityRange: (state, action: PayloadAction<string>) => {
             state.primaryQuantityRange = action.payload;
         },
-        setLimitPrice: (state, action: PayloadAction<string>) => {
-            state.limitPrice = action.payload;
+        setLimitTick: (state, action: PayloadAction<number>) => {
+            state.limitTick = action.payload;
         },
         setAdvancedLowTick: (state, action: PayloadAction<number>) => {
             state.advancedLowTick = action.payload;
@@ -174,6 +186,9 @@ export const tradeDataSlice = createSlice({
         setRangeLowLineTriggered: (state, action: PayloadAction<boolean>) => {
             state.rangeLowLineTriggered = action.payload;
         },
+        setCandleDomains: (state, action: PayloadAction<candleDomain>) => {
+            state.candleDomains = action.payload;
+        },
 
         resetTradeData: () => initialState,
     },
@@ -183,6 +198,7 @@ export const tradeDataSlice = createSlice({
 export const {
     setTokenA,
     setTokenB,
+    setLiquidityFee,
     setDidUserFlipDenom,
     toggleDidUserFlipDenom,
     setDenomInBase,
@@ -194,7 +210,7 @@ export const {
     setPrimaryQuantity,
     setIsTokenAPrimaryRange,
     setPrimaryQuantityRange,
-    setLimitPrice,
+    setLimitTick,
     setAdvancedLowTick,
     setAdvancedHighTick,
     setSimpleRangeWidth,
@@ -209,6 +225,7 @@ export const {
     setRangeModuleTriggered,
     setRangeLowLineTriggered,
     setRangeHighLineTriggered,
+    setCandleDomains,
 } = tradeDataSlice.actions;
 
 export default tradeDataSlice.reducer;

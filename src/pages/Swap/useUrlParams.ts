@@ -40,6 +40,16 @@ export const useUrlParams = (
         );
     }, [params]);
 
+    const getAddress = (tkn: string) => {
+        const tokenParam = urlParams.find((param) => param[0] === tkn);
+        const tokenAddress = tokenParam ? tokenParam[1] : ethers.constants.AddressZero;
+        return tokenAddress.toLowerCase();
+    };
+
+    const tokenPair = useMemo(() => {
+        return [getAddress('tokenA'), getAddress('tokenB')];
+    }, [urlParams]);
+
     // make a list of params found in the URL queried
     const paramsUsed = useMemo(() => urlParams.map((param) => param[0]), [urlParams]);
 
@@ -154,12 +164,6 @@ export const useUrlParams = (
                     fromList: 'urlParam',
                 }));
         }
-
-        const getAddress = (tkn: string) => {
-            const tokenParam = urlParams.find((param) => param[0] === tkn);
-            const tokenAddress = tokenParam ? tokenParam[1] : ethers.constants.AddressZero;
-            return tokenAddress.toLowerCase();
-        };
         const addrTokenA = getAddress('tokenA');
         const addrTokenB = getAddress('tokenB');
         const tokensAreDifferent =
@@ -184,4 +188,6 @@ export const useUrlParams = (
             });
         }
     }, [tokenList, urlParams]);
+
+    return tokenPair;
 };

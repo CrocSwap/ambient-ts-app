@@ -34,7 +34,9 @@ import { useModal } from '../../components/Global/Modal/useModal';
 import { useRelativeModal } from '../../components/Global/RelativeModal/useRelativeModal';
 import { addPendingTx, addReceipt, removePendingTx } from '../../utils/state/receiptDataSlice';
 import { useUrlParams } from './useUrlParams';
+import SwapShareControl from '../../components/Swap/SwapShareControl/SwapShareControl';
 // import { calcImpact } from '../../App/functions/calcImpact';
+import { FiCopy } from 'react-icons/fi';
 
 interface SwapPropsIF {
     crocEnv: CrocEnv | undefined;
@@ -66,6 +68,9 @@ interface SwapPropsIF {
     openModalWallet: () => void;
     isInitialized: boolean;
     poolExists: boolean | null;
+    setTokenPairLocal?: Dispatch<SetStateAction<string[] | null>>;
+
+    openGlobalModal: (content: React.ReactNode) => void;
 }
 
 export default function Swap(props: SwapPropsIF) {
@@ -80,7 +85,6 @@ export default function Swap(props: SwapPropsIF) {
         isPairStable,
         provider,
         isOnTradeRoute,
-        // nativeBalance,
         ethMainnetUsdPrice,
         gasPriceInGwei,
         baseTokenBalance,
@@ -98,13 +102,17 @@ export default function Swap(props: SwapPropsIF) {
         openModalWallet,
         isInitialized,
         poolExists,
+        setTokenPairLocal,
     } = props;
 
     const [isModalOpen, openModal, closeModal] = useModal();
 
     const dispatch = useAppDispatch();
 
-    useUrlParams(chainId, isInitialized);
+    const tokenPairFromParams = useUrlParams(chainId, isInitialized);
+    useEffect(() => {
+        setTokenPairLocal && setTokenPairLocal(tokenPairFromParams);
+    }, [tokenPairFromParams]);
 
     const [isRelativeModalOpen, closeRelativeModal] = useRelativeModal();
 
@@ -128,20 +136,44 @@ export default function Swap(props: SwapPropsIF) {
         ? parseFloat(swapSlippage.stable.value)
         : parseFloat(swapSlippage.volatile.value);
 
-    const loginButton = <Button title='Login' action={openModalWallet} />;
+    const loginButton = <Button title='Connect Wallet' action={openModalWallet} />;
 
     const [isApprovalPending, setIsApprovalPending] = useState(false);
 
     const approve = async (tokenAddress: string) => {
-        if (!provider) return;
-        setIsApprovalPending(true);
+        if (!crocEnv) return;
         try {
-            const tx = await new CrocEnv(provider).token(tokenAddress).approve();
-            if (tx) {
-                await tx.wait();
+            setIsApprovalPending(true);
+            const tx = await crocEnv.token(tokenAddress).approve();
+            if (tx) dispatch(addPendingTx(tx?.hash));
+            let receipt;
+            try {
+                if (tx) receipt = await tx.wait();
+            } catch (e) {
+                const error = e as TransactionError;
+                console.log({ error });
+                // The user used "speed up" or something similar
+                // in their client, but we now have the updated info
+                if (isTransactionReplacedError(error)) {
+                    console.log('repriced');
+                    dispatch(removePendingTx(error.hash));
+
+                    const newTransactionHash = error.replacement.hash;
+                    dispatch(addPendingTx(newTransactionHash));
+
+                    console.log({ newTransactionHash });
+                    receipt = error.receipt;
+                } else if (isTransactionFailedError(error)) {
+                    // console.log({ error });
+                    receipt = error.receipt;
+                }
+            }
+            if (receipt) {
+                dispatch(addReceipt(JSON.stringify(receipt)));
+                dispatch(removePendingTx(receipt.transactionHash));
             }
         } catch (error) {
-            console.warn({ error });
+            console.log({ error });
         } finally {
             setIsApprovalPending(false);
             setRecheckTokenAApproval(true);
@@ -167,7 +199,6 @@ export default function Swap(props: SwapPropsIF) {
     const [swapAllowed, setSwapAllowed] = useState<boolean>(false);
     const [swapButtonErrorMessage, setSwapButtonErrorMessage] = useState<string>('');
     const isTokenAPrimary = tradeData.isTokenAPrimary;
-    // console.log({ isTokenAPrimary });
     const [isWithdrawFromDexChecked, setIsWithdrawFromDexChecked] = useState(false);
     const [isSaveAsDexSurplusChecked, setIsSaveAsDexSurplusChecked] = useState(false);
     const [newSwapTransactionHash, setNewSwapTransactionHash] = useState('');
@@ -183,23 +214,20 @@ export default function Swap(props: SwapPropsIF) {
         setTxErrorMessage('');
     };
 
-    useEffect(() => {
-        if (poolPriceDisplay === undefined) {
-            setSwapAllowed(false);
-            setSwapButtonErrorMessage('…');
-        } else if (!poolExists) {
-            setSwapAllowed(false);
-            setSwapButtonErrorMessage('Pool Not Initialized');
-        }
-    }, [poolPriceDisplay]);
+    // useEffect(() =>
+    //     if (poolExists === null) {
+    //         setSwapAllowed(false);
+    //         setSwapButtonErrorMessage('...');
+    //     } else if (poolExists === false) {
+    //         setSwapAllowed(false);
+    //         setSwapButtonErrorMessage('Pool Not Initialized');
+    //     }
+    // }, [poolExists]);
 
     const [priceImpactExceedsTolerance, setPriceImpactExceedsTolerance] = useState(false);
 
     useEffect(() => {
-        console.log({ priceImpact });
         const priceImpactPercentChange = priceImpact?.percentChange;
-        // console.log({ priceImpactPercentChange });
-        // console.log({ slippageTolerancePercentage });
         if (priceImpactPercentChange) {
             if (Math.abs(priceImpactPercentChange) > slippageTolerancePercentage / 100) {
                 console.log('price impace exceeds slippage tolerance');
@@ -212,46 +240,24 @@ export default function Swap(props: SwapPropsIF) {
     }, [priceImpact, slippageTolerancePercentage]);
 
     async function initiateSwap() {
-        if (!provider) return;
-
-        if (!(provider as ethers.providers.WebSocketProvider).getSigner()) {
-            return;
-        }
-
+        resetConfirmation();
+        if (!crocEnv) return;
         const sellTokenAddress = tokenA.address;
         const buyTokenAddress = tokenB.address;
         const sellTokenQty = (document.getElementById('sell-quantity') as HTMLInputElement)?.value;
         const buyTokenQty = (document.getElementById('buy-quantity') as HTMLInputElement)?.value;
         const qty = isTokenAPrimary ? sellTokenQty : buyTokenQty;
         const isQtySell = isTokenAPrimary;
-
-        console.log({ slippageTolerancePercentage });
-
-        const env = new CrocEnv(provider);
-
-        // const impact = await calcImpact(
-        //     isQtySell,
-        //     env,
-        //     sellTokenAddress,
-        //     buyTokenAddress,
-        //     slippageTolerancePercentage,
-        //     qty,
-        // );
-
-        console.log({ priceImpact });
-        console.log({ isWithdrawFromDexChecked });
-        console.log({ isSaveAsDexSurplusChecked });
-
         let tx;
         try {
             (tx = await (isQtySell
-                ? env
+                ? crocEnv
                       .sell(sellTokenAddress, qty)
                       .for(buyTokenAddress, {
                           slippage: slippageTolerancePercentage / 100,
                       })
                       .swap({ surplus: [isWithdrawFromDexChecked, isSaveAsDexSurplusChecked] })
-                : env
+                : crocEnv
                       .buy(buyTokenAddress, qty)
                       .with(sellTokenAddress, {
                           slippage: slippageTolerancePercentage / 100,
@@ -269,7 +275,7 @@ export default function Swap(props: SwapPropsIF) {
         const inBaseQty =
             (isSellTokenBase && isTokenAPrimary) || (!isSellTokenBase && !isTokenAPrimary);
 
-        const crocQty = await env
+        const crocQty = await crocEnv
             .token(isTokenAPrimary ? tokenA.address : tokenB.address)
             .normQty(qty);
 
@@ -281,7 +287,7 @@ export default function Swap(props: SwapPropsIF) {
                         user: account ?? '',
                         base: isSellTokenBase ? sellTokenAddress : buyTokenAddress,
                         quote: isSellTokenBase ? buyTokenAddress : sellTokenAddress,
-                        poolIdx: (await env.context).chain.poolIndex.toString(),
+                        poolIdx: (await crocEnv.context).chain.poolIndex.toString(),
                         isBuy: isSellTokenBase.toString(),
                         inBaseQty: inBaseQty.toString(),
                         qty: crocQty.toString(),
@@ -320,7 +326,7 @@ export default function Swap(props: SwapPropsIF) {
                                 user: account ?? '',
                                 base: isSellTokenBase ? sellTokenAddress : buyTokenAddress,
                                 quote: isSellTokenBase ? buyTokenAddress : sellTokenAddress,
-                                poolIdx: (await env.context).chain.poolIndex.toString(),
+                                poolIdx: (await crocEnv.context).chain.poolIndex.toString(),
                                 isBuy: isSellTokenBase.toString(),
                                 inBaseQty: inBaseQty.toString(),
                                 qty: crocQty.toString(),
@@ -332,7 +338,6 @@ export default function Swap(props: SwapPropsIF) {
                     );
                 }
             } else if (isTransactionFailedError(error)) {
-                // console.log({ error });
                 receipt = error.receipt;
             }
         }
@@ -346,10 +351,35 @@ export default function Swap(props: SwapPropsIF) {
     const handleModalClose = () => {
         closeModal();
         setNewSwapTransactionHash('');
-        // setTxErrorCode(0);
-        // setTxErrorMessage('');
         resetConfirmation();
     };
+
+    const effectivePrice =
+        parseFloat(priceImpact?.buyQty || '0') / parseFloat(priceImpact?.sellQty || '1');
+
+    const isPriceInverted =
+        (tradeData.isDenomBase && !isSellTokenBase) || (!tradeData.isDenomBase && isSellTokenBase);
+
+    const effectivePriceWithDenom = effectivePrice
+        ? isPriceInverted
+            ? 1 / effectivePrice
+            : effectivePrice
+        : undefined;
+
+    const displayEffectivePriceString =
+        !effectivePriceWithDenom ||
+        effectivePriceWithDenom === Infinity ||
+        effectivePriceWithDenom === 0
+            ? '…'
+            : effectivePriceWithDenom < 2
+            ? effectivePriceWithDenom.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 6,
+              })
+            : effectivePriceWithDenom.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+              });
 
     // TODO:  @Emily refactor this Modal and later elements such that
     // TODO:  ... tradeData is passed to directly instead of tokenPair
@@ -365,12 +395,14 @@ export default function Swap(props: SwapPropsIF) {
                 initiateSwapMethod={initiateSwap}
                 onClose={handleModalClose}
                 newSwapTransactionHash={newSwapTransactionHash}
-                // setNewSwapTransactionHash={setNewSwapTransactionHash}
                 txErrorCode={txErrorCode}
                 txErrorMessage={txErrorMessage}
                 showConfirmation={showConfirmation}
                 setShowConfirmation={setShowConfirmation}
                 resetConfirmation={resetConfirmation}
+                slippageTolerancePercentage={slippageTolerancePercentage}
+                effectivePrice={effectivePrice}
+                isSellTokenBase={isSellTokenBase}
             />
         </Modal>
     ) : null;
@@ -400,18 +432,75 @@ export default function Swap(props: SwapPropsIF) {
     const isTokenAAllowanceSufficient = parseFloat(tokenAAllowance) >= parseFloat(tokenAInputQty);
 
     const swapContainerStyle = pathname.startsWith('/swap') ? styles.swap_page_container : null;
+
     const swapPageStyle = pathname.startsWith('/swap') ? styles.swap_page : null;
+
+    const [connectButtonDelayElapsed, setConnectButtonDelayElapsed] = useState(false);
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setConnectButtonDelayElapsed(true);
+        }, 3000);
+        return () => clearTimeout(timer);
+    }, []);
+
+    // -------------------------Swap SHARE FUNCTIONALITY---------------------------
+    const [shareOptions, setShareOptions] = useState([
+        { slug: 'first', name: 'Include Swap 1', checked: false },
+        { slug: 'second', name: 'Include Swap 2', checked: false },
+        { slug: 'third', name: 'Include Swap 3', checked: false },
+        { slug: 'fourth', name: 'Include Swap 4', checked: false },
+    ]);
+
+    const handleShareOptionChange = (slug: string) => {
+        const copyShareOptions = [...shareOptions];
+        const modifiedShareOptions = copyShareOptions.map((option) => {
+            if (slug === option.slug) {
+                option.checked = !option.checked;
+            }
+
+            return option;
+        });
+
+        setShareOptions(modifiedShareOptions);
+    };
+
+    const shareOptionsDisplay = (
+        <div className={styles.option_control_container}>
+            <div className={styles.options_control_display_container}>
+                <p className={styles.control_title}>Options</p>
+                <ul>
+                    {shareOptions.map((option, idx) => (
+                        <SwapShareControl
+                            key={idx}
+                            option={option}
+                            handleShareOptionChange={handleShareOptionChange}
+                        />
+                    ))}
+                </ul>
+            </div>
+            <p className={styles.control_title}>URL:</p>
+            <p className={styles.url_link}>
+                https://ambient.finance/trade/market/0xaaaaaa/93bbbb
+                <div style={{ cursor: 'pointer' }}>
+                    <FiCopy color='#cdc1ff' />
+                </div>
+            </p>
+        </div>
+    );
+
+    // -------------------------END OF Swap SHARE FUNCTIONALITY---------------------------
+
     return (
         <main data-testid={'swap'} className={swapPageStyle}>
             <div className={`${swapContainerStyle}`}>
                 <ContentContainer isOnTradeRoute={isOnTradeRoute}>
                     <SwapHeader
-                        // tokenPair={{ dataTokenA: tokenA, dataTokenB: tokenB }}
                         swapSlippage={swapSlippage}
                         isPairStable={isPairStable}
                         isOnTradeRoute={isOnTradeRoute}
-                        // isDenomBase={tradeData.isDenomBase}
-                        // isTokenABase={isSellTokenBase}
+                        openGlobalModal={props.openGlobalModal}
+                        shareOptionsDisplay={shareOptionsDisplay}
                     />
                     <DividerDark addMarginTop />
                     {navigationMenu}
@@ -422,6 +511,7 @@ export default function Swap(props: SwapPropsIF) {
                     >
                         <CurrencyConverter
                             crocEnv={crocEnv}
+                            poolExists={poolExists}
                             isUserLoggedIn={isUserLoggedIn}
                             provider={provider}
                             slippageTolerancePercentage={slippageTolerancePercentage}
@@ -435,11 +525,6 @@ export default function Swap(props: SwapPropsIF) {
                             poolPriceDisplay={poolPriceDisplay}
                             isTokenAPrimary={isTokenAPrimary}
                             isSellTokenBase={isSellTokenBase}
-                            // nativeBalance={
-                            //     nativeBalance
-                            //         ? truncateDecimals(parseFloat(nativeBalance), 4).toString()
-                            //         : '...'
-                            // }
                             baseTokenBalance={baseTokenBalance}
                             quoteTokenBalance={quoteTokenBalance}
                             baseTokenDexBalance={baseTokenDexBalance}
@@ -456,6 +541,7 @@ export default function Swap(props: SwapPropsIF) {
                             setSwapButtonErrorMessage={setSwapButtonErrorMessage}
                             activeTokenListsChanged={activeTokenListsChanged}
                             indicateActiveTokenListsChanged={indicateActiveTokenListsChanged}
+                            gasPriceInGwei={gasPriceInGwei}
                         />
                     </motion.div>
                     <div className={styles.header_container}>
@@ -466,15 +552,18 @@ export default function Swap(props: SwapPropsIF) {
                         tokenPair={{ dataTokenA: tokenA, dataTokenB: tokenB }}
                         priceImpact={priceImpact}
                         isTokenABase={isSellTokenBase}
+                        displayEffectivePriceString={displayEffectivePriceString}
                         poolPriceDisplay={poolPriceDisplay || 0}
                         slippageTolerance={slippageTolerancePercentage}
-                        liquidityProviderFee={0.3}
+                        liquidityProviderFee={tradeData.liquidityFee}
                         quoteTokenIsBuy={true}
                         swapGasPriceinDollars={swapGasPriceinDollars}
                         didUserFlipDenom={tradeData.didUserFlipDenom}
                         isDenomBase={tradeData.isDenomBase}
+                        isOnTradeRoute={isOnTradeRoute}
                     />
-                    {isUserLoggedIn ? (
+                    {isUserLoggedIn || !connectButtonDelayElapsed ? (
+                        poolExists &&
                         !isTokenAAllowanceSufficient &&
                         parseFloat(tokenAInputQty) > 0 &&
                         tokenAInputQty !== 'Infinity' ? (

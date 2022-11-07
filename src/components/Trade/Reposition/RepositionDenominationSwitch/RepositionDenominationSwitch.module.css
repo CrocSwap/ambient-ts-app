@@ -24,11 +24,12 @@
     border: solid 0.2px transparent;
     border-radius: 50px;
     padding: 5px 8px;
+    transition: all var(--animation-speed) ease-in-out;
 }
 
 .denomination_switch button:hover {
     background: var(--title-gradient);
-    transition: all var(--animation-speed) ease-in-out;
+    /* transition: all var(--animation-speed) ease-in-out; */
     color: var(--dark2);
 }
 

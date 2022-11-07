@@ -1,5 +1,6 @@
 import React from 'react';
 import { useTermsOfService } from '../../App/hooks/useTermsOfService';
+import Medal from '../../components/Global/Medal/Medal';
 import { MenuButton } from '../../components/Global/MenuButton/MenuButton';
 import styles from './TestPage.module.css';
 // import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
@@ -65,6 +66,7 @@ export default function TestPage(props: TestPageProps) {
                 height='24'
                 style={menuButtonStyle}
             />
+            <Medal ranking={1} />
         </main>
     );
 }

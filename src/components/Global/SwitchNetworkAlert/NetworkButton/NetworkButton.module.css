@@ -24,7 +24,6 @@
     border: none;
 }
 .networkButton:hover {
-    transition: all 0.3s ease-out;
 
     filter: brightness(85%);
 }

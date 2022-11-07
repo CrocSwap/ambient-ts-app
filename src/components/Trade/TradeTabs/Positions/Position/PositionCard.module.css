@@ -102,7 +102,7 @@
     line-height: var(--body-lh);
 }
 
-.apy {
+.apr {
     font-family: 'Lexend Deca';
     font-style: normal;
     font-weight: 200;
@@ -111,7 +111,7 @@
 
     letter-spacing: -0.02em;
 
-    /* apy/green */
+    /* apr/green */
 
     background: linear-gradient(90deg, #15be6f 32.38%, #8fe9bf 51.39%, #15be6f 68.17%);
     -webkit-background-clip: text;
@@ -225,7 +225,7 @@
 
         grid-template-columns: repeat(2, 1fr) 0.7fr 130px 70px 50px;
     }
-    .apy {
+    .apr {
         /* background: red; */
         display: none;
     }

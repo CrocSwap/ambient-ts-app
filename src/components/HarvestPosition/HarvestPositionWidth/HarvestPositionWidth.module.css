@@ -90,11 +90,12 @@
 
     color: var(--text-grey-light);
     border: none;
+    transition: all var(--animation-speed) ease-in-out
 }
 
 .percentage_option_buttons:hover{
     color: var(--text-grey-white);
-    transition: all var(--animation-speed) ease-in-out
+   
 }
 .percentage_input {
     /* padding: 15px 0px;  */

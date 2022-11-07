@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { useProcessOrder } from '../../utils/hooks/useProcessOrder';
-import { ILimitOrderState } from '../../utils/state/graphDataSlice';
 import RemoveOrderButton from './RemoveOrderButton/RemoveOrderButton';
 import RemoveOrderTokenHeader from './RemoveOrderTokenHeader/RemoveOrderTokenHeader';
 import RemoveOrderInfo from './RemoveOrderInfo/RemoveOrderInfo';
@@ -13,13 +12,21 @@ import completed from '../../assets/animations/completed.json';
 import { FiExternalLink } from 'react-icons/fi';
 import RemoveOrderModalHeader from './RemoveOrderModalHeader/RemoveOrderModalHeader';
 import RemoveOrderSettings from './RemoveOrderSettings/RemoveOrderSettings';
+import { formatAmount } from '../../utils/numbers';
+import { CrocEnv } from '@crocswap-libs/sdk';
+import { BigNumber } from 'ethers';
+import Toggle2 from '../Global/Toggle/Toggle2';
+import TooltipComponent from '../Global/TooltipComponent/TooltipComponent';
+import { LimitOrderIF } from '../../utils/interfaces/exports';
+
 interface IOrderRemovalProps {
-    limitOrder: ILimitOrderState;
+    crocEnv: CrocEnv | undefined;
+    limitOrder: LimitOrderIF;
     closeGlobalModal: () => void;
 }
 
 export default function OrderRemoval(props: IOrderRemovalProps) {
-    const { limitOrder, closeGlobalModal } = props;
+    const { crocEnv, limitOrder, closeGlobalModal } = props;
     const {
         posLiqBaseDecimalCorrected,
         posLiqQuoteDecimalCorrected,
@@ -27,7 +34,7 @@ export default function OrderRemoval(props: IOrderRemovalProps) {
         // highPriceDisplay,
         bidTick,
         askTick,
-        positionLiquidity,
+        // positionLiquidity,
         positionLiqTotalUSD,
         // userNameToDisplay,
         baseTokenSymbol,
@@ -39,6 +46,8 @@ export default function OrderRemoval(props: IOrderRemovalProps) {
         usdValue,
         baseDisplayFrontend,
         quoteDisplayFrontend,
+        baseDisplay,
+        quoteDisplay,
     } = useProcessOrder(limitOrder);
 
     const [showConfirmation, setShowConfirmation] = useState(false);
@@ -61,12 +70,71 @@ export default function OrderRemoval(props: IOrderRemovalProps) {
     }, [txErrorCode]);
 
     const [removalPercentage, setRemovalPercentage] = useState(100);
+    const [baseQtyToBeRemoved, setBaseQtyToBeRemoved] = useState<string>('…');
+    const [quoteQtyToBeRemoved, setQuoteQtyToBeRemoved] = useState<string>('…');
 
-    const removeFn = () => {
-        setShowConfirmation(true);
-        setShowSettings(false);
-        console.log('order removed');
-        // rorder removal function here
+    const baseQty = limitOrder.positionLiqBaseDecimalCorrected;
+    const quoteQty = limitOrder.positionLiqQuoteDecimalCorrected;
+
+    useEffect(() => {
+        const baseRemovalNum = baseQty * (removalPercentage / 100);
+        const quoteRemovalNum = quoteQty * (removalPercentage / 100);
+        const baseRemovalTruncated =
+            baseRemovalNum === undefined
+                ? undefined
+                : baseRemovalNum === 0
+                ? '0.00'
+                : baseRemovalNum < 0.0001
+                ? baseRemovalNum.toExponential(2)
+                : baseRemovalNum < 2
+                ? baseRemovalNum.toPrecision(3)
+                : baseRemovalNum >= 100000
+                ? formatAmount(baseRemovalNum)
+                : // ? baseLiqDisplayNum.toExponential(2)
+                  baseRemovalNum.toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                  });
+        if (baseRemovalTruncated !== undefined) setBaseQtyToBeRemoved(baseRemovalTruncated);
+        const quoteRemovalTruncated =
+            baseRemovalNum === undefined
+                ? undefined
+                : quoteRemovalNum === 0
+                ? '0.00'
+                : quoteRemovalNum < 0.0001
+                ? quoteRemovalNum.toExponential(2)
+                : quoteRemovalNum < 2
+                ? quoteRemovalNum.toPrecision(3)
+                : quoteRemovalNum >= 100000
+                ? formatAmount(quoteRemovalNum)
+                : quoteRemovalNum.toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                  });
+        if (quoteRemovalTruncated !== undefined) setQuoteQtyToBeRemoved(quoteRemovalTruncated);
+    }, [removalPercentage]);
+
+    // const positionLiquidity = limitOrder.positionLiq;
+
+    const removeFn = async () => {
+        if (crocEnv) {
+            setShowConfirmation(true);
+            setShowSettings(false);
+            console.log({ limitOrder });
+            if (limitOrder.isBid === true) {
+                crocEnv
+                    .sell(limitOrder.base, 0)
+                    .atLimit(limitOrder.quote, limitOrder.askTick)
+                    .burnLiq(BigNumber.from('1000'));
+                // .burnLiq(BigNumber.from(positionLiquidity));
+            } else {
+                crocEnv
+                    .sell(limitOrder.quote, 0)
+                    .atLimit(limitOrder.base, limitOrder.bidTick)
+                    .burnLiq(BigNumber.from('1000'));
+                // .burnLiq(BigNumber.from(positionLiquidity));
+            }
+        }
     };
 
     // ----------------------------CONFIRMATION JSX------------------------------
@@ -151,6 +219,57 @@ export default function OrderRemoval(props: IOrderRemovalProps) {
     );
     // ----------------------------END OF CONFIRMATION JSX------------------------------
 
+    // ----------------------------- GASLESS TRANSACTION-----------------------
+
+    const gaslesssTransactionControl = (
+        <section className={styles.gasless_container}>
+            <h3>Enable Gasless Transaction</h3>
+
+            <Toggle2
+                isOn={false}
+                handleToggle={() => console.log('toggled')}
+                id='gasless_transaction_toggle_remove_order'
+                disabled={true}
+            />
+        </section>
+    );
+
+    // ----------------------------- END OF GASLESS TRANSACTION-----------------------
+
+    // ---------------------SLIPPAGE TOLERANCE DISPLAY-----------------------------
+
+    const tooltipExplanationData = [
+        {
+            title: 'Slippage Tolerance',
+            tooltipTitle: 'something here',
+            data: '0.5%',
+        },
+        {
+            title: 'Network Fee',
+            tooltipTitle: 'something here about network fee',
+            data: '-$3.69',
+            // data: isDenomBase
+            //     ? `${displayLimitPriceString} ${quoteTokenSymbol} per ${baseTokenSymbol}`
+            //     : `${displayLimitPriceString} ${baseTokenSymbol} per ${quoteTokenSymbol}`,
+        },
+    ];
+
+    const tooltipExplanationDataDisplay = (
+        <div className={styles.explanation_details}>
+            {tooltipExplanationData.map((item, idx) => (
+                <div className={styles.extra_row} key={idx}>
+                    <div className={styles.align_center}>
+                        <div>{item.title}</div>
+                        <TooltipComponent title={item.tooltipTitle} />
+                    </div>
+                    <div className={styles.data}>{item.data}</div>
+                </div>
+            ))}
+        </div>
+    );
+
+    // ---------------------SLIPPAGE TOLERANCE DISPLAY-----------------------------
+
     const showSettingsOrMainContent = showSettings ? (
         <RemoveOrderSettings
             showSettings={showSettings}
@@ -161,7 +280,7 @@ export default function OrderRemoval(props: IOrderRemovalProps) {
         <div>
             <RemoveOrderModalHeader
                 onClose={closeGlobalModal}
-                title={showConfirmation ? '' : 'Limit Order Removal'}
+                title={showConfirmation ? '' : 'Remove Limit Order'}
                 showSettings={showSettings}
                 setShowSettings={setShowSettings}
                 onGoBack={showSettings ? () => setShowSettings(false) : null}
@@ -192,10 +311,16 @@ export default function OrderRemoval(props: IOrderRemovalProps) {
                 askTick={askTick}
                 baseDisplayFrontend={baseDisplayFrontend}
                 quoteDisplayFrontend={quoteDisplayFrontend}
+                baseDisplay={baseDisplay}
+                quoteDisplay={quoteDisplay}
                 positionLiqTotalUSD={positionLiqTotalUSD}
-                positionLiquidity={positionLiquidity}
+                positionLiquidity={limitOrder.positionLiq.toString()}
+                baseRemovalString={baseQtyToBeRemoved}
+                quoteRemovalString={quoteQtyToBeRemoved}
             />
-            <RemoveOrderButton removeFn={removeFn} disabled={false} title='Show Example Submit' />
+            {gaslesssTransactionControl}
+            {tooltipExplanationDataDisplay}
+            <RemoveOrderButton removeFn={removeFn} disabled={false} title='Remove Limit Order' />
         </div>
     );
 

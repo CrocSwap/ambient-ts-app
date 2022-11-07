@@ -49,8 +49,8 @@ export default function RangeCard(props: RangeCardProps) {
         chainId,
         position,
         // isAllPositionsEnabled,
-        tokenAAddress,
-        tokenBAddress,
+        // tokenAAddress,
+        // tokenBAddress,
         baseTokenBalance,
         quoteTokenBalance,
         baseTokenDexBalance,
@@ -90,17 +90,17 @@ export default function RangeCard(props: RangeCardProps) {
     // --------------------SELECTED TOKEN FUNCTIONALITY---------------------------
     // const ownerId = position ? position.user : null;
 
-    const positionBaseAddressLowerCase = position.base.toLowerCase();
-    const positionQuoteAddressLowerCase = position.quote.toLowerCase();
+    // const positionBaseAddressLowerCase = position.base.toLowerCase();
+    // const positionQuoteAddressLowerCase = position.quote.toLowerCase();
 
-    const tokenAAddressLowerCase = tokenAAddress.toLowerCase();
-    const tokenBAddressLowerCase = tokenBAddress.toLowerCase();
+    // const tokenAAddressLowerCase = tokenAAddress.toLowerCase();
+    // const tokenBAddressLowerCase = tokenBAddress.toLowerCase();
 
-    const positionMatchesSelectedTokens =
-        (positionBaseAddressLowerCase === tokenAAddressLowerCase ||
-            positionQuoteAddressLowerCase === tokenAAddressLowerCase) &&
-        (positionBaseAddressLowerCase === tokenBAddressLowerCase ||
-            positionQuoteAddressLowerCase === tokenBAddressLowerCase);
+    // const positionMatchesSelectedTokens =
+    //     (positionBaseAddressLowerCase === tokenAAddressLowerCase ||
+    //         positionQuoteAddressLowerCase === tokenAAddressLowerCase) &&
+    //     (positionBaseAddressLowerCase === tokenBAddressLowerCase ||
+    //         positionQuoteAddressLowerCase === tokenBAddressLowerCase);
 
     const accountAddress = account ? account.toLowerCase() : null;
     const userMatchesConnectedAccount = accountAddress === position.user.toLowerCase();
@@ -181,7 +181,7 @@ export default function RangeCard(props: RangeCardProps) {
     const activePositionStyle =
         position.positionStorageSlot === currentPositionActive ? styles.active_position_style : '';
 
-    if (!positionMatchesSelectedTokens) return null;
+    // if (!positionMatchesSelectedTokens) return null;
 
     const usdValueNum = position.totalValueUSD;
 
@@ -200,63 +200,67 @@ export default function RangeCard(props: RangeCardProps) {
           });
 
     return (
-        <li
-            className={`${styles.main_container} ${activePositionStyle}`}
-            onClick={() =>
-                position.positionStorageSlot === currentPositionActive
-                    ? null
-                    : setCurrentPositionActive('')
-            }
-            id={positionDomId}
-        >
-            <div className={styles.row_container}>
-                {/* ------------------------------------------------------ */}
+        // <li
+        //     className={`${styles.main_container} ${activePositionStyle}`}
+        //     onClick={() =>
+        //         position.positionStorageSlot === currentPositionActive
+        //             ? null
+        //             : setCurrentPositionActive('')
+        //     }
+        //     id={positionDomId}
+        // >
+        //     <div className={styles.row_container}>
+        //         {/* ------------------------------------------------------ */}
 
-                <WalletAndId
-                    ownerId={position.user}
-                    posHash={posHash as string}
-                    ensName={position.ensResolution ? position.ensResolution : null}
-                    isOwnerActiveAccount={userMatchesConnectedAccount}
-                />
+        //         <WalletAndId
+        //             ownerId={position.user}
+        //             posHash={posHash as string}
+        //             ensName={position.ensResolution ? position.ensResolution : null}
+        //             isOwnerActiveAccount={userMatchesConnectedAccount}
+        //         />
 
-                {/* ------------------------------------------------------ */}
-                <RangeMinMax min={ambientMinOrNull} max={ambientMaxOrNull} />
-                {/* ------------------------------------------------------ */}
-                {/* ------------------------------------------------------ */}
-                <Value usdValue={usdValueTruncated ? '$' + usdValueTruncated : '…'} />
-                {/* ------------------------------------------------------ */}
+        //         {/* ------------------------------------------------------ */}
+        //         <RangeMinMax min={ambientMinOrNull} max={ambientMaxOrNull} />
+        //         {/* ------------------------------------------------------ */}
+        //         {/* ------------------------------------------------------ */}
+        //         <Value usdValue={usdValueTruncated ? '$' + usdValueTruncated : '…'} />
+        //         {/* ------------------------------------------------------ */}
 
-                <TokenQty
-                    baseQty={position.positionLiqBaseTruncated}
-                    quoteQty={position.positionLiqQuoteTruncated}
-                    baseTokenCharacter={baseTokenCharacter}
-                    quoteTokenCharacter={quoteTokenCharacter}
-                />
-                {/* ------------------------------------------------------ */}
-                <Apy amount={position.apy ?? undefined} />
-                {/* ------------------------------------------------------ */}
-                <RangeStatus
-                    isInRange={isPositionInRange}
-                    isAmbient={position.positionType === 'ambient'}
-                />
-            </div>
+        //         <TokenQty
+        //             baseQty={position.positionLiqBaseTruncated}
+        //             quoteQty={position.positionLiqQuoteTruncated}
+        //             baseTokenCharacter={baseTokenCharacter}
+        //             quoteTokenCharacter={quoteTokenCharacter}
+        //         />
+        //         {/* ------------------------------------------------------ */}
+        //         <Apy amount={position.apy ?? undefined} />
+        //         {/* ------------------------------------------------------ */}
+        //         <RangeStatus
+        //             isInRange={isPositionInRange}
+        //             isAmbient={position.positionType === 'ambient'}
+        //         />
+        //     </div>
 
-            <div className={styles.menu_container}>
-                <RangesMenu
-                    crocEnv={crocEnv}
-                    chainData={chainData}
-                    userMatchesConnectedAccount={userMatchesConnectedAccount}
-                    rangeDetailsProps={rangeDetailsProps}
-                    posHash={posHash as string}
-                    positionData={position}
-                    baseTokenBalance={baseTokenBalance}
-                    quoteTokenBalance={quoteTokenBalance}
-                    baseTokenDexBalance={baseTokenDexBalance}
-                    quoteTokenDexBalance={quoteTokenDexBalance}
-                    // openGlobalModal={props.openGlobalModal}
-                    // closeGlobalModal={props.closeGlobalModal}
-                />
-            </div>
-        </li>
+        //     <div className={styles.menu_container}>
+        //         <RangesMenu
+        //             crocEnv={crocEnv}
+        //             chainData={chainData}
+        //             userMatchesConnectedAccount={userMatchesConnectedAccount}
+        //             rangeDetailsProps={rangeDetailsProps}
+        //             posHash={posHash as string}
+        //             positionData={position}
+        //             baseTokenBalance={baseTokenBalance}
+        //             quoteTokenBalance={quoteTokenBalance}
+        //             baseTokenDexBalance={baseTokenDexBalance}
+        //             quoteTokenDexBalance={quoteTokenDexBalance}
+
+        //         />
+        //     </div>
+        // </li>
+        <p>
+            This file has been refactored and updated to RangeRow.tsx on 10/14/2022. It is no longer
+            in use. If not uncommented by 12/14/2022, it can be safely deleted, along with
+            RangeCard.module.css. -Jr
+        </p>
     );
 }

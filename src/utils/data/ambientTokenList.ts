@@ -56,6 +56,15 @@ export const ambientTokenList = {
             logoURI: 'https://tokens.1inch.io/0x6b175474e89094c44da98b954eedeac495271d0f.png',
         },
         {
+            name: 'USDCoin',
+            address: '0xD87Ba7A50B2E7E660f678A895E4B72E7CB4CCd9C',
+            symbol: 'USDC',
+            decimals: 6,
+            chainId: 5,
+            logoURI:
+                'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png',
+        },
+        {
             name: 'Dai Stablecoin',
             address: '0xdc31Ee1784292379Fbb2964b3B9C4124D8F89C60',
             symbol: 'DAI',
@@ -115,7 +124,15 @@ export const ambientTokenList = {
             logoURI:
                 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png',
         },
-
+        {
+            name: 'Wrapped BTC',
+            address: '0xC04B0d3107736C32e19F1c62b2aF67BE61d63a05',
+            symbol: 'WBTC',
+            decimals: 8,
+            chainId: 5,
+            logoURI:
+                'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599/logo.png',
+        },
         {
             name: 'Wrapped BTC',
             address: '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599',

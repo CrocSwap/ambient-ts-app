@@ -10,7 +10,7 @@ import styles from './RepositionPriceInfo.module.css';
 //     spotPriceDisplay: string;
 //     maxPriceDisplay: string;
 //     minPriceDisplay: string;
-//     apyPercentage: number;
+//     aprPercentage: number;
 //     didUserFlipDenom: boolean;
 //     poolPriceCharacter: string;
 // }
@@ -23,20 +23,20 @@ export default function RepositionPriceInfo() {
     //     poolPriceCharacter,
     //     maxPriceDisplay,
     //     minPriceDisplay,
-    //     apyPercentage,
+    //     aprPercentage,
     // } = props;
 
     // -----------------------------TEMPORARY PLACE HOLDERS--------------
-    const apyPercentage = 10;
+    const aprPercentage = 10;
     const minPriceDisplay = 0;
     const spotPriceDisplay = 684.21;
     const maxPriceDisplay = 943.43;
     const poolPriceCharacter = 2;
     // -----------------------------END OF TEMPORARY PLACE HOLDERS--------------
 
-    // JSX frag for estimated APY of position
+    // JSX frag for estimated APR of position
 
-    const apy = <span className={styles.apy}> Est. APY | {apyPercentage}%</span>;
+    const apr = <span className={styles.apr}> Est. APR | {aprPercentage}%</span>;
 
     // JSX frag for lowest price in range
     const minimumPrice = (
@@ -76,7 +76,7 @@ export default function RepositionPriceInfo() {
 
     return (
         <div className={styles.price_info_container}>
-            {apy}
+            {apr}
             <div className={styles.price_info_content}>
                 {minimumPrice}
                 <div className={styles.price_display}>

@@ -1,8 +1,7 @@
 import styles from './SidebarLimitOrdersCard.module.css';
 import { SetStateAction, Dispatch, useState, useEffect, useMemo } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { ILimitOrderState } from '../../../../utils/state/graphDataSlice';
-import { TokenIF } from '../../../../utils/interfaces/TokenIF';
+import { LimitOrderIF, TokenIF } from '../../../../utils/interfaces/exports';
 // import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
 // import { setTokenA, setTokenB } from '../../../../utils/state/tradeDataSlice';
 import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
@@ -11,7 +10,7 @@ import { formatAmount } from '../../../../utils/numbers';
 interface SidebarLimitOrdersCardProps {
     isDenomBase: boolean;
     tokenMap: Map<string, TokenIF>;
-    order: ILimitOrderState;
+    order: LimitOrderIF;
     selectedOutsideTab: number;
     setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
     outsideControl: boolean;
@@ -32,7 +31,7 @@ export default function SidebarLimitOrdersCard(props: SidebarLimitOrdersCardProp
         isDenomBase,
     } = props;
 
-    if (order.positionLiq === 0) return null;
+    if (order.positionLiq === '0') return null;
 
     const baseId = order.base + '_' + order.chainId;
     const quoteId = order.quote + '_' + order.chainId;
@@ -106,10 +105,6 @@ export default function SidebarLimitOrdersCard(props: SidebarLimitOrdersCardProp
 
     const { pathname } = useLocation();
 
-    //   const getToken = (addr: string) => tokenMap.get(addr.toLowerCase()) as TokenIF;
-    //   const baseToken = getToken(order.base + '_' + order.chainId);
-    //   const quoteToken = getToken(order.quote + '_' + order.chainId);
-
     const linkPath = useMemo(() => {
         let locationSlug = '';
         if (pathname.startsWith('/trade/market') || pathname.startsWith('/account')) {
@@ -131,8 +126,6 @@ export default function SidebarLimitOrdersCard(props: SidebarLimitOrdersCardProp
         setSelectedOutsideTab(1);
         setCurrentPositionActive(order.limitOrderIdentifier);
         setIsShowAllEnabled(false);
-        // if (baseToken) dispatch(setTokenA(baseToken));
-        // if (quoteToken) dispatch(setTokenB(quoteToken));
         navigate(linkPath);
     }
 
@@ -146,7 +139,6 @@ export default function SidebarLimitOrdersCard(props: SidebarLimitOrdersCardProp
             <div>{priceDisplay}</div>
             <div className={styles.status_display}>
                 {usdValueTruncated ? '$' + usdValueTruncated : '…'}
-                {/* {tokenDisplay} */}
             </div>
         </div>
     );

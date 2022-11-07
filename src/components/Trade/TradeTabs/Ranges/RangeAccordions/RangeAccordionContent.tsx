@@ -11,7 +11,7 @@ interface RangeAccordionContentPropsIF {
     quoteTokenSymbol: string;
     baseDisplay: string;
     quoteDisplay: string;
-    apy: number;
+    apr: number;
     isPositionInRange: boolean;
     isAmbient: boolean;
     isOwnerActiveAccount: boolean;
@@ -27,7 +27,7 @@ export default function RangeAccordionContent(props: RangeAccordionContentPropsI
         quoteTokenSymbol,
         baseDisplay,
         quoteDisplay,
-        apy,
+        apr,
         isPositionInRange,
         isAmbient,
         isOwnerActiveAccount,
@@ -78,10 +78,10 @@ export default function RangeAccordionContent(props: RangeAccordionContentPropsI
             {quoteDisplay}
         </div>
     );
-    const apyDisplayDom = (
+    const aprDisplayDom = (
         <div className={styles.row}>
-            <p>APY:</p>
-            {apy}
+            <p>APR:</p>
+            {apr}
         </div>
     );
     const statusDisplay = (
@@ -110,7 +110,7 @@ export default function RangeAccordionContent(props: RangeAccordionContentPropsI
                 {valueDisplay}
                 {baseDisplayDom}
                 {quoteDisplayDom}
-                {apyDisplayDom}
+                {aprDisplayDom}
                 {statusDisplay}
             </div>
             {actionButtonsDisplay}

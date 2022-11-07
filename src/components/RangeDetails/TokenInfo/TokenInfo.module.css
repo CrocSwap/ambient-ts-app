@@ -27,7 +27,7 @@
     line-height: var(--body-lh);
     color: var(--negative);
 }
-.apy_green {
+.apr_green {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -42,7 +42,7 @@
 
     text-shadow: 0px 0px 10px rgba(21, 190, 111, 0.75);
 }
-.apy_red {
+.apr_red {
     display: flex;
     justify-content: center;
     align-items: center;

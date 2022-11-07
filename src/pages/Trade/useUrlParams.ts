@@ -40,12 +40,18 @@ export const useUrlParams = (
         );
     }, [params]);
 
-    useEffect(() => console.log({urlParams}), [urlParams]);
+    const getAddress = (tkn: string) => {
+        const tokenParam = urlParams.find((param) => param[0] === tkn);
+        const tokenAddress = tokenParam ? tokenParam[1] : ethers.constants.AddressZero;
+        return tokenAddress.toLowerCase();
+    };
 
+    const tokenPair = useMemo(() => {
+        return [getAddress('tokenA'), getAddress('tokenB')];
+    }, [urlParams]);
 
     // make a list of params found in the URL queried
     const paramsUsed = useMemo(() => urlParams.map((param) => param[0]), [urlParams]);
-
 
     // determine which chain to use
     const chainToUse = useMemo(() => {
@@ -103,7 +109,7 @@ export const useUrlParams = (
 
             // function to find token if not the native token
             const findToken = (listNames: string[]): TokenIF | undefined => {
-                console.log('looking for token!!')
+                console.log('looking for token!!');
                 const allTokenLists = tokenList ? JSON.parse(tokenList as string) : undefined;
                 // extract CoinGecko list from allTokenLists
                 if (
@@ -160,13 +166,8 @@ export const useUrlParams = (
                 }));
         }
 
-        const getAddress = (tkn: string) => {
-            const tokenParam = urlParams.find((param) => param[0] === tkn);
-            const tokenAddress = tokenParam ? tokenParam[1] : ethers.constants.AddressZero;
-            return tokenAddress.toLowerCase();
-        };
-        const addrTokenA = getAddress('tokenA');
-        const addrTokenB = getAddress('tokenB');
+        const addrTokenA = tokenPair[0];
+        const addrTokenB = tokenPair[1];
         const tokensAreDifferent =
             paramsUsed.includes('tokenA') &&
             paramsUsed.includes('tokenB') &&
@@ -190,4 +191,6 @@ export const useUrlParams = (
             });
         }
     }, [tokenList, urlParams]);
+
+    return tokenPair;
 };

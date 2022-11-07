@@ -42,11 +42,11 @@ export default function EditPriceInfo(props: EditPriceInfoIF) {
         </div>
     );
 
-    // JSX frag to display the estimated APY of the position
-    const estimatedAPY = (
+    // JSX frag to display the estimated APR of the position
+    const estimatedAPR = (
         <div className={styles.price_info_row}>
-            <span>Est.APY</span>
-            <span className='primary_apy'>35.68%</span>
+            <span>Est.APR</span>
+            <span className='primary_apr'>35.68%</span>
         </div>
     );
 
@@ -101,7 +101,7 @@ export default function EditPriceInfo(props: EditPriceInfoIF) {
         <div className={styles.price_info_container}>
             <div className={styles.price_info_content}>
                 {currentPrice}
-                {estimatedAPY}
+                {estimatedAPR}
                 <div className={styles.advanced_table_display}>
                     <table>
                         {tableHead}

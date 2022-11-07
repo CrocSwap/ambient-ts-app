@@ -10,7 +10,7 @@
     align-items: center;
     padding: 0.5rem 1rem;
     margin: 1rem 0;
-    transition: all var(--animation-speed) ease 0s;
+    transition: all var(--animation-speed) ease-in-out;
     border-radius: var(--border-radius);
     background: rgba(23, 29, 39, 0.55);
 }

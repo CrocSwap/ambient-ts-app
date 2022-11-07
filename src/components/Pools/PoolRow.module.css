@@ -62,12 +62,13 @@
 
 .star_svg {
     cursor: pointer;
+    transition: all var(--animation-speed) ease-in-out;
 }
 
 .star_svg:hover {
     fill: var(--text-grey-light);
     cursor: pointer;
-    transition: all var(--animation-speed) ease-in-out;
+   
 }
 
 /* Desktop screen Sizes */

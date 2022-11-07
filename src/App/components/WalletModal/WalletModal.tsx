@@ -20,6 +20,7 @@ import {
     CircleLoader,
     CircleLoaderFailed,
 } from '../../../components/Global/LoadingAnimations/CircleLoader/CircleLoader';
+import WaitingConfirmation from '../../../components/Global/WaitingConfirmation/WaitingConfirmation';
 
 interface WalletModalPropsIF {
     closeModalWallet: () => void;
@@ -121,8 +122,11 @@ export default function WalletModal(props: WalletModalPropsIF) {
 
     const metamaskPendingPage = (
         <div className={styles.metamask_pending_container}>
-            <CircleLoader size='5rem' borderColor='#171d27' />
-            <p>Check the Metamask extension in your browser for notifications.</p>
+            <WaitingConfirmation
+                content={`Please check the ${'Metamask'} extension in your browser for notifications.`}
+            />
+            {/* <CircleLoader size='5rem' borderColor='#171d27' /> */}
+            {/* <p>Check the Metamask extension in your browser for notifications.</p> */}
         </div>
     );
 
