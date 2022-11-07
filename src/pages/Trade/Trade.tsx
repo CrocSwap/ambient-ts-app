@@ -521,6 +521,7 @@ export default function Trade(props: TradePropsIF) {
                         <div className={!showChartAndNotTab ? styles.hide : ''}>
                             <TradeTabs2
                                 isUserLoggedIn={isUserLoggedIn}
+                                isTokenABase={isTokenABase}
                                 crocEnv={crocEnv}
                                 provider={provider}
                                 account={account}

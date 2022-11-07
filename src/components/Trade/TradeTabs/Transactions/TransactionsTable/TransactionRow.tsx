@@ -11,7 +11,7 @@ import IconWithTooltip from '../../../../Global/IconWithTooltip/IconWithTooltip'
 import TransactionDetails from '../../../../Global/TransactionDetails/TransactionDetails';
 interface TransactionRowPropsIF {
     tx: ITransaction;
-
+    isTokenABase: boolean;
     currentTxActiveInTransactions: string;
     setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
     isShowAllEnabled: boolean;
@@ -28,6 +28,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
     const {
         showColumns,
         ipadView,
+        isTokenABase,
         tx,
         showSidebar,
         blockExplorer,
@@ -424,6 +425,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                 <TransactionsMenu
                     userPosition={userNameToDisplay === 'You'}
                     tx={tx}
+                    isTokenABase={isTokenABase}
                     blockExplorer={blockExplorer}
                     showSidebar={props.showSidebar}
                     openGlobalModal={props.openGlobalModal}

@@ -30,6 +30,7 @@ const mainnetProvider = new ethers.providers.WebSocketProvider(
 
 interface PortfolioPropsIF {
     crocEnv: CrocEnv | undefined;
+    isTokenABase: boolean;
     provider: ethers.providers.Provider | undefined;
     cachedFetchNativeTokenBalance: nativeTokenBalanceFn;
     cachedFetchErc20TokenBalances: Erc20TokenBalanceFn;
@@ -73,6 +74,7 @@ export default function Portfolio(props: PortfolioPropsIF) {
 
     const {
         crocEnv,
+        isTokenABase,
         provider,
         cachedFetchNativeTokenBalance,
         cachedFetchErc20TokenBalances,
@@ -352,6 +354,7 @@ export default function Portfolio(props: PortfolioPropsIF) {
             >
                 <PortfolioTabs
                     crocEnv={crocEnv}
+                    isTokenABase={isTokenABase}
                     provider={provider}
                     cachedFetchTokenPrice={cachedFetchTokenPrice}
                     importedTokens={importedTokens}

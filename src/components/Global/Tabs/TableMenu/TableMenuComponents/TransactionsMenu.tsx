@@ -20,6 +20,9 @@ import {
     setAdvancedHighTick,
     setAdvancedLowTick,
     setAdvancedMode,
+    setIsTokenAPrimary,
+    setPrimaryQuantity,
+    setShouldSwapConverterUpdate,
     setSimpleRangeWidth,
 } from '../../../../../utils/state/tradeDataSlice';
 import { Link } from 'react-router-dom';
@@ -27,6 +30,7 @@ import { Link } from 'react-router-dom';
 // interface for React functional component props
 interface TransactionMenuIF {
     userPosition: boolean | undefined; // position belongs to active user
+    isTokenABase: boolean;
     tx: ITransaction;
     blockExplorer?: string;
     showSidebar: boolean;
@@ -39,6 +43,7 @@ interface TransactionMenuIF {
 export default function TransactionsMenu(props: TransactionMenuIF) {
     const menuItemRef = useRef<HTMLDivElement>(null);
     const {
+        // isTokenABase,
         // userPosition,
         tx,
         blockExplorer,
@@ -91,9 +96,21 @@ export default function TransactionsMenu(props: TransactionMenuIF) {
             dispatch(setAdvancedHighTick(tx.askTick));
             dispatch(setAdvancedMode(true));
         } else if (tx.entityType === 'swap') {
+            dispatch(
+                setIsTokenAPrimary((tx.isBuy && tx.inBaseQty) || (!tx.isBuy && !tx.inBaseQty)),
+            );
+            dispatch(
+                setPrimaryQuantity(
+                    tx.inBaseQty
+                        ? Math.abs(tx.baseFlowDecimalCorrected).toString()
+                        : Math.abs(tx.quoteFlowDecimalCorrected).toString(),
+                ),
+            );
+            dispatch(setShouldSwapConverterUpdate(true));
             console.log('swap copy clicked');
         } else if (tx.entityType === 'limitOrder') {
             console.log('limit order copy clicked');
+            dispatch(setAdvancedLowTick(tx.bidTick));
         }
         setShowDropdownMenu(false);
 
@@ -158,8 +175,7 @@ export default function TransactionsMenu(props: TransactionMenuIF) {
     //     </button>
     // );
 
-    const isTxCopiable =
-        tx.entityType === 'swap' || (tx.entityType === 'limitOrder' && tx.changeType === 'mint');
+    const isTxCopiable = tx.entityType === 'swap' || tx.changeType === 'mint';
 
     const copyButton =
         tx.entityType === 'liqchange' ? (
@@ -202,9 +218,9 @@ export default function TransactionsMenu(props: TransactionMenuIF) {
                     'chain=' +
                     tx.chainId +
                     '&tokenA=' +
-                    tx.base +
+                    (tx.isBuy ? tx.base : tx.quote) +
                     '&tokenB=' +
-                    tx.quote
+                    (tx.isBuy ? tx.quote : tx.base)
                 }
                 onClick={handleCopyClick}
             >

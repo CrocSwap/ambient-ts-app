@@ -26,7 +26,7 @@ import { useSortedTransactions } from '../useSortedTxs';
 // import TransactionAccordions from './TransactionAccordions/TransactionAccordions';
 interface TransactionsProps {
     importedTokens: TokenIF[];
-
+    isTokenABase: boolean;
     activeAccountTransactionData?: ITransaction[];
     connectedAccountActive?: boolean;
     isShowAllEnabled: boolean;
@@ -55,6 +55,7 @@ interface TransactionsProps {
 export default function Transactions(props: TransactionsProps) {
     const {
         importedTokens,
+        isTokenABase,
         activeAccountTransactionData,
         // connectedAccountActive,
         isShowAllEnabled,
@@ -522,6 +523,7 @@ export default function Transactions(props: TransactionsProps) {
         <TransactionRow
             key={idx}
             tx={tx}
+            isTokenABase={isTokenABase}
             currentTxActiveInTransactions={currentTxActiveInTransactions}
             setCurrentTxActiveInTransactions={setCurrentTxActiveInTransactions}
             openGlobalModal={openGlobalModal}

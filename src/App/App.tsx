@@ -2315,6 +2315,7 @@ export default function App() {
                             element={
                                 <Portfolio
                                     crocEnv={crocEnv}
+                                    isTokenABase={isTokenABase}
                                     provider={provider}
                                     cachedFetchErc20TokenBalances={cachedFetchErc20TokenBalances}
                                     cachedFetchNativeTokenBalance={cachedFetchNativeTokenBalance}
@@ -2357,6 +2358,7 @@ export default function App() {
                             element={
                                 <Portfolio
                                     crocEnv={crocEnv}
+                                    isTokenABase={isTokenABase}
                                     provider={provider}
                                     cachedFetchErc20TokenBalances={cachedFetchErc20TokenBalances}
                                     cachedFetchNativeTokenBalance={cachedFetchNativeTokenBalance}
@@ -2410,6 +2412,7 @@ export default function App() {
                             element={
                                 <Portfolio
                                     crocEnv={crocEnv}
+                                    isTokenABase={isTokenABase}
                                     provider={provider}
                                     cachedFetchErc20TokenBalances={cachedFetchErc20TokenBalances}
                                     cachedFetchNativeTokenBalance={cachedFetchNativeTokenBalance}

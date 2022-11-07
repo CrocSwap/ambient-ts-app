@@ -33,6 +33,7 @@ import Transactions from '../../Trade/TradeTabs/Transactions/Transactions';
 // interface for React functional component props
 interface PortfolioTabsPropsIF {
     crocEnv: CrocEnv | undefined;
+    isTokenABase: boolean;
     provider: ethers.providers.Provider | undefined;
     cachedFetchTokenPrice: TokenPriceFn;
     importedTokens: TokenIF[];
@@ -72,6 +73,7 @@ interface PortfolioTabsPropsIF {
 export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
     const {
         crocEnv,
+        isTokenABase,
         cachedFetchTokenPrice,
         importedTokens,
         connectedUserTokens,
@@ -283,6 +285,7 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
     // props for <Transactions/> React Element
     const transactionsProps = {
         importedTokens: importedTokens,
+        isTokenABase: isTokenABase,
         activeAccountTransactionData: activeAccountTransactionData,
         connectedAccountActive: connectedAccountActive,
         isShowAllEnabled: false,
