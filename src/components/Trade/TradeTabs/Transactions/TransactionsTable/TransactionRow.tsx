@@ -216,7 +216,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
             </DefaultTooltip>
         ) : (
             <IconWithTooltip title={`${baseTokenSymbol}`} placement='bottom'>
-                <NoTokenIcon tokenInitial={tx.baseSymbol.charAt(0)} width='30px' />
+                <NoTokenIcon tokenInitial={tx.baseSymbol.charAt(0)} width='15px' />
             </IconWithTooltip>
         );
 
@@ -238,7 +238,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                 <img src={quoteTokenLogo} alt='quote token' width='15px' />
             </DefaultTooltip>
         ) : (
-            <NoTokenIcon tokenInitial={tx.quoteSymbol.charAt(0)} width='25px' />
+            <NoTokenIcon tokenInitial={tx.quoteSymbol.charAt(0)} width='15px' />
         );
 
     const tokensTogether = (
@@ -398,13 +398,19 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                     className='color_white'
                     style={{ textAlign: 'right' }}
                 >
-                    <p className={`${styles.token_qty} ${baseDisplayStyle}`}>
+                    <p
+                        className={`${styles.token_qty} ${baseDisplayStyle}`}
+                        style={{ fontFamily: 'monospace' }}
+                    >
                         {baseDisplay}
                         {baseFlowArrow}
                         {baseTokenLogoComponent}
                     </p>
 
-                    <p className={`${styles.token_qty} ${quoteDisplayStyle}`}>
+                    <p
+                        className={`${styles.token_qty} ${quoteDisplayStyle}`}
+                        style={{ fontFamily: 'monospace' }}
+                    >
                         {' '}
                         {quoteDisplay}
                         {quoteFlowArrow}
