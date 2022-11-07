@@ -92,6 +92,8 @@ export default function TransactionsMenu(props: TransactionMenuIF) {
             dispatch(setAdvancedMode(true));
         } else if (tx.entityType === 'swap') {
             console.log('swap copy clicked');
+        } else if (tx.entityType === 'limitOrder') {
+            console.log('limit order copy clicked');
         }
         setShowDropdownMenu(false);
 
@@ -156,12 +158,31 @@ export default function TransactionsMenu(props: TransactionMenuIF) {
     //     </button>
     // );
 
+    const isTxCopiable =
+        tx.entityType === 'swap' || (tx.entityType === 'limitOrder' && tx.changeType === 'mint');
+
     const copyButton =
         tx.entityType === 'liqchange' ? (
             <Link
                 className={styles.option_button}
                 to={
                     '/trade/range/' +
+                    'chain=' +
+                    tx.chainId +
+                    '&tokenA=' +
+                    tx.base +
+                    '&tokenB=' +
+                    tx.quote
+                }
+                onClick={handleCopyClick}
+            >
+                Copy
+            </Link>
+        ) : tx.entityType === 'limitOrder' ? (
+            <Link
+                className={styles.option_button}
+                to={
+                    '/trade/limit/' +
                     'chain=' +
                     tx.chainId +
                     '&tokenA=' +
@@ -233,7 +254,7 @@ export default function TransactionsMenu(props: TransactionMenuIF) {
             {/* {(isOnPortfolioPage && !showSidebar) || (!isOnPortfolioPage && detailsButton)} */}
             {/* {view2 && explorerButton} */}
             {/* {(!showSidebar && !isOnPortfolioPage) || (view2 && copyButton)} */}
-            {copyButton}
+            {isTxCopiable && copyButton}
         </div>
     );
 
