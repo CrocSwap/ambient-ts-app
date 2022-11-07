@@ -247,6 +247,34 @@ export default function Portfolio(props: PortfolioPropsIF) {
     // useEffect(() => {
     //     .userAccount ? setFullLayoutActive(true) : null;
     // }, [userAccount]);
+    const fullLayerToggle = (
+        <div className={styles.right_tab_option}>
+            <section onClick={() => setFullLayoutActive(!fullLayoutActive)}>
+                {' '}
+                <div
+                    className={`${styles.full_layout_svg} ${
+                        fullLayoutActive && styles.active_layout_style
+                    } `}
+                />
+            </section>
+
+            <section
+                onClick={() => setFullLayoutActive(!fullLayoutActive)}
+                className={styles.shared_layout_svg}
+            >
+                <div
+                    className={`${styles.full_layout_svg_copied} ${
+                        !fullLayoutActive && styles.active_layout_style
+                    }`}
+                />
+                <div
+                    className={`${styles.half_layout_svg} ${
+                        !fullLayoutActive && styles.active_layout_style
+                    }`}
+                />
+            </section>
+        </div>
+    );
 
     const connectedUserNativeToken = useAppSelector((state) => state.userData.tokens.nativeToken);
     const connectedUserErc20Tokens = useAppSelector((state) => state.userData.tokens.erc20Tokens);
@@ -383,6 +411,7 @@ export default function Portfolio(props: PortfolioPropsIF) {
                     quoteTokenDexBalance={quoteTokenDexBalance}
                     currentTxActiveInTransactions={currentTxActiveInTransactions}
                     setCurrentTxActiveInTransactions={setCurrentTxActiveInTransactions}
+                    fullLayoutToggle={fullLayerToggle}
                 />
                 {connectedAccountActive && !fullLayoutActive ? exchangeBalanceComponent : null}
             </div>
