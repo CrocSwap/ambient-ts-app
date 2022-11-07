@@ -57,11 +57,13 @@ const useSocket = (room: any) => {
         });
     }
 
-    async function sendMsg(currentUser: any, msg: any, room: any) {
+    async function sendMsg(currentUser: any, msg: any, room: any, ensName: any, walletID: any) {
         socketRef.current.emit('send-msg', {
             from: currentUser,
             message: msg,
             roomInfo: room,
+            ensName: ensName,
+            walletID: walletID,
         });
     }
 

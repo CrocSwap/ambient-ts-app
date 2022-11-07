@@ -1,20 +1,10 @@
-import {
-    useEffect,
-    useMemo,
-    useState,
-    Dispatch,
-    SetStateAction
-} from 'react';
+import { useEffect, useMemo, useState, Dispatch, SetStateAction } from 'react';
 import { TokenIF, TokenListIF } from '../../../utils/interfaces/exports';
 import { ambientTokenList } from '../../../utils/data/ambientTokenList';
 
 export const useSoloSearch = (
-    chainId: string
-): [
-    TokenIF | null,
-    string,
-    Dispatch<SetStateAction<string>>
-] => {
+    chainId: string,
+): [TokenIF | null, string, Dispatch<SetStateAction<string>>] => {
     // raw input from the user
     const [input, setInput] = useState('');
 
@@ -23,9 +13,7 @@ export const useSoloSearch = (
         // trim string and make it lower case
         const cleanInput = input.trim().toLowerCase();
         // add '0x' to the front of the cleaned string if not present
-        const fixedInput = cleanInput.startsWith('0x')
-            ? cleanInput
-            : '0x' + cleanInput;
+        const fixedInput = cleanInput.startsWith('0x') ? cleanInput : '0x' + cleanInput;
         // declare an output variable
         let output = '';
         // check if string is a correctly-formed contract address
@@ -43,7 +31,7 @@ export const useSoloSearch = (
     }, [input]);
 
     // data object for token matching user query
-    const [token, setToken] = useState<TokenIF|null>(null);
+    const [token, setToken] = useState<TokenIF | null>(null);
 
     // control flow to gatekeep secondary and tertiary calls
     const [isTokenFound, setIsTokenFound] = useState(false);
@@ -57,15 +45,18 @@ export const useSoloSearch = (
         validatedInput || setToken(null);
 
         // fn to find token in an array of tokens by address and chain ID
-        const findToken = (tokens: TokenIF[]) => tokens.find(
-            (token) => token.address.toLowerCase() === validatedInput && token.chainId === parseInt(chainId)
-        );
+        const findToken = (tokens: TokenIF[]) =>
+            tokens.find(
+                (token) =>
+                    token.address.toLowerCase() === validatedInput &&
+                    token.chainId === parseInt(chainId),
+            );
 
         // fn to update local state if a token is found
         const updateToken = (tkn: TokenIF) => {
             setIsTokenFound(true);
             setToken(tkn);
-        }
+        };
 
         // first check ambient list
         if (validatedInput && ambientTokenList) {
@@ -76,15 +67,11 @@ export const useSoloSearch = (
         }
 
         // if not found check CoinGecko
-        if (
-            validatedInput &&
-            localStorage.allTokenLists &&
-            !isTokenFound
-        ) {
+        if (validatedInput && localStorage.allTokenLists && !isTokenFound) {
             // get tokens array from CoinGecko list in local storage
-            const coinGeckoTokens = JSON.parse(localStorage.getItem('allTokenLists') as string)
-                .find((list: TokenListIF) => list.name === 'CoinGecko')
-                .tokens;
+            const coinGeckoTokens = JSON.parse(
+                localStorage.getItem('allTokenLists') as string,
+            ).find((list: TokenListIF) => list.name === 'CoinGecko').tokens;
             // find token in CoinGecko token list
             const tkn = findToken(coinGeckoTokens) as TokenIF;
             // update local state if a token is found
@@ -93,16 +80,12 @@ export const useSoloSearch = (
 
         // TODO: if not found pull data from on-chain
 
-    // run hook when validated user input changes
-    // this prevents queries without valid input
+        // run hook when validated user input changes
+        // this prevents queries without valid input
     }, [validatedInput]);
 
     // token === token data object or null
     // input === raw input from the user
     // setInput === useState setter function for raw input
-    return [
-        token,
-        input.trim(),
-        setInput
-    ];
-}
+    return [token, input.trim(), setInput];
+};

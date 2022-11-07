@@ -47,10 +47,7 @@ export const useUrlParams = (
     };
 
     const tokenPair = useMemo(() => {
-        return [
-            getAddress('tokenA'),
-            getAddress('tokenB')
-        ];
+        return [getAddress('tokenA'), getAddress('tokenB')];
     }, [urlParams]);
 
     // make a list of params found in the URL queried

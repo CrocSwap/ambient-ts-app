@@ -47,15 +47,11 @@ export const useUrlParams = (
     };
 
     const tokenPair = useMemo(() => {
-        return [
-            getAddress('tokenA'),
-            getAddress('tokenB')
-        ];
+        return [getAddress('tokenA'), getAddress('tokenB')];
     }, [urlParams]);
 
     // make a list of params found in the URL queried
     const paramsUsed = useMemo(() => urlParams.map((param) => param[0]), [urlParams]);
-
 
     // determine which chain to use
     const chainToUse = useMemo(() => {
@@ -113,7 +109,7 @@ export const useUrlParams = (
 
             // function to find token if not the native token
             const findToken = (listNames: string[]): TokenIF | undefined => {
-                console.log('looking for token!!')
+                console.log('looking for token!!');
                 const allTokenLists = tokenList ? JSON.parse(tokenList as string) : undefined;
                 // extract CoinGecko list from allTokenLists
                 if (

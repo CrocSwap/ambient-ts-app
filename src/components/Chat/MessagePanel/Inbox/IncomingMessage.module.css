@@ -70,7 +70,7 @@ flex-grow: 0;
     font-family: 'Lexend Deca';
     font-style: normal;
     font-weight: 300;
-    font-size: calc(1vw - 3px);
+    font-size: calc(1vw - 5px);
     line-height: 16px;
     display: flex;
     align-items: center;

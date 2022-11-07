@@ -50,7 +50,7 @@ export default function Transfer(props: PortfolioTransferProps) {
         resolvedAddress,
         setSendToAddress,
         secondaryEnsName,
-        openTokenModal
+        openTokenModal,
     } = props;
 
     const dispatch = useAppDispatch();
@@ -154,7 +154,7 @@ export default function Transfer(props: PortfolioTransferProps) {
     //         }
     //     </div>
     // );
-/*
+    /*
     const tokenSelectModalOrNull = isModalOpen ? (
         <Modal
             onClose={closeModal}

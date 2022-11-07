@@ -49,7 +49,7 @@ export default function ExchangeBalance(props: ExchangeBalanceProps) {
         setRecheckTokenAllowance,
         setRecheckTokenBalances,
         lastBlockNumber,
-        openTokenModal
+        openTokenModal,
     } = props;
 
     const [sendToAddress, setSendToAddress] = useState<string | undefined>();

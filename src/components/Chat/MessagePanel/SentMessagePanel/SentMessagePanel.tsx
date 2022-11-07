@@ -7,12 +7,12 @@ import { useMoralis } from 'react-moralis';
 
 interface SentMessageProps {
     message: Message;
-    name: string;
 }
 
 export default function SentMessagePanel(props: SentMessageProps) {
     const { user, account, enableWeb3, isWeb3Enabled, isAuthenticated } = useMoralis();
     const [name, setName] = useState('');
+    const [isPosition, setIsPosition] = useState(false);
     const formatAMPM = (str: any) => {
         const date = new Date(str);
         let hours = date.getHours();
@@ -24,28 +24,20 @@ export default function SentMessagePanel(props: SentMessageProps) {
         const strTime = hours + ':' + _min + ' ' + ampm;
         return strTime;
     };
-    async function getName() {
-        const response = await fetch('http://localhost:5000/api/auth/getUserByAccount/' + account, {
-            method: 'GET',
-        });
-        const data = await response.json();
-
-        return data;
-    }
-
-    useEffect(() => {
-        getName().then((res) => {
-            setName(res.userData.ensName);
-        });
-    }, [name]);
 
     return (
         <div className={styles.sent_message_body}>
-            <PositionBox message={props.message.message} isInput={false} />
+            {props.message.message.includes('0x')}
+            <PositionBox
+                message={props.message.message}
+                isInput={false}
+                isPosition={isPosition}
+                setIsPosition={setIsPosition}
+            />
 
             <p className={styles.message_date}>{formatAMPM(props.message.createdAt)}</p>
             <div className={styles.message_item}>
-                <p className={styles.message}>{props.message.message}</p>
+                {!isPosition && <p className={styles.message}>{props.message.message}</p>}
             </div>
             <div className={styles.avatar_image}>
                 <img src={noAvatarImage} alt='no avatar' />

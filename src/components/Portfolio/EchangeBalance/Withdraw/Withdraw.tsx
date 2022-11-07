@@ -53,7 +53,7 @@ export default function Withdraw(props: PortfolioWithdrawProps) {
         resolvedAddress,
         setSendToAddress,
         secondaryEnsName,
-        openTokenModal
+        openTokenModal,
     } = props;
 
     const dispatch = useAppDispatch();

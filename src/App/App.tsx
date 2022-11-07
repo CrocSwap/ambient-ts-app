@@ -121,6 +121,7 @@ import { getTransactionData } from './functions/getTransactionData';
 import AppOverlay from '../components/Global/AppOverlay/AppOverlay';
 import { getLiquidityFee } from './functions/getLiquidityFee';
 // import PhishingWarning from '../components/Global/PhisingWarning/PhishingWarning';
+import useChatApi from '../components/Chat/Service/ChatApi';
 
 const cachedFetchAddress = memoizeFetchAddress();
 const cachedFetchNativeTokenBalance = memoizeFetchNativeTokenBalance();
@@ -151,12 +152,26 @@ export default function App() {
     const userData = useAppSelector((state) => state.userData);
     const isUserLoggedIn = userData.isLoggedIn;
 
+    const { getID } = useChatApi();
+
     useEffect(() => {
         const isLoggedIn = isAuthenticated && isWeb3Enabled;
 
         if (userData.isLoggedIn !== isLoggedIn) {
             dispatch(setIsLoggedIn(isLoggedIn));
         }
+    }, [isAuthenticated, isWeb3Enabled, isUserLoggedIn]);
+
+    useEffect(() => {
+        const isLoggedIn = isAuthenticated && isWeb3Enabled;
+
+        if (userData.isLoggedIn !== isLoggedIn) {
+            dispatch(setIsLoggedIn(isLoggedIn));
+        }
+
+        getID().then((result: any) => {
+            console.log(result);
+        });
     }, [isAuthenticated, isWeb3Enabled, isUserLoggedIn]);
 
     const tokenMap = useTokenMap();
@@ -199,7 +214,6 @@ export default function App() {
 
     const [provider, setProvider] = useState<ethers.providers.Provider>();
     const [crocEnv, setCrocEnv] = useState<CrocEnv | undefined>();
-
     useEffect(() => {
         (async () => {
             if (!provider) {
@@ -316,6 +330,7 @@ export default function App() {
     }, [tokenListsReceived]);
 
     useEffect(() => {
+        console.log(chainData.nodeUrl);
         fetch(chainData.nodeUrl, {
             method: 'POST',
             headers: {
@@ -330,6 +345,7 @@ export default function App() {
             }),
         })
             .then((response) => response?.json())
+
             .then((json) => {
                 if (lastBlockNumber !== parseInt(json?.result)) {
                     setLastBlockNumber(parseInt(json?.result));

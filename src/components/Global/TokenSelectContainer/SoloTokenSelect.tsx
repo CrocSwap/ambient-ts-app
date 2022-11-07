@@ -15,7 +15,7 @@ interface propsIF {
 export const SoloTokenSelect = (props: propsIF) => {
     const { tokensBank, chainId, setImportedTokens, closeModal } = props;
 
-    const [ searchedToken, input, setInput ] = useSoloSearch(chainId);
+    const [searchedToken, input, setInput] = useSoloSearch(chainId);
 
     const dispatch = useAppDispatch();
 
@@ -31,12 +31,10 @@ export const SoloTokenSelect = (props: propsIF) => {
         dispatch(setToken(tkn));
         if (searchedToken) {
             const tokenIsImported = tokensBank.some(
-                (tk: TokenIF) => tk.address === searchedToken.address
+                (tk: TokenIF) => tk.address === searchedToken.address,
             );
             if (tokenIsImported) {
-                const userDataFromLocalStorage = JSON.parse(
-                    localStorage.getItem('user') as string
-                );
+                const userDataFromLocalStorage = JSON.parse(localStorage.getItem('user') as string);
                 userDataFromLocalStorage.tokens = [searchedToken, ...tokensBank];
                 localStorage.setItem('user', JSON.stringify(userDataFromLocalStorage));
             }
@@ -46,10 +44,12 @@ export const SoloTokenSelect = (props: propsIF) => {
 
     const importedTokenButtons = tokensBank
         .filter((token: TokenIF) => token.chainId === parseInt(chainId))
-        .filter((token: TokenIF) => (
+        .filter((token: TokenIF) =>
             searchedToken
-                ? searchedToken.address.toLowerCase() === token.address.toLowerCase() : true
-        )).map((token: TokenIF) => (
+                ? searchedToken.address.toLowerCase() === token.address.toLowerCase()
+                : true,
+        )
+        .map((token: TokenIF) => (
             <TokenSelect
                 key={JSON.stringify(token)}
                 token={token}
@@ -69,7 +69,14 @@ export const SoloTokenSelect = (props: propsIF) => {
                 placeholder='Enter an Address'
                 onChange={(e) => setInput(e.target.value)}
             />
-            {(input && !searchedToken) ? <p>Could not find a matching token on-chain, please recheck your input and try again.</p> : importedTokenButtons}
+            {input && !searchedToken ? (
+                <p>
+                    Could not find a matching token on-chain, please recheck your input and try
+                    again.
+                </p>
+            ) : (
+                importedTokenButtons
+            )}
         </>
     );
 };

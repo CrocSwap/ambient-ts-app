@@ -70,7 +70,7 @@ export default function ChatPanel(props: ChatProps) {
 
     const { messages, getMsg } = useSocket(room);
 
-    const { getID } = useChatApi();
+    const { getID, getNameOrWallet } = useChatApi();
 
     useEffect(() => {
         // 👇️ scroll to bottom every time messages change
@@ -86,20 +86,20 @@ export default function ChatPanel(props: ChatProps) {
     }, []);
 
     useEffect(() => {
-        getID().then((result) => {
-            setCurrentUser(result._id);
+        getID().then((result: any) => {
+            setCurrentUser(result.userData._id);
             console.log(currentUser);
-            setName(result.ensName);
+            setName(result.userData.ensName);
         });
-    }, [props.chatStatus, name]);
+    }, [props.chatStatus]);
 
     useEffect(() => {
-        getID().then((result) => {
-            setCurrentUser(result._id);
+        getID().then((result: any) => {
+            setCurrentUser(result.userData._id);
             console.log(currentUser);
-            setName(result.ensName);
+            setName(result.userData.ensName);
         });
-    }, [name]);
+    }, []);
 
     function handleCloseChatPanel() {
         props.setChatStatus(false);
@@ -155,6 +155,14 @@ export default function ChatPanel(props: ChatProps) {
         </div>
     );
 
+    function getName(item: any) {
+        if (item.ensName === 'defaultValue') {
+            return item.walletID;
+        } else {
+            return item.ensName;
+        }
+    }
+
     const messageList = (
         <>
             {messages &&
@@ -163,10 +171,10 @@ export default function ChatPanel(props: ChatProps) {
                         {item.sender === currentUser && currentUser !== undefined ? (
                             <>
                                 <DividerDark changeColor addMarginTop addMarginBottom />
-                                <SentMessagePanel message={item} name={name} />
+                                <SentMessagePanel message={item} />
                             </>
                         ) : (
-                            <IncomingMessage message={item} name={name} />
+                            <IncomingMessage message={item} name={getName(item)} />
                         )}
                     </div>
                 ))}
@@ -231,6 +239,7 @@ export default function ChatPanel(props: ChatProps) {
                                           currentPool.quoteToken.symbol
                                         : room
                                 }
+                                ensName={name}
                             />
                         </div>
                     </div>
