@@ -74,7 +74,7 @@ export const useSoloSearch = (
         // if not, set token data object to null
         validatedInput || setTokens(null);
 
-        // TODO:  @Emily refactor this a switch (case)
+        // TODO:  @Emily refactor this to a switch (case)
         // fn to find token in an array of tokens by address and chain ID
         const findToken = (
             tokens: TokenIF[],
