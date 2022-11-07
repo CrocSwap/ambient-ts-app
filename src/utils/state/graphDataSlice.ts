@@ -245,6 +245,8 @@ export interface ITransaction {
     user: string;
     userEnsName: string;
     limitPrice: number;
+    bidTick: number;
+    askTick: number;
     price: number;
     invPrice: number;
     limitPriceDecimalCorrected: number;

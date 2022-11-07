@@ -5,16 +5,23 @@ import { FiExternalLink, FiMoreHorizontal } from 'react-icons/fi';
 
 // START: Import JSX Functional Components
 // import Modal from '../../../../Global/Modal/Modal';
-import SnackbarComponent from '../../../../../components/Global/SnackbarComponent/SnackbarComponent';
+// import SnackbarComponent from '../../../../../components/Global/SnackbarComponent/SnackbarComponent';
 
 // START: Import Local Files
 import styles from './TableMenus.module.css';
 // import { useModal } from '../../../../Global/Modal/useModal';
-import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
+// import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
 import { ITransaction } from '../../../../../utils/state/graphDataSlice';
 import UseOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
 import TransactionDetails from '../../../TransactionDetails/TransactionDetails';
+import { useAppDispatch } from '../../../../../utils/hooks/reduxToolkit';
+import {
+    setAdvancedHighTick,
+    setAdvancedLowTick,
+    setAdvancedMode,
+    setSimpleRangeWidth,
+} from '../../../../../utils/state/tradeDataSlice';
 
 // interface for React functional component props
 interface TransactionMenuIF {
@@ -40,8 +47,8 @@ export default function TransactionsMenu(props: TransactionMenuIF) {
         // isOnPortfolioPage,
     } = props;
 
-    const [value, copy] = useCopyToClipboard();
-    const [openSnackbar, setOpenSnackbar] = useState(false);
+    // const [value, copy] = useCopyToClipboard();
+    // const [openSnackbar, setOpenSnackbar] = useState(false);
     // const [isModalOpen, openModal, closeModal] = useModal();
     // const [currentModal, setCurrentModal] = useState('edit');
     // ---------------------MODAL FUNCTIONALITY----------------
@@ -64,11 +71,29 @@ export default function TransactionsMenu(props: TransactionMenuIF) {
     // }
 
     // -----------------SNACKBAR----------------
-    function handleCopyAddress() {
-        copy('Not Yet Implemented');
+    // function handleCopyAddress() {
+    //     copy('Not Yet Implemented');
 
-        setOpenSnackbar(true);
-    }
+    //     setOpenSnackbar(true);
+    // }
+    const dispatch = useAppDispatch();
+
+    const handleCopyClick = () => {
+        // console.log('copy clicked');
+        console.log({ tx });
+
+        if (tx.positionType === 'ambient') {
+            dispatch(setSimpleRangeWidth(100));
+            dispatch(setAdvancedMode(false));
+        } else if (tx.positionType === 'concentrated') {
+            dispatch(setAdvancedLowTick(tx.bidTick));
+            dispatch(setAdvancedHighTick(tx.askTick));
+            dispatch(setAdvancedMode(true));
+        }
+        setShowDropdownMenu(false);
+
+        // dispatch(setRangeModuleTriggered(true));
+    };
 
     function handleOpenExplorer() {
         if (tx && blockExplorer) {
@@ -77,15 +102,15 @@ export default function TransactionsMenu(props: TransactionMenuIF) {
         }
     }
 
-    const snackbarContent = (
-        <SnackbarComponent
-            severity='info'
-            setOpenSnackbar={setOpenSnackbar}
-            openSnackbar={openSnackbar}
-        >
-            {value}
-        </SnackbarComponent>
-    );
+    // const snackbarContent = (
+    //     <SnackbarComponent
+    //         severity='info'
+    //         setOpenSnackbar={setOpenSnackbar}
+    //         openSnackbar={openSnackbar}
+    //     >
+    //         {value}
+    //     </SnackbarComponent>
+    // );
     // -----------------END OF SNACKBAR----------------
 
     // TODO:  @Junior please add a `default` to this with debugging code
@@ -123,7 +148,7 @@ export default function TransactionsMenu(props: TransactionMenuIF) {
     // ) : null;
 
     const copyButton = (
-        <button className={styles.option_button} onClick={handleCopyAddress}>
+        <button className={styles.option_button} onClick={handleCopyClick}>
             Copy
         </button>
     );
@@ -209,7 +234,7 @@ export default function TransactionsMenu(props: TransactionMenuIF) {
             {transactionsMenu}
             {dropdownTransactionsMenu}
             {/* {modalOrNull} */}
-            {snackbarContent}
+            {/* {snackbarContent} */}
         </div>
     );
 }
