@@ -48,8 +48,6 @@ export const SoloTokenSelect = (props: propsIF) => {
     const tokensOnChain = tokensBank
         .filter((token: TokenIF) => token.chainId === parseInt(chainId))
 
-    console.log(searchedToken);
-
     const filterByAddress = (tokens: TokenIF[]) => tokens.filter((token: TokenIF) => (
         searchedToken && searchedToken.length
             ? searchedToken[0].address.toLowerCase() === token.address.toLowerCase() : true
@@ -71,7 +69,6 @@ export const SoloTokenSelect = (props: propsIF) => {
     }
 
     const filteredTokens = useMemo(() => {
-        console.log(searchType);
         switch (searchType) {
             case 'address':
                 return filterByAddress(tokensOnChain);
