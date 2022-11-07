@@ -13,7 +13,8 @@ export const useSoloSearch = (
 ): [
     TokenIF[] | null,
     string,
-    Dispatch<SetStateAction<string>>
+    Dispatch<SetStateAction<string>>,
+    string
 ] => {
     // raw input from the user
     const [input, setInput] = useState('');
@@ -25,11 +26,20 @@ export const useSoloSearch = (
         // trim string and make it lower case
         const cleanInput = input.trim().toLowerCase();
         // add '0x' to the front of the cleaned string if not present
-        if (cleanInput.length === (40) || cleanInput.length === (42)) {
+        if (
+            cleanInput.length === (42) ||
+            (
+                cleanInput.length === (40) &&
+                !cleanInput.startsWith('0x')
+            )
+        ) {
             setSearchAs('address');
-        } else {
+        } else if (cleanInput.length >= 3) {
             setSearchAs('nameOrSymbol');
             return cleanInput;
+        } else {
+            setSearchAs('');
+            return '';
         }
         const fixedInput = cleanInput.startsWith('0x')
             ? cleanInput
@@ -139,6 +149,7 @@ export const useSoloSearch = (
     return [
         tokens,
         input.trim(),
-        setInput
+        setInput,
+        searchAs
     ];
 }

@@ -15,7 +15,8 @@ interface propsIF {
 export const SoloTokenSelect = (props: propsIF) => {
     const { tokensBank, chainId, setImportedTokens, closeModal } = props;
 
-    const [ searchedToken, input, setInput ] = useSoloSearch(chainId);
+    const [ searchedToken, input, setInput, searchType ] = useSoloSearch(chainId);
+    false && input;
 
     const dispatch = useAppDispatch();
 
@@ -54,19 +55,45 @@ export const SoloTokenSelect = (props: propsIF) => {
             ? searchedToken[0].address.toLowerCase() === token.address.toLowerCase() : true
     ));
 
-    const importedTokenButtons = filterByAddress(tokensOnChain)
-        .map((token: TokenIF) => (
-            <TokenSelect
-                key={JSON.stringify(token)}
-                token={token}
-                tokensBank={tokensBank}
-                undeletableTokens={undeletableTokens}
-                chainId={chainId}
-                setImportedTokens={setImportedTokens}
-                chooseToken={chooseToken}
-                isOnPortfolio={true}
-            />
+    const filterByName = (tokens: TokenIF[]) => {
+        const positives: string[] = [];
+        if (searchedToken && searchedToken.length) {
+            searchedToken.forEach((token) => {
+                positives.push(token.name);
+                positives.push(token.symbol);
+            })
+        };
+        const matchingTokens = tokens.filter((token) => (
+            positives.includes(token.name) ||
+            positives.includes(token.symbol)
         ));
+        return matchingTokens;
+    }
+
+    const filteredTokens = useMemo(() => {
+        console.log(searchType);
+        switch (searchType) {
+            case 'address':
+                return filterByAddress(tokensOnChain);
+            case 'nameOrSymbol':
+                return filterByName(tokensOnChain);
+            default:
+                return tokensOnChain;
+        }
+    }, [searchType, tokensOnChain]);
+
+    const importedTokenButtons = filteredTokens.map((token: TokenIF) => (
+        <TokenSelect
+            key={JSON.stringify(token)}
+            token={token}
+            tokensBank={tokensBank}
+            undeletableTokens={undeletableTokens}
+            chainId={chainId}
+            setImportedTokens={setImportedTokens}
+            chooseToken={chooseToken}
+            isOnPortfolio={true}
+        />
+    ));
 
     return (
         <>
@@ -75,7 +102,9 @@ export const SoloTokenSelect = (props: propsIF) => {
                 placeholder='Enter an Address'
                 onChange={(e) => setInput(e.target.value)}
             />
-            {(input && !searchedToken) ? <p>Could not find a matching token on-chain, please recheck your input and try again.</p> : importedTokenButtons}
+            {
+                importedTokenButtons
+            }
         </>
     );
 };
