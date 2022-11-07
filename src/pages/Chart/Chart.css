@@ -67,9 +67,8 @@ text.y_axis {
     position: absolute;
     text-align: center;
     pointer-events: none;
-
-    top: 66%;
-    width: 60%;
+    
+    width: 45%;
     left: 50%;
     transform: translate(-50%, -50%);
 

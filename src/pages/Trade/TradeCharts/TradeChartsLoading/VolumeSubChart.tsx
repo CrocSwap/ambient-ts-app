@@ -11,6 +11,7 @@ interface VolumeData {
     crosshairData: any[];
     setsubChartValues: React.Dispatch<React.SetStateAction<any>>;
     setSelectedVolume: React.Dispatch<React.SetStateAction<any>>;
+    selectedVolume: any;
     candlestick: any;
     xScale: any;
     xScaleCopy: any;
@@ -19,14 +20,15 @@ interface VolumeData {
 }
 
 export default function VolumeSubChart(props: VolumeData) {
-    const { volumeData, period, xScale, crosshairData, xScaleCopy, candlestick } = props;
+    const { volumeData, period, xScale, crosshairData, xScaleCopy, candlestick, selectedVolume } =
+        props;
 
     const setsubChartValues = props.setsubChartValues;
 
-    let selectedVolume: any | undefined = undefined;
-
     // Volume Chart
     useEffect(() => {
+        console.log({ selectedVolume });
+
         if (
             volumeData !== undefined &&
             period !== undefined &&
@@ -136,12 +138,10 @@ export default function VolumeSubChart(props: VolumeData) {
                                 .style('stroke', '#E480FF');
 
                             props.setSelectedVolume(() => {
-                                selectedVolume = event.target.__data__.time;
                                 return event.target.__data__.time;
                             });
                         } else {
                             props.setSelectedVolume(() => {
-                                selectedVolume = undefined;
                                 return undefined;
                             });
                         }
@@ -224,7 +224,7 @@ export default function VolumeSubChart(props: VolumeData) {
 
             render();
         }
-    }, [xScale, volumeData, crosshairData, period]);
+    }, [xScale, crosshairData, period, selectedVolume, volumeData]);
 
     return <div style={{ height: '10%', width: '100%' }} className='chart-volume'></div>;
 }
