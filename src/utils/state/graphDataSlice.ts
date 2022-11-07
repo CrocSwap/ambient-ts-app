@@ -95,9 +95,15 @@ export interface LiquidityForAllPools {
     pools: Array<LiquidityByPool>;
 }
 
+export interface liquidityData {
+    time: number;
+    currentTick: number;
+    ranges: Array<Range>;
+}
+
 export interface LiquidityByPool {
     pool: { baseAddress: string; quoteAddress: string; poolIdx: number; chainId: string };
-    liquidityData: Array<Range>;
+    liquidityData: liquidityData;
 }
 
 export interface Range {
@@ -120,6 +126,8 @@ export interface Range {
     cumBidLiq: string;
     cumAmbientBidLiq: string;
     cumConcBidLiq: string;
+    deltaAverageUSD: number;
+    cumAverageUSD: number;
 }
 
 export interface CandlesForAllPools {
