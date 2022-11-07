@@ -22,6 +22,7 @@ import {
     setAdvancedMode,
     setSimpleRangeWidth,
 } from '../../../../../utils/state/tradeDataSlice';
+import { Link } from 'react-router-dom';
 
 // interface for React functional component props
 interface TransactionMenuIF {
@@ -89,6 +90,8 @@ export default function TransactionsMenu(props: TransactionMenuIF) {
             dispatch(setAdvancedLowTick(tx.bidTick));
             dispatch(setAdvancedHighTick(tx.askTick));
             dispatch(setAdvancedMode(true));
+        } else if (tx.entityType === 'swap') {
+            console.log('swap copy clicked');
         }
         setShowDropdownMenu(false);
 
@@ -147,11 +150,47 @@ export default function TransactionsMenu(props: TransactionMenuIF) {
     //     </button>
     // ) : null;
 
-    const copyButton = (
-        <button className={styles.option_button} onClick={handleCopyClick}>
-            Copy
-        </button>
-    );
+    // const copyButton = (
+    //     <button className={styles.option_button} onClick={handleCopyClick}>
+    //         Copy
+    //     </button>
+    // );
+
+    const copyButton =
+        tx.entityType === 'liqchange' ? (
+            <Link
+                className={styles.option_button}
+                to={
+                    '/trade/range/' +
+                    'chain=' +
+                    tx.chainId +
+                    '&tokenA=' +
+                    tx.base +
+                    '&tokenB=' +
+                    tx.quote
+                }
+                onClick={handleCopyClick}
+            >
+                Copy
+            </Link>
+        ) : (
+            <Link
+                className={styles.option_button}
+                to={
+                    '/trade/market/' +
+                    'chain=' +
+                    tx.chainId +
+                    '&tokenA=' +
+                    tx.base +
+                    '&tokenB=' +
+                    tx.quote
+                }
+                onClick={handleCopyClick}
+            >
+                Copy
+            </Link>
+        );
+
     const explorerButton = (
         <button className={styles.option_button} onClick={handleOpenExplorer}>
             Explorer
