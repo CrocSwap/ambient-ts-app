@@ -159,6 +159,8 @@ export default function Chart(props: ChartData) {
     const [rescaleText, setRescaleText] = useState<any>();
     const [isMouseMoveCrosshair, setIsMouseMoveCrosshair] = useState(false);
     const [crosshairXForSubChart, setCrosshairXForSubChart] = useState(0);
+    const [isMouseMoveForSubChart, setIsMouseMoveForSubChart] = useState(false);
+    const [mouseMoveEventForSubChart, setMouseMoveEventForSubChart] = useState<any>();
 
     // Data
     const [crosshairData, setCrosshairData] = useState([{ x: 0, y: -1 }]);
@@ -329,6 +331,7 @@ export default function Chart(props: ChartData) {
     // crosshair x text
     useEffect(() => {
         if (scaleData && xAxis) {
+            console.error('crossHairDATA[0].x', crosshairData[0].x);
             if (isMouseMoveCrosshair) {
                 xAxis
                     .tickValues([...scaleData.xScale.ticks(), ...[crosshairData[0].x]])
@@ -2070,6 +2073,7 @@ export default function Chart(props: ChartData) {
                 liqHighligtedBidSeries,
                 yAxis,
                 xAxis,
+                crosshairXForSubChart,
             );
         }
     }, [
@@ -2100,7 +2104,7 @@ export default function Chart(props: ChartData) {
         liqHighligtedBidSeries,
         yAxis,
         xAxis,
-        crosshairXForSubChart,
+        mouseMoveEventForSubChart,
     ]);
 
     const minimum = (data: any, accessor: any) => {
@@ -2147,11 +2151,15 @@ export default function Chart(props: ChartData) {
             liqHighligtedBidSeries: any,
             yAxis: any,
             xAxis: any,
+            crosshairXForSubChart: any,
         ) => {
             if (chartData.length > 0) {
-                console.error('öf', crosshairData[0].y);
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 
+                if (isMouseMoveForSubChart) {
+                    crosshairData[0].x = scaleData.xScale.invert(crosshairXForSubChart);
+                    setIsMouseMoveCrosshair(true);
+                }
                 const snap = (series: any, data: any, point: any) => {
                     if (point == undefined) return [];
                     const xScale = series.xScale(),
@@ -2676,11 +2684,22 @@ export default function Chart(props: ChartData) {
     }, [isCandleSelected]);
 
     useEffect(() => {
-        //   setCrosshairXForSubChart(crosshairXForSubChart);
-        setCrosshairData([
-            { x: scaleData.xScale.invert(crosshairXForSubChart), y: crosshairData[0].y },
-        ]);
-    }, [crosshairXForSubChart]);
+        if (mouseMoveEventForSubChart) {
+            setCrosshairData([
+                { x: scaleData.xScale.invert(crosshairXForSubChart), y: crosshairData[0].y },
+            ]);
+        }
+    }, [mouseMoveEventForSubChart]);
+
+    // useEffect(() => {
+    //     //   setCrosshairXForSubChart(crosshairXForSubChart);
+    //     if (scaleData && isMouseMoveCrosshair){
+    //         setCrosshairData([
+    //             { x: scaleData.xScale.invert(crosshairXForSubChart), y: crosshairData[0].y },
+    //         ]);
+
+    //     }
+    // }, [crosshairXForSubChart]);
 
     return (
         <div ref={d3Container} className='main_layout_chart' data-testid={'chart'}>
@@ -2783,6 +2802,8 @@ export default function Chart(props: ChartData) {
                                     scaleData !== undefined ? scaleData.xScaleCopy : undefined
                                 }
                                 setZoomAndYdragControl={setZoomAndYdragControl}
+                                setIsMouseMoveForSubChart={setIsMouseMoveForSubChart}
+                                setMouseMoveEventForSubChart={setMouseMoveEventForSubChart}
                                 render={render}
                             />
                         </>

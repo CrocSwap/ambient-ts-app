@@ -16,6 +16,8 @@ interface VolumeData {
     xScaleCopy: any;
     setZoomAndYdragControl: React.Dispatch<React.SetStateAction<any>>;
     setCrosshairXForSubChart: React.Dispatch<React.SetStateAction<any>>;
+    setIsMouseMoveForSubChart: React.Dispatch<React.SetStateAction<boolean>>;
+    setMouseMoveEventForSubChart: React.Dispatch<React.SetStateAction<any>>;
     render: any;
 }
 
@@ -69,7 +71,8 @@ export default function VolumeSubChart(props: VolumeData) {
                     if (event[0] !== undefined) {
                         chartData.crosshairDataLocal[0].y = event[0].y;
                         chartData.crosshairDataLocal[0].x = event[0].x;
-
+                        props.setIsMouseMoveForSubChart(true);
+                        props.setMouseMoveEventForSubChart(event);
                         props.setCrosshairXForSubChart(chartData.crosshairDataLocal[0].x);
                         render();
                         props.render();
