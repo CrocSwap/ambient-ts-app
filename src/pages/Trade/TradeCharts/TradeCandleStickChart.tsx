@@ -268,7 +268,16 @@ export default function TradeCandleStickChart(props: ChartData) {
 
     // Scale
     useEffect(() => {
-        if (parsedChartData !== undefined && liquidityData !== undefined) {
+        if (!isLoading && parsedChartData !== undefined && liquidityData !== undefined) {
+            let candleNumber = parsedChartData.chartData;
+
+            if (parsedChartData.chartData.length > 100) {
+                candleNumber = parsedChartData.chartData.slice(
+                    parsedChartData.chartData.length - 99,
+                    parsedChartData.chartData.length,
+                );
+            }
+
             const priceRange = d3fc
                 .extentLinear()
                 .accessors([(d: any) => d.high, (d: any) => d.low])
@@ -292,9 +301,9 @@ export default function TradeCandleStickChart(props: ChartData) {
             const subChartxScale = d3.scaleTime();
             const yScale = d3.scaleLinear();
 
-            xScale.domain(xExtent(parsedChartData.chartData));
-            subChartxScale.domain(subChartxExtent(parsedChartData.chartData));
-            yScale.domain(priceRange(parsedChartData.chartData));
+            xScale.domain(xExtent(candleNumber));
+            subChartxScale.domain(subChartxExtent(candleNumber));
+            yScale.domain(priceRange(candleNumber));
 
             const xScaleCopy = xScale.copy();
             const yScaleCopy = yScale.copy();
@@ -333,7 +342,7 @@ export default function TradeCandleStickChart(props: ChartData) {
                 };
             });
         }
-    }, [parsedChartData?.period, denominationsInBase, liquidityData]);
+    }, [parsedChartData?.period, denominationsInBase, liquidityData, isLoading]);
 
     // cursor change----------------------------------------------
     function loadingCursor(event: any) {
