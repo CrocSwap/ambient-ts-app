@@ -4,7 +4,8 @@
 
 .search_input_container{
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-end;
+    gap: 8px;
     align-items: center;
     padding: 1rem 0;
 }
@@ -18,7 +19,8 @@
     padding: 2px 3rem;
 
     color: var(--text-grey-white);
-    transition: all var(--animation-speed) ease-in-out
+    transition: all var(--animation-speed) ease-in-out;
+    text-align: end;
 
     
 }

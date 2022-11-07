@@ -1,3 +1,8 @@
+
+.GraphContainers{
+    transition: all var(--animation-speed) ease-in-out
+}
+
 /* timeframe */
 .time_frame_container {
     display: flex;

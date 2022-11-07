@@ -2,7 +2,7 @@ import { useMoralis } from 'react-moralis';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { useState, useEffect, useMemo } from 'react';
 import getUnicodeCharacter from '../../utils/functions/getUnicodeCharacter';
-import { formatAmount } from '../../utils/numbers';
+import { formatAmountOld } from '../../utils/numbers';
 import trimString from '../../utils/functions/trimString';
 import { LimitOrderIF } from '../interfaces/exports';
 import { getMoneynessRank } from '../functions/getMoneynessRank';
@@ -65,7 +65,7 @@ export const useProcessOrder = (limitOrder: LimitOrderIF) => {
                     : priceDecimalCorrected < 2
                     ? priceDecimalCorrected.toPrecision(3)
                     : priceDecimalCorrected >= 100000
-                    ? formatAmount(priceDecimalCorrected)
+                    ? formatAmountOld(priceDecimalCorrected)
                     : priceDecimalCorrected.toLocaleString(undefined, {
                           minimumFractionDigits: 2,
                           maximumFractionDigits: 2,
@@ -79,7 +79,7 @@ export const useProcessOrder = (limitOrder: LimitOrderIF) => {
                     : invPriceDecimalCorrected < 2
                     ? invPriceDecimalCorrected.toPrecision(3)
                     : invPriceDecimalCorrected >= 100000
-                    ? formatAmount(invPriceDecimalCorrected)
+                    ? formatAmountOld(invPriceDecimalCorrected)
                     : invPriceDecimalCorrected.toLocaleString(undefined, {
                           minimumFractionDigits: 2,
                           maximumFractionDigits: 2,
@@ -128,7 +128,7 @@ export const useProcessOrder = (limitOrder: LimitOrderIF) => {
             : liqBaseNum < 2
             ? liqBaseNum.toPrecision(3)
             : liqBaseNum >= 100000
-            ? formatAmount(liqBaseNum)
+            ? formatAmountOld(liqBaseNum)
             : // ? baseLiqDisplayNum.toExponential(2)
               liqBaseNum.toLocaleString(undefined, {
                   minimumFractionDigits: 2,
@@ -142,7 +142,7 @@ export const useProcessOrder = (limitOrder: LimitOrderIF) => {
             : liqQuoteNum < 2
             ? liqQuoteNum.toPrecision(3)
             : liqQuoteNum >= 100000
-            ? formatAmount(liqQuoteNum)
+            ? formatAmountOld(liqQuoteNum)
             : // ? baseLiqDisplayNum.toExponential(2)
               liqQuoteNum.toLocaleString(undefined, {
                   minimumFractionDigits: 2,
@@ -154,13 +154,23 @@ export const useProcessOrder = (limitOrder: LimitOrderIF) => {
         ? undefined
         : usdValueNum < 0.001
         ? usdValueNum.toExponential(2) + ' '
-        : usdValueNum >= 100000
-        ? formatAmount(usdValueNum)
+        : usdValueNum >= 99999
+        ? formatAmountOld(usdValueNum)
         : // ? baseLiqDisplayNum.toExponential(2)
           usdValueNum.toLocaleString(undefined, {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
           }) + ' ';
+
+    const usdValueLocaleString = !usdValueNum
+        ? '…'
+        : usdValueNum < 0.01
+        ? usdValueNum.toPrecision(3)
+        : // ? baseLiqDisplayNum.toExponential(2)
+          usdValueNum.toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+          });
 
     // -----------------------------------------------------------------------------------------
     // eslint-disable-next-line
@@ -290,6 +300,7 @@ export const useProcessOrder = (limitOrder: LimitOrderIF) => {
 
         // Value data
         usdValue,
+        usdValueLocaleString,
 
         // Token Qty data
         baseQty,

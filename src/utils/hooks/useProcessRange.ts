@@ -3,7 +3,7 @@ import { ambientPosSlot, concPosSlot } from '@crocswap-libs/sdk';
 import { useMoralis } from 'react-moralis';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import getUnicodeCharacter from '../../utils/functions/getUnicodeCharacter';
-import { formatAmount } from '../../utils/numbers';
+import { formatAmountOld } from '../../utils/numbers';
 import { PositionIF } from '../../utils/interfaces/PositionIF';
 import trimString from '../../utils/functions/trimString';
 import { useMemo } from 'react';
@@ -118,12 +118,22 @@ export const useProcessRange = (position: PositionIF) => {
         : usdValueNum < 0.001
         ? usdValueNum.toExponential(2) + ' '
         : usdValueNum >= 100000
-        ? formatAmount(usdValueNum)
+        ? formatAmountOld(usdValueNum)
         : // ? baseLiqDisplayNum.toExponential(2)
           usdValueNum.toLocaleString(undefined, {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
           }) + ' ';
+
+    const usdValueLocaleString = !usdValueNum
+        ? '…'
+        : usdValueNum < 0.01
+        ? usdValueNum.toPrecision(3)
+        : // ? baseLiqDisplayNum.toExponential(2)
+          usdValueNum.toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+          });
 
     const quantitiesAvailable = baseQty !== undefined || quoteQty !== undefined;
 
@@ -165,6 +175,7 @@ export const useProcessRange = (position: PositionIF) => {
 
         // value
         usdValue,
+        usdValueLocaleString,
 
         // Token Qty data
         baseQty,

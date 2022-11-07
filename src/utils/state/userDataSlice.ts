@@ -3,6 +3,11 @@ import { TokenIF } from '../interfaces/TokenIF';
 
 export interface userData {
     isLoggedIn: boolean;
+    addressAtLogin: string | undefined;
+    addressCurrent: string | undefined;
+    ensNameAtLogin: string | undefined;
+    ensNameCurrent: string | undefined;
+    ensOrAddressTruncated: string | undefined;
     isUserIdle: boolean;
     tokens: tokenData;
 }
@@ -14,6 +19,11 @@ export interface tokenData {
 
 const initialState: userData = {
     isLoggedIn: false,
+    addressAtLogin: undefined,
+    addressCurrent: undefined,
+    ensNameAtLogin: undefined,
+    ensNameCurrent: undefined,
+    ensOrAddressTruncated: undefined,
     isUserIdle: false,
     tokens: {
         nativeToken: undefined,
@@ -28,6 +38,21 @@ export const userDataSlice = createSlice({
         setIsLoggedIn: (state, action: PayloadAction<boolean>) => {
             state.isLoggedIn = action.payload;
         },
+        setAddressAtLogin: (state, action: PayloadAction<string>) => {
+            state.addressAtLogin = action.payload;
+        },
+        setAddressCurrent: (state, action: PayloadAction<string | undefined>) => {
+            state.addressCurrent = action.payload;
+        },
+        setEnsNameAtLogin: (state, action: PayloadAction<string>) => {
+            state.ensNameAtLogin = action.payload;
+        },
+        setEnsNameCurrent: (state, action: PayloadAction<string | undefined>) => {
+            state.ensNameCurrent = action.payload;
+        },
+        setEnsOrAddressTruncated: (state, action: PayloadAction<string | undefined>) => {
+            state.ensOrAddressTruncated = action.payload;
+        },
         setIsUserIdle: (state, action: PayloadAction<boolean>) => {
             state.isUserIdle = action.payload;
         },
@@ -40,17 +65,30 @@ export const userDataSlice = createSlice({
         resetTokenData: (state) => {
             state.tokens = initialState.tokens;
         },
+        resetUserAddresses: (state) => {
+            state.addressAtLogin = initialState.addressAtLogin;
+            state.addressCurrent = initialState.addressCurrent;
+            state.ensNameAtLogin = initialState.ensNameAtLogin;
+            state.ensNameAtLogin = initialState.ensNameAtLogin;
+            state.ensOrAddressTruncated = initialState.ensOrAddressTruncated;
+        },
     },
 });
 
 // action creators are generated for each case reducer function
 export const {
     setIsLoggedIn,
+    setAddressAtLogin,
+    setAddressCurrent,
+    setEnsNameAtLogin,
+    setEnsNameCurrent,
+    setEnsOrAddressTruncated,
     setIsUserIdle,
     setNativeToken,
     setErc20Tokens,
     //  addNativeBalance,
     resetTokenData,
+    resetUserAddresses,
 } = userDataSlice.actions;
 
 export default userDataSlice.reducer;
