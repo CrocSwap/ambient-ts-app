@@ -2317,7 +2317,15 @@ export default function App() {
                                     />
                                 }
                             />
-                            <Route path='pools' element={<TopPools />} />
+                            <Route
+                                path='pools'
+                                element={
+                                    <TopPools
+                                        analyticsSearchInput={analyticsSearchInput}
+                                        setAnalyticsSearchInput={setAnalyticsSearchInput}
+                                    />
+                                }
+                            />
                             <Route
                                 path='trendingpools'
                                 element={
