@@ -16,9 +16,9 @@ interface VolumeData {
     xScale: any;
     xScaleCopy: any;
     setZoomAndYdragControl: React.Dispatch<React.SetStateAction<any>>;
-    setCrosshairXForSubChart: React.Dispatch<React.SetStateAction<any>>;
     setIsMouseMoveForSubChart: React.Dispatch<React.SetStateAction<boolean>>;
     setMouseMoveEventForSubChart: React.Dispatch<React.SetStateAction<any>>;
+
     render: any;
 }
 
@@ -50,6 +50,8 @@ export default function VolumeSubChart(props: VolumeData) {
                 crosshairDataLocal: [{ x: crosshairXForSubChart, y: -1 }],
             };
 
+            console.log('crosshairXForSubChart', crosshairXForSubChart);
+            console.log('chartData.crosshairDataLocal', chartData.crosshairDataLocal[0].x);
             const render = () => {
                 d3.select('.chart-volume').datum(chartData).call(chart);
 
@@ -65,17 +67,6 @@ export default function VolumeSubChart(props: VolumeData) {
                     .select('.right-label')
                     .remove();
 
-                setsubChartValues((prevState: any) => {
-                    const newTargets = [...prevState];
-                    newTargets.filter((target: any) => target.name === 'volume')[0].value = snap(
-                        barSeries,
-                        chartData.barSeries,
-                        { x: xScale(crosshairXForSubChart), y: -1 },
-                    );
-
-                    return newTargets;
-                });
-
                 d3.select('.chart-volume').on('mousemove', async function (event: any) {
                     props.setMouseMoveEventForSubChart(event);
                     props.setIsMouseMoveForSubChart(true);
@@ -83,18 +74,10 @@ export default function VolumeSubChart(props: VolumeData) {
                     chartData.crosshairDataLocal[0].y = event.offsetY;
                 });
 
-                // const pointer = d3fc.pointer().on('point', (event: any) => {
-                //     if (event[0] !== undefined) {
-                //         chartData.crosshairDataLocal[0].y = event[0].y;
-                //         chartData.crosshairDataLocal[0].x = event[0].x;
-                //         props.setIsMouseMoveForSubChart(true);
-                //         props.setMouseMoveEventForSubChart(event);
-                //         props.setCrosshairXForSubChart(chartData.crosshairDataLocal[0].x);
-                //         render();
-                //         props.render();
-                //     }
-                // });
-                // d3.select('.chart-volume').call(pointer);
+                d3.select('.chart-volume').on('mouseleave', async function (event: any) {
+                    props.setMouseMoveEventForSubChart(event);
+                    props.setIsMouseMoveForSubChart(false);
+                });
             };
 
             const minimum = (volumeData: any, accessor: any) => {
@@ -191,10 +174,10 @@ export default function VolumeSubChart(props: VolumeData) {
                 .scaleExtent([1, 10])
                 .on('zoom', (event: any) => {
                     xScale.domain(event.transform.rescaleX(xScaleCopy).domain());
-                    // props.setZoomAndYdragControl(event);
+                    props.setZoomAndYdragControl(event);
                     props.setIsMouseMoveForSubChart(true);
-                    // props.setMouseMoveEventForSubChart(event);
-                    // props.setCrosshairXForSubChart(chartData.crosshairDataLocal[0].x);
+                    props.setMouseMoveEventForSubChart(event);
+                    //    props.setCrosshairXForSubChart(chartData.crosshairDataLocal[0].x);
                     render();
                     props.render();
                 });
@@ -249,7 +232,7 @@ export default function VolumeSubChart(props: VolumeData) {
 
             render();
         }
-    }, [xScale, crosshairXForSubChart, period, selectedVolume, volumeData]);
+    }, [xScale.domain(), crosshairXForSubChart, period, selectedVolume, volumeData]);
 
     return <div style={{ height: '10%', width: '100%' }} className='chart-volume'></div>;
 }

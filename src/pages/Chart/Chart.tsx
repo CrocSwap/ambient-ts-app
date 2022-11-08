@@ -559,6 +559,7 @@ export default function Chart(props: ChartData) {
 
                             scaleData.yScale.domain([domainY[0] + deltaY, domainY[1] + deltaY]);
                         }
+                        setCrosshairXForSubChart(scaleData.xScale(crosshairData[0].x));
 
                         setZoomAndYdragControl(event);
 
@@ -2400,14 +2401,16 @@ export default function Chart(props: ChartData) {
                     setIsMouseMoveCrosshair(true);
 
                     setCrosshairData([
-                        { x: crosshairData[0].x, y: scaleData.yScale.invert(event.offsetY) },
+                        {
+                            x: crosshairData[0].x,
+                            y: isMouseMoveForSubChart ? -1 : scaleData.yScale.invert(event.offsetY),
+                        },
                     ]);
 
                     render();
                 };
 
                 if (isMouseMoveForSubChart) {
-                    console.log({ mouseMoveEventForSubChart });
                     setCrossHairLocation(mouseMoveEventForSubChart);
                     // crosshairData[0].x = scaleData.xScale.invert(crosshairXForSubChart);
                     // setIsMouseMoveCrosshair(true);
@@ -2752,7 +2755,6 @@ export default function Chart(props: ChartData) {
                                 volumeData={parsedChartData?.volumeChartData}
                                 period={parsedChartData?.period}
                                 crosshairXForSubChart={crosshairXForSubChart}
-                                setCrosshairXForSubChart={setCrosshairXForSubChart}
                                 setsubChartValues={setsubChartValues}
                                 setSelectedVolume={setSelectedVolume}
                                 selectedVolume={selectedVolume}
