@@ -88,7 +88,7 @@ export default function Limit(props: LimitPropsIF) {
         mintSlippage,
         isPairStable,
         setImportedTokens,
-        isSellTokenBase,
+        // isSellTokenBase,
         baseTokenBalance,
         quoteTokenBalance,
         baseTokenDexBalance,
@@ -137,6 +137,7 @@ export default function Limit(props: LimitPropsIF) {
 
     const isTokenAPrimary = tradeData.isTokenAPrimary;
     const limitTick = tradeData.limitTick;
+    const isSellTokenBase = tradeData.isTokenABase;
 
     const slippageTolerancePercentage = tradeData.slippageTolerance;
 
@@ -178,7 +179,7 @@ export default function Limit(props: LimitPropsIF) {
             const gridSize = lookupChain(chainId).gridSize;
 
             // const croc = crocEnv ? crocEnv : new CrocEnv(provider);
-
+            // console.log({ isSellTokenBase });
             const initialLimitRateNonDisplay =
                 poolPriceNonDisplay * (isSellTokenBase ? 0.985 : 1.015);
 

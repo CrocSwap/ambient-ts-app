@@ -108,10 +108,12 @@ export default function TransactionsMenu(props: TransactionMenuIF) {
                 ),
             );
             dispatch(setShouldSwapConverterUpdate(true));
-            console.log('swap copy clicked');
+            // console.log('swap copy clicked');
         } else if (tx.entityType === 'limitOrder') {
-            console.log('limit order copy clicked');
-            dispatch(setLimitTick(tx.isBid ? tx.bidTick : tx.askTick));
+            // console.log('limit order copy clicked');
+            setTimeout(() => {
+                dispatch(setLimitTick(tx.isBid ? tx.bidTick : tx.askTick));
+            }, 1000);
             // dispatch(
             //     setIsTokenAPrimary((tx.isBid && tx.inBaseQty) || (!tx.isBid && !tx.inBaseQty)),
             // );

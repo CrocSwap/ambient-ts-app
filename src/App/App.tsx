@@ -701,7 +701,9 @@ export default function App() {
     const tokenPairStringified = useMemo(() => JSON.stringify(tokenPair), [tokenPair]);
 
     useEffect(() => {
+        console.log('resetting limit tick');
         dispatch(setLimitTick(0));
+        // }, [JSON.stringify({ base: baseTokenAddress, quote: quoteTokenAddress })]);
     }, [tokenPairStringified]);
 
     useEffect(() => {
