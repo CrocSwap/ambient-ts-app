@@ -50,8 +50,8 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
         baseTokenLogo,
         baseDisplay,
         quoteDisplay,
-        isBaseFlowPositive,
-        isQuoteFlowPositive,
+        // isBaseFlowPositive,
+        // isQuoteFlowPositive,
         // baseDisplayFrontend,
         // quoteDisplayFrontend,
         ownerId,
@@ -84,18 +84,24 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
 
     const valueArrows = sideType !== 'add' && sideType !== 'remove';
 
-    const baseFlowArrow =
-        valueArrows && baseDisplay !== '0.00' ? (!isBaseFlowPositive ? '↑' : '↓') : null;
-    const quoteFlowArrow =
-        valueArrows && quoteDisplay !== '0.00' ? (!isQuoteFlowPositive ? '↑' : '↓') : null;
+    const positiveArrow = valueArrows && '↑';
+    const negativeArrow = valueArrows && '↓';
+    // const baseFlowArrow =
+    //     valueArrows && baseDisplay !== '0.00' ? (!isBaseFlowPositive ? '↑' : '↓') : null;
+    // const quoteFlowArrow =
+    //     valueArrows && quoteDisplay !== '0.00' ? (!isQuoteFlowPositive ? '↑' : '↓') : null;
 
-    const posOrNegativeBase = !isBaseFlowPositive ? styles.positive_value : styles.negative_value;
-    const posOrNegativeQuote = !isQuoteFlowPositive ? styles.positive_value : styles.negative_value;
+    // const posOrNegativeBase = !isBaseFlowPositive ? styles.positive_value : styles.negative_value;
+    // const posOrNegativeQuote = !isQuoteFlowPositive ? styles.positive_value : styles.negative_value;
 
-    const baseDisplayStyle =
-        baseDisplay == '0.00' || !valueArrows ? styles.light_grey : posOrNegativeBase;
-    const quoteDisplayStyle =
-        quoteDisplay == '0.00' || !valueArrows ? styles.light_grey : posOrNegativeQuote;
+    const positiveDisplayStyle =
+        baseDisplay == '0.00' || !valueArrows ? styles.light_grey : styles.positive_value;
+    const negativeDisplayStyle =
+        quoteDisplay == '0.00' || !valueArrows ? styles.light_grey : styles.negative_value;
+    // const baseDisplayStyle =
+    //     baseDisplay == '0.00' || !valueArrows ? styles.light_grey : posOrNegativeBase;
+    // const quoteDisplayStyle =
+    //     quoteDisplay == '0.00' || !valueArrows ? styles.light_grey : posOrNegativeQuote;
 
     const isBuy = tx.isBuy === true || tx.isBid === true;
 
@@ -400,32 +406,31 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                     style={{ textAlign: 'right' }}
                 >
                     <p
-                        // onClick={() => {
-                        //     const isBuyQuote = tx.isBuy === true || tx.isBid === true;
-                        //     console.log({ isBuyQuote });
-                        //     console.log({ tx });
-                        //     console.log(tx.isBuy);
-                        //     console.log(tx.isBid);
-                        // }}
-                        className={`${styles.token_qty} ${
-                            isBuy ? quoteDisplayStyle : baseDisplayStyle
-                        }`}
+                        onClick={() => {
+                            const isBuyQuote = tx.isBuy === true || tx.isBid === true;
+                            console.log({ isBuyQuote });
+                            console.log({ isBuy });
+                            console.log({ tx });
+                            console.log(tx.isBuy);
+                            console.log(tx.isBid);
+                        }}
+                        className={`${styles.token_qty} ${positiveDisplayStyle}`}
                         style={{ fontFamily: 'monospace' }}
                     >
                         {isBuy ? quoteDisplay : baseDisplay}
-                        {isBuy ? quoteFlowArrow : baseFlowArrow}
+                        {positiveArrow}
+                        {/* {isBuy ? quoteFlowArrow : baseFlowArrow} */}
                         {isBuy ? quoteTokenLogoComponent : baseTokenLogoComponent}
                     </p>
 
                     <p
-                        className={`${styles.token_qty} ${
-                            isBuy ? baseDisplayStyle : quoteDisplayStyle
-                        }`}
+                        className={`${styles.token_qty} ${negativeDisplayStyle}`}
                         style={{ fontFamily: 'monospace' }}
                     >
                         {' '}
                         {isBuy ? baseDisplay : quoteDisplay}
-                        {isBuy ? baseFlowArrow : quoteFlowArrow}
+                        {negativeArrow}
+                        {/* {isBuy ? baseFlowArrow : quoteFlowArrow} */}
                         {isBuy ? baseTokenLogoComponent : quoteTokenLogoComponent}
                     </p>
                 </li>

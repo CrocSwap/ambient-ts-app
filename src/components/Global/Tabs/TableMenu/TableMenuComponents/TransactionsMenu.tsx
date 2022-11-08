@@ -186,7 +186,8 @@ export default function TransactionsMenu(props: TransactionMenuIF) {
     //     </button>
     // );
 
-    const isTxCopiable = tx.entityType === 'swap' || tx.changeType === 'mint';
+    const isTxCopiable =
+        tx.source !== 'manual' && (tx.entityType === 'swap' || tx.changeType === 'mint');
 
     const copyButton =
         tx.entityType === 'liqchange' ? (
