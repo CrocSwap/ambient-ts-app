@@ -400,22 +400,26 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                     style={{ textAlign: 'right' }}
                 >
                     <p
-                        className={`${styles.token_qty} ${baseDisplayStyle}`}
+                        className={`${styles.token_qty} ${
+                            tx.isBuy || tx.isBid ? quoteDisplayStyle : baseDisplayStyle
+                        }`}
                         style={{ fontFamily: 'monospace' }}
                     >
-                        {baseDisplay}
-                        {baseFlowArrow}
-                        {baseTokenLogoComponent}
+                        {tx.isBuy || tx.isBid ? quoteDisplay : baseDisplay}
+                        {tx.isBuy || tx.isBid ? quoteFlowArrow : baseFlowArrow}
+                        {tx.isBuy || tx.isBid ? quoteTokenLogoComponent : baseTokenLogoComponent}
                     </p>
 
                     <p
-                        className={`${styles.token_qty} ${quoteDisplayStyle}`}
+                        className={`${styles.token_qty} ${
+                            tx.isBuy || tx.isBid ? baseDisplayStyle : quoteDisplayStyle
+                        }`}
                         style={{ fontFamily: 'monospace' }}
                     >
                         {' '}
-                        {quoteDisplay}
-                        {quoteFlowArrow}
-                        {quoteTokenLogoComponent}
+                        {tx.isBuy || tx.isBid ? baseDisplay : quoteDisplay}
+                        {tx.isBuy || tx.isBid ? baseFlowArrow : quoteFlowArrow}
+                        {tx.isBuy || tx.isBid ? baseTokenLogoComponent : quoteTokenLogoComponent}
                     </p>
                 </li>
             }
