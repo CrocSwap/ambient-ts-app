@@ -4,6 +4,7 @@ import TopPoolsHeader from './TopPoolsHeader/TopPoolsHeader';
 import { uniswapPools } from '../fakedata/uniswapTokens';
 import { motion } from 'framer-motion';
 import AnalyticsTokenRows from '../AnalyticsTokenRows/AnalyticsTokenRows';
+import AnalyticsPoolRows from '../AnalyticsPoolRows/AnalyticsPoolRows';
 export default function TopPools() {
     const container = (
         <div className={styles.item_container}>
@@ -20,7 +21,8 @@ export default function TopPools() {
             exit={{ y: -10, opacity: 0 }}
             transition={{ duration: 0.5 }}
         >
-            {/* <p>Trending Pools</p> */}
+            <p>Trending Pools</p>
+            <AnalyticsPoolRows />
             <p>All Pools</p>
             <AnalyticsTokenRows />
             <TopPoolsHeader />
