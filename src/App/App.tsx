@@ -75,6 +75,7 @@ import {
     setAdvancedMode,
     setDenomInBase,
     setDidUserFlipDenom,
+    setLimitTick,
     setLiquidityFee,
     setPrimaryQuantityRange,
     setSimpleRangeWidth,
@@ -698,6 +699,10 @@ export default function App() {
         // this indirectly tracks a new chain being used
     }, [crocEnv, tokenPairLocal]);
     const tokenPairStringified = useMemo(() => JSON.stringify(tokenPair), [tokenPair]);
+
+    useEffect(() => {
+        dispatch(setLimitTick(0));
+    }, [tokenPairStringified]);
 
     useEffect(() => {
         dispatch(setPrimaryQuantityRange(''));
@@ -2315,6 +2320,7 @@ export default function App() {
                             element={
                                 <Portfolio
                                     crocEnv={crocEnv}
+                                    isTokenABase={isTokenABase}
                                     provider={provider}
                                     cachedFetchErc20TokenBalances={cachedFetchErc20TokenBalances}
                                     cachedFetchNativeTokenBalance={cachedFetchNativeTokenBalance}
@@ -2357,6 +2363,7 @@ export default function App() {
                             element={
                                 <Portfolio
                                     crocEnv={crocEnv}
+                                    isTokenABase={isTokenABase}
                                     provider={provider}
                                     cachedFetchErc20TokenBalances={cachedFetchErc20TokenBalances}
                                     cachedFetchNativeTokenBalance={cachedFetchNativeTokenBalance}
@@ -2410,6 +2417,7 @@ export default function App() {
                             element={
                                 <Portfolio
                                     crocEnv={crocEnv}
+                                    isTokenABase={isTokenABase}
                                     provider={provider}
                                     cachedFetchErc20TokenBalances={cachedFetchErc20TokenBalances}
                                     cachedFetchNativeTokenBalance={cachedFetchNativeTokenBalance}
