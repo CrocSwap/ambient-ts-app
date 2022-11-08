@@ -21,7 +21,7 @@ export default function TransferAddressInput(props: TransferAddressInputProps) {
                 placeholder='Enter Address or ENS ... '
                 onChange={(event) => {
                     const value = event.target.value;
-                    if (!value.startsWith('0x')) {
+                    if (!value.endsWith('.eth') && !value.startsWith('0x')) {
                         setTransferToAddress('0x' + event.target.value);
                     } else {
                         setTransferToAddress(event.target.value);
