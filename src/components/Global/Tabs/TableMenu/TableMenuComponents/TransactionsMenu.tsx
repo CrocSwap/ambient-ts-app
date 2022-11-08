@@ -198,9 +198,9 @@ export default function TransactionsMenu(props: TransactionMenuIF) {
                     'chain=' +
                     tx.chainId +
                     '&tokenA=' +
-                    tx.base +
+                    (tx.isBid ? tx.base : tx.quote) +
                     '&tokenB=' +
-                    tx.quote
+                    (tx.isBid ? tx.quote : tx.base)
                 }
                 onClick={handleCopyClick}
             >
@@ -214,9 +214,9 @@ export default function TransactionsMenu(props: TransactionMenuIF) {
                     'chain=' +
                     tx.chainId +
                     '&tokenA=' +
-                    tx.base +
+                    (tx.isBid ? tx.base : tx.quote) +
                     '&tokenB=' +
-                    tx.quote
+                    (tx.isBid ? tx.quote : tx.base)
                 }
                 onClick={handleCopyClick}
             >
