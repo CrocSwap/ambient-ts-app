@@ -214,8 +214,7 @@ export default function PositionBox(props: PositionBoxProps) {
     }
 
     function getRestOfMessagesIfAny() {
-        const restOfMessages = message.split(' ');
-        return restOfMessages?.[1];
+        return message.substring(message.indexOf(' ') + 1);
     }
     return props.isPosition ? (
         position !== undefined && !isInput ? (
@@ -282,7 +281,7 @@ export default function PositionBox(props: PositionBoxProps) {
                     </div>
                     {snackbarContent}
                 </div>
-                <p>{getRestOfMessagesIfAny()}</p>
+                <p className={styles.position_message}>{getRestOfMessagesIfAny()}</p>
             </motion.div>
         ) : position !== undefined && isInput ? (
             <motion.div
@@ -347,7 +346,9 @@ export default function PositionBox(props: PositionBoxProps) {
                         )}
                     </div>
                     {snackbarContent}
-                    <p className={styles.message}>{getRestOfMessagesIfAny()}</p>
+                </div>
+                <div>
+                    <p className={styles.position_message}>{getRestOfMessagesIfAny()}</p>
                 </div>
             </motion.div>
         ) : sPositions && !isInput ? (
@@ -394,7 +395,7 @@ export default function PositionBox(props: PositionBoxProps) {
                         </div>
                     </div>
                 </div>
-                <p>{getRestOfMessagesIfAny()}</p>
+                <p className={styles.position_message}>{getRestOfMessagesIfAny()}</p>
             </motion.div>
         ) : sPositions && isInput ? (
             <motion.div
@@ -440,7 +441,7 @@ export default function PositionBox(props: PositionBoxProps) {
                         </div>
                     </div>
                 </div>
-                <p>{getRestOfMessagesIfAny()}</p>
+                <p className={styles.position_message}>{getRestOfMessagesIfAny()}</p>
             </motion.div>
         ) : (
             <></>
