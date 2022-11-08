@@ -3,7 +3,7 @@ import { ChangeEvent, Dispatch, SetStateAction, useEffect, useState } from 'reac
 import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import {
-    reverseTokensInRTK,
+    // reverseTokensInRTK,
     setIsTokenAPrimary,
     setPrimaryQuantity,
 } from '../../../../utils/state/tradeDataSlice';
@@ -161,7 +161,7 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
     const navigate = useNavigate();
 
     const reverseTokens = (): void => {
-        dispatch(reverseTokensInRTK());
+        // dispatch(reverseTokensInRTK());
 
         navigate(
             '/trade/limit/chain=0x5&tokenA=' +
@@ -197,12 +197,12 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
     };
 
     useEffect(() => {
-        isTokenAPrimaryLocal ? handleTokenAChangeEvent() : handleTokenBChangeEvent();
+        isTokenAPrimary ? handleTokenAChangeEvent() : handleTokenBChangeEvent();
     }, [
         poolExists,
         limitTickDisplayPrice,
         isSellTokenBase,
-        isTokenAPrimaryLocal,
+        isTokenAPrimary,
         tokenABalance,
         isWithdrawFromDexChecked,
     ]);

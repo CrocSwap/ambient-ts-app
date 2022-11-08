@@ -18,6 +18,7 @@ export interface tradeData {
     tokenB: TokenIF;
     baseToken: TokenIF;
     quoteToken: TokenIF;
+    isTokenABase: boolean;
     liquidityFee: number;
     didUserFlipDenom: boolean;
     shouldSwapConverterUpdate: boolean;
@@ -47,6 +48,7 @@ const initialState: tradeData = {
     tokenB: goerliUSDC,
     baseToken: goerliETH,
     quoteToken: goerliUSDC,
+    isTokenABase: true,
     liquidityFee: 0,
     didUserFlipDenom: false,
     shouldSwapConverterUpdate: false,
@@ -87,9 +89,11 @@ export const tradeDataSlice = createSlice({
             if (action.payload.address.toLowerCase() === baseTokenAddress.toLowerCase()) {
                 state.baseToken = action.payload;
                 state.quoteToken = state.tokenB;
+                state.isTokenABase = true;
             } else if (action.payload.address.toLowerCase() === quoteTokenAddress.toLowerCase()) {
                 state.quoteToken = action.payload;
                 state.baseToken = state.tokenB;
+                state.isTokenABase = false;
             }
         },
         setTokenB: (state, action: PayloadAction<TokenIF>) => {
@@ -101,9 +105,11 @@ export const tradeDataSlice = createSlice({
             if (action.payload.address.toLowerCase() === baseTokenAddress.toLowerCase()) {
                 state.baseToken = action.payload;
                 state.quoteToken = state.tokenA;
+                state.isTokenABase = false;
             } else if (action.payload.address.toLowerCase() === quoteTokenAddress.toLowerCase()) {
                 state.quoteToken = action.payload;
                 state.baseToken = state.tokenA;
+                state.isTokenABase = true;
             }
         },
         setLiquidityFee: (state, action: PayloadAction<number>) => {
