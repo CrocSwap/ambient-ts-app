@@ -82,7 +82,8 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
 
     const sideTypeStyle = `${sideType}_style`;
 
-    const valueArrows = sideType !== 'add' && sideType !== 'remove';
+    const valueArrows = tx.entityType !== 'liqchange';
+    // const valueArrows = sideType !== 'add' && sideType !== 'remove';
 
     const positiveArrow = valueArrows && '↑';
     const negativeArrow = valueArrows && '↓';
@@ -93,17 +94,24 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
 
     // const posOrNegativeBase = !isBaseFlowPositive ? styles.positive_value : styles.negative_value;
     // const posOrNegativeQuote = !isQuoteFlowPositive ? styles.positive_value : styles.negative_value;
+    const isBuy = tx.isBuy === true || tx.isBid === true;
+
+    const isSellQtyZero = (isBuy && tx.baseFlow === '0') || (!isBuy && tx.quoteFlow === '0');
+    const isBuyQtyZero = (!isBuy && tx.baseFlow === '0') || (isBuy && tx.quoteFlow === '0');
 
     const positiveDisplayStyle =
-        baseDisplay == '0.00' || !valueArrows ? styles.light_grey : styles.positive_value;
+        baseDisplay === '0.00' || !valueArrows || isBuyQtyZero || tx.source === 'manual'
+            ? styles.light_grey
+            : styles.positive_value;
+    // baseDisplay == '0.00' || !valueArrows ? styles.light_grey : styles.positive_value;
     const negativeDisplayStyle =
-        quoteDisplay == '0.00' || !valueArrows ? styles.light_grey : styles.negative_value;
+        quoteDisplay === '0.00' || !valueArrows || isSellQtyZero
+            ? styles.light_grey
+            : styles.negative_value;
     // const baseDisplayStyle =
     //     baseDisplay == '0.00' || !valueArrows ? styles.light_grey : posOrNegativeBase;
     // const quoteDisplayStyle =
     //     quoteDisplay == '0.00' || !valueArrows ? styles.light_grey : posOrNegativeQuote;
-
-    const isBuy = tx.isBuy === true || tx.isBid === true;
 
     // console.log(baseDisplay);
 
