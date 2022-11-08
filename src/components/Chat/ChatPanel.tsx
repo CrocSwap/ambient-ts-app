@@ -54,13 +54,13 @@ export default function ChatPanel(props: ChatProps) {
     const messageEnd = useRef<HTMLInputElement | null>(null);
     const [room, setRoom] = useState('Global');
     const [showChatPanel, setShowChatPanel] = useState(true);
-    const [selected, setSelected] = useState('');
     const { user, account, enableWeb3, isWeb3Enabled, isAuthenticated } = useMoralis();
     const [currentUser, setCurrentUser] = useState('');
     const [name, setName] = useState('');
 
     const wrapperStyleFull = styles.chat_wrapper_full;
     const wrapperStyle = props.chatStatus ? styles.chat_wrapper_active : styles.chat_wrapper;
+    const [isPosition, setIsPosition] = useState(false);
 
     useEffect(() => {
         props.isFullScreen ? setShowChatPanel(true) : null;
@@ -105,13 +105,6 @@ export default function ChatPanel(props: ChatProps) {
         props.setChatStatus(false);
     }
 
-    const scrollTop = () => {
-        messageEnd.current?.scrollTo(
-            messageEnd.current?.scrollHeight,
-            messageEnd.current?.scrollHeight,
-        );
-    };
-
     const scrollToBottom = () => {
         messageEnd.current?.scrollTo(
             messageEnd.current?.scrollHeight,
@@ -131,6 +124,10 @@ export default function ChatPanel(props: ChatProps) {
     useEffect(() => {
         scrollToBottom();
     }, [props.chatStatus, room, messages]);
+
+    useEffect(() => {
+        scrollToBottom();
+    }, []);
 
     const header = (
         <div className={styles.modal_header}>

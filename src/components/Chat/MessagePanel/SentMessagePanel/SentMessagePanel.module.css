@@ -57,6 +57,8 @@
     color: #EBEBFF;
     white-space: pre-line;
     align-self: stretch;
+    word-break: break-word;
+    white-space: normal;
 }
 
 .right_image_box {
@@ -93,7 +95,7 @@ align-self: stretch;
     cursor: default;
     display: flex;
     flex-direction: row;
-    flex-grow: 4;
+    flex-grow: 1;
 }
 
 p {
