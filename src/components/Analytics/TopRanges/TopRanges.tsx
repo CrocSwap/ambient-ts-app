@@ -3,7 +3,12 @@ import TopRangesCard from './TopRangesCard/TopRangesCard';
 import TopRangesHeader from './TopRangesHeader/TopRangesHeader';
 import { motion } from 'framer-motion';
 import AnalyticsTokenRows from '../AnalyticsTokenRows/AnalyticsTokenRows';
-const TopRanges = () => {
+import { Dispatch, SetStateAction } from 'react';
+interface TopRangesPropsIF {
+    analyticsSearchInput: string;
+    setAnalyticsSearchInput: Dispatch<SetStateAction<string>>;
+}
+const TopRanges = (props: TopRangesPropsIF) => {
     const items = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
     const container = (

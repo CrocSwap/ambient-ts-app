@@ -2,9 +2,13 @@ import styles from './AnalyticsTransactions.module.css';
 import AnalyticsTransactionsCard from './AnalyticsTransactionsCard/AnalyticsTransactionsCard';
 import AnalyticsTransactionsHeader from './AnalyticsTransactionsHeader/AnalyticsTransactionsHeader';
 import { motion } from 'framer-motion';
-import { useState } from 'react';
 import AnalyticsTokenRows from '../AnalyticsTokenRows/AnalyticsTokenRows';
-export default function AnalyticsTransactions() {
+import { Dispatch, SetStateAction, useState } from 'react';
+interface AnalyticsTransactionsPropsIF {
+    analyticsSearchInput: string;
+    setAnalyticsSearchInput: Dispatch<SetStateAction<string>>;
+}
+export default function AnalyticsTransactions(props: AnalyticsTransactionsPropsIF) {
     const items = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
     const tabControlData = [
