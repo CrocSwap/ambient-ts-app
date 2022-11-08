@@ -75,6 +75,7 @@ import {
     setAdvancedMode,
     setDenomInBase,
     setDidUserFlipDenom,
+    setLimitTick,
     setLiquidityFee,
     setPrimaryQuantityRange,
     setSimpleRangeWidth,
@@ -698,6 +699,10 @@ export default function App() {
         // this indirectly tracks a new chain being used
     }, [crocEnv, tokenPairLocal]);
     const tokenPairStringified = useMemo(() => JSON.stringify(tokenPair), [tokenPair]);
+
+    useEffect(() => {
+        dispatch(setLimitTick(0));
+    }, [tokenPairStringified]);
 
     useEffect(() => {
         dispatch(setPrimaryQuantityRange(''));

@@ -146,26 +146,28 @@ export default function Limit(props: LimitPropsIF) {
     const [middleDisplayPrice, setMiddleDisplayPrice] = useState<number>(0);
     const [orderGasPriceInDollars, setOrderGasPriceInDollars] = useState<string | undefined>();
 
-    const [initialLoad, setInitialLoad] = useState<boolean>(true);
+    // const [initialLoad, setInitialLoad] = useState<boolean>(false);
 
     const isDenomBase = tradeData.isDenomBase;
 
-    useEffect(() => {
-        console.log({ poolPriceNonDisplay });
-        if (poolPriceNonDisplay !== 0) setInitialLoad(true);
-    }, [
-        JSON.stringify({
-            isDenomBase: isDenomBase,
-            isSellTokenBase: isSellTokenBase,
-            // tokenA: tradeData.tokenA.address,
-            // tokenB: tradeData.tokenB.address,
-            isPoolPriceZero: poolPriceNonDisplay === 0, // force re-initialization when tokens are changed
-        }),
-    ]);
+    // useEffect(() => {
+    //     console.log({ poolPriceNonDisplay });
+    //     console.log({ isDenomBase });
+    //     console.log({ isSellTokenBase });
+    //     if (poolPriceNonDisplay !== 0) dispatch(setLimitTick(0));
+    // }, [
+    //     JSON.stringify({
+    //         isDenomBase: isDenomBase,
+    //         // isSellTokenBase: isSellTokenBase,
+    //         tokenA: tradeData.tokenA.address,
+    //         tokenB: tradeData.tokenB.address,
+    //         // isPoolPriceZero: poolPriceNonDisplay === 0, // force re-initialization when tokens are changed
+    //     }),
+    // ]);
 
     useEffect(() => {
-        if (initialLoad) {
-            console.log({ initialLoad });
+        if (limitTick === 0) {
+            console.log({ limitTick });
             console.log({ poolPriceNonDisplay });
             if (!pool) return;
             // if (!provider) return;
@@ -208,7 +210,7 @@ export default function Limit(props: LimitPropsIF) {
                 setEndDisplayPrice(displayPriceWithDenom);
                 // console.log({ displayPriceWithDenom });
                 // dispatch(setLimitPrice(isDenomBase ? (1 / tp).toString() : tp.toString()));
-                setInitialLoad(false);
+                // setInitialLoad(false);
                 const limitRateTruncated =
                     displayPriceWithDenom < 2
                         ? displayPriceWithDenom.toLocaleString(undefined, {
@@ -367,7 +369,7 @@ export default function Limit(props: LimitPropsIF) {
         }
     }, [
         pool,
-        initialLoad,
+        // initialLoad,
         chainId,
         limitTick,
         poolPriceNonDisplay,
