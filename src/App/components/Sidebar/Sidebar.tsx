@@ -249,6 +249,12 @@ export default function Sidebar(props: SidebarPropsIF) {
     }, [searchInput]);
     // ------------------------------------------
     // ---------------------------ANALYTICS SEARCH CONTAINER-----------------------
+
+    const handleInputClearAnalytics = () => {
+        const currentInput = document.getElementById('search_input_analytics') as HTMLInputElement;
+
+        currentInput.value = '';
+    };
     const AnalyticsSearchContainer = (
         <div className={styles.search_container}>
             <div className={styles.search__icon} onClick={toggleSidebar}>
@@ -260,12 +266,12 @@ export default function Sidebar(props: SidebarPropsIF) {
                 // ref={searchInputRef}
                 placeholder='Search token or pools...'
                 className={styles.search__box}
-                onFocus={() => setSearchMode(true)}
-                onBlur={() => setSearchMode(false)}
-                onChange={(e) => searchInputChangeHandler(e.target.value)}
+                // onFocus={() => setSearchMode(true)}
+                // onBlur={() => setSearchMode(false)}
+                onChange={(e) => setAnalyticsSearchInput(e.target.value)}
             />
             {searchInput && searchInput.length > 0 && (
-                <div onClick={handleInputClear} className={styles.close_icon}>
+                <div onClick={handleInputClearAnalytics} className={styles.close_icon}>
                     <MdClose size={18} color='#ebebeb66' />{' '}
                 </div>
             )}
@@ -299,7 +305,7 @@ export default function Sidebar(props: SidebarPropsIF) {
 
     const searchContainerDisplay = (
         <div className={` ${styles.sidebar_link_search} ${styles.main_search_container}`}>
-            {location.pathname.includes('overview') ? AnalyticsSearchContainer : searchContainer}
+            {location.pathname.includes('analytics') ? AnalyticsSearchContainer : searchContainer}
 
             <div style={{ cursor: 'pointer' }}>
                 <img src={closeSidebarImage} alt='close sidebar' onClick={toggleSidebar} />

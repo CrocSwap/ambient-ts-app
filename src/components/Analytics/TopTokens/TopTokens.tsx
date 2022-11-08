@@ -46,7 +46,7 @@ export default function TopTokens(props: TopTokensPropsIF) {
             exit={{ y: -10, opacity: 0 }}
             transition={{ duration: 0.5 }}
         >
-            <AnalyticsTokenRows />
+            {analyticsSearchInput == '' && <AnalyticsTokenRows />}
             <p>All Tokens</p>
 
             <TopTokensHeader />
