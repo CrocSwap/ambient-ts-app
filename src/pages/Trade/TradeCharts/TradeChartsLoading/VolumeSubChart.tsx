@@ -76,18 +76,25 @@ export default function VolumeSubChart(props: VolumeData) {
                     return newTargets;
                 });
 
-                const pointer = d3fc.pointer().on('point', (event: any) => {
-                    if (event[0] !== undefined) {
-                        chartData.crosshairDataLocal[0].y = event[0].y;
-                        chartData.crosshairDataLocal[0].x = event[0].x;
-                        props.setIsMouseMoveForSubChart(true);
-                        props.setMouseMoveEventForSubChart(event);
-                        props.setCrosshairXForSubChart(chartData.crosshairDataLocal[0].x);
-                        render();
-                        props.render();
-                    }
+                d3.select('.chart-volume').on('mousemove', async function (event: any) {
+                    props.setMouseMoveEventForSubChart(event);
+                    props.setIsMouseMoveForSubChart(true);
+                    // props.setCrosshairXForSubChart(event.offsetX);
+                    chartData.crosshairDataLocal[0].y = event.offsetY;
                 });
-                d3.select('.chart-volume').call(pointer);
+
+                // const pointer = d3fc.pointer().on('point', (event: any) => {
+                //     if (event[0] !== undefined) {
+                //         chartData.crosshairDataLocal[0].y = event[0].y;
+                //         chartData.crosshairDataLocal[0].x = event[0].x;
+                //         props.setIsMouseMoveForSubChart(true);
+                //         props.setMouseMoveEventForSubChart(event);
+                //         props.setCrosshairXForSubChart(chartData.crosshairDataLocal[0].x);
+                //         render();
+                //         props.render();
+                //     }
+                // });
+                // d3.select('.chart-volume').call(pointer);
             };
 
             const minimum = (volumeData: any, accessor: any) => {
@@ -116,6 +123,7 @@ export default function VolumeSubChart(props: VolumeData) {
                     Math.abs(point.x - xScale(xValue(d))),
                 )[1];
 
+                console.log({ nearest });
                 return nearest !== undefined ? nearest.value : 0;
             };
 
@@ -183,7 +191,10 @@ export default function VolumeSubChart(props: VolumeData) {
                 .scaleExtent([1, 10])
                 .on('zoom', (event: any) => {
                     xScale.domain(event.transform.rescaleX(xScaleCopy).domain());
-                    props.setZoomAndYdragControl(event);
+                    // props.setZoomAndYdragControl(event);
+                    props.setIsMouseMoveForSubChart(true);
+                    // props.setMouseMoveEventForSubChart(event);
+                    // props.setCrosshairXForSubChart(chartData.crosshairDataLocal[0].x);
                     render();
                     props.render();
                 });

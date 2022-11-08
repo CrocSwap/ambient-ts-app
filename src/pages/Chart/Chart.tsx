@@ -339,7 +339,6 @@ export default function Chart(props: ChartData) {
     // crosshair x text
     useEffect(() => {
         if (scaleData && xAxis) {
-            console.error('crossHairDATA[0].x', crosshairData[0].x);
             if (isMouseMoveCrosshair) {
                 xAxis
                     .tickValues([...scaleData.xScale.ticks(), ...[crosshairData[0].x]])
@@ -2011,7 +2010,8 @@ export default function Chart(props: ChartData) {
                 liqHighligtedBidSeries,
                 yAxis,
                 xAxis,
-                crosshairXForSubChart,
+                mouseMoveEventForSubChart,
+                isMouseMoveForSubChart,
             );
         }
     }, [
@@ -2087,15 +2087,12 @@ export default function Chart(props: ChartData) {
             liqHighligtedBidSeries: any,
             yAxis: any,
             xAxis: any,
-            crosshairXForSubChart: any,
+            mouseMoveEventForSubChart: any,
+            isMouseMoveForSubChart: boolean,
         ) => {
             if (chartData.length > 0) {
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 
-                if (isMouseMoveForSubChart) {
-                    crosshairData[0].x = scaleData.xScale.invert(crosshairXForSubChart);
-                    setIsMouseMoveCrosshair(true);
-                }
                 const snap = (series: any, data: any, point: any) => {
                     if (point == undefined) return [];
                     const xScale = series.xScale(),
@@ -2398,7 +2395,7 @@ export default function Chart(props: ChartData) {
                     svg.call(zoomUtils.zoom);
                 });
 
-                d3.select(d3PlotArea.current).on('mousemove', async function (event: any) {
+                const setCrossHairLocation = (event: any) => {
                     crosshairData[0] = snap(candlestick, chartData, event)[0];
                     setIsMouseMoveCrosshair(true);
 
@@ -2407,6 +2404,17 @@ export default function Chart(props: ChartData) {
                     ]);
 
                     render();
+                };
+
+                if (isMouseMoveForSubChart) {
+                    console.log({ mouseMoveEventForSubChart });
+                    setCrossHairLocation(mouseMoveEventForSubChart);
+                    // crosshairData[0].x = scaleData.xScale.invert(crosshairXForSubChart);
+                    // setIsMouseMoveCrosshair(true);
+                }
+
+                d3.select(d3PlotArea.current).on('mousemove', async function (event: any) {
+                    setCrossHairLocation(event);
                 });
 
                 d3.select(d3Yaxis.current)
@@ -2619,13 +2627,13 @@ export default function Chart(props: ChartData) {
         }
     }, [isCandleSelected]);
 
-    useEffect(() => {
-        if (mouseMoveEventForSubChart) {
-            setCrosshairData([
-                { x: scaleData.xScale.invert(crosshairXForSubChart), y: crosshairData[0].y },
-            ]);
-        }
-    }, [mouseMoveEventForSubChart]);
+    // useEffect(() => {
+    //     if (mouseMoveEventForSubChart) {
+    //         setCrosshairData([
+    //             { x: scaleData.xScale.invert(crosshairXForSubChart), y: crosshairData[0].y },
+    //         ]);
+    //     }
+    // }, [mouseMoveEventForSubChart]);
 
     // useEffect(() => {
     //     //   setCrosshairXForSubChart(crosshairXForSubChart);
