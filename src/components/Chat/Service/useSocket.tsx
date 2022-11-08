@@ -1,8 +1,7 @@
 import { useEffect, useState, useRef } from 'react';
 import io from 'socket.io-client';
 import { Message } from '../Model/MessageModel';
-export const host = 'http://localhost:5000';
-export const client = 'http://localhost:3000';
+export const host = 'https://crocswap-chat.herokuapp.com';
 export const sendMessageRoute = `${host}/api/messages/addmsg`;
 export const recieveMessageRoute = `${host}/api/messages/getall`;
 export const recieveMessageByRoomRoute = `${host}/api/messages/getmsgbyroom`;

@@ -38,7 +38,7 @@ export default function PositionBox(props: PositionBoxProps) {
     const graphData = useAppSelector((state) => state?.graphData);
     const transactionsData = graphData?.changesByPool?.changes;
     const [sortBy, setSortBy, reverseSort, setReverseSort, sortedPositions] = useSortedPositions(
-        graphData?.positionsByUser?.positions,
+        'lastUpdate',
         graphData?.positionsByPool?.positions,
     );
     const [minPrice, setMinPrice] = useState<string | undefined>();

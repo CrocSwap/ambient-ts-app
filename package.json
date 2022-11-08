@@ -51,7 +51,7 @@
         "magic-sdk": "^7.0.0",
         "mockdate": "^3.0.5",
         "moment": "^2.29.4",
-        "moralis-v1": "^1.11.0",
+        "moralis-v1": "1.11.0",
         "numbro": "^2.3.6",
         "react": "^18.1.0",
         "react-color": "^2.19.3",
@@ -69,6 +69,7 @@
         "redux-localstorage-simple": "^2.5.1",
         "rive-react": "^3.0.1",
         "seedrandom": "^3.0.5",
+        "socket.io": "^4.5.3",
         "socket.io-client": "^4.5.1",
         "swiper": "^8.4.2",
         "tippy.js": "^6.3.7",
@@ -77,7 +78,7 @@
         "yarn": "^1.22.19"
     },
     "scripts": {
-        "start": "yarn && react-scripts --openssl-legacy-provider start",
+        "start": "yarn && react-scripts start",
         "start-only": "react-scripts start",
         "build": "react-scripts --max_old_space_size=3072 build",
         "test": "react-scripts test ",
