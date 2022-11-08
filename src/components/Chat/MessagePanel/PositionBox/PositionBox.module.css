@@ -31,14 +31,13 @@
 
 }
 
-.message {
+.position_message {
 
     width: 80%;
     height: 80%;
 
     bottom: -100%;
     
-    white-space: pre-line;
     font-family: 'Lexend Deca';
     font-style: normal;
     font-weight: 300;
