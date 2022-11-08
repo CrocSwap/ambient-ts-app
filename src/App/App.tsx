@@ -2065,6 +2065,8 @@ export default function App() {
     const [outsideControl, setOutsideControl] = useState(false);
     const [chatStatus, setChatStatus] = useState(false);
 
+    const [analyticsSearchInput, setAnalyticsSearchInput] = useState('');
+
     // props for <Sidebar/> React element
     const sidebarProps = {
         tradeData: tradeData,
@@ -2091,6 +2093,9 @@ export default function App() {
 
         currentPositionActive: currentPositionActive,
         setCurrentPositionActive: setCurrentPositionActive,
+
+        analyticsSearchInput: analyticsSearchInput,
+        setAnalyticsSearchInput: setAnalyticsSearchInput,
     };
 
     const analyticsProps = {

@@ -1,5 +1,6 @@
 // START: Import React and Dongles
 import { MouseEvent, SetStateAction, Dispatch, useState, useEffect, useRef } from 'react';
+import { useLocation } from 'react-router-dom';
 import { BiSearch } from 'react-icons/bi';
 
 // START: Import JSX Elements
@@ -45,6 +46,8 @@ interface SidebarPropsIF {
     setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
     currentPositionActive: string;
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
+    analyticsSearchInput: string;
+    setAnalyticsSearchInput: Dispatch<SetStateAction<string>>;
     isShowAllEnabled: boolean;
     setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
     expandTradeTable: boolean;
@@ -79,8 +82,11 @@ export default function Sidebar(props: SidebarPropsIF) {
         lastBlockNumber,
         favePools,
         setShowSidebar,
+        analyticsSearchInput,
+        setAnalyticsSearchInput,
     } = props;
 
+    const location = useLocation();
     const graphData = useAppSelector((state) => state.graphData);
     const isUserLoggedIn = useAppSelector((state) => state.userData).isLoggedIn;
     const transactionsByUser = graphData.changesByUser.changes;
@@ -242,6 +248,30 @@ export default function Sidebar(props: SidebarPropsIF) {
         return () => clearTimeout(timer);
     }, [searchInput]);
     // ------------------------------------------
+    // ---------------------------ANALYTICS SEARCH CONTAINER-----------------------
+    const AnalyticsSearchContainer = (
+        <div className={styles.search_container}>
+            <div className={styles.search__icon} onClick={toggleSidebar}>
+                <BiSearch size={18} color='#CDC1FF' />
+            </div>
+            <input
+                type='text'
+                id='search_input_analytics'
+                // ref={searchInputRef}
+                placeholder='Search token or pools...'
+                className={styles.search__box}
+                onFocus={() => setSearchMode(true)}
+                onBlur={() => setSearchMode(false)}
+                onChange={(e) => searchInputChangeHandler(e.target.value)}
+            />
+            {searchInput && searchInput.length > 0 && (
+                <div onClick={handleInputClear} className={styles.close_icon}>
+                    <MdClose size={18} color='#ebebeb66' />{' '}
+                </div>
+            )}
+        </div>
+        // ---------------------------END OF ANALYTICS SEARCH CONTAINER-----------------------
+    );
     const searchContainer = (
         <div className={styles.search_container}>
             <div className={styles.search__icon} onClick={toggleSidebar}>
@@ -269,7 +299,7 @@ export default function Sidebar(props: SidebarPropsIF) {
 
     const searchContainerDisplay = (
         <div className={` ${styles.sidebar_link_search} ${styles.main_search_container}`}>
-            {searchContainer}
+            {location.pathname.includes('overview') ? AnalyticsSearchContainer : searchContainer}
 
             <div style={{ cursor: 'pointer' }}>
                 <img src={closeSidebarImage} alt='close sidebar' onClick={toggleSidebar} />
