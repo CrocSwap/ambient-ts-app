@@ -273,14 +273,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
     );
 
     // portfolio page li element ---------------
-    const accountTokenImages = (
-        <li className={styles.token_images_account}>
-            {/* {baseTokenLogoComponent}
-            {quoteTokenLogoComponent} */}
-            {tokensTogether}
-            {/* <p>hello</p> */}
-        </li>
-    );
+    const accountTokenImages = <li className={styles.token_images_account}>{tokensTogether}</li>;
 
     const poolName = (
         <li className='base_color'>
