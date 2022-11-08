@@ -1,3 +1,4 @@
+import AnalyticsTokenRows from '../AnalyticsTokenRows/AnalyticsTokenRows';
 import styles from './TrendingPools.module.css';
 import TrendingPoolsCard from './TrendingPoolsCard/TrendingPoolsCard';
 import TrendingPoolsHeader from './TrendingPoolsHeader/TrendingPoolsHeader';
@@ -14,6 +15,7 @@ const TrendingPools = () => {
     );
     return (
         <div className={styles.main_container}>
+            <AnalyticsTokenRows />
             <p>Trending Pools</p>
             <TrendingPoolsHeader />
 

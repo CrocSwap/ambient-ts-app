@@ -3,6 +3,7 @@ import AnalyticsTransactionsCard from './AnalyticsTransactionsCard/AnalyticsTran
 import AnalyticsTransactionsHeader from './AnalyticsTransactionsHeader/AnalyticsTransactionsHeader';
 import { motion } from 'framer-motion';
 import { useState } from 'react';
+import AnalyticsTokenRows from '../AnalyticsTokenRows/AnalyticsTokenRows';
 export default function AnalyticsTransactions() {
     const items = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
@@ -33,6 +34,7 @@ export default function AnalyticsTransactions() {
             exit={{ y: -10, opacity: 0 }}
             transition={{ duration: 0.5 }}
         >
+            <AnalyticsTokenRows />
             <p> Transactions</p>
 
             <AnalyticsTransactionsHeader

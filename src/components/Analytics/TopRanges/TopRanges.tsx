@@ -2,6 +2,7 @@ import styles from './TopRanges.module.css';
 import TopRangesCard from './TopRangesCard/TopRangesCard';
 import TopRangesHeader from './TopRangesHeader/TopRangesHeader';
 import { motion } from 'framer-motion';
+import AnalyticsTokenRows from '../AnalyticsTokenRows/AnalyticsTokenRows';
 const TopRanges = () => {
     const items = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
@@ -20,6 +21,7 @@ const TopRanges = () => {
             exit={{ y: -10, opacity: 0 }}
             transition={{ duration: 0.5 }}
         >
+            <AnalyticsTokenRows />
             <p>Top Ranges</p>
             <TopRangesHeader />
 

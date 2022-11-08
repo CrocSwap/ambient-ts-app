@@ -3,6 +3,7 @@ import TopPoolsCard from './TopPoolsCard/TopPoolsCard';
 import TopPoolsHeader from './TopPoolsHeader/TopPoolsHeader';
 import { uniswapPools } from '../fakedata/uniswapTokens';
 import { motion } from 'framer-motion';
+import AnalyticsTokenRows from '../AnalyticsTokenRows/AnalyticsTokenRows';
 export default function TopPools() {
     const container = (
         <div className={styles.item_container}>
@@ -21,6 +22,7 @@ export default function TopPools() {
         >
             {/* <p>Trending Pools</p> */}
             <p>All Pools</p>
+            <AnalyticsTokenRows />
             <TopPoolsHeader />
 
             {container}
