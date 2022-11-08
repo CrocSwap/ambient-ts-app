@@ -75,6 +75,7 @@ import {
     setAdvancedMode,
     setDenomInBase,
     setDidUserFlipDenom,
+    setLimitTick,
     setLiquidityFee,
     setPrimaryQuantityRange,
     setSimpleRangeWidth,
@@ -700,6 +701,10 @@ export default function App() {
     const tokenPairStringified = useMemo(() => JSON.stringify(tokenPair), [tokenPair]);
 
     useEffect(() => {
+        dispatch(setLimitTick(0));
+    }, [tokenPairStringified]);
+
+    useEffect(() => {
         dispatch(setPrimaryQuantityRange(''));
         dispatch(setSimpleRangeWidth(100));
         dispatch(setAdvancedMode(false));
@@ -1090,13 +1095,28 @@ export default function App() {
                                 const poolLimitOrderStates = json?.data;
 
                                 if (poolLimitOrderStates) {
-                                    dispatch(
-                                        setLimitOrdersByPool({
-                                            dataReceived: true,
-                                            limitOrders: poolLimitOrderStates,
+                                    Promise.all(
+                                        poolLimitOrderStates.map((limitOrder: LimitOrderIF) => {
+                                            return getLimitOrderData(limitOrder, importedTokens);
                                         }),
-                                    );
+                                    ).then((updatedLimitOrderStates) => {
+                                        dispatch(
+                                            setLimitOrdersByPool({
+                                                dataReceived: true,
+                                                limitOrders: updatedLimitOrderStates,
+                                            }),
+                                        );
+                                    });
                                 }
+
+                                // if (poolLimitOrderStates) {
+                                //     dispatch(
+                                //         setLimitOrdersByPool({
+                                //             dataReceived: true,
+                                //             limitOrders: poolLimitOrderStates,
+                                //         }),
+                                //     );
+                                // }
                             })
                             .catch(console.log);
                     }
@@ -2315,6 +2335,7 @@ export default function App() {
                             element={
                                 <Portfolio
                                     crocEnv={crocEnv}
+                                    isTokenABase={isTokenABase}
                                     provider={provider}
                                     cachedFetchErc20TokenBalances={cachedFetchErc20TokenBalances}
                                     cachedFetchNativeTokenBalance={cachedFetchNativeTokenBalance}
@@ -2357,6 +2378,7 @@ export default function App() {
                             element={
                                 <Portfolio
                                     crocEnv={crocEnv}
+                                    isTokenABase={isTokenABase}
                                     provider={provider}
                                     cachedFetchErc20TokenBalances={cachedFetchErc20TokenBalances}
                                     cachedFetchNativeTokenBalance={cachedFetchNativeTokenBalance}
@@ -2410,6 +2432,7 @@ export default function App() {
                             element={
                                 <Portfolio
                                     crocEnv={crocEnv}
+                                    isTokenABase={isTokenABase}
                                     provider={provider}
                                     cachedFetchErc20TokenBalances={cachedFetchErc20TokenBalances}
                                     cachedFetchNativeTokenBalance={cachedFetchNativeTokenBalance}

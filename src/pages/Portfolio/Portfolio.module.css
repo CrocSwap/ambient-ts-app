@@ -14,9 +14,10 @@
     padding: 4px;
     border-radius: 4px;
     transition: all var(--animation-speed) ease-in-out;
+    cursor: pointer;
 }
 
-.right_tab_option section{
+.right_tab_option section {
     cursor: pointer;
 }
 .full_layout_svg {
@@ -24,7 +25,7 @@
     height: 20px;
     border-radius: 4px;
     background: var(--dark2);
-    
+
     transition: all var(--animation-speed) ease-in-out;
 }
 
@@ -39,7 +40,7 @@
     flex-direction: row;
     gap: 2px;
     position: relative;
-   
+
     transition: all var(--animation-speed) ease-in-out;
 }
 .full_layout_svg_copied {
@@ -66,8 +67,6 @@
         grid-template-columns: auto 380px;
         gap: 1rem;
         max-height: calc(100vh - 20rem);
-
-        
     }
     .full_layout_container {
         grid-template-columns: auto;

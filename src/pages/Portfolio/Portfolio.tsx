@@ -30,6 +30,7 @@ const mainnetProvider = new ethers.providers.WebSocketProvider(
 
 interface PortfolioPropsIF {
     crocEnv: CrocEnv | undefined;
+    isTokenABase: boolean;
     provider: ethers.providers.Provider | undefined;
     cachedFetchNativeTokenBalance: nativeTokenBalanceFn;
     cachedFetchErc20TokenBalances: Erc20TokenBalanceFn;
@@ -73,6 +74,7 @@ export default function Portfolio(props: PortfolioPropsIF) {
 
     const {
         crocEnv,
+        isTokenABase,
         provider,
         cachedFetchNativeTokenBalance,
         cachedFetchErc20TokenBalances,
@@ -248,8 +250,11 @@ export default function Portfolio(props: PortfolioPropsIF) {
     //     .userAccount ? setFullLayoutActive(true) : null;
     // }, [userAccount]);
     const fullLayerToggle = (
-        <div className={styles.right_tab_option}>
-            <section onClick={() => setFullLayoutActive(!fullLayoutActive)}>
+        <div
+            className={styles.right_tab_option}
+            onClick={() => setFullLayoutActive(!fullLayoutActive)}
+        >
+            <section>
                 {' '}
                 <div
                     className={`${styles.full_layout_svg} ${
@@ -259,7 +264,7 @@ export default function Portfolio(props: PortfolioPropsIF) {
             </section>
 
             <section
-                onClick={() => setFullLayoutActive(!fullLayoutActive)}
+                // onClick={() => setFullLayoutActive(!fullLayoutActive)}
                 className={styles.shared_layout_svg}
             >
                 <div
@@ -380,6 +385,7 @@ export default function Portfolio(props: PortfolioPropsIF) {
             >
                 <PortfolioTabs
                     crocEnv={crocEnv}
+                    isTokenABase={isTokenABase}
                     provider={provider}
                     cachedFetchTokenPrice={cachedFetchTokenPrice}
                     importedTokens={importedTokens}

@@ -21,12 +21,12 @@ import useWebSocket from 'react-use-websocket';
 import { fetchPoolRecentChanges } from '../../../../App/functions/fetchPoolRecentChanges';
 import TransactionHeader from './TransactionsTable/TransactionHeader';
 import TransactionRow from './TransactionsTable/TransactionRow';
-import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
+// import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
 import { useSortedTransactions } from '../useSortedTxs';
 // import TransactionAccordions from './TransactionAccordions/TransactionAccordions';
 interface TransactionsProps {
     importedTokens: TokenIF[];
-
+    isTokenABase: boolean;
     activeAccountTransactionData?: ITransaction[];
     connectedAccountActive?: boolean;
     isShowAllEnabled: boolean;
@@ -55,6 +55,7 @@ interface TransactionsProps {
 export default function Transactions(props: TransactionsProps) {
     const {
         importedTokens,
+        isTokenABase,
         activeAccountTransactionData,
         // connectedAccountActive,
         isShowAllEnabled,
@@ -360,11 +361,11 @@ export default function Transactions(props: TransactionsProps) {
 
     const showColumns = sidebarOpen || desktopView;
 
-    const quoteTokenSymbol = tradeData.quoteToken?.symbol;
-    const baseTokenSymbol = tradeData.baseToken?.symbol;
+    // const quoteTokenSymbol = tradeData.quoteToken?.symbol;
+    // const baseTokenSymbol = tradeData.baseToken?.symbol;
 
-    const baseTokenCharacter = baseTokenSymbol ? getUnicodeCharacter(baseTokenSymbol) : '';
-    const quoteTokenCharacter = quoteTokenSymbol ? getUnicodeCharacter(quoteTokenSymbol) : '';
+    // const baseTokenCharacter = baseTokenSymbol ? getUnicodeCharacter(baseTokenSymbol) : '';
+    // const quoteTokenCharacter = quoteTokenSymbol ? getUnicodeCharacter(quoteTokenSymbol) : '';
 
     // const priceCharacter = isDenomBase ? quoteTokenCharacter : baseTokenCharacter;
 
@@ -380,12 +381,13 @@ export default function Transactions(props: TransactionsProps) {
             <p>Type</p>
         </>
     );
-    const tokens = (
-        <>
-            <p>{`${baseTokenSymbol} ( ${baseTokenCharacter} )`}</p>
-            <p>{`${quoteTokenSymbol} ( ${quoteTokenCharacter} )`}</p>
-        </>
-    );
+    const tokens = <></>;
+    // const tokens = (
+    //     <>
+    //         <p>{`${baseTokenSymbol} ( ${baseTokenCharacter} )`}</p>
+    //         <p>{`${quoteTokenSymbol} ( ${quoteTokenCharacter} )`}</p>
+    //     </>
+    // );
     const headerColumns = [
         {
             name: '',
@@ -522,6 +524,7 @@ export default function Transactions(props: TransactionsProps) {
         <TransactionRow
             key={idx}
             tx={tx}
+            isTokenABase={isTokenABase}
             currentTxActiveInTransactions={currentTxActiveInTransactions}
             setCurrentTxActiveInTransactions={setCurrentTxActiveInTransactions}
             openGlobalModal={openGlobalModal}
