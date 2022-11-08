@@ -524,6 +524,7 @@ export default function Transactions(props: TransactionsProps) {
         <TransactionRow
             key={idx}
             tx={tx}
+            tradeData={tradeData}
             isTokenABase={isTokenABase}
             currentTxActiveInTransactions={currentTxActiveInTransactions}
             setCurrentTxActiveInTransactions={setCurrentTxActiveInTransactions}

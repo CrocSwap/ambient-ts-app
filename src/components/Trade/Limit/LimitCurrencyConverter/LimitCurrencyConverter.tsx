@@ -205,6 +205,7 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
         isTokenAPrimary,
         tokenABalance,
         isWithdrawFromDexChecked,
+        tradeData.shouldLimitConverterUpdate,
     ]);
 
     const handleLimitButtonMessage = (tokenAAmount: number) => {
@@ -266,6 +267,7 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
 
     const handleTokenAChangeEvent = (evt?: ChangeEvent<HTMLInputElement>) => {
         let rawTokenBQty: number;
+        console.log({ isSellTokenBase });
 
         if (evt) {
             const input = evt.target.value;
@@ -289,16 +291,18 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
         } else {
             if (!isDenominationInBase) {
                 rawTokenBQty = isSellTokenBase
-                    ? (1 / limitTickDisplayPrice) * parseFloat(tokenAQtyLocal)
-                    : limitTickDisplayPrice * parseFloat(tokenAQtyLocal);
+                    ? (1 / limitTickDisplayPrice) * parseFloat(tradeData.primaryQuantity)
+                    : // ? (1 / limitTickDisplayPrice) * parseFloat(tokenAQtyLocal)
+                      limitTickDisplayPrice * parseFloat(tradeData.primaryQuantity);
             } else {
                 rawTokenBQty = !isSellTokenBase
-                    ? (1 / limitTickDisplayPrice) * parseFloat(tokenAQtyLocal)
-                    : limitTickDisplayPrice * parseFloat(tokenAQtyLocal);
+                    ? (1 / limitTickDisplayPrice) * parseFloat(tradeData.primaryQuantity)
+                    : limitTickDisplayPrice * parseFloat(tradeData.primaryQuantity);
             }
 
-            handleLimitButtonMessage(parseFloat(tokenAQtyLocal));
+            handleLimitButtonMessage(parseFloat(tradeData.primaryQuantity));
         }
+
         const truncatedTokenBQty = rawTokenBQty
             ? rawTokenBQty < 100000
                 ? rawTokenBQty.toPrecision(6)
@@ -337,7 +341,7 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
                 : limitTickDisplayPrice * parseFloat(input);
         }
 
-        handleLimitButtonMessage(parseFloat(input));
+        // handleLimitButtonMessage(parseFloat(input));
         const truncatedTokenBQty = rawTokenBQty
             ? rawTokenBQty < 100000
                 ? rawTokenBQty.toPrecision(6)
@@ -345,6 +349,7 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
             : '';
 
         // const truncatedTokenBQty = truncateDecimals(rawTokenBQty, tokenBDecimals).toString();
+        handleLimitButtonMessage(parseFloat(input));
 
         setTokenBQtyLocal(truncatedTokenBQty);
         // setTokenBInputQty(truncatedTokenBQty);
@@ -357,7 +362,7 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
 
     const handleTokenBChangeEvent = (evt?: ChangeEvent<HTMLInputElement>) => {
         let rawTokenAQty;
-
+        // console.log({ evt });
         if (evt) {
             const input = evt.target.value;
             setTokenBQtyLocal(input);
@@ -375,6 +380,7 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
                     ? limitTickDisplayPrice * parseFloat(input)
                     : (1 / limitTickDisplayPrice) * parseFloat(input);
             }
+            handleLimitButtonMessage(parseFloat(input));
 
             // rawTokenAQty = isDenominationInBase
             //     ? (1 / limitTickDisplayPrice) * parseFloat(input)
@@ -382,15 +388,16 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
         } else {
             if (!isDenominationInBase) {
                 rawTokenAQty = isSellTokenBase
-                    ? limitTickDisplayPrice * parseFloat(tokenBQtyLocal)
-                    : (1 / limitTickDisplayPrice) * parseFloat(tokenBQtyLocal);
+                    ? limitTickDisplayPrice * parseFloat(tradeData.primaryQuantity)
+                    : // ? limitTickDisplayPrice * parseFloat(tokenBQtyLocal)
+                      (1 / limitTickDisplayPrice) * parseFloat(tradeData.primaryQuantity);
             } else {
                 rawTokenAQty = !isSellTokenBase
-                    ? limitTickDisplayPrice * parseFloat(tokenBQtyLocal)
-                    : (1 / limitTickDisplayPrice) * parseFloat(tokenBQtyLocal);
+                    ? limitTickDisplayPrice * parseFloat(tradeData.primaryQuantity)
+                    : (1 / limitTickDisplayPrice) * parseFloat(tradeData.primaryQuantity);
             }
+            handleLimitButtonMessage(rawTokenAQty);
         }
-        handleLimitButtonMessage(rawTokenAQty);
         const truncatedTokenAQty = rawTokenAQty
             ? rawTokenAQty < 100000
                 ? rawTokenAQty.toPrecision(6)
