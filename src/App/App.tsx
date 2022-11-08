@@ -2065,6 +2065,8 @@ export default function App() {
     const [outsideControl, setOutsideControl] = useState(false);
     const [chatStatus, setChatStatus] = useState(false);
 
+    const [analyticsSearchInput, setAnalyticsSearchInput] = useState('');
+
     // props for <Sidebar/> React element
     const sidebarProps = {
         tradeData: tradeData,
@@ -2091,6 +2093,9 @@ export default function App() {
 
         currentPositionActive: currentPositionActive,
         setCurrentPositionActive: setCurrentPositionActive,
+
+        analyticsSearchInput: analyticsSearchInput,
+        setAnalyticsSearchInput: setAnalyticsSearchInput,
     };
 
     const analyticsProps = {
@@ -2289,18 +2294,74 @@ export default function App() {
                             <Route path='edit/' element={<Navigate to='/trade/market' replace />} />
                         </Route>
                         <Route path='analytics' element={<Analytics {...analyticsProps} />} />
-                        <Route path='analytics2' element={<Analytics2 />}>
+                        <Route
+                            path='analytics2'
+                            element={
+                                <Analytics2
+                                    analyticsSearchInput={analyticsSearchInput}
+                                    setAnalyticsSearchInput={setAnalyticsSearchInput}
+                                />
+                            }
+                        >
                             <Route
                                 path=''
                                 element={<Navigate to='/analytics2/overview' replace />}
                             />
 
-                            <Route path='overview' element={<AnalyticsOverview />} />
-                            <Route path='pools' element={<TopPools />} />
-                            <Route path='trendingpools' element={<TrendingPools />} />
-                            <Route path='ranges/top' element={<TopRanges />} />
-                            <Route path='tokens' element={<TopTokens />} />
-                            <Route path='transactions' element={<AnalyticsTransactions />} />
+                            <Route
+                                path='overview'
+                                element={
+                                    <AnalyticsOverview
+                                        analyticsSearchInput={analyticsSearchInput}
+                                        setAnalyticsSearchInput={setAnalyticsSearchInput}
+                                    />
+                                }
+                            />
+                            <Route
+                                path='pools'
+                                element={
+                                    <TopPools
+                                        analyticsSearchInput={analyticsSearchInput}
+                                        setAnalyticsSearchInput={setAnalyticsSearchInput}
+                                    />
+                                }
+                            />
+                            <Route
+                                path='trendingpools'
+                                element={
+                                    <TrendingPools
+                                        analyticsSearchInput={analyticsSearchInput}
+                                        setAnalyticsSearchInput={setAnalyticsSearchInput}
+                                    />
+                                }
+                            />
+                            <Route
+                                path='ranges/top'
+                                element={
+                                    <TopRanges
+                                        analyticsSearchInput={analyticsSearchInput}
+                                        setAnalyticsSearchInput={setAnalyticsSearchInput}
+                                    />
+                                }
+                            />
+                            <Route
+                                path='tokens'
+                                element={
+                                    <TopTokens
+                                        analyticsSearchInput={analyticsSearchInput}
+                                        setAnalyticsSearchInput={setAnalyticsSearchInput}
+                                    />
+                                }
+                            />
+                            <Route
+                                path='transactions'
+                                element={
+                                    <AnalyticsTransactions
+                                        analyticsSearchInput={analyticsSearchInput}
+                                        setAnalyticsSearchInput={setAnalyticsSearchInput}
+                                    />
+                                }
+                            />
                         </Route>
                         <Route
                             path='app/chat'
