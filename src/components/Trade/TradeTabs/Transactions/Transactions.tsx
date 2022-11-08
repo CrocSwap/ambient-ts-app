@@ -21,7 +21,7 @@ import useWebSocket from 'react-use-websocket';
 import { fetchPoolRecentChanges } from '../../../../App/functions/fetchPoolRecentChanges';
 import TransactionHeader from './TransactionsTable/TransactionHeader';
 import TransactionRow from './TransactionsTable/TransactionRow';
-import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
+// import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
 import { useSortedTransactions } from '../useSortedTxs';
 // import TransactionAccordions from './TransactionAccordions/TransactionAccordions';
 interface TransactionsProps {
@@ -361,11 +361,11 @@ export default function Transactions(props: TransactionsProps) {
 
     const showColumns = sidebarOpen || desktopView;
 
-    const quoteTokenSymbol = tradeData.quoteToken?.symbol;
-    const baseTokenSymbol = tradeData.baseToken?.symbol;
+    // const quoteTokenSymbol = tradeData.quoteToken?.symbol;
+    // const baseTokenSymbol = tradeData.baseToken?.symbol;
 
-    const baseTokenCharacter = baseTokenSymbol ? getUnicodeCharacter(baseTokenSymbol) : '';
-    const quoteTokenCharacter = quoteTokenSymbol ? getUnicodeCharacter(quoteTokenSymbol) : '';
+    // const baseTokenCharacter = baseTokenSymbol ? getUnicodeCharacter(baseTokenSymbol) : '';
+    // const quoteTokenCharacter = quoteTokenSymbol ? getUnicodeCharacter(quoteTokenSymbol) : '';
 
     // const priceCharacter = isDenomBase ? quoteTokenCharacter : baseTokenCharacter;
 
@@ -381,12 +381,13 @@ export default function Transactions(props: TransactionsProps) {
             <p>Type</p>
         </>
     );
-    const tokens = (
-        <>
-            <p>{`${baseTokenSymbol} ( ${baseTokenCharacter} )`}</p>
-            <p>{`${quoteTokenSymbol} ( ${quoteTokenCharacter} )`}</p>
-        </>
-    );
+    const tokens = <></>;
+    // const tokens = (
+    //     <>
+    //         <p>{`${baseTokenSymbol} ( ${baseTokenCharacter} )`}</p>
+    //         <p>{`${quoteTokenSymbol} ( ${quoteTokenCharacter} )`}</p>
+    //     </>
+    // );
     const headerColumns = [
         {
             name: '',
