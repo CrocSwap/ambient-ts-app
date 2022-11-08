@@ -9,6 +9,8 @@ interface AnalyticsTransactionsPropsIF {
     setAnalyticsSearchInput: Dispatch<SetStateAction<string>>;
 }
 export default function AnalyticsTransactions(props: AnalyticsTransactionsPropsIF) {
+    const { analyticsSearchInput } = props;
+
     const items = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
     const tabControlData = [
@@ -30,6 +32,19 @@ export default function AnalyticsTransactions(props: AnalyticsTransactionsPropsI
         </div>
     );
 
+    const exampleSearch = (
+        <div className={styles.item_container}>
+            {items.slice(0, 2).map((item, idx) => (
+                <AnalyticsTransactionsCard
+                    key={idx}
+                    number={item + 1}
+                    currentTransactions={currentTransactions}
+                    searchInput={analyticsSearchInput}
+                />
+            ))}
+        </div>
+    );
+
     return (
         <motion.div
             className={styles.main_container}
@@ -38,15 +53,19 @@ export default function AnalyticsTransactions(props: AnalyticsTransactionsPropsI
             exit={{ y: -10, opacity: 0 }}
             transition={{ duration: 0.5 }}
         >
-            <AnalyticsTokenRows />
-            <p> Transactions</p>
+            {analyticsSearchInput == '' && <AnalyticsTokenRows />}
+            <p>
+                {analyticsSearchInput
+                    ? `Latest Transactions involving ${analyticsSearchInput}`
+                    : 'Latest Transactions'}
+            </p>
 
             <AnalyticsTransactionsHeader
                 currentTransactions={currentTransactions}
                 setCurrentTransactions={setCurrentTransactions}
                 tabControlData={tabControlData}
             />
-            {container}
+            {analyticsSearchInput !== '' ? exampleSearch : container}
         </motion.div>
     );
 }
