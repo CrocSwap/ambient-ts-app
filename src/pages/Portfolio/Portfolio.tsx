@@ -250,8 +250,11 @@ export default function Portfolio(props: PortfolioPropsIF) {
     //     .userAccount ? setFullLayoutActive(true) : null;
     // }, [userAccount]);
     const fullLayerToggle = (
-        <div className={styles.right_tab_option}>
-            <section onClick={() => setFullLayoutActive(!fullLayoutActive)}>
+        <div
+            className={styles.right_tab_option}
+            onClick={() => setFullLayoutActive(!fullLayoutActive)}
+        >
+            <section>
                 {' '}
                 <div
                     className={`${styles.full_layout_svg} ${
@@ -261,7 +264,7 @@ export default function Portfolio(props: PortfolioPropsIF) {
             </section>
 
             <section
-                onClick={() => setFullLayoutActive(!fullLayoutActive)}
+                // onClick={() => setFullLayoutActive(!fullLayoutActive)}
                 className={styles.shared_layout_svg}
             >
                 <div
