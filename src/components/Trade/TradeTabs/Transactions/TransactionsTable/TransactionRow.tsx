@@ -291,6 +291,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
     return (
         <ul
             className={`${styles.row_container} ${activeTransactionStyle} ${userPositionStyle}`}
+            style={{ cursor: 'pointer' }}
             onClick={() =>
                 tx.id === currentTxActiveInTransactions
                     ? null
@@ -412,16 +413,17 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                     data-label={baseTokenSymbol + quoteTokenSymbol}
                     className='color_white'
                     style={{ textAlign: 'right' }}
+                    onClick={openDetailsModal}
                 >
                     <p
-                        onClick={() => {
-                            const isBuyQuote = tx.isBuy === true || tx.isBid === true;
-                            console.log({ isBuyQuote });
-                            console.log({ isBuy });
-                            console.log({ tx });
-                            console.log(tx.isBuy);
-                            console.log(tx.isBid);
-                        }}
+                        // onClick={() => {
+                        //     const isBuyQuote = tx.isBuy === true || tx.isBid === true;
+                        //     console.log({ isBuyQuote });
+                        //     console.log({ isBuy });
+                        //     console.log({ tx });
+                        //     console.log(tx.isBuy);
+                        //     console.log(tx.isBid);
+                        // }}
                         className={`${styles.token_qty} ${positiveDisplayStyle}`}
                         style={{ fontFamily: 'monospace' }}
                     >
