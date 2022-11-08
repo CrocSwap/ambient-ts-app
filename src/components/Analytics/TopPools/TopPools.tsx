@@ -19,6 +19,13 @@ export default function TopPools(props: TrendingPoolsPropsIF) {
             ))}
         </div>
     );
+    const exampleSearch = (
+        <div className={styles.item_container}>
+            {uniswapPools.slice(0, 2).map((pair, idx) => (
+                <TopPoolsCard pair={pair} key={idx} number={idx + 1} />
+            ))}
+        </div>
+    );
     return (
         <motion.div
             className={styles.main_container}
@@ -41,7 +48,7 @@ export default function TopPools(props: TrendingPoolsPropsIF) {
 
             {analyticsSearchInput == '' && <TopPoolsHeader />}
 
-            {container}
+            {analyticsSearchInput == '' ? container : exampleSearch}
         </motion.div>
     );
 }

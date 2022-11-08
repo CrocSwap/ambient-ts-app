@@ -4,6 +4,8 @@ interface TopPoolsCardProp {
     number: number;
     // eslint-disable-next-line
     pair: any;
+
+    searchInput?: string;
 }
 export default function TopPoolsCard(props: TopPoolsCardProp) {
     const firstPair = props.pair[0];
@@ -27,7 +29,8 @@ export default function TopPoolsCard(props: TopPoolsCardProp) {
                     />
                 </div>
                 <p>
-                    {firstPair?.symbol}/{secondPair?.symbol}
+                    {props.searchInput == '' ? firstPair?.symbol : props.searchInput}/
+                    {secondPair?.symbol}
                 </p>
                 <p>0.01%</p>
             </div>

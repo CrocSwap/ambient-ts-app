@@ -5,7 +5,7 @@ import TopTokens from '../TopTokens/TopTokens';
 import AnalyticsTransactions from '../AnalyticsTransactions/AnalyticsTransactions';
 import TrendingPools from '../TrendingPools/TrendingPools';
 import { AnimatePresence, motion } from 'framer-motion';
-import { useOutletContext } from 'react-router-dom';
+// import { useOutletContext } from 'react-router-dom';
 import { Dispatch, SetStateAction } from 'react';
 
 interface AnalyticsOverviewPropsIF {

@@ -15,11 +15,13 @@ export default function Analytics2(props: Analytics2Props) {
     const location = useLocation();
     const currentLocation = location.pathname;
 
+    const graphContainerOrNull = analyticsSearchInput == '' ? <GraphContainer /> : null;
+
     return (
         <>
             <main data-testid={'analytics'} className={styles.analytics_container}>
                 <AnalyticsHeader />
-                {currentLocation === '/analytics2/overview' && <GraphContainer />}
+                {currentLocation === '/analytics2/overview' && graphContainerOrNull}
                 <Outlet context={[analyticsSearchInput, setAnalyticsSearchInput]} />
 
                 {/* <TopTokens />

@@ -82,7 +82,7 @@ export default function Sidebar(props: SidebarPropsIF) {
         lastBlockNumber,
         favePools,
         setShowSidebar,
-        analyticsSearchInput,
+        // analyticsSearchInput,
         setAnalyticsSearchInput,
     } = props;
 
