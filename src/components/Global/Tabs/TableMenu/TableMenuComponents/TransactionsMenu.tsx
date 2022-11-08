@@ -23,13 +23,16 @@ import {
     setIsTokenAPrimary,
     setLimitTick,
     setPrimaryQuantity,
+    setShouldLimitConverterUpdate,
     setShouldSwapConverterUpdate,
     setSimpleRangeWidth,
+    tradeData,
 } from '../../../../../utils/state/tradeDataSlice';
 import { Link } from 'react-router-dom';
 
 // interface for React functional component props
 interface TransactionMenuIF {
+    tradeData: tradeData;
     userPosition: boolean | undefined; // position belongs to active user
     isTokenABase: boolean;
     tx: ITransaction;
@@ -44,6 +47,7 @@ interface TransactionMenuIF {
 export default function TransactionsMenu(props: TransactionMenuIF) {
     const menuItemRef = useRef<HTMLDivElement>(null);
     const {
+        tradeData,
         // isTokenABase,
         // userPosition,
         tx,
@@ -111,18 +115,81 @@ export default function TransactionsMenu(props: TransactionMenuIF) {
             // console.log('swap copy clicked');
         } else if (tx.entityType === 'limitOrder') {
             // console.log('limit order copy clicked');
+            console.log({ tradeData });
+            console.log({ tx });
+            const shouldMovePrimaryQuantity =
+                tradeData.tokenA.address.toLowerCase() ===
+                (tx.isBid ? tx.quote.toLowerCase() : tx.base.toLowerCase());
+
+            console.log({ shouldMovePrimaryQuantity });
+            const shouldClearNonPrimaryQty =
+                tradeData.limitTick !== tx.askTick &&
+                (tradeData.isTokenAPrimary
+                    ? tradeData.tokenA.address.toLowerCase() ===
+                      (tx.isBid ? tx.base.toLowerCase() : tx.quote.toLowerCase())
+                        ? true
+                        : false
+                    : tradeData.tokenB.address.toLowerCase() ===
+                      (tx.isBid ? tx.quote.toLowerCase() : tx.base.toLowerCase())
+                    ? true
+                    : false);
+            if (shouldMovePrimaryQuantity) {
+                console.log('flipping primary');
+                // setTimeout(() => {
+                const sellQtyField = document.getElementById(
+                    'sell-limit-quantity',
+                ) as HTMLInputElement;
+                const buyQtyField = document.getElementById(
+                    'buy-limit-quantity',
+                ) as HTMLInputElement;
+
+                console.log(buyQtyField.value);
+                if (tradeData.isTokenAPrimary) {
+                    if (buyQtyField) {
+                        buyQtyField.value = sellQtyField.value;
+                    }
+                    if (sellQtyField) {
+                        sellQtyField.value = '';
+                        // tradeData.primaryQuantity === 'NaN' ? '' : tradeData.primaryQuantity;
+                    }
+                } else {
+                    if (sellQtyField) {
+                        sellQtyField.value = buyQtyField.value;
+                        // tradeData.primaryQuantity === 'NaN' ? '' : tradeData.primaryQuantity;
+                    }
+                    if (buyQtyField) {
+                        buyQtyField.value = '';
+                    }
+                }
+                // }, 500);
+                dispatch(setIsTokenAPrimary(!tradeData.isTokenAPrimary));
+                dispatch(setShouldLimitConverterUpdate(true));
+            } else if (shouldClearNonPrimaryQty) {
+                if (!tradeData.isTokenAPrimary) {
+                    const sellQtyField = document.getElementById(
+                        'sell-limit-quantity',
+                    ) as HTMLInputElement;
+                    if (sellQtyField) {
+                        sellQtyField.value = '';
+                        // tradeData.primaryQuantity === 'NaN' ? '' : tradeData.primaryQuantity;
+                    }
+                } else {
+                    const buyQtyField = document.getElementById(
+                        'buy-limit-quantity',
+                    ) as HTMLInputElement;
+                    if (buyQtyField) {
+                        buyQtyField.value = '';
+                    }
+                }
+                console.log('resetting');
+                // dispatch(setPrimaryQuantity(''));
+            }
             setTimeout(() => {
                 dispatch(setLimitTick(tx.isBid ? tx.bidTick : tx.askTick));
             }, 1000);
+
             // dispatch(
             //     setIsTokenAPrimary((tx.isBid && tx.inBaseQty) || (!tx.isBid && !tx.inBaseQty)),
-            // );
-            // dispatch(
-            //     setPrimaryQuantity(
-            //         tx.inBaseQty
-            //             ? Math.abs(tx.baseFlowDecimalCorrected).toString()
-            //             : Math.abs(tx.quoteFlowDecimalCorrected).toString(),
-            //     ),
             // );
         }
         setShowDropdownMenu(false);

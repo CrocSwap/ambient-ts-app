@@ -9,8 +9,10 @@ import { NavLink } from 'react-router-dom';
 import NoTokenIcon from '../../../../Global/NoTokenIcon/NoTokenIcon';
 import IconWithTooltip from '../../../../Global/IconWithTooltip/IconWithTooltip';
 import TransactionDetails from '../../../../Global/TransactionDetails/TransactionDetails';
+import { tradeData } from '../../../../../utils/state/tradeDataSlice';
 interface TransactionRowPropsIF {
     tx: ITransaction;
+    tradeData: tradeData;
     isTokenABase: boolean;
     currentTxActiveInTransactions: string;
     setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
@@ -27,6 +29,7 @@ interface TransactionRowPropsIF {
 export default function TransactionRow(props: TransactionRowPropsIF) {
     const {
         showColumns,
+        tradeData,
         ipadView,
         isTokenABase,
         tx,
@@ -443,6 +446,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                 <TransactionsMenu
                     userPosition={userNameToDisplay === 'You'}
                     tx={tx}
+                    tradeData={tradeData}
                     isTokenABase={isTokenABase}
                     blockExplorer={blockExplorer}
                     showSidebar={props.showSidebar}
