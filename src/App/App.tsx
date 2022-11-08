@@ -1095,13 +1095,28 @@ export default function App() {
                                 const poolLimitOrderStates = json?.data;
 
                                 if (poolLimitOrderStates) {
-                                    dispatch(
-                                        setLimitOrdersByPool({
-                                            dataReceived: true,
-                                            limitOrders: poolLimitOrderStates,
+                                    Promise.all(
+                                        poolLimitOrderStates.map((limitOrder: LimitOrderIF) => {
+                                            return getLimitOrderData(limitOrder, importedTokens);
                                         }),
-                                    );
+                                    ).then((updatedLimitOrderStates) => {
+                                        dispatch(
+                                            setLimitOrdersByPool({
+                                                dataReceived: true,
+                                                limitOrders: updatedLimitOrderStates,
+                                            }),
+                                        );
+                                    });
                                 }
+
+                                // if (poolLimitOrderStates) {
+                                //     dispatch(
+                                //         setLimitOrdersByPool({
+                                //             dataReceived: true,
+                                //             limitOrders: poolLimitOrderStates,
+                                //         }),
+                                //     );
+                                // }
                             })
                             .catch(console.log);
                     }
