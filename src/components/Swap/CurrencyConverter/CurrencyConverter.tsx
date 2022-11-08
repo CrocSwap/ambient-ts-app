@@ -229,7 +229,7 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
             }
         }
         setIsTokenAPrimaryLocal(!isTokenAPrimaryLocal);
-        dispatch(setIsTokenAPrimary(!isTokenAPrimaryLocal));
+        dispatch(setIsTokenAPrimary(!isTokenAPrimary));
     };
 
     useEffect(() => {

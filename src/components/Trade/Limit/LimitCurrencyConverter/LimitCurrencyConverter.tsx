@@ -99,9 +99,9 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
 
     const tradeData = useAppSelector((state) => state.tradeData);
 
-    const [isTokenAPrimaryLocal, setIsTokenAPrimaryLocal] = useState<boolean>(
-        tradeData.isTokenAPrimary,
-    );
+    const isTokenAPrimary = tradeData.isTokenAPrimary;
+
+    const [isTokenAPrimaryLocal, setIsTokenAPrimaryLocal] = useState<boolean>(isTokenAPrimary);
     const [tokenAQtyLocal, setTokenAQtyLocal] = useState<string>(
         isTokenAPrimaryLocal ? tradeData?.primaryQuantity : '',
     );
@@ -193,7 +193,7 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
             }
         }
         setIsTokenAPrimaryLocal(!isTokenAPrimaryLocal);
-        dispatch(setIsTokenAPrimary(!isTokenAPrimaryLocal));
+        dispatch(setIsTokenAPrimary(!isTokenAPrimary));
     };
 
     useEffect(() => {
