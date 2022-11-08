@@ -97,6 +97,8 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
     const quoteDisplayStyle =
         quoteDisplay == '0.00' || !valueArrows ? styles.light_grey : posOrNegativeQuote;
 
+    const isBuy = tx.isBuy === true || tx.isBid === true;
+
     // console.log(baseDisplay);
 
     const openDetailsModal = () =>
@@ -353,7 +355,6 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                             : truncatedDisplayPrice || '…'}
                     </li>
                 ))}
-
             {!showColumns && (
                 <li
                     onClick={openDetailsModal}
@@ -378,7 +379,6 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                 </li>
             )}
             {usdValueWithTooltip}
-
             {/* {!showColumns && (
                 <li onClick={openDetailsModal} data-label={baseTokenSymbol} className='color_white'>
                     <p style={{ textAlign: 'right', fontFamily: 'monospace' }}>{baseDisplay}</p>
@@ -400,30 +400,36 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                     style={{ textAlign: 'right' }}
                 >
                     <p
+                        // onClick={() => {
+                        //     const isBuyQuote = tx.isBuy === true || tx.isBid === true;
+                        //     console.log({ isBuyQuote });
+                        //     console.log({ tx });
+                        //     console.log(tx.isBuy);
+                        //     console.log(tx.isBid);
+                        // }}
                         className={`${styles.token_qty} ${
-                            tx.isBuy || tx.isBid ? quoteDisplayStyle : baseDisplayStyle
+                            isBuy ? quoteDisplayStyle : baseDisplayStyle
                         }`}
                         style={{ fontFamily: 'monospace' }}
                     >
-                        {tx.isBuy || tx.isBid ? quoteDisplay : baseDisplay}
-                        {tx.isBuy || tx.isBid ? quoteFlowArrow : baseFlowArrow}
-                        {tx.isBuy || tx.isBid ? quoteTokenLogoComponent : baseTokenLogoComponent}
+                        {isBuy ? quoteDisplay : baseDisplay}
+                        {isBuy ? quoteFlowArrow : baseFlowArrow}
+                        {isBuy ? quoteTokenLogoComponent : baseTokenLogoComponent}
                     </p>
 
                     <p
                         className={`${styles.token_qty} ${
-                            tx.isBuy || tx.isBid ? baseDisplayStyle : quoteDisplayStyle
+                            isBuy ? baseDisplayStyle : quoteDisplayStyle
                         }`}
                         style={{ fontFamily: 'monospace' }}
                     >
                         {' '}
-                        {tx.isBuy || tx.isBid ? baseDisplay : quoteDisplay}
-                        {tx.isBuy || tx.isBid ? baseFlowArrow : quoteFlowArrow}
-                        {tx.isBuy || tx.isBid ? baseTokenLogoComponent : quoteTokenLogoComponent}
+                        {isBuy ? baseDisplay : quoteDisplay}
+                        {isBuy ? baseFlowArrow : quoteFlowArrow}
+                        {isBuy ? baseTokenLogoComponent : quoteTokenLogoComponent}
                     </p>
                 </li>
             }
-
             <li data-label='menu'>
                 {/* <OrdersMenu limitOrder={limitOrder} {...orderMenuProps} /> */}
                 <TransactionsMenu
