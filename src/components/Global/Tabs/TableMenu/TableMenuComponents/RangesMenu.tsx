@@ -118,9 +118,6 @@ export default function RangesMenu(props: RangesMenuIF) {
         }
         setShowDropdownMenu(false);
 
-        // if (positionData.positionType === 'ambient') {
-        // } else {
-        // }
         dispatch(setRangeModuleTriggered(true));
     };
 

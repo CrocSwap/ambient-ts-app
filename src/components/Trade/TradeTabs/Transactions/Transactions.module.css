@@ -164,6 +164,14 @@ text-transform: capitalize;
   
 }
 
+.token_qty{
+  display: flex;
+  justify-content: flex-end;
+  flex-direction: row;
+  align-items: center;
+  gap: 4px;
+}
+
 
 
 .token_images_account img{
@@ -180,17 +188,54 @@ text-transform: capitalize;
   text-align: right;
 }
 
-.mono_font{
-  font-family: monospace;
+.positive_value{
+  color: var(--positive);
+  
 }
 
-.header li:nth-of-type(3), .header li:nth-of-type(6), .header li:nth-of-type(7), .header li:nth-of-type(8){
+.negative_value{
+  color: var(--negative)
+}
 
+.light_grey{
+  color: var(--text-grey-light);
+}
+
+.mono_font{
+  font-family: var(--mono);
+}
+/* .trade_header li:nth-of-type(1), .trade_header li:nth-of-type(2){
+  text-align: center;
+} */
+
+.trade_header li:nth-of-type(3), .trade_header li:nth-of-type(6), .trade_header li:nth-of-type(7){
   text-align: right;
  
 }
 
-.header li:nth-of-type(4){
+.trade_header li:nth-of-type(4){
   text-align: center;
   
 }
+
+
+
+
+
+/* 
+.portfolio_header li:nth-of-type(2), .portfolio_header li:nth-of-type(3){
+  text-align: center;
+
+} */
+
+.portfolio_header li:nth-of-type(4), .portfolio_header li:nth-of-type(7), .portfolio_header li:nth-of-type(8){
+  text-align: right;
+ 
+}
+
+.portfolio_header li:nth-of-type(5){
+  text-align: center;
+  
+}
+
+

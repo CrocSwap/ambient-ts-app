@@ -341,7 +341,7 @@ export default function RangesRow(props: RangesRowPropsIF) {
                 </li>
             )}
             {ValueWithTooltip}
-            {!showColumns && (
+            {/* {!showColumns && (
                 <li onClick={openDetailsModal} data-label={baseTokenSymbol} className='base_color'>
                     <p style={{ textAlign: 'right', fontFamily: 'monospace' }}>{baseDisplay}</p>
                 </li>
@@ -350,23 +350,26 @@ export default function RangesRow(props: RangesRowPropsIF) {
                 <li onClick={openDetailsModal} data-label={quoteTokenSymbol} className='base_color'>
                     <p style={{ textAlign: 'right', fontFamily: 'monospace' }}>{quoteDisplay}</p>
                 </li>
-            )}
-            {showColumns && (
-                <li data-label={baseTokenSymbol + quoteTokenSymbol} className='base_color'>
-                    <p className={styles.align_center}>
-                        {' '}
-                        <img src={baseTokenLogo} alt='' width='15px' />
+            )} */}
+            {
+                <li
+                    data-label={baseTokenSymbol + quoteTokenSymbol}
+                    className='base_color'
+                    style={{ textAlign: 'end' }}
+                >
+                    <p className={styles.token_qty} style={{ fontFamily: 'monospace' }}>
                         {baseDisplay}
+                        <img src={baseTokenLogo} alt='' width='15px' />
                     </p>
 
-                    <p className={styles.align_center}>
+                    <p className={styles.token_qty} style={{ fontFamily: 'monospace' }}>
                         {' '}
-                        {quoteTokenLogoComponent}
                         {quoteDisplay}
+                        {quoteTokenLogoComponent}
                     </p>
                 </li>
-            )}
-            <li onClick={openDetailsModal} data-label='value'>
+            }
+            <li onClick={openDetailsModal} data-label='value' style={{ textAlign: 'center' }}>
                 {' '}
                 <p
                     style={{ textAlign: 'center', fontFamily: 'monospace' }}

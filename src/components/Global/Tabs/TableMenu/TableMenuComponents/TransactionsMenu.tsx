@@ -5,20 +5,33 @@ import { FiExternalLink, FiMoreHorizontal } from 'react-icons/fi';
 
 // START: Import JSX Functional Components
 // import Modal from '../../../../Global/Modal/Modal';
-import SnackbarComponent from '../../../../../components/Global/SnackbarComponent/SnackbarComponent';
+// import SnackbarComponent from '../../../../../components/Global/SnackbarComponent/SnackbarComponent';
 
 // START: Import Local Files
 import styles from './TableMenus.module.css';
 // import { useModal } from '../../../../Global/Modal/useModal';
-import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
+// import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
 import { ITransaction } from '../../../../../utils/state/graphDataSlice';
 import UseOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
 import TransactionDetails from '../../../TransactionDetails/TransactionDetails';
+import { useAppDispatch } from '../../../../../utils/hooks/reduxToolkit';
+import {
+    setAdvancedHighTick,
+    setAdvancedLowTick,
+    setAdvancedMode,
+    setIsTokenAPrimary,
+    setLimitTick,
+    setPrimaryQuantity,
+    setShouldSwapConverterUpdate,
+    setSimpleRangeWidth,
+} from '../../../../../utils/state/tradeDataSlice';
+import { Link } from 'react-router-dom';
 
 // interface for React functional component props
 interface TransactionMenuIF {
     userPosition: boolean | undefined; // position belongs to active user
+    isTokenABase: boolean;
     tx: ITransaction;
     blockExplorer?: string;
     showSidebar: boolean;
@@ -31,6 +44,7 @@ interface TransactionMenuIF {
 export default function TransactionsMenu(props: TransactionMenuIF) {
     const menuItemRef = useRef<HTMLDivElement>(null);
     const {
+        // isTokenABase,
         // userPosition,
         tx,
         blockExplorer,
@@ -40,8 +54,8 @@ export default function TransactionsMenu(props: TransactionMenuIF) {
         // isOnPortfolioPage,
     } = props;
 
-    const [value, copy] = useCopyToClipboard();
-    const [openSnackbar, setOpenSnackbar] = useState(false);
+    // const [value, copy] = useCopyToClipboard();
+    // const [openSnackbar, setOpenSnackbar] = useState(false);
     // const [isModalOpen, openModal, closeModal] = useModal();
     // const [currentModal, setCurrentModal] = useState('edit');
     // ---------------------MODAL FUNCTIONALITY----------------
@@ -64,11 +78,55 @@ export default function TransactionsMenu(props: TransactionMenuIF) {
     // }
 
     // -----------------SNACKBAR----------------
-    function handleCopyAddress() {
-        copy('Not Yet Implemented');
+    // function handleCopyAddress() {
+    //     copy('Not Yet Implemented');
 
-        setOpenSnackbar(true);
-    }
+    //     setOpenSnackbar(true);
+    // }
+    const dispatch = useAppDispatch();
+
+    const handleCopyClick = () => {
+        // console.log('copy clicked');
+        console.log({ tx });
+
+        if (tx.positionType === 'ambient') {
+            dispatch(setSimpleRangeWidth(100));
+            dispatch(setAdvancedMode(false));
+        } else if (tx.positionType === 'concentrated') {
+            dispatch(setAdvancedLowTick(tx.bidTick));
+            dispatch(setAdvancedHighTick(tx.askTick));
+            dispatch(setAdvancedMode(true));
+        } else if (tx.entityType === 'swap') {
+            dispatch(
+                setIsTokenAPrimary((tx.isBuy && tx.inBaseQty) || (!tx.isBuy && !tx.inBaseQty)),
+            );
+            dispatch(
+                setPrimaryQuantity(
+                    tx.inBaseQty
+                        ? Math.abs(tx.baseFlowDecimalCorrected).toString()
+                        : Math.abs(tx.quoteFlowDecimalCorrected).toString(),
+                ),
+            );
+            dispatch(setShouldSwapConverterUpdate(true));
+            console.log('swap copy clicked');
+        } else if (tx.entityType === 'limitOrder') {
+            console.log('limit order copy clicked');
+            dispatch(setLimitTick(tx.isBid ? tx.bidTick : tx.askTick));
+            // dispatch(
+            //     setIsTokenAPrimary((tx.isBid && tx.inBaseQty) || (!tx.isBid && !tx.inBaseQty)),
+            // );
+            // dispatch(
+            //     setPrimaryQuantity(
+            //         tx.inBaseQty
+            //             ? Math.abs(tx.baseFlowDecimalCorrected).toString()
+            //             : Math.abs(tx.quoteFlowDecimalCorrected).toString(),
+            //     ),
+            // );
+        }
+        setShowDropdownMenu(false);
+
+        // dispatch(setRangeModuleTriggered(true));
+    };
 
     function handleOpenExplorer() {
         if (tx && blockExplorer) {
@@ -77,15 +135,15 @@ export default function TransactionsMenu(props: TransactionMenuIF) {
         }
     }
 
-    const snackbarContent = (
-        <SnackbarComponent
-            severity='info'
-            setOpenSnackbar={setOpenSnackbar}
-            openSnackbar={openSnackbar}
-        >
-            {value}
-        </SnackbarComponent>
-    );
+    // const snackbarContent = (
+    //     <SnackbarComponent
+    //         severity='info'
+    //         setOpenSnackbar={setOpenSnackbar}
+    //         openSnackbar={openSnackbar}
+    //     >
+    //         {value}
+    //     </SnackbarComponent>
+    // );
     // -----------------END OF SNACKBAR----------------
 
     // TODO:  @Junior please add a `default` to this with debugging code
@@ -122,11 +180,66 @@ export default function TransactionsMenu(props: TransactionMenuIF) {
     //     </button>
     // ) : null;
 
-    const copyButton = (
-        <button className={styles.option_button} onClick={handleCopyAddress}>
-            Copy
-        </button>
-    );
+    // const copyButton = (
+    //     <button className={styles.option_button} onClick={handleCopyClick}>
+    //         Copy
+    //     </button>
+    // );
+
+    const isTxCopiable =
+        tx.source !== 'manual' && (tx.entityType === 'swap' || tx.changeType === 'mint');
+
+    const copyButton =
+        tx.entityType === 'liqchange' ? (
+            <Link
+                className={styles.option_button}
+                to={
+                    '/trade/range/' +
+                    'chain=' +
+                    tx.chainId +
+                    '&tokenA=' +
+                    (tx.isBid ? tx.base : tx.quote) +
+                    '&tokenB=' +
+                    (tx.isBid ? tx.quote : tx.base)
+                }
+                onClick={handleCopyClick}
+            >
+                Copy
+            </Link>
+        ) : tx.entityType === 'limitOrder' ? (
+            <Link
+                className={styles.option_button}
+                to={
+                    '/trade/limit/' +
+                    'chain=' +
+                    tx.chainId +
+                    '&tokenA=' +
+                    (tx.isBid ? tx.base : tx.quote) +
+                    '&tokenB=' +
+                    (tx.isBid ? tx.quote : tx.base)
+                }
+                onClick={handleCopyClick}
+            >
+                Copy
+            </Link>
+        ) : (
+            <Link
+                className={styles.option_button}
+                to={
+                    '/trade/market/' +
+                    'chain=' +
+                    tx.chainId +
+                    '&tokenA=' +
+                    (tx.isBuy ? tx.base : tx.quote) +
+                    '&tokenB=' +
+                    (tx.isBuy ? tx.quote : tx.base)
+                }
+                onClick={handleCopyClick}
+            >
+                Copy
+            </Link>
+        );
+
     const explorerButton = (
         <button className={styles.option_button} onClick={handleOpenExplorer}>
             Explorer
@@ -169,7 +282,7 @@ export default function TransactionsMenu(props: TransactionMenuIF) {
             {/* {(isOnPortfolioPage && !showSidebar) || (!isOnPortfolioPage && detailsButton)} */}
             {/* {view2 && explorerButton} */}
             {/* {(!showSidebar && !isOnPortfolioPage) || (view2 && copyButton)} */}
-            {copyButton}
+            {isTxCopiable && copyButton}
         </div>
     );
 
@@ -209,7 +322,7 @@ export default function TransactionsMenu(props: TransactionMenuIF) {
             {transactionsMenu}
             {dropdownTransactionsMenu}
             {/* {modalOrNull} */}
-            {snackbarContent}
+            {/* {snackbarContent} */}
         </div>
     );
 }

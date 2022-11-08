@@ -31,7 +31,7 @@ export default function SidebarLimitOrdersCard(props: SidebarLimitOrdersCardProp
         isDenomBase,
     } = props;
 
-    if (order.positionLiq === '0') return null;
+    // if (order.positionLiq === '0') return null;
 
     const baseId = order.base + '_' + order.chainId;
     const quoteId = order.quote + '_' + order.chainId;
