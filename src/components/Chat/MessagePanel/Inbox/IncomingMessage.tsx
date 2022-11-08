@@ -33,16 +33,16 @@ export default function IncomingMessage(props: IncomingMessageProps) {
                 <div className={styles.message_message}>
                     <div className={styles.name}>{props.name}</div>
                     {!isPosition && <p className={styles.message}>{props.message.message}</p>}
+                    <PositionBox
+                        message={props.message.message}
+                        isInput={false}
+                        isPosition={isPosition}
+                        setIsPosition={setIsPosition}
+                    />
                 </div>
 
                 <div className={styles.message_date}>{formatAMPM(props.message.createdAt)}</div>
             </div>
-            <PositionBox
-                message={props.message.message}
-                isInput={false}
-                isPosition={isPosition}
-                setIsPosition={setIsPosition}
-            />
         </div>
     );
 }

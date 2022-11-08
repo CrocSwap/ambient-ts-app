@@ -38,7 +38,6 @@ export default function PositionBox(props: PositionBoxProps) {
     const graphData = useAppSelector((state) => state?.graphData);
     const transactionsData = graphData?.changesByPool?.changes;
     const [sortBy, setSortBy, reverseSort, setReverseSort, sortedPositions] = useSortedPositions(
-        true,
         graphData?.positionsByUser?.positions,
         graphData?.positionsByPool?.positions,
     );
@@ -209,8 +208,14 @@ export default function PositionBox(props: PositionBoxProps) {
     );
     function handleCopyAddress() {
         const hashMsg = message.split(' ').find((item) => item.includes('0x'));
+
         copy(hashMsg as string);
         setOpenSnackbar(true);
+    }
+
+    function getRestOfMessagesIfAny() {
+        const restOfMessages = message.split(' ');
+        return restOfMessages?.[1];
     }
     return props.isPosition ? (
         position !== undefined && !isInput ? (
@@ -277,6 +282,7 @@ export default function PositionBox(props: PositionBoxProps) {
                     </div>
                     {snackbarContent}
                 </div>
+                <p>{getRestOfMessagesIfAny()}</p>
             </motion.div>
         ) : position !== undefined && isInput ? (
             <motion.div
@@ -341,6 +347,7 @@ export default function PositionBox(props: PositionBoxProps) {
                         )}
                     </div>
                     {snackbarContent}
+                    <p className={styles.message}>{getRestOfMessagesIfAny()}</p>
                 </div>
             </motion.div>
         ) : sPositions && !isInput ? (
@@ -387,6 +394,7 @@ export default function PositionBox(props: PositionBoxProps) {
                         </div>
                     </div>
                 </div>
+                <p>{getRestOfMessagesIfAny()}</p>
             </motion.div>
         ) : sPositions && isInput ? (
             <motion.div
@@ -432,6 +440,7 @@ export default function PositionBox(props: PositionBoxProps) {
                         </div>
                     </div>
                 </div>
+                <p>{getRestOfMessagesIfAny()}</p>
             </motion.div>
         ) : (
             <></>
