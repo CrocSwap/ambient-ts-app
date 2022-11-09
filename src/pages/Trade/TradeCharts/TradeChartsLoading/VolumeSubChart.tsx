@@ -243,7 +243,6 @@ export default function VolumeSubChart(props: VolumeData) {
     }, [
         xScale,
         crosshairXForSubChart,
-        crosshairData,
         period,
         selectedDate,
         volumeData,
