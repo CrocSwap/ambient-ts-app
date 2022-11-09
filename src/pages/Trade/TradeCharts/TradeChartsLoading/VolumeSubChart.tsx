@@ -8,7 +8,7 @@ import { VolumeChartData } from '../TradeCharts';
 interface VolumeData {
     volumeData: VolumeChartData[] | undefined;
     period: number | undefined;
-    crosshairData: any[];
+    crosshairXForSubChart: number;
     setsubChartValues: React.Dispatch<React.SetStateAction<any>>;
     setSelectedDate: React.Dispatch<React.SetStateAction<any>>;
     selectedDate: any;
@@ -16,12 +16,23 @@ interface VolumeData {
     xScale: any;
     xScaleCopy: any;
     setZoomAndYdragControl: React.Dispatch<React.SetStateAction<any>>;
+    setIsMouseMoveForSubChart: React.Dispatch<React.SetStateAction<boolean>>;
+    setMouseMoveEventForSubChart: React.Dispatch<React.SetStateAction<any>>;
+    zoomAndYdragControl: any;
     render: any;
 }
 
 export default function VolumeSubChart(props: VolumeData) {
-    const { volumeData, period, xScale, crosshairData, xScaleCopy, candlestick, selectedDate } =
-        props;
+    const {
+        volumeData,
+        period,
+        xScale,
+        crosshairXForSubChart,
+        xScaleCopy,
+        candlestick,
+        selectedDate,
+        zoomAndYdragControl,
+    } = props;
 
     const setsubChartValues = props.setsubChartValues;
 
@@ -35,7 +46,7 @@ export default function VolumeSubChart(props: VolumeData) {
         ) {
             const chartData = {
                 barSeries: volumeData,
-                crosshairDataLocal: crosshairData,
+                crosshairDataLocal: [{ x: crosshairXForSubChart, y: -1 }],
             };
 
             const render = () => {
@@ -58,19 +69,23 @@ export default function VolumeSubChart(props: VolumeData) {
                     newTargets.filter((target: any) => target.name === 'volume')[0].value = snap(
                         barSeries,
                         chartData.barSeries,
-                        crosshairData[0],
+                        { x: xScale(crosshairXForSubChart), y: -1 },
                     );
 
                     return newTargets;
                 });
 
-                const pointer = d3fc.pointer().on('point', (event: any) => {
-                    if (event[0] !== undefined) {
-                        chartData.crosshairDataLocal[0].y = event[0].y;
-                        render();
-                    }
+                d3.select('.chart-volume').on('mousemove', async function (event: any) {
+                    props.setMouseMoveEventForSubChart(event);
+                    props.setIsMouseMoveForSubChart(true);
+                    // props.setCrosshairXForSubChart(event.offsetX);
+                    chartData.crosshairDataLocal[0].y = event.offsetY;
                 });
-                d3.select('.chart-volume').call(pointer);
+
+                d3.select('.chart-volume').on('mouseleave', async function (event: any) {
+                    props.setMouseMoveEventForSubChart(event);
+                    props.setIsMouseMoveForSubChart(false);
+                });
             };
 
             const minimum = (volumeData: any, accessor: any) => {
@@ -99,6 +114,7 @@ export default function VolumeSubChart(props: VolumeData) {
                     Math.abs(point.x - xScale(xValue(d))),
                 )[1];
 
+                console.log({ nearest });
                 return nearest !== undefined ? nearest.value : 0;
             };
 
@@ -168,6 +184,8 @@ export default function VolumeSubChart(props: VolumeData) {
                 .on('zoom', (event: any) => {
                     xScale.domain(event.transform.rescaleX(xScaleCopy).domain());
                     props.setZoomAndYdragControl(event);
+                    props.setIsMouseMoveForSubChart(true);
+                    props.setMouseMoveEventForSubChart(event);
                     render();
                     props.render();
                 });
@@ -217,7 +235,6 @@ export default function VolumeSubChart(props: VolumeData) {
                         .attr('visibility', 'hidden');
                 });
 
-                crosshairData[0].y = -1;
                 render();
             });
 
@@ -225,10 +242,11 @@ export default function VolumeSubChart(props: VolumeData) {
         }
     }, [
         xScale,
-        crosshairData,
+        crosshairXForSubChart,
         period,
         selectedDate,
         volumeData,
+        zoomAndYdragControl,
         JSON.stringify(candlestick.bandwidth()),
     ]);
 

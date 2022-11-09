@@ -8,14 +8,16 @@ import { FeeChartData } from '../TradeCharts';
 interface FreeRateData {
     feeData: FeeChartData[] | undefined;
     period: number | undefined;
-    crosshairData: any[];
     setsubChartValues: React.Dispatch<React.SetStateAction<any>>;
     setZoomAndYdragControl: React.Dispatch<React.SetStateAction<any>>;
     xScale: any;
+    crosshairXForSubChart: number;
+    setIsMouseMoveForSubChart: React.Dispatch<React.SetStateAction<boolean>>;
+    setMouseMoveEventForSubChart: React.Dispatch<React.SetStateAction<any>>;
 }
 
 export default function FeeRateSubChart(props: FreeRateData) {
-    const { feeData, period, xScale, crosshairData, setsubChartValues } = props;
+    const { feeData, period, xScale, setsubChartValues, crosshairXForSubChart } = props;
 
     // Fee Rate Chart
     useEffect(() => {
@@ -24,7 +26,7 @@ export default function FeeRateSubChart(props: FreeRateData) {
 
             const chartData = {
                 series: feeData,
-                crosshairDataLocal: crosshairData,
+                crosshairDataLocal: [{ x: crosshairXForSubChart, y: -1 }],
             };
 
             const yScale = d3.scaleLinear();
@@ -64,7 +66,7 @@ export default function FeeRateSubChart(props: FreeRateData) {
                 .mapping((data: any, index: any, series: any) => {
                     switch (series[index]) {
                         case crosshair:
-                            return crosshairData;
+                            return chartData.crosshairDataLocal;
                         default:
                             return data.series;
                     }
@@ -106,10 +108,22 @@ export default function FeeRateSubChart(props: FreeRateData) {
                     newTargets.filter((target: any) => target.name === 'feeRate')[0].value = snap(
                         lineSeries,
                         chartData.series,
-                        crosshairData[0],
+                        chartData.crosshairDataLocal[0],
                     );
 
                     return newTargets;
+                });
+
+                d3.select('.chart-fee').on('mousemove', async function (event: any) {
+                    props.setMouseMoveEventForSubChart(event);
+                    props.setIsMouseMoveForSubChart(true);
+                    // props.setCrosshairXForSubChart(event.offsetX);
+                    chartData.crosshairDataLocal[0].y = event.offsetY;
+                });
+
+                d3.select('.chart-volume').on('mouseleave', async function (event: any) {
+                    props.setMouseMoveEventForSubChart(event);
+                    props.setIsMouseMoveForSubChart(false);
                 });
             };
 
@@ -150,12 +164,12 @@ export default function FeeRateSubChart(props: FreeRateData) {
                         .attr('visibility', 'hidden');
                 });
 
-                crosshairData[0].y = -1;
+                chartData.crosshairDataLocal[0].y = -1;
 
                 render();
             });
         }
-    }, [feeData, crosshairData, period, xScale]);
+    }, [feeData, period, xScale, crosshairXForSubChart]);
 
     return <div style={{ height: '10%', width: '100%' }} className='chart-fee'></div>;
 }

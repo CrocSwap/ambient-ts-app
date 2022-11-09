@@ -35,12 +35,18 @@ text.y_axis {
     stroke-opacity: 0.1;
 }
 
-.annotation-line > .redline {
+.annotation-line > .line {
     stroke: rgba(235, 235, 255, 0.4);
     stroke-width: 3;
     stroke-dasharray: 16 16;
-    stroke-opacity: 0.4;
     border: 2px dashed rgba(235, 235, 255, 0.4);
+}
+
+.annotation-line > .lowline {
+    stroke: rgb(139, 253, 244);
+    stroke-width: 3;
+    stroke-dasharray: 16 16;
+    border: 2px dashed rgb(139, 253, 244);  
 }
 
 .annotation-line > .marketLine {

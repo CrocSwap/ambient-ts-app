@@ -162,7 +162,9 @@ export default function Chart(props: ChartData) {
     const [zoomAndYdragControl, setZoomAndYdragControl] = useState();
     const [rescaleText, setRescaleText] = useState<any>();
     const [isMouseMoveCrosshair, setIsMouseMoveCrosshair] = useState(false);
-    const [crosshairForSubChart, setCrosshairForSubChart] = useState([{ x: 0, y: -1 }]);
+    const [crosshairXForSubChart, setCrosshairXForSubChart] = useState(0);
+    const [isMouseMoveForSubChart, setIsMouseMoveForSubChart] = useState(false);
+    const [mouseMoveEventForSubChart, setMouseMoveEventForSubChart] = useState<any>();
 
     // Data
     const [crosshairData, setCrosshairData] = useState([{ x: 0, y: -1 }]);
@@ -303,6 +305,9 @@ export default function Chart(props: ChartData) {
                                 ? d === limit[0].value
                                 : d === ranges[0].value || d === ranges[1].value
                         ) {
+                            if (d === limit[0].value && market[0].value > limit[0].value) {
+                                return 'url(#textLowBg)';
+                            }
                             return 'url(#textBg)';
                         }
                         if (d === market[0].value) {
@@ -311,7 +316,12 @@ export default function Chart(props: ChartData) {
                     })
                     .select('text')
                     .attr('class', (d: any) => {
-                        if (d === market[0].value) {
+                        if (
+                            d === market[0].value ||
+                            (location.pathname.includes('limit') &&
+                                d === limit[0].value &&
+                                market[0].value > limit[0].value)
+                        ) {
                             return 'market';
                         }
                         if (isMouseMoveCrosshair && d === crosshairData[0].y) {
@@ -554,12 +564,14 @@ export default function Chart(props: ChartData) {
                             scaleData.yScale.domain([domainY[0] + deltaY, domainY[1] + deltaY]);
                         }
 
-                        setZoomAndYdragControl(event);
+                        // setCrosshairXForSubChart(scaleData.xScale(crosshairData[0].x));
 
                         lastY = t.y;
 
                         render();
                     }
+
+                    setZoomAndYdragControl(event);
                 })
                 .on('end', (event: any) => {
                     if (event.sourceEvent && event.sourceEvent.type != 'wheel') {
@@ -1190,7 +1202,9 @@ export default function Chart(props: ChartData) {
                     .attr('stroke', 'none');
 
                 selection.enter().select('g.right-handle').remove();
-                selection.enter().select('line').attr('class', 'redline');
+                selection
+                    .select('line')
+                    .attr('class', (d: any) => (d.value > market[0].value ? 'line' : 'lowline'));
             });
 
             const marketLine = d3fc
@@ -1230,7 +1244,7 @@ export default function Chart(props: ChartData) {
                     .attr('y', -5);
 
                 selection.enter().select('g.right-handle').remove();
-                selection.enter().select('line').attr('class', 'redline');
+                selection.enter().select('line').attr('class', 'line');
                 selection.select('g.left-handle').remove();
             });
 
@@ -1278,7 +1292,7 @@ export default function Chart(props: ChartData) {
                 return limitLine;
             });
         }
-    }, [scaleData]);
+    }, [scaleData, market]);
 
     // easy drag and triangle to horizontal lines for range
     async function addTriangleAndRect() {
@@ -1290,18 +1304,19 @@ export default function Chart(props: ChartData) {
             .remove();
 
         if (!location.pathname.includes('market')) {
+            const selectClass = location.pathname.includes('range') ? '.targets' : '.limit';
             d3.select(d3PlotArea.current)
-                .select('.targets')
+                .select(selectClass)
                 .selectAll('.annotation-line')
                 .style('cursor', 'row-resize');
 
             const nodes = d3
                 .select(d3PlotArea.current)
-                .select('.targets')
+                .select(selectClass)
                 .selectAll('.annotation-line')
                 .nodes();
 
-            nodes.forEach((res) => {
+            nodes.forEach(async (res) => {
                 if (d3.select(res).select('rect').node() === null) {
                     d3.select(res)
                         .append('rect')
@@ -1312,21 +1327,48 @@ export default function Chart(props: ChartData) {
                         .attr('stroke', 'none');
                 }
 
-                if (d3.select(res).select('polygon').node() === null) {
-                    d3.select(res)
-                        .append('polygon')
-                        .attr('points', '0,40 0,55 10,49 10,46')
-                        .attr('stroke', 'rgba(235, 235, 255, 0.4)')
-                        .attr('fill', 'rgba(235, 235, 255, 0.4)')
-                        .style('transform', 'translate(1px, -48px)');
+                await d3.select(res).selectAll('polygon').remove();
+                d3.select(res)
+                    .append('polygon')
+                    .attr('points', '0,40 0,55 10,49 10,46')
+                    .attr(
+                        'stroke',
+                        selectClass.includes('limit')
+                            ? market[0].value > limit[0].value
+                                ? 'rgb(139, 253, 244)'
+                                : 'rgba(235, 235, 255)'
+                            : 'rgba(235, 235, 255)',
+                    )
+                    .attr(
+                        'fill',
+                        selectClass.includes('limit')
+                            ? market[0].value > limit[0].value
+                                ? 'rgb(139, 253, 244)'
+                                : 'rgba(235, 235, 255)'
+                            : 'rgba(235, 235, 255)',
+                    )
+                    .style('transform', 'translate(1px, -48px)');
 
-                    d3.select(res)
-                        .append('polygon')
-                        .attr('points', '0,40 0,55 10,49 10,46')
-                        .attr('stroke', 'rgba(235, 235, 255, 0.4)')
-                        .attr('fill', 'rgba(235, 235, 255, 0.4)')
-                        .style('transform', 'translate(100%, 48px) rotate(180deg)');
-                }
+                d3.select(res)
+                    .append('polygon')
+                    .attr('points', '0,40 0,55 10,49 10,46')
+                    .attr(
+                        'stroke',
+                        selectClass.includes('limit')
+                            ? market[0].value > limit[0].value
+                                ? 'rgb(139, 253, 244)'
+                                : 'rgba(235, 235, 255)'
+                            : 'rgba(235, 235, 255)',
+                    )
+                    .attr(
+                        'fill',
+                        selectClass.includes('limit')
+                            ? market[0].value > limit[0].value
+                                ? 'rgb(139, 253, 244)'
+                                : 'rgba(235, 235, 255)'
+                            : 'rgba(235, 235, 255)',
+                    )
+                    .style('transform', 'translate(100%, 48px) rotate(180deg)');
             });
         }
     }
@@ -1390,6 +1432,20 @@ export default function Chart(props: ChartData) {
             const feMergeTagYaxisText = yAxisText.append('feMerge');
             feMergeTagYaxisText.append('feMergeNode').attr('in', 'bg');
             feMergeTagYaxisText.append('feMergeNode').attr('in', 'SourceGraphic');
+
+            const yAxisTextLow = svgmain
+                .append('defs')
+                .append('filter')
+                .attr('x', 0)
+                .attr('y', 0)
+                .attr('height', 1)
+                .attr('width', 1)
+                .attr('id', 'textLowBg');
+
+            yAxisTextLow.append('feFlood').attr('flood-color', '#5FFFF2').attr('result', 'bg');
+            const feMergeTagYaxisTextLow = yAxisTextLow.append('feMerge');
+            feMergeTagYaxisTextLow.append('feMergeNode').attr('in', 'bg');
+            feMergeTagYaxisTextLow.append('feMergeNode').attr('in', 'SourceGraphic');
         }
     }
 
@@ -1408,9 +1464,9 @@ export default function Chart(props: ChartData) {
             d3.select(d3PlotArea.current)
                 .select('.targetsArea')
                 .style('filter', 'url(#targetsAreaBackground)');
-            addTriangleAndRect();
         }
-    }, [dragControl, location]);
+        addTriangleAndRect();
+    }, [dragControl, location, market, limit]);
 
     // Line Rules
     useEffect(() => {
@@ -1504,12 +1560,20 @@ export default function Chart(props: ChartData) {
                             : pool?.toDisplayPrice(tickToPrice(pinnedTick));
 
                         newLimitDisplay?.then((newLimitNum) => {
+                            console.log({ newLimitNum });
                             setLimit(() => {
-                                return [{ name: 'Limit', value: newLimitNum }];
+                                return [{ name: 'Limit', value: newLimitValue }];
+                                //    return [{ name: 'Limit', value: newLimitNum }];
                             });
-                            // onBlurlimitRate(newLimitNum);
+                            onBlurlimitRate(newLimitValue);
                         });
                     });
+
+                    // setLimit(() => {
+                    //     return [{ name: 'Limit', value: snappedValue }];
+                    // });
+
+                    // onBlurlimitRate(snappedValue);
                 }
             });
         }
@@ -1991,6 +2055,8 @@ export default function Chart(props: ChartData) {
                 liqHighligtedBidSeries,
                 yAxis,
                 xAxis,
+                mouseMoveEventForSubChart,
+                isMouseMoveForSubChart,
             );
         }
     }, [
@@ -2020,6 +2086,7 @@ export default function Chart(props: ChartData) {
         liqHighligtedBidSeries,
         yAxis,
         xAxis,
+        mouseMoveEventForSubChart,
     ]);
 
     const minimum = (data: any, accessor: any) => {
@@ -2065,6 +2132,8 @@ export default function Chart(props: ChartData) {
             liqHighligtedBidSeries: any,
             yAxis: any,
             xAxis: any,
+            mouseMoveEventForSubChart: any,
+            isMouseMoveForSubChart: boolean,
         ) => {
             if (chartData.length > 0) {
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -2080,7 +2149,7 @@ export default function Chart(props: ChartData) {
                         Math.abs(point.offsetX - xScale(xValue(d))),
                     )[1];
 
-                    setCrosshairForSubChart([{ x: scaleData.xScale(nearest?.date), y: -1 }]);
+                    setCrosshairXForSubChart(scaleData.xScale(nearest?.date));
 
                     props.setCurrentData(nearest);
                     return [
@@ -2371,15 +2440,28 @@ export default function Chart(props: ChartData) {
                     svg.call(zoomUtils.zoom);
                 });
 
-                d3.select(d3PlotArea.current).on('mousemove', async function (event: any) {
+                const setCrossHairLocation = (event: any) => {
                     crosshairData[0] = snap(candlestick, chartData, event)[0];
                     setIsMouseMoveCrosshair(true);
 
                     setCrosshairData([
-                        { x: crosshairData[0].x, y: scaleData.yScale.invert(event.offsetY) },
+                        {
+                            x: crosshairData[0].x,
+                            y: isMouseMoveForSubChart ? -1 : scaleData.yScale.invert(event.offsetY),
+                        },
                     ]);
 
                     render();
+                };
+
+                if (isMouseMoveForSubChart) {
+                    setCrossHairLocation(mouseMoveEventForSubChart);
+                    // crosshairData[0].x = scaleData.xScale.invert(crosshairXForSubChart);
+                    // setIsMouseMoveCrosshair(true);
+                }
+
+                d3.select(d3PlotArea.current).on('mousemove', async function (event: any) {
+                    setCrossHairLocation(event);
                 });
 
                 d3.select(d3Yaxis.current)
@@ -2623,10 +2705,12 @@ export default function Chart(props: ChartData) {
                                     (a, b) => b.time - a.time,
                                 )}
                                 period={parsedChartData?.period}
-                                crosshairData={crosshairForSubChart}
+                                crosshairXForSubChart={crosshairXForSubChart}
                                 setsubChartValues={setsubChartValues}
                                 setZoomAndYdragControl={setZoomAndYdragControl}
                                 xScale={scaleData !== undefined ? scaleData.xScale : undefined}
+                                setIsMouseMoveForSubChart={setIsMouseMoveForSubChart}
+                                setMouseMoveEventForSubChart={setMouseMoveEventForSubChart}
                             />
                         </>
                     )}
@@ -2646,13 +2730,16 @@ export default function Chart(props: ChartData) {
                                     (a, b) => b.time - a.time,
                                 )}
                                 period={parsedChartData?.period}
-                                crosshairData={crosshairForSubChart}
+                                crosshairXForSubChart={crosshairXForSubChart}
+                                crosshairData={crosshairData}
                                 setsubChartValues={setsubChartValues}
                                 xScale={scaleData !== undefined ? scaleData.xScale : undefined}
                                 xScaleCopy={
                                     scaleData !== undefined ? scaleData.xScaleCopy : undefined
                                 }
                                 setZoomAndYdragControl={setZoomAndYdragControl}
+                                setIsMouseMoveForSubChart={setIsMouseMoveForSubChart}
+                                setMouseMoveEventForSubChart={setMouseMoveEventForSubChart}
                                 render={render}
                             />
                         </>
@@ -2672,7 +2759,7 @@ export default function Chart(props: ChartData) {
                             <VolumeSubChart
                                 volumeData={parsedChartData?.volumeChartData}
                                 period={parsedChartData?.period}
-                                crosshairData={crosshairForSubChart}
+                                crosshairXForSubChart={crosshairXForSubChart}
                                 setsubChartValues={setsubChartValues}
                                 setSelectedDate={setSelectedDate}
                                 selectedDate={selectedDate}
@@ -2682,6 +2769,9 @@ export default function Chart(props: ChartData) {
                                     scaleData !== undefined ? scaleData.xScaleCopy : undefined
                                 }
                                 setZoomAndYdragControl={setZoomAndYdragControl}
+                                zoomAndYdragControl={zoomAndYdragControl}
+                                setIsMouseMoveForSubChart={setIsMouseMoveForSubChart}
+                                setMouseMoveEventForSubChart={setMouseMoveEventForSubChart}
                                 render={render}
                             />
                         </>
