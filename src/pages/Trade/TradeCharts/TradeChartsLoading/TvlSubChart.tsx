@@ -11,13 +11,16 @@ interface TvlData {
     crosshairData: any[];
     setsubChartValues: React.Dispatch<React.SetStateAction<any>>;
     setZoomAndYdragControl: React.Dispatch<React.SetStateAction<any>>;
+    crosshairXForSubChart: number;
     xScale: any;
     xScaleCopy: any;
     render: any;
+    setIsMouseMoveForSubChart: React.Dispatch<React.SetStateAction<boolean>>;
+    setMouseMoveEventForSubChart: React.Dispatch<React.SetStateAction<any>>;
 }
 
 export default function TvlSubChart(props: TvlData) {
-    const { tvlData, period, xScale, crosshairData, xScaleCopy } = props;
+    const { tvlData, period, xScale, crosshairData, xScaleCopy, crosshairXForSubChart } = props;
 
     const setsubChartValues = props.setsubChartValues;
 
@@ -28,7 +31,7 @@ export default function TvlSubChart(props: TvlData) {
 
             const chartData = {
                 series: tvlData,
-                crosshairDataLocal: crosshairData,
+                crosshairDataLocal: [{ x: crosshairXForSubChart, y: -1 }],
             };
 
             const yScale = d3.scaleLinear();
@@ -153,13 +156,19 @@ export default function TvlSubChart(props: TvlData) {
                     return newTargets;
                 });
 
-                const pointer = d3fc.pointer().on('point', (event: any) => {
-                    if (event[0] !== undefined) {
-                        chartData.crosshairDataLocal[0].y = event[0].y;
-                        render();
-                    }
+                d3.select('.chart-tvl').on('mousemove', async function (event: any) {
+                    props.setMouseMoveEventForSubChart(event);
+                    props.setIsMouseMoveForSubChart(true);
+                    // props.setCrosshairXForSubChart(event.offsetX);
+                    chartData.crosshairDataLocal[0].y = event.offsetY;
                 });
-                d3.select('.chart-tvl').call(pointer);
+                // const pointer = d3fc.pointer().on('point', (event: any) => {
+                //     if (event[0] !== undefined) {
+                //         chartData.crosshairDataLocal[0].y = event[0].y;
+                //         render();
+                //     }
+                // });
+                // d3.select('.chart-tvl').call(pointer);
             };
 
             const minimum = (tvlData: any, accessor: any) => {
@@ -197,7 +206,7 @@ export default function TvlSubChart(props: TvlData) {
 
             render();
 
-            d3.select('.chart-tvl').on('mouseleave', () => {
+            d3.select('.chart-tvl').on('mouseleave', (event) => {
                 crosshair.decorate((selection: any) => {
                     selection
                         .enter()
@@ -206,6 +215,8 @@ export default function TvlSubChart(props: TvlData) {
                 });
 
                 crosshairData[0].y = -1;
+                props.setMouseMoveEventForSubChart(event);
+                props.setIsMouseMoveForSubChart(false);
                 render();
             });
         }

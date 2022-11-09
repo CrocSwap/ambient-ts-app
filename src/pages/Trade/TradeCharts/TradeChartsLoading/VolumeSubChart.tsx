@@ -18,7 +18,7 @@ interface VolumeData {
     setZoomAndYdragControl: React.Dispatch<React.SetStateAction<any>>;
     setIsMouseMoveForSubChart: React.Dispatch<React.SetStateAction<boolean>>;
     setMouseMoveEventForSubChart: React.Dispatch<React.SetStateAction<any>>;
-
+    zoomAndYdragControl: any;
     render: any;
 }
 
@@ -31,12 +31,15 @@ export default function VolumeSubChart(props: VolumeData) {
         xScaleCopy,
         candlestick,
         selectedVolume,
+        zoomAndYdragControl,
     } = props;
 
     const setsubChartValues = props.setsubChartValues;
 
     // Volume Chart
     useEffect(() => {
+        console.log({ xScale });
+
         console.log({ selectedVolume });
 
         if (
@@ -50,8 +53,6 @@ export default function VolumeSubChart(props: VolumeData) {
                 crosshairDataLocal: [{ x: crosshairXForSubChart, y: -1 }],
             };
 
-            console.log('crosshairXForSubChart', crosshairXForSubChart);
-            console.log('chartData.crosshairDataLocal', chartData.crosshairDataLocal[0].x);
             const render = () => {
                 d3.select('.chart-volume').datum(chartData).call(chart);
 
@@ -177,7 +178,6 @@ export default function VolumeSubChart(props: VolumeData) {
                     props.setZoomAndYdragControl(event);
                     props.setIsMouseMoveForSubChart(true);
                     props.setMouseMoveEventForSubChart(event);
-                    //    props.setCrosshairXForSubChart(chartData.crosshairDataLocal[0].x);
                     render();
                     props.render();
                 });
@@ -232,7 +232,7 @@ export default function VolumeSubChart(props: VolumeData) {
 
             render();
         }
-    }, [xScale.domain(), crosshairXForSubChart, period, selectedVolume, volumeData]);
+    }, [xScale, crosshairXForSubChart, period, selectedVolume, volumeData, zoomAndYdragControl]);
 
     return <div style={{ height: '10%', width: '100%' }} className='chart-volume'></div>;
 }

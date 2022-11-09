@@ -219,7 +219,7 @@ export default function Chart(props: ChartData) {
     const [dragRange, setDragRange] = useState<any>();
     const [dragLimit, setDragLimit] = useState<any>();
     const [selectedCandleState, setSelectedCandleState] = useState<any>();
-
+    const [xScaleForSubchart, setXscaleForSubchart] = useState(scaleData.xScale);
     const valueFormatter = d3.format('.5f');
 
     const setDefaultRangeData = () => {
@@ -234,6 +234,13 @@ export default function Chart(props: ChartData) {
             return newTargets;
         });
     };
+
+    useEffect(() => {
+        if (scaleData) {
+            console.log('eefffcc', scaleData.xScale);
+            setXscaleForSubchart(scaleData.xScale);
+        }
+    }, [scaleData]);
 
     useEffect(() => {
         addDefsStyle();
@@ -559,14 +566,15 @@ export default function Chart(props: ChartData) {
 
                             scaleData.yScale.domain([domainY[0] + deltaY, domainY[1] + deltaY]);
                         }
-                        setCrosshairXForSubChart(scaleData.xScale(crosshairData[0].x));
 
-                        setZoomAndYdragControl(event);
+                        // setCrosshairXForSubChart(scaleData.xScale(crosshairData[0].x));
 
                         lastY = t.y;
 
                         render();
                     }
+
+                    setZoomAndYdragControl(event);
                 })
                 .on('end', (event: any) => {
                     if (event.sourceEvent && event.sourceEvent.type != 'wheel') {
@@ -2705,10 +2713,12 @@ export default function Chart(props: ChartData) {
                                     (a, b) => b.time - a.time,
                                 )}
                                 period={parsedChartData?.period}
-                                crosshairData={crosshairData}
+                                crosshairXForSubChart={crosshairXForSubChart}
                                 setsubChartValues={setsubChartValues}
                                 setZoomAndYdragControl={setZoomAndYdragControl}
                                 xScale={scaleData !== undefined ? scaleData.xScale : undefined}
+                                setIsMouseMoveForSubChart={setIsMouseMoveForSubChart}
+                                setMouseMoveEventForSubChart={setMouseMoveEventForSubChart}
                             />
                         </>
                     )}
@@ -2728,6 +2738,7 @@ export default function Chart(props: ChartData) {
                                     (a, b) => b.time - a.time,
                                 )}
                                 period={parsedChartData?.period}
+                                crosshairXForSubChart={crosshairXForSubChart}
                                 crosshairData={crosshairData}
                                 setsubChartValues={setsubChartValues}
                                 xScale={scaleData !== undefined ? scaleData.xScale : undefined}
@@ -2735,6 +2746,8 @@ export default function Chart(props: ChartData) {
                                     scaleData !== undefined ? scaleData.xScaleCopy : undefined
                                 }
                                 setZoomAndYdragControl={setZoomAndYdragControl}
+                                setIsMouseMoveForSubChart={setIsMouseMoveForSubChart}
+                                setMouseMoveEventForSubChart={setMouseMoveEventForSubChart}
                                 render={render}
                             />
                         </>
@@ -2764,6 +2777,7 @@ export default function Chart(props: ChartData) {
                                     scaleData !== undefined ? scaleData.xScaleCopy : undefined
                                 }
                                 setZoomAndYdragControl={setZoomAndYdragControl}
+                                zoomAndYdragControl={zoomAndYdragControl}
                                 setIsMouseMoveForSubChart={setIsMouseMoveForSubChart}
                                 setMouseMoveEventForSubChart={setMouseMoveEventForSubChart}
                                 render={render}
