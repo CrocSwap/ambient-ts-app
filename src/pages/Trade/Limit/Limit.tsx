@@ -42,6 +42,7 @@ import {
 } from '../../../utils/TransactionError';
 import LimitShareControl from '../../../components/Trade/Limit/LimitShareControl/LimitShareControl';
 import { FiCopy } from 'react-icons/fi';
+import { memoizeQuerySpotPrice } from '../../../App/functions/querySpotPrice';
 
 interface LimitPropsIF {
     pool: CrocPoolView | undefined;
@@ -78,6 +79,8 @@ interface LimitPropsIF {
     chainData: ChainSpec;
 }
 
+const cachedQuerySpotPrice = memoizeQuerySpotPrice();
+
 export default function Limit(props: LimitPropsIF) {
     const {
         pool,
@@ -106,6 +109,7 @@ export default function Limit(props: LimitPropsIF) {
         indicateActiveTokenListsChanged,
         openModalWallet,
         poolExists,
+        lastBlockNumber,
     } = props;
 
     const { tradeData, navigationMenu } = useTradeData();
@@ -153,136 +157,148 @@ export default function Limit(props: LimitPropsIF) {
     const isDenomBase = tradeData.isDenomBase;
 
     useEffect(() => {
-        if (limitTick === 0) {
-            console.log({ limitTick });
-            if (!pool) return;
-            // if (!provider) return;
-            if (!poolPriceNonDisplay) return;
+        (async () => {
+            if (limitTick === 0 && crocEnv) {
+                console.log({ limitTick });
+                if (!pool) return;
+                // if (!provider) return;
+                // if (!poolPriceNonDisplay) return;
 
-            // console.log({ poolPriceNonDisplay });
+                // console.log({ poolPriceNonDisplay });
 
-            const gridSize = lookupChain(chainId).gridSize;
+                const spotPrice = await cachedQuerySpotPrice(
+                    crocEnv,
+                    pool.baseToken,
+                    pool.quoteToken,
+                    chainData.chainId,
+                    lastBlockNumber,
+                );
+                // console.log({ spotPrice });
 
-            // const croc = crocEnv ? crocEnv : new CrocEnv(provider);
-            // console.log({ isSellTokenBase });
-            const initialLimitRateNonDisplay =
-                poolPriceNonDisplay * (isSellTokenBase ? 0.985 : 1.015);
+                const gridSize = lookupChain(chainId).gridSize;
 
-            // console.log({ initialLimitRateNonDisplay });
+                // const croc = crocEnv ? crocEnv : new CrocEnv(provider);
+                // console.log({ isSellTokenBase });
+                const initialLimitRateNonDisplay = spotPrice * (isSellTokenBase ? 0.985 : 1.015);
 
-            const pinnedTick: number = isSellTokenBase
-                ? pinTickLower(initialLimitRateNonDisplay, gridSize)
-                : pinTickUpper(initialLimitRateNonDisplay, gridSize);
-            // pinTick.then(setLimitTick);
-            // pinTick.then((newTick) => {
-            console.log({ pinnedTick });
+                // console.log({ initialLimitRateNonDisplay });
 
-            dispatch(setLimitTick(pinnedTick));
+                const pinnedTick: number = isSellTokenBase
+                    ? pinTickLower(initialLimitRateNonDisplay, gridSize)
+                    : pinTickUpper(initialLimitRateNonDisplay, gridSize);
+                // pinTick.then(setLimitTick);
+                // pinTick.then((newTick) => {
+                // console.log({ pinnedTick });
 
-            const tickPrice = tickToPrice(pinnedTick);
-            const tickDispPrice = pool.toDisplayPrice(tickPrice);
+                dispatch(setLimitTick(pinnedTick));
 
-            tickDispPrice.then((tp) => {
-                const displayPriceWithDenom = isDenomBase ? tp : 1 / tp;
-                setEndDisplayPrice(displayPriceWithDenom);
-                // console.log({ displayPriceWithDenom });
+                const tickPrice = tickToPrice(pinnedTick);
+                const tickDispPrice = pool.toDisplayPrice(tickPrice);
 
-                const limitRateTruncated =
-                    displayPriceWithDenom < 2
-                        ? displayPriceWithDenom.toLocaleString(undefined, {
-                              minimumFractionDigits: 2,
-                              maximumFractionDigits: 6,
-                          })
-                        : displayPriceWithDenom.toLocaleString(undefined, {
-                              minimumFractionDigits: 2,
-                              maximumFractionDigits: 2,
-                          });
-                // console.log({ limitRateTruncated });
-                const limitRateInputField = document.getElementById('limit-rate-quantity');
-                if (limitRateInputField)
-                    (limitRateInputField as HTMLInputElement).value = limitRateTruncated;
-            });
+                tickDispPrice.then((tp) => {
+                    const displayPriceWithDenom = isDenomBase ? tp : 1 / tp;
+                    setEndDisplayPrice(displayPriceWithDenom);
+                    // console.log({ displayPriceWithDenom });
 
-            // const priceHalfBelow = pool.toDisplayPrice(priceHalfBelowTick(pinnedTick, gridSize));
-            const priceHalfAbove = pool.toDisplayPrice(priceHalfAboveTick(pinnedTick, gridSize));
-            // const priceFullTickBelow = pool.toDisplayPrice(tickToPrice(pinnedTick - gridSize));
-            const priceFullTickAbove = pool.toDisplayPrice(tickToPrice(pinnedTick + gridSize));
-
-            if (isDenomBase) {
-                priceHalfAbove.then((priceHalfAbove) => {
-                    // console.log({ priceHalfAbove });
-                    setMiddleDisplayPrice(priceHalfAbove);
+                    const limitRateTruncated =
+                        displayPriceWithDenom < 2
+                            ? displayPriceWithDenom.toLocaleString(undefined, {
+                                  minimumFractionDigits: 2,
+                                  maximumFractionDigits: 6,
+                              })
+                            : displayPriceWithDenom.toLocaleString(undefined, {
+                                  minimumFractionDigits: 2,
+                                  maximumFractionDigits: 2,
+                              });
+                    // console.log({ limitRateTruncated });
+                    const limitRateInputField = document.getElementById('limit-rate-quantity');
+                    if (limitRateInputField)
+                        (limitRateInputField as HTMLInputElement).value = limitRateTruncated;
                 });
-                priceFullTickAbove.then((priceFullTickAbove) => {
-                    setStartDisplayPrice(priceFullTickAbove);
-                });
+
+                // const priceHalfBelow = pool.toDisplayPrice(priceHalfBelowTick(pinnedTick, gridSize));
+                const priceHalfAbove = pool.toDisplayPrice(
+                    priceHalfAboveTick(pinnedTick, gridSize),
+                );
+                // const priceFullTickBelow = pool.toDisplayPrice(tickToPrice(pinnedTick - gridSize));
+                const priceFullTickAbove = pool.toDisplayPrice(tickToPrice(pinnedTick + gridSize));
+
+                if (isDenomBase) {
+                    priceHalfAbove.then((priceHalfAbove) => {
+                        // console.log({ priceHalfAbove });
+                        setMiddleDisplayPrice(priceHalfAbove);
+                    });
+                    priceFullTickAbove.then((priceFullTickAbove) => {
+                        setStartDisplayPrice(priceFullTickAbove);
+                    });
+                } else {
+                    priceHalfAbove.then((priceHalfBelow) => {
+                        // console.log({ priceHalfBelow });
+                        setMiddleDisplayPrice(1 / priceHalfBelow);
+                    });
+                    priceFullTickAbove.then((priceFullTickBelow) => {
+                        setStartDisplayPrice(1 / priceFullTickBelow);
+                    });
+                }
             } else {
-                priceHalfAbove.then((priceHalfBelow) => {
-                    // console.log({ priceHalfBelow });
-                    setMiddleDisplayPrice(1 / priceHalfBelow);
+                if (!pool) return;
+                // if (!provider) return;
+                if (poolPriceNonDisplay === 0) return;
+                // if (!priceInputFieldBlurred) return;
+
+                const gridSize = lookupChain(chainId).gridSize;
+
+                const tickPrice = tickToPrice(limitTick);
+
+                const tickDispPrice = pool.toDisplayPrice(tickPrice);
+
+                tickDispPrice.then((tp) => {
+                    const displayPriceWithDenom = isDenomBase ? tp : 1 / tp;
+
+                    // const limitPriceWithDenom = isDenomBase ? 1 / tp : tp;
+                    setEndDisplayPrice(displayPriceWithDenom);
+                    const limitRateTruncated =
+                        displayPriceWithDenom < 2
+                            ? displayPriceWithDenom.toLocaleString(undefined, {
+                                  minimumFractionDigits: 2,
+                                  maximumFractionDigits: 6,
+                              })
+                            : displayPriceWithDenom.toLocaleString(undefined, {
+                                  minimumFractionDigits: 2,
+                                  maximumFractionDigits: 2,
+                              });
+                    // console.log({ limitRateTruncated });
+                    const limitRateInputField = document.getElementById('limit-rate-quantity');
+                    if (limitRateInputField)
+                        (limitRateInputField as HTMLInputElement).value = limitRateTruncated;
                 });
-                priceFullTickAbove.then((priceFullTickBelow) => {
-                    setStartDisplayPrice(1 / priceFullTickBelow);
-                });
+
+                // const priceHalfBelow = pool.toDisplayPrice(priceHalfBelowTick(limitTick, gridSize));
+                const priceHalfAbove = pool.toDisplayPrice(priceHalfAboveTick(limitTick, gridSize));
+                // const priceFullTickBelow = pool.toDisplayPrice(tickToPrice(limitTick - gridSize));
+                const priceFullTickAbove = pool.toDisplayPrice(tickToPrice(limitTick + gridSize));
+
+                if (isDenomBase) {
+                    priceHalfAbove.then((priceHalfAbove) => {
+                        // console.log({ priceHalfAbove });
+                        setMiddleDisplayPrice(priceHalfAbove);
+                    });
+                    priceFullTickAbove.then((priceFullTickAbove) => {
+                        setStartDisplayPrice(priceFullTickAbove);
+                    });
+                } else {
+                    priceHalfAbove.then((priceHalfBelow) => {
+                        // console.log({ priceHalfBelow });
+                        setMiddleDisplayPrice(1 / priceHalfBelow);
+                    });
+                    priceFullTickAbove.then((priceFullTickBelow) => {
+                        setStartDisplayPrice(1 / priceFullTickBelow);
+                    });
+                }
+
+                setPriceInputFieldBlurred(false);
             }
-        } else {
-            if (!pool) return;
-            // if (!provider) return;
-            if (poolPriceNonDisplay === 0) return;
-            // if (!priceInputFieldBlurred) return;
-
-            const gridSize = lookupChain(chainId).gridSize;
-
-            const tickPrice = tickToPrice(limitTick);
-
-            const tickDispPrice = pool.toDisplayPrice(tickPrice);
-
-            tickDispPrice.then((tp) => {
-                const displayPriceWithDenom = isDenomBase ? tp : 1 / tp;
-
-                // const limitPriceWithDenom = isDenomBase ? 1 / tp : tp;
-                setEndDisplayPrice(displayPriceWithDenom);
-                const limitRateTruncated =
-                    displayPriceWithDenom < 2
-                        ? displayPriceWithDenom.toLocaleString(undefined, {
-                              minimumFractionDigits: 2,
-                              maximumFractionDigits: 6,
-                          })
-                        : displayPriceWithDenom.toLocaleString(undefined, {
-                              minimumFractionDigits: 2,
-                              maximumFractionDigits: 2,
-                          });
-                // console.log({ limitRateTruncated });
-                const limitRateInputField = document.getElementById('limit-rate-quantity');
-                if (limitRateInputField)
-                    (limitRateInputField as HTMLInputElement).value = limitRateTruncated;
-            });
-
-            // const priceHalfBelow = pool.toDisplayPrice(priceHalfBelowTick(limitTick, gridSize));
-            const priceHalfAbove = pool.toDisplayPrice(priceHalfAboveTick(limitTick, gridSize));
-            // const priceFullTickBelow = pool.toDisplayPrice(tickToPrice(limitTick - gridSize));
-            const priceFullTickAbove = pool.toDisplayPrice(tickToPrice(limitTick + gridSize));
-
-            if (isDenomBase) {
-                priceHalfAbove.then((priceHalfAbove) => {
-                    // console.log({ priceHalfAbove });
-                    setMiddleDisplayPrice(priceHalfAbove);
-                });
-                priceFullTickAbove.then((priceFullTickAbove) => {
-                    setStartDisplayPrice(priceFullTickAbove);
-                });
-            } else {
-                priceHalfAbove.then((priceHalfBelow) => {
-                    // console.log({ priceHalfBelow });
-                    setMiddleDisplayPrice(1 / priceHalfBelow);
-                });
-                priceFullTickAbove.then((priceFullTickBelow) => {
-                    setStartDisplayPrice(1 / priceFullTickBelow);
-                });
-            }
-
-            setPriceInputFieldBlurred(false);
-        }
+        })();
     }, [
         pool,
         // initialLoad,
