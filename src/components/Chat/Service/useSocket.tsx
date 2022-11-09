@@ -25,23 +25,12 @@ const useSocket = (room: any) => {
         socketRef.current.on('send-msg', () => {
             console.log('send-msg');
             socketRef.current.on('msg-recieve', (data: any) => {
-                console.log('msg-recieve data: ', data);
-
                 setMessages(data);
             });
         });
 
         socketRef.current.on('msg-recieve', (data: any) => {
-            console.log('msg-recieve data: ', data);
             setMessages(data);
-            // if(messages.length === 0 )
-            // {
-            //   setMessages(data);
-            // }
-            // else{
-            //   setMessages(() => [messages, ...data]);
-            // }
-            console.log('msg-recieve messages: ', messages);
         });
 
         return () => {

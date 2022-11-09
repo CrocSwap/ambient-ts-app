@@ -11,14 +11,25 @@ import { Message } from '../../Model/MessageModel';
 import Picker from 'emoji-picker-react';
 import styles from './MessageInput.module.css';
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
-import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
+import { useAppDispatch, useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { ITransaction } from '../../../../utils/state/graphDataSlice';
 import PositionBox from '../PositionBox/PositionBox';
 import { PoolIF } from '../../../../utils/interfaces/PoolIF';
 import { TokenIF } from '../../../../utils/interfaces/TokenIF';
 import { targetData } from '../../../../utils/state/tradeDataSlice';
 import useChatApi from '../../Service/ChatApi';
-
+import {
+    resetTokenData,
+    resetUserAddresses,
+    setAddressAtLogin,
+    setAddressCurrent,
+    setEnsNameCurrent,
+    setEnsOrAddressTruncated,
+    setErc20Tokens,
+    setIsLoggedIn,
+    setIsUserIdle,
+    setNativeToken,
+} from '../../../../utils/state/userDataSlice';
 interface MessageInputProps {
     message?: Message;
     room: string;
@@ -88,6 +99,22 @@ export default function MessageInput(props: MessageInputProps, prop: ChatProps) 
         setShowEmojiPicker(false);
     };
 
+    function messageInputText() {
+        if (isAuthenticated && isWeb3Enabled && isUserLoggedIn && account) {
+            return 'Type to chat. Enter to submit.';
+        } else {
+            return 'Please log in to chat.';
+        }
+    }
+    const userData = useAppSelector((state) => state.userData);
+    const isUserLoggedIn = userData.isLoggedIn;
+    const isUserIdle = userData.isUserIdle;
+    const dispatch = useAppDispatch();
+
+    useEffect(() => {
+        messageInputText();
+    }, [isAuthenticated, isWeb3Enabled, isUserLoggedIn, account]);
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const _handleKeyDown = (e: any) => {
         if (e.key === 'Enter') {
@@ -139,11 +166,7 @@ export default function MessageInput(props: MessageInputProps, prop: ChatProps) 
                 <input
                     type='text'
                     id='box'
-                    placeholder={
-                        isAuthenticated || isWeb3Enabled
-                            ? 'Type to chat. Enter to submit.'
-                            : 'Please log in to chat.'
-                    }
+                    placeholder={messageInputText()}
                     disabled={!isAuthenticated || !isWeb3Enabled}
                     className={styles.input_text}
                     onKeyDown={_handleKeyDown}
