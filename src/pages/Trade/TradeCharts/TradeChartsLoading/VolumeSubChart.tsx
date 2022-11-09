@@ -114,7 +114,7 @@ export default function VolumeSubChart(props: VolumeData) {
                     Math.abs(point.x - xScale(xValue(d))),
                 )[1];
 
-                console.log({ nearest });
+                // console.log({ nearest });
                 return nearest !== undefined ? nearest.value : 0;
             };
 
