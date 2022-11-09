@@ -77,6 +77,7 @@ import {
     setDidUserFlipDenom,
     setLimitTick,
     setLiquidityFee,
+    setPoolPriceNonDisplay,
     setPrimaryQuantityRange,
     setSimpleRangeWidth,
 } from '../utils/state/tradeDataSlice';
@@ -698,10 +699,13 @@ export default function App() {
         // run every time crocEnv updates
         // this indirectly tracks a new chain being used
     }, [crocEnv, tokenPairLocal]);
+
     const tokenPairStringified = useMemo(() => JSON.stringify(tokenPair), [tokenPair]);
 
     useEffect(() => {
         console.log('resetting limit tick');
+        dispatch(setPoolPriceNonDisplay(0));
+
         dispatch(setLimitTick(0));
         // }, [JSON.stringify({ base: baseTokenAddress, quote: quoteTokenAddress })]);
     }, [tokenPairStringified]);
@@ -1557,11 +1561,11 @@ export default function App() {
     const [quoteTokenDexBalance, setQuoteTokenDexBalance] = useState<string>('');
 
     // const [poolPriceTick, setPoolPriceTick] = useState<number | undefined>();
-    const [poolPriceNonDisplay, setPoolPriceNonDisplay] = useState<number | undefined>();
+    // const [poolPriceNonDisplay, setPoolPriceNonDisplay] = useState<number | undefined>();
     const [poolPriceDisplay, setPoolPriceDisplay] = useState<number | undefined>();
+    const poolPriceNonDisplay = tradeData.poolPriceNonDisplay;
 
     useEffect(() => {
-        setPoolPriceNonDisplay(0);
         setPoolPriceDisplay(0);
         // setPoolPriceTick(undefined);
     }, [JSON.stringify({ base: baseTokenAddress, quote: quoteTokenAddress })]);
@@ -1596,7 +1600,7 @@ export default function App() {
                     lastBlockNumber,
                 );
 
-                setPoolPriceNonDisplay(spotPrice);
+                dispatch(setPoolPriceNonDisplay(spotPrice));
                 if (spotPrice) {
                     const displayPrice = toDisplayPrice(
                         spotPrice,
@@ -2004,7 +2008,7 @@ export default function App() {
         isSellTokenBase: isTokenABase,
         tokenPair: tokenPair,
         poolPriceDisplay: poolPriceDisplay,
-        poolPriceNonDisplay: poolPriceNonDisplay,
+        // poolPriceNonDisplay: poolPriceNonDisplay,
         setRecheckTokenAApproval: setRecheckTokenAApproval,
         tokenAAllowance: tokenAAllowance,
         chainId: chainData.chainId,

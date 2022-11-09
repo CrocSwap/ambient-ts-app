@@ -65,7 +65,7 @@ interface LimitPropsIF {
     isSellTokenBase: boolean;
     tokenPair: TokenPairIF;
     poolPriceDisplay: number | undefined;
-    poolPriceNonDisplay: number | undefined;
+    // poolPriceNonDisplay: number | undefined;
     tokenAAllowance: string;
     setRecheckTokenAApproval: Dispatch<SetStateAction<boolean>>;
     chainId: string;
@@ -97,7 +97,7 @@ export default function Limit(props: LimitPropsIF) {
         gasPriceInGwei,
         ethMainnetUsdPrice,
         poolPriceDisplay,
-        poolPriceNonDisplay,
+        // poolPriceNonDisplay,
         tokenAAllowance,
         setRecheckTokenAApproval,
         chainId,
@@ -138,6 +138,7 @@ export default function Limit(props: LimitPropsIF) {
     const isTokenAPrimary = tradeData.isTokenAPrimary;
     const limitTick = tradeData.limitTick;
     const isSellTokenBase = tradeData.isTokenABase;
+    const poolPriceNonDisplay = tradeData.poolPriceNonDisplay;
 
     const slippageTolerancePercentage = tradeData.slippageTolerance;
 
@@ -151,39 +152,23 @@ export default function Limit(props: LimitPropsIF) {
 
     const isDenomBase = tradeData.isDenomBase;
 
-    // useEffect(() => {
-    //     console.log({ poolPriceNonDisplay });
-    //     console.log({ isDenomBase });
-    //     console.log({ isSellTokenBase });
-    //     if (poolPriceNonDisplay !== 0) dispatch(setLimitTick(0));
-    // }, [
-    //     JSON.stringify({
-    //         isDenomBase: isDenomBase,
-    //         // isSellTokenBase: isSellTokenBase,
-    //         tokenA: tradeData.tokenA.address,
-    //         tokenB: tradeData.tokenB.address,
-    //         // isPoolPriceZero: poolPriceNonDisplay === 0, // force re-initialization when tokens are changed
-    //     }),
-    // ]);
-
     useEffect(() => {
         if (limitTick === 0) {
             console.log({ limitTick });
-            console.log({ poolPriceNonDisplay });
             if (!pool) return;
             // if (!provider) return;
             if (!poolPriceNonDisplay) return;
 
-            // console.log({ isDenomBase });
+            console.log({ poolPriceNonDisplay });
 
             const gridSize = lookupChain(chainId).gridSize;
 
             // const croc = crocEnv ? crocEnv : new CrocEnv(provider);
-            // console.log({ isSellTokenBase });
+            console.log({ isSellTokenBase });
             const initialLimitRateNonDisplay =
                 poolPriceNonDisplay * (isSellTokenBase ? 0.985 : 1.015);
 
-            // console.log({ initialLimitRateNonDisplay });
+            console.log({ initialLimitRateNonDisplay });
             // const initialLimitRateWithDenom = isDenomBase
             //     ? 1 / initialLimitRateNonInverted
             //     : initialLimitRateNonInverted;
@@ -196,7 +181,7 @@ export default function Limit(props: LimitPropsIF) {
                 : pinTickUpper(initialLimitRateNonDisplay, gridSize);
             // pinTick.then(setLimitTick);
             // pinTick.then((newTick) => {
-            // console.log({ pinnedTick });
+            console.log({ pinnedTick });
 
             dispatch(setLimitTick(pinnedTick));
             // });
@@ -209,7 +194,7 @@ export default function Limit(props: LimitPropsIF) {
             tickDispPrice.then((tp) => {
                 const displayPriceWithDenom = isDenomBase ? tp : 1 / tp;
                 setEndDisplayPrice(displayPriceWithDenom);
-                // console.log({ displayPriceWithDenom });
+                console.log({ displayPriceWithDenom });
                 // dispatch(setLimitPrice(isDenomBase ? (1 / tp).toString() : tp.toString()));
                 // setInitialLoad(false);
                 const limitRateTruncated =
