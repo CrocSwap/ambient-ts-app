@@ -557,9 +557,9 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
         </span>
     );
 
-    const tvlDisplay = <p className={styles.tvl_display}>Pool TVL: {poolTvl || '...'}</p>;
+    const tvlDisplay = <p className={styles.tvl_display}>Pool Liquidity: {poolTvl || '...'}</p>;
     const tvlTickDisplay = (
-        <p className={styles.tvl_display}>TVL at Current Price: {tvlAtTick || '...'}</p>
+        <p className={styles.tvl_display}>Liquidity at Current Price: {tvlAtTick || '...'}</p>
     );
 
     // ------------  END OF MIDDLE TOP HEADER OF TRADE CHARTS

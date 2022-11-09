@@ -310,6 +310,7 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
 
     // Props for <Orders/> React Element
     const ordersProps = {
+        importedTokens: importedTokens,
         activeAccountLimitOrderData: activeAccountLimitOrderData,
         connectedAccountActive: connectedAccountActive,
         crocEnv: props.crocEnv,
@@ -339,7 +340,7 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
         { label: 'Limit Orders', content: <Orders {...ordersProps} />, icon: openOrdersImage },
         { label: 'Ranges', content: <Ranges {...rangeProps} />, icon: rangePositionsImage },
         {
-            label: 'Exchange Balances',
+            label: 'Exchange Deposits',
             content: <Exchange {...exchangeProps} />,
             icon: exchangeImage,
         },
