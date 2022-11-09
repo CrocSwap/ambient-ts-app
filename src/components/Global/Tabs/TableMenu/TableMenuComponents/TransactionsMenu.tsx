@@ -22,7 +22,7 @@ import {
     setAdvancedMode,
     setIsTokenAPrimary,
     setLimitTick,
-    setPrimaryQuantity,
+    // setPrimaryQuantity,
     setShouldLimitConverterUpdate,
     setShouldSwapConverterUpdate,
     setSimpleRangeWidth,
@@ -97,20 +97,22 @@ export default function TransactionsMenu(props: TransactionMenuIF) {
             dispatch(setSimpleRangeWidth(100));
             dispatch(setAdvancedMode(false));
         } else if (tx.positionType === 'concentrated') {
-            dispatch(setAdvancedLowTick(tx.bidTick));
-            dispatch(setAdvancedHighTick(tx.askTick));
-            dispatch(setAdvancedMode(true));
+            setTimeout(() => {
+                dispatch(setAdvancedLowTick(tx.bidTick));
+                dispatch(setAdvancedHighTick(tx.askTick));
+                dispatch(setAdvancedMode(true));
+            }, 1000);
         } else if (tx.entityType === 'swap') {
             dispatch(
                 setIsTokenAPrimary((tx.isBuy && tx.inBaseQty) || (!tx.isBuy && !tx.inBaseQty)),
             );
-            dispatch(
-                setPrimaryQuantity(
-                    tx.inBaseQty
-                        ? Math.abs(tx.baseFlowDecimalCorrected).toString()
-                        : Math.abs(tx.quoteFlowDecimalCorrected).toString(),
-                ),
-            );
+            // dispatch(
+            //     setPrimaryQuantity(
+            //         tx.inBaseQty
+            //             ? Math.abs(tx.baseFlowDecimalCorrected).toString()
+            //             : Math.abs(tx.quoteFlowDecimalCorrected).toString(),
+            //     ),
+            // );
             dispatch(setShouldSwapConverterUpdate(true));
             // console.log('swap copy clicked');
         } else if (tx.entityType === 'limitOrder') {
