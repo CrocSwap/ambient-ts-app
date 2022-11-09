@@ -4,6 +4,7 @@ import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
 import { formatDollarAmountAxis } from '../../../../utils/numbers';
 import { VolumeChartData } from '../TradeCharts';
+import { isNull } from 'lodash';
 
 interface VolumeData {
     volumeData: VolumeChartData[] | undefined;
@@ -114,8 +115,7 @@ export default function VolumeSubChart(props: VolumeData) {
                     Math.abs(point.x - xScale(xValue(d))),
                 )[1];
 
-                console.log({ nearest });
-                return nearest !== undefined ? nearest.value : 0;
+                return nearest !== undefined && !isNull(nearest) ? nearest.value : 0;
             };
 
             const yExtent = d3fc.extentLinear().accessors([(d: any) => d.value]);
