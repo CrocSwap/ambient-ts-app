@@ -51,7 +51,6 @@ export default function PositionBox(props: PositionBoxProps) {
             setHashMsg(hashMsg as string);
             setPosition(transactionsData.find((item) => item.tx === hashMsg));
             props.setIsPosition(true);
-            console.log(hashMsg);
         } else {
             setPosition(undefined);
         }
@@ -64,7 +63,6 @@ export default function PositionBox(props: PositionBoxProps) {
             setSPosition(
                 sortedPositions.find((item: PositionIF) => item.positionStorageSlot === hashMsg),
             );
-            console.log(sPositions?.positionStorageSlot);
             props.setIsPosition(true);
         } else {
             setSPosition(undefined);
@@ -214,7 +212,11 @@ export default function PositionBox(props: PositionBoxProps) {
     }
 
     function getRestOfMessagesIfAny() {
-        return message.substring(message.indexOf(' ') + 1);
+        if (message.includes(' ')) {
+            return message.substring(message.indexOf(' ') + 1);
+        } else {
+            return ' ';
+        }
     }
     return props.isPosition ? (
         position !== undefined && !isInput ? (
@@ -395,7 +397,7 @@ export default function PositionBox(props: PositionBoxProps) {
                         </div>
                     </div>
                 </div>
-                <p className={styles.position_message}>{getRestOfMessagesIfAny()}</p>
+                {/* <p className={styles.position_message}>{getRestOfMessagesIfAny()}</p> */}
             </motion.div>
         ) : sPositions && isInput ? (
             <motion.div

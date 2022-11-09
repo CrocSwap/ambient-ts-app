@@ -36,9 +36,10 @@ export default function SentMessagePanel(props: SentMessageProps) {
                     isPosition={isPosition}
                     setIsPosition={setIsPosition}
                 />
-            </div>
-            <div className={styles.avatar_image}>
-                <img src={noAvatarImage} alt='no avatar' />
+
+                <div className={styles.avatar_image}>
+                    <img src={noAvatarImage} alt='no avatar' />
+                </div>
             </div>
         </div>
     );
