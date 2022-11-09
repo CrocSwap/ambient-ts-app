@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from 'react';
 import printDomToImage from '../../utils/functions/printDomToImage';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 // import { toDisplayQty } from '@crocswap-libs/sdk';
-import { formatAmount } from '../../utils/numbers';
+import { formatAmountOld } from '../../utils/numbers';
 import { PositionIF } from '../../utils/interfaces/PositionIF';
 import APYGraphDisplay from './APYGraphDisplay/APYGraphDisplay';
 import RangeDetailsControl from './RangeDetailsControl/RangeDetailsControl';
@@ -150,7 +150,7 @@ export default function RangeDetails(props: IRangeDetailsProps) {
                         : baseFeeDisplayNum < 2
                         ? baseFeeDisplayNum.toPrecision(3)
                         : baseFeeDisplayNum >= 100000
-                        ? formatAmount(baseFeeDisplayNum)
+                        ? formatAmountOld(baseFeeDisplayNum)
                         : // ? baseLiqDisplayNum.toExponential(2)
                           baseFeeDisplayNum.toLocaleString(undefined, {
                               minimumFractionDigits: 2,
@@ -165,7 +165,7 @@ export default function RangeDetails(props: IRangeDetailsProps) {
                         : quoteFeeDisplayNum < 2
                         ? quoteFeeDisplayNum.toPrecision(3)
                         : quoteFeeDisplayNum >= 100000
-                        ? formatAmount(quoteFeeDisplayNum)
+                        ? formatAmountOld(quoteFeeDisplayNum)
                         : quoteFeeDisplayNum.toLocaleString(undefined, {
                               minimumFractionDigits: 2,
                               maximumFractionDigits: 2,

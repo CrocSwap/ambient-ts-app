@@ -28,6 +28,7 @@ import PoolInfo from './PoolInfo/PoolInfo';
 
 interface ITabsProps {
     isUserLoggedIn: boolean;
+    isTokenABase: boolean;
     crocEnv: CrocEnv | undefined;
     provider: ethers.providers.Provider | undefined;
     account: string;
@@ -70,6 +71,7 @@ interface ITabsProps {
 export default function TradeTabs2(props: ITabsProps) {
     const {
         isUserLoggedIn,
+        isTokenABase,
         crocEnv,
         chainId,
         chainData,
@@ -358,7 +360,7 @@ export default function TradeTabs2(props: ITabsProps) {
     const transactionsProps = {
         isShowAllEnabled: isShowAllEnabled,
         importedTokens: importedTokens,
-
+        isTokenABase: isTokenABase,
         changesInSelectedCandle: changesInSelectedCandle,
         tokenMap: tokenMap,
         graphData: graphData,

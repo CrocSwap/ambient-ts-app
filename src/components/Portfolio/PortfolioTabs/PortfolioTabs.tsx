@@ -33,6 +33,7 @@ import Transactions from '../../Trade/TradeTabs/Transactions/Transactions';
 // interface for React functional component props
 interface PortfolioTabsPropsIF {
     crocEnv: CrocEnv | undefined;
+    isTokenABase: boolean;
     provider: ethers.providers.Provider | undefined;
     cachedFetchTokenPrice: TokenPriceFn;
     importedTokens: TokenIF[];
@@ -66,12 +67,15 @@ interface PortfolioTabsPropsIF {
 
     currentTxActiveInTransactions: string;
     setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
+
+    fullLayoutToggle: JSX.Element;
 }
 
 // React functional component
 export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
     const {
         crocEnv,
+        isTokenABase,
         cachedFetchTokenPrice,
         importedTokens,
         connectedUserTokens,
@@ -92,6 +96,7 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
         quoteTokenBalance,
         baseTokenDexBalance,
         quoteTokenDexBalance,
+        fullLayoutToggle,
 
         account,
     } = props;
@@ -283,6 +288,7 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
     // props for <Transactions/> React Element
     const transactionsProps = {
         importedTokens: importedTokens,
+        isTokenABase: isTokenABase,
         activeAccountTransactionData: activeAccountTransactionData,
         connectedAccountActive: connectedAccountActive,
         isShowAllEnabled: false,
@@ -345,7 +351,7 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
         <div className={styles.tabs_container}>
             <TabComponent
                 data={accountTabData}
-                rightTabOptions={false}
+                rightTabOptions={connectedAccountActive ? fullLayoutToggle : false}
                 selectedOutsideTab={selectedOutsideTab}
                 setSelectedOutsideTab={setSelectedOutsideTab}
                 outsideControl={outsideControl}

@@ -6,7 +6,7 @@ import { TokenIF } from '../../../../../utils/interfaces/TokenIF';
 import styles from './WalletCard.module.css';
 import { useEffect, useState } from 'react';
 import { TokenPriceFn } from '../../../../../App/functions/fetchTokenPrice';
-// import { formatAmount } from '../../../../../utils/numbers';
+// import { formatAmountOld } from '../../../../../utils/numbers';
 interface WalletPropsIF {
     cachedFetchTokenPrice: TokenPriceFn;
     token?: TokenIF;

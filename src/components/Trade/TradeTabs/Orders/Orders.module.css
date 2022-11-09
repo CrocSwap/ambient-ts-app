@@ -162,14 +162,43 @@ text-transform: capitalize;
   
 }
 
-.header li:nth-of-type(3), .header li:nth-of-type(6), .header li:nth-of-type(7), .header li:nth-of-type(8){
+.trade_header li:nth-of-type(3), .trade_header li:nth-of-type(6), .trade_header li:nth-of-type(7), .trade_header li:nth-of-type(8){
 
   text-align: right;
  
 }
 
-.header li:nth-of-type(4){
+.trade_header li:nth-of-type(4){
   text-align: center;
   
 }
+.trade_header li:nth-of-type(9){
+  text-align: center;
+}
 
+
+
+
+.portfolio_header li:nth-of-type(4),
+ .portfolio_header li:nth-of-type(7),
+  .portfolio_header li:nth-of-type(8){
+
+  text-align: right;
+ 
+}
+
+.portfolio_header li:nth-of-type(5){
+  text-align: center;
+  
+}
+.portfolio_header li:nth-of-type(9){
+  text-align: center;
+}
+
+.token_qty{
+  display: flex;
+  justify-content: flex-end;
+  flex-direction: row;
+  align-items: center;
+  gap: 4px;
+}

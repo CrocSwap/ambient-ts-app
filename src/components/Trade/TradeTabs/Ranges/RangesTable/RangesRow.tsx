@@ -77,6 +77,7 @@ export default function RangesRow(props: RangesRowPropsIF) {
         // isOrderFilled,
 
         usdValue,
+        usdValueLocaleString,
         baseTokenSymbol,
         quoteTokenSymbol,
         isOwnerActiveAccount,
@@ -178,11 +179,32 @@ export default function RangesRow(props: RangesRowPropsIF) {
             title={posHash.toString()}
             placement={'right'}
             arrow
-            enterDelay={400}
+            enterDelay={750}
             leaveDelay={200}
         >
             <li onClick={openDetailsModal} data-label='id' className='base_color'>
                 {posHashTruncated}
+            </li>
+        </DefaultTooltip>
+    );
+
+    const ValueWithTooltip = (
+        <DefaultTooltip
+            interactive
+            title={'$' + usdValueLocaleString}
+            placement={'right'}
+            arrow
+            enterDelay={750}
+            leaveDelay={200}
+        >
+            <li
+                onClick={openDetailsModal}
+                data-label='value'
+                className='gradient_text'
+                style={{ textAlign: 'right', fontFamily: 'monospace' }}
+            >
+                {' '}
+                {'$' + usdValue}
             </li>
         </DefaultTooltip>
     );
@@ -202,7 +224,7 @@ export default function RangesRow(props: RangesRowPropsIF) {
             }
             placement={'right'}
             arrow
-            enterDelay={400}
+            enterDelay={750}
             leaveDelay={200}
         >
             <li
@@ -302,7 +324,6 @@ export default function RangesRow(props: RangesRowPropsIF) {
                     {isOnPortfolioPage ? minRangeDenomByMoneyness || '…' : ambientMinOrNull || '…'}
                 </li>
             )}
-
             {!showColumns && (
                 <li
                     onClick={openDetailsModal}
@@ -313,24 +334,14 @@ export default function RangesRow(props: RangesRowPropsIF) {
                     {isOnPortfolioPage ? maxRangeDenomByMoneyness || '…' : ambientMaxOrNull || '…'}
                 </li>
             )}
-
             {showColumns && !ipadView && (
                 <li data-label='side-type' className='color_white'>
                     <p>{ambientMinOrNull}</p>
                     <p>{ambientMaxOrNull}</p>
                 </li>
             )}
-            <li
-                onClick={openDetailsModal}
-                data-label='value'
-                className='gradient_text'
-                style={{ textAlign: 'right', fontFamily: 'monospace' }}
-            >
-                {' '}
-                {'$' + usdValue}
-            </li>
-
-            {!showColumns && (
+            {ValueWithTooltip}
+            {/* {!showColumns && (
                 <li onClick={openDetailsModal} data-label={baseTokenSymbol} className='base_color'>
                     <p style={{ textAlign: 'right', fontFamily: 'monospace' }}>{baseDisplay}</p>
                 </li>
@@ -339,23 +350,26 @@ export default function RangesRow(props: RangesRowPropsIF) {
                 <li onClick={openDetailsModal} data-label={quoteTokenSymbol} className='base_color'>
                     <p style={{ textAlign: 'right', fontFamily: 'monospace' }}>{quoteDisplay}</p>
                 </li>
-            )}
-            {showColumns && (
-                <li data-label={baseTokenSymbol + quoteTokenSymbol} className='base_color'>
-                    <p className={styles.align_center}>
-                        {' '}
-                        <img src={baseTokenLogo} alt='' width='15px' />
+            )} */}
+            {
+                <li
+                    data-label={baseTokenSymbol + quoteTokenSymbol}
+                    className='base_color'
+                    style={{ textAlign: 'end' }}
+                >
+                    <p className={styles.token_qty} style={{ fontFamily: 'monospace' }}>
                         {baseDisplay}
+                        <img src={baseTokenLogo} alt='' width='15px' />
                     </p>
 
-                    <p className={styles.align_center}>
+                    <p className={styles.token_qty} style={{ fontFamily: 'monospace' }}>
                         {' '}
-                        {quoteTokenLogoComponent}
                         {quoteDisplay}
+                        {quoteTokenLogoComponent}
                     </p>
                 </li>
-            )}
-            <li onClick={openDetailsModal} data-label='value'>
+            }
+            <li onClick={openDetailsModal} data-label='value' style={{ textAlign: 'center' }}>
                 {' '}
                 <p
                     style={{ textAlign: 'center', fontFamily: 'monospace' }}
@@ -367,7 +381,6 @@ export default function RangesRow(props: RangesRowPropsIF) {
             <li onClick={openDetailsModal} data-label='status' className='gradient_text'>
                 <RangeStatus isInRange={isPositionInRange} isAmbient={isAmbient} justSymbol />
             </li>
-
             <li data-label='menu'>
                 <RangesMenu {...rangeMenuProps} showSidebar={props.showSidebar} />
             </li>

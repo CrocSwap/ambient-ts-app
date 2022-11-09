@@ -7,7 +7,7 @@ import { useState } from 'react';
 import styles from './InitPoolExtraInfo.module.css';
 import TooltipComponent from '../../Global/TooltipComponent/TooltipComponent';
 import { TokenIF } from '../../../utils/interfaces/TokenIF';
-import { formatAmount } from '../../../utils/numbers';
+import { formatAmountOld } from '../../../utils/numbers';
 
 interface InitPriceExtraInfoProps {
     initGasPriceinDollars: string | undefined;
@@ -29,7 +29,7 @@ export default function InitPoolExtraInfo(props: InitPriceExtraInfoProps) {
             : initialPrice < 2
             ? initialPrice.toPrecision(3)
             : initialPrice >= 100000
-            ? formatAmount(initialPrice)
+            ? formatAmountOld(initialPrice)
             : initialPrice.toLocaleString(undefined, {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,

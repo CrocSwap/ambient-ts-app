@@ -3,7 +3,7 @@ import { PositionIF, TokenIF } from '../../../../utils/interfaces/exports';
 import { useMemo, SetStateAction, Dispatch } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
-import { formatAmount } from '../../../../utils/numbers';
+import { formatAmountOld } from '../../../../utils/numbers';
 
 interface SidebarRangePositionsProps {
     isDenomBase: boolean;
@@ -22,7 +22,7 @@ interface SidebarRangePositionsProps {
 
 export default function SidebarRangePositionsCard(props: SidebarRangePositionsProps) {
     const {
-        tokenMap,
+        // tokenMap,
         isDenomBase,
         position,
         setOutsideControl,
@@ -32,9 +32,9 @@ export default function SidebarRangePositionsCard(props: SidebarRangePositionsPr
         tabToSwitchToBasedOnRoute,
     } = props;
 
-    const getToken = (addr: string) => tokenMap.get(addr.toLowerCase()) as TokenIF;
-    const baseToken = getToken(position.base + '_' + position.chainId);
-    const quoteToken = getToken(position.quote + '_' + position.chainId);
+    // const getToken = (addr: string) => tokenMap.get(addr.toLowerCase()) as TokenIF;
+    // const baseToken = getToken(position.base + '_' + position.chainId);
+    // const quoteToken = getToken(position.quote + '_' + position.chainId);
 
     const { pathname } = useLocation();
 
@@ -49,13 +49,7 @@ export default function SidebarRangePositionsCard(props: SidebarRangePositionsPr
         } else if (pathname.startsWith('/swap')) {
             locationSlug = '/swap';
         }
-        return (
-            locationSlug +
-            '/chain=0x5&tokenA=' +
-            baseToken.address +
-            '&tokenB=' +
-            quoteToken.address
-        );
+        return locationSlug + '/chain=0x5&tokenA=' + position.base + '&tokenB=' + position.quote;
     }, [pathname]);
 
     const navigate = useNavigate();
@@ -77,7 +71,7 @@ export default function SidebarRangePositionsCard(props: SidebarRangePositionsPr
         : usdValueNum < 2
         ? usdValueNum.toPrecision(3)
         : usdValueNum >= 10000
-        ? formatAmount(usdValueNum, 1)
+        ? formatAmountOld(usdValueNum, 1)
         : // ? baseLiqDisplayNum.toExponential(2)
           usdValueNum.toLocaleString(undefined, {
               minimumFractionDigits: 2,

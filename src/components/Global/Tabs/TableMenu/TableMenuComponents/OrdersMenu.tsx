@@ -60,7 +60,7 @@ export default function OrdersMenu(props: OrdersMenuIF) {
 
     // -----------------SNACKBAR----------------
     function handleCopyAddress() {
-        copy('example data');
+        copy('Not Yet Implemented');
         setOpenSnackbar(true);
     }
 
@@ -70,7 +70,7 @@ export default function OrdersMenu(props: OrdersMenuIF) {
             setOpenSnackbar={setOpenSnackbar}
             openSnackbar={openSnackbar}
         >
-            {value} copied
+            {value}
         </SnackbarComponent>
     );
     // -----------------END OF SNACKBAR----------------
@@ -153,17 +153,18 @@ export default function OrdersMenu(props: OrdersMenuIF) {
 
     const ordersMenu = (
         <div className={styles.actions_menu}>
-            {view1 && claimButton}
+            {view1 && !showSidebar && claimButton}
             {/* {view1 && removeButton} */}
             {/* {(view2 || (view1NoSidebar && !isOnPortfolioPage)) && copyButton} */}
             {(view3 || view2WithNoSidebar) && detailsButton}
+            {view1 && copyButton}
         </div>
     );
 
     const menuContent = (
         <div className={styles.menu_column}>
             {detailsButton}
-            {copyButton}
+            {!view1 && copyButton}
             {removeButton}
             {claimButton}
         </div>
