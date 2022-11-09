@@ -219,7 +219,6 @@ export default function Chart(props: ChartData) {
     const [dragRange, setDragRange] = useState<any>();
     const [dragLimit, setDragLimit] = useState<any>();
     const [selectedCandleState, setSelectedCandleState] = useState<any>();
-    const [xScaleForSubchart, setXscaleForSubchart] = useState(scaleData.xScale);
     const valueFormatter = d3.format('.5f');
 
     const setDefaultRangeData = () => {
@@ -234,13 +233,6 @@ export default function Chart(props: ChartData) {
             return newTargets;
         });
     };
-
-    useEffect(() => {
-        if (scaleData) {
-            console.log('eefffcc', scaleData.xScale);
-            setXscaleForSubchart(scaleData.xScale);
-        }
-    }, [scaleData]);
 
     useEffect(() => {
         addDefsStyle();
@@ -316,6 +308,9 @@ export default function Chart(props: ChartData) {
                                 ? d === limit[0].value
                                 : d === ranges[0].value || d === ranges[1].value
                         ) {
+                            if (d === limit[0].value && market[0].value > limit[0].value) {
+                                return 'url(#textLowBg)';
+                            }
                             return 'url(#textBg)';
                         }
                         if (d === market[0].value) {
@@ -324,7 +319,12 @@ export default function Chart(props: ChartData) {
                     })
                     .select('text')
                     .attr('class', (d: any) => {
-                        if (d === market[0].value) {
+                        if (
+                            d === market[0].value ||
+                            (location.pathname.includes('limit') &&
+                                d === limit[0].value &&
+                                market[0].value > limit[0].value)
+                        ) {
                             return 'market';
                         }
                         if (isMouseMoveCrosshair && d === crosshairData[0].y) {
@@ -1186,7 +1186,9 @@ export default function Chart(props: ChartData) {
                     .attr('stroke', 'none');
 
                 selection.enter().select('g.right-handle').remove();
-                selection.enter().select('line').attr('class', 'redline');
+                selection
+                    .select('line')
+                    .attr('class', (d: any) => (d.value > market[0].value ? 'line' : 'lowline'));
             });
 
             const marketLine = d3fc
@@ -1226,7 +1228,7 @@ export default function Chart(props: ChartData) {
                     .attr('y', -5);
 
                 selection.enter().select('g.right-handle').remove();
-                selection.enter().select('line').attr('class', 'redline');
+                selection.enter().select('line').attr('class', 'line');
                 selection.select('g.left-handle').remove();
             });
 
@@ -1274,7 +1276,7 @@ export default function Chart(props: ChartData) {
                 return limitLine;
             });
         }
-    }, [scaleData]);
+    }, [scaleData, market]);
 
     // easy drag and triangle to horizontal lines for range
     async function addTriangleAndRect() {
@@ -1286,18 +1288,19 @@ export default function Chart(props: ChartData) {
             .remove();
 
         if (!location.pathname.includes('market')) {
+            const selectClass = location.pathname.includes('range') ? '.targets' : '.limit';
             d3.select(d3PlotArea.current)
-                .select('.targets')
+                .select(selectClass)
                 .selectAll('.annotation-line')
                 .style('cursor', 'row-resize');
 
             const nodes = d3
                 .select(d3PlotArea.current)
-                .select('.targets')
+                .select(selectClass)
                 .selectAll('.annotation-line')
                 .nodes();
 
-            nodes.forEach((res) => {
+            nodes.forEach(async (res) => {
                 if (d3.select(res).select('rect').node() === null) {
                     d3.select(res)
                         .append('rect')
@@ -1308,21 +1311,48 @@ export default function Chart(props: ChartData) {
                         .attr('stroke', 'none');
                 }
 
-                if (d3.select(res).select('polygon').node() === null) {
-                    d3.select(res)
-                        .append('polygon')
-                        .attr('points', '0,40 0,55 10,49 10,46')
-                        .attr('stroke', 'rgba(235, 235, 255, 0.4)')
-                        .attr('fill', 'rgba(235, 235, 255, 0.4)')
-                        .style('transform', 'translate(1px, -48px)');
+                await d3.select(res).selectAll('polygon').remove();
+                d3.select(res)
+                    .append('polygon')
+                    .attr('points', '0,40 0,55 10,49 10,46')
+                    .attr(
+                        'stroke',
+                        selectClass.includes('limit')
+                            ? market[0].value > limit[0].value
+                                ? 'rgb(139, 253, 244)'
+                                : 'rgba(235, 235, 255)'
+                            : 'rgba(235, 235, 255)',
+                    )
+                    .attr(
+                        'fill',
+                        selectClass.includes('limit')
+                            ? market[0].value > limit[0].value
+                                ? 'rgb(139, 253, 244)'
+                                : 'rgba(235, 235, 255)'
+                            : 'rgba(235, 235, 255)',
+                    )
+                    .style('transform', 'translate(1px, -48px)');
 
-                    d3.select(res)
-                        .append('polygon')
-                        .attr('points', '0,40 0,55 10,49 10,46')
-                        .attr('stroke', 'rgba(235, 235, 255, 0.4)')
-                        .attr('fill', 'rgba(235, 235, 255, 0.4)')
-                        .style('transform', 'translate(100%, 48px) rotate(180deg)');
-                }
+                d3.select(res)
+                    .append('polygon')
+                    .attr('points', '0,40 0,55 10,49 10,46')
+                    .attr(
+                        'stroke',
+                        selectClass.includes('limit')
+                            ? market[0].value > limit[0].value
+                                ? 'rgb(139, 253, 244)'
+                                : 'rgba(235, 235, 255)'
+                            : 'rgba(235, 235, 255)',
+                    )
+                    .attr(
+                        'fill',
+                        selectClass.includes('limit')
+                            ? market[0].value > limit[0].value
+                                ? 'rgb(139, 253, 244)'
+                                : 'rgba(235, 235, 255)'
+                            : 'rgba(235, 235, 255)',
+                    )
+                    .style('transform', 'translate(100%, 48px) rotate(180deg)');
             });
         }
     }
@@ -1386,6 +1416,20 @@ export default function Chart(props: ChartData) {
             const feMergeTagYaxisText = yAxisText.append('feMerge');
             feMergeTagYaxisText.append('feMergeNode').attr('in', 'bg');
             feMergeTagYaxisText.append('feMergeNode').attr('in', 'SourceGraphic');
+
+            const yAxisTextLow = svgmain
+                .append('defs')
+                .append('filter')
+                .attr('x', 0)
+                .attr('y', 0)
+                .attr('height', 1)
+                .attr('width', 1)
+                .attr('id', 'textLowBg');
+
+            yAxisTextLow.append('feFlood').attr('flood-color', '#5FFFF2').attr('result', 'bg');
+            const feMergeTagYaxisTextLow = yAxisTextLow.append('feMerge');
+            feMergeTagYaxisTextLow.append('feMergeNode').attr('in', 'bg');
+            feMergeTagYaxisTextLow.append('feMergeNode').attr('in', 'SourceGraphic');
         }
     }
 
@@ -1404,9 +1448,9 @@ export default function Chart(props: ChartData) {
             d3.select(d3PlotArea.current)
                 .select('.targetsArea')
                 .style('filter', 'url(#targetsAreaBackground)');
-            addTriangleAndRect();
         }
-    }, [dragControl, location]);
+        addTriangleAndRect();
+    }, [dragControl, location, market, limit]);
 
     // Line Rules
     useEffect(() => {
@@ -1503,12 +1547,20 @@ export default function Chart(props: ChartData) {
                             : pool?.toDisplayPrice(tickToPrice(pinnedTick));
 
                         newLimitDisplay?.then((newLimitNum) => {
+                            console.log({ newLimitNum });
                             setLimit(() => {
-                                return [{ name: 'Limit', value: newLimitNum }];
+                                return [{ name: 'Limit', value: newLimitValue }];
+                                //    return [{ name: 'Limit', value: newLimitNum }];
                             });
-                            // onBlurlimitRate(newLimitNum);
+                            onBlurlimitRate(newLimitValue);
                         });
                     });
+
+                    // setLimit(() => {
+                    //     return [{ name: 'Limit', value: snappedValue }];
+                    // });
+
+                    // onBlurlimitRate(snappedValue);
                 }
             });
         }
