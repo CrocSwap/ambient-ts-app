@@ -503,7 +503,6 @@ export default function Trade(props: TradePropsIF) {
                                 downBorderColor={downBorderColor}
                                 baseTokenAddress={baseTokenAddress}
                                 poolPriceNonDisplay={poolPriceNonDisplay}
-                                isCandleSelected={isCandleSelected}
                             />
                         </motion.div>
                     </div>
