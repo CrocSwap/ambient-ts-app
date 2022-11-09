@@ -10,8 +10,8 @@ interface VolumeData {
     period: number | undefined;
     crosshairData: any[];
     setsubChartValues: React.Dispatch<React.SetStateAction<any>>;
-    setSelectedVolume: React.Dispatch<React.SetStateAction<any>>;
-    selectedVolume: any;
+    setSelectedDate: React.Dispatch<React.SetStateAction<any>>;
+    selectedDate: any;
     candlestick: any;
     xScale: any;
     xScaleCopy: any;
@@ -20,15 +20,13 @@ interface VolumeData {
 }
 
 export default function VolumeSubChart(props: VolumeData) {
-    const { volumeData, period, xScale, crosshairData, xScaleCopy, candlestick, selectedVolume } =
+    const { volumeData, period, xScale, crosshairData, xScaleCopy, candlestick, selectedDate } =
         props;
 
     const setsubChartValues = props.setsubChartValues;
 
     // Volume Chart
     useEffect(() => {
-        console.log({ selectedVolume });
-
         if (
             volumeData !== undefined &&
             period !== undefined &&
@@ -115,13 +113,14 @@ export default function VolumeSubChart(props: VolumeData) {
                 .crossValue((d: any) => d.time)
                 .mainValue((d: any) => d.value)
                 .decorate((selection: any) => {
-                    selection.style('fill', (d: any) =>
-                        selectedVolume !== undefined && selectedVolume === d.time
+                    selection.style('fill', (d: any) => {
+                        return selectedDate !== undefined &&
+                            selectedDate.getTime() === d.time.getTime()
                             ? '#E480FF'
-                            : 'rgba(115,113,252, 0.6)',
-                    );
+                            : 'rgba(115,113,252, 0.6)';
+                    });
                     selection.style('stroke', (d: any) =>
-                        selectedVolume !== undefined && selectedVolume === d.time
+                        selectedDate !== undefined && selectedDate.getTime() === d.time.getTime()
                             ? '#E480FF'
                             : 'rgba(115,113,252, 0.6)',
                     );
@@ -130,18 +129,18 @@ export default function VolumeSubChart(props: VolumeData) {
                     });
                     selection.on('click', (event: any) => {
                         if (
-                            selectedVolume === undefined ||
-                            selectedVolume !== event.target.__data__.time
+                            selectedDate === undefined ||
+                            selectedDate !== event.target.__data__.time
                         ) {
                             d3.select(event.currentTarget)
                                 .style('fill', '#E480FF')
                                 .style('stroke', '#E480FF');
 
-                            props.setSelectedVolume(() => {
+                            props.setSelectedDate(() => {
                                 return event.target.__data__.time;
                             });
                         } else {
-                            props.setSelectedVolume(() => {
+                            props.setSelectedDate(() => {
                                 return undefined;
                             });
                         }
@@ -224,7 +223,14 @@ export default function VolumeSubChart(props: VolumeData) {
 
             render();
         }
-    }, [xScale, crosshairData, period, selectedVolume, volumeData]);
+    }, [
+        xScale,
+        crosshairData,
+        period,
+        selectedDate,
+        volumeData,
+        JSON.stringify(candlestick.bandwidth()),
+    ]);
 
     return <div style={{ height: '10%', width: '100%' }} className='chart-volume'></div>;
 }
