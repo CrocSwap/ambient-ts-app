@@ -594,6 +594,30 @@ export default function Chart(props: ChartData) {
         }
     }, [parsedChartData?.chartData, scaleData, rescale, location]);
 
+    useEffect(() => {
+        if (scaleData !== undefined) {
+            if (rescale) {
+                const xmin = new Date(Math.floor(scaleData.xScale.domain()[0]));
+                const xmax = new Date(Math.floor(scaleData.xScale.domain()[1]));
+
+                const filtered = parsedChartData?.chartData.filter(
+                    (data: any) => data.date >= xmin && data.date <= xmax,
+                );
+
+                if (filtered !== undefined) {
+                    const minYBoundary = d3.min(filtered, (d) => d.low);
+                    const maxYBoundary = d3.max(filtered, (d) => d.high);
+
+                    if (maxYBoundary !== undefined && minYBoundary !== undefined) {
+                        const buffer = Math.floor((maxYBoundary - minYBoundary) * 0.1);
+
+                        scaleData.yScale.domain([minYBoundary - buffer, maxYBoundary + buffer]);
+                    }
+                }
+            }
+        }
+    }, [parsedChartData?.chartData]);
+
     const setMarketLineValue = () => {
         const lastCandlePrice = parsedChartData?.chartData[0]?.close;
 
