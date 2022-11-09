@@ -2717,12 +2717,17 @@ export default function Chart(props: ChartData) {
                         <>
                             <hr />
                             <label>
-                                Fee Rate{' '}
-                                {formatDollarAmountAxis(
+                                Fee Rate:{' '}
+                                {(
+                                    subChartValues.filter(
+                                        (value: any) => value.name === 'feeRate',
+                                    )[0].value * 100
+                                ).toString() + '%'}
+                                {/* {formatDollarAmountAxis(
                                     subChartValues.filter(
                                         (value: any) => value.name === 'feeRate',
                                     )[0].value,
-                                )}
+                                )} */}
                             </label>
                             <FeeRateSubChart
                                 feeData={parsedChartData?.feeChartData.sort(
