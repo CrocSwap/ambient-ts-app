@@ -86,7 +86,7 @@ export default function PoolInfo(props: PoolInfoPropsIF) {
             >
                 <div className={styles.time_display_content}>
                     <p>TXS</p>
-                    <h6>{txs}</h6>
+                    <h6> {txs}</h6>
                 </div>
                 <div className={styles.time_display_content}>
                     <p>Buys</p>

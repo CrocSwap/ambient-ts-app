@@ -260,7 +260,15 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
             <div className={styles.direction}> </div>
             <div className={styles.swapbox_top}>
                 <div className={styles.swap_input}>
-                    <CurrencyQuantity fieldId={fieldId} handleChangeEvent={handleChangeEvent} />
+                    <CurrencyQuantity
+                        fieldId={fieldId}
+                        handleChangeEvent={(evt) => {
+                            // console.log('change triggered from selector');
+                            // console.log({ evt });
+                            if (evt === undefined) return;
+                            handleChangeEvent(evt);
+                        }}
+                    />
                 </div>
                 <div className={styles.token_select} onClick={openModal}>
                     {thisToken.logoURI ? (

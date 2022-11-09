@@ -9,23 +9,28 @@
 .right_tab_option {
     display: flex;
     flex-direction: row;
-    gap: 12px;
+    gap: 2rem;
     background: var(--dark3);
     padding: 4px;
     border-radius: 4px;
     transition: all var(--animation-speed) ease-in-out;
+    cursor: pointer;
+}
+
+.right_tab_option section {
+    cursor: pointer;
 }
 .full_layout_svg {
-    width: 30px;
+    width: 40px;
     height: 20px;
     border-radius: 4px;
     background: var(--dark2);
-    cursor: pointer;
+
     transition: all var(--animation-speed) ease-in-out;
 }
 
 .half_layout_svg {
-    width: 10px;
+    width: 20px;
     height: 20px;
     border-radius: 4px;
     background: var(--dark2);
@@ -35,7 +40,7 @@
     flex-direction: row;
     gap: 2px;
     position: relative;
-    cursor: pointer;
+
     transition: all var(--animation-speed) ease-in-out;
 }
 .full_layout_svg_copied {
@@ -43,7 +48,6 @@
     height: 20px;
     border-radius: 4px;
     background: var(--dark2);
-    cursor: pointer;
 }
 .active_layout_style {
     background: var(--title-gradient);
@@ -63,8 +67,6 @@
         grid-template-columns: auto 380px;
         gap: 1rem;
         max-height: calc(100vh - 20rem);
-
-        
     }
     .full_layout_container {
         grid-template-columns: auto;

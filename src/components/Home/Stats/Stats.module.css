@@ -56,7 +56,7 @@
     line-height: 22px;
     letter-spacing: -0.02em;
     color: var(--text-grey-white);
-}
+    font-family: var(--mono);}
 @media (min-width: 600px) {
     .content {
         grid-template-columns: repeat(2, 1fr);

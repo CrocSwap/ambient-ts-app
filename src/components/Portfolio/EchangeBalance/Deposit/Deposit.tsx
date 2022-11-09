@@ -71,7 +71,7 @@ export default function Deposit(props: PortfolioDepositProps) {
         // console.log({ isTokenAllowanceSufficient });
         if (!depositQty) {
             setIsButtonDisabled(true);
-            setButtonMessage('Please Enter Token Quantity');
+            setButtonMessage('Enter a Deposit Amount');
         } else if (isApprovalPending) {
             setIsButtonDisabled(true);
             setButtonMessage(`${selectedToken.symbol} Approval Pending`);
@@ -235,7 +235,7 @@ export default function Deposit(props: PortfolioDepositProps) {
     return (
         <div className={styles.deposit_container}>
             <div className={styles.info_text}>
-                Deposit tokens to Ambient Finance exchange wallet
+                Deposit collateral for future trading at lower gas costs:
             </div>
             <DepositCurrencySelector
                 fieldId='exchange-balance-deposit'

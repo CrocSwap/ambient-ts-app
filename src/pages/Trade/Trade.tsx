@@ -23,6 +23,7 @@ import NoTokenIcon from '../../components/Global/NoTokenIcon/NoTokenIcon';
 // interface for React functional component props
 interface TradePropsIF {
     pool: CrocPoolView | undefined;
+    // poolPriceTick: number | undefined;
     isUserLoggedIn: boolean;
     crocEnv: CrocEnv | undefined;
     provider: ethers.providers.Provider | undefined;
@@ -80,6 +81,7 @@ interface TradePropsIF {
 export default function Trade(props: TradePropsIF) {
     const {
         pool,
+        // poolPriceTick,
         isUserLoggedIn,
         crocEnv,
         candleData,
@@ -473,6 +475,7 @@ export default function Trade(props: TradePropsIF) {
                             }`}
                         >
                             <TradeCharts
+                                // poolPriceTick={poolPriceTick}
                                 pool={pool}
                                 chainData={chainData}
                                 poolPriceDisplay={poolPriceDisplayWithDenom}
@@ -518,6 +521,7 @@ export default function Trade(props: TradePropsIF) {
                         <div className={!showChartAndNotTab ? styles.hide : ''}>
                             <TradeTabs2
                                 isUserLoggedIn={isUserLoggedIn}
+                                isTokenABase={isTokenABase}
                                 crocEnv={crocEnv}
                                 provider={provider}
                                 account={account}
