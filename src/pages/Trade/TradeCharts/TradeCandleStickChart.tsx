@@ -269,10 +269,8 @@ export default function TradeCandleStickChart(props: ChartData) {
     // Scale
     useEffect(() => {
         if (!isLoading && parsedChartData !== undefined && liquidityData !== undefined) {
-            let candleNumber = parsedChartData.chartData;
-
             if (parsedChartData.chartData.length > 100) {
-                candleNumber = parsedChartData.chartData.slice(
+                parsedChartData.chartData = parsedChartData.chartData.slice(
                     parsedChartData.chartData.length - 99,
                     parsedChartData.chartData.length,
                 );
@@ -301,9 +299,9 @@ export default function TradeCandleStickChart(props: ChartData) {
             const subChartxScale = d3.scaleTime();
             const yScale = d3.scaleLinear();
 
-            xScale.domain(xExtent(candleNumber));
-            subChartxScale.domain(subChartxExtent(candleNumber));
-            yScale.domain(priceRange(candleNumber));
+            xScale.domain(xExtent(parsedChartData.chartData));
+            subChartxScale.domain(subChartxExtent(parsedChartData.chartData));
+            yScale.domain(priceRange(parsedChartData.chartData));
 
             const xScaleCopy = xScale.copy();
             const yScaleCopy = yScale.copy();
@@ -375,7 +373,7 @@ export default function TradeCandleStickChart(props: ChartData) {
             );
         }, 500);
         return () => clearTimeout(timer);
-    }, [parsedChartData?.chartData, props.poolPriceDisplay]);
+    }, [parsedChartData?.chartData]);
 
     return (
         <>

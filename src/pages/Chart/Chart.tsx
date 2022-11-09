@@ -597,6 +597,11 @@ export default function Chart(props: ChartData) {
         }
     }, [parsedChartData?.chartData, scaleData, rescale, location]);
 
+    useEffect(() => {
+        console.log(parsedChartData?.chartData);
+        parsedChartData?.chartData.sort((a: any, b: any) => b.liqPrices - a.liqPrices);
+    }, [parsedChartData?.chartData]);
+
     const setMarketLineValue = () => {
         const lastCandlePrice = parsedChartData?.chartData[0]?.close;
 
@@ -1140,7 +1145,10 @@ export default function Chart(props: ChartData) {
                 .axisBottom()
                 .scale(scaleData.xScale)
                 .tickArguments([6])
-                .tickFormat((d: any) => d3.timeFormat('%d/%m/%y')(d));
+                .tickFormat((d: any) => {
+                    console.log(d.toLocaleDateString());
+                    return d3.timeFormat('%d/%m/%y')(d);
+                });
 
             setXaxis(() => {
                 return _xAxis;
