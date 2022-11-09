@@ -68,6 +68,17 @@ export default function VolumeSubChart(props: VolumeData) {
                     .select('.right-label')
                     .remove();
 
+                setsubChartValues((prevState: any) => {
+                    const newTargets = [...prevState];
+                    newTargets.filter((target: any) => target.name === 'volume')[0].value = snap(
+                        barSeries,
+                        chartData.barSeries,
+                        { x: xScale(crosshairXForSubChart), y: -1 },
+                    );
+
+                    return newTargets;
+                });
+
                 d3.select('.chart-volume').on('mousemove', async function (event: any) {
                     props.setMouseMoveEventForSubChart(event);
                     props.setIsMouseMoveForSubChart(true);

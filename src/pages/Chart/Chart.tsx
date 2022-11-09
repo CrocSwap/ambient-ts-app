@@ -2805,7 +2805,7 @@ export default function Chart(props: ChartData) {
                         </>
                     )}
 
-                    {showVolume === false && candlestick !== undefined && (
+                    {showVolume === true && candlestick !== undefined && (
                         <>
                             <hr />
                             <label>

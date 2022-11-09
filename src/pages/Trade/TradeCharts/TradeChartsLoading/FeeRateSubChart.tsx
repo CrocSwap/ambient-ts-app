@@ -113,6 +113,18 @@ export default function FeeRateSubChart(props: FreeRateData) {
 
                     return newTargets;
                 });
+
+                d3.select('.chart-fee').on('mousemove', async function (event: any) {
+                    props.setMouseMoveEventForSubChart(event);
+                    props.setIsMouseMoveForSubChart(true);
+                    // props.setCrosshairXForSubChart(event.offsetX);
+                    chartData.crosshairDataLocal[0].y = event.offsetY;
+                });
+
+                d3.select('.chart-volume').on('mouseleave', async function (event: any) {
+                    props.setMouseMoveEventForSubChart(event);
+                    props.setIsMouseMoveForSubChart(false);
+                });
             };
 
             const minimum = (data: any, accessor: any) => {
