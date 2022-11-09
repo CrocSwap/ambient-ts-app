@@ -267,7 +267,7 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
 
     const handleTokenAChangeEvent = (evt?: ChangeEvent<HTMLInputElement>) => {
         let rawTokenBQty: number;
-        console.log({ isSellTokenBase });
+        // console.log({ isSellTokenBase });
 
         if (evt) {
             const input = evt.target.value;
