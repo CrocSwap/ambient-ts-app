@@ -335,25 +335,10 @@ export default function TradeCandleStickChart(props: ChartData) {
         }
     }, [parsedChartData?.period, denominationsInBase, liquidityData]);
 
-    // cursor change----------------------------------------------
-    function loadingCursor(event: any) {
-        const el = document?.getElementById('hov_text');
-        if (el != null) {
-            el.style.top = event.clientY + 'px';
-            el.style.left = event.clientX + 'px';
-        }
-    }
-
-    const loadingChartElement = document?.getElementById('loading_chart_hover');
-    if (loadingChartElement != null) {
-        loadingChartElement?.addEventListener('mousemove', loadingCursor);
-    }
-    // end of cursor change----------------------------------------------
-
     const loading = (
-        <div className='animatedImg_container' id='loading_chart_hover'>
+        <div style={{ height: '100%', width: '100%' }} className='animatedImg_container'>
             <img src={candleStikPlaceholder} className='img_shimmer' />
-            <div id='hov_text'>Fetching chart data...</div>
+            <div className='fetching_text'>Fetching chart data...</div>
         </div>
     );
 
@@ -400,9 +385,6 @@ export default function TradeCandleStickChart(props: ChartData) {
                     />
                 ) : (
                     <>{loading}</>
-                    // <TradeChartsLoading/>
-
-                    // <Animation animData={candleStickLoading} />
                 )}
             </div>
         </>

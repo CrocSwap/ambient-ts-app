@@ -30,6 +30,7 @@ const mainnetProvider = new ethers.providers.WebSocketProvider(
 
 interface PortfolioPropsIF {
     crocEnv: CrocEnv | undefined;
+    isTokenABase: boolean;
     provider: ethers.providers.Provider | undefined;
     cachedFetchNativeTokenBalance: nativeTokenBalanceFn;
     cachedFetchErc20TokenBalances: Erc20TokenBalanceFn;
@@ -73,6 +74,7 @@ export default function Portfolio(props: PortfolioPropsIF) {
 
     const {
         crocEnv,
+        isTokenABase,
         provider,
         cachedFetchNativeTokenBalance,
         cachedFetchErc20TokenBalances,
@@ -247,6 +249,37 @@ export default function Portfolio(props: PortfolioPropsIF) {
     // useEffect(() => {
     //     .userAccount ? setFullLayoutActive(true) : null;
     // }, [userAccount]);
+    const fullLayerToggle = (
+        <div
+            className={styles.right_tab_option}
+            onClick={() => setFullLayoutActive(!fullLayoutActive)}
+        >
+            <section>
+                {' '}
+                <div
+                    className={`${styles.full_layout_svg} ${
+                        fullLayoutActive && styles.active_layout_style
+                    } `}
+                />
+            </section>
+
+            <section
+                // onClick={() => setFullLayoutActive(!fullLayoutActive)}
+                className={styles.shared_layout_svg}
+            >
+                <div
+                    className={`${styles.full_layout_svg_copied} ${
+                        !fullLayoutActive && styles.active_layout_style
+                    }`}
+                />
+                <div
+                    className={`${styles.half_layout_svg} ${
+                        !fullLayoutActive && styles.active_layout_style
+                    }`}
+                />
+            </section>
+        </div>
+    );
 
     const connectedUserNativeToken = useAppSelector((state) => state.userData.tokens.nativeToken);
     const connectedUserErc20Tokens = useAppSelector((state) => state.userData.tokens.erc20Tokens);
@@ -352,6 +385,7 @@ export default function Portfolio(props: PortfolioPropsIF) {
             >
                 <PortfolioTabs
                     crocEnv={crocEnv}
+                    isTokenABase={isTokenABase}
                     provider={provider}
                     cachedFetchTokenPrice={cachedFetchTokenPrice}
                     importedTokens={importedTokens}
@@ -383,6 +417,7 @@ export default function Portfolio(props: PortfolioPropsIF) {
                     quoteTokenDexBalance={quoteTokenDexBalance}
                     currentTxActiveInTransactions={currentTxActiveInTransactions}
                     setCurrentTxActiveInTransactions={setCurrentTxActiveInTransactions}
+                    fullLayoutToggle={fullLayerToggle}
                 />
                 {connectedAccountActive && !fullLayoutActive ? exchangeBalanceComponent : null}
             </div>

@@ -49,7 +49,7 @@ export default function ExchangeBalance(props: ExchangeBalanceProps) {
         setRecheckTokenAllowance,
         setRecheckTokenBalances,
         lastBlockNumber,
-        openTokenModal
+        openTokenModal,
     } = props;
 
     const [sendToAddress, setSendToAddress] = useState<string | undefined>();
@@ -183,9 +183,10 @@ export default function ExchangeBalance(props: ExchangeBalanceProps) {
             </div>
             <div className={styles.info_text}>
                 {' '}
-                Collateral stored on the Ambient Finance exchange reduces gas costs when making
-                transactions. Collateral can be withdrawn at any time.
+                Collateral deposited into the Ambient Finance exchange reduces gas costs when making
+                transactions.
             </div>
+            <div className={styles.info_text}> Collateral can be withdrawn at any time.</div>
         </div>
     );
 }
