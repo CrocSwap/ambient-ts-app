@@ -139,7 +139,10 @@ export default function Transactions(props: TransactionsProps) {
     const [debouncedIsShowAllEnabled, setDebouncedIsShowAllEnabled] = useState(false);
 
     const [sortBy, setSortBy, reverseSort, setReverseSort, sortedTransactions] =
-        useSortedTransactions('time', isShowAllEnabled ? changesByPool : transactionData);
+        useSortedTransactions(
+            'time',
+            isShowAllEnabled ? changesByPoolWithoutFills : transactionData,
+        );
 
     // check to see if data is received
     // if it is, set data is loading to false
