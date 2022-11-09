@@ -30,6 +30,7 @@ export interface tradeData {
     isTokenAPrimaryRange: boolean;
     primaryQuantityRange: string;
     limitTick: number;
+    limitTickCopied: boolean;
     poolPriceNonDisplay: number;
     advancedLowTick: number;
     advancedHighTick: number;
@@ -62,6 +63,7 @@ const initialState: tradeData = {
     isTokenAPrimaryRange: true,
     primaryQuantityRange: '',
     limitTick: 0,
+    limitTickCopied: false,
     poolPriceNonDisplay: 0,
     advancedLowTick: 0,
     advancedHighTick: 0,
@@ -161,6 +163,9 @@ export const tradeDataSlice = createSlice({
         setLimitTick: (state, action: PayloadAction<number>) => {
             state.limitTick = action.payload;
         },
+        setLimitTickCopied: (state, action: PayloadAction<boolean>) => {
+            state.limitTickCopied = action.payload;
+        },
         setPoolPriceNonDisplay: (state, action: PayloadAction<number>) => {
             state.poolPriceNonDisplay = action.payload;
         },
@@ -234,6 +239,7 @@ export const {
     setIsTokenAPrimaryRange,
     setPrimaryQuantityRange,
     setLimitTick,
+    setLimitTickCopied,
     setPoolPriceNonDisplay,
     setAdvancedLowTick,
     setAdvancedHighTick,

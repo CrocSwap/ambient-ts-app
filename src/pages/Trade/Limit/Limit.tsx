@@ -33,7 +33,7 @@ import { useTradeData } from '../Trade';
 import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
 import { useModal } from '../../../components/Global/Modal/useModal';
 import { SlippagePairIF, TokenIF, TokenPairIF } from '../../../utils/interfaces/exports';
-import { setLimitTick } from '../../../utils/state/tradeDataSlice';
+import { setLimitTick, setLimitTickCopied } from '../../../utils/state/tradeDataSlice';
 import { addPendingTx, addReceipt, removePendingTx } from '../../../utils/state/receiptDataSlice';
 import {
     isTransactionFailedError,
@@ -155,11 +155,13 @@ export default function Limit(props: LimitPropsIF) {
     // const [initialLoad, setInitialLoad] = useState<boolean>(false);
 
     const isDenomBase = tradeData.isDenomBase;
+    const limitTickCopied = tradeData.limitTickCopied;
 
     useEffect(() => {
         (async () => {
-            if (limitTick === 0 && crocEnv) {
-                console.log({ limitTick });
+            // console.log({ limitTickCopied });
+            if (limitTick === 0 && crocEnv && !limitTickCopied) {
+                // console.log({ limitTick });
                 if (!pool) return;
                 // if (!provider) return;
                 // if (!poolPriceNonDisplay) return;
@@ -240,7 +242,7 @@ export default function Limit(props: LimitPropsIF) {
                         setStartDisplayPrice(1 / priceFullTickBelow);
                     });
                 }
-            } else {
+            } else if (limitTick) {
                 if (!pool) return;
                 // if (!provider) return;
                 if (poolPriceNonDisplay === 0) return;
@@ -297,10 +299,12 @@ export default function Limit(props: LimitPropsIF) {
                 }
 
                 setPriceInputFieldBlurred(false);
+                if (limitTickCopied) dispatch(setLimitTickCopied(false));
             }
         })();
     }, [
         pool,
+        limitTickCopied,
         // initialLoad,
         chainId,
         limitTick,
