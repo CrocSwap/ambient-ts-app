@@ -96,7 +96,7 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
         quoteTokenBalance,
         baseTokenDexBalance,
         quoteTokenDexBalance,
-        fullLayoutToggle,
+        // fullLayoutToggle,
 
         account,
     } = props;
@@ -352,7 +352,7 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
         <div className={styles.tabs_container}>
             <TabComponent
                 data={accountTabData}
-                rightTabOptions={connectedAccountActive ? fullLayoutToggle : false}
+                rightTabOptions={false}
                 selectedOutsideTab={selectedOutsideTab}
                 setSelectedOutsideTab={setSelectedOutsideTab}
                 outsideControl={outsideControl}

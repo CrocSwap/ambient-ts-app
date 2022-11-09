@@ -60,15 +60,14 @@
         height: calc(100vh - 16rem);
 
         display: grid;
+        grid-template-columns: auto auto;
         transition: all var(--animation-speed) ease-in-out;
     }
 
     .tabs_exchange_balance_container {
-        grid-template-columns: auto 380px;
+        grid-template-columns: auto auto;
         gap: 1rem;
         max-height: calc(100vh - 20rem);
     }
-    .full_layout_container {
-        grid-template-columns: auto;
-    }
+   
 }

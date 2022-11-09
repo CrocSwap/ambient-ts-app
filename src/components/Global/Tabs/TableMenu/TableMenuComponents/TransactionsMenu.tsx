@@ -22,13 +22,14 @@ import {
     setAdvancedMode,
     setIsTokenAPrimary,
     setLimitTick,
-    setPrimaryQuantity,
+    setLimitTickCopied,
+    // setPrimaryQuantity,
     setShouldLimitConverterUpdate,
     setShouldSwapConverterUpdate,
     setSimpleRangeWidth,
     tradeData,
 } from '../../../../../utils/state/tradeDataSlice';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 // interface for React functional component props
 interface TransactionMenuIF {
@@ -97,23 +98,26 @@ export default function TransactionsMenu(props: TransactionMenuIF) {
             dispatch(setSimpleRangeWidth(100));
             dispatch(setAdvancedMode(false));
         } else if (tx.positionType === 'concentrated') {
-            dispatch(setAdvancedLowTick(tx.bidTick));
-            dispatch(setAdvancedHighTick(tx.askTick));
-            dispatch(setAdvancedMode(true));
+            setTimeout(() => {
+                dispatch(setAdvancedLowTick(tx.bidTick));
+                dispatch(setAdvancedHighTick(tx.askTick));
+                dispatch(setAdvancedMode(true));
+            }, 1000);
         } else if (tx.entityType === 'swap') {
             dispatch(
                 setIsTokenAPrimary((tx.isBuy && tx.inBaseQty) || (!tx.isBuy && !tx.inBaseQty)),
             );
-            dispatch(
-                setPrimaryQuantity(
-                    tx.inBaseQty
-                        ? Math.abs(tx.baseFlowDecimalCorrected).toString()
-                        : Math.abs(tx.quoteFlowDecimalCorrected).toString(),
-                ),
-            );
+            // dispatch(
+            //     setPrimaryQuantity(
+            //         tx.inBaseQty
+            //             ? Math.abs(tx.baseFlowDecimalCorrected).toString()
+            //             : Math.abs(tx.quoteFlowDecimalCorrected).toString(),
+            //     ),
+            // );
             dispatch(setShouldSwapConverterUpdate(true));
             // console.log('swap copy clicked');
         } else if (tx.entityType === 'limitOrder') {
+            dispatch(setLimitTickCopied(true));
             // console.log('limit order copy clicked');
             console.log({ tradeData });
             console.log({ tx });
@@ -143,7 +147,6 @@ export default function TransactionsMenu(props: TransactionMenuIF) {
                     'buy-limit-quantity',
                 ) as HTMLInputElement;
 
-                console.log(buyQtyField.value);
                 if (tradeData.isTokenAPrimary) {
                     if (buyQtyField) {
                         buyQtyField.value = sellQtyField.value;
@@ -258,55 +261,111 @@ export default function TransactionsMenu(props: TransactionMenuIF) {
     const isTxCopiable =
         tx.source !== 'manual' && (tx.entityType === 'swap' || tx.changeType === 'mint');
 
+    const navigate = useNavigate();
+
     const copyButton =
         tx.entityType === 'liqchange' ? (
-            <Link
+            <button
                 className={styles.option_button}
-                to={
-                    '/trade/range/' +
-                    'chain=' +
-                    tx.chainId +
-                    '&tokenA=' +
-                    (tx.isBid ? tx.base : tx.quote) +
-                    '&tokenB=' +
-                    (tx.isBid ? tx.quote : tx.base)
-                }
-                onClick={handleCopyClick}
+                onClick={() => {
+                    navigate(
+                        '/trade/range/' +
+                            'chain=' +
+                            tx.chainId +
+                            '&tokenA=' +
+                            (tx.isBid ? tx.base : tx.quote) +
+                            '&tokenB=' +
+                            (tx.isBid ? tx.quote : tx.base),
+                    );
+                    handleCopyClick();
+                }}
             >
                 Copy
-            </Link>
-        ) : tx.entityType === 'limitOrder' ? (
-            <Link
+            </button>
+        ) : // <Link
+        //     className={styles.option_button}
+        //     to={
+        //         '/trade/range/' +
+        //         'chain=' +
+        //         tx.chainId +
+        //         '&tokenA=' +
+        //         (tx.isBid ? tx.base : tx.quote) +
+        //         '&tokenB=' +
+        //         (tx.isBid ? tx.quote : tx.base)
+        //     }
+        //     onClick={handleCopyClick}
+        // >
+        //     Copy
+        // </Link>
+
+        tx.entityType === 'limitOrder' ? (
+            <button
                 className={styles.option_button}
-                to={
-                    '/trade/limit/' +
-                    'chain=' +
-                    tx.chainId +
-                    '&tokenA=' +
-                    (tx.isBid ? tx.base : tx.quote) +
-                    '&tokenB=' +
-                    (tx.isBid ? tx.quote : tx.base)
-                }
-                onClick={handleCopyClick}
+                onClick={() => {
+                    dispatch(setLimitTickCopied(true));
+                    dispatch(setLimitTick(0));
+                    navigate(
+                        '/trade/limit/' +
+                            'chain=' +
+                            tx.chainId +
+                            '&tokenA=' +
+                            (tx.isBid ? tx.base : tx.quote) +
+                            '&tokenB=' +
+                            (tx.isBid ? tx.quote : tx.base),
+                    );
+                    handleCopyClick();
+                }}
             >
                 Copy
-            </Link>
+            </button>
         ) : (
-            <Link
+            // <Link
+            //     className={styles.option_button}
+            //     to={
+            //         '/trade/limit/' +
+            //         'chain=' +
+            //         tx.chainId +
+            //         '&tokenA=' +
+            //         (tx.isBid ? tx.base : tx.quote) +
+            //         '&tokenB=' +
+            //         (tx.isBid ? tx.quote : tx.base)
+            //     }
+            //     onClick={handleCopyClick}
+            // >
+            //     Copy
+            // </Link>
+            <button
                 className={styles.option_button}
-                to={
-                    '/trade/market/' +
-                    'chain=' +
-                    tx.chainId +
-                    '&tokenA=' +
-                    (tx.isBuy ? tx.base : tx.quote) +
-                    '&tokenB=' +
-                    (tx.isBuy ? tx.quote : tx.base)
-                }
-                onClick={handleCopyClick}
+                onClick={() => {
+                    navigate(
+                        '/trade/market/' +
+                            'chain=' +
+                            tx.chainId +
+                            '&tokenA=' +
+                            (tx.isBuy ? tx.base : tx.quote) +
+                            '&tokenB=' +
+                            (tx.isBuy ? tx.quote : tx.base),
+                    );
+                    handleCopyClick();
+                }}
             >
                 Copy
-            </Link>
+            </button>
+            // <Link
+            //     className={styles.option_button}
+            //     to={
+            //         '/trade/market/' +
+            //         'chain=' +
+            //         tx.chainId +
+            //         '&tokenA=' +
+            //         (tx.isBuy ? tx.base : tx.quote) +
+            //         '&tokenB=' +
+            //         (tx.isBuy ? tx.quote : tx.base)
+            //     }
+            //     onClick={handleCopyClick}
+            // >
+            //     Copy
+            // </Link>
         );
 
     const explorerButton = (
