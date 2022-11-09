@@ -1620,6 +1620,7 @@ export default function App() {
         quoteTokenDecimals,
         chainData.chainId,
         crocEnv,
+        poolPriceNonDisplay === 0,
     ]);
 
     // useEffect to update selected token balances
