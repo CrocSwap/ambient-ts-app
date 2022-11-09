@@ -57,7 +57,6 @@ interface ChartData {
     baseTokenAddress: string;
     chainId: string;
     poolPriceNonDisplay: number | undefined;
-    isCandleSelected: boolean | undefined;
 }
 
 export interface ChartUtils {
@@ -156,6 +155,11 @@ export default function TradeCandleStickChart(props: ChartData) {
             });
         });
 
+        chartData.sort((a: any, b: any) => b.time - a.time);
+        tvlChartData.sort((a: any, b: any) => b.time - a.time);
+        volumeChartData.sort((a: any, b: any) => b.time - a.time);
+        feeChartData.sort((a: any, b: any) => b.time - a.time);
+
         const chartUtils: ChartUtils = {
             period: props.candleData?.duration,
             bandwidth: 0,
@@ -253,8 +257,6 @@ export default function TradeCandleStickChart(props: ChartData) {
             });
         }
 
-        // console.log({ liqAskData, liqBidData });
-
         return {
             liqData: liqData,
             liqAskData: liqAskData,
@@ -270,10 +272,7 @@ export default function TradeCandleStickChart(props: ChartData) {
     useEffect(() => {
         if (!isLoading && parsedChartData !== undefined && liquidityData !== undefined) {
             if (parsedChartData.chartData.length > 100) {
-                parsedChartData.chartData = parsedChartData.chartData.slice(
-                    parsedChartData.chartData.length - 99,
-                    parsedChartData.chartData.length,
-                );
+                parsedChartData.chartData = parsedChartData.chartData.slice(0, 100);
             }
 
             const priceRange = d3fc
@@ -358,7 +357,7 @@ export default function TradeCandleStickChart(props: ChartData) {
             );
         }, 500);
         return () => clearTimeout(timer);
-    }, [parsedChartData?.chartData]);
+    }, [parsedChartData?.chartData, props.poolPriceDisplay]);
 
     return (
         <>
@@ -386,7 +385,6 @@ export default function TradeCandleStickChart(props: ChartData) {
                         upBorderColor={props.upBorderColor}
                         downBodyColor={props.downBodyColor}
                         downBorderColor={props.downBorderColor}
-                        isCandleSelected={props.isCandleSelected}
                         isCandleAdded={isCandleAdded}
                         scaleData={scaleData}
                     />
