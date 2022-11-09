@@ -219,6 +219,7 @@ export default function Portfolio(props: PortfolioPropsIF) {
 
     const [isTokenModalOpen, openTokenModal, closeTokenModal] = useModal();
 
+    const [fullLayoutActive, setFullLayoutActive] = useState(false);
     const exchangeBalanceComponent = (
         <div className={styles.exchange_balance}>
             <ExchangeBalance
@@ -237,10 +238,11 @@ export default function Portfolio(props: PortfolioPropsIF) {
                 setRecheckTokenBalances={setRecheckTokenBalances}
                 lastBlockNumber={lastBlockNumber}
                 openTokenModal={openTokenModal}
+                fullLayoutActive={fullLayoutActive}
+                setFullLayoutActive={setFullLayoutActive}
             />
         </div>
     );
-    const [fullLayoutActive, setFullLayoutActive] = useState(false);
 
     useEffect(() => {
         !connectedAccountActive ? setFullLayoutActive(true) : setFullLayoutActive(false);
@@ -378,9 +380,9 @@ export default function Portfolio(props: PortfolioPropsIF) {
             />
             <div
                 className={
-                    fullLayoutActive
-                        ? styles.full_layout_container
-                        : styles.tabs_exchange_balance_container
+                    // fullLayoutActive
+                    // ?styles.full_layout_container:
+                    styles.tabs_exchange_balance_container
                 }
             >
                 <PortfolioTabs
@@ -419,7 +421,8 @@ export default function Portfolio(props: PortfolioPropsIF) {
                     setCurrentTxActiveInTransactions={setCurrentTxActiveInTransactions}
                     fullLayoutToggle={fullLayerToggle}
                 />
-                {connectedAccountActive && !fullLayoutActive ? exchangeBalanceComponent : null}
+                {/* {connectedAccountActive && !fullLayoutActive ? exchangeBalanceComponent : null} */}
+                {connectedAccountActive && exchangeBalanceComponent}
             </div>
             {isTokenModalOpen && (
                 <Modal
