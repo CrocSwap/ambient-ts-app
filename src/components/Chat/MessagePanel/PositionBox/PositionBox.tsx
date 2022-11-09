@@ -49,8 +49,13 @@ export default function PositionBox(props: PositionBoxProps) {
         if (message && message.includes('0x')) {
             const hashMsg = message.split(' ').find((item) => item.includes('0x'));
             setHashMsg(hashMsg as string);
-            setPosition(transactionsData.find((item) => item.tx === hashMsg));
-            props.setIsPosition(true);
+            if (transactionsData.find((item) => item.tx === hashMsg)) {
+                setPosition(transactionsData.find((item) => item.tx === hashMsg));
+                props.setIsPosition(true);
+                console.log(hashMsg);
+            } else {
+                setPosition(undefined);
+            }
         } else {
             setPosition(undefined);
         }
@@ -60,10 +65,17 @@ export default function PositionBox(props: PositionBoxProps) {
         if (message && message.includes('0x')) {
             const hashMsg = message.split(' ').find((item) => item.includes('0x'));
             setHashMsg(hashMsg as string);
-            setSPosition(
-                sortedPositions.find((item: PositionIF) => item.positionStorageSlot === hashMsg),
-            );
-            props.setIsPosition(true);
+            if (sortedPositions.find((item: PositionIF) => item.positionStorageSlot === hashMsg)) {
+                setSPosition(
+                    sortedPositions.find(
+                        (item: PositionIF) => item.positionStorageSlot === hashMsg,
+                    ),
+                );
+                console.log(sPositions?.positionStorageSlot);
+                props.setIsPosition(true);
+            } else {
+                setSPosition(undefined);
+            }
         } else {
             setSPosition(undefined);
         }
@@ -215,7 +227,11 @@ export default function PositionBox(props: PositionBoxProps) {
         if (message.includes(' ')) {
             return message.substring(message.indexOf(' ') + 1);
         } else {
-            return ' ';
+            if (!position || !sPositions || !props.isPosition) {
+                return message;
+            } else {
+                return '';
+            }
         }
     }
     return props.isPosition ? (
@@ -397,7 +413,7 @@ export default function PositionBox(props: PositionBoxProps) {
                         </div>
                     </div>
                 </div>
-                {/* <p className={styles.position_message}>{getRestOfMessagesIfAny()}</p> */}
+                <p className={styles.position_message}>{getRestOfMessagesIfAny()}</p>
             </motion.div>
         ) : sPositions && isInput ? (
             <motion.div
