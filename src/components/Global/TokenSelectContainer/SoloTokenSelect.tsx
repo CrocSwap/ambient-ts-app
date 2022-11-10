@@ -1,4 +1,4 @@
-import { useMemo, Dispatch, SetStateAction } from 'react';
+import { useEffect, useMemo, useState, Dispatch, SetStateAction } from 'react';
 import { TokenListIF, TokenIF } from '../../../utils/interfaces/exports';
 import TokenSelect from '../TokenSelect/TokenSelect';
 import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
@@ -28,6 +28,19 @@ export const SoloTokenSelect = (props: propsIF) => {
         [],
     );
 
+    const [tokensOnActiveLists, setTokensOnActiveLists] = useState<TokenIF[]>();
+    useEffect(() => {
+        const namesOfActiveLists = JSON.parse(
+            localStorage.getItem('user') as string)
+        .activeTokenLists;
+        const allLists = JSON.parse(localStorage.getItem('allTokenLists') as string);
+        // console.log(allLists);
+        const filtLists = allLists.filter((tokenList: TokenListIF) => namesOfActiveLists.includes(tokenList.uri));
+        // console.log(filtLists);
+        const tkns = filtLists.flatMap((tokenList: TokenListIF) => tokenList.tokens);
+        setTokensOnActiveLists(tkns);
+    }, []);
+
     const chooseToken = (tkn: TokenIF) => {
         dispatch(setToken(tkn));
         if (searchedToken) {
@@ -46,7 +59,7 @@ export const SoloTokenSelect = (props: propsIF) => {
     };
 
     const tokensOnChain = tokensBank
-        .filter((token: TokenIF) => token.chainId === parseInt(chainId))
+        .filter((token: TokenIF) => token.chainId === parseInt(chainId));
 
     const filterByAddress = (tokens: TokenIF[]) => tokens.filter((token: TokenIF) => (
         searchedToken && searchedToken.length
@@ -71,11 +84,11 @@ export const SoloTokenSelect = (props: propsIF) => {
     const filteredTokens = useMemo(() => {
         switch (searchType) {
             case 'address':
-                return filterByAddress(tokensOnChain);
+                return filterByAddress(tokensOnActiveLists ?? tokensOnChain);
             case 'nameOrSymbol':
-                return filterByName(tokensOnChain);
+                return filterByName(tokensOnActiveLists ?? tokensOnChain);
             default:
-                return tokensOnChain;
+                return tokensOnActiveLists ?? tokensOnChain;
         }
     }, [searchType, tokensOnChain]);
 

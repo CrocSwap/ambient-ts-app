@@ -138,6 +138,7 @@ import TopRanges from '../components/Analytics/TopRanges/TopRanges';
 import TopTokens from '../components/Analytics/TopTokens/TopTokens';
 import AnalyticsTransactions from '../components/Analytics/AnalyticsTransactions/AnalyticsTransactions';
 import trimString from '../utils/functions/trimString';
+import { defaultTokenLists } from '../utils/data/defaultTokenLists';
 // import { memoizeQuerySpotTick } from './functions/querySpotTick';
 // import PhishingWarning from '../components/Global/PhisingWarning/PhishingWarning';
 
@@ -230,7 +231,10 @@ export default function App() {
         }
     }, [isAuthenticated, isWeb3Enabled, isUserLoggedIn, account]);
 
-    const tokenMap = useTokenMap();
+    const tokenMap = useTokenMap(
+        JSON.parse(localStorage.getItem('user') as string).activeTokenLists ??
+        defaultTokenLists
+    );
     const location = useLocation();
 
     const [candleData, setCandleData] = useState<CandlesByPoolAndDuration | undefined>();

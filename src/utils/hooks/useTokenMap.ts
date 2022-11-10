@@ -1,10 +1,18 @@
 import { useEffect, useState } from 'react';
 import { TokenIF, TokenListIF } from '../interfaces/exports';
 import { tokenListURIs } from '../data/tokenListURIs';
-// import { ambientTokenList } from '../data/ambientTokenList';
 
-export const useTokenMap = () => {
+export const useTokenMap = (
+    tokenListsNeeded: string[]
+) => {
+    console.log(tokenListURIs);
     const [tokenMap, setTokenMap] = useState(new Map<string, TokenIF>());
+
+    const tokensArray = JSON.parse(localStorage.getItem('allTokenLists') as string)
+        .filter((list: TokenListIF) => tokenListsNeeded.includes(list.uri ?? ''))
+        .flatMap((list: TokenListIF) => list.tokens);
+
+    console.log(tokensArray);
 
     const getAmbientTokens = () => {
         let ambientTokens = [];
