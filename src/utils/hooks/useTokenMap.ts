@@ -5,14 +5,14 @@ import { tokenListURIs } from '../data/tokenListURIs';
 export const useTokenMap = (
     tokenListsNeeded: string[]
 ) => {
-    console.log(tokenListURIs);
+    // console.log(tokenListURIs);
     const [tokenMap, setTokenMap] = useState(new Map<string, TokenIF>());
 
-    const tokensArray = JSON.parse(localStorage.getItem('allTokenLists') as string)
-        .filter((list: TokenListIF) => tokenListsNeeded.includes(list.uri ?? ''))
-        .flatMap((list: TokenListIF) => list.tokens);
+    // const tokensArray = JSON.parse(localStorage.getItem('allTokenLists') as string)
+    //     .filter((list: TokenListIF) => tokenListsNeeded.includes(list.uri ?? ''))
+    //     .flatMap((list: TokenListIF) => list.tokens);
 
-    console.log(tokensArray);
+    // console.log(tokensArray);
 
     const getAmbientTokens = () => {
         let ambientTokens = [];
@@ -68,7 +68,17 @@ export const useTokenMap = (
     };
 
     useEffect(() => {
+        const allTokenLists = JSON.parse(localStorage.getItem('allTokenLists') as string);
+
+        const getTokensByURI = (uri: string) => allTokenLists.find((list: TokenListIF) => list.uri === uri).tokens;
+
+        const tkns = tokenListsNeeded.flatMap((listURI: string) => getTokensByURI(listURI));
+        console.log(tkns);
+
         const newTokensMap = new Map<string, TokenIF>();
+
+
+
         getCoinGeckoTokens().forEach((tkn: TokenIF) =>
             newTokensMap.set(
                 tkn.address.toLowerCase() + '_0x' + tkn.chainId.toString(16).toLowerCase(),
