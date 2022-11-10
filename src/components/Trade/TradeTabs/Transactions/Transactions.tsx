@@ -392,6 +392,7 @@ export default function Transactions(props: TransactionsProps) {
     //         <p>{`${quoteTokenSymbol} ( ${quoteTokenCharacter} )`}</p>
     //     </>
     // );
+
     const headerColumns = [
         {
             name: 'Date',
@@ -405,19 +406,19 @@ export default function Transactions(props: TransactionsProps) {
             sortable: true,
         },
         {
-            name: '',
+            name: 'Pair',
             className: '',
             show: isOnPortfolioPage,
-            slug: 'token_images',
-            sortable: false,
-        },
-        {
-            name: 'Pool',
-            className: '',
-            show: isOnPortfolioPage && !showSidebar,
             slug: 'pool',
-            sortable: false,
+            sortable: true,
         },
+        // {
+        //     name: 'Pool',
+        //     className: '',
+        //     show: isOnPortfolioPage && !showSidebar,
+        //     slug: 'pool',
+        //     sortable: false,
+        // },
         {
             name: 'ID',
 
