@@ -153,7 +153,7 @@ export default function OrdersMenu(props: OrdersMenuIF) {
 
     const ordersMenu = (
         <div className={styles.actions_menu}>
-            {view1 && claimButton}
+            {view1 && !showSidebar && claimButton}
             {/* {view1 && removeButton} */}
             {/* {(view2 || (view1NoSidebar && !isOnPortfolioPage)) && copyButton} */}
             {(view3 || view2WithNoSidebar) && detailsButton}

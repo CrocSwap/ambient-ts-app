@@ -105,7 +105,7 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
     const [tokenBAllowed, setTokenBAllowed] = useState(false);
 
     useEffect(() => {
-        if (tokenAAllowed && tokenBAllowed) {
+        if (tokenAAllowed || tokenBAllowed) {
             setRangeAllowed(true);
         } else {
             setRangeAllowed(false);

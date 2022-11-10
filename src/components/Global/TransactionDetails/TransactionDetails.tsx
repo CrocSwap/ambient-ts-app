@@ -13,6 +13,8 @@ interface TransactionDetailsPropsIF {
 export default function TransactionDetails(props: TransactionDetailsPropsIF) {
     const { tx } = props;
 
+    console.log({ tx });
+
     const [showSettings, setShowSettings] = useState(false);
 
     const detailsRef = useRef(null);

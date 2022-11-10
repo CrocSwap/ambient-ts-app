@@ -7,6 +7,8 @@ import { motion } from 'framer-motion';
 import { useProcessTransaction } from '../../../../utils/hooks/useProcessTransaction';
 import { AiOutlineDash } from 'react-icons/ai';
 import NoTokenIcon from '../../NoTokenIcon/NoTokenIcon';
+import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
+import { useMemo } from 'react';
 
 type ItemIF = {
     slug: string;
@@ -35,13 +37,21 @@ export default function TransactionDetailsPriceInfo(props: ITransactionDetailsPr
         // askTick,
         // positionLiqTotalUSD,
 
+        // baseDisplay,
+        // quoteDisplay,
         baseDisplayFrontend,
         quoteDisplayFrontend,
-        truncatedLowDisplayPrice,
-        truncatedHighDisplayPrice,
+        // truncatedLowDisplayPrice,
+        // truncatedHighDisplayPrice,
         truncatedDisplayPrice,
+        truncatedLowDisplayPriceDenomByMoneyness,
+        truncatedHighDisplayPriceDenomByMoneyness,
+        truncatedDisplayPriceDenomByMoneyness,
+        isBaseTokenMoneynessGreaterOrEqual,
         // positionLiquidity,
     } = useProcessTransaction(tx);
+
+    const isBuy = tx.isBuy === true || tx.isBid === true;
 
     const tokenPairDetails = (
         <div
@@ -80,11 +90,58 @@ export default function TransactionDetailsPriceInfo(props: ITransactionDetailsPr
             className={styles.info_container}
         >
             <Row>
-                <span>Total Value</span>
+                <span>Total Value: </span>
                 <div className={styles.info_text}>{usdValue}</div>
             </Row>
         </motion.div>
     );
+
+    const typeDisplay = tx.entityType
+        ? tx.entityType === 'swap'
+            ? 'Market'
+            : tx.entityType === 'liqchange'
+            ? tx.changeType === 'mint'
+                ? 'Add to Range'
+                : 'Remove from Range'
+            : 'Limit Order'
+        : '...';
+
+    const txTypeContent = (
+        <motion.div
+            layout
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className={styles.info_container}
+        >
+            <Row>
+                <span>Type: </span>
+                <div className={styles.info_text}>{typeDisplay}</div>
+            </Row>
+        </motion.div>
+    );
+
+    // const fillTime = new Intl.DateTimeFormat('en-US', {
+    //     year: 'numeric',
+    //     month: '2-digit',
+    //     day: '2-digit',
+    //     hour: '2-digit',
+    //     minute: '2-digit',
+    //     second: '2-digit',
+    // }).format(tx.time);
+
+    const fillTime = new Intl.DateTimeFormat('en-US', {
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+    }).format(tx.time * 1000);
+
+    const fillDate = new Intl.DateTimeFormat('en-US', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+    }).format(tx.time * 1000);
+
     const fillTimeContent = (
         <motion.div
             layout
@@ -94,23 +151,64 @@ export default function TransactionDetailsPriceInfo(props: ITransactionDetailsPr
             className={styles.info_container}
         >
             <Row>
-                <span>Fill Time</span>
-                <div className={styles.info_text}>25/08/2022</div>
+                <span>Fill Time: </span>
+                <div className={styles.info_text}>{fillTime}</div>
+            </Row>
+            <Row>
+                <span> </span>
+                <div className={styles.info_text}>{fillDate}</div>
             </Row>
         </motion.div>
     );
 
-    const transactionDetails = (
+    const isBuyTransactionDetails = (
         <div
             className={styles.tx_details}
-            onClick={() => {
-                dispatch(toggleDidUserFlipDenom());
-            }}
+            // onClick={() => {
+            // dispatch(toggleDidUserFlipDenom());
+            // }}
         >
             <Row>
-                <p>From:</p>
+                <p>{tx.entityType === 'liqchange' ? tx.quoteSymbol + ': ' : 'Buy: '}</p>
+
                 <div>
-                    {baseDisplayFrontend}
+                    {quoteDisplayFrontend.replace(/[()]/g, '')}
+
+                    {quoteTokenLogo ? (
+                        <img width='15px' src={quoteTokenLogo} alt={quoteTokenSymbol} />
+                    ) : (
+                        <NoTokenIcon tokenInitial={quoteTokenSymbol.charAt(0)} width='15px' />
+                    )}
+                </div>
+            </Row>
+            <span className={styles.divider}></span>
+            <Row>
+                <p>{tx.entityType === 'liqchange' ? tx.baseSymbol + ': ' : 'Sell: '}</p>
+                <div>
+                    {baseDisplayFrontend.replace(/[()]/g, '')}
+
+                    {baseTokenLogo ? (
+                        <img width='15px' src={baseTokenLogo} alt={baseTokenSymbol} />
+                    ) : (
+                        <NoTokenIcon tokenInitial={baseTokenSymbol.charAt(0)} width='15px' />
+                    )}
+                </div>
+            </Row>
+        </div>
+    );
+
+    const isSellTransactionDetails = (
+        <div
+            className={styles.tx_details}
+            // onClick={() => {
+            // dispatch(toggleDidUserFlipDenom());
+            // }}
+        >
+            <Row>
+                <p>{tx.entityType === 'liqchange' ? tx.baseSymbol + ': ' : 'Buy: '}</p>
+
+                <div>
+                    {baseDisplayFrontend.replace(/[()]/g, '')}
 
                     {baseTokenLogo ? (
                         <img width='15px' src={baseTokenLogo} alt={baseTokenSymbol} />
@@ -121,9 +219,9 @@ export default function TransactionDetailsPriceInfo(props: ITransactionDetailsPr
             </Row>
             <span className={styles.divider}></span>
             <Row>
-                <p>To: </p>
+                <p>{tx.entityType === 'liqchange' ? tx.quoteSymbol + ': ' : 'Sell: '}</p>
                 <div>
-                    {quoteDisplayFrontend}
+                    {quoteDisplayFrontend.replace(/[()]/g, '')}
 
                     {quoteTokenLogo ? (
                         <img width='15px' src={quoteTokenLogo} alt={quoteTokenSymbol} />
@@ -135,16 +233,42 @@ export default function TransactionDetailsPriceInfo(props: ITransactionDetailsPr
         </div>
     );
 
-    const PriceDipslay = (
-        <div className={styles.min_max_price}>
-            <p>Price</p>
+    const baseCharacter = useMemo(() => getUnicodeCharacter(tx.baseSymbol), [tx.baseSymbol]);
+    const quoteCharacter = useMemo(() => getUnicodeCharacter(tx.quoteSymbol), [tx.quoteSymbol]);
 
-            <span className={styles.min_price}>
-                {truncatedDisplayPrice ? truncatedDisplayPrice : null}
-                {truncatedLowDisplayPrice ? truncatedLowDisplayPrice : null}
-                {!truncatedDisplayPrice ? <AiOutlineDash /> : null}
-                {truncatedHighDisplayPrice ? truncatedHighDisplayPrice : null}
-            </span>
+    const PriceDisplay = (
+        <div className={styles.min_max_price}>
+            <p>{tx.entityType === 'liqchange' ? 'Price Range' : 'Price'}</p>
+
+            {isBaseTokenMoneynessGreaterOrEqual ? (
+                <span className={styles.min_price}>
+                    {truncatedDisplayPriceDenomByMoneyness
+                        ? baseCharacter + truncatedDisplayPriceDenomByMoneyness
+                        : null}
+
+                    {truncatedHighDisplayPriceDenomByMoneyness
+                        ? baseCharacter + truncatedHighDisplayPriceDenomByMoneyness
+                        : null}
+                    {!truncatedDisplayPrice ? <AiOutlineDash /> : null}
+                    {truncatedLowDisplayPriceDenomByMoneyness
+                        ? baseCharacter + truncatedLowDisplayPriceDenomByMoneyness
+                        : null}
+                </span>
+            ) : (
+                <span className={styles.min_price}>
+                    {truncatedDisplayPriceDenomByMoneyness
+                        ? quoteCharacter + truncatedDisplayPriceDenomByMoneyness
+                        : null}
+
+                    {truncatedLowDisplayPriceDenomByMoneyness
+                        ? quoteCharacter + truncatedLowDisplayPriceDenomByMoneyness
+                        : null}
+                    {!truncatedDisplayPrice ? <AiOutlineDash /> : null}
+                    {truncatedHighDisplayPriceDenomByMoneyness
+                        ? quoteCharacter + truncatedHighDisplayPriceDenomByMoneyness
+                        : null}
+                </span>
+            )}
         </div>
     );
     // console.log(controlItems);
@@ -153,10 +277,11 @@ export default function TransactionDetailsPriceInfo(props: ITransactionDetailsPr
         <div className={styles.main_container}>
             <div className={styles.price_info_container}>
                 {tokenPairDetails}
+                {txTypeContent}
                 {controlItems[2] && totalValueContent}
                 {fillTimeContent}
-                {transactionDetails}
-                {PriceDipslay}
+                {isBuy ? isBuyTransactionDetails : isSellTransactionDetails}
+                {PriceDisplay}
             </div>
         </div>
     );

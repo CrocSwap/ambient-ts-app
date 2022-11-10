@@ -279,7 +279,7 @@ export default function OrderRow(props: OrderRowPropsIF) {
             )}
 
             {ValueWithTooltip}
-            {!showColumns && (
+            {/* {!showColumns && (
                 <li onClick={openDetailsModal} data-label={baseTokenSymbol} className='color_white'>
                     <p style={{ textAlign: 'right', fontFamily: 'monospace' }}>{baseDisplay}</p>
                 </li>
@@ -292,25 +292,26 @@ export default function OrderRow(props: OrderRowPropsIF) {
                 >
                     <p style={{ textAlign: 'right', fontFamily: 'monospace' }}>{quoteDisplay}</p>
                 </li>
-            )}
-            {showColumns && (
+            )} */}
+            {
                 <li data-label={baseTokenSymbol + quoteTokenSymbol} className='color_white'>
-                    <p className={styles.align_center}>
+                    <p className={styles.token_qty} style={{ fontFamily: 'monospace' }}>
                         {' '}
-                        {baseTokenLogoComponent}
-                        {baseDisplay}{' '}
+                        {baseDisplay} {baseTokenLogoComponent}
                     </p>
 
-                    <p className={styles.align_center}>
+                    <p className={styles.token_qty} style={{ fontFamily: 'monospace' }}>
                         {' '}
-                        {quoteTokenLogoComponent}
                         {quoteDisplay}
+                        {quoteTokenLogoComponent}
                     </p>
                 </li>
-            )}
+            }
             {!ipadView && (
                 <li onClick={openDetailsModal} data-label='status'>
-                    <OpenOrderStatus isFilled={isOrderFilled} />
+                    <p style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                        <OpenOrderStatus isFilled={isOrderFilled} />
+                    </p>
                 </li>
             )}
             <li data-label='menu'>

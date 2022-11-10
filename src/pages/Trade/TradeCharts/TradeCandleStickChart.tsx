@@ -16,6 +16,7 @@ import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { getPinnedPriceValuesFromDisplayPrices } from '../Range/rangeFunctions';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import * as d3 from 'd3';
+import * as d3fc from 'd3fc';
 import { ChainSpec, CrocPoolView } from '@crocswap-libs/sdk';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -56,7 +57,6 @@ interface ChartData {
     baseTokenAddress: string;
     chainId: string;
     poolPriceNonDisplay: number | undefined;
-    isCandleSelected: boolean | undefined;
 }
 
 export interface ChartUtils {
@@ -76,6 +76,8 @@ type chartItemStates = {
 
 export default function TradeCandleStickChart(props: ChartData) {
     const { pool, chainData, baseTokenAddress, chainId /* poolPriceNonDisplay */ } = props;
+
+    const [scaleData, setScaleData] = useState<any>();
 
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [isCandleAdded, setIsCandleAdded] = useState<boolean>(false);
@@ -153,6 +155,11 @@ export default function TradeCandleStickChart(props: ChartData) {
             });
         });
 
+        chartData.sort((a: any, b: any) => b.time - a.time);
+        tvlChartData.sort((a: any, b: any) => b.time - a.time);
+        volumeChartData.sort((a: any, b: any) => b.time - a.time);
+        feeChartData.sort((a: any, b: any) => b.time - a.time);
+
         const chartUtils: ChartUtils = {
             period: props.candleData?.duration,
             bandwidth: 0,
@@ -176,7 +183,11 @@ export default function TradeCandleStickChart(props: ChartData) {
 
         const liqSnapData: LiqSnap[] = [];
 
-        if (props.poolPriceDisplay !== undefined && props.liquidityData) {
+        if (
+            props.liquidityData &&
+            props.poolPriceDisplay !== undefined &&
+            props.poolPriceDisplay > 0
+        ) {
             const domainLeft = Math.min(
                 ...props.liquidityData.ranges.map((o: any) => {
                     return o.activeLiq !== undefined ? parseFloat(o.activeLiq) : 0;
@@ -198,21 +209,27 @@ export default function TradeCandleStickChart(props: ChartData) {
                     ? data.upperBoundInvPriceDecimalCorrected
                     : data.upperBoundPriceDecimalCorrected;
 
-                if (liqPrices !== Infinity && liqPrices !== '+inf' && barThreshold !== undefined) {
+                if (liqPrices !== Infinity && liqPrices !== '+inf') {
                     liqData.push({
                         activeLiq: liquidityScale(data.activeLiq),
                         liqPrices: liqPrices,
+                        deltaAverageUSD: data.deltaAverageUSD,
+                        cumAverageUSD: data.cumAverageUSD,
                     });
 
                     if (liqPrices > barThreshold) {
                         liqBidData.push({
                             activeLiq: liquidityScale(data.activeLiq),
                             liqPrices: liqPrices,
+                            deltaAverageUSD: data.deltaAverageUSD,
+                            cumAverageUSD: data.cumAverageUSD,
                         });
                     } else {
                         liqAskData.push({
                             activeLiq: liquidityScale(data.activeLiq),
                             liqPrices: liqPrices,
+                            deltaAverageUSD: data.deltaAverageUSD,
+                            cumAverageUSD: data.cumAverageUSD,
                         });
                     }
                 }
@@ -240,8 +257,6 @@ export default function TradeCandleStickChart(props: ChartData) {
             });
         }
 
-        // console.log({ liqAskData, liqBidData });
-
         return {
             liqData: liqData,
             liqAskData: liqAskData,
@@ -251,27 +266,85 @@ export default function TradeCandleStickChart(props: ChartData) {
             liqHighligtedBidSeries: [],
             totalLiq: props.liquidityData?.totals?.totalLiq,
         };
-    }, [props.liquidityData, denominationsInBase]);
+    }, [props.liquidityData, denominationsInBase, props.poolPriceDisplay]);
 
-    // cursor change----------------------------------------------
-    function loadingCursor(event: any) {
-        const el = document?.getElementById('hov_text');
-        if (el != null) {
-            el.style.top = event.clientY + 'px';
-            el.style.left = event.clientX + 'px';
+    // Scale
+    useEffect(() => {
+        if (!isLoading && parsedChartData !== undefined && liquidityData !== undefined) {
+            if (parsedChartData.chartData.length > 100) {
+                parsedChartData.chartData = parsedChartData.chartData.slice(0, 100);
+            }
+
+            const priceRange = d3fc
+                .extentLinear()
+                .accessors([(d: any) => d.high, (d: any) => d.low])
+                .pad([0.05, 0.05]);
+
+            const xExtent = d3fc
+                .extentDate()
+                .accessors([(d: any) => d.date])
+                .padUnit('domain')
+                // ensure that the scale is padded by one day in either direction
+                .pad([parsedChartData.period * 1000, (parsedChartData.period / 2) * 80000]);
+
+            const subChartxExtent = d3fc
+                .extentDate()
+                .accessors([(d: any) => d.date])
+                .padUnit('domain')
+                // ensure that the scale is padded by one day in either direction
+                .pad([parsedChartData.period * 3000, (parsedChartData.period / 2) * 100000]);
+
+            const xScale = d3.scaleTime();
+            const subChartxScale = d3.scaleTime();
+            const yScale = d3.scaleLinear();
+
+            xScale.domain(xExtent(parsedChartData.chartData));
+            subChartxScale.domain(subChartxExtent(parsedChartData.chartData));
+            yScale.domain(priceRange(parsedChartData.chartData));
+
+            const xScaleCopy = xScale.copy();
+            const yScaleCopy = yScale.copy();
+
+            const yScaleIndicator = yScale.copy();
+            const xScaleIndicator = xScale.copy();
+
+            const liquidityScale = d3.scaleLinear();
+            const ghostScale = d3.scaleLinear();
+
+            // bar chart
+            const liquidityExtent = d3fc
+                .extentLinear(liquidityData.liqData)
+                .include([0])
+                .accessors([(d: any) => parseFloat(d.activeLiq)]);
+
+            const ghostExtent = d3fc
+                .extentLinear(liquidityData.liqSnapData)
+                .include([0])
+                .accessors([(d: any) => parseFloat(d.activeLiq)]);
+
+            liquidityScale.domain(liquidityExtent(liquidityData.liqData));
+            ghostScale.domain(ghostExtent(liquidityData.liqSnapData));
+
+            setScaleData(() => {
+                return {
+                    xScale: xScale,
+                    yScale: yScale,
+                    yScaleIndicator: yScaleIndicator,
+                    xScaleIndicator: xScaleIndicator,
+                    liquidityScale: liquidityScale,
+                    xScaleCopy: xScaleCopy,
+                    yScaleCopy: yScaleCopy,
+                    ghostScale: ghostScale,
+                    subChartxScale: subChartxScale,
+                };
+            });
         }
-    }
-
-    const loadingChartElement = document?.getElementById('loading_chart_hover');
-    if (loadingChartElement != null) {
-        loadingChartElement?.addEventListener('mousemove', loadingCursor);
-    }
-    // end of cursor change----------------------------------------------
+    }, [parsedChartData?.period, denominationsInBase, liquidityData, isLoading]);
 
     const loading = (
-        <div className='animatedImg_container' id='loading_chart_hover'>
+        <div style={{ height: '100%', width: '100%' }} className='animatedImg_container'>
             <img src={candleStikPlaceholder} className='img_shimmer' />
-            <div id='hov_text'>Fetching chart data...</div>
+            <div className='fetching_text'>Fetching chart data...</div>
         </div>
     );
 
@@ -312,14 +385,11 @@ export default function TradeCandleStickChart(props: ChartData) {
                         upBorderColor={props.upBorderColor}
                         downBodyColor={props.downBodyColor}
                         downBorderColor={props.downBorderColor}
-                        isCandleSelected={props.isCandleSelected}
                         isCandleAdded={isCandleAdded}
+                        scaleData={scaleData}
                     />
                 ) : (
                     <>{loading}</>
-                    // <TradeChartsLoading/>
-
-                    // <Animation animData={candleStickLoading} />
                 )}
             </div>
         </>

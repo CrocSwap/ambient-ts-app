@@ -2,8 +2,10 @@ import styles from './TopRangesCard.module.css';
 import { BsFillCheckCircleFill } from 'react-icons/bs';
 interface TopRangesCardProp {
     number: number;
+    searchInput?: string;
 }
 export default function TopRangesCard(props: TopRangesCardProp) {
+    const { searchInput } = props;
     return (
         <div className={styles.container}>
             <div>{props.number}</div>
@@ -22,7 +24,7 @@ export default function TopRangesCard(props: TopRangesCardProp) {
                         width='25px'
                     />
                 </div>
-                <p>DAI/USDC</p>
+                <p>{searchInput ? searchInput : 'DAI'}/USDC</p>
                 <p>0.01%</p>
             </div>
 
