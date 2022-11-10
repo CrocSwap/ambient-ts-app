@@ -1,4 +1,3 @@
-import { StylesContext } from '@material-ui/styles';
 import { Dispatch, SetStateAction, useMemo } from 'react';
 import { BsSortDown, BsSortUpAlt } from 'react-icons/bs';
 import styles from '../Transactions.module.css';
