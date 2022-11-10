@@ -402,6 +402,7 @@ export default function Orders(props: propsIF) {
     const rowItemContent = sortedLimits.map((order, idx) => (
         <OrderRow
             crocEnv={crocEnv}
+            tradeData={tradeData}
             expandTradeTable={expandTradeTable}
             showSidebar={showSidebar}
             showColumns={showColumns}

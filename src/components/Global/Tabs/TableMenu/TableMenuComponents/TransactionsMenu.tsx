@@ -189,7 +189,7 @@ export default function TransactionsMenu(props: TransactionMenuIF) {
             }
             setTimeout(() => {
                 dispatch(setLimitTick(tx.isBid ? tx.bidTick : tx.askTick));
-            }, 1000);
+            }, 500);
 
             // dispatch(
             //     setIsTokenAPrimary((tx.isBid && tx.inBaseQty) || (!tx.isBid && !tx.inBaseQty)),
