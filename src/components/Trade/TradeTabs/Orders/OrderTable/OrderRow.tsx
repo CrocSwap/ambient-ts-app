@@ -17,6 +17,7 @@ interface OrderRowPropsIF {
     expandTradeTable: boolean;
     showColumns: boolean;
     ipadView: boolean;
+    view2: boolean;
     limitOrder: LimitOrderIF;
     showSidebar: boolean;
 
@@ -35,6 +36,7 @@ export default function OrderRow(props: OrderRowPropsIF) {
         tradeData,
         showColumns,
         ipadView,
+        view2,
         limitOrder,
         showSidebar,
         openGlobalModal,
@@ -235,6 +237,11 @@ export default function OrderRow(props: OrderRowPropsIF) {
                     : setCurrentPositionActive('')
             }
         >
+            {!isOnPortfolioPage && !showColumns && !view2 && (
+                <li>
+                    <p className='base_color'> Nov 9 10:36:23 AM</p>
+                </li>
+            )}
             {isOnPortfolioPage && accountTokenImages}
             {isOnPortfolioPage && !showSidebar && poolName}
             {!showColumns && IDWithTooltip}
@@ -270,19 +277,28 @@ export default function OrderRow(props: OrderRowPropsIF) {
                 </li>
             )}
             {!showColumns && (
-                <li onClick={openDetailsModal} data-label='type' className={sellOrderStyle}>
+                <li
+                    onClick={openDetailsModal}
+                    data-label='type'
+                    className={sellOrderStyle}
+                    style={{ textAlign: 'center' }}
+                >
                     Order
                 </li>
             )}
             {showColumns && !ipadView && (
-                <li data-label='side-type' className={sellOrderStyle}>
+                <li
+                    data-label='side-type'
+                    className={sellOrderStyle}
+                    style={{ textAlign: 'center' }}
+                >
                     <p>{side}</p>
                     <p>Order</p>
                 </li>
             )}
 
             {ValueWithTooltip}
-            {/* {!showColumns && (
+            {!showColumns && (
                 <li onClick={openDetailsModal} data-label={baseTokenSymbol} className='color_white'>
                     <p style={{ textAlign: 'right', fontFamily: 'monospace' }}>{baseDisplay}</p>
                 </li>
@@ -295,8 +311,8 @@ export default function OrderRow(props: OrderRowPropsIF) {
                 >
                     <p style={{ textAlign: 'right', fontFamily: 'monospace' }}>{quoteDisplay}</p>
                 </li>
-            )} */}
-            {
+            )}
+            {showColumns && (
                 <li data-label={baseTokenSymbol + quoteTokenSymbol} className='color_white'>
                     <p className={styles.token_qty} style={{ fontFamily: 'monospace' }}>
                         {' '}
@@ -309,7 +325,7 @@ export default function OrderRow(props: OrderRowPropsIF) {
                         {quoteTokenLogoComponent}
                     </p>
                 </li>
-            }
+            )}
             {!ipadView && (
                 <li onClick={openDetailsModal} data-label='status'>
                     <p style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>

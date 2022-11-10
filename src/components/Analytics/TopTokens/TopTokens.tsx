@@ -3,9 +3,10 @@ import TopTokensCard from './TopTokensCard/TopTokensCard';
 import TopTokensHeader from './TopTokensHeader/TopTokensHeader';
 import { uniswapTokens } from '../fakedata/uniswapTokens';
 import { motion } from 'framer-motion';
-import AnalyticsTokenRows from '../AnalyticsTokenRows/AnalyticsTokenRows';
+// import AnalyticsTokenRows from '../AnalyticsTokenRows/AnalyticsTokenRows';
 const tokenData = uniswapTokens[0].tokens;
 import { Dispatch, SetStateAction } from 'react';
+import AnalyticsTokenScrolls from '../AnalyticsTokenScrolls/AnalyticsTokenScrolls';
 interface TopTokensPropsIF {
     analyticsSearchInput: string;
     setAnalyticsSearchInput: Dispatch<SetStateAction<string>>;
@@ -46,9 +47,9 @@ export default function TopTokens(props: TopTokensPropsIF) {
             exit={{ y: -10, opacity: 0 }}
             transition={{ duration: 0.5 }}
         >
-            {analyticsSearchInput == '' && <AnalyticsTokenRows />}
+            {/* {analyticsSearchInput == '' && <AnalyticsTokenRows />} */}
+            {analyticsSearchInput == '' && <AnalyticsTokenScrolls />}
             <p>All Tokens</p>
-
             <TopTokensHeader />
             {analyticsSearchInput !== '' ? exampleSearch : container}
         </motion.div>
