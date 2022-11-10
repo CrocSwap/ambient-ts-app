@@ -230,7 +230,11 @@ export default function App() {
         }
     }, [isAuthenticated, isWeb3Enabled, isUserLoggedIn, account]);
 
+    // this is another case where true vs false is an arbitrary distinction
+    const [activeTokenListsChanged, indicateActiveTokenListsChanged] = useState(false);
+
     const tokenMap = useTokenMap(
+        activeTokenListsChanged,
         JSON.parse(localStorage.getItem('user') as string).activeTokenLists ??
         ['/ambient-token-list.json']
     );
@@ -384,9 +388,6 @@ export default function App() {
     // trigger a useEffect() which needs to run when new token lists are received
     // true vs false is an arbitrary distinction here
     const [tokenListsReceived, indicateTokenListsReceived] = useState(false);
-
-    // this is another case where true vs false is an arbitrary distinction
-    const [activeTokenListsChanged, indicateActiveTokenListsChanged] = useState(false);
 
     if (needTokenLists) {
         setNeedTokenLists(false);

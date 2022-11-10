@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { TokenIF, TokenListIF } from '../interfaces/exports';
 
 export const useTokenMap = (
+    activeTokenListsChanged: boolean,
     tokenListsNeeded: string[]
 ) => {
     // hook to preserve the token map value across renders
@@ -57,7 +58,7 @@ export const useTokenMap = (
         // update local storage with the new value
         setTokenMap(newTokensMap);
     // this dependency array should not work but things seem fine so here it stays
-    }, [localStorage.allTokenLists]);
+    }, [localStorage.allTokenLists, activeTokenListsChanged]);
 
     // return token map held in local state created by useEffect() hook
     return tokenMap;
