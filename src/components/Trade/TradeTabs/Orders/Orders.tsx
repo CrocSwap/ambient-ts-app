@@ -21,13 +21,15 @@ import OrderRow from './OrderTable/OrderRow';
 import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
 import TableSkeletons from '../TableSkeletons/TableSkeletons';
 import { useSortedLimits } from '../useSortedLimits';
-import { LimitOrderIF } from '../../../../utils/interfaces/exports';
+import { LimitOrderIF, TokenIF } from '../../../../utils/interfaces/exports';
+import { getLimitOrderData } from '../../../../App/functions/getLimitOrderData';
 
 // import OrderAccordions from './OrderAccordions/OrderAccordions';
 
 // interface for props for react functional component
 interface propsIF {
     activeAccountLimitOrderData?: LimitOrderIF[];
+    importedTokens: TokenIF[];
     connectedAccountActive?: boolean;
     crocEnv: CrocEnv | undefined;
     expandTradeTable: boolean;
@@ -48,6 +50,7 @@ interface propsIF {
 export default function Orders(props: propsIF) {
     const {
         activeAccountLimitOrderData,
+        importedTokens,
         connectedAccountActive,
         crocEnv,
         chainData,
@@ -120,13 +123,27 @@ export default function Orders(props: propsIF) {
                 ensResolution: true,
             })
                 .then((poolChangesJsonData) => {
+                    // if (poolChangesJsonData) {
+                    //     dispatch(
+                    //         setLimitOrdersByPool({
+                    //             dataReceived: true,
+                    //             limitOrders: poolChangesJsonData,
+                    //         }),
+                    //     );
+                    // }
                     if (poolChangesJsonData) {
-                        dispatch(
-                            setLimitOrdersByPool({
-                                dataReceived: true,
-                                limitOrders: poolChangesJsonData,
+                        Promise.all(
+                            poolChangesJsonData.map((limitOrder: LimitOrderIF) => {
+                                return getLimitOrderData(limitOrder, importedTokens);
                             }),
-                        );
+                        ).then((updatedLimitOrderStates) => {
+                            dispatch(
+                                setLimitOrdersByPool({
+                                    dataReceived: true,
+                                    limitOrders: updatedLimitOrderStates,
+                                }),
+                            );
+                        });
                     }
                 })
                 .catch(console.log);

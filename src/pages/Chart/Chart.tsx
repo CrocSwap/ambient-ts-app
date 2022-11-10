@@ -2547,13 +2547,18 @@ export default function Chart(props: ChartData) {
                 }
             });
 
-            const difference = Math.abs(poolPriceDisplay - liqTooltipSelectedLiqBar.liqPrices);
-
-            const percentage = (difference * 100) / poolPriceDisplay;
+            const difference = liqTooltipSelectedLiqBar.liqPrices - poolPriceDisplay;
+            // const absoluteDifference = Math.abs(difference)
+            const percentage =
+                difference === 0
+                    ? ''
+                    : difference < 0
+                    ? ((difference * 100) / poolPriceDisplay).toFixed(1)
+                    : '+' + ((difference * 100) / poolPriceDisplay).toFixed(1);
 
             liqTooltip.html(
                 '<p>' +
-                    percentage.toFixed(1) +
+                    percentage +
                     '%</p>' +
                     '<p> $' +
                     formatAmountWithoutDigit(liqTextData.totalValue, 0) +
@@ -2592,9 +2597,14 @@ export default function Chart(props: ChartData) {
                     .style('visibility', 'visible')
                     .html(
                         '<p>Showing Transactions for <span style="color: #E480FF">' +
-                            moment(candle.date).format('DD MMM  HH:mm') +
-                            '</span> Candle</p>',
+                            moment(candle.date).calendar() +
+                            '</span></p>',
                     );
+                // .html(
+                //     '<p>Showing Transactions for <span style="color: #E480FF">' +
+                //         moment(candle.date).format('DD MMM  HH:mm') +
+                //         '</span></p>',
+                // );
 
                 props.changeState(true, candle);
             }
@@ -2717,12 +2727,17 @@ export default function Chart(props: ChartData) {
                         <>
                             <hr />
                             <label>
-                                Fee Rate{' '}
-                                {formatDollarAmountAxis(
+                                Fee Rate:{' '}
+                                {(
+                                    subChartValues.filter(
+                                        (value: any) => value.name === 'feeRate',
+                                    )[0].value * 100
+                                ).toString() + '%'}
+                                {/* {formatDollarAmountAxis(
                                     subChartValues.filter(
                                         (value: any) => value.name === 'feeRate',
                                     )[0].value,
-                                )}
+                                )} */}
                             </label>
                             <FeeRateSubChart
                                 feeData={parsedChartData?.feeChartData.sort(
@@ -2814,7 +2829,14 @@ export default function Chart(props: ChartData) {
                 className='popup'
                 id='transactionPopup'
                 style={{ visibility: 'hidden', top: popupHeight + '%' }}
-                onClick={() => console.log('Asdasd')}
+                onClick={() => {
+                    setSelectedDate(() => {
+                        return undefined;
+                    });
+
+                    d3.select('#transactionPopup').style('visibility', 'hidden');
+                    props.changeState(false, undefined);
+                }}
             ></div>
         </div>
     );

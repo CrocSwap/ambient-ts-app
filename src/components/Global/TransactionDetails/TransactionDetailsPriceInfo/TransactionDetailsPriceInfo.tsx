@@ -51,6 +51,8 @@ export default function TransactionDetailsPriceInfo(props: ITransactionDetailsPr
         // positionLiquidity,
     } = useProcessTransaction(tx);
 
+    const isBuy = tx.isBuy === true || tx.isBid === true;
+
     const tokenPairDetails = (
         <div
             className={styles.token_pair_details}
@@ -159,13 +161,27 @@ export default function TransactionDetailsPriceInfo(props: ITransactionDetailsPr
         </motion.div>
     );
 
-    const transactionDetails = (
+    const isBuyTransactionDetails = (
         <div
             className={styles.tx_details}
             // onClick={() => {
             // dispatch(toggleDidUserFlipDenom());
             // }}
         >
+            <Row>
+                <p>{tx.entityType === 'liqchange' ? tx.quoteSymbol + ': ' : 'Buy: '}</p>
+
+                <div>
+                    {quoteDisplayFrontend.replace(/[()]/g, '')}
+
+                    {quoteTokenLogo ? (
+                        <img width='15px' src={quoteTokenLogo} alt={quoteTokenSymbol} />
+                    ) : (
+                        <NoTokenIcon tokenInitial={quoteTokenSymbol.charAt(0)} width='15px' />
+                    )}
+                </div>
+            </Row>
+            <span className={styles.divider}></span>
             <Row>
                 <p>{tx.entityType === 'liqchange' ? tx.baseSymbol + ': ' : 'Sell: '}</p>
                 <div>
@@ -178,10 +194,32 @@ export default function TransactionDetailsPriceInfo(props: ITransactionDetailsPr
                     )}
                 </div>
             </Row>
+        </div>
+    );
+
+    const isSellTransactionDetails = (
+        <div
+            className={styles.tx_details}
+            // onClick={() => {
+            // dispatch(toggleDidUserFlipDenom());
+            // }}
+        >
+            <Row>
+                <p>{tx.entityType === 'liqchange' ? tx.baseSymbol + ': ' : 'Buy: '}</p>
+
+                <div>
+                    {baseDisplayFrontend.replace(/[()]/g, '')}
+
+                    {baseTokenLogo ? (
+                        <img width='15px' src={baseTokenLogo} alt={baseTokenSymbol} />
+                    ) : (
+                        <NoTokenIcon tokenInitial={baseTokenSymbol.charAt(0)} width='15px' />
+                    )}
+                </div>
+            </Row>
             <span className={styles.divider}></span>
             <Row>
-                <p>{tx.entityType === 'liqchange' ? tx.quoteSymbol + ': ' : 'Buy: '}</p>
-
+                <p>{tx.entityType === 'liqchange' ? tx.quoteSymbol + ': ' : 'Sell: '}</p>
                 <div>
                     {quoteDisplayFrontend.replace(/[()]/g, '')}
 
@@ -242,7 +280,7 @@ export default function TransactionDetailsPriceInfo(props: ITransactionDetailsPr
                 {txTypeContent}
                 {controlItems[2] && totalValueContent}
                 {fillTimeContent}
-                {transactionDetails}
+                {isBuy ? isBuyTransactionDetails : isSellTransactionDetails}
                 {PriceDisplay}
             </div>
         </div>

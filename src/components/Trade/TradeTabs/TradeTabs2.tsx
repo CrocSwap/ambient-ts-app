@@ -383,6 +383,7 @@ export default function TradeTabs2(props: ITabsProps) {
     // Props for <Orders/> React Element
     const ordersProps = {
         crocEnv: crocEnv,
+        importedTokens: importedTokens,
         expandTradeTable: expandTradeTable,
         chainData: chainData,
         isShowAllEnabled: isShowAllEnabled,

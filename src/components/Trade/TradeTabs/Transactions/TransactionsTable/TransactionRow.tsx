@@ -9,8 +9,10 @@ import { NavLink } from 'react-router-dom';
 import NoTokenIcon from '../../../../Global/NoTokenIcon/NoTokenIcon';
 import IconWithTooltip from '../../../../Global/IconWithTooltip/IconWithTooltip';
 import TransactionDetails from '../../../../Global/TransactionDetails/TransactionDetails';
+import { tradeData } from '../../../../../utils/state/tradeDataSlice';
 interface TransactionRowPropsIF {
     tx: ITransaction;
+    tradeData: tradeData;
     isTokenABase: boolean;
     currentTxActiveInTransactions: string;
     setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
@@ -27,6 +29,7 @@ interface TransactionRowPropsIF {
 export default function TransactionRow(props: TransactionRowPropsIF) {
     const {
         showColumns,
+        tradeData,
         ipadView,
         isTokenABase,
         tx,
@@ -273,14 +276,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
     );
 
     // portfolio page li element ---------------
-    const accountTokenImages = (
-        <li className={styles.token_images_account}>
-            {/* {baseTokenLogoComponent}
-            {quoteTokenLogoComponent} */}
-            {tokensTogether}
-            {/* <p>hello</p> */}
-        </li>
-    );
+    const accountTokenImages = <li className={styles.token_images_account}>{tokensTogether}</li>;
 
     const poolName = (
         <li className='base_color'>
@@ -291,6 +287,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
     return (
         <ul
             className={`${styles.row_container} ${activeTransactionStyle} ${userPositionStyle}`}
+            style={{ cursor: 'pointer' }}
             onClick={() =>
                 tx.id === currentTxActiveInTransactions
                     ? null
@@ -412,16 +409,17 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                     data-label={baseTokenSymbol + quoteTokenSymbol}
                     className='color_white'
                     style={{ textAlign: 'right' }}
+                    onClick={openDetailsModal}
                 >
                     <p
-                        onClick={() => {
-                            const isBuyQuote = tx.isBuy === true || tx.isBid === true;
-                            console.log({ isBuyQuote });
-                            console.log({ isBuy });
-                            console.log({ tx });
-                            console.log(tx.isBuy);
-                            console.log(tx.isBid);
-                        }}
+                        // onClick={() => {
+                        //     const isBuyQuote = tx.isBuy === true || tx.isBid === true;
+                        //     console.log({ isBuyQuote });
+                        //     console.log({ isBuy });
+                        //     console.log({ tx });
+                        //     console.log(tx.isBuy);
+                        //     console.log(tx.isBid);
+                        // }}
                         className={`${styles.token_qty} ${positiveDisplayStyle}`}
                         style={{ fontFamily: 'monospace' }}
                     >
@@ -448,6 +446,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                 <TransactionsMenu
                     userPosition={userNameToDisplay === 'You'}
                     tx={tx}
+                    tradeData={tradeData}
                     isTokenABase={isTokenABase}
                     blockExplorer={blockExplorer}
                     showSidebar={props.showSidebar}
