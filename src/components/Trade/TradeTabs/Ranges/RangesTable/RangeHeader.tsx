@@ -1,6 +1,6 @@
 import { Dispatch, SetStateAction, useMemo } from 'react';
 import { BsSortDown, BsSortUpAlt } from 'react-icons/bs';
-
+import styles from '../Ranges.module.css';
 interface RangeHeaderPropsIF {
     header: {
         name: string | JSX.Element;
@@ -8,6 +8,8 @@ interface RangeHeaderPropsIF {
         show: boolean;
         slug: string;
         sortable: boolean;
+        alignRight?: boolean;
+        alignCenter?: boolean;
     };
 
     sortBy: string;
@@ -17,7 +19,7 @@ interface RangeHeaderPropsIF {
 }
 export default function RangeHeader(props: RangeHeaderPropsIF) {
     const { header, sortBy, setSortBy, reverseSort, setReverseSort } = props;
-    const { name, show, slug, sortable } = header;
+    const { name, show, slug, sortable, alignRight, alignCenter } = header;
 
     function handleClick(slug: string) {
         console.clear();
@@ -67,7 +69,9 @@ export default function RangeHeader(props: RangeHeaderPropsIF) {
                 <li
                     style={{ cursor: sortable ? 'pointer' : 'default' }}
                     onClick={() => handleClick(slug.toLowerCase())}
-                    className={activeSortStyle}
+                    className={`${activeSortStyle} ${alignRight && styles.align_right} ${
+                        alignCenter && styles.align_center
+                    }`}
                 >
                     {name} {arrow}
                 </li>

@@ -10,6 +10,7 @@ import NoTokenIcon from '../../../../Global/NoTokenIcon/NoTokenIcon';
 import IconWithTooltip from '../../../../Global/IconWithTooltip/IconWithTooltip';
 import TransactionDetails from '../../../../Global/TransactionDetails/TransactionDetails';
 import { tradeData } from '../../../../../utils/state/tradeDataSlice';
+// import { light } from '@material-ui/core/styles/createPalette';
 interface TransactionRowPropsIF {
     tx: ITransaction;
     tradeData: tradeData;
@@ -19,6 +20,7 @@ interface TransactionRowPropsIF {
     isShowAllEnabled: boolean;
     showSidebar: boolean;
     ipadView: boolean;
+    view2: boolean;
     showColumns: boolean;
     blockExplorer: string | undefined;
     closeGlobalModal: () => void;
@@ -31,6 +33,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
         showColumns,
         tradeData,
         ipadView,
+        view2,
         isTokenABase,
         tx,
         showSidebar,
@@ -295,10 +298,15 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
             }
             id={txDomId}
         >
+            {!isOnPortfolioPage && !showColumns && !view2 && (
+                <li>
+                    <p className='base_color'> Nov 9 10:36:23 AM</p>
+                </li>
+            )}
             {isOnPortfolioPage && accountTokenImages}
             {isOnPortfolioPage && !showSidebar && poolName}
             {!showColumns && IDWithTooltip}
-            {!showColumns && walletWithTooltip}
+            {!showColumns && !isOnPortfolioPage && walletWithTooltip}
             {showColumns && (
                 <li data-label='id'>
                     <p className='base_color' style={{ textAlign: 'center' }}>
@@ -318,7 +326,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                         <li
                             onClick={openDetailsModal}
                             data-label='price'
-                            className={sideTypeStyle}
+                            className={`${sideTypeStyle} ${styles.mono_font}`}
                             style={{ textAlign: 'right' }}
                         >
                             ambient
@@ -379,18 +387,27 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                 </li>
             )}
             {!showColumns && (
-                <li onClick={openDetailsModal} data-label='type' className={sideTypeStyle}>
+                <li
+                    onClick={openDetailsModal}
+                    data-label='type'
+                    className={sideTypeStyle}
+                    style={{ textAlign: 'center' }}
+                >
                     {type}
                 </li>
             )}
             {showColumns && !ipadView && (
-                <li data-label='side-type' className={sideTypeStyle}>
+                <li
+                    data-label='side-type'
+                    className={sideTypeStyle}
+                    style={{ textAlign: 'center' }}
+                >
                     <p>{sideType}</p>
                     <p>{type}</p>
                 </li>
             )}
             {usdValueWithTooltip}
-            {/* {!showColumns && (
+            {!showColumns && (
                 <li onClick={openDetailsModal} data-label={baseTokenSymbol} className='color_white'>
                     <p style={{ textAlign: 'right', fontFamily: 'monospace' }}>{baseDisplay}</p>
                 </li>
@@ -403,8 +420,8 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                 >
                     <p style={{ textAlign: 'right', fontFamily: 'monospace' }}>{quoteDisplay}</p>
                 </li>
-            )} */}
-            {
+            )}
+            {showColumns && (
                 <li
                     data-label={baseTokenSymbol + quoteTokenSymbol}
                     className='color_white'
@@ -440,7 +457,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                         {isBuy ? baseTokenLogoComponent : quoteTokenLogoComponent}
                     </p>
                 </li>
-            }
+            )}
             <li data-label='menu'>
                 {/* <OrdersMenu limitOrder={limitOrder} {...orderMenuProps} /> */}
                 <TransactionsMenu
