@@ -23,8 +23,8 @@ interface TransactionProps {
 export default function SidebarRecentTransactionsCard(props: TransactionProps) {
     const {
         tx,
-        coinGeckoTokenMap,
-        chainId,
+        // coinGeckoTokenMap,
+        // chainId,
         setCurrentTxActiveInTransactions,
         setIsShowAllEnabled,
         setSelectedOutsideTab,
@@ -32,34 +32,41 @@ export default function SidebarRecentTransactionsCard(props: TransactionProps) {
         tabToSwitchToBasedOnRoute,
     } = props;
 
-    const baseId = tx.base + '_' + chainId;
-    const quoteId = tx.quote + '_' + chainId;
+    // const baseId = tx.base + '_' + chainId;
+    // const quoteId = tx.quote + '_' + chainId;
 
-    const getToken = (addr: string) => coinGeckoTokenMap.get(addr.toLowerCase());
-    const baseToken = getToken(baseId) as TokenIF;
-    const quoteToken = getToken(quoteId) as TokenIF;
+    // const getToken = (addr: string) => coinGeckoTokenMap.get(addr.toLowerCase());
+    // const baseToken = getToken(baseId) as TokenIF;
+    // const quoteToken = getToken(quoteId) as TokenIF;
 
     const { pathname } = useLocation();
 
     const linkPath = useMemo(() => {
         let locationSlug = '';
-        if (pathname.startsWith('/trade/market') || pathname.startsWith('/account')) {
+        if (tx.entityType === 'swap') {
             locationSlug = '/trade/market';
-        } else if (pathname.startsWith('/trade/limit')) {
+        } else if (tx.entityType === 'limitOrder') {
             locationSlug = '/trade/limit';
-        } else if (pathname.startsWith('/trade/range')) {
+        } else if (tx.entityType === 'liqchange') {
             locationSlug = '/trade/range';
-        } else if (pathname.startsWith('/swap')) {
-            locationSlug = '/swap';
+        } else {
+            locationSlug = '/trade/market';
         }
-        return (
-            locationSlug +
-            '/chain=0x5&tokenA=' +
-            baseToken.address +
-            '&tokenB=' +
-            quoteToken.address
-        );
+        return locationSlug + '/chain=0x5&tokenA=' + tx.base + '&tokenB=' + tx.quote;
     }, [pathname]);
+    // const linkPath = useMemo(() => {
+    //     let locationSlug = '';
+    //     if (pathname.startsWith('/trade/market') || pathname.startsWith('/account')) {
+    //         locationSlug = '/trade/market';
+    //     } else if (pathname.startsWith('/trade/limit')) {
+    //         locationSlug = '/trade/limit';
+    //     } else if (pathname.startsWith('/trade/range')) {
+    //         locationSlug = '/trade/range';
+    //     } else if (pathname.startsWith('/swap')) {
+    //         locationSlug = '/swap';
+    //     }
+    //     return locationSlug + '/chain=0x5&tokenA=' + tx.base + '&tokenB=' + tx.quote;
+    // }, [pathname]);
 
     // const [valueUSD, setValueUSD] = useState<string | undefined>(undefined);
 
@@ -148,7 +155,7 @@ export default function SidebarRecentTransactionsCard(props: TransactionProps) {
     return (
         <div className={styles.container} onClick={() => handleRecentTransactionClick(tx)}>
             <div>
-                {baseToken.symbol} / {quoteToken.symbol}
+                {tx.baseSymbol} / {tx.quoteSymbol}
             </div>
             <div>{transactionTypeSide}</div>
             <div className={styles.status_display}>

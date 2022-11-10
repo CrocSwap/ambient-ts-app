@@ -18,8 +18,11 @@ export interface tradeData {
     tokenB: TokenIF;
     baseToken: TokenIF;
     quoteToken: TokenIF;
+    isTokenABase: boolean;
     liquidityFee: number;
     didUserFlipDenom: boolean;
+    shouldSwapConverterUpdate: boolean;
+    shouldLimitConverterUpdate: boolean;
     isDenomBase: boolean;
     advancedMode: boolean;
     isTokenAPrimary: boolean;
@@ -27,6 +30,8 @@ export interface tradeData {
     isTokenAPrimaryRange: boolean;
     primaryQuantityRange: string;
     limitTick: number;
+    limitTickCopied: boolean;
+    poolPriceNonDisplay: number;
     advancedLowTick: number;
     advancedHighTick: number;
     simpleRangeWidth: number;
@@ -46,8 +51,11 @@ const initialState: tradeData = {
     tokenB: goerliUSDC,
     baseToken: goerliETH,
     quoteToken: goerliUSDC,
+    isTokenABase: true,
     liquidityFee: 0,
     didUserFlipDenom: false,
+    shouldSwapConverterUpdate: false,
+    shouldLimitConverterUpdate: false,
     isDenomBase: true,
     advancedMode: false,
     isTokenAPrimary: true,
@@ -55,6 +63,8 @@ const initialState: tradeData = {
     isTokenAPrimaryRange: true,
     primaryQuantityRange: '',
     limitTick: 0,
+    limitTickCopied: false,
+    poolPriceNonDisplay: 0,
     advancedLowTick: 0,
     advancedHighTick: 0,
     simpleRangeWidth: 100,
@@ -85,9 +95,11 @@ export const tradeDataSlice = createSlice({
             if (action.payload.address.toLowerCase() === baseTokenAddress.toLowerCase()) {
                 state.baseToken = action.payload;
                 state.quoteToken = state.tokenB;
+                state.isTokenABase = true;
             } else if (action.payload.address.toLowerCase() === quoteTokenAddress.toLowerCase()) {
                 state.quoteToken = action.payload;
                 state.baseToken = state.tokenB;
+                state.isTokenABase = false;
             }
         },
         setTokenB: (state, action: PayloadAction<TokenIF>) => {
@@ -99,9 +111,11 @@ export const tradeDataSlice = createSlice({
             if (action.payload.address.toLowerCase() === baseTokenAddress.toLowerCase()) {
                 state.baseToken = action.payload;
                 state.quoteToken = state.tokenA;
+                state.isTokenABase = false;
             } else if (action.payload.address.toLowerCase() === quoteTokenAddress.toLowerCase()) {
                 state.quoteToken = action.payload;
                 state.baseToken = state.tokenA;
+                state.isTokenABase = true;
             }
         },
         setLiquidityFee: (state, action: PayloadAction<number>) => {
@@ -109,6 +123,12 @@ export const tradeDataSlice = createSlice({
         },
         setDidUserFlipDenom: (state, action: PayloadAction<boolean>) => {
             state.didUserFlipDenom = action.payload;
+        },
+        setShouldSwapConverterUpdate: (state, action: PayloadAction<boolean>) => {
+            state.shouldSwapConverterUpdate = action.payload;
+        },
+        setShouldLimitConverterUpdate: (state, action: PayloadAction<boolean>) => {
+            state.shouldLimitConverterUpdate = action.payload;
         },
         toggleDidUserFlipDenom: (state) => {
             state.didUserFlipDenom = !state.didUserFlipDenom;
@@ -142,6 +162,12 @@ export const tradeDataSlice = createSlice({
         },
         setLimitTick: (state, action: PayloadAction<number>) => {
             state.limitTick = action.payload;
+        },
+        setLimitTickCopied: (state, action: PayloadAction<boolean>) => {
+            state.limitTickCopied = action.payload;
+        },
+        setPoolPriceNonDisplay: (state, action: PayloadAction<number>) => {
+            state.poolPriceNonDisplay = action.payload;
         },
         setAdvancedLowTick: (state, action: PayloadAction<number>) => {
             state.advancedLowTick = action.payload;
@@ -201,6 +227,8 @@ export const {
     setLiquidityFee,
     setDidUserFlipDenom,
     toggleDidUserFlipDenom,
+    setShouldSwapConverterUpdate,
+    setShouldLimitConverterUpdate,
     setDenomInBase,
     toggleDenomInBase,
     setAdvancedMode,
@@ -211,6 +239,8 @@ export const {
     setIsTokenAPrimaryRange,
     setPrimaryQuantityRange,
     setLimitTick,
+    setLimitTickCopied,
+    setPoolPriceNonDisplay,
     setAdvancedLowTick,
     setAdvancedHighTick,
     setSimpleRangeWidth,

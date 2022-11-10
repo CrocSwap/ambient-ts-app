@@ -30,6 +30,7 @@ const mainnetProvider = new ethers.providers.WebSocketProvider(
 
 interface PortfolioPropsIF {
     crocEnv: CrocEnv | undefined;
+    isTokenABase: boolean;
     provider: ethers.providers.Provider | undefined;
     cachedFetchNativeTokenBalance: nativeTokenBalanceFn;
     cachedFetchErc20TokenBalances: Erc20TokenBalanceFn;
@@ -73,6 +74,7 @@ export default function Portfolio(props: PortfolioPropsIF) {
 
     const {
         crocEnv,
+        isTokenABase,
         provider,
         cachedFetchNativeTokenBalance,
         cachedFetchErc20TokenBalances,
@@ -217,6 +219,7 @@ export default function Portfolio(props: PortfolioPropsIF) {
 
     const [isTokenModalOpen, openTokenModal, closeTokenModal] = useModal();
 
+    const [fullLayoutActive, setFullLayoutActive] = useState(false);
     const exchangeBalanceComponent = (
         <div className={styles.exchange_balance}>
             <ExchangeBalance
@@ -235,10 +238,11 @@ export default function Portfolio(props: PortfolioPropsIF) {
                 setRecheckTokenBalances={setRecheckTokenBalances}
                 lastBlockNumber={lastBlockNumber}
                 openTokenModal={openTokenModal}
+                fullLayoutActive={fullLayoutActive}
+                setFullLayoutActive={setFullLayoutActive}
             />
         </div>
     );
-    const [fullLayoutActive, setFullLayoutActive] = useState(false);
 
     useEffect(() => {
         !connectedAccountActive ? setFullLayoutActive(true) : setFullLayoutActive(false);
@@ -247,6 +251,37 @@ export default function Portfolio(props: PortfolioPropsIF) {
     // useEffect(() => {
     //     .userAccount ? setFullLayoutActive(true) : null;
     // }, [userAccount]);
+    const fullLayerToggle = (
+        <div
+            className={styles.right_tab_option}
+            onClick={() => setFullLayoutActive(!fullLayoutActive)}
+        >
+            <section>
+                {' '}
+                <div
+                    className={`${styles.full_layout_svg} ${
+                        fullLayoutActive && styles.active_layout_style
+                    } `}
+                />
+            </section>
+
+            <section
+                // onClick={() => setFullLayoutActive(!fullLayoutActive)}
+                className={styles.shared_layout_svg}
+            >
+                <div
+                    className={`${styles.full_layout_svg_copied} ${
+                        !fullLayoutActive && styles.active_layout_style
+                    }`}
+                />
+                <div
+                    className={`${styles.half_layout_svg} ${
+                        !fullLayoutActive && styles.active_layout_style
+                    }`}
+                />
+            </section>
+        </div>
+    );
 
     const connectedUserNativeToken = useAppSelector((state) => state.userData.tokens.nativeToken);
     const connectedUserErc20Tokens = useAppSelector((state) => state.userData.tokens.erc20Tokens);
@@ -345,13 +380,14 @@ export default function Portfolio(props: PortfolioPropsIF) {
             />
             <div
                 className={
-                    fullLayoutActive
-                        ? styles.full_layout_container
-                        : styles.tabs_exchange_balance_container
+                    // fullLayoutActive
+                    // ?styles.full_layout_container:
+                    styles.tabs_exchange_balance_container
                 }
             >
                 <PortfolioTabs
                     crocEnv={crocEnv}
+                    isTokenABase={isTokenABase}
                     provider={provider}
                     cachedFetchTokenPrice={cachedFetchTokenPrice}
                     importedTokens={importedTokens}
@@ -383,8 +419,10 @@ export default function Portfolio(props: PortfolioPropsIF) {
                     quoteTokenDexBalance={quoteTokenDexBalance}
                     currentTxActiveInTransactions={currentTxActiveInTransactions}
                     setCurrentTxActiveInTransactions={setCurrentTxActiveInTransactions}
+                    fullLayoutToggle={fullLayerToggle}
                 />
-                {connectedAccountActive && !fullLayoutActive ? exchangeBalanceComponent : null}
+                {/* {connectedAccountActive && !fullLayoutActive ? exchangeBalanceComponent : null} */}
+                {connectedAccountActive && exchangeBalanceComponent}
             </div>
             {isTokenModalOpen && (
                 <Modal

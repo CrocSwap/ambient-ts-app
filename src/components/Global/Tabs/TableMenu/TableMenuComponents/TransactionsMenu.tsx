@@ -5,20 +5,37 @@ import { FiExternalLink, FiMoreHorizontal } from 'react-icons/fi';
 
 // START: Import JSX Functional Components
 // import Modal from '../../../../Global/Modal/Modal';
-import SnackbarComponent from '../../../../../components/Global/SnackbarComponent/SnackbarComponent';
+// import SnackbarComponent from '../../../../../components/Global/SnackbarComponent/SnackbarComponent';
 
 // START: Import Local Files
 import styles from './TableMenus.module.css';
 // import { useModal } from '../../../../Global/Modal/useModal';
-import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
+// import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
 import { ITransaction } from '../../../../../utils/state/graphDataSlice';
 import UseOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
 import TransactionDetails from '../../../TransactionDetails/TransactionDetails';
+import { useAppDispatch } from '../../../../../utils/hooks/reduxToolkit';
+import {
+    setAdvancedHighTick,
+    setAdvancedLowTick,
+    setAdvancedMode,
+    setIsTokenAPrimary,
+    setLimitTick,
+    setLimitTickCopied,
+    // setPrimaryQuantity,
+    setShouldLimitConverterUpdate,
+    setShouldSwapConverterUpdate,
+    setSimpleRangeWidth,
+    tradeData,
+} from '../../../../../utils/state/tradeDataSlice';
+import { useNavigate } from 'react-router-dom';
 
 // interface for React functional component props
 interface TransactionMenuIF {
+    tradeData: tradeData;
     userPosition: boolean | undefined; // position belongs to active user
+    isTokenABase: boolean;
     tx: ITransaction;
     blockExplorer?: string;
     showSidebar: boolean;
@@ -31,6 +48,8 @@ interface TransactionMenuIF {
 export default function TransactionsMenu(props: TransactionMenuIF) {
     const menuItemRef = useRef<HTMLDivElement>(null);
     const {
+        tradeData,
+        // isTokenABase,
         // userPosition,
         tx,
         blockExplorer,
@@ -40,8 +59,8 @@ export default function TransactionsMenu(props: TransactionMenuIF) {
         // isOnPortfolioPage,
     } = props;
 
-    const [value, copy] = useCopyToClipboard();
-    const [openSnackbar, setOpenSnackbar] = useState(false);
+    // const [value, copy] = useCopyToClipboard();
+    // const [openSnackbar, setOpenSnackbar] = useState(false);
     // const [isModalOpen, openModal, closeModal] = useModal();
     // const [currentModal, setCurrentModal] = useState('edit');
     // ---------------------MODAL FUNCTIONALITY----------------
@@ -64,11 +83,122 @@ export default function TransactionsMenu(props: TransactionMenuIF) {
     // }
 
     // -----------------SNACKBAR----------------
-    function handleCopyAddress() {
-        copy('Not Yet Implemented');
+    // function handleCopyAddress() {
+    //     copy('Not Yet Implemented');
 
-        setOpenSnackbar(true);
-    }
+    //     setOpenSnackbar(true);
+    // }
+    const dispatch = useAppDispatch();
+
+    const handleCopyClick = () => {
+        // console.log('copy clicked');
+        console.log({ tx });
+
+        if (tx.positionType === 'ambient') {
+            dispatch(setSimpleRangeWidth(100));
+            dispatch(setAdvancedMode(false));
+        } else if (tx.positionType === 'concentrated') {
+            setTimeout(() => {
+                dispatch(setAdvancedLowTick(tx.bidTick));
+                dispatch(setAdvancedHighTick(tx.askTick));
+                dispatch(setAdvancedMode(true));
+            }, 1000);
+        } else if (tx.entityType === 'swap') {
+            dispatch(
+                setIsTokenAPrimary((tx.isBuy && tx.inBaseQty) || (!tx.isBuy && !tx.inBaseQty)),
+            );
+            // dispatch(
+            //     setPrimaryQuantity(
+            //         tx.inBaseQty
+            //             ? Math.abs(tx.baseFlowDecimalCorrected).toString()
+            //             : Math.abs(tx.quoteFlowDecimalCorrected).toString(),
+            //     ),
+            // );
+            dispatch(setShouldSwapConverterUpdate(true));
+            // console.log('swap copy clicked');
+        } else if (tx.entityType === 'limitOrder') {
+            dispatch(setLimitTickCopied(true));
+            // console.log('limit order copy clicked');
+            console.log({ tradeData });
+            console.log({ tx });
+            const shouldMovePrimaryQuantity =
+                tradeData.tokenA.address.toLowerCase() ===
+                (tx.isBid ? tx.quote.toLowerCase() : tx.base.toLowerCase());
+
+            console.log({ shouldMovePrimaryQuantity });
+            const shouldClearNonPrimaryQty =
+                tradeData.limitTick !== tx.askTick &&
+                (tradeData.isTokenAPrimary
+                    ? tradeData.tokenA.address.toLowerCase() ===
+                      (tx.isBid ? tx.base.toLowerCase() : tx.quote.toLowerCase())
+                        ? true
+                        : false
+                    : tradeData.tokenB.address.toLowerCase() ===
+                      (tx.isBid ? tx.quote.toLowerCase() : tx.base.toLowerCase())
+                    ? true
+                    : false);
+            if (shouldMovePrimaryQuantity) {
+                console.log('flipping primary');
+                // setTimeout(() => {
+                const sellQtyField = document.getElementById(
+                    'sell-limit-quantity',
+                ) as HTMLInputElement;
+                const buyQtyField = document.getElementById(
+                    'buy-limit-quantity',
+                ) as HTMLInputElement;
+
+                if (tradeData.isTokenAPrimary) {
+                    if (buyQtyField) {
+                        buyQtyField.value = sellQtyField.value;
+                    }
+                    if (sellQtyField) {
+                        sellQtyField.value = '';
+                        // tradeData.primaryQuantity === 'NaN' ? '' : tradeData.primaryQuantity;
+                    }
+                } else {
+                    if (sellQtyField) {
+                        sellQtyField.value = buyQtyField.value;
+                        // tradeData.primaryQuantity === 'NaN' ? '' : tradeData.primaryQuantity;
+                    }
+                    if (buyQtyField) {
+                        buyQtyField.value = '';
+                    }
+                }
+                // }, 500);
+                dispatch(setIsTokenAPrimary(!tradeData.isTokenAPrimary));
+                dispatch(setShouldLimitConverterUpdate(true));
+            } else if (shouldClearNonPrimaryQty) {
+                if (!tradeData.isTokenAPrimary) {
+                    const sellQtyField = document.getElementById(
+                        'sell-limit-quantity',
+                    ) as HTMLInputElement;
+                    if (sellQtyField) {
+                        sellQtyField.value = '';
+                        // tradeData.primaryQuantity === 'NaN' ? '' : tradeData.primaryQuantity;
+                    }
+                } else {
+                    const buyQtyField = document.getElementById(
+                        'buy-limit-quantity',
+                    ) as HTMLInputElement;
+                    if (buyQtyField) {
+                        buyQtyField.value = '';
+                    }
+                }
+                console.log('resetting');
+                // dispatch(setPrimaryQuantity(''));
+            }
+            setTimeout(() => {
+                dispatch(setLimitTick(tx.isBid ? tx.bidTick : tx.askTick));
+            }, 1000);
+
+            // dispatch(
+            //     setIsTokenAPrimary((tx.isBid && tx.inBaseQty) || (!tx.isBid && !tx.inBaseQty)),
+            // );
+        }
+        setShowDropdownMenu(false);
+
+        // dispatch(setRangeModuleTriggered(true));
+    };
 
     function handleOpenExplorer() {
         if (tx && blockExplorer) {
@@ -77,15 +207,15 @@ export default function TransactionsMenu(props: TransactionMenuIF) {
         }
     }
 
-    const snackbarContent = (
-        <SnackbarComponent
-            severity='info'
-            setOpenSnackbar={setOpenSnackbar}
-            openSnackbar={openSnackbar}
-        >
-            {value}
-        </SnackbarComponent>
-    );
+    // const snackbarContent = (
+    //     <SnackbarComponent
+    //         severity='info'
+    //         setOpenSnackbar={setOpenSnackbar}
+    //         openSnackbar={openSnackbar}
+    //     >
+    //         {value}
+    //     </SnackbarComponent>
+    // );
     // -----------------END OF SNACKBAR----------------
 
     // TODO:  @Junior please add a `default` to this with debugging code
@@ -122,11 +252,122 @@ export default function TransactionsMenu(props: TransactionMenuIF) {
     //     </button>
     // ) : null;
 
-    const copyButton = (
-        <button className={styles.option_button} onClick={handleCopyAddress}>
-            Copy
-        </button>
-    );
+    // const copyButton = (
+    //     <button className={styles.option_button} onClick={handleCopyClick}>
+    //         Copy
+    //     </button>
+    // );
+
+    const isTxCopiable =
+        tx.source !== 'manual' && (tx.entityType === 'swap' || tx.changeType === 'mint');
+
+    const navigate = useNavigate();
+
+    const copyButton =
+        tx.entityType === 'liqchange' ? (
+            <button
+                className={styles.option_button}
+                onClick={() => {
+                    navigate(
+                        '/trade/range/' +
+                            'chain=' +
+                            tx.chainId +
+                            '&tokenA=' +
+                            (tx.isBid ? tx.base : tx.quote) +
+                            '&tokenB=' +
+                            (tx.isBid ? tx.quote : tx.base),
+                    );
+                    handleCopyClick();
+                }}
+            >
+                Copy
+            </button>
+        ) : // <Link
+        //     className={styles.option_button}
+        //     to={
+        //         '/trade/range/' +
+        //         'chain=' +
+        //         tx.chainId +
+        //         '&tokenA=' +
+        //         (tx.isBid ? tx.base : tx.quote) +
+        //         '&tokenB=' +
+        //         (tx.isBid ? tx.quote : tx.base)
+        //     }
+        //     onClick={handleCopyClick}
+        // >
+        //     Copy
+        // </Link>
+
+        tx.entityType === 'limitOrder' ? (
+            <button
+                className={styles.option_button}
+                onClick={() => {
+                    dispatch(setLimitTickCopied(true));
+                    dispatch(setLimitTick(0));
+                    navigate(
+                        '/trade/limit/' +
+                            'chain=' +
+                            tx.chainId +
+                            '&tokenA=' +
+                            (tx.isBid ? tx.base : tx.quote) +
+                            '&tokenB=' +
+                            (tx.isBid ? tx.quote : tx.base),
+                    );
+                    handleCopyClick();
+                }}
+            >
+                Copy
+            </button>
+        ) : (
+            // <Link
+            //     className={styles.option_button}
+            //     to={
+            //         '/trade/limit/' +
+            //         'chain=' +
+            //         tx.chainId +
+            //         '&tokenA=' +
+            //         (tx.isBid ? tx.base : tx.quote) +
+            //         '&tokenB=' +
+            //         (tx.isBid ? tx.quote : tx.base)
+            //     }
+            //     onClick={handleCopyClick}
+            // >
+            //     Copy
+            // </Link>
+            <button
+                className={styles.option_button}
+                onClick={() => {
+                    navigate(
+                        '/trade/market/' +
+                            'chain=' +
+                            tx.chainId +
+                            '&tokenA=' +
+                            (tx.isBuy ? tx.base : tx.quote) +
+                            '&tokenB=' +
+                            (tx.isBuy ? tx.quote : tx.base),
+                    );
+                    handleCopyClick();
+                }}
+            >
+                Copy
+            </button>
+            // <Link
+            //     className={styles.option_button}
+            //     to={
+            //         '/trade/market/' +
+            //         'chain=' +
+            //         tx.chainId +
+            //         '&tokenA=' +
+            //         (tx.isBuy ? tx.base : tx.quote) +
+            //         '&tokenB=' +
+            //         (tx.isBuy ? tx.quote : tx.base)
+            //     }
+            //     onClick={handleCopyClick}
+            // >
+            //     Copy
+            // </Link>
+        );
+
     const explorerButton = (
         <button className={styles.option_button} onClick={handleOpenExplorer}>
             Explorer
@@ -169,7 +410,7 @@ export default function TransactionsMenu(props: TransactionMenuIF) {
             {/* {(isOnPortfolioPage && !showSidebar) || (!isOnPortfolioPage && detailsButton)} */}
             {/* {view2 && explorerButton} */}
             {/* {(!showSidebar && !isOnPortfolioPage) || (view2 && copyButton)} */}
-            {copyButton}
+            {isTxCopiable && copyButton}
         </div>
     );
 
@@ -209,7 +450,7 @@ export default function TransactionsMenu(props: TransactionMenuIF) {
             {transactionsMenu}
             {dropdownTransactionsMenu}
             {/* {modalOrNull} */}
-            {snackbarContent}
+            {/* {snackbarContent} */}
         </div>
     );
 }

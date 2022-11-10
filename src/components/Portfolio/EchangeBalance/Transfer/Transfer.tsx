@@ -108,10 +108,10 @@ export default function Transfer(props: PortfolioTransferProps) {
         // console.log({ isTokenAllowanceSufficient });
         if (!isResolvedAddressValid) {
             setIsButtonDisabled(true);
-            setButtonMessage('Please enter a valid address');
+            setButtonMessage('Please Enter a Valid Address');
         } else if (!transferQty) {
             setIsButtonDisabled(true);
-            setButtonMessage('Please Enter Token Quantity');
+            setButtonMessage('Enter a Transfer Amount');
         } else if (!isDexBalanceSufficient) {
             setIsButtonDisabled(true);
             setButtonMessage(`${selectedToken.symbol} Exchange Balance Insufficient`);
@@ -265,15 +265,15 @@ export default function Transfer(props: PortfolioTransferProps) {
 
     const secondaryEnsOrNull = secondaryEnsName ? (
         <div className={styles.info_text}>
-            Destination ENS Address:
-            <div className={styles.hex_address}>{secondaryEnsName}</div>
+            Destination ENS Address: {secondaryEnsName}
+            {/* <div className={styles.hex_address}>{secondaryEnsName}</div> */}
         </div>
     ) : null;
 
     return (
         <div className={styles.deposit_container}>
             <div className={styles.info_text}>
-                Transfer tokens to another account within the exchange
+                Transfer deposited collateral to another deposit account:
             </div>
             <TransferAddressInput
                 fieldId='exchange-balance-transfer-address'

@@ -4,10 +4,15 @@
     -webkit-box-align: center;
     align-items: center;
     grid-template-columns: 1.5fr repeat(5, 1fr);
-    color: white;
+    color: var(--text-grey-white);
     
-    padding: 1rem 0;
+    padding: 0.5rem 0;
+    transition: all var(--animation-speed) ease-in-out
    
+}
+
+.container:hover{
+    background: var(--dark2)
 }
 .container > *:not(:first-child, :nth-child(2)){
     text-align: end;

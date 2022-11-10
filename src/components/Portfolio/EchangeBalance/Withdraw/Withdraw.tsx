@@ -124,10 +124,10 @@ export default function Withdraw(props: PortfolioWithdrawProps) {
         // console.log({ isDepositQtyValid });
         if (isSendToAddressChecked && !isResolvedAddressValid) {
             setIsButtonDisabled(true);
-            setButtonMessage('Please enter a valid address');
+            setButtonMessage('Please Enter a Valid Address');
         } else if (!withdrawQty) {
             setIsButtonDisabled(true);
-            setButtonMessage('Please Enter Token Quantity');
+            setButtonMessage('Enter a Withdrawal Amount');
         } else if (!isDexBalanceSufficient) {
             setIsButtonDisabled(true);
             setButtonMessage(`${selectedToken.symbol} Exchange Balance Insufficient`);
@@ -290,8 +290,8 @@ export default function Withdraw(props: PortfolioWithdrawProps) {
     const secondaryEnsOrNull =
         isSendToAddressChecked && secondaryEnsName ? (
             <div className={styles.info_text}>
-                Destination ENS Address:
-                <div className={styles.hex_address}>{secondaryEnsName}</div>
+                Destination ENS Address: {secondaryEnsName}
+                {/* <div className={styles.hex_address}>{secondaryEnsName}</div> */}
             </div>
         ) : null;
 
@@ -311,7 +311,7 @@ export default function Withdraw(props: PortfolioWithdrawProps) {
 
     return (
         <div className={styles.deposit_container}>
-            <div className={styles.info_text}>Withdraw tokens from the exchange to your wallet</div>
+            <div className={styles.info_text}>Withdraw deposited collateral to your wallet:</div>
             {toggleContent}
             {transferAddressOrNull}
             <WithdrawCurrencySelector

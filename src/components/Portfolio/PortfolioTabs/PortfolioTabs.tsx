@@ -33,6 +33,7 @@ import Transactions from '../../Trade/TradeTabs/Transactions/Transactions';
 // interface for React functional component props
 interface PortfolioTabsPropsIF {
     crocEnv: CrocEnv | undefined;
+    isTokenABase: boolean;
     provider: ethers.providers.Provider | undefined;
     cachedFetchTokenPrice: TokenPriceFn;
     importedTokens: TokenIF[];
@@ -66,12 +67,15 @@ interface PortfolioTabsPropsIF {
 
     currentTxActiveInTransactions: string;
     setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
+
+    fullLayoutToggle: JSX.Element;
 }
 
 // React functional component
 export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
     const {
         crocEnv,
+        isTokenABase,
         cachedFetchTokenPrice,
         importedTokens,
         connectedUserTokens,
@@ -92,6 +96,7 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
         quoteTokenBalance,
         baseTokenDexBalance,
         quoteTokenDexBalance,
+        // fullLayoutToggle,
 
         account,
     } = props;
@@ -283,6 +288,7 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
     // props for <Transactions/> React Element
     const transactionsProps = {
         importedTokens: importedTokens,
+        isTokenABase: isTokenABase,
         activeAccountTransactionData: activeAccountTransactionData,
         connectedAccountActive: connectedAccountActive,
         isShowAllEnabled: false,
@@ -304,6 +310,7 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
 
     // Props for <Orders/> React Element
     const ordersProps = {
+        importedTokens: importedTokens,
         activeAccountLimitOrderData: activeAccountLimitOrderData,
         connectedAccountActive: connectedAccountActive,
         crocEnv: props.crocEnv,
@@ -333,7 +340,7 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
         { label: 'Limit Orders', content: <Orders {...ordersProps} />, icon: openOrdersImage },
         { label: 'Ranges', content: <Ranges {...rangeProps} />, icon: rangePositionsImage },
         {
-            label: 'Exchange Balances',
+            label: 'Exchange Deposits',
             content: <Exchange {...exchangeProps} />,
             icon: exchangeImage,
         },

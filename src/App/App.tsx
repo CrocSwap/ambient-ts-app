@@ -75,7 +75,9 @@ import {
     setAdvancedMode,
     setDenomInBase,
     setDidUserFlipDenom,
+    setLimitTick,
     setLiquidityFee,
+    setPoolPriceNonDisplay,
     setPrimaryQuantityRange,
     setSimpleRangeWidth,
 } from '../utils/state/tradeDataSlice';
@@ -136,6 +138,7 @@ import TopRanges from '../components/Analytics/TopRanges/TopRanges';
 import TopTokens from '../components/Analytics/TopTokens/TopTokens';
 import AnalyticsTransactions from '../components/Analytics/AnalyticsTransactions/AnalyticsTransactions';
 import trimString from '../utils/functions/trimString';
+// import { memoizeQuerySpotTick } from './functions/querySpotTick';
 // import PhishingWarning from '../components/Global/PhisingWarning/PhishingWarning';
 import useChatApi from '../components/Chat/Service/ChatApi';
 
@@ -144,6 +147,7 @@ const cachedFetchNativeTokenBalance = memoizeFetchNativeTokenBalance();
 const cachedFetchErc20TokenBalances = memoizeFetchErc20TokenBalances();
 const cachedFetchTokenPrice = memoizeTokenPrice();
 const cachedQuerySpotPrice = memoizeQuerySpotPrice();
+// const cachedQuerySpotTick = memoizeQuerySpotTick();
 
 const httpGraphCacheServerDomain = 'https://809821320828123.de:5000';
 const wssGraphCacheServerDomain = 'wss://809821320828123.de:5000';
@@ -363,8 +367,8 @@ export default function App() {
     }, [chainData.chainId]);
 
     useEffect(() => {
-        console.log({ isUserLoggedIn });
-        console.log({ account });
+        // console.log({ isUserLoggedIn });
+        // console.log({ account });
         if (!isUserLoggedIn) {
             dispatch(resetTokenData());
         } else if (account) {
@@ -711,7 +715,16 @@ export default function App() {
         // run every time crocEnv updates
         // this indirectly tracks a new chain being used
     }, [crocEnv, tokenPairLocal]);
+
     const tokenPairStringified = useMemo(() => JSON.stringify(tokenPair), [tokenPair]);
+
+    useEffect(() => {
+        console.log('resetting limit tick');
+        dispatch(setPoolPriceNonDisplay(0));
+
+        dispatch(setLimitTick(0));
+        // }, [JSON.stringify({ base: baseTokenAddress, quote: quoteTokenAddress })]);
+    }, [tokenPairStringified]);
 
     useEffect(() => {
         dispatch(setPrimaryQuantityRange(''));
@@ -1104,13 +1117,28 @@ export default function App() {
                                 const poolLimitOrderStates = json?.data;
 
                                 if (poolLimitOrderStates) {
-                                    dispatch(
-                                        setLimitOrdersByPool({
-                                            dataReceived: true,
-                                            limitOrders: poolLimitOrderStates,
+                                    Promise.all(
+                                        poolLimitOrderStates.map((limitOrder: LimitOrderIF) => {
+                                            return getLimitOrderData(limitOrder, importedTokens);
                                         }),
-                                    );
+                                    ).then((updatedLimitOrderStates) => {
+                                        dispatch(
+                                            setLimitOrdersByPool({
+                                                dataReceived: true,
+                                                limitOrders: updatedLimitOrderStates,
+                                            }),
+                                        );
+                                    });
                                 }
+
+                                // if (poolLimitOrderStates) {
+                                //     dispatch(
+                                //         setLimitOrdersByPool({
+                                //             dataReceived: true,
+                                //             limitOrders: poolLimitOrderStates,
+                                //         }),
+                                //     );
+                                // }
                             })
                             .catch(console.log);
                     }
@@ -1548,12 +1576,14 @@ export default function App() {
     const [baseTokenDexBalance, setBaseTokenDexBalance] = useState<string>('');
     const [quoteTokenDexBalance, setQuoteTokenDexBalance] = useState<string>('');
 
-    const [poolPriceNonDisplay, setPoolPriceNonDisplay] = useState<number | undefined>(undefined);
-    const [poolPriceDisplay, setPoolPriceDisplay] = useState<number | undefined>(undefined);
+    // const [poolPriceTick, setPoolPriceTick] = useState<number | undefined>();
+    // const [poolPriceNonDisplay, setPoolPriceNonDisplay] = useState<number | undefined>();
+    const [poolPriceDisplay, setPoolPriceDisplay] = useState<number | undefined>();
+    const poolPriceNonDisplay = tradeData.poolPriceNonDisplay;
 
     useEffect(() => {
-        setPoolPriceNonDisplay(0);
         setPoolPriceDisplay(0);
+        // setPoolPriceTick(undefined);
     }, [JSON.stringify({ base: baseTokenAddress, quote: quoteTokenAddress })]);
 
     // useEffect to get spot price when tokens change and block updates
@@ -1568,9 +1598,15 @@ export default function App() {
             lastBlockNumber !== 0
         ) {
             (async () => {
-                // const viewProvider = provider
-                //     ? provider
-                //     : (await new CrocEnv(chainData.chainId).context).provider;
+                // const spotTick = await cachedQuerySpotTick(
+                //     crocEnv,
+                //     baseTokenAddress,
+                //     quoteTokenAddress,
+                //     chainData.chainId,
+                //     lastBlockNumber,
+                // );
+
+                // setPoolPriceTick(spotTick);
 
                 const spotPrice = await cachedQuerySpotPrice(
                     crocEnv,
@@ -1580,7 +1616,7 @@ export default function App() {
                     lastBlockNumber,
                 );
 
-                setPoolPriceNonDisplay(spotPrice);
+                dispatch(setPoolPriceNonDisplay(spotPrice));
                 if (spotPrice) {
                     const displayPrice = toDisplayPrice(
                         spotPrice,
@@ -1600,6 +1636,7 @@ export default function App() {
         quoteTokenDecimals,
         chainData.chainId,
         crocEnv,
+        poolPriceNonDisplay === 0,
     ]);
 
     // useEffect to update selected token balances
@@ -1988,7 +2025,7 @@ export default function App() {
         isSellTokenBase: isTokenABase,
         tokenPair: tokenPair,
         poolPriceDisplay: poolPriceDisplay,
-        poolPriceNonDisplay: poolPriceNonDisplay,
+        // poolPriceNonDisplay: poolPriceNonDisplay,
         setRecheckTokenAApproval: setRecheckTokenAApproval,
         tokenAAllowance: tokenAAllowance,
         chainId: chainData.chainId,
@@ -2049,6 +2086,8 @@ export default function App() {
     const [outsideControl, setOutsideControl] = useState(false);
     const [chatStatus, setChatStatus] = useState(false);
 
+    const [analyticsSearchInput, setAnalyticsSearchInput] = useState('');
+
     // props for <Sidebar/> React element
     const sidebarProps = {
         tradeData: tradeData,
@@ -2075,6 +2114,9 @@ export default function App() {
 
         currentPositionActive: currentPositionActive,
         setCurrentPositionActive: setCurrentPositionActive,
+
+        analyticsSearchInput: analyticsSearchInput,
+        setAnalyticsSearchInput: setAnalyticsSearchInput,
     };
 
     const analyticsProps = {
@@ -2197,6 +2239,7 @@ export default function App() {
                             element={
                                 <Trade
                                     pool={pool}
+                                    // poolPriceTick={poolPriceTick}
                                     isUserLoggedIn={isUserLoggedIn}
                                     crocEnv={crocEnv}
                                     provider={provider}
@@ -2272,18 +2315,74 @@ export default function App() {
                             <Route path='edit/' element={<Navigate to='/trade/market' replace />} />
                         </Route>
                         <Route path='analytics' element={<Analytics {...analyticsProps} />} />
-                        <Route path='analytics2' element={<Analytics2 />}>
+                        <Route
+                            path='analytics2'
+                            element={
+                                <Analytics2
+                                    analyticsSearchInput={analyticsSearchInput}
+                                    setAnalyticsSearchInput={setAnalyticsSearchInput}
+                                />
+                            }
+                        >
                             <Route
                                 path=''
                                 element={<Navigate to='/analytics2/overview' replace />}
                             />
 
-                            <Route path='overview' element={<AnalyticsOverview />} />
-                            <Route path='pools' element={<TopPools />} />
-                            <Route path='trendingpools' element={<TrendingPools />} />
-                            <Route path='ranges/top' element={<TopRanges />} />
-                            <Route path='tokens' element={<TopTokens />} />
-                            <Route path='transactions' element={<AnalyticsTransactions />} />
+                            <Route
+                                path='overview'
+                                element={
+                                    <AnalyticsOverview
+                                        analyticsSearchInput={analyticsSearchInput}
+                                        setAnalyticsSearchInput={setAnalyticsSearchInput}
+                                    />
+                                }
+                            />
+                            <Route
+                                path='pools'
+                                element={
+                                    <TopPools
+                                        analyticsSearchInput={analyticsSearchInput}
+                                        setAnalyticsSearchInput={setAnalyticsSearchInput}
+                                    />
+                                }
+                            />
+                            <Route
+                                path='trendingpools'
+                                element={
+                                    <TrendingPools
+                                        analyticsSearchInput={analyticsSearchInput}
+                                        setAnalyticsSearchInput={setAnalyticsSearchInput}
+                                    />
+                                }
+                            />
+                            <Route
+                                path='ranges/top'
+                                element={
+                                    <TopRanges
+                                        analyticsSearchInput={analyticsSearchInput}
+                                        setAnalyticsSearchInput={setAnalyticsSearchInput}
+                                    />
+                                }
+                            />
+                            <Route
+                                path='tokens'
+                                element={
+                                    <TopTokens
+                                        analyticsSearchInput={analyticsSearchInput}
+                                        setAnalyticsSearchInput={setAnalyticsSearchInput}
+                                    />
+                                }
+                            />
+                            <Route
+                                path='transactions'
+                                element={
+                                    <AnalyticsTransactions
+                                        analyticsSearchInput={analyticsSearchInput}
+                                        setAnalyticsSearchInput={setAnalyticsSearchInput}
+                                    />
+                                }
+                            />
                         </Route>
                         <Route
                             path='app/chat'
@@ -2321,6 +2420,7 @@ export default function App() {
                             element={
                                 <Portfolio
                                     crocEnv={crocEnv}
+                                    isTokenABase={isTokenABase}
                                     provider={provider}
                                     cachedFetchErc20TokenBalances={cachedFetchErc20TokenBalances}
                                     cachedFetchNativeTokenBalance={cachedFetchNativeTokenBalance}
@@ -2363,6 +2463,7 @@ export default function App() {
                             element={
                                 <Portfolio
                                     crocEnv={crocEnv}
+                                    isTokenABase={isTokenABase}
                                     provider={provider}
                                     cachedFetchErc20TokenBalances={cachedFetchErc20TokenBalances}
                                     cachedFetchNativeTokenBalance={cachedFetchNativeTokenBalance}
@@ -2416,6 +2517,7 @@ export default function App() {
                             element={
                                 <Portfolio
                                     crocEnv={crocEnv}
+                                    isTokenABase={isTokenABase}
                                     provider={provider}
                                     cachedFetchErc20TokenBalances={cachedFetchErc20TokenBalances}
                                     cachedFetchNativeTokenBalance={cachedFetchNativeTokenBalance}

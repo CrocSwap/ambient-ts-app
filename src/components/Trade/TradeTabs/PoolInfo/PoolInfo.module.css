@@ -88,7 +88,8 @@ border-radius: 4px;
     font-weight: 200;
     font-size: var(--header2-size);
     line-height: var(--header2-lh);
-    color: var(--text-grey-white)
+    color: var(--text-grey-white);
+    font-family: var(--mono);
 }
 .token_display_container  p{
     font-size: var(--body-size);
@@ -105,7 +106,8 @@ border-radius: 4px;
 .card_container .info{
     font-size: var(--header2-size);
     line-height: var(--header2-lh);
-    color: var(--text-grey-white)
+    color: var(--text-grey-white);
+    font-family: var(--mono);
 }
 .pool_composition_container{
     display: flex;
@@ -256,6 +258,7 @@ position: relative;
     font-size: var(--body-size);
     line-height: var(--body-lh);
     color: var(--text-grey-white);
+    font-family: var(--mono);
 
   }
 

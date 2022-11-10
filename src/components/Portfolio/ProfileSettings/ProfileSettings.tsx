@@ -149,7 +149,7 @@ export default function ProfileSettings(props: ProfileSettingsPropsIF) {
     }, []);
 
     async function updateUser() {
-        const response = await fetch('http://localhost:5000/api/auth/updateUser', {
+        const response = await fetch('https://crocswap-chat.herokuapp.com/api/auth/updateUser', {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
