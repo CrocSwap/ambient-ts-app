@@ -36,7 +36,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
         view2,
         isTokenABase,
         tx,
-        showSidebar,
+        // showSidebar,
         blockExplorer,
         // openGlobalModal,
         // closeGlobalModal,
@@ -235,11 +235,11 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                 enterDelay={750}
                 leaveDelay={200}
             >
-                <img src={baseTokenLogo} alt='base token' width='15px' />
+                <img src={baseTokenLogo} alt='base token' width='20px' />
             </DefaultTooltip>
         ) : (
             <IconWithTooltip title={`${baseTokenSymbol}`} placement='bottom'>
-                <NoTokenIcon tokenInitial={tx.baseSymbol.charAt(0)} width='15px' />
+                <NoTokenIcon tokenInitial={tx.baseSymbol.charAt(0)} width='20px' />
             </IconWithTooltip>
         );
 
@@ -258,10 +258,10 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                 enterDelay={750}
                 leaveDelay={200}
             >
-                <img src={quoteTokenLogo} alt='quote token' width='15px' />
+                <img src={quoteTokenLogo} alt='quote token' width='20px' />
             </DefaultTooltip>
         ) : (
-            <NoTokenIcon tokenInitial={tx.quoteSymbol.charAt(0)} width='15px' />
+            <NoTokenIcon tokenInitial={tx.quoteSymbol.charAt(0)} width='20px' />
         );
 
     const tokensTogether = (
@@ -279,11 +279,24 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
     );
 
     // portfolio page li element ---------------
-    const accountTokenImages = <li className={styles.token_images_account}>{tokensTogether}</li>;
+    // const accountTokenImages = <li className={styles.token_images_account}>{tokensTogether}</li>;
 
-    const poolName = (
+    // const poolName = (
+    //     <li className='base_color'>
+    //         {baseTokenSymbol} / {quoteTokenSymbol}
+    //     </li>
+    // );
+
+    const tokenPair = (
         <li className='base_color'>
-            {baseTokenSymbol} / {quoteTokenSymbol}
+            {/* <div style={{display: 'flex', alignItems: 'center', gap: '4px'}}> */}
+
+            {tokensTogether}
+            <p>
+                {' '}
+                {baseTokenSymbol} / {quoteTokenSymbol}
+            </p>
+            {/* </div> */}
         </li>
     );
     // end of portfolio page li element ---------------
@@ -303,8 +316,8 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                     <p className='base_color'> Nov 9 10:36:23 AM</p>
                 </li>
             )}
-            {isOnPortfolioPage && accountTokenImages}
-            {isOnPortfolioPage && !showSidebar && poolName}
+            {isOnPortfolioPage && tokenPair}
+            {/* {isOnPortfolioPage && !showSidebar && poolName} */}
             {!showColumns && IDWithTooltip}
             {!showColumns && !isOnPortfolioPage && walletWithTooltip}
             {showColumns && (
