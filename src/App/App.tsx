@@ -138,7 +138,6 @@ import TopRanges from '../components/Analytics/TopRanges/TopRanges';
 import TopTokens from '../components/Analytics/TopTokens/TopTokens';
 import AnalyticsTransactions from '../components/Analytics/AnalyticsTransactions/AnalyticsTransactions';
 import trimString from '../utils/functions/trimString';
-import { defaultTokenLists } from '../utils/data/defaultTokenLists';
 // import { memoizeQuerySpotTick } from './functions/querySpotTick';
 // import PhishingWarning from '../components/Global/PhisingWarning/PhishingWarning';
 
@@ -233,8 +232,9 @@ export default function App() {
 
     const tokenMap = useTokenMap(
         JSON.parse(localStorage.getItem('user') as string).activeTokenLists ??
-        defaultTokenLists
+        ['/ambient-token-list.json']
     );
+    useEffect(() => {console.log({tokenMap})}, [tokenMap]);
     const location = useLocation();
 
     const [candleData, setCandleData] = useState<CandlesByPoolAndDuration | undefined>();
