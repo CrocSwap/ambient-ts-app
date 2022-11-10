@@ -44,14 +44,13 @@ export const useTokenMap = (
         // declare a variable to hold the token map
         const newTokensMap = new Map<string, TokenIF>();
 
-        // iterate over param with array of URIs
-        tokenListsNeeded
-            // map of all tokens in the relevant lists
-            .flatMap((listURI: string) => getTokensByURI(listURI))
+        // make array of all tokens in the relevant lists
+        tokenListsNeeded.flatMap((listURI: string) => getTokensByURI(listURI))
             // create a value in the Map object
             .forEach((tkn: TokenIF) =>
                 newTokensMap.set(
-                    tkn.address.toLowerCase() + '_0x' + tkn.chainId.toString(16).toLowerCase(),
+                    tkn.address.toLowerCase() +
+                    '_0x' + tkn.chainId.toString(16).toLowerCase(),
                     tkn,
             ),
         );
