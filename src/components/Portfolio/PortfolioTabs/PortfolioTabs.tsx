@@ -221,8 +221,20 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
         : otherAccountLimitOrderData;
 
     const activeAccountTransactionData = connectedAccountActive
-        ? connectedAccountTransactionData
-        : otherAccountTransactionData;
+        ? connectedAccountTransactionData?.filter((tx) => {
+              if (tx.changeType !== 'fill') {
+                  return true;
+              } else {
+                  return false;
+              }
+          })
+        : otherAccountTransactionData?.filter((tx) => {
+              if (tx.changeType !== 'fill') {
+                  return true;
+              } else {
+                  return false;
+              }
+          });
 
     // console.log({ connectedAccountActive });
     // console.log({ connectedAccountTransactionData });

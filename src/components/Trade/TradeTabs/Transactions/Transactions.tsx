@@ -97,6 +97,14 @@ export default function Transactions(props: TransactionsProps) {
         }
     });
 
+    const changesByUserWithoutFills = changesByUser.filter((tx) => {
+        if (tx.changeType !== 'fill') {
+            return true;
+        } else {
+            return false;
+        }
+    });
+
     const changesByPoolWithoutFills = changesByPool.filter((tx) => {
         if (
             tx.base.toLowerCase() === baseTokenAddressLowerCase &&
@@ -121,15 +129,16 @@ export default function Transactions(props: TransactionsProps) {
     // console.log({ transactionData });
 
     useEffect(() => {
-        // console.log({ isOnPortfolioPage });
-        if (isOnPortfolioPage && activeAccountTransactionData) {
+        if (isOnPortfolioPage && activeAccountTransactionData?.length) {
+            // console.log({ activeAccountTransactionData });
             // console.log({ activeAccountTransactionData });
             setTransactionData(activeAccountTransactionData);
-            setDataReceived(true);
+            setDataToDisplay(true);
+            setIsDataLoading(false);
         }
-    }, [isOnPortfolioPage, activeAccountTransactionData]);
+    }, [isOnPortfolioPage, JSON.stringify(activeAccountTransactionData)]);
 
-    const [dataReceived, setDataReceived] = useState(false);
+    // const [responseReceived, setResponseReceived] = useState(false);
     // todoJr: Finish this loading logic
     const [isDataLoading, setIsDataLoading] = useState(true);
     const [dataToDisplay, setDataToDisplay] = useState(false);
@@ -154,42 +163,55 @@ export default function Transactions(props: TransactionsProps) {
     // 0x0000000000000000000000000000000000000000
     // 0xdc31Ee1784292379Fbb2964b3B9C4124D8F89C60
 
-    function handleDataReceived() {
+    function handleResponseReceived() {
         if (transactionData.length) {
-            setIsDataLoading(false);
             setDataToDisplay(true);
         } else {
             setDataToDisplay(false);
         }
+        setIsDataLoading(false);
     }
     function handleUserSelected() {
         // console.log({ changesByUserMatchingSelectedTokens });
-        if (!isOnPortfolioPage) {
-            setTransactionData(changesByUserMatchingSelectedTokens);
-            setDataReceived(dataReceivedByUser);
-        }
+        // if (!isOnPortfolioPage) {
+        setTransactionData(changesByUserMatchingSelectedTokens);
+        setIsDataLoading(!dataReceivedByUser);
+        setDataToDisplay(changesByUserWithoutFills?.length > 0);
+        // }
     }
     function handlePoolSelected() {
         if (!isOnPortfolioPage) {
             // console.log({ changesByPoolWithoutFills });
             setTransactionData(changesByPoolWithoutFills);
-            setDataReceived(dataReceivedByPool);
+            setDataToDisplay(changesByPoolWithoutFills?.length > 0);
+            setIsDataLoading(!dataReceivedByPool);
         }
     }
     // console.log({ isCandleSelected });
     useEffect(() => {
+        if (!isOnPortfolioPage) {
+            if (isCandleSelected) {
+                if (changesInSelectedCandle?.length) {
+                    setTransactionData(changesInSelectedCandle);
+                    setDataToDisplay(true);
+                } else {
+                    setDataToDisplay(false);
+                }
+                setIsDataLoading(false);
+            } else if (isShowAllEnabled) {
+                handlePoolSelected();
+            } else {
+                handleUserSelected();
+            }
+            // isCandleSelected && changesInSelectedCandle
+            //     ? setTransactionData(changesInSelectedCandle)
+            //     : !isShowAllEnabled
+            //     ? handleUserSelected()
+            //     : handlePoolSelected();
+        }
         // console.log({ changesInSelectedCandle });
-        isCandleSelected && changesInSelectedCandle
-            ? setTransactionData(changesInSelectedCandle)
-            : // ? setTransactionData(
-            //       changesByPool.filter((data) => {
-            //           filter?.allSwaps?.includes(data.id);
-            //       }),
-            //   )
-            !isShowAllEnabled
-            ? handleUserSelected()
-            : handlePoolSelected();
     }, [
+        isOnPortfolioPage,
         isShowAllEnabled,
         isCandleSelected,
         filter,
@@ -201,8 +223,12 @@ export default function Transactions(props: TransactionsProps) {
     useEffect(() => {
         // console.log({ dataReceived });
         // console.log({ isDataLoading });
-        dataReceived ? handleDataReceived() : setIsDataLoading(true);
-    }, [graphData, transactionData, dataReceived]);
+        if (!isDataLoading) {
+            handleResponseReceived();
+        }
+        // dataReceived ? handleResponseReceived() : setIsDataLoading(true);
+    }, [isDataLoading]);
+    // }, [graphData, transactionData, isDataLoading]);
 
     // const isDenomBase = tradeData.isDenomBase;
 
