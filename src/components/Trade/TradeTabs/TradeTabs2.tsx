@@ -64,6 +64,8 @@ interface ITabsProps {
     closeGlobalModal: () => void;
     importedTokens: TokenIF[];
     showSidebar: boolean;
+    handleTxCopiedClick: () => void;
+    handleOrderCopiedClick: () => void;
 }
 
 // const httpGraphCacheServerDomain = 'https://809821320828123.de:5000';
@@ -103,6 +105,8 @@ export default function TradeTabs2(props: ITabsProps) {
         setOutsideControl,
         importedTokens,
         showSidebar,
+        handleTxCopiedClick,
+        handleOrderCopiedClick,
     } = props;
 
     const graphData = useAppSelector((state) => state?.graphData);
@@ -389,6 +393,8 @@ export default function TradeTabs2(props: ITabsProps) {
         showSidebar: showSidebar,
 
         isOnPortfolioPage: false,
+
+        handleTxCopiedClick: handleTxCopiedClick,
     };
     // Props for <Orders/> React Element
     const ordersProps = {
@@ -405,6 +411,7 @@ export default function TradeTabs2(props: ITabsProps) {
         setCurrentPositionActive: setCurrentPositionActive,
         showSidebar: showSidebar,
         isOnPortfolioPage: false,
+        handleOrderCopiedClick: handleOrderCopiedClick,
     };
     // props for <PositionsOnlyToggle/> React Element
 

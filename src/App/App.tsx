@@ -1897,6 +1897,26 @@ export default function App() {
     const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
     const [isAppOverlayActive, setIsAppOverlayActive] = useState(false);
+
+    const [isTxCopied, setIsTxCopied] = useState(false);
+    const [isOrderCopied, setIsOrderCopied] = useState(false);
+
+    const handleTxCopiedClick = () => {
+        setIsTxCopied(true);
+        console.log('STARTING ANIMATION');
+
+        setTimeout(() => {
+            setIsTxCopied(false);
+        }, 3000);
+    };
+    const handleOrderCopiedClick = () => {
+        setIsOrderCopied(true);
+        console.log('STARTING ANIMATION');
+
+        setTimeout(() => {
+            setIsOrderCopied(false);
+        }, 3000);
+    };
     // props for <PageHeader/> React element
     const headerProps = {
         isUserLoggedIn: isUserLoggedIn,
@@ -1984,6 +2004,7 @@ export default function App() {
         isInitialized: isInitialized,
         poolExists: poolExists,
         openGlobalModal: openGlobalModal,
+        isTxCopied: isTxCopied,
     };
 
     // props for <Limit/> React element on trade route
@@ -2020,6 +2041,8 @@ export default function App() {
         openGlobalModal: openGlobalModal,
         closeGlobalModal: closeGlobalModal,
         poolExists: poolExists,
+
+        isOrderCopied: isOrderCopied,
 
         // limitRate: limitRate,
         // setLimitRate: setLimitRate,
@@ -2273,6 +2296,8 @@ export default function App() {
                                     poolExists={poolExists}
                                     setTokenPairLocal={setTokenPairLocal}
                                     showSidebar={showSidebar}
+                                    handleTxCopiedClick={handleTxCopiedClick}
+                                    handleOrderCopiedClick={handleOrderCopiedClick}
                                 />
                             }
                         >

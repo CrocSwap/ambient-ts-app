@@ -41,6 +41,7 @@ interface TransactionMenuIF {
     showSidebar: boolean;
     openGlobalModal: (content: React.ReactNode, title?: string) => void;
     closeGlobalModal: () => void;
+    handlePulseAnimation?: () => void;
     isOnPortfolioPage: boolean;
 }
 
@@ -56,6 +57,7 @@ export default function TransactionsMenu(props: TransactionMenuIF) {
         showSidebar,
         openGlobalModal,
         closeGlobalModal,
+        handlePulseAnimation,
         // isOnPortfolioPage,
     } = props;
 
@@ -93,6 +95,9 @@ export default function TransactionsMenu(props: TransactionMenuIF) {
     const handleCopyClick = () => {
         // console.log('copy clicked');
         console.log({ tx });
+        {
+            handlePulseAnimation ? handlePulseAnimation() : null;
+        }
 
         if (tx.positionType === 'ambient') {
             dispatch(setSimpleRangeWidth(100));

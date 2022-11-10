@@ -24,6 +24,7 @@ interface TransactionRowPropsIF {
     showColumns: boolean;
     blockExplorer: string | undefined;
     closeGlobalModal: () => void;
+    handlePulseAnimation?: () => void;
 
     openGlobalModal: (content: React.ReactNode) => void;
     isOnPortfolioPage: boolean;
@@ -38,6 +39,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
         tx,
         // showSidebar,
         blockExplorer,
+        handlePulseAnimation,
         // openGlobalModal,
         // closeGlobalModal,
         currentTxActiveInTransactions,
@@ -483,6 +485,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                     openGlobalModal={props.openGlobalModal}
                     closeGlobalModal={props.closeGlobalModal}
                     isOnPortfolioPage={props.isOnPortfolioPage}
+                    handlePulseAnimation={handlePulseAnimation}
                 />
             </li>
         </ul>

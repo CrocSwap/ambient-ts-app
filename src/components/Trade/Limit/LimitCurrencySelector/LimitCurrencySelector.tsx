@@ -48,6 +48,8 @@ interface LimitCurrencySelectorProps {
     activeTokenListsChanged: boolean;
     indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
     gasPriceInGwei: number | undefined;
+
+    isOrderCopied: boolean;
 }
 
 // central react functional component
@@ -79,6 +81,7 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
         indicateActiveTokenListsChanged,
         gasPriceInGwei,
         handleChangeClick,
+        isOrderCopied,
     } = props;
 
     const thisToken = fieldId === 'sell' ? tokenPair.dataTokenA : tokenPair.dataTokenB;
@@ -117,7 +120,10 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
     // ... a common element for those modules in the future.
 
     const tokenSelect = (
-        <div className={styles.token_select} onClick={openModal}>
+        <div
+            className={`${styles.token_select} ${isOrderCopied && styles.pulse_animation}`}
+            onClick={openModal}
+        >
             {thisToken.logoURI ? (
                 <img
                     className={styles.token_list_img}

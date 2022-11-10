@@ -66,6 +66,7 @@ interface TradePropsIF {
     outsideControl: boolean;
     setOutsideControl: Dispatch<SetStateAction<boolean>>;
     currentPositionActive: string;
+
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
     openGlobalModal: (content: ReactNode) => void;
     closeGlobalModal: () => void;
@@ -75,6 +76,9 @@ interface TradePropsIF {
     poolExists: boolean | null;
     showSidebar: boolean;
     setTokenPairLocal: Dispatch<SetStateAction<string[] | null>>;
+
+    handleTxCopiedClick: () => void;
+    handleOrderCopiedClick: () => void;
 }
 
 // React functional component
@@ -116,6 +120,8 @@ export default function Trade(props: TradePropsIF) {
         poolExists,
         setTokenPairLocal,
         showSidebar,
+        handleTxCopiedClick,
+        handleOrderCopiedClick,
     } = props;
 
     const tokenPairFromParams = useUrlParams(chainId, isInitialized);
@@ -554,6 +560,8 @@ export default function Trade(props: TradePropsIF) {
                                 closeGlobalModal={props.closeGlobalModal}
                                 importedTokens={importedTokens}
                                 showSidebar={showSidebar}
+                                handleTxCopiedClick={handleTxCopiedClick}
+                                handleOrderCopiedClick={handleOrderCopiedClick}
                             />
                         </div>
                     </motion.div>
