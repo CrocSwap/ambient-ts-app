@@ -393,11 +393,11 @@ export default function Transactions(props: TransactionsProps) {
     // );
     const headerColumns = [
         {
-            name: '',
+            name: 'Pair',
             className: '',
             show: isOnPortfolioPage,
             slug: 'token_images',
-            sortable: false,
+            sortable: true,
         },
         {
             name: 'Pool',
