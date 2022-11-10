@@ -357,15 +357,16 @@ export default function Transactions(props: TransactionsProps) {
 
     // const [expanded, setExpanded] = useState<false | number>(false);
 
-    const sidebarOpen = false;
+    // const sidebarOpen = false;
 
     const ipadView = useMediaQuery('(max-width: 480px)');
     const desktopView = useMediaQuery('(max-width: 768px)');
+    const view2 = useMediaQuery('(max-width: 1568px)');
 
-    const showColumns = sidebarOpen || desktopView;
+    const showColumns = desktopView;
 
-    // const quoteTokenSymbol = tradeData.quoteToken?.symbol;
-    // const baseTokenSymbol = tradeData.baseToken?.symbol;
+    const quoteTokenSymbol = tradeData.quoteToken?.symbol;
+    const baseTokenSymbol = tradeData.baseToken?.symbol;
 
     // const baseTokenCharacter = baseTokenSymbol ? getUnicodeCharacter(baseTokenSymbol) : '';
     // const quoteTokenCharacter = quoteTokenSymbol ? getUnicodeCharacter(quoteTokenSymbol) : '';
@@ -393,6 +394,17 @@ export default function Transactions(props: TransactionsProps) {
     // );
     const headerColumns = [
         {
+            name: 'Date',
+            className: '',
+            show:
+                !showColumns &&
+                !view2 &&
+                // && !showSidebar
+                !isOnPortfolioPage,
+            slug: 'date',
+            sortable: true,
+        },
+        {
             name: '',
             className: '',
             show: isOnPortfolioPage,
@@ -416,7 +428,7 @@ export default function Transactions(props: TransactionsProps) {
         {
             name: 'Wallet',
 
-            show: !showColumns,
+            show: !showColumns && !isOnPortfolioPage,
             slug: 'wallet',
             sortable: isShowAllEnabled,
         },
@@ -433,6 +445,7 @@ export default function Transactions(props: TransactionsProps) {
             show: !ipadView,
             slug: 'price',
             sortable: false,
+            alignRight: true,
         },
         {
             name: 'Side',
@@ -440,6 +453,7 @@ export default function Transactions(props: TransactionsProps) {
             show: !showColumns,
             slug: 'side',
             sortable: false,
+            alignCenter: true,
         },
         {
             name: 'Type',
@@ -447,6 +461,7 @@ export default function Transactions(props: TransactionsProps) {
             show: !showColumns,
             slug: 'type',
             sortable: false,
+            alignCenter: true,
         },
         {
             name: sideType,
@@ -454,6 +469,7 @@ export default function Transactions(props: TransactionsProps) {
             show: showColumns && !ipadView,
             slug: 'sidetype',
             sortable: false,
+            alignCenter: true,
         },
         {
             name: 'Value (USD)',
@@ -461,27 +477,32 @@ export default function Transactions(props: TransactionsProps) {
             show: true,
             slug: 'value',
             sortable: true,
+            alignRight: true,
         },
-        // {
-        //     name: isOnPortfolioPage ? 'Qty A' : `${baseTokenSymbol}`,
+        {
+            name: isOnPortfolioPage ? 'Qty A' : `${baseTokenSymbol}`,
 
-        //     show: !showColumns,
-        //     slug: baseTokenSymbol,
-        //     sortable: false,
-        // },
-        // {
-        //     name: isOnPortfolioPage ? 'Qty B' : `${quoteTokenSymbol}`,
+            show: !showColumns,
+            slug: baseTokenSymbol,
+            sortable: false,
+            alignRight: true,
+        },
+        {
+            name: isOnPortfolioPage ? 'Qty B' : `${quoteTokenSymbol}`,
 
-        //     show: !showColumns,
-        //     slug: quoteTokenSymbol,
-        //     sortable: false,
-        // },
+            show: !showColumns,
+            slug: quoteTokenSymbol,
+            sortable: false,
+            alignRight: true,
+        },
         {
             name: tokens,
 
-            show: true,
+            show: showColumns,
+
             slug: 'tokens',
             sortable: false,
+            alignRight: true,
         },
 
         {
@@ -535,6 +556,7 @@ export default function Transactions(props: TransactionsProps) {
             isShowAllEnabled={isShowAllEnabled}
             ipadView={ipadView}
             showColumns={showColumns}
+            view2={view2}
             showSidebar={showSidebar}
             blockExplorer={blockExplorer}
             closeGlobalModal={closeGlobalModal}

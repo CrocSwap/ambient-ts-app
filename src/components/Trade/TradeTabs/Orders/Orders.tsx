@@ -242,12 +242,11 @@ export default function Orders(props: propsIF) {
 
     // -----------------------------
 
-    const sidebarOpen = false;
-
     const ipadView = useMediaQuery('(max-width: 480px)');
     const desktopView = useMediaQuery('(max-width: 768px)');
+    const view2 = useMediaQuery('(max-width: 1568px)');
 
-    const showColumns = sidebarOpen || desktopView;
+    const showColumns = desktopView;
 
     const quoteTokenSymbol = tradeData.quoteToken?.symbol;
     const baseTokenSymbol = tradeData.baseToken?.symbol;
@@ -276,6 +275,17 @@ export default function Orders(props: propsIF) {
         </>
     );
     const headerColumns = [
+        {
+            name: 'Date',
+            className: '',
+            show:
+                !showColumns &&
+                !view2 &&
+                // && !showSidebar
+                !isOnPortfolioPage,
+            slug: 'date',
+            sortable: true,
+        },
         {
             name: '',
             className: '',
@@ -317,6 +327,7 @@ export default function Orders(props: propsIF) {
             show: !ipadView,
             slug: 'price',
             sortable: true,
+            alignRight: true,
         },
         {
             name: 'Side',
@@ -324,6 +335,7 @@ export default function Orders(props: propsIF) {
             show: !showColumns,
             slug: 'side',
             sortable: true,
+            alignCenter: true,
         },
         {
             name: 'Type',
@@ -331,6 +343,7 @@ export default function Orders(props: propsIF) {
             show: !showColumns,
             slug: 'type',
             sortable: true,
+            alignCenter: true,
         },
         {
             name: sideType,
@@ -345,27 +358,31 @@ export default function Orders(props: propsIF) {
             show: true,
             slug: 'value',
             sortable: true,
+            alignRight: true,
         },
-        // {
-        //     name: isOnPortfolioPage ? 'Qty A' : `${baseTokenSymbol}`,
+        {
+            name: isOnPortfolioPage ? 'Qty A' : `${baseTokenSymbol}`,
 
-        //     show: !showColumns,
-        //     slug: baseTokenSymbol,
-        //     sortable: false,
-        // },
-        // {
-        //     name: isOnPortfolioPage ? 'Qty B' : `${quoteTokenSymbol}`,
+            show: !showColumns,
+            slug: baseTokenSymbol,
+            sortable: false,
+            alignRight: true,
+        },
+        {
+            name: isOnPortfolioPage ? 'Qty B' : `${quoteTokenSymbol}`,
 
-        //     show: !showColumns,
-        //     slug: quoteTokenSymbol,
-        //     sortable: false,
-        // },
+            show: !showColumns,
+            slug: quoteTokenSymbol,
+            sortable: false,
+            alignRight: true,
+        },
         {
             name: tokens,
             className: 'tokens',
-            show: true,
+            show: showColumns,
             slug: 'tokens',
             sortable: false,
+            alignRight: true,
         },
         {
             name: ' ',
@@ -406,6 +423,7 @@ export default function Orders(props: propsIF) {
             showSidebar={showSidebar}
             showColumns={showColumns}
             ipadView={ipadView}
+            view2={view2}
             key={idx}
             limitOrder={order}
             openGlobalModal={props.openGlobalModal}
