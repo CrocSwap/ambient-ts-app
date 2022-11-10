@@ -391,6 +391,12 @@ export default function Transactions(props: TransactionsProps) {
     //         <p>{`${quoteTokenSymbol} ( ${quoteTokenCharacter} )`}</p>
     //     </>
     // );
+
+    // @Junior
+    //   1. Delete the "Pool" column
+    //   2. Refactor the "Pair" column to show token symbols
+    //   3. Change the slug value to "pool"
+    //   4. Go to useSortedTxs.ts and change 'token_images' to 'pool'
     const headerColumns = [
         {
             name: 'Pair',
