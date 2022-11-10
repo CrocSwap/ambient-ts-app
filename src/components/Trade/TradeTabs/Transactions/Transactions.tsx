@@ -129,13 +129,14 @@ export default function Transactions(props: TransactionsProps) {
     // console.log({ transactionData });
 
     useEffect(() => {
-        // console.log({ isOnPortfolioPage });
         if (isOnPortfolioPage && activeAccountTransactionData?.length) {
+            // console.log({ activeAccountTransactionData });
             // console.log({ activeAccountTransactionData });
             setTransactionData(activeAccountTransactionData);
             setDataToDisplay(true);
+            setIsDataLoading(false);
         }
-    }, [isOnPortfolioPage, activeAccountTransactionData]);
+    }, [isOnPortfolioPage, JSON.stringify(activeAccountTransactionData)]);
 
     // const [responseReceived, setResponseReceived] = useState(false);
     // todoJr: Finish this loading logic
@@ -188,26 +189,29 @@ export default function Transactions(props: TransactionsProps) {
     }
     // console.log({ isCandleSelected });
     useEffect(() => {
-        // console.log({ changesInSelectedCandle });
-        if (isCandleSelected) {
-            if (changesInSelectedCandle?.length) {
-                setTransactionData(changesInSelectedCandle);
-                setDataToDisplay(true);
+        if (!isOnPortfolioPage) {
+            if (isCandleSelected) {
+                if (changesInSelectedCandle?.length) {
+                    setTransactionData(changesInSelectedCandle);
+                    setDataToDisplay(true);
+                } else {
+                    setDataToDisplay(false);
+                }
+                setIsDataLoading(false);
+            } else if (isShowAllEnabled) {
+                handlePoolSelected();
             } else {
-                setDataToDisplay(false);
+                handleUserSelected();
             }
-            setIsDataLoading(false);
-        } else if (isShowAllEnabled) {
-            handlePoolSelected();
-        } else {
-            handleUserSelected();
+            // isCandleSelected && changesInSelectedCandle
+            //     ? setTransactionData(changesInSelectedCandle)
+            //     : !isShowAllEnabled
+            //     ? handleUserSelected()
+            //     : handlePoolSelected();
         }
-        // isCandleSelected && changesInSelectedCandle
-        //     ? setTransactionData(changesInSelectedCandle)
-        //     : !isShowAllEnabled
-        //     ? handleUserSelected()
-        //     : handlePoolSelected();
+        // console.log({ changesInSelectedCandle });
     }, [
+        isOnPortfolioPage,
         isShowAllEnabled,
         isCandleSelected,
         filter,
