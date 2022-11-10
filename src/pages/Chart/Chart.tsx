@@ -305,7 +305,11 @@ export default function Chart(props: ChartData) {
                                 ? d === limit[0].value
                                 : d === ranges[0].value || d === ranges[1].value
                         ) {
-                            if (d === limit[0].value && market[0].value > limit[0].value) {
+                            if (
+                                location.pathname.includes('limit') &&
+                                d === limit[0].value &&
+                                market[0].value > limit[0].value
+                            ) {
                                 return 'url(#textLowBg)';
                             }
                             return 'url(#textBg)';
