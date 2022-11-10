@@ -1092,7 +1092,19 @@ export default function Chart(props: ChartData) {
                         .selectAll('.horizontal')
                         .remove();
 
-                    onBlurlimitRate(newLimitValue);
+                    const limitNonDisplay = denomInBase
+                        ? pool?.fromDisplayPrice(parseFloat(newLimitValue))
+                        : pool?.fromDisplayPrice(1 / parseFloat(newLimitValue));
+
+                    limitNonDisplay?.then((limit) => {
+                        // const limitPriceInTick = Math.log(limit) / Math.log(1.0001);
+                        const pinnedTick: number = isTokenABase
+                            ? pinTickLower(limit, chainData.gridSize)
+                            : pinTickUpper(limit, chainData.gridSize);
+
+                        console.log({ pinnedTick });
+                        dispatch(setLimitTick(pinnedTick));
+                    });
                 });
 
             setDragRange(() => {
@@ -1155,8 +1167,8 @@ export default function Chart(props: ChartData) {
                 .select('svg')
                 .append('circle')
                 .attr('id', 'scroll')
-                .attr('cx', '89%')
-                .attr('cy', '-50%')
+                .attr('cx', '90%')
+                .attr('cy', '55%')
                 .attr('r', 12)
                 .attr('fill', 'rgba(41,47,63,0.8)')
                 .attr('class', 'scroll')
@@ -1583,25 +1595,58 @@ export default function Chart(props: ChartData) {
 
                         dispatch(setLimitTick(pinnedTick));
 
-                        const newLimitDisplay = denomInBase
-                            ? pool?.toDisplayPrice(1 / tickToPrice(pinnedTick))
-                            : pool?.toDisplayPrice(tickToPrice(pinnedTick));
+                        const tickPrice = tickToPrice(pinnedTick);
 
-                        newLimitDisplay?.then((newLimitNum) => {
-                            console.log({ newLimitNum });
+                        const tickDispPrice = pool?.toDisplayPrice(tickPrice);
+
+                        if (!tickDispPrice) {
                             setLimit(() => {
-                                return [{ name: 'Limit', value: newLimitValue }];
-                                //    return [{ name: 'Limit', value: newLimitNum }];
+                                return [
+                                    {
+                                        name: 'Limit',
+                                        value: newLimitValue,
+                                    },
+                                ];
                             });
-                            onBlurlimitRate(newLimitValue);
-                        });
+                        } else {
+                            tickDispPrice.then((tp) => {
+                                const displayPriceWithDenom = denomInBase ? tp : 1 / tp;
+
+                                // const limitPriceWithDenom = isDenomBase ? 1 / tp : tp;
+                                const limitRateTruncated =
+                                    displayPriceWithDenom < 2
+                                        ? displayPriceWithDenom.toLocaleString(undefined, {
+                                              minimumFractionDigits: 2,
+                                              maximumFractionDigits: 6,
+                                          })
+                                        : displayPriceWithDenom.toLocaleString(undefined, {
+                                              minimumFractionDigits: 2,
+                                              maximumFractionDigits: 2,
+                                          });
+
+                                setLimit(() => {
+                                    return [
+                                        {
+                                            name: 'Limit',
+                                            value: parseFloat(limitRateTruncated.replace(',', '')),
+                                        },
+                                    ];
+                                });
+                            });
+                        }
+
+                        // const newLimitDisplay = denomInBase
+                        //     ? pool?.toDisplayPrice(1 / tickToPrice(pinnedTick))
+                        //     : pool?.toDisplayPrice(tickToPrice(pinnedTick));
+
+                        // newLimitDisplay?.then((newLimitNum) => {
+                        //     setLimit(() => {
+                        //         return [{ name: 'Limit', value: newLimitValue }];
+                        //         //    return [{ name: 'Limit', value: newLimitNum }];
+                        //     });
+
+                        //  });
                     });
-
-                    // setLimit(() => {
-                    //     return [{ name: 'Limit', value: snappedValue }];
-                    // });
-
-                    // onBlurlimitRate(snappedValue);
                 }
             });
         }
@@ -2675,21 +2720,6 @@ export default function Chart(props: ChartData) {
                 dispatch(setRangeLowLineTriggered(lowLineMoved));
             }
         }
-    };
-
-    const onBlurlimitRate = (newLimitValue: any) => {
-        // const limitNonDisplay = pool?.fromDisplayPrice(parseFloat(newLimitValue));
-        const limitNonDisplay = denomInBase
-            ? pool?.fromDisplayPrice(parseFloat(newLimitValue))
-            : pool?.fromDisplayPrice(1 / parseFloat(newLimitValue));
-
-        limitNonDisplay?.then((limit) => {
-            // const limitPriceInTick = Math.log(limit) / Math.log(1.0001);
-            const pinnedTick: number = isTokenABase
-                ? pinTickLower(limit, chainData.gridSize)
-                : pinTickUpper(limit, chainData.gridSize);
-            dispatch(setLimitTick(pinnedTick));
-        });
     };
 
     useEffect(() => {
