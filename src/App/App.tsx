@@ -235,7 +235,7 @@ export default function App() {
 
     const tokenMap = useTokenMap(
         activeTokenListsChanged,
-        JSON.parse(localStorage.getItem('user') as string).activeTokenLists ??
+        JSON.parse(localStorage.getItem('user') as string)?.activeTokenLists ??
         ['/ambient-token-list.json']
     );
     useEffect(() => {console.log({tokenMap})}, [tokenMap]);
