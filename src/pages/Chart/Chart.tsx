@@ -2597,9 +2597,14 @@ export default function Chart(props: ChartData) {
                     .style('visibility', 'visible')
                     .html(
                         '<p>Showing Transactions for <span style="color: #E480FF">' +
-                            moment(candle.date).format('DD MMM  HH:mm') +
-                            '</span> Candle</p>',
+                            moment(candle.date).calendar() +
+                            '</span></p>',
                     );
+                // .html(
+                //     '<p>Showing Transactions for <span style="color: #E480FF">' +
+                //         moment(candle.date).format('DD MMM  HH:mm') +
+                //         '</span></p>',
+                // );
 
                 props.changeState(true, candle);
             }
