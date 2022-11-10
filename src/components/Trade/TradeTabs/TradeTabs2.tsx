@@ -281,8 +281,18 @@ export default function TradeTabs2(props: ITabsProps) {
             })
                 .then((selectedCandleChangesJson) => {
                     console.log({ selectedCandleChangesJson });
-                    if (selectedCandleChangesJson)
-                        setChangesInSelectedCandle(selectedCandleChangesJson);
+                    if (selectedCandleChangesJson) {
+                        const selectedCandleChangesWithoutFills = selectedCandleChangesJson.filter(
+                            (tx) => {
+                                if (tx.changeType !== 'fill') {
+                                    return true;
+                                } else {
+                                    return false;
+                                }
+                            },
+                        );
+                        setChangesInSelectedCandle(selectedCandleChangesWithoutFills);
+                    }
                     setOutsideControl(true);
                     setSelectedInsideTab(0);
                 })
