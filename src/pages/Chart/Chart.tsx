@@ -2824,7 +2824,14 @@ export default function Chart(props: ChartData) {
                 className='popup'
                 id='transactionPopup'
                 style={{ visibility: 'hidden', top: popupHeight + '%' }}
-                onClick={() => console.log('Asdasd')}
+                onClick={() => {
+                    setSelectedDate(() => {
+                        return undefined;
+                    });
+
+                    d3.select('#transactionPopup').style('visibility', 'hidden');
+                    props.changeState(false, undefined);
+                }}
             ></div>
         </div>
     );

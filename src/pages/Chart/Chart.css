@@ -69,6 +69,7 @@ text.y_axis {
 .popup {
     position: absolute;
     text-align: center;
+    cursor: pointer;
     /* pointer-events: none; */
 
     width: 45%;
