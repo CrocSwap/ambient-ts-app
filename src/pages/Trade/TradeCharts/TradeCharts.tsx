@@ -82,7 +82,6 @@ interface TradeChartsPropsIF {
     downBorderColor: string;
     baseTokenAddress: string;
     poolPriceNonDisplay: number | undefined;
-    isCandleSelected: boolean | undefined;
 }
 
 export interface CandleChartData {
@@ -117,6 +116,10 @@ export interface LiquidityData {
     activeLiq: any;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     liqPrices: any;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    deltaAverageUSD: any;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    cumAverageUSD: any;
 }
 
 export interface LiqSnap {
@@ -554,9 +557,9 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
         </span>
     );
 
-    const tvlDisplay = <p className={styles.tvl_display}>Pool Liquidity: {poolTvl || '...'}</p>;
+    const tvlDisplay = <p className={styles.tvl_display}>Total Liquidity: {poolTvl || '...'}</p>;
     const tvlTickDisplay = (
-        <p className={styles.tvl_display}>Liquidity at Current Price: {tvlAtTick || '...'}</p>
+        <p className={styles.tvl_display}>Liquidity at Tick: {tvlAtTick || '...'}</p>
     );
 
     // ------------  END OF MIDDLE TOP HEADER OF TRADE CHARTS
@@ -746,7 +749,6 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
                         baseTokenAddress={props.baseTokenAddress}
                         chainId={chainId}
                         poolPriceNonDisplay={props.poolPriceNonDisplay}
-                        isCandleSelected={props.isCandleSelected}
                     />
                 </div>
             )}
