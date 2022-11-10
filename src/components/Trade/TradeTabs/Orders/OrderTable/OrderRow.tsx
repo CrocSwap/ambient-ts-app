@@ -9,9 +9,11 @@ import { DefaultTooltip } from '../../../../Global/StyledTooltip/StyledTooltip';
 import { NavLink } from 'react-router-dom';
 import NoTokenIcon from '../../../../Global/NoTokenIcon/NoTokenIcon';
 import { LimitOrderIF } from '../../../../../utils/interfaces/exports';
+import { tradeData } from '../../../../../utils/state/tradeDataSlice';
 
 interface OrderRowPropsIF {
     crocEnv: CrocEnv | undefined;
+    tradeData: tradeData;
     expandTradeTable: boolean;
     showColumns: boolean;
     ipadView: boolean;
@@ -30,6 +32,7 @@ interface OrderRowPropsIF {
 export default function OrderRow(props: OrderRowPropsIF) {
     const {
         crocEnv,
+        tradeData,
         showColumns,
         ipadView,
         limitOrder,
@@ -315,7 +318,12 @@ export default function OrderRow(props: OrderRowPropsIF) {
                 </li>
             )}
             <li data-label='menu'>
-                <OrdersMenu limitOrder={limitOrder} {...orderMenuProps} showSidebar={showSidebar} />
+                <OrdersMenu
+                    tradeData={tradeData}
+                    limitOrder={limitOrder}
+                    {...orderMenuProps}
+                    showSidebar={showSidebar}
+                />
             </li>
         </ul>
     );
