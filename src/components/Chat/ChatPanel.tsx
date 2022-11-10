@@ -142,7 +142,6 @@ export default function ChatPanel(props: ChatProps) {
                     <MdOpenInFull size={18} className={styles.open_full_button} />
                 </Link>
             )}
-
             {props.isFullScreen ? (
                 <></>
             ) : (
@@ -152,6 +151,7 @@ export default function ChatPanel(props: ChatProps) {
                     onClick={() => handleCloseChatPanel()}
                 />
             )}
+            g
         </div>
     );
 
@@ -244,7 +244,7 @@ export default function ChatPanel(props: ChatProps) {
                                 {messageList}
                             </div>
                             <MessageInput
-                                currentUser={currentUser}
+                                currentUser={currentUser as string}
                                 message={messages[0]}
                                 room={
                                     room === 'Current Pool'

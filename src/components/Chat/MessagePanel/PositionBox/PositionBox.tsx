@@ -52,7 +52,6 @@ export default function PositionBox(props: PositionBoxProps) {
             if (transactionsData.find((item) => item.tx === hashMsg)) {
                 setPosition(transactionsData.find((item) => item.tx === hashMsg));
                 props.setIsPosition(true);
-                console.log(hashMsg);
             } else {
                 setPosition(undefined);
             }
@@ -71,7 +70,6 @@ export default function PositionBox(props: PositionBoxProps) {
                         (item: PositionIF) => item.positionStorageSlot === hashMsg,
                     ),
                 );
-                console.log(sPositions?.positionStorageSlot);
                 props.setIsPosition(true);
             } else {
                 setSPosition(undefined);
