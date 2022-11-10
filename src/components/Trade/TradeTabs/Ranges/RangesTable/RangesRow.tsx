@@ -305,7 +305,7 @@ export default function RangesRow(props: RangesRowPropsIF) {
             {isOnPortfolioPage && accountTokenImages}
             {isOnPortfolioPage && !props.showSidebar && poolName}
             {displayIDorRanking}
-            {!showColumns && walletWithTooltip}
+            {!showColumns && !isOnPortfolioPage && walletWithTooltip}
             {showColumns && (
                 <li data-label='id'>
                     <p className='base_color'>{posHashTruncated}</p>{' '}
@@ -341,7 +341,7 @@ export default function RangesRow(props: RangesRowPropsIF) {
                 </li>
             )}
             {ValueWithTooltip}
-            {/* {!showColumns && (
+            {!showColumns && (
                 <li onClick={openDetailsModal} data-label={baseTokenSymbol} className='base_color'>
                     <p style={{ textAlign: 'right', fontFamily: 'monospace' }}>{baseDisplay}</p>
                 </li>
@@ -350,12 +350,12 @@ export default function RangesRow(props: RangesRowPropsIF) {
                 <li onClick={openDetailsModal} data-label={quoteTokenSymbol} className='base_color'>
                     <p style={{ textAlign: 'right', fontFamily: 'monospace' }}>{quoteDisplay}</p>
                 </li>
-            )} */}
-            {
+            )}
+            {showColumns && (
                 <li
                     data-label={baseTokenSymbol + quoteTokenSymbol}
                     className='base_color'
-                    style={{ textAlign: 'end' }}
+                    style={{ textAlign: 'right' }}
                 >
                     <p className={styles.token_qty} style={{ fontFamily: 'monospace' }}>
                         {baseDisplay}
@@ -368,13 +368,10 @@ export default function RangesRow(props: RangesRowPropsIF) {
                         {quoteTokenLogoComponent}
                     </p>
                 </li>
-            }
-            <li onClick={openDetailsModal} data-label='value' style={{ textAlign: 'center' }}>
+            )}
+            <li onClick={openDetailsModal} data-label='value' style={{ textAlign: 'right' }}>
                 {' '}
-                <p
-                    style={{ textAlign: 'center', fontFamily: 'monospace' }}
-                    className={apyClassname}
-                >
+                <p style={{ fontFamily: 'monospace' }} className={apyClassname}>
                     {apyString}
                 </p>
             </li>
