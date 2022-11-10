@@ -49,9 +49,12 @@ export default function PositionBox(props: PositionBoxProps) {
         if (message && message.includes('0x')) {
             const hashMsg = message.split(' ').find((item) => item.includes('0x'));
             setHashMsg(hashMsg as string);
-            setPosition(transactionsData.find((item) => item.tx === hashMsg));
-            props.setIsPosition(true);
-            console.log(hashMsg);
+            if (transactionsData.find((item) => item.tx === hashMsg)) {
+                setPosition(transactionsData.find((item) => item.tx === hashMsg));
+                props.setIsPosition(true);
+            } else {
+                setPosition(undefined);
+            }
         } else {
             setPosition(undefined);
         }
@@ -61,11 +64,16 @@ export default function PositionBox(props: PositionBoxProps) {
         if (message && message.includes('0x')) {
             const hashMsg = message.split(' ').find((item) => item.includes('0x'));
             setHashMsg(hashMsg as string);
-            setSPosition(
-                sortedPositions.find((item: PositionIF) => item.positionStorageSlot === hashMsg),
-            );
-            console.log(sPositions?.positionStorageSlot);
-            props.setIsPosition(true);
+            if (sortedPositions.find((item: PositionIF) => item.positionStorageSlot === hashMsg)) {
+                setSPosition(
+                    sortedPositions.find(
+                        (item: PositionIF) => item.positionStorageSlot === hashMsg,
+                    ),
+                );
+                props.setIsPosition(true);
+            } else {
+                setSPosition(undefined);
+            }
         } else {
             setSPosition(undefined);
         }
@@ -214,7 +222,15 @@ export default function PositionBox(props: PositionBoxProps) {
     }
 
     function getRestOfMessagesIfAny() {
-        return message.substring(message.indexOf(' ') + 1);
+        if (message.includes(' ')) {
+            return message.substring(message.indexOf(' ') + 1);
+        } else {
+            if (!position || !sPositions || !props.isPosition) {
+                return message;
+            } else {
+                return '';
+            }
+        }
     }
     return props.isPosition ? (
         position !== undefined && !isInput ? (

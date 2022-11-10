@@ -18,6 +18,7 @@ import ChatButton from '../../App/components/Chat/ChatButton/ChatButton';
 import { MdClose, MdOpenInFull } from 'react-icons/md';
 import { Link } from 'react-router-dom';
 import useChatApi from './Service/ChatApi';
+import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 
 interface currentPoolInfo {
     tokenA: TokenIF;
@@ -55,7 +56,7 @@ export default function ChatPanel(props: ChatProps) {
     const [room, setRoom] = useState('Global');
     const [showChatPanel, setShowChatPanel] = useState(true);
     const { user, account, enableWeb3, isWeb3Enabled, isAuthenticated } = useMoralis();
-    const [currentUser, setCurrentUser] = useState('');
+    const [currentUser, setCurrentUser] = useState<string | undefined>(undefined);
     const [name, setName] = useState('');
 
     const wrapperStyleFull = styles.chat_wrapper_full;
@@ -71,6 +72,9 @@ export default function ChatPanel(props: ChatProps) {
     const { messages, getMsg } = useSocket(room);
 
     const { getID, getNameOrWallet } = useChatApi();
+    const userData = useAppSelector((state) => state.userData);
+    const isUserLoggedIn = userData.isLoggedIn;
+    const name_ = userData.ensNameCurrent;
 
     useEffect(() => {
         // 👇️ scroll to bottom every time messages change
@@ -88,7 +92,6 @@ export default function ChatPanel(props: ChatProps) {
     useEffect(() => {
         getID().then((result: any) => {
             setCurrentUser(result.userData._id);
-            console.log(currentUser);
             setName(result.userData.ensName);
         });
     }, [props.chatStatus]);
@@ -96,20 +99,20 @@ export default function ChatPanel(props: ChatProps) {
     useEffect(() => {
         getID().then((result: any) => {
             setCurrentUser(result.userData._id);
-            console.log(currentUser);
             setName(result.userData.ensName);
         });
     }, []);
+
+    useEffect(() => {
+        isCurrentUser();
+    }, [account, isUserLoggedIn, isAuthenticated]);
 
     function handleCloseChatPanel() {
         props.setChatStatus(false);
     }
 
     const scrollToBottom = () => {
-        messageEnd.current?.scrollTo(
-            messageEnd.current?.scrollHeight,
-            messageEnd.current?.scrollHeight,
-        );
+        messageEnd.current?.scrollIntoView({ behavior: 'smooth' });
     };
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -139,7 +142,6 @@ export default function ChatPanel(props: ChatProps) {
                     <MdOpenInFull size={18} className={styles.open_full_button} />
                 </Link>
             )}
-
             {props.isFullScreen ? (
                 <></>
             ) : (
@@ -149,6 +151,7 @@ export default function ChatPanel(props: ChatProps) {
                     onClick={() => handleCloseChatPanel()}
                 />
             )}
+            g
         </div>
     );
 
@@ -157,6 +160,19 @@ export default function ChatPanel(props: ChatProps) {
             return item.walletID;
         } else {
             return item.ensName;
+        }
+    }
+
+    function isCurrentUser() {
+        console.log(account, isUserLoggedIn, isAuthenticated, name_);
+        if (account === null) {
+            return setCurrentUser(undefined);
+        } else {
+            getID().then((result: any) => {
+                setCurrentUser(result.userData._id);
+                setName(result.userData.ensName);
+            });
+            return currentUser;
         }
     }
 
@@ -228,7 +244,7 @@ export default function ChatPanel(props: ChatProps) {
                                 {messageList}
                             </div>
                             <MessageInput
-                                currentUser={currentUser}
+                                currentUser={currentUser as string}
                                 message={messages[0]}
                                 room={
                                     room === 'Current Pool'
