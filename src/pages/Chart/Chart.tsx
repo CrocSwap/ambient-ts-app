@@ -1046,38 +1046,37 @@ export default function Chart(props: ChartData) {
                     d3.select(d3Container.current).select('.targets').style('cursor', 'row-resize');
                 })
                 .on('drag', function (event) {
-                    d3.select(d3Container.current)
-                        .select('.ghostLines')
-                        .selectAll('.horizontal')
-                        .style('visibility', 'visible');
+                    // d3.select(d3Container.current)
+                    //     .select('.ghostLines')
+                    //     .selectAll('.horizontal')
+                    //     .style('visibility', 'visible');
 
-                    const snapResponse = snap(
-                        props.liquidityData.liqSnapData,
-                        scaleData.yScale.invert(d3.pointer(event)[1] - 215),
-                    );
+                    // const snapResponse = snap(
+                    //     props.liquidityData.liqSnapData,
+                    //     scaleData.yScale.invert(d3.pointer(event)[1] - 215),
+                    // );
 
-                    const snappedValue = Math.round(snapResponse[0].value * 100) / 100;
-                    const snappedValueIndex = snapResponse[0].index;
+                    // const snappedValueIndex = snapResponse[0].index;
 
-                    const neighborValues: any[] = [];
+                    // const neighborValues: any[] = [];
 
-                    for (let i = -3; i < 4; i++) {
-                        neighborValues.push(props.liquidityData.liqSnapData[snappedValueIndex + i]);
-                    }
+                    // for (let i = -3; i < 4; i++) {
+                    //     neighborValues.push(props.liquidityData.liqSnapData[snappedValueIndex + i]);
+                    // }
 
-                    const ghostJoin = d3fc.dataJoin('g', 'ghostLines');
+                    // const ghostJoin = d3fc.dataJoin('g', 'ghostLines');
 
-                    newLimitValue = snappedValue;
+                    newLimitValue = scaleData.yScale.invert(d3.pointer(event)[1] - 215);
 
                     d3.select(d3PlotArea.current).on('draw', async function (event: any) {
                         const svg = d3.select(event.target).select('svg');
 
-                        ghostJoin(svg, [neighborValues]).call(ghostLines);
-                        limitJoin(svg, [[{ name: 'Limit', value: snappedValue }]]).call(limitLine);
+                        // ghostJoin(svg, [neighborValues]).call(ghostLines);
+                        limitJoin(svg, [[{ name: 'Limit', value: newLimitValue }]]).call(limitLine);
                     });
 
                     setLimit(() => {
-                        return [{ name: 'Limit', value: snappedValue }];
+                        return [{ name: 'Limit', value: newLimitValue }];
                     });
                 })
                 .on('end', () => {
@@ -1088,19 +1087,7 @@ export default function Chart(props: ChartData) {
                         .selectAll('.horizontal')
                         .remove();
 
-                    const limitNonDisplay = denomInBase
-                        ? pool?.fromDisplayPrice(parseFloat(newLimitValue))
-                        : pool?.fromDisplayPrice(1 / parseFloat(newLimitValue));
-
-                    limitNonDisplay?.then((limit) => {
-                        // const limitPriceInTick = Math.log(limit) / Math.log(1.0001);
-                        const pinnedTick: number = isTokenABase
-                            ? pinTickLower(limit, chainData.gridSize)
-                            : pinTickUpper(limit, chainData.gridSize);
-
-                        console.log({ pinnedTick });
-                        dispatch(setLimitTick(pinnedTick));
-                    });
+                    onBlurlimitRate(newLimitValue);
                 });
 
             setDragRange(() => {
@@ -1574,75 +1561,7 @@ export default function Chart(props: ChartData) {
             d3.select(d3PlotArea.current).on('click', (event: any) => {
                 if ((event.target.__data__ as CandleChartData) === undefined) {
                     const newLimitValue = scaleData.yScale.invert(d3.pointer(event)[1]);
-
-                    // const snapResponse = snap(props.liquidityData.liqSnapData, newLimitValue);
-
-                    // const snappedValue = Math.round(snapResponse[0].value * 100) / 100;
-
-                    const limitNonDisplay = denomInBase
-                        ? pool?.fromDisplayPrice(parseFloat(newLimitValue))
-                        : pool?.fromDisplayPrice(1 / parseFloat(newLimitValue));
-
-                    limitNonDisplay?.then((limit) => {
-                        // const limitPriceInTick = Math.log(limit) / Math.log(1.0001);
-                        const pinnedTick: number = isTokenABase
-                            ? pinTickLower(limit, chainData.gridSize)
-                            : pinTickUpper(limit, chainData.gridSize);
-
-                        dispatch(setLimitTick(pinnedTick));
-
-                        const tickPrice = tickToPrice(pinnedTick);
-
-                        const tickDispPrice = pool?.toDisplayPrice(tickPrice);
-
-                        if (!tickDispPrice) {
-                            setLimit(() => {
-                                return [
-                                    {
-                                        name: 'Limit',
-                                        value: newLimitValue,
-                                    },
-                                ];
-                            });
-                        } else {
-                            tickDispPrice.then((tp) => {
-                                const displayPriceWithDenom = denomInBase ? tp : 1 / tp;
-
-                                // const limitPriceWithDenom = isDenomBase ? 1 / tp : tp;
-                                const limitRateTruncated =
-                                    displayPriceWithDenom < 2
-                                        ? displayPriceWithDenom.toLocaleString(undefined, {
-                                              minimumFractionDigits: 2,
-                                              maximumFractionDigits: 6,
-                                          })
-                                        : displayPriceWithDenom.toLocaleString(undefined, {
-                                              minimumFractionDigits: 2,
-                                              maximumFractionDigits: 2,
-                                          });
-
-                                setLimit(() => {
-                                    return [
-                                        {
-                                            name: 'Limit',
-                                            value: parseFloat(limitRateTruncated.replace(',', '')),
-                                        },
-                                    ];
-                                });
-                            });
-                        }
-
-                        // const newLimitDisplay = denomInBase
-                        //     ? pool?.toDisplayPrice(1 / tickToPrice(pinnedTick))
-                        //     : pool?.toDisplayPrice(tickToPrice(pinnedTick));
-
-                        // newLimitDisplay?.then((newLimitNum) => {
-                        //     setLimit(() => {
-                        //         return [{ name: 'Limit', value: newLimitValue }];
-                        //         //    return [{ name: 'Limit', value: newLimitNum }];
-                        //     });
-
-                        //  });
-                    });
+                    onBlurlimitRate(newLimitValue);
                 }
             });
         }
@@ -2716,6 +2635,61 @@ export default function Chart(props: ChartData) {
                 dispatch(setRangeLowLineTriggered(lowLineMoved));
             }
         }
+    };
+
+    const onBlurlimitRate = (newLimitValue: any) => {
+        const limitNonDisplay = denomInBase
+            ? pool?.fromDisplayPrice(parseFloat(newLimitValue))
+            : pool?.fromDisplayPrice(1 / parseFloat(newLimitValue));
+
+        limitNonDisplay?.then((limit) => {
+            // const limitPriceInTick = Math.log(limit) / Math.log(1.0001);
+            const pinnedTick: number = isTokenABase
+                ? pinTickLower(limit, chainData.gridSize)
+                : pinTickUpper(limit, chainData.gridSize);
+
+            dispatch(setLimitTick(pinnedTick));
+
+            const tickPrice = tickToPrice(pinnedTick);
+
+            const tickDispPrice = pool?.toDisplayPrice(tickPrice);
+
+            if (!tickDispPrice) {
+                setLimit(() => {
+                    return [
+                        {
+                            name: 'Limit',
+                            value: newLimitValue,
+                        },
+                    ];
+                });
+            } else {
+                tickDispPrice.then((tp) => {
+                    const displayPriceWithDenom = denomInBase ? tp : 1 / tp;
+
+                    // const limitPriceWithDenom = isDenomBase ? 1 / tp : tp;
+                    const limitRateTruncated =
+                        displayPriceWithDenom < 2
+                            ? displayPriceWithDenom.toLocaleString(undefined, {
+                                  minimumFractionDigits: 2,
+                                  maximumFractionDigits: 6,
+                              })
+                            : displayPriceWithDenom.toLocaleString(undefined, {
+                                  minimumFractionDigits: 2,
+                                  maximumFractionDigits: 2,
+                              });
+
+                    setLimit(() => {
+                        return [
+                            {
+                                name: 'Limit',
+                                value: parseFloat(limitRateTruncated.replace(',', '')),
+                            },
+                        ];
+                    });
+                });
+            }
+        });
     };
 
     useEffect(() => {
