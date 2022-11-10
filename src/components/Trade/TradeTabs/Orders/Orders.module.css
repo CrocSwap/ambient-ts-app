@@ -131,12 +131,10 @@ text-transform: capitalize;
 
 .align_center{
 text-align: center;
-    background: blue;
 }
 
 .align_right{
   text-align: right;
-  background: red;
 }
 /* .token_images_account{
   display: flex;

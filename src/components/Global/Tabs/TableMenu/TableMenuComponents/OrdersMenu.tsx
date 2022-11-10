@@ -108,7 +108,7 @@ export default function OrdersMenu(props: OrdersMenuIF) {
     // ------------------  END OF MODAL FUNCTIONALITY-----------------
 
     const view1 = useMediaQuery('(min-width: 1280px)');
-    // const view2 = useMediaQuery('(min-width: 1680px)');
+    const view2 = useMediaQuery('(min-width: 1680px)');
     const view3 = useMediaQuery('(min-width: 2300px)');
 
     // const view1NoSidebar = useMediaQuery('(min-width: 1200px)') && !showSidebar;
@@ -153,7 +153,7 @@ export default function OrdersMenu(props: OrdersMenuIF) {
 
     const ordersMenu = (
         <div className={styles.actions_menu}>
-            {view1 && !showSidebar && claimButton}
+            {view3 && claimButton}
             {/* {view1 && removeButton} */}
             {/* {(view2 || (view1NoSidebar && !isOnPortfolioPage)) && copyButton} */}
             {(view3 || view2WithNoSidebar) && detailsButton}
