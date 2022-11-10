@@ -277,7 +277,7 @@ export default function Ranges(props: RangesPropsIF) {
         {
             name: 'Wallet',
             className: 'wallet',
-            show: !showColumns,
+            show: !showColumns && !isOnPortfolioPage,
             slug: 'wallet',
             sortable: isShowAllEnabled,
         },
@@ -294,6 +294,7 @@ export default function Ranges(props: RangesPropsIF) {
             show: !showColumns,
             slug: 'min',
             sortable: false,
+            alignRight: true,
         },
         {
             name: 'Max',
@@ -301,6 +302,7 @@ export default function Ranges(props: RangesPropsIF) {
             show: !showColumns,
             slug: 'max',
             sortable: false,
+            alignRight: true,
         },
 
         {
@@ -309,6 +311,7 @@ export default function Ranges(props: RangesPropsIF) {
             show: showColumns && !ipadView,
             slug: 'minMax',
             sortable: false,
+            alignRight: true,
         },
         {
             name: 'Value (USD)',
@@ -316,27 +319,31 @@ export default function Ranges(props: RangesPropsIF) {
             show: true,
             slug: 'value',
             sortable: true,
+            alignRight: true,
         },
-        // {
-        //     name: isOnPortfolioPage ? 'Qty A' : `${baseTokenSymbol}`,
+        {
+            name: isOnPortfolioPage ? 'Qty A' : `${baseTokenSymbol}`,
 
-        //     show: !showColumns,
-        //     slug: baseTokenSymbol,
-        //     sortable: false,
-        // },
-        // {
-        //     name: isOnPortfolioPage ? 'Qty B' : `${quoteTokenSymbol}`,
+            show: !showColumns,
+            slug: baseTokenSymbol,
+            sortable: false,
+            alignRight: true,
+        },
+        {
+            name: isOnPortfolioPage ? 'Qty B' : `${quoteTokenSymbol}`,
 
-        //     show: !showColumns,
-        //     slug: quoteTokenSymbol,
-        //     sortable: false,
-        // },
+            show: !showColumns,
+            slug: quoteTokenSymbol,
+            sortable: false,
+            alignRight: true,
+        },
         {
             name: tokens,
             className: 'tokens',
-            show: true,
+            show: showColumns,
             slug: 'tokens',
             sortable: false,
+            alignRight: true,
         },
         {
             name: 'APR',
@@ -344,6 +351,7 @@ export default function Ranges(props: RangesPropsIF) {
             show: true,
             slug: 'apr',
             sortable: true,
+            alignRight: true,
         },
         {
             name: ' ',
