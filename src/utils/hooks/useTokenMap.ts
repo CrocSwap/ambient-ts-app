@@ -22,15 +22,15 @@ export const useTokenMap = (
                 const findListByURI = (list: TokenListIF) => list.uri === uri;
                 // boolean value to see if the desired list exists
                 const doesListExist = allTokenLists.some(findListByURI);
-                // error message if there is no token list for the given URI
-                const errMsg = `Did not find a token list with URI <<${uri}>> in local storage.`;
                 // gatekeep action based on whether local storage has the desired list
                 if (doesListExist) {
                     // if list is present, get tokens and assign to output variable
                     tokens = allTokenLists.find(findListByURI).tokens;
                 } else {
                     // if list is missing, trigger error handling with console message
-                    throw new Error(errMsg);
+                    throw new Error(
+                        `Did not find a token list with URI <<${uri}>> in local storage.`
+                    );
                 }
             } catch (err) {
                 // display console warning in case of error
