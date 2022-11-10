@@ -2547,13 +2547,18 @@ export default function Chart(props: ChartData) {
                 }
             });
 
-            const difference = Math.abs(poolPriceDisplay - liqTooltipSelectedLiqBar.liqPrices);
-
-            const percentage = (difference * 100) / poolPriceDisplay;
+            const difference = liqTooltipSelectedLiqBar.liqPrices - poolPriceDisplay;
+            // const absoluteDifference = Math.abs(difference)
+            const percentage =
+                difference === 0
+                    ? ''
+                    : difference < 0
+                    ? ((difference * 100) / poolPriceDisplay).toFixed(1)
+                    : '+' + ((difference * 100) / poolPriceDisplay).toFixed(1);
 
             liqTooltip.html(
                 '<p>' +
-                    percentage.toFixed(1) +
+                    percentage +
                     '%</p>' +
                     '<p> $' +
                     formatAmountWithoutDigit(liqTextData.totalValue, 0) +
