@@ -335,7 +335,7 @@ export default function RangesRow(props: RangesRowPropsIF) {
                 </li>
             )}
             {showColumns && !ipadView && (
-                <li data-label='side-type' className='color_white'>
+                <li data-label='side-type' className='color_white' style={{ textAlign: 'right' }}>
                     <p>{ambientMinOrNull}</p>
                     <p>{ambientMaxOrNull}</p>
                 </li>

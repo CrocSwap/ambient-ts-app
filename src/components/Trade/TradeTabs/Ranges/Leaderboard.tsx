@@ -220,6 +220,7 @@ export default function Leaderboard(props: LeaderboardPropsIF) {
             show: !showColumns,
             slug: 'min',
             sortable: false,
+            alignRight: true,
         },
         {
             name: 'Max',
@@ -227,6 +228,7 @@ export default function Leaderboard(props: LeaderboardPropsIF) {
             show: !showColumns,
             slug: 'max',
             sortable: false,
+            alignRight: true,
         },
 
         {
@@ -235,6 +237,7 @@ export default function Leaderboard(props: LeaderboardPropsIF) {
             show: showColumns && !ipadView,
             slug: 'minMax',
             sortable: false,
+            alignRight: true,
         },
         {
             name: 'Value (USD)',
@@ -242,6 +245,7 @@ export default function Leaderboard(props: LeaderboardPropsIF) {
             show: true,
             slug: 'value',
             sortable: false,
+            alignRight: true,
         },
         {
             name: `${baseTokenSymbol}`,
@@ -249,6 +253,7 @@ export default function Leaderboard(props: LeaderboardPropsIF) {
             show: !showColumns,
             slug: baseTokenSymbol,
             sortable: false,
+            alignRight: true,
         },
         {
             name: `${quoteTokenSymbol}`,
@@ -256,6 +261,7 @@ export default function Leaderboard(props: LeaderboardPropsIF) {
             show: !showColumns,
             slug: quoteTokenSymbol,
             sortable: false,
+            alignRight: true,
         },
         {
             name: tokens,
@@ -263,6 +269,7 @@ export default function Leaderboard(props: LeaderboardPropsIF) {
             show: showColumns,
             slug: 'tokens',
             sortable: false,
+            alignRight: true,
         },
         {
             name: 'APR',
@@ -270,6 +277,7 @@ export default function Leaderboard(props: LeaderboardPropsIF) {
             show: true,
             slug: 'apr',
             sortable: false,
+            alignRight: true,
         },
         {
             name: ' ',
