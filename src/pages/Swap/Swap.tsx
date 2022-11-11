@@ -494,6 +494,13 @@ export default function Swap(props: SwapPropsIF) {
 
     // -------------------------END OF Swap SHARE FUNCTIONALITY---------------------------
 
+    const denominationSwitchOrNull = priceImpact ? (
+        <div className={styles.header_container}>
+            <DividerDark addMarginTop />
+            <DenominationSwitch />
+        </div>
+    ) : null;
+
     return (
         <main data-testid={'swap'} className={swapPageStyle}>
             <div className={`${swapContainerStyle}`}>
@@ -548,10 +555,7 @@ export default function Swap(props: SwapPropsIF) {
                             isTxCopied={isTxCopied}
                         />
                     </motion.div>
-                    <div className={styles.header_container}>
-                        <DividerDark addMarginTop />
-                        <DenominationSwitch />
-                    </div>
+                    {denominationSwitchOrNull}
                     <ExtraInfo
                         tokenPair={{ dataTokenA: tokenA, dataTokenB: tokenB }}
                         priceImpact={priceImpact}
