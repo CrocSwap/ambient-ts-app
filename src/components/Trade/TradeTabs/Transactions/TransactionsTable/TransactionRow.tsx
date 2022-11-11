@@ -204,7 +204,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                         onClick={() => {
                             dispatch(
                                 setDataLoadingStatus({
-                                    datasetName: 'lookupUserTx',
+                                    datasetName: 'lookupUserTxData',
                                     loadingStatus: true,
                                 }),
                             );

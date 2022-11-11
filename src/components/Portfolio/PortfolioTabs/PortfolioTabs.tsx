@@ -204,7 +204,7 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
                 }
                 dispatch(
                     setDataLoadingStatus({
-                        datasetName: 'lookupUserTx',
+                        datasetName: 'lookupUserTxData',
                         loadingStatus: false,
                     }),
                 );
@@ -222,7 +222,7 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
                 } else {
                     dispatch(
                         setDataLoadingStatus({
-                            datasetName: 'lookupUserTx',
+                            datasetName: 'lookupUserTxData',
                             loadingStatus: false,
                         }),
                     );

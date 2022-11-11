@@ -254,7 +254,9 @@ export default function Transactions(props: TransactionsProps) {
                             }),
                         );
                     }
-                    dispatch(setDataLoadingStatus({ datasetName: 'poolTx', loadingStatus: false }));
+                    dispatch(
+                        setDataLoadingStatus({ datasetName: 'poolTxData', loadingStatus: false }),
+                    );
                 })
                 .catch(console.log);
         }

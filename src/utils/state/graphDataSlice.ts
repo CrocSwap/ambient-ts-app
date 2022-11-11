@@ -629,25 +629,25 @@ export const graphDataSlice = createSlice({
                     state.dataLoadingStatus.isConnectedUserRangeDataLoading =
                         action.payload.loadingStatus;
                     break;
-                case 'lookupUserTx':
+                case 'lookupUserTxData':
                     state.dataLoadingStatus.isLookupUserTxDataLoading =
                         action.payload.loadingStatus;
                     break;
-                case 'lookupUserOrder':
+                case 'lookupUserOrderData':
                     state.dataLoadingStatus.isLookupUserOrderDataLoading =
                         action.payload.loadingStatus;
                     break;
-                case 'lookupUserRange':
+                case 'lookupUserRangeData':
                     state.dataLoadingStatus.isLookupUserRangeDataLoading =
                         action.payload.loadingStatus;
                     break;
-                case 'poolTx':
+                case 'poolTxData':
                     state.dataLoadingStatus.isPoolTxDataLoading = action.payload.loadingStatus;
                     break;
-                case 'poolOrder':
+                case 'poolOrderData':
                     state.dataLoadingStatus.isPoolOrderDataLoading = action.payload.loadingStatus;
                     break;
-                case 'poolRange':
+                case 'poolRangeData':
                     state.dataLoadingStatus.isPoolRangeDataLoading = action.payload.loadingStatus;
                     break;
                 case 'candleData':
