@@ -14,6 +14,20 @@ export interface graphData {
     poolTvlSeries: PoolTvlSeries;
     limitOrdersByUser: LimitOrdersByUser;
     limitOrdersByPool: LimitOrdersByPool;
+    dataLoadingStatus: DataLoadingStatus;
+}
+
+export interface DataLoadingStatus {
+    isConnectedUserTxDataLoading: boolean;
+    isConnectedUserOrderDataLoading: boolean;
+    isConnectedUserRangeDataLoading: boolean;
+    isLookupUserTxDataLoading: boolean;
+    isLookupUserOrderDataLoading: boolean;
+    isLookupUserRangeDataLoading: boolean;
+    isPoolTxDataLoading: boolean;
+    isPoolOrderDataLoading: boolean;
+    isPoolRangeDataLoading: boolean;
+    isCandleDataLoading: boolean;
 }
 
 export interface LimitOrdersByUser {
@@ -288,6 +302,18 @@ const initialState: graphData = {
     liquidityForAllPools: { pools: [] },
     poolVolumeSeries: { dataReceived: false, pools: [] },
     poolTvlSeries: { dataReceived: false, pools: [] },
+    dataLoadingStatus: {
+        isConnectedUserTxDataLoading: true,
+        isConnectedUserOrderDataLoading: true,
+        isConnectedUserRangeDataLoading: true,
+        isLookupUserTxDataLoading: true,
+        isLookupUserOrderDataLoading: true,
+        isLookupUserRangeDataLoading: true,
+        isPoolTxDataLoading: true,
+        isPoolOrderDataLoading: true,
+        isPoolRangeDataLoading: true,
+        isCandleDataLoading: true,
+    },
 };
 
 export const graphDataSlice = createSlice({
@@ -586,6 +612,68 @@ export const graphDataSlice = createSlice({
                 }
             }
         },
+        setDataLoadingStatus: (
+            state,
+            action: PayloadAction<{ datasetName: string; loadingStatus: boolean }>,
+        ) => {
+            switch (action.payload.datasetName) {
+                case 'connectedUserTxData':
+                    state.dataLoadingStatus.isConnectedUserTxDataLoading =
+                        action.payload.loadingStatus;
+                    break;
+                case 'connectedUserOrderData':
+                    state.dataLoadingStatus.isConnectedUserOrderDataLoading =
+                        action.payload.loadingStatus;
+                    break;
+                case 'connectedUserRangeData':
+                    state.dataLoadingStatus.isConnectedUserRangeDataLoading =
+                        action.payload.loadingStatus;
+                    break;
+                case 'lookupUserTxData':
+                    state.dataLoadingStatus.isLookupUserTxDataLoading =
+                        action.payload.loadingStatus;
+                    break;
+                case 'lookupUserOrderData':
+                    state.dataLoadingStatus.isLookupUserOrderDataLoading =
+                        action.payload.loadingStatus;
+                    break;
+                case 'lookupUserRangeData':
+                    state.dataLoadingStatus.isLookupUserRangeDataLoading =
+                        action.payload.loadingStatus;
+                    break;
+                case 'poolTxData':
+                    state.dataLoadingStatus.isPoolTxDataLoading = action.payload.loadingStatus;
+                    break;
+                case 'poolOrderData':
+                    state.dataLoadingStatus.isPoolOrderDataLoading = action.payload.loadingStatus;
+                    break;
+                case 'poolRangeData':
+                    state.dataLoadingStatus.isPoolRangeDataLoading = action.payload.loadingStatus;
+                    break;
+                case 'candleData':
+                    state.dataLoadingStatus.isCandleDataLoading = action.payload.loadingStatus;
+                    break;
+                default:
+                    break;
+            }
+        },
+        resetConnectedUserDataLoadingStatus: (state) => {
+            state.dataLoadingStatus.isConnectedUserTxDataLoading = true;
+            state.dataLoadingStatus.isConnectedUserOrderDataLoading = true;
+            state.dataLoadingStatus.isConnectedUserRangeDataLoading = true;
+            // state.dataLoadingStatus.isLookupUserTxDataLoading = true;
+            // state.dataLoadingStatus.isLookupUserOrderDataLoading = true;
+            // state.dataLoadingStatus.isLookupUserRangeDataLoading = true;
+            // state.dataLoadingStatus.isPoolTxDataLoading = true;
+            // state.dataLoadingStatus.isPoolOrderDataLoading = true;
+            // state.dataLoadingStatus.isPoolRangeDataLoading = true;
+            // state.dataLoadingStatus.isCandleDataLoading = true;
+        },
+        resetLookupUserDataLoadingStatus: (state) => {
+            state.dataLoadingStatus.isLookupUserTxDataLoading = true;
+            state.dataLoadingStatus.isLookupUserOrderDataLoading = true;
+            state.dataLoadingStatus.isLookupUserRangeDataLoading = true;
+        },
         resetUserGraphData: (state) => {
             state.positionsByUser = initialState.positionsByUser;
             state.changesByUser = initialState.changesByUser;
@@ -616,7 +704,10 @@ export const {
     addLimitOrderChangesByPool,
     addChangesByPool,
     setChangesByPool,
+    setDataLoadingStatus,
     resetUserGraphData,
+    resetConnectedUserDataLoadingStatus,
+    resetLookupUserDataLoadingStatus,
 } = graphDataSlice.actions;
 
 export default graphDataSlice.reducer;

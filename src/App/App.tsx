@@ -30,6 +30,8 @@ import {
     addLimitOrderChangesByUser,
     ITransaction,
     setLeaderboardByPool,
+    setDataLoadingStatus,
+    resetConnectedUserDataLoadingStatus,
     // ChangesByUser,
 } from '../utils/state/graphDataSlice';
 import { ethers } from 'ethers';
@@ -950,6 +952,12 @@ export default function App() {
                             .then((response) => response.json())
                             .then((json) => {
                                 const poolPositions = json.data;
+                                dispatch(
+                                    setDataLoadingStatus({
+                                        datasetName: 'poolRangeData',
+                                        loadingStatus: false,
+                                    }),
+                                );
 
                                 if (poolPositions && crocEnv) {
                                     // console.log({ poolPositions });
@@ -1710,6 +1718,8 @@ export default function App() {
 
     useEffect(() => {
         if (isUserLoggedIn && account) {
+            dispatch(resetConnectedUserDataLoadingStatus());
+
             console.log('fetching user positions');
 
             const userPositionsCacheEndpoint = httpGraphCacheServerDomain + '/user_positions?';
@@ -1730,6 +1740,13 @@ export default function App() {
                     .then((response) => response?.json())
                     .then((json) => {
                         const userPositions = json?.data;
+
+                        dispatch(
+                            setDataLoadingStatus({
+                                datasetName: 'connectedUserRangeData',
+                                loadingStatus: false,
+                            }),
+                        );
 
                         if (userPositions && crocEnv) {
                             Promise.all(
@@ -1778,7 +1795,12 @@ export default function App() {
                     .then((response) => response?.json())
                     .then((json) => {
                         const userLimitOrderStates = json?.data;
-
+                        dispatch(
+                            setDataLoadingStatus({
+                                datasetName: 'connectedUserOrderData',
+                                loadingStatus: false,
+                            }),
+                        );
                         if (userLimitOrderStates) {
                             Promise.all(
                                 userLimitOrderStates.map((limitOrder: LimitOrderIF) => {
@@ -1812,6 +1834,12 @@ export default function App() {
                     n: 100,
                 })
                     .then((updatedTransactions) => {
+                        dispatch(
+                            setDataLoadingStatus({
+                                datasetName: 'connectedUserTxData',
+                                loadingStatus: false,
+                            }),
+                        );
                         if (updatedTransactions) {
                             dispatch(
                                 setChangesByUser({
