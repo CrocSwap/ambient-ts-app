@@ -3,7 +3,7 @@
 }
 
 .selector_select {
-    color: white;
+    color: var(--text-grey-white);
     border: 0;
     border-radius: var(--border-radius);
     background: transparent;
@@ -53,7 +53,7 @@
     padding: 12px;
     overflow: hidden;
     z-index: 2;
-    background: rgba(26, 20, 43, 0.25);
+    background: var(--body-bg);
     /* box-shadow: 0 8px 32px 0 rgba( 31, 38, 135, 0.37 ); */
     backdrop-filter: blur(16.5px);
     -webkit-backdrop-filter: blur(16.5px);
@@ -90,7 +90,7 @@
 .icon_button {
     width: 25px;
     margin-right: 0.5rem;
-    background: rgb(28, 28, 5);
+    background: var(--dark1);
     border-radius: 50%;
     padding: 3px;
     display: flex;
@@ -110,6 +110,7 @@
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
+    color: var(--text-grey-white)
 }
 
 

@@ -14,9 +14,9 @@
  
 }
 
-.footer svg {
+/* .footer svg {
     color: rgb(213, 226, 231);
-}
+} */
 
 .footer a {
     display: flex;
@@ -33,6 +33,11 @@
     gap: 0.25rem;
 }
 
+.block_number_div span{
+    color: var(--text-grey-light)
+
+}
+
 /* page block sign */
 .page_block_sign {
     width: 10px;
@@ -41,7 +46,7 @@
     background: linear-gradient(45deg, transparent, transparent 40%, yellow),
         linear-gradient(#262626, #141414);
     animation: rotate 9.5s linear infinite;
-    color: white;
+    color: var(--text-grey-white);
 }
 .page_block_sign:before,
 .page_block_sign:after {

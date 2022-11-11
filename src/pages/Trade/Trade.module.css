@@ -75,7 +75,7 @@
 .right_col {
     display: flex;
     flex-direction: column;
-    background-color: var(--dark1);
+    /* background-color: var(--dark1); */
     position: relative;
     background: url(../../assets/images/backgrounds/background.png) no-repeat center center;
     -webkit-background-size: cover;
@@ -348,7 +348,7 @@
     }
 
     .right_col {
-        background: var(--dark1);
+        background: transparent;
     }
 
     .middle_col,

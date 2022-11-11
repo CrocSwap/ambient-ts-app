@@ -12,7 +12,7 @@ export default function ContentContainer(props: ContentContainerPropsIF) {
     const { children, isOnTradeRoute, customWidth, customWidthAuto } = props;
 
     const customWidthStyle = customWidth ? styles.customWidth_container : null;
-    const tradeRouteStyle = isOnTradeRoute ? styles.no_background : null;
+    const tradeRouteStyle = isOnTradeRoute ? styles.no_background : styles.swap_bg;
     const swapRouteStyle = isOnTradeRoute ? null : styles.swap_route;
     const customWidthAutoStyle = customWidthAuto ? styles.customWidthAuto : styles.container;
 

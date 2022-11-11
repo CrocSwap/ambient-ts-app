@@ -104,7 +104,7 @@ footer {
 } */
 .swap-body {
     /* height: 100vh; */
-    background: var(--dark3);
+    /* background: var(--dark3); */
     height: calc(100vh - (var(--footer-height) + 2rem));
 
    
@@ -270,12 +270,12 @@ footer {
     .content-container {
         height: 100vh;
 
-        background: var(--dark3);
+        background: var(--body-bg);
     }
     .content-container-trade {
         /* height: calc(100vh - var(--footer-height)); */
         overflow: hidden;
 
-        background: var(--dark3);
+        background: var(--body-bg);
     }
 }

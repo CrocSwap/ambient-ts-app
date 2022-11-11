@@ -168,7 +168,7 @@ export default function ExtraInfo(props: ExtraInfoPropsIF) {
                                     ? Math.abs(priceImpactNum) > 2
                                         ? '#f6385b'
                                         : '#15be67'
-                                    : '#bdbdbd',
+                                    : 'var(--text-grey-light)',
                         }}
                     >
                         {item.data}
