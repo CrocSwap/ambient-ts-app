@@ -31,6 +31,7 @@ import {
     ITransaction,
     setLeaderboardByPool,
     setDataLoadingStatus,
+    resetConnectedUserDataLoadingStatus,
     // ChangesByUser,
 } from '../utils/state/graphDataSlice';
 import { ethers } from 'ethers';
@@ -1711,12 +1712,7 @@ export default function App() {
 
     useEffect(() => {
         if (isUserLoggedIn && account) {
-            dispatch(
-                setDataLoadingStatus({
-                    datasetName: 'connectedUserTxData',
-                    loadingStatus: true,
-                }),
-            );
+            dispatch(resetConnectedUserDataLoadingStatus());
 
             console.log('fetching user positions');
 
@@ -1786,7 +1782,12 @@ export default function App() {
                     .then((response) => response?.json())
                     .then((json) => {
                         const userLimitOrderStates = json?.data;
-
+                        dispatch(
+                            setDataLoadingStatus({
+                                datasetName: 'connectedUserOrderData',
+                                loadingStatus: false,
+                            }),
+                        );
                         if (userLimitOrderStates) {
                             Promise.all(
                                 userLimitOrderStates.map((limitOrder: LimitOrderIF) => {

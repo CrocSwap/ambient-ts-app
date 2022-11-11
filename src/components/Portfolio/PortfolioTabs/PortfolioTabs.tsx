@@ -108,13 +108,13 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
     const connectedAccountLimitOrderData = graphData.limitOrdersByUser.limitOrders;
     const connectedAccountTransactionData = graphData.changesByUser.changes;
 
-    const [otherAccountPositionData, setOtherAccountPositionData] = useState<PositionIF[]>([]);
-    const [otherAccountLimitOrderData, setOtherAccountLimitOrderData] = useState<LimitOrderIF[]>(
+    const [lookupAccountPositionData, setLookupAccountPositionData] = useState<PositionIF[]>([]);
+    const [lookupAccountLimitOrderData, setLookupAccountLimitOrderData] = useState<LimitOrderIF[]>(
         [],
     );
-    const [otherAccountTransactionData, setOtherAccountTransactionData] = useState<ITransaction[]>(
-        [],
-    );
+    const [lookupAccountTransactionData, setLookupAccountTransactionData] = useState<
+        ITransaction[]
+    >([]);
 
     // useEffect(() => {
     //     console.log({ connectedAccountPositionData });
@@ -155,13 +155,13 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
                             );
                         }),
                     ).then((updatedPositions) => {
-                        setOtherAccountPositionData(updatedPositions);
+                        setLookupAccountPositionData(updatedPositions);
                     });
                 }
             })
             .catch(console.log);
 
-    const getUserLimitOrders = async (accountToSearch: string) =>
+    const getLookupUserLimitOrders = async (accountToSearch: string) =>
         fetch(
             userLimitOrdersCacheEndpoint +
                 new URLSearchParams({
@@ -179,9 +179,15 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
                             return getLimitOrderData(limitOrder, importedTokens);
                         }),
                     ).then((updatedLimitOrderStates) => {
-                        setOtherAccountLimitOrderData(updatedLimitOrderStates);
+                        setLookupAccountLimitOrderData(updatedLimitOrderStates);
                     });
                 }
+                dispatch(
+                    setDataLoadingStatus({
+                        datasetName: 'lookupUserOrderData',
+                        loadingStatus: false,
+                    }),
+                );
             })
             .catch(console.log);
 
@@ -198,10 +204,10 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
             n: 100,
         })
             .then((updatedTransactions) => {
-                console.log({ updatedTransactions });
                 if (updatedTransactions) {
-                    setOtherAccountTransactionData(updatedTransactions);
+                    setLookupAccountTransactionData(updatedTransactions);
                 }
+
                 dispatch(
                     setDataLoadingStatus({
                         datasetName: 'lookupUserTxData',
@@ -217,7 +223,7 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
             if (!connectedAccountActive) {
                 if (resolvedAddress) {
                     await getUserPositions(resolvedAddress);
-                    await getUserLimitOrders(resolvedAddress);
+                    await getLookupUserLimitOrders(resolvedAddress);
                     await getLookupUserTransactions(resolvedAddress);
                 } else {
                     dispatch(
@@ -233,11 +239,11 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
 
     const activeAccountPositionData = connectedAccountActive
         ? connectedAccountPositionData
-        : otherAccountPositionData;
+        : lookupAccountPositionData;
     // eslint-disable-next-line
     const activeAccountLimitOrderData = connectedAccountActive
         ? connectedAccountLimitOrderData
-        : otherAccountLimitOrderData;
+        : lookupAccountLimitOrderData;
 
     const activeAccountTransactionData = connectedAccountActive
         ? connectedAccountTransactionData?.filter((tx) => {
@@ -247,7 +253,7 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
                   return false;
               }
           })
-        : otherAccountTransactionData?.filter((tx) => {
+        : lookupAccountTransactionData?.filter((tx) => {
               if (tx.changeType !== 'fill') {
                   return true;
               } else {

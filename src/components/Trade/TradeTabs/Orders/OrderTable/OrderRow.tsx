@@ -10,6 +10,8 @@ import { NavLink } from 'react-router-dom';
 import NoTokenIcon from '../../../../Global/NoTokenIcon/NoTokenIcon';
 import { LimitOrderIF } from '../../../../../utils/interfaces/exports';
 import { tradeData } from '../../../../../utils/state/tradeDataSlice';
+import { useAppDispatch } from '../../../../../utils/hooks/reduxToolkit';
+import { setDataLoadingStatus } from '../../../../../utils/state/graphDataSlice';
 
 interface OrderRowPropsIF {
     crocEnv: CrocEnv | undefined;
@@ -83,6 +85,8 @@ export default function OrderRow(props: OrderRowPropsIF) {
         isOrderFilled: isOrderFilled,
         isOnPortfolioPage: isOnPortfolioPage,
     };
+
+    const dispatch = useAppDispatch();
 
     const sideCharacter = isDenomBase ? baseTokenCharacter : quoteTokenCharacter;
 
@@ -161,6 +165,14 @@ export default function OrderRow(props: OrderRowPropsIF) {
                 <div>
                     <p>{ensName ? ensName : ownerId}</p>
                     <NavLink
+                        onClick={() => {
+                            dispatch(
+                                setDataLoadingStatus({
+                                    datasetName: 'lookupUserTxData',
+                                    loadingStatus: true,
+                                }),
+                            );
+                        }}
                         to={`/${isOwnerActiveAccount ? 'account' : ensName ? ensName : ownerId}`}
                     >
                         View Account

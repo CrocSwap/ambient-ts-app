@@ -621,11 +621,11 @@ export const graphDataSlice = createSlice({
                     state.dataLoadingStatus.isConnectedUserTxDataLoading =
                         action.payload.loadingStatus;
                     break;
-                case 'connectedUserOrder':
+                case 'connectedUserOrderData':
                     state.dataLoadingStatus.isConnectedUserOrderDataLoading =
                         action.payload.loadingStatus;
                     break;
-                case 'connectedUserRange':
+                case 'connectedUserRangeData':
                     state.dataLoadingStatus.isConnectedUserRangeDataLoading =
                         action.payload.loadingStatus;
                     break;
@@ -657,7 +657,18 @@ export const graphDataSlice = createSlice({
                     break;
             }
         },
-
+        resetConnectedUserDataLoadingStatus: (state) => {
+            state.dataLoadingStatus.isConnectedUserTxDataLoading = true;
+            state.dataLoadingStatus.isConnectedUserOrderDataLoading = true;
+            state.dataLoadingStatus.isConnectedUserRangeDataLoading = true;
+            // state.dataLoadingStatus.isLookupUserTxDataLoading = true;
+            // state.dataLoadingStatus.isLookupUserOrderDataLoading = true;
+            // state.dataLoadingStatus.isLookupUserRangeDataLoading = true;
+            // state.dataLoadingStatus.isPoolTxDataLoading = true;
+            // state.dataLoadingStatus.isPoolOrderDataLoading = true;
+            // state.dataLoadingStatus.isPoolRangeDataLoading = true;
+            // state.dataLoadingStatus.isCandleDataLoading = true;
+        },
         resetUserGraphData: (state) => {
             state.positionsByUser = initialState.positionsByUser;
             state.changesByUser = initialState.changesByUser;
@@ -690,6 +701,7 @@ export const {
     setChangesByPool,
     setDataLoadingStatus,
     resetUserGraphData,
+    resetConnectedUserDataLoadingStatus,
 } = graphDataSlice.actions;
 
 export default graphDataSlice.reducer;
