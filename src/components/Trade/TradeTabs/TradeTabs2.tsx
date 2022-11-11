@@ -66,6 +66,7 @@ interface ITabsProps {
     showSidebar: boolean;
     handleTxCopiedClick: () => void;
     handleOrderCopiedClick: () => void;
+    handleRangeCopiedClick: () => void;
 }
 
 // const httpGraphCacheServerDomain = 'https://809821320828123.de:5000';
@@ -107,6 +108,7 @@ export default function TradeTabs2(props: ITabsProps) {
         showSidebar,
         handleTxCopiedClick,
         handleOrderCopiedClick,
+        handleRangeCopiedClick,
     } = props;
 
     const graphData = useAppSelector((state) => state?.graphData);
@@ -363,6 +365,7 @@ export default function TradeTabs2(props: ITabsProps) {
 
         setLeader: setLeader,
         setLeaderOwnerId: setLeaderOwnerId,
+        handleRangeCopiedClick: handleRangeCopiedClick,
     };
     // Props for <Ranges/> React Element
     const poolInfoProps = {

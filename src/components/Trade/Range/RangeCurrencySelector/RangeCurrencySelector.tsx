@@ -54,6 +54,8 @@ interface RangeCurrencySelectorProps {
     activeTokenListsChanged: boolean;
     indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
     handleChangeClick: (input: string) => void;
+
+    isRangeCopied: boolean;
 }
 
 export default function RangeCurrencySelector(props: RangeCurrencySelectorProps) {
@@ -98,6 +100,8 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
         activeTokenListsChanged,
         indicateActiveTokenListsChanged,
         handleChangeClick,
+
+        isRangeCopied,
     } = props;
 
     const isTokenASelector = fieldId === 'A';
@@ -277,7 +281,10 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
                         isAdvancedMode={isAdvancedMode}
                     />
                 </div>
-                <div className={styles.token_select} onClick={openModal}>
+                <div
+                    className={`${styles.token_select} ${isRangeCopied && styles.pulse_animation}`}
+                    onClick={openModal}
+                >
                     {thisToken.logoURI ? (
                         <img
                             className={styles.token_list_img}

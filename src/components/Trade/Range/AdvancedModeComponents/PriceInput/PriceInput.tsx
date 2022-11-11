@@ -12,6 +12,7 @@ interface priceInputProps {
     onBlur: () => void;
     increaseTick: () => void;
     decreaseTick: () => void;
+    isRangeCopied: boolean;
 }
 
 export default function PriceInput(props: priceInputProps) {
@@ -24,6 +25,7 @@ export default function PriceInput(props: priceInputProps) {
         onBlur,
         increaseTick,
         decreaseTick,
+        isRangeCopied,
     } = props;
 
     const priceInput = (
@@ -67,7 +69,7 @@ export default function PriceInput(props: priceInputProps) {
                 <span className={styles.sign} onClick={decreaseTick}>
                     <FaMinus size={16} />
                 </span>
-                <span>{priceInput}</span>
+                <span className={isRangeCopied && styles.pulse_animation}>{priceInput}</span>
                 <span className={styles.sign} onClick={increaseTick}>
                     <FaPlus size={16} />
                 </span>

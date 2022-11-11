@@ -79,6 +79,7 @@ interface TradePropsIF {
 
     handleTxCopiedClick: () => void;
     handleOrderCopiedClick: () => void;
+    handleRangeCopiedClick: () => void;
 }
 
 // React functional component
@@ -122,6 +123,7 @@ export default function Trade(props: TradePropsIF) {
         showSidebar,
         handleTxCopiedClick,
         handleOrderCopiedClick,
+        handleRangeCopiedClick,
     } = props;
 
     const tokenPairFromParams = useUrlParams(chainId, isInitialized);
@@ -562,6 +564,7 @@ export default function Trade(props: TradePropsIF) {
                                 showSidebar={showSidebar}
                                 handleTxCopiedClick={handleTxCopiedClick}
                                 handleOrderCopiedClick={handleOrderCopiedClick}
+                                handleRangeCopiedClick={handleRangeCopiedClick}
                             />
                         </div>
                     </motion.div>

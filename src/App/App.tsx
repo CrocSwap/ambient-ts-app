@@ -1898,8 +1898,11 @@ export default function App() {
 
     const [isAppOverlayActive, setIsAppOverlayActive] = useState(false);
 
+    // ------------------- FOLLOWING CODE IS PURELY RESPONSIBLE FOR PULSE ANIMATION------------
+
     const [isTxCopied, setIsTxCopied] = useState(false);
     const [isOrderCopied, setIsOrderCopied] = useState(false);
+    const [isRangeCopied, setIsRangeCopied] = useState(false);
 
     const handleTxCopiedClick = () => {
         setIsTxCopied(true);
@@ -1917,6 +1920,17 @@ export default function App() {
             setIsOrderCopied(false);
         }, 3000);
     };
+    const handleRangeCopiedClick = () => {
+        setIsRangeCopied(true);
+        console.log('STARTING ANIMATION');
+
+        setTimeout(() => {
+            setIsRangeCopied(false);
+        }, 3000);
+    };
+
+    // END OF------------------- FOLLOWING CODE IS PURELY RESPONSIBLE FOR PULSE ANIMATION------------
+
     // props for <PageHeader/> React element
     const headerProps = {
         isUserLoggedIn: isUserLoggedIn,
@@ -2082,6 +2096,7 @@ export default function App() {
         openGlobalModal: openGlobalModal,
 
         poolExists: poolExists,
+        isRangeCopied: isRangeCopied,
     };
 
     function toggleSidebar() {
@@ -2298,6 +2313,7 @@ export default function App() {
                                     showSidebar={showSidebar}
                                     handleTxCopiedClick={handleTxCopiedClick}
                                     handleOrderCopiedClick={handleOrderCopiedClick}
+                                    handleRangeCopiedClick={handleRangeCopiedClick}
                                 />
                             }
                         >

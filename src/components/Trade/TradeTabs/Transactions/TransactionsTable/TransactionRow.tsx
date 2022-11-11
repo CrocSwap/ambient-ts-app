@@ -20,6 +20,7 @@ interface TransactionRowPropsIF {
     isShowAllEnabled: boolean;
     showSidebar: boolean;
     ipadView: boolean;
+    desktopView: boolean;
     view2: boolean;
     showColumns: boolean;
     blockExplorer: string | undefined;
@@ -48,6 +49,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
         isOnPortfolioPage,
         closeGlobalModal,
         openGlobalModal,
+        desktopView,
     } = props;
 
     const {
@@ -318,7 +320,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                     <p className='base_color'> Nov 9 10:36:23 AM</p>
                 </li>
             )}
-            {isOnPortfolioPage && tokenPair}
+            {isOnPortfolioPage && !desktopView && tokenPair}
             {/* {isOnPortfolioPage && !showSidebar && poolName} */}
             {!showColumns && IDWithTooltip}
             {!showColumns && !isOnPortfolioPage && walletWithTooltip}

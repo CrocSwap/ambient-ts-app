@@ -59,6 +59,7 @@ interface RangesPropsIF {
 
     setLeader?: Dispatch<SetStateAction<string>>;
     setLeaderOwnerId?: Dispatch<SetStateAction<string>>;
+    handleRangeCopiedClick?: () => void;
 }
 
 // react functional component
@@ -84,6 +85,7 @@ export default function Ranges(props: RangesPropsIF) {
         setCurrentPositionActive,
         account,
         isOnPortfolioPage,
+        handleRangeCopiedClick,
 
         showSidebar,
     } = props;
@@ -409,6 +411,7 @@ export default function Ranges(props: RangesPropsIF) {
             lastBlockNumber={lastBlockNumber}
             isOnPortfolioPage={isOnPortfolioPage}
             idx={idx}
+            handleRangeCopiedClick={handleRangeCopiedClick}
 
             // blockExplorer={blockExplorer}
         />

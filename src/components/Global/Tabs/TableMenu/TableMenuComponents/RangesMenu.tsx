@@ -41,6 +41,8 @@ interface RangesMenuIF {
     posHash: string;
     showSidebar: boolean;
     isOnPortfolioPage: boolean;
+
+    handleRangeCopiedClick?: () => void;
 }
 
 // React functional component
@@ -55,6 +57,7 @@ export default function RangesMenu(props: RangesMenuIF) {
         posHash,
         positionData,
         isOnPortfolioPage,
+        handleRangeCopiedClick,
         // showSidebar,
         // eslint-disable-next-line
     } = props;
@@ -107,6 +110,9 @@ export default function RangesMenu(props: RangesMenuIF) {
     const handleCopyClick = () => {
         // console.log('copy clicked');
         // console.log({ positionData });
+        {
+            handleRangeCopiedClick ? handleRangeCopiedClick() : null;
+        }
 
         if (positionData.positionType === 'ambient') {
             dispatch(setSimpleRangeWidth(100));

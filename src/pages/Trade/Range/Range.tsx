@@ -91,6 +91,8 @@ interface RangePropsIF {
     ambientApy: number | undefined;
     openGlobalModal: (content: React.ReactNode, title?: string) => void;
     poolExists: boolean | null;
+
+    isRangeCopied: boolean;
 }
 
 export default function Range(props: RangePropsIF) {
@@ -124,6 +126,8 @@ export default function Range(props: RangePropsIF) {
         ambientApy,
         openGlobalModal,
         poolExists,
+
+        isRangeCopied,
     } = props;
 
     const [isModalOpen, openModal, closeModal] = useModal();
@@ -1034,12 +1038,15 @@ export default function Range(props: RangePropsIF) {
         rangeSpanBelowCurrentPrice: rangeSpanBelowCurrentPrice,
         activeTokenListsChanged: activeTokenListsChanged,
         indicateActiveTokenListsChanged: indicateActiveTokenListsChanged,
+
+        isRangeCopied: isRangeCopied,
     };
 
     // props for <RangeWidth/> React element
     const rangeWidthProps = {
         rangeWidthPercentage: rangeWidthPercentage,
         setRangeWidthPercentage: setRangeWidthPercentage,
+        isRangeCopied: isRangeCopied,
     };
     // props for <RangeExtraInfo/> React element
     const rangeExtraInfoProps = {
@@ -1098,6 +1105,7 @@ export default function Range(props: RangePropsIF) {
                     disable={isInvalidRange || !poolExists}
                     chainId={chainId.toString()}
                     targetData={tradeData.targetData}
+                    isRangeCopied={isRangeCopied}
                 />
             </motion.div>
             <DividerDark addMarginTop />
