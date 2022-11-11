@@ -71,7 +71,7 @@ export default function Account(props: AccountPropsIF) {
             {isUserLoggedIn && (
                 <NavLink to={`/${props.accountAddressFull}`}>
                     <div className={`${styles.title_gradient}`} onClick={handleCopyAddress}>
-                        <MdAccountBalanceWallet color='#ebebff' />
+                        <MdAccountBalanceWallet color='var(--text-grey-white)' />
                         <p>{ensName !== '' ? ensName : props.accountAddress}</p>
                     </div>
                 </NavLink>

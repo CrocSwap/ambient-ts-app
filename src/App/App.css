@@ -30,6 +30,9 @@ body::-webkit-scrollbar-thumb {
 
     box-shadow: 0px 0px 0px 100000vh black;
 }
+body{
+    background: var(--body-bg)
+}
 
 html {
     background: var(--body-bg);

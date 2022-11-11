@@ -2204,7 +2204,16 @@ export default function App() {
 
     return (
         <>
-            <button onClick={switchTheme}>Switch Theme</button>
+            <div
+                style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                }}
+            >
+                <button onClick={switchTheme}>Switch Theme</button>
+            </div>
             <div className={containerStyle} data-theme={theme}>
                 {isMobileSidebarOpen && <div className='blur_app' />}
                 <AppOverlay

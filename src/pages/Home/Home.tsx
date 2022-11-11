@@ -47,7 +47,7 @@ export default function Home(props: HomeProps) {
                 <DividerDark />
 
                 {/* <Investors /> */}
-                <DividerDark />
+                {/* <DividerDark /> */}
                 <Links />
             </main>
         </>
