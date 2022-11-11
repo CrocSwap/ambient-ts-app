@@ -41,7 +41,7 @@ interface PortfolioPropsIF {
     userImageData: string[];
     chainId: string;
     ambientTokens: Map<string, TokenIF>;
-    tokenMap: Map<string, TokenIF>;
+    tokensOnActiveLists: Map<string, TokenIF>;
     selectedOutsideTab: number;
     setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
     outsideControl: boolean;
@@ -83,7 +83,7 @@ export default function Portfolio(props: PortfolioPropsIF) {
         userImageData,
         connectedAccount,
         chainId,
-        tokenMap,
+        tokensOnActiveLists,
         openGlobalModal,
         closeGlobalModal,
         userAccount,
@@ -103,7 +103,6 @@ export default function Portfolio(props: PortfolioPropsIF) {
         showSidebar,
         isUserLoggedIn,
     } = props;
-
     const { isInitialized } = useMoralis();
 
     const selectedToken: TokenIF = useAppSelector((state) => state.temp.token);
@@ -397,7 +396,7 @@ export default function Portfolio(props: PortfolioPropsIF) {
                     activeAccount={address ?? connectedAccount}
                     connectedAccountActive={connectedAccountActive}
                     chainId={chainId}
-                    tokenMap={tokenMap}
+                    tokenMap={tokensOnActiveLists}
                     selectedOutsideTab={selectedOutsideTab}
                     setSelectedOutsideTab={setSelectedOutsideTab}
                     setOutsideControl={setOutsideControl}
@@ -437,6 +436,7 @@ export default function Portfolio(props: PortfolioPropsIF) {
                         chainId={chainId}
                         importedTokens={importedTokens}
                         setImportedTokens={setImportedTokens}
+                        tokensOnActiveLists={tokensOnActiveLists}
                     />
                 </Modal>
             )}

@@ -9,13 +9,15 @@ import { TokenIF, TokenListIF } from '../../../utils/interfaces/exports';
 import { ambientTokenList } from '../../../utils/data/ambientTokenList';
 
 export const useSoloSearch = (
-    chainId: string
+    chainId: string,
+    tokensOnActiveLists: Map<string, TokenIF>
 ): [
     TokenIF[] | null,
     string,
     Dispatch<SetStateAction<string>>,
     string
 ] => {
+    console.log(tokensOnActiveLists);
     // raw input from the user
     const [input, setInput] = useState('');
 
@@ -137,6 +139,16 @@ export const useSoloSearch = (
             // update local state if a token is found
             tkn && updateToken(tkn);
         }
+
+        console.log([...tokensOnActiveLists.values()])
+
+        // for(const val of tokensOnActiveLists.values()) {
+        //     if(val.name.includes('ETH')) console.log('it matches');
+        // }
+
+        // for(const key of tokensOnActiveLists.keys()) {
+        //     if(key.includes('0x')) return key;
+        //   }
 
     // TODO: if not found pull data from on-chain
 

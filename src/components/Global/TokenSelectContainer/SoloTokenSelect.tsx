@@ -1,4 +1,4 @@
-import { useMemo, Dispatch, SetStateAction } from 'react';
+import { useMemo, useState, Dispatch, SetStateAction } from 'react';
 import { TokenListIF, TokenIF } from '../../../utils/interfaces/exports';
 import TokenSelect from '../TokenSelect/TokenSelect';
 import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
@@ -9,13 +9,25 @@ interface propsIF {
     importedTokens: TokenIF[];
     chainId: string;
     setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
+    tokensOnActiveLists: Map<string, TokenIF>;
     closeModal: () => void;
 }
 
 export const SoloTokenSelect = (props: propsIF) => {
-    const { importedTokens, chainId, setImportedTokens, closeModal } = props;
+    const {
+        importedTokens,
+        chainId,
+        setImportedTokens,
+        closeModal,
+        tokensOnActiveLists
+    } = props;
 
-    const [ searchedToken, input, setInput, searchType ] = useSoloSearch(chainId);
+    const [
+        searchedToken,
+        input,
+        setInput,
+        searchType
+    ] = useSoloSearch(chainId, tokensOnActiveLists);
     false && input;
 
     const dispatch = useAppDispatch();
@@ -27,24 +39,6 @@ export const SoloTokenSelect = (props: propsIF) => {
                 .tokens.map((tkn: TokenIF) => tkn.address),
         [],
     );
-
-    // // hook to persist array of all tokens on active lists
-    // const [tokensOnActiveLists, setTokensOnActiveLists] = useState<TokenIF[]>();
-    // // hook to update fetch and set tokens from active lists
-    // useEffect(() => {
-    //     // get array of active list URIs from local storage
-    //     const namesOfActiveLists = JSON.parse(
-    //         localStorage.getItem('user') as string)
-    //     .activeTokenLists;
-    //     // get value of allTokenLists from local storage
-    //     const tokens = JSON.parse(localStorage.getItem('allTokenLists') as string)
-    //         // filter out token lists not currently active
-    //         .filter((tokenList: TokenListIF) => namesOfActiveLists.includes(tokenList.uri))
-    //         // make a flattened array of tokens from active lists
-    //         .flatMap((tokenList: TokenListIF) => tokenList.tokens);
-    //     // send array of tokens from active lists to local state
-    //     setTokensOnActiveLists(tokens);
-    // }, []);
 
     const chooseToken = (tkn: TokenIF) => {
         dispatch(setToken(tkn));
@@ -117,7 +111,9 @@ export const SoloTokenSelect = (props: propsIF) => {
                 placeholder='Enter an Address'
                 onChange={(e) => setInput(e.target.value)}
             />
+            <h1>Imported Tokens</h1>
             {importedTokenButtons}
+            <h2>More Available Tokens</h2>
         </>
     );
 };
