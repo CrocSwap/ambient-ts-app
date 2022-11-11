@@ -162,6 +162,7 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
                         setLookupAccountPositionData(updatedPositions);
                     });
                 }
+                console.log('dispatch');
                 dispatch(
                     setDataLoadingStatus({
                         datasetName: 'lookupUserRangeData',
@@ -169,7 +170,14 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
                     }),
                 );
             })
-            .catch(console.log);
+            .catch(() => {
+                dispatch(
+                    setDataLoadingStatus({
+                        datasetName: 'lookupUserRangeData',
+                        loadingStatus: false,
+                    }),
+                );
+            });
 
     const getLookupUserLimitOrders = async (accountToSearch: string) =>
         fetch(
@@ -199,7 +207,14 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
                     }),
                 );
             })
-            .catch(console.log);
+            .catch(() => {
+                dispatch(
+                    setDataLoadingStatus({
+                        datasetName: 'lookupUserOrderData',
+                        loadingStatus: false,
+                    }),
+                );
+            });
 
     const getLookupUserTransactions = async (accountToSearch: string) =>
         fetchUserRecentChanges({
@@ -225,8 +240,14 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
                     }),
                 );
             })
-
-            .catch(console.log);
+            .catch(() => {
+                dispatch(
+                    setDataLoadingStatus({
+                        datasetName: 'lookupUserTxData',
+                        loadingStatus: false,
+                    }),
+                );
+            });
 
     useEffect(() => {
         (async () => {
