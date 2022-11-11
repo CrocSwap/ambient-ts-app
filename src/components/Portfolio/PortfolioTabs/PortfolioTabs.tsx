@@ -164,7 +164,7 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
                 }
                 dispatch(
                     setDataLoadingStatus({
-                        datasetName: 'lookupUserOrderData',
+                        datasetName: 'lookupUserRangeData',
                         loadingStatus: false,
                     }),
                 );
