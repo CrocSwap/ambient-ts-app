@@ -50,6 +50,8 @@ interface CurrencySelectorProps {
     activeTokenListsChanged: boolean;
     indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
     gasPriceInGwei: number | undefined;
+
+    isTxCopied?: boolean;
 }
 
 export default function CurrencySelector(props: CurrencySelectorProps) {
@@ -73,6 +75,7 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
         tokenBBalance,
         tokenADexBalance,
         tokenBDexBalance,
+        isTxCopied,
         // userHasEnteredAmount,
         isSellTokenEth,
         tokenAQtyCoveredBySurplusBalance,
@@ -270,7 +273,10 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                         }}
                     />
                 </div>
-                <div className={styles.token_select} onClick={openModal}>
+                <div
+                    className={`${styles.token_select} ${isTxCopied && styles.pulse_animation}`}
+                    onClick={openModal}
+                >
                     {thisToken.logoURI ? (
                         <img
                             className={styles.token_list_img}

@@ -21,10 +21,12 @@ interface TransactionRowPropsIF {
     isShowAllEnabled: boolean;
     showSidebar: boolean;
     ipadView: boolean;
+    desktopView: boolean;
     view2: boolean;
     showColumns: boolean;
     blockExplorer: string | undefined;
     closeGlobalModal: () => void;
+    handlePulseAnimation?: () => void;
 
     openGlobalModal: (content: React.ReactNode) => void;
     isOnPortfolioPage: boolean;
@@ -39,6 +41,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
         tx,
         // showSidebar,
         blockExplorer,
+        handlePulseAnimation,
         // openGlobalModal,
         // closeGlobalModal,
         currentTxActiveInTransactions,
@@ -47,6 +50,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
         isOnPortfolioPage,
         closeGlobalModal,
         openGlobalModal,
+        desktopView,
     } = props;
 
     const {
@@ -327,7 +331,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                     <p className='base_color'> Nov 9 10:36:23 AM</p>
                 </li>
             )}
-            {isOnPortfolioPage && tokenPair}
+            {isOnPortfolioPage && !desktopView && tokenPair}
             {/* {isOnPortfolioPage && !showSidebar && poolName} */}
             {!showColumns && IDWithTooltip}
             {!showColumns && !isOnPortfolioPage && walletWithTooltip}
@@ -494,6 +498,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                     openGlobalModal={props.openGlobalModal}
                     closeGlobalModal={props.closeGlobalModal}
                     isOnPortfolioPage={props.isOnPortfolioPage}
+                    handlePulseAnimation={handlePulseAnimation}
                 />
             </li>
         </ul>

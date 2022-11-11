@@ -48,6 +48,7 @@ interface TransactionsProps {
 
     openGlobalModal: (content: React.ReactNode) => void;
     closeGlobalModal: () => void;
+    handleTxCopiedClick?: () => void;
     showSidebar: boolean;
 
     isOnPortfolioPage: boolean;
@@ -76,6 +77,7 @@ export default function Transactions(props: TransactionsProps) {
         openGlobalModal,
         closeGlobalModal,
         isOnPortfolioPage,
+        handleTxCopiedClick,
         // setExpandTradeTable,
     } = props;
 
@@ -368,13 +370,13 @@ export default function Transactions(props: TransactionsProps) {
             <p>Type</p>
         </>
     );
-    const tokens = <></>;
-    // const tokens = (
-    //     <>
-    //         <p>{`${baseTokenSymbol} ( ${baseTokenCharacter} )`}</p>
-    //         <p>{`${quoteTokenSymbol} ( ${quoteTokenCharacter} )`}</p>
-    //     </>
-    // );
+    // const tokens = <></>;
+    const tokens = (
+        <>
+            <p>{`${baseTokenSymbol} `}</p>
+            <p>{`${quoteTokenSymbol} `}</p>
+        </>
+    );
 
     const headerColumns = [
         {
@@ -391,7 +393,7 @@ export default function Transactions(props: TransactionsProps) {
         {
             name: 'Pair',
             className: '',
-            show: isOnPortfolioPage,
+            show: isOnPortfolioPage && !desktopView,
             slug: 'pool',
             sortable: true,
         },
@@ -422,6 +424,7 @@ export default function Transactions(props: TransactionsProps) {
             show: showColumns,
             slug: 'walletid',
             sortable: false,
+            alignCenter: true,
         },
         {
             name: 'Price',
@@ -541,10 +544,12 @@ export default function Transactions(props: TransactionsProps) {
             ipadView={ipadView}
             showColumns={showColumns}
             view2={view2}
+            desktopView={desktopView}
             showSidebar={showSidebar}
             blockExplorer={blockExplorer}
             closeGlobalModal={closeGlobalModal}
             isOnPortfolioPage={isOnPortfolioPage}
+            handlePulseAnimation={handleTxCopiedClick}
         />
     ));
 

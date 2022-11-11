@@ -21,6 +21,7 @@ interface LimitRatePropsIF {
     // onBlur: () => void;
     poolPriceNonDisplay: number | undefined;
     limitTickDisplayPrice: number;
+    isOrderCopied: boolean;
 }
 
 export default function LimitRate(props: LimitRatePropsIF) {
@@ -32,6 +33,7 @@ export default function LimitRate(props: LimitRatePropsIF) {
         fieldId,
         disable,
         limitTickDisplayPrice,
+        isOrderCopied,
     } = props;
 
     const dispatch = useAppDispatch();
@@ -92,9 +94,10 @@ export default function LimitRate(props: LimitRatePropsIF) {
     );
 
     return (
-        <div className={styles.swapbox}>
+        <div className={`${styles.swapbox} ${isOrderCopied && styles.pulse_animation}`}>
             <span className={styles.direction}>Price</span>
-            <div className={styles.swap_input}>{rateInput}</div>
+
+            <div className={`${styles.swap_input} `}>{rateInput}</div>
         </div>
     );
 }

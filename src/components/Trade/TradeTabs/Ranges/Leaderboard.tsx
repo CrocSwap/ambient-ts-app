@@ -57,6 +57,7 @@ interface LeaderboardPropsIF {
 
     setLeader?: Dispatch<SetStateAction<string>>;
     setLeaderOwnerId?: Dispatch<SetStateAction<string>>;
+    handleRangeCopiedClick?: () => void;
 }
 
 // react functional component
@@ -78,6 +79,7 @@ export default function Leaderboard(props: LeaderboardPropsIF) {
         currentPositionActive,
         setCurrentPositionActive,
         account,
+        handleRangeCopiedClick,
         // setLeader,
         // setLeaderOwnerId,
 
@@ -334,6 +336,7 @@ export default function Leaderboard(props: LeaderboardPropsIF) {
             isOnPortfolioPage={false}
             isLeaderboard={true}
             idx={idx + 1}
+            handleRangeCopiedClick={handleRangeCopiedClick}
 
             // blockExplorer={blockExplorer}
         />

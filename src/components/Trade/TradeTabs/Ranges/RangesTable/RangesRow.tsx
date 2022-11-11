@@ -47,6 +47,7 @@ interface RangesRowPropsIF {
     isOnPortfolioPage: boolean;
     isLeaderboard?: boolean;
     idx: number;
+    handleRangeCopiedClick?: () => void;
 }
 
 export default function RangesRow(props: RangesRowPropsIF) {
@@ -61,6 +62,7 @@ export default function RangesRow(props: RangesRowPropsIF) {
         openGlobalModal,
         isOnPortfolioPage,
         isLeaderboard,
+        handleRangeCopiedClick,
         // idx,
     } = props;
 
@@ -145,6 +147,7 @@ export default function RangesRow(props: RangesRowPropsIF) {
         baseTokenDexBalance: props.baseTokenDexBalance,
         quoteTokenDexBalance: props.quoteTokenDexBalance,
         isOnPortfolioPage: props.isOnPortfolioPage,
+        handleRangeCopiedClick: handleRangeCopiedClick,
     };
 
     const openDetailsModal = () => {
