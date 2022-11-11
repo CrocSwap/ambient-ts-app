@@ -31,6 +31,7 @@
     --body-lh: 15px;
 
     /* colors */
+    --shimmer: linear-gradient(to right, #141e30, #243b55);
     --body-bg: #0e131a;
     --dark1: #0d1117;
     --dark2: #12171f;
@@ -61,6 +62,7 @@
 }
 
 [data-theme='light'] {
+    --shimmer: linear-gradient(to right, #ece9e6, #ffffff);
     --body-bg: linear-gradient(to right, #ece9e6, #ffffff);
     --dark1: linear-gradient(to right, #ece9e6, #ffffff);
     --dark2: rgb(226, 221, 221);
