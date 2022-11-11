@@ -14,6 +14,19 @@ export interface graphData {
     poolTvlSeries: PoolTvlSeries;
     limitOrdersByUser: LimitOrdersByUser;
     limitOrdersByPool: LimitOrdersByPool;
+    dataLoadingStatus: DataLoadingStatus;
+}
+
+export interface DataLoadingStatus {
+    isConnectedUserTxDataLoading: boolean;
+    isConnectedUserOrderDataLoading: boolean;
+    isConnectedUserRangeDataLoading: boolean;
+    isLookupUserTxDataLoading: boolean;
+    isLookupUserOrderDataLoading: boolean;
+    isLookupUserRangeDataLoading: boolean;
+    isPoolTxDataLoading: boolean;
+    isPoolOrderDataLoading: boolean;
+    isPoolRangeDataLoading: boolean;
 }
 
 export interface LimitOrdersByUser {
@@ -288,6 +301,17 @@ const initialState: graphData = {
     liquidityForAllPools: { pools: [] },
     poolVolumeSeries: { dataReceived: false, pools: [] },
     poolTvlSeries: { dataReceived: false, pools: [] },
+    dataLoadingStatus: {
+        isConnectedUserTxDataLoading: true,
+        isConnectedUserOrderDataLoading: true,
+        isConnectedUserRangeDataLoading: true,
+        isLookupUserTxDataLoading: true,
+        isLookupUserOrderDataLoading: true,
+        isLookupUserRangeDataLoading: true,
+        isPoolTxDataLoading: true,
+        isPoolOrderDataLoading: true,
+        isPoolRangeDataLoading: true,
+    },
 };
 
 export const graphDataSlice = createSlice({
@@ -586,6 +610,49 @@ export const graphDataSlice = createSlice({
                 }
             }
         },
+        setDataLoadingStatus: (
+            state,
+            action: PayloadAction<{ datasetName: string; loadingStatus: boolean }>,
+        ) => {
+            switch (action.payload.datasetName) {
+                case 'isConnectedUserTxDataLoading':
+                    state.dataLoadingStatus.isConnectedUserTxDataLoading =
+                        action.payload.loadingStatus;
+                    break;
+                case 'isConnectedUserOrderDataLoading':
+                    state.dataLoadingStatus.isConnectedUserOrderDataLoading =
+                        action.payload.loadingStatus;
+                    break;
+                case 'isConnectedUserRangeDataLoading':
+                    state.dataLoadingStatus.isConnectedUserRangeDataLoading =
+                        action.payload.loadingStatus;
+                    break;
+                case 'isLookupUserTxDataLoading':
+                    state.dataLoadingStatus.isLookupUserTxDataLoading =
+                        action.payload.loadingStatus;
+                    break;
+                case 'isLookupUserOrderDataLoading':
+                    state.dataLoadingStatus.isLookupUserOrderDataLoading =
+                        action.payload.loadingStatus;
+                    break;
+                case 'isLookupUserRangeDataLoading':
+                    state.dataLoadingStatus.isLookupUserRangeDataLoading =
+                        action.payload.loadingStatus;
+                    break;
+                case 'isPoolTxDataLoading':
+                    state.dataLoadingStatus.isPoolTxDataLoading = action.payload.loadingStatus;
+                    break;
+                case 'isPoolOrderDataLoading':
+                    state.dataLoadingStatus.isPoolOrderDataLoading = action.payload.loadingStatus;
+                    break;
+                case 'isPoolRangeDataLoading':
+                    state.dataLoadingStatus.isPoolRangeDataLoading = action.payload.loadingStatus;
+                    break;
+                default:
+                    break;
+            }
+        },
+
         resetUserGraphData: (state) => {
             state.positionsByUser = initialState.positionsByUser;
             state.changesByUser = initialState.changesByUser;
