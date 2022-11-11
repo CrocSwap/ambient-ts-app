@@ -391,7 +391,7 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
         chainId: chainId,
     };
 
-    const accountTabData = [
+    const accountTabDataWithTokens = [
         {
             label: 'Transactions',
             content: <Transactions {...transactionsProps} />,
@@ -408,10 +408,28 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
         { label: 'Tokens', content: <Tokens {...tokensProps} />, icon: walletImage },
     ];
 
+    const accountTabDataWithoutTokens = [
+        {
+            label: 'Transactions',
+            content: <Transactions {...transactionsProps} />,
+            icon: recentTransactionsImage,
+        },
+        { label: 'Limit Orders', content: <Orders {...ordersProps} />, icon: openOrdersImage },
+        { label: 'Ranges', content: <Ranges {...rangeProps} />, icon: rangePositionsImage },
+        {
+            label: 'Exchange Deposits',
+            content: <Exchange {...exchangeProps} />,
+            icon: exchangeImage,
+        },
+        { label: 'Wallet Balances', content: <Wallet {...walletProps} />, icon: walletImage },
+    ];
+
     return (
         <div className={styles.tabs_container}>
             <TabComponent
-                data={accountTabData}
+                data={
+                    connectedAccountActive ? accountTabDataWithTokens : accountTabDataWithoutTokens
+                }
                 rightTabOptions={false}
                 selectedOutsideTab={selectedOutsideTab}
                 setSelectedOutsideTab={setSelectedOutsideTab}
