@@ -391,7 +391,6 @@ export default function Chart(props: ChartData) {
         limit,
         market,
         crosshairData,
-        isMouseMoveCrosshair,
     ]);
 
     useEffect(() => {
@@ -2491,15 +2490,11 @@ export default function Chart(props: ChartData) {
 
                 const setCrossHairLocation = (event: any) => {
                     crosshairData[0] = snap(candlestick, chartData, event)[0];
-                    setIsMouseMoveCrosshair(true);
 
                     setCrosshairData([
                         {
                             x: crosshairData[0].x,
-                            y:
-                                isMouseMoveForSubChart || isZoomForSubChart
-                                    ? -1
-                                    : scaleData.yScale.invert(event.offsetY),
+                            y: scaleData.yScale.invert(event.offsetY),
                         },
                     ]);
 
@@ -2513,6 +2508,7 @@ export default function Chart(props: ChartData) {
                 }
 
                 d3.select(d3PlotArea.current).on('mousemove', async function (event: any) {
+                    setIsMouseMoveCrosshair(true);
                     setCrossHairLocation(event);
                 });
 
@@ -2828,7 +2824,6 @@ export default function Chart(props: ChartData) {
                                     (a, b) => b.time - a.time,
                                 )}
                                 period={parsedChartData?.period}
-                                crosshairData={crosshairData}
                                 crosshairXForSubChart={crosshairXForSubChart}
                                 setsubChartValues={setsubChartValues}
                                 setSelectedDate={setSelectedDate}
