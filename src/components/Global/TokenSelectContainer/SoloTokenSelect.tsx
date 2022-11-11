@@ -28,14 +28,21 @@ export const SoloTokenSelect = (props: propsIF) => {
         [],
     );
 
+    // hook to persist array of all tokens on active lists
     const [tokensOnActiveLists, setTokensOnActiveLists] = useState<TokenIF[]>();
+    // hook to update fetch and set tokens from active lists
     useEffect(() => {
+        // get array of active list URIs from local storage
         const namesOfActiveLists = JSON.parse(
             localStorage.getItem('user') as string)
         .activeTokenLists;
+        // get value of allTokenLists from local storage
         const tokens = JSON.parse(localStorage.getItem('allTokenLists') as string)
+            // filter out token lists not currently active
             .filter((tokenList: TokenListIF) => namesOfActiveLists.includes(tokenList.uri))
+            // make a flattened array of tokens from active lists
             .flatMap((tokenList: TokenListIF) => tokenList.tokens);
+        // send array of tokens from active lists to local state
         setTokensOnActiveLists(tokens);
     }, []);
 
