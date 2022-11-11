@@ -200,7 +200,10 @@ export default function TradeCandleStickChart(props: ChartData) {
                 }),
             );
 
-            const liquidityScale = d3.scaleLog().domain([domainLeft, domainRight]).range([0, 1000]);
+            const liquidityScale = d3
+                .scaleLog()
+                .domain([domainLeft, domainRight])
+                .range([10, 1000]);
 
             const barThreshold = props.poolPriceDisplay !== undefined ? props.poolPriceDisplay : 0;
 
@@ -387,6 +390,7 @@ export default function TradeCandleStickChart(props: ChartData) {
                         downBorderColor={props.downBorderColor}
                         isCandleAdded={isCandleAdded}
                         scaleData={scaleData}
+                        chainId={chainId}
                     />
                 ) : (
                     <>{loading}</>
