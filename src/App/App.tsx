@@ -341,7 +341,7 @@ export default function App() {
                 const chainSpec = lookupChain(chainData.chainId);
                 const url = chainSpec.nodeUrl;
                 // const url = chainSpec.wsUrl ? chainSpec.wsUrl : chainSpec.nodeUrl;
-                // console.log('Chain URL ' + url);
+                console.log('setting up new provider: ' + url);
                 setProvider(new ethers.providers.JsonRpcProvider(url));
             }
         } catch (error) {
@@ -397,7 +397,7 @@ export default function App() {
     }, [tokenListsReceived]);
 
     useEffect(() => {
-        fetch(chainData.nodeUrl, {
+        fetch(chainData.nodeUrl2, {
             method: 'POST',
             headers: {
                 Accept: 'application/json',
