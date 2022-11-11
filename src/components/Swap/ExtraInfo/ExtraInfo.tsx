@@ -226,12 +226,9 @@ export default function ExtraInfo(props: ExtraInfoPropsIF) {
             </div>
         </div>
     );
-    const extraDetailsDropDownOrNull =
-        displayEffectivePriceString !== '…' ? extraDetailsDropdown : null;
-    const extraDetailsOrNull =
-        showExtraDetails && displayEffectivePriceString !== '…' ? extraInfoDetails : null;
-    const feesAndSlippageOrNull =
-        showExtraDetails && displayEffectivePriceString !== '…' ? feesAndSlippageDetails : null;
+    const extraDetailsDropDownOrNull = priceImpact ? extraDetailsDropdown : null;
+    const extraDetailsOrNull = showExtraDetails && priceImpact ? extraInfoDetails : null;
+    const feesAndSlippageOrNull = showExtraDetails && priceImpact ? feesAndSlippageDetails : null;
 
     return (
         <>
