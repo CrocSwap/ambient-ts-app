@@ -21,7 +21,11 @@ import walletImage from '../../../assets/images/sidebarImages/wallet.svg';
 import exchangeImage from '../../../assets/images/sidebarImages/exchange.svg';
 import { CrocEnv, ChainSpec } from '@crocswap-libs/sdk';
 import { ethers } from 'ethers';
-import { ITransaction, setDataLoadingStatus } from '../../../utils/state/graphDataSlice';
+import {
+    ITransaction,
+    resetLookupUserDataLoadingStatus,
+    setDataLoadingStatus,
+} from '../../../utils/state/graphDataSlice';
 import { getLimitOrderData } from '../../../App/functions/getLimitOrderData';
 // import { getTransactionData } from '../../../App/functions/getTransactionData';
 import { TokenPriceFn } from '../../../App/functions/fetchTokenPrice';
@@ -126,7 +130,7 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
     const userLimitOrdersCacheEndpoint = httpGraphCacheServerDomain + '/user_limit_order_states?';
     // const userTransactionsCacheEndpoint = httpGraphCacheServerDomain + '/user_recent_changes?';
 
-    const getUserPositions = async (accountToSearch: string) =>
+    const getLookupUserPositions = async (accountToSearch: string) =>
         fetch(
             userPositionsCacheEndpoint +
                 new URLSearchParams({
@@ -158,6 +162,12 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
                         setLookupAccountPositionData(updatedPositions);
                     });
                 }
+                dispatch(
+                    setDataLoadingStatus({
+                        datasetName: 'lookupUserOrderData',
+                        loadingStatus: false,
+                    }),
+                );
             })
             .catch(console.log);
 
@@ -222,13 +232,26 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
         (async () => {
             if (!connectedAccountActive) {
                 if (resolvedAddress) {
-                    await getUserPositions(resolvedAddress);
-                    await getLookupUserLimitOrders(resolvedAddress);
+                    dispatch(resetLookupUserDataLoadingStatus());
                     await getLookupUserTransactions(resolvedAddress);
+                    await getLookupUserLimitOrders(resolvedAddress);
+                    await getLookupUserPositions(resolvedAddress);
                 } else {
                     dispatch(
                         setDataLoadingStatus({
                             datasetName: 'lookupUserTxData',
+                            loadingStatus: false,
+                        }),
+                    );
+                    dispatch(
+                        setDataLoadingStatus({
+                            datasetName: 'lookupUserOrderData',
+                            loadingStatus: false,
+                        }),
+                    );
+                    dispatch(
+                        setDataLoadingStatus({
+                            datasetName: 'lookupUserRangeData',
                             loadingStatus: false,
                         }),
                     );

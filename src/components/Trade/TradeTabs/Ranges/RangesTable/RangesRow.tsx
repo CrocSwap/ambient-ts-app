@@ -11,6 +11,8 @@ import { DefaultTooltip } from '../../../../Global/StyledTooltip/StyledTooltip';
 import { NavLink } from 'react-router-dom';
 import Medal from '../../../../Global/Medal/Medal';
 import NoTokenIcon from '../../../../Global/NoTokenIcon/NoTokenIcon';
+import { useAppDispatch } from '../../../../../utils/hooks/reduxToolkit';
+import { setDataLoadingStatus } from '../../../../../utils/state/graphDataSlice';
 
 interface RangesRowPropsIF {
     isUserLoggedIn: boolean;
@@ -149,6 +151,8 @@ export default function RangesRow(props: RangesRowPropsIF) {
         openGlobalModal(<RangeDetails position={position} {...rangeDetailsProps} />);
     };
 
+    const dispatch = useAppDispatch();
+
     const positionDomId =
         position.positionStorageSlot === currentPositionActive
             ? `position-${position.positionStorageSlot}`
@@ -216,6 +220,14 @@ export default function RangesRow(props: RangesRowPropsIF) {
                 <div>
                     <p>{ensName ? ensName : ownerId}</p>
                     <NavLink
+                        onClick={() => {
+                            dispatch(
+                                setDataLoadingStatus({
+                                    datasetName: 'lookupUserTxData',
+                                    loadingStatus: true,
+                                }),
+                            );
+                        }}
                         to={`/${isOwnerActiveAccount ? 'account' : ensName ? ensName : ownerId}`}
                     >
                         View Account

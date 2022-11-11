@@ -669,6 +669,11 @@ export const graphDataSlice = createSlice({
             // state.dataLoadingStatus.isPoolRangeDataLoading = true;
             // state.dataLoadingStatus.isCandleDataLoading = true;
         },
+        resetLookupUserDataLoadingStatus: (state) => {
+            state.dataLoadingStatus.isLookupUserTxDataLoading = true;
+            state.dataLoadingStatus.isLookupUserOrderDataLoading = true;
+            state.dataLoadingStatus.isLookupUserRangeDataLoading = true;
+        },
         resetUserGraphData: (state) => {
             state.positionsByUser = initialState.positionsByUser;
             state.changesByUser = initialState.changesByUser;
@@ -702,6 +707,7 @@ export const {
     setDataLoadingStatus,
     resetUserGraphData,
     resetConnectedUserDataLoadingStatus,
+    resetLookupUserDataLoadingStatus,
 } = graphDataSlice.actions;
 
 export default graphDataSlice.reducer;

@@ -122,7 +122,13 @@ export default function Orders(props: propsIF) {
         } else if (limitOrdersByPool) {
             setLimitOrderData(limitOrdersByPool);
         }
-    }, [isShowAllEnabled, connectedAccountActive, JSON.stringify(activeAccountLimitOrderData)]);
+    }, [
+        isShowAllEnabled,
+        connectedAccountActive,
+        JSON.stringify(activeAccountLimitOrderData),
+        JSON.stringify(ordersByUserMatchingSelectedTokens),
+        JSON.stringify(limitOrdersByPool),
+    ]);
 
     // wait 5 seconds to open a subscription to pool changes
     useEffect(() => {

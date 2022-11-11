@@ -952,6 +952,12 @@ export default function App() {
                             .then((response) => response.json())
                             .then((json) => {
                                 const poolPositions = json.data;
+                                dispatch(
+                                    setDataLoadingStatus({
+                                        datasetName: 'poolRangeData',
+                                        loadingStatus: false,
+                                    }),
+                                );
 
                                 if (poolPositions && crocEnv) {
                                     // console.log({ poolPositions });
@@ -1734,6 +1740,13 @@ export default function App() {
                     .then((response) => response?.json())
                     .then((json) => {
                         const userPositions = json?.data;
+
+                        dispatch(
+                            setDataLoadingStatus({
+                                datasetName: 'connectedUserRangeData',
+                                loadingStatus: false,
+                            }),
+                        );
 
                         if (userPositions && crocEnv) {
                             Promise.all(
