@@ -27,6 +27,7 @@ export interface DataLoadingStatus {
     isPoolTxDataLoading: boolean;
     isPoolOrderDataLoading: boolean;
     isPoolRangeDataLoading: boolean;
+    isCandleDataLoading: boolean;
 }
 
 export interface LimitOrdersByUser {
@@ -311,6 +312,7 @@ const initialState: graphData = {
         isPoolTxDataLoading: true,
         isPoolOrderDataLoading: true,
         isPoolRangeDataLoading: true,
+        isCandleDataLoading: true,
     },
 };
 
@@ -615,38 +617,41 @@ export const graphDataSlice = createSlice({
             action: PayloadAction<{ datasetName: string; loadingStatus: boolean }>,
         ) => {
             switch (action.payload.datasetName) {
-                case 'isConnectedUserTxDataLoading':
+                case 'connectedUserTxData':
                     state.dataLoadingStatus.isConnectedUserTxDataLoading =
                         action.payload.loadingStatus;
                     break;
-                case 'isConnectedUserOrderDataLoading':
+                case 'connectedUserOrder':
                     state.dataLoadingStatus.isConnectedUserOrderDataLoading =
                         action.payload.loadingStatus;
                     break;
-                case 'isConnectedUserRangeDataLoading':
+                case 'connectedUserRange':
                     state.dataLoadingStatus.isConnectedUserRangeDataLoading =
                         action.payload.loadingStatus;
                     break;
-                case 'isLookupUserTxDataLoading':
+                case 'lookupUserTx':
                     state.dataLoadingStatus.isLookupUserTxDataLoading =
                         action.payload.loadingStatus;
                     break;
-                case 'isLookupUserOrderDataLoading':
+                case 'lookupUserOrder':
                     state.dataLoadingStatus.isLookupUserOrderDataLoading =
                         action.payload.loadingStatus;
                     break;
-                case 'isLookupUserRangeDataLoading':
+                case 'lookupUserRange':
                     state.dataLoadingStatus.isLookupUserRangeDataLoading =
                         action.payload.loadingStatus;
                     break;
-                case 'isPoolTxDataLoading':
+                case 'poolTx':
                     state.dataLoadingStatus.isPoolTxDataLoading = action.payload.loadingStatus;
                     break;
-                case 'isPoolOrderDataLoading':
+                case 'poolOrder':
                     state.dataLoadingStatus.isPoolOrderDataLoading = action.payload.loadingStatus;
                     break;
-                case 'isPoolRangeDataLoading':
+                case 'poolRange':
                     state.dataLoadingStatus.isPoolRangeDataLoading = action.payload.loadingStatus;
+                    break;
+                case 'candleData':
+                    state.dataLoadingStatus.isCandleDataLoading = action.payload.loadingStatus;
                     break;
                 default:
                     break;
@@ -683,6 +688,7 @@ export const {
     addLimitOrderChangesByPool,
     addChangesByPool,
     setChangesByPool,
+    setDataLoadingStatus,
     resetUserGraphData,
 } = graphDataSlice.actions;
 

@@ -10,7 +10,7 @@ import Tokens from '../Tokens/Tokens';
 
 // START: Import Local Files
 import styles from './PortfolioTabs.module.css';
-import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
+import { useAppDispatch, useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { getPositionData } from '../../../App/functions/getPositionData';
 import { PositionIF } from '../../../utils/interfaces/PositionIF';
 import { LimitOrderIF, TokenIF } from '../../../utils/interfaces/exports';
@@ -21,7 +21,7 @@ import walletImage from '../../../assets/images/sidebarImages/wallet.svg';
 import exchangeImage from '../../../assets/images/sidebarImages/exchange.svg';
 import { CrocEnv, ChainSpec } from '@crocswap-libs/sdk';
 import { ethers } from 'ethers';
-import { ITransaction } from '../../../utils/state/graphDataSlice';
+import { ITransaction, setDataLoadingStatus } from '../../../utils/state/graphDataSlice';
 import { getLimitOrderData } from '../../../App/functions/getLimitOrderData';
 // import { getTransactionData } from '../../../App/functions/getTransactionData';
 import { TokenPriceFn } from '../../../App/functions/fetchTokenPrice';
@@ -100,6 +100,8 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
 
         account,
     } = props;
+
+    const dispatch = useAppDispatch();
 
     const graphData = useAppSelector((state) => state?.graphData);
     const connectedAccountPositionData = graphData.positionsByUser.positions;
@@ -183,7 +185,7 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
             })
             .catch(console.log);
 
-    const getUserTransactions = async (accountToSearch: string) =>
+    const getLookupUserTransactions = async (accountToSearch: string) =>
         fetchUserRecentChanges({
             importedTokens: importedTokens,
             user: accountToSearch,
@@ -196,18 +198,35 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
             n: 100,
         })
             .then((updatedTransactions) => {
+                console.log({ updatedTransactions });
                 if (updatedTransactions) {
                     setOtherAccountTransactionData(updatedTransactions);
                 }
+                dispatch(
+                    setDataLoadingStatus({
+                        datasetName: 'lookupUserTx',
+                        loadingStatus: false,
+                    }),
+                );
             })
+
             .catch(console.log);
 
     useEffect(() => {
         (async () => {
-            if (!connectedAccountActive && resolvedAddress) {
-                await getUserPositions(resolvedAddress);
-                await getUserLimitOrders(resolvedAddress);
-                await getUserTransactions(resolvedAddress);
+            if (!connectedAccountActive) {
+                if (resolvedAddress) {
+                    await getUserPositions(resolvedAddress);
+                    await getUserLimitOrders(resolvedAddress);
+                    await getLookupUserTransactions(resolvedAddress);
+                } else {
+                    dispatch(
+                        setDataLoadingStatus({
+                            datasetName: 'lookupUserTx',
+                            loadingStatus: false,
+                        }),
+                    );
+                }
             }
         })();
     }, [resolvedAddress, connectedAccountActive]);

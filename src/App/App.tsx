@@ -30,6 +30,7 @@ import {
     addLimitOrderChangesByUser,
     ITransaction,
     setLeaderboardByPool,
+    setDataLoadingStatus,
     // ChangesByUser,
 } from '../utils/state/graphDataSlice';
 import { ethers } from 'ethers';
@@ -1710,6 +1711,13 @@ export default function App() {
 
     useEffect(() => {
         if (isUserLoggedIn && account) {
+            dispatch(
+                setDataLoadingStatus({
+                    datasetName: 'connectedUserTxData',
+                    loadingStatus: true,
+                }),
+            );
+
             console.log('fetching user positions');
 
             const userPositionsCacheEndpoint = httpGraphCacheServerDomain + '/user_positions?';
@@ -1812,6 +1820,12 @@ export default function App() {
                     n: 100,
                 })
                     .then((updatedTransactions) => {
+                        dispatch(
+                            setDataLoadingStatus({
+                                datasetName: 'connectedUserTxData',
+                                loadingStatus: false,
+                            }),
+                        );
                         if (updatedTransactions) {
                             dispatch(
                                 setChangesByUser({

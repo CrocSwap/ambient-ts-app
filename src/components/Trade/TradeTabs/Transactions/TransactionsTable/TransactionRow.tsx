@@ -1,5 +1,5 @@
 import styles from '../Transactions.module.css';
-import { ITransaction } from '../../../../../utils/state/graphDataSlice';
+import { ITransaction, setDataLoadingStatus } from '../../../../../utils/state/graphDataSlice';
 import { Dispatch, SetStateAction, useEffect } from 'react';
 import { useProcessTransaction } from '../../../../../utils/hooks/useProcessTransaction';
 import TransactionsMenu from '../../../../Global/Tabs/TableMenu/TableMenuComponents/TransactionsMenu';
@@ -10,6 +10,7 @@ import NoTokenIcon from '../../../../Global/NoTokenIcon/NoTokenIcon';
 import IconWithTooltip from '../../../../Global/IconWithTooltip/IconWithTooltip';
 import TransactionDetails from '../../../../Global/TransactionDetails/TransactionDetails';
 import { tradeData } from '../../../../../utils/state/tradeDataSlice';
+import { useAppDispatch } from '../../../../../utils/hooks/reduxToolkit';
 // import { light } from '@material-ui/core/styles/createPalette';
 interface TransactionRowPropsIF {
     tx: ITransaction;
@@ -83,6 +84,8 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
         isBaseTokenMoneynessGreaterOrEqual,
         // orderMatchesSelectedTokens,
     } = useProcessTransaction(tx);
+
+    const dispatch = useAppDispatch();
 
     const sideCharacter = isDenomBase ? baseTokenCharacter : quoteTokenCharacter;
 
@@ -198,6 +201,14 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                 <div>
                     <p>{ensName ? ensName : ownerId}</p>
                     <NavLink
+                        onClick={() => {
+                            dispatch(
+                                setDataLoadingStatus({
+                                    datasetName: 'lookupUserTx',
+                                    loadingStatus: true,
+                                }),
+                            );
+                        }}
                         to={`/${isOwnerActiveAccount ? 'account' : ensName ? ensName : ownerId}`}
                     >
                         View Account
