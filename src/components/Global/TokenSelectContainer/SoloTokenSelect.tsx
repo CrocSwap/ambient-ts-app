@@ -33,12 +33,10 @@ export const SoloTokenSelect = (props: propsIF) => {
         const namesOfActiveLists = JSON.parse(
             localStorage.getItem('user') as string)
         .activeTokenLists;
-        const allLists = JSON.parse(localStorage.getItem('allTokenLists') as string);
-        // console.log(allLists);
-        const filtLists = allLists.filter((tokenList: TokenListIF) => namesOfActiveLists.includes(tokenList.uri));
-        // console.log(filtLists);
-        const tkns = filtLists.flatMap((tokenList: TokenListIF) => tokenList.tokens);
-        setTokensOnActiveLists(tkns);
+        const tokens = JSON.parse(localStorage.getItem('allTokenLists') as string)
+            .filter((tokenList: TokenListIF) => namesOfActiveLists.includes(tokenList.uri))
+            .flatMap((tokenList: TokenListIF) => tokenList.tokens);
+        setTokensOnActiveLists(tokens);
     }, []);
 
     const chooseToken = (tkn: TokenIF) => {
