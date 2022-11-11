@@ -77,6 +77,8 @@ interface LimitPropsIF {
     closeGlobalModal: () => void;
     poolExists: boolean | null;
     chainData: ChainSpec;
+
+    isOrderCopied: boolean;
 }
 
 const cachedQuerySpotPrice = memoizeQuerySpotPrice();
@@ -110,6 +112,7 @@ export default function Limit(props: LimitPropsIF) {
         openModalWallet,
         poolExists,
         lastBlockNumber,
+        isOrderCopied,
     } = props;
 
     const { tradeData, navigationMenu } = useTradeData();
@@ -661,6 +664,7 @@ export default function Limit(props: LimitPropsIF) {
                         indicateActiveTokenListsChanged={indicateActiveTokenListsChanged}
                         poolExists={poolExists}
                         gasPriceInGwei={gasPriceInGwei}
+                        isOrderCopied={isOrderCopied}
                     />
                 </motion.div>
                 <div className={styles.header_container}>

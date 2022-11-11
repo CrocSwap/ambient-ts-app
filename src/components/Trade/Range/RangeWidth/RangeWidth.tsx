@@ -12,11 +12,12 @@ import { updateRangeWithButton, handleRangeSlider } from './rangeWidthFunctions'
 interface RangeWidthPropsIF {
     rangeWidthPercentage: number;
     setRangeWidthPercentage: Dispatch<SetStateAction<number>>;
+    isRangeCopied: boolean;
 }
 
 // React functional component
 export default function RangeWidth(props: RangeWidthPropsIF) {
-    const { rangeWidthPercentage, setRangeWidthPercentage } = props;
+    const { rangeWidthPercentage, setRangeWidthPercentage, isRangeCopied } = props;
 
     const PercentageOptionContent = (
         <>
@@ -67,7 +68,12 @@ export default function RangeWidth(props: RangeWidthPropsIF) {
         <div className={styles.range_width_container}>
             <div className={styles.range_width_content}>
                 {PercentageOptionContent}
-                <span className={styles.percentage_amount} id='percentage-output'>
+                <span
+                    className={`${styles.percentage_amount} ${
+                        isRangeCopied && styles.pulse_animation
+                    }`}
+                    id='percentage-output'
+                >
                     {rangeWidthPercentage === 100 ? 'Ambient' : '± ' + rangeWidthPercentage + '%'}
                 </span>
                 <div className={styles.range_width_input}>

@@ -1925,6 +1925,40 @@ export default function App() {
     const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
     const [isAppOverlayActive, setIsAppOverlayActive] = useState(false);
+
+    // ------------------- FOLLOWING CODE IS PURELY RESPONSIBLE FOR PULSE ANIMATION------------
+
+    const [isTxCopied, setIsTxCopied] = useState(false);
+    const [isOrderCopied, setIsOrderCopied] = useState(false);
+    const [isRangeCopied, setIsRangeCopied] = useState(false);
+
+    const handleTxCopiedClick = () => {
+        setIsTxCopied(true);
+        console.log('STARTING ANIMATION');
+
+        setTimeout(() => {
+            setIsTxCopied(false);
+        }, 3000);
+    };
+    const handleOrderCopiedClick = () => {
+        setIsOrderCopied(true);
+        console.log('STARTING ANIMATION');
+
+        setTimeout(() => {
+            setIsOrderCopied(false);
+        }, 3000);
+    };
+    const handleRangeCopiedClick = () => {
+        setIsRangeCopied(true);
+        console.log('STARTING ANIMATION');
+
+        setTimeout(() => {
+            setIsRangeCopied(false);
+        }, 3000);
+    };
+
+    // END OF------------------- FOLLOWING CODE IS PURELY RESPONSIBLE FOR PULSE ANIMATION------------
+
     // props for <PageHeader/> React element
     const headerProps = {
         isUserLoggedIn: isUserLoggedIn,
@@ -2012,6 +2046,7 @@ export default function App() {
         isInitialized: isInitialized,
         poolExists: poolExists,
         openGlobalModal: openGlobalModal,
+        isTxCopied: isTxCopied,
     };
 
     // props for <Limit/> React element on trade route
@@ -2048,6 +2083,8 @@ export default function App() {
         openGlobalModal: openGlobalModal,
         closeGlobalModal: closeGlobalModal,
         poolExists: poolExists,
+
+        isOrderCopied: isOrderCopied,
 
         // limitRate: limitRate,
         // setLimitRate: setLimitRate,
@@ -2087,6 +2124,7 @@ export default function App() {
         openGlobalModal: openGlobalModal,
 
         poolExists: poolExists,
+        isRangeCopied: isRangeCopied,
     };
 
     function toggleSidebar() {
@@ -2301,6 +2339,9 @@ export default function App() {
                                     poolExists={poolExists}
                                     setTokenPairLocal={setTokenPairLocal}
                                     showSidebar={showSidebar}
+                                    handleTxCopiedClick={handleTxCopiedClick}
+                                    handleOrderCopiedClick={handleOrderCopiedClick}
+                                    handleRangeCopiedClick={handleRangeCopiedClick}
                                 />
                             }
                         >

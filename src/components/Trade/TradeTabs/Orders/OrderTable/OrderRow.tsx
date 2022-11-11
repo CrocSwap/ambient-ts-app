@@ -31,6 +31,8 @@ interface OrderRowPropsIF {
 
     isShowAllEnabled: boolean;
     isOnPortfolioPage: boolean;
+
+    handleOrderCopiedClick?: () => void;
 }
 export default function OrderRow(props: OrderRowPropsIF) {
     const {
@@ -47,6 +49,7 @@ export default function OrderRow(props: OrderRowPropsIF) {
         setCurrentPositionActive,
         isShowAllEnabled,
         isOnPortfolioPage,
+        handleOrderCopiedClick,
     } = props;
 
     const {
@@ -351,6 +354,7 @@ export default function OrderRow(props: OrderRowPropsIF) {
                     limitOrder={limitOrder}
                     {...orderMenuProps}
                     showSidebar={showSidebar}
+                    handleOrderCopiedClick={handleOrderCopiedClick}
                 />
             </li>
         </ul>

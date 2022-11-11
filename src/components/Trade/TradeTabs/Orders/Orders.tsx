@@ -46,6 +46,7 @@ interface propsIF {
     isOnPortfolioPage: boolean;
 
     showSidebar: boolean;
+    handleOrderCopiedClick?: () => void;
 }
 
 // main react functional component
@@ -64,6 +65,7 @@ export default function Orders(props: propsIF) {
         currentPositionActive,
         showSidebar,
         isOnPortfolioPage,
+        handleOrderCopiedClick,
     } = props;
 
     const limitOrdersByUser = graphData.limitOrdersByUser.limitOrders;
@@ -458,6 +460,7 @@ export default function Orders(props: propsIF) {
             setCurrentPositionActive={setCurrentPositionActive}
             isShowAllEnabled={isShowAllEnabled}
             isOnPortfolioPage={isOnPortfolioPage}
+            handleOrderCopiedClick={handleOrderCopiedClick}
         />
     ));
 

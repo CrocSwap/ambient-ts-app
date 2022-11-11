@@ -18,3 +18,24 @@
     font-weight: 200;
     color: #f6385b;
 }
+
+@keyframes shadow-pulse
+{
+  0% {
+    box-shadow: 0 0 0 0px rgba(131, 119, 220, 0.8);
+    border-radius: var(--border-radius);
+  }
+  /* 50% {
+    box-shadow: 0 0 0 6px rgba(131, 119, 220, 0.5);
+    border-radius: var(--border-radius);
+  } */
+  100% {
+    box-shadow: 0 0 0 12px rgba(0, 0, 0, 0);
+    border-radius: var(--border-radius);
+  }
+}
+
+.pulse_animation
+{
+  animation: shadow-pulse 1s 6;
+}
