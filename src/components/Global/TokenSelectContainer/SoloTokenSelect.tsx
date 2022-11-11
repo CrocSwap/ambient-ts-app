@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, Dispatch, SetStateAction } from 'react';
+import { useMemo, Dispatch, SetStateAction } from 'react';
 import { TokenListIF, TokenIF } from '../../../utils/interfaces/exports';
 import TokenSelect from '../TokenSelect/TokenSelect';
 import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
@@ -6,14 +6,14 @@ import { setToken } from '../../../utils/state/temp';
 import { useSoloSearch } from './useSoloSearch';
 
 interface propsIF {
-    tokensBank: TokenIF[];
+    importedTokens: TokenIF[];
     chainId: string;
     setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
     closeModal: () => void;
 }
 
 export const SoloTokenSelect = (props: propsIF) => {
-    const { tokensBank, chainId, setImportedTokens, closeModal } = props;
+    const { importedTokens, chainId, setImportedTokens, closeModal } = props;
 
     const [ searchedToken, input, setInput, searchType ] = useSoloSearch(chainId);
     false && input;
@@ -28,43 +28,40 @@ export const SoloTokenSelect = (props: propsIF) => {
         [],
     );
 
-    // hook to persist array of all tokens on active lists
-    const [tokensOnActiveLists, setTokensOnActiveLists] = useState<TokenIF[]>();
-    // hook to update fetch and set tokens from active lists
-    useEffect(() => {
-        // get array of active list URIs from local storage
-        const namesOfActiveLists = JSON.parse(
-            localStorage.getItem('user') as string)
-        .activeTokenLists;
-        // get value of allTokenLists from local storage
-        const tokens = JSON.parse(localStorage.getItem('allTokenLists') as string)
-            // filter out token lists not currently active
-            .filter((tokenList: TokenListIF) => namesOfActiveLists.includes(tokenList.uri))
-            // make a flattened array of tokens from active lists
-            .flatMap((tokenList: TokenListIF) => tokenList.tokens);
-        // send array of tokens from active lists to local state
-        setTokensOnActiveLists(tokens);
-    }, []);
+    // // hook to persist array of all tokens on active lists
+    // const [tokensOnActiveLists, setTokensOnActiveLists] = useState<TokenIF[]>();
+    // // hook to update fetch and set tokens from active lists
+    // useEffect(() => {
+    //     // get array of active list URIs from local storage
+    //     const namesOfActiveLists = JSON.parse(
+    //         localStorage.getItem('user') as string)
+    //     .activeTokenLists;
+    //     // get value of allTokenLists from local storage
+    //     const tokens = JSON.parse(localStorage.getItem('allTokenLists') as string)
+    //         // filter out token lists not currently active
+    //         .filter((tokenList: TokenListIF) => namesOfActiveLists.includes(tokenList.uri))
+    //         // make a flattened array of tokens from active lists
+    //         .flatMap((tokenList: TokenListIF) => tokenList.tokens);
+    //     // send array of tokens from active lists to local state
+    //     setTokensOnActiveLists(tokens);
+    // }, []);
 
     const chooseToken = (tkn: TokenIF) => {
         dispatch(setToken(tkn));
         if (searchedToken) {
-            const tokenIsImported = tokensBank.some(
+            const tokenIsImported = importedTokens.some(
                 (tk: TokenIF) => tk.address === searchedToken[0].address
             );
             if (tokenIsImported) {
                 const userDataFromLocalStorage = JSON.parse(
                     localStorage.getItem('user') as string
                 );
-                userDataFromLocalStorage.tokens = [searchedToken, ...tokensBank];
+                userDataFromLocalStorage.tokens = [searchedToken, ...importedTokens];
                 localStorage.setItem('user', JSON.stringify(userDataFromLocalStorage));
             }
         }
         closeModal();
     };
-
-    const tokensOnChain = tokensBank
-        .filter((token: TokenIF) => token.chainId === parseInt(chainId));
 
     const filterByAddress = (tokens: TokenIF[]) => tokens.filter((token: TokenIF) => (
         searchedToken && searchedToken.length
@@ -87,21 +84,24 @@ export const SoloTokenSelect = (props: propsIF) => {
     }
 
     const filteredTokens = useMemo(() => {
+        const tokensOnChain = importedTokens
+            .filter((token: TokenIF) => token.chainId === parseInt(chainId));
+        console.log(tokensOnChain)
         switch (searchType) {
             case 'address':
-                return filterByAddress(tokensOnActiveLists ?? tokensOnChain);
+                return filterByAddress(tokensOnChain);
             case 'nameOrSymbol':
-                return filterByName(tokensOnActiveLists ?? tokensOnChain);
+                return filterByName(tokensOnChain);
             default:
-                return tokensOnActiveLists ?? tokensOnChain;
+                return tokensOnChain;
         }
-    }, [searchType, tokensOnChain]);
+    }, [searchType, importedTokens]);
 
     const importedTokenButtons = filteredTokens.map((token: TokenIF) => (
         <TokenSelect
             key={JSON.stringify(token)}
             token={token}
-            tokensBank={tokensBank}
+            tokensBank={importedTokens}
             undeletableTokens={undeletableTokens}
             chainId={chainId}
             setImportedTokens={setImportedTokens}

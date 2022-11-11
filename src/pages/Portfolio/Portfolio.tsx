@@ -40,6 +40,7 @@ interface PortfolioPropsIF {
     connectedAccount: string;
     userImageData: string[];
     chainId: string;
+    ambientTokens: Map<string, TokenIF>;
     tokenMap: Map<string, TokenIF>;
     selectedOutsideTab: number;
     setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
@@ -70,8 +71,6 @@ interface PortfolioPropsIF {
 // const cachedFetchAddress = memoizePromiseFn(fetchAddress);
 
 export default function Portfolio(props: PortfolioPropsIF) {
-    const { isInitialized } = useMoralis();
-
     const {
         crocEnv,
         isTokenABase,
@@ -99,13 +98,13 @@ export default function Portfolio(props: PortfolioPropsIF) {
         quoteTokenBalance,
         baseTokenDexBalance,
         quoteTokenDexBalance,
-
         currentTxActiveInTransactions,
         setCurrentTxActiveInTransactions,
-
         showSidebar,
         isUserLoggedIn,
     } = props;
+
+    const { isInitialized } = useMoralis();
 
     const selectedToken: TokenIF = useAppSelector((state) => state.temp.token);
 
@@ -436,7 +435,7 @@ export default function Portfolio(props: PortfolioPropsIF) {
                     <SoloTokenSelect
                         closeModal={closeTokenModal}
                         chainId={chainId}
-                        tokensBank={importedTokens}
+                        importedTokens={importedTokens}
                         setImportedTokens={setImportedTokens}
                     />
                 </Modal>
