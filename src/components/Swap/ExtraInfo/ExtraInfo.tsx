@@ -46,7 +46,7 @@ export default function ExtraInfo(props: ExtraInfoPropsIF) {
     } = props;
 
     const [showExtraDetails, setShowExtraDetails] = useState<boolean>(
-        isOnTradeRoute ? true : false,
+        isOnTradeRoute ? false : false,
     );
 
     // const truncatedGasInGwei = gasPriceInGwei ? truncateDecimals(gasPriceInGwei, 2) : undefined;
@@ -111,6 +111,19 @@ export default function ExtraInfo(props: ExtraInfoPropsIF) {
               maximumFractionDigits: 3,
           });
 
+    const feesAndSlippageData = [
+        {
+            title: 'Slippage Tolerance',
+            tooltipTitle: 'This can be changed in settings.',
+            data: `±${slippageTolerance}%`,
+        },
+        {
+            title: 'Liquidity Provider Fee',
+            tooltipTitle: `This is a dynamically updated rate to reward ${baseTokenSymbol} / ${quoteTokenSymbol} liquidity providers.`,
+            data: `${liquidityProviderFee * 100}%`,
+        },
+    ];
+
     const extraInfoData = [
         {
             title: 'Spot Price',
@@ -141,63 +154,87 @@ export default function ExtraInfo(props: ExtraInfoPropsIF) {
             tooltipTitle: 'Percentage difference between spot price and final price',
             data: `${priceImpactString}%`,
         },
-        {
-            title: 'Slippage Tolerance',
-            tooltipTitle: 'This can be changed in settings.',
-            data: `±${slippageTolerance}%`,
-        },
-        {
-            title: 'Liquidity Provider Fee',
-            tooltipTitle: `This is a dynamically updated rate to reward ${baseTokenSymbol} / ${quoteTokenSymbol} liquidity providers.`,
-            data: `${liquidityProviderFee * 100}%`,
-        },
     ];
     const extraInfoDetails = (
         <div className={styles.extra_details}>
-            {extraInfoData.map((item, idx) => (
-                <div className={styles.extra_row} key={idx}>
-                    <div className={styles.align_center}>
-                        <div>{item.title}</div>
-                        <TooltipComponent title={item.tooltipTitle} />
+            {extraInfoData.map((item, idx) =>
+                item ? (
+                    <div className={styles.extra_row} key={idx}>
+                        <div className={styles.align_center}>
+                            <div>{item.title}</div>
+                            <TooltipComponent title={item.tooltipTitle} />
+                        </div>
+                        <div
+                            className={styles.data}
+                            style={{
+                                color:
+                                    item.title === 'Price Impact' && priceImpactNum
+                                        ? Math.abs(priceImpactNum) > 2
+                                            ? '#f6385b'
+                                            : '#15be67'
+                                        : '#bdbdbd',
+                            }}
+                        >
+                            {item.data}
+                        </div>
                     </div>
-                    <div
-                        className={styles.data}
-                        style={{
-                            color:
-                                item.title === 'Price Impact' && priceImpactNum
-                                    ? Math.abs(priceImpactNum) > 2
-                                        ? '#f6385b'
-                                        : '#15be67'
-                                    : '#bdbdbd',
-                        }}
-                    >
-                        {item.data}
-                    </div>
-                </div>
-            ))}
+                ) : null,
+            )}
         </div>
     );
-
-    const extraDetailsOrNull = showExtraDetails ? extraInfoDetails : null;
+    const feesAndSlippageDetails = (
+        <div className={styles.extra_details}>
+            {feesAndSlippageData.map((item, idx) =>
+                item ? (
+                    <div className={styles.extra_row} key={idx}>
+                        <div className={styles.align_center}>
+                            <div>{item.title}</div>
+                            <TooltipComponent title={item.tooltipTitle} />
+                        </div>
+                        <div
+                            className={styles.data}
+                            style={{
+                                color:
+                                    item.title === 'Price Impact' && priceImpactNum
+                                        ? Math.abs(priceImpactNum) > 2
+                                            ? '#f6385b'
+                                            : '#15be67'
+                                        : '#bdbdbd',
+                            }}
+                        >
+                            {item.data}
+                        </div>
+                    </div>
+                ) : null,
+            )}
+        </div>
+    );
+    const extraDetailsDropdown = (
+        <div
+            className={styles.extra_info_content}
+            onClick={() => setShowExtraDetails(!showExtraDetails)}
+        >
+            <div className={styles.gas_pump}>
+                <FaGasPump size={15} /> {swapGasPriceinDollars ? swapGasPriceinDollars : '…'}
+                {/* {truncatedGasInGwei ? `${truncatedGasInGwei} gwei` : '…'} */}
+            </div>
+            <div className={styles.token_amount}>
+                {isDenomBase
+                    ? `1 ${baseTokenSymbol} ≈ ${displayPriceString} ${quoteTokenSymbol}`
+                    : `1 ${quoteTokenSymbol} ≈ ${displayPriceString} ${baseTokenSymbol}`}
+                <RiArrowDownSLine size={27} />{' '}
+            </div>
+        </div>
+    );
+    const extraDetailsDropDownOrNull = priceImpact ? extraDetailsDropdown : null;
+    const extraDetailsOrNull = showExtraDetails && priceImpact ? extraInfoDetails : null;
+    const feesAndSlippageOrNull = showExtraDetails && priceImpact ? feesAndSlippageDetails : null;
 
     return (
         <>
-            <div
-                className={styles.extra_info_content}
-                onClick={() => setShowExtraDetails(!showExtraDetails)}
-            >
-                <div className={styles.gas_pump}>
-                    <FaGasPump size={15} /> {swapGasPriceinDollars ? swapGasPriceinDollars : '…'}
-                    {/* {truncatedGasInGwei ? `${truncatedGasInGwei} gwei` : '…'} */}
-                </div>
-                <div className={styles.token_amount}>
-                    {isDenomBase
-                        ? `1 ${baseTokenSymbol} ≈ ${displayPriceString} ${quoteTokenSymbol}`
-                        : `1 ${quoteTokenSymbol} ≈ ${displayPriceString} ${baseTokenSymbol}`}
-                    <RiArrowDownSLine size={27} />{' '}
-                </div>
-            </div>
+            {extraDetailsDropDownOrNull}
             {extraDetailsOrNull}
+            {feesAndSlippageOrNull}
         </>
     );
 }
