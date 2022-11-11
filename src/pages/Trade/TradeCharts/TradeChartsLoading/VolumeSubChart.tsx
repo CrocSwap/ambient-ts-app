@@ -9,15 +9,17 @@ import { isNull } from 'lodash';
 interface VolumeData {
     volumeData: VolumeChartData[] | undefined;
     period: number | undefined;
-    crosshairXForSubChart: number;
+    crosshairXForSubChart: any;
     setsubChartValues: React.Dispatch<React.SetStateAction<any>>;
     setSelectedDate: React.Dispatch<React.SetStateAction<any>>;
     selectedDate: any;
     candlestick: any;
     xScale: any;
     xScaleCopy: any;
+    crosshairData: any;
     setZoomAndYdragControl: React.Dispatch<React.SetStateAction<any>>;
     setIsMouseMoveForSubChart: React.Dispatch<React.SetStateAction<boolean>>;
+    setIsZoomForSubChart: React.Dispatch<React.SetStateAction<boolean>>;
     setMouseMoveEventForSubChart: React.Dispatch<React.SetStateAction<any>>;
     zoomAndYdragControl: any;
     render: any;
@@ -47,7 +49,7 @@ export default function VolumeSubChart(props: VolumeData) {
         ) {
             const chartData = {
                 barSeries: volumeData,
-                crosshairDataLocal: [{ x: crosshairXForSubChart, y: -1 }],
+                crosshairDataLocal: [{ x: xScale(crosshairXForSubChart), y: -1 }],
             };
 
             const render = () => {
@@ -77,15 +79,10 @@ export default function VolumeSubChart(props: VolumeData) {
                 });
 
                 d3.select('.chart-volume').on('mousemove', async function (event: any) {
-                    props.setMouseMoveEventForSubChart(event);
                     props.setIsMouseMoveForSubChart(true);
-                    // props.setCrosshairXForSubChart(event.offsetX);
-                    chartData.crosshairDataLocal[0].y = event.offsetY;
-                });
-
-                d3.select('.chart-volume').on('mouseleave', async function (event: any) {
+                    props.setIsZoomForSubChart(false);
                     props.setMouseMoveEventForSubChart(event);
-                    props.setIsMouseMoveForSubChart(false);
+                    chartData.crosshairDataLocal[0].y = event.offsetY;
                 });
             };
 
@@ -184,7 +181,8 @@ export default function VolumeSubChart(props: VolumeData) {
                 .on('zoom', (event: any) => {
                     xScale.domain(event.transform.rescaleX(xScaleCopy).domain());
                     props.setZoomAndYdragControl(event);
-                    props.setIsMouseMoveForSubChart(true);
+                    props.setIsMouseMoveForSubChart(false);
+                    props.setIsZoomForSubChart(true);
                     props.setMouseMoveEventForSubChart(event);
                     render();
                     props.render();
@@ -234,6 +232,9 @@ export default function VolumeSubChart(props: VolumeData) {
                         .select('g.annotation-line.horizontal')
                         .attr('visibility', 'hidden');
                 });
+
+                props.setIsMouseMoveForSubChart(false);
+                props.setIsZoomForSubChart(false);
 
                 render();
             });
