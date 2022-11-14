@@ -398,6 +398,7 @@
         font-weight: 300;
         font-size: var(--header1-size);
         line-height: var(--header1-lh);
+        color: var(--text-grey-white)
     }
     .tokens_images img {
         width: 30px;
