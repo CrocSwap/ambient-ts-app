@@ -74,13 +74,13 @@
 }
 
 .nonTopLevelContainer:hover {
-    background: #28364a;
+    background: var(--dark2);
 
     /* color: var(--text-grey-white);
     background-position: 99% 50%; */
 }
 .goBackStyle:hover {
-    background: rgba(14, 19, 26, 0.5);
+    background: var(--dark2);
 }
 
 .goBackStyle:hover .icon_button {

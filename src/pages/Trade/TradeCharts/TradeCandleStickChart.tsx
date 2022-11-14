@@ -3,7 +3,7 @@ import { CandleData, CandlesByPoolAndDuration } from '../../../utils/state/graph
 import Chart from '../../Chart/Chart';
 import './TradeCandleStickChart.css';
 
-import candleStikPlaceholder from '../../../assets/images/charts/candlestick.png';
+// import candleStikPlaceholder from '../../../assets/images/charts/candlestick.png';
 import {
     CandleChartData,
     FeeChartData,
@@ -18,9 +18,7 @@ import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
 import { ChainSpec, CrocPoolView } from '@crocswap-libs/sdk';
-import PulseLoading from '../../../components/Global/PulseLoading/PulseLoading';
 import ChartSkeleton from './ChartSkeleton/ChartSkeleton';
-import TableSkeletons from '../../../components/Trade/TradeTabs/TableSkeletons/TableSkeletons';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 

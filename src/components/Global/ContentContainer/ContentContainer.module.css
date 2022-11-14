@@ -55,6 +55,12 @@
     transition: all var(--animation-speed) ease-in-out;
 }
 
+.swap_route{
+    background: var(--title-gradient);
+    padding: 1px;
+    border-radius: var(--border-radius);
+}
+
 /* media queries */
 
 @media (min-width: 1200px) {

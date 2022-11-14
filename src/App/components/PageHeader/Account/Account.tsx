@@ -24,6 +24,9 @@ interface AccountPropsIF {
     isAppOverlayActive: boolean;
 
     setIsAppOverlayActive: Dispatch<SetStateAction<boolean>>;
+
+    switchTheme: () => void;
+    theme: string;
 }
 
 export default function Account(props: AccountPropsIF) {
@@ -36,6 +39,8 @@ export default function Account(props: AccountPropsIF) {
         chainId,
         isAppOverlayActive,
         setIsAppOverlayActive,
+        switchTheme,
+        theme,
     } = props;
 
     const [openSnackbar, setOpenSnackbar] = useState(false);
@@ -91,6 +96,8 @@ export default function Account(props: AccountPropsIF) {
                     isAppOverlayActive={isAppOverlayActive}
                     setIsAppOverlayActive={setIsAppOverlayActive}
                     setIsNavbarMenuOpen={setOpenNavbarMenu}
+                    switchTheme={switchTheme}
+                    theme={theme}
                 />
             </NavItem>
             {snackbarContent}

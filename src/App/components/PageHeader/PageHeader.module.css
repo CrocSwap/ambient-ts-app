@@ -5,6 +5,8 @@
     align-items: center;
     padding: 1rem 0;
     height: 56px;
+
+    border-bottom: 1px solid var(--navbar-border);
 }
 /* .header_gradient{
     position: absolute;

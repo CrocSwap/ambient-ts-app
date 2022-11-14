@@ -1897,6 +1897,30 @@ export default function App() {
     const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
     const [isAppOverlayActive, setIsAppOverlayActive] = useState(false);
+
+    // --------------THEME--------------------------
+    // const defaultDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const [theme, setTheme] = useState('dark');
+
+    const switchTheme = () => {
+        const newTheme = theme === 'light' ? 'dark' : 'light';
+        setTheme(newTheme);
+    };
+
+    // const themeButtons = (
+    //     <div
+    //         style={{
+    //             display: 'flex',
+    //             flexDirection: 'column',
+    //             justifyContent: 'center',
+    //             alignItems: 'center',
+    //         }}
+    //     >
+    //         <button onClick={switchTheme}>Switch Theme</button>
+    //     </div>
+    // );
+
+    // --------------END OF THEME--------------------------
     // props for <PageHeader/> React element
     const headerProps = {
         isUserLoggedIn: isUserLoggedIn,
@@ -1917,6 +1941,9 @@ export default function App() {
         closeGlobalModal: closeGlobalModal,
         isAppOverlayActive: isAppOverlayActive,
         setIsAppOverlayActive: setIsAppOverlayActive,
+
+        switchTheme: switchTheme,
+        theme: theme,
     };
 
     // props for <Swap/> React element
@@ -2191,33 +2218,8 @@ export default function App() {
     // app overlay-----------------------------------------------
     // end of app overlay-----------------------------------------------
 
-    // --------------THEME--------------------------
-    // const defaultDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    const [theme, setTheme] = useState('dark');
-
-    const switchTheme = () => {
-        const newTheme = theme === 'light' ? 'dark' : 'light';
-        setTheme(newTheme);
-    };
-
-    const themeButtons = (
-        <div
-            style={{
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'center',
-                alignItems: 'center',
-            }}
-        >
-            <button onClick={switchTheme}>Switch Theme</button>
-        </div>
-    );
-
-    // --------------END OF THEME--------------------------
-
     return (
         <>
-            {themeButtons}
             <div className={containerStyle} data-theme={theme}>
                 {isMobileSidebarOpen && <div className='blur_app' />}
                 <AppOverlay
