@@ -23,12 +23,17 @@ export const SoloTokenSelect = (props: propsIF) => {
     } = props;
 
     const [
-        searchedToken,
+        tokensForDOM,
         input,
         setInput,
         searchType
-    ] = useSoloSearch(chainId, tokensOnActiveLists);
+    ] = useSoloSearch(
+        chainId,
+        importedTokens,
+        tokensOnActiveLists
+    );
     false && input;
+    false && searchType;
 
     const dispatch = useAppDispatch();
 
@@ -42,90 +47,36 @@ export const SoloTokenSelect = (props: propsIF) => {
 
     const chooseToken = (tkn: TokenIF) => {
         dispatch(setToken(tkn));
-        if (searchedToken) {
-            const tokenIsImported = importedTokens.some(
-                (tk: TokenIF) => tk.address === searchedToken[0].address
-            );
-            if (tokenIsImported) {
-                const userDataFromLocalStorage = JSON.parse(
-                    localStorage.getItem('user') as string
-                );
-                userDataFromLocalStorage.tokens = [searchedToken, ...importedTokens];
-                localStorage.setItem('user', JSON.stringify(userDataFromLocalStorage));
-            }
-        }
+        // if (searchedToken) {
+        //     const tokenIsImported = importedTokens.some(
+        //         (tk: TokenIF) => tk.address === searchedToken[0].address
+        //     );
+        //     if (tokenIsImported) {
+        //         const userDataFromLocalStorage = JSON.parse(
+        //             localStorage.getItem('user') as string
+        //         );
+        //         userDataFromLocalStorage.tokens = [searchedToken, ...importedTokens];
+        //         localStorage.setItem('user', JSON.stringify(userDataFromLocalStorage));
+        //     }
+        // }
+        console.log('user clicked a token: ' + JSON.stringify(tkn));
         closeModal();
     };
 
-    // fn to find a token with a matching contract address
-    // arg tokens === array of token data objects to search
-    const filterByAddress = (tokens: TokenIF[]) =>
-        // run a filter on provided array of tokens
-        tokens.filter((token: TokenIF) => (
-            // make sure a valid value exists for the searchedToken array
-            searchedToken && searchedToken.length
-                // look for a token matching the address of the desired one
-                ? searchedToken[0].address.toLowerCase() === token.address.toLowerCase()
-                // if no token matches, return true
-                : true
-    ));
-
-    // fn to find a token with a matching name or symbol
-    // arg tokens === array of token data objects to search
-    const filterByName = (tokens: TokenIF[]) => {
-        // declare a variable to hold strings to match
-        const positives: string[] = [];
-        // make sure the searchedToken array has at least one value in it
-        if (searchedToken && searchedToken.length) {
-            // for each value in searchedToken, push name and symbol into matches
-            searchedToken.forEach((token) => {
-                positives.push(token.name);
-                positives.push(token.symbol);
-            })
-        };
-        // make an array with tokens filtered out of provided bank of tokens
-        const matchingTokens = tokens.filter((token) => (
-            // place token in output variable if name matches (partials ok)
-            positives.includes(token.name) ||
-            // place token in output variable if symbol matches (partials ok)
-            positives.includes(token.symbol)
-        ));
-        // return output variable
-        return matchingTokens;
-    }
-
-    // function to take list of imported tokens and filter ones for DOM
-    const filteredTokens = useMemo(() => {
-        // filter to display only tokens that are on the active chain
-        const tokensOnChain = importedTokens
-            .filter((token: TokenIF) => token.chainId === parseInt(chainId));
-        // router to run the currect search function
-            switch (searchType) {
-            // search tokens by contract address
-            case 'address':
-                return filterByAddress(tokensOnChain);
-            // search tokens by name or symbol
-            case 'nameOrSymbol':
-                return filterByName(tokensOnChain);
-            // fallback is to return all on-chain tokens
-            default:
-                return tokensOnChain;
-        }
-    // memoize to type of search and bank of imported tokens
-    }, [searchType, importedTokens]);
-
-    const importedTokenButtons = filteredTokens.map((token: TokenIF) => (
-        <TokenSelect
-            key={JSON.stringify(token)}
-            token={token}
-            tokensBank={importedTokens}
-            undeletableTokens={undeletableTokens}
-            chainId={chainId}
-            setImportedTokens={setImportedTokens}
-            chooseToken={chooseToken}
-            isOnPortfolio={true}
-        />
-    ));
+    const importedTokenButtons = tokensForDOM
+        ? tokensForDOM.map((token: TokenIF) => (
+            <TokenSelect
+                key={JSON.stringify(token)}
+                token={token}
+                tokensBank={importedTokens}
+                undeletableTokens={undeletableTokens}
+                chainId={chainId}
+                setImportedTokens={setImportedTokens}
+                chooseToken={chooseToken}
+                isOnPortfolio={true}
+            />
+            )
+        ) : null;
 
     return (
         <>
