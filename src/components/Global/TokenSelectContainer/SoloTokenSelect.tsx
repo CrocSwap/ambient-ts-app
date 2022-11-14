@@ -87,7 +87,7 @@ export const SoloTokenSelect = (props: propsIF) => {
             />
             <h1>Imported Tokens</h1>
             {importedTokenButtons}
-            <h2>More Available Tokens</h2>
+            {searchType && <h2>More Available Tokens</h2>}
         </>
     );
 };
