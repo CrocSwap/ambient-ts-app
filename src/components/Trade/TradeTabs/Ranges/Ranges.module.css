@@ -152,30 +152,12 @@
     transition: background 0.5s ease-out;
 }
 
-.trade_header li:nth-of-type(3),
-.trade_header li:nth-of-type(4),
-.trade_header li:nth-of-type(5),
-.trade_header li:nth-of-type(6) {
-    text-align: right;
-}
-.trade_header li:nth-of-type(7){
-    text-align: center;
+.align_right{
+    text-align: right
+    ;
 }
 
-.trade_header li:nth-of-type(8) {
-    text-align: center;
-}
-
-.portfolio_header li:nth-of-type(4),
-.portfolio_header li:nth-of-type(7),
-.portfolio_header li:nth-of-type(8) {
-    text-align: right;
-}
-/* .portfolio_header li:nth-of-type(8){
-    text-align: center;
-} */
-
-.portfolio_header li:nth-of-type(9) {
+.align_center{
     text-align: center;
 }
 .token_qty{

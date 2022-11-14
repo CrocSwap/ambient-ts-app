@@ -56,6 +56,8 @@ interface RangeCurrencyConverterPropsIF {
     activeTokenListsChanged: boolean;
     indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
     gasPriceInGwei: number | undefined;
+
+    isRangeCopied: boolean;
 }
 
 // central React functional component
@@ -94,6 +96,7 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
         rangeSpanAboveCurrentPrice,
         activeTokenListsChanged,
         indicateActiveTokenListsChanged,
+        isRangeCopied,
     } = props;
 
     const dispatch = useAppDispatch();
@@ -678,6 +681,7 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
         tokenBSurplusMinusTokenBQtyNum: tokenBSurplusMinusTokenBQtyNum,
         activeTokenListsChanged: activeTokenListsChanged,
         indicateActiveTokenListsChanged: indicateActiveTokenListsChanged,
+        isRangeCopied: isRangeCopied,
     };
 
     return (

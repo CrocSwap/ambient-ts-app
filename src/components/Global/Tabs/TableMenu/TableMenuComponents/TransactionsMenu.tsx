@@ -41,6 +41,7 @@ interface TransactionMenuIF {
     showSidebar: boolean;
     openGlobalModal: (content: React.ReactNode, title?: string) => void;
     closeGlobalModal: () => void;
+    handlePulseAnimation?: () => void;
     isOnPortfolioPage: boolean;
 }
 
@@ -56,6 +57,7 @@ export default function TransactionsMenu(props: TransactionMenuIF) {
         showSidebar,
         openGlobalModal,
         closeGlobalModal,
+        handlePulseAnimation,
         // isOnPortfolioPage,
     } = props;
 
@@ -93,6 +95,9 @@ export default function TransactionsMenu(props: TransactionMenuIF) {
     const handleCopyClick = () => {
         // console.log('copy clicked');
         console.log({ tx });
+        {
+            handlePulseAnimation ? handlePulseAnimation() : null;
+        }
 
         if (tx.positionType === 'ambient') {
             dispatch(setSimpleRangeWidth(100));
@@ -189,7 +194,7 @@ export default function TransactionsMenu(props: TransactionMenuIF) {
             }
             setTimeout(() => {
                 dispatch(setLimitTick(tx.isBid ? tx.bidTick : tx.askTick));
-            }, 1000);
+            }, 500);
 
             // dispatch(
             //     setIsTokenAPrimary((tx.isBid && tx.inBaseQty) || (!tx.isBid && !tx.inBaseQty)),
@@ -397,6 +402,8 @@ export default function TransactionsMenu(props: TransactionMenuIF) {
     // const view3 = useMediaQuery('(min-width: 2300px)');
     // eslint-disable-next-line
     const view1NoSidebar = useMediaQuery('(min-width: 1280px)') && !showSidebar;
+    const desktopView = useMediaQuery('(max-width: 768px)');
+
     // const view3WithNoSidebar = useMediaQuery('(min-width: 2300px)') && !showSidebar;
     // const view2WithNoSidebar = useMediaQuery('(min-width: 1680px)') && !showSidebar;
 
@@ -447,7 +454,7 @@ export default function TransactionsMenu(props: TransactionMenuIF) {
 
     return (
         <div className={styles.main_container}>
-            {transactionsMenu}
+            {!desktopView && transactionsMenu}
             {dropdownTransactionsMenu}
             {/* {modalOrNull} */}
             {/* {snackbarContent} */}
