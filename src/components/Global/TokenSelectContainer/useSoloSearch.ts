@@ -69,21 +69,22 @@ export const useSoloSearch = (
 
     const [importedTokensForDOM, setImportedTokensForDOM] = useState<TokenIF[]>([]);
     useEffect(() => {
+        const importedTokensOnChain = importedTokens.filter(
+            (tkn: TokenIF) => tkn.chainId === parseInt(chainId)
+        );
         const searchByAddress = (searchString: string) => {
-            const importedMatches = importedTokens.filter((tkn: TokenIF) => (
-                tkn.chainId === parseInt(chainId) &&
-                tkn.address === searchString
-            ));
+            const importedMatches = importedTokensOnChain.filter(
+                (tkn: TokenIF) => tkn.address === searchString
+            );
             setImportedTokensForDOM(importedMatches);
         }
         const searchByNameOrSymbol = (searchString: string) => {
-            const importedMatches = importedTokens.filter((tkn: TokenIF) => (
-                tkn.chainId === parseInt(chainId) &&
-                (
+            const importedMatches = importedTokensOnChain.filter(
+                (tkn: TokenIF) => (
                     tkn.name.toLowerCase().includes(searchString) ||
                     tkn.symbol.toLowerCase().includes(searchString)
                 )
-            ));
+            );
             setImportedTokensForDOM(importedMatches);
         }
         const noSort = () => {
@@ -102,7 +103,7 @@ export const useSoloSearch = (
             default:
                 noSort();
         }
-    }, [validatedInput]);
+    }, [importedTokens, validatedInput]);
 
     // token === token data object or null
     // input === raw input from the user
