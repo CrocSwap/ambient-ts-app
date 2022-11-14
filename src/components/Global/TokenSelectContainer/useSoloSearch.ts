@@ -14,6 +14,7 @@ export const useSoloSearch = (
     tokensOnActiveLists: Map<string, TokenIF>
 ): [
     TokenIF[] | null,
+    TokenIF[] | null,
     string,
     Dispatch<SetStateAction<string>>,
     string
@@ -68,10 +69,13 @@ export const useSoloSearch = (
     }, [input]);
 
     const [importedTokensForDOM, setImportedTokensForDOM] = useState<TokenIF[]>([]);
+    const [otherTokensForDOM, setOtherTokensForDOM] = useState<TokenIF[]>([]);
+    useEffect(() => console.log(otherTokensForDOM), [otherTokensForDOM]);
     useEffect(() => {
         const importedTokensOnChain = importedTokens.filter(
             (tkn: TokenIF) => tkn.chainId === parseInt(chainId)
         );
+
         const otherTokensOnChain = [...tokensOnActiveLists.values()].filter(
             (tkn: TokenIF) => (
                 tkn.chainId === parseInt(chainId) &&
@@ -80,13 +84,18 @@ export const useSoloSearch = (
                 ))
             )
         );
-        console.log(otherTokensOnChain);
+
         const searchByAddress = (searchString: string) => {
             const importedMatches = importedTokensOnChain.filter(
                 (tkn: TokenIF) => tkn.address === searchString
             );
             setImportedTokensForDOM(importedMatches);
+            const otherMatches = otherTokensOnChain.filter(
+                (tkn: TokenIF) => tkn.address === searchString
+            );
+            setOtherTokensForDOM(otherMatches);
         }
+
         const searchByNameOrSymbol = (searchString: string) => {
             const importedMatches = importedTokensOnChain.filter(
                 (tkn: TokenIF) => (
@@ -95,13 +104,20 @@ export const useSoloSearch = (
                 )
             );
             setImportedTokensForDOM(importedMatches);
-        }
-        const noSort = () => {
-            const tokensOnChain = importedTokens.filter(
-                (tkn: TokenIF) => tkn.chainId === parseInt(chainId)
+            const otherMatches = otherTokensOnChain.filter(
+                (tkn: TokenIF) => (
+                    tkn.name.toLowerCase().includes(searchString) ||
+                    tkn.symbol.toLowerCase().includes(searchString)
+                )
             );
-            setImportedTokensForDOM(tokensOnChain)
+            setOtherTokensForDOM(otherMatches);
         }
+
+        const noSort = () => {
+            setImportedTokensForDOM(importedTokensOnChain);
+            setOtherTokensForDOM([]);
+        }
+
         switch (searchAs) {
             case 'address':
                 searchByAddress(validatedInput);
@@ -119,6 +135,7 @@ export const useSoloSearch = (
     // setInput === useState setter function for raw input
     return [
         importedTokensForDOM,
+        otherTokensForDOM,
         input.trim(),
         setInput,
         searchAs

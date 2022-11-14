@@ -24,6 +24,7 @@ export const SoloTokenSelect = (props: propsIF) => {
 
     const [
         tokensForDOM,
+        otherTokensForDOM,
         input,
         setInput,
         searchType
@@ -78,6 +79,21 @@ export const SoloTokenSelect = (props: propsIF) => {
             )
         ) : null;
 
+    const otherTokenButtons = otherTokensForDOM
+        ? otherTokensForDOM.map((token: TokenIF) => (
+            <TokenSelect
+                key={JSON.stringify(token)}
+                token={token}
+                tokensBank={importedTokens}
+                undeletableTokens={undeletableTokens}
+                chainId={chainId}
+                setImportedTokens={setImportedTokens}
+                chooseToken={chooseToken}
+                isOnPortfolio={true}
+            />
+            )
+        ) : null;
+
     return (
         <>
             <input
@@ -88,6 +104,7 @@ export const SoloTokenSelect = (props: propsIF) => {
             <h1>Imported Tokens</h1>
             {importedTokenButtons}
             {searchType && <h2>More Available Tokens</h2>}
+            {otherTokenButtons}
         </>
     );
 };
