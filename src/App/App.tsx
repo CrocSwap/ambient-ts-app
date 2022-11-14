@@ -226,10 +226,9 @@ export default function App() {
             ? process.env.REACT_APP_CACHE_SERVER_IS_ENABLED === 'true'
             : true;
 
-    useEffect(() => {
-        console.log(process.env.REACT_APP_CACHE_SERVER_IS_ENABLED);
-        console.log({ isServerEnabled });
-    }, [isServerEnabled]);
+    // useEffect(() => {
+    //     console.log({ isServerEnabled });
+    // }, [isServerEnabled]);
 
     useEffect(() => {
         const isLoggedIn = isAuthenticated && isWeb3Enabled;
