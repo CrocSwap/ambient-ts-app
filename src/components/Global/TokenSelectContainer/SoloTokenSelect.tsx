@@ -94,18 +94,24 @@ export const SoloTokenSelect = (props: propsIF) => {
         return matchingTokens;
     }
 
+    // function to take list of imported tokens and filter ones for DOM
     const filteredTokens = useMemo(() => {
+        // filter to display only tokens that are on the active chain
         const tokensOnChain = importedTokens
             .filter((token: TokenIF) => token.chainId === parseInt(chainId));
-        console.log(tokensOnChain)
-        switch (searchType) {
+        // router to run the currect search function
+            switch (searchType) {
+            // search tokens by contract address
             case 'address':
                 return filterByAddress(tokensOnChain);
+            // search tokens by name or symbol
             case 'nameOrSymbol':
                 return filterByName(tokensOnChain);
+            // fallback is to return all on-chain tokens
             default:
                 return tokensOnChain;
         }
+    // memoize to type of search and bank of imported tokens
     }, [searchType, importedTokens]);
 
     const importedTokenButtons = filteredTokens.map((token: TokenIF) => (
