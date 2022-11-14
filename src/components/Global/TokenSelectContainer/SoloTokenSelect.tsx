@@ -34,7 +34,6 @@ export const SoloTokenSelect = (props: propsIF) => {
         tokensOnActiveLists
     );
     false && input;
-    false && searchType;
 
     const dispatch = useAppDispatch();
 
