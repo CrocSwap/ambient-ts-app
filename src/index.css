@@ -32,6 +32,7 @@
 
     /* colors */
     --shimmer: linear-gradient(to right, #141e30, #243b55);
+    --blur-bg: rgba(14, 19, 26, 0.5);
     --body-bg: #0e131a;
     --dark1: #0d1117;
     --dark2: #12171f;
@@ -65,6 +66,7 @@
 
 [data-theme='light'] {
     --shimmer: linear-gradient(to right, #ece9e6, #ffffff);
+    --blur-bg: rgba(159, 165, 174, 0.5);
    
    
     --body-bg: linear-gradient(to right, #ece9e6, #ffffff);
@@ -76,6 +78,7 @@
     --border: #cacbcd;
     --text-grey-white: black;
     --select:  #acb6c4;
+    --text-accent: #625984;
 
     --text-highlight: #7371fc;
   
