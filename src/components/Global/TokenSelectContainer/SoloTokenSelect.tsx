@@ -47,19 +47,15 @@ export const SoloTokenSelect = (props: propsIF) => {
 
     const chooseToken = (tkn: TokenIF) => {
         dispatch(setToken(tkn));
-        // if (searchedToken) {
-        //     const tokenIsImported = importedTokens.some(
-        //         (tk: TokenIF) => tk.address === searchedToken[0].address
-        //     );
-        //     if (tokenIsImported) {
-        //         const userDataFromLocalStorage = JSON.parse(
-        //             localStorage.getItem('user') as string
-        //         );
-        //         userDataFromLocalStorage.tokens = [searchedToken, ...importedTokens];
-        //         localStorage.setItem('user', JSON.stringify(userDataFromLocalStorage));
-        //     }
-        // }
-        console.log('user clicked a token: ' + JSON.stringify(tkn));
+        const isTokenImported = importedTokens.some(
+            (tk: TokenIF) => tk.address.toLowerCase() === tkn.address.toLowerCase()
+        );
+        if (!isTokenImported) {
+            const userData = JSON.parse(localStorage.getItem('user') as string);
+            userData.tokens = [...importedTokens, tkn];
+            localStorage.setItem('user', JSON.stringify(userData));
+            setImportedTokens([...importedTokens, tkn])
+        }
         closeModal();
     };
 
