@@ -12,6 +12,7 @@ import { SpotPriceFn } from '../../App/functions/querySpotPrice';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 
 interface HomeProps {
+    isServerEnabled: boolean;
     crocEnv?: CrocEnv;
     cachedQuerySpotPrice: SpotPriceFn;
     tokenMap: Map<string, TokenIF>;
@@ -19,7 +20,8 @@ interface HomeProps {
     chainId: string;
 }
 export default function Home(props: HomeProps) {
-    const { tokenMap, lastBlockNumber, crocEnv, chainId, cachedQuerySpotPrice } = props;
+    const { isServerEnabled, tokenMap, lastBlockNumber, crocEnv, chainId, cachedQuerySpotPrice } =
+        props;
 
     const tradeData = useAppSelector((state) => state.tradeData);
     const userData = useAppSelector((state) => state.userData);
@@ -33,6 +35,7 @@ export default function Home(props: HomeProps) {
 
                 <div className={styles.pools_container}>
                     <TopPools
+                        isServerEnabled={isServerEnabled}
                         tradeData={tradeData}
                         userData={userData}
                         crocEnv={crocEnv}
@@ -42,7 +45,11 @@ export default function Home(props: HomeProps) {
                         chainId={chainId}
                     />
                     <DividerDark />
-                    <Stats lastBlockNumber={lastBlockNumber} userData={userData} />
+                    <Stats
+                        isServerEnabled={isServerEnabled}
+                        lastBlockNumber={lastBlockNumber}
+                        userData={userData}
+                    />
                 </div>
                 <DividerDark />
 

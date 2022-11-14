@@ -83,6 +83,8 @@ export default function Transactions(props: TransactionsProps) {
 
     const dispatch = useAppDispatch();
 
+    const isServerEnabled = process.env.REACT_APP_CACHE_SERVER_IS_ENABLED === 'true';
+
     const changesByUser = graphData?.changesByUser?.changes;
     const changesByPool = graphData?.changesByPool?.changes;
     const dataLoadingStatus = graphData?.dataLoadingStatus;
@@ -233,7 +235,7 @@ export default function Transactions(props: TransactionsProps) {
     }, [isShowAllEnabled]);
 
     useEffect(() => {
-        if (isShowAllEnabled) {
+        if (isServerEnabled && isShowAllEnabled) {
             fetchPoolRecentChanges({
                 importedTokens: importedTokens,
                 base: baseTokenAddress,
@@ -262,7 +264,7 @@ export default function Transactions(props: TransactionsProps) {
                 })
                 .catch(console.log);
         }
-    }, [isShowAllEnabled]);
+    }, [isServerEnabled, isShowAllEnabled]);
 
     const wssGraphCacheServerDomain = 'wss://809821320828123.de:5000';
 
@@ -329,7 +331,7 @@ export default function Transactions(props: TransactionsProps) {
             shouldReconnect: () => true,
         },
         // only connect if user is viewing pool changes
-        debouncedIsShowAllEnabled,
+        isServerEnabled && debouncedIsShowAllEnabled,
     );
 
     useEffect(() => {

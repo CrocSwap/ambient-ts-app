@@ -14,6 +14,7 @@ export default function TopTokensCard(props: TopTokensCardProps) {
     const { pool } = props;
 
     const location = useLocation();
+    const isServerEnabled = process.env.REACT_APP_CACHE_SERVER_IS_ENABLED === 'true';
 
     const linkPath = useMemo(() => {
         const { pathname } = location;
@@ -98,20 +99,22 @@ export default function TopTokensCard(props: TopTokensCardProps) {
     };
 
     useEffect(() => {
-        fetchPoolPriceChange();
-
-        // fetch every minute
-        const timerId = setInterval(() => {
+        if (isServerEnabled) {
             fetchPoolPriceChange();
-        }, 60000);
 
-        // after 1 hour stop
-        setTimeout(() => {
-            clearInterval(timerId);
-        }, 3600000);
+            // fetch every minute
+            const timerId = setInterval(() => {
+                fetchPoolPriceChange();
+            }, 60000);
 
-        // clear interval when component unmounts
-        return () => clearInterval(timerId);
+            // after 1 hour stop
+            setTimeout(() => {
+                clearInterval(timerId);
+            }, 3600000);
+
+            // clear interval when component unmounts
+            return () => clearInterval(timerId);
+        }
     }, []);
 
     return (

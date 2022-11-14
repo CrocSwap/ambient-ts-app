@@ -43,6 +43,8 @@ export default function PoolInfo(props: PoolInfoPropsIF) {
     //     </p>
     // );
 
+    const isServerEnabled = process.env.REACT_APP_CACHE_SERVER_IS_ENABLED === 'true';
+
     function PoolInfoCard(props: PoolInfoCardPropsIF) {
         return (
             <DefaultTooltip
@@ -159,8 +161,9 @@ export default function PoolInfo(props: PoolInfoPropsIF) {
     };
 
     useEffect(() => {
-        fetchPoolStats();
+        if (isServerEnabled) fetchPoolStats();
     }, [
+        isServerEnabled,
         lastBlockNumber,
         JSON.stringify({ base: tradeData.baseToken.address, quote: tradeData.quoteToken.address }),
     ]);

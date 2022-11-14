@@ -114,6 +114,8 @@ export default function TradeTabs2(props: ITabsProps) {
     const graphData = useAppSelector((state) => state?.graphData);
     const tradeData = useAppSelector((state) => state?.tradeData);
 
+    const isServerEnabled = process.env.REACT_APP_CACHE_SERVER_IS_ENABLED === 'true';
+
     const activeChartPeriod = tradeData.activeChartPeriod;
     // const userData = useAppSelector((state) => state?.userData);
 
@@ -242,7 +244,7 @@ export default function TradeTabs2(props: ITabsProps) {
     const dispatch = useAppDispatch();
 
     useEffect(() => {
-        if (!isShowAllEnabled) {
+        if (isServerEnabled && !isShowAllEnabled) {
             try {
                 fetchUserRecentChanges({
                     importedTokens: importedTokens,
@@ -270,15 +272,13 @@ export default function TradeTabs2(props: ITabsProps) {
                 console.log;
             }
         }
-    }, [isShowAllEnabled]);
+    }, [isServerEnabled, isShowAllEnabled]);
 
     const [changesInSelectedCandle, setChangesInSelectedCandle] = useState<ITransaction[]>([]);
 
     useEffect(() => {
         // console.log({ filter });
-        if (isCandleSelected && filter?.time) {
-            // const poolSwapsCacheEndpoint = httpGraphCacheServerDomain + '/pool_recent_changes?';
-
+        if (isServerEnabled && isCandleSelected && filter?.time) {
             fetchPoolRecentChanges({
                 importedTokens: importedTokens,
                 base: selectedBase,
@@ -312,32 +312,8 @@ export default function TradeTabs2(props: ITabsProps) {
                     setSelectedInsideTab(0);
                 })
                 .catch(console.log);
-            // fetch(
-            //     poolSwapsCacheEndpoint +
-            //         new URLSearchParams({
-            //             base: selectedBase,
-            //             quote: selectedQuote,
-            //             chainId: chainData.chainId,
-            //             poolIdx: chainData.poolIndex.toString(),
-            //             ensResolution: 'true',
-            //             annotate: 'true',
-            //             omitEmpty: 'true',
-            //             omitKnockout: 'false',
-            //             addValue: 'true',
-            //             n: '100',
-            //             period: activeChartPeriod.toString(),
-            //             time: filter?.time.toString(),
-            //         }),
-            // )
-            //     .then((response) => response?.json())
-            //     .then((json) => {
-            //         const selectedCandlePoolSwaps = json?.data;
-            //         console.log({ selectedCandlePoolSwaps });
-            //         setSwapsForSelectedCandle(selectedCandlePoolSwaps);
-            //     })
-            //     .catch(console.log);
         }
-    }, [isCandleSelected, filter?.time, lastBlockNumber]);
+    }, [isServerEnabled, isCandleSelected, filter?.time, lastBlockNumber]);
 
     // -------------------------------DATA-----------------------------------------
     const [leader, setLeader] = useState('');
