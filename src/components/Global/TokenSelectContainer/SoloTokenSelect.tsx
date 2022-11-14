@@ -57,9 +57,17 @@ export const SoloTokenSelect = (props: propsIF) => {
         closeModal();
     };
 
-    const filterByAddress = (tokens: TokenIF[]) => tokens.filter((token: TokenIF) => (
-        searchedToken && searchedToken.length
-            ? searchedToken[0].address.toLowerCase() === token.address.toLowerCase() : true
+    // fn to find a token with a matching contract address
+    // arg tokens === array of token data objects to search
+    const filterByAddress = (tokens: TokenIF[]) =>
+        // run a filter on provided array of tokens
+        tokens.filter((token: TokenIF) => (
+            // make sure a valid value exists for the searchedToken array
+            searchedToken && searchedToken.length
+                // look for a token matching the address of the desired one
+                ? searchedToken[0].address.toLowerCase() === token.address.toLowerCase()
+                // if no token matches, return true
+                : true
     ));
 
     const filterByName = (tokens: TokenIF[]) => {
