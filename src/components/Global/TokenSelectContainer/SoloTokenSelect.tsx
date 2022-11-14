@@ -70,18 +70,27 @@ export const SoloTokenSelect = (props: propsIF) => {
                 : true
     ));
 
+    // fn to find a token with a matching name or symbol
+    // arg tokens === array of token data objects to search
     const filterByName = (tokens: TokenIF[]) => {
+        // declare a variable to hold strings to match
         const positives: string[] = [];
+        // make sure the searchedToken array has at least one value in it
         if (searchedToken && searchedToken.length) {
+            // for each value in searchedToken, push name and symbol into matches
             searchedToken.forEach((token) => {
                 positives.push(token.name);
                 positives.push(token.symbol);
             })
         };
+        // make an array with tokens filtered out of provided bank of tokens
         const matchingTokens = tokens.filter((token) => (
+            // place token in output variable if name matches (partials ok)
             positives.includes(token.name) ||
+            // place token in output variable if symbol matches (partials ok)
             positives.includes(token.symbol)
         ));
+        // return output variable
         return matchingTokens;
     }
 
