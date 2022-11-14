@@ -72,6 +72,14 @@ export default function Orders(props: propsIF) {
     const limitOrdersByPool = graphData.limitOrdersByPool.limitOrders;
     const dataLoadingStatus = graphData?.dataLoadingStatus;
 
+    // allow a local environment variable to be defined in [app_repo]/.env.local to turn off connections to the cache server
+    const isServerEnabled =
+        process.env.REACT_APP_CACHE_SERVER_IS_ENABLED !== undefined
+            ? process.env.REACT_APP_CACHE_SERVER_IS_ENABLED === 'true'
+            : true;
+
+    // const poolSwapsCacheEndpoint = httpGraphCacheServerDomain + '/pool_recent_changes?';
+
     const tradeData = useAppSelector((state) => state.tradeData);
 
     const baseTokenAddressLowerCase = tradeData.baseToken.address.toLowerCase();
@@ -143,7 +151,7 @@ export default function Orders(props: propsIF) {
         isShowAllEnabled ? limitOrdersByPool : limitOrderData,
     );
     useEffect(() => {
-        if (isShowAllEnabled) {
+        if (isServerEnabled && isShowAllEnabled) {
             fetchPoolLimitOrderStates({
                 chainId: chainData.chainId,
                 base: tradeData.baseToken.address,
@@ -175,7 +183,7 @@ export default function Orders(props: propsIF) {
                 })
                 .catch(console.log);
         }
-    }, [isShowAllEnabled]);
+    }, [isServerEnabled, isShowAllEnabled]);
 
     const wssGraphCacheServerDomain = 'wss://809821320828123.de:5000';
 
@@ -239,7 +247,7 @@ export default function Orders(props: propsIF) {
             shouldReconnect: () => true,
         },
         // only connect if user is viewing pool changes
-        debouncedIsShowAllEnabled,
+        isServerEnabled && debouncedIsShowAllEnabled,
     );
 
     useEffect(() => {

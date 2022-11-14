@@ -11,6 +11,7 @@ interface StatCardProps {
 }
 
 interface StatsProps {
+    isServerEnabled: boolean;
     userData: userData;
     lastBlockNumber: number;
 }
@@ -27,7 +28,7 @@ function StatCard(props: StatCardProps) {
 }
 
 export default function Stats(props: StatsProps) {
-    const { userData, lastBlockNumber } = props;
+    const { isServerEnabled, userData, lastBlockNumber } = props;
 
     const isUserIdle = userData.isUserIdle;
 
@@ -38,13 +39,13 @@ export default function Stats(props: StatsProps) {
     const [totalFeesString, setTotalFeesString] = useState<string | undefined>();
 
     useEffect(() => {
-        if (!isUserIdle)
+        if (isServerEnabled && !isUserIdle)
             getDexStatsFresh().then((dexStats) => {
                 if (dexStats.tvl) setTotalTvlString('$' + formatAmountOld(dexStats.tvl));
                 if (dexStats.volume) setTotalVolumeString('$' + formatAmountOld(dexStats.volume));
                 if (dexStats.fees) setTotalFeesString('$' + formatAmountOld(dexStats.fees));
             });
-    }, [isUserIdle, lastBlockNumber]);
+    }, [isServerEnabled, isUserIdle, lastBlockNumber]);
 
     const statCardData = [
         {

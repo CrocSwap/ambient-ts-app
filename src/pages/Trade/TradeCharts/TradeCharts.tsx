@@ -151,6 +151,12 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
 
     const dispatch = useAppDispatch();
 
+    // allow a local environment variable to be defined in [app_repo]/.env.local to turn off connections to the cache server
+    const isServerEnabled =
+        process.env.REACT_APP_CACHE_SERVER_IS_ENABLED !== undefined
+            ? process.env.REACT_APP_CACHE_SERVER_IS_ENABLED === 'true'
+            : true;
+
     // ---------------------TRADE DATA CALCULATIONS------------------------
 
     const { tradeData } = useAppSelector((state) => state);
@@ -259,7 +265,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
 
     useEffect(() => {
         (async () => {
-            if (tokenAAddress && tokenBAddress) {
+            if (isServerEnabled && tokenAAddress && tokenBAddress) {
                 try {
                     const priceChangeResult = await get24hChange(
                         chainId,
@@ -297,11 +303,11 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
                 }
             }
         })();
-    }, [denomInBase, baseTokenAddress, quoteTokenAddress, lastBlockNumber]);
+    }, [isServerEnabled, denomInBase, baseTokenAddress, quoteTokenAddress, lastBlockNumber]);
 
     useEffect(() => {
         (async () => {
-            if (tokenAAddress && tokenBAddress) {
+            if (isServerEnabled && tokenAAddress && tokenBAddress) {
                 try {
                     const poolTvlResult = await getPoolTVL(
                         baseTokenAddress,
@@ -324,7 +330,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
                 }
             }
         })();
-    }, [baseTokenAddress, quoteTokenAddress, Math.floor(lastBlockNumber / 4)]);
+    }, [isServerEnabled, baseTokenAddress, quoteTokenAddress, Math.floor(lastBlockNumber / 4)]);
 
     useEffect(() => {
         if (liquidityData) {
