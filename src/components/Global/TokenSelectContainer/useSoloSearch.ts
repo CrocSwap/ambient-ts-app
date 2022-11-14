@@ -22,6 +22,7 @@ export const useSoloSearch = (
     // raw input from the user
     const [input, setInput] = useState('');
 
+    // search type => '' or 'address' or 'nameOrAddress'
     const [searchAs, setSearchAs] = useState('');
 
     // cleaned and validated version of raw user input
@@ -78,7 +79,10 @@ export const useSoloSearch = (
         const searchByNameOrSymbol = (searchString: string) => {
             const importedMatches = importedTokens.filter((tkn: TokenIF) => (
                 tkn.chainId === parseInt(chainId) &&
-                (tkn.name.includes(searchString) || tkn.symbol.includes(searchString))
+                (
+                    tkn.name.toLowerCase().includes(searchString) ||
+                    tkn.symbol.toLowerCase().includes(searchString)
+                )
             ));
             setImportedTokensForDOM(importedMatches);
         }
