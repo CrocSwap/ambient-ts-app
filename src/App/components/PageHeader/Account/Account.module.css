@@ -31,7 +31,7 @@
     font-weight: 300;
     font-size: var(--header-size);
     line-height: var(--body-lh);
-    color: white;
+    color: var(--text-grey-white);
 }
 
 .title_gradient {

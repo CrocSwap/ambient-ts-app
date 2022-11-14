@@ -47,6 +47,8 @@ interface HeaderPropsIF {
     isAppOverlayActive: boolean;
 
     setIsAppOverlayActive: Dispatch<SetStateAction<boolean>>;
+    switchTheme: () => void;
+    theme: string;
 }
 
 export default function PageHeader(props: HeaderPropsIF) {
@@ -67,6 +69,8 @@ export default function PageHeader(props: HeaderPropsIF) {
         setIsMobileSidebarOpen,
         isAppOverlayActive,
         setIsAppOverlayActive,
+        switchTheme,
+        theme,
     } = props;
 
     const {
@@ -156,6 +160,9 @@ export default function PageHeader(props: HeaderPropsIF) {
         chainId: chainId,
         isAppOverlayActive: isAppOverlayActive,
         setIsAppOverlayActive: setIsAppOverlayActive,
+
+        switchTheme: switchTheme,
+        theme: theme,
     };
 
     // End of Page Header Functions

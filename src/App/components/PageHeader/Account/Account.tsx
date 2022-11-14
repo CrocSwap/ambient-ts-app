@@ -24,6 +24,9 @@ interface AccountPropsIF {
     isAppOverlayActive: boolean;
 
     setIsAppOverlayActive: Dispatch<SetStateAction<boolean>>;
+
+    switchTheme: () => void;
+    theme: string;
 }
 
 export default function Account(props: AccountPropsIF) {
@@ -36,6 +39,8 @@ export default function Account(props: AccountPropsIF) {
         chainId,
         isAppOverlayActive,
         setIsAppOverlayActive,
+        switchTheme,
+        theme,
     } = props;
 
     const [openSnackbar, setOpenSnackbar] = useState(false);
@@ -72,7 +77,7 @@ export default function Account(props: AccountPropsIF) {
                 <NavLink to={'/account'}>
                     {/* <NavLink to={`/${props.accountAddressFull}`}> */}
                     <div className={`${styles.title_gradient}`} onClick={handleCopyAddress}>
-                        <MdAccountBalanceWallet color='#ebebff' />
+                        <MdAccountBalanceWallet color='var(--text-grey-white)' />
                         <p>{ensName !== '' ? ensName : props.accountAddress}</p>
                     </div>
                 </NavLink>
@@ -92,6 +97,8 @@ export default function Account(props: AccountPropsIF) {
                     isAppOverlayActive={isAppOverlayActive}
                     setIsAppOverlayActive={setIsAppOverlayActive}
                     setIsNavbarMenuOpen={setOpenNavbarMenu}
+                    switchTheme={switchTheme}
+                    theme={theme}
                 />
             </NavItem>
             {snackbarContent}

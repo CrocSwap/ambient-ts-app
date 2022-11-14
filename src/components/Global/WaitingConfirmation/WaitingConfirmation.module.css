@@ -25,7 +25,7 @@
 	width: 150px;
 	height: 150px;
 	border-radius: 50%;
-    background: linear-gradient(45deg, transparent, transparent 40%, #7371fc);
+    background: linear-gradient(45deg, transparent, transparent 40%, var(--text-highlight));
 
 	animation: animate 2s linear infinite;
 
@@ -52,7 +52,7 @@
 	z-index: 2;
 }
 .loader:after{
-	background: linear-gradient(45deg, transparent, transparent 40%, #7371fc);
+	background: linear-gradient(45deg, transparent, transparent 40%, var(--text-highlight));
 
 	content: '';
 	position: absolute;

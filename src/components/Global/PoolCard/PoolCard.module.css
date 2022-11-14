@@ -55,6 +55,7 @@
     line-height: 22px;
     display: flex;
     justify-content: flex-end;
+    color: var(--text-grey-white)
 }
 
 .pool_price_change {
@@ -68,6 +69,7 @@
     font-style: normal;
     font-weight: 300;
     font-size: 12px;
+    color: var(--text-grey-white)
 }
 
 .row_title {
@@ -109,7 +111,7 @@
 
     /* text/white */
 
-    color: #ffffff;
+    color: var(--text-grey-white)
 }
 .change_positive {
     font-weight: 200;
@@ -139,7 +141,7 @@
     line-height: 30px;
 
     letter-spacing: -0.02em;
-    color: #ffffff;
+    color: var(--text-grey-white);
     font-family: var(--mono);
 }
 

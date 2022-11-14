@@ -36,7 +36,7 @@
 
 
   .header{
-    background: #012B39;
+    /* background: #012B39; */
     position: sticky;
     top: 0; /* Don't forget this, required for the stickiness */
     box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4);
@@ -65,7 +65,7 @@
   }
 
 
-.header{
+  .header{
  
     position: sticky;
     top: 0; /* Don't forget this, required for the stickiness */
@@ -80,7 +80,7 @@
 font-size: 10px;
 line-height: 13px;
 
-color: rgba(235, 235, 255, 0.4);
+color: var(--text-grey-light)
 }
 .row_container:hover{
   background: var(--dark2)

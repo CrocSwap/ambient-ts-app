@@ -33,7 +33,7 @@
     font-weight: 200;
     font-size: 18px;
     line-height: 22px;
-    color: #cdc1ff;
+    color: var(--text-highlight);
 }
 .architecture {
     width: 100%;
@@ -50,7 +50,7 @@
 
 .highlight_text {
     font-weight: 500;
-    color: #7371fc;
+    color: var(--text-highlight);
   
 }
 

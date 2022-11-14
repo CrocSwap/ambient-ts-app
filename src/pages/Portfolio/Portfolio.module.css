@@ -1,6 +1,6 @@
 .portfolio_container {
     padding: 2rem;
-    background: var(--dark3);
+    /* background: var(--dark3); */
     transition: all var(--animation-speed) ease-in-out;
 }
 
@@ -58,13 +58,14 @@
     .full_layout_container {
         /* I wish I had a logical answer to this calculation but it was through trial and error. The higher level containers of the app needs to be refactored to prevent this workflow */
         height: calc(100vh - 16rem);
-
+        
         display: grid;
         grid-template-columns: auto auto;
         transition: all var(--animation-speed) ease-in-out;
     }
-
+    
     .tabs_exchange_balance_container {
+       
         grid-template-columns: auto auto;
         gap: 1rem;
         max-height: calc(100vh - 20rem);

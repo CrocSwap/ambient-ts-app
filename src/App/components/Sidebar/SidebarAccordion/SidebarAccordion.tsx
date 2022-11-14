@@ -78,9 +78,7 @@ export default function SidebarAccordion(props: SidebarAccordionPropsIF) {
             >
                 <div>
                     <div className={styles.sidebar_link}>
-                        {showSidebar && (
-                            <MdPlayArrow size={12} color='#ffffff' className={sidebarIconStyle} />
-                        )}
+                        {showSidebar && <MdPlayArrow size={12} className={sidebarIconStyle} />}
                         <img src={item.icon} alt={item.name} width='20px' />
 
                         <span className={styles.link_text}>{item.name}</span>
