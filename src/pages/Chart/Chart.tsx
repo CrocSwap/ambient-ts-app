@@ -229,7 +229,7 @@ export default function Chart(props: ChartData) {
     const [dragRange, setDragRange] = useState<any>();
     const [dragLimit, setDragLimit] = useState<any>();
 
-    const valueFormatter = d3.format('.5f');
+    // const valueFormatter = d3.format('.5f');
 
     const setDefaultRangeData = () => {
         setRanges((prevState) => {
