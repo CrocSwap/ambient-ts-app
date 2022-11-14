@@ -192,7 +192,7 @@ export default function PageHeader(props: HeaderPropsIF) {
         // console.log({ isPathValidAddress });
 
         if (pathNoLeadingSlash === 'account') {
-            document.title = 'My Account - ambient.finance';
+            document.title = 'My Account ~ ambient.finance';
         } else if (isPathValidAddress) {
             const ensNameOrAddressTruncated = isAddressEns
                 ? pathNoLeadingSlash.length > 15
@@ -202,10 +202,10 @@ export default function PageHeader(props: HeaderPropsIF) {
             document.title = `${ensNameOrAddressTruncated} - ambient.finance`;
         } else if (location.pathname.includes('swap') || location.pathname.includes('trade')) {
             document.title = isDenomBase
-                ? `${baseSymbol}/${quoteSymbol} - ambient.finance`
-                : `${quoteSymbol}/${baseSymbol} - ambient.finance`;
+                ? `${baseSymbol}/${quoteSymbol} ~ ambient.finance`
+                : `${quoteSymbol}/${baseSymbol} ~ ambient.finance`;
         } else {
-            document.title = 'ambient.finance';
+            document.title = 'Home ~ ambient.finance';
         }
     }, [baseSymbol, quoteSymbol, isDenomBase, location]);
 
