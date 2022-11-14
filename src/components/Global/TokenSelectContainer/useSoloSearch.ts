@@ -18,7 +18,7 @@ export const useSoloSearch = (
     Dispatch<SetStateAction<string>>,
     string
 ] => {
-    console.log(tokensOnActiveLists);
+    // console.log(tokensOnActiveLists);
     // raw input from the user
     const [input, setInput] = useState('');
 
@@ -72,6 +72,15 @@ export const useSoloSearch = (
         const importedTokensOnChain = importedTokens.filter(
             (tkn: TokenIF) => tkn.chainId === parseInt(chainId)
         );
+        const otherTokensOnChain = [...tokensOnActiveLists.values()].filter(
+            (tkn: TokenIF) => (
+                tkn.chainId === parseInt(chainId) &&
+                !importedTokensOnChain.some((tk: TokenIF) => (
+                    tk.address === tkn.address
+                ))
+            )
+        );
+        console.log(otherTokensOnChain);
         const searchByAddress = (searchString: string) => {
             const importedMatches = importedTokensOnChain.filter(
                 (tkn: TokenIF) => tkn.address === searchString
