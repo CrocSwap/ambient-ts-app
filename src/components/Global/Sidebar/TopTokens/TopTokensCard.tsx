@@ -14,7 +14,11 @@ export default function TopTokensCard(props: TopTokensCardProps) {
     const { pool } = props;
 
     const location = useLocation();
-    const isServerEnabled = process.env.REACT_APP_CACHE_SERVER_IS_ENABLED === 'true';
+    // allow a local environment variable to be defined in [app_repo]/.env.local to turn off connections to the cache server
+    const isServerEnabled =
+        process.env.REACT_APP_CACHE_SERVER_IS_ENABLED !== undefined
+            ? process.env.REACT_APP_CACHE_SERVER_IS_ENABLED === 'true'
+            : true;
 
     const linkPath = useMemo(() => {
         const { pathname } = location;

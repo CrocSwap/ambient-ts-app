@@ -220,11 +220,11 @@ export default function App() {
     const isUserLoggedIn = userData.isLoggedIn;
     const isUserIdle = userData.isUserIdle;
 
-    const isServerEnabled = process.env.REACT_APP_CACHE_SERVER_IS_ENABLED === 'true';
-
-    useEffect(() => {
-        console.log({ isServerEnabled });
-    }, [isServerEnabled]);
+    // allow a local environment variable to be defined in [app_repo]/.env.local to turn off connections to the cache server
+    const isServerEnabled =
+        process.env.REACT_APP_CACHE_SERVER_IS_ENABLED !== undefined
+            ? process.env.REACT_APP_CACHE_SERVER_IS_ENABLED === 'true'
+            : true;
 
     useEffect(() => {
         const isLoggedIn = isAuthenticated && isWeb3Enabled;
