@@ -24,7 +24,7 @@ export default function PortfolioBannerAccount(props: IPortfolioBannerAccountPro
             width: '500px',
             height: 'auto',
             borderRadius: '20px',
-            background: '#12171f',
+            background: 'var(--dark3)',
             boxShadow: '0px 45px 20px rgba(0, 0, 0, 0.9)',
             // padding: '24px'
         },

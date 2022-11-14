@@ -3,6 +3,7 @@
     height: 100%;
     position: absolute;
     background: var(--dark3);
+    color: var(--text-grey-white);
     /* background: red; */
     z-index: 3;
 
@@ -69,7 +70,7 @@
     width: 222px;
 
     border-radius: 4px;
-    background: #242f3f;
+    background: var(--dark2);
     outline: none;
     border: none;
     text-align: end;
@@ -100,7 +101,7 @@
     background: transparent;
     text-transform: uppercase;
 
-    color: #cdc1ff;
+    color: var(--text-accent);
     border-radius: 4px;
     transition: all var(--animation-speed) ease-in-out;
     background: linear-gradient(
@@ -118,7 +119,7 @@
 }
 
 .settings_container .save_button:hover {
-    color: black;
+    color: var(--text-grey-dark);
     border: 1px solid rgba(223, 190, 106, 0);
     background-position: 99% 50%;
 }

@@ -2192,7 +2192,7 @@ export default function App() {
     // end of app overlay-----------------------------------------------
 
     // --------------THEME--------------------------
-    const defaultDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    // const defaultDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     const [theme, setTheme] = useState('dark');
 
     const switchTheme = () => {
@@ -2200,20 +2200,24 @@ export default function App() {
         setTheme(newTheme);
     };
 
+    const themeButtons = (
+        <div
+            style={{
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                alignItems: 'center',
+            }}
+        >
+            <button onClick={switchTheme}>Switch Theme</button>
+        </div>
+    );
+
     // --------------END OF THEME--------------------------
 
     return (
         <>
-            <div
-                style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                }}
-            >
-                <button onClick={switchTheme}>Switch Theme</button>
-            </div>
+            {themeButtons}
             <div className={containerStyle} data-theme={theme}>
                 {isMobileSidebarOpen && <div className='blur_app' />}
                 <AppOverlay
