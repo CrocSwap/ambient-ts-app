@@ -112,6 +112,7 @@ export default function Chart(props: ChartData) {
 
     const location = useLocation();
 
+    const [horizontalBandData, setHorizontalBandData] = useState([[0, 0]]);
     const [ranges, setRanges] = useState([
         {
             name: 'Min',
@@ -238,6 +239,15 @@ export default function Chart(props: ChartData) {
     useEffect(() => {
         addDefsStyle();
     }, []);
+
+    useEffect(() => {
+        setHorizontalBandData([
+            [
+                ranges.filter((item: any) => item.name === 'Min')[0].value,
+                ranges.filter((item: any) => item.name === 'Max')[0].value,
+            ],
+        ]);
+    }, [ranges]);
 
     const render = useCallback(() => {
         const nd = d3.select('#d3fc_group').node() as any;
@@ -2110,6 +2120,7 @@ export default function Chart(props: ChartData) {
                 mouseMoveEventForSubChart,
                 isMouseMoveForSubChart,
                 isZoomForSubChart,
+                horizontalBandData,
             );
         }
     }, [
@@ -2190,6 +2201,7 @@ export default function Chart(props: ChartData) {
             mouseMoveEventForSubChart: any,
             isMouseMoveForSubChart: boolean,
             isZoomForSubChart: boolean,
+            horizontalBandData: any,
         ) => {
             if (chartData.length > 0) {
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -2224,6 +2236,18 @@ export default function Chart(props: ChartData) {
 
                 const candleJoin = d3fc.dataJoin('g', 'candle');
 
+                const horizontalBandJoin = d3fc.dataJoin('g', 'horizontalBand');
+
+                const horizontalBand = d3fc
+                    .annotationSvgBand()
+                    .xScale(scaleData.xScale)
+                    .yScale(scaleData.yScale)
+                    .fromValue((d: any) => d[0])
+                    .toValue((d: any) => d[1])
+                    .decorate((selection: any) => {
+                        selection.attr('fill', '#7371FC1A');
+                    });
+
                 const crosshairHorizontalJoin = d3fc.dataJoin('g', 'crosshairHorizontal');
                 const crosshairVerticalJoin = d3fc.dataJoin('g', 'crosshairVertical');
                 // const highlightedCurrentPriceLineJoin = d3fc.dataJoin(
@@ -2252,7 +2276,7 @@ export default function Chart(props: ChartData) {
                     async function createElements() {
                         const svg = d3.select(event.target).select('svg');
 
-                        targetsAreaJoin(svg, [targets.ranges]).call(horizontalLine);
+                        horizontalBandJoin(svg, [horizontalBandData]).call(horizontalBand);
 
                         crosshairHorizontalJoin(svg, [crosshairData]).call(crosshairHorizontal);
                         crosshairVerticalJoin(svg, [crosshairData]).call(crosshairVertical);
