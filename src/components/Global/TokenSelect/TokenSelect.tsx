@@ -7,14 +7,8 @@ import { CgUnavailable } from 'react-icons/cg';
 import styles from './TokenSelect.module.css';
 import { TokenIF } from '../../../utils/interfaces/exports';
 import uriToHttp from '../../../utils/functions/uriToHttp';
-// import clickStar from './clickStar';
 import { removeToken } from '../../Global/TokenSelectContainer/removeToken';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
-// import { toDisplayQty } from '@crocswap-libs/sdk';
-// import { ZERO_ADDRESS } from '../../../constants';
-// import { formatAmountOld } from '../../../utils/numbers';
-// import truncateDecimals from '../../../utils/data/truncateDecimals';
-// import { tokenData } from '../../../utils/state/tokenDataSlice';
 
 interface TokenSelectPropsIF {
     token: TokenIF;
@@ -45,8 +39,6 @@ export default function TokenSelect(props: TokenSelectPropsIF) {
 
     const connectedUserNativeToken = userData.tokens.nativeToken;
     const connectedUserErc20Tokens = userData.tokens.erc20Tokens;
-    // const connectedUserNativeToken = useAppSelector((state) => state.userData.tokens.nativeToken);
-    // const connectedUserErc20Tokens = useAppSelector((state) => state.userData.tokens.erc20Tokens);
     const isUserLoggedIn = userData.isLoggedIn;
 
     const connectedUserTokens = connectedUserNativeToken
