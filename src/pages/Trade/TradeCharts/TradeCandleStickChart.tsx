@@ -75,7 +75,7 @@ type chartItemStates = {
 };
 
 export default function TradeCandleStickChart(props: ChartData) {
-    const { pool, chainData, baseTokenAddress, chainId /* poolPriceNonDisplay */ } = props;
+    const { pool, chainData, baseTokenAddress, chainId, poolPriceNonDisplay } = props;
 
     const [scaleData, setScaleData] = useState<any>();
 
@@ -356,11 +356,12 @@ export default function TradeCandleStickChart(props: ChartData) {
             setIsLoading(
                 parsedChartData === undefined ||
                     parsedChartData.chartData.length === 0 ||
-                    props.poolPriceDisplay === 0,
+                    props.poolPriceDisplay === 0 ||
+                    poolPriceNonDisplay === 0,
             );
         }, 500);
         return () => clearTimeout(timer);
-    }, [parsedChartData?.chartData, props.poolPriceDisplay]);
+    }, [parsedChartData?.chartData, props.poolPriceDisplay, poolPriceNonDisplay]);
 
     return (
         <>
@@ -391,6 +392,7 @@ export default function TradeCandleStickChart(props: ChartData) {
                         isCandleAdded={isCandleAdded}
                         scaleData={scaleData}
                         chainId={chainId}
+                        poolPriceNonDisplay={poolPriceNonDisplay}
                     />
                 ) : (
                     <>{loading}</>
