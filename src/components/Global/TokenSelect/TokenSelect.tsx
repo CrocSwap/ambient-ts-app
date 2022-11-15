@@ -24,10 +24,18 @@ interface TokenSelectPropsIF {
     setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
     chooseToken: (tok: TokenIF) => void;
     isOnPortfolio?: boolean;
+    fromListsText: string;
 }
 
 export default function TokenSelect(props: TokenSelectPropsIF) {
-    const { token, chooseToken, tokensBank, undeletableTokens, chainId, setImportedTokens } = props;
+    const {
+        token,
+        chooseToken,
+        tokensBank,
+        undeletableTokens,
+        chainId,
+        setImportedTokens
+    } = props;
 
     const [showDelete, setShowDelete] = useState(false);
     const [toggleDeleteOn, setToggleDeleteOn] = useState(false);

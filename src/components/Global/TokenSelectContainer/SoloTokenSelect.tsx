@@ -29,7 +29,7 @@ export const SoloTokenSelect = (props: propsIF) => {
         setInput,
         searchType
     ] = useSoloSearch(
-        chainId,
+        '0x1',
         importedTokens,
         tokensOnActiveLists
     );
@@ -70,6 +70,7 @@ export const SoloTokenSelect = (props: propsIF) => {
                 setImportedTokens={setImportedTokens}
                 chooseToken={chooseToken}
                 isOnPortfolio={true}
+                fromListsText='Imported'
             />
             )
         ) : null;
@@ -85,6 +86,7 @@ export const SoloTokenSelect = (props: propsIF) => {
                 setImportedTokens={setImportedTokens}
                 chooseToken={chooseToken}
                 isOnPortfolio={true}
+                fromListsText='Not Imported'
             />
             )
         ) : null;
