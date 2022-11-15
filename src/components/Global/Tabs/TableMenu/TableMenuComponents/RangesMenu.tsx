@@ -42,7 +42,7 @@ interface RangesMenuIF {
     showSidebar: boolean;
     isOnPortfolioPage: boolean;
 
-    handleRangeCopiedClick?: () => void;
+    handlePulseAnimation?: (type: string) => void;
 }
 
 // React functional component
@@ -57,7 +57,7 @@ export default function RangesMenu(props: RangesMenuIF) {
         posHash,
         positionData,
         isOnPortfolioPage,
-        handleRangeCopiedClick,
+        handlePulseAnimation,
         // showSidebar,
         // eslint-disable-next-line
     } = props;
@@ -111,7 +111,7 @@ export default function RangesMenu(props: RangesMenuIF) {
         // console.log('copy clicked');
         // console.log({ positionData });
         {
-            handleRangeCopiedClick ? handleRangeCopiedClick() : null;
+            handlePulseAnimation ? handlePulseAnimation('range') : null;
         }
 
         if (positionData.positionType === 'ambient') {
@@ -157,7 +157,7 @@ export default function RangesMenu(props: RangesMenuIF) {
         </button>
     ) : null;
 
-    const copyButton = isPositionInRange ? (
+    const copyButton = (
         <Link
             className={styles.option_button}
             to={
@@ -175,10 +175,7 @@ export default function RangesMenu(props: RangesMenuIF) {
         >
             Copy
         </Link>
-    ) : // <button className={styles.option_button} onClick={handleCopyAddress}>
-    //     Copy
-    // </button>
-    null;
+    );
 
     const detailsButton = (
         <button className={styles.option_button} onClick={openDetailsModal}>
@@ -219,11 +216,12 @@ export default function RangesMenu(props: RangesMenuIF) {
     const rangesMenu = (
         <div className={styles.actions_menu}>
             {view1 && repositionButton}
-            {view1 && !noRespositionButton && !isOnPortfolioPage && editButton}
+            {view1 && !noRespositionButton && userMatchesConnectedAccount && editButton}
+            {/* {view1 && !noRespositionButton && !isOnPortfolioPage && editButton} */}
             {view3 && harvestButton}
             {/* {view2 && removeButton} */}
             {view3 && detailsButton}
-            {copyButton}
+            {!userMatchesConnectedAccount && copyButton}
             {/* {view1 && !props.showSidebar && copyButton} */}
         </div>
     );
@@ -233,7 +231,7 @@ export default function RangesMenu(props: RangesMenuIF) {
     const menuContent = (
         <div className={styles.menu_column}>
             {repositionButton}
-            {editButton}
+            {!view1 && !noRespositionButton && userMatchesConnectedAccount && editButton}
             {harvestButton}
             {removeButton}
             {detailsButton}

@@ -26,7 +26,7 @@ interface TransactionRowPropsIF {
     showColumns: boolean;
     blockExplorer: string | undefined;
     closeGlobalModal: () => void;
-    handlePulseAnimation?: () => void;
+    handlePulseAnimation?: (type: string) => void;
 
     openGlobalModal: (content: React.ReactNode) => void;
     isOnPortfolioPage: boolean;
