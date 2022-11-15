@@ -58,17 +58,6 @@ export default function ExchangeBalance(props: ExchangeBalanceProps) {
         setFullLayoutActive,
     } = props;
 
-    const variants = {
-        open: {
-            width: 'auto',
-            height: 'auto',
-        },
-        closed: {
-            width: '30px',
-            height: 'auto',
-        },
-    };
-
     const [sendToAddress, setSendToAddress] = useState<string | undefined>();
     const [resolvedAddress, setResolvedAddress] = useState<string | undefined>();
 
@@ -193,26 +182,24 @@ export default function ExchangeBalance(props: ExchangeBalanceProps) {
                 <img
                     src={!fullLayoutActive ? closeSidebarImage : vaultImage}
                     alt='toggleSidebar'
-                    width='25px'
+                    width='20px'
                 />
             </IconWithTooltip>
             {/* { fullLayoutActive && <p>Exchange Balance</p>} */}
         </section>
     );
 
-    const titleOpacity = fullLayoutActive ? '0' : '1';
+    // const titleOpacity = fullLayoutActive ? '0' : '1';
     return (
         <motion.main
             animate={fullLayoutActive ? 'closed' : 'open'}
-            variants={variants}
+            style={{ width: '100%' }}
             className={styles.container}
         >
-            {
-                <div style={{ opacity: titleOpacity }} className={styles.title}>
-                    Exchange Balance
-                </div>
-            }
             <motion.div className={styles.main_container}>
+                {/* <div style={{ opacity: titleOpacity }} className={styles.title}>
+                    Exchange Balance
+                </div> */}
                 <div className={styles.tabs_container}>
                     {!fullLayoutActive && (
                         <TabComponent

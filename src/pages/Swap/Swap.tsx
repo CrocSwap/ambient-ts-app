@@ -72,7 +72,7 @@ interface SwapPropsIF {
 
     openGlobalModal: (content: React.ReactNode) => void;
 
-    isTxCopied?: boolean;
+    isSwapCopied?: boolean;
 }
 
 export default function Swap(props: SwapPropsIF) {
@@ -105,7 +105,7 @@ export default function Swap(props: SwapPropsIF) {
         isInitialized,
         poolExists,
         setTokenPairLocal,
-        isTxCopied,
+        isSwapCopied,
     } = props;
 
     const [isModalOpen, openModal, closeModal] = useModal();
@@ -552,7 +552,7 @@ export default function Swap(props: SwapPropsIF) {
                             activeTokenListsChanged={activeTokenListsChanged}
                             indicateActiveTokenListsChanged={indicateActiveTokenListsChanged}
                             gasPriceInGwei={gasPriceInGwei}
-                            isTxCopied={isTxCopied}
+                            isSwapCopied={isSwapCopied}
                         />
                     </motion.div>
                     {denominationSwitchOrNull}

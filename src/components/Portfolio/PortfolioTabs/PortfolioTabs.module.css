@@ -1,7 +1,7 @@
 .tabs_container {
-    /* width: 100%; */
+    width: 100%;
     height: 100%;
-    margin-top: 1rem;
+   
     border-radius: var(--border-radius);
     background: var(--dark1);
    

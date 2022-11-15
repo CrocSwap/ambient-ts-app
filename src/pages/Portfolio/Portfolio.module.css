@@ -58,17 +58,33 @@
     .full_layout_container {
         /* I wish I had a logical answer to this calculation but it was through trial and error. The higher level containers of the app needs to be refactored to prevent this workflow */
         height: calc(100vh - 16rem);
-        
+        width: 100%;
         display: grid;
-        grid-template-columns: auto auto;
+        
+        /* display: grid;
+        grid-template-columns: auto auto; */
+        /* grid-template-columns: auto 380px; */
         transition: all var(--animation-speed) ease-in-out;
     }
+
     
     .tabs_exchange_balance_container {
-       
+        width: 100%;
         grid-template-columns: auto auto;
+        /* grid-template-columns: auto 380px; */
         gap: 1rem;
         max-height: calc(100vh - 20rem);
+        padding: 1rem 0;
     }
+    .full_layout_container{
+
+        display: grid;
+        grid-template-columns: auto 50px;
+    }
+
+    .tabs_exchange_balance_container{
+        grid-template-columns: auto 380px;
+    }
+
    
 }

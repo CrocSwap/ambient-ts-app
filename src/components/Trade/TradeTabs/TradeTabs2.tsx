@@ -64,9 +64,10 @@ interface ITabsProps {
     closeGlobalModal: () => void;
     importedTokens: TokenIF[];
     showSidebar: boolean;
-    handleTxCopiedClick: () => void;
-    handleOrderCopiedClick: () => void;
-    handleRangeCopiedClick: () => void;
+    handlePulseAnimation: (type: string) => void;
+    // handleTxCopiedClick: () => void;
+    // handleOrderCopiedClick: () => void;
+    // handleRangeCopiedClick: () => void;
 }
 
 // const httpGraphCacheServerDomain = 'https://809821320828123.de:5000';
@@ -106,9 +107,10 @@ export default function TradeTabs2(props: ITabsProps) {
         setOutsideControl,
         importedTokens,
         showSidebar,
-        handleTxCopiedClick,
-        handleOrderCopiedClick,
-        handleRangeCopiedClick,
+        handlePulseAnimation,
+        // handleTxCopiedClick,
+        // handleOrderCopiedClick,
+        // handleRangeCopiedClick,
     } = props;
 
     const graphData = useAppSelector((state) => state?.graphData);
@@ -354,7 +356,9 @@ export default function TradeTabs2(props: ITabsProps) {
 
         setLeader: setLeader,
         setLeaderOwnerId: setLeaderOwnerId,
-        handleRangeCopiedClick: handleRangeCopiedClick,
+        handlePulseAnimation: handlePulseAnimation,
+        // handleRangeCopiedClick: handleRangeCopiedClick,
+        setIsShowAllEnabled: setIsShowAllEnabled,
     };
     // Props for <Ranges/> React Element
     const poolInfoProps = {
@@ -376,6 +380,7 @@ export default function TradeTabs2(props: ITabsProps) {
         account: account,
         setCurrentTxActiveInTransactions: setCurrentTxActiveInTransactions,
         expandTradeTable: expandTradeTable,
+        setIsShowAllEnabled: setIsShowAllEnabled,
 
         isCandleSelected: isCandleSelected,
         filter: filter,
@@ -386,7 +391,8 @@ export default function TradeTabs2(props: ITabsProps) {
 
         isOnPortfolioPage: false,
 
-        handleTxCopiedClick: handleTxCopiedClick,
+        handlePulseAnimation: handlePulseAnimation,
+        // handleTxCopiedClick: handleTxCopiedClick,
     };
     // Props for <Orders/> React Element
     const ordersProps = {
@@ -403,7 +409,9 @@ export default function TradeTabs2(props: ITabsProps) {
         setCurrentPositionActive: setCurrentPositionActive,
         showSidebar: showSidebar,
         isOnPortfolioPage: false,
-        handleOrderCopiedClick: handleOrderCopiedClick,
+        handlePulseAnimation: handlePulseAnimation,
+        // handleOrderCopiedClick: handleOrderCopiedClick,
+        setIsShowAllEnabled: setIsShowAllEnabled,
     };
     // props for <PositionsOnlyToggle/> React Element
 
