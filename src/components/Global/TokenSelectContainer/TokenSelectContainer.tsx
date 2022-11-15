@@ -1,7 +1,7 @@
 // START: Import React and Dongles
-import { Dispatch, SetStateAction, useMemo } from 'react';
+import { Dispatch, SetStateAction, useMemo, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-
+import { motion } from 'framer-motion';
 // START: Import Local Files
 import styles from './TokenSelectContainer.module.css';
 import TokenSelect from '../TokenSelect/TokenSelect';
@@ -10,6 +10,7 @@ import { TokenIF, TokenPairIF, TokenListIF } from '../../../utils/interfaces/exp
 import TokenList from '../../Global/TokenList/TokenList';
 import { useSearch } from './useSearch';
 import { importToken } from './importToken';
+import CustomTokens from '../TokenList/CustomTokens';
 
 interface TokenSelectContainerPropsIF {
     resetTokenQuantities?: () => void;
@@ -133,7 +134,8 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
 
     const tokenListContent = (
         <>
-            <div className={styles.title}>YOUR TOKENS</div>
+            {/* <div className={styles.title}>YOUR TOKENS</div> */}
+
             <div className={styles.tokens_container}>
                 {matchingImportedTokens.map((token: TokenIF, idx: number) => (
                     <TokenSelect
@@ -168,6 +170,49 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
         </>
     );
 
+    const favoritesTab = <div style={{ minHeight: '300px' }}>Favorites</div>;
+    const importedTabs = (
+        <div style={{ minHeight: '300px' }}>
+            <CustomTokens
+                chainId={chainId}
+                tokenToUpdate={tokenToUpdate}
+                undeletableTokens={undeletableTokens}
+                justTokensDisplay={true}
+                closeModal={closeModal}
+            />
+        </div>
+    );
+
+    const allTokenTabData = [
+        { icon: '', label: 'All', content: tokenListContent },
+        { icon: '', label: 'Favorites', content: favoritesTab },
+        { icon: '', label: 'Imported', content: importedTabs },
+    ];
+    const [selectedTokenTab, setSelectedTokenTab] = useState(allTokenTabData[0]);
+
+    const tabControl = (
+        <nav className={styles.tab_control_nav}>
+            <ul>
+                {allTokenTabData.map((item) => (
+                    <li
+                        key={item.label}
+                        className={
+                            item.label === selectedTokenTab.label
+                                ? styles.selected
+                                : styles.list_item
+                        }
+                        onClick={() => setSelectedTokenTab(item)}
+                    >
+                        {`${item.icon} ${item.label}`}
+                        {item.label === selectedTokenTab.label ? (
+                            <motion.div className={styles.underline} layoutId='underline' />
+                        ) : null}
+                    </li>
+                ))}
+            </ul>
+        </nav>
+    );
+
     const tokenListContainer = (
         <>
             <div className={styles.search_input}>
@@ -177,7 +222,9 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
                     onChange={(event) => setSearchInput(event.target.value)}
                 />
             </div>
-            {tokenListContent}
+            {tabControl}
+
+            {selectedTokenTab?.content}
         </>
     );
 
