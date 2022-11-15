@@ -34,7 +34,8 @@ export default function TokenSelect(props: TokenSelectPropsIF) {
         tokensBank,
         undeletableTokens,
         chainId,
-        setImportedTokens
+        setImportedTokens,
+        fromListsText
     } = props;
 
     const [showDelete, setShowDelete] = useState(false);
@@ -164,7 +165,7 @@ export default function TokenSelect(props: TokenSelectPropsIF) {
                 </div>
                 {undeletableTokens.includes(token.address) || deleteIcon}
             </div>
-            <p className={styles.token_list_data}>lorem ipsum ipsum</p>
+            <p className={styles.token_list_data}>{fromListsText}</p>
         </>
     );
 }
