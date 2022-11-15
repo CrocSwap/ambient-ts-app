@@ -2525,6 +2525,7 @@ export default function App() {
                                     setCurrentTxActiveInTransactions={
                                         setCurrentTxActiveInTransactions
                                     }
+                                    handlePulseAnimation={handlePulseAnimation}
                                 />
                             }
                         />
@@ -2569,6 +2570,7 @@ export default function App() {
                                     setCurrentTxActiveInTransactions={
                                         setCurrentTxActiveInTransactions
                                     }
+                                    handlePulseAnimation={handlePulseAnimation}
                                 />
                             }
                         />
@@ -2624,6 +2626,7 @@ export default function App() {
                                     setCurrentTxActiveInTransactions={
                                         setCurrentTxActiveInTransactions
                                     }
+                                    handlePulseAnimation={handlePulseAnimation}
                                 />
                             }
                         />

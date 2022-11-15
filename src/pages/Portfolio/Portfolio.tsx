@@ -63,6 +63,7 @@ interface PortfolioPropsIF {
     quoteTokenBalance: string;
     baseTokenDexBalance: string;
     quoteTokenDexBalance: string;
+    handlePulseAnimation: (type: string) => void;
 
     currentTxActiveInTransactions: string;
     setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
@@ -102,6 +103,7 @@ export default function Portfolio(props: PortfolioPropsIF) {
         setCurrentTxActiveInTransactions,
         showSidebar,
         isUserLoggedIn,
+        handlePulseAnimation,
     } = props;
     const { isInitialized } = useMoralis();
 
@@ -418,6 +420,7 @@ export default function Portfolio(props: PortfolioPropsIF) {
                     currentTxActiveInTransactions={currentTxActiveInTransactions}
                     setCurrentTxActiveInTransactions={setCurrentTxActiveInTransactions}
                     fullLayoutToggle={fullLayerToggle}
+                    handlePulseAnimation={handlePulseAnimation}
                 />
                 {/* {connectedAccountActive && !fullLayoutActive ? exchangeBalanceComponent : null} */}
                 {connectedAccountActive && exchangeBalanceComponent}
