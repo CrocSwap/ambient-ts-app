@@ -70,7 +70,6 @@ export const useSoloSearch = (
 
     const [importedTokensForDOM, setImportedTokensForDOM] = useState<TokenIF[]>([]);
     const [otherTokensForDOM, setOtherTokensForDOM] = useState<TokenIF[]>([]);
-    useEffect(() => console.log(otherTokensForDOM), [otherTokensForDOM]);
     useEffect(() => {
         const importedTokensOnChain = importedTokens.filter(
             (tkn: TokenIF) => tkn.chainId === parseInt(chainId)
