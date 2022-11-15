@@ -357,12 +357,11 @@
     }
 
     .middle_col {
-        align-items: stretch;
+        /* align-items: stretch; */
         /* display: flex; */
         flex-flow: column;
         /* gap: 40px; */
         height: 95%;
-        justify-content: flex-start;
         position: relative;
     }
     @-moz-document url-prefix() {
