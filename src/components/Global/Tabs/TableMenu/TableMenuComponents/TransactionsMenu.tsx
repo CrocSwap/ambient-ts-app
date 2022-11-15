@@ -41,7 +41,8 @@ interface TransactionMenuIF {
     showSidebar: boolean;
     openGlobalModal: (content: React.ReactNode, title?: string) => void;
     closeGlobalModal: () => void;
-    handlePulseAnimation?: () => void;
+    handlePulseAnimation?: (type: string) => void;
+
     isOnPortfolioPage: boolean;
 }
 
@@ -94,9 +95,14 @@ export default function TransactionsMenu(props: TransactionMenuIF) {
 
     const handleCopyClick = () => {
         // console.log('copy clicked');
-        console.log({ tx });
-        {
-            handlePulseAnimation ? handlePulseAnimation() : null;
+        if (handlePulseAnimation) {
+            if (tx.entityType === 'swap') {
+                handlePulseAnimation('swap');
+            } else if (tx.entityType === 'limitOrder') {
+                handlePulseAnimation('limitOrder');
+            } else if (tx.entityType === 'liqchange') {
+                handlePulseAnimation('range');
+            }
         }
 
         if (tx.positionType === 'ambient') {

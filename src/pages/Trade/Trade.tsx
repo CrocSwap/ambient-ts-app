@@ -76,10 +76,10 @@ interface TradePropsIF {
     poolExists: boolean | null;
     showSidebar: boolean;
     setTokenPairLocal: Dispatch<SetStateAction<string[] | null>>;
-
-    handleTxCopiedClick: () => void;
-    handleOrderCopiedClick: () => void;
-    handleRangeCopiedClick: () => void;
+    handlePulseAnimation: (type: string) => void;
+    // handleTxCopiedClick: () => void;
+    // handleOrderCopiedClick: () => void;
+    // handleRangeCopiedClick: () => void;
 }
 
 // React functional component
@@ -121,9 +121,10 @@ export default function Trade(props: TradePropsIF) {
         poolExists,
         setTokenPairLocal,
         showSidebar,
-        handleTxCopiedClick,
-        handleOrderCopiedClick,
-        handleRangeCopiedClick,
+        handlePulseAnimation,
+        // handleTxCopiedClick,
+        // handleOrderCopiedClick,
+        // handleRangeCopiedClick,
     } = props;
 
     const tokenPairFromParams = useUrlParams(chainId, isInitialized);
@@ -554,9 +555,10 @@ export default function Trade(props: TradePropsIF) {
                             closeGlobalModal={props.closeGlobalModal}
                             importedTokens={importedTokens}
                             showSidebar={showSidebar}
-                            handleTxCopiedClick={handleTxCopiedClick}
-                            handleOrderCopiedClick={handleOrderCopiedClick}
-                            handleRangeCopiedClick={handleRangeCopiedClick}
+                            handlePulseAnimation={handlePulseAnimation}
+                            // handleTxCopiedClick={handleTxCopiedClick}
+                            // handleOrderCopiedClick={handleOrderCopiedClick}
+                            // handleRangeCopiedClick={handleRangeCopiedClick}
                         />
                     </div>
                 </motion.div>

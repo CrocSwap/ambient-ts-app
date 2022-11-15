@@ -52,7 +52,7 @@ interface CurrencyConverterPropsIF {
     indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
     gasPriceInGwei: number | undefined;
 
-    isTxCopied?: boolean;
+    isSwapCopied?: boolean;
 }
 
 export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
@@ -86,7 +86,7 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
         activeTokenListsChanged,
         indicateActiveTokenListsChanged,
         gasPriceInGwei,
-        isTxCopied,
+        isSwapCopied,
     } = props;
 
     // TODO: update name of functions with 'handle' verbiage
@@ -592,7 +592,7 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
                 activeTokenListsChanged={activeTokenListsChanged}
                 indicateActiveTokenListsChanged={indicateActiveTokenListsChanged}
                 gasPriceInGwei={gasPriceInGwei}
-                isTxCopied={isTxCopied}
+                isSwapCopied={isSwapCopied}
             />
             <div className={styles.arrow_container} onClick={reverseTokens}>
                 {isLiq ? null : (
@@ -631,7 +631,7 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
                 activeTokenListsChanged={activeTokenListsChanged}
                 indicateActiveTokenListsChanged={indicateActiveTokenListsChanged}
                 gasPriceInGwei={gasPriceInGwei}
-                isTxCopied={isTxCopied}
+                isSwapCopied={isSwapCopied}
             />
         </section>
     );

@@ -48,7 +48,7 @@ interface propsIF {
     isOnPortfolioPage: boolean;
 
     showSidebar: boolean;
-    handleOrderCopiedClick?: () => void;
+    handlePulseAnimation?: (type: string) => void;
 }
 
 // main react functional component
@@ -67,7 +67,7 @@ export default function Orders(props: propsIF) {
         currentPositionActive,
         showSidebar,
         isOnPortfolioPage,
-        handleOrderCopiedClick,
+        handlePulseAnimation,
         setIsShowAllEnabled,
     } = props;
 
@@ -471,7 +471,7 @@ export default function Orders(props: propsIF) {
             setCurrentPositionActive={setCurrentPositionActive}
             isShowAllEnabled={isShowAllEnabled}
             isOnPortfolioPage={isOnPortfolioPage}
-            handleOrderCopiedClick={handleOrderCopiedClick}
+            handlePulseAnimation={handlePulseAnimation}
         />
     ));
 
