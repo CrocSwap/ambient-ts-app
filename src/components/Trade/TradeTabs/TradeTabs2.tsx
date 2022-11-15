@@ -376,6 +376,7 @@ export default function TradeTabs2(props: ITabsProps) {
         account: account,
         setCurrentTxActiveInTransactions: setCurrentTxActiveInTransactions,
         expandTradeTable: expandTradeTable,
+        setIsShowAllEnabled: setIsShowAllEnabled,
 
         isCandleSelected: isCandleSelected,
         filter: filter,
