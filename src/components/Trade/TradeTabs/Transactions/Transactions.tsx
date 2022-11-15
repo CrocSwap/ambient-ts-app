@@ -27,6 +27,7 @@ import { useSortedTransactions } from '../useSortedTxs';
 import useDebounce from '../../../../App/hooks/useDebounce';
 import Animation from '../../../Global/Animation/Animation';
 import noDataLottie from '../../../../assets/animations/noData.json';
+import NoTableData from '../NoTableData/NoTableData';
 // import TransactionAccordions from './TransactionAccordions/TransactionAccordions';
 interface TransactionsProps {
     importedTokens: TokenIF[];
@@ -566,7 +567,7 @@ export default function Transactions(props: TransactionsProps) {
             <Animation animData={noDataLottie} loop={false} />
         </div>
     );
-    const transactionDataOrNull = transactionData.length > 0 ? rowItemContent : noData;
+    const transactionDataOrNull = transactionData.length > 0 ? rowItemContent : <NoTableData />;
 
     const expandStyle = expandTradeTable ? 'calc(100vh - 10rem)' : '250px';
 
