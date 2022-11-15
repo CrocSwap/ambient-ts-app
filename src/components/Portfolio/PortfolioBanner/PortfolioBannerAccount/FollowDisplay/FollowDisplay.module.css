@@ -69,7 +69,7 @@ transition: all var(--animation-speed) ease-in-out
 
 
 .button_following{
-    background: linear-gradient(90deg, #7371FC 0%, #CDC1FF 49.48%, #7371FC 100%);
+    background: var(--title-gradient)
    
 
 }
@@ -86,7 +86,7 @@ transition: all var(--animation-speed) ease-in-out
     background: transparent;
     
 
-    color: #000000;
+    color: var(--text-grey-dark);
    
     transition: all var(--animation-speed) ease-in-out;
     background: linear-gradient(
@@ -100,12 +100,12 @@ transition: all var(--animation-speed) ease-in-out
     background-position: 1% 50%;
     background-size: 100% 300%;
     text-decoration: none;
-    border: 1px solid #7371fc;
+    border: 1px solid var(--text-highlight);
     
 }
 
 .button_not_following:hover{
-    color: black;
+    color: var(--text-grey-dark);
     border: 1px solid rgba(223, 190, 106, 0);
     background-position: 99% 50%;
     box-shadow: 0px 15px 20px rgba(77, 6, 112, 0.4);
@@ -145,6 +145,7 @@ transition: all var(--animation-speed) ease-in-out
     padding: 12px 15px;
     position: relative;
     background: var(--dark3);
+    color: var(--text-grey-white);
     cursor: pointer;
    
     display: flex;
@@ -162,7 +163,7 @@ transition: all var(--animation-speed) ease-in-out
     left: 0;
     right: 0;
     height: 1px;
-    background: blue;
+    background: var(--text-highlight);
   }
   
   .header_active{

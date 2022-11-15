@@ -75,7 +75,7 @@
 .right_col {
     display: flex;
     flex-direction: column;
-    background-color: var(--dark1);
+    /* background-color: var(--dark1); */
     position: relative;
     background: url(../../assets/images/backgrounds/background.png) no-repeat center center;
     -webkit-background-size: cover;
@@ -148,7 +148,7 @@
     /* background: var(--dark2); */
     backdrop-filter: blur(6px);
     -webkit-backdrop-filter: blur(6px);
-    z-index: 3;
+    z-index: 7;
 
     display: flex;
     justify-content: center;
@@ -348,7 +348,7 @@
     }
 
     .right_col {
-        background: var(--dark1);
+        background: transparent;
     }
 
     .middle_col,
@@ -358,7 +358,7 @@
 
     .middle_col {
         align-items: stretch;
-        display: flex;
+        /* display: flex; */
         flex-flow: column;
         /* gap: 40px; */
         height: 95%;

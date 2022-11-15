@@ -316,7 +316,7 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
                                 isWithdrawTokenBFromDexChecked &&
                                 tokenBSurplusMinusTokenBRemainderNum &&
                                 tokenBSurplusMinusTokenBRemainderNum < 0)
-                                ? '#ebebff'
+                                ? 'var(--text-highlight)'
                                 : '#555555',
                     }}
                 >
@@ -348,7 +348,7 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
                                             isWithdrawTokenBFromDexChecked &&
                                             tokenBSurplusMinusTokenBRemainderNum &&
                                             tokenBSurplusMinusTokenBRemainderNum < 0)
-                                            ? '#ebebff'
+                                            ? 'var(--text-highlight)'
                                             : '#555555'
                                     }
                                 />
@@ -387,7 +387,7 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
                                 color:
                                     (isTokenASelector && isWithdrawTokenAFromDexChecked) ||
                                     (!isTokenASelector && isWithdrawTokenBFromDexChecked)
-                                        ? '#ebebff'
+                                        ? 'var(--text-highlight)'
                                         : '#555555',
                             }}
                         >

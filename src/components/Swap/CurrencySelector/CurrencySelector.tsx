@@ -303,7 +303,7 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                                 isWithdrawFromDexChecked &&
                                 tokenASurplusMinusTokenARemainderNum &&
                                 tokenASurplusMinusTokenARemainderNum < 0)
-                                ? '#ebebff'
+                                ? 'var(--text-highlight)'
                                 : '#555555',
                     }}
                 >
@@ -332,7 +332,7 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                                             isWithdrawFromDexChecked &&
                                             tokenASurplusMinusTokenARemainderNum &&
                                             tokenASurplusMinusTokenARemainderNum < 0)
-                                            ? '#ebebff'
+                                            ? 'var(--text-highlight)'
                                             : '#555555'
                                     }
                                 />
@@ -364,7 +364,7 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                                     (isSellTokenSelector && !isWithdrawFromDexChecked) ||
                                     (!isSellTokenSelector && !isSaveAsDexSurplusChecked)
                                         ? '#555555'
-                                        : '#ebebff',
+                                        : 'var(--text-highlight)',
                             }}
                             onClick={() => {
                                 if (props.sellToken) {
@@ -388,7 +388,12 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                                         : null
                                 }`}
                             >
-                                <img src={ambientLogo} width='20' alt='surplus' color='#ebebff' />
+                                <img
+                                    src={ambientLogo}
+                                    width='20'
+                                    alt='surplus'
+                                    color='var(--text-highlight)'
+                                />
                             </div>
 
                             <div className={styles.balance_column}>

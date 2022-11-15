@@ -1937,6 +1937,29 @@ export default function App() {
 
     // END OF------------------- FOLLOWING CODE IS PURELY RESPONSIBLE FOR PULSE ANIMATION------------
 
+    // --------------THEME--------------------------
+    // const defaultDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const [theme, setTheme] = useState('dark');
+
+    const switchTheme = () => {
+        const newTheme = theme === 'light' ? 'dark' : 'light';
+        setTheme(newTheme);
+    };
+
+    // const themeButtons = (
+    //     <div
+    //         style={{
+    //             display: 'flex',
+    //             flexDirection: 'column',
+    //             justifyContent: 'center',
+    //             alignItems: 'center',
+    //         }}
+    //     >
+    //         <button onClick={switchTheme}>Switch Theme</button>
+    //     </div>
+    // );
+
+    // --------------END OF THEME--------------------------
     // props for <PageHeader/> React element
     const headerProps = {
         isUserLoggedIn: isUserLoggedIn,
@@ -1957,6 +1980,9 @@ export default function App() {
         closeGlobalModal: closeGlobalModal,
         isAppOverlayActive: isAppOverlayActive,
         setIsAppOverlayActive: setIsAppOverlayActive,
+
+        switchTheme: switchTheme,
+        theme: theme,
     };
 
     // props for <Swap/> React element
@@ -2237,7 +2263,7 @@ export default function App() {
 
     return (
         <>
-            <div className={containerStyle}>
+            <div className={containerStyle} data-theme={theme}>
                 {isMobileSidebarOpen && <div className='blur_app' />}
                 <AppOverlay
                     isAppOverlayActive={isAppOverlayActive}
@@ -2246,6 +2272,7 @@ export default function App() {
                 {/* {currentLocation == '/' && <PhishingWarning />} */}
 
                 {currentLocation !== '/404' && <PageHeader {...headerProps} />}
+
                 {/* <MobileSidebar/> */}
                 <main className={`${showSidebarOrNullStyle} ${swapBodyStyle}`}>
                     {!currentLocation.startsWith('/swap') && sidebarRender}

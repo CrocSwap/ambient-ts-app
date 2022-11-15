@@ -98,7 +98,7 @@
     flex-direction: column;
     gap: 10px;
     padding: 8px;
-    border: 1px solid #242f3f;
+    border: 1px solid var(--border);
     border-radius: 4px;
 }
 .extra_info_container .row {

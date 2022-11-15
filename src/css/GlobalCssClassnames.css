@@ -14,7 +14,7 @@
 }
 
 .base_color {
-  color: rgba(235, 235, 255, 0.4);
+  color: var(--text-grey-light)
 }
 .order_sell{
    color:  #E480FF

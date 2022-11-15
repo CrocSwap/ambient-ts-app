@@ -15,7 +15,7 @@
     background: transparent;
     text-transform: uppercase;
 
-    color: #cdc1ff;
+    color: var(--text-highlight);
     border-radius: 4px;
     transition: all var(--animation-speed) ease-in-out;
     background: linear-gradient(
@@ -33,7 +33,7 @@
 }
 
 .btn:hover {
-    color: black;
+    color: var(--text-grey-white);
     border: 1px solid rgba(223, 190, 106, 0);
     background-position: 99% 50%;
 }
