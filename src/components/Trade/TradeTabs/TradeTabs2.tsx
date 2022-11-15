@@ -355,6 +355,7 @@ export default function TradeTabs2(props: ITabsProps) {
         setLeader: setLeader,
         setLeaderOwnerId: setLeaderOwnerId,
         handleRangeCopiedClick: handleRangeCopiedClick,
+        setIsShowAllEnabled: setIsShowAllEnabled,
     };
     // Props for <Ranges/> React Element
     const poolInfoProps = {
@@ -376,6 +377,7 @@ export default function TradeTabs2(props: ITabsProps) {
         account: account,
         setCurrentTxActiveInTransactions: setCurrentTxActiveInTransactions,
         expandTradeTable: expandTradeTable,
+        setIsShowAllEnabled: setIsShowAllEnabled,
 
         isCandleSelected: isCandleSelected,
         filter: filter,
@@ -404,6 +406,7 @@ export default function TradeTabs2(props: ITabsProps) {
         showSidebar: showSidebar,
         isOnPortfolioPage: false,
         handleOrderCopiedClick: handleOrderCopiedClick,
+        setIsShowAllEnabled: setIsShowAllEnabled,
     };
     // props for <PositionsOnlyToggle/> React Element
 

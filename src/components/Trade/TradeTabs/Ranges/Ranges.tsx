@@ -28,6 +28,7 @@ import RangeHeader from './RangesTable/RangeHeader';
 import RangesRow from './RangesTable/RangesRow';
 import TableSkeletons from '../TableSkeletons/TableSkeletons';
 import useDebounce from '../../../../App/hooks/useDebounce';
+import NoTableData from '../NoTableData/NoTableData';
 // import RangeAccordions from './RangeAccordions/RangeAccordions';
 
 // interface for props
@@ -42,6 +43,7 @@ interface RangesPropsIF {
     account: string;
     chainId: string;
     isShowAllEnabled: boolean;
+    setIsShowAllEnabled?: Dispatch<SetStateAction<boolean>>;
     notOnTradeRoute?: boolean;
     graphData: graphData;
     lastBlockNumber: number;
@@ -88,7 +90,7 @@ export default function Ranges(props: RangesPropsIF) {
         account,
         isOnPortfolioPage,
         handleRangeCopiedClick,
-
+        setIsShowAllEnabled,
         showSidebar,
     } = props;
 
@@ -445,10 +447,17 @@ export default function Ranges(props: RangesPropsIF) {
     ));
 
     const expandStyle = expandTradeTable ? 'calc(100vh - 10rem)' : '250px';
-    const noData = <div className={styles.no_data}>No Data to Display</div>;
 
     const portfolioPageStyle = props.isOnPortfolioPage ? 'calc(100vh - 19.5rem)' : expandStyle;
-    const rangeDataOrNull = rangeData.length ? rowItemContent : noData;
+    const rangeDataOrNull = rangeData.length ? (
+        rowItemContent
+    ) : (
+        <NoTableData
+            isShowAllEnabled={isShowAllEnabled}
+            type='ranges'
+            setIsShowAllEnabled={setIsShowAllEnabled}
+        />
+    );
 
     return (
         <main className={`${styles.main_list_container} `} style={{ height: portfolioPageStyle }}>

@@ -200,19 +200,17 @@ export default function ExchangeBalance(props: ExchangeBalanceProps) {
         </section>
     );
 
-    const titleOpacity = fullLayoutActive ? '0' : '1';
+    // const titleOpacity = fullLayoutActive ? '0' : '1';
     return (
         <motion.main
             animate={fullLayoutActive ? 'closed' : 'open'}
             variants={variants}
             className={styles.container}
         >
-            {
-                <div style={{ opacity: titleOpacity }} className={styles.title}>
-                    Exchange Balance
-                </div>
-            }
             <motion.div className={styles.main_container}>
+                {/* <div style={{ opacity: titleOpacity }} className={styles.title}>
+                    Exchange Balance
+                </div> */}
                 <div className={styles.tabs_container}>
                     {!fullLayoutActive && (
                         <TabComponent

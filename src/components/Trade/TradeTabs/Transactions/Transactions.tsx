@@ -25,6 +25,7 @@ import TransactionRow from './TransactionsTable/TransactionRow';
 // import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
 import { useSortedTransactions } from '../useSortedTxs';
 import useDebounce from '../../../../App/hooks/useDebounce';
+import NoTableData from '../NoTableData/NoTableData';
 // import TransactionAccordions from './TransactionAccordions/TransactionAccordions';
 interface TransactionsProps {
     importedTokens: TokenIF[];
@@ -40,6 +41,7 @@ interface TransactionsProps {
     blockExplorer?: string;
     currentTxActiveInTransactions: string;
     setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
+    setIsShowAllEnabled?: Dispatch<SetStateAction<boolean>>;
     account: string;
     expandTradeTable: boolean;
 
@@ -78,6 +80,7 @@ export default function Transactions(props: TransactionsProps) {
         closeGlobalModal,
         isOnPortfolioPage,
         handleTxCopiedClick,
+        setIsShowAllEnabled,
         // setExpandTradeTable,
     } = props;
 
@@ -559,8 +562,16 @@ export default function Transactions(props: TransactionsProps) {
         />
     ));
 
-    const noData = <div className={styles.no_data}>No Data to Display</div>;
-    const transactionDataOrNull = transactionData.length > 0 ? rowItemContent : noData;
+    const transactionDataOrNull =
+        transactionData.length > 0 ? (
+            rowItemContent
+        ) : (
+            <NoTableData
+                isShowAllEnabled={isShowAllEnabled}
+                setIsShowAllEnabled={setIsShowAllEnabled}
+                type='transactions'
+            />
+        );
 
     const expandStyle = expandTradeTable ? 'calc(100vh - 10rem)' : '250px';
 
