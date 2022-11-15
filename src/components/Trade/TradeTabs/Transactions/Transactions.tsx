@@ -50,7 +50,7 @@ interface TransactionsProps {
 
     openGlobalModal: (content: React.ReactNode) => void;
     closeGlobalModal: () => void;
-    handleTxCopiedClick?: () => void;
+    handlePulseAnimation?: (type: string) => void;
     showSidebar: boolean;
 
     isOnPortfolioPage: boolean;
@@ -79,7 +79,7 @@ export default function Transactions(props: TransactionsProps) {
         openGlobalModal,
         closeGlobalModal,
         isOnPortfolioPage,
-        handleTxCopiedClick,
+        handlePulseAnimation,
         setIsShowAllEnabled,
         // setExpandTradeTable,
     } = props;
@@ -558,7 +558,7 @@ export default function Transactions(props: TransactionsProps) {
             blockExplorer={blockExplorer}
             closeGlobalModal={closeGlobalModal}
             isOnPortfolioPage={isOnPortfolioPage}
-            handlePulseAnimation={handleTxCopiedClick}
+            handlePulseAnimation={handlePulseAnimation}
         />
     ));
 

@@ -248,10 +248,13 @@ export default function App() {
     const ambientTokens = useTokenMap(false, ['/ambient-token-list.json']);
     const tokensOnActiveLists = useTokenMap(
         activeTokenListsChanged,
-        JSON.parse(localStorage.getItem('user') as string)?.activeTokenLists ??
-        ['/ambient-token-list.json']
+        JSON.parse(localStorage.getItem('user') as string)?.activeTokenLists ?? [
+            '/ambient-token-list.json',
+        ],
     );
-    useEffect(() => {console.log({tokensOnActiveLists})}, [tokensOnActiveLists]);
+    useEffect(() => {
+        console.log({ tokensOnActiveLists });
+    }, [tokensOnActiveLists]);
     const location = useLocation();
 
     const [candleData, setCandleData] = useState<CandlesByPoolAndDuration | undefined>();
@@ -1912,33 +1915,34 @@ export default function App() {
 
     // ------------------- FOLLOWING CODE IS PURELY RESPONSIBLE FOR PULSE ANIMATION------------
 
-    const [isTxCopied, setIsTxCopied] = useState(false);
+    const [isSwapCopied, setIsSwapCopied] = useState(false);
     const [isOrderCopied, setIsOrderCopied] = useState(false);
     const [isRangeCopied, setIsRangeCopied] = useState(false);
 
-    const handleTxCopiedClick = () => {
-        setIsTxCopied(true);
-        console.log('STARTING ANIMATION');
+    const handlePulseAnimation = (type: string) => {
+        switch (type) {
+            case 'swap':
+                setIsSwapCopied(true);
+                setTimeout(() => {
+                    setIsSwapCopied(false);
+                }, 3000);
+                break;
+            case 'limitOrder':
+                setIsOrderCopied(true);
+                setTimeout(() => {
+                    setIsOrderCopied(false);
+                }, 3000);
+                break;
+            case 'range':
+                setIsRangeCopied(true);
 
-        setTimeout(() => {
-            setIsTxCopied(false);
-        }, 3000);
-    };
-    const handleOrderCopiedClick = () => {
-        setIsOrderCopied(true);
-        console.log('STARTING ANIMATION');
-
-        setTimeout(() => {
-            setIsOrderCopied(false);
-        }, 3000);
-    };
-    const handleRangeCopiedClick = () => {
-        setIsRangeCopied(true);
-        console.log('STARTING ANIMATION');
-
-        setTimeout(() => {
-            setIsRangeCopied(false);
-        }, 3000);
+                setTimeout(() => {
+                    setIsRangeCopied(false);
+                }, 3000);
+                break;
+            default:
+                break;
+        }
     };
 
     // END OF------------------- FOLLOWING CODE IS PURELY RESPONSIBLE FOR PULSE ANIMATION------------
@@ -2056,7 +2060,7 @@ export default function App() {
         isInitialized: isInitialized,
         poolExists: poolExists,
         openGlobalModal: openGlobalModal,
-        isTxCopied: isTxCopied,
+        isSwapCopied: isSwapCopied,
     };
 
     // props for <Limit/> React element on trade route
@@ -2351,9 +2355,10 @@ export default function App() {
                                     poolExists={poolExists}
                                     setTokenPairLocal={setTokenPairLocal}
                                     showSidebar={showSidebar}
-                                    handleTxCopiedClick={handleTxCopiedClick}
-                                    handleOrderCopiedClick={handleOrderCopiedClick}
-                                    handleRangeCopiedClick={handleRangeCopiedClick}
+                                    handlePulseAnimation={handlePulseAnimation}
+                                    // handleTxCopiedClick={handleTxCopiedClick}
+                                    // handleOrderCopiedClick={handleOrderCopiedClick}
+                                    // handleRangeCopiedClick={handleRangeCopiedClick}
                                 />
                             }
                         >
