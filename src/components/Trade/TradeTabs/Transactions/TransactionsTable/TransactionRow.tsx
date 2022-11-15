@@ -314,6 +314,15 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
             {/* </div> */}
         </li>
     );
+
+    const fillTime = new Intl.DateTimeFormat('en-US', {
+        month: 'short',
+        day: 'numeric',
+        // hour12: false,
+        // hour: '2-digit',
+        // minute: '2-digit',
+    }).format(tx.time * 1000);
+
     // end of portfolio page li element ---------------
     return (
         <ul
@@ -326,12 +335,13 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
             }
             id={txDomId}
         >
+            {isOnPortfolioPage && !desktopView && tokenPair}
             {!isOnPortfolioPage && !showColumns && !view2 && (
-                <li>
-                    <p className='base_color'> Nov 9 10:36:23 AM</p>
+                <li onClick={openDetailsModal}>
+                    <p className='base_color'>{fillTime}</p>
+                    {/* <p className='base_color'> Nov 9 10:36:23 AM</p> */}
                 </li>
             )}
-            {isOnPortfolioPage && !desktopView && tokenPair}
             {/* {isOnPortfolioPage && !showSidebar && poolName} */}
             {!showColumns && IDWithTooltip}
             {!showColumns && !isOnPortfolioPage && walletWithTooltip}
