@@ -7,14 +7,8 @@ import { CgUnavailable } from 'react-icons/cg';
 import styles from './TokenSelect.module.css';
 import { TokenIF } from '../../../utils/interfaces/exports';
 import uriToHttp from '../../../utils/functions/uriToHttp';
-// import clickStar from './clickStar';
 import { removeToken } from '../../Global/TokenSelectContainer/removeToken';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
-// import { toDisplayQty } from '@crocswap-libs/sdk';
-// import { ZERO_ADDRESS } from '../../../constants';
-// import { formatAmountOld } from '../../../utils/numbers';
-// import truncateDecimals from '../../../utils/data/truncateDecimals';
-// import { tokenData } from '../../../utils/state/tokenDataSlice';
 
 interface TokenSelectPropsIF {
     token: TokenIF;
@@ -24,10 +18,19 @@ interface TokenSelectPropsIF {
     setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
     chooseToken: (tok: TokenIF) => void;
     isOnPortfolio?: boolean;
+    fromListsText: string;
 }
 
 export default function TokenSelect(props: TokenSelectPropsIF) {
-    const { token, chooseToken, tokensBank, undeletableTokens, chainId, setImportedTokens } = props;
+    const {
+        token,
+        chooseToken,
+        tokensBank,
+        undeletableTokens,
+        chainId,
+        setImportedTokens,
+        fromListsText
+    } = props;
 
     const [showDelete, setShowDelete] = useState(false);
     const [toggleDeleteOn, setToggleDeleteOn] = useState(false);
@@ -36,8 +39,6 @@ export default function TokenSelect(props: TokenSelectPropsIF) {
 
     const connectedUserNativeToken = userData.tokens.nativeToken;
     const connectedUserErc20Tokens = userData.tokens.erc20Tokens;
-    // const connectedUserNativeToken = useAppSelector((state) => state.userData.tokens.nativeToken);
-    // const connectedUserErc20Tokens = useAppSelector((state) => state.userData.tokens.erc20Tokens);
     const isUserLoggedIn = userData.isLoggedIn;
 
     const connectedUserTokens = connectedUserNativeToken
@@ -156,7 +157,7 @@ export default function TokenSelect(props: TokenSelectPropsIF) {
                 </div>
                 {undeletableTokens.includes(token.address) || deleteIcon}
             </div>
-            <p className={styles.token_list_data}>lorem ipsum ipsum</p>
+            <p className={styles.token_list_data}>{fromListsText}</p>
         </>
     );
 }

@@ -6,7 +6,6 @@ import {
     SetStateAction
 } from 'react';
 import { TokenIF } from '../../../utils/interfaces/exports';
-// import { ambientTokenList } from '../../../utils/data/ambientTokenList';
 
 export const useSoloSearch = (
     chainId: string,
@@ -19,7 +18,6 @@ export const useSoloSearch = (
     Dispatch<SetStateAction<string>>,
     string
 ] => {
-    // console.log(tokensOnActiveLists);
     // raw input from the user
     const [input, setInput] = useState('');
 
@@ -70,7 +68,6 @@ export const useSoloSearch = (
 
     const [importedTokensForDOM, setImportedTokensForDOM] = useState<TokenIF[]>([]);
     const [otherTokensForDOM, setOtherTokensForDOM] = useState<TokenIF[]>([]);
-    useEffect(() => console.log(otherTokensForDOM), [otherTokensForDOM]);
     useEffect(() => {
         const importedTokensOnChain = importedTokens.filter(
             (tkn: TokenIF) => tkn.chainId === parseInt(chainId)

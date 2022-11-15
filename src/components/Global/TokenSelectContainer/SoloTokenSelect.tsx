@@ -70,9 +70,31 @@ export const SoloTokenSelect = (props: propsIF) => {
                 setImportedTokens={setImportedTokens}
                 chooseToken={chooseToken}
                 isOnPortfolio={true}
+                fromListsText='Imported'
             />
             )
         ) : null;
+
+    const findDupes = (addr: string) => {
+        const allTokenLists = JSON.parse(
+            localStorage.getItem('allTokenLists') as string
+        );
+        const listNames = allTokenLists.filter((tokenList: TokenListIF) => (
+            tokenList.tokens.some((token: TokenIF) => token.address.toLowerCase() === addr.toLowerCase())
+        )).map((tokenList: TokenListIF) => tokenList.name);
+        let outputMessage = '';
+        if (listNames.length > 2) {
+            outputMessage = `from ${listNames[0]}, ${listNames[1]}, and ${listNames.length - 2} other lists`;
+        } else if (listNames.length === 2) {
+            outputMessage = `from ${listNames[0]} and ${listNames[1]}`;
+        } else if (listNames.length === 1) {
+            outputMessage = `from ${listNames[0]}`;
+        } else {
+            console.warn('Could not find a valid array length for listNames in fn findDupes() in SoloTokenSelect.tsx file. Will return empty string. Please troubleshoot.');
+            outputMessage = '';
+        }
+        return outputMessage;
+    }
 
     const otherTokenButtons = otherTokensForDOM
         ? otherTokensForDOM.map((token: TokenIF) => (
@@ -85,6 +107,7 @@ export const SoloTokenSelect = (props: propsIF) => {
                 setImportedTokens={setImportedTokens}
                 chooseToken={chooseToken}
                 isOnPortfolio={true}
+                fromListsText={findDupes(token.address)}
             />
             )
         ) : null;
