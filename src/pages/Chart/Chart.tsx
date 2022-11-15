@@ -163,6 +163,8 @@ export default function Chart(props: ChartData) {
     const [rescaleText, setRescaleText] = useState<any>();
     const [isMouseMoveCrosshair, setIsMouseMoveCrosshair] = useState(false);
     const [crosshairXForSubChart, setCrosshairXForSubChart] = useState(0);
+    const [crosshairYForSubChart, setCrosshairYForSubChart] = useState(0);
+
     const [isMouseMoveForSubChart, setIsMouseMoveForSubChart] = useState(false);
     const [mouseMoveEventForSubChart, setMouseMoveEventForSubChart] = useState<any>();
     const [isZoomForSubChart, setIsZoomForSubChart] = useState(false);
@@ -362,13 +364,13 @@ export default function Chart(props: ChartData) {
                 xAxis.decorate((selection: any) => {
                     selection
                         .attr('filter', (d: any) => {
-                            if (isMouseMoveCrosshair && d === crosshairData[0].x) {
+                            if (d === crosshairData[0].x) {
                                 return 'url(#crossHairBg)';
                             }
                         })
                         .select('text')
                         .attr('class', (d: any) => {
-                            if (isMouseMoveCrosshair && d === crosshairData[0].x) {
+                            if (d === crosshairData[0].x) {
                                 return 'crossHairText';
                             }
                         });
@@ -2490,11 +2492,15 @@ export default function Chart(props: ChartData) {
 
                 const setCrossHairLocation = (event: any) => {
                     crosshairData[0] = snap(candlestick, chartData, event)[0];
+                    setIsMouseMoveCrosshair(true);
 
                     setCrosshairData([
                         {
                             x: crosshairData[0].x,
-                            y: scaleData.yScale.invert(event.offsetY),
+                            y:
+                                isMouseMoveForSubChart || isZoomForSubChart
+                                    ? -1
+                                    : scaleData.yScale.invert(event.offsetY),
                         },
                     ]);
 
@@ -2508,7 +2514,6 @@ export default function Chart(props: ChartData) {
                 }
 
                 d3.select(d3PlotArea.current).on('mousemove', async function (event: any) {
-                    setIsMouseMoveCrosshair(true);
                     setCrossHairLocation(event);
                 });
 
@@ -2769,11 +2774,19 @@ export default function Chart(props: ChartData) {
                                 )}
                                 period={parsedChartData?.period}
                                 crosshairXForSubChart={crosshairXForSubChart}
+                                crosshairYForSubChart={crosshairYForSubChart}
+                                setCrosshairYForSubChart={setCrosshairYForSubChart}
                                 setsubChartValues={setsubChartValues}
-                                setZoomAndYdragControl={setZoomAndYdragControl}
                                 xScale={scaleData !== undefined ? scaleData.xScale : undefined}
+                                xScaleCopy={
+                                    scaleData !== undefined ? scaleData.xScaleCopy : undefined
+                                }
+                                setZoomAndYdragControl={setZoomAndYdragControl}
+                                zoomAndYdragControl={zoomAndYdragControl}
                                 setIsMouseMoveForSubChart={setIsMouseMoveForSubChart}
+                                setIsZoomForSubChart={setIsZoomForSubChart}
                                 setMouseMoveEventForSubChart={setMouseMoveEventForSubChart}
+                                render={render}
                             />
                         </>
                     )}
@@ -2794,14 +2807,15 @@ export default function Chart(props: ChartData) {
                                 )}
                                 period={parsedChartData?.period}
                                 crosshairXForSubChart={crosshairXForSubChart}
-                                crosshairData={crosshairData}
                                 setsubChartValues={setsubChartValues}
                                 xScale={scaleData !== undefined ? scaleData.xScale : undefined}
                                 xScaleCopy={
                                     scaleData !== undefined ? scaleData.xScaleCopy : undefined
                                 }
                                 setZoomAndYdragControl={setZoomAndYdragControl}
+                                zoomAndYdragControl={zoomAndYdragControl}
                                 setIsMouseMoveForSubChart={setIsMouseMoveForSubChart}
+                                setIsZoomForSubChart={setIsZoomForSubChart}
                                 setMouseMoveEventForSubChart={setMouseMoveEventForSubChart}
                                 render={render}
                             />
