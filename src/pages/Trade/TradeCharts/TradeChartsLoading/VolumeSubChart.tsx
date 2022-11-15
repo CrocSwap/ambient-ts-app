@@ -9,19 +9,23 @@ import { useCallback, useEffect, useRef } from 'react';
 interface VolumeData {
     volumeData: VolumeChartData[] | undefined;
     period: number | undefined;
-    crosshairXForSubChart: any;
     setsubChartValues: React.Dispatch<React.SetStateAction<any>>;
+    setZoomAndYdragControl: React.Dispatch<React.SetStateAction<any>>;
     setSelectedDate: React.Dispatch<React.SetStateAction<any>>;
+    crosshairForSubChart: any;
     selectedDate: any;
     candlestick: any;
     xScale: any;
     xScaleCopy: any;
-    setZoomAndYdragControl: React.Dispatch<React.SetStateAction<any>>;
     setIsMouseMoveForSubChart: React.Dispatch<React.SetStateAction<boolean>>;
     setIsZoomForSubChart: React.Dispatch<React.SetStateAction<boolean>>;
     setMouseMoveEventForSubChart: React.Dispatch<React.SetStateAction<any>>;
     zoomAndYdragControl: any;
     render: any;
+    getNewCandleData: any;
+    isMouseMoveForSubChart: any;
+    setMouseMoveChartName: React.Dispatch<React.SetStateAction<string | undefined>>;
+    mouseMoveChartName: string | undefined;
 }
 
 export default function VolumeSubChart(props: VolumeData) {
@@ -29,12 +33,14 @@ export default function VolumeSubChart(props: VolumeData) {
         volumeData,
         period,
         xScale,
-        crosshairXForSubChart,
+        crosshairForSubChart,
         xScaleCopy,
         candlestick,
         selectedDate,
         zoomAndYdragControl,
         setsubChartValues,
+        getNewCandleData,
+        isMouseMoveForSubChart,
     } = props;
 
     const d3PlotBar = useRef(null);
@@ -48,7 +54,7 @@ export default function VolumeSubChart(props: VolumeData) {
         }
     }, [
         xScale,
-        crosshairXForSubChart,
+        crosshairForSubChart,
         period,
         selectedDate,
         volumeData,
@@ -63,8 +69,6 @@ export default function VolumeSubChart(props: VolumeData) {
 
     const drawChart = useCallback(
         (volumeData: any, xScale: any) => {
-            const crosshairDataLocal = [{ x: crosshairXForSubChart, y: -1 }];
-
             if (volumeData.length > 0) {
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
                 const yExtent = d3fc.extentLinear().accessors([(d: any) => d.value]);
@@ -75,6 +79,16 @@ export default function VolumeSubChart(props: VolumeData) {
                     .scale(yScale)
                     .tickFormat(formatDollarAmountAxis)
                     .tickArguments([2]);
+
+                const crosshairDataLocal = [
+                    {
+                        x: crosshairForSubChart[0].x,
+                        y:
+                            isMouseMoveForSubChart && props.mouseMoveChartName === 'volume'
+                                ? crosshairForSubChart[0].y
+                                : -1,
+                    },
+                ];
 
                 const barJoin = d3fc.dataJoin('g', 'bar');
                 const crosshairHorizontalJoin = d3fc.dataJoin('g', 'crosshairHorizontal');
@@ -100,7 +114,7 @@ export default function VolumeSubChart(props: VolumeData) {
 
                 const crosshairVertical = d3fc
                     .annotationSvgLine()
-                    .value((d: any) => d.y)
+                    .value((d: any) => yScale.invert(d.y))
                     .xScale(xScale)
                     .yScale(yScale);
 
@@ -165,12 +179,20 @@ export default function VolumeSubChart(props: VolumeData) {
                 });
 
                 d3.select(d3PlotBar.current).on('measure.range', function (event: any) {
+                    let date: any | undefined = undefined;
                     const svg = d3.select(event.target).select('svg');
                     const zoom = d3
                         .zoom()
                         .scaleExtent([1, 10])
+                        .on('start', () => {
+                            if (date === undefined) {
+                                date = volumeData[volumeData.length - 1].time;
+                            }
+                        })
                         .on('zoom', (event: any) => {
+                            getNewCandleData(event, date, xScale);
                             xScale.domain(event.transform.rescaleX(xScaleCopy).domain());
+
                             props.setZoomAndYdragControl(event);
                             props.setIsMouseMoveForSubChart(false);
                             props.setIsZoomForSubChart(true);
@@ -221,16 +243,16 @@ export default function VolumeSubChart(props: VolumeData) {
                 };
 
                 d3.select('#volume_chart').on('mousemove', function (event: any) {
+                    props.setMouseMoveChartName('volume');
                     props.setIsMouseMoveForSubChart(true);
                     props.setIsZoomForSubChart(false);
                     props.setMouseMoveEventForSubChart(event);
-                    crosshairDataLocal[0].y = yScale.invert(event.offsetY);
 
                     setsubChartValues((prevState: any) => {
                         const newTargets = [...prevState];
                         newTargets.filter((target: any) => target.name === 'volume')[0].value =
                             snap(barSeries, volumeData, {
-                                x: xScale(crosshairXForSubChart),
+                                x: xScale(crosshairDataLocal[0].x),
                                 y: -1,
                             });
 
@@ -241,12 +263,12 @@ export default function VolumeSubChart(props: VolumeData) {
                 d3.select('#volume_chart').on('mouseleave', () => {
                     props.setIsMouseMoveForSubChart(false);
                     props.setIsZoomForSubChart(false);
-
+                    props.setMouseMoveChartName(undefined);
                     render();
                 });
             }
         },
-        [crosshairXForSubChart, selectedDate],
+        [crosshairForSubChart, selectedDate],
     );
 
     return (

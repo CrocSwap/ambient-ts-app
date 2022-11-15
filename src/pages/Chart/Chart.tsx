@@ -162,13 +162,14 @@ export default function Chart(props: ChartData) {
     const [zoomAndYdragControl, setZoomAndYdragControl] = useState();
     const [rescaleText, setRescaleText] = useState<any>();
     const [isMouseMoveCrosshair, setIsMouseMoveCrosshair] = useState(false);
-    const [crosshairXForSubChart, setCrosshairXForSubChart] = useState(0);
-    const [crosshairYForSubChart, setCrosshairYForSubChart] = useState(0);
+
+    const [crosshairForSubChart, setCrosshairForSubChart] = useState([{ x: 0, y: -1 }]);
 
     const [isMouseMoveForSubChart, setIsMouseMoveForSubChart] = useState(false);
     const [mouseMoveEventForSubChart, setMouseMoveEventForSubChart] = useState<any>();
     const [isZoomForSubChart, setIsZoomForSubChart] = useState(false);
 
+    const [mouseMoveChartName, setMouseMoveChartName] = useState<string | undefined>(undefined);
     // Data
     const [crosshairData, setCrosshairData] = useState([{ x: 0, y: -1 }]);
     const [currentPriceData] = useState([{ value: -1 }]);
@@ -485,14 +486,48 @@ export default function Chart(props: ChartData) {
             Math.abs(point.offsetX - xScale(xValue(d))),
         )[1];
 
-        setCrosshairXForSubChart(nearest?.date);
+        setCrosshairForSubChart((prevState) => {
+            const newData = [...prevState];
+
+            newData[0].x = nearest?.date;
+
+            return newData;
+        });
     };
 
+    const getNewCandleData = (event: any, date: any, xScale: any) => {
+        let candleDomain: candleDomain;
+        let domainBoundary = scaleData.xScaleCopy.domain();
+        //    console.log('domBoun',domainBoundary[0])
+        console.log('EVENT', event.transform.rescaleX(scaleData.xScaleCopy).domain()[0]);
+        if (event.transform.rescaleX(scaleData.xScaleCopy).domain()[0] < domainBoundary[0]) {
+            domainBoundary = xScale.domain();
+        }
+
+        if (domainBoundary[0] > event.transform.rescaleX(scaleData.xScaleCopy).domain()[0]) {
+            candleDomain = {
+                lastCandleDate: parsedChartData?.chartData[0].time,
+                domainBoundry: date.getTime(),
+            };
+
+            if (event.transform.rescaleX(scaleData.xScaleCopy).domain()[0] < date) {
+                date.setTime(
+                    new Date(event.transform.rescaleX(scaleData.xScaleCopy).domain()[0]).getTime() -
+                        100 * parsedChartData?.period * 1000,
+                );
+
+                candleDomain = {
+                    lastCandleDate: parsedChartData?.chartData[0].time,
+                    domainBoundry: date.getTime(),
+                };
+
+                dispatch(setCandleDomains(candleDomain));
+            }
+        }
+    };
     // Zoom
     useEffect(() => {
         if (scaleData !== undefined) {
-            let domainBoundary = scaleData.xScaleCopy.domain();
-            let candleDomain: candleDomain;
             let lastY = 0;
             let date: any | undefined = undefined;
 
@@ -512,38 +547,7 @@ export default function Chart(props: ChartData) {
                     if (event.sourceEvent && event.sourceEvent.type !== 'dblclick') {
                         const t = event.transform;
 
-                        if (
-                            event.transform.rescaleX(scaleData.xScaleCopy).domain()[0] <
-                            domainBoundary[0]
-                        ) {
-                            domainBoundary = scaleData.xScale.domain();
-                        }
-
-                        if (
-                            domainBoundary[0] >
-                            event.transform.rescaleX(scaleData.xScaleCopy).domain()[0]
-                        ) {
-                            candleDomain = {
-                                lastCandleDate: parsedChartData?.chartData[0].time,
-                                domainBoundry: date.getTime(),
-                            };
-
-                            if (event.transform.rescaleX(scaleData.xScaleCopy).domain()[0] < date) {
-                                date.setTime(
-                                    new Date(
-                                        event.transform.rescaleX(scaleData.xScaleCopy).domain()[0],
-                                    ).getTime() -
-                                        100 * parsedChartData?.period * 1000,
-                                );
-
-                                candleDomain = {
-                                    lastCandleDate: parsedChartData?.chartData[0].time,
-                                    domainBoundry: date.getTime(),
-                                };
-
-                                dispatch(setCandleDomains(candleDomain));
-                            }
-                        }
+                        getNewCandleData(event, date, scaleData.xScale);
 
                         if (rescale) {
                             const xmin = new Date(Math.floor(scaleData.xScale.domain()[0]));
@@ -599,7 +603,6 @@ export default function Chart(props: ChartData) {
                     if (event.sourceEvent && event.sourceEvent.type != 'wheel') {
                         d3.select(d3Container.current).style('cursor', 'default');
                     }
-
                     // dispatch(setCandleDomains(candleDomain));
                 }) as any;
 
@@ -2202,8 +2205,14 @@ export default function Chart(props: ChartData) {
                         Math.abs(point.offsetX - xScale(xValue(d))),
                     )[1];
 
-                    setCrosshairXForSubChart(nearest?.date);
+                    setCrosshairForSubChart((prevState) => {
+                        const newData = [...prevState];
 
+                        newData[0].x = nearest?.date;
+                        newData[0].y = point.offsetY;
+
+                        return newData;
+                    });
                     props.setCurrentData(nearest);
                     return [
                         {
@@ -2514,6 +2523,8 @@ export default function Chart(props: ChartData) {
                 }
 
                 d3.select(d3PlotArea.current).on('mousemove', async function (event: any) {
+                    isMouseMoveForSubChart = false;
+                    isZoomForSubChart = false;
                     setCrossHairLocation(event);
                 });
 
@@ -2773,20 +2784,22 @@ export default function Chart(props: ChartData) {
                                     (a, b) => b.time - a.time,
                                 )}
                                 period={parsedChartData?.period}
-                                crosshairXForSubChart={crosshairXForSubChart}
-                                crosshairYForSubChart={crosshairYForSubChart}
-                                setCrosshairYForSubChart={setCrosshairYForSubChart}
+                                crosshairForSubChart={crosshairForSubChart}
                                 setsubChartValues={setsubChartValues}
                                 xScale={scaleData !== undefined ? scaleData.xScale : undefined}
                                 xScaleCopy={
                                     scaleData !== undefined ? scaleData.xScaleCopy : undefined
                                 }
+                                getNewCandleData={getNewCandleData}
                                 setZoomAndYdragControl={setZoomAndYdragControl}
                                 zoomAndYdragControl={zoomAndYdragControl}
                                 setIsMouseMoveForSubChart={setIsMouseMoveForSubChart}
+                                isMouseMoveForSubChart={isMouseMoveForSubChart}
                                 setIsZoomForSubChart={setIsZoomForSubChart}
                                 setMouseMoveEventForSubChart={setMouseMoveEventForSubChart}
                                 render={render}
+                                mouseMoveChartName={mouseMoveChartName}
+                                setMouseMoveChartName={setMouseMoveChartName}
                             />
                         </>
                     )}
@@ -2806,18 +2819,22 @@ export default function Chart(props: ChartData) {
                                     (a, b) => b.time - a.time,
                                 )}
                                 period={parsedChartData?.period}
-                                crosshairXForSubChart={crosshairXForSubChart}
+                                crosshairForSubChart={crosshairForSubChart}
                                 setsubChartValues={setsubChartValues}
                                 xScale={scaleData !== undefined ? scaleData.xScale : undefined}
                                 xScaleCopy={
                                     scaleData !== undefined ? scaleData.xScaleCopy : undefined
                                 }
+                                getNewCandleData={getNewCandleData}
                                 setZoomAndYdragControl={setZoomAndYdragControl}
                                 zoomAndYdragControl={zoomAndYdragControl}
+                                isMouseMoveForSubChart={isMouseMoveForSubChart}
                                 setIsMouseMoveForSubChart={setIsMouseMoveForSubChart}
                                 setIsZoomForSubChart={setIsZoomForSubChart}
                                 setMouseMoveEventForSubChart={setMouseMoveEventForSubChart}
                                 render={render}
+                                mouseMoveChartName={mouseMoveChartName}
+                                setMouseMoveChartName={setMouseMoveChartName}
                             />
                         </>
                     )}
@@ -2833,27 +2850,33 @@ export default function Chart(props: ChartData) {
                                     )[0].value,
                                 )}
                             </label>
-                            <VolumeSubChart
-                                volumeData={parsedChartData?.volumeChartData.sort(
-                                    (a, b) => b.time - a.time,
-                                )}
-                                period={parsedChartData?.period}
-                                crosshairXForSubChart={crosshairXForSubChart}
-                                setsubChartValues={setsubChartValues}
-                                setSelectedDate={setSelectedDate}
-                                selectedDate={selectedDate}
-                                candlestick={candlestick}
-                                xScale={scaleData !== undefined ? scaleData.xScale : undefined}
-                                xScaleCopy={
-                                    scaleData !== undefined ? scaleData.xScaleCopy : undefined
-                                }
-                                setZoomAndYdragControl={setZoomAndYdragControl}
-                                zoomAndYdragControl={zoomAndYdragControl}
-                                setIsMouseMoveForSubChart={setIsMouseMoveForSubChart}
-                                setIsZoomForSubChart={setIsZoomForSubChart}
-                                setMouseMoveEventForSubChart={setMouseMoveEventForSubChart}
-                                render={render}
-                            />
+                            {
+                                <VolumeSubChart
+                                    volumeData={parsedChartData?.volumeChartData.sort(
+                                        (a, b) => b.time - a.time,
+                                    )}
+                                    period={parsedChartData?.period}
+                                    crosshairForSubChart={crosshairForSubChart}
+                                    setsubChartValues={setsubChartValues}
+                                    setSelectedDate={setSelectedDate}
+                                    selectedDate={selectedDate}
+                                    candlestick={candlestick}
+                                    xScale={scaleData !== undefined ? scaleData.xScale : undefined}
+                                    xScaleCopy={
+                                        scaleData !== undefined ? scaleData.xScaleCopy : undefined
+                                    }
+                                    getNewCandleData={getNewCandleData}
+                                    setZoomAndYdragControl={setZoomAndYdragControl}
+                                    zoomAndYdragControl={zoomAndYdragControl}
+                                    setIsMouseMoveForSubChart={setIsMouseMoveForSubChart}
+                                    setIsZoomForSubChart={setIsZoomForSubChart}
+                                    setMouseMoveEventForSubChart={setMouseMoveEventForSubChart}
+                                    isMouseMoveForSubChart={isMouseMoveForSubChart}
+                                    mouseMoveChartName={mouseMoveChartName}
+                                    setMouseMoveChartName={setMouseMoveChartName}
+                                    render={render}
+                                />
+                            }
                         </>
                     )}
 
