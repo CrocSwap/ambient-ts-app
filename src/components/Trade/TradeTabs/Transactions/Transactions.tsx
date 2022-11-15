@@ -576,6 +576,7 @@ export default function Transactions(props: TransactionsProps) {
             <NoTableData
                 isShowAllEnabled={isShowAllEnabled}
                 setIsShowAllEnabled={setIsShowAllEnabled}
+                type='transactions'
             />
         );
 

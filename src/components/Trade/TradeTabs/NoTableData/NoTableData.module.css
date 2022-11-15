@@ -28,6 +28,7 @@
     padding: 4px;
     border-radius: 4px;
     cursor: pointer;
+    text-transform: capitalize;
     transition: all var(--animation-speed) ease-in-out
 }
 .container button:hover{

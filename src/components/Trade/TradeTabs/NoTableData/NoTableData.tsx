@@ -1,14 +1,14 @@
 import styles from './NoTableData.module.css';
 import { AiFillFolderOpen } from 'react-icons/ai';
 import { Dispatch, SetStateAction } from 'react';
-import { set } from 'immer/dist/internal';
 
 interface NoTableDataPropsIF {
     isShowAllEnabled: boolean;
     setIsShowAllEnabled: Dispatch<SetStateAction<boolean>> | undefined;
+    type: string;
 }
 export default function NoTableData(props: NoTableDataPropsIF) {
-    const { isShowAllEnabled, setIsShowAllEnabled } = props;
+    const { isShowAllEnabled, setIsShowAllEnabled, type } = props;
 
     const toggleAllEnabled = () => {
         setIsShowAllEnabled ? setIsShowAllEnabled(true) : '';
@@ -16,8 +16,8 @@ export default function NoTableData(props: NoTableDataPropsIF) {
 
     const toggleAllEnabledContent = (
         <>
-            <p>Consider turning on all transactions</p>
-            <button onClick={toggleAllEnabled}>All Transactions</button>
+            <p>Consider turning on all {type}</p>
+            <button onClick={toggleAllEnabled}>All {type}</button>
         </>
     );
 

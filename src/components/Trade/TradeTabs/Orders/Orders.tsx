@@ -25,6 +25,7 @@ import { useSortedLimits } from '../useSortedLimits';
 import { LimitOrderIF, TokenIF } from '../../../../utils/interfaces/exports';
 import { getLimitOrderData } from '../../../../App/functions/getLimitOrderData';
 import useDebounce from '../../../../App/hooks/useDebounce';
+import NoTableData from '../NoTableData/NoTableData';
 
 // import OrderAccordions from './OrderAccordions/OrderAccordions';
 
@@ -39,6 +40,7 @@ interface propsIF {
     account: string;
     graphData: graphData;
     isShowAllEnabled: boolean;
+    setIsShowAllEnabled?: Dispatch<SetStateAction<boolean>>;
     openGlobalModal: (content: React.ReactNode) => void;
     closeGlobalModal: () => void;
     currentPositionActive: string;
@@ -66,6 +68,7 @@ export default function Orders(props: propsIF) {
         showSidebar,
         isOnPortfolioPage,
         handleOrderCopiedClick,
+        setIsShowAllEnabled,
     } = props;
 
     const limitOrdersByUser = graphData.limitOrdersByUser.limitOrders;
@@ -472,10 +475,15 @@ export default function Orders(props: propsIF) {
         />
     ));
 
-    const noData = <div className={styles.no_data}>No Data to Display</div>;
-
-    const orderDataOrNull = limitOrderData.length ? rowItemContent : noData;
-
+    const orderDataOrNull = limitOrderData.length ? (
+        rowItemContent
+    ) : (
+        <NoTableData
+            isShowAllEnabled={isShowAllEnabled}
+            type='orders'
+            setIsShowAllEnabled={setIsShowAllEnabled}
+        />
+    );
     const expandStyle = expandTradeTable ? 'calc(100vh - 10rem)' : '250px';
 
     const portfolioPageStyle = props.isOnPortfolioPage ? 'calc(100vh - 19.5rem)' : expandStyle;

@@ -405,6 +405,7 @@ export default function TradeTabs2(props: ITabsProps) {
         showSidebar: showSidebar,
         isOnPortfolioPage: false,
         handleOrderCopiedClick: handleOrderCopiedClick,
+        setIsShowAllEnabled: setIsShowAllEnabled,
     };
     // props for <PositionsOnlyToggle/> React Element
 
