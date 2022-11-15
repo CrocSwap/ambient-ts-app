@@ -355,6 +355,7 @@ export default function TradeTabs2(props: ITabsProps) {
         setLeader: setLeader,
         setLeaderOwnerId: setLeaderOwnerId,
         handleRangeCopiedClick: handleRangeCopiedClick,
+        setIsShowAllEnabled: setIsShowAllEnabled,
     };
     // Props for <Ranges/> React Element
     const poolInfoProps = {

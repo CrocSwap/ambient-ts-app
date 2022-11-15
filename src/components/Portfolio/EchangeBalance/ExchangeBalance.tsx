@@ -200,7 +200,7 @@ export default function ExchangeBalance(props: ExchangeBalanceProps) {
         </section>
     );
 
-    const titleOpacity = fullLayoutActive ? '0' : '1';
+    // const titleOpacity = fullLayoutActive ? '0' : '1';
     return (
         <motion.main
             animate={fullLayoutActive ? 'closed' : 'open'}

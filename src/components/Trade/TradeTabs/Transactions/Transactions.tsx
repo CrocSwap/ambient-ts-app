@@ -25,8 +25,6 @@ import TransactionRow from './TransactionsTable/TransactionRow';
 // import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
 import { useSortedTransactions } from '../useSortedTxs';
 import useDebounce from '../../../../App/hooks/useDebounce';
-import Animation from '../../../Global/Animation/Animation';
-import noDataLottie from '../../../../assets/animations/noData.json';
 import NoTableData from '../NoTableData/NoTableData';
 // import TransactionAccordions from './TransactionAccordions/TransactionAccordions';
 interface TransactionsProps {
@@ -564,11 +562,6 @@ export default function Transactions(props: TransactionsProps) {
         />
     ));
 
-    const noData = (
-        <div className={styles.no_data}>
-            <Animation animData={noDataLottie} loop={false} />
-        </div>
-    );
     const transactionDataOrNull =
         transactionData.length > 0 ? (
             rowItemContent
