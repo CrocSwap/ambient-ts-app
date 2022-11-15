@@ -121,12 +121,12 @@ export default function TokenSelect(props: TokenSelectPropsIF) {
     return (
         <>
             <div className={styles.main_container}>
-                {!props.isOnPortfolio && (
+                {
                     <div className={`${styles.delete_container} ${deleteStateStyle}`}>
                         Remove {token.symbol} from your list
                         {toggleButtons}
                     </div>
-                )}
+                }
                 <div className={styles.star_icon}>{starIcon}</div>
                 <div className={styles.modal_content} onClick={() => chooseToken(token)}>
                     <div className={styles.modal_tokens_info}>

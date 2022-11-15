@@ -242,7 +242,16 @@ export default function App() {
         }
     }, [isAuthenticated, isWeb3Enabled, isUserLoggedIn, account]);
 
-    const tokenMap = useTokenMap();
+    // this is another case where true vs false is an arbitrary distinction
+    const [activeTokenListsChanged, indicateActiveTokenListsChanged] = useState(false);
+
+    const ambientTokens = useTokenMap(false, ['/ambient-token-list.json']);
+    const tokensOnActiveLists = useTokenMap(
+        activeTokenListsChanged,
+        JSON.parse(localStorage.getItem('user') as string)?.activeTokenLists ??
+        ['/ambient-token-list.json']
+    );
+    useEffect(() => {console.log({tokensOnActiveLists})}, [tokensOnActiveLists]);
     const location = useLocation();
 
     const [candleData, setCandleData] = useState<CandlesByPoolAndDuration | undefined>();
@@ -392,9 +401,6 @@ export default function App() {
     // trigger a useEffect() which needs to run when new token lists are received
     // true vs false is an arbitrary distinction here
     const [tokenListsReceived, indicateTokenListsReceived] = useState(false);
-
-    // this is another case where true vs false is an arbitrary distinction
-    const [activeTokenListsChanged, indicateActiveTokenListsChanged] = useState(false);
 
     if (needTokenLists) {
         setNeedTokenLists(false);
@@ -2157,7 +2163,7 @@ export default function App() {
         setIsShowAllEnabled: setIsShowAllEnabled,
         expandTradeTable: expandTradeTable,
         setExpandTradeTable: setExpandTradeTable,
-        tokenMap: tokenMap,
+        tokenMap: tokensOnActiveLists,
         lastBlockNumber: lastBlockNumber,
         favePools: favePools,
 
@@ -2282,7 +2288,7 @@ export default function App() {
                             element={
                                 <Home
                                     cachedQuerySpotPrice={cachedQuerySpotPrice}
-                                    tokenMap={tokenMap}
+                                    tokenMap={tokensOnActiveLists}
                                     lastBlockNumber={lastBlockNumber}
                                     crocEnv={crocEnv}
                                     chainId={chainData.chainId}
@@ -2323,7 +2329,7 @@ export default function App() {
                                     setIsShowAllEnabled={setIsShowAllEnabled}
                                     expandTradeTable={expandTradeTable}
                                     setExpandTradeTable={setExpandTradeTable}
-                                    tokenMap={tokenMap}
+                                    tokenMap={tokensOnActiveLists}
                                     favePools={favePools}
                                     addPoolToFaves={addPoolToFaves}
                                     removePoolFromFaves={removePoolFromFaves}
@@ -2488,7 +2494,8 @@ export default function App() {
                                     connectedAccount={account ? account : ''}
                                     userImageData={imageData}
                                     chainId={chainData.chainId}
-                                    tokenMap={tokenMap}
+                                    ambientTokens={ambientTokens}
+                                    tokensOnActiveLists={tokensOnActiveLists}
                                     selectedOutsideTab={selectedOutsideTab}
                                     setSelectedOutsideTab={setSelectedOutsideTab}
                                     outsideControl={outsideControl}
@@ -2531,7 +2538,7 @@ export default function App() {
                                     connectedAccount={account ? account : ''}
                                     chainId={chainData.chainId}
                                     userImageData={imageData}
-                                    tokenMap={tokenMap}
+                                    tokensOnActiveLists={tokensOnActiveLists}
                                     selectedOutsideTab={selectedOutsideTab}
                                     setSelectedOutsideTab={setSelectedOutsideTab}
                                     outsideControl={outsideControl}
@@ -2539,6 +2546,7 @@ export default function App() {
                                     userAccount={false}
                                     openGlobalModal={openGlobalModal}
                                     closeGlobalModal={closeGlobalModal}
+                                    ambientTokens={ambientTokens}
                                     importedTokens={importedTokens}
                                     setImportedTokens={setImportedTokens}
                                     chainData={chainData}
@@ -2585,7 +2593,7 @@ export default function App() {
                                     connectedAccount={account ? account : ''}
                                     chainId={chainData.chainId}
                                     userImageData={imageData}
-                                    tokenMap={tokenMap}
+                                    tokensOnActiveLists={tokensOnActiveLists}
                                     selectedOutsideTab={selectedOutsideTab}
                                     setSelectedOutsideTab={setSelectedOutsideTab}
                                     outsideControl={outsideControl}
@@ -2593,6 +2601,7 @@ export default function App() {
                                     userAccount={false}
                                     openGlobalModal={openGlobalModal}
                                     closeGlobalModal={closeGlobalModal}
+                                    ambientTokens={ambientTokens}
                                     importedTokens={importedTokens}
                                     setImportedTokens={setImportedTokens}
                                     chainData={chainData}

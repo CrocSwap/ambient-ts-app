@@ -40,7 +40,8 @@ interface PortfolioPropsIF {
     connectedAccount: string;
     userImageData: string[];
     chainId: string;
-    tokenMap: Map<string, TokenIF>;
+    ambientTokens: Map<string, TokenIF>;
+    tokensOnActiveLists: Map<string, TokenIF>;
     selectedOutsideTab: number;
     setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
     outsideControl: boolean;
@@ -70,8 +71,6 @@ interface PortfolioPropsIF {
 // const cachedFetchAddress = memoizePromiseFn(fetchAddress);
 
 export default function Portfolio(props: PortfolioPropsIF) {
-    const { isInitialized } = useMoralis();
-
     const {
         crocEnv,
         isTokenABase,
@@ -84,7 +83,7 @@ export default function Portfolio(props: PortfolioPropsIF) {
         userImageData,
         connectedAccount,
         chainId,
-        tokenMap,
+        tokensOnActiveLists,
         openGlobalModal,
         closeGlobalModal,
         userAccount,
@@ -99,13 +98,12 @@ export default function Portfolio(props: PortfolioPropsIF) {
         quoteTokenBalance,
         baseTokenDexBalance,
         quoteTokenDexBalance,
-
         currentTxActiveInTransactions,
         setCurrentTxActiveInTransactions,
-
         showSidebar,
         isUserLoggedIn,
     } = props;
+    const { isInitialized } = useMoralis();
 
     const selectedToken: TokenIF = useAppSelector((state) => state.temp.token);
 
@@ -398,7 +396,7 @@ export default function Portfolio(props: PortfolioPropsIF) {
                     activeAccount={address ?? connectedAccount}
                     connectedAccountActive={connectedAccountActive}
                     chainId={chainId}
-                    tokenMap={tokenMap}
+                    tokenMap={tokensOnActiveLists}
                     selectedOutsideTab={selectedOutsideTab}
                     setSelectedOutsideTab={setSelectedOutsideTab}
                     setOutsideControl={setOutsideControl}
@@ -436,8 +434,9 @@ export default function Portfolio(props: PortfolioPropsIF) {
                     <SoloTokenSelect
                         closeModal={closeTokenModal}
                         chainId={chainId}
-                        tokensBank={importedTokens}
+                        importedTokens={importedTokens}
                         setImportedTokens={setImportedTokens}
+                        tokensOnActiveLists={tokensOnActiveLists}
                     />
                 </Modal>
             )}
