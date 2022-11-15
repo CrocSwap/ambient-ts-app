@@ -378,9 +378,9 @@ export default function Portfolio(props: PortfolioPropsIF) {
             />
             <div
                 className={
-                    // fullLayoutActive
-                    // ?styles.full_layout_container:
-                    styles.tabs_exchange_balance_container
+                    fullLayoutActive
+                        ? styles.full_layout_container
+                        : styles.tabs_exchange_balance_container
                 }
             >
                 <PortfolioTabs
