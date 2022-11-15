@@ -621,13 +621,13 @@ export default function Range(props: RangePropsIF) {
                     value: parseFloat(pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated),
                 },
             ];
-            console.log({ newTargetData });
 
             dispatch(setTargetData(newTargetData));
             setRangeLowBoundFieldBlurred(false);
             dispatch(setRangeLowLineTriggered(false));
+            dispatch(setRangeModuleTriggered(true));
         }
-    }, [rangeLowBoundFieldBlurred, rangeLowLineTriggered]);
+    }, [rangeLowBoundFieldBlurred, JSON.stringify(rangeLowLineTriggered)]);
 
     useEffect(() => {
         if (rangeHighBoundFieldBlurred || rangeHighLineTriggered) {
@@ -641,6 +641,7 @@ export default function Range(props: RangePropsIF) {
             //     console.log('target data not defined');
             //     return;
             // }
+
             const targetMaxValue = tradeData.targetData.filter(
                 (target: any) => target.name === 'Max',
             )[0].value;
@@ -667,7 +668,7 @@ export default function Range(props: RangePropsIF) {
             //     ? dispatch(setPinnedMinPrice(pinnedDisplayPrices.pinnedLowTick))
             //     : dispatch(setPinnedMaxPrice(pinnedDisplayPrices.pinnedHighTick));
 
-            denominationsInBase;
+            // denominationsInBase;
             // ? setRangeLowTick(pinnedDisplayPrices.pinnedLowTick)
             // : setRangeHighTick(pinnedDisplayPrices.pinnedHighTick);
 
@@ -710,8 +711,9 @@ export default function Range(props: RangePropsIF) {
             dispatch(setTargetData(newTargetData));
             setRangeHighBoundFieldBlurred(false);
             dispatch(setRangeHighLineTriggered(false));
+            dispatch(setRangeModuleTriggered(true));
         }
-    }, [rangeHighBoundFieldBlurred, rangeHighLineTriggered]);
+    }, [rangeHighBoundFieldBlurred, JSON.stringify(rangeHighLineTriggered)]);
 
     const depositSkew = useMemo(
         () =>
