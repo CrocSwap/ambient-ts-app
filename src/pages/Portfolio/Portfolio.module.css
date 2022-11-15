@@ -69,6 +69,7 @@
         grid-template-columns: auto auto;
         gap: 1rem;
         max-height: calc(100vh - 20rem);
+        padding: 1rem 0;
     }
    
 }

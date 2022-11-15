@@ -207,12 +207,10 @@ export default function ExchangeBalance(props: ExchangeBalanceProps) {
             variants={variants}
             className={styles.container}
         >
-            {
-                <div style={{ opacity: titleOpacity }} className={styles.title}>
-                    Exchange Balance
-                </div>
-            }
             <motion.div className={styles.main_container}>
+                {/* <div style={{ opacity: titleOpacity }} className={styles.title}>
+                    Exchange Balance
+                </div> */}
                 <div className={styles.tabs_container}>
                     {!fullLayoutActive && (
                         <TabComponent
