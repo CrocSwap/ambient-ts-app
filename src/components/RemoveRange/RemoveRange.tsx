@@ -411,7 +411,7 @@ export default function RemoveRange(props: IRemoveRangeProps) {
                 Check the Metamask extension in your browser for notifications, or click &quot;Try
                 Again&quot;. You can also click the left arrow above to try again.
             </p>
-            <Button title='Try Again' action={resetConfirmation} />
+            <Button title='Try Again' action={resetConfirmation} flat={true} />
         </div>
     );
 
@@ -496,7 +496,7 @@ export default function RemoveRange(props: IRemoveRangeProps) {
     const buttonToDisplay = (
         <div style={{ padding: '0 1rem' }}>
             {showSettings ? (
-                <Button title='Confirm' action={() => setShowSettings(false)} />
+                <Button title='Confirm' action={() => setShowSettings(false)} flat={true} />
             ) : isPositionPendingUpdate ? (
                 <RemoveRangeButton
                     removeFn={removeFn}

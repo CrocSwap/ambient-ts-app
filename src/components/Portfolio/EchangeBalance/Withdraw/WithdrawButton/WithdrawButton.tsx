@@ -17,6 +17,7 @@ export default function WithdrawButton(props: PortfolioWithdrawButtonProps) {
                 // action={() => console.log('clicked')}
                 action={onClick}
                 disabled={disabled}
+                flat={true}
             />
         </div>
     );

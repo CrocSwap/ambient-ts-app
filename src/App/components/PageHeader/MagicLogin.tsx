@@ -62,7 +62,7 @@ export default function MagicLogin(props: IMagicLoginProps) {
                     }}
                 />
                 <label>Email</label>
-                <Button title={message} action={handleCustomLogin} disabled={disable} />
+                <Button title={message} action={handleCustomLogin} disabled={disable} flat={true} />
             </div>
         </div>
     );

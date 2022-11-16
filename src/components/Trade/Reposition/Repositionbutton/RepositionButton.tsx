@@ -22,6 +22,7 @@ export default function RepositionButton(props: IRepostionButtonProps) {
                 // action={() => console.log('clicked')}
                 action={props.onClickFn}
                 disabled={!rangeAllowed}
+                flat={true}
             />
         </div>
     );

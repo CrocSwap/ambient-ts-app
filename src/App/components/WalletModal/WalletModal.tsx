@@ -139,6 +139,7 @@ export default function WalletModal(props: WalletModalPropsIF) {
             </p>
             <Button
                 title='Try Again'
+                flat={true}
                 action={() => {
                     setPage('metamaskPending');
                     authenticateMetamask(
@@ -182,6 +183,7 @@ export default function WalletModal(props: WalletModalPropsIF) {
                             );
                             acceptToS();
                         }}
+                        flat={true}
                     />
                 </section>
                 <div onClick={() => setPage('wallets')} className={styles.different_wallet}>
