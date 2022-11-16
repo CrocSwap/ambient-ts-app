@@ -14,6 +14,7 @@ export default function EditButton(props: IEditButtonProps) {
                 title={allowedButton ? 'Open Edit Confirmation' : 'Enter an amount'}
                 action={props.onClickFn}
                 disabled={!allowedButton}
+                flat={true}
             />
         </div>
     );

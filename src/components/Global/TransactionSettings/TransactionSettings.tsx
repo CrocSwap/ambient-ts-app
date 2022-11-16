@@ -64,7 +64,7 @@ export default function TransactionSettings(props: TransactionSettingsPropsIF) {
             ) : null}
             <div className={styles.button_container}>
                 {shouldDisplaySlippageTolerance ? (
-                    <Button title='Submit' action={handleSubmit} />
+                    <Button title='Submit' action={handleSubmit} flat={true} />
                 ) : null}
             </div>
         </div>

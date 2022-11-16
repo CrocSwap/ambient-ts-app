@@ -199,6 +199,7 @@ export default function ConfirmRangeModal(props: ConfirmRangeModalPropsIF) {
                 sendTransaction();
                 setShowConfirmation(false);
             }}
+            flat={true}
         />
     );
 

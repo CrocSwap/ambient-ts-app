@@ -1,4 +1,4 @@
-.toggle_switch {
+/* .toggle_switch {
     position: relative;
     display: inline-block;
     width: 36px;
@@ -8,13 +8,12 @@
 }
 .toggle_switch input[type='checkbox'] {
     display: none;
-}
+} */
 
-.toggle_switch .switch {
+/* .toggle_switch .switch {
     position: absolute;
     cursor: pointer;
-    /* background-color: #171D27; */
-    /* outline: 1px solid red; */
+
     border-radius: 25px;
     top: 0;
     right: 0;
@@ -27,12 +26,11 @@
     background-image: linear-gradient(var(--dark3), var(--dark3)), var(--title-gradient);
     background-origin: border-box;
     background-clip: content-box, border-box;
-}
-.toggle_switch .switch::before {
+} */
+/* .toggle_switch .switch::before {
     position: absolute;
     content: '';
-    /* left: 2px;
-    top: 2px; */
+
     width: 16px;
     height: 16px;
 
@@ -52,8 +50,40 @@
 }
 .toggle_switch input[type='checkbox']:checked + .switch {
     background: var(--title-gradient);
-}
+} */
 
+.switch {
+    width: 36px;
+    height: 20px;
+    background-color: transparent;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    border-radius: 50px;
+    border: 1px solid #7371fc;
+    /* padding: 10px; */
+    /* padding:  2px; */
+    cursor: pointer;
+
+
+  }
+  
+  .switch[data-isOn="true"] {
+    justify-content: flex-end;
+    background-color: #7371fc;
+  }
+  .switch[data-isOn="true"] .handle{
+    background: var(--text-grey-light);
+  }
+  
+  .handle {
+    /* width: 36px; */
+    width: 18px;
+    height: 18px;
+    background: var(--text-grey-light);
+    border-radius: 40px;
+  }
+  
 .disabled {
     pointer-events: none;
     opacity: 0.4;

@@ -13,7 +13,7 @@ export default function RemoveOrderButton(props: IRemoveOrderButtonProps) {
 
     return (
         <div className={styles.button_container}>
-            <Button title={title} disabled={props.disabled} action={removeFn} />
+            <Button title={title} disabled={props.disabled} action={removeFn} flat={true} />
         </div>
     );
 }

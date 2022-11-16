@@ -297,6 +297,7 @@ export default function ConfirmSwapModal(props: ConfirmSwapModalProps) {
                 initiateSwapMethod();
                 setShowConfirmation(false);
             }}
+            flat={true}
         />
     );
 

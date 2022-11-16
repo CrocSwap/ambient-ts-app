@@ -1,5 +1,6 @@
 .btn {
     width: 100%;
+    outline: none;
 
     padding: 12px 16px;
     font-size: 16px;
@@ -15,9 +16,12 @@
     background: transparent;
     text-transform: uppercase;
 
-    color: var(--text-highlight);
     border-radius: 4px;
     transition: all var(--animation-speed) ease-in-out;
+}
+
+.btn_gradient{
+    color: var(--text-highlight);
     background: linear-gradient(
         270deg,
         #7371fc,
@@ -30,12 +34,25 @@
     background-size: 300% 300%;
     text-decoration: none;
     border: 1px solid #7371fc;
+
+}
+.btn_flat{
+    border: none;
+    background: var(--text-highlight-dark);
+    color: var(--dark1)
 }
 
-.btn:hover {
+.btn_gradient:hover {
     color: var(--text-grey-white);
     border: 1px solid rgba(223, 190, 106, 0);
     background-position: 99% 50%;
+
+    
+}
+
+.btn_flat:hover{
+    color: var(--dark2);
+    box-shadow: 0 0 2px #fff, 0 0 5px #fff, 0 0 10px #0ba9ca
 }
 
 .disabled_btn {

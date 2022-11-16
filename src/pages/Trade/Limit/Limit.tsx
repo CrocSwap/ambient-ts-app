@@ -566,6 +566,7 @@ export default function Limit(props: LimitPropsIF) {
             action={async () => {
                 await approve(tokenPair.dataTokenA.address);
             }}
+            flat={true}
         />
     );
 

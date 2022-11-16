@@ -1192,6 +1192,7 @@ export default function Range(props: RangePropsIF) {
             action={async () => {
                 await approve(tokenPair.dataTokenA.address);
             }}
+            flat={true}
         />
     );
 
@@ -1206,6 +1207,7 @@ export default function Range(props: RangePropsIF) {
             action={async () => {
                 await approve(tokenPair.dataTokenB.address);
             }}
+            flat={true}
         />
     );
     // -------------------------RANGE SHARE FUNCTIONALITY---------------------------
