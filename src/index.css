@@ -10,6 +10,7 @@
 
     --title-gradient: linear-gradient(90deg, #7371fc 0%, #cdc1ff 49.48%, #7371fc 100%);
     --text-highlight: #cdc1ff;
+    --text-highlight-dark: #7371fc;
 
     --apr-gradient-primary: linear-gradient(90deg, #15be6f 0%, #8fe9bf 49.48%, #15be6f 100%);
 
@@ -82,6 +83,7 @@
     --text-accent: #625984;
 
     --text-highlight: #7371fc;
+    --text-highlight-dark: #5d5bd3;
   
     --title-gradient: linear-gradient(90deg, #4f4db3 0%, #aa9fd4 49.48%, #4f4db3 100%);
 
