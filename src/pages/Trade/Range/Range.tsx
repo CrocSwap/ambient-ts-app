@@ -561,6 +561,10 @@ export default function Range(props: RangePropsIF) {
                 (target: any) => target.name === 'Min',
             )[0].value;
 
+            const targetMaxValue = tradeData.targetData.filter(
+                (target: any) => target.name === 'Max',
+            )[0].value;
+
             const pinnedDisplayPrices = getPinnedPriceValuesFromDisplayPrices(
                 denominationsInBase,
                 baseTokenDecimals,
@@ -618,7 +622,7 @@ export default function Range(props: RangePropsIF) {
                 },
                 {
                     name: 'Max',
-                    value: parseFloat(pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated),
+                    value: targetMaxValue,
                 },
             ];
 
@@ -644,6 +648,10 @@ export default function Range(props: RangePropsIF) {
 
             const targetMaxValue = tradeData.targetData.filter(
                 (target: any) => target.name === 'Max',
+            )[0].value;
+
+            const targetMinValue = tradeData.targetData.filter(
+                (target: any) => target.name === 'Min',
             )[0].value;
 
             const pinnedDisplayPrices = getPinnedPriceValuesFromDisplayPrices(
@@ -700,7 +708,7 @@ export default function Range(props: RangePropsIF) {
             const newTargetData: targetData[] = [
                 {
                     name: 'Min',
-                    value: parseFloat(pinnedDisplayPrices.pinnedMinPriceDisplayTruncated),
+                    value: targetMinValue,
                 },
                 {
                     name: 'Max',
