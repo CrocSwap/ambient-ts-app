@@ -363,7 +363,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
             id={txDomId}
         >
             {isOnPortfolioPage && !desktopView && tokenPair}
-            {!isOnPortfolioPage && !showColumns && !view2 && TxDateWithTooltip}
+            {!showColumns && !view2 && TxDateWithTooltip}
             {/* {isOnPortfolioPage && !showSidebar && poolName} */}
             {!showColumns && IDWithTooltip}
             {!showColumns && !isOnPortfolioPage && walletWithTooltip}
