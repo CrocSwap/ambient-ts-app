@@ -659,9 +659,9 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
 
     const currentDataInfo = (
         <div className={styles.current_data_info}>
-            {denomInBase ? tradeData.baseToken.symbol : tradeData.quoteToken.symbol} /{' '}
+            {/* {denomInBase ? tradeData.baseToken.symbol : tradeData.quoteToken.symbol} /{' '}
             {denomInBase ? tradeData.quoteToken.symbol : tradeData.baseToken.symbol}·{' '}
-            {activeTimeFrame} ·{' '}
+            {activeTimeFrame} ·{' '} */}
             {currentData
                 ? 'O: ' +
                   formattedCurrentData(currentData.open) +
