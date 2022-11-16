@@ -11,7 +11,6 @@ import { Message } from '../../Model/MessageModel';
 import Picker from 'emoji-picker-react';
 import styles from './MessageInput.module.css';
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
-import { useAppDispatch, useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { ITransaction } from '../../../../utils/state/graphDataSlice';
 import PositionBox from '../PositionBox/PositionBox';
 import { PoolIF } from '../../../../utils/interfaces/PoolIF';
@@ -30,6 +29,7 @@ import {
     setIsUserIdle,
     setNativeToken,
 } from '../../../../utils/state/userDataSlice';
+import { useAppDispatch, useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 interface MessageInputProps {
     message?: Message;
     room: string;
@@ -80,6 +80,10 @@ export default function MessageInput(props: MessageInputProps, prop: ChatProps) 
     const { messages, getMsg, sendMsg } = useSocket(props.room);
     const { getID } = useChatApi();
 
+    const userData = useAppSelector((state) => state.userData);
+    const isUserLoggedIn = userData.isLoggedIn;
+    const name_ = userData.ensNameCurrent;
+
     const roomId =
         props.room === 'Current Pool'
             ? prop.currentPool.baseToken.symbol + prop.currentPool.quoteToken.symbol
@@ -106,9 +110,7 @@ export default function MessageInput(props: MessageInputProps, prop: ChatProps) 
             return 'Please log in to chat.';
         }
     }
-    const userData = useAppSelector((state) => state.userData);
-    const isUserLoggedIn = userData.isLoggedIn;
-    const isUserIdle = userData.isUserIdle;
+
     const dispatch = useAppDispatch();
 
     useEffect(() => {

@@ -44,7 +44,6 @@
     font-size: calc(1vw - 5px);
     line-height: 15px;
     flex-grow: 5px !important;
-    margin: 10px;
     width: 85%;
     font-family: 'Lexend Deca';
     font-style: normal;
@@ -61,7 +60,7 @@
 .tokens_name {
     font-style: normal;
     font-weight: 200;
-    font-size: 18px;
+    font-size: 15px;
     line-height: 22px;
     /* identical to box height */
     font-family: 'Lexend Deca';
@@ -75,10 +74,10 @@
 }
 
 .tokens_apy {
-    margin-right: 137px;
     flex-grow: 4;
     font-weight: lighter;
     color: rgba(141, 248, 168, 0.836);
+    text-align: -webkit-right;
 }
 
 .tokens_min_price {
@@ -97,16 +96,17 @@
 .address {
 
     color: rgba(235, 235, 255, 0.4);
-    font-size: 16px;
+    font-size: 14px;
     line-height: 22px;
     font-family: 'Lexend Deca';
-    margin-bottom: 5px;
-    margin-left: -79px;
+    flex-grow: 2;
 }
 
 .address_box {
-    flex-grow: 4;
-    margin-left: 127px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: row;
+    text-align: -webkit-right;
 
     
 }
@@ -114,12 +114,13 @@
 .position_info {
     display: flex;
     flex-direction: row;
-    padding: 2%;
+    padding: 1%;
 }
 
 .price {
     flex-grow: 4;
     font-weight: lighter;
+    text-align: -webkit-right;
 }
 .range_price {
     flex-grow: 2;

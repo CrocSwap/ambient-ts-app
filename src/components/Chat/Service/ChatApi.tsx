@@ -4,7 +4,7 @@ import { PoolIF } from '../../../utils/interfaces/PoolIF';
 import { TokenIF } from '../../../utils/interfaces/TokenIF';
 import { Message } from '../Model/MessageModel';
 import { useMoralis } from 'react-moralis';
-export const host = 'https://crocswap-chat.herokuapp.com';
+export const host = 'http://localhost:5000';
 export const sendMessageRoute = `${host}/api/messages/addmsg`;
 export const recieveMessageRoute = `${host}/api/messages/getall`;
 export const recieveMessageByRoomRoute = `${host}/api/messages/getmsgbyroom`;
@@ -47,12 +47,9 @@ const useChatApi = () => {
 
     async function getID() {
         if (account) {
-            const response = await fetch(
-                'https://crocswap-chat.herokuapp.com/api/auth/getUserByAccount/' + account,
-                {
-                    method: 'GET',
-                },
-            );
+            const response = await fetch(host + '/api/auth/getUserByAccount/' + account, {
+                method: 'GET',
+            });
             const data = await response.json();
             if (data.status === 'OK') {
                 return data;
@@ -64,12 +61,9 @@ const useChatApi = () => {
     }
 
     async function getNameOrWallet(_id: string) {
-        const response = await fetch(
-            'https://crocswap-chat.herokuapp.com/api/auth/getUserByAccount/' + _id,
-            {
-                method: 'GET',
-            },
-        );
+        const response = await fetch(host + '/api/auth/getUserByAccount/' + _id, {
+            method: 'GET',
+        });
         const data = await response.json();
         if (data.ensName === '') {
             return data.walletID;

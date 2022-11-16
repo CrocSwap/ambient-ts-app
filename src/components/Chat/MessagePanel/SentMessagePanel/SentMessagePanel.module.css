@@ -11,6 +11,19 @@
 
 }
 
+.avatar_image_position {
+    max-width: 13px;
+    max-height: 13px;
+    border-radius: 50%;
+    background: var(--title-gradient);
+    padding: 2px;
+    flex-grow: 1;
+    align-self: end;
+    vertical-align: end;
+    margin: 0;
+
+}
+
 .message_date {
     width: 50px;
     height: 14px;
@@ -95,7 +108,7 @@ align-self: stretch;
     cursor: default;
     display: flex;
     flex-direction: row;
-    flex-grow: 1;
+    flex-grow: 3;
 }
 
 p {

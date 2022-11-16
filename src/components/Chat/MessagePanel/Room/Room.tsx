@@ -121,9 +121,11 @@ export default function RoomDropdown(props: RoomProps) {
                 className={isActive ? styles.dropdown_btn_isActive : styles.dropdown_btn}
                 onClick={(e: any) => handleDropdownMenu()}
             >
-                {props.selectedRoom}
-                {handleShowSelectedRoom(props.selectedRoom)}
-                <RiArrowDownSLine className={styles.star_icon} />
+                <div style={{ flexGrow: '1' }}>{props.selectedRoom}</div>
+                <div> {handleShowSelectedRoom(props.selectedRoom)}</div>
+                <div>
+                    <RiArrowDownSLine className={styles.star_icon} />
+                </div>
             </div>
 
             {isActive && (

@@ -2387,11 +2387,15 @@ export default function App() {
                         <Route
                             path='app/chat'
                             element={
-                                <Chat
-                                    ensName={ensName}
-                                    connectedAccount={account ? account : ''}
-                                    fullScreen={true}
+                                <ChatPanel
+                                    chatStatus={true}
+                                    onClose={() => {
+                                        console.error('Function not implemented.');
+                                    }}
                                     favePools={favePools}
+                                    currentPool={currentPoolInfo}
+                                    setChatStatus={setChatStatus}
+                                    isFullScreen={true}
                                 />
                             }
                         />
@@ -2597,6 +2601,7 @@ export default function App() {
                         favePools={favePools}
                         currentPool={currentPoolInfo}
                         setChatStatus={setChatStatus}
+                        isFullScreen={false}
                     />
                 )}
             </div>
