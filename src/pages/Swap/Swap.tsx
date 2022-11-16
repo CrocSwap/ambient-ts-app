@@ -71,6 +71,8 @@ interface SwapPropsIF {
     setTokenPairLocal?: Dispatch<SetStateAction<string[] | null>>;
 
     openGlobalModal: (content: React.ReactNode) => void;
+
+    isTxCopied?: boolean;
 }
 
 export default function Swap(props: SwapPropsIF) {
@@ -103,6 +105,7 @@ export default function Swap(props: SwapPropsIF) {
         isInitialized,
         poolExists,
         setTokenPairLocal,
+        isTxCopied,
     } = props;
 
     const [isModalOpen, openModal, closeModal] = useModal();
@@ -491,6 +494,13 @@ export default function Swap(props: SwapPropsIF) {
 
     // -------------------------END OF Swap SHARE FUNCTIONALITY---------------------------
 
+    const denominationSwitchOrNull = priceImpact ? (
+        <div className={styles.header_container}>
+            <DividerDark addMarginTop />
+            <DenominationSwitch />
+        </div>
+    ) : null;
+
     return (
         <main data-testid={'swap'} className={swapPageStyle}>
             <div className={`${swapContainerStyle}`}>
@@ -542,12 +552,10 @@ export default function Swap(props: SwapPropsIF) {
                             activeTokenListsChanged={activeTokenListsChanged}
                             indicateActiveTokenListsChanged={indicateActiveTokenListsChanged}
                             gasPriceInGwei={gasPriceInGwei}
+                            isTxCopied={isTxCopied}
                         />
                     </motion.div>
-                    <div className={styles.header_container}>
-                        <DividerDark addMarginTop />
-                        <DenominationSwitch />
-                    </div>
+                    {denominationSwitchOrNull}
                     <ExtraInfo
                         tokenPair={{ dataTokenA: tokenA, dataTokenB: tokenB }}
                         priceImpact={priceImpact}

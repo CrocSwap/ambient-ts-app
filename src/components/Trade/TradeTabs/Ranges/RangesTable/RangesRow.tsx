@@ -11,6 +11,8 @@ import { DefaultTooltip } from '../../../../Global/StyledTooltip/StyledTooltip';
 import { NavLink } from 'react-router-dom';
 import Medal from '../../../../Global/Medal/Medal';
 import NoTokenIcon from '../../../../Global/NoTokenIcon/NoTokenIcon';
+import { useAppDispatch } from '../../../../../utils/hooks/reduxToolkit';
+import { setDataLoadingStatus } from '../../../../../utils/state/graphDataSlice';
 
 interface RangesRowPropsIF {
     isUserLoggedIn: boolean;
@@ -45,6 +47,7 @@ interface RangesRowPropsIF {
     isOnPortfolioPage: boolean;
     isLeaderboard?: boolean;
     idx: number;
+    handleRangeCopiedClick?: () => void;
 }
 
 export default function RangesRow(props: RangesRowPropsIF) {
@@ -59,6 +62,7 @@ export default function RangesRow(props: RangesRowPropsIF) {
         openGlobalModal,
         isOnPortfolioPage,
         isLeaderboard,
+        handleRangeCopiedClick,
         // idx,
     } = props;
 
@@ -143,11 +147,14 @@ export default function RangesRow(props: RangesRowPropsIF) {
         baseTokenDexBalance: props.baseTokenDexBalance,
         quoteTokenDexBalance: props.quoteTokenDexBalance,
         isOnPortfolioPage: props.isOnPortfolioPage,
+        handleRangeCopiedClick: handleRangeCopiedClick,
     };
 
     const openDetailsModal = () => {
         openGlobalModal(<RangeDetails position={position} {...rangeDetailsProps} />);
     };
+
+    const dispatch = useAppDispatch();
 
     const positionDomId =
         position.positionStorageSlot === currentPositionActive
@@ -216,6 +223,14 @@ export default function RangesRow(props: RangesRowPropsIF) {
                 <div>
                     <p>{ensName ? ensName : ownerId}</p>
                     <NavLink
+                        onClick={() => {
+                            dispatch(
+                                setDataLoadingStatus({
+                                    datasetName: 'lookupUserTxData',
+                                    loadingStatus: true,
+                                }),
+                            );
+                        }}
                         to={`/${isOwnerActiveAccount ? 'account' : ensName ? ensName : ownerId}`}
                     >
                         View Account
@@ -305,7 +320,7 @@ export default function RangesRow(props: RangesRowPropsIF) {
             {isOnPortfolioPage && accountTokenImages}
             {isOnPortfolioPage && !props.showSidebar && poolName}
             {displayIDorRanking}
-            {!showColumns && walletWithTooltip}
+            {!showColumns && !isOnPortfolioPage && walletWithTooltip}
             {showColumns && (
                 <li data-label='id'>
                     <p className='base_color'>{posHashTruncated}</p>{' '}
@@ -335,13 +350,13 @@ export default function RangesRow(props: RangesRowPropsIF) {
                 </li>
             )}
             {showColumns && !ipadView && (
-                <li data-label='side-type' className='color_white'>
+                <li data-label='side-type' className='color_white' style={{ textAlign: 'right' }}>
                     <p>{ambientMinOrNull}</p>
                     <p>{ambientMaxOrNull}</p>
                 </li>
             )}
             {ValueWithTooltip}
-            {/* {!showColumns && (
+            {!showColumns && (
                 <li onClick={openDetailsModal} data-label={baseTokenSymbol} className='base_color'>
                     <p style={{ textAlign: 'right', fontFamily: 'monospace' }}>{baseDisplay}</p>
                 </li>
@@ -350,12 +365,12 @@ export default function RangesRow(props: RangesRowPropsIF) {
                 <li onClick={openDetailsModal} data-label={quoteTokenSymbol} className='base_color'>
                     <p style={{ textAlign: 'right', fontFamily: 'monospace' }}>{quoteDisplay}</p>
                 </li>
-            )} */}
-            {
+            )}
+            {showColumns && (
                 <li
                     data-label={baseTokenSymbol + quoteTokenSymbol}
                     className='base_color'
-                    style={{ textAlign: 'end' }}
+                    style={{ textAlign: 'right' }}
                 >
                     <p className={styles.token_qty} style={{ fontFamily: 'monospace' }}>
                         {baseDisplay}
@@ -368,13 +383,10 @@ export default function RangesRow(props: RangesRowPropsIF) {
                         {quoteTokenLogoComponent}
                     </p>
                 </li>
-            }
-            <li onClick={openDetailsModal} data-label='value' style={{ textAlign: 'center' }}>
+            )}
+            <li onClick={openDetailsModal} data-label='value' style={{ textAlign: 'right' }}>
                 {' '}
-                <p
-                    style={{ textAlign: 'center', fontFamily: 'monospace' }}
-                    className={apyClassname}
-                >
+                <p style={{ fontFamily: 'monospace' }} className={apyClassname}>
                     {apyString}
                 </p>
             </li>

@@ -1,5 +1,5 @@
 import styles from '../Transactions.module.css';
-import { ITransaction } from '../../../../../utils/state/graphDataSlice';
+import { ITransaction, setDataLoadingStatus } from '../../../../../utils/state/graphDataSlice';
 import { Dispatch, SetStateAction, useEffect } from 'react';
 import { useProcessTransaction } from '../../../../../utils/hooks/useProcessTransaction';
 import TransactionsMenu from '../../../../Global/Tabs/TableMenu/TableMenuComponents/TransactionsMenu';
@@ -10,6 +10,8 @@ import NoTokenIcon from '../../../../Global/NoTokenIcon/NoTokenIcon';
 import IconWithTooltip from '../../../../Global/IconWithTooltip/IconWithTooltip';
 import TransactionDetails from '../../../../Global/TransactionDetails/TransactionDetails';
 import { tradeData } from '../../../../../utils/state/tradeDataSlice';
+import { useAppDispatch } from '../../../../../utils/hooks/reduxToolkit';
+// import { light } from '@material-ui/core/styles/createPalette';
 interface TransactionRowPropsIF {
     tx: ITransaction;
     tradeData: tradeData;
@@ -19,9 +21,12 @@ interface TransactionRowPropsIF {
     isShowAllEnabled: boolean;
     showSidebar: boolean;
     ipadView: boolean;
+    desktopView: boolean;
+    view2: boolean;
     showColumns: boolean;
     blockExplorer: string | undefined;
     closeGlobalModal: () => void;
+    handlePulseAnimation?: () => void;
 
     openGlobalModal: (content: React.ReactNode) => void;
     isOnPortfolioPage: boolean;
@@ -31,10 +36,12 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
         showColumns,
         tradeData,
         ipadView,
+        view2,
         isTokenABase,
         tx,
-        showSidebar,
+        // showSidebar,
         blockExplorer,
+        handlePulseAnimation,
         // openGlobalModal,
         // closeGlobalModal,
         currentTxActiveInTransactions,
@@ -43,6 +50,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
         isOnPortfolioPage,
         closeGlobalModal,
         openGlobalModal,
+        desktopView,
     } = props;
 
     const {
@@ -80,6 +88,8 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
         isBaseTokenMoneynessGreaterOrEqual,
         // orderMatchesSelectedTokens,
     } = useProcessTransaction(tx);
+
+    const dispatch = useAppDispatch();
 
     const sideCharacter = isDenomBase ? baseTokenCharacter : quoteTokenCharacter;
 
@@ -195,6 +205,14 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                 <div>
                     <p>{ensName ? ensName : ownerId}</p>
                     <NavLink
+                        onClick={() => {
+                            dispatch(
+                                setDataLoadingStatus({
+                                    datasetName: 'lookupUserTxData',
+                                    loadingStatus: true,
+                                }),
+                            );
+                        }}
                         to={`/${isOwnerActiveAccount ? 'account' : ensName ? ensName : ownerId}`}
                     >
                         View Account
@@ -232,11 +250,11 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                 enterDelay={750}
                 leaveDelay={200}
             >
-                <img src={baseTokenLogo} alt='base token' width='15px' />
+                <img src={baseTokenLogo} alt='base token' width='20px' />
             </DefaultTooltip>
         ) : (
             <IconWithTooltip title={`${baseTokenSymbol}`} placement='bottom'>
-                <NoTokenIcon tokenInitial={tx.baseSymbol.charAt(0)} width='15px' />
+                <NoTokenIcon tokenInitial={tx.baseSymbol.charAt(0)} width='20px' />
             </IconWithTooltip>
         );
 
@@ -255,10 +273,10 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                 enterDelay={750}
                 leaveDelay={200}
             >
-                <img src={quoteTokenLogo} alt='quote token' width='15px' />
+                <img src={quoteTokenLogo} alt='quote token' width='20px' />
             </DefaultTooltip>
         ) : (
-            <NoTokenIcon tokenInitial={tx.quoteSymbol.charAt(0)} width='15px' />
+            <NoTokenIcon tokenInitial={tx.quoteSymbol.charAt(0)} width='20px' />
         );
 
     const tokensTogether = (
@@ -276,11 +294,24 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
     );
 
     // portfolio page li element ---------------
-    const accountTokenImages = <li className={styles.token_images_account}>{tokensTogether}</li>;
+    // const accountTokenImages = <li className={styles.token_images_account}>{tokensTogether}</li>;
 
-    const poolName = (
+    // const poolName = (
+    //     <li className='base_color'>
+    //         {baseTokenSymbol} / {quoteTokenSymbol}
+    //     </li>
+    // );
+
+    const tokenPair = (
         <li className='base_color'>
-            {baseTokenSymbol} / {quoteTokenSymbol}
+            {/* <div style={{display: 'flex', alignItems: 'center', gap: '4px'}}> */}
+
+            {tokensTogether}
+            <p>
+                {' '}
+                {baseTokenSymbol} / {quoteTokenSymbol}
+            </p>
+            {/* </div> */}
         </li>
     );
     // end of portfolio page li element ---------------
@@ -295,10 +326,15 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
             }
             id={txDomId}
         >
-            {isOnPortfolioPage && accountTokenImages}
-            {isOnPortfolioPage && !showSidebar && poolName}
+            {!isOnPortfolioPage && !showColumns && !view2 && (
+                <li>
+                    <p className='base_color'> Nov 9 10:36:23 AM</p>
+                </li>
+            )}
+            {isOnPortfolioPage && !desktopView && tokenPair}
+            {/* {isOnPortfolioPage && !showSidebar && poolName} */}
             {!showColumns && IDWithTooltip}
-            {!showColumns && walletWithTooltip}
+            {!showColumns && !isOnPortfolioPage && walletWithTooltip}
             {showColumns && (
                 <li data-label='id'>
                     <p className='base_color' style={{ textAlign: 'center' }}>
@@ -318,7 +354,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                         <li
                             onClick={openDetailsModal}
                             data-label='price'
-                            className={sideTypeStyle}
+                            className={`${sideTypeStyle} ${styles.mono_font}`}
                             style={{ textAlign: 'right' }}
                         >
                             ambient
@@ -379,18 +415,27 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                 </li>
             )}
             {!showColumns && (
-                <li onClick={openDetailsModal} data-label='type' className={sideTypeStyle}>
+                <li
+                    onClick={openDetailsModal}
+                    data-label='type'
+                    className={sideTypeStyle}
+                    style={{ textAlign: 'center' }}
+                >
                     {type}
                 </li>
             )}
             {showColumns && !ipadView && (
-                <li data-label='side-type' className={sideTypeStyle}>
+                <li
+                    data-label='side-type'
+                    className={sideTypeStyle}
+                    style={{ textAlign: 'center' }}
+                >
                     <p>{sideType}</p>
                     <p>{type}</p>
                 </li>
             )}
             {usdValueWithTooltip}
-            {/* {!showColumns && (
+            {!showColumns && (
                 <li onClick={openDetailsModal} data-label={baseTokenSymbol} className='color_white'>
                     <p style={{ textAlign: 'right', fontFamily: 'monospace' }}>{baseDisplay}</p>
                 </li>
@@ -403,8 +448,8 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                 >
                     <p style={{ textAlign: 'right', fontFamily: 'monospace' }}>{quoteDisplay}</p>
                 </li>
-            )} */}
-            {
+            )}
+            {showColumns && (
                 <li
                     data-label={baseTokenSymbol + quoteTokenSymbol}
                     className='color_white'
@@ -440,7 +485,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                         {isBuy ? baseTokenLogoComponent : quoteTokenLogoComponent}
                     </p>
                 </li>
-            }
+            )}
             <li data-label='menu'>
                 {/* <OrdersMenu limitOrder={limitOrder} {...orderMenuProps} /> */}
                 <TransactionsMenu
@@ -453,6 +498,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                     openGlobalModal={props.openGlobalModal}
                     closeGlobalModal={props.closeGlobalModal}
                     isOnPortfolioPage={props.isOnPortfolioPage}
+                    handlePulseAnimation={handlePulseAnimation}
                 />
             </li>
         </ul>

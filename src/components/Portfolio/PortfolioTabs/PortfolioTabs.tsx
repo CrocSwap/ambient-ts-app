@@ -10,7 +10,7 @@ import Tokens from '../Tokens/Tokens';
 
 // START: Import Local Files
 import styles from './PortfolioTabs.module.css';
-import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
+import { useAppDispatch, useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { getPositionData } from '../../../App/functions/getPositionData';
 import { PositionIF } from '../../../utils/interfaces/PositionIF';
 import { LimitOrderIF, TokenIF } from '../../../utils/interfaces/exports';
@@ -21,7 +21,11 @@ import walletImage from '../../../assets/images/sidebarImages/wallet.svg';
 import exchangeImage from '../../../assets/images/sidebarImages/exchange.svg';
 import { CrocEnv, ChainSpec } from '@crocswap-libs/sdk';
 import { ethers } from 'ethers';
-import { ITransaction } from '../../../utils/state/graphDataSlice';
+import {
+    ITransaction,
+    resetLookupUserDataLoadingStatus,
+    setDataLoadingStatus,
+} from '../../../utils/state/graphDataSlice';
 import { getLimitOrderData } from '../../../App/functions/getLimitOrderData';
 // import { getTransactionData } from '../../../App/functions/getTransactionData';
 import { TokenPriceFn } from '../../../App/functions/fetchTokenPrice';
@@ -101,18 +105,20 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
         account,
     } = props;
 
+    const dispatch = useAppDispatch();
+
     const graphData = useAppSelector((state) => state?.graphData);
     const connectedAccountPositionData = graphData.positionsByUser.positions;
     const connectedAccountLimitOrderData = graphData.limitOrdersByUser.limitOrders;
     const connectedAccountTransactionData = graphData.changesByUser.changes;
 
-    const [otherAccountPositionData, setOtherAccountPositionData] = useState<PositionIF[]>([]);
-    const [otherAccountLimitOrderData, setOtherAccountLimitOrderData] = useState<LimitOrderIF[]>(
+    const [lookupAccountPositionData, setLookupAccountPositionData] = useState<PositionIF[]>([]);
+    const [lookupAccountLimitOrderData, setLookupAccountLimitOrderData] = useState<LimitOrderIF[]>(
         [],
     );
-    const [otherAccountTransactionData, setOtherAccountTransactionData] = useState<ITransaction[]>(
-        [],
-    );
+    const [lookupAccountTransactionData, setLookupAccountTransactionData] = useState<
+        ITransaction[]
+    >([]);
 
     // useEffect(() => {
     //     console.log({ connectedAccountPositionData });
@@ -124,7 +130,7 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
     const userLimitOrdersCacheEndpoint = httpGraphCacheServerDomain + '/user_limit_order_states?';
     // const userTransactionsCacheEndpoint = httpGraphCacheServerDomain + '/user_recent_changes?';
 
-    const getUserPositions = async (accountToSearch: string) =>
+    const getLookupUserPositions = async (accountToSearch: string) =>
         fetch(
             userPositionsCacheEndpoint +
                 new URLSearchParams({
@@ -153,13 +159,27 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
                             );
                         }),
                     ).then((updatedPositions) => {
-                        setOtherAccountPositionData(updatedPositions);
+                        setLookupAccountPositionData(updatedPositions);
                     });
                 }
+                console.log('dispatch');
+                dispatch(
+                    setDataLoadingStatus({
+                        datasetName: 'lookupUserRangeData',
+                        loadingStatus: false,
+                    }),
+                );
             })
-            .catch(console.log);
+            .catch(() => {
+                dispatch(
+                    setDataLoadingStatus({
+                        datasetName: 'lookupUserRangeData',
+                        loadingStatus: false,
+                    }),
+                );
+            });
 
-    const getUserLimitOrders = async (accountToSearch: string) =>
+    const getLookupUserLimitOrders = async (accountToSearch: string) =>
         fetch(
             userLimitOrdersCacheEndpoint +
                 new URLSearchParams({
@@ -177,13 +197,26 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
                             return getLimitOrderData(limitOrder, importedTokens);
                         }),
                     ).then((updatedLimitOrderStates) => {
-                        setOtherAccountLimitOrderData(updatedLimitOrderStates);
+                        setLookupAccountLimitOrderData(updatedLimitOrderStates);
                     });
                 }
+                dispatch(
+                    setDataLoadingStatus({
+                        datasetName: 'lookupUserOrderData',
+                        loadingStatus: false,
+                    }),
+                );
             })
-            .catch(console.log);
+            .catch(() => {
+                dispatch(
+                    setDataLoadingStatus({
+                        datasetName: 'lookupUserOrderData',
+                        loadingStatus: false,
+                    }),
+                );
+            });
 
-    const getUserTransactions = async (accountToSearch: string) =>
+    const getLookupUserTransactions = async (accountToSearch: string) =>
         fetchUserRecentChanges({
             importedTokens: importedTokens,
             user: accountToSearch,
@@ -197,32 +230,80 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
         })
             .then((updatedTransactions) => {
                 if (updatedTransactions) {
-                    setOtherAccountTransactionData(updatedTransactions);
+                    setLookupAccountTransactionData(updatedTransactions);
                 }
+
+                dispatch(
+                    setDataLoadingStatus({
+                        datasetName: 'lookupUserTxData',
+                        loadingStatus: false,
+                    }),
+                );
             })
-            .catch(console.log);
+            .catch(() => {
+                dispatch(
+                    setDataLoadingStatus({
+                        datasetName: 'lookupUserTxData',
+                        loadingStatus: false,
+                    }),
+                );
+            });
 
     useEffect(() => {
         (async () => {
-            if (!connectedAccountActive && resolvedAddress) {
-                await getUserPositions(resolvedAddress);
-                await getUserLimitOrders(resolvedAddress);
-                await getUserTransactions(resolvedAddress);
+            if (!connectedAccountActive) {
+                if (resolvedAddress) {
+                    dispatch(resetLookupUserDataLoadingStatus());
+                    await getLookupUserTransactions(resolvedAddress);
+                    await getLookupUserLimitOrders(resolvedAddress);
+                    await getLookupUserPositions(resolvedAddress);
+                } else {
+                    dispatch(
+                        setDataLoadingStatus({
+                            datasetName: 'lookupUserTxData',
+                            loadingStatus: false,
+                        }),
+                    );
+                    dispatch(
+                        setDataLoadingStatus({
+                            datasetName: 'lookupUserOrderData',
+                            loadingStatus: false,
+                        }),
+                    );
+                    dispatch(
+                        setDataLoadingStatus({
+                            datasetName: 'lookupUserRangeData',
+                            loadingStatus: false,
+                        }),
+                    );
+                }
             }
         })();
     }, [resolvedAddress, connectedAccountActive]);
 
     const activeAccountPositionData = connectedAccountActive
         ? connectedAccountPositionData
-        : otherAccountPositionData;
+        : lookupAccountPositionData;
     // eslint-disable-next-line
     const activeAccountLimitOrderData = connectedAccountActive
         ? connectedAccountLimitOrderData
-        : otherAccountLimitOrderData;
+        : lookupAccountLimitOrderData;
 
     const activeAccountTransactionData = connectedAccountActive
-        ? connectedAccountTransactionData
-        : otherAccountTransactionData;
+        ? connectedAccountTransactionData?.filter((tx) => {
+              if (tx.changeType !== 'fill') {
+                  return true;
+              } else {
+                  return false;
+              }
+          })
+        : lookupAccountTransactionData?.filter((tx) => {
+              if (tx.changeType !== 'fill') {
+                  return true;
+              } else {
+                  return false;
+              }
+          });
 
     // console.log({ connectedAccountActive });
     // console.log({ connectedAccountTransactionData });
@@ -331,7 +412,7 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
         chainId: chainId,
     };
 
-    const accountTabData = [
+    const accountTabDataWithTokens = [
         {
             label: 'Transactions',
             content: <Transactions {...transactionsProps} />,
@@ -348,10 +429,28 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
         { label: 'Tokens', content: <Tokens {...tokensProps} />, icon: walletImage },
     ];
 
+    const accountTabDataWithoutTokens = [
+        {
+            label: 'Transactions',
+            content: <Transactions {...transactionsProps} />,
+            icon: recentTransactionsImage,
+        },
+        { label: 'Limit Orders', content: <Orders {...ordersProps} />, icon: openOrdersImage },
+        { label: 'Ranges', content: <Ranges {...rangeProps} />, icon: rangePositionsImage },
+        {
+            label: 'Exchange Deposits',
+            content: <Exchange {...exchangeProps} />,
+            icon: exchangeImage,
+        },
+        { label: 'Wallet Balances', content: <Wallet {...walletProps} />, icon: walletImage },
+    ];
+
     return (
         <div className={styles.tabs_container}>
             <TabComponent
-                data={accountTabData}
+                data={
+                    connectedAccountActive ? accountTabDataWithTokens : accountTabDataWithoutTokens
+                }
                 rightTabOptions={false}
                 selectedOutsideTab={selectedOutsideTab}
                 setSelectedOutsideTab={setSelectedOutsideTab}

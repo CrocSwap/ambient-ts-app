@@ -58,6 +58,8 @@ interface LimitCurrencyConverterProps {
     indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
     poolExists: boolean | null;
     gasPriceInGwei: number | undefined;
+
+    isOrderCopied: boolean;
 }
 
 // central react functional component
@@ -93,6 +95,8 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
         indicateActiveTokenListsChanged,
         poolExists,
         gasPriceInGwei,
+
+        isOrderCopied,
     } = props;
 
     const dispatch = useAppDispatch();
@@ -455,6 +459,7 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
                 activeTokenListsChanged={activeTokenListsChanged}
                 indicateActiveTokenListsChanged={indicateActiveTokenListsChanged}
                 gasPriceInGwei={gasPriceInGwei}
+                isOrderCopied={isOrderCopied}
             />
 
             <div
@@ -493,6 +498,7 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
                 activeTokenListsChanged={activeTokenListsChanged}
                 indicateActiveTokenListsChanged={indicateActiveTokenListsChanged}
                 gasPriceInGwei={gasPriceInGwei}
+                isOrderCopied={isOrderCopied}
             />
             <DividerDark addMarginTop />
             <LimitRate
@@ -508,6 +514,7 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
                 // onBlur={priceInputOnBlur}
                 poolPriceNonDisplay={poolPriceNonDisplay}
                 limitTickDisplayPrice={limitTickDisplayPrice}
+                isOrderCopied={isOrderCopied}
             />
         </section>
     );

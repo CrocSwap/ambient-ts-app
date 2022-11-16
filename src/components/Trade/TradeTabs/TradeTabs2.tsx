@@ -64,6 +64,9 @@ interface ITabsProps {
     closeGlobalModal: () => void;
     importedTokens: TokenIF[];
     showSidebar: boolean;
+    handleTxCopiedClick: () => void;
+    handleOrderCopiedClick: () => void;
+    handleRangeCopiedClick: () => void;
 }
 
 // const httpGraphCacheServerDomain = 'https://809821320828123.de:5000';
@@ -103,6 +106,9 @@ export default function TradeTabs2(props: ITabsProps) {
         setOutsideControl,
         importedTokens,
         showSidebar,
+        handleTxCopiedClick,
+        handleOrderCopiedClick,
+        handleRangeCopiedClick,
     } = props;
 
     const graphData = useAppSelector((state) => state?.graphData);
@@ -175,10 +181,13 @@ export default function TradeTabs2(props: ITabsProps) {
                     !isUserLoggedIn ||
                     (!isCandleSelected && !isShowAllEnabled && matchingUserChangesLength < 1)
                 ) {
+                    // console.log('1');
                     setIsShowAllEnabled(true);
                 } else if (matchingUserChangesLength < 1) {
+                    // console.log('2');
                     return;
                 } else if (isShowAllEnabled && matchingUserChangesLength >= 1) {
+                    // console.log('3');
                     setIsShowAllEnabled(false);
                 }
             } else if (
@@ -189,10 +198,13 @@ export default function TradeTabs2(props: ITabsProps) {
                     !isUserLoggedIn ||
                     (!isCandleSelected && !isShowAllEnabled && matchingUserLimitOrdersLength < 1)
                 ) {
+                    // console.log('4');
                     setIsShowAllEnabled(true);
                 } else if (matchingUserLimitOrdersLength < 1) {
+                    // console.log('5');
                     return;
                 } else if (isShowAllEnabled && matchingUserLimitOrdersLength >= 1) {
+                    // console.log('6');
                     setIsShowAllEnabled(false);
                 }
             } else if (
@@ -203,10 +215,13 @@ export default function TradeTabs2(props: ITabsProps) {
                     !isUserLoggedIn ||
                     (!isCandleSelected && !isShowAllEnabled && matchingUserPositionsLength < 1)
                 ) {
+                    // console.log('7');
                     setIsShowAllEnabled(true);
                 } else if (matchingUserPositionsLength < 1) {
+                    // console.log('8');
                     return;
                 } else if (isShowAllEnabled && matchingUserPositionsLength >= 1) {
+                    // console.log('9');
                     setIsShowAllEnabled(false);
                 }
             }
@@ -281,8 +296,18 @@ export default function TradeTabs2(props: ITabsProps) {
             })
                 .then((selectedCandleChangesJson) => {
                     console.log({ selectedCandleChangesJson });
-                    if (selectedCandleChangesJson)
-                        setChangesInSelectedCandle(selectedCandleChangesJson);
+                    if (selectedCandleChangesJson) {
+                        const selectedCandleChangesWithoutFills = selectedCandleChangesJson.filter(
+                            (tx) => {
+                                if (tx.changeType !== 'fill') {
+                                    return true;
+                                } else {
+                                    return false;
+                                }
+                            },
+                        );
+                        setChangesInSelectedCandle(selectedCandleChangesWithoutFills);
+                    }
                     setOutsideControl(true);
                     setSelectedInsideTab(0);
                 })
@@ -349,6 +374,7 @@ export default function TradeTabs2(props: ITabsProps) {
 
         setLeader: setLeader,
         setLeaderOwnerId: setLeaderOwnerId,
+        handleRangeCopiedClick: handleRangeCopiedClick,
     };
     // Props for <Ranges/> React Element
     const poolInfoProps = {
@@ -379,6 +405,8 @@ export default function TradeTabs2(props: ITabsProps) {
         showSidebar: showSidebar,
 
         isOnPortfolioPage: false,
+
+        handleTxCopiedClick: handleTxCopiedClick,
     };
     // Props for <Orders/> React Element
     const ordersProps = {
@@ -395,6 +423,7 @@ export default function TradeTabs2(props: ITabsProps) {
         setCurrentPositionActive: setCurrentPositionActive,
         showSidebar: showSidebar,
         isOnPortfolioPage: false,
+        handleOrderCopiedClick: handleOrderCopiedClick,
     };
     // props for <PositionsOnlyToggle/> React Element
 
