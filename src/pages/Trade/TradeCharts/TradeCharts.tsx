@@ -580,7 +580,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
 
     const tvlDisplay = <p className={styles.tvl_display}></p>;
     // const tvlDisplay = <p className={styles.tvl_display}>Total Liquidity: {poolTvl || '...'}</p>;
-    const tvlTickDisplay = <p className={styles.tvl_display}></p>;
+    // const tvlTickDisplay = <p className={styles.tvl_display}></p>;
     // const tvlTickDisplay = (
     //     <p className={styles.tvl_display}>Liquidity at Tick: {tvlAtTick || '...'}</p>
     // );
@@ -625,9 +625,10 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
                 {currentAmountDisplay}
                 {poolPriceChange}
             </div>
-            {tvlDisplay}
-            {tvlTickDisplay}
+            <div>{tvlDisplay}</div>
+            <div>{graphSettingsContent}</div>
 
+            {/* {tvlTickDisplay} */}
             {/* <div className={styles.chart_overlay_container}>{chartOverlayButtons1}</div>
             <div className={styles.chart_overlay_container}>{chartOverlayButtons2}</div> */}
         </div>
@@ -736,7 +737,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
     return (
         <>
             <div className={`${styles.graph_style} ${expandGraphStyle}`}>
-                {graphSettingsContent}
+                {/* {graphSettingsContent} */}
                 {tokenInfo}
                 {timeFrameContent}
                 {currentDataInfo}
