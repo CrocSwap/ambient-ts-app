@@ -629,7 +629,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
         return data
             ? data.toLocaleString(undefined, {
                   minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
+                  maximumFractionDigits: 5,
               })
             : '';
     }
