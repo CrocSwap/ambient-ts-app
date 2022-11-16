@@ -10,6 +10,7 @@ import NoTokenIcon from '../../NoTokenIcon/NoTokenIcon';
 import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
 import { useMemo } from 'react';
 import { DefaultTooltip } from '../../StyledTooltip/StyledTooltip';
+// import TooltipComponent from '../../TooltipComponent/TooltipComponent';
 
 type ItemIF = {
     slug: string;

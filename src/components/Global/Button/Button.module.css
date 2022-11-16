@@ -14,7 +14,7 @@
     text-align: center;
 
     background: transparent;
-    text-transform: uppercase;
+    text-transform: capitalize;
 
     border-radius: 4px;
     transition: all var(--animation-speed) ease-in-out;
