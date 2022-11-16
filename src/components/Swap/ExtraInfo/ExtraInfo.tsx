@@ -125,16 +125,16 @@ export default function ExtraInfo(props: ExtraInfoPropsIF) {
     ];
 
     const extraInfoData = [
-        {
-            title: 'Spot Price',
-            tooltipTitle: 'Current Price of the Selected Token Pool',
-            data: isDenomBase
-                ? `${displayPriceString} ${quoteTokenSymbol} per ${baseTokenSymbol}`
-                : `${displayPriceString} ${baseTokenSymbol} per ${quoteTokenSymbol}`,
-        },
+        // {
+        //     title: 'Spot Price',
+        //     tooltipTitle: 'Current Price of the Selected Token Pool',
+        //     data: isDenomBase
+        //         ? `${displayPriceString} ${quoteTokenSymbol} per ${baseTokenSymbol}`
+        //         : `${displayPriceString} ${baseTokenSymbol} per ${quoteTokenSymbol}`,
+        // },
         {
             title: 'Effective Conversion Rate',
-            tooltipTitle: 'Conversion Rate After Swap Impact and Fees',
+            tooltipTitle: 'After Price Impact and Provider Fee',
             data: isDenomBase
                 ? `${displayEffectivePriceString} ${quoteTokenSymbol} per ${baseTokenSymbol}`
                 : `${displayEffectivePriceString} ${baseTokenSymbol} per ${quoteTokenSymbol}`,
@@ -144,14 +144,14 @@ export default function ExtraInfo(props: ExtraInfoPropsIF) {
         },
         {
             title: 'Final Price',
-            tooltipTitle: 'Expected Price of the Selected Token Pool After Swap',
+            tooltipTitle: 'Expected Price After Swap',
             data: isDenomBase
                 ? `${finalPriceString} ${quoteTokenSymbol} per ${baseTokenSymbol}`
                 : `${finalPriceString} ${baseTokenSymbol} per ${quoteTokenSymbol}`,
         },
         {
             title: 'Price Impact',
-            tooltipTitle: 'Percentage difference between spot price and final price',
+            tooltipTitle: 'Difference Between Current (Spot) Price and Final Price',
             data: `${priceImpactString}%`,
         },
     ];
