@@ -11,6 +11,7 @@ import IconWithTooltip from '../../../../Global/IconWithTooltip/IconWithTooltip'
 import TransactionDetails from '../../../../Global/TransactionDetails/TransactionDetails';
 import { tradeData } from '../../../../../utils/state/tradeDataSlice';
 import { useAppDispatch } from '../../../../../utils/hooks/reduxToolkit';
+import moment from 'moment';
 // import { light } from '@material-ui/core/styles/createPalette';
 interface TransactionRowPropsIF {
     tx: ITransaction;
@@ -203,7 +204,6 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
             interactive
             title={
                 <div>
-                    <p>{ensName ? ensName : ownerId}</p>
                     <NavLink
                         onClick={() => {
                             dispatch(
@@ -215,6 +215,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                         }}
                         to={`/${isOwnerActiveAccount ? 'account' : ensName ? ensName : ownerId}`}
                     >
+                        <p>{ensName ? ensName : ownerId}</p>
                         View Account
                     </NavLink>
                 </div>
@@ -315,13 +316,39 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
         </li>
     );
 
-    const fillTime = new Intl.DateTimeFormat('en-US', {
-        month: 'short',
-        day: 'numeric',
-        // hour12: false,
-        // hour: '2-digit',
-        // minute: '2-digit',
-    }).format(tx.time * 1000);
+    // const fillTime = new Intl.DateTimeFormat('en-US', {
+    //     month: 'short',
+    //     day: 'numeric',
+    //     // hour12: false,
+    //     // hour: '2-digit',
+    //     // minute: '2-digit',
+    // }).format(tx.time * 1000);
+
+    const txTimeInDays = moment(Date.now()).diff(tx.time * 1000, 'days');
+    // const txTimeInHours = moment(Date.now()).diff(tx.time * 1000, 'hours');
+
+    const txTimeDisplay =
+        txTimeInDays === 0
+            ? 'Today'
+            : txTimeInDays === 1
+            ? '1 day ago'
+            : `${txTimeInDays} days ago`;
+
+    const TxDateWithTooltip = (
+        <DefaultTooltip
+            interactive
+            title={moment(tx.time * 1000).format('MM/DD/YYYY HH:mm')}
+            placement={'right'}
+            arrow
+            enterDelay={750}
+            leaveDelay={200}
+        >
+            <li onClick={openDetailsModal}>
+                <p className='base_color'>{txTimeDisplay}</p>
+                {/* <p className='base_color'> Nov 9 10:36:23 AM</p> */}
+            </li>
+        </DefaultTooltip>
+    );
 
     // end of portfolio page li element ---------------
     return (
@@ -336,12 +363,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
             id={txDomId}
         >
             {isOnPortfolioPage && !desktopView && tokenPair}
-            {!isOnPortfolioPage && !showColumns && !view2 && (
-                <li onClick={openDetailsModal}>
-                    <p className='base_color'>{fillTime}</p>
-                    {/* <p className='base_color'> Nov 9 10:36:23 AM</p> */}
-                </li>
-            )}
+            {!isOnPortfolioPage && !showColumns && !view2 && TxDateWithTooltip}
             {/* {isOnPortfolioPage && !showSidebar && poolName} */}
             {!showColumns && IDWithTooltip}
             {!showColumns && !isOnPortfolioPage && walletWithTooltip}
