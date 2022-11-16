@@ -689,18 +689,8 @@ export default function Chart(props: ChartData) {
 
     const setBalancedLines = () => {
         if (simpleRangeWidth === 100 || rangeModuleTriggered) {
-            const results: boolean[] = [];
-
             if (simpleRangeWidth === 100) {
-                ranges.map((mapData) => {
-                    if (mapData.value === 0) {
-                        results.push(true);
-                    }
-                });
-
-                if (results.length === 2) {
-                    setDefaultRangeData();
-                }
+                setDefaultRangeData();
             } else {
                 setRanges(() => {
                     return [
@@ -799,10 +789,11 @@ export default function Chart(props: ChartData) {
                     { name: 'Max', value: 0 },
                 ];
             });
+
+            dispatch(setRangeHighLineTriggered(false));
+            dispatch(setRangeLowLineTriggered(false));
+            dispatch(setRangeModuleTriggered(false));
         }
-        dispatch(setRangeHighLineTriggered(false));
-        dispatch(setRangeLowLineTriggered(false));
-        dispatch(setRangeModuleTriggered(false));
     };
 
     // Targets
@@ -860,29 +851,6 @@ export default function Chart(props: ChartData) {
     // Drag Type
     useEffect(() => {
         if (scaleData) {
-            const snap = (data: any, value: any) => {
-                if (value == undefined) return [];
-
-                const filtered =
-                    data.length > 1
-                        ? data.filter((d: any) => d.pinnedMaxPriceDisplayTruncated != null)
-                        : data;
-
-                const nearest = filtered.reduce(function (prev: any, curr: any) {
-                    return Math.abs(curr.pinnedMaxPriceDisplayTruncated - value) <
-                        Math.abs(prev.pinnedMaxPriceDisplayTruncated - value)
-                        ? curr
-                        : prev;
-                });
-
-                return [
-                    {
-                        value: nearest.pinnedMaxPriceDisplayTruncated,
-                        index: filtered.findIndex((liqData: any) => liqData === nearest),
-                    },
-                ];
-            };
-
             let newLimitValue: any;
             let newRangeValue: any;
 
@@ -897,7 +865,7 @@ export default function Chart(props: ChartData) {
                     d3.select(d3Container.current).style('cursor', 'grabbing');
                     d3.select(d3Container.current).select('.targets').style('cursor', 'grabbing');
                 })
-                .on('drag', function (event, d: any) {
+                .on('drag', function (event) {
                     // d3.select(d3Container.current)
                     //     .select('.ghostLines')
                     //     .selectAll('.horizontal')
@@ -993,38 +961,6 @@ export default function Chart(props: ChartData) {
                             newRangeValue = newTargets;
                             return newTargets;
                         });
-
-                        //     const newTargets = [...prevState];
-
-                        //     const low = newTargets.filter((target: any) => target.name === 'Min')[0]
-                        //         .value;
-
-                        //     const high = newTargets.filter(
-                        //         (target: any) => target.name === 'Max',
-                        //     )[0].value;
-
-                        //     if (d.name === 'Max' && dragedValue > low) {
-                        //         newTargets.filter(
-                        //             (target: any) => target.name === d.name,
-                        //         )[0].value = dragedValue;
-                        //     } else if (d.name === 'Min' && dragedValue < high) {
-                        //         newTargets.filter(
-                        //             (target: any) => target.name === d.name,
-                        //         )[0].value = dragedValue;
-                        //     } else if (d.name === 'Max' && dragedValue < low) {
-                        //         newTargets.filter((target: any) => target.name === 'Max')[0].value =
-                        //             dragedValue;
-                        //     } else if (d.name === 'Min' && dragedValue > high) {
-                        //         newTargets.filter((target: any) => target.name === 'Min')[0].value =
-                        //             dragedValue;
-                        //     }
-
-                        //     render();
-
-                        //     newRangeValue = newTargets;
-
-                        //     return newTargets;
-                        // });
                     }
 
                     d3.select(d3PlotArea.current).on('draw', async function (event: any) {
