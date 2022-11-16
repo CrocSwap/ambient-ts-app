@@ -24,7 +24,7 @@ import { DefaultTooltip } from '../../../components/Global/StyledTooltip/StyledT
 
 // START: Import Local Files
 import styles from './TradeCharts.module.css';
-import { BsSuitHeart, BsSuitHeartFill } from 'react-icons/bs';
+import { BsHeart, BsHeartFill } from 'react-icons/bs';
 import printDomToImage from '../../../utils/functions/printDomToImage';
 import getUnicodeCharacter from '../../../utils/functions/getUnicodeCharacter';
 import {
@@ -527,11 +527,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
 
     const favButton = (
         <button className={styles.favorite_button} onClick={handleFavButton}>
-            {isButtonFavorited ? (
-                <BsSuitHeartFill color='#cdc1ff' size={30} />
-            ) : (
-                <BsSuitHeart size={30} />
-            )}
+            {isButtonFavorited ? <BsHeartFill color='#cdc1ff' size={30} /> : <BsHeart size={30} />}
         </button>
     );
 
