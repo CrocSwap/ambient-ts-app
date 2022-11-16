@@ -121,6 +121,7 @@ export default function ExtraInfo(props: ExtraInfoPropsIF) {
             title: 'Liquidity Provider Fee',
             tooltipTitle: `This is a dynamically updated rate to reward ${baseTokenSymbol} / ${quoteTokenSymbol} liquidity providers.`,
             data: `${liquidityProviderFee * 100}%`,
+            placement: 'bottom',
         },
     ];
 
@@ -153,6 +154,7 @@ export default function ExtraInfo(props: ExtraInfoPropsIF) {
             title: 'Price Impact',
             tooltipTitle: 'Difference Between Current (Spot) Price and Final Price',
             data: `${priceImpactString}%`,
+            placement: 'bottom',
         },
     ];
     const extraInfoDetails = (
@@ -162,7 +164,10 @@ export default function ExtraInfo(props: ExtraInfoPropsIF) {
                     <div className={styles.extra_row} key={idx}>
                         <div className={styles.align_center}>
                             <div>{item.title}</div>
-                            <TooltipComponent title={item.tooltipTitle} />
+                            <TooltipComponent
+                                title={item.tooltipTitle}
+                                placement={item.placement as 'bottom'}
+                            />
                         </div>
                         <div
                             className={styles.data}
@@ -189,7 +194,10 @@ export default function ExtraInfo(props: ExtraInfoPropsIF) {
                     <div className={styles.extra_row} key={idx}>
                         <div className={styles.align_center}>
                             <div>{item.title}</div>
-                            <TooltipComponent title={item.tooltipTitle} />
+                            <TooltipComponent
+                                title={item.tooltipTitle}
+                                placement={item.placement as 'bottom'}
+                            />
                         </div>
                         <div
                             className={styles.data}
