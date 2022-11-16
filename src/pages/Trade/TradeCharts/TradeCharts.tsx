@@ -618,14 +618,16 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
             <div
                 style={{
                     display: 'flex',
-                    alignItems: 'baseline',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+
                     gap: '8px',
                 }}
             >
                 {currentAmountDisplay}
                 {poolPriceChange}
+                <div>{tvlDisplay}</div>
             </div>
-            <div>{tvlDisplay}</div>
             <div>{graphSettingsContent}</div>
 
             {/* {tvlTickDisplay} */}
@@ -639,8 +641,26 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
     const timeFrameContent = (
         <div className={styles.time_frame_container}>
             <div className={styles.chart_overlay_container}>{activeTimeFrameDisplay}</div>
-            <div className={styles.chart_overlay_container}>{chartOverlayButtons1}</div>
-            <div className={styles.chart_overlay_container}>{chartOverlayButtons2}</div>
+            <div
+                style={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                }}
+                className={styles.chart_overlay_container}
+            >
+                {chartOverlayButtons1}
+            </div>
+            <div
+                style={{
+                    display: 'flex',
+                    justifyContent: 'end',
+                    alignItems: 'end',
+                }}
+                className={styles.chart_overlay_container}
+            >
+                {chartOverlayButtons2}
+            </div>
         </div>
     );
 

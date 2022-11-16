@@ -3,6 +3,9 @@
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
     align-items: center;
     padding: 0.3rem 0;
 }
@@ -72,7 +75,7 @@
     display: flex;
     flex-direction: row;
     align-items: center;
-    /* gap: 8px; */
+   
 }
 
 .chart_overlay_container {
@@ -139,7 +142,7 @@
     border-radius: 50px;
     padding: 5px 8px;
     position: relative;
-    margin: 0 4px;
+  
 }
 
 
@@ -254,7 +257,8 @@
     display: flex;
     flex-direction: column;
     /* align-items: center; */
-    gap: 8px;
+
+    
     padding: 1rem 2rem;
 
     font-size: var(--body-size);
