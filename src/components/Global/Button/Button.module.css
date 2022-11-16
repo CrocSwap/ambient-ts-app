@@ -52,7 +52,7 @@
 
 .btn_flat:hover{
     color: var(--dark2);
-    box-shadow: 0 0 2px #fff, 0 0 5px #fff, 0 0 10px #0ba9ca, 0 0 20px #0ba9ca
+    box-shadow: 0 0 2px #fff, 0 0 5px #fff, 0 0 10px #0ba9ca
 }
 
 .disabled_btn {
