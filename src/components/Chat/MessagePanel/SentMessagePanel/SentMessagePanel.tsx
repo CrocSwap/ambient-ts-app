@@ -29,17 +29,16 @@ export default function SentMessagePanel(props: SentMessageProps) {
         <div className={styles.sent_message_body}>
             <p className={styles.message_date}>{formatAMPM(props.message.createdAt)}</p>
             <div className={styles.message_item}>
-                {!isPosition && <p className={styles.message}>{props.message.message}</p>}
                 <PositionBox
                     message={props.message.message}
                     isInput={false}
                     isPosition={isPosition}
                     setIsPosition={setIsPosition}
                 />
-
-                <div className={styles.avatar_image}>
-                    <img src={noAvatarImage} alt='no avatar' />
-                </div>
+                {!isPosition && <p className={styles.message}>{props.message.message}</p>}
+            </div>
+            <div className={styles.avatar_image}>
+                <img src={noAvatarImage} alt='no avatar' />
             </div>
         </div>
     );

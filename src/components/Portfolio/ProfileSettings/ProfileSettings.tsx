@@ -47,6 +47,7 @@ export default function ProfileSettings(props: ProfileSettingsPropsIF) {
     const [id, setId] = useState('');
     const { setShowProfileSettings, imageData, openGlobalModal } = props;
     const [openSnackbar, setOpenSnackbar] = useState(false);
+    const host = 'http://localhost:5000';
     const onChangeName = async (e: any) => {
         setName(e.target.value);
     };
@@ -149,7 +150,7 @@ export default function ProfileSettings(props: ProfileSettingsPropsIF) {
     }, []);
 
     async function updateUser() {
-        const response = await fetch('https://crocswap-chat.herokuapp.com/api/auth/updateUser', {
+        const response = await fetch(host + '/api/auth/updateUser', {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',

@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from 'react';
 import io from 'socket.io-client';
 import { Message } from '../Model/MessageModel';
-export const host = 'https://crocswap-chat.herokuapp.com';
+export const host = 'http://localhost:5000';
 export const sendMessageRoute = `${host}/api/messages/addmsg`;
 export const recieveMessageRoute = `${host}/api/messages/getall`;
 export const recieveMessageByRoomRoute = `${host}/api/messages/getmsgbyroom`;
@@ -39,8 +39,7 @@ const useSocket = (room: any) => {
     }, [room]);
 
     async function getMsg() {
-        console.log('Geldi');
-        socketRef.current.emit('msg-recieve', {
+        await socketRef.current.emit('msg-recieve', {
             room: room,
         });
     }

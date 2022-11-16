@@ -52,32 +52,22 @@ export default function PositionBox(props: PositionBoxProps) {
             if (transactionsData.find((item) => item.tx === hashMsg)) {
                 setPosition(transactionsData.find((item) => item.tx === hashMsg));
                 props.setIsPosition(true);
-            } else {
-                setPosition(undefined);
-            }
-        } else {
-            setPosition(undefined);
-        }
-    }, [message]);
-
-    useEffect(() => {
-        if (message && message.includes('0x')) {
-            const hashMsg = message.split(' ').find((item) => item.includes('0x'));
-            setHashMsg(hashMsg as string);
-            if (sortedPositions.find((item: PositionIF) => item.positionStorageSlot === hashMsg)) {
+            } else if (
+                sortedPositions.find((item: PositionIF) => item.positionStorageSlot === hashMsg)
+            ) {
                 setSPosition(
                     sortedPositions.find(
                         (item: PositionIF) => item.positionStorageSlot === hashMsg,
                     ),
                 );
                 props.setIsPosition(true);
-            } else {
-                setSPosition(undefined);
             }
         } else {
+            setPosition(undefined);
             setSPosition(undefined);
+            props.setIsPosition(false);
         }
-    }, [message]);
+    }, [message, sortedPositions, transactionsData]);
 
     const sSideType = sPositions ? 'Range' : '';
 
@@ -225,7 +215,7 @@ export default function PositionBox(props: PositionBoxProps) {
         if (message.includes(' ')) {
             return message.substring(message.indexOf(' ') + 1);
         } else {
-            if (!position || !sPositions || !props.isPosition) {
+            if ((!position && !props.isPosition) || (!sPositions && !props.isPosition)) {
                 return message;
             } else {
                 return '';
@@ -253,34 +243,39 @@ export default function PositionBox(props: PositionBoxProps) {
                                 {position.quoteSymbol} / {position.baseSymbol}
                             </div>
                             <div className={styles.address_box}>
-                                <span className={styles.address}>{getPositionAdress()}</span>
-                                <span>
+                                <div className={styles.address}>{getPositionAdress()}</div>
+
+                                <div>
+                                    <FiCopy
+                                        size={19}
+                                        color='rgba(235, 235, 255, 0.4)'
+                                        onClick={handleCopyAddress}
+                                    />
+                                </div>
+                                <div>
                                     <HiOutlineExternalLink
-                                        size={22}
+                                        size={20}
                                         color='rgba(235, 235, 255, 0.4)'
                                     />
-                                </span>
-                                <span>
-                                    <FiCopy onClick={handleCopyAddress} />
-                                </span>
+                                </div>
                             </div>
                         </div>
                         <div className={styles.position_info}>
-                            <span className={styles.tokens_name}>{sideType} Price</span>
+                            <div className={styles.tokens_name}>{sideType} Price</div>
 
-                            <span className={styles.price}>{truncatedDisplayPrice}</span>
+                            <div className={styles.price}>{truncatedDisplayPrice}</div>
                         </div>
                         {isPoolPriceChangePositive ? (
                             <>
                                 <div className={styles.position_info}>
-                                    <span className={styles.tokens_name}>Range</span>
+                                    <div className={styles.tokens_name}>Range</div>
 
-                                    <span className={styles.range_price}>$2,950.00</span>
-                                    <span className={styles.range}>$4,200.00</span>
+                                    <div className={styles.range_price}>$2,950.00</div>
+                                    <div className={styles.range}>$4,200.00</div>
                                 </div>
                                 <div className={styles.position_info}>
-                                    <span className={styles.tokens_name}>APY</span>
-                                    <span
+                                    <div className={styles.tokens_name}>APY</div>
+                                    <div
                                         className={
                                             isPoolPriceChangePositive
                                                 ? styles.change_positive
@@ -288,7 +283,7 @@ export default function PositionBox(props: PositionBoxProps) {
                                         }
                                     >
                                         36.65%
-                                    </span>
+                                    </div>
                                 </div>
                             </>
                         ) : (
@@ -319,34 +314,34 @@ export default function PositionBox(props: PositionBoxProps) {
                                 {position.quoteSymbol} / {position.baseSymbol}
                             </div>
                             <div className={styles.address_box}>
-                                <span className={styles.address}>{getPositionAdress()}</span>
-                                <span>
+                                <div className={styles.address}>{getPositionAdress()}</div>
+                                <div>
                                     <HiOutlineExternalLink
                                         size={22}
                                         color='rgba(235, 235, 255, 0.4)'
                                     />
-                                </span>
-                                <span>
+                                </div>
+                                <div>
                                     <FiCopy onClick={handleCopyAddress} />
-                                </span>
+                                </div>
                             </div>
                         </div>
                         <div className={styles.position_info}>
-                            <span className={styles.tokens_name}>{sideType} Price</span>
+                            <div className={styles.tokens_name}>{sideType} Price</div>
 
-                            <span className={styles.price}>{truncatedDisplayPrice}</span>
+                            <div className={styles.price}>{truncatedDisplayPrice}</div>
                         </div>
                         {isPoolPriceChangePositive ? (
                             <>
                                 <div className={styles.position_info}>
-                                    <span className={styles.tokens_name}>Range</span>
+                                    <div className={styles.tokens_name}>Range</div>
 
-                                    <span className={styles.range_price}>$2,950.00</span>
-                                    <span className={styles.range}>$4,200.00</span>
+                                    <div className={styles.range_price}>$2,950.00</div>
+                                    <div className={styles.range}>$4,200.00</div>
                                 </div>
                                 <div className={styles.position_info}>
-                                    <span className={styles.tokens_name}>APY</span>
-                                    <span
+                                    <div className={styles.tokens_name}>APY</div>
+                                    <div
                                         className={
                                             isPoolPriceChangePositive
                                                 ? styles.change_positive
@@ -354,7 +349,7 @@ export default function PositionBox(props: PositionBoxProps) {
                                         }
                                     >
                                         36.65%
-                                    </span>
+                                    </div>
                                 </div>
                             </>
                         ) : (
@@ -367,7 +362,7 @@ export default function PositionBox(props: PositionBoxProps) {
                     <p className={styles.position_message}>{getRestOfMessagesIfAny()}</p>
                 </div>
             </motion.div>
-        ) : sPositions && !isInput ? (
+        ) : sPositions !== undefined && !isInput ? (
             <motion.div
                 className={styles.animate_position_box}
                 //  key='content'
@@ -388,32 +383,32 @@ export default function PositionBox(props: PositionBoxProps) {
                                 {sPositions.quoteSymbol} / {sPositions.baseSymbol}
                             </div>
                             <div className={styles.address_box}>
-                                <span className={styles.address}>{getPositionAdress()}</span>
-                                <span>
+                                <div className={styles.address}>{getPositionAdress()}</div>
+                                <div>
                                     <HiOutlineExternalLink
                                         size={22}
                                         color='rgba(235, 235, 255, 0.4)'
                                     />
-                                </span>
-                                <span>
+                                </div>
+                                <div>
                                     <FiCopy onClick={handleCopyAddress} />
-                                </span>
+                                </div>
                             </div>
                         </div>
                         <div className={styles.position_info}>
-                            <span className={styles.tokens_name}>Range</span>
-                            <span className={styles.tokens_min_price}>${minPrice}</span>
-                            <span className={styles.tokens_max_price}>${maxPrice}</span>
+                            <div className={styles.tokens_name}>Range</div>
+                            <div className={styles.tokens_min_price}>${minPrice}</div>
+                            <div className={styles.tokens_max_price}>${maxPrice}</div>
                         </div>
                         <div className={styles.position_info}>
-                            <span className={styles.tokens_name}>APY</span>
-                            <span className={styles.tokens_apy}>{financial(apy)}%</span>
+                            <div className={styles.tokens_name}>APY</div>
+                            <div className={styles.tokens_apy}>{financial(apy)}%</div>
                         </div>
                     </div>
                 </div>
                 <p className={styles.position_message}>{getRestOfMessagesIfAny()}</p>
             </motion.div>
-        ) : sPositions && isInput ? (
+        ) : sPositions !== undefined && isInput ? (
             <motion.div
                 className={styles.animate_position_box}
                 key='content'
@@ -434,26 +429,26 @@ export default function PositionBox(props: PositionBoxProps) {
                                 {sPositions.quoteSymbol} / {sPositions.baseSymbol}
                             </div>
                             <div className={styles.address_box}>
-                                <span className={styles.address}>{getPositionAdress()}</span>
-                                <span>
+                                <div className={styles.address}>{getPositionAdress()}</div>
+                                <div>
                                     <HiOutlineExternalLink
                                         size={22}
                                         color='rgba(235, 235, 255, 0.4)'
                                     />
-                                </span>
-                                <span>
+                                </div>
+                                <div>
                                     <FiCopy onClick={handleCopyAddress} />
-                                </span>
+                                </div>
                             </div>
                         </div>
                         <div className={styles.position_info}>
-                            <span className={styles.tokens_name}>Range</span>
-                            <span className={styles.tokens_min_price}>${minPrice}</span>
-                            <span className={styles.tokens_max_price}>${maxPrice}</span>
+                            <div className={styles.tokens_name}>Range</div>
+                            <div className={styles.tokens_min_price}>${minPrice}</div>
+                            <div className={styles.tokens_max_price}>${maxPrice}</div>
                         </div>
                         <div className={styles.position_info}>
-                            <span className={styles.tokens_name}>APY</span>
-                            <span className={styles.tokens_apy}>{financial(apy)}%</span>
+                            <div className={styles.tokens_name}>APY</div>
+                            <div className={styles.tokens_apy}>{financial(apy)}%</div>
                         </div>
                     </div>
                 </div>

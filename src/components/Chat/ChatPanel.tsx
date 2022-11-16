@@ -48,11 +48,12 @@ interface ChatProps {
     currentPool: currentPoolInfo;
     isFullScreen?: boolean;
     setChatStatus: Dispatch<SetStateAction<boolean>>;
+    fullScreen?: boolean;
 }
 
 export default function ChatPanel(props: ChatProps) {
     const { favePools, currentPool } = props;
-    const messageEnd = useRef<HTMLInputElement | null>(null);
+    const messageEnd = useRef<any>(null);
     const [room, setRoom] = useState('Global');
     const [showChatPanel, setShowChatPanel] = useState(true);
     const { user, account, enableWeb3, isWeb3Enabled, isAuthenticated } = useMoralis();
@@ -87,6 +88,8 @@ export default function ChatPanel(props: ChatProps) {
 
     useEffect(() => {
         getMsg();
+        console.log('Burada1');
+        console.log('ilk acilis');
     }, []);
 
     useEffect(() => {
@@ -94,7 +97,7 @@ export default function ChatPanel(props: ChatProps) {
             setCurrentUser(result.userData._id);
             setName(result.userData.ensName);
         });
-    }, [props.chatStatus]);
+    }, [props.chatStatus, props.isFullScreen]);
 
     useEffect(() => {
         getID().then((result: any) => {
@@ -105,16 +108,36 @@ export default function ChatPanel(props: ChatProps) {
 
     useEffect(() => {
         isCurrentUser();
-    }, [account, isUserLoggedIn, isAuthenticated]);
+    }, [isUserLoggedIn]);
+
+    useEffect(() => {
+        scrollToBottomRoom();
+    }, [room]);
+
+    useEffect(() => {
+        scrollToBottom();
+    }, [messages]);
 
     function handleCloseChatPanel() {
         props.setChatStatus(false);
     }
 
-    const scrollToBottom = () => {
-        messageEnd.current?.scrollIntoView({ behavior: 'smooth' });
+    const scrollToBottomRoom = async () => {
+        const timer = setTimeout(() => {
+            messageEnd.current?.scrollTo(
+                messageEnd.current?.scrollHeight,
+                messageEnd.current?.scrollHeight,
+            );
+        }, 500);
+        return () => clearTimeout(timer);
     };
 
+    const scrollToBottom = async () => {
+        messageEnd.current?.scrollTo(
+            messageEnd.current?.scrollHeight,
+            messageEnd.current?.scrollHeight,
+        );
+    };
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleScroll = (e: any) => {
         setScrollBottomControl(
@@ -124,14 +147,6 @@ export default function ChatPanel(props: ChatProps) {
         );
     };
 
-    useEffect(() => {
-        scrollToBottom();
-    }, [props.chatStatus, room, messages]);
-
-    useEffect(() => {
-        scrollToBottom();
-    }, []);
-
     const header = (
         <div className={styles.modal_header}>
             <h2 className={styles.modal_title}>Chat</h2>
@@ -139,7 +154,11 @@ export default function ChatPanel(props: ChatProps) {
                 <></>
             ) : (
                 <Link target='_blank' to='/app/chat'>
-                    <MdOpenInFull size={18} className={styles.open_full_button} />
+                    <MdOpenInFull
+                        size={18}
+                        className={styles.open_full_button}
+                        onClick={() => props.setChatStatus(true)}
+                    />
                 </Link>
             )}
             {props.isFullScreen ? (
@@ -151,7 +170,6 @@ export default function ChatPanel(props: ChatProps) {
                     onClick={() => handleCloseChatPanel()}
                 />
             )}
-            g
         </div>
     );
 
@@ -175,7 +193,6 @@ export default function ChatPanel(props: ChatProps) {
             return currentUser;
         }
     }
-
     const messageList = (
         <>
             {messages &&
@@ -197,7 +214,7 @@ export default function ChatPanel(props: ChatProps) {
     return (
         <>
             {props.isFullScreen ? (
-                <></>
+                <>{console.log('Chat buyuk ekran')}</>
             ) : (
                 <ChatButton chatStatus={props.chatStatus} setChatStatus={props.setChatStatus} />
             )}
@@ -208,14 +225,13 @@ export default function ChatPanel(props: ChatProps) {
                 <motion.div
                     initial={{ opacity: 0, scale: 0.5 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 0.4 }}
+                    transition={{ duration: 0.3 }}
                     className={`
                     ${styles.main_body}
                     `}
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     onClick={(e: any) => e.stopPropagation()}
                 >
-                    <div className={styles.main_body}></div>
                     <div
                         className={`
                             ${props.isFullScreen ? wrapperStyleFull : styles.modal_body}
@@ -223,13 +239,21 @@ export default function ChatPanel(props: ChatProps) {
                     >
                         <div className={styles.chat_body}>
                             {header}
-
-                            <Room
-                                favePools={favePools}
-                                selectedRoom={room}
-                                setRoom={setRoom}
-                                currentPool={currentPool}
-                            />
+                            {props.isFullScreen ? (
+                                <Room
+                                    favePools={favePools}
+                                    selectedRoom={room}
+                                    setRoom={setRoom}
+                                    currentPool={currentPool}
+                                />
+                            ) : (
+                                <Room
+                                    favePools={favePools}
+                                    selectedRoom={room}
+                                    setRoom={setRoom}
+                                    currentPool={currentPool}
+                                />
+                            )}
 
                             <div style={{ width: '90%' }}>
                                 <DividerDark changeColor addMarginTop addMarginBottom />
@@ -254,6 +278,7 @@ export default function ChatPanel(props: ChatProps) {
                                 }
                                 ensName={name}
                             />
+                            <div id='thelastmessage'></div>
                         </div>
                     </div>
                 </motion.div>
