@@ -170,6 +170,45 @@ export default function App() {
         enableWeb3,
     } = useMoralis();
 
+    const tradeData = useAppSelector((state) => state.tradeData);
+    const location = useLocation();
+
+    // hook to check if token addresses in URL match token addresses in RTK
+    const rtkMatchesParams = useMemo(() => {
+        // output value, false is default return
+        let matching = false;
+        // address of token A as held by RTK
+        const rtkTokenA = tradeData.tokenA.address;
+        // address of token B as held by RTK
+        const rtkTokenB = tradeData.tokenB.address;
+        // current URL pathway
+        const { pathname } = location;
+        // make sure app is on a pathway with two URLs in params
+        if (pathname.includes('tokenA') && pathname.includes('tokenB')) {
+            // function to extract token addresses from URL string (absolute)
+            const getAddrFromParams = (token: string) => {
+                const idx = pathname.indexOf(token);
+                const address = pathname.substring(idx+7, idx+49)
+                return address;
+            }
+            // address of token A from URL params
+            const addrTokenA = getAddrFromParams('tokenA');
+            // address of token B from URL params
+            const addrTokenB = getAddrFromParams('tokenB');
+            // check if URL param addresses match RTK token addresses
+            if (
+                addrTokenA.toLowerCase() === rtkTokenA.toLowerCase() &&
+                addrTokenB.toLowerCase() === rtkTokenB.toLowerCase()
+            ) {
+                // if match set return value as true
+                matching = true;
+            }
+        }
+        // return output variable (boolean)
+        return matching;
+    // run hook when URL or token addresses in RTK change
+    }, [location, tradeData.tokenA.address, tradeData.tokenB.address]);
+
     const onIdle = () => {
         console.log('user is idle');
         dispatch(setIsUserIdle(true));
@@ -217,6 +256,9 @@ export default function App() {
     });
 
     const userData = useAppSelector((state) => state.userData);
+
+
+
     const isUserLoggedIn = userData.isLoggedIn;
     const isUserIdle = userData.isUserIdle;
 
@@ -255,7 +297,6 @@ export default function App() {
     useEffect(() => {
         console.log({ tokensOnActiveLists });
     }, [tokensOnActiveLists]);
-    const location = useLocation();
 
     const [candleData, setCandleData] = useState<CandlesByPoolAndDuration | undefined>();
 
@@ -391,7 +432,6 @@ export default function App() {
     const dispatch = useAppDispatch();
 
     // current configurations of trade as specified by the user
-    const tradeData = useAppSelector((state) => state.tradeData);
     const currentPoolInfo = tradeData;
 
     // tokens specifically imported by the end user
@@ -771,6 +811,9 @@ export default function App() {
 
     // useEffect that runs when token pair changes
     useEffect(() => {
+        console.log(tradeData.tokenA.address);
+        console.log(tradeData.tokenB.address);
+        if (rtkMatchesParams) {
         // reset rtk values for user specified range in ticks
         dispatch(setAdvancedLowTick(0));
         dispatch(setAdvancedHighTick(0));
@@ -1125,7 +1168,8 @@ export default function App() {
                 }
             }
         }
-    }, [isServerEnabled, tokenPairStringified, chainData.chainId, crocEnv]);
+    } else {console.log('stopped it!')}
+    }, [rtkMatchesParams, isServerEnabled, tokenPairStringified, chainData.chainId, crocEnv]);
 
     const activePeriod = tradeData.activeChartPeriod;
 
