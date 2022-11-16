@@ -207,7 +207,7 @@ export default function Chart(props: ChartData) {
     const [candlestick, setCandlestick] = useState<any>();
 
     // Line Series
-    const [ghostLines, setGhostLines] = useState<any>();
+    // const [ghostLines, setGhostLines] = useState<any>();
     const [horizontalLine, setHorizontalLine] = useState<any>();
     const [marketLine, setMarketLine] = useState<any>();
     const [limitLine, setLimitLine] = useState<any>();
@@ -851,9 +851,9 @@ export default function Chart(props: ChartData) {
                 selection.enter().select('g.left-handle').remove();
                 selection.enter().select('line').attr('class', 'ghostline');
             });
-            setGhostLines(() => {
-                return ghostLines;
-            });
+            // setGhostLines(() => {
+            //     return ghostLines;
+            // });
         }
     }, [scaleData]);
 
@@ -889,6 +889,8 @@ export default function Chart(props: ChartData) {
             let lowLineMoved: any;
             let highLineMoved: any;
 
+            let rangeWidthPercentage: any;
+
             const dragRange = d3
                 .drag()
                 .on('start', () => {
@@ -896,174 +898,139 @@ export default function Chart(props: ChartData) {
                     d3.select(d3Container.current).select('.targets').style('cursor', 'grabbing');
                 })
                 .on('drag', function (event, d: any) {
-                    d3.select(d3Container.current)
-                        .select('.ghostLines')
-                        .selectAll('.horizontal')
-                        .style('visibility', 'visible');
+                    // d3.select(d3Container.current)
+                    //     .select('.ghostLines')
+                    //     .selectAll('.horizontal')
+                    //     .style('visibility', 'visible');
 
-                    const snapResponse = snap(
-                        props.liquidityData.liqSnapData,
-                        scaleData.yScale.invert(d3.pointer(event)[1] - 200),
-                    );
+                    // const ghostJoin = d3fc.dataJoin('g', 'ghostLines');
 
-                    const snappedValue = Math.round(snapResponse[0].value * 100) / 100;
-                    const snappedValueIndex = snapResponse[0].index;
+                    const dragedValue = scaleData.yScale.invert(d3.pointer(event)[1] - 200);
 
-                    const neighborValues: any[] = [];
-
-                    for (let i = -3; i < 4; i++) {
-                        neighborValues.push(props.liquidityData.liqSnapData[snappedValueIndex + i]);
-                    }
-
-                    const ghostJoin = d3fc.dataJoin('g', 'ghostLines');
+                    const displayValue = poolPriceDisplay !== undefined ? poolPriceDisplay : 0;
 
                     if (!isAdvancedModeActive) {
-                        let valueWithRange: number;
+                        rangeWidthPercentage = Math.round(
+                            Math.abs(dragedValue - displayValue) / (displayValue / 100),
+                        );
 
-                        if (d.name === 'Max') {
-                            setRanges((prevState) => {
-                                const newTargets = [...prevState];
+                        const lowTick =
+                            currentPoolPriceTick -
+                            (rangeWidthPercentage < 1 ? 1 : rangeWidthPercentage) * 100;
+                        const highTick =
+                            currentPoolPriceTick +
+                            (rangeWidthPercentage < 1 ? 1 : rangeWidthPercentage) * 100;
 
-                                const low = newTargets.filter(
-                                    (target: any) => target.name === 'Min',
-                                )[0].value;
+                        const pinnedDisplayPrices = getPinnedPriceValuesFromTicks(
+                            denomInBase,
+                            baseTokenDecimals,
+                            quoteTokenDecimals,
+                            lowTick,
+                            highTick,
+                            lookupChain(chainId).gridSize,
+                        );
 
-                                const displayValue =
-                                    poolPriceDisplay !== undefined ? poolPriceDisplay : 0;
-
-                                const dragLimit = displayValue / 100.0;
-
-                                valueWithRange =
-                                    newTargets.filter((target: any) => target.name === 'Max')[0]
-                                        .value - snappedValue;
-
-                                if (snappedValue > displayValue + dragLimit) {
-                                    newTargets.filter(
-                                        (target: any) => target.name === 'Max',
-                                    )[0].value = snappedValue;
-
-                                    newTargets.filter(
-                                        (target: any) => target.name === 'Min',
-                                    )[0].value = snap(
-                                        props.liquidityData.liqSnapData,
-                                        low + valueWithRange,
-                                    )[0].value;
-
-                                    render();
-                                } else {
-                                    newTargets.filter(
-                                        (target: any) => target.name === 'Max',
-                                    )[0].value = snap(
-                                        props.liquidityData.liqSnapData,
-                                        displayValue + dragLimit * 1.01,
-                                    )[0].value;
-
-                                    newTargets.filter(
-                                        (target: any) => target.name === 'Min',
-                                    )[0].value = snap(
-                                        props.liquidityData.liqSnapData,
-                                        displayValue - dragLimit * 1.01,
-                                    )[0].value;
-
-                                    render();
-                                }
-                                newRangeValue = newTargets;
-                                return newTargets;
-                            });
-                            highLineMoved = true;
-                        } else {
-                            setRanges((prevState) => {
-                                const newTargets = [...prevState];
-
-                                const displayValue =
-                                    poolPriceDisplay !== undefined ? poolPriceDisplay : 0;
-                                const dragLimit = displayValue / 100.0;
-
-                                valueWithRange =
-                                    newTargets.filter((target: any) => target.name === 'Min')[0]
-                                        .value - snappedValue;
-
-                                const high = newTargets.filter(
-                                    (target: any) => target.name === 'Max',
-                                )[0].value;
-
-                                if (snappedValue < displayValue - dragLimit) {
-                                    newTargets.filter(
-                                        (target: any) => target.name === 'Min',
-                                    )[0].value = snappedValue;
-
-                                    newTargets.filter(
-                                        (target: any) => target.name === 'Max',
-                                    )[0].value = snap(
-                                        props.liquidityData.liqSnapData,
-                                        high + valueWithRange,
-                                    )[0].value;
-
-                                    render();
-                                } else {
-                                    newTargets.filter(
-                                        (target: any) => target.name === 'Max',
-                                    )[0].value = snap(
-                                        props.liquidityData.liqSnapData,
-                                        displayValue + dragLimit * 1.01,
-                                    )[0].value;
-
-                                    newTargets.filter(
-                                        (target: any) => target.name === 'Min',
-                                    )[0].value = snap(
-                                        props.liquidityData.liqSnapData,
-                                        displayValue - dragLimit * 1.01,
-                                    )[0].value;
-
-                                    render();
-                                }
-
-                                newRangeValue = newTargets;
-                                return newTargets;
-                            });
-                            lowLineMoved = true;
-                        }
-                    } else {
                         setRanges((prevState) => {
                             const newTargets = [...prevState];
 
-                            const low = newTargets.filter((target: any) => target.name === 'Min')[0]
-                                .value;
+                            newTargets.filter((target: any) => target.name === 'Min')[0].value =
+                                parseFloat(pinnedDisplayPrices.pinnedMinPriceDisplayTruncated);
 
-                            const high = newTargets.filter(
-                                (target: any) => target.name === 'Max',
-                            )[0].value;
-
-                            if (d.name === 'Max' && snappedValue > low) {
-                                newTargets.filter(
-                                    (target: any) => target.name === d.name,
-                                )[0].value = snappedValue;
-                            } else if (d.name === 'Min' && snappedValue < high) {
-                                newTargets.filter(
-                                    (target: any) => target.name === d.name,
-                                )[0].value = snappedValue;
-                            } else if (d.name === 'Max' && snappedValue < low) {
-                                newTargets.filter((target: any) => target.name === 'Max')[0].value =
-                                    snappedValue;
-                            } else if (d.name === 'Min' && snappedValue > high) {
-                                newTargets.filter((target: any) => target.name === 'Min')[0].value =
-                                    snappedValue;
-                            }
-
-                            render();
+                            newTargets.filter((target: any) => target.name === 'Max')[0].value =
+                                parseFloat(pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated);
 
                             newRangeValue = newTargets;
-
                             return newTargets;
                         });
-                        highLineMoved = true;
-                        lowLineMoved = true;
+                    } else {
+                        const lineToBeSet = dragedValue > displayValue ? 'Max' : 'Min';
+
+                        highLineMoved = lineToBeSet === 'Max';
+                        lowLineMoved = lineToBeSet === 'Min';
+
+                        const low = ranges.filter((target: any) => target.name === 'Min')[0].value;
+                        const high = ranges.filter((target: any) => target.name === 'Max')[0].value;
+
+                        let pinnedDisplayPrices;
+                        if (lineToBeSet === 'Max') {
+                            pinnedDisplayPrices = getPinnedPriceValuesFromDisplayPrices(
+                                denomInBase,
+                                baseTokenDecimals,
+                                quoteTokenDecimals,
+                                low.toString(),
+                                dragedValue,
+                                lookupChain(chainId).gridSize,
+                            );
+                        } else {
+                            pinnedDisplayPrices = getPinnedPriceValuesFromDisplayPrices(
+                                denomInBase,
+                                baseTokenDecimals,
+                                quoteTokenDecimals,
+                                dragedValue,
+                                high.toString(),
+                                lookupChain(chainId).gridSize,
+                            );
+                        }
+
+                        const pinnedMaxPriceDisplayTruncated = parseFloat(
+                            pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
+                        );
+                        const pinnedMinPriceDisplayTruncated = parseFloat(
+                            pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
+                        );
+
+                        setRanges((prevState) => {
+                            const newTargets = [...prevState];
+
+                            if (lineToBeSet === 'Max') {
+                                newTargets.filter((target: any) => target.name === 'Max')[0].value =
+                                    pinnedMaxPriceDisplayTruncated;
+                            } else {
+                                newTargets.filter((target: any) => target.name === 'Min')[0].value =
+                                    pinnedMinPriceDisplayTruncated;
+                            }
+
+                            newRangeValue = newTargets;
+                            return newTargets;
+                        });
+
+                        //     const newTargets = [...prevState];
+
+                        //     const low = newTargets.filter((target: any) => target.name === 'Min')[0]
+                        //         .value;
+
+                        //     const high = newTargets.filter(
+                        //         (target: any) => target.name === 'Max',
+                        //     )[0].value;
+
+                        //     if (d.name === 'Max' && dragedValue > low) {
+                        //         newTargets.filter(
+                        //             (target: any) => target.name === d.name,
+                        //         )[0].value = dragedValue;
+                        //     } else if (d.name === 'Min' && dragedValue < high) {
+                        //         newTargets.filter(
+                        //             (target: any) => target.name === d.name,
+                        //         )[0].value = dragedValue;
+                        //     } else if (d.name === 'Max' && dragedValue < low) {
+                        //         newTargets.filter((target: any) => target.name === 'Max')[0].value =
+                        //             dragedValue;
+                        //     } else if (d.name === 'Min' && dragedValue > high) {
+                        //         newTargets.filter((target: any) => target.name === 'Min')[0].value =
+                        //             dragedValue;
+                        //     }
+
+                        //     render();
+
+                        //     newRangeValue = newTargets;
+
+                        //     return newTargets;
+                        // });
                     }
 
                     d3.select(d3PlotArea.current).on('draw', async function (event: any) {
                         const svg = d3.select(event.target).select('svg');
 
-                        ghostJoin(svg, [neighborValues]).call(ghostLines);
+                        // ghostJoin(svg, [neighborValues]).call(ghostLines);
                         targetsJoin(svg, [newRangeValue]).call(horizontalLine);
                     });
                 })
@@ -1074,6 +1041,14 @@ export default function Chart(props: ChartData) {
                         .select('.ghostLines')
                         .selectAll('.horizontal')
                         .remove();
+
+                    if (!isAdvancedModeActive) {
+                        dispatch(
+                            setSimpleRangeWidth(
+                                rangeWidthPercentage < 1 ? 1 : rangeWidthPercentage,
+                            ),
+                        );
+                    }
 
                     onBlurRange(newRangeValue, highLineMoved, lowLineMoved);
                 });
@@ -2530,23 +2505,25 @@ export default function Chart(props: ChartData) {
     }, [selectedDate]);
 
     const onBlurRange = (range: any, highLineMoved: boolean, lowLineMoved: boolean) => {
-        const low = range.filter((target: any) => target.name === 'Min')[0].value;
-        const high = range.filter((target: any) => target.name === 'Max')[0].value;
+        if (range !== undefined) {
+            const low = range.filter((target: any) => target.name === 'Min')[0].value;
+            const high = range.filter((target: any) => target.name === 'Max')[0].value;
 
-        const newTargetData: targetData[] = [
-            {
-                name: 'Min',
-                value: low > high ? high : low,
-            },
-            {
-                name: 'Max',
-                value: low > high ? low : high,
-            },
-        ];
+            const newTargetData: targetData[] = [
+                {
+                    name: 'Min',
+                    value: low > high ? high : low,
+                },
+                {
+                    name: 'Max',
+                    value: low > high ? low : high,
+                },
+            ];
 
-        dispatch(setTargetData(newTargetData));
-        dispatch(setRangeHighLineTriggered(highLineMoved));
-        dispatch(setRangeLowLineTriggered(lowLineMoved));
+            dispatch(setTargetData(newTargetData));
+            dispatch(setRangeHighLineTriggered(highLineMoved));
+            dispatch(setRangeLowLineTriggered(lowLineMoved));
+        }
     };
 
     const onBlurlimitRate = (newLimitValue: any) => {
