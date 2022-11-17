@@ -113,7 +113,7 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
         } else {
             setRangeAllowed(false);
         }
-    }, [tokenAAllowed, tokenBAllowed]);
+    }, [isOutOfRange, tokenAAllowed, tokenBAllowed]);
 
     const tokenABalance = isTokenABase ? baseTokenBalance : quoteTokenBalance;
     const tokenBBalance = isTokenABase ? quoteTokenBalance : baseTokenBalance;

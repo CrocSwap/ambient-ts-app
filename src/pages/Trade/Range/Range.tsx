@@ -340,10 +340,9 @@ export default function Range(props: RangePropsIF) {
     const rangeSpanAboveCurrentPrice = rangeHighTick - currentPoolPriceTick;
     const rangeSpanBelowCurrentPrice = currentPoolPriceTick - rangeLowTick;
 
-    const isOutOfRange =
-        tradeData.simpleRangeWidth === 100
-            ? false
-            : rangeSpanAboveCurrentPrice < 0 || rangeSpanBelowCurrentPrice < 0;
+    const isOutOfRange = !tradeData.advancedMode
+        ? false
+        : rangeSpanAboveCurrentPrice < 0 || rangeSpanBelowCurrentPrice < 0;
 
     const isInvalidRange = !isAmbient && rangeHighTick <= rangeLowTick;
 
@@ -1265,7 +1264,6 @@ export default function Range(props: RangePropsIF) {
     );
 
     // -------------------------END OF RANGE SHARE FUNCTIONALITY---------------------------
-
     return (
         <section data-testid={'range'} className={styles.scrollable_container}>
             <ContentContainer isOnTradeRoute>
