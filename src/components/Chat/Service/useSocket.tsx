@@ -22,7 +22,6 @@ const useSocket = (room: any) => {
         });
 
         socketRef.current.on('send-msg', () => {
-            console.log('send-msg');
             socketRef.current.on('msg-recieve', (data: any) => {
                 setMessages(data);
             });

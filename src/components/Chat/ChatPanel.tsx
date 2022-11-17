@@ -88,8 +88,6 @@ export default function ChatPanel(props: ChatProps) {
 
     useEffect(() => {
         getMsg();
-        console.log('Burada1');
-        console.log('ilk acilis');
     }, []);
 
     useEffect(() => {
@@ -182,7 +180,6 @@ export default function ChatPanel(props: ChatProps) {
     }
 
     function isCurrentUser() {
-        console.log(account, isUserLoggedIn, isAuthenticated, name_);
         if (account === null) {
             return setCurrentUser(undefined);
         } else {
@@ -214,7 +211,7 @@ export default function ChatPanel(props: ChatProps) {
     return (
         <>
             {props.isFullScreen ? (
-                <>{console.log('Chat buyuk ekran')}</>
+                <></>
             ) : (
                 <ChatButton chatStatus={props.chatStatus} setChatStatus={props.setChatStatus} />
             )}
