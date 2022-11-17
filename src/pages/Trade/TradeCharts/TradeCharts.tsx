@@ -24,7 +24,7 @@ import { DefaultTooltip } from '../../../components/Global/StyledTooltip/StyledT
 
 // START: Import Local Files
 import styles from './TradeCharts.module.css';
-import { BsSuitHeart, BsSuitHeartFill } from 'react-icons/bs';
+import { BsHeart, BsHeartFill } from 'react-icons/bs';
 import printDomToImage from '../../../utils/functions/printDomToImage';
 import getUnicodeCharacter from '../../../utils/functions/getUnicodeCharacter';
 import {
@@ -527,11 +527,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
 
     const favButton = (
         <button className={styles.favorite_button} onClick={handleFavButton}>
-            {isButtonFavorited ? (
-                <BsSuitHeartFill color='#cdc1ff' size={30} />
-            ) : (
-                <BsSuitHeart size={30} />
-            )}
+            {isButtonFavorited ? <BsHeartFill color='#cdc1ff' size={30} /> : <BsHeart size={30} />}
         </button>
     );
 
@@ -618,14 +614,16 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
             <div
                 style={{
                     display: 'flex',
-                    alignItems: 'baseline',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+
                     gap: '8px',
                 }}
             >
                 {currentAmountDisplay}
                 {poolPriceChange}
+                <div>{tvlDisplay}</div>
             </div>
-            <div>{tvlDisplay}</div>
             <div>{graphSettingsContent}</div>
 
             {/* {tvlTickDisplay} */}
@@ -639,8 +637,26 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
     const timeFrameContent = (
         <div className={styles.time_frame_container}>
             <div className={styles.chart_overlay_container}>{activeTimeFrameDisplay}</div>
-            <div className={styles.chart_overlay_container}>{chartOverlayButtons1}</div>
-            <div className={styles.chart_overlay_container}>{chartOverlayButtons2}</div>
+            <div
+                style={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                }}
+                className={styles.chart_overlay_container}
+            >
+                {chartOverlayButtons1}
+            </div>
+            <div
+                style={{
+                    display: 'flex',
+                    justifyContent: 'end',
+                    alignItems: 'end',
+                }}
+                className={styles.chart_overlay_container}
+            >
+                {chartOverlayButtons2}
+            </div>
         </div>
     );
 
