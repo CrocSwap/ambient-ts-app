@@ -1061,7 +1061,7 @@ export default function App() {
                                     // omitKnockout: 'true',
                                     addValue: 'true',
                                     sortByAPY: 'true',
-                                    n: '10',
+                                    n: '30',
                                 }),
                         )
                             .then((response) => response.json())
@@ -1069,7 +1069,6 @@ export default function App() {
                                 const leaderboardPositions = json.data;
 
                                 if (leaderboardPositions && crocEnv) {
-                                    // console.log({ poolPositions });
                                     Promise.all(
                                         leaderboardPositions.map((position: PositionIF) => {
                                             return getPositionData(
@@ -1082,16 +1081,20 @@ export default function App() {
                                         }),
                                     )
                                         .then((updatedPositions) => {
-                                            // console.log({ updatedPositions });
+                                            const top10Positions = updatedPositions
+                                                .filter((updatedPosition: PositionIF) => {
+                                                    return updatedPosition.isPositionInRange;
+                                                })
+                                                .slice(1, 10);
                                             if (
                                                 JSON.stringify(
                                                     graphData.leaderboardByPool.positions,
-                                                ) !== JSON.stringify(updatedPositions)
+                                                ) !== JSON.stringify(top10Positions)
                                             ) {
                                                 dispatch(
                                                     setLeaderboardByPool({
                                                         dataReceived: true,
-                                                        positions: updatedPositions,
+                                                        positions: top10Positions,
                                                     }),
                                                 );
                                             }
