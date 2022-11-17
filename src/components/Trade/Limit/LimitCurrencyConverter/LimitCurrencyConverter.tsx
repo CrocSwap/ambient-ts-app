@@ -215,7 +215,7 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
     const handleLimitButtonMessage = (tokenAAmount: number) => {
         if (!poolExists) {
             setLimitAllowed(false);
-            if (poolExists === null) setLimitButtonErrorMessage('...');
+            if (poolExists === undefined) setLimitButtonErrorMessage('...');
             if (poolExists === false) setLimitButtonErrorMessage('Pool Not Initialized');
         } else if (isNaN(tokenAAmount) || tokenAAmount <= 0) {
             setLimitAllowed(false);

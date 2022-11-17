@@ -217,16 +217,6 @@ export default function Swap(props: SwapPropsIF) {
         setTxErrorMessage('');
     };
 
-    // useEffect(() =>
-    //     if (poolExists === null) {
-    //         setSwapAllowed(false);
-    //         setSwapButtonErrorMessage('...');
-    //     } else if (poolExists === false) {
-    //         setSwapAllowed(false);
-    //         setSwapButtonErrorMessage('Pool Not Initialized');
-    //     }
-    // }, [poolExists]);
-
     const [priceImpactExceedsTolerance, setPriceImpactExceedsTolerance] = useState(false);
 
     useEffect(() => {
@@ -437,15 +427,6 @@ export default function Swap(props: SwapPropsIF) {
     const swapContainerStyle = pathname.startsWith('/swap') ? styles.swap_page_container : null;
 
     const swapPageStyle = pathname.startsWith('/swap') ? styles.swap_page : null;
-
-    // const [buttonDelayElapsed, setButtonDelayElapsed] = useState(false);
-
-    // useEffect(() => {
-    //     const timer = setTimeout(() => {
-    //         setButtonDelayElapsed(true);
-    //     }, 3000);
-    //     return () => clearTimeout(timer);
-    // }, []);
 
     // -------------------------Swap SHARE FUNCTIONALITY---------------------------
     const [shareOptions, setShareOptions] = useState([

@@ -254,7 +254,7 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
     const handleSwapButtonMessage = (tokenAAmount: number) => {
         if (!poolExists) {
             setSwapAllowed(false);
-            if (poolExists === null) setSwapButtonErrorMessage('...');
+            if (poolExists === undefined) setSwapButtonErrorMessage('...');
             if (poolExists === false) setSwapButtonErrorMessage('Pool Not Initialized');
         } else if (poolPriceDisplay === 0 || poolPriceDisplay === Infinity) {
             setSwapAllowed(false);

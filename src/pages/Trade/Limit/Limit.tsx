@@ -117,7 +117,7 @@ export default function Limit(props: LimitPropsIF) {
 
     const { tradeData, navigationMenu } = useTradeData();
     const dispatch = useAppDispatch();
-    const { account, isWeb3Enabled, isAuthenticated } = useMoralis();
+    const { account } = useMoralis();
     const [isModalOpen, openModal, closeModal] = useModal();
     const [limitAllowed, setLimitAllowed] = useState<boolean>(false);
 
@@ -498,7 +498,7 @@ export default function Limit(props: LimitPropsIF) {
     ) : null;
 
     const isTokenAAllowanceSufficient = parseFloat(tokenAAllowance) >= parseFloat(tokenAInputQty);
-    const loginButton = <Button title='Login' action={openModalWallet} />;
+    const loginButton = <Button title='Connect Wallet' action={openModalWallet} />;
     const [isApprovalPending, setIsApprovalPending] = useState(false);
 
     const approve = async (tokenAddress: string) => {
@@ -687,7 +687,7 @@ export default function Limit(props: LimitPropsIF) {
                     middleDisplayPrice={middleDisplayPrice}
                     endDisplayPrice={endDisplayPrice}
                 />
-                {isAuthenticated && isWeb3Enabled ? (
+                {isUserLoggedIn === undefined ? null : isUserLoggedIn === true ? (
                     !isTokenAAllowanceSufficient && parseFloat(tokenAInputQty) > 0 ? (
                         approvalButton
                     ) : (

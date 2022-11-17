@@ -148,7 +148,7 @@ export default function Range(props: RangePropsIF) {
         setTxErrorMessage('');
     };
 
-    const { account, isAuthenticated, isWeb3Enabled } = useMoralis();
+    const { account } = useMoralis();
 
     const { tradeData, navigationMenu } = useTradeData();
 
@@ -208,8 +208,8 @@ export default function Range(props: RangePropsIF) {
         ? getUnicodeCharacter(tokenB.symbol)
         : getUnicodeCharacter(tokenA.symbol);
 
-    const [rangeButtonErrorMessage, setRangeButtonErrorMessage] =
-        useState<string>('Enter an Amount');
+    const [rangeButtonErrorMessage, setRangeButtonErrorMessage] = useState<string>('');
+
     const currentPoolPriceTick =
         poolPriceNonDisplay === undefined ? 0 : Math.log(poolPriceNonDisplay) / Math.log(1.0001);
     const [rangeWidthPercentage, setRangeWidthPercentage] = useState<number>(
@@ -354,8 +354,10 @@ export default function Range(props: RangePropsIF) {
             setRangeButtonErrorMessage('Pool Not Initialized');
         } else if (isInvalidRange) {
             setRangeButtonErrorMessage('Please Enter a Valid Range');
-        } else {
+        } else if (isUserLoggedIn) {
             setRangeButtonErrorMessage('Enter an Amount');
+        } else {
+            setRangeButtonErrorMessage('...');
         }
     }, [poolExists, isInvalidRange, poolPriceNonDisplay, isUserLoggedIn]);
 
@@ -1136,7 +1138,7 @@ export default function Range(props: RangePropsIF) {
     const isTokenAAllowanceSufficient = parseFloat(tokenAAllowance) >= parseFloat(tokenAInputQty);
     const isTokenBAllowanceSufficient = parseFloat(tokenBAllowance) >= parseFloat(tokenBInputQty);
 
-    const loginButton = <Button title='Login' action={openModalWallet} />;
+    const loginButton = <Button title='Connect Wallet' action={openModalWallet} />;
 
     const [isApprovalPending, setIsApprovalPending] = useState(false);
 
@@ -1280,22 +1282,24 @@ export default function Range(props: RangePropsIF) {
                     <DividerDark />
                     {tradeData.advancedMode ? advancedModeContent : baseModeContent}
                 </motion.div>
-                {!isAuthenticated || !isWeb3Enabled ? (
-                    loginButton
-                ) : poolPriceNonDisplay !== 0 &&
-                  parseFloat(tokenAInputQty) > 0 &&
-                  !isTokenAAllowanceSufficient ? (
-                    tokenAApprovalButton
-                ) : poolPriceNonDisplay !== 0 &&
-                  parseFloat(tokenBInputQty) > 0 &&
-                  !isTokenBAllowanceSufficient ? (
-                    tokenBApprovalButton
+                {isUserLoggedIn === undefined ? null : isUserLoggedIn === true ? (
+                    poolPriceNonDisplay !== 0 &&
+                    parseFloat(tokenAInputQty) > 0 &&
+                    !isTokenAAllowanceSufficient ? (
+                        tokenAApprovalButton
+                    ) : poolPriceNonDisplay !== 0 &&
+                      parseFloat(tokenBInputQty) > 0 &&
+                      !isTokenBAllowanceSufficient ? (
+                        tokenBApprovalButton
+                    ) : (
+                        <RangeButton
+                            onClickFn={openModal}
+                            rangeAllowed={poolExists === true && rangeAllowed && !isInvalidRange}
+                            rangeButtonErrorMessage={rangeButtonErrorMessage}
+                        />
+                    )
                 ) : (
-                    <RangeButton
-                        onClickFn={openModal}
-                        rangeAllowed={!!poolExists && rangeAllowed && !isInvalidRange}
-                        rangeButtonErrorMessage={rangeButtonErrorMessage}
-                    />
+                    loginButton
                 )}
             </ContentContainer>
             {confirmSwapModalOrNull}
