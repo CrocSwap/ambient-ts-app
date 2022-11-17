@@ -452,7 +452,7 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
     const handleTokenAQtyFieldUpdate = (evt?: ChangeEvent<HTMLInputElement>) => {
         if (evt) {
             const input = evt.target.value;
-            if (input === '' || parseFloat(input) <= 0) {
+            if (input === '' || isNaN(parseFloat(input)) || parseFloat(input) <= 0) {
                 setTokenAAllowed(false);
                 setRangeButtonErrorMessage('Enter an Amount');
                 setTokenAQtyValue(0);
@@ -545,7 +545,7 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
     const handleTokenBQtyFieldUpdate = (evt?: ChangeEvent<HTMLInputElement>) => {
         if (evt) {
             const input = evt.target.value;
-            if (input === '' || parseFloat(input) <= 0) {
+            if (input === '' || isNaN(parseFloat(input)) || parseFloat(input) <= 0) {
                 setTokenBAllowed(false);
                 setRangeButtonErrorMessage('Enter an Amount');
                 setTokenBQtyValue(0);
