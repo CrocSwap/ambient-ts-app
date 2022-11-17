@@ -109,7 +109,6 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
 
     useEffect(() => {
         if (tokenAAllowed && tokenBAllowed) {
-            console.log('setting to allowed');
             setRangeAllowed(true);
         } else {
             setRangeAllowed(false);
@@ -470,6 +469,7 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
                 if (tokenAQtyLocal === 0 && tokenBQtyLocal === 0) {
                     setTokenAAllowed(false);
                     setTokenBAllowed(false);
+                    setRangeButtonErrorMessage('Enter an Amount');
                 } else if (tokenAQtyLocal) setTokenAQtyValue(tokenAQtyLocal);
             } else {
                 if (rangeSpanAboveCurrentPrice < 0) {
@@ -605,6 +605,8 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
             }
         }
     };
+
+    // const isQtyEntered = tokenAInputQty !== '' && tokenBInputQty !== '';
 
     useEffect(() => {
         tradeData.isTokenAPrimaryRange

@@ -328,8 +328,6 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
                 if (input !== '') return;
             }
 
-            console.log({ parsedInput });
-
             setTokenAQtyLocal(input);
             setTokenAInputQty(input);
             setIsTokenAPrimaryLocal(true);

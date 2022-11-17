@@ -354,12 +354,17 @@ export default function Range(props: RangePropsIF) {
             setRangeButtonErrorMessage('Pool Not Initialized');
         } else if (isInvalidRange) {
             setRangeButtonErrorMessage('Please Enter a Valid Range');
-        } else if (isUserLoggedIn) {
-            setRangeButtonErrorMessage('Enter an Amount');
-        } else {
-            setRangeButtonErrorMessage('...');
         }
-    }, [poolExists, isInvalidRange, poolPriceNonDisplay, isUserLoggedIn]);
+        // else if (isUserLoggedIn) {
+        //     if (!isQtyEntered) {
+        //         console.log('setting to enter an amount');
+        //         setRangeButtonErrorMessage('Enter an Amount');
+        //     }
+        // } else {
+        //     setRangeButtonErrorMessage('...');
+        // }
+    }, [poolExists, isInvalidRange, poolPriceNonDisplay]);
+    // }, [isQtyEntered, poolExists, isInvalidRange, poolPriceNonDisplay, isUserLoggedIn]);
 
     const minimumSpan =
         rangeSpanAboveCurrentPrice < rangeSpanBelowCurrentPrice
