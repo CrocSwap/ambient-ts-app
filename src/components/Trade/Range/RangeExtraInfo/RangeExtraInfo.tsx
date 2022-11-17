@@ -20,6 +20,7 @@ interface RangeExtraInfoPropsIF {
     isDenomBase: boolean;
     isTokenABase: boolean;
     daysInRangeEstimation: number;
+    isQtyEntered: boolean;
 }
 
 // central react functional component
@@ -34,6 +35,7 @@ export default function RangeExtraInfo(props: RangeExtraInfoPropsIF) {
         isDenomBase,
         isTokenABase,
         daysInRangeEstimation,
+        isQtyEntered,
     } = props;
 
     const [showExtraDetails, setShowExtraDetails] = useState<boolean>(false);
@@ -115,22 +117,25 @@ export default function RangeExtraInfo(props: RangeExtraInfoPropsIF) {
 
     // const flippedDisplay = `1 ${tokenPair.dataTokenB.symbol} ≈ ${displayPriceStringTruncated} ${tokenPair.dataTokenA.symbol}`;
 
+    const extraInfoSectionOrNull = isQtyEntered ? (
+        <div
+            className={styles.extra_info_content}
+            onClick={() => setShowExtraDetails(!showExtraDetails)}
+        >
+            <div className={styles.gas_pump}>
+                <FaGasPump size={15} /> {rangeGasPriceinDollars ? rangeGasPriceinDollars : '…'}
+            </div>
+            <div className={styles.token_amount}>
+                {reverseDisplay
+                    ? `1 ${tokenPair.dataTokenB.symbol} ≈ ${poolPriceDisplay} ${tokenPair.dataTokenA.symbol}`
+                    : `1 ${tokenPair.dataTokenA.symbol} ≈ ${poolPriceDisplay} ${tokenPair.dataTokenB.symbol}`}
+                <RiArrowDownSLine size={27} />{' '}
+            </div>
+        </div>
+    ) : null;
     return (
         <>
-            <div
-                className={styles.extra_info_content}
-                onClick={() => setShowExtraDetails(!showExtraDetails)}
-            >
-                <div className={styles.gas_pump}>
-                    <FaGasPump size={15} /> {rangeGasPriceinDollars ? rangeGasPriceinDollars : '…'}
-                </div>
-                <div className={styles.token_amount}>
-                    {reverseDisplay
-                        ? `1 ${tokenPair.dataTokenB.symbol} ≈ ${poolPriceDisplay} ${tokenPair.dataTokenA.symbol}`
-                        : `1 ${tokenPair.dataTokenA.symbol} ≈ ${poolPriceDisplay} ${tokenPair.dataTokenB.symbol}`}
-                    <RiArrowDownSLine size={27} />{' '}
-                </div>
-            </div>
+            {extraInfoSectionOrNull}
             {extraDetailsOrNull}
         </>
     );

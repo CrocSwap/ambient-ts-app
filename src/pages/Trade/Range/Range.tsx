@@ -1053,7 +1053,9 @@ export default function Range(props: RangePropsIF) {
         isRangeCopied: isRangeCopied,
     };
     // props for <RangeExtraInfo/> React element
+
     const rangeExtraInfoProps = {
+        isQtyEntered: tokenAInputQty !== '' && tokenBInputQty !== '',
         tokenPair: tokenPair,
         rangeGasPriceinDollars: rangeGasPriceinDollars,
         poolPriceDisplay: displayPriceString,

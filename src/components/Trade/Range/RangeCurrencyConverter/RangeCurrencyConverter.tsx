@@ -263,6 +263,7 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
             tokenBQtyField.value = '';
             dispatch(setIsTokenAPrimaryRange(true));
             setTokenBQtyLocal(0);
+            setTokenBInputQty('');
         }
     };
 
@@ -306,6 +307,7 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
             tokenAQtyField.value = '';
             dispatch(setIsTokenAPrimaryRange(false));
             setTokenAQtyLocal(0);
+            setTokenAInputQty('');
         }
     };
     const navigate = useNavigate();
