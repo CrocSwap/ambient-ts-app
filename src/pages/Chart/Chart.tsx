@@ -249,7 +249,7 @@ export default function Chart(props: ChartData) {
             const newTargets = [...prevState];
             newTargets.filter((target: any) => target.name === 'Max')[0].value =
                 props.liquidityData !== undefined
-                    ? props.liquidityData.liqData[0].liqPrices
+                    ? props.liquidityData.liqBidData[0].liqPrices
                     : Infinity;
             newTargets.filter((target: any) => target.name === 'Min')[0].value = 0;
 
@@ -987,32 +987,38 @@ export default function Chart(props: ChartData) {
                         const high = ranges.filter((target: any) => target.name === 'Max')[0].value;
 
                         let pinnedDisplayPrices;
-                        if (lineToBeSet === 'Max') {
-                            pinnedDisplayPrices = getPinnedPriceValuesFromDisplayPrices(
-                                denomInBase,
-                                baseTokenDecimals,
-                                quoteTokenDecimals,
-                                low.toString(),
-                                dragedValue,
-                                lookupChain(chainId).gridSize,
+
+                        let pinnedMaxPriceDisplayTruncated = 0;
+                        let pinnedMinPriceDisplayTruncated = 0;
+
+                        if (dragedValue >= 0) {
+                            if (lineToBeSet === 'Max') {
+                                pinnedDisplayPrices = getPinnedPriceValuesFromDisplayPrices(
+                                    denomInBase,
+                                    baseTokenDecimals,
+                                    quoteTokenDecimals,
+                                    low.toString(),
+                                    dragedValue,
+                                    lookupChain(chainId).gridSize,
+                                );
+                            } else {
+                                pinnedDisplayPrices = getPinnedPriceValuesFromDisplayPrices(
+                                    denomInBase,
+                                    baseTokenDecimals,
+                                    quoteTokenDecimals,
+                                    dragedValue,
+                                    high.toString(),
+                                    lookupChain(chainId).gridSize,
+                                );
+                            }
+
+                            pinnedMaxPriceDisplayTruncated = parseFloat(
+                                pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
                             );
-                        } else {
-                            pinnedDisplayPrices = getPinnedPriceValuesFromDisplayPrices(
-                                denomInBase,
-                                baseTokenDecimals,
-                                quoteTokenDecimals,
-                                dragedValue,
-                                high.toString(),
-                                lookupChain(chainId).gridSize,
+                            pinnedMinPriceDisplayTruncated = parseFloat(
+                                pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
                             );
                         }
-
-                        const pinnedMaxPriceDisplayTruncated = parseFloat(
-                            pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
-                        );
-                        const pinnedMinPriceDisplayTruncated = parseFloat(
-                            pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
-                        );
 
                         setRanges((prevState) => {
                             const newTargets = [...prevState];
@@ -1804,7 +1810,7 @@ export default function Chart(props: ChartData) {
             const liqAskSeries = d3fc
                 .seriesSvgArea()
                 .orient('horizontal')
-                .curve(d3.curveNatural)
+                .curve(d3.curveBasis)
                 .mainValue((d: any) => d.activeLiq)
                 .crossValue((d: any) => d.liqPrices)
                 .xScale(scaleData.liquidityScale)
@@ -1820,7 +1826,7 @@ export default function Chart(props: ChartData) {
             const liqBidSeries = d3fc
                 .seriesSvgArea()
                 .orient('horizontal')
-                .curve(d3.curveNatural)
+                .curve(d3.curveBasis)
                 .mainValue((d: any) => d.activeLiq)
                 .crossValue((d: any) => d.liqPrices)
                 .xScale(scaleData.liquidityScale)
@@ -1836,7 +1842,7 @@ export default function Chart(props: ChartData) {
             const liqHighligtedAskSeries = d3fc
                 .seriesSvgArea()
                 .orient('horizontal')
-                .curve(d3.curveNatural)
+                .curve(d3.curveBasis)
                 .mainValue((d: any) => d.activeLiq)
                 .crossValue((d: any) => d.liqPrices)
                 .xScale(scaleData.liquidityScale)
@@ -1852,7 +1858,7 @@ export default function Chart(props: ChartData) {
             const liqHighligtedBidSeries = d3fc
                 .seriesSvgArea()
                 .orient('horizontal')
-                .curve(d3.curveNatural)
+                .curve(d3.curveBasis)
                 .mainValue((d: any) => d.activeLiq)
                 .crossValue((d: any) => d.liqPrices)
                 .xScale(scaleData.liquidityScale)
@@ -1888,7 +1894,6 @@ export default function Chart(props: ChartData) {
     // Call drawChart()
     useEffect(() => {
         if (
-            props.liquidityData.liqData !== undefined &&
             parsedChartData !== undefined &&
             scaleData !== undefined &&
             zoomUtils !== undefined &&
@@ -2127,12 +2132,12 @@ export default function Chart(props: ChartData) {
                         indicatorLineJoin(svg, [indicatorLineData]).call(indicatorLine);
 
                         candleJoin(svg, [chartData]).call(candlestick);
-                        // liqHighligtedAskJoin(svg, [liquidityData.liqHighligtedAskSeries]).call(
-                        //     liqHighligtedAskSeries,
-                        // );
-                        // liqHighligtedBidJoin(svg, [liquidityData.liqHighligtedBidSeries]).call(
-                        //     liqHighligtedBidSeries,
-                        // );
+                        liqHighligtedAskJoin(svg, [liquidityData.liqHighligtedAskSeries]).call(
+                            liqHighligtedAskSeries,
+                        );
+                        liqHighligtedBidJoin(svg, [liquidityData.liqHighligtedBidSeries]).call(
+                            liqHighligtedBidSeries,
+                        );
 
                         areaAskJoin(svg, [liquidityData.liqAskData]).call(liqAskSeries);
                         areaBidJoin(svg, [liquidityData.liqBidData]).call(liqBidSeries);
@@ -2430,23 +2435,25 @@ export default function Chart(props: ChartData) {
         ) {
             const liqTextData = { totalValue: 0 };
 
-            props.liquidityData.liqData.map((liqData: any) => {
-                if (liqTooltipSelectedLiqBar.liqPrices < poolPriceDisplay) {
+            if (liqTooltipSelectedLiqBar.liqPrices < poolPriceDisplay) {
+                props.liquidityData.liqAskData.map((liqData: any) => {
                     if (
                         liqData.liqPrices >= liqTooltipSelectedLiqBar.liqPrices &&
                         poolPriceDisplay > liqData.liqPrices
                     ) {
                         liqTextData.totalValue = liqTextData.totalValue + liqData.deltaAverageUSD;
                     }
-                } else {
+                });
+            } else {
+                props.liquidityData.liqBidData.map((liqData: any) => {
                     if (
                         liqData.liqPrices <= liqTooltipSelectedLiqBar.liqPrices &&
                         poolPriceDisplay < liqData.liqPrices
                     ) {
                         liqTextData.totalValue = liqTextData.totalValue + liqData.deltaAverageUSD;
                     }
-                }
-            });
+                });
+            }
 
             const difference = liqTooltipSelectedLiqBar.liqPrices - poolPriceDisplay;
             // const absoluteDifference = Math.abs(difference)
