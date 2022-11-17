@@ -13,7 +13,7 @@ import IconWithTooltip from '../../../Global/IconWithTooltip/IconWithTooltip';
 import NoTokenIcon from '../../../Global/NoTokenIcon/NoTokenIcon';
 
 interface RangeCurrencySelectorProps {
-    isUserLoggedIn: boolean;
+    isUserLoggedIn: boolean | undefined;
     gasPriceInGwei: number | undefined;
     resetTokenQuantities: () => void;
     fieldId: string;

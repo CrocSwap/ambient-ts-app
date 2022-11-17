@@ -24,7 +24,7 @@ import NoTokenIcon from '../../components/Global/NoTokenIcon/NoTokenIcon';
 interface TradePropsIF {
     pool: CrocPoolView | undefined;
     // poolPriceTick: number | undefined;
-    isUserLoggedIn: boolean;
+    isUserLoggedIn: boolean | undefined;
     crocEnv: CrocEnv | undefined;
     provider: ethers.providers.Provider | undefined;
     candleData: CandlesByPoolAndDuration | undefined;
@@ -73,7 +73,7 @@ interface TradePropsIF {
     isInitialized: boolean;
     poolPriceNonDisplay: number | undefined;
     importedTokens: TokenIF[];
-    poolExists: boolean | null;
+    poolExists: boolean | undefined;
     showSidebar: boolean;
     setTokenPairLocal: Dispatch<SetStateAction<string[] | null>>;
     handlePulseAnimation: (type: string) => void;

@@ -62,7 +62,7 @@ interface PortfolioTabsPropsIF {
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
     account: string;
     showSidebar: boolean;
-    isUserLoggedIn: boolean;
+    isUserLoggedIn: boolean | undefined;
     isAuthenticated: boolean;
     baseTokenBalance: string;
     quoteTokenBalance: string;

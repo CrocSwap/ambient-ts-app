@@ -21,7 +21,7 @@ import { useNavigate } from 'react-router-dom';
 
 // interface for component props
 interface RangeCurrencyConverterPropsIF {
-    isUserLoggedIn: boolean;
+    isUserLoggedIn: boolean | undefined;
     tokensBank: Array<TokenIF>;
     setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
     searchableTokens: Array<TokenIF>;
@@ -108,12 +108,12 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
     const [tokenBAllowed, setTokenBAllowed] = useState(false);
 
     useEffect(() => {
-        if (tokenAAllowed || tokenBAllowed) {
+        if (tokenAAllowed && tokenBAllowed) {
             setRangeAllowed(true);
         } else {
             setRangeAllowed(false);
         }
-    }, [tokenAAllowed, tokenBAllowed]);
+    }, [isOutOfRange, tokenAAllowed, tokenBAllowed]);
 
     const tokenABalance = isTokenABase ? baseTokenBalance : quoteTokenBalance;
     const tokenBBalance = isTokenABase ? quoteTokenBalance : baseTokenBalance;
@@ -262,6 +262,7 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
             tokenBQtyField.value = '';
             dispatch(setIsTokenAPrimaryRange(true));
             setTokenBQtyLocal(0);
+            setTokenBInputQty('');
         }
     };
 
@@ -305,6 +306,7 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
             tokenAQtyField.value = '';
             dispatch(setIsTokenAPrimaryRange(false));
             setTokenAQtyLocal(0);
+            setTokenAInputQty('');
         }
     };
     const navigate = useNavigate();
@@ -452,7 +454,7 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
     const handleTokenAQtyFieldUpdate = (evt?: ChangeEvent<HTMLInputElement>) => {
         if (evt) {
             const input = evt.target.value;
-            if (input === '' || parseFloat(input) <= 0) {
+            if (input === '' || isNaN(parseFloat(input)) || parseFloat(input) <= 0) {
                 setTokenAAllowed(false);
                 setRangeButtonErrorMessage('Enter an Amount');
                 setTokenAQtyValue(0);
@@ -467,6 +469,7 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
                 if (tokenAQtyLocal === 0 && tokenBQtyLocal === 0) {
                     setTokenAAllowed(false);
                     setTokenBAllowed(false);
+                    setRangeButtonErrorMessage('Enter an Amount');
                 } else if (tokenAQtyLocal) setTokenAQtyValue(tokenAQtyLocal);
             } else {
                 if (rangeSpanAboveCurrentPrice < 0) {
@@ -545,7 +548,7 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
     const handleTokenBQtyFieldUpdate = (evt?: ChangeEvent<HTMLInputElement>) => {
         if (evt) {
             const input = evt.target.value;
-            if (input === '' || parseFloat(input) <= 0) {
+            if (input === '' || isNaN(parseFloat(input)) || parseFloat(input) <= 0) {
                 setTokenBAllowed(false);
                 setRangeButtonErrorMessage('Enter an Amount');
                 setTokenBQtyValue(0);
@@ -602,6 +605,8 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
             }
         }
     };
+
+    // const isQtyEntered = tokenAInputQty !== '' && tokenBInputQty !== '';
 
     useEffect(() => {
         tradeData.isTokenAPrimaryRange

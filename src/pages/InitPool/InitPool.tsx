@@ -28,7 +28,7 @@ import InitPoolDenom from '../../components/InitPool/InitPoolDenom/InitPoolDenom
 
 // interface for props
 interface InitPoolPropsIF {
-    isUserLoggedIn: boolean;
+    isUserLoggedIn: boolean | undefined;
     crocEnv: CrocEnv | undefined;
     showSidebar: boolean;
     tokenPair: TokenPairIF;

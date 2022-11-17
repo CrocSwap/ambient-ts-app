@@ -19,8 +19,8 @@ import IconWithTooltip from '../../Global/IconWithTooltip/IconWithTooltip';
 import { ZERO_ADDRESS } from '../../../constants';
 interface CurrencyConverterPropsIF {
     crocEnv: CrocEnv | undefined;
-    poolExists: boolean | null;
-    isUserLoggedIn: boolean;
+    poolExists: boolean | undefined;
+    isUserLoggedIn: boolean | undefined;
     provider: ethers.providers.Provider | undefined;
     slippageTolerancePercentage: number;
     setPriceImpact: Dispatch<SetStateAction<CrocImpact | undefined>>;
@@ -254,7 +254,7 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
     const handleSwapButtonMessage = (tokenAAmount: number) => {
         if (!poolExists) {
             setSwapAllowed(false);
-            if (poolExists === null) setSwapButtonErrorMessage('...');
+            if (poolExists === undefined) setSwapButtonErrorMessage('...');
             if (poolExists === false) setSwapButtonErrorMessage('Pool Not Initialized');
         } else if (poolPriceDisplay === 0 || poolPriceDisplay === Infinity) {
             setSwapAllowed(false);
@@ -322,9 +322,11 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
             }
             const input = evt.target.value;
             const parsedInput = parseFloat(input);
-            if ((input !== '' && isNaN(parsedInput)) || parsedInput === 0) return;
-
-            // console.log({ parsedInput });
+            if (input === '' || isNaN(parsedInput) || parsedInput === 0) {
+                setSwapAllowed(false);
+                setSwapButtonErrorMessage('Enter an Amount');
+                if (input !== '') return;
+            }
 
             setTokenAQtyLocal(input);
             setTokenAInputQty(input);
@@ -477,7 +479,13 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
             }
             const input = evt.target.value;
             const parsedInput = parseFloat(input);
-            if ((input !== '' && isNaN(parsedInput)) || parsedInput === 0) return;
+            if (input === '' || isNaN(parsedInput) || parsedInput === 0) {
+                setSwapAllowed(false);
+                setSwapButtonErrorMessage('Enter an Amount');
+                if (input !== '') return;
+            }
+
+            // if (input === '' || isNaN(parsedInput) || parsedInput === 0) return;
 
             // console.log({ parsedInput });
 

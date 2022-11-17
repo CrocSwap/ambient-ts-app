@@ -31,7 +31,7 @@ import RangesRow from './RangesTable/RangesRow';
 
 // interface for props
 interface LeaderboardPropsIF {
-    isUserLoggedIn: boolean;
+    isUserLoggedIn: boolean | undefined;
     crocEnv: CrocEnv | undefined;
     chainData: ChainSpec;
     provider: ethers.providers.Provider | undefined;

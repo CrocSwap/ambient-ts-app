@@ -28,7 +28,7 @@ interface LimitCurrencyConverterProps {
     pool: CrocPoolView | undefined;
     gridSize: number;
     setPriceInputFieldBlurred: Dispatch<SetStateAction<boolean>>;
-    isUserLoggedIn: boolean;
+    isUserLoggedIn: boolean | undefined;
     tokenPair: TokenPairIF;
     tokensBank: Array<TokenIF>;
     setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
@@ -56,7 +56,7 @@ interface LimitCurrencyConverterProps {
     isDenominationInBase: boolean;
     activeTokenListsChanged: boolean;
     indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
-    poolExists: boolean | null;
+    poolExists: boolean | undefined;
     gasPriceInGwei: number | undefined;
 
     isOrderCopied: boolean;
@@ -215,7 +215,7 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
     const handleLimitButtonMessage = (tokenAAmount: number) => {
         if (!poolExists) {
             setLimitAllowed(false);
-            if (poolExists === null) setLimitButtonErrorMessage('...');
+            if (poolExists === undefined) setLimitButtonErrorMessage('...');
             if (poolExists === false) setLimitButtonErrorMessage('Pool Not Initialized');
         } else if (isNaN(tokenAAmount) || tokenAAmount <= 0) {
             setLimitAllowed(false);
@@ -275,6 +275,13 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
 
         if (evt) {
             const input = evt.target.value;
+            const parsedInput = parseFloat(input);
+            if (input === '' || isNaN(parsedInput) || parsedInput === 0) {
+                setLimitAllowed(false);
+                setLimitButtonErrorMessage('Enter an Amount');
+                if (input !== '') return;
+            }
+
             setTokenAQtyLocal(input);
             setTokenAInputQty(input);
             setIsTokenAPrimaryLocal(true);
@@ -369,6 +376,12 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
         // console.log({ evt });
         if (evt) {
             const input = evt.target.value;
+            const parsedInput = parseFloat(input);
+            if (input === '' || isNaN(parsedInput) || parsedInput === 0) {
+                setLimitAllowed(false);
+                setLimitButtonErrorMessage('Enter an Amount');
+                if (input !== '') return;
+            }
             setTokenBQtyLocal(input);
             setTokenBInputQty(input);
             setIsTokenAPrimaryLocal(false);

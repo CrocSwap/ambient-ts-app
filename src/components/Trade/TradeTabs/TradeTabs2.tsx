@@ -27,7 +27,7 @@ import Leaderboard from './Ranges/Leaderboard';
 import PoolInfo from './PoolInfo/PoolInfo';
 
 interface ITabsProps {
-    isUserLoggedIn: boolean;
+    isUserLoggedIn: boolean | undefined;
     isTokenABase: boolean;
     crocEnv: CrocEnv | undefined;
     provider: ethers.providers.Provider | undefined;

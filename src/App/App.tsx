@@ -270,17 +270,28 @@ export default function App() {
     //     console.log({ isServerEnabled });
     // }, [isServerEnabled]);
 
+    const [loginCheckDelayElapsed, setLoginCheckDelayElapsed] = useState(false);
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setLoginCheckDelayElapsed(true);
+        }, 3000);
+        return () => clearTimeout(timer);
+    }, []);
+
     useEffect(() => {
         const isLoggedIn = isAuthenticated && isWeb3Enabled;
 
-        if (isLoggedIn && userData.isLoggedIn !== isLoggedIn && account) {
-            dispatch(setIsLoggedIn(isLoggedIn));
-            dispatch(setAddressAtLogin(account));
-        } else if (!isLoggedIn && userData.isLoggedIn !== isLoggedIn) {
-            dispatch(setIsLoggedIn(isLoggedIn));
-            dispatch(resetUserAddresses());
+        if (isLoggedIn || (isLoggedIn === false && loginCheckDelayElapsed)) {
+            if (isLoggedIn && userData.isLoggedIn !== isLoggedIn && account) {
+                dispatch(setIsLoggedIn(isLoggedIn));
+                dispatch(setAddressAtLogin(account));
+            } else if (!isLoggedIn && userData.isLoggedIn !== isLoggedIn) {
+                dispatch(setIsLoggedIn(isLoggedIn));
+                dispatch(resetUserAddresses());
+            }
         }
-    }, [isAuthenticated, isWeb3Enabled, isUserLoggedIn, account]);
+    }, [loginCheckDelayElapsed, isAuthenticated, isWeb3Enabled, isUserLoggedIn, account]);
 
     // this is another case where true vs false is an arbitrary distinction
     const [activeTokenListsChanged, indicateActiveTokenListsChanged] = useState(false);
@@ -737,12 +748,12 @@ export default function App() {
     // ... true => pool exists
     // ... false => pool does not exist
     // ... null => no crocEnv to check if pool exists
-    const [poolExists, setPoolExists] = useState<boolean | null>(null);
+    const [poolExists, setPoolExists] = useState<boolean | undefined>();
     useEffect(() => console.log({ poolExists }), [poolExists]);
 
     // hook to update `poolExists` when crocEnv changes
     useEffect(() => {
-        setPoolExists(null);
+        setPoolExists(undefined);
         if (crocEnv && tokenPairLocal) {
             // token pair has an initialized pool on-chain
             // returns a promise object

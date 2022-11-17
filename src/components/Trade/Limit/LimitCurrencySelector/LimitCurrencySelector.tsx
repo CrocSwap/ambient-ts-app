@@ -19,7 +19,7 @@ import NoTokenIcon from '../../../Global/NoTokenIcon/NoTokenIcon';
 
 // interface for component props
 interface LimitCurrencySelectorProps {
-    isUserLoggedIn: boolean;
+    isUserLoggedIn: boolean | undefined;
     tokenPair: TokenPairIF;
     tokensBank: Array<TokenIF>;
     setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
