@@ -37,7 +37,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
         showColumns,
         tradeData,
         ipadView,
-        view2,
+        // view2,
         isTokenABase,
         tx,
         // showSidebar,
@@ -51,7 +51,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
         isOnPortfolioPage,
         closeGlobalModal,
         openGlobalModal,
-        desktopView,
+        // desktopView,
     } = props;
 
     const {
@@ -280,19 +280,19 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
             <NoTokenIcon tokenInitial={tx.quoteSymbol.charAt(0)} width='20px' />
         );
 
-    const tokensTogether = (
-        <div
-            style={{
-                display: 'flex',
-                flexDirection: 'row',
-                alignItems: 'center',
-                gap: '4px',
-            }}
-        >
-            {baseTokenLogoComponent}
-            {quoteTokenLogoComponent}
-        </div>
-    );
+    // const tokensTogether = (
+    //     <div
+    //         style={{
+    //             display: 'flex',
+    //             flexDirection: 'row',
+    //             alignItems: 'center',
+    //             gap: '4px',
+    //         }}
+    //     >
+    //         {baseTokenLogoComponent}
+    //         {quoteTokenLogoComponent}
+    //     </div>
+    // );
 
     // portfolio page li element ---------------
     // const accountTokenImages = <li className={styles.token_images_account}>{tokensTogether}</li>;
@@ -303,18 +303,17 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
     //     </li>
     // );
 
-    const tokenPair = (
-        <li className='base_color'>
-            {/* <div style={{display: 'flex', alignItems: 'center', gap: '4px'}}> */}
+    // const tokenPair = (
+    //     <li className='base_color'>
 
-            {tokensTogether}
-            <p>
-                {' '}
-                {baseTokenSymbol} / {quoteTokenSymbol}
-            </p>
-            {/* </div> */}
-        </li>
-    );
+    //         {tokensTogether}
+    //         <p>
+    //             {' '}
+    //             {baseTokenSymbol} / {quoteTokenSymbol}
+    //         </p>
+    //         {/* </div> */}
+    //     </li>
+    // );
 
     // const fillTime = new Intl.DateTimeFormat('en-US', {
     //     month: 'short',
