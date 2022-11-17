@@ -28,7 +28,7 @@ interface LimitCurrencyConverterProps {
     pool: CrocPoolView | undefined;
     gridSize: number;
     setPriceInputFieldBlurred: Dispatch<SetStateAction<boolean>>;
-    isUserLoggedIn: boolean;
+    isUserLoggedIn: boolean | undefined;
     tokenPair: TokenPairIF;
     tokensBank: Array<TokenIF>;
     setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;

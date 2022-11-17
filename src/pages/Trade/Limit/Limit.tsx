@@ -47,7 +47,7 @@ import { memoizeQuerySpotPrice } from '../../../App/functions/querySpotPrice';
 interface LimitPropsIF {
     pool: CrocPoolView | undefined;
     crocEnv: CrocEnv | undefined;
-    isUserLoggedIn: boolean;
+    isUserLoggedIn: boolean | undefined;
     importedTokens: Array<TokenIF>;
     searchableTokens: Array<TokenIF>;
     mintSlippage: SlippagePairIF;

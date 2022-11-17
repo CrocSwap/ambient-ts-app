@@ -31,7 +31,7 @@ interface NavbarDropdownItemPropsIF {
 }
 
 interface NavbarDropdownMenuPropsIF {
-    isUserLoggedIn: boolean;
+    isUserLoggedIn: boolean | undefined;
     // isAuthenticated?: boolean;
     // isWeb3Enabled?: boolean;
     clickLogout: () => void;

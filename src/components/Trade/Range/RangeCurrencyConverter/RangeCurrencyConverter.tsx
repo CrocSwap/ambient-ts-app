@@ -21,7 +21,7 @@ import { useNavigate } from 'react-router-dom';
 
 // interface for component props
 interface RangeCurrencyConverterPropsIF {
-    isUserLoggedIn: boolean;
+    isUserLoggedIn: boolean | undefined;
     tokensBank: Array<TokenIF>;
     setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
     searchableTokens: Array<TokenIF>;

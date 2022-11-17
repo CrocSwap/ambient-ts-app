@@ -62,7 +62,7 @@ import RangeShareControl from '../../../components/Trade/Range/RangeShareControl
 
 interface RangePropsIF {
     crocEnv: CrocEnv | undefined;
-    isUserLoggedIn: boolean;
+    isUserLoggedIn: boolean | undefined;
     importedTokens: Array<TokenIF>;
     setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
     searchableTokens: Array<TokenIF>;

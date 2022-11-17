@@ -16,7 +16,7 @@ import { AiOutlineLogout } from 'react-icons/ai';
 import UseOnClickOutside from '../../../../utils/hooks/useOnClickOutside';
 
 interface AccountPropsIF {
-    isUserLoggedIn: boolean;
+    isUserLoggedIn: boolean | undefined;
     nativeBalance: string | undefined;
     accountAddress: string;
     accountAddressFull: string;

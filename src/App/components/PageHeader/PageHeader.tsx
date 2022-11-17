@@ -24,12 +24,12 @@ import NotificationCenter from '../../../components/Global/NotificationCenter/No
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 
 interface HeaderPropsIF {
-    isUserLoggedIn: boolean;
+    isUserLoggedIn: boolean | undefined;
     // nativeBalance: string | undefined;
     clickLogout: () => void;
     metamaskLocked: boolean;
     ensName: string;
-    shouldDisplayAccountTab: boolean;
+    shouldDisplayAccountTab: boolean | undefined;
     chainId: string;
     isChainSupported: boolean;
     switchChain: Dispatch<SetStateAction<string>>;

@@ -15,7 +15,7 @@ import Value from '../../../Global/Tabs/Value/Value';
 import { formatAmountOld } from '../../../../utils/numbers';
 
 interface RangeCardProps {
-    isUserLoggedIn: boolean;
+    isUserLoggedIn: boolean | undefined;
     crocEnv: CrocEnv | undefined;
     chainData: ChainSpec;
     provider: ethers.providers.Provider | undefined;

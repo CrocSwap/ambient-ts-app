@@ -35,7 +35,7 @@ import NoTableData from '../NoTableData/NoTableData';
 interface RangesPropsIF {
     activeAccountPositionData?: PositionIF[];
     connectedAccountActive?: boolean;
-    isUserLoggedIn: boolean;
+    isUserLoggedIn: boolean | undefined;
     crocEnv: CrocEnv | undefined;
     chainData: ChainSpec;
     provider: ethers.providers.Provider | undefined;

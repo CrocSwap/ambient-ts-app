@@ -40,7 +40,7 @@ import { FiCopy } from 'react-icons/fi';
 
 interface SwapPropsIF {
     crocEnv: CrocEnv | undefined;
-    isUserLoggedIn: boolean;
+    isUserLoggedIn: boolean | undefined;
     account: string | null;
     importedTokens: Array<TokenIF>;
     setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
@@ -438,14 +438,14 @@ export default function Swap(props: SwapPropsIF) {
 
     const swapPageStyle = pathname.startsWith('/swap') ? styles.swap_page : null;
 
-    const [connectButtonDelayElapsed, setConnectButtonDelayElapsed] = useState(false);
+    // const [buttonDelayElapsed, setButtonDelayElapsed] = useState(false);
 
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            setConnectButtonDelayElapsed(true);
-        }, 3000);
-        return () => clearTimeout(timer);
-    }, []);
+    // useEffect(() => {
+    //     const timer = setTimeout(() => {
+    //         setButtonDelayElapsed(true);
+    //     }, 3000);
+    //     return () => clearTimeout(timer);
+    // }, []);
 
     // -------------------------Swap SHARE FUNCTIONALITY---------------------------
     const [shareOptions, setShareOptions] = useState([
@@ -500,6 +500,9 @@ export default function Swap(props: SwapPropsIF) {
             <DenominationSwitch />
         </div>
     ) : null;
+
+    // console.log({ isUserLoggedIn });
+    // console.log({ swapAllowed });
 
     return (
         <main data-testid={'swap'} className={swapPageStyle}>
@@ -570,7 +573,7 @@ export default function Swap(props: SwapPropsIF) {
                         isDenomBase={tradeData.isDenomBase}
                         isOnTradeRoute={isOnTradeRoute}
                     />
-                    {isUserLoggedIn || !connectButtonDelayElapsed ? (
+                    {isUserLoggedIn === undefined ? null : isUserLoggedIn === true ? (
                         poolExists &&
                         !isTokenAAllowanceSufficient &&
                         parseFloat(tokenAInputQty) > 0 &&
