@@ -477,7 +477,11 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
             }
             const input = evt.target.value;
             const parsedInput = parseFloat(input);
-            if ((input !== '' && isNaN(parsedInput)) || parsedInput === 0) return;
+            if (input === '' || isNaN(parsedInput) || parsedInput === 0) {
+                setSwapAllowed(false);
+                setSwapButtonErrorMessage('Enter an Amount');
+                return;
+            }
 
             // console.log({ parsedInput });
 
