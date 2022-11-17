@@ -349,6 +349,9 @@ export default function Chart(props: ChartData) {
                         ) {
                             return 'market';
                         }
+                        if (isMouseMoveCrosshair && d === crosshairData[0].y) {
+                            return 'crossHairText';
+                        }
                         if (isSameLocation ? d === sameLocationData : d === limit[0].value) {
                             return 'y_axis';
                         }
