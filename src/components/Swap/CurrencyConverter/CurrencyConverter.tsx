@@ -325,10 +325,10 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
             if (input === '' || isNaN(parsedInput) || parsedInput === 0) {
                 setSwapAllowed(false);
                 setSwapButtonErrorMessage('Enter an Amount');
-                return;
+                if (input !== '') return;
             }
 
-            // console.log({ parsedInput });
+            console.log({ parsedInput });
 
             setTokenAQtyLocal(input);
             setTokenAInputQty(input);
@@ -484,7 +484,7 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
             if (input === '' || isNaN(parsedInput) || parsedInput === 0) {
                 setSwapAllowed(false);
                 setSwapButtonErrorMessage('Enter an Amount');
-                return;
+                if (input !== '') return;
             }
 
             // if (input === '' || isNaN(parsedInput) || parsedInput === 0) return;
