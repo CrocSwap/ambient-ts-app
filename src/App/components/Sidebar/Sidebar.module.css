@@ -140,6 +140,19 @@
     width: 100%;
 }
 
+.open_all_button{
+    cursor: pointer;
+    background: var(--dark2);
+    border: none;
+    outline: none;
+    color: var(--text-grey-white);
+
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    gap: 4px;
+}
+
 /* .logo {
     margin-bottom: 1rem;
     text-align: center;
