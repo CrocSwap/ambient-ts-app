@@ -19,7 +19,7 @@ import IconWithTooltip from '../../Global/IconWithTooltip/IconWithTooltip';
 import { ZERO_ADDRESS } from '../../../constants';
 interface CurrencyConverterPropsIF {
     crocEnv: CrocEnv | undefined;
-    poolExists: boolean | null;
+    poolExists: boolean | undefined;
     isUserLoggedIn: boolean;
     provider: ethers.providers.Provider | undefined;
     slippageTolerancePercentage: number;

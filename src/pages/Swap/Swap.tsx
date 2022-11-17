@@ -67,7 +67,7 @@ interface SwapPropsIF {
     indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
     openModalWallet: () => void;
     isInitialized: boolean;
-    poolExists: boolean | null;
+    poolExists: boolean | undefined;
     setTokenPairLocal?: Dispatch<SetStateAction<string[] | null>>;
 
     openGlobalModal: (content: React.ReactNode) => void;

@@ -90,7 +90,7 @@ interface RangePropsIF {
     openModalWallet: () => void;
     ambientApy: number | undefined;
     openGlobalModal: (content: React.ReactNode, title?: string) => void;
-    poolExists: boolean | null;
+    poolExists: boolean | undefined;
 
     isRangeCopied: boolean;
 }
@@ -348,7 +348,7 @@ export default function Range(props: RangePropsIF) {
     const isInvalidRange = !isAmbient && rangeHighTick <= rangeLowTick;
 
     useEffect(() => {
-        if (poolPriceNonDisplay === undefined) {
+        if (poolExists === undefined || poolPriceNonDisplay === undefined) {
             setRangeButtonErrorMessage('…');
         } else if (!poolExists) {
             setRangeButtonErrorMessage('Pool Not Initialized');
@@ -357,7 +357,7 @@ export default function Range(props: RangePropsIF) {
         } else {
             setRangeButtonErrorMessage('Enter an Amount');
         }
-    }, [isInvalidRange, poolPriceNonDisplay, isUserLoggedIn]);
+    }, [poolExists, isInvalidRange, poolPriceNonDisplay, isUserLoggedIn]);
 
     const minimumSpan =
         rangeSpanAboveCurrentPrice < rangeSpanBelowCurrentPrice

@@ -75,7 +75,7 @@ interface LimitPropsIF {
     openModalWallet: () => void;
     openGlobalModal: (content: React.ReactNode) => void;
     closeGlobalModal: () => void;
-    poolExists: boolean | null;
+    poolExists: boolean | undefined;
     chainData: ChainSpec;
 
     isOrderCopied: boolean;

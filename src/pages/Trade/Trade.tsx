@@ -73,7 +73,7 @@ interface TradePropsIF {
     isInitialized: boolean;
     poolPriceNonDisplay: number | undefined;
     importedTokens: TokenIF[];
-    poolExists: boolean | null;
+    poolExists: boolean | undefined;
     showSidebar: boolean;
     setTokenPairLocal: Dispatch<SetStateAction<string[] | null>>;
     handlePulseAnimation: (type: string) => void;

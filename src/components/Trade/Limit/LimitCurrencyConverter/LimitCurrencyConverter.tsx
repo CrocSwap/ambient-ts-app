@@ -56,7 +56,7 @@ interface LimitCurrencyConverterProps {
     isDenominationInBase: boolean;
     activeTokenListsChanged: boolean;
     indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
-    poolExists: boolean | null;
+    poolExists: boolean | undefined;
     gasPriceInGwei: number | undefined;
 
     isOrderCopied: boolean;
