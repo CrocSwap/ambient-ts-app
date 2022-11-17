@@ -350,6 +350,63 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
         </DefaultTooltip>
     );
 
+    const baseQtyToolTipStyle = <p className={styles.tooltip_style}>{baseTokenSymbol + ' Qty'}</p>;
+    const quoteQtyToolTipStyle = (
+        <p className={styles.tooltip_style}>{quoteTokenSymbol + ' Qty'}</p>
+    );
+    const baseQtyDisplayWithTooltip = (
+        <DefaultTooltip
+            interactive
+            title={baseQtyToolTipStyle}
+            placement={'right'}
+            arrow
+            enterDelay={150}
+            leaveDelay={200}
+        >
+            <li onClick={openDetailsModal} data-label={baseTokenSymbol} className='color_white'>
+                <p
+                    style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'flex-end',
+                        gap: '4px',
+                        textAlign: 'right',
+                        fontFamily: 'monospace',
+                    }}
+                >
+                    {baseDisplay}
+                    <img src={baseTokenLogo} width='15px' alt='' />
+                </p>
+            </li>
+        </DefaultTooltip>
+    );
+    const quoteQtyDisplayWithTooltip = (
+        <DefaultTooltip
+            interactive
+            title={quoteQtyToolTipStyle}
+            placement={'right'}
+            arrow
+            enterDelay={150}
+            leaveDelay={200}
+        >
+            <li onClick={openDetailsModal} data-label={quoteTokenSymbol} className='color_white'>
+                <p
+                    style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'flex-end',
+                        gap: '4px',
+                        textAlign: 'right',
+                        fontFamily: 'monospace',
+                    }}
+                >
+                    {quoteDisplay}
+                    <img src={quoteTokenLogo} width='15px' alt='' />
+                </p>
+            </li>
+        </DefaultTooltip>
+    );
+
     // end of portfolio page li element ---------------
     return (
         <ul
@@ -362,8 +419,8 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
             }
             id={txDomId}
         >
-            {isOnPortfolioPage && !desktopView && tokenPair}
-            {!showColumns && !view2 && TxDateWithTooltip}
+            {/* {isOnPortfolioPage && !desktopView && tokenPair} */}
+            {!showColumns && TxDateWithTooltip}
             {/* {isOnPortfolioPage && !showSidebar && poolName} */}
             {!showColumns && IDWithTooltip}
             {!showColumns && !isOnPortfolioPage && walletWithTooltip}
@@ -467,20 +524,8 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                 </li>
             )}
             {usdValueWithTooltip}
-            {!showColumns && (
-                <li onClick={openDetailsModal} data-label={baseTokenSymbol} className='color_white'>
-                    <p style={{ textAlign: 'right', fontFamily: 'monospace' }}>{baseDisplay}</p>
-                </li>
-            )}
-            {!showColumns && (
-                <li
-                    onClick={openDetailsModal}
-                    data-label={quoteTokenSymbol}
-                    className='color_white'
-                >
-                    <p style={{ textAlign: 'right', fontFamily: 'monospace' }}>{quoteDisplay}</p>
-                </li>
-            )}
+            {!showColumns && baseQtyDisplayWithTooltip}
+            {!showColumns && quoteQtyDisplayWithTooltip}
             {showColumns && (
                 <li
                     data-label={baseTokenSymbol + quoteTokenSymbol}

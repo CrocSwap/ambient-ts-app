@@ -388,17 +388,17 @@ export default function Transactions(props: TransactionsProps) {
     );
 
     const headerColumns = [
-        {
-            name: 'Pair',
-            className: '',
-            show: isOnPortfolioPage && !desktopView,
-            slug: 'pool',
-            sortable: true,
-        },
+        // {
+        //     name: 'Pair',
+        //     className: '',
+        //     show: isOnPortfolioPage && !desktopView,
+        //     slug: 'pool',
+        //     sortable: true,
+        // },
         {
             name: 'Date',
             className: '',
-            show: !showColumns && !view2,
+            show: !showColumns,
             // && !showSidebar
             //   &&  !isOnPortfolioPage,
             slug: 'date',
