@@ -673,6 +673,7 @@ export default function Limit(props: LimitPropsIF) {
                     <DenominationSwitch />
                 </div>
                 <LimitExtraInfo
+                    isQtyEntered={tokenAInputQty !== '' || tokenBInputQty !== ''}
                     tokenPair={tokenPair}
                     orderGasPriceInDollars={orderGasPriceInDollars}
                     poolPriceDisplay={poolPriceDisplay || 0}
