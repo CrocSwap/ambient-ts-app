@@ -316,21 +316,17 @@ export default function Orders(props: propsIF) {
         {
             name: 'Date',
             className: '',
-            show:
-                !showColumns &&
-                !view2 &&
-                // && !showSidebar
-                !isOnPortfolioPage,
+            show: !showColumns,
             slug: 'date',
             sortable: true,
         },
-        {
-            name: '',
-            className: '',
-            show: isOnPortfolioPage,
-            slug: 'token_images',
-            sortable: false,
-        },
+        // {
+        //     name: '',
+        //     className: '',
+        //     show: isOnPortfolioPage,
+        //     slug: 'token_images',
+        //     sortable: false,
+        // },
         {
             name: 'Pool',
             className: '',

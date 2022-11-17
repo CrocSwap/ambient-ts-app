@@ -51,7 +51,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
         isOnPortfolioPage,
         closeGlobalModal,
         openGlobalModal,
-        // desktopView,
+        desktopView,
     } = props;
 
     const {
@@ -303,17 +303,15 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
     //     </li>
     // );
 
-    // const tokenPair = (
-    //     <li className='base_color'>
-
-    //         {tokensTogether}
-    //         <p>
-    //             {' '}
-    //             {baseTokenSymbol} / {quoteTokenSymbol}
-    //         </p>
-    //         {/* </div> */}
-    //     </li>
-    // );
+    const tokenPair = (
+        <li className='base_color'>
+            {/* {tokensTogether} */}
+            <p>
+                {' '}
+                {baseTokenSymbol} / {quoteTokenSymbol}
+            </p>
+        </li>
+    );
 
     // const fillTime = new Intl.DateTimeFormat('en-US', {
     //     month: 'short',
@@ -418,8 +416,8 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
             }
             id={txDomId}
         >
-            {/* {isOnPortfolioPage && !desktopView && tokenPair} */}
             {!showColumns && TxDateWithTooltip}
+            {isOnPortfolioPage && !desktopView && tokenPair}
             {/* {isOnPortfolioPage && !showSidebar && poolName} */}
             {!showColumns && IDWithTooltip}
             {!showColumns && !isOnPortfolioPage && walletWithTooltip}
