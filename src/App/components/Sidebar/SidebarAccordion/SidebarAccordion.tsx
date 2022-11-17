@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { useState, MouseEvent, ReactNode, Dispatch, SetStateAction } from 'react';
+import { useState, MouseEvent, ReactNode, Dispatch, SetStateAction, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MdPlayArrow } from 'react-icons/md';
 
@@ -24,6 +24,7 @@ interface SidebarAccordionPropsIF {
         data: ReactNode;
     };
     idx: number | string;
+    openAllDefault?: boolean;
     // mostRecent?: PositionIF[] | ITransaction[] | string[];
 }
 
@@ -60,11 +61,19 @@ export default function SidebarAccordion(props: SidebarAccordionPropsIF) {
     //         <div className={notificationStyles.number}>3</div>
     //     </div>
     // )
-
+    console.log(props.openAllDefault);
     function handleAccordionOpen() {
         setIsOpen(!isOpen);
         setShowSidebar(true);
     }
+
+    useEffect(() => {
+        setIsOpen(false);
+        if (props.openAllDefault) {
+            setIsOpen(true);
+        }
+    }, [props.openAllDefault]);
+    // if (props.openAllDefault){setIsOpen(true)}
 
     return (
         <>
