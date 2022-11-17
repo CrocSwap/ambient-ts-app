@@ -127,7 +127,6 @@ export default function MessageInput(props: MessageInputProps, prop: ChatProps) 
     };
 
     const handleSendMsg = async (msg: string, roomId: any) => {
-        console.log('Current user is ', currentUser);
         sendMsg(props.currentUser, message, roomId, props.ensName, account);
     };
 
@@ -145,7 +144,6 @@ export default function MessageInput(props: MessageInputProps, prop: ChatProps) 
                 response = await axios
                     .get(receiveUsername + '/' + word)
                     .then((response) => {
-                        console.log({ response });
                         setMessage(value);
                     })
                     .catch((exception) => {
