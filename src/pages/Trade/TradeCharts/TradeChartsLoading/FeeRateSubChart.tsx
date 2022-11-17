@@ -206,7 +206,7 @@ export default function FeeRateSubChart(props: FreeRateData) {
                         Math.abs(point.x - xScale(xValue(d))),
                     )[1];
 
-                    return nearest !== undefined ? nearest?.value : 0;
+                    return nearest?.value;
                 };
 
                 d3.select(d3PlotFeeRate.current).on('mousemove', function (event: any) {

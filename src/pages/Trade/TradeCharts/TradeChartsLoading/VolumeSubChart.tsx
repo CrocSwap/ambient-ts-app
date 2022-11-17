@@ -136,7 +136,7 @@ export default function VolumeSubChart(props: VolumeData) {
                     .xScale(xScale)
                     .yScale(yScale)
                     .crossValue((d: any) => d.time)
-                    .mainValue((d: any) => (d.value !== null ? d.value : 0))
+                    .mainValue((d: any) => d.value)
                     .decorate((selection: any) => {
                         selection.style('fill', (d: any) => {
                             return selectedDate !== undefined &&
