@@ -67,7 +67,7 @@ export default function ExtraInfo(props: ExtraInfoPropsIF) {
             : displayPriceWithDenom < 2
             ? displayPriceWithDenom.toLocaleString(undefined, {
                   minimumFractionDigits: 2,
-                  maximumFractionDigits: 3,
+                  maximumFractionDigits: 6,
               })
             : displayPriceWithDenom.toLocaleString(undefined, {
                   minimumFractionDigits: 2,
