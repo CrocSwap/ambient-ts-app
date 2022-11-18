@@ -140,6 +140,7 @@ import TopRanges from '../components/Analytics/TopRanges/TopRanges';
 import TopTokens from '../components/Analytics/TopTokens/TopTokens';
 import AnalyticsTransactions from '../components/Analytics/AnalyticsTransactions/AnalyticsTransactions';
 import trimString from '../utils/functions/trimString';
+import { memoizeFetchContractDetails } from './functions/fetchContractDetails';
 // import { memoizeQuerySpotTick } from './functions/querySpotTick';
 // import PhishingWarning from '../components/Global/PhisingWarning/PhishingWarning';
 
@@ -148,6 +149,7 @@ const cachedFetchNativeTokenBalance = memoizeFetchNativeTokenBalance();
 const cachedFetchErc20TokenBalances = memoizeFetchErc20TokenBalances();
 const cachedFetchTokenPrice = memoizeTokenPrice();
 const cachedQuerySpotPrice = memoizeQuerySpotPrice();
+const cachedFetchContractDetails = memoizeFetchContractDetails();
 // const cachedQuerySpotTick = memoizeQuerySpotTick();
 
 const httpGraphCacheServerDomain = 'https://809821320828123.de:5000';
@@ -265,10 +267,6 @@ export default function App() {
         process.env.REACT_APP_CACHE_SERVER_IS_ENABLED !== undefined
             ? process.env.REACT_APP_CACHE_SERVER_IS_ENABLED === 'true'
             : true;
-
-    // useEffect(() => {
-    //     console.log({ isServerEnabled });
-    // }, [isServerEnabled]);
 
     const [loginCheckDelayElapsed, setLoginCheckDelayElapsed] = useState(false);
 
@@ -821,6 +819,17 @@ export default function App() {
     // useEffect that runs when token pair changes
     useEffect(() => {
         if (rtkMatchesParams) {
+            if (provider) {
+                (async () => {
+                    const contractDetails = await cachedFetchContractDetails(
+                        provider,
+                        tradeData.tokenB.address,
+                        chainData.chainId,
+                    );
+                    console.log({ contractDetails });
+                })();
+            }
+
             // console.log(tradeData.tokenA.address);
             // console.log(tradeData.tokenB.address);
             // reset rtk values for user specified range in ticks
