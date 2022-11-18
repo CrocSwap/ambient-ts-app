@@ -38,7 +38,7 @@ export const useSoloSearch = (
         ) {
             setSearchAs('address');
         // if not an apparent token address search name and symbol
-        } else if (cleanInput.length >= 2) {
+        } else if (cleanInput.length >= 3) {
             setSearchAs('nameOrSymbol');
             return cleanInput;
         // otherwise treat as if there is no input entered
@@ -75,10 +75,7 @@ export const useSoloSearch = (
 
         const otherTokensOnChain = [...tokensOnActiveLists.values()].filter(
             (tkn: TokenIF) => (
-                tkn.chainId === parseInt(chainId) &&
-                !importedTokensOnChain.some((tk: TokenIF) => (
-                    tk.address === tkn.address
-                ))
+                tkn.chainId === parseInt(chainId)
             )
         );
 
