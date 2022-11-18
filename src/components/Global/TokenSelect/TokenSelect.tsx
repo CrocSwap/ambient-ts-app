@@ -122,7 +122,7 @@ export default function TokenSelect(props: TokenSelectPropsIF) {
 
     return (
         <>
-            <div className={styles.main_container}>
+            <div className={styles.main_container} onClick={() => chooseToken(token)}>
                 {
                     // <div className={`${styles.delete_container} ${deleteStateStyle}`}>
                     //     Remove {token.symbol} from your list
@@ -133,7 +133,7 @@ export default function TokenSelect(props: TokenSelectPropsIF) {
                     {/* <div className={styles.star_icon}>{starIcon}</div> */}
                     {/* <div onClick={() => setPinned(!pinned)}>{ pinned ? <BsPinFill/> : <BsPin  />}</div> */}
 
-                    <div className={styles.modal_content} onClick={() => chooseToken(token)}>
+                    <div className={styles.modal_content}>
                         <div className={styles.modal_tokens_info}>
                             {token.logoURI ? (
                                 <img

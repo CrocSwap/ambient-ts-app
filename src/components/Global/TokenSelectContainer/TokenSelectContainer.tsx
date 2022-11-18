@@ -219,7 +219,7 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
             <div className={styles.search_input}>
                 <input
                     type='text'
-                    placeholder='Search name or paste address'
+                    placeholder='Search by name, symbol, or paste address'
                     onChange={(event) => setSearchInput(event.target.value)}
                 />
             </div>
