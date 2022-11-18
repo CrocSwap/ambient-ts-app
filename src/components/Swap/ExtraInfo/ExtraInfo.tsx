@@ -230,7 +230,7 @@ export default function ExtraInfo(props: ExtraInfoPropsIF) {
             onClick={() => setShowExtraDetails(!showExtraDetails)}
         >
             <div className={styles.gas_pump}>
-                <FaGasPump size={15} /> {swapGasPriceinDollars ? swapGasPriceinDollars : '…'}
+                <FaGasPump size={12} /> {swapGasPriceinDollars ? swapGasPriceinDollars : '…'}
                 {/* {truncatedGasInGwei ? `${truncatedGasInGwei} gwei` : '…'} */}
             </div>
             <div className={styles.token_amount}>
