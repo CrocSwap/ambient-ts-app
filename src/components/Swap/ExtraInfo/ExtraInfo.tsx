@@ -11,6 +11,7 @@ import { TokenPairIF } from '../../../utils/interfaces/exports';
 import TooltipComponent from '../../Global/TooltipComponent/TooltipComponent';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { CrocImpact } from '@crocswap-libs/sdk';
+import DenominationSwitch from '../DenominationSwitch/DenominationSwitch';
 
 // interface for props in this file
 interface ExtraInfoPropsIF {
@@ -217,11 +218,35 @@ export default function ExtraInfo(props: ExtraInfoPropsIF) {
             )}
         </div>
     );
+    const dropDownOrNull = priceImpact ? (
+        <div onClick={() => setShowExtraDetails(!showExtraDetails)} style={{ cursor: 'pointer' }}>
+            <RiArrowDownSLine size={27} />
+        </div>
+    ) : null;
+
     const extraDetailsDropdown = (
         <div
             className={styles.extra_info_content}
             onClick={() => setShowExtraDetails(!showExtraDetails)}
         >
+            <div className={styles.gas_pump}>
+                <FaGasPump size={12} /> {swapGasPriceinDollars ? swapGasPriceinDollars : '…'}
+                {/* {truncatedGasInGwei ? `${truncatedGasInGwei} gwei` : '…'} */}
+            </div>
+            <div className={styles.token_amount}>
+                {isDenomBase
+                    ? `1 ${baseTokenSymbol} ≈ ${displayPriceString} ${quoteTokenSymbol}`
+                    : `1 ${quoteTokenSymbol} ≈ ${displayPriceString} ${baseTokenSymbol}`}
+            </div>
+            <DenominationSwitch />
+            {/* <div className={styles.header_container}>
+                <DividerDark addMarginTop />
+                <DenominationSwitch />
+            </div> */}
+        </div>
+    );
+    const extraDetailsNoDropdown = (
+        <div className={styles.extra_info_content} style={{ cursor: 'default' }}>
             <div className={styles.gas_pump}>
                 <FaGasPump size={15} /> {swapGasPriceinDollars ? swapGasPriceinDollars : '…'}
                 {/* {truncatedGasInGwei ? `${truncatedGasInGwei} gwei` : '…'} */}
@@ -230,17 +255,22 @@ export default function ExtraInfo(props: ExtraInfoPropsIF) {
                 {isDenomBase
                     ? `1 ${baseTokenSymbol} ≈ ${displayPriceString} ${quoteTokenSymbol}`
                     : `1 ${quoteTokenSymbol} ≈ ${displayPriceString} ${baseTokenSymbol}`}
-                <RiArrowDownSLine size={27} />{' '}
             </div>
+            <DenominationSwitch />
+            {/* <div className={styles.header_container}>
+            </div> */}
         </div>
     );
+    const extraDetailsNoDropDownOrNull = !priceImpact ? extraDetailsNoDropdown : null;
     const extraDetailsDropDownOrNull = priceImpact ? extraDetailsDropdown : null;
     const extraDetailsOrNull = showExtraDetails && priceImpact ? extraInfoDetails : null;
     const feesAndSlippageOrNull = showExtraDetails && priceImpact ? feesAndSlippageDetails : null;
 
     return (
         <>
+            {extraDetailsNoDropDownOrNull}
             {extraDetailsDropDownOrNull}
+            {dropDownOrNull}
             {extraDetailsOrNull}
             {feesAndSlippageOrNull}
         </>
