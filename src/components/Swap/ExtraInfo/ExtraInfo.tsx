@@ -218,6 +218,12 @@ export default function ExtraInfo(props: ExtraInfoPropsIF) {
             )}
         </div>
     );
+    const dropDownOrNull = priceImpact ? (
+        <div onClick={() => setShowExtraDetails(!showExtraDetails)} style={{ cursor: 'pointer' }}>
+            <RiArrowDownSLine size={27} />
+        </div>
+    ) : null;
+
     const extraDetailsDropdown = (
         <div
             className={styles.extra_info_content}
@@ -231,10 +237,8 @@ export default function ExtraInfo(props: ExtraInfoPropsIF) {
                 {isDenomBase
                     ? `1 ${baseTokenSymbol} ≈ ${displayPriceString} ${quoteTokenSymbol}`
                     : `1 ${quoteTokenSymbol} ≈ ${displayPriceString} ${baseTokenSymbol}`}
-                <RiArrowDownSLine size={27} />{' '}
             </div>
             <DenominationSwitch />
-
             {/* <div className={styles.header_container}>
                 <DividerDark addMarginTop />
                 <DenominationSwitch />
@@ -266,6 +270,7 @@ export default function ExtraInfo(props: ExtraInfoPropsIF) {
         <>
             {extraDetailsNoDropDownOrNull}
             {extraDetailsDropDownOrNull}
+            {dropDownOrNull}
             {extraDetailsOrNull}
             {feesAndSlippageOrNull}
         </>
