@@ -73,7 +73,7 @@
 
 .token_select_container {
     max-height: 400px;
-    padding-bottom: 11rem;
+    /* padding-bottom: 11rem; */
 
     transition: all var(--animation-speed) cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
