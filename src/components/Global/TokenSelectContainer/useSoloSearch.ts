@@ -81,11 +81,11 @@ export const useSoloSearch = (
 
         const searchByAddress = (searchString: string) => {
             const importedMatches = importedTokensOnChain.filter(
-                (tkn: TokenIF) => tkn.address === searchString
+                (tkn: TokenIF) => tkn.address.toLowerCase() === searchString
             );
             setImportedTokensForDOM(importedMatches);
             const otherMatches = otherTokensOnChain.filter(
-                (tkn: TokenIF) => tkn.address === searchString
+                (tkn: TokenIF) => tkn.address.toLowerCase() === searchString
             );
             setOtherTokensForDOM(otherMatches);
         }
