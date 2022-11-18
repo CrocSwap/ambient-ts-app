@@ -61,7 +61,7 @@ export default function SidebarAccordion(props: SidebarAccordionPropsIF) {
     //         <div className={notificationStyles.number}>3</div>
     //     </div>
     // )
-    console.log(props.openAllDefault);
+    // console.log(props.openAllDefault);
     function handleAccordionOpen() {
         setIsOpen(!isOpen);
         setShowSidebar(true);
