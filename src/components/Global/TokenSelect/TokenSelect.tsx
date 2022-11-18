@@ -9,7 +9,7 @@ import uriToHttp from '../../../utils/functions/uriToHttp';
 // import { removeToken } from '../../Global/TokenSelectContainer/removeToken';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import NoTokenIcon from '../NoTokenIcon/NoTokenIcon';
-
+// import {BsPin, BsPinFill} from 'react-icons/bs'
 interface TokenSelectPropsIF {
     token: TokenIF;
     tokensBank: Array<TokenIF>;
@@ -60,24 +60,24 @@ export default function TokenSelect(props: TokenSelectPropsIF) {
     // const noTokenImage = <CgUnavailable size={20} />;
 
     // As much as I dislike directing using svgs in code, this is the only way we can style the fill on hover...unless we want to bring in two different SVGS.
-    const starIcon = (
-        <svg
-            width='18'
-            height='18'
-            viewBox='0 0 23 23'
-            fill='none'
-            xmlns='http://www.w3.org/2000/svg'
-        >
-            <path
-                d='M11.5 1.58301L14.7187 8.10384L21.9166 9.15593L16.7083 14.2288L17.9375 21.3955L11.5 18.0101L5.06248 21.3955L6.29165 14.2288L1.08331 9.15593L8.28123 8.10384L11.5 1.58301Z'
-                stroke='#BDBDBD'
-                strokeWidth='2'
-                strokeLinecap='round'
-                strokeLinejoin='round'
-                className={styles.star_svg}
-            />
-        </svg>
-    );
+    // const starIcon = (
+    //     <svg
+    //         width='18'
+    //         height='18'
+    //         viewBox='0 0 23 23'
+    //         fill='none'
+    //         xmlns='http://www.w3.org/2000/svg'
+    //     >
+    //         <path
+    //             d='M11.5 1.58301L14.7187 8.10384L21.9166 9.15593L16.7083 14.2288L17.9375 21.3955L11.5 18.0101L5.06248 21.3955L6.29165 14.2288L1.08331 9.15593L8.28123 8.10384L11.5 1.58301Z'
+    //             stroke='#BDBDBD'
+    //             strokeWidth='2'
+    //             strokeLinecap='round'
+    //             strokeLinejoin='round'
+    //             className={styles.star_svg}
+    //         />
+    //     </svg>
+    // );
 
     // const deleteIcon = (
     //     <div className={styles.close_icon} onClick={() => setShowDelete(true)}>
@@ -118,10 +118,11 @@ export default function TokenSelect(props: TokenSelectPropsIF) {
     // );
 
     // const deleteStateStyle = !showDelete ? styles.delete_active : styles.delete_inactive;
+    // const [ pinned, setPinned] = useState(false)
 
     return (
         <>
-            <div className={styles.main_container}>
+            <div className={styles.main_container} onClick={() => chooseToken(token)}>
                 {
                     // <div className={`${styles.delete_container} ${deleteStateStyle}`}>
                     //     Remove {token.symbol} from your list
@@ -129,9 +130,10 @@ export default function TokenSelect(props: TokenSelectPropsIF) {
                     // </div>
                 }
                 <section className={styles.left_side_container}>
-                    <div className={styles.star_icon}>{starIcon}</div>
+                    {/* <div className={styles.star_icon}>{starIcon}</div> */}
+                    {/* <div onClick={() => setPinned(!pinned)}>{ pinned ? <BsPinFill/> : <BsPin  />}</div> */}
 
-                    <div className={styles.modal_content} onClick={() => chooseToken(token)}>
+                    <div className={styles.modal_content}>
                         <div className={styles.modal_tokens_info}>
                             {token.logoURI ? (
                                 <img
