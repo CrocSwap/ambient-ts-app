@@ -13,7 +13,7 @@ export default function ClaimOrderButton(props: IClaimOrderButtonProps) {
 
     return (
         <div className={styles.button_container}>
-            <Button title={title} disabled={props.disabled} action={claimFn} />
+            <Button title={title} disabled={props.disabled} action={claimFn} flat={true} />
         </div>
     );
 }

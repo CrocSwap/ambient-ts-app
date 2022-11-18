@@ -24,12 +24,12 @@ import NotificationCenter from '../../../components/Global/NotificationCenter/No
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 
 interface HeaderPropsIF {
-    isUserLoggedIn: boolean;
+    isUserLoggedIn: boolean | undefined;
     // nativeBalance: string | undefined;
     clickLogout: () => void;
     metamaskLocked: boolean;
     ensName: string;
-    shouldDisplayAccountTab: boolean;
+    shouldDisplayAccountTab: boolean | undefined;
     chainId: string;
     isChainSupported: boolean;
     switchChain: Dispatch<SetStateAction<string>>;
@@ -47,6 +47,8 @@ interface HeaderPropsIF {
     isAppOverlayActive: boolean;
 
     setIsAppOverlayActive: Dispatch<SetStateAction<boolean>>;
+    switchTheme: () => void;
+    theme: string;
 }
 
 export default function PageHeader(props: HeaderPropsIF) {
@@ -67,6 +69,8 @@ export default function PageHeader(props: HeaderPropsIF) {
         setIsMobileSidebarOpen,
         isAppOverlayActive,
         setIsAppOverlayActive,
+        switchTheme,
+        theme,
     } = props;
 
     const {
@@ -156,6 +160,9 @@ export default function PageHeader(props: HeaderPropsIF) {
         chainId: chainId,
         isAppOverlayActive: isAppOverlayActive,
         setIsAppOverlayActive: setIsAppOverlayActive,
+
+        switchTheme: switchTheme,
+        theme: theme,
     };
 
     // End of Page Header Functions
@@ -192,7 +199,7 @@ export default function PageHeader(props: HeaderPropsIF) {
         // console.log({ isPathValidAddress });
 
         if (pathNoLeadingSlash === 'account') {
-            document.title = 'My Account - ambient.finance';
+            document.title = 'My Account ~ ambient.finance';
         } else if (isPathValidAddress) {
             const ensNameOrAddressTruncated = isAddressEns
                 ? pathNoLeadingSlash.length > 15
@@ -202,10 +209,10 @@ export default function PageHeader(props: HeaderPropsIF) {
             document.title = `${ensNameOrAddressTruncated} - ambient.finance`;
         } else if (location.pathname.includes('swap') || location.pathname.includes('trade')) {
             document.title = isDenomBase
-                ? `${baseSymbol}/${quoteSymbol} - ambient.finance`
-                : `${quoteSymbol}/${baseSymbol} - ambient.finance`;
+                ? `${baseSymbol}/${quoteSymbol} ~ ambient.finance`
+                : `${quoteSymbol}/${baseSymbol} ~ ambient.finance`;
         } else {
-            document.title = 'ambient.finance';
+            document.title = 'Home ~ ambient.finance';
         }
     }, [baseSymbol, quoteSymbol, isDenomBase, location]);
 

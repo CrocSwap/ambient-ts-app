@@ -40,7 +40,8 @@ interface PortfolioPropsIF {
     connectedAccount: string;
     userImageData: string[];
     chainId: string;
-    tokenMap: Map<string, TokenIF>;
+    ambientTokens: Map<string, TokenIF>;
+    tokensOnActiveLists: Map<string, TokenIF>;
     selectedOutsideTab: number;
     setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
     outsideControl: boolean;
@@ -56,12 +57,13 @@ interface PortfolioPropsIF {
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
     account: string;
     showSidebar: boolean;
-    isUserLoggedIn: boolean;
+    isUserLoggedIn: boolean | undefined;
     isAuthenticated: boolean;
     baseTokenBalance: string;
     quoteTokenBalance: string;
     baseTokenDexBalance: string;
     quoteTokenDexBalance: string;
+    handlePulseAnimation: (type: string) => void;
 
     currentTxActiveInTransactions: string;
     setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
@@ -70,8 +72,6 @@ interface PortfolioPropsIF {
 // const cachedFetchAddress = memoizePromiseFn(fetchAddress);
 
 export default function Portfolio(props: PortfolioPropsIF) {
-    const { isInitialized } = useMoralis();
-
     const {
         crocEnv,
         isTokenABase,
@@ -84,7 +84,7 @@ export default function Portfolio(props: PortfolioPropsIF) {
         userImageData,
         connectedAccount,
         chainId,
-        tokenMap,
+        tokensOnActiveLists,
         openGlobalModal,
         closeGlobalModal,
         userAccount,
@@ -99,13 +99,13 @@ export default function Portfolio(props: PortfolioPropsIF) {
         quoteTokenBalance,
         baseTokenDexBalance,
         quoteTokenDexBalance,
-
         currentTxActiveInTransactions,
         setCurrentTxActiveInTransactions,
-
         showSidebar,
         isUserLoggedIn,
+        handlePulseAnimation,
     } = props;
+    const { isInitialized } = useMoralis();
 
     const selectedToken: TokenIF = useAppSelector((state) => state.temp.token);
 
@@ -380,9 +380,9 @@ export default function Portfolio(props: PortfolioPropsIF) {
             />
             <div
                 className={
-                    // fullLayoutActive
-                    // ?styles.full_layout_container:
-                    styles.tabs_exchange_balance_container
+                    fullLayoutActive
+                        ? styles.full_layout_container
+                        : styles.tabs_exchange_balance_container
                 }
             >
                 <PortfolioTabs
@@ -398,7 +398,7 @@ export default function Portfolio(props: PortfolioPropsIF) {
                     activeAccount={address ?? connectedAccount}
                     connectedAccountActive={connectedAccountActive}
                     chainId={chainId}
-                    tokenMap={tokenMap}
+                    tokenMap={tokensOnActiveLists}
                     selectedOutsideTab={selectedOutsideTab}
                     setSelectedOutsideTab={setSelectedOutsideTab}
                     setOutsideControl={setOutsideControl}
@@ -420,6 +420,7 @@ export default function Portfolio(props: PortfolioPropsIF) {
                     currentTxActiveInTransactions={currentTxActiveInTransactions}
                     setCurrentTxActiveInTransactions={setCurrentTxActiveInTransactions}
                     fullLayoutToggle={fullLayerToggle}
+                    handlePulseAnimation={handlePulseAnimation}
                 />
                 {/* {connectedAccountActive && !fullLayoutActive ? exchangeBalanceComponent : null} */}
                 {connectedAccountActive && exchangeBalanceComponent}
@@ -436,8 +437,9 @@ export default function Portfolio(props: PortfolioPropsIF) {
                     <SoloTokenSelect
                         closeModal={closeTokenModal}
                         chainId={chainId}
-                        tokensBank={importedTokens}
+                        importedTokens={importedTokens}
                         setImportedTokens={setImportedTokens}
+                        tokensOnActiveLists={tokensOnActiveLists}
                     />
                 </Modal>
             )}

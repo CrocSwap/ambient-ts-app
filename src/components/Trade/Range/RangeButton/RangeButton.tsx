@@ -18,6 +18,7 @@ export default function RangeButton(props: IRangeButtonProps) {
                 // action={() => console.log('clicked')}
                 action={props.onClickFn}
                 disabled={!props.rangeAllowed}
+                flat={true}
             />
         </div>
     );

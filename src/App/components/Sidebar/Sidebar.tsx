@@ -2,6 +2,7 @@
 import { MouseEvent, SetStateAction, Dispatch, useState, useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import { BiSearch } from 'react-icons/bi';
+import { BsChevronBarDown } from 'react-icons/bs';
 
 // START: Import JSX Elements
 import SidebarAccordion from './SidebarAccordion/SidebarAccordion';
@@ -30,6 +31,7 @@ import { MdClose } from 'react-icons/md';
 import closeSidebarImage from '../../../assets/images/sidebarImages/closeSidebar.svg';
 import { memoizePoolStats } from '../../functions/getPoolStats';
 import { tradeData } from '../../../utils/state/tradeDataSlice';
+import { DefaultTooltip } from '../../../components/Global/StyledTooltip/StyledTooltip';
 
 const cachedPoolStatsFetch = memoizePoolStats();
 
@@ -302,14 +304,32 @@ export default function Sidebar(props: SidebarPropsIF) {
     );
 
     // console.log(searchInput);
+    const [openAllDefault, setOpenAllDefault] = useState(false);
+    const openAllButton = (
+        <button
+            onClick={() => setOpenAllDefault(!openAllDefault)}
+            className={styles.open_all_button}
+        >
+            <BsChevronBarDown size={18} color='var(--text-grey-light)' />{' '}
+            {!openAllDefault ? 'Open All' : 'Close All'}
+        </button>
+    );
 
     const searchContainerDisplay = (
         <div className={` ${styles.sidebar_link_search} ${styles.main_search_container}`}>
             {location.pathname.includes('analytics') ? AnalyticsSearchContainer : searchContainer}
-
-            <div style={{ cursor: 'pointer' }}>
-                <img src={closeSidebarImage} alt='close sidebar' onClick={toggleSidebar} />
-            </div>
+            <DefaultTooltip
+                interactive
+                title={openAllButton}
+                placement={'bottom'}
+                arrow
+                enterDelay={100}
+                leaveDelay={200}
+            >
+                <div style={{ cursor: 'pointer' }}>
+                    <img src={closeSidebarImage} alt='close sidebar' onClick={toggleSidebar} />
+                </div>
+            </DefaultTooltip>
         </div>
     );
 
@@ -331,6 +351,7 @@ export default function Sidebar(props: SidebarPropsIF) {
                     toggleSidebar={toggleSidebar}
                     key={idx}
                     setShowSidebar={setShowSidebar}
+                    openAllDefault={openAllDefault}
 
                     // mostRecent={mostRecentPositions}
                 />
@@ -343,6 +364,7 @@ export default function Sidebar(props: SidebarPropsIF) {
                     toggleSidebar={toggleSidebar}
                     key={idx}
                     setShowSidebar={setShowSidebar}
+                    openAllDefault={openAllDefault}
                     // mostRecent={['should open automatically']}
                 />
             ))}
@@ -359,6 +381,7 @@ export default function Sidebar(props: SidebarPropsIF) {
                     item={item}
                     key={idx}
                     setShowSidebar={setShowSidebar}
+                    openAllDefault={openAllDefault}
                     // mostRecent={mostRecentTransactions}
                 />
             ))}{' '}
@@ -370,6 +393,7 @@ export default function Sidebar(props: SidebarPropsIF) {
                     item={item}
                     key={idx}
                     setShowSidebar={setShowSidebar}
+                    openAllDefault={openAllDefault}
                 />
             ))}{' '}
             {rangePositions.map((item, idx) => (
@@ -380,6 +404,7 @@ export default function Sidebar(props: SidebarPropsIF) {
                     item={item}
                     key={idx}
                     setShowSidebar={setShowSidebar}
+                    openAllDefault={openAllDefault}
                     // mostRecent={positionsByUser}
                 />
             ))}
@@ -391,6 +416,7 @@ export default function Sidebar(props: SidebarPropsIF) {
                     item={item}
                     key={idx}
                     setShowSidebar={setShowSidebar}
+                    openAllDefault={openAllDefault}
                 />
             ))}
         </div>

@@ -3,7 +3,7 @@ import { CandleData, CandlesByPoolAndDuration } from '../../../utils/state/graph
 import Chart from '../../Chart/Chart';
 import './TradeCandleStickChart.css';
 
-import candleStikPlaceholder from '../../../assets/images/charts/candlestick2.png';
+// import candleStikPlaceholder from '../../../assets/images/charts/candlestick.png';
 import {
     CandleChartData,
     FeeChartData,
@@ -18,6 +18,7 @@ import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
 import { ChainSpec, CrocPoolView } from '@crocswap-libs/sdk';
+import ChartSkeleton from './ChartSkeleton/ChartSkeleton';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -346,7 +347,9 @@ export default function TradeCandleStickChart(props: ChartData) {
 
     const loading = (
         <div style={{ height: '100%', width: '100%' }} className='animatedImg_container'>
-            <img src={candleStikPlaceholder} className='img_shimmer' />
+            {/* <img src={candleStikPlaceholder} className='img_shimmer' /> */}
+            {/* <PulseLoading/> */}
+            <ChartSkeleton />
             <div className='fetching_text'>Fetching chart data...</div>
         </div>
     );

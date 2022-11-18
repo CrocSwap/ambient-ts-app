@@ -26,7 +26,7 @@
 .divider{
     width: 100%;
     height: 1px;
-    background: #171D27;
+    background: var(--border);
  
  }
 @media (min-width: 600px) {

@@ -17,6 +17,7 @@ export default function TransferButton(props: PortfolioTransferButtonProps) {
                 // action={() => console.log('clicked')}
                 action={onClick}
                 disabled={disabled}
+                flat={true}
             />
         </div>
     );

@@ -14,7 +14,7 @@ import IconWithTooltip from '../../Global/IconWithTooltip/IconWithTooltip';
 import NoTokenIcon from '../../Global/NoTokenIcon/NoTokenIcon';
 
 interface CurrencySelectorProps {
-    isUserLoggedIn: boolean;
+    isUserLoggedIn: boolean | undefined;
     tokenPair: TokenPairIF;
     tokensBank: Array<TokenIF>;
     setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
@@ -51,7 +51,7 @@ interface CurrencySelectorProps {
     indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
     gasPriceInGwei: number | undefined;
 
-    isTxCopied?: boolean;
+    isSwapCopied?: boolean;
 }
 
 export default function CurrencySelector(props: CurrencySelectorProps) {
@@ -75,7 +75,7 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
         tokenBBalance,
         tokenADexBalance,
         tokenBDexBalance,
-        isTxCopied,
+        isSwapCopied,
         // userHasEnteredAmount,
         isSellTokenEth,
         tokenAQtyCoveredBySurplusBalance,
@@ -274,7 +274,7 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                     />
                 </div>
                 <div
-                    className={`${styles.token_select} ${isTxCopied && styles.pulse_animation}`}
+                    className={`${styles.token_select} ${isSwapCopied && styles.pulse_animation}`}
                     onClick={openModal}
                 >
                     {thisToken.logoURI ? (
@@ -303,7 +303,7 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                                 isWithdrawFromDexChecked &&
                                 tokenASurplusMinusTokenARemainderNum &&
                                 tokenASurplusMinusTokenARemainderNum < 0)
-                                ? '#ebebff'
+                                ? 'var(--text-highlight)'
                                 : '#555555',
                     }}
                 >
@@ -332,7 +332,7 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                                             isWithdrawFromDexChecked &&
                                             tokenASurplusMinusTokenARemainderNum &&
                                             tokenASurplusMinusTokenARemainderNum < 0)
-                                            ? '#ebebff'
+                                            ? 'var(--text-highlight)'
                                             : '#555555'
                                     }
                                 />
@@ -364,7 +364,7 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                                     (isSellTokenSelector && !isWithdrawFromDexChecked) ||
                                     (!isSellTokenSelector && !isSaveAsDexSurplusChecked)
                                         ? '#555555'
-                                        : '#ebebff',
+                                        : 'var(--text-highlight)',
                             }}
                             onClick={() => {
                                 if (props.sellToken) {
@@ -388,7 +388,12 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                                         : null
                                 }`}
                             >
-                                <img src={ambientLogo} width='20' alt='surplus' color='#ebebff' />
+                                <img
+                                    src={ambientLogo}
+                                    width='20'
+                                    alt='surplus'
+                                    color='var(--text-highlight)'
+                                />
                             </div>
 
                             <div className={styles.balance_column}>

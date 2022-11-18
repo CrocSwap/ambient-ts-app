@@ -37,7 +37,7 @@
 }
 
 .header_text {
-    color: #cdc1ff;
+    color: var(--text-highlight);
     font-weight: 100;
 }
 
@@ -50,17 +50,17 @@
 }
 
 .highlight_text {
-    color: #7371fc;
+    color: var(--text-highlight);
     font-weight: 300;
 }
 .amm_pools {
     font-size: 16px;
-    color: #bdbdbd;
+    color: var(--text-grey-light);
 }
 .efficiency {
     font-weight: 300;
     font-size: 16px;
-    color: #cdc1ff;
+    color: var(--text-highlight);
 }
 
 
@@ -75,7 +75,7 @@ flex-direction: column;
 /* align-items: center; */
 padding: 16px;
 gap: 8px;
-background: rgba(23, 29, 39, 0.3);
+background: var(--dark3);
 backdrop-filter: blur(10px);
 
 border-radius: 4px;
@@ -114,7 +114,7 @@ color: var(--text-grey-light)
     flex-direction: column;
    
     border-radius: 50%;
-    border: 0.5px solid #7371FC;
+    border: 0.5px solid var(--text-highlight);
     background: var(--dark1);
 
     display: flex;

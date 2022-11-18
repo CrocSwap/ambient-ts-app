@@ -4,18 +4,23 @@ import TokenSelect from '../TokenSelect/TokenSelect';
 import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
 import { setToken } from '../../../utils/state/temp';
 import { useSoloSearch } from './useSoloSearch';
-
+import styles from './SoloTokenSelect.module.css';
 interface propsIF {
-    tokensBank: TokenIF[];
+    importedTokens: TokenIF[];
     chainId: string;
     setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
+    tokensOnActiveLists: Map<string, TokenIF>;
     closeModal: () => void;
 }
 
 export const SoloTokenSelect = (props: propsIF) => {
-    const { tokensBank, chainId, setImportedTokens, closeModal } = props;
+    const { importedTokens, chainId, setImportedTokens, closeModal, tokensOnActiveLists } = props;
 
-    const [ searchedToken, input, setInput, searchType ] = useSoloSearch(chainId);
+    const [tokensForDOM, otherTokensForDOM, input, setInput, searchType] = useSoloSearch(
+        chainId,
+        importedTokens,
+        tokensOnActiveLists,
+    );
     false && input;
 
     const dispatch = useAppDispatch();
@@ -30,76 +35,96 @@ export const SoloTokenSelect = (props: propsIF) => {
 
     const chooseToken = (tkn: TokenIF) => {
         dispatch(setToken(tkn));
-        if (searchedToken) {
-            const tokenIsImported = tokensBank.some(
-                (tk: TokenIF) => tk.address === searchedToken[0].address
-            );
-            if (tokenIsImported) {
-                const userDataFromLocalStorage = JSON.parse(
-                    localStorage.getItem('user') as string
-                );
-                userDataFromLocalStorage.tokens = [searchedToken, ...tokensBank];
-                localStorage.setItem('user', JSON.stringify(userDataFromLocalStorage));
-            }
+        const isTokenImported = importedTokens.some(
+            (tk: TokenIF) => tk.address.toLowerCase() === tkn.address.toLowerCase(),
+        );
+        if (!isTokenImported) {
+            const userData = JSON.parse(localStorage.getItem('user') as string);
+            userData.tokens = [...importedTokens, tkn];
+            localStorage.setItem('user', JSON.stringify(userData));
+            setImportedTokens([...importedTokens, tkn]);
         }
         closeModal();
     };
 
-    const tokensOnChain = tokensBank
-        .filter((token: TokenIF) => token.chainId === parseInt(chainId))
+    const importedTokenButtons = (
+        <div className={styles.scrollable_container}>
+            {tokensForDOM
+                ? tokensForDOM.map((token: TokenIF) => (
+                      <TokenSelect
+                          key={JSON.stringify(token)}
+                          token={token}
+                          tokensBank={importedTokens}
+                          undeletableTokens={undeletableTokens}
+                          chainId={chainId}
+                          setImportedTokens={setImportedTokens}
+                          chooseToken={chooseToken}
+                          isOnPortfolio={true}
+                          fromListsText='Imported'
+                      />
+                  ))
+                : null}
+        </div>
+    );
 
-    const filterByAddress = (tokens: TokenIF[]) => tokens.filter((token: TokenIF) => (
-        searchedToken && searchedToken.length
-            ? searchedToken[0].address.toLowerCase() === token.address.toLowerCase() : true
-    ));
-
-    const filterByName = (tokens: TokenIF[]) => {
-        const positives: string[] = [];
-        if (searchedToken && searchedToken.length) {
-            searchedToken.forEach((token) => {
-                positives.push(token.name);
-                positives.push(token.symbol);
-            })
-        };
-        const matchingTokens = tokens.filter((token) => (
-            positives.includes(token.name) ||
-            positives.includes(token.symbol)
-        ));
-        return matchingTokens;
-    }
-
-    const filteredTokens = useMemo(() => {
-        switch (searchType) {
-            case 'address':
-                return filterByAddress(tokensOnChain);
-            case 'nameOrSymbol':
-                return filterByName(tokensOnChain);
-            default:
-                return tokensOnChain;
+    const findDupes = (addr: string) => {
+        const allTokenLists = JSON.parse(localStorage.getItem('allTokenLists') as string);
+        const listNames = allTokenLists
+            .filter((tokenList: TokenListIF) =>
+                tokenList.tokens.some(
+                    (token: TokenIF) => token.address.toLowerCase() === addr.toLowerCase(),
+                ),
+            )
+            .map((tokenList: TokenListIF) => tokenList.name);
+        let outputMessage = '';
+        if (listNames.length > 2) {
+            outputMessage = `from ${listNames[0]}, ${listNames[1]}, and ${
+                listNames.length - 2
+            } other lists`;
+        } else if (listNames.length === 2) {
+            outputMessage = `from ${listNames[0]} and ${listNames[1]}`;
+        } else if (listNames.length === 1) {
+            outputMessage = `from ${listNames[0]}`;
+        } else {
+            console.warn(
+                'Could not find a valid array length for listNames in fn findDupes() in SoloTokenSelect.tsx file. Will return empty string. Please troubleshoot.',
+            );
+            outputMessage = '';
         }
-    }, [searchType, tokensOnChain]);
+        return outputMessage;
+    };
 
-    const importedTokenButtons = filteredTokens.map((token: TokenIF) => (
-        <TokenSelect
-            key={JSON.stringify(token)}
-            token={token}
-            tokensBank={tokensBank}
-            undeletableTokens={undeletableTokens}
-            chainId={chainId}
-            setImportedTokens={setImportedTokens}
-            chooseToken={chooseToken}
-            isOnPortfolio={true}
-        />
-    ));
+    const otherTokenButtons = (
+        <div className={styles.scrollable_container}>
+            {otherTokensForDOM
+                ? otherTokensForDOM.map((token: TokenIF) => (
+                      <TokenSelect
+                          key={JSON.stringify(token)}
+                          token={token}
+                          tokensBank={importedTokens}
+                          undeletableTokens={undeletableTokens}
+                          chainId={chainId}
+                          setImportedTokens={setImportedTokens}
+                          chooseToken={chooseToken}
+                          isOnPortfolio={true}
+                          fromListsText={findDupes(token.address)}
+                      />
+                  ))
+                : null}
+        </div>
+    );
 
     return (
-        <>
+        <section className={styles.container}>
             <input
                 type='text'
-                placeholder='Enter an Address'
+                placeholder='&#61442; Search name or enter an Address'
                 onChange={(e) => setInput(e.target.value)}
             />
+            {tokensForDOM?.length ? <h2>Imported Tokens</h2> : null}
             {importedTokenButtons}
-        </>
+            {searchType && otherTokensForDOM?.length ? <h2>More Available Tokens</h2> : null}
+            {otherTokenButtons}
+        </section>
     );
 };

@@ -15,7 +15,7 @@ import { useAppDispatch } from '../../../../../utils/hooks/reduxToolkit';
 import { setDataLoadingStatus } from '../../../../../utils/state/graphDataSlice';
 
 interface RangesRowPropsIF {
-    isUserLoggedIn: boolean;
+    isUserLoggedIn: boolean | undefined;
     crocEnv: CrocEnv | undefined;
     chainData: ChainSpec;
     provider: ethers.providers.Provider | undefined;
@@ -47,7 +47,7 @@ interface RangesRowPropsIF {
     isOnPortfolioPage: boolean;
     isLeaderboard?: boolean;
     idx: number;
-    handleRangeCopiedClick?: () => void;
+    handlePulseAnimation?: (type: string) => void;
 }
 
 export default function RangesRow(props: RangesRowPropsIF) {
@@ -62,7 +62,7 @@ export default function RangesRow(props: RangesRowPropsIF) {
         openGlobalModal,
         isOnPortfolioPage,
         isLeaderboard,
-        handleRangeCopiedClick,
+        handlePulseAnimation,
         // idx,
     } = props;
 
@@ -147,7 +147,7 @@ export default function RangesRow(props: RangesRowPropsIF) {
         baseTokenDexBalance: props.baseTokenDexBalance,
         quoteTokenDexBalance: props.quoteTokenDexBalance,
         isOnPortfolioPage: props.isOnPortfolioPage,
-        handleRangeCopiedClick: handleRangeCopiedClick,
+        handlePulseAnimation: handlePulseAnimation,
     };
 
     const openDetailsModal = () => {

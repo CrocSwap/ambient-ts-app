@@ -2,7 +2,7 @@
     font-weight: 200;
     font-size: 18px;
     line-height: 22px;
-    color: #fffefd;
+    color: var(--text-grey-white);
     text-align: start;
     width: 100%;
     height: calc(1.5em + 0.75rem + 2px);

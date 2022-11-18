@@ -170,6 +170,45 @@ export default function App() {
         enableWeb3,
     } = useMoralis();
 
+    const tradeData = useAppSelector((state) => state.tradeData);
+    const location = useLocation();
+
+    // hook to check if token addresses in URL match token addresses in RTK
+    const rtkMatchesParams = useMemo(() => {
+        // output value, false is default return
+        let matching = false;
+        // address of token A as held by RTK
+        const rtkTokenA = tradeData.tokenA.address;
+        // address of token B as held by RTK
+        const rtkTokenB = tradeData.tokenB.address;
+        // current URL pathway
+        const { pathname } = location;
+        // make sure app is on a pathway with two URLs in params
+        if (pathname.includes('tokenA') && pathname.includes('tokenB')) {
+            // function to extract token addresses from URL string (absolute)
+            const getAddrFromParams = (token: string) => {
+                const idx = pathname.indexOf(token);
+                const address = pathname.substring(idx + 7, idx + 49);
+                return address;
+            };
+            // address of token A from URL params
+            const addrTokenA = getAddrFromParams('tokenA');
+            // address of token B from URL params
+            const addrTokenB = getAddrFromParams('tokenB');
+            // check if URL param addresses match RTK token addresses
+            if (
+                addrTokenA.toLowerCase() === rtkTokenA.toLowerCase() &&
+                addrTokenB.toLowerCase() === rtkTokenB.toLowerCase()
+            ) {
+                // if match set return value as true
+                matching = true;
+            }
+        }
+        // return output variable (boolean)
+        return matching;
+        // run hook when URL or token addresses in RTK change
+    }, [location, tradeData.tokenA.address, tradeData.tokenB.address]);
+
     const onIdle = () => {
         console.log('user is idle');
         dispatch(setIsUserIdle(true));
@@ -217,23 +256,56 @@ export default function App() {
     });
 
     const userData = useAppSelector((state) => state.userData);
+
     const isUserLoggedIn = userData.isLoggedIn;
     const isUserIdle = userData.isUserIdle;
+
+    // allow a local environment variable to be defined in [app_repo]/.env.local to turn off connections to the cache server
+    const isServerEnabled =
+        process.env.REACT_APP_CACHE_SERVER_IS_ENABLED !== undefined
+            ? process.env.REACT_APP_CACHE_SERVER_IS_ENABLED === 'true'
+            : true;
+
+    // useEffect(() => {
+    //     console.log({ isServerEnabled });
+    // }, [isServerEnabled]);
+
+    const [loginCheckDelayElapsed, setLoginCheckDelayElapsed] = useState(false);
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setLoginCheckDelayElapsed(true);
+        }, 3000);
+        return () => clearTimeout(timer);
+    }, []);
 
     useEffect(() => {
         const isLoggedIn = isAuthenticated && isWeb3Enabled;
 
-        if (isLoggedIn && userData.isLoggedIn !== isLoggedIn && account) {
-            dispatch(setIsLoggedIn(isLoggedIn));
-            dispatch(setAddressAtLogin(account));
-        } else if (!isLoggedIn && userData.isLoggedIn !== isLoggedIn) {
-            dispatch(setIsLoggedIn(isLoggedIn));
-            dispatch(resetUserAddresses());
+        if (isLoggedIn || (isLoggedIn === false && loginCheckDelayElapsed)) {
+            if (isLoggedIn && userData.isLoggedIn !== isLoggedIn && account) {
+                dispatch(setIsLoggedIn(isLoggedIn));
+                dispatch(setAddressAtLogin(account));
+            } else if (!isLoggedIn && userData.isLoggedIn !== isLoggedIn) {
+                dispatch(setIsLoggedIn(isLoggedIn));
+                dispatch(resetUserAddresses());
+            }
         }
-    }, [isAuthenticated, isWeb3Enabled, isUserLoggedIn, account]);
+    }, [loginCheckDelayElapsed, isAuthenticated, isWeb3Enabled, isUserLoggedIn, account]);
 
-    const tokenMap = useTokenMap();
-    const location = useLocation();
+    // this is another case where true vs false is an arbitrary distinction
+    const [activeTokenListsChanged, indicateActiveTokenListsChanged] = useState(false);
+
+    const ambientTokens = useTokenMap(false, ['/ambient-token-list.json']);
+    const tokensOnActiveLists = useTokenMap(
+        activeTokenListsChanged,
+        JSON.parse(localStorage.getItem('user') as string)?.activeTokenLists ?? [
+            '/ambient-token-list.json',
+        ],
+    );
+    useEffect(() => {
+        console.log({ tokensOnActiveLists });
+    }, [tokensOnActiveLists]);
 
     const [candleData, setCandleData] = useState<CandlesByPoolAndDuration | undefined>();
 
@@ -369,7 +441,6 @@ export default function App() {
     const dispatch = useAppDispatch();
 
     // current configurations of trade as specified by the user
-    const tradeData = useAppSelector((state) => state.tradeData);
     const currentPoolInfo = tradeData;
 
     // tokens specifically imported by the end user
@@ -382,9 +453,6 @@ export default function App() {
     // trigger a useEffect() which needs to run when new token lists are received
     // true vs false is an arbitrary distinction here
     const [tokenListsReceived, indicateTokenListsReceived] = useState(false);
-
-    // this is another case where true vs false is an arbitrary distinction
-    const [activeTokenListsChanged, indicateActiveTokenListsChanged] = useState(false);
 
     if (needTokenLists) {
         setNeedTokenLists(false);
@@ -680,12 +748,12 @@ export default function App() {
     // ... true => pool exists
     // ... false => pool does not exist
     // ... null => no crocEnv to check if pool exists
-    const [poolExists, setPoolExists] = useState<boolean | null>(null);
+    const [poolExists, setPoolExists] = useState<boolean | undefined>();
     useEffect(() => console.log({ poolExists }), [poolExists]);
 
     // hook to update `poolExists` when crocEnv changes
     useEffect(() => {
-        setPoolExists(null);
+        setPoolExists(undefined);
         if (crocEnv && tokenPairLocal) {
             // token pair has an initialized pool on-chain
             // returns a promise object
@@ -724,7 +792,7 @@ export default function App() {
 
     useEffect(() => {
         (async () => {
-            if (baseTokenAddress && quoteTokenAddress) {
+            if (isServerEnabled && baseTokenAddress && quoteTokenAddress) {
                 const poolAmbientApyCacheEndpoint =
                     'https://809821320828123.de:5000' + '/pool_ambient_apy_cached?';
 
@@ -748,146 +816,147 @@ export default function App() {
                     });
             }
         })();
-    }, [JSON.stringify({ base: baseTokenAddress, quote: quoteTokenAddress })]);
+    }, [isServerEnabled, JSON.stringify({ base: baseTokenAddress, quote: quoteTokenAddress })]);
 
     // useEffect that runs when token pair changes
     useEffect(() => {
-        // reset rtk values for user specified range in ticks
-        dispatch(setAdvancedLowTick(0));
-        dispatch(setAdvancedHighTick(0));
+        if (rtkMatchesParams) {
+            // console.log(tradeData.tokenA.address);
+            // console.log(tradeData.tokenB.address);
+            // reset rtk values for user specified range in ticks
+            dispatch(setAdvancedLowTick(0));
+            dispatch(setAdvancedHighTick(0));
 
-        const tokenAAddress = tokenPair?.dataTokenA?.address;
-        const tokenBAddress = tokenPair?.dataTokenB?.address;
+            const tokenAAddress = tokenPair?.dataTokenA?.address;
+            const tokenBAddress = tokenPair?.dataTokenB?.address;
 
-        if (tokenAAddress && tokenBAddress) {
-            const sortedTokens = sortBaseQuoteTokens(tokenAAddress, tokenBAddress);
-            const tokenAMainnetEquivalent =
-                tokenAAddress === ZERO_ADDRESS
-                    ? tokenAAddress
-                    : testTokenMap
-                          .get(tokenAAddress.toLowerCase() + '_' + chainData.chainId)
-                          ?.split('_')[0];
-            const tokenBMainnetEquivalent =
-                tokenBAddress === ZERO_ADDRESS
-                    ? tokenBAddress
-                    : testTokenMap
-                          .get(tokenBAddress.toLowerCase() + '_' + chainData.chainId)
-                          ?.split('_')[0];
+            if (tokenAAddress && tokenBAddress) {
+                const sortedTokens = sortBaseQuoteTokens(tokenAAddress, tokenBAddress);
+                const tokenAMainnetEquivalent =
+                    tokenAAddress === ZERO_ADDRESS
+                        ? tokenAAddress
+                        : testTokenMap
+                              .get(tokenAAddress.toLowerCase() + '_' + chainData.chainId)
+                              ?.split('_')[0];
+                const tokenBMainnetEquivalent =
+                    tokenBAddress === ZERO_ADDRESS
+                        ? tokenBAddress
+                        : testTokenMap
+                              .get(tokenBAddress.toLowerCase() + '_' + chainData.chainId)
+                              ?.split('_')[0];
 
-            if (tokenAMainnetEquivalent && tokenBMainnetEquivalent) {
-                const sortedMainnetTokens = sortBaseQuoteTokens(
-                    tokenAMainnetEquivalent,
-                    tokenBMainnetEquivalent,
-                );
+                if (tokenAMainnetEquivalent && tokenBMainnetEquivalent) {
+                    const sortedMainnetTokens = sortBaseQuoteTokens(
+                        tokenAMainnetEquivalent,
+                        tokenBMainnetEquivalent,
+                    );
 
-                setMainnetBaseTokenAddress(sortedMainnetTokens[0]);
-                setMainnetQuoteTokenAddress(sortedMainnetTokens[1]);
-            } else {
-                setMainnetBaseTokenAddress('');
-                setMainnetQuoteTokenAddress('');
-            }
+                    setMainnetBaseTokenAddress(sortedMainnetTokens[0]);
+                    setMainnetQuoteTokenAddress(sortedMainnetTokens[1]);
+                } else {
+                    setMainnetBaseTokenAddress('');
+                    setMainnetQuoteTokenAddress('');
+                }
 
-            setBaseTokenAddress(sortedTokens[0]);
-            setQuoteTokenAddress(sortedTokens[1]);
-            if (tokenPair.dataTokenA.address === sortedTokens[0]) {
-                setIsTokenABase(true);
-                setBaseTokenDecimals(tokenPair.dataTokenA.decimals);
-                setQuoteTokenDecimals(tokenPair.dataTokenB.decimals);
-            } else {
-                setIsTokenABase(false);
-                setBaseTokenDecimals(tokenPair.dataTokenB.decimals);
-                setQuoteTokenDecimals(tokenPair.dataTokenA.decimals);
-            }
+                setBaseTokenAddress(sortedTokens[0]);
+                setQuoteTokenAddress(sortedTokens[1]);
+                if (tokenPair.dataTokenA.address === sortedTokens[0]) {
+                    setIsTokenABase(true);
+                    setBaseTokenDecimals(tokenPair.dataTokenA.decimals);
+                    setQuoteTokenDecimals(tokenPair.dataTokenB.decimals);
+                } else {
+                    setIsTokenABase(false);
+                    setBaseTokenDecimals(tokenPair.dataTokenB.decimals);
+                    setQuoteTokenDecimals(tokenPair.dataTokenA.decimals);
+                }
 
-            // retrieve pool liquidity provider fee
+                // retrieve pool liquidity provider fee
 
-            getLiquidityFee(
-                sortedTokens[0],
-                sortedTokens[1],
-                chainData.poolIndex,
-                chainData.chainId,
-            )
-                .then((liquidityFeeNum) => {
-                    if (liquidityFeeNum) dispatch(setLiquidityFee(liquidityFeeNum));
-                })
-                .catch(console.log);
-
-            // retrieve pool TVL series
-            getTvlSeries(
-                sortedTokens[0],
-                sortedTokens[1],
-                chainData.poolIndex,
-                chainData.chainId,
-                600, // 10 minute resolution
-            )
-                .then((tvlSeries) => {
-                    if (
-                        tvlSeries &&
-                        tvlSeries.base &&
-                        tvlSeries.quote &&
-                        tvlSeries.poolIdx &&
-                        tvlSeries.seriesData
+                if (isServerEnabled && httpGraphCacheServerDomain) {
+                    getLiquidityFee(
+                        sortedTokens[0],
+                        sortedTokens[1],
+                        chainData.poolIndex,
+                        chainData.chainId,
                     )
-                        dispatch(
-                            setPoolTvlSeries({
-                                dataReceived: true,
-                                pools: [
-                                    {
-                                        dataReceived: true,
-                                        pool: {
-                                            base: tvlSeries.base,
-                                            quote: tvlSeries.quote,
-                                            poolIdx: tvlSeries.poolIdx,
-                                            chainId: chainData.chainId,
-                                        },
-                                        tvlData: tvlSeries,
-                                    },
-                                ],
-                            }),
-                        );
-                })
-                .catch(console.log);
+                        .then((liquidityFeeNum) => {
+                            if (liquidityFeeNum) dispatch(setLiquidityFee(liquidityFeeNum));
+                        })
+                        .catch(console.log);
 
-            // retrieve pool volume series
-            getVolumeSeries(
-                sortedTokens[0],
-                sortedTokens[1],
-                chainData.poolIndex,
-                chainData.chainId,
-                600, // 10 minute resolution
-            )
-                .then((volumeSeries) => {
-                    if (
-                        volumeSeries &&
-                        volumeSeries.base &&
-                        volumeSeries.quote &&
-                        volumeSeries.poolIdx &&
-                        volumeSeries.seriesData
+                    // retrieve pool TVL series
+                    getTvlSeries(
+                        sortedTokens[0],
+                        sortedTokens[1],
+                        chainData.poolIndex,
+                        chainData.chainId,
+                        600, // 10 minute resolution
                     )
-                        dispatch(
-                            setPoolVolumeSeries({
-                                dataReceived: true,
-                                pools: [
-                                    {
+                        .then((tvlSeries) => {
+                            if (
+                                tvlSeries &&
+                                tvlSeries.base &&
+                                tvlSeries.quote &&
+                                tvlSeries.poolIdx &&
+                                tvlSeries.seriesData
+                            )
+                                dispatch(
+                                    setPoolTvlSeries({
                                         dataReceived: true,
-                                        pool: {
-                                            base: volumeSeries.base,
-                                            quote: volumeSeries.quote,
-                                            poolIdx: volumeSeries.poolIdx,
-                                            chainId: chainData.chainId,
-                                        },
-                                        volumeData: volumeSeries,
-                                    },
-                                ],
-                            }),
-                        );
-                })
-                .catch(console.log);
+                                        pools: [
+                                            {
+                                                dataReceived: true,
+                                                pool: {
+                                                    base: tvlSeries.base,
+                                                    quote: tvlSeries.quote,
+                                                    poolIdx: tvlSeries.poolIdx,
+                                                    chainId: chainData.chainId,
+                                                },
+                                                tvlData: tvlSeries,
+                                            },
+                                        ],
+                                    }),
+                                );
+                        })
+                        .catch(console.log);
 
-            // retrieve pool liquidity
-            try {
-                if (httpGraphCacheServerDomain) {
-                    // console.log('fetching pool liquidity distribution');
+                    // retrieve pool volume series
+                    getVolumeSeries(
+                        sortedTokens[0],
+                        sortedTokens[1],
+                        chainData.poolIndex,
+                        chainData.chainId,
+                        600, // 10 minute resolution
+                    )
+                        .then((volumeSeries) => {
+                            if (
+                                volumeSeries &&
+                                volumeSeries.base &&
+                                volumeSeries.quote &&
+                                volumeSeries.poolIdx &&
+                                volumeSeries.seriesData
+                            )
+                                dispatch(
+                                    setPoolVolumeSeries({
+                                        dataReceived: true,
+                                        pools: [
+                                            {
+                                                dataReceived: true,
+                                                pool: {
+                                                    base: volumeSeries.base,
+                                                    quote: volumeSeries.quote,
+                                                    poolIdx: volumeSeries.poolIdx,
+                                                    chainId: chainData.chainId,
+                                                },
+                                                volumeData: volumeSeries,
+                                            },
+                                        ],
+                                    }),
+                                );
+                        })
+                        .catch(console.log);
+
+                    // retrieve pool liquidity
 
                     const poolLiquidityCacheEndpoint =
                         httpGraphCacheServerDomain + '/pool_liquidity_distribution?';
@@ -923,15 +992,10 @@ export default function App() {
                             }
                         })
                         .catch(console.log);
-                }
-            } catch (error) {
-                console.log;
-            }
 
-            if (crocEnv) {
-                // retrieve pool_positions
-                try {
-                    if (httpGraphCacheServerDomain) {
+                    if (crocEnv) {
+                        // retrieve pool_positions
+
                         // console.log('fetching pool positions');
                         const allPositionsCacheEndpoint =
                             httpGraphCacheServerDomain + '/pool_positions?';
@@ -991,14 +1055,8 @@ export default function App() {
                                 }
                             })
                             .catch(console.log);
-                    }
-                } catch (error) {
-                    console.log;
-                }
 
-                // retrieve positions for leaderboard
-                try {
-                    if (httpGraphCacheServerDomain) {
+                        // retrieve positions for leaderboard
                         // console.log('fetching leaderboard positions');
                         const poolPositionsCacheEndpoint =
                             httpGraphCacheServerDomain + '/annotated_pool_positions?';
@@ -1014,7 +1072,7 @@ export default function App() {
                                     // omitKnockout: 'true',
                                     addValue: 'true',
                                     sortByAPY: 'true',
-                                    n: '10',
+                                    n: '30',
                                 }),
                         )
                             .then((response) => response.json())
@@ -1022,7 +1080,6 @@ export default function App() {
                                 const leaderboardPositions = json.data;
 
                                 if (leaderboardPositions && crocEnv) {
-                                    // console.log({ poolPositions });
                                     Promise.all(
                                         leaderboardPositions.map((position: PositionIF) => {
                                             return getPositionData(
@@ -1035,16 +1092,20 @@ export default function App() {
                                         }),
                                     )
                                         .then((updatedPositions) => {
-                                            // console.log({ updatedPositions });
+                                            const top10Positions = updatedPositions
+                                                .filter((updatedPosition: PositionIF) => {
+                                                    return updatedPosition.isPositionInRange;
+                                                })
+                                                .slice(1, 10);
                                             if (
                                                 JSON.stringify(
                                                     graphData.leaderboardByPool.positions,
-                                                ) !== JSON.stringify(updatedPositions)
+                                                ) !== JSON.stringify(top10Positions)
                                             ) {
                                                 dispatch(
                                                     setLeaderboardByPool({
                                                         dataReceived: true,
-                                                        positions: updatedPositions,
+                                                        positions: top10Positions,
                                                     }),
                                                 );
                                             }
@@ -1053,41 +1114,34 @@ export default function App() {
                                 }
                             })
                             .catch(console.log);
-                    }
-                } catch (error) {
-                    console.log;
-                }
 
-                // retrieve pool recent changes
-                fetchPoolRecentChanges({
-                    importedTokens: importedTokens,
-                    base: sortedTokens[0],
-                    quote: sortedTokens[1],
-                    poolIdx: chainData.poolIndex,
-                    chainId: chainData.chainId,
-                    annotate: true,
-                    addValue: true,
-                    simpleCalc: true,
-                    annotateMEV: false,
-                    ensResolution: true,
-                    n: 100,
-                })
-                    .then((poolChangesJsonData) => {
-                        if (poolChangesJsonData) {
-                            dispatch(
-                                setChangesByPool({
-                                    dataReceived: true,
-                                    changes: poolChangesJsonData,
-                                }),
-                            );
-                        }
-                    })
-                    .catch(console.log);
+                        // retrieve pool recent changes
+                        fetchPoolRecentChanges({
+                            importedTokens: importedTokens,
+                            base: sortedTokens[0],
+                            quote: sortedTokens[1],
+                            poolIdx: chainData.poolIndex,
+                            chainId: chainData.chainId,
+                            annotate: true,
+                            addValue: true,
+                            simpleCalc: true,
+                            annotateMEV: false,
+                            ensResolution: true,
+                            n: 100,
+                        })
+                            .then((poolChangesJsonData) => {
+                                if (poolChangesJsonData) {
+                                    dispatch(
+                                        setChangesByPool({
+                                            dataReceived: true,
+                                            changes: poolChangesJsonData,
+                                        }),
+                                    );
+                                }
+                            })
+                            .catch(console.log);
 
-                // retrieve pool limit order states
-                try {
-                    if (httpGraphCacheServerDomain) {
-                        // console.log('fetching pool limit order states');
+                        // retrieve pool limit order states
 
                         const poolLimitOrderStatesCacheEndpoint =
                             httpGraphCacheServerDomain + '/pool_limit_order_states?';
@@ -1122,24 +1176,13 @@ export default function App() {
                                         );
                                     });
                                 }
-
-                                // if (poolLimitOrderStates) {
-                                //     dispatch(
-                                //         setLimitOrdersByPool({
-                                //             dataReceived: true,
-                                //             limitOrders: poolLimitOrderStates,
-                                //         }),
-                                //     );
-                                // }
                             })
                             .catch(console.log);
                     }
-                } catch (error) {
-                    console.log;
                 }
             }
         }
-    }, [tokenPairStringified, chainData.chainId, crocEnv]);
+    }, [rtkMatchesParams, isServerEnabled, tokenPairStringified, chainData.chainId, crocEnv]);
 
     const activePeriod = tradeData.activeChartPeriod;
 
@@ -1150,6 +1193,7 @@ export default function App() {
 
     const fetchCandles = () => {
         if (
+            isServerEnabled &&
             baseTokenAddress &&
             quoteTokenAddress &&
             mainnetBaseTokenAddress &&
@@ -1246,7 +1290,7 @@ export default function App() {
             shouldReconnect: () => shouldNonCandleSubscriptionsReconnect,
         },
         // only connect if base/quote token addresses are available
-        baseTokenAddress !== '' && quoteTokenAddress !== '',
+        isServerEnabled && baseTokenAddress !== '' && quoteTokenAddress !== '',
     );
 
     useEffect(() => {
@@ -1303,7 +1347,7 @@ export default function App() {
             shouldReconnect: () => shouldCandleSubscriptionsReconnect,
         },
         // only connect if base/quote token addresses are available
-        mainnetBaseTokenAddress !== '' && mainnetQuoteTokenAddress !== '',
+        isServerEnabled && mainnetBaseTokenAddress !== '' && mainnetQuoteTokenAddress !== '',
     );
 
     const candleDomains = tradeData.candleDomains;
@@ -1330,7 +1374,7 @@ export default function App() {
 
         const numDurationsNeeded = Math.floor((minTime - domainBoundaryInSeconds) / activePeriod);
 
-        if (httpGraphCacheServerDomain && domainBoundaryInSeconds && minTime) {
+        if (isServerEnabled && httpGraphCacheServerDomain && domainBoundaryInSeconds && minTime) {
             // console.log('fetching candles');
             const candleSeriesCacheEndpoint = httpGraphCacheServerDomain + '/candle_series?';
 
@@ -1457,7 +1501,7 @@ export default function App() {
             shouldReconnect: () => shouldNonCandleSubscriptionsReconnect,
         },
         // only connect is account is available
-        account !== null && account !== '',
+        isServerEnabled && account !== null && account !== '',
     );
 
     useEffect(() => {
@@ -1507,7 +1551,7 @@ export default function App() {
             shouldReconnect: () => shouldNonCandleSubscriptionsReconnect,
         },
         // only connect is account is available
-        account !== null && account !== '',
+        isServerEnabled && account !== null && account !== '',
     );
 
     useEffect(() => {
@@ -1552,7 +1596,7 @@ export default function App() {
             shouldReconnect: () => shouldNonCandleSubscriptionsReconnect,
         },
         // only connect is account is available
-        account !== null && account !== '',
+        isServerEnabled && account !== null && account !== '',
     );
 
     useEffect(() => {
@@ -1717,7 +1761,7 @@ export default function App() {
     const graphData = useAppSelector((state) => state.graphData);
 
     useEffect(() => {
-        if (isUserLoggedIn && account) {
+        if (isServerEnabled && isUserLoggedIn && account) {
             dispatch(resetConnectedUserDataLoadingStatus());
 
             console.log('fetching user positions');
@@ -1854,7 +1898,7 @@ export default function App() {
                 console.log;
             }
         }
-    }, [isUserLoggedIn, account, chainData.chainId]);
+    }, [isServerEnabled, isUserLoggedIn, account, chainData.chainId]);
 
     // run function to initialize local storage
     // internal controls will only initialize values that don't exist
@@ -1928,37 +1972,61 @@ export default function App() {
 
     // ------------------- FOLLOWING CODE IS PURELY RESPONSIBLE FOR PULSE ANIMATION------------
 
-    const [isTxCopied, setIsTxCopied] = useState(false);
+    const [isSwapCopied, setIsSwapCopied] = useState(false);
     const [isOrderCopied, setIsOrderCopied] = useState(false);
     const [isRangeCopied, setIsRangeCopied] = useState(false);
 
-    const handleTxCopiedClick = () => {
-        setIsTxCopied(true);
-        console.log('STARTING ANIMATION');
+    const handlePulseAnimation = (type: string) => {
+        switch (type) {
+            case 'swap':
+                setIsSwapCopied(true);
+                setTimeout(() => {
+                    setIsSwapCopied(false);
+                }, 3000);
+                break;
+            case 'limitOrder':
+                setIsOrderCopied(true);
+                setTimeout(() => {
+                    setIsOrderCopied(false);
+                }, 3000);
+                break;
+            case 'range':
+                setIsRangeCopied(true);
 
-        setTimeout(() => {
-            setIsTxCopied(false);
-        }, 3000);
-    };
-    const handleOrderCopiedClick = () => {
-        setIsOrderCopied(true);
-        console.log('STARTING ANIMATION');
-
-        setTimeout(() => {
-            setIsOrderCopied(false);
-        }, 3000);
-    };
-    const handleRangeCopiedClick = () => {
-        setIsRangeCopied(true);
-        console.log('STARTING ANIMATION');
-
-        setTimeout(() => {
-            setIsRangeCopied(false);
-        }, 3000);
+                setTimeout(() => {
+                    setIsRangeCopied(false);
+                }, 3000);
+                break;
+            default:
+                break;
+        }
     };
 
     // END OF------------------- FOLLOWING CODE IS PURELY RESPONSIBLE FOR PULSE ANIMATION------------
 
+    // --------------THEME--------------------------
+    // const defaultDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const [theme, setTheme] = useState('dark');
+
+    const switchTheme = () => {
+        const newTheme = theme === 'light' ? 'dark' : 'light';
+        setTheme(newTheme);
+    };
+
+    // const themeButtons = (
+    //     <div
+    //         style={{
+    //             display: 'flex',
+    //             flexDirection: 'column',
+    //             justifyContent: 'center',
+    //             alignItems: 'center',
+    //         }}
+    //     >
+    //         <button onClick={switchTheme}>Switch Theme</button>
+    //     </div>
+    // );
+
+    // --------------END OF THEME--------------------------
     // props for <PageHeader/> React element
     const headerProps = {
         isUserLoggedIn: isUserLoggedIn,
@@ -1979,6 +2047,9 @@ export default function App() {
         closeGlobalModal: closeGlobalModal,
         isAppOverlayActive: isAppOverlayActive,
         setIsAppOverlayActive: setIsAppOverlayActive,
+
+        switchTheme: switchTheme,
+        theme: theme,
     };
 
     // props for <Swap/> React element
@@ -2046,7 +2117,7 @@ export default function App() {
         isInitialized: isInitialized,
         poolExists: poolExists,
         openGlobalModal: openGlobalModal,
-        isTxCopied: isTxCopied,
+        isSwapCopied: isSwapCopied,
     };
 
     // props for <Limit/> React element on trade route
@@ -2153,7 +2224,7 @@ export default function App() {
         setIsShowAllEnabled: setIsShowAllEnabled,
         expandTradeTable: expandTradeTable,
         setExpandTradeTable: setExpandTradeTable,
-        tokenMap: tokenMap,
+        tokenMap: tokensOnActiveLists,
         lastBlockNumber: lastBlockNumber,
         favePools: favePools,
 
@@ -2259,7 +2330,7 @@ export default function App() {
 
     return (
         <>
-            <div className={containerStyle}>
+            <div className={containerStyle} data-theme={theme}>
                 {isMobileSidebarOpen && <div className='blur_app' />}
                 <AppOverlay
                     isAppOverlayActive={isAppOverlayActive}
@@ -2268,6 +2339,7 @@ export default function App() {
                 {/* {currentLocation == '/' && <PhishingWarning />} */}
 
                 {currentLocation !== '/404' && <PageHeader {...headerProps} />}
+
                 {/* <MobileSidebar/> */}
                 <main className={`${showSidebarOrNullStyle} ${swapBodyStyle}`}>
                     {!currentLocation.startsWith('/swap') && sidebarRender}
@@ -2277,10 +2349,11 @@ export default function App() {
                             element={
                                 <Home
                                     cachedQuerySpotPrice={cachedQuerySpotPrice}
-                                    tokenMap={tokenMap}
+                                    tokenMap={tokensOnActiveLists}
                                     lastBlockNumber={lastBlockNumber}
                                     crocEnv={crocEnv}
                                     chainId={chainData.chainId}
+                                    isServerEnabled={isServerEnabled}
                                 />
                             }
                         />
@@ -2317,7 +2390,7 @@ export default function App() {
                                     setIsShowAllEnabled={setIsShowAllEnabled}
                                     expandTradeTable={expandTradeTable}
                                     setExpandTradeTable={setExpandTradeTable}
-                                    tokenMap={tokenMap}
+                                    tokenMap={tokensOnActiveLists}
                                     favePools={favePools}
                                     addPoolToFaves={addPoolToFaves}
                                     removePoolFromFaves={removePoolFromFaves}
@@ -2339,9 +2412,10 @@ export default function App() {
                                     poolExists={poolExists}
                                     setTokenPairLocal={setTokenPairLocal}
                                     showSidebar={showSidebar}
-                                    handleTxCopiedClick={handleTxCopiedClick}
-                                    handleOrderCopiedClick={handleOrderCopiedClick}
-                                    handleRangeCopiedClick={handleRangeCopiedClick}
+                                    handlePulseAnimation={handlePulseAnimation}
+                                    // handleTxCopiedClick={handleTxCopiedClick}
+                                    // handleOrderCopiedClick={handleOrderCopiedClick}
+                                    // handleRangeCopiedClick={handleRangeCopiedClick}
                                 />
                             }
                         >
@@ -2482,7 +2556,8 @@ export default function App() {
                                     connectedAccount={account ? account : ''}
                                     userImageData={imageData}
                                     chainId={chainData.chainId}
-                                    tokenMap={tokenMap}
+                                    ambientTokens={ambientTokens}
+                                    tokensOnActiveLists={tokensOnActiveLists}
                                     selectedOutsideTab={selectedOutsideTab}
                                     setSelectedOutsideTab={setSelectedOutsideTab}
                                     outsideControl={outsideControl}
@@ -2507,6 +2582,7 @@ export default function App() {
                                     setCurrentTxActiveInTransactions={
                                         setCurrentTxActiveInTransactions
                                     }
+                                    handlePulseAnimation={handlePulseAnimation}
                                 />
                             }
                         />
@@ -2525,7 +2601,7 @@ export default function App() {
                                     connectedAccount={account ? account : ''}
                                     chainId={chainData.chainId}
                                     userImageData={imageData}
-                                    tokenMap={tokenMap}
+                                    tokensOnActiveLists={tokensOnActiveLists}
                                     selectedOutsideTab={selectedOutsideTab}
                                     setSelectedOutsideTab={setSelectedOutsideTab}
                                     outsideControl={outsideControl}
@@ -2533,6 +2609,7 @@ export default function App() {
                                     userAccount={false}
                                     openGlobalModal={openGlobalModal}
                                     closeGlobalModal={closeGlobalModal}
+                                    ambientTokens={ambientTokens}
                                     importedTokens={importedTokens}
                                     setImportedTokens={setImportedTokens}
                                     chainData={chainData}
@@ -2550,6 +2627,7 @@ export default function App() {
                                     setCurrentTxActiveInTransactions={
                                         setCurrentTxActiveInTransactions
                                     }
+                                    handlePulseAnimation={handlePulseAnimation}
                                 />
                             }
                         />
@@ -2579,7 +2657,7 @@ export default function App() {
                                     connectedAccount={account ? account : ''}
                                     chainId={chainData.chainId}
                                     userImageData={imageData}
-                                    tokenMap={tokenMap}
+                                    tokensOnActiveLists={tokensOnActiveLists}
                                     selectedOutsideTab={selectedOutsideTab}
                                     setSelectedOutsideTab={setSelectedOutsideTab}
                                     outsideControl={outsideControl}
@@ -2587,6 +2665,7 @@ export default function App() {
                                     userAccount={false}
                                     openGlobalModal={openGlobalModal}
                                     closeGlobalModal={closeGlobalModal}
+                                    ambientTokens={ambientTokens}
                                     importedTokens={importedTokens}
                                     setImportedTokens={setImportedTokens}
                                     chainData={chainData}
@@ -2604,6 +2683,7 @@ export default function App() {
                                     setCurrentTxActiveInTransactions={
                                         setCurrentTxActiveInTransactions
                                     }
+                                    handlePulseAnimation={handlePulseAnimation}
                                 />
                             }
                         />

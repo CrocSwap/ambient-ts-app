@@ -25,6 +25,7 @@ import { useSortedLimits } from '../useSortedLimits';
 import { LimitOrderIF, TokenIF } from '../../../../utils/interfaces/exports';
 import { getLimitOrderData } from '../../../../App/functions/getLimitOrderData';
 import useDebounce from '../../../../App/hooks/useDebounce';
+import NoTableData from '../NoTableData/NoTableData';
 
 // import OrderAccordions from './OrderAccordions/OrderAccordions';
 
@@ -39,6 +40,7 @@ interface propsIF {
     account: string;
     graphData: graphData;
     isShowAllEnabled: boolean;
+    setIsShowAllEnabled?: Dispatch<SetStateAction<boolean>>;
     openGlobalModal: (content: React.ReactNode) => void;
     closeGlobalModal: () => void;
     currentPositionActive: string;
@@ -46,7 +48,7 @@ interface propsIF {
     isOnPortfolioPage: boolean;
 
     showSidebar: boolean;
-    handleOrderCopiedClick?: () => void;
+    handlePulseAnimation?: (type: string) => void;
 }
 
 // main react functional component
@@ -65,12 +67,21 @@ export default function Orders(props: propsIF) {
         currentPositionActive,
         showSidebar,
         isOnPortfolioPage,
-        handleOrderCopiedClick,
+        handlePulseAnimation,
+        setIsShowAllEnabled,
     } = props;
 
     const limitOrdersByUser = graphData.limitOrdersByUser.limitOrders;
     const limitOrdersByPool = graphData.limitOrdersByPool.limitOrders;
     const dataLoadingStatus = graphData?.dataLoadingStatus;
+
+    // allow a local environment variable to be defined in [app_repo]/.env.local to turn off connections to the cache server
+    const isServerEnabled =
+        process.env.REACT_APP_CACHE_SERVER_IS_ENABLED !== undefined
+            ? process.env.REACT_APP_CACHE_SERVER_IS_ENABLED === 'true'
+            : true;
+
+    // const poolSwapsCacheEndpoint = httpGraphCacheServerDomain + '/pool_recent_changes?';
 
     const tradeData = useAppSelector((state) => state.tradeData);
 
@@ -143,7 +154,7 @@ export default function Orders(props: propsIF) {
         isShowAllEnabled ? limitOrdersByPool : limitOrderData,
     );
     useEffect(() => {
-        if (isShowAllEnabled) {
+        if (isServerEnabled && isShowAllEnabled) {
             fetchPoolLimitOrderStates({
                 chainId: chainData.chainId,
                 base: tradeData.baseToken.address,
@@ -175,7 +186,7 @@ export default function Orders(props: propsIF) {
                 })
                 .catch(console.log);
         }
-    }, [isShowAllEnabled]);
+    }, [isServerEnabled, isShowAllEnabled]);
 
     const wssGraphCacheServerDomain = 'wss://809821320828123.de:5000';
 
@@ -239,7 +250,7 @@ export default function Orders(props: propsIF) {
             shouldReconnect: () => true,
         },
         // only connect if user is viewing pool changes
-        debouncedIsShowAllEnabled,
+        isServerEnabled && debouncedIsShowAllEnabled,
     );
 
     useEffect(() => {
@@ -460,14 +471,19 @@ export default function Orders(props: propsIF) {
             setCurrentPositionActive={setCurrentPositionActive}
             isShowAllEnabled={isShowAllEnabled}
             isOnPortfolioPage={isOnPortfolioPage}
-            handleOrderCopiedClick={handleOrderCopiedClick}
+            handlePulseAnimation={handlePulseAnimation}
         />
     ));
 
-    const noData = <div className={styles.no_data}>No Data to Display</div>;
-
-    const orderDataOrNull = limitOrderData.length ? rowItemContent : noData;
-
+    const orderDataOrNull = limitOrderData.length ? (
+        rowItemContent
+    ) : (
+        <NoTableData
+            isShowAllEnabled={isShowAllEnabled}
+            type='orders'
+            setIsShowAllEnabled={setIsShowAllEnabled}
+        />
+    );
     const expandStyle = expandTradeTable ? 'calc(100vh - 10rem)' : '250px';
 
     const portfolioPageStyle = props.isOnPortfolioPage ? 'calc(100vh - 19.5rem)' : expandStyle;

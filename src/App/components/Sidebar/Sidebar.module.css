@@ -3,7 +3,7 @@
 
 .sidebar {
     position: fixed;
-    background-color: var(--dark1);
+    background-color: transparent;
     transition: all var(--animation-speed) ease-in-out;
 
     overflow: scroll;
@@ -47,7 +47,7 @@
 .bottom_elements {
     margin-top: auto;
     width: 100%;
-    border-top: 1px solid var(--dark3);
+    border-top: 1px solid var(--border);
 }
 
 .sidebar_link {
@@ -55,11 +55,12 @@
   
     align-items: center;
     height: 28px;
-    border-bottom: 1px solid #171d27;
+    border-bottom: 1px solid var(--border);
     /* padding: 4px 0; */
     
     cursor: pointer;
 }
+
 
 
 
@@ -137,6 +138,19 @@
 
 .accordion_container {
     width: 100%;
+}
+
+.open_all_button{
+    cursor: pointer;
+    background: var(--dark2);
+    border: none;
+    outline: none;
+    color: var(--text-grey-white);
+
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    gap: 4px;
 }
 
 /* .logo {
