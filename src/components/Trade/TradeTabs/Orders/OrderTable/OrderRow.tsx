@@ -40,7 +40,7 @@ export default function OrderRow(props: OrderRowPropsIF) {
         tradeData,
         showColumns,
         ipadView,
-        view2,
+        // view2,
         limitOrder,
         showSidebar,
         openGlobalModal,
@@ -210,29 +210,28 @@ export default function OrderRow(props: OrderRowPropsIF) {
         <NoTokenIcon tokenInitial={limitOrder.quoteSymbol.charAt(0)} width='15px' />
     );
 
-    const tokensTogether = (
-        <div
-            style={{
-                display: 'flex',
-                flexDirection: 'row',
-                alignItems: 'center',
-                gap: '4px',
-            }}
-        >
-            {baseTokenLogoComponent}
-            {quoteTokenLogoComponent}
-        </div>
-    );
+    // const tokensTogether = (
+    //     <div
+    //         style={{
+    //             display: 'flex',
+    //             flexDirection: 'row',
+    //             alignItems: 'center',
+    //             gap: '4px',
+    //         }}
+    //     >
+    //         {baseTokenLogoComponent}
+    //         {quoteTokenLogoComponent}
+    //     </div>
+    // );
 
     // portfolio page li element ---------------
-    const accountTokenImages = (
-        <li className={styles.token_images_account}>
-            {/* {baseTokenLogoComponent}
-                {quoteTokenLogoComponent} */}
-            {tokensTogether}
-            {/* <p>hello</p> */}
-        </li>
-    );
+    // const accountTokenImages = (
+    //     <li className={styles.token_images_account}>
+
+    //         {tokensTogether}
+
+    //     </li>
+    // );
 
     const poolName = (
         <li className='base_color'>
@@ -277,7 +276,7 @@ export default function OrderRow(props: OrderRowPropsIF) {
                     }}
                 >
                     {baseDisplay}
-                    <img src={baseTokenLogo} width='15px' alt='' />
+                    {isOnPortfolioPage && <img src={baseTokenLogo} width='15px' alt='' />}
                 </p>
             </li>
         </DefaultTooltip>
@@ -303,7 +302,7 @@ export default function OrderRow(props: OrderRowPropsIF) {
                     }}
                 >
                     {quoteDisplay}
-                    <img src={quoteTokenLogo} width='15px' alt='' />
+                    {isOnPortfolioPage && <img src={quoteTokenLogo} width='15px' alt='' />}
                 </p>
             </li>
         </DefaultTooltip>

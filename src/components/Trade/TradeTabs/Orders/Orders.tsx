@@ -328,7 +328,7 @@ export default function Orders(props: propsIF) {
         //     sortable: false,
         // },
         {
-            name: 'Pool',
+            name: 'Pair',
             className: '',
             show: isOnPortfolioPage && !showSidebar,
             slug: 'pool',

@@ -372,7 +372,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                     }}
                 >
                     {baseDisplay}
-                    <img src={baseTokenLogo} width='15px' alt='' />
+                    {isOnPortfolioPage && <img src={baseTokenLogo} width='15px' alt='' />}
                 </p>
             </li>
         </DefaultTooltip>
@@ -398,7 +398,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                     }}
                 >
                     {quoteDisplay}
-                    <img src={quoteTokenLogo} width='15px' alt='' />
+                    {isOnPortfolioPage && <img src={quoteTokenLogo} width='15px' alt='' />}
                 </p>
             </li>
         </DefaultTooltip>
