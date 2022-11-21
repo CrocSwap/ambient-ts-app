@@ -22,8 +22,8 @@ export const useSoloSearch = (
             (cleanInput.length === 40 && !cleanInput.startsWith('0x'))
         ) {
             setSearchAs('address');
-            // if not an apparent token address search name and symbol
-        } else if (cleanInput.length >= 2) {
+        // if not an apparent token address search name and symbol
+        } else if (cleanInput.length >= 3) {
             setSearchAs('nameOrSymbol');
             return cleanInput;
             // otherwise treat as if there is no input entered
@@ -58,17 +58,16 @@ export const useSoloSearch = (
 
         const otherTokensOnChain = [...tokensOnActiveLists.values()].filter(
             (tkn: TokenIF) =>
-                tkn.chainId === parseInt(chainId) &&
-                !importedTokensOnChain.some((tk: TokenIF) => tk.address === tkn.address),
+                tkn.chainId === parseInt(chainId)
         );
 
         const searchByAddress = (searchString: string) => {
             const importedMatches = importedTokensOnChain.filter(
-                (tkn: TokenIF) => tkn.address === searchString,
+                (tkn: TokenIF) => tkn.address.toLowerCase() === searchString
             );
             setImportedTokensForDOM(importedMatches);
             const otherMatches = otherTokensOnChain.filter(
-                (tkn: TokenIF) => tkn.address === searchString,
+                (tkn: TokenIF) => tkn.address.toLowerCase() === searchString
             );
             setOtherTokensForDOM(otherMatches);
         };

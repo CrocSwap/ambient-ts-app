@@ -47,25 +47,21 @@ export const SoloTokenSelect = (props: propsIF) => {
         closeModal();
     };
 
-    const importedTokenButtons = (
-        <div className={styles.scrollable_container}>
-            {tokensForDOM
-                ? tokensForDOM.map((token: TokenIF) => (
-                      <TokenSelect
-                          key={JSON.stringify(token)}
-                          token={token}
-                          tokensBank={importedTokens}
-                          undeletableTokens={undeletableTokens}
-                          chainId={chainId}
-                          setImportedTokens={setImportedTokens}
-                          chooseToken={chooseToken}
-                          isOnPortfolio={true}
-                          fromListsText='Imported'
-                      />
-                  ))
-                : null}
-        </div>
-    );
+    const importedTokenButtons = tokensForDOM
+        ? tokensForDOM.map((token: TokenIF) => (
+            <TokenSelect
+                key={JSON.stringify(token)}
+                token={token}
+                tokensBank={importedTokens}
+                undeletableTokens={undeletableTokens}
+                chainId={chainId}
+                setImportedTokens={setImportedTokens}
+                chooseToken={chooseToken}
+                isOnPortfolio={true}
+                fromListsText='Imported'
+            />
+        ))
+        : null;
 
     const findDupes = (addr: string) => {
         const allTokenLists = JSON.parse(localStorage.getItem('allTokenLists') as string);
@@ -80,7 +76,7 @@ export const SoloTokenSelect = (props: propsIF) => {
         if (listNames.length > 2) {
             outputMessage = `from ${listNames[0]}, ${listNames[1]}, and ${
                 listNames.length - 2
-            } other lists`;
+            } more`;
         } else if (listNames.length === 2) {
             outputMessage = `from ${listNames[0]} and ${listNames[1]}`;
         } else if (listNames.length === 1) {
@@ -94,25 +90,21 @@ export const SoloTokenSelect = (props: propsIF) => {
         return outputMessage;
     };
 
-    const otherTokenButtons = (
-        <div className={styles.scrollable_container}>
-            {otherTokensForDOM
-                ? otherTokensForDOM.map((token: TokenIF) => (
-                      <TokenSelect
-                          key={JSON.stringify(token)}
-                          token={token}
-                          tokensBank={importedTokens}
-                          undeletableTokens={undeletableTokens}
-                          chainId={chainId}
-                          setImportedTokens={setImportedTokens}
-                          chooseToken={chooseToken}
-                          isOnPortfolio={true}
-                          fromListsText={findDupes(token.address)}
-                      />
-                  ))
-                : null}
-        </div>
-    );
+    const otherTokenButtons = otherTokensForDOM
+        ? otherTokensForDOM.map((token: TokenIF) => (
+            <TokenSelect
+                key={JSON.stringify(token)}
+                token={token}
+                tokensBank={importedTokens}
+                undeletableTokens={undeletableTokens}
+                chainId={chainId}
+                setImportedTokens={setImportedTokens}
+                chooseToken={chooseToken}
+                isOnPortfolio={true}
+                fromListsText={findDupes(token.address)}
+            />
+        ))
+        : null;
 
     return (
         <section className={styles.container}>
@@ -121,10 +113,23 @@ export const SoloTokenSelect = (props: propsIF) => {
                 placeholder='&#61442; Search name or enter an Address'
                 onChange={(e) => setInput(e.target.value)}
             />
-            {tokensForDOM?.length ? <h2>Imported Tokens</h2> : null}
-            {importedTokenButtons}
-            {searchType && otherTokensForDOM?.length ? <h2>More Available Tokens</h2> : null}
-            {otherTokenButtons}
+            {!searchType
+                ? importedTokenButtons
+                : null}
+            
+            {searchType && otherTokensForDOM?.length
+                ? (
+                    <>
+                        <h2>More Available Tokens</h2>
+                        <div className={styles.scrollable_container}>
+                        {otherTokenButtons}
+                        </div>
+                    </>
+                ) : null
+            }
+            {searchType && otherTokensForDOM?.length === 0
+                ? <h2>I could not find any!</h2>
+                : null}
         </section>
     );
 };
