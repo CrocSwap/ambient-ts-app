@@ -527,7 +527,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
 
     const favButton = (
         <button className={styles.favorite_button} onClick={handleFavButton}>
-            {isButtonFavorited ? <BsHeartFill color='#cdc1ff' size={30} /> : <BsHeart size={30} />}
+            {isButtonFavorited ? <BsHeartFill color='#cdc1ff' size={22} /> : <BsHeart size={22} />}
         </button>
     );
 
