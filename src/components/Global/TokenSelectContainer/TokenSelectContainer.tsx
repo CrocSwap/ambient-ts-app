@@ -11,6 +11,7 @@ import TokenList from '../../Global/TokenList/TokenList';
 import { useSearch } from './useSearch';
 import { importToken } from './importToken';
 import RecentToken from './RecentToken/RecentToken';
+import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 // import CustomTokens from '../TokenList/CustomTokens';
 
 interface TokenSelectContainerPropsIF {
@@ -47,6 +48,8 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
     } = props;
 
     const navigate = useNavigate();
+
+    const recentTokensInRTK = useAppSelector((state) => state.userData).recentTokens;
 
     const undeletableTokens = useMemo(
         () =>
@@ -174,8 +177,15 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
 
     const recentTokens = (
         <div className={styles.recent_tokens_container}>
-            {[1, 2, 3, 4, 5].map((token, idx) => (
-                <RecentToken key={idx} />
+            {recentTokensInRTK?.slice(0, 6).map((token, idx) => (
+                <RecentToken
+                    key={idx}
+                    token={token}
+                    clickHandler={() => {
+                        chooseToken(token);
+                        // importToken(token, tokensBank, setImportedTokens, () => chooseToken(token));
+                    }}
+                />
             ))}
         </div>
     );
