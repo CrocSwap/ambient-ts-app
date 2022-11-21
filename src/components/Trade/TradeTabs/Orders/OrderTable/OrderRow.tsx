@@ -4,7 +4,7 @@ import OpenOrderStatus from '../../../../Global/OpenOrderStatus/OpenOrderStatus'
 import OrdersMenu from '../../../../Global/Tabs/TableMenu/TableMenuComponents/OrdersMenu';
 import OrderDetails from '../../../../OrderDetails/OrderDetails';
 import { Dispatch, SetStateAction, useEffect } from 'react';
-import { CrocEnv } from '@crocswap-libs/sdk';
+import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
 import { DefaultTooltip } from '../../../../Global/StyledTooltip/StyledTooltip';
 import { NavLink } from 'react-router-dom';
 import NoTokenIcon from '../../../../Global/NoTokenIcon/NoTokenIcon';
@@ -15,6 +15,7 @@ import { setDataLoadingStatus } from '../../../../../utils/state/graphDataSlice'
 
 interface OrderRowPropsIF {
     crocEnv: CrocEnv | undefined;
+    chainData: ChainSpec;
     tradeData: tradeData;
     expandTradeTable: boolean;
     showColumns: boolean;
@@ -37,6 +38,7 @@ interface OrderRowPropsIF {
 export default function OrderRow(props: OrderRowPropsIF) {
     const {
         crocEnv,
+        chainData,
         tradeData,
         showColumns,
         ipadView,
@@ -406,6 +408,7 @@ export default function OrderRow(props: OrderRowPropsIF) {
             )}
             <li data-label='menu'>
                 <OrdersMenu
+                    chainData={chainData}
                     tradeData={tradeData}
                     limitOrder={limitOrder}
                     {...orderMenuProps}

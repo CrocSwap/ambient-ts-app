@@ -13,7 +13,7 @@ import { FiExternalLink } from 'react-icons/fi';
 import RemoveOrderModalHeader from './RemoveOrderModalHeader/RemoveOrderModalHeader';
 import RemoveOrderSettings from './RemoveOrderSettings/RemoveOrderSettings';
 import { formatAmountOld } from '../../utils/numbers';
-import { CrocEnv } from '@crocswap-libs/sdk';
+import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
 import { BigNumber } from 'ethers';
 import Toggle2 from '../Global/Toggle/Toggle2';
 import TooltipComponent from '../Global/TooltipComponent/TooltipComponent';
@@ -30,12 +30,13 @@ import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 
 interface IOrderRemovalProps {
     crocEnv: CrocEnv | undefined;
+    chainData: ChainSpec;
     limitOrder: LimitOrderIF;
     closeGlobalModal: () => void;
 }
 
 export default function OrderRemoval(props: IOrderRemovalProps) {
-    const { crocEnv, limitOrder, closeGlobalModal } = props;
+    const { chainData, crocEnv, limitOrder, closeGlobalModal } = props;
     const {
         posLiqBaseDecimalCorrected,
         posLiqQuoteDecimalCorrected,
@@ -242,7 +243,7 @@ export default function OrderRemoval(props: IOrderRemovalProps) {
         </div>
     );
 
-    const etherscanLink = 'chainData.blockExplorer' + 'tx/' + newRemovalTransactionHash;
+    const etherscanLink = chainData.blockExplorer + 'tx/' + newRemovalTransactionHash;
 
     const removalSuccess = (
         <div className={styles.removal_pending}>
