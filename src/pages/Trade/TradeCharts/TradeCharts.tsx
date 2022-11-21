@@ -666,12 +666,16 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
     const [currentData, setCurrentData] = useState<CandleChartData>();
 
     function formattedCurrentData(data: number): string {
-        return data
-            ? data.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 5,
-              })
-            : '';
+        if (data > 2) {
+            return data
+                ? data.toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                  })
+                : '';
+        } else {
+            return data ? data.toPrecision(3) : '';
+        }
     }
 
     const currentDataInfo = (
