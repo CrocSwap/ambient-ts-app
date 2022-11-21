@@ -2247,6 +2247,7 @@ export default function App() {
 
         analyticsSearchInput: analyticsSearchInput,
         setAnalyticsSearchInput: setAnalyticsSearchInput,
+        openModalWallet: openModalWallet,
     };
 
     const analyticsProps = {
