@@ -10,6 +10,7 @@ export interface userData {
     ensOrAddressTruncated: string | undefined;
     isUserIdle: boolean;
     tokens: tokenData;
+    recentTokens: TokenIF[] | undefined;
 }
 
 export interface tokenData {
@@ -29,6 +30,7 @@ const initialState: userData = {
         nativeToken: undefined,
         erc20Tokens: undefined,
     },
+    recentTokens: undefined,
 };
 
 export const userDataSlice = createSlice({
@@ -62,8 +64,12 @@ export const userDataSlice = createSlice({
         setErc20Tokens: (state, action: PayloadAction<TokenIF[]>) => {
             state.tokens.erc20Tokens = action.payload;
         },
+        setRecentTokens: (state, action: PayloadAction<TokenIF[]>) => {
+            state.recentTokens = action.payload;
+        },
         resetTokenData: (state) => {
             state.tokens = initialState.tokens;
+            state.recentTokens = initialState.recentTokens;
         },
         resetUserAddresses: (state) => {
             state.addressAtLogin = initialState.addressAtLogin;
@@ -86,6 +92,7 @@ export const {
     setIsUserIdle,
     setNativeToken,
     setErc20Tokens,
+    setRecentTokens,
     //  addNativeBalance,
     resetTokenData,
     resetUserAddresses,
