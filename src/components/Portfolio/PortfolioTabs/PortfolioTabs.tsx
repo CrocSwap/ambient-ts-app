@@ -62,7 +62,7 @@ interface PortfolioTabsPropsIF {
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
     account: string;
     showSidebar: boolean;
-    isUserLoggedIn: boolean;
+    isUserLoggedIn: boolean | undefined;
     isAuthenticated: boolean;
     baseTokenBalance: string;
     quoteTokenBalance: string;
@@ -71,6 +71,7 @@ interface PortfolioTabsPropsIF {
 
     currentTxActiveInTransactions: string;
     setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
+    handlePulseAnimation: (type: string) => void;
 
     fullLayoutToggle: JSX.Element;
 }
@@ -101,7 +102,7 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
         baseTokenDexBalance,
         quoteTokenDexBalance,
         // fullLayoutToggle,
-
+        handlePulseAnimation,
         account,
     } = props;
 
@@ -364,6 +365,7 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
         quoteTokenBalance: quoteTokenBalance,
         baseTokenDexBalance: baseTokenDexBalance,
         quoteTokenDexBalance: quoteTokenDexBalance,
+        handlePulseAnimation: handlePulseAnimation,
     };
 
     // props for <Transactions/> React Element
@@ -386,6 +388,7 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
         closeGlobalModal: props.closeGlobalModal,
         openGlobalModal: props.openGlobalModal,
         showSidebar: props.showSidebar,
+        handlePulseAnimation: handlePulseAnimation,
         isOnPortfolioPage: true,
     };
 
@@ -406,6 +409,7 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
         setCurrentPositionActive: props.setCurrentPositionActive,
         showSidebar: props.showSidebar,
         isOnPortfolioPage: true,
+        handlePulseAnimation: handlePulseAnimation,
     };
 
     const tokensProps = {

@@ -10,7 +10,7 @@
     font-size: var(--header1-size);
     line-height: var(--header1-lh);
 
-    color: #c4c4c4;
+    color: var(--text-grey-light);
     border-top-left-radius: 24px;
     border-top-right-radius: 24px;
 

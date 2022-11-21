@@ -24,7 +24,7 @@ import { DefaultTooltip } from '../../../components/Global/StyledTooltip/StyledT
 
 // START: Import Local Files
 import styles from './TradeCharts.module.css';
-import { BsSuitHeart, BsSuitHeartFill } from 'react-icons/bs';
+import { BsHeart, BsHeartFill } from 'react-icons/bs';
 import printDomToImage from '../../../utils/functions/printDomToImage';
 import getUnicodeCharacter from '../../../utils/functions/getUnicodeCharacter';
 import {
@@ -41,11 +41,14 @@ import {
 import { useAppSelector, useAppDispatch } from '../../../utils/hooks/reduxToolkit';
 import TradeCandleStickChart from './TradeCandleStickChart';
 import { PoolIF, TokenIF } from '../../../utils/interfaces/exports';
-import { get24hChange, getPoolTVL } from '../../../App/functions/getPoolStats';
+import {
+    get24hChange,
+    // getPoolTVL
+} from '../../../App/functions/getPoolStats';
 import TradeChartsLoading from './TradeChartsLoading/TradeChartsLoading';
 import NoTokenIcon from '../../../components/Global/NoTokenIcon/NoTokenIcon';
 import { ChainSpec, CrocPoolView } from '@crocswap-libs/sdk';
-import { formatAmountOld } from '../../../utils/numbers';
+// import { formatAmountOld } from '../../../utils/numbers';
 
 // interface for React functional component props
 interface TradeChartsPropsIF {
@@ -135,7 +138,7 @@ export interface LiqSnap {
 export default function TradeCharts(props: TradeChartsPropsIF) {
     const {
         pool,
-        liquidityData,
+        // liquidityData,
         chainData,
         isTokenABase,
         poolPriceDisplay,
@@ -257,8 +260,8 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
     const [poolPriceChangePercent, setPoolPriceChangePercent] = useState<string | undefined>();
     const [isPoolPriceChangePositive, setIsPoolPriceChangePositive] = useState<boolean>(true);
 
-    const [poolTvl, setPoolTvl] = useState<string | undefined>();
-    const [tvlAtTick, setTvlAtTick] = useState<string | undefined>();
+    // const [poolTvl, setPoolTvl] = useState<string | undefined>();
+    // const [tvlAtTick, setTvlAtTick] = useState<string | undefined>();
 
     const baseTokenAddress = isTokenABase ? tokenAAddress : tokenBAddress;
     const quoteTokenAddress = isTokenABase ? tokenBAddress : tokenAAddress;
@@ -305,46 +308,46 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
         })();
     }, [isServerEnabled, denomInBase, baseTokenAddress, quoteTokenAddress, lastBlockNumber]);
 
-    useEffect(() => {
-        (async () => {
-            if (isServerEnabled && tokenAAddress && tokenBAddress) {
-                try {
-                    const poolTvlResult = await getPoolTVL(
-                        baseTokenAddress,
-                        quoteTokenAddress,
-                        poolIndex,
-                        chainId,
-                    );
+    // useEffect(() => {
+    //     (async () => {
+    //         if (isServerEnabled && tokenAAddress && tokenBAddress) {
+    //             try {
+    //                 const poolTvlResult = await getPoolTVL(
+    //                     baseTokenAddress,
+    //                     quoteTokenAddress,
+    //                     poolIndex,
+    //                     chainId,
+    //                 );
 
-                    if (poolTvlResult) {
-                        const tvlString = poolTvlResult
-                            ? '$' + formatAmountOld(poolTvlResult)
-                            : undefined;
+    //                 if (poolTvlResult) {
+    //                     const tvlString = poolTvlResult
+    //                         ? '$' + formatAmountOld(poolTvlResult)
+    //                         : undefined;
 
-                        setPoolTvl(tvlString);
-                    } else {
-                        setPoolTvl(undefined);
-                    }
-                } catch (error) {
-                    setPoolTvl(undefined);
-                }
-            }
-        })();
-    }, [isServerEnabled, baseTokenAddress, quoteTokenAddress, Math.floor(lastBlockNumber / 4)]);
+    //                     setPoolTvl(tvlString);
+    //                 } else {
+    //                     setPoolTvl(undefined);
+    //                 }
+    //             } catch (error) {
+    //                 setPoolTvl(undefined);
+    //             }
+    //         }
+    //     })();
+    // }, [isServerEnabled, baseTokenAddress, quoteTokenAddress, Math.floor(lastBlockNumber / 4)]);
 
-    useEffect(() => {
-        if (liquidityData) {
-            const currentTick = liquidityData?.currentTick;
-            const currentRangeData = liquidityData.ranges.filter(
-                (range) => range.lowerBound === currentTick,
-            );
-            const currentTickAverageUSD = currentRangeData[0]?.deltaAverageUSD;
-            const currentTickAverageUSDString = currentTickAverageUSD
-                ? '$' + formatAmountOld(currentTickAverageUSD)
-                : undefined;
-            setTvlAtTick(currentTickAverageUSDString);
-        }
-    }, [liquidityData?.currentTick]);
+    // useEffect(() => {
+    //     if (liquidityData) {
+    //         const currentTick = liquidityData?.currentTick;
+    //         const currentRangeData = liquidityData.ranges.filter(
+    //             (range) => range.lowerBound === currentTick,
+    //         );
+    //         const currentTickAverageUSD = currentRangeData[0]?.deltaAverageUSD;
+    //         const currentTickAverageUSDString = currentTickAverageUSD
+    //             ? '$' + formatAmountOld(currentTickAverageUSD)
+    //             : undefined;
+    //         setTvlAtTick(currentTickAverageUSDString);
+    //     }
+    // }, [liquidityData?.currentTick]);
 
     // ---------------------------ACTIVE OVERLAY BUTTON FUNCTIONALITY-------------------------------
 
@@ -524,11 +527,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
 
     const favButton = (
         <button className={styles.favorite_button} onClick={handleFavButton}>
-            {isButtonFavorited ? (
-                <BsSuitHeartFill color='#cdc1ff' size={30} />
-            ) : (
-                <BsSuitHeart size={30} />
-            )}
+            {isButtonFavorited ? <BsHeartFill color='#cdc1ff' size={30} /> : <BsHeart size={30} />}
         </button>
     );
 
@@ -556,17 +555,31 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
     );
 
     const poolPriceChange = (
-        <span
-            className={isPoolPriceChangePositive ? styles.change_positive : styles.change_negative}
+        <DefaultTooltip
+            title={'24 hour price change'}
+            interactive
+            placement={'right'}
+            arrow
+            enterDelay={400}
+            leaveDelay={200}
         >
-            {poolPriceChangePercent === undefined ? '…' : poolPriceChangePercent + ' | 24h'}
-        </span>
+            <span
+                className={
+                    isPoolPriceChangePositive ? styles.change_positive : styles.change_negative
+                }
+            >
+                {poolPriceChangePercent === undefined ? '…' : poolPriceChangePercent}
+                {/* {poolPriceChangePercent === undefined ? '…' : poolPriceChangePercent + ' | 24h'} */}
+            </span>
+        </DefaultTooltip>
     );
 
-    const tvlDisplay = <p className={styles.tvl_display}>Total Liquidity: {poolTvl || '...'}</p>;
-    const tvlTickDisplay = (
-        <p className={styles.tvl_display}>Liquidity at Tick: {tvlAtTick || '...'}</p>
-    );
+    const tvlDisplay = <p className={styles.tvl_display}></p>;
+    // const tvlDisplay = <p className={styles.tvl_display}>Total Liquidity: {poolTvl || '...'}</p>;
+    // const tvlTickDisplay = <p className={styles.tvl_display}></p>;
+    // const tvlTickDisplay = (
+    //     <p className={styles.tvl_display}>Liquidity at Tick: {tvlAtTick || '...'}</p>
+    // );
 
     // ------------  END OF MIDDLE TOP HEADER OF TRADE CHARTS
 
@@ -601,16 +614,19 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
             <div
                 style={{
                     display: 'flex',
+                    justifyContent: 'center',
                     alignItems: 'center',
+
                     gap: '8px',
                 }}
             >
                 {currentAmountDisplay}
                 {poolPriceChange}
+                <div>{tvlDisplay}</div>
             </div>
-            {tvlDisplay}
-            {tvlTickDisplay}
+            <div>{graphSettingsContent}</div>
 
+            {/* {tvlTickDisplay} */}
             {/* <div className={styles.chart_overlay_container}>{chartOverlayButtons1}</div>
             <div className={styles.chart_overlay_container}>{chartOverlayButtons2}</div> */}
         </div>
@@ -621,8 +637,26 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
     const timeFrameContent = (
         <div className={styles.time_frame_container}>
             <div className={styles.chart_overlay_container}>{activeTimeFrameDisplay}</div>
-            <div className={styles.chart_overlay_container}>{chartOverlayButtons1}</div>
-            <div className={styles.chart_overlay_container}>{chartOverlayButtons2}</div>
+            <div
+                style={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                }}
+                className={styles.chart_overlay_container}
+            >
+                {chartOverlayButtons1}
+            </div>
+            <div
+                style={{
+                    display: 'flex',
+                    justifyContent: 'end',
+                    alignItems: 'end',
+                }}
+                className={styles.chart_overlay_container}
+            >
+                {chartOverlayButtons2}
+            </div>
         </div>
     );
 
@@ -635,16 +669,16 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
         return data
             ? data.toLocaleString(undefined, {
                   minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
+                  maximumFractionDigits: 5,
               })
             : '';
     }
 
     const currentDataInfo = (
         <div className={styles.current_data_info}>
-            {denomInBase ? tradeData.baseToken.symbol : tradeData.quoteToken.symbol} /{' '}
+            {/* {denomInBase ? tradeData.baseToken.symbol : tradeData.quoteToken.symbol} /{' '}
             {denomInBase ? tradeData.quoteToken.symbol : tradeData.baseToken.symbol}·{' '}
-            {activeTimeFrame} ·{' '}
+            {activeTimeFrame} ·{' '} */}
             {currentData
                 ? 'O: ' +
                   formattedCurrentData(currentData.open) +
@@ -719,7 +753,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
     return (
         <>
             <div className={`${styles.graph_style} ${expandGraphStyle}`}>
-                {graphSettingsContent}
+                {/* {graphSettingsContent} */}
                 {tokenInfo}
                 {timeFrameContent}
                 {currentDataInfo}

@@ -40,7 +40,7 @@ import { FiCopy } from 'react-icons/fi';
 
 interface SwapPropsIF {
     crocEnv: CrocEnv | undefined;
-    isUserLoggedIn: boolean;
+    isUserLoggedIn: boolean | undefined;
     account: string | null;
     importedTokens: Array<TokenIF>;
     setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
@@ -67,12 +67,12 @@ interface SwapPropsIF {
     indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
     openModalWallet: () => void;
     isInitialized: boolean;
-    poolExists: boolean | null;
+    poolExists: boolean | undefined;
     setTokenPairLocal?: Dispatch<SetStateAction<string[] | null>>;
 
     openGlobalModal: (content: React.ReactNode) => void;
 
-    isTxCopied?: boolean;
+    isSwapCopied?: boolean;
 }
 
 export default function Swap(props: SwapPropsIF) {
@@ -105,7 +105,7 @@ export default function Swap(props: SwapPropsIF) {
         isInitialized,
         poolExists,
         setTokenPairLocal,
-        isTxCopied,
+        isSwapCopied,
     } = props;
 
     const [isModalOpen, openModal, closeModal] = useModal();
@@ -216,16 +216,6 @@ export default function Swap(props: SwapPropsIF) {
         setTxErrorCode(0);
         setTxErrorMessage('');
     };
-
-    // useEffect(() =>
-    //     if (poolExists === null) {
-    //         setSwapAllowed(false);
-    //         setSwapButtonErrorMessage('...');
-    //     } else if (poolExists === false) {
-    //         setSwapAllowed(false);
-    //         setSwapButtonErrorMessage('Pool Not Initialized');
-    //     }
-    // }, [poolExists]);
 
     const [priceImpactExceedsTolerance, setPriceImpactExceedsTolerance] = useState(false);
 
@@ -438,15 +428,6 @@ export default function Swap(props: SwapPropsIF) {
 
     const swapPageStyle = pathname.startsWith('/swap') ? styles.swap_page : null;
 
-    const [connectButtonDelayElapsed, setConnectButtonDelayElapsed] = useState(false);
-
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            setConnectButtonDelayElapsed(true);
-        }, 3000);
-        return () => clearTimeout(timer);
-    }, []);
-
     // -------------------------Swap SHARE FUNCTIONALITY---------------------------
     const [shareOptions, setShareOptions] = useState([
         { slug: 'first', name: 'Include Swap 1', checked: false },
@@ -501,6 +482,9 @@ export default function Swap(props: SwapPropsIF) {
         </div>
     ) : null;
 
+    // console.log({ isUserLoggedIn });
+    // console.log({ swapAllowed });
+
     return (
         <main data-testid={'swap'} className={swapPageStyle}>
             <div className={`${swapContainerStyle}`}>
@@ -552,7 +536,7 @@ export default function Swap(props: SwapPropsIF) {
                             activeTokenListsChanged={activeTokenListsChanged}
                             indicateActiveTokenListsChanged={indicateActiveTokenListsChanged}
                             gasPriceInGwei={gasPriceInGwei}
-                            isTxCopied={isTxCopied}
+                            isSwapCopied={isSwapCopied}
                         />
                     </motion.div>
                     {denominationSwitchOrNull}
@@ -570,7 +554,7 @@ export default function Swap(props: SwapPropsIF) {
                         isDenomBase={tradeData.isDenomBase}
                         isOnTradeRoute={isOnTradeRoute}
                     />
-                    {isUserLoggedIn || !connectButtonDelayElapsed ? (
+                    {isUserLoggedIn === undefined ? null : isUserLoggedIn === true ? (
                         poolExists &&
                         !isTokenAAllowanceSufficient &&
                         parseFloat(tokenAInputQty) > 0 &&

@@ -1,3 +1,5 @@
+
+ 
  .main_content{
 
     background: url(../../../assets/images/backgrounds/background.png) no-repeat ;
@@ -9,7 +11,9 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
-    align-items: center;
+    border-radius: 4px;
+    padding: 0 3rem;
+    /* align-items: center; */
 }
 .control_display_container{
     display: flex;

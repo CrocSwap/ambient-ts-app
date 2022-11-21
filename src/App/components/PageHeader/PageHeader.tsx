@@ -24,12 +24,12 @@ import NotificationCenter from '../../../components/Global/NotificationCenter/No
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 
 interface HeaderPropsIF {
-    isUserLoggedIn: boolean;
+    isUserLoggedIn: boolean | undefined;
     // nativeBalance: string | undefined;
     clickLogout: () => void;
     metamaskLocked: boolean;
     ensName: string;
-    shouldDisplayAccountTab: boolean;
+    shouldDisplayAccountTab: boolean | undefined;
     chainId: string;
     isChainSupported: boolean;
     switchChain: Dispatch<SetStateAction<string>>;
@@ -47,6 +47,8 @@ interface HeaderPropsIF {
     isAppOverlayActive: boolean;
 
     setIsAppOverlayActive: Dispatch<SetStateAction<boolean>>;
+    switchTheme: () => void;
+    theme: string;
 }
 
 export default function PageHeader(props: HeaderPropsIF) {
@@ -67,6 +69,8 @@ export default function PageHeader(props: HeaderPropsIF) {
         setIsMobileSidebarOpen,
         isAppOverlayActive,
         setIsAppOverlayActive,
+        switchTheme,
+        theme,
     } = props;
 
     const {
@@ -156,6 +160,9 @@ export default function PageHeader(props: HeaderPropsIF) {
         chainId: chainId,
         isAppOverlayActive: isAppOverlayActive,
         setIsAppOverlayActive: setIsAppOverlayActive,
+
+        switchTheme: switchTheme,
+        theme: theme,
     };
 
     // End of Page Header Functions

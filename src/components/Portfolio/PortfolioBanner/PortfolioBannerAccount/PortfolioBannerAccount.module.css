@@ -71,5 +71,5 @@
 
     /* text/grey light */
 
-    color: #bdbdbd;
+    color: var(--text-grey-light);
 }

@@ -47,7 +47,7 @@ import { memoizeQuerySpotPrice } from '../../../App/functions/querySpotPrice';
 interface LimitPropsIF {
     pool: CrocPoolView | undefined;
     crocEnv: CrocEnv | undefined;
-    isUserLoggedIn: boolean;
+    isUserLoggedIn: boolean | undefined;
     importedTokens: Array<TokenIF>;
     searchableTokens: Array<TokenIF>;
     mintSlippage: SlippagePairIF;
@@ -75,7 +75,7 @@ interface LimitPropsIF {
     openModalWallet: () => void;
     openGlobalModal: (content: React.ReactNode) => void;
     closeGlobalModal: () => void;
-    poolExists: boolean | null;
+    poolExists: boolean | undefined;
     chainData: ChainSpec;
 
     isOrderCopied: boolean;
@@ -117,7 +117,7 @@ export default function Limit(props: LimitPropsIF) {
 
     const { tradeData, navigationMenu } = useTradeData();
     const dispatch = useAppDispatch();
-    const { account, isWeb3Enabled, isAuthenticated } = useMoralis();
+    const { account } = useMoralis();
     const [isModalOpen, openModal, closeModal] = useModal();
     const [limitAllowed, setLimitAllowed] = useState<boolean>(false);
 
@@ -498,7 +498,7 @@ export default function Limit(props: LimitPropsIF) {
     ) : null;
 
     const isTokenAAllowanceSufficient = parseFloat(tokenAAllowance) >= parseFloat(tokenAInputQty);
-    const loginButton = <Button title='Login' action={openModalWallet} />;
+    const loginButton = <Button title='Connect Wallet' action={openModalWallet} />;
     const [isApprovalPending, setIsApprovalPending] = useState(false);
 
     const approve = async (tokenAddress: string) => {
@@ -566,6 +566,7 @@ export default function Limit(props: LimitPropsIF) {
             action={async () => {
                 await approve(tokenPair.dataTokenA.address);
             }}
+            flat={true}
         />
     );
 
@@ -672,6 +673,7 @@ export default function Limit(props: LimitPropsIF) {
                     <DenominationSwitch />
                 </div>
                 <LimitExtraInfo
+                    isQtyEntered={tokenAInputQty !== '' || tokenBInputQty !== ''}
                     tokenPair={tokenPair}
                     orderGasPriceInDollars={orderGasPriceInDollars}
                     poolPriceDisplay={poolPriceDisplay || 0}
@@ -686,7 +688,7 @@ export default function Limit(props: LimitPropsIF) {
                     middleDisplayPrice={middleDisplayPrice}
                     endDisplayPrice={endDisplayPrice}
                 />
-                {isAuthenticated && isWeb3Enabled ? (
+                {isUserLoggedIn === undefined ? null : isUserLoggedIn === true ? (
                     !isTokenAAllowanceSufficient && parseFloat(tokenAInputQty) > 0 ? (
                         approvalButton
                     ) : (

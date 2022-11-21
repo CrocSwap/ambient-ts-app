@@ -26,6 +26,7 @@ interface LimitExtraInfoPropsIF {
     startDisplayPrice: number;
     middleDisplayPrice: number;
     endDisplayPrice: number;
+    isQtyEntered: boolean;
 }
 
 // central react functional component
@@ -44,6 +45,7 @@ export default function LimitExtraInfo(props: LimitExtraInfoPropsIF) {
         startDisplayPrice,
         middleDisplayPrice,
         endDisplayPrice,
+        isQtyEntered,
     } = props;
     const [showExtraDetails, setShowExtraDetails] = useState<boolean>(false);
 
@@ -243,23 +245,25 @@ export default function LimitExtraInfo(props: LimitExtraInfoPropsIF) {
     //     poolPriceDisplay,
     //     didUserFlipDenom,
     // );
-
+    const extraInfoSectionOrNull = isQtyEntered ? (
+        <div
+            className={styles.extra_info_content}
+            onClick={() => setShowExtraDetails(!showExtraDetails)}
+        >
+            <div className={styles.gas_pump}>
+                <FaGasPump size={15} /> {orderGasPriceInDollars ? orderGasPriceInDollars : '…'}
+            </div>
+            <div className={styles.token_amount}>
+                {isDenomBase
+                    ? `1 ${baseTokenSymbol} ≈ ${displayPriceString} ${quoteTokenSymbol}`
+                    : `1 ${quoteTokenSymbol} ≈ ${displayPriceString} ${baseTokenSymbol}`}
+                <RiArrowDownSLine size={27} />{' '}
+            </div>
+        </div>
+    ) : null;
     return (
         <>
-            <div
-                className={styles.extra_info_content}
-                onClick={() => setShowExtraDetails(!showExtraDetails)}
-            >
-                <div className={styles.gas_pump}>
-                    <FaGasPump size={15} /> {orderGasPriceInDollars ? orderGasPriceInDollars : '…'}
-                </div>
-                <div className={styles.token_amount}>
-                    {isDenomBase
-                        ? `1 ${baseTokenSymbol} ≈ ${displayPriceString} ${quoteTokenSymbol}`
-                        : `1 ${quoteTokenSymbol} ≈ ${displayPriceString} ${baseTokenSymbol}`}
-                    <RiArrowDownSLine size={27} />{' '}
-                </div>
-            </div>
+            {extraInfoSectionOrNull}
             {extraDetailsOrNull}
         </>
     );

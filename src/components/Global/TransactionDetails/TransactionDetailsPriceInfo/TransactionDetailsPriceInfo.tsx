@@ -9,6 +9,8 @@ import { AiOutlineDash } from 'react-icons/ai';
 import NoTokenIcon from '../../NoTokenIcon/NoTokenIcon';
 import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
 import { useMemo } from 'react';
+import { DefaultTooltip } from '../../StyledTooltip/StyledTooltip';
+// import TooltipComponent from '../../TooltipComponent/TooltipComponent';
 
 type ItemIF = {
     slug: string;
@@ -131,7 +133,7 @@ export default function TransactionDetailsPriceInfo(props: ITransactionDetailsPr
     // }).format(tx.time);
 
     const fillTime = new Intl.DateTimeFormat('en-US', {
-        hour: '2-digit',
+        hour: 'numeric',
         minute: '2-digit',
         second: '2-digit',
     }).format(tx.time * 1000);
@@ -151,13 +153,33 @@ export default function TransactionDetailsPriceInfo(props: ITransactionDetailsPr
             className={styles.info_container}
         >
             <Row>
-                <span>Fill Time: </span>
-                <div className={styles.info_text}>{fillTime}</div>
+                <DefaultTooltip
+                    interactive
+                    title={'Block: ' + tx.block}
+                    placement={'right'}
+                    arrow
+                    enterDelay={750}
+                    leaveDelay={200}
+                >
+                    <div className={styles.info_text}>{fillDate}</div>
+                </DefaultTooltip>
+                <DefaultTooltip
+                    interactive
+                    title={'Block: ' + tx.block}
+                    placement={'right'}
+                    arrow
+                    enterDelay={750}
+                    leaveDelay={200}
+                >
+                    <div className={styles.info_text}>{fillTime}</div>
+                </DefaultTooltip>
+
+                {/* <span>Date: </span> */}
             </Row>
-            <Row>
-                <span> </span>
-                <div className={styles.info_text}>{fillDate}</div>
-            </Row>
+
+            {/* <Row> */}
+            {/* <span>Time: </span> */}
+            {/* </Row> */}
         </motion.div>
     );
 
@@ -278,8 +300,8 @@ export default function TransactionDetailsPriceInfo(props: ITransactionDetailsPr
             <div className={styles.price_info_container}>
                 {tokenPairDetails}
                 {txTypeContent}
-                {controlItems[2] && totalValueContent}
                 {fillTimeContent}
+                {controlItems[2] && totalValueContent}
                 {isBuy ? isBuyTransactionDetails : isSellTransactionDetails}
                 {PriceDisplay}
             </div>

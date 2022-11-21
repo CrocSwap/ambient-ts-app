@@ -28,7 +28,7 @@
     padding: 5px 8px;
     text-decoration: none;
 
-    background: #0d1117;
+    background: var(--dark3);
     border: 1px solid #242f3f;
     box-shadow: 2px 1000px 1px var(--dark3) inset;
     transition: box-shadow var(--animation-speed) ease-in-out;
@@ -131,7 +131,7 @@
   /* width: 100%; */
   /* height: 400px; */
   position: absolute;
-  background: #171d27;
+  background: var(--dark3);
 
 
   border-radius: 4px;
@@ -149,7 +149,7 @@
     left: 98%;
     top:0;
     border: 10px solid transparent;
-    border-left: 10px solid #171d27;
+    border-left: 10px solid var(--dark3);
 }
 
 .dropdown_wrapper {

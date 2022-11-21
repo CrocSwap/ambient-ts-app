@@ -22,7 +22,7 @@ interface SidebarRecentTransactionsPropsIF {
     setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
     outsideControl: boolean;
     setOutsideControl: Dispatch<SetStateAction<boolean>>;
-    isUserLoggedIn: boolean;
+    isUserLoggedIn: boolean | undefined;
 }
 
 export default function SidebarRecentTransactions(props: SidebarRecentTransactionsPropsIF) {
