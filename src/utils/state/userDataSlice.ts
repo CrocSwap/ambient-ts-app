@@ -2,7 +2,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { TokenIF } from '../interfaces/TokenIF';
 
 export interface userData {
-    isLoggedIn: boolean;
+    isLoggedIn: boolean | undefined;
     addressAtLogin: string | undefined;
     addressCurrent: string | undefined;
     ensNameAtLogin: string | undefined;
@@ -18,7 +18,7 @@ export interface tokenData {
 }
 
 const initialState: userData = {
-    isLoggedIn: false,
+    isLoggedIn: undefined,
     addressAtLogin: undefined,
     addressCurrent: undefined,
     ensNameAtLogin: undefined,

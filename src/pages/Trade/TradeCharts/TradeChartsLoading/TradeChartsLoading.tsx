@@ -1,4 +1,4 @@
-import candleStickImage from '../../../../assets/images/charts/candlestick2.png';
+import candleStickImage from '../../../../assets/images/charts/candlestick.png';
 import Shimmer from '../../../../components/Global/Skeletons/Shimmer';
 import styles from './TradeChartsLoading.module.css';
 export default function TradeChartsLoading() {

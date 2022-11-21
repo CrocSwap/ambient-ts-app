@@ -27,7 +27,7 @@ import Leaderboard from './Ranges/Leaderboard';
 import PoolInfo from './PoolInfo/PoolInfo';
 
 interface ITabsProps {
-    isUserLoggedIn: boolean;
+    isUserLoggedIn: boolean | undefined;
     isTokenABase: boolean;
     crocEnv: CrocEnv | undefined;
     provider: ethers.providers.Provider | undefined;
@@ -64,9 +64,10 @@ interface ITabsProps {
     closeGlobalModal: () => void;
     importedTokens: TokenIF[];
     showSidebar: boolean;
-    handleTxCopiedClick: () => void;
-    handleOrderCopiedClick: () => void;
-    handleRangeCopiedClick: () => void;
+    handlePulseAnimation: (type: string) => void;
+    // handleTxCopiedClick: () => void;
+    // handleOrderCopiedClick: () => void;
+    // handleRangeCopiedClick: () => void;
 }
 
 // const httpGraphCacheServerDomain = 'https://809821320828123.de:5000';
@@ -106,13 +107,20 @@ export default function TradeTabs2(props: ITabsProps) {
         setOutsideControl,
         importedTokens,
         showSidebar,
-        handleTxCopiedClick,
-        handleOrderCopiedClick,
-        handleRangeCopiedClick,
+        handlePulseAnimation,
+        // handleTxCopiedClick,
+        // handleOrderCopiedClick,
+        // handleRangeCopiedClick,
     } = props;
 
     const graphData = useAppSelector((state) => state?.graphData);
     const tradeData = useAppSelector((state) => state?.tradeData);
+
+    // allow a local environment variable to be defined in [app_repo]/.env.local to turn off connections to the cache server
+    const isServerEnabled =
+        process.env.REACT_APP_CACHE_SERVER_IS_ENABLED !== undefined
+            ? process.env.REACT_APP_CACHE_SERVER_IS_ENABLED === 'true'
+            : true;
 
     const activeChartPeriod = tradeData.activeChartPeriod;
     // const userData = useAppSelector((state) => state?.userData);
@@ -242,7 +250,7 @@ export default function TradeTabs2(props: ITabsProps) {
     const dispatch = useAppDispatch();
 
     useEffect(() => {
-        if (!isShowAllEnabled) {
+        if (isServerEnabled && !isShowAllEnabled) {
             try {
                 fetchUserRecentChanges({
                     importedTokens: importedTokens,
@@ -270,15 +278,13 @@ export default function TradeTabs2(props: ITabsProps) {
                 console.log;
             }
         }
-    }, [isShowAllEnabled]);
+    }, [isServerEnabled, isShowAllEnabled]);
 
     const [changesInSelectedCandle, setChangesInSelectedCandle] = useState<ITransaction[]>([]);
 
     useEffect(() => {
         // console.log({ filter });
-        if (isCandleSelected && filter?.time) {
-            // const poolSwapsCacheEndpoint = httpGraphCacheServerDomain + '/pool_recent_changes?';
-
+        if (isServerEnabled && isCandleSelected && filter?.time) {
             fetchPoolRecentChanges({
                 importedTokens: importedTokens,
                 base: selectedBase,
@@ -312,32 +318,8 @@ export default function TradeTabs2(props: ITabsProps) {
                     setSelectedInsideTab(0);
                 })
                 .catch(console.log);
-            // fetch(
-            //     poolSwapsCacheEndpoint +
-            //         new URLSearchParams({
-            //             base: selectedBase,
-            //             quote: selectedQuote,
-            //             chainId: chainData.chainId,
-            //             poolIdx: chainData.poolIndex.toString(),
-            //             ensResolution: 'true',
-            //             annotate: 'true',
-            //             omitEmpty: 'true',
-            //             omitKnockout: 'false',
-            //             addValue: 'true',
-            //             n: '100',
-            //             period: activeChartPeriod.toString(),
-            //             time: filter?.time.toString(),
-            //         }),
-            // )
-            //     .then((response) => response?.json())
-            //     .then((json) => {
-            //         const selectedCandlePoolSwaps = json?.data;
-            //         console.log({ selectedCandlePoolSwaps });
-            //         setSwapsForSelectedCandle(selectedCandlePoolSwaps);
-            //     })
-            //     .catch(console.log);
         }
-    }, [isCandleSelected, filter?.time, lastBlockNumber]);
+    }, [isServerEnabled, isCandleSelected, filter?.time, lastBlockNumber]);
 
     // -------------------------------DATA-----------------------------------------
     const [leader, setLeader] = useState('');
@@ -374,7 +356,9 @@ export default function TradeTabs2(props: ITabsProps) {
 
         setLeader: setLeader,
         setLeaderOwnerId: setLeaderOwnerId,
-        handleRangeCopiedClick: handleRangeCopiedClick,
+        handlePulseAnimation: handlePulseAnimation,
+        // handleRangeCopiedClick: handleRangeCopiedClick,
+        setIsShowAllEnabled: setIsShowAllEnabled,
     };
     // Props for <Ranges/> React Element
     const poolInfoProps = {
@@ -396,6 +380,7 @@ export default function TradeTabs2(props: ITabsProps) {
         account: account,
         setCurrentTxActiveInTransactions: setCurrentTxActiveInTransactions,
         expandTradeTable: expandTradeTable,
+        setIsShowAllEnabled: setIsShowAllEnabled,
 
         isCandleSelected: isCandleSelected,
         filter: filter,
@@ -406,7 +391,8 @@ export default function TradeTabs2(props: ITabsProps) {
 
         isOnPortfolioPage: false,
 
-        handleTxCopiedClick: handleTxCopiedClick,
+        handlePulseAnimation: handlePulseAnimation,
+        // handleTxCopiedClick: handleTxCopiedClick,
     };
     // Props for <Orders/> React Element
     const ordersProps = {
@@ -423,7 +409,9 @@ export default function TradeTabs2(props: ITabsProps) {
         setCurrentPositionActive: setCurrentPositionActive,
         showSidebar: showSidebar,
         isOnPortfolioPage: false,
-        handleOrderCopiedClick: handleOrderCopiedClick,
+        handlePulseAnimation: handlePulseAnimation,
+        // handleOrderCopiedClick: handleOrderCopiedClick,
+        setIsShowAllEnabled: setIsShowAllEnabled,
     };
     // props for <PositionsOnlyToggle/> React Element
 

@@ -10,6 +10,10 @@
    background-size: cover;
 } */
 
+.home_container{
+    background: var(--body-bg);
+}
+
 .pools_container {
     position: relative;
 

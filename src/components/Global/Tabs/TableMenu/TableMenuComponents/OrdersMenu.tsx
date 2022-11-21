@@ -39,7 +39,7 @@ interface OrdersMenuIF {
     showSidebar: boolean;
     isOrderFilled: boolean;
     isOnPortfolioPage: boolean;
-    handleOrderCopiedClick?: () => void;
+    handlePulseAnimation?: (type: string) => void;
     // orderDetailsProps: any;
 }
 
@@ -55,7 +55,7 @@ export default function OrdersMenu(props: OrdersMenuIF) {
         isOwnerActiveAccount,
         closeGlobalModal,
         showSidebar,
-        handleOrderCopiedClick,
+        handlePulseAnimation,
         // isOnPortfolioPage,
     } = props;
     // const [value, copy] = useCopyToClipboard();
@@ -77,9 +77,7 @@ export default function OrdersMenu(props: OrdersMenuIF) {
 
     // -----------------SNACKBAR----------------
     function handleCopyOrder() {
-        {
-            handleOrderCopiedClick ? handleOrderCopiedClick() : null;
-        }
+        handlePulseAnimation ? handlePulseAnimation('limitOrder') : null;
         dispatch(setLimitTickCopied(true));
         // console.log('limit order copy clicked');
         console.log({ tradeData });

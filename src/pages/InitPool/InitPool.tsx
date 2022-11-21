@@ -28,7 +28,7 @@ import InitPoolDenom from '../../components/InitPool/InitPoolDenom/InitPoolDenom
 
 // interface for props
 interface InitPoolPropsIF {
-    isUserLoggedIn: boolean;
+    isUserLoggedIn: boolean | undefined;
     crocEnv: CrocEnv | undefined;
     showSidebar: boolean;
     tokenPair: TokenPairIF;
@@ -329,6 +329,7 @@ export default function InitPool(props: InitPoolPropsIF) {
             action={async () => {
                 await approve(tokenPair.dataTokenA.address);
             }}
+            flat={true}
         />
     );
 
@@ -343,6 +344,7 @@ export default function InitPool(props: InitPoolPropsIF) {
             action={async () => {
                 await approve(tokenPair.dataTokenB.address);
             }}
+            flat={true}
         />
     );
 
@@ -441,6 +443,7 @@ export default function InitPool(props: InitPoolPropsIF) {
                                         title='Pool Already Initialized'
                                         disabled={true}
                                         action={() => console.log('clicked')}
+                                        flat={true}
                                     />
                                 ) : isUserLoggedIn || !connectButtonDelayElapsed ? (
                                     !isTokenAAllowanceSufficient ? (
@@ -452,18 +455,24 @@ export default function InitPool(props: InitPoolPropsIF) {
                                             title='Enter an Initial Price'
                                             disabled={true}
                                             action={() => console.log('clicked')}
+                                            flat={true}
                                         />
                                     ) : isInitPending === true ? (
                                         <Button
                                             title='Initialization Pending'
                                             disabled={true}
                                             action={() => console.log('clicked')}
+                                            flat={true}
                                         />
                                     ) : (
-                                        <Button title='Open Confirmation' action={sendInit} />
+                                        <Button
+                                            title='Open Confirmation'
+                                            action={sendInit}
+                                            flat={true}
+                                        />
                                     )
                                 ) : (
-                                    <Button title='Login' action={openModalWallet} />
+                                    <Button title='Login' action={openModalWallet} flat={true} />
                                 )}
                             </footer>
                         </div>

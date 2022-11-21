@@ -12,12 +12,12 @@
     margin: 1rem 0;
     transition: all var(--animation-speed) ease-in-out;
     border-radius: var(--border-radius);
-    background: rgba(23, 29, 39, 0.55);
+    background: var(--dark1);
 }
 
 .token_list_card_content:hover {
     background: var(--dark3);
-    color: #fff;
+    color: var(--text-grey-white);
 }
 
 .left_content {
@@ -70,7 +70,7 @@
 }
 
 .popover_container {
-    background: #17191c;
+    background: var(--dark1);
     padding: 10px;
 }
 
@@ -79,13 +79,13 @@
     flex-direction: column;
     padding: 5px 10px;
 
-    color: white;
+    color: var(--text-grey-white);
     font-size: 12px;
 }
 
 .popover_content a {
     text-decoration: none;
-    color: white;
+    color: var(--text-grey-white);
     cursor: pointer;
 }
 
@@ -95,5 +95,5 @@
 }
 
 .menu {
-    color: white;
+    color: var(--text-grey-white);
 }

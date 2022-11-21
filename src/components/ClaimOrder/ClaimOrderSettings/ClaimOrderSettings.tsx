@@ -25,7 +25,7 @@ export default function ClaimOrderSettings(props: ClaimOrderSettingsPropsIF) {
                 </header>
                 <div>Settings data will be here.</div>
             </div>
-            <Button title='CONFIRM' action={() => setShowSettings(false)} />
+            <Button title='CONFIRM' action={() => setShowSettings(false)} flat={true} />
         </div>
     );
 }

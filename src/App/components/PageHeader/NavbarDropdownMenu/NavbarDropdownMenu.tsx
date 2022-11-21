@@ -25,12 +25,13 @@ interface NavbarDropdownItemPropsIF {
     goBackItem?: boolean;
     imageIcon?: string;
     onClick?: () => void;
+
     children: ReactNode;
     rightIcon?: ReactNode;
 }
 
 interface NavbarDropdownMenuPropsIF {
-    isUserLoggedIn: boolean;
+    isUserLoggedIn: boolean | undefined;
     // isAuthenticated?: boolean;
     // isWeb3Enabled?: boolean;
     clickLogout: () => void;
@@ -41,6 +42,8 @@ interface NavbarDropdownMenuPropsIF {
 
     setIsAppOverlayActive: React.Dispatch<React.SetStateAction<boolean>>;
     setIsNavbarMenuOpen: React.Dispatch<React.SetStateAction<boolean>>;
+    switchTheme: () => void;
+    theme: string;
 }
 
 export default function NavbarDropdownMenu(props: NavbarDropdownMenuPropsIF) {
@@ -53,6 +56,8 @@ export default function NavbarDropdownMenu(props: NavbarDropdownMenuPropsIF) {
         closeMenu,
         setIsAppOverlayActive,
         setIsNavbarMenuOpen,
+        switchTheme,
+        theme,
     } = props;
 
     const navigate = useNavigate();
@@ -131,7 +136,9 @@ export default function NavbarDropdownMenu(props: NavbarDropdownMenuPropsIF) {
 
     const settingsItems = (
         <>
-            <NavbarDropdownItem leftIcon={<FaSun size={20} />}>Light Mode</NavbarDropdownItem>
+            <NavbarDropdownItem leftIcon={<FaSun size={20} />} onClick={switchTheme}>
+                {theme === 'dark' ? 'Light' : 'Dark'} Mode
+            </NavbarDropdownItem>
             <NavbarDropdownItem
                 leftIcon={<MdLanguage size={20} />}
                 rightIcon={<MdArrowForwardIos />}

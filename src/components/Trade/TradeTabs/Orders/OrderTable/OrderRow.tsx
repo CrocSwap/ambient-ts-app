@@ -32,7 +32,7 @@ interface OrderRowPropsIF {
     isShowAllEnabled: boolean;
     isOnPortfolioPage: boolean;
 
-    handleOrderCopiedClick?: () => void;
+    handlePulseAnimation?: (type: string) => void;
 }
 export default function OrderRow(props: OrderRowPropsIF) {
     const {
@@ -49,7 +49,7 @@ export default function OrderRow(props: OrderRowPropsIF) {
         setCurrentPositionActive,
         isShowAllEnabled,
         isOnPortfolioPage,
-        handleOrderCopiedClick,
+        handlePulseAnimation,
     } = props;
 
     const {
@@ -242,22 +242,34 @@ export default function OrderRow(props: OrderRowPropsIF) {
     // end of portfolio page li element ---------------
 
     // if (!orderMatchesSelectedTokens) return null;
+
+    const fillTime = new Intl.DateTimeFormat('en-US', {
+        month: 'short',
+        day: 'numeric',
+        // hour12: false,
+        hour: '2-digit',
+        minute: '2-digit',
+        // second: '2-digit',
+    }).format(limitOrder.time * 1000);
+
     return (
         <ul
             className={`${styles.row_container} ${activePositionStyle} ${userPositionStyle}`}
             id={orderDomId}
+            style={{ cursor: 'pointer' }}
             onClick={() =>
                 limitOrder.limitOrderIdentifier === currentPositionActive
                     ? null
                     : setCurrentPositionActive('')
             }
         >
+            {isOnPortfolioPage && accountTokenImages}
             {!isOnPortfolioPage && !showColumns && !view2 && (
-                <li>
-                    <p className='base_color'> Nov 9 10:36:23 AM</p>
+                <li onClick={openDetailsModal}>
+                    <p className='base_color'> {fillTime}</p>
+                    {/* <p className='base_color'> Nov 9 10:36:23 AM</p> */}
                 </li>
             )}
-            {isOnPortfolioPage && accountTokenImages}
             {isOnPortfolioPage && !showSidebar && poolName}
             {!showColumns && IDWithTooltip}
             {!showColumns && walletWithTooltip}
@@ -354,7 +366,7 @@ export default function OrderRow(props: OrderRowPropsIF) {
                     limitOrder={limitOrder}
                     {...orderMenuProps}
                     showSidebar={showSidebar}
-                    handleOrderCopiedClick={handleOrderCopiedClick}
+                    handlePulseAnimation={handlePulseAnimation}
                 />
             </li>
         </ul>

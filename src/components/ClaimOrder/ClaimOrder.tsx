@@ -107,7 +107,7 @@ export default function ClaimOrder(props: IClaimOrderProps) {
                 Check the Metamask extension in your browser for notifications, or click &quot;Try
                 Again&quot;. You can also click the left arrow above to try again.
             </p>
-            <Button title='Try Again' action={resetConfirmation} />
+            <Button title='Try Again' action={resetConfirmation} flat={true} />
         </div>
     );
     const etherscanLink = 'chainData.blockExplorer' + 'tx/' + newClaimTransactionHash;

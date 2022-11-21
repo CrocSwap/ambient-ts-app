@@ -16,6 +16,7 @@ export default function SwapButton(props: ITransactionButtonProps) {
                 // action={() => console.log('clicked')}
                 action={props.onClickFn}
                 disabled={!props.swapAllowed}
+                flat={true}
             />
         </div>
     );

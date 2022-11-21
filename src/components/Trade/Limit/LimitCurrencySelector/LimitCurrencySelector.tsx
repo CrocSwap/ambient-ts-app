@@ -19,7 +19,7 @@ import NoTokenIcon from '../../../Global/NoTokenIcon/NoTokenIcon';
 
 // interface for component props
 interface LimitCurrencySelectorProps {
-    isUserLoggedIn: boolean;
+    isUserLoggedIn: boolean | undefined;
     tokenPair: TokenPairIF;
     tokensBank: Array<TokenIF>;
     setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
@@ -254,7 +254,7 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
                                         isWithdrawFromDexChecked &&
                                         tokenASurplusMinusTokenARemainderNum &&
                                         tokenASurplusMinusTokenARemainderNum < 0)
-                                        ? '#ebebff'
+                                        ? 'var(--text-highlight)'
                                         : '#555555'
                                 }
                             />
@@ -290,7 +290,7 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
                             color:
                                 isSellTokenSelector && !isWithdrawFromDexChecked
                                     ? '#555555'
-                                    : '#ebebff',
+                                    : 'var(--text-highlight)',
                         }}
                         onClick={() => {
                             if (props.sellToken) {
