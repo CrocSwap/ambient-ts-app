@@ -177,7 +177,7 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
 
     const recentTokens = (
         <div className={styles.recent_tokens_container}>
-            {recentTokensInRTK?.slice(0, 6).map((token, idx) => (
+            {recentTokensInRTK?.slice(0, 5).map((token, idx) => (
                 <RecentToken
                     key={idx}
                     token={token}
