@@ -2030,6 +2030,8 @@ export default function Chart(props: ChartData) {
                 market: market,
             };
 
+            const volumeData = parsedChartData?.volumeChartData.sort((a, b) => b.time - a.time);
+
             drawChart(
                 parsedChartData.chartData,
                 targetData,
@@ -2066,6 +2068,7 @@ export default function Chart(props: ChartData) {
                 isMouseMoveForSubChart,
                 isZoomForSubChart,
                 horizontalBandData,
+                volumeData,
             );
         }
     }, [
@@ -2156,10 +2159,10 @@ export default function Chart(props: ChartData) {
             isMouseMoveForSubChart: boolean,
             isZoomForSubChart: boolean,
             horizontalBandData: any,
+            volumeData: any,
         ) => {
             if (chartData.length > 0) {
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-
                 const snap = (series: any, data: any, point: any) => {
                     if (point == undefined) return [];
                     const xScale = series.xScale(),
@@ -2188,6 +2191,15 @@ export default function Chart(props: ChartData) {
                     ];
                 };
 
+                const yExtent = d3fc.extentLinear().accessors([(d: any) => d.value]);
+                const yScaleBar = d3.scaleLinear();
+                yScaleBar.domain(yExtent(volumeData));
+                const yAxisBar = d3fc
+                    .axisRight()
+                    .scale(yScaleBar)
+                    .tickFormat(formatDollarAmountAxis)
+                    .tickArguments([2]);
+
                 const candleJoin = d3fc.dataJoin('g', 'candle');
 
                 const horizontalBand = d3fc
@@ -2200,6 +2212,52 @@ export default function Chart(props: ChartData) {
                         selection.select('path').attr('fill', '#7371FC1A');
                     });
 
+                d3.select('.bar').call(yAxisBar);
+
+                const barSeries = d3fc
+                    .seriesSvgBar()
+                    .align('center')
+                    .bandwidth(candlestick.bandwidth())
+                    .xScale(scaleData.xScale)
+                    .yScale(yScaleBar)
+                    .crossValue((d: any) => d.time)
+                    .mainValue((d: any) => d.value)
+                    .decorate((selection: any) => {
+                        selection.style('fill', (d: any) => {
+                            return selectedDate !== undefined &&
+                                selectedDate.getTime() === d.time.getTime()
+                                ? '#E480FF'
+                                : 'rgba(115,113,252, 0.6)';
+                        });
+                        selection.style('stroke', (d: any) =>
+                            selectedDate !== undefined &&
+                            selectedDate.getTime() === d.time.getTime()
+                                ? '#E480FF'
+                                : 'rgba(115,113,252, 0.6)',
+                        );
+                        selection.on('mouseover', (event: any) => {
+                            d3.select(event.currentTarget).style('cursor', 'pointer');
+                        });
+                        selection.on('click', (event: any) => {
+                            if (
+                                selectedDate === undefined ||
+                                selectedDate !== event.target.__data__.time
+                            ) {
+                                d3.select(event.currentTarget)
+                                    .style('fill', '#E480FF')
+                                    .style('stroke', '#E480FF');
+
+                                setSelectedDate(() => {
+                                    return event.target.__data__.time;
+                                });
+                            } else {
+                                setSelectedDate(() => {
+                                    return undefined;
+                                });
+                            }
+                        });
+                    });
+
                 const crosshairHorizontalJoin = d3fc.dataJoin('g', 'crosshairHorizontal');
                 const crosshairVerticalJoin = d3fc.dataJoin('g', 'crosshairVertical');
                 // const highlightedCurrentPriceLineJoin = d3fc.dataJoin(
@@ -2207,6 +2265,8 @@ export default function Chart(props: ChartData) {
                 //     'highlightedCurrentPriceLine',
                 // );
                 const indicatorLineJoin = d3fc.dataJoin('g', 'indicatorLine');
+
+                const barJoin = d3fc.dataJoin('g', 'bar');
 
                 // handle the plot area measure event in order to compute the scale ranges
                 d3.select(d3PlotArea.current).on('measure', function (event: any) {
@@ -2253,6 +2313,7 @@ export default function Chart(props: ChartData) {
                         areaBidJoin(svg, [liquidityData.liqBidData]).call(liqBidSeries);
                         lineAskSeriesJoin(svg, [liquidityData.lineBidSeries]).call(lineBidSeries);
                         lineBidSeriesJoin(svg, [liquidityData.lineAskSeries]).call(lineAskSeries);
+                        barJoin(svg, [volumeData]).call(barSeries);
                     }
 
                     const mouseOutFunc = () => {
