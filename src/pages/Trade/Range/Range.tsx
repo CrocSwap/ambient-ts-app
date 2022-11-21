@@ -316,6 +316,8 @@ export default function Range(props: RangePropsIF) {
         }
     }, [rangeWidthPercentage, tradeData.advancedMode, denominationsInBase]);
 
+    const isQtyEntered = tokenAInputQty !== '' && tokenBInputQty !== '';
+
     useEffect(() => {
         const lowTick = currentPoolPriceTick - rangeWidthPercentage * 100;
         const highTick = currentPoolPriceTick + rangeWidthPercentage * 100;
@@ -353,17 +355,10 @@ export default function Range(props: RangePropsIF) {
             setRangeButtonErrorMessage('Pool Not Initialized');
         } else if (isInvalidRange) {
             setRangeButtonErrorMessage('Please Enter a Valid Range');
+        } else if (!isQtyEntered) {
+            setRangeButtonErrorMessage('Enter an Amount');
         }
-        // else if (isUserLoggedIn) {
-        //     if (!isQtyEntered) {
-        //         console.log('setting to enter an amount');
-        //         setRangeButtonErrorMessage('Enter an Amount');
-        //     }
-        // } else {
-        //     setRangeButtonErrorMessage('...');
-        // }
-    }, [poolExists, isInvalidRange, poolPriceNonDisplay]);
-    // }, [isQtyEntered, poolExists, isInvalidRange, poolPriceNonDisplay, isUserLoggedIn]);
+    }, [isQtyEntered, poolExists, isInvalidRange, poolPriceNonDisplay]);
 
     const minimumSpan =
         rangeSpanAboveCurrentPrice < rangeSpanBelowCurrentPrice
@@ -1067,7 +1062,7 @@ export default function Range(props: RangePropsIF) {
     // props for <RangeExtraInfo/> React element
 
     const rangeExtraInfoProps = {
-        isQtyEntered: tokenAInputQty !== '' && tokenBInputQty !== '',
+        isQtyEntered: isQtyEntered,
         tokenPair: tokenPair,
         rangeGasPriceinDollars: rangeGasPriceinDollars,
         poolPriceDisplay: displayPriceString,
