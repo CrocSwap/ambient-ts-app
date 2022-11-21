@@ -10,6 +10,7 @@ import { TokenIF, TokenPairIF, TokenListIF } from '../../../utils/interfaces/exp
 import TokenList from '../../Global/TokenList/TokenList';
 import { useSearch } from './useSearch';
 import { importToken } from './importToken';
+import RecentToken from './RecentToken/RecentToken';
 // import CustomTokens from '../TokenList/CustomTokens';
 
 interface TokenSelectContainerPropsIF {
@@ -171,6 +172,14 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
         </>
     );
 
+    const recentTokens = (
+        <div className={styles.recent_tokens_container}>
+            {[1, 2, 3, 4, 5].map((token, idx) => (
+                <RecentToken key={idx} />
+            ))}
+        </div>
+    );
+
     // const favoritesTab = <div style={{ minHeight: '300px' }}>Favorites</div>;
     // const importedTabs = (
     //     <div style={{ minHeight: '300px' }}>
@@ -225,8 +234,9 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
             </div>
             {/* {tabControl}
         
-
-            {selectedTokenTab?.content} */}
+        
+    {selectedTokenTab?.content} */}
+            {recentTokens}
 
             {tokenListContent}
         </>

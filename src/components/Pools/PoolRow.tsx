@@ -1,5 +1,4 @@
 import { useNavigate } from 'react-router-dom';
-import { PoolData } from '../../state/pools/models';
 import { feeTierPercent, isAddress } from '../../utils';
 import { useAppDispatch } from '../../utils/hooks/reduxToolkit';
 import { TokenIF } from '../../utils/interfaces/TokenIF';
@@ -14,7 +13,8 @@ import { PoolIF } from '../../utils/interfaces/PoolIF';
 import { MouseEvent } from 'react';
 
 interface PoolProps {
-    pool: PoolData;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    pool: any;
     poolType: string;
     favePools: PoolIF[];
     addPoolToFaves: (tokenA: TokenIF, tokenB: TokenIF, chainId: string, poolId: number) => void;

@@ -1,4 +1,4 @@
-import { TokenData } from '../../state/tokens/models';
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { isAddress } from '../../utils';
 import trimString from '../../utils/functions/trimString';
 import { formatDollarAmount } from '../../utils/numbers';
@@ -6,12 +6,12 @@ import { DefaultTooltip } from '../Global/StyledTooltip/StyledTooltip';
 import styles from './TopTokenRow.module.css';
 
 interface TokenProps {
-    token: TokenData;
+    token: any;
     index: number;
 }
 
 export default function TopTokenRow(props: TokenProps) {
-    const tokenData: TokenData = props.token;
+    const tokenData: any = props.token;
 
     function handleRowClick() {
         window.open(

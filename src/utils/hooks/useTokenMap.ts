@@ -1,10 +1,7 @@
 import { useEffect, useState } from 'react';
 import { TokenIF, TokenListIF } from '../interfaces/exports';
 
-export const useTokenMap = (
-    activeTokenListsChanged: boolean,
-    tokenListsNeeded: string[]
-) => {
+export const useTokenMap = (activeTokenListsChanged: boolean, tokenListsNeeded: string[]) => {
     // hook to preserve the token map value across renders
     const [tokenMap, setTokenMap] = useState(new Map<string, TokenIF>());
 
@@ -30,7 +27,7 @@ export const useTokenMap = (
                 } else {
                     // if list is missing, trigger error handling with console message
                     throw new Error(
-                        `Did not find a token list with URI <<${uri}>> in local storage.`
+                        `Did not find a token list with URI <<${uri}>> in local storage.`,
                     );
                 }
             } catch (err) {
@@ -46,18 +43,18 @@ export const useTokenMap = (
         const newTokensMap = new Map<string, TokenIF>();
 
         // make array of all tokens in the relevant lists
-        tokenListsNeeded.flatMap((listURI: string) => getTokensByURI(listURI))
+        tokenListsNeeded
+            .flatMap((listURI: string) => getTokensByURI(listURI))
             // create a value in the Map object
             .forEach((tkn: TokenIF) =>
                 newTokensMap.set(
-                    tkn.address.toLowerCase() +
-                    '_0x' + tkn.chainId.toString(16).toLowerCase(),
+                    tkn.address.toLowerCase() + '_0x' + tkn.chainId.toString(16).toLowerCase(),
                     tkn,
-            ),
-        );
+                ),
+            );
         // update local storage with the new value
         setTokenMap(newTokensMap);
-    // this dependency array should not work but things seem fine so here it stays
+        // this dependency array should not work but things seem fine so here it stays
     }, [localStorage.allTokenLists, activeTokenListsChanged]);
 
     // return token map held in local state created by useEffect() hook

@@ -2412,7 +2412,7 @@ export default function App() {
                                     openGlobalModal={openGlobalModal}
                                     closeGlobalModal={closeGlobalModal}
                                     isInitialized={isInitialized}
-                                    poolPriceNonDisplay={undefined}
+                                    poolPriceNonDisplay={poolPriceNonDisplay}
                                     setLimitRate={function (): void {
                                         throw new Error('Function not implemented.');
                                     }}
