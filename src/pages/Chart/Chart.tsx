@@ -928,7 +928,7 @@ export default function Chart(props: ChartData) {
 
     // Drag Type
     useEffect(() => {
-        if (scaleData) {
+        if (scaleData && targetsJoin !== undefined) {
             let newLimitValue: any;
             let newRangeValue: any;
 
@@ -1136,7 +1136,7 @@ export default function Chart(props: ChartData) {
                 return dragLimit;
             });
         }
-    }, [poolPriceDisplay, location, scaleData, isAdvancedModeActive, dragControl]);
+    }, [poolPriceDisplay, location, scaleData, isAdvancedModeActive, dragControl, targetsJoin]);
 
     useEffect(() => {
         setDragControl(false);
