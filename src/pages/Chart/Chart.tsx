@@ -2191,15 +2191,6 @@ export default function Chart(props: ChartData) {
                     ];
                 };
 
-                const yExtent = d3fc.extentLinear().accessors([(d: any) => d.value]);
-                const yScaleBar = d3.scaleLinear();
-                yScaleBar.domain(yExtent(volumeData));
-                const yAxisBar = d3fc
-                    .axisRight()
-                    .scale(yScaleBar)
-                    .tickFormat(formatDollarAmountAxis)
-                    .tickArguments([2]);
-
                 const candleJoin = d3fc.dataJoin('g', 'candle');
 
                 const horizontalBand = d3fc
@@ -2212,14 +2203,12 @@ export default function Chart(props: ChartData) {
                         selection.select('path').attr('fill', '#7371FC1A');
                     });
 
-                d3.select('.bar').call(yAxisBar);
-
                 const barSeries = d3fc
                     .seriesSvgBar()
                     .align('center')
                     .bandwidth(candlestick.bandwidth())
                     .xScale(scaleData.xScale)
-                    .yScale(yScaleBar)
+                    .yScale(scaleData.volumeScale)
                     .crossValue((d: any) => d.time)
                     .mainValue((d: any) => d.value)
                     .decorate((selection: any) => {
@@ -2281,6 +2270,11 @@ export default function Chart(props: ChartData) {
                     scaleData.liquidityScale.range([
                         event.detail.width,
                         (event.detail.width / 10) * 8,
+                    ]);
+
+                    scaleData.volumeScale.range([
+                        event.detail.height,
+                        event.detail.height * (2 / 2.003),
                     ]);
                 });
 

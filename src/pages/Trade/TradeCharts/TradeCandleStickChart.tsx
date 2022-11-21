@@ -379,6 +379,13 @@ export default function TradeCandleStickChart(props: ChartData) {
             const liquidityScale = d3.scaleLinear();
             const ghostScale = d3.scaleLinear();
 
+            const yExtent = d3fc
+                .extentLinear()
+                .include([0])
+                .accessors([(d: any) => d.value]);
+            const volumeScale = d3.scaleLinear();
+            volumeScale.domain(yExtent(parsedChartData.volumeChartData));
+
             // bar chart
             const liquidityExtent = d3fc
                 .extentLinear(liquidityData.liqBidData.concat(liquidityData.liqAskData))
@@ -406,6 +413,7 @@ export default function TradeCandleStickChart(props: ChartData) {
                     yScaleCopy: yScaleCopy,
                     ghostScale: ghostScale,
                     subChartxScale: subChartxScale,
+                    volumeScale: volumeScale,
                 };
             });
         }
