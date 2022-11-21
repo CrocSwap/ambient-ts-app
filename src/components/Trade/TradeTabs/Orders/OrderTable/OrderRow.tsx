@@ -409,6 +409,7 @@ export default function OrderRow(props: OrderRowPropsIF) {
             <li data-label='menu'>
                 <OrdersMenu
                     chainData={chainData}
+                    isShowAllEnabled={isShowAllEnabled}
                     tradeData={tradeData}
                     limitOrder={limitOrder}
                     {...orderMenuProps}

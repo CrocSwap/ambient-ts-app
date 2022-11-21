@@ -37,6 +37,7 @@ interface OrdersMenuIF {
     openGlobalModal: (content: React.ReactNode, title?: string) => void;
     closeGlobalModal: () => void;
     isOwnerActiveAccount?: boolean;
+    isShowAllEnabled: boolean;
     showSidebar: boolean;
     isOrderFilled: boolean;
     isOnPortfolioPage: boolean;
@@ -49,11 +50,13 @@ export default function OrdersMenu(props: OrdersMenuIF) {
     const menuItemRef = useRef<HTMLDivElement>(null);
 
     const {
+        isShowAllEnabled,
         crocEnv,
         chainData,
         tradeData,
         limitOrder,
         openGlobalModal,
+        isOrderFilled,
         isOwnerActiveAccount,
         closeGlobalModal,
         showSidebar,
@@ -228,38 +231,39 @@ export default function OrdersMenu(props: OrdersMenuIF) {
     };
 
     const removeButton =
-        limitOrder && isOwnerActiveAccount && !props.isOrderFilled ? (
+        limitOrder && isOwnerActiveAccount && !isOrderFilled ? (
             <button className={styles.option_button} onClick={removeButtonOnClick}>
                 Remove
             </button>
         ) : null;
     const claimButton =
-        limitOrder && isOwnerActiveAccount && props.isOrderFilled ? (
+        limitOrder && isOwnerActiveAccount && isOrderFilled ? (
             <button className={styles.option_button} onClick={claimButtonOnClick}>
                 Claim
             </button>
         ) : null;
-    const copyButton = limitOrder ? (
-        <button
-            className={styles.option_button}
-            onClick={() => {
-                dispatch(setLimitTickCopied(true));
-                dispatch(setLimitTick(0));
-                navigate(
-                    '/trade/limit/' +
-                        'chain=' +
-                        limitOrder.chainId +
-                        '&tokenA=' +
-                        (limitOrder.isBid ? limitOrder.base : limitOrder.quote) +
-                        '&tokenB=' +
-                        (limitOrder.isBid ? limitOrder.quote : limitOrder.base),
-                );
-                handleCopyOrder();
-            }}
-        >
-            Copy
-        </button>
-    ) : null;
+    const copyButton =
+        limitOrder && isShowAllEnabled ? (
+            <button
+                className={styles.option_button}
+                onClick={() => {
+                    dispatch(setLimitTickCopied(true));
+                    dispatch(setLimitTick(0));
+                    navigate(
+                        '/trade/limit/' +
+                            'chain=' +
+                            limitOrder.chainId +
+                            '&tokenA=' +
+                            (limitOrder.isBid ? limitOrder.base : limitOrder.quote) +
+                            '&tokenB=' +
+                            (limitOrder.isBid ? limitOrder.quote : limitOrder.base),
+                    );
+                    handleCopyOrder();
+                }}
+            >
+                Copy
+            </button>
+        ) : null;
     const detailsButton = (
         <button className={styles.option_button} onClick={detailsButtonOnClick}>
             Details
@@ -272,16 +276,16 @@ export default function OrdersMenu(props: OrdersMenuIF) {
             {/* {view1 && removeButton} */}
             {/* {(view2 || (view1NoSidebar && !isOnPortfolioPage)) && copyButton} */}
             {(view3 || view2WithNoSidebar) && detailsButton}
-            {view1 && copyButton}
+            {view1 && !isOrderFilled && copyButton}
+            {claimButton}
         </div>
     );
 
     const menuContent = (
         <div className={styles.menu_column}>
             {detailsButton}
-            {!view1 && copyButton}
+            {!(view1 && !isOrderFilled) && copyButton}
             {removeButton}
-            {claimButton}
         </div>
     );
 
