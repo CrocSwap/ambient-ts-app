@@ -171,44 +171,25 @@
     
 }
 .connect_button button{
-    outline: none;
-
-    padding: 2px 16px;
-    font-size: 16px;
-
-    line-height: 24px;
-
-    display: block;
-
-   height: auto;
     cursor: pointer;
-    text-align: center;
-
-    background: transparent;
-    text-transform: capitalize;
-
+    background: var(--title-gradient);
+    border: none;
+    outline: none;
+    color: var(--dark3);
+    font-weight: 200;
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
     border-radius: 4px;
-    transition: all var(--animation-speed) ease-in-out;
 
-    color: var(--text-highlight);
-    background: linear-gradient(
-        270deg,
-        #7371fc,
-        #cdc1ff,
-        #7371fc,
-        rgba(34, 34, 34, 0),
-        rgba(34, 34, 34, 0)
-    );
-    background-position: 1% 50%;
-    background-size: 300% 300%;
-    text-decoration: none;
-    border: 1px solid #7371fc;
+    border-radius: var(--border-radius);
+    width: 155px;
+    height: 25px;
+    transition: box-shadow var(--animation-speed) ease-in-out;
 }
 
 .connect_button button:hover {
-    color: var(--text-grey-white);
-    border: 1px solid rgba(223, 190, 106, 0);
-    background-position: 99% 50%;
+    box-shadow: 0px 0px 36px rgba(205, 193, 255, 0.2), 0px 0px 21px rgba(205, 193, 255, 0.2),
+    0px 0px 12px rgba(205, 193, 255, 0.2), 0px 0px 7px rgba(205, 193, 255, 0.2),
+    0px 0px 4px #cdc1ff, 0px 0px 2px rgba(205, 193, 255, 0.2);
 
     
 }

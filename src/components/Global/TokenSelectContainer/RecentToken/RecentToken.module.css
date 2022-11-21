@@ -6,7 +6,11 @@
     border-radius: 4px;
     padding: 0 6px;
     margin: 5px;
-    width: 100px;
+    /* width: 50px; */
+    gap: 4px;
+
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
 }
 
 .recent_token:hover{
@@ -20,7 +24,7 @@
 }
 
 .recent_token img{
-width: 25px;
-height: 25px;
+width: 20px;
+height: 20px;
     border-radius: 50%;
 }

@@ -1152,7 +1152,11 @@ export default function Range(props: RangePropsIF) {
     const isTokenAAllowanceSufficient = parseFloat(tokenAAllowance) >= parseFloat(tokenAInputQty);
     const isTokenBAllowanceSufficient = parseFloat(tokenBAllowance) >= parseFloat(tokenBInputQty);
 
-    const loginButton = <Button title='Connect Wallet' action={openModalWallet} />;
+    const loginButton = (
+        <button onClick={openModalWallet} className={styles.authenticate_button}>
+            Connect Wallet
+        </button>
+    );
 
     const [isApprovalPending, setIsApprovalPending] = useState(false);
 

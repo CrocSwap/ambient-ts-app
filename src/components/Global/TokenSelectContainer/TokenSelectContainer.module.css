@@ -79,7 +79,7 @@
 }
 
 .recent_tokens_container{
-  max-width: 350px;
+  max-width: 420px;
 display: flex;
 flex-direction: row;
 align-items: center;

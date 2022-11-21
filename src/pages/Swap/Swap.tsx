@@ -138,7 +138,13 @@ export default function Swap(props: SwapPropsIF) {
         ? parseFloat(swapSlippage.stable.value)
         : parseFloat(swapSlippage.volatile.value);
 
-    const loginButton = <Button title='Connect Wallet' action={openModalWallet} />;
+    const loginButton = (
+        <button onClick={openModalWallet} className={styles.authenticate_button}>
+            Connect Wallet
+        </button>
+    );
+
+    // <Button title='Connect Wallet' action={openModalWallet} />;
 
     const [isApprovalPending, setIsApprovalPending] = useState(false);
 
