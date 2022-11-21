@@ -150,7 +150,7 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
                         undeletableTokens={undeletableTokens}
                         chainId={chainId}
                         setImportedTokens={setImportedTokens}
-                        fromListsText='Bacon'
+                        fromListsText='Vegan Bacon'
                     />
                 ))}
             </div>

@@ -122,7 +122,7 @@
     position: absolute;
     top: 50px;
     width: 350px;
-    height: 300px;
+    height: 250px;
    right: -40px;
    z-index: 9;
    padding: 1rem;
@@ -161,8 +161,9 @@
 .ambient_card_content{
 position: absolute;
 background: #1D4350;  /* fallback for old browsers */
-background: -webkit-linear-gradient(to bottom, var(--text-highlight-dark), var(--dark1));  /* Chrome 10-25, Safari 5.1-6 */
-background: linear-gradient(to bottom, var(--text-highlight-dark), var(--dark1)); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+/* background: -webkit-linear-gradient(to bottom, var(--text-highlight-dark), var(--dark1));  
+background: linear-gradient(to bottom, var(--text-highlight-dark), var(--dark1)); */
+background: var(--dark3);
 border-bottom: 1px dotted var(--text-grey-light);
 width: 90%;
 height: 100px;
@@ -207,7 +208,7 @@ top: -20px;
     align-items: center;
     justify-content: space-between;
     padding: 0 4px;
-    border-bottom: 1px solid var(--border);
+    border-bottom: 1px solid var(--text-grey-dark);
 }
 .token_display{
     display: flex;
