@@ -43,6 +43,14 @@
             "logoURI": ""
         },
         {
+            "name": "EDS Test Token 2",
+            "address": "0x0B0322d75bad9cA72eC7708708B54e6b38C26adA",
+            "symbol": "EDS2",
+            "decimals": 18,
+            "chainId": 5,
+            "logoURI": ""
+        },
+        {
             "name": "Dai Stablecoin",
             "address": "0xdc31Ee1784292379Fbb2964b3B9C4124D8F89C60",
             "symbol": "DAI",
