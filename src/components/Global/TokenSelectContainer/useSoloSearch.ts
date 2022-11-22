@@ -107,5 +107,5 @@ export const useSoloSearch = (
     // token === token data object or null
     // input === raw input from the user
     // setInput === useState setter function for raw input
-    return [importedTokensForDOM, otherTokensForDOM, input.trim(), setInput, searchAs];
+    return [importedTokensForDOM, otherTokensForDOM, validatedInput, setInput, searchAs];
 };
