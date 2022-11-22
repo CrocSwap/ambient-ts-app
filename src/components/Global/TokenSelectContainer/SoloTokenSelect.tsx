@@ -1,11 +1,15 @@
-import { useMemo, Dispatch, SetStateAction } from 'react';
+import { useMemo, useState, Dispatch, SetStateAction, useEffect } from 'react';
 import { TokenListIF, TokenIF } from '../../../utils/interfaces/exports';
 import TokenSelect from '../TokenSelect/TokenSelect';
 import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
 import { setToken } from '../../../utils/state/temp';
 import { useSoloSearch } from './useSoloSearch';
 import styles from './SoloTokenSelect.module.css';
+import { memoizeFetchContractDetails } from '../../../App/functions/fetchContractDetails';
+import { ethers } from 'ethers';
+
 interface propsIF {
+    provider: ethers.providers.Provider | undefined;
     importedTokens: TokenIF[];
     chainId: string;
     setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
@@ -14,14 +18,20 @@ interface propsIF {
 }
 
 export const SoloTokenSelect = (props: propsIF) => {
-    const { importedTokens, chainId, setImportedTokens, closeModal, tokensOnActiveLists } = props;
+    const {
+        provider,
+        importedTokens,
+        chainId,
+        setImportedTokens,
+        closeModal,
+        tokensOnActiveLists
+    } = props;
 
-    const [tokensForDOM, otherTokensForDOM, input, setInput, searchType] = useSoloSearch(
+    const [tokensForDOM, otherTokensForDOM, validatedInput, setInput, searchType] = useSoloSearch(
         chainId,
         importedTokens,
         tokensOnActiveLists,
     );
-    false && input;
 
     const dispatch = useAppDispatch();
 
@@ -106,9 +116,24 @@ export const SoloTokenSelect = (props: propsIF) => {
         ))
         : null;
 
+    const [customToken, setCustomToken] = useState<TokenIF | null>(null);
+    useEffect(() => {
+        if (provider && searchType === 'address' && !otherTokensForDOM?.length) {
+            const cachedFetchContractDetails = memoizeFetchContractDetails();
+            const promise = cachedFetchContractDetails(
+                provider,
+                validatedInput,
+                chainId,
+            );
+            Promise.resolve(promise).then((res) => res && setCustomToken(res));
+        }
+    }, [searchType, validatedInput]);
+    // '0x0B0322d75bad9cA72eC7708708B54e6b38C26adA'
+
     return (
         <section className={styles.container}>
             <input
+                spellCheck={'false'}
                 type='text'
                 placeholder='&#61442; Search name or enter an Address'
                 onChange={(e) => setInput(e.target.value)}
@@ -116,7 +141,6 @@ export const SoloTokenSelect = (props: propsIF) => {
             {!searchType
                 ? importedTokenButtons
                 : null}
-            
             {searchType && otherTokensForDOM?.length
                 ? (
                     <>
@@ -128,7 +152,7 @@ export const SoloTokenSelect = (props: propsIF) => {
                 ) : null
             }
             {searchType && otherTokensForDOM?.length === 0
-                ? <h2>I could not find any!</h2>
+                ? <h2>{JSON.stringify(customToken)}</h2>
                 : null}
         </section>
     );
