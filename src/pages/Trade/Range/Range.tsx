@@ -246,8 +246,8 @@ export default function Range(props: RangePropsIF) {
     const defaultLowTick = useMemo(
         () =>
             tradeData.advancedLowTick === 0 ||
-            tradeData.advancedHighTick > currentPoolPriceTick * 10000 ||
-            tradeData.advancedLowTick < currentPoolPriceTick * 10000
+            tradeData.advancedHighTick > currentPoolPriceTick + 10000 ||
+            tradeData.advancedLowTick < currentPoolPriceTick - 10000
                 ? currentPoolPriceTick + defaultMinPriceDifferencePercentage * 100
                 : tradeData.advancedLowTick,
         [tradeData.advancedLowTick, currentPoolPriceTick],
@@ -256,8 +256,8 @@ export default function Range(props: RangePropsIF) {
     const defaultHighTick = useMemo(
         () =>
             tradeData.advancedHighTick === 0 ||
-            tradeData.advancedHighTick > currentPoolPriceTick * 10000 ||
-            tradeData.advancedLowTick < currentPoolPriceTick * 10000
+            tradeData.advancedHighTick > currentPoolPriceTick + 10000 ||
+            tradeData.advancedLowTick < currentPoolPriceTick - 10000
                 ? currentPoolPriceTick + defaultMaxPriceDifferencePercentage * 100
                 : tradeData.advancedHighTick,
         [tradeData.advancedHighTick, currentPoolPriceTick],
