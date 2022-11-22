@@ -414,6 +414,7 @@ export default function TradeCandleStickChart(props: ChartData) {
                     ghostScale: ghostScale,
                     subChartxScale: subChartxScale,
                     volumeScale: volumeScale,
+                    lastY: 0,
                 };
             });
         }
