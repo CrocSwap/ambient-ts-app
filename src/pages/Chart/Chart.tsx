@@ -1836,6 +1836,13 @@ export default function Chart(props: ChartData) {
         }
     }, [scaleData, selectedDate]);
 
+    useEffect(() => {
+        if (!location.pathname.includes('range')) {
+            props.liquidityData.lineAskSeries = [];
+            props.liquidityData.lineBidSeries = [];
+        }
+    }, [location]);
+
     const setLiqHighlightedLinesAndArea = (ranges: any, isAmbient = false) => {
         props.liquidityData.lineAskSeries = [];
         props.liquidityData.lineBidSeries = [];
