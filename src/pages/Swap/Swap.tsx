@@ -12,7 +12,6 @@ import ExtraInfo from '../../components/Swap/ExtraInfo/ExtraInfo';
 import ContentContainer from '../../components/Global/ContentContainer/ContentContainer';
 import SwapHeader from '../../components/Swap/SwapHeader/SwapHeader';
 import SwapButton from '../../components/Swap/SwapButton/SwapButton';
-import DenominationSwitch from '../../components/Swap/DenominationSwitch/DenominationSwitch';
 import DividerDark from '../../components/Global/DividerDark/DividerDark';
 import Modal from '../../components/Global/Modal/Modal';
 import RelativeModal from '../../components/Global/RelativeModal/RelativeModal';
@@ -139,7 +138,13 @@ export default function Swap(props: SwapPropsIF) {
         ? parseFloat(swapSlippage.stable.value)
         : parseFloat(swapSlippage.volatile.value);
 
-    const loginButton = <Button title='Connect Wallet' action={openModalWallet} />;
+    const loginButton = (
+        <button onClick={openModalWallet} className={styles.authenticate_button}>
+            Connect Wallet
+        </button>
+    );
+
+    // <Button title='Connect Wallet' action={openModalWallet} />;
 
     const [isApprovalPending, setIsApprovalPending] = useState(false);
 
@@ -475,12 +480,12 @@ export default function Swap(props: SwapPropsIF) {
 
     // -------------------------END OF Swap SHARE FUNCTIONALITY---------------------------
 
-    const denominationSwitchOrNull = priceImpact ? (
-        <div className={styles.header_container}>
-            <DividerDark addMarginTop />
-            <DenominationSwitch />
-        </div>
-    ) : null;
+    // const denominationSwitchOrNull = priceImpact ? (
+    //     <div className={styles.header_container}>
+    //         <DividerDark addMarginTop />
+    //         <DenominationSwitch />
+    //     </div>
+    // ) : null;
 
     // console.log({ isUserLoggedIn });
     // console.log({ swapAllowed });
@@ -539,7 +544,7 @@ export default function Swap(props: SwapPropsIF) {
                             isSwapCopied={isSwapCopied}
                         />
                     </motion.div>
-                    {denominationSwitchOrNull}
+                    {/* {denominationSwitchOrNull} */}
                     <ExtraInfo
                         tokenPair={{ dataTokenA: tokenA, dataTokenB: tokenB }}
                         priceImpact={priceImpact}

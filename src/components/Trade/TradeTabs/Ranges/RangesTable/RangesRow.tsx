@@ -253,12 +253,12 @@ export default function RangesRow(props: RangesRowPropsIF) {
         </DefaultTooltip>
     );
 
-    const baseTokenLogoComponent =
-        baseTokenLogo !== '' ? (
-            <img src={baseTokenLogo} alt='base token' width='15px' />
-        ) : (
-            <NoTokenIcon tokenInitial={position.baseSymbol.charAt(0)} width='30px' />
-        );
+    // const baseTokenLogoComponent =
+    //     baseTokenLogo !== '' ? (
+    //         <img src={baseTokenLogo} alt='base token' width='15px' />
+    //     ) : (
+    //         <NoTokenIcon tokenInitial={position.baseSymbol.charAt(0)} width='30px' />
+    //     );
 
     const quoteTokenLogoComponent =
         quoteTokenLogo !== '' ? (
@@ -267,29 +267,27 @@ export default function RangesRow(props: RangesRowPropsIF) {
             <NoTokenIcon tokenInitial={position.quoteSymbol.charAt(0)} width='30px' />
         );
 
-    const tokensTogether = (
-        <div
-            style={{
-                display: 'flex',
-                flexDirection: 'row',
-                alignItems: 'center',
-                gap: '4px',
-            }}
-        >
-            {baseTokenLogoComponent}
-            {quoteTokenLogoComponent}
-        </div>
-    );
+    // const tokensTogether = (
+    //     <div
+    //         style={{
+    //             display: 'flex',
+    //             flexDirection: 'row',
+    //             alignItems: 'center',
+    //             gap: '4px',
+    //         }}
+    //     >
+    //         {baseTokenLogoComponent}
+    //         {quoteTokenLogoComponent}
+    //     </div>
+    // );
 
     // portfolio page li element ---------------
-    const accountTokenImages = (
-        <li className={styles.token_images_account}>
-            {/* {baseTokenLogoComponent}
-            {quoteTokenLogoComponent} */}
-            {tokensTogether}
-            {/* <p>hello</p> */}
-        </li>
-    );
+    // const accountTokenImages = (
+    //     <li className={styles.token_images_account}>
+
+    //         {tokensTogether}
+    //     </li>
+    // );
 
     const poolName = (
         <li className='base_color'>
@@ -307,6 +305,63 @@ export default function RangesRow(props: RangesRowPropsIF) {
 
     // End of Leaderboard content--------------------------------
 
+    const baseQtyToolTipStyle = <p className={styles.tooltip_style}>{baseTokenSymbol + ' Qty'}</p>;
+    const quoteQtyToolTipStyle = (
+        <p className={styles.tooltip_style}>{quoteTokenSymbol + ' Qty'}</p>
+    );
+    const baseQtyDisplayWithTooltip = (
+        <DefaultTooltip
+            interactive
+            title={baseQtyToolTipStyle}
+            placement={'right'}
+            arrow
+            enterDelay={150}
+            leaveDelay={200}
+        >
+            <li onClick={openDetailsModal} data-label={baseTokenSymbol} className='color_white'>
+                <p
+                    style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'flex-end',
+                        gap: '4px',
+                        textAlign: 'right',
+                        fontFamily: 'monospace',
+                    }}
+                >
+                    {baseDisplay}
+                    {isOnPortfolioPage && <img src={baseTokenLogo} width='15px' alt='' />}
+                </p>
+            </li>
+        </DefaultTooltip>
+    );
+    const quoteQtyDisplayWithTooltip = (
+        <DefaultTooltip
+            interactive
+            title={quoteQtyToolTipStyle}
+            placement={'right'}
+            arrow
+            enterDelay={150}
+            leaveDelay={200}
+        >
+            <li onClick={openDetailsModal} data-label={quoteTokenSymbol} className='color_white'>
+                <p
+                    style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'flex-end',
+                        gap: '4px',
+                        textAlign: 'right',
+                        fontFamily: 'monospace',
+                    }}
+                >
+                    {quoteDisplay}
+                    {isOnPortfolioPage && <img src={quoteTokenLogo} width='15px' alt='' />}
+                </p>
+            </li>
+        </DefaultTooltip>
+    );
+
     return (
         <ul
             className={`${styles.row_container} ${activePositionStyle} ${userPositionStyle}`}
@@ -317,8 +372,13 @@ export default function RangesRow(props: RangesRowPropsIF) {
             }
             id={positionDomId}
         >
-            {isOnPortfolioPage && accountTokenImages}
-            {isOnPortfolioPage && !props.showSidebar && poolName}
+            {!showColumns && (
+                <li onClick={openDetailsModal}>
+                    <p className='base_color'> {'2 days ago'}</p>
+                </li>
+            )}
+            {/* {isOnPortfolioPage && accountTokenImages} */}
+            {isOnPortfolioPage && poolName}
             {displayIDorRanking}
             {!showColumns && !isOnPortfolioPage && walletWithTooltip}
             {showColumns && (
@@ -356,16 +416,8 @@ export default function RangesRow(props: RangesRowPropsIF) {
                 </li>
             )}
             {ValueWithTooltip}
-            {!showColumns && (
-                <li onClick={openDetailsModal} data-label={baseTokenSymbol} className='base_color'>
-                    <p style={{ textAlign: 'right', fontFamily: 'monospace' }}>{baseDisplay}</p>
-                </li>
-            )}
-            {!showColumns && (
-                <li onClick={openDetailsModal} data-label={quoteTokenSymbol} className='base_color'>
-                    <p style={{ textAlign: 'right', fontFamily: 'monospace' }}>{quoteDisplay}</p>
-                </li>
-            )}
+            {!showColumns && baseQtyDisplayWithTooltip}
+            {!showColumns && quoteQtyDisplayWithTooltip}
             {showColumns && (
                 <li
                     data-label={baseTokenSymbol + quoteTokenSymbol}

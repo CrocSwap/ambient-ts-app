@@ -148,7 +148,7 @@
     /* background: var(--dark2); */
     backdrop-filter: blur(6px);
     -webkit-backdrop-filter: blur(6px);
-    z-index: 7;
+    z-index: 999;
 
     display: flex;
     justify-content: center;
@@ -361,7 +361,7 @@
         /* display: flex; */
         flex-flow: column;
         /* gap: 40px; */
-        height: 95%;
+        height: 100%;
         position: relative;
     }
     @-moz-document url-prefix() {

@@ -254,7 +254,7 @@ export default function Chart(props: ChartData) {
             const newTargets = [...prevState];
             newTargets.filter((target: any) => target.name === 'Max')[0].value =
                 props.liquidityData !== undefined
-                    ? props.liquidityData.liqBidData[0].liqPrices
+                    ? props.liquidityData.liqBidData[0]?.liqPrices
                     : Infinity;
             newTargets.filter((target: any) => target.name === 'Min')[0].value = 0;
 
@@ -991,14 +991,14 @@ export default function Chart(props: ChartData) {
                             return newTargets;
                         });
 
-                        const lowDomain = parseFloat(
-                            pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
-                        );
-                        const highDomain = parseFloat(
-                            pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
-                        );
+                        // const lowDomain = parseFloat(
+                        //     pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
+                        // );
+                        // const highDomain = parseFloat(
+                        //     pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
+                        // );
 
-                        const buffer = 2 * (poolPriceDisplay! / 100);
+                        // const buffer = 2 * (poolPriceDisplay! / 100);
 
                         // scaleData.yScale.domain([lowDomain - buffer, highDomain + buffer]);
                     } else {

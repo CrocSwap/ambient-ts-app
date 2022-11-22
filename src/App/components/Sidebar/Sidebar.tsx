@@ -61,6 +61,8 @@ interface SidebarPropsIF {
     outsideControl: boolean;
     setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
     setOutsideControl: Dispatch<SetStateAction<boolean>>;
+
+    openModalWallet: () => void;
 }
 
 export default function Sidebar(props: SidebarPropsIF) {
@@ -86,6 +88,7 @@ export default function Sidebar(props: SidebarPropsIF) {
         setShowSidebar,
         // analyticsSearchInput,
         setAnalyticsSearchInput,
+        openModalWallet,
     } = props;
 
     const location = useLocation();
@@ -107,6 +110,7 @@ export default function Sidebar(props: SidebarPropsIF) {
         {
             name: 'Top Tokens',
             icon: topTokensImage,
+
             data: <TopTokens chainId={chainId} lastBlockNumber={lastBlockNumber} />,
         },
     ];
@@ -114,6 +118,7 @@ export default function Sidebar(props: SidebarPropsIF) {
         {
             name: 'Top Pools',
             icon: topPoolsImage,
+
             data: (
                 <TopPools
                     tradeData={tradeData}
@@ -184,6 +189,7 @@ export default function Sidebar(props: SidebarPropsIF) {
         {
             name: 'Favorite Pools',
             icon: favouritePoolsImage,
+
             data: (
                 <FavoritePools
                     favePools={favePools}
@@ -198,6 +204,7 @@ export default function Sidebar(props: SidebarPropsIF) {
         {
             name: 'Transactions',
             icon: recentTransactionsImage,
+
             data: (
                 <SidebarRecentTransactions
                     mostRecentTransactions={mostRecentTransactions}
@@ -346,12 +353,14 @@ export default function Sidebar(props: SidebarPropsIF) {
             {topTokens.map((item, idx) => (
                 <SidebarAccordion
                     showSidebar={showSidebar}
+                    shouldDisplayContentWhenUserNotLoggedIn={true}
                     idx={idx}
                     item={item}
                     toggleSidebar={toggleSidebar}
                     key={idx}
                     setShowSidebar={setShowSidebar}
                     openAllDefault={openAllDefault}
+                    openModalWallet={openModalWallet}
 
                     // mostRecent={mostRecentPositions}
                 />
@@ -359,12 +368,14 @@ export default function Sidebar(props: SidebarPropsIF) {
             {topPoolsSection.map((item, idx) => (
                 <SidebarAccordion
                     showSidebar={showSidebar}
+                    shouldDisplayContentWhenUserNotLoggedIn={true}
                     idx={idx}
                     item={item}
                     toggleSidebar={toggleSidebar}
                     key={idx}
                     setShowSidebar={setShowSidebar}
                     openAllDefault={openAllDefault}
+                    openModalWallet={openModalWallet}
                     // mostRecent={['should open automatically']}
                 />
             ))}
@@ -376,47 +387,55 @@ export default function Sidebar(props: SidebarPropsIF) {
             {recentTransactions.map((item, idx) => (
                 <SidebarAccordion
                     toggleSidebar={toggleSidebar}
+                    shouldDisplayContentWhenUserNotLoggedIn={false}
                     showSidebar={showSidebar}
                     idx={idx}
                     item={item}
                     key={idx}
                     setShowSidebar={setShowSidebar}
                     openAllDefault={openAllDefault}
+                    openModalWallet={openModalWallet}
                     // mostRecent={mostRecentTransactions}
                 />
             ))}{' '}
             {recentLimitOrders.map((item, idx) => (
                 <SidebarAccordion
                     toggleSidebar={toggleSidebar}
+                    shouldDisplayContentWhenUserNotLoggedIn={false}
                     showSidebar={showSidebar}
                     idx={idx}
                     item={item}
                     key={idx}
                     setShowSidebar={setShowSidebar}
                     openAllDefault={openAllDefault}
+                    openModalWallet={openModalWallet}
                 />
             ))}{' '}
             {rangePositions.map((item, idx) => (
                 <SidebarAccordion
                     toggleSidebar={toggleSidebar}
+                    shouldDisplayContentWhenUserNotLoggedIn={false}
                     showSidebar={showSidebar}
                     idx={idx}
                     item={item}
                     key={idx}
                     setShowSidebar={setShowSidebar}
                     openAllDefault={openAllDefault}
+                    openModalWallet={openModalWallet}
                     // mostRecent={positionsByUser}
                 />
             ))}
             {favoritePools.map((item, idx) => (
                 <SidebarAccordion
                     toggleSidebar={toggleSidebar}
+                    shouldDisplayContentWhenUserNotLoggedIn={true}
                     showSidebar={showSidebar}
                     idx={idx}
                     item={item}
                     key={idx}
                     setShowSidebar={setShowSidebar}
                     openAllDefault={openAllDefault}
+                    openModalWallet={openModalWallet}
                 />
             ))}
         </div>
