@@ -16,6 +16,7 @@ interface SidebarAccordionPropsIF {
     children?: ReactNode;
     showSidebar: boolean;
     setShowSidebar: Dispatch<SetStateAction<boolean>>;
+    shouldDisplayContentWhenUserNotLoggedIn: boolean;
 
     openModalWallet: () => void;
 
@@ -31,7 +32,14 @@ interface SidebarAccordionPropsIF {
 }
 
 export default function SidebarAccordion(props: SidebarAccordionPropsIF) {
-    const { showSidebar, idx, item, setShowSidebar, openModalWallet } = props;
+    const {
+        showSidebar,
+        shouldDisplayContentWhenUserNotLoggedIn,
+        idx,
+        item,
+        setShowSidebar,
+        openModalWallet,
+    } = props;
     const isUserLoggedIn = useAppSelector((state) => state.userData).isLoggedIn;
 
     const [isOpen, setIsOpen] = useState(false);
@@ -78,14 +86,15 @@ export default function SidebarAccordion(props: SidebarAccordionPropsIF) {
     }, [props.openAllDefault]);
     // if (props.openAllDefault){setIsOpen(true)}
 
-    const accordionContentToShow = isUserLoggedIn ? (
-        showOpenContentOrNull
-    ) : (
-        <div className={styles.connect_button}>
-            <p>Please connect your wallet to view the {item.name}</p>
-            <button onClick={openModalWallet}>Connect Wallet</button>
-        </div>
-    );
+    const accordionContentToShow =
+        isUserLoggedIn || shouldDisplayContentWhenUserNotLoggedIn ? (
+            showOpenContentOrNull
+        ) : (
+            <div className={styles.connect_button}>
+                <p>Your recent {item.name.toLowerCase()} will display here.</p>
+                <button onClick={openModalWallet}>Connect Wallet</button>
+            </div>
+        );
 
     return (
         <>

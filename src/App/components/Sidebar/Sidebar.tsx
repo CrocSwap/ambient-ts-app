@@ -353,6 +353,7 @@ export default function Sidebar(props: SidebarPropsIF) {
             {topTokens.map((item, idx) => (
                 <SidebarAccordion
                     showSidebar={showSidebar}
+                    shouldDisplayContentWhenUserNotLoggedIn={true}
                     idx={idx}
                     item={item}
                     toggleSidebar={toggleSidebar}
@@ -367,6 +368,7 @@ export default function Sidebar(props: SidebarPropsIF) {
             {topPoolsSection.map((item, idx) => (
                 <SidebarAccordion
                     showSidebar={showSidebar}
+                    shouldDisplayContentWhenUserNotLoggedIn={true}
                     idx={idx}
                     item={item}
                     toggleSidebar={toggleSidebar}
@@ -385,6 +387,7 @@ export default function Sidebar(props: SidebarPropsIF) {
             {recentTransactions.map((item, idx) => (
                 <SidebarAccordion
                     toggleSidebar={toggleSidebar}
+                    shouldDisplayContentWhenUserNotLoggedIn={false}
                     showSidebar={showSidebar}
                     idx={idx}
                     item={item}
@@ -398,6 +401,7 @@ export default function Sidebar(props: SidebarPropsIF) {
             {recentLimitOrders.map((item, idx) => (
                 <SidebarAccordion
                     toggleSidebar={toggleSidebar}
+                    shouldDisplayContentWhenUserNotLoggedIn={false}
                     showSidebar={showSidebar}
                     idx={idx}
                     item={item}
@@ -410,6 +414,7 @@ export default function Sidebar(props: SidebarPropsIF) {
             {rangePositions.map((item, idx) => (
                 <SidebarAccordion
                     toggleSidebar={toggleSidebar}
+                    shouldDisplayContentWhenUserNotLoggedIn={false}
                     showSidebar={showSidebar}
                     idx={idx}
                     item={item}
@@ -423,6 +428,7 @@ export default function Sidebar(props: SidebarPropsIF) {
             {favoritePools.map((item, idx) => (
                 <SidebarAccordion
                     toggleSidebar={toggleSidebar}
+                    shouldDisplayContentWhenUserNotLoggedIn={true}
                     showSidebar={showSidebar}
                     idx={idx}
                     item={item}
