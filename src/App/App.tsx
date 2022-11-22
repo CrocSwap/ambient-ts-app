@@ -108,6 +108,7 @@ import {
     setIsLoggedIn,
     setIsUserIdle,
     setNativeToken,
+    setRecentTokens,
 } from '../utils/state/userDataSlice';
 import { checkIsStable } from '../utils/data/stablePairs';
 import { useTokenMap } from '../utils/hooks/useTokenMap';
@@ -1901,6 +1902,33 @@ export default function App() {
                                 }),
                             );
                         }
+                        const result: TokenIF[] = [];
+                        const tokenMap = new Map();
+                        for (const item of updatedTransactions as ITransaction[]) {
+                            if (!tokenMap.has(item.base)) {
+                                tokenMap.set(item.base, true); // set any value to Map
+                                result.push({
+                                    name: item.baseName,
+                                    address: item.base,
+                                    symbol: item.baseSymbol,
+                                    decimals: item.baseDecimals,
+                                    chainId: parseInt(item.chainId),
+                                    logoURI: item.baseTokenLogoURI,
+                                });
+                            }
+                            if (!tokenMap.has(item.quote)) {
+                                tokenMap.set(item.quote, true); // set any value to Map
+                                result.push({
+                                    name: item.quoteName,
+                                    address: item.quote,
+                                    symbol: item.quoteSymbol,
+                                    decimals: item.quoteDecimals,
+                                    chainId: parseInt(item.chainId),
+                                    logoURI: item.quoteTokenLogoURI,
+                                });
+                            }
+                        }
+                        dispatch(setRecentTokens(result));
                     })
                     .catch(console.log);
             } catch (error) {
@@ -2247,6 +2275,7 @@ export default function App() {
 
         analyticsSearchInput: analyticsSearchInput,
         setAnalyticsSearchInput: setAnalyticsSearchInput,
+        openModalWallet: openModalWallet,
     };
 
     const analyticsProps = {

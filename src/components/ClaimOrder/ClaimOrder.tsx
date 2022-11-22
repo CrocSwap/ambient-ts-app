@@ -6,7 +6,7 @@ import Button from '../Global/Button/Button';
 import Animation from '../Global/Animation/Animation';
 import completed from '../../assets/animations/completed.json';
 import { FiExternalLink } from 'react-icons/fi';
-import { CrocEnv } from '@crocswap-libs/sdk';
+import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
 import Toggle2 from '../Global/Toggle/Toggle2';
 import TooltipComponent from '../Global/TooltipComponent/TooltipComponent';
 import ClaimOrderSettings from './ClaimOrderSettings/ClaimOrderSettings';
@@ -15,15 +15,25 @@ import ClaimOrderTokenHeader from './ClaimOrderTokenHeader/ClaimOrderTokenHeader
 import ClaimOrderInfo from './ClaimOrderInfo/ClaimOrderInfo';
 import ClaimOrderButton from './ClaimOrderButton/ClaimOrderButton';
 import { LimitOrderIF } from '../../utils/interfaces/exports';
+import { useAppDispatch } from '../../utils/hooks/reduxToolkit';
+import { addPendingTx, addReceipt, removePendingTx } from '../../utils/state/receiptDataSlice';
+// import { useMoralis } from 'react-moralis';
+// import { lookupChain } from '@crocswap-libs/sdk/dist/context';
+import {
+    isTransactionFailedError,
+    isTransactionReplacedError,
+    TransactionError,
+} from '../../utils/TransactionError';
 
 interface IClaimOrderProps {
     crocEnv: CrocEnv | undefined;
+    chainData: ChainSpec;
     limitOrder: LimitOrderIF;
     closeGlobalModal: () => void;
 }
 
 export default function ClaimOrder(props: IClaimOrderProps) {
-    const { crocEnv, limitOrder, closeGlobalModal } = props;
+    const { chainData, crocEnv, limitOrder, closeGlobalModal } = props;
     const {
         posLiqBaseDecimalCorrected,
         posLiqQuoteDecimalCorrected,
@@ -53,6 +63,9 @@ export default function ClaimOrder(props: IClaimOrderProps) {
     const [txErrorMessage, setTxErrorMessage] = useState('');
     const [showSettings, setShowSettings] = useState(false);
 
+    const dispatch = useAppDispatch();
+    // const { account } = useMoralis();
+
     const resetConfirmation = () => {
         setShowConfirmation(false);
         setNewClaimTransactionHash('');
@@ -80,21 +93,96 @@ export default function ClaimOrder(props: IClaimOrderProps) {
             setShowConfirmation(true);
             setShowSettings(false);
             console.log({ limitOrder });
-            if (limitOrder.isBid === true) {
-                crocEnv
-                    .sell(limitOrder.base, 0)
-                    .atLimit(limitOrder.quote, limitOrder.askTick)
-                    .recoverPost(limitOrder.latestCrossPivotTime, { surplus: false });
-            } else {
-                crocEnv
-                    .sell(limitOrder.quote, 0)
-                    .atLimit(limitOrder.base, limitOrder.bidTick)
-                    .recoverPost(limitOrder.latestCrossPivotTime, { surplus: false });
+            let tx;
+            try {
+                if (limitOrder.isBid === true) {
+                    tx = await crocEnv
+                        .buy(limitOrder.quote, 0)
+                        .atLimit(limitOrder.base, limitOrder.askTick)
+                        .recoverPost(limitOrder.latestCrossPivotTime, { surplus: false });
+                    setNewClaimTransactionHash(tx.hash);
+                    dispatch(addPendingTx(tx?.hash));
+                } else {
+                    tx = await crocEnv
+                        .buy(limitOrder.base, 0)
+                        .atLimit(limitOrder.quote, limitOrder.askTick)
+                        .recoverPost(limitOrder.latestCrossPivotTime, { surplus: false });
+                    setNewClaimTransactionHash(tx.hash);
+                    dispatch(addPendingTx(tx?.hash));
 
-                // .burnLiq(BigNumber.from(positionLiquidity));
+                    // .burnLiq(BigNumber.from(positionLiquidity));
+                }
+            } catch (error) {
+                console.log({ error });
+                setTxErrorCode(error?.code);
+                setTxErrorMessage(error?.message);
+            }
+            //  const newLimitOrderChangeCacheEndpoint =
+            //      'https://809821320828123.de:5000/new_limit_order_change?';
+
+            //  if (tx?.hash) {
+            //      fetch(
+            //          newLimitOrderChangeCacheEndpoint +
+            //              new URLSearchParams({
+            //                  chainId: limitOrder.chainId.toString(),
+            //                  tx: tx.hash,
+            //                  user: account ?? '',
+            //                  base: limitOrder.base,
+            //                  quote: limitOrder.quote,
+            //                  poolIdx: lookupChain(limitOrder.chainId).poolIndex.toString(),
+            //                  positionType: 'knockout',
+            //                  changeType: 'burn',
+            //                  limitTick: limitOrder.askTick.toString(),
+            //                  isBid: limitOrder.isBid.toString(), // boolean (Only applies if knockout is true.) Whether or not the knockout liquidity position is a bid (rather than an ask).
+            //              }),
+            //      );
+            //  }
+            let receipt;
+            try {
+                if (tx) receipt = await tx.wait();
+            } catch (e) {
+                const error = e as TransactionError;
+                console.log({ error });
+                // The user used "speed up" or something similar
+                // in their client, but we now have the updated info
+                if (isTransactionReplacedError(error)) {
+                    console.log('repriced');
+                    dispatch(removePendingTx(error.hash));
+                    const newTransactionHash = error.replacement.hash;
+                    dispatch(addPendingTx(newTransactionHash));
+                    setNewClaimTransactionHash(newTransactionHash);
+                    console.log({ newTransactionHash });
+                    receipt = error.receipt;
+
+                    //  if (newTransactionHash) {
+                    //      fetch(
+                    //          newLimitOrderChangeCacheEndpoint +
+                    //              new URLSearchParams({
+                    //                  chainId: limitOrder.chainId.toString(),
+                    //                  tx: newTransactionHash,
+                    //                  user: account ?? '',
+                    //                  base: limitOrder.base,
+                    //                  quote: limitOrder.quote,
+                    //                  poolIdx: lookupChain(limitOrder.chainId).poolIndex.toString(),
+                    //                  positionType: 'knockout',
+                    //                  changeType: 'mint',
+                    //                  limitTick: limitOrder.askTick.toString(),
+                    //                  isBid: limitOrder.isBid.toString(), // boolean (Only applies if knockout is true.) Whether or not the knockout liquidity position is a bid (rather than an ask).
+                    //                  liq: positionLiquidity, // boolean (Optional.) If true, transaction is immediately inserted into cache without checking whether tx has been mined.
+                    //              }),
+                    //      );
+                    //  }
+                } else if (isTransactionFailedError(error)) {
+                    // console.log({ error });
+                    receipt = error.receipt;
+                }
+            }
+
+            if (receipt) {
+                dispatch(addReceipt(JSON.stringify(receipt)));
+                dispatch(removePendingTx(receipt.transactionHash));
             }
         }
-        console.log('Order has been claimed');
     };
 
     // -------------END OF CLAIM FUNCTION TO BE REFACTORED
@@ -110,7 +198,7 @@ export default function ClaimOrder(props: IClaimOrderProps) {
             <Button title='Try Again' action={resetConfirmation} flat={true} />
         </div>
     );
-    const etherscanLink = 'chainData.blockExplorer' + 'tx/' + newClaimTransactionHash;
+    const etherscanLink = chainData.blockExplorer + 'tx/' + newClaimTransactionHash;
 
     const claimSuccess = (
         <div className={styles.removal_pending}>

@@ -129,7 +129,6 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
 
     const userPositionsCacheEndpoint = httpGraphCacheServerDomain + '/user_positions?';
     const userLimitOrdersCacheEndpoint = httpGraphCacheServerDomain + '/user_limit_order_states?';
-    // const userTransactionsCacheEndpoint = httpGraphCacheServerDomain + '/user_recent_changes?';
 
     const getLookupUserPositions = async (accountToSearch: string) =>
         fetch(

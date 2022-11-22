@@ -254,7 +254,7 @@ export default function Chart(props: ChartData) {
             const newTargets = [...prevState];
             newTargets.filter((target: any) => target.name === 'Max')[0].value =
                 props.liquidityData !== undefined
-                    ? props.liquidityData.liqBidData[0].liqPrices
+                    ? props.liquidityData.liqBidData[0]?.liqPrices
                     : Infinity;
             newTargets.filter((target: any) => target.name === 'Min')[0].value = 0;
 
@@ -602,10 +602,10 @@ export default function Chart(props: ChartData) {
             }
         }
     };
+
     // Zoom
     useEffect(() => {
         if (scaleData !== undefined) {
-            let lastY = 0;
             let date: any | undefined = undefined;
 
             const zoom = d3
@@ -661,14 +661,14 @@ export default function Chart(props: ChartData) {
                                 .domain(scaleData.yScale.range())
                                 .range([domainY[1] - domainY[0], 0]);
 
-                            const deltaY = linearY(t.y - lastY);
+                            const deltaY = linearY(t.y - scaleData.lastY);
 
                             scaleData.yScale.domain([domainY[0] + deltaY, domainY[1] + deltaY]);
                         }
 
                         // setCrosshairXForSubChart(scaleData.xScale(crosshairData[0].x));
 
-                        lastY = t.y;
+                        scaleData.lastY = t.y;
 
                         render();
                     }
@@ -990,6 +990,17 @@ export default function Chart(props: ChartData) {
                             setLiqHighlightedLinesAndArea(newTargets);
                             return newTargets;
                         });
+
+                        // const lowDomain = parseFloat(
+                        //     pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
+                        // );
+                        // const highDomain = parseFloat(
+                        //     pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
+                        // );
+
+                        // const buffer = 2 * (poolPriceDisplay! / 100);
+
+                        // scaleData.yScale.domain([lowDomain - buffer, highDomain + buffer]);
                     } else {
                         const lineToBeSet = dragedValue > displayValue ? 'Max' : 'Min';
 
@@ -1822,6 +1833,13 @@ export default function Chart(props: ChartData) {
             });
         }
     }, [scaleData, selectedDate]);
+
+    useEffect(() => {
+        if (!location.pathname.includes('range')) {
+            props.liquidityData.lineAskSeries = [];
+            props.liquidityData.lineBidSeries = [];
+        }
+    }, [location]);
 
     const setLiqHighlightedLinesAndArea = (ranges: any, isAmbient = false) => {
         props.liquidityData.lineAskSeries = [];
