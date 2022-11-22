@@ -1,6 +1,7 @@
 import { ERC20_ABI } from '@crocswap-libs/sdk';
 import { Contract, ethers } from 'ethers';
 import { memoizeProviderFn } from './memoizePromiseFn';
+import { TokenIF } from '../../utils/interfaces/exports';
 
 export interface ContractDetails {
     address: string;
@@ -15,7 +16,7 @@ export const fetchContractDetails = async (
     address: string,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     _chainId: string,
-): Promise<ContractDetails> => {
+): Promise<TokenIF> => {
     const contract = new Contract(address, ERC20_ABI, provider);
 
     let decimals,
@@ -29,14 +30,14 @@ export const fetchContractDetails = async (
         console.log({ error });
     }
 
-    return { address: address, chain: _chainId, decimals: decimals, symbol: symbol, name: name };
+    return { address: address, chainId: parseInt(_chainId), decimals: decimals, symbol: symbol, name: name, fromList: 'custom_token', logoURI: ''};
 };
 
 type FetchContractDetailsFn = (
     provider: ethers.providers.Provider,
     address: string,
     chainId: string,
-) => Promise<number | undefined>;
+) => Promise<TokenIF | undefined>;
 
 export function memoizeFetchContractDetails(): FetchContractDetailsFn {
     return memoizeProviderFn(fetchContractDetails) as FetchContractDetailsFn;
