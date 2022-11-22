@@ -2199,6 +2199,10 @@ export default function App() {
     };
 
     // props for <Range/> React element
+
+    const [rangetokenAQtyLocal, setRangeTokenAQtyLocal] = useState<number>(0);
+    const [rangetokenBQtyLocal, setRangeTokenBQtyLocal] = useState<number>(0);
+
     const rangeProps = {
         crocEnv: crocEnv,
         isUserLoggedIn: isUserLoggedIn,
@@ -2233,6 +2237,10 @@ export default function App() {
 
         poolExists: poolExists,
         isRangeCopied: isRangeCopied,
+        tokenAQtyLocal: rangetokenAQtyLocal,
+        tokenBQtyLocal: rangetokenBQtyLocal,
+        setTokenAQtyLocal: setRangeTokenAQtyLocal,
+        setTokenBQtyLocal: setRangeTokenBQtyLocal,
     };
 
     function toggleSidebar() {
