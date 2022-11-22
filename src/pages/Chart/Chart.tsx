@@ -991,14 +991,14 @@ export default function Chart(props: ChartData) {
                             return newTargets;
                         });
 
-                        const lowDomain = parseFloat(
-                            pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
-                        );
-                        const highDomain = parseFloat(
-                            pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
-                        );
+                        // const lowDomain = parseFloat(
+                        //     pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
+                        // );
+                        // const highDomain = parseFloat(
+                        //     pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
+                        // );
 
-                        const buffer = 2 * (poolPriceDisplay! / 100);
+                        // const buffer = 2 * (poolPriceDisplay! / 100);
 
                         // scaleData.yScale.domain([lowDomain - buffer, highDomain + buffer]);
                     } else {
