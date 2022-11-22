@@ -26,7 +26,6 @@ import {
 import { CandleChartData } from '../Trade/TradeCharts/TradeCharts';
 import FeeRateSubChart from '../Trade/TradeCharts/TradeChartsLoading/FeeRateSubChart';
 import TvlSubChart from '../Trade/TradeCharts/TradeChartsLoading/TvlSubChart';
-import VolumeSubChart from '../Trade/TradeCharts/TradeChartsLoading/VolumeSubChart';
 import { ChartUtils } from '../Trade/TradeCharts/TradeCandleStickChart';
 import './Chart.css';
 import {
@@ -210,7 +209,7 @@ export default function Chart(props: ChartData) {
     const [crosshairHorizontal, setCrosshairHorizontal] = useState<any>();
     const [crosshairVertical, setCrosshairVertical] = useState<any>();
     const [candlestick, setCandlestick] = useState<any>();
-
+    const [barSeries, setBarSeries] = useState<any>();
     // Line Series
     // const [ghostLines, setGhostLines] = useState<any>();
     const [horizontalLine, setHorizontalLine] = useState<any>();
@@ -1835,6 +1834,57 @@ export default function Chart(props: ChartData) {
     }, [scaleData, selectedDate]);
 
     useEffect(() => {
+        if (scaleData !== undefined && candlestick !== undefined) {
+            const barSeries = d3fc
+                .seriesSvgBar()
+                .align('center')
+                .bandwidth(d3fc.seriesSvgCandlestick())
+                .xScale(scaleData.xScale)
+                .yScale(scaleData.volumeScale)
+                .crossValue((d: any) => d.time)
+                .mainValue((d: any) => d.value)
+                .decorate((selection: any) => {
+                    selection.style('fill', (d: any) => {
+                        return selectedDate !== undefined &&
+                            selectedDate.getTime() === d.time.getTime()
+                            ? '#E480FF'
+                            : 'rgba(115,113,252, 0.6)';
+                    });
+                    selection.style('stroke', (d: any) =>
+                        selectedDate !== undefined && selectedDate.getTime() === d.time.getTime()
+                            ? '#E480FF'
+                            : 'rgba(115,113,252, 0.6)',
+                    );
+                    selection.on('mouseover', (event: any) => {
+                        d3.select(event.currentTarget).style('cursor', 'pointer');
+                    });
+                    selection.on('click', (event: any) => {
+                        if (
+                            selectedDate === undefined ||
+                            selectedDate !== event.target.__data__.time
+                        ) {
+                            d3.select(event.currentTarget)
+                                .style('fill', '#E480FF')
+                                .style('stroke', '#E480FF');
+
+                            setSelectedDate(() => {
+                                return event.target.__data__.time;
+                            });
+                        } else {
+                            setSelectedDate(() => {
+                                return undefined;
+                            });
+                        }
+                    });
+                });
+
+            setBarSeries(() => {
+                return barSeries;
+            });
+        }
+    }, [scaleData, selectedDate, candlestick]);
+
+    useEffect(() => {
         if (!location.pathname.includes('range')) {
             props.liquidityData.lineAskSeries = [];
             props.liquidityData.lineBidSeries = [];
@@ -2086,7 +2136,9 @@ export default function Chart(props: ChartData) {
                 isMouseMoveForSubChart,
                 isZoomForSubChart,
                 horizontalBandData,
+                barSeries,
                 volumeData,
+                showVolume,
             );
         }
     }, [
@@ -2107,6 +2159,7 @@ export default function Chart(props: ChartData) {
         crosshairHorizontal,
         marketLine,
         candlestick,
+        barSeries,
         liqAskSeries,
         liqBidSeries,
         lineBidSeries,
@@ -2124,6 +2177,7 @@ export default function Chart(props: ChartData) {
         mouseMoveEventForSubChart,
         isZoomForSubChart,
         horizontalBandData,
+        showVolume,
     ]);
 
     const minimum = (data: any, accessor: any) => {
@@ -2177,7 +2231,9 @@ export default function Chart(props: ChartData) {
             isMouseMoveForSubChart: boolean,
             isZoomForSubChart: boolean,
             horizontalBandData: any,
+            barSeries: any,
             volumeData: any,
+            showVolume: boolean,
         ) => {
             if (chartData.length > 0) {
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -2219,50 +2275,6 @@ export default function Chart(props: ChartData) {
                     .toValue((d: any) => d[1])
                     .decorate((selection: any) => {
                         selection.select('path').attr('fill', '#7371FC1A');
-                    });
-
-                const barSeries = d3fc
-                    .seriesSvgBar()
-                    .align('center')
-                    .bandwidth(candlestick.bandwidth())
-                    .xScale(scaleData.xScale)
-                    .yScale(scaleData.volumeScale)
-                    .crossValue((d: any) => d.time)
-                    .mainValue((d: any) => d.value)
-                    .decorate((selection: any) => {
-                        selection.style('fill', (d: any) => {
-                            return selectedDate !== undefined &&
-                                selectedDate.getTime() === d.time.getTime()
-                                ? '#E480FF'
-                                : 'rgba(115,113,252, 0.6)';
-                        });
-                        selection.style('stroke', (d: any) =>
-                            selectedDate !== undefined &&
-                            selectedDate.getTime() === d.time.getTime()
-                                ? '#E480FF'
-                                : 'rgba(115,113,252, 0.6)',
-                        );
-                        selection.on('mouseover', (event: any) => {
-                            d3.select(event.currentTarget).style('cursor', 'pointer');
-                        });
-                        selection.on('click', (event: any) => {
-                            if (
-                                selectedDate === undefined ||
-                                selectedDate !== event.target.__data__.time
-                            ) {
-                                d3.select(event.currentTarget)
-                                    .style('fill', '#E480FF')
-                                    .style('stroke', '#E480FF');
-
-                                setSelectedDate(() => {
-                                    return event.target.__data__.time;
-                                });
-                            } else {
-                                setSelectedDate(() => {
-                                    return undefined;
-                                });
-                            }
-                        });
                     });
 
                 const crosshairHorizontalJoin = d3fc.dataJoin('g', 'crosshairHorizontal');
@@ -2325,6 +2337,7 @@ export default function Chart(props: ChartData) {
                         areaBidJoin(svg, [liquidityData.liqBidData]).call(liqBidSeries);
                         lineAskSeriesJoin(svg, [liquidityData.lineBidSeries]).call(lineBidSeries);
                         lineBidSeriesJoin(svg, [liquidityData.lineAskSeries]).call(lineAskSeries);
+
                         barJoin(svg, [volumeData]).call(barSeries);
                     }
 
@@ -2893,47 +2906,6 @@ export default function Chart(props: ChartData) {
                                 mouseMoveChartName={mouseMoveChartName}
                                 setMouseMoveChartName={setMouseMoveChartName}
                             />
-                        </>
-                    )}
-
-                    {showVolume === true && candlestick !== undefined && (
-                        <>
-                            <hr />
-                            <label>
-                                Volume{' '}
-                                {formatDollarAmountAxis(
-                                    subChartValues.filter(
-                                        (value: any) => value.name === 'volume',
-                                    )[0].value,
-                                )}
-                            </label>
-                            {
-                                <VolumeSubChart
-                                    volumeData={parsedChartData?.volumeChartData.sort(
-                                        (a, b) => b.time - a.time,
-                                    )}
-                                    period={parsedChartData?.period}
-                                    crosshairForSubChart={crosshairForSubChart}
-                                    setsubChartValues={setsubChartValues}
-                                    setSelectedDate={setSelectedDate}
-                                    selectedDate={selectedDate}
-                                    candlestick={candlestick}
-                                    xScale={scaleData !== undefined ? scaleData.xScale : undefined}
-                                    xScaleCopy={
-                                        scaleData !== undefined ? scaleData.xScaleCopy : undefined
-                                    }
-                                    getNewCandleData={getNewCandleData}
-                                    setZoomAndYdragControl={setZoomAndYdragControl}
-                                    zoomAndYdragControl={zoomAndYdragControl}
-                                    setIsMouseMoveForSubChart={setIsMouseMoveForSubChart}
-                                    setIsZoomForSubChart={setIsZoomForSubChart}
-                                    setMouseMoveEventForSubChart={setMouseMoveEventForSubChart}
-                                    isMouseMoveForSubChart={isMouseMoveForSubChart}
-                                    mouseMoveChartName={mouseMoveChartName}
-                                    setMouseMoveChartName={setMouseMoveChartName}
-                                    render={render}
-                                />
-                            }
                         </>
                     )}
 
