@@ -501,6 +501,7 @@ export default function Range(props: RangePropsIF) {
             dispatch(
                 setPinnedMaxPrice(parseFloat(pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated)),
             );
+            dispatch(setRangeModuleTriggered(true));
         }
     }, [
         currentPoolPriceTick,
