@@ -4,13 +4,7 @@ import { useState, useEffect, useMemo, Dispatch, SetStateAction } from 'react';
 import { useMoralis } from 'react-moralis';
 import { ethers } from 'ethers';
 import { motion } from 'framer-motion';
-import {
-    concDepositSkew,
-    //  MIN_TICK, MAX_TICK,
-    CrocEnv,
-    MAX_TICK,
-    MIN_TICK,
-} from '@crocswap-libs/sdk';
+import { concDepositSkew, CrocEnv } from '@crocswap-libs/sdk';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 
 // START: Import JSX Elements
@@ -251,9 +245,9 @@ export default function Range(props: RangePropsIF) {
 
     const defaultLowTick = useMemo(
         () =>
-            tradeData.advancedLowTick === 0 &&
-            currentPoolPriceTick >= MIN_TICK &&
-            currentPoolPriceTick <= MAX_TICK
+            tradeData.advancedLowTick === 0 ||
+            tradeData.advancedHighTick > currentPoolPriceTick * 10000 ||
+            tradeData.advancedLowTick < currentPoolPriceTick * 10000
                 ? currentPoolPriceTick + defaultMinPriceDifferencePercentage * 100
                 : tradeData.advancedLowTick,
         [tradeData.advancedLowTick, currentPoolPriceTick],
@@ -261,9 +255,9 @@ export default function Range(props: RangePropsIF) {
 
     const defaultHighTick = useMemo(
         () =>
-            tradeData.advancedHighTick === 0 &&
-            currentPoolPriceTick >= MIN_TICK &&
-            currentPoolPriceTick <= MAX_TICK
+            tradeData.advancedHighTick === 0 ||
+            tradeData.advancedHighTick > currentPoolPriceTick * 10000 ||
+            tradeData.advancedLowTick < currentPoolPriceTick * 10000
                 ? currentPoolPriceTick + defaultMaxPriceDifferencePercentage * 100
                 : tradeData.advancedHighTick,
         [tradeData.advancedHighTick, currentPoolPriceTick],
@@ -435,7 +429,6 @@ export default function Range(props: RangePropsIF) {
 
     useEffect(() => {
         if (tradeData.advancedMode) {
-            console.log('firing');
             const pinnedDisplayPrices = getPinnedPriceValuesFromTicks(
                 denominationsInBase,
                 baseTokenDecimals,

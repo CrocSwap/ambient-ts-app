@@ -833,7 +833,9 @@ export default function App() {
 
             // console.log(tradeData.tokenA.address);
             // console.log(tradeData.tokenB.address);
+
             // reset rtk values for user specified range in ticks
+            console.log('resetting advanced ticks');
             dispatch(setAdvancedLowTick(0));
             dispatch(setAdvancedHighTick(0));
 
