@@ -1000,8 +1000,6 @@ export default function Chart(props: ChartData) {
 
                         const buffer = 2 * (poolPriceDisplay! / 100);
 
-                        console.log({ lowDomain, highDomain, buffer });
-
                         // scaleData.yScale.domain([lowDomain - buffer, highDomain + buffer]);
                     } else {
                         const lineToBeSet = dragedValue > displayValue ? 'Max' : 'Min';
