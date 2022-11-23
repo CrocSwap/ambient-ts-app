@@ -620,8 +620,8 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
                     gap: '8px',
                 }}
             >
-                {currentAmountDisplay}
                 {poolPriceChange}
+                {currentAmountDisplay}
                 <div>{tvlDisplay}</div>
             </div>
             <div>{graphSettingsContent}</div>
