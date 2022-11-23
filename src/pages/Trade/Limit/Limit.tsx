@@ -675,7 +675,7 @@ export default function Limit(props: LimitPropsIF) {
                 </motion.div>
                 <div className={styles.header_container}>
                     <DividerDark addMarginTop />
-                    <DenominationSwitch />
+                    {/* <DenominationSwitch /> */}
                 </div>
                 <LimitExtraInfo
                     isQtyEntered={tokenAInputQty !== '' || tokenBInputQty !== ''}
