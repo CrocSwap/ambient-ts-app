@@ -2631,6 +2631,7 @@ export default function App() {
                                         setCurrentTxActiveInTransactions
                                     }
                                     handlePulseAnimation={handlePulseAnimation}
+                                    gasPriceInGwei={gasPriceInGwei}
                                 />
                             }
                         />
@@ -2676,6 +2677,7 @@ export default function App() {
                                         setCurrentTxActiveInTransactions
                                     }
                                     handlePulseAnimation={handlePulseAnimation}
+                                    gasPriceInGwei={gasPriceInGwei}
                                 />
                             }
                         />
@@ -2732,6 +2734,7 @@ export default function App() {
                                         setCurrentTxActiveInTransactions
                                     }
                                     handlePulseAnimation={handlePulseAnimation}
+                                    gasPriceInGwei={gasPriceInGwei}
                                 />
                             }
                         />

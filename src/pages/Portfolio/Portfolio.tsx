@@ -7,8 +7,8 @@ import { getNFTs } from '../../App/functions/getNFTs';
 import { useEffect, useState, Dispatch, SetStateAction } from 'react';
 import { fetchAddress } from '../../App/functions/fetchAddress';
 import { useMoralis } from 'react-moralis';
-import { ethers } from 'ethers';
-import { CrocEnv, toDisplayQty, ChainSpec } from '@crocswap-libs/sdk';
+import { BigNumber, ethers } from 'ethers';
+import { CrocEnv, ChainSpec } from '@crocswap-libs/sdk';
 import Modal from '../../components/Global/Modal/Modal';
 import { useModal } from '../../components/Global/Modal/useModal';
 import { TokenIF } from '../../utils/interfaces/exports';
@@ -66,6 +66,7 @@ interface PortfolioPropsIF {
 
     currentTxActiveInTransactions: string;
     setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
+    gasPriceInGwei: number | undefined;
 }
 
 // const cachedFetchAddress = memoizePromiseFn(fetchAddress);
@@ -103,6 +104,7 @@ export default function Portfolio(props: PortfolioPropsIF) {
         showSidebar,
         isUserLoggedIn,
         handlePulseAnimation,
+        gasPriceInGwei,
     } = props;
     const { isInitialized } = useMoralis();
 
@@ -122,14 +124,14 @@ export default function Portfolio(props: PortfolioPropsIF) {
         if (crocEnv && selectedToken.address && connectedAccount) {
             crocEnv
                 .token(selectedToken.address)
-                .walletDisplay(connectedAccount)
-                .then((bal: string) => setTokenWalletBalance(bal))
+                .wallet(connectedAccount)
+                .then((bal: BigNumber) => setTokenWalletBalance(bal.toString()))
                 .catch(console.log);
             crocEnv
                 .token(selectedToken.address)
-                .balanceDisplay(connectedAccount)
-                .then((bal: string) => {
-                    setTokenDexBalance(bal);
+                .balance(connectedAccount)
+                .then((bal: BigNumber) => {
+                    setTokenDexBalance(bal.toString());
                 })
                 .catch(console.log);
         }
@@ -143,7 +145,8 @@ export default function Portfolio(props: PortfolioPropsIF) {
                     const allowance = await crocEnv
                         .token(selectedTokenAddress)
                         .allowance(connectedAccount);
-                    setTokenAllowance(toDisplayQty(allowance, selectedTokenDecimals));
+                    setTokenAllowance(allowance.toString());
+                    // setTokenAllowance(toDisplayQty(allowance, selectedTokenDecimals));
                 } catch (err) {
                     console.log(err);
                 }
@@ -239,6 +242,8 @@ export default function Portfolio(props: PortfolioPropsIF) {
                 openTokenModal={openTokenModal}
                 fullLayoutActive={fullLayoutActive}
                 setFullLayoutActive={setFullLayoutActive}
+                selectedTokenDecimals={selectedTokenDecimals}
+                gasPriceInGwei={gasPriceInGwei}
             />
         </div>
     );

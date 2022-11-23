@@ -35,6 +35,8 @@ interface ExchangeBalanceProps {
     setRecheckTokenBalances: Dispatch<SetStateAction<boolean>>;
     lastBlockNumber: number;
     openTokenModal: () => void;
+    selectedTokenDecimals: number;
+    gasPriceInGwei: number | undefined;
 }
 
 export default function ExchangeBalance(props: ExchangeBalanceProps) {
@@ -56,6 +58,8 @@ export default function ExchangeBalance(props: ExchangeBalanceProps) {
         openTokenModal,
         fullLayoutActive,
         setFullLayoutActive,
+        selectedTokenDecimals,
+        gasPriceInGwei,
     } = props;
 
     const [sendToAddress, setSendToAddress] = useState<string | undefined>();
@@ -124,6 +128,8 @@ export default function ExchangeBalance(props: ExchangeBalanceProps) {
                     setRecheckTokenAllowance={setRecheckTokenAllowance}
                     setRecheckTokenBalances={setRecheckTokenBalances}
                     openTokenModal={openTokenModal}
+                    selectedTokenDecimals={selectedTokenDecimals}
+                    gasPriceInGwei={gasPriceInGwei}
                 />
             ),
             icon: depositImage,

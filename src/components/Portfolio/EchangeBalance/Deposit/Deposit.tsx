@@ -5,7 +5,7 @@ import DepositCurrencySelector from './DepositCurrencySelector/DepositCurrencySe
 import { TokenIF } from '../../../../utils/interfaces/TokenIF';
 import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
 // import { setToken } from '../../../../utils/state/temp';
-import { CrocEnv } from '@crocswap-libs/sdk';
+import { CrocEnv, toDisplayQty } from '@crocswap-libs/sdk';
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
 import {
     addPendingTx,
@@ -17,6 +17,9 @@ import {
     isTransactionReplacedError,
     TransactionError,
 } from '../../../../utils/TransactionError';
+import { BigNumber } from 'ethers';
+import { ZERO_ADDRESS } from '../../../../constants';
+// import { formatAmountOld } from '../../../../utils/numbers';
 interface PortfolioDepositProps {
     crocEnv: CrocEnv | undefined;
     connectedAccount: string;
@@ -29,6 +32,8 @@ interface PortfolioDepositProps {
     setRecheckTokenAllowance: Dispatch<SetStateAction<boolean>>;
     setRecheckTokenBalances: Dispatch<SetStateAction<boolean>>;
     openTokenModal: () => void;
+    selectedTokenDecimals: number;
+    gasPriceInGwei: number | undefined;
 }
 
 export default function Deposit(props: PortfolioDepositProps) {
@@ -44,24 +49,78 @@ export default function Deposit(props: PortfolioDepositProps) {
         setRecheckTokenAllowance,
         setRecheckTokenBalances,
         openTokenModal,
+        selectedTokenDecimals,
+        gasPriceInGwei,
     } = props;
 
     const dispatch = useAppDispatch();
 
-    const [depositQty, setDepositQty] = useState<number>(0);
+    const isTokenEth = selectedToken.address === ZERO_ADDRESS;
+    const tokenWalletBalanceAdjustedNonDisplayString =
+        isTokenEth && !!gasPriceInGwei && !!tokenWalletBalance
+            ? BigNumber.from(tokenWalletBalance)
+                  .sub(BigNumber.from(Math.floor(gasPriceInGwei * 200000 * 1e8)))
+                  //   .sub(BigNumber.from(Math.floor(1000000000000000)))
+                  //   .sub(BigNumber.from(Math.floor(gasPriceInGwei * 11500000 * 1e-9)))
+                  .toString()
+            : tokenWalletBalance;
+
+    const tokenWalletBalanceDisplay = tokenWalletBalance
+        ? toDisplayQty(tokenWalletBalance, selectedTokenDecimals)
+        : undefined;
+
+    const tokenWalletBalanceDisplayNum = tokenWalletBalanceDisplay
+        ? parseFloat(tokenWalletBalanceDisplay)
+        : undefined;
+
+    const tokenWalletBalanceTruncated = tokenWalletBalanceDisplayNum
+        ? tokenWalletBalanceDisplayNum < 0.0001
+            ? tokenWalletBalanceDisplayNum.toExponential(2)
+            : tokenWalletBalanceDisplayNum < 2
+            ? tokenWalletBalanceDisplayNum.toPrecision(3)
+            : // : tokenWalletBalanceNum >= 100000
+              // ? formatAmountOld(tokenWalletBalanceNum)
+              tokenWalletBalanceDisplayNum.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+              })
+        : undefined;
+
+    const tokenDexBalanceNum = parseFloat(tokenDexBalance);
+
+    const tokenDexBalanceTruncated = tokenDexBalanceNum
+        ? tokenDexBalanceNum < 0.0001
+            ? tokenDexBalanceNum.toExponential(2)
+            : tokenDexBalanceNum < 2
+            ? tokenDexBalanceNum.toPrecision(3)
+            : // : tokenDexBalanceNum >= 100000
+              // ? formatAmountOld(tokenDexBalanceNum)
+              tokenDexBalanceNum.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+              })
+        : undefined;
+
+    const [depositQty, setDepositQty] = useState<string | undefined>();
     const [buttonMessage, setButtonMessage] = useState<string>('...');
     const [isButtonDisabled, setIsButtonDisabled] = useState<boolean>(true);
 
     const isTokenAllowanceSufficient = useMemo(
-        () => (tokenAllowance !== '0.0' ? parseFloat(tokenAllowance) >= depositQty : false),
+        () =>
+            tokenAllowance && depositQty
+                ? BigNumber.from(tokenAllowance).gte(BigNumber.from(depositQty))
+                : false,
         [tokenAllowance, depositQty],
     );
     const isWalletBalanceSufficient = useMemo(
-        () => (tokenWalletBalance !== '0.0' ? parseFloat(tokenWalletBalance) >= depositQty : false),
+        () =>
+            tokenWalletBalance && depositQty
+                ? BigNumber.from(tokenWalletBalance).gte(BigNumber.from(depositQty))
+                : false,
         [tokenWalletBalance, depositQty],
     );
 
-    const isDepositQtyValid = useMemo(() => depositQty > 0, [depositQty]);
+    const isDepositQtyValid = useMemo(() => depositQty !== undefined, [depositQty]);
 
     const [isApprovalPending, setIsApprovalPending] = useState(false);
     const [isDepositPending, setIsDepositPending] = useState(false);
@@ -115,15 +174,21 @@ export default function Deposit(props: PortfolioDepositProps) {
     //     </div>
     // );
 
-    const deposit = async (depositQty: number) => {
+    const deposit = async (depositQty: string) => {
         if (crocEnv && depositQty) {
             try {
+                const depositQtyDisplay = toDisplayQty(depositQty, selectedTokenDecimals);
+
                 setIsDepositPending(true);
+
                 const tx = await crocEnv
                     .token(selectedToken.address)
-                    .deposit(depositQty, connectedAccount);
+                    .deposit(depositQtyDisplay, connectedAccount);
+
                 dispatch(addPendingTx(tx?.hash));
+
                 let receipt;
+
                 try {
                     if (tx) receipt = await tx.wait();
                 } catch (e) {
@@ -184,7 +249,8 @@ export default function Deposit(props: PortfolioDepositProps) {
     };
 
     const depositFn = async () => {
-        await deposit(depositQty);
+        if (tokenWalletBalanceAdjustedNonDisplayString)
+            await deposit(tokenWalletBalanceAdjustedNonDisplayString);
     };
 
     const approve = async (tokenAddress: string) => {
@@ -232,6 +298,17 @@ export default function Deposit(props: PortfolioDepositProps) {
         await approve(selectedToken.address);
     };
 
+    const handleBalanceClick = () => {
+        setDepositQty(tokenWalletBalanceAdjustedNonDisplayString);
+
+        const depositInput = document.getElementById(
+            'exchange-balance-deposit-exchange-balance-deposit-quantity',
+        ) as HTMLInputElement;
+
+        if (depositInput && tokenWalletBalanceDisplay)
+            depositInput.value = tokenWalletBalanceDisplay;
+    };
+
     return (
         <div className={styles.deposit_container}>
             <div className={styles.info_text}>
@@ -244,10 +321,14 @@ export default function Deposit(props: PortfolioDepositProps) {
                 setDepositQty={setDepositQty}
             />
             <div className={styles.info_text}>
-                Your Wallet Balance ({selectedToken.symbol}): {tokenWalletBalance}
+                Your Wallet Balance ({selectedToken.symbol}):{' '}
+                <span className={styles.clickable_balance} onClick={handleBalanceClick}>
+                    {tokenWalletBalanceTruncated}
+                </span>
             </div>
             <div className={styles.info_text}>
-                Your Exchange Balance ({selectedToken.symbol}): {tokenDexBalance}
+                Your Exchange Balance ({selectedToken.symbol}):{' '}
+                <span>{tokenDexBalanceTruncated}</span>
             </div>
             <DepositButton
                 onClick={() => {

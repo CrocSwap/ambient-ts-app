@@ -9,3 +9,7 @@
     line-height: var(--body-lh);
     color: var(--text-grey-dark);
 }
+
+.clickable_balance {
+    cursor: pointer;
+}

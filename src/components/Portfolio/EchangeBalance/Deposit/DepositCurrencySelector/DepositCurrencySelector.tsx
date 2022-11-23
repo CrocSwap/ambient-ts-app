@@ -2,6 +2,7 @@ import styles from './DepositCurrencySelector.module.css';
 import { RiArrowDownSLine } from 'react-icons/ri';
 import { TokenIF } from '../../../../../utils/interfaces/TokenIF';
 import { Dispatch, SetStateAction } from 'react';
+import { fromDisplayQty } from '@crocswap-libs/sdk';
 
 interface DepositCurrencySelectorProps {
     fieldId: string;
@@ -9,7 +10,7 @@ interface DepositCurrencySelectorProps {
     sellToken?: boolean;
     disable?: boolean;
     selectedToken: TokenIF;
-    setDepositQty: Dispatch<SetStateAction<number>>; // updateOtherQuantity: (evt: ChangeEvent<HTMLInputElement>) => void;
+    setDepositQty: Dispatch<SetStateAction<string | undefined>>;
 }
 
 export default function DepositCurrencySelector(props: DepositCurrencySelectorProps) {
@@ -22,9 +23,12 @@ export default function DepositCurrencySelector(props: DepositCurrencySelectorPr
                 className={styles.currency_quantity}
                 placeholder='0'
                 onChange={(event) => {
-                    setDepositQty(
-                        parseFloat(event.target.value) > 0 ? parseFloat(event.target.value) : 0,
+                    // console.log(event.target.value);
+                    const nonDisplayQty = fromDisplayQty(
+                        event.target.value,
+                        selectedToken.decimals,
                     );
+                    setDepositQty(nonDisplayQty.toString());
                 }}
                 type='string'
                 inputMode='decimal'
