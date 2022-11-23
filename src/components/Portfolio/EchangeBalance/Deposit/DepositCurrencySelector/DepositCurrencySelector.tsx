@@ -24,11 +24,15 @@ export default function DepositCurrencySelector(props: DepositCurrencySelectorPr
                 placeholder='0'
                 onChange={(event) => {
                     // console.log(event.target.value);
-                    const nonDisplayQty = fromDisplayQty(
-                        event.target.value,
-                        selectedToken.decimals,
-                    );
-                    setDepositQty(nonDisplayQty.toString());
+                    if (parseFloat(event.target.value) > 0) {
+                        const nonDisplayQty = fromDisplayQty(
+                            event.target.value,
+                            selectedToken.decimals,
+                        );
+                        setDepositQty(nonDisplayQty.toString());
+                    } else {
+                        setDepositQty(undefined);
+                    }
                 }}
                 type='string'
                 inputMode='decimal'
