@@ -13,3 +13,7 @@
 .hex_address {
     user-select: all;
 }
+
+.clickable_balance {
+    cursor: pointer;
+}

@@ -5,7 +5,7 @@ import DepositCurrencySelector from './DepositCurrencySelector/DepositCurrencySe
 import { TokenIF } from '../../../../utils/interfaces/TokenIF';
 import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
 // import { setToken } from '../../../../utils/state/temp';
-import { CrocEnv, fromDisplayQty, toDisplayQty } from '@crocswap-libs/sdk';
+import { CrocEnv, toDisplayQty } from '@crocswap-libs/sdk';
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
 import {
     addPendingTx,
@@ -247,6 +247,7 @@ export default function Deposit(props: PortfolioDepositProps) {
                 if (receipt) {
                     dispatch(addReceipt(JSON.stringify(receipt)));
                     dispatch(removePendingTx(receipt.transactionHash));
+                    resetDepositQty();
                 }
             } catch (error) {
                 console.warn({ error });
@@ -312,20 +313,31 @@ export default function Deposit(props: PortfolioDepositProps) {
         'exchange-balance-deposit-exchange-balance-deposit-quantity',
     ) as HTMLInputElement;
 
-    useEffect(() => {
+    const resetDepositQty = () => {
         if (depositInput) {
-            const inputDisplayValueString = depositInput.value;
-            if (parseFloat(inputDisplayValueString) > 0) {
-                const nonDisplayQty = fromDisplayQty(
-                    inputDisplayValueString,
-                    selectedToken.decimals,
-                );
-                setDepositQtyNonDisplay(nonDisplayQty.toString());
-            } else {
-                setDepositQtyNonDisplay(undefined);
-            }
+            setDepositQtyNonDisplay(undefined);
+            depositInput.value = '';
         }
-    }, [selectedToken.decimals]);
+    };
+
+    useEffect(() => {
+        resetDepositQty();
+    }, [selectedToken.address]);
+
+    // useEffect(() => {
+    //     if (depositInput) {
+    //         const inputDisplayValueString = depositInput.value;
+    //         if (parseFloat(inputDisplayValueString) > 0) {
+    //             const nonDisplayQty = fromDisplayQty(
+    //                 inputDisplayValueString,
+    //                 selectedToken.decimals,
+    //             );
+    //             setDepositQtyNonDisplay(nonDisplayQty.toString());
+    //         } else {
+    //             setDepositQtyNonDisplay(undefined);
+    //         }
+    //     }
+    // }, [selectedToken.decimals]);
 
     const handleBalanceClick = () => {
         setDepositQtyNonDisplay(tokenWalletBalanceAdjustedNonDisplayString);

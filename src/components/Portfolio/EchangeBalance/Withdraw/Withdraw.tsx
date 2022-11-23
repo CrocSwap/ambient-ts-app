@@ -1,4 +1,4 @@
-import { CrocEnv, fromDisplayQty, toDisplayQty } from '@crocswap-libs/sdk';
+import { CrocEnv, toDisplayQty } from '@crocswap-libs/sdk';
 import { TokenIF } from '../../../../utils/interfaces/TokenIF';
 import styles from './Withdraw.module.css';
 import WithdrawButton from './WithdrawButton/WithdrawButton';
@@ -324,6 +324,7 @@ export default function Withdraw(props: PortfolioWithdrawProps) {
                 if (receipt) {
                     dispatch(addReceipt(JSON.stringify(receipt)));
                     dispatch(removePendingTx(receipt.transactionHash));
+                    resetWithdrawQty();
                 }
             } catch (error) {
                 console.warn({ error });
@@ -339,20 +340,16 @@ export default function Withdraw(props: PortfolioWithdrawProps) {
         'exchange-balance-withdraw-exchange-balance-withdraw-quantity',
     ) as HTMLInputElement;
 
-    useEffect(() => {
+    const resetWithdrawQty = () => {
         if (withdrawInput) {
-            const inputDisplayValueString = withdrawInput.value;
-            if (parseFloat(inputDisplayValueString) > 0) {
-                const nonDisplayQty = fromDisplayQty(
-                    inputDisplayValueString,
-                    selectedToken.decimals,
-                );
-                setWithdrawQtyNonDisplay(nonDisplayQty.toString());
-            } else {
-                setWithdrawQtyNonDisplay(undefined);
-            }
+            setWithdrawQtyNonDisplay(undefined);
+            withdrawInput.value = '';
         }
-    }, [selectedToken.decimals]);
+    };
+
+    useEffect(() => {
+        resetWithdrawQty();
+    }, [selectedToken.address]);
 
     const withdrawFn = async () => {
         if (withdrawQtyNonDisplay) await withdraw(withdrawQtyNonDisplay);
