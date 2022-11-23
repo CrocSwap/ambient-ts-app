@@ -152,6 +152,7 @@ export default function ExchangeBalance(props: ExchangeBalanceProps) {
                     setSendToAddress={setSendToAddress}
                     secondaryEnsName={secondaryEnsName}
                     openTokenModal={openTokenModal}
+                    gasPriceInGwei={gasPriceInGwei}
                 />
             ),
             icon: withdrawImage,
