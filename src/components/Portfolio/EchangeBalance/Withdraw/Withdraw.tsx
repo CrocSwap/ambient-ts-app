@@ -19,7 +19,6 @@ import {
     isTransactionReplacedError,
     TransactionError,
 } from '../../../../utils/TransactionError';
-import { ZERO_ADDRESS } from '../../../../constants';
 import { BigNumber } from 'ethers';
 interface PortfolioWithdrawProps {
     crocEnv: CrocEnv | undefined;
@@ -57,23 +56,11 @@ export default function Withdraw(props: PortfolioWithdrawProps) {
         setSendToAddress,
         secondaryEnsName,
         openTokenModal,
-        gasPriceInGwei,
     } = props;
 
     const dispatch = useAppDispatch();
 
-    const isTokenEth = selectedToken.address === ZERO_ADDRESS;
-
     const selectedTokenDecimals = selectedToken.decimals;
-
-    const tokenDexBalanceAdjustedNonDisplayString =
-        isTokenEth && !!gasPriceInGwei && !!tokenDexBalance
-            ? BigNumber.from(tokenDexBalance)
-                  .sub(BigNumber.from(Math.floor(gasPriceInGwei * 200000 * 1e8)))
-                  //   .sub(BigNumber.from(Math.floor(1000000000000000)))
-                  //   .sub(BigNumber.from(Math.floor(gasPriceInGwei * 11500000 * 1e-9)))
-                  .toString()
-            : tokenDexBalance;
 
     const tokenWalletBalanceDisplay = tokenWalletBalance
         ? toDisplayQty(tokenWalletBalance, selectedTokenDecimals)
@@ -182,12 +169,10 @@ export default function Withdraw(props: PortfolioWithdrawProps) {
 
     const isDexBalanceSufficient = useMemo(
         () =>
-            tokenDexBalanceAdjustedNonDisplayString && !!withdrawQtyNonDisplay
-                ? BigNumber.from(tokenDexBalanceAdjustedNonDisplayString).gte(
-                      BigNumber.from(withdrawQtyNonDisplay),
-                  )
+            tokenDexBalance && !!withdrawQtyNonDisplay
+                ? BigNumber.from(tokenDexBalance).gte(BigNumber.from(withdrawQtyNonDisplay))
                 : false,
-        [tokenDexBalanceAdjustedNonDisplayString, withdrawQtyNonDisplay],
+        [tokenDexBalance, withdrawQtyNonDisplay],
     );
 
     const isWithdrawQtyValid = useMemo(
@@ -415,7 +400,7 @@ export default function Withdraw(props: PortfolioWithdrawProps) {
     );
 
     const handleBalanceClick = () => {
-        setWithdrawQtyNonDisplay(tokenDexBalanceAdjustedNonDisplayString);
+        setWithdrawQtyNonDisplay(tokenDexBalance);
 
         if (withdrawInput && tokenExchangeDepositsDisplay)
             withdrawInput.value = tokenExchangeDepositsDisplay;
