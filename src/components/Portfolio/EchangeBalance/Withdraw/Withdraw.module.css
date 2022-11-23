@@ -28,3 +28,7 @@
     line-height: var(--body-lh);
     color: var(--text-grey-light);
 }
+
+.clickable_balance {
+    cursor: pointer;
+}
