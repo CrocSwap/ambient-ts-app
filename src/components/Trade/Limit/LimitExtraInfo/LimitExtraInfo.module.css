@@ -57,9 +57,9 @@
         gap: 5px;
         text-align: start;
     }
-    .extra_info_content {
+    /* .extra_info_content {
         padding: 0 10%;
-    }
+    } */
     .data {
         text-align: end;
     }
