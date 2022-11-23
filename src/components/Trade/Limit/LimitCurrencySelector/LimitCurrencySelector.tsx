@@ -266,7 +266,7 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
                                     color: isSellTokenSelector ? '#f6385b' : '#15be67',
                                 }}
                             >
-                                {sellTokenWalletBalanceChange}
+                                <p style={{ fontSize: '9px' }}> {sellTokenWalletBalanceChange}</p>
                             </div>
                         </div>
                     </div>
@@ -317,7 +317,7 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
                                     color: isSellTokenSelector ? '#f6385b' : '#15be67',
                                 }}
                             >
-                                {sellTokenSurplusChange}
+                                <p style={{ fontSize: '9px' }}> {sellTokenSurplusChange}</p>
                             </div>
                         </div>
                     </div>
