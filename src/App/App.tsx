@@ -426,11 +426,8 @@ export default function App() {
     }, [chainData.chainId]);
 
     useEffect(() => {
-        // console.log({ isUserLoggedIn });
-        // console.log({ account });
-        if (!isUserLoggedIn) {
-            dispatch(resetTokenData());
-        } else if (account) {
+        dispatch(resetTokenData());
+        if (account) {
             dispatch(setAddressCurrent(account));
         } else {
             dispatch(setAddressCurrent(undefined));
@@ -1972,7 +1969,6 @@ export default function App() {
         setBaseTokenDexBalance('');
         setQuoteTokenDexBalance('');
         dispatch(resetTradeData());
-        dispatch(resetTokenData());
         dispatch(resetUserGraphData());
         dispatch(resetReceiptData());
         dispatch(resetTokenData());
