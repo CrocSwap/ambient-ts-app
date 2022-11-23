@@ -833,7 +833,9 @@ export default function App() {
 
             // console.log(tradeData.tokenA.address);
             // console.log(tradeData.tokenB.address);
+
             // reset rtk values for user specified range in ticks
+            console.log('resetting advanced ticks');
             dispatch(setAdvancedLowTick(0));
             dispatch(setAdvancedHighTick(0));
 
@@ -2199,6 +2201,10 @@ export default function App() {
     };
 
     // props for <Range/> React element
+
+    const [rangetokenAQtyLocal, setRangeTokenAQtyLocal] = useState<number>(0);
+    const [rangetokenBQtyLocal, setRangeTokenBQtyLocal] = useState<number>(0);
+
     const rangeProps = {
         crocEnv: crocEnv,
         isUserLoggedIn: isUserLoggedIn,
@@ -2233,6 +2239,10 @@ export default function App() {
 
         poolExists: poolExists,
         isRangeCopied: isRangeCopied,
+        tokenAQtyLocal: rangetokenAQtyLocal,
+        tokenBQtyLocal: rangetokenBQtyLocal,
+        setTokenAQtyLocal: setRangeTokenAQtyLocal,
+        setTokenBQtyLocal: setRangeTokenBQtyLocal,
     };
 
     function toggleSidebar() {

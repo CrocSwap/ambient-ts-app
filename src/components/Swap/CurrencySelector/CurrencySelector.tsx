@@ -342,6 +342,7 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                                 <div
                                     style={{
                                         color: isSellTokenSelector ? '#f6385b' : '#15be67',
+                                        fontSize: '9px',
                                     }}
                                 >
                                     {isSellTokenSelector
@@ -401,6 +402,7 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                                 <div
                                     style={{
                                         color: isSellTokenSelector ? '#f6385b' : '#15be67',
+                                        fontSize: '9px',
                                     }}
                                 >
                                     {isSellTokenSelector
