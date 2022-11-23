@@ -4,12 +4,14 @@
     gap: 1rem;
     padding: 1rem;
 }
-.info_text {
+.info_text_non_clickable {
     font-size: var(--body-size);
     line-height: var(--body-lh);
     color: var(--text-grey-dark);
 }
-
-.clickable_balance {
+.info_text_clickable {
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+    color: var(--text-grey-dark);
     cursor: pointer;
 }

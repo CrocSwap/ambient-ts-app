@@ -83,6 +83,8 @@ export default function Withdraw(props: PortfolioWithdrawProps) {
               })
         : undefined;
 
+    const isTokenDexBalanceGreaterThanZero = parseFloat(tokenDexBalance) > 0;
+
     const tokenExchangeDepositsDisplay = tokenDexBalance
         ? toDisplayQty(tokenDexBalance, selectedTokenDecimals)
         : undefined;
@@ -371,7 +373,7 @@ export default function Withdraw(props: PortfolioWithdrawProps) {
 
     const resolvedAddressOrNull =
         isSendToAddressChecked && isResolvedAddressValid && isResolvedAddressDifferent ? (
-            <div className={styles.info_text}>
+            <div className={styles.info_text_non_clickable}>
                 Resolved Destination Address:
                 <div className={styles.hex_address}>{resolvedAddress}</div>
             </div>
@@ -379,7 +381,7 @@ export default function Withdraw(props: PortfolioWithdrawProps) {
 
     const secondaryEnsOrNull =
         isSendToAddressChecked && secondaryEnsName ? (
-            <div className={styles.info_text}>
+            <div className={styles.info_text_non_clickable}>
                 Destination ENS Address: {secondaryEnsName}
                 {/* <div className={styles.hex_address}>{secondaryEnsName}</div> */}
             </div>
@@ -400,15 +402,19 @@ export default function Withdraw(props: PortfolioWithdrawProps) {
     );
 
     const handleBalanceClick = () => {
-        setWithdrawQtyNonDisplay(tokenDexBalance);
+        if (isTokenDexBalanceGreaterThanZero) {
+            setWithdrawQtyNonDisplay(tokenDexBalance);
 
-        if (withdrawInput && tokenExchangeDepositsDisplay)
-            withdrawInput.value = tokenExchangeDepositsDisplay;
+            if (withdrawInput && tokenExchangeDepositsDisplay)
+                withdrawInput.value = tokenExchangeDepositsDisplay;
+        }
     };
 
     return (
         <div className={styles.deposit_container}>
-            <div className={styles.info_text}>Withdraw deposited collateral to your wallet:</div>
+            <div className={styles.info_text_non_clickable}>
+                Withdraw deposited collateral to your wallet:
+            </div>
             {toggleContent}
             {transferAddressOrNull}
             <WithdrawCurrencySelector
@@ -419,13 +425,17 @@ export default function Withdraw(props: PortfolioWithdrawProps) {
                 isSendToAddressChecked={isSendToAddressChecked}
                 setIsSendToAddressChecked={setIsSendToAddressChecked}
             />
-            <div className={styles.info_text}>
-                Your Exchange Balance ({selectedToken.symbol}):{' '}
-                <span className={styles.clickable_balance} onClick={handleBalanceClick}>
-                    {tokenDexBalanceTruncated || '0.0'}
-                </span>
+            <div
+                onClick={handleBalanceClick}
+                className={
+                    isTokenDexBalanceGreaterThanZero
+                        ? styles.info_text_clickable
+                        : styles.info_text_non_clickable
+                }
+            >
+                Your Exchange Balance ({selectedToken.symbol}): {tokenDexBalanceTruncated || '0.0'}
             </div>
-            <div className={styles.info_text}>
+            <div className={styles.info_text_non_clickable}>
                 {isSendToAddressChecked
                     ? `Destination Wallet Balance (${selectedToken.symbol}): `
                     : `Your Wallet Balance (${selectedToken.symbol}): `}

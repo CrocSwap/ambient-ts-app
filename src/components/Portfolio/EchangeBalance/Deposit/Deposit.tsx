@@ -339,16 +339,20 @@ export default function Deposit(props: PortfolioDepositProps) {
     //     }
     // }, [selectedToken.decimals]);
 
-    const handleBalanceClick = () => {
-        setDepositQtyNonDisplay(tokenWalletBalanceAdjustedNonDisplayString);
+    const isTokenWalletBalanceGreaterThanZero = parseFloat(tokenWalletBalance) > 0;
 
-        if (depositInput && tokenWalletBalanceDisplay)
-            depositInput.value = tokenWalletBalanceDisplay;
+    const handleBalanceClick = () => {
+        if (isTokenWalletBalanceGreaterThanZero) {
+            setDepositQtyNonDisplay(tokenWalletBalanceAdjustedNonDisplayString);
+
+            if (depositInput && tokenWalletBalanceDisplay)
+                depositInput.value = tokenWalletBalanceDisplay;
+        }
     };
 
     return (
         <div className={styles.deposit_container}>
-            <div className={styles.info_text}>
+            <div className={styles.info_text_non_clickable}>
                 Deposit collateral for future trading at lower gas costs:
             </div>
             <DepositCurrencySelector
@@ -357,13 +361,17 @@ export default function Deposit(props: PortfolioDepositProps) {
                 selectedToken={selectedToken}
                 setDepositQty={setDepositQtyNonDisplay}
             />
-            <div className={styles.info_text}>
-                Your Wallet Balance ({selectedToken.symbol}):{' '}
-                <span className={styles.clickable_balance} onClick={handleBalanceClick}>
-                    {tokenWalletBalanceTruncated || '0.0'}
-                </span>
+            <div
+                onClick={handleBalanceClick}
+                className={
+                    isTokenWalletBalanceGreaterThanZero
+                        ? styles.info_text_clickable
+                        : styles.info_text_non_clickable
+                }
+            >
+                Your Wallet Balance ({selectedToken.symbol}): {tokenWalletBalanceTruncated || '0.0'}
             </div>
-            <div className={styles.info_text}>
+            <div className={styles.info_text_non_clickable}>
                 Your Exchange Balance ({selectedToken.symbol}):{' '}
                 <span>{tokenDexBalanceTruncated || '0.0'}</span>
             </div>

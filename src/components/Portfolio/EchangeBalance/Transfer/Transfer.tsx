@@ -311,14 +311,14 @@ export default function Transfer(props: PortfolioTransferProps) {
     const isResolvedAddressDifferent = resolvedAddress !== sendToAddress;
 
     const resolvedAddressOrNull = isResolvedAddressDifferent ? (
-        <div className={styles.info_text}>
+        <div className={styles.info_text_non_clickable}>
             Resolved Destination Address:
             <div className={styles.hex_address}>{resolvedAddress}</div>
         </div>
     ) : null;
 
     const secondaryEnsOrNull = secondaryEnsName ? (
-        <div className={styles.info_text}>
+        <div className={styles.info_text_non_clickable}>
             Destination ENS Address: {secondaryEnsName}
             {/* <div className={styles.hex_address}>{secondaryEnsName}</div> */}
         </div>
@@ -339,16 +339,20 @@ export default function Transfer(props: PortfolioTransferProps) {
         resetTransferQty();
     }, [selectedToken.address]);
 
-    const handleBalanceClick = () => {
-        setTransferQtyNonDisplay(tokenDexBalance);
+    const isTokenDexBalanceGreaterThanZero = parseFloat(tokenDexBalance) > 0;
 
-        if (transferInput && tokenExchangeDepositsDisplay)
-            transferInput.value = tokenExchangeDepositsDisplay;
+    const handleBalanceClick = () => {
+        if (isTokenDexBalanceGreaterThanZero) {
+            setTransferQtyNonDisplay(tokenDexBalance);
+
+            if (transferInput && tokenExchangeDepositsDisplay)
+                transferInput.value = tokenExchangeDepositsDisplay;
+        }
     };
 
     return (
         <div className={styles.deposit_container}>
-            <div className={styles.info_text}>
+            <div className={styles.info_text_non_clickable}>
                 Transfer deposited collateral to another deposit account:
             </div>
             <TransferAddressInput
@@ -362,13 +366,17 @@ export default function Transfer(props: PortfolioTransferProps) {
                 selectedToken={selectedToken}
                 setTransferQty={setTransferQtyNonDisplay}
             />
-            <div className={styles.info_text}>
-                Your Exchange Balance ({selectedToken.symbol}):{' '}
-                <span className={styles.clickable_balance} onClick={handleBalanceClick}>
-                    {tokenDexBalanceTruncated || '0.0'}
-                </span>
+            <div
+                onClick={handleBalanceClick}
+                className={
+                    isTokenDexBalanceGreaterThanZero
+                        ? styles.info_text_clickable
+                        : styles.info_text_non_clickable
+                }
+            >
+                Your Exchange Balance ({selectedToken.symbol}): {tokenDexBalanceTruncated || '0.0'}
             </div>
-            <div className={styles.info_text}>
+            <div className={styles.info_text_non_clickable}>
                 Destination Exchange Balance ({selectedToken.symbol}):{' '}
                 {sendToAddressBalanceTruncated || '0.0'}
             </div>
