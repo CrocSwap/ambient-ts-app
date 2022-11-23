@@ -1,4 +1,7 @@
-import optimisticImage from '../../../../assets/images/networks/optimistic.svg';
+import goerliLogo from '../../../../assets/images/networks/goerli.png'; // https://github.com/goerli/goer-logo
+
+// import ethereumLogo from '../../../../assets/images/networks/ethereum.png';
+
 import NetworkButton from './NetworkButton';
 
 interface NetworkButtonsPropsIF {
@@ -11,7 +14,7 @@ export default function NetworkButtons(props: NetworkButtonsPropsIF) {
         {
             name: 'Görli ',
             id: '0x5',
-            icon: optimisticImage,
+            icon: goerliLogo,
             theme: '#36364a',
         },
     ];
