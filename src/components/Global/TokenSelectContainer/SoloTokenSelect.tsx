@@ -26,6 +26,7 @@ export const SoloTokenSelect = (props: propsIF) => {
         closeModal,
         tokensOnActiveLists
     } = props;
+    console.log(importedTokens);
 
     const [tokensForDOM, otherTokensForDOM, validatedInput, setInput, searchType] = useSoloSearch(
         chainId,

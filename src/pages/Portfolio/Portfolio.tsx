@@ -285,6 +285,15 @@ export default function Portfolio(props: PortfolioPropsIF) {
     const connectedUserNativeToken = useAppSelector((state) => state.userData.tokens.nativeToken);
     const connectedUserErc20Tokens = useAppSelector((state) => state.userData.tokens.erc20Tokens);
 
+    const getImportedTokensPlus = () => {
+        const importedAddresses = importedTokens.map((tkn) => tkn.address.toLowerCase());
+        const output = importedTokens;
+        connectedUserErc20Tokens?.forEach((tkn) => {
+        importedAddresses.includes(tkn.address.toLowerCase()) || output.push(tkn);
+        });
+        return output;
+    }
+
     const connectedUserTokens = [connectedUserNativeToken].concat(connectedUserErc20Tokens);
 
     const [resolvedAddressNativeToken, setResolvedAddressNativeToken] = useState<
@@ -367,8 +376,6 @@ export default function Portfolio(props: PortfolioPropsIF) {
                     openGlobalModal={openGlobalModal}
                 />
             )}
-            {/* <button onClick={openTempModal}>Choose a Token</button> */}
-            {/* <h3>{tempToken.name}</h3> */}
             <PortfolioBanner
                 ensName={address ? secondaryensName : ensName}
                 resolvedAddress={resolvedAddress}
@@ -437,7 +444,7 @@ export default function Portfolio(props: PortfolioPropsIF) {
                         provider={provider}
                         closeModal={closeTokenModal}
                         chainId={chainId}
-                        importedTokens={importedTokens}
+                        importedTokens={getImportedTokensPlus()}
                         setImportedTokens={setImportedTokens}
                         tokensOnActiveLists={tokensOnActiveLists}
                     />
