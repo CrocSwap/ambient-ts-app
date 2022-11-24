@@ -427,6 +427,8 @@ export default function TradeCandleStickChart(props: ChartData) {
                 parsedChartData === undefined ||
                     parsedChartData.chartData.length === 0 ||
                     props.poolPriceDisplay === 0 ||
+                    liquidityData.liqAskData.length === 0 ||
+                    liquidityData.liqBidData.length === 0 ||
                     poolPriceNonDisplay === 0,
             );
         }, 500);

@@ -951,9 +951,11 @@ export default function Chart(props: ChartData) {
 
                     // const ghostJoin = d3fc.dataJoin('g', 'ghostLines');
 
-                    const dragedValue = scaleData.yScale.invert(d3.pointer(event)[1] - 200);
-
+                    const dragedValue = scaleData.yScale.invert(d3.pointer(event)[1] - 120);
                     const displayValue = poolPriceDisplay !== undefined ? poolPriceDisplay : 0;
+
+                    const low = ranges.filter((target: any) => target.name === 'Min')[0].value;
+                    const high = ranges.filter((target: any) => target.name === 'Max')[0].value;
 
                     if (!isAdvancedModeActive) {
                         rangeWidthPercentage = Math.round(
@@ -991,24 +993,21 @@ export default function Chart(props: ChartData) {
                             return newTargets;
                         });
 
-                        const lowDomain = parseFloat(
-                            pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
-                        );
-                        const highDomain = parseFloat(
-                            pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
-                        );
+                        const dy = event.dy;
+                        const factor = Math.pow(2, -dy * 0.008);
 
-                        const buffer = 2 * (poolPriceDisplay! / 100);
+                        const domain = scaleData.yScale.domain();
+                        const center = (domain[1] + domain[0]) / 2;
+                        const size = (domain[1] - domain[0]) / 2 / factor;
 
-                        // scaleData.yScale.domain([lowDomain - buffer, highDomain + buffer]);
+                        console.log(center - size, center + size);
+
+                        scaleData.yScale.domain([center - size, center + size]);
                     } else {
                         const lineToBeSet = dragedValue > displayValue ? 'Max' : 'Min';
 
                         highLineMoved = lineToBeSet === 'Max';
                         lowLineMoved = lineToBeSet === 'Min';
-
-                        const low = ranges.filter((target: any) => target.name === 'Min')[0].value;
-                        const high = ranges.filter((target: any) => target.name === 'Max')[0].value;
 
                         let pinnedDisplayPrices;
 
@@ -1115,7 +1114,7 @@ export default function Chart(props: ChartData) {
 
                     // const ghostJoin = d3fc.dataJoin('g', 'ghostLines');
 
-                    newLimitValue = scaleData.yScale.invert(d3.pointer(event)[1] - 215);
+                    newLimitValue = scaleData.yScale.invert(d3.pointer(event)[1] - 120);
 
                     d3.select(d3PlotArea.current).on('draw', async function (event: any) {
                         const svg = d3.select(event.target).select('svg');
@@ -1598,6 +1597,22 @@ export default function Chart(props: ChartData) {
                             lookupChain(chainId).gridSize,
                         );
 
+                        const high = ranges.filter((target: any) => target.name === 'Max')[0].value;
+
+                        const pinnedValue = getPinnedPriceValuesFromDisplayPrices(
+                            denomInBase,
+                            baseTokenDecimals,
+                            quoteTokenDecimals,
+                            clickedValue,
+                            high.toString(),
+                            lookupChain(chainId).gridSize,
+                        );
+
+                        const perc =
+                            Math.abs(pinnedValue.pinnedLowTick - currentPoolPriceTick) / 100;
+
+                        console.log({ perc, rangeWidthPercentage });
+
                         dispatch(setAdvancedLowTick(pinnedDisplayPrices.pinnedLowTick));
                         dispatch(setAdvancedHighTick(pinnedDisplayPrices.pinnedHighTick));
 
@@ -1677,7 +1692,14 @@ export default function Chart(props: ChartData) {
                 }
             });
         }
-    }, [dragLimit, dragRange, parsedChartData?.period, location, horizontalLine]);
+    }, [
+        dragLimit,
+        dragRange,
+        parsedChartData?.period,
+        location,
+        horizontalLine,
+        currentPoolPriceTick,
+    ]);
 
     useEffect(() => {
         if (scaleData !== undefined) {
