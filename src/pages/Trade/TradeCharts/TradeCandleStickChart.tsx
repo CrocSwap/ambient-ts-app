@@ -51,6 +51,7 @@ interface ChartData {
     truncatedPoolPrice: number | undefined;
     poolPriceDisplay: number | undefined;
     setCurrentData: React.Dispatch<React.SetStateAction<CandleChartData | undefined>>;
+    setCurrentVolumeData: React.Dispatch<React.SetStateAction<number | undefined>>;
     upBodyColor: string;
     upBorderColor: string;
     downBodyColor: string;
@@ -463,6 +464,7 @@ export default function TradeCandleStickChart(props: ChartData) {
                         truncatedPoolPrice={props.truncatedPoolPrice}
                         chartItemStates={props.chartItemStates}
                         setCurrentData={props.setCurrentData}
+                        setCurrentVolumeData={props.setCurrentVolumeData}
                         upBodyColor={props.upBodyColor}
                         upBorderColor={props.upBorderColor}
                         downBodyColor={props.downBodyColor}

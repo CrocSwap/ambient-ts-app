@@ -76,6 +76,7 @@ interface ChartData {
     poolPriceDisplay: number | undefined;
     chartItemStates: chartItemStates;
     setCurrentData: React.Dispatch<React.SetStateAction<CandleChartData | undefined>>;
+    setCurrentVolumeData: React.Dispatch<React.SetStateAction<number | undefined>>;
     upBodyColor: string;
     upBorderColor: string;
     downBodyColor: string;
@@ -2261,6 +2262,12 @@ export default function Chart(props: ChartData) {
                         return newData;
                     });
                     props.setCurrentData(nearest);
+
+                    props.setCurrentVolumeData(
+                        volumeData.find(
+                            (item: any) => item.time.getTime() === nearest?.date.getTime(),
+                        ).value,
+                    );
                     return [
                         {
                             x: nearest?.date,
