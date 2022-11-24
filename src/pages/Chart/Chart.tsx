@@ -962,6 +962,9 @@ export default function Chart(props: ChartData) {
                             Math.abs(dragedValue - displayValue) / (displayValue / 100),
                         );
 
+                        rangeWidthPercentage =
+                            rangeWidthPercentage > 200 ? 200 : rangeWidthPercentage;
+
                         const lowTick =
                             currentPoolPriceTick -
                             (rangeWidthPercentage < 1 ? 1 : rangeWidthPercentage) * 100;
@@ -1000,8 +1003,6 @@ export default function Chart(props: ChartData) {
                         const center = (domain[1] + domain[0]) / 2;
                         const size = (domain[1] - domain[0]) / 2 / factor;
 
-                        console.log(center - size, center + size);
-
                         scaleData.yScale.domain([center - size, center + size]);
                     } else {
                         const lineToBeSet = dragedValue > displayValue ? 'Max' : 'Min';
@@ -1011,8 +1012,8 @@ export default function Chart(props: ChartData) {
 
                         let pinnedDisplayPrices;
 
-                        let pinnedMaxPriceDisplayTruncated = 0;
-                        let pinnedMinPriceDisplayTruncated = 0;
+                        let pinnedMaxPriceDisplayTruncated: number;
+                        let pinnedMinPriceDisplayTruncated: number;
 
                         if (dragedValue >= 0) {
                             if (lineToBeSet === 'Max') {
@@ -1060,13 +1061,6 @@ export default function Chart(props: ChartData) {
                             return newTargets;
                         });
                     }
-
-                    d3.select(d3PlotArea.current).on('draw', async function (event: any) {
-                        const svg = d3.select(event.target).select('svg');
-
-                        // ghostJoin(svg, [neighborValues]).call(ghostLines);
-                        targetsJoin(svg, [newRangeValue]).call(horizontalLine);
-                    });
                 })
                 .on('end', () => {
                     d3.select(d3Container.current).style('cursor', 'default');
@@ -1079,7 +1073,11 @@ export default function Chart(props: ChartData) {
                     if (!isAdvancedModeActive) {
                         dispatch(
                             setSimpleRangeWidth(
-                                rangeWidthPercentage < 1 ? 1 : rangeWidthPercentage,
+                                rangeWidthPercentage < 1
+                                    ? 1
+                                    : rangeWidthPercentage > 100
+                                    ? 100
+                                    : rangeWidthPercentage,
                             ),
                         );
                     }
@@ -1116,12 +1114,10 @@ export default function Chart(props: ChartData) {
 
                     newLimitValue = scaleData.yScale.invert(d3.pointer(event)[1] - 120);
 
-                    d3.select(d3PlotArea.current).on('draw', async function (event: any) {
-                        const svg = d3.select(event.target).select('svg');
-
-                        // ghostJoin(svg, [neighborValues]).call(ghostLines);
-                        limitJoin(svg, [[{ name: 'Limit', value: newLimitValue }]]).call(limitLine);
-                    });
+                    newLimitValue =
+                        poolPriceDisplay !== undefined && newLimitValue > poolPriceDisplay * 10
+                            ? poolPriceDisplay * 10
+                            : newLimitValue;
 
                     setLimit(() => {
                         return [{ name: 'Limit', value: newLimitValue }];
@@ -1611,8 +1607,6 @@ export default function Chart(props: ChartData) {
                         const perc =
                             Math.abs(pinnedValue.pinnedLowTick - currentPoolPriceTick) / 100;
 
-                        console.log({ perc, rangeWidthPercentage });
-
                         dispatch(setAdvancedLowTick(pinnedDisplayPrices.pinnedLowTick));
                         dispatch(setAdvancedHighTick(pinnedDisplayPrices.pinnedHighTick));
 
@@ -1633,7 +1627,11 @@ export default function Chart(props: ChartData) {
 
                         dispatch(
                             setSimpleRangeWidth(
-                                rangeWidthPercentage < 1 ? 1 : rangeWidthPercentage,
+                                rangeWidthPercentage < 1
+                                    ? 1
+                                    : rangeWidthPercentage > 100
+                                    ? 100
+                                    : rangeWidthPercentage,
                             ),
                         );
                     } else {
@@ -1856,13 +1854,6 @@ export default function Chart(props: ChartData) {
         }
     }, [scaleData, selectedDate]);
 
-    useEffect(() => {
-        if (!location.pathname.includes('range')) {
-            props.liquidityData.lineAskSeries = [];
-            props.liquidityData.lineBidSeries = [];
-        }
-    }, [location]);
-
     const setLiqHighlightedLinesAndArea = (ranges: any, isAmbient = false) => {
         props.liquidityData.lineAskSeries = [];
         props.liquidityData.lineBidSeries = [];
@@ -1918,6 +1909,10 @@ export default function Chart(props: ChartData) {
                 .decorate((selection: any) => {
                     selection.enter().style('stroke', () => 'rgba(205, 193, 255)');
                     selection.attr('stroke-width', '2');
+                    selection.style(
+                        'visibility',
+                        location.pathname.includes('range') ? 'visible' : 'hidden',
+                    );
                 });
 
             setLineAskSeries(() => {
@@ -1935,6 +1930,10 @@ export default function Chart(props: ChartData) {
                 .decorate((selection: any) => {
                     selection.enter().style('stroke', () => '#7371FC');
                     selection.attr('stroke-width', '2');
+                    selection.style(
+                        'visibility',
+                        location.pathname.includes('range') ? 'visible' : 'hidden',
+                    );
                 });
 
             setLineBidSeries(() => {
@@ -2031,7 +2030,7 @@ export default function Chart(props: ChartData) {
                 return liqHighligtedBidJoin;
             });
         }
-    }, [scaleData, props.liquidityData]);
+    }, [scaleData, props.liquidityData, location]);
 
     // Call drawChart()
     useEffect(() => {
@@ -2563,6 +2562,11 @@ export default function Chart(props: ChartData) {
                         .select('.crosshairVertical')
                         .style('visibility', 'hidden');
 
+                    d3.select(d3PlotArea.current)
+                        .select('svg')
+                        .select('.crosshairHorizontal')
+                        .style('visibility', 'hidden');
+
                     setIsMouseMoveCrosshair(false);
 
                     render();
@@ -2572,6 +2576,11 @@ export default function Chart(props: ChartData) {
                     d3.select(d3PlotArea.current)
                         .select('svg')
                         .select('.crosshairVertical')
+                        .style('visibility', 'visible');
+
+                    d3.select(d3PlotArea.current)
+                        .select('svg')
+                        .select('.crosshairHorizontal')
                         .style('visibility', 'visible');
                 });
             }
@@ -2739,11 +2748,17 @@ export default function Chart(props: ChartData) {
                                   maximumFractionDigits: 2,
                               });
 
+                    const limitValue =
+                        poolPriceDisplay !== undefined &&
+                        parseFloat(limitRateTruncated.replace(',', '')) > poolPriceDisplay * 10
+                            ? poolPriceDisplay * 10
+                            : parseFloat(limitRateTruncated.replace(',', ''));
+
                     setLimit(() => {
                         return [
                             {
                                 name: 'Limit',
-                                value: parseFloat(limitRateTruncated.replace(',', '')),
+                                value: limitValue,
                             },
                         ];
                     });

@@ -338,10 +338,14 @@ export default function TradeCandleStickChart(props: ChartData) {
 
     // Scale
     useEffect(() => {
-        if (!isLoading && parsedChartData !== undefined && liquidityData !== undefined) {
+        if (parsedChartData !== undefined && liquidityData !== undefined) {
             if (parsedChartData.chartData.length > 100) {
                 parsedChartData.chartData = parsedChartData.chartData.slice(0, 100);
             }
+
+            setScaleData(() => {
+                return undefined;
+            });
 
             const priceRange = d3fc
                 .extentLinear()
@@ -410,7 +414,7 @@ export default function TradeCandleStickChart(props: ChartData) {
                 };
             });
         }
-    }, [parsedChartData?.period, denominationsInBase, liquidityData, isLoading]);
+    }, [parsedChartData?.period, denominationsInBase, liquidityData]);
 
     const loading = (
         <div style={{ height: '100%', width: '100%' }} className='animatedImg_container'>
@@ -424,7 +428,8 @@ export default function TradeCandleStickChart(props: ChartData) {
     useEffect(() => {
         const timer = setTimeout(() => {
             setIsLoading(
-                parsedChartData === undefined ||
+                scaleData === undefined ||
+                    parsedChartData === undefined ||
                     parsedChartData.chartData.length === 0 ||
                     props.poolPriceDisplay === 0 ||
                     liquidityData.liqAskData.length === 0 ||
@@ -433,7 +438,7 @@ export default function TradeCandleStickChart(props: ChartData) {
             );
         }, 500);
         return () => clearTimeout(timer);
-    }, [parsedChartData?.chartData, props.poolPriceDisplay, poolPriceNonDisplay]);
+    }, [parsedChartData?.chartData, props.poolPriceDisplay, poolPriceNonDisplay, scaleData]);
 
     return (
         <>
