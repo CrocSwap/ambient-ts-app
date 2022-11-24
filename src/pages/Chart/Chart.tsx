@@ -181,6 +181,7 @@ export default function Chart(props: ChartData) {
     const [zoomAndYdragControl, setZoomAndYdragControl] = useState();
     const [rescaleText, setRescaleText] = useState<any>();
     const [isMouseMoveCrosshair, setIsMouseMoveCrosshair] = useState(false);
+    const [bandwidth, setBandwidth] = useState(5);
 
     const [crosshairForSubChart, setCrosshairForSubChart] = useState([{ x: 0, y: -1 }]);
 
@@ -621,6 +622,7 @@ export default function Chart(props: ChartData) {
                 })
                 .on('zoom', (event: any) => {
                     if (event.sourceEvent && event.sourceEvent.type !== 'dblclick') {
+                        setBandwidth(candlestick.bandwidth());
                         const t = event.transform;
 
                         getNewCandleData(event, date, scaleData.xScale);
@@ -1800,7 +1802,8 @@ export default function Chart(props: ChartData) {
                         .on('click', (event: any) => {
                             if (
                                 selectedDate === undefined ||
-                                selectedDate !== event.target.__data__.date
+                                selectedDate.getTime() !==
+                                    new Date(event.target.__data__.date).getTime()
                             ) {
                                 d3.select(event.currentTarget)
                                     .style('fill', '#E480FF')
@@ -1834,11 +1837,11 @@ export default function Chart(props: ChartData) {
     }, [scaleData, selectedDate]);
 
     useEffect(() => {
-        if (scaleData !== undefined && candlestick !== undefined) {
+        if (scaleData !== undefined) {
             const barSeries = d3fc
                 .seriesSvgBar()
                 .align('center')
-                .bandwidth(d3fc.seriesSvgCandlestick())
+                .bandwidth(bandwidth)
                 .xScale(scaleData.xScale)
                 .yScale(scaleData.volumeScale)
                 .crossValue((d: any) => d.time)
@@ -1861,7 +1864,8 @@ export default function Chart(props: ChartData) {
                     selection.on('click', (event: any) => {
                         if (
                             selectedDate === undefined ||
-                            selectedDate !== event.target.__data__.time
+                            selectedDate.getTime() !==
+                                new Date(event.target.__data__.time).getTime()
                         ) {
                             d3.select(event.currentTarget)
                                 .style('fill', '#E480FF')
@@ -1882,7 +1886,7 @@ export default function Chart(props: ChartData) {
                 return barSeries;
             });
         }
-    }, [scaleData, selectedDate, candlestick]);
+    }, [scaleData, selectedDate, bandwidth]);
 
     useEffect(() => {
         if (!location.pathname.includes('range')) {
@@ -2302,10 +2306,7 @@ export default function Chart(props: ChartData) {
                         (event.detail.width / 10) * 8,
                     ]);
 
-                    scaleData.volumeScale.range([
-                        event.detail.height,
-                        event.detail.height * (2 / 2.003),
-                    ]);
+                    scaleData.volumeScale.range([event.detail.height, event.detail.height * 0.998]);
                 });
 
                 d3.select(d3PlotArea.current).on('draw', function (event: any) {
@@ -2338,7 +2339,7 @@ export default function Chart(props: ChartData) {
                         lineAskSeriesJoin(svg, [liquidityData.lineBidSeries]).call(lineBidSeries);
                         lineBidSeriesJoin(svg, [liquidityData.lineAskSeries]).call(lineAskSeries);
 
-                        barJoin(svg, [volumeData]).call(barSeries);
+                        barJoin(svg, [showVolume ? volumeData : []]).call(barSeries);
                     }
 
                     const mouseOutFunc = () => {
