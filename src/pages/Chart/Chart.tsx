@@ -951,14 +951,19 @@ export default function Chart(props: ChartData) {
 
                     // const ghostJoin = d3fc.dataJoin('g', 'ghostLines');
 
-                    const dragedValue = scaleData.yScale.invert(d3.pointer(event)[1] - 200);
-
+                    const dragedValue = scaleData.yScale.invert(d3.pointer(event)[1] - 120);
                     const displayValue = poolPriceDisplay !== undefined ? poolPriceDisplay : 0;
+
+                    const low = ranges.filter((target: any) => target.name === 'Min')[0].value;
+                    const high = ranges.filter((target: any) => target.name === 'Max')[0].value;
 
                     if (!isAdvancedModeActive) {
                         rangeWidthPercentage = Math.round(
                             Math.abs(dragedValue - displayValue) / (displayValue / 100),
                         );
+
+                        rangeWidthPercentage =
+                            rangeWidthPercentage > 200 ? 200 : rangeWidthPercentage;
 
                         const lowTick =
                             currentPoolPriceTick -
@@ -991,29 +996,24 @@ export default function Chart(props: ChartData) {
                             return newTargets;
                         });
 
-                        // const lowDomain = parseFloat(
-                        //     pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
-                        // );
-                        // const highDomain = parseFloat(
-                        //     pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
-                        // );
+                        const dy = event.dy;
+                        const factor = Math.pow(2, -dy * 0.008);
 
-                        // const buffer = 2 * (poolPriceDisplay! / 100);
+                        const domain = scaleData.yScale.domain();
+                        const center = (domain[1] + domain[0]) / 2;
+                        const size = (domain[1] - domain[0]) / 2 / factor;
 
-                        // scaleData.yScale.domain([lowDomain - buffer, highDomain + buffer]);
+                        scaleData.yScale.domain([center - size, center + size]);
                     } else {
                         const lineToBeSet = dragedValue > displayValue ? 'Max' : 'Min';
 
                         highLineMoved = lineToBeSet === 'Max';
                         lowLineMoved = lineToBeSet === 'Min';
 
-                        const low = ranges.filter((target: any) => target.name === 'Min')[0].value;
-                        const high = ranges.filter((target: any) => target.name === 'Max')[0].value;
-
                         let pinnedDisplayPrices;
 
-                        let pinnedMaxPriceDisplayTruncated = 0;
-                        let pinnedMinPriceDisplayTruncated = 0;
+                        let pinnedMaxPriceDisplayTruncated: number;
+                        let pinnedMinPriceDisplayTruncated: number;
 
                         if (dragedValue >= 0) {
                             if (lineToBeSet === 'Max') {
@@ -1061,13 +1061,6 @@ export default function Chart(props: ChartData) {
                             return newTargets;
                         });
                     }
-
-                    d3.select(d3PlotArea.current).on('draw', async function (event: any) {
-                        const svg = d3.select(event.target).select('svg');
-
-                        // ghostJoin(svg, [neighborValues]).call(ghostLines);
-                        targetsJoin(svg, [newRangeValue]).call(horizontalLine);
-                    });
                 })
                 .on('end', () => {
                     d3.select(d3Container.current).style('cursor', 'default');
@@ -1080,7 +1073,11 @@ export default function Chart(props: ChartData) {
                     if (!isAdvancedModeActive) {
                         dispatch(
                             setSimpleRangeWidth(
-                                rangeWidthPercentage < 1 ? 1 : rangeWidthPercentage,
+                                rangeWidthPercentage < 1
+                                    ? 1
+                                    : rangeWidthPercentage > 100
+                                    ? 100
+                                    : rangeWidthPercentage,
                             ),
                         );
                     }
@@ -1115,14 +1112,12 @@ export default function Chart(props: ChartData) {
 
                     // const ghostJoin = d3fc.dataJoin('g', 'ghostLines');
 
-                    newLimitValue = scaleData.yScale.invert(d3.pointer(event)[1] - 215);
+                    newLimitValue = scaleData.yScale.invert(d3.pointer(event)[1] - 120);
 
-                    d3.select(d3PlotArea.current).on('draw', async function (event: any) {
-                        const svg = d3.select(event.target).select('svg');
-
-                        // ghostJoin(svg, [neighborValues]).call(ghostLines);
-                        limitJoin(svg, [[{ name: 'Limit', value: newLimitValue }]]).call(limitLine);
-                    });
+                    newLimitValue =
+                        poolPriceDisplay !== undefined && newLimitValue > poolPriceDisplay * 10
+                            ? poolPriceDisplay * 10
+                            : newLimitValue;
 
                     setLimit(() => {
                         return [{ name: 'Limit', value: newLimitValue }];
@@ -1598,6 +1593,20 @@ export default function Chart(props: ChartData) {
                             lookupChain(chainId).gridSize,
                         );
 
+                        const high = ranges.filter((target: any) => target.name === 'Max')[0].value;
+
+                        const pinnedValue = getPinnedPriceValuesFromDisplayPrices(
+                            denomInBase,
+                            baseTokenDecimals,
+                            quoteTokenDecimals,
+                            clickedValue,
+                            high.toString(),
+                            lookupChain(chainId).gridSize,
+                        );
+
+                        const perc =
+                            Math.abs(pinnedValue.pinnedLowTick - currentPoolPriceTick) / 100;
+
                         dispatch(setAdvancedLowTick(pinnedDisplayPrices.pinnedLowTick));
                         dispatch(setAdvancedHighTick(pinnedDisplayPrices.pinnedHighTick));
 
@@ -1618,7 +1627,11 @@ export default function Chart(props: ChartData) {
 
                         dispatch(
                             setSimpleRangeWidth(
-                                rangeWidthPercentage < 1 ? 1 : rangeWidthPercentage,
+                                rangeWidthPercentage < 1
+                                    ? 1
+                                    : rangeWidthPercentage > 100
+                                    ? 100
+                                    : rangeWidthPercentage,
                             ),
                         );
                     } else {
@@ -1677,7 +1690,14 @@ export default function Chart(props: ChartData) {
                 }
             });
         }
-    }, [dragLimit, dragRange, parsedChartData?.period, location, horizontalLine]);
+    }, [
+        dragLimit,
+        dragRange,
+        parsedChartData?.period,
+        location,
+        horizontalLine,
+        currentPoolPriceTick,
+    ]);
 
     useEffect(() => {
         if (scaleData !== undefined) {
@@ -1834,13 +1854,6 @@ export default function Chart(props: ChartData) {
         }
     }, [scaleData, selectedDate]);
 
-    useEffect(() => {
-        if (!location.pathname.includes('range')) {
-            props.liquidityData.lineAskSeries = [];
-            props.liquidityData.lineBidSeries = [];
-        }
-    }, [location]);
-
     const setLiqHighlightedLinesAndArea = (ranges: any, isAmbient = false) => {
         props.liquidityData.lineAskSeries = [];
         props.liquidityData.lineBidSeries = [];
@@ -1896,6 +1909,10 @@ export default function Chart(props: ChartData) {
                 .decorate((selection: any) => {
                     selection.enter().style('stroke', () => 'rgba(205, 193, 255)');
                     selection.attr('stroke-width', '2');
+                    selection.style(
+                        'visibility',
+                        location.pathname.includes('range') ? 'visible' : 'hidden',
+                    );
                 });
 
             setLineAskSeries(() => {
@@ -1913,6 +1930,10 @@ export default function Chart(props: ChartData) {
                 .decorate((selection: any) => {
                     selection.enter().style('stroke', () => '#7371FC');
                     selection.attr('stroke-width', '2');
+                    selection.style(
+                        'visibility',
+                        location.pathname.includes('range') ? 'visible' : 'hidden',
+                    );
                 });
 
             setLineBidSeries(() => {
@@ -2009,7 +2030,7 @@ export default function Chart(props: ChartData) {
                 return liqHighligtedBidJoin;
             });
         }
-    }, [scaleData, props.liquidityData]);
+    }, [scaleData, props.liquidityData, location]);
 
     // Call drawChart()
     useEffect(() => {
@@ -2541,6 +2562,11 @@ export default function Chart(props: ChartData) {
                         .select('.crosshairVertical')
                         .style('visibility', 'hidden');
 
+                    d3.select(d3PlotArea.current)
+                        .select('svg')
+                        .select('.crosshairHorizontal')
+                        .style('visibility', 'hidden');
+
                     setIsMouseMoveCrosshair(false);
 
                     render();
@@ -2550,6 +2576,11 @@ export default function Chart(props: ChartData) {
                     d3.select(d3PlotArea.current)
                         .select('svg')
                         .select('.crosshairVertical')
+                        .style('visibility', 'visible');
+
+                    d3.select(d3PlotArea.current)
+                        .select('svg')
+                        .select('.crosshairHorizontal')
                         .style('visibility', 'visible');
                 });
             }
@@ -2717,11 +2748,17 @@ export default function Chart(props: ChartData) {
                                   maximumFractionDigits: 2,
                               });
 
+                    const limitValue =
+                        poolPriceDisplay !== undefined &&
+                        parseFloat(limitRateTruncated.replace(',', '')) > poolPriceDisplay * 10
+                            ? poolPriceDisplay * 10
+                            : parseFloat(limitRateTruncated.replace(',', ''));
+
                     setLimit(() => {
                         return [
                             {
                                 name: 'Limit',
-                                value: parseFloat(limitRateTruncated.replace(',', '')),
+                                value: limitValue,
                             },
                         ];
                     });
