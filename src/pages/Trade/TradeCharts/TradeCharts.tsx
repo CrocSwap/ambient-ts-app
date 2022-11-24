@@ -48,6 +48,7 @@ import {
 import TradeChartsLoading from './TradeChartsLoading/TradeChartsLoading';
 import NoTokenIcon from '../../../components/Global/NoTokenIcon/NoTokenIcon';
 import { ChainSpec, CrocPoolView } from '@crocswap-libs/sdk';
+import { formatDollarAmountAxis } from '../../../utils/numbers';
 // import { formatAmountOld } from '../../../utils/numbers';
 
 // interface for React functional component props
@@ -664,6 +665,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
 
     // CURRENT DATA INFO----------------------------------------------------------------
     const [currentData, setCurrentData] = useState<CandleChartData>();
+    const [currentVolumeData, setCurrentVolumeData] = useState<number | undefined>();
 
     function formattedCurrentData(data: number): string {
         if (data > 2) {
@@ -693,6 +695,12 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
                   ' C: ' +
                   formattedCurrentData(currentData.close)
                 : ''}
+        </div>
+    );
+
+    const currentVolumeDataDisplay = (
+        <div className={styles.current_data_info}>
+            {'Volume : ' + formatDollarAmountAxis(currentVolumeData)}
         </div>
     );
 
@@ -761,6 +769,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
                 {tokenInfo}
                 {timeFrameContent}
                 {currentDataInfo}
+                {currentVolumeDataDisplay}
                 {/* {liquidityTypeContent} */}
             </div>
             {graphIsLoading ? (
@@ -786,6 +795,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
                         poolPriceDisplay={poolPriceDisplay}
                         truncatedPoolPrice={parseFloat(truncatedPoolPrice)}
                         setCurrentData={setCurrentData}
+                        setCurrentVolumeData={setCurrentVolumeData}
                         upBodyColor={props.upBodyColor}
                         upBorderColor={props.upBorderColor}
                         downBodyColor={props.downBodyColor}
