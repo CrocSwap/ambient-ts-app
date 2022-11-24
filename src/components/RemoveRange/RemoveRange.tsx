@@ -17,10 +17,10 @@ import { ambientPosSlot, ChainSpec, concPosSlot, CrocEnv } from '@crocswap-libs/
 import Button from '../Global/Button/Button';
 
 import RemoveRangeSettings from './RemoveRangeSettings/RemoveRangeSettings';
-import {
-    CircleLoader,
-    CircleLoaderFailed,
-} from '../Global/LoadingAnimations/CircleLoader/CircleLoader';
+// import {
+//     // CircleLoader,
+//     // CircleLoaderFailed,
+// } from '../Global/LoadingAnimations/CircleLoader/CircleLoader';
 import RemoveRangeHeader from './RemoveRangeHeader/RemoveRangeHeader';
 import ExtraControls from './ExtraControls/ExtraControls';
 import {
@@ -38,6 +38,8 @@ import {
 } from '../../utils/TransactionError';
 import WithdrawAs from './WithdrawAs/WithdrawAs';
 import WithdrawTo from './WithdrawTo/WithdrawTo';
+import WaitingConfirmation from '../Global/WaitingConfirmation/WaitingConfirmation';
+import TransactionDenied from '../Global/TransactionDenied/TransactionDenied';
 interface IRemoveRangeProps {
     provider: ethers.providers.Provider;
     chainData: ChainSpec;
@@ -403,17 +405,18 @@ export default function RemoveRange(props: IRemoveRangeProps) {
             dispatch(removePositionPendingUpdate(posHash as string));
         }
     };
+    const removalDenied = <TransactionDenied resetConfirmation={resetConfirmation} />;
 
-    const removalDenied = (
-        <div className={styles.removal_pending}>
-            <CircleLoaderFailed />
-            <p>
-                Check the Metamask extension in your browser for notifications, or click &quot;Try
-                Again&quot;. You can also click the left arrow above to try again.
-            </p>
-            <Button title='Try Again' action={resetConfirmation} flat={true} />
-        </div>
-    );
+    // const removalDenied = (
+    //     <div className={styles.removal_pending}>
+    //         <CircleLoaderFailed />
+    //         <p>
+    //             Check the Metamask extension in your browser for notifications, or click &quot;Try
+    //             Again&quot;. You can also click the left arrow above to try again.
+    //         </p>
+    //         <Button title='Try Again' action={resetConfirmation} flat={true} />
+    //     </div>
+    // );
 
     const etherscanLink = chainData.blockExplorer + 'tx/' + newRemovalTransactionHash;
 
@@ -436,11 +439,17 @@ export default function RemoveRange(props: IRemoveRangeProps) {
     );
 
     const removalPending = (
-        <div className={styles.removal_pending}>
-            <CircleLoader size='5rem' borderColor='#171d27' />
-            <p>Check the Metamask extension in your browser for notifications.</p>
-        </div>
+        <WaitingConfirmation
+            content={`Please check the ${'Metamask'} extension in your browser for notifications.`}
+        />
     );
+
+    // const removalPending = (
+    //     <div className={styles.removal_pending}>
+    //         <CircleLoader size='5rem' borderColor='#171d27' />
+    //         <p>Check the Metamask extension in your browser for notifications.</p>
+    //     </div>
+    // );
 
     const [currentConfirmationData, setCurrentConfirmationData] = useState(removalPending);
 
