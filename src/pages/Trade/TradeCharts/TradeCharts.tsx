@@ -700,7 +700,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
 
     const currentVolumeDataDisplay = (
         <div className={styles.current_data_info}>
-            {currentVolumeData ? 'Volume : ' + formatDollarAmountAxis(currentVolumeData) : ''}
+            {'Volume : ' + formatDollarAmountAxis(currentVolumeData)}
         </div>
     );
 
