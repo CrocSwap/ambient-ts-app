@@ -37,13 +37,19 @@ export default function DenominationSwitch() {
         <div className={styles.denomination_switch}>
             <button
                 className={!isDenomBase ? styles.active_button : styles.non_active_button}
-                onClick={() => dispatch(toggleDidUserFlipDenom())}
+                onClick={(e) => {
+                    dispatch(toggleDidUserFlipDenom());
+                    e.stopPropagation();
+                }}
             >
                 {baseTokenSymbol}
             </button>
             <button
                 className={isDenomBase ? styles.active_button : styles.non_active_button}
-                onClick={() => dispatch(toggleDidUserFlipDenom())}
+                onClick={(e) => {
+                    dispatch(toggleDidUserFlipDenom());
+                    e.stopPropagation();
+                }}
             >
                 {quoteTokenSymbol}
             </button>

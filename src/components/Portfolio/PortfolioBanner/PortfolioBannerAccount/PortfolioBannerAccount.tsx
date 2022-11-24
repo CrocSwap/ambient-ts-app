@@ -1,8 +1,9 @@
 import noAvatarImage from '../../../../assets/images/icons/avatar.svg';
+import useCopyToClipboard from '../../../../utils/hooks/useCopyToClipboard';
+import SnackbarComponent from '../../../../components/Global/SnackbarComponent/SnackbarComponent';
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { exampleFollowers, exampleFollowing } from './exampleAccounts';
-import { IoMdArrowDropdown } from 'react-icons/io';
+
 interface IPortfolioBannerAccountPropsIF {
     imageData: string[];
     ensName: string;
@@ -12,30 +13,76 @@ interface IPortfolioBannerAccountPropsIF {
     ensNameAvailable: boolean;
     connectedAccountActive: boolean;
 }
-
 import styles from './PortfolioBannerAccount.module.css';
-import FollowDisplay from './FollowDisplay/FollowDisplay';
 
+// const variants = {
+//     open: {
+//         width: '500px',
+//         height: 'auto',
+//         borderRadius: '20px',
+//         background: 'var(--dark3)',
+//         boxShadow: '0px 45px 20px rgba(0, 0, 0, 0.9)',
+
+//     },
+//     closed: {
+//         width: 'auto',
+//         height: '56px',
+//         borderRadius: '99px',
+//         background: '',
+
+//     },
+// };
 export default function PortfolioBannerAccount(props: IPortfolioBannerAccountPropsIF) {
     const [showAccountDetails, setShowAccountDetails] = useState(false);
 
-    const variants = {
-        open: {
-            width: '500px',
-            height: 'auto',
-            borderRadius: '20px',
-            background: 'var(--dark3)',
-            boxShadow: '0px 45px 20px rgba(0, 0, 0, 0.9)',
-            // padding: '24px'
-        },
-        closed: {
-            width: 'auto',
-            height: '56px',
-            borderRadius: '99px',
-            background: '',
-            // padding: '8px 16px'
-        },
-    };
+    const {
+        imageData,
+        ensName,
+        resolvedAddress,
+        activeAccount,
+        truncatedAccountAddress,
+        ensNameAvailable,
+        // connectedAccountActive,
+    } = props;
+
+    const ensNameToDisplay = ensNameAvailable
+        ? ensName
+        : resolvedAddress
+        ? activeAccount
+        : truncatedAccountAddress;
+
+    const addressToDisplay = resolvedAddress
+        ? resolvedAddress
+        : ensNameAvailable
+        ? truncatedAccountAddress
+        : activeAccount;
+    const [openSnackbar, setOpenSnackbar] = useState(false);
+    // eslint-disable-next-line
+    const [value, copy] = useCopyToClipboard();
+    const [copiedData, setCopiedData] = useState('');
+
+    function handleCopyEnsName() {
+        copy(ensNameToDisplay);
+        setCopiedData(ensNameToDisplay);
+
+        setOpenSnackbar(true);
+    }
+    function handleCopyAddress() {
+        copy(addressToDisplay);
+        setCopiedData(addressToDisplay);
+
+        setOpenSnackbar(true);
+    }
+
+    const snackbarContent = (
+        <SnackbarComponent
+            severity='info'
+            setOpenSnackbar={setOpenSnackbar}
+            openSnackbar={openSnackbar}
+        >
+            {copiedData} copied
+        </SnackbarComponent>
+    );
 
     const iconVariants = {
         open: {
@@ -49,22 +96,13 @@ export default function PortfolioBannerAccount(props: IPortfolioBannerAccountPro
             // borderRadius: '50%',
         },
     };
-    const {
-        imageData,
-        ensName,
-        resolvedAddress,
-        activeAccount,
-        truncatedAccountAddress,
-        ensNameAvailable,
-        connectedAccountActive,
-    } = props;
 
     return (
         <motion.main
             // style={{padding: showAccountDetails ? '24px' : '8px 16px'}}
             className={styles.main_container}
             animate={showAccountDetails ? 'open' : 'closed'}
-            variants={variants}
+            // variants={variants}
 
             // style={{ background: showAccountDetails ? 'black' : '' }}
         >
@@ -84,31 +122,23 @@ export default function PortfolioBannerAccount(props: IPortfolioBannerAccountPro
                     )}
                 </motion.div>
                 <div className={styles.account_names}>
-                    <span className={styles.name}>
-                        {ensNameAvailable
-                            ? ensName
-                            : resolvedAddress
-                            ? activeAccount
-                            : truncatedAccountAddress}
-                        <IoMdArrowDropdown />
+                    <span className={styles.name} onClick={handleCopyEnsName}>
+                        {ensNameToDisplay}
                     </span>
-                    <span className={styles.hash}>
-                        {resolvedAddress
-                            ? resolvedAddress
-                            : ensNameAvailable
-                            ? truncatedAccountAddress
-                            : activeAccount}
+                    <span className={styles.hash} onClick={handleCopyAddress}>
+                        {addressToDisplay}
                     </span>
                 </div>
             </div>
-            {showAccountDetails && (
+            {/* {showAccountDetails && (
                 <FollowDisplay
                     exampleFollowers={exampleFollowers}
                     exampleFollowing={exampleFollowing}
                     showAccountDetails={showAccountDetails}
                     connectedAccountActive={connectedAccountActive}
                 />
-            )}
+            )} */}
+            {snackbarContent}
         </motion.main>
     );
 }

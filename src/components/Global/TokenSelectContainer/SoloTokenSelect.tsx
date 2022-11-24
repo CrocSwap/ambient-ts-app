@@ -1,11 +1,16 @@
-import { useMemo, Dispatch, SetStateAction } from 'react';
+import { useMemo, useState, Dispatch, SetStateAction, useEffect } from 'react';
 import { TokenListIF, TokenIF } from '../../../utils/interfaces/exports';
 import TokenSelect from '../TokenSelect/TokenSelect';
 import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
 import { setToken } from '../../../utils/state/temp';
 import { useSoloSearch } from './useSoloSearch';
 import styles from './SoloTokenSelect.module.css';
+import { memoizeFetchContractDetails } from '../../../App/functions/fetchContractDetails';
+import { ethers } from 'ethers';
+import SoloTokenImport from './SoloTokenImport';
+
 interface propsIF {
+    provider: ethers.providers.Provider | undefined;
     importedTokens: TokenIF[];
     chainId: string;
     setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
@@ -14,14 +19,20 @@ interface propsIF {
 }
 
 export const SoloTokenSelect = (props: propsIF) => {
-    const { importedTokens, chainId, setImportedTokens, closeModal, tokensOnActiveLists } = props;
+    const {
+        provider,
+        importedTokens,
+        chainId,
+        setImportedTokens,
+        closeModal,
+        tokensOnActiveLists,
+    } = props;
 
-    const [tokensForDOM, otherTokensForDOM, input, setInput, searchType] = useSoloSearch(
+    const [tokensForDOM, otherTokensForDOM, validatedInput, setInput, searchType] = useSoloSearch(
         chainId,
         importedTokens,
         tokensOnActiveLists,
     );
-    false && input;
 
     const dispatch = useAppDispatch();
 
@@ -47,25 +58,21 @@ export const SoloTokenSelect = (props: propsIF) => {
         closeModal();
     };
 
-    const importedTokenButtons = (
-        <div className={styles.scrollable_container}>
-            {tokensForDOM
-                ? tokensForDOM.map((token: TokenIF) => (
-                      <TokenSelect
-                          key={JSON.stringify(token)}
-                          token={token}
-                          tokensBank={importedTokens}
-                          undeletableTokens={undeletableTokens}
-                          chainId={chainId}
-                          setImportedTokens={setImportedTokens}
-                          chooseToken={chooseToken}
-                          isOnPortfolio={true}
-                          fromListsText='Imported'
-                      />
-                  ))
-                : null}
-        </div>
-    );
+    const importedTokenButtons = tokensForDOM
+        ? tokensForDOM.map((token: TokenIF) => (
+              <TokenSelect
+                  key={JSON.stringify(token)}
+                  token={token}
+                  tokensBank={importedTokens}
+                  undeletableTokens={undeletableTokens}
+                  chainId={chainId}
+                  setImportedTokens={setImportedTokens}
+                  chooseToken={chooseToken}
+                  isOnPortfolio={true}
+                  fromListsText='Imported'
+              />
+          ))
+        : null;
 
     const findDupes = (addr: string) => {
         const allTokenLists = JSON.parse(localStorage.getItem('allTokenLists') as string);
@@ -80,7 +87,7 @@ export const SoloTokenSelect = (props: propsIF) => {
         if (listNames.length > 2) {
             outputMessage = `from ${listNames[0]}, ${listNames[1]}, and ${
                 listNames.length - 2
-            } other lists`;
+            } more`;
         } else if (listNames.length === 2) {
             outputMessage = `from ${listNames[0]} and ${listNames[1]}`;
         } else if (listNames.length === 1) {
@@ -94,37 +101,55 @@ export const SoloTokenSelect = (props: propsIF) => {
         return outputMessage;
     };
 
-    const otherTokenButtons = (
-        <div className={styles.scrollable_container}>
-            {otherTokensForDOM
-                ? otherTokensForDOM.map((token: TokenIF) => (
-                      <TokenSelect
-                          key={JSON.stringify(token)}
-                          token={token}
-                          tokensBank={importedTokens}
-                          undeletableTokens={undeletableTokens}
-                          chainId={chainId}
-                          setImportedTokens={setImportedTokens}
-                          chooseToken={chooseToken}
-                          isOnPortfolio={true}
-                          fromListsText={findDupes(token.address)}
-                      />
-                  ))
-                : null}
-        </div>
-    );
+    const otherTokenButtons = otherTokensForDOM
+        ? otherTokensForDOM.map((token: TokenIF) => (
+              <TokenSelect
+                  key={JSON.stringify(token)}
+                  token={token}
+                  tokensBank={importedTokens}
+                  undeletableTokens={undeletableTokens}
+                  chainId={chainId}
+                  setImportedTokens={setImportedTokens}
+                  chooseToken={chooseToken}
+                  isOnPortfolio={true}
+                  fromListsText={findDupes(token.address)}
+              />
+          ))
+        : null;
 
+    const [customToken, setCustomToken] = useState<TokenIF | null>(null);
+    useEffect(() => {
+        if (provider && searchType === 'address' && !otherTokensForDOM?.length) {
+            const cachedFetchContractDetails = memoizeFetchContractDetails();
+            const promise = cachedFetchContractDetails(provider, validatedInput, chainId);
+            Promise.resolve(promise).then((res) => res && setCustomToken(res));
+        }
+    }, [searchType, validatedInput]);
+    // '0x0B0322d75bad9cA72eC7708708B54e6b38C26adA'
+
+    const customTokenReturn = JSON.stringify(customToken);
+
+    console.log(customToken);
+
+    console.log({ customTokenReturn });
     return (
         <section className={styles.container}>
             <input
+                spellCheck={'false'}
                 type='text'
                 placeholder='&#61442; Search name or enter an Address'
                 onChange={(e) => setInput(e.target.value)}
             />
-            {tokensForDOM?.length ? <h2>Imported Tokens</h2> : null}
-            {importedTokenButtons}
-            {searchType && otherTokensForDOM?.length ? <h2>More Available Tokens</h2> : null}
-            {otherTokenButtons}
+            {!searchType ? importedTokenButtons : null}
+            {searchType && otherTokensForDOM?.length ? (
+                <>
+                    <h2>More Available Tokens</h2>
+                    <div className={styles.scrollable_container}>{otherTokenButtons}</div>
+                </>
+            ) : null}
+            {searchType && otherTokensForDOM?.length === 0 ? (
+                <SoloTokenImport customToken={customToken} closeModal={closeModal} />
+            ) : null}
         </section>
     );
 };

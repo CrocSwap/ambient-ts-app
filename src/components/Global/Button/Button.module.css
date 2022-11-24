@@ -9,7 +9,7 @@
 
     display: block;
 
-    max-height: 3rem;
+   height: auto;
     cursor: pointer;
     text-align: center;
 

@@ -108,6 +108,7 @@ import {
     setIsLoggedIn,
     setIsUserIdle,
     setNativeToken,
+    setRecentTokens,
 } from '../utils/state/userDataSlice';
 import { checkIsStable } from '../utils/data/stablePairs';
 import { useTokenMap } from '../utils/hooks/useTokenMap';
@@ -140,6 +141,7 @@ import TopRanges from '../components/Analytics/TopRanges/TopRanges';
 import TopTokens from '../components/Analytics/TopTokens/TopTokens';
 import AnalyticsTransactions from '../components/Analytics/AnalyticsTransactions/AnalyticsTransactions';
 import trimString from '../utils/functions/trimString';
+import { memoizeFetchContractDetails } from './functions/fetchContractDetails';
 // import { memoizeQuerySpotTick } from './functions/querySpotTick';
 // import PhishingWarning from '../components/Global/PhisingWarning/PhishingWarning';
 
@@ -148,6 +150,7 @@ const cachedFetchNativeTokenBalance = memoizeFetchNativeTokenBalance();
 const cachedFetchErc20TokenBalances = memoizeFetchErc20TokenBalances();
 const cachedFetchTokenPrice = memoizeTokenPrice();
 const cachedQuerySpotPrice = memoizeQuerySpotPrice();
+const cachedFetchContractDetails = memoizeFetchContractDetails();
 // const cachedQuerySpotTick = memoizeQuerySpotTick();
 
 const httpGraphCacheServerDomain = 'https://809821320828123.de:5000';
@@ -265,10 +268,6 @@ export default function App() {
         process.env.REACT_APP_CACHE_SERVER_IS_ENABLED !== undefined
             ? process.env.REACT_APP_CACHE_SERVER_IS_ENABLED === 'true'
             : true;
-
-    // useEffect(() => {
-    //     console.log({ isServerEnabled });
-    // }, [isServerEnabled]);
 
     const [loginCheckDelayElapsed, setLoginCheckDelayElapsed] = useState(false);
 
@@ -821,9 +820,22 @@ export default function App() {
     // useEffect that runs when token pair changes
     useEffect(() => {
         if (rtkMatchesParams) {
+            if (provider) {
+                (async () => {
+                    const contractDetails = await cachedFetchContractDetails(
+                        provider,
+                        tradeData.tokenB.address,
+                        chainData.chainId,
+                    );
+                    console.log({ contractDetails });
+                })();
+            }
+
             // console.log(tradeData.tokenA.address);
             // console.log(tradeData.tokenB.address);
+
             // reset rtk values for user specified range in ticks
+            console.log('resetting advanced ticks');
             dispatch(setAdvancedLowTick(0));
             dispatch(setAdvancedHighTick(0));
 
@@ -1892,6 +1904,33 @@ export default function App() {
                                 }),
                             );
                         }
+                        const result: TokenIF[] = [];
+                        const tokenMap = new Map();
+                        for (const item of updatedTransactions as ITransaction[]) {
+                            if (!tokenMap.has(item.base)) {
+                                tokenMap.set(item.base, true); // set any value to Map
+                                result.push({
+                                    name: item.baseName,
+                                    address: item.base,
+                                    symbol: item.baseSymbol,
+                                    decimals: item.baseDecimals,
+                                    chainId: parseInt(item.chainId),
+                                    logoURI: item.baseTokenLogoURI,
+                                });
+                            }
+                            if (!tokenMap.has(item.quote)) {
+                                tokenMap.set(item.quote, true); // set any value to Map
+                                result.push({
+                                    name: item.quoteName,
+                                    address: item.quote,
+                                    symbol: item.quoteSymbol,
+                                    decimals: item.quoteDecimals,
+                                    chainId: parseInt(item.chainId),
+                                    logoURI: item.quoteTokenLogoURI,
+                                });
+                            }
+                        }
+                        dispatch(setRecentTokens(result));
                     })
                     .catch(console.log);
             } catch (error) {
@@ -2162,6 +2201,10 @@ export default function App() {
     };
 
     // props for <Range/> React element
+
+    const [rangetokenAQtyLocal, setRangeTokenAQtyLocal] = useState<number>(0);
+    const [rangetokenBQtyLocal, setRangeTokenBQtyLocal] = useState<number>(0);
+
     const rangeProps = {
         crocEnv: crocEnv,
         isUserLoggedIn: isUserLoggedIn,
@@ -2196,6 +2239,10 @@ export default function App() {
 
         poolExists: poolExists,
         isRangeCopied: isRangeCopied,
+        tokenAQtyLocal: rangetokenAQtyLocal,
+        tokenBQtyLocal: rangetokenBQtyLocal,
+        setTokenAQtyLocal: setRangeTokenAQtyLocal,
+        setTokenBQtyLocal: setRangeTokenBQtyLocal,
     };
 
     function toggleSidebar() {
@@ -2238,6 +2285,7 @@ export default function App() {
 
         analyticsSearchInput: analyticsSearchInput,
         setAnalyticsSearchInput: setAnalyticsSearchInput,
+        openModalWallet: openModalWallet,
     };
 
     const analyticsProps = {

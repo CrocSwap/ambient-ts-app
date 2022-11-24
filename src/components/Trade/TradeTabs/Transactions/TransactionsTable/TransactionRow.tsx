@@ -37,7 +37,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
         showColumns,
         tradeData,
         ipadView,
-        view2,
+        // view2,
         isTokenABase,
         tx,
         // showSidebar,
@@ -280,19 +280,19 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
             <NoTokenIcon tokenInitial={tx.quoteSymbol.charAt(0)} width='20px' />
         );
 
-    const tokensTogether = (
-        <div
-            style={{
-                display: 'flex',
-                flexDirection: 'row',
-                alignItems: 'center',
-                gap: '4px',
-            }}
-        >
-            {baseTokenLogoComponent}
-            {quoteTokenLogoComponent}
-        </div>
-    );
+    // const tokensTogether = (
+    //     <div
+    //         style={{
+    //             display: 'flex',
+    //             flexDirection: 'row',
+    //             alignItems: 'center',
+    //             gap: '4px',
+    //         }}
+    //     >
+    //         {baseTokenLogoComponent}
+    //         {quoteTokenLogoComponent}
+    //     </div>
+    // );
 
     // portfolio page li element ---------------
     // const accountTokenImages = <li className={styles.token_images_account}>{tokensTogether}</li>;
@@ -305,14 +305,11 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
 
     const tokenPair = (
         <li className='base_color'>
-            {/* <div style={{display: 'flex', alignItems: 'center', gap: '4px'}}> */}
-
-            {tokensTogether}
+            {/* {tokensTogether} */}
             <p>
                 {' '}
                 {baseTokenSymbol} / {quoteTokenSymbol}
             </p>
-            {/* </div> */}
         </li>
     );
 
@@ -350,6 +347,63 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
         </DefaultTooltip>
     );
 
+    const baseQtyToolTipStyle = <p className={styles.tooltip_style}>{baseTokenSymbol + ' Qty'}</p>;
+    const quoteQtyToolTipStyle = (
+        <p className={styles.tooltip_style}>{quoteTokenSymbol + ' Qty'}</p>
+    );
+    const baseQtyDisplayWithTooltip = (
+        <DefaultTooltip
+            interactive
+            title={baseQtyToolTipStyle}
+            placement={'right'}
+            arrow
+            enterDelay={150}
+            leaveDelay={200}
+        >
+            <li onClick={openDetailsModal} data-label={baseTokenSymbol} className='color_white'>
+                <p
+                    style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'flex-end',
+                        gap: '4px',
+                        textAlign: 'right',
+                        fontFamily: 'monospace',
+                    }}
+                >
+                    {baseDisplay}
+                    {isOnPortfolioPage && <img src={baseTokenLogo} width='15px' alt='' />}
+                </p>
+            </li>
+        </DefaultTooltip>
+    );
+    const quoteQtyDisplayWithTooltip = (
+        <DefaultTooltip
+            interactive
+            title={quoteQtyToolTipStyle}
+            placement={'right'}
+            arrow
+            enterDelay={150}
+            leaveDelay={200}
+        >
+            <li onClick={openDetailsModal} data-label={quoteTokenSymbol} className='color_white'>
+                <p
+                    style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'flex-end',
+                        gap: '4px',
+                        textAlign: 'right',
+                        fontFamily: 'monospace',
+                    }}
+                >
+                    {quoteDisplay}
+                    {isOnPortfolioPage && <img src={quoteTokenLogo} width='15px' alt='' />}
+                </p>
+            </li>
+        </DefaultTooltip>
+    );
+
     // end of portfolio page li element ---------------
     return (
         <ul
@@ -362,8 +416,8 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
             }
             id={txDomId}
         >
+            {!showColumns && TxDateWithTooltip}
             {isOnPortfolioPage && !desktopView && tokenPair}
-            {!showColumns && !view2 && TxDateWithTooltip}
             {/* {isOnPortfolioPage && !showSidebar && poolName} */}
             {!showColumns && IDWithTooltip}
             {!showColumns && !isOnPortfolioPage && walletWithTooltip}
@@ -467,20 +521,8 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                 </li>
             )}
             {usdValueWithTooltip}
-            {!showColumns && (
-                <li onClick={openDetailsModal} data-label={baseTokenSymbol} className='color_white'>
-                    <p style={{ textAlign: 'right', fontFamily: 'monospace' }}>{baseDisplay}</p>
-                </li>
-            )}
-            {!showColumns && (
-                <li
-                    onClick={openDetailsModal}
-                    data-label={quoteTokenSymbol}
-                    className='color_white'
-                >
-                    <p style={{ textAlign: 'right', fontFamily: 'monospace' }}>{quoteDisplay}</p>
-                </li>
-            )}
+            {!showColumns && baseQtyDisplayWithTooltip}
+            {!showColumns && quoteQtyDisplayWithTooltip}
             {showColumns && (
                 <li
                     data-label={baseTokenSymbol + quoteTokenSymbol}

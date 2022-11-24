@@ -254,7 +254,7 @@ export default function Chart(props: ChartData) {
             const newTargets = [...prevState];
             newTargets.filter((target: any) => target.name === 'Max')[0].value =
                 props.liquidityData !== undefined
-                    ? props.liquidityData.liqBidData[0].liqPrices
+                    ? props.liquidityData.liqBidData[0]?.liqPrices
                     : Infinity;
             newTargets.filter((target: any) => target.name === 'Min')[0].value = 0;
 

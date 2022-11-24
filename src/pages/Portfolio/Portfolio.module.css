@@ -53,7 +53,7 @@
     background: var(--title-gradient);
 }
 
-@media (min-width: 1280px) {
+@media (min-width: 900px) {
     .tabs_exchange_balance_container,
     .full_layout_container {
         /* I wish I had a logical answer to this calculation but it was through trial and error. The higher level containers of the app needs to be refactored to prevent this workflow */

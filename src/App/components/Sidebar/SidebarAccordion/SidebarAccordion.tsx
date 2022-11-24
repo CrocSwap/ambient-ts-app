@@ -2,7 +2,7 @@
 import { useState, MouseEvent, ReactNode, Dispatch, SetStateAction, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MdPlayArrow } from 'react-icons/md';
-
+import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 // START: Import Local Files
 // import notificationStyles from './SidebarAccordion.module.css'
 import styles from '../Sidebar.module.css';
@@ -16,6 +16,9 @@ interface SidebarAccordionPropsIF {
     children?: ReactNode;
     showSidebar: boolean;
     setShowSidebar: Dispatch<SetStateAction<boolean>>;
+    shouldDisplayContentWhenUserNotLoggedIn: boolean;
+
+    openModalWallet: () => void;
 
     toggleSidebar: (event: MouseEvent<HTMLDivElement> | MouseEvent<HTMLLIElement>) => void;
     item: {
@@ -29,7 +32,15 @@ interface SidebarAccordionPropsIF {
 }
 
 export default function SidebarAccordion(props: SidebarAccordionPropsIF) {
-    const { showSidebar, idx, item, setShowSidebar } = props;
+    const {
+        showSidebar,
+        shouldDisplayContentWhenUserNotLoggedIn,
+        idx,
+        item,
+        setShowSidebar,
+        openModalWallet,
+    } = props;
+    const isUserLoggedIn = useAppSelector((state) => state.userData).isLoggedIn;
 
     const [isOpen, setIsOpen] = useState(false);
 
@@ -75,6 +86,16 @@ export default function SidebarAccordion(props: SidebarAccordionPropsIF) {
     }, [props.openAllDefault]);
     // if (props.openAllDefault){setIsOpen(true)}
 
+    const accordionContentToShow =
+        isUserLoggedIn || shouldDisplayContentWhenUserNotLoggedIn ? (
+            showOpenContentOrNull
+        ) : (
+            <div className={styles.connect_button}>
+                <p>Your recent {item.name.toLowerCase()} will display here.</p>
+                <button onClick={openModalWallet}>Connect Wallet</button>
+            </div>
+        );
+
     return (
         <>
             <motion.li
@@ -96,7 +117,7 @@ export default function SidebarAccordion(props: SidebarAccordionPropsIF) {
                     {/* { notificationBell} */}
                 </div>
             </motion.li>
-            <AnimatePresence>{isOpen && showOpenContentOrNull}</AnimatePresence>
+            <AnimatePresence>{isOpen && accordionContentToShow}</AnimatePresence>
         </>
     );
 }

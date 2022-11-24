@@ -1,1 +1,1 @@
-export const defaultTokenLists = ['ambient', 'coingecko', 'testnet'];
+export const defaultTokenLists = ['ambient', 'coingecko'];
