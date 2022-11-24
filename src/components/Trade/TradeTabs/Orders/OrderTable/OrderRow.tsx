@@ -4,7 +4,7 @@ import OpenOrderStatus from '../../../../Global/OpenOrderStatus/OpenOrderStatus'
 import OrdersMenu from '../../../../Global/Tabs/TableMenu/TableMenuComponents/OrdersMenu';
 import OrderDetails from '../../../../OrderDetails/OrderDetails';
 import { Dispatch, SetStateAction, useEffect } from 'react';
-import { CrocEnv } from '@crocswap-libs/sdk';
+import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
 import { DefaultTooltip } from '../../../../Global/StyledTooltip/StyledTooltip';
 import { NavLink } from 'react-router-dom';
 import NoTokenIcon from '../../../../Global/NoTokenIcon/NoTokenIcon';
@@ -15,6 +15,7 @@ import { setDataLoadingStatus } from '../../../../../utils/state/graphDataSlice'
 
 interface OrderRowPropsIF {
     crocEnv: CrocEnv | undefined;
+    chainData: ChainSpec;
     tradeData: tradeData;
     expandTradeTable: boolean;
     showColumns: boolean;
@@ -37,10 +38,11 @@ interface OrderRowPropsIF {
 export default function OrderRow(props: OrderRowPropsIF) {
     const {
         crocEnv,
+        chainData,
         tradeData,
         showColumns,
         ipadView,
-        view2,
+        // view2,
         limitOrder,
         showSidebar,
         openGlobalModal,
@@ -210,29 +212,28 @@ export default function OrderRow(props: OrderRowPropsIF) {
         <NoTokenIcon tokenInitial={limitOrder.quoteSymbol.charAt(0)} width='15px' />
     );
 
-    const tokensTogether = (
-        <div
-            style={{
-                display: 'flex',
-                flexDirection: 'row',
-                alignItems: 'center',
-                gap: '4px',
-            }}
-        >
-            {baseTokenLogoComponent}
-            {quoteTokenLogoComponent}
-        </div>
-    );
+    // const tokensTogether = (
+    //     <div
+    //         style={{
+    //             display: 'flex',
+    //             flexDirection: 'row',
+    //             alignItems: 'center',
+    //             gap: '4px',
+    //         }}
+    //     >
+    //         {baseTokenLogoComponent}
+    //         {quoteTokenLogoComponent}
+    //     </div>
+    // );
 
     // portfolio page li element ---------------
-    const accountTokenImages = (
-        <li className={styles.token_images_account}>
-            {/* {baseTokenLogoComponent}
-                {quoteTokenLogoComponent} */}
-            {tokensTogether}
-            {/* <p>hello</p> */}
-        </li>
-    );
+    // const accountTokenImages = (
+    //     <li className={styles.token_images_account}>
+
+    //         {tokensTogether}
+
+    //     </li>
+    // );
 
     const poolName = (
         <li className='base_color'>
@@ -252,6 +253,63 @@ export default function OrderRow(props: OrderRowPropsIF) {
         // second: '2-digit',
     }).format(limitOrder.time * 1000);
 
+    const baseQtyToolTipStyle = <p className={styles.tooltip_style}>{baseTokenSymbol + ' Qty'}</p>;
+    const quoteQtyToolTipStyle = (
+        <p className={styles.tooltip_style}>{quoteTokenSymbol + ' Qty'}</p>
+    );
+    const baseQtyDisplayWithTooltip = (
+        <DefaultTooltip
+            interactive
+            title={baseQtyToolTipStyle}
+            placement={'right'}
+            arrow
+            enterDelay={150}
+            leaveDelay={200}
+        >
+            <li onClick={openDetailsModal} data-label={baseTokenSymbol} className='color_white'>
+                <p
+                    style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'flex-end',
+                        gap: '4px',
+                        textAlign: 'right',
+                        fontFamily: 'monospace',
+                    }}
+                >
+                    {baseDisplay}
+                    {isOnPortfolioPage && <img src={baseTokenLogo} width='15px' alt='' />}
+                </p>
+            </li>
+        </DefaultTooltip>
+    );
+    const quoteQtyDisplayWithTooltip = (
+        <DefaultTooltip
+            interactive
+            title={quoteQtyToolTipStyle}
+            placement={'right'}
+            arrow
+            enterDelay={150}
+            leaveDelay={200}
+        >
+            <li onClick={openDetailsModal} data-label={quoteTokenSymbol} className='color_white'>
+                <p
+                    style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'flex-end',
+                        gap: '4px',
+                        textAlign: 'right',
+                        fontFamily: 'monospace',
+                    }}
+                >
+                    {quoteDisplay}
+                    {isOnPortfolioPage && <img src={quoteTokenLogo} width='15px' alt='' />}
+                </p>
+            </li>
+        </DefaultTooltip>
+    );
+
     return (
         <ul
             className={`${styles.row_container} ${activePositionStyle} ${userPositionStyle}`}
@@ -263,8 +321,8 @@ export default function OrderRow(props: OrderRowPropsIF) {
                     : setCurrentPositionActive('')
             }
         >
-            {isOnPortfolioPage && accountTokenImages}
-            {!isOnPortfolioPage && !showColumns && !view2 && (
+            {/* {isOnPortfolioPage && accountTokenImages} */}
+            {!showColumns && (
                 <li onClick={openDetailsModal}>
                     <p className='base_color'> {fillTime}</p>
                     {/* <p className='base_color'> Nov 9 10:36:23 AM</p> */}
@@ -325,20 +383,8 @@ export default function OrderRow(props: OrderRowPropsIF) {
             )}
 
             {ValueWithTooltip}
-            {!showColumns && (
-                <li onClick={openDetailsModal} data-label={baseTokenSymbol} className='color_white'>
-                    <p style={{ textAlign: 'right', fontFamily: 'monospace' }}>{baseDisplay}</p>
-                </li>
-            )}
-            {!showColumns && (
-                <li
-                    onClick={openDetailsModal}
-                    data-label={quoteTokenSymbol}
-                    className='color_white'
-                >
-                    <p style={{ textAlign: 'right', fontFamily: 'monospace' }}>{quoteDisplay}</p>
-                </li>
-            )}
+            {!showColumns && baseQtyDisplayWithTooltip}
+            {!showColumns && quoteQtyDisplayWithTooltip}
             {showColumns && (
                 <li data-label={baseTokenSymbol + quoteTokenSymbol} className='color_white'>
                     <p className={styles.token_qty} style={{ fontFamily: 'monospace' }}>
@@ -362,6 +408,8 @@ export default function OrderRow(props: OrderRowPropsIF) {
             )}
             <li data-label='menu'>
                 <OrdersMenu
+                    chainData={chainData}
+                    isShowAllEnabled={isShowAllEnabled}
                     tradeData={tradeData}
                     limitOrder={limitOrder}
                     {...orderMenuProps}

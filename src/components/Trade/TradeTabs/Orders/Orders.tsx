@@ -316,23 +316,19 @@ export default function Orders(props: propsIF) {
         {
             name: 'Date',
             className: '',
-            show:
-                !showColumns &&
-                !view2 &&
-                // && !showSidebar
-                !isOnPortfolioPage,
+            show: !showColumns,
             slug: 'date',
             sortable: true,
         },
+        // {
+        //     name: '',
+        //     className: '',
+        //     show: isOnPortfolioPage,
+        //     slug: 'token_images',
+        //     sortable: false,
+        // },
         {
-            name: '',
-            className: '',
-            show: isOnPortfolioPage,
-            slug: 'token_images',
-            sortable: false,
-        },
-        {
-            name: 'Pool',
+            name: 'Pair',
             className: '',
             show: isOnPortfolioPage && !showSidebar,
             slug: 'pool',
@@ -457,6 +453,7 @@ export default function Orders(props: propsIF) {
     const rowItemContent = sortedLimits.map((order, idx) => (
         <OrderRow
             crocEnv={crocEnv}
+            chainData={chainData}
             tradeData={tradeData}
             expandTradeTable={expandTradeTable}
             showSidebar={showSidebar}

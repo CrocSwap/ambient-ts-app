@@ -284,17 +284,24 @@ export default function Ranges(props: RangesPropsIF) {
         </>
     );
     const headerColumns = [
+        // {
+        //     name: '',
+        //     className: '',
+        //     show: isOnPortfolioPage,
+        //     slug: 'token_images',
+        //     sortable: false,
+        // },
         {
-            name: '',
+            name: 'Date',
             className: '',
-            show: isOnPortfolioPage,
-            slug: 'token_images',
-            sortable: false,
+            show: !showColumns,
+            slug: 'date',
+            sortable: true,
         },
         {
             name: 'Pool',
             className: '',
-            show: isOnPortfolioPage && !showSidebar,
+            show: isOnPortfolioPage,
             slug: 'pool',
             sortable: false,
         },

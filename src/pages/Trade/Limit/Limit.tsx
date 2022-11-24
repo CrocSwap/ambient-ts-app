@@ -498,7 +498,12 @@ export default function Limit(props: LimitPropsIF) {
     ) : null;
 
     const isTokenAAllowanceSufficient = parseFloat(tokenAAllowance) >= parseFloat(tokenAInputQty);
-    const loginButton = <Button title='Connect Wallet' action={openModalWallet} />;
+    const loginButton = (
+        <button onClick={openModalWallet} className={styles.authenticate_button}>
+            Connect Wallet
+        </button>
+    );
+
     const [isApprovalPending, setIsApprovalPending] = useState(false);
 
     const approve = async (tokenAddress: string) => {
