@@ -664,6 +664,26 @@ export default function Chart(props: ChartData) {
                             const deltaY = linearY(t.y - scaleData.lastY);
 
                             scaleData.yScale.domain([domainY[0] + deltaY, domainY[1] + deltaY]);
+
+                            scaleData.yScaleIndicator.range([
+                                event.sourceEvent.offsetY,
+                                scaleData.yScale(poolPriceDisplay),
+                            ]);
+
+                            const topPlacement =
+                                event.sourceEvent.y -
+                                80 -
+                                (event.sourceEvent.offsetY - scaleData.yScale(poolPriceDisplay)) /
+                                    2;
+
+                            liqTooltip
+                                .style(
+                                    'top',
+                                    topPlacement > 500
+                                        ? 500
+                                        : (topPlacement < 115 ? 115 : topPlacement) + 'px',
+                                )
+                                .style('left', event.offsetX - 80 + 'px');
                         }
 
                         // setCrosshairXForSubChart(scaleData.xScale(crosshairData[0].x));
@@ -951,7 +971,7 @@ export default function Chart(props: ChartData) {
 
                     // const ghostJoin = d3fc.dataJoin('g', 'ghostLines');
 
-                    const dragedValue = scaleData.yScale.invert(d3.pointer(event)[1] - 120);
+                    const dragedValue = scaleData.yScale.invert(event.y);
                     const displayValue = poolPriceDisplay !== undefined ? poolPriceDisplay : 0;
 
                     const low = ranges.filter((target: any) => target.name === 'Min')[0].value;
@@ -1099,7 +1119,7 @@ export default function Chart(props: ChartData) {
 
                     // const snapResponse = snap(
                     //     props.liquidityData.liqSnapData,
-                    //     scaleData.yScale.invert(d3.pointer(event)[1] - 215),
+                    //     scaleData.yScale.invert(event.y),
                     // );
 
                     // const snappedValueIndex = snapResponse[0].index;
@@ -1112,7 +1132,7 @@ export default function Chart(props: ChartData) {
 
                     // const ghostJoin = d3fc.dataJoin('g', 'ghostLines');
 
-                    newLimitValue = scaleData.yScale.invert(d3.pointer(event)[1] - 120);
+                    newLimitValue = scaleData.yScale.invert(event.y);
 
                     newLimitValue =
                         poolPriceDisplay !== undefined && newLimitValue > poolPriceDisplay * 10
@@ -1645,7 +1665,7 @@ export default function Chart(props: ChartData) {
                                 baseTokenDecimals,
                                 quoteTokenDecimals,
                                 low.toString(),
-                                scaleData.yScale.invert(d3.pointer(event)[1]).toString(),
+                                scaleData.yScale.invert(event.y).toString(),
                                 lookupChain(chainId).gridSize,
                             );
                         } else {
@@ -1653,7 +1673,7 @@ export default function Chart(props: ChartData) {
                                 denomInBase,
                                 baseTokenDecimals,
                                 quoteTokenDecimals,
-                                scaleData.yScale.invert(d3.pointer(event)[1]).toString(),
+                                scaleData.yScale.invert(event.y).toString(),
                                 high.toString(),
                                 lookupChain(chainId).gridSize,
                             );
@@ -2315,7 +2335,7 @@ export default function Chart(props: ChartData) {
                             .on('mousemove', (event: any) => {
                                 indicatorLineData[0] = {
                                     x: scaleData.xScale.invert(event.offsetX),
-                                    y: event.offsetY,
+                                    y: scaleData.yScale.invert(event.offsetY),
                                 };
 
                                 currentPriceData[0] = {
@@ -2357,16 +2377,14 @@ export default function Chart(props: ChartData) {
                                     return nearest;
                                 });
 
+                                const topPlacement =
+                                    event.y -
+                                    80 -
+                                    (event.offsetY - scaleData.yScale(poolPriceDisplay)) / 2;
+
                                 liqTooltip
                                     .style('visibility', 'visible')
-                                    .style(
-                                        'top',
-                                        event.y -
-                                            80 -
-                                            (event.offsetY - scaleData.yScale(poolPriceDisplay)) /
-                                                2 +
-                                            'px',
-                                    )
+                                    .style('top', (topPlacement < 115 ? 115 : topPlacement) + 'px')
                                     .style('left', event.offsetX - 80 + 'px');
 
                                 liquidityData.liqHighligtedBidSeries = [];
@@ -2408,7 +2426,7 @@ export default function Chart(props: ChartData) {
                             .on('mousemove', (event: any) => {
                                 indicatorLineData[0] = {
                                     x: scaleData.xScale.invert(event.offsetX),
-                                    y: event.offsetY,
+                                    y: scaleData.yScale.invert(event.offsetY),
                                 };
 
                                 currentPriceData[0] = {
@@ -2450,16 +2468,14 @@ export default function Chart(props: ChartData) {
                                     return nearest;
                                 });
 
+                                const topPlacement =
+                                    event.y -
+                                    80 -
+                                    (event.offsetY - scaleData.yScale(poolPriceDisplay)) / 2;
+
                                 liqTooltip
                                     .style('visibility', 'visible')
-                                    .style(
-                                        'top',
-                                        event.y -
-                                            80 -
-                                            (event.offsetY - scaleData.yScale(poolPriceDisplay)) /
-                                                2 +
-                                            'px',
-                                    )
+                                    .style('top', (topPlacement > 500 ? 500 : topPlacement) + 'px')
                                     .style('left', event.offsetX - 80 + 'px');
 
                                 liquidityData.liqHighligtedAskSeries = [];
