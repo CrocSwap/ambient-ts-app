@@ -131,7 +131,7 @@ export default function Chart(props: ChartData) {
     const tokenBDecimals = tokenB.decimals;
     const baseTokenDecimals = isTokenABase ? tokenADecimals : tokenBDecimals;
     const quoteTokenDecimals = !isTokenABase ? tokenADecimals : tokenBDecimals;
-
+    const tvlMainDiv = useRef(null);
     const [ranges, setRanges] = useState([
         {
             name: 'Min',
@@ -2276,14 +2276,14 @@ export default function Chart(props: ChartData) {
                     const filtered =
                         data.length > 1 ? data.filter((d: any) => xValue(d) != null) : data;
                     const nearest = minimum(filtered, (d: any) =>
-                        Math.abs(point.offsetX - xScale(xValue(d))),
+                        Math.abs(point.layerX - xScale(xValue(d))),
                     )[1];
 
                     setCrosshairForSubChart((prevState) => {
                         const newData = [...prevState];
 
                         newData[0].x = nearest?.date;
-                        newData[0].y = point.offsetY;
+                        newData[0].y = point.layerY;
 
                         return newData;
                     });
@@ -2598,6 +2598,7 @@ export default function Chart(props: ChartData) {
                 });
 
                 const setCrossHairLocation = (event: any) => {
+                    // console.log({event});
                     crosshairData[0] = snap(candlestick, chartData, event)[0];
                     setIsMouseMoveCrosshair(true);
 
@@ -2607,7 +2608,7 @@ export default function Chart(props: ChartData) {
                             y:
                                 isMouseMoveForSubChart || isZoomForSubChart
                                     ? -1
-                                    : scaleData.yScale.invert(event.offsetY),
+                                    : scaleData.yScale.invert(event.layerY),
                         },
                     ]);
 
@@ -2634,6 +2635,14 @@ export default function Chart(props: ChartData) {
 
                 render();
 
+                d3.select(d3Container.current).on('mouseleave', () => {
+                    d3.select(d3PlotArea.current)
+                        .select('svg')
+                        .select('.crosshairHorizontal')
+                        .style('visibility', 'hidden');
+
+                    setIsMouseMoveCrosshair(false);
+                });
                 d3.select(d3PlotArea.current).on('mouseleave', () => {
                     liquidityData.liqHighligtedBidSeries = [];
                     liquidityData.liqHighligtedAskSeries = [];
@@ -2642,12 +2651,6 @@ export default function Chart(props: ChartData) {
                         .select('svg')
                         .select('.crosshairVertical')
                         .style('visibility', 'hidden');
-
-                    d3.select(d3PlotArea.current)
-                        .select('svg')
-                        .select('.crosshairHorizontal')
-                        .style('visibility', 'hidden');
-
                     setIsMouseMoveCrosshair(false);
 
                     render();
@@ -2955,6 +2958,7 @@ export default function Chart(props: ChartData) {
                                 render={render}
                                 mouseMoveChartName={mouseMoveChartName}
                                 setMouseMoveChartName={setMouseMoveChartName}
+                                tvlMainDiv={tvlMainDiv}
                             />
                         </>
                     )}
