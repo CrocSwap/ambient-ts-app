@@ -2642,7 +2642,6 @@ export default function Chart(props: ChartData) {
                 });
 
                 const setCrossHairLocation = (event: any) => {
-                    // console.log({event});
                     crosshairData[0] = snap(candlestick, chartData, event)[0];
                     setIsMouseMoveCrosshair(true);
 
@@ -2685,6 +2684,30 @@ export default function Chart(props: ChartData) {
                         .select('.crosshairHorizontal')
                         .style('visibility', 'hidden');
 
+                    d3.select('#tvl_chart')
+                        .select('svg')
+                        .select('.crosshairHorizontal')
+                        .selectChild()
+                        .style('visibility', 'hidden');
+
+                    d3.select('#tvl_chart')
+                        .select('svg')
+                        .select('.crosshairVertical')
+                        .selectChild()
+                        .style('visibility', 'hidden');
+
+                    d3.select('#fee_rate_chart')
+                        .select('svg')
+                        .select('.crosshairHorizontal')
+                        .selectChild()
+                        .style('visibility', 'hidden');
+
+                    d3.select('#fee_rate_chart')
+                        .select('svg')
+                        .select('.crosshairVertical')
+                        .selectChild()
+                        .style('visibility', 'hidden');
+
                     setIsMouseMoveCrosshair(false);
                 });
                 d3.select(d3PlotArea.current).on('mouseleave', () => {
@@ -2700,15 +2723,41 @@ export default function Chart(props: ChartData) {
                     render();
                 });
 
+                d3.select(d3Container.current).on('mouseenter', () => {
+                    d3.select(d3PlotArea.current)
+                        .select('svg')
+                        .select('.crosshairHorizontal')
+                        .style('visibility', 'visible');
+
+                    d3.select('#tvl_chart')
+                        .select('svg')
+                        .select('.crosshairHorizontal')
+                        .selectChild()
+                        .style('visibility', 'visible');
+
+                    d3.select('#tvl_chart')
+                        .select('svg')
+                        .select('.crosshairVertical')
+                        .selectChild()
+                        .style('visibility', 'visible');
+
+                    d3.select('#fee_rate_chart')
+                        .select('svg')
+                        .select('.crosshairHorizontal')
+                        .selectChild()
+                        .style('visibility', 'visible');
+
+                    d3.select('#fee_rate_chart')
+                        .select('svg')
+                        .select('.crosshairVertical')
+                        .selectChild()
+                        .style('visibility', 'visible');
+                });
+
                 d3.select(d3PlotArea.current).on('mouseenter', () => {
                     d3.select(d3PlotArea.current)
                         .select('svg')
                         .select('.crosshairVertical')
-                        .style('visibility', 'visible');
-
-                    d3.select(d3PlotArea.current)
-                        .select('svg')
-                        .select('.crosshairHorizontal')
                         .style('visibility', 'visible');
                 });
             }

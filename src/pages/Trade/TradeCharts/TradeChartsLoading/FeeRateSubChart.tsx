@@ -105,6 +105,7 @@ export default function FeeRateSubChart(props: FreeRateData) {
 
                 crosshairHorizontal.decorate((selection: any) => {
                     selection.enter().select('line').attr('class', 'crosshair');
+                    selection.enter().style('visibility', 'hidden');
                     selection
                         .enter()
                         .append('line')
@@ -121,6 +122,7 @@ export default function FeeRateSubChart(props: FreeRateData) {
 
                 crosshairVertical.decorate((selection: any) => {
                     selection.enter().select('line').attr('class', 'crosshair');
+                    selection.enter().style('visibility', 'hidden');
                     selection
                         .enter()
                         .append('line')
@@ -214,6 +216,11 @@ export default function FeeRateSubChart(props: FreeRateData) {
                     setIsMouseMoveForSubChart(true);
                     setIsZoomForSubChart(false);
                     setMouseMoveEventForSubChart(event);
+                    d3.select('#fee_rate_chart')
+                        .select('svg')
+                        .select('.crosshairVertical')
+                        .selectChildren()
+                        .style('visibility', 'visible');
 
                     setsubChartValues((prevState: any) => {
                         const newTargets = [...prevState];
@@ -231,6 +238,12 @@ export default function FeeRateSubChart(props: FreeRateData) {
                     setMouseMoveChartName(undefined);
                     setIsMouseMoveForSubChart(false);
                     setIsZoomForSubChart(false);
+
+                    d3.select('#fee_rate_chart')
+                        .select('svg')
+                        .select('.crosshairVertical')
+                        .selectChildren()
+                        .style('visibility', 'hidden');
                     render();
                 });
             }

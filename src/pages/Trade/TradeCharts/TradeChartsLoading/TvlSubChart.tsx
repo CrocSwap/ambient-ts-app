@@ -99,6 +99,7 @@ export default function TvlSubChart(props: TvlData) {
 
                 crosshairHorizontal.decorate((selection: any) => {
                     selection.enter().select('line').attr('class', 'crosshair');
+                    selection.enter().style('visibility', 'hidden');
                     selection
                         .enter()
                         .append('line')
@@ -115,6 +116,7 @@ export default function TvlSubChart(props: TvlData) {
 
                 crosshairVertical.decorate((selection: any) => {
                     selection.enter().select('line').attr('class', 'crosshair');
+                    selection.enter().style('visibility', 'hidden');
                     selection
                         .enter()
                         .append('line')
@@ -247,6 +249,11 @@ export default function TvlSubChart(props: TvlData) {
 
                 d3.select(d3PlotTvl.current).on('mousemove', function (event: any) {
                     setMouseMoveChartName('tvl');
+                    d3.select(d3PlotTvl.current)
+                        .select('svg')
+                        .select('.crosshairVertical')
+                        .selectChildren()
+                        .style('visibility', 'visible');
                     setIsMouseMoveForSubChart(true);
                     setIsZoomForSubChart(false);
                     setMouseMoveEventForSubChart(event);
@@ -269,6 +276,11 @@ export default function TvlSubChart(props: TvlData) {
                     setMouseMoveChartName(undefined);
                     props.setIsMouseMoveForSubChart(false);
                     props.setIsZoomForSubChart(false);
+                    d3.select(d3PlotTvl.current)
+                        .select('svg')
+                        .select('.crosshairVertical')
+                        .style('visibility', 'hidden');
+
                     render();
                 });
             }
