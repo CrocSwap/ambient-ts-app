@@ -292,10 +292,10 @@ export default function Ranges(props: RangesPropsIF) {
         //     sortable: false,
         // },
         {
-            name: 'Date',
+            name: 'Time',
             className: '',
             show: !showColumns,
-            slug: 'date',
+            slug: 'time',
             sortable: true,
         },
         {
