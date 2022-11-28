@@ -113,6 +113,33 @@ div.liqTooltip {
     border-radius: var(--border-radius);
 }
 
+div.zoomUtilsTooltip {
+    position: absolute;
+    text-align: center;
+    align-items: center;
+    display: flex;
+
+    background: #171d27;
+    font-weight: bold;
+
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    border-radius: var(--border-radius);
+}
+
+.zoomUtilsTooltip {
+    position: absolute;
+    text-align: center;
+    align-items: center;
+
+    background: #171d27;
+    font-size: 14px;
+    font-weight: bold;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    border-radius: var(--border-radius);
+}
+
 div.tooltip {
     position: absolute;
     pointer-events: none;

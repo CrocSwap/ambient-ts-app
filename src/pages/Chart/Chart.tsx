@@ -179,7 +179,6 @@ export default function Chart(props: ChartData) {
     const [dragControl, setDragControl] = useState(false);
     const [rescale, setRescale] = useState(true);
     const [zoomAndYdragControl, setZoomAndYdragControl] = useState();
-    const [rescaleText, setRescaleText] = useState<any>();
     const [isMouseMoveCrosshair, setIsMouseMoveCrosshair] = useState(false);
     const [bandwidth, setBandwidth] = useState(5);
 
@@ -244,6 +243,7 @@ export default function Chart(props: ChartData) {
     const [popupHeight, setPopupHeight] = useState<any>();
     const [dragRange, setDragRange] = useState<any>();
     const [dragLimit, setDragLimit] = useState<any>();
+    const [zoomUtilsTooltip, setZoomUtilsTooltip] = useState<any>();
 
     // const valueFormatter = d3.format('.5f');
     const currentPoolPriceTick =
@@ -773,7 +773,7 @@ export default function Chart(props: ChartData) {
                 }
             }
         }
-    }, [parsedChartData?.chartData]);
+    }, [parsedChartData?.chartData, rescale]);
 
     const setMarketLineValue = () => {
         const lastCandlePrice = parsedChartData?.chartData[0]?.close;
@@ -1192,72 +1192,12 @@ export default function Chart(props: ChartData) {
     }, [parsedChartData]);
 
     useEffect(() => {
-        if (rescaleText !== undefined) {
-            rescaleText.style('fill', () =>
-                rescale ? 'rgb(58, 60, 120)' : 'rgba(237, 231, 225, 0.2)',
+        if (zoomUtilsTooltip !== undefined) {
+            zoomUtilsTooltip.style('color', () =>
+                rescale ? 'rgb(97, 100, 189)' : 'rgba(237, 231, 225, 0.2)',
             );
         }
     }, [rescale]);
-
-    useEffect(() => {
-        if (d3.select(d3Xaxis.current).select('svg').select('#rescale').node() == null) {
-            const rescaleText = d3
-                .select(d3Xaxis.current)
-                .select('svg')
-                .append('text')
-                .attr('dx', '95%')
-                .attr('dy', '60%')
-                .attr('id', 'rescale')
-                .style('font-size', '14px')
-                .style('font-weight', 'bold')
-                .style('fill', 'rgb(58, 60, 120)')
-                .text('AUTO');
-
-            rescaleText
-                .on('mouseover', (event: any) => {
-                    d3.select(event.currentTarget).style('cursor', 'pointer');
-                })
-                .on('click', () => {
-                    setRescale((prevState) => {
-                        rescaleText.style('fill', () =>
-                            !prevState ? 'rgb(58, 60, 120)' : 'rgba(237, 231, 225, 0.2)',
-                        );
-
-                        return !prevState;
-                    });
-                });
-
-            setRescaleText(() => {
-                return rescaleText;
-            });
-        }
-
-        if (d3.select(d3Xaxis.current).select('svg').select('#scroll').node() == null) {
-            d3.select(d3Xaxis.current)
-                .select('svg')
-                .append('circle')
-                .attr('id', 'scroll')
-                .attr('cx', '90%')
-                .attr('cy', '55%')
-                .attr('r', 12)
-                .attr('fill', 'rgba(41,47,63,0.8)')
-                .attr('class', 'scroll')
-                .on('mouseover', (event: any) => {
-                    d3.select(event.currentTarget).style('cursor', 'pointer');
-                    d3.select(d3Xaxis.current)
-                        .select('svg')
-                        .select('#scroll')
-                        .attr('fill', 'rgba(41,47,63,1)');
-                })
-                .on('mouseleave', (event: any) => {
-                    d3.select(event.currentTarget).style('cursor', 'pointer');
-                    d3.select(d3Xaxis.current)
-                        .select('svg')
-                        .select('#scroll')
-                        .attr('fill', 'rgba(41,47,63,0.8)');
-                });
-        }
-    }, []);
 
     // y Axis
     useEffect(() => {
@@ -1376,6 +1316,47 @@ export default function Chart(props: ChartData) {
                 });
             }
 
+            if (d3.select(d3Container.current).select('.zoomUtilsTooltip').node() === null) {
+                const zoomUtilsTooltip = d3
+                    .select(d3Container.current)
+                    .append('div')
+                    .attr('class', 'zoomUtilsTooltip')
+                    .style('color', () =>
+                        rescale ? 'rgb(97, 100, 189)' : 'rgba(237, 231, 225, 0.2)',
+                    )
+                    .on('mouseover', (event: any) => {
+                        d3.select(event.currentTarget).style('cursor', 'pointer');
+                    })
+                    .on('click', () => {
+                        setRescale((prevState) => {
+                            zoomUtilsTooltip.style('color', () =>
+                                !prevState ? 'rgb(97, 100, 189)' : 'rgba(237, 231, 225, 0.2)',
+                            );
+
+                            return !prevState;
+                        });
+                    });
+
+                zoomUtilsTooltip.html('<p><span style="font-weight: bold">AUTO</span></p>');
+
+                const placement = document.querySelector('#d3fc_group');
+
+                zoomUtilsTooltip
+                    .style('top', (placement !== null ? placement.clientHeight + 95 : 557) + 'px')
+                    .style('left', (placement !== null ? placement.clientWidth - 32 : 1180) + 'px');
+
+                zoomUtilsTooltip
+                    .append('circle')
+                    .attr('id', 'scroll')
+                    .attr('r', 12)
+                    .attr('fill', 'rgba(41,47,63,0.8)')
+                    .attr('class', 'scroll');
+
+                setZoomUtilsTooltip(() => {
+                    return zoomUtilsTooltip;
+                });
+            }
+
             setTargetsJoin(() => {
                 return targetsJoin;
             });
@@ -1404,7 +1385,7 @@ export default function Chart(props: ChartData) {
                 return limitLine;
             });
         }
-    }, [scaleData, market]);
+    }, [parsedChartData?.chartData, scaleData, market, rescale]);
 
     // easy drag and triangle to horizontal lines for range
     async function addTriangleAndRect() {
