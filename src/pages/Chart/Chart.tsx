@@ -950,6 +950,7 @@ export default function Chart(props: ChartData) {
                     //     .style('visibility', 'visible');
 
                     // const ghostJoin = d3fc.dataJoin('g', 'ghostLines');
+
                     setIsLineDrag(true);
                     const dragedValue = scaleData.yScale.invert(d3.pointer(event)[1] - 120);
                     const displayValue = poolPriceDisplay !== undefined ? poolPriceDisplay : 0;
@@ -1062,8 +1063,17 @@ export default function Chart(props: ChartData) {
                         });
                     }
                 })
-                .on('end', () => {
+                .on('end', (event: any) => {
                     d3.select(d3Container.current).style('cursor', 'default');
+                    setCrosshairData([
+                        {
+                            x: crosshairData[0].x,
+                            y:
+                                isMouseMoveForSubChart || isZoomForSubChart
+                                    ? -1
+                                    : scaleData.yScale.invert(event.sourceEvent.layerY),
+                        },
+                    ]);
                     setIsLineDrag(false);
                     d3.select(d3Container.current)
                         .select('.ghostLines')
@@ -1123,9 +1133,21 @@ export default function Chart(props: ChartData) {
                         return [{ name: 'Limit', value: newLimitValue }];
                     });
                 })
-                .on('end', () => {
+                .on('end', (event: any) => {
                     d3.select(d3Container.current).style('cursor', 'default');
+
+                    setCrosshairData([
+                        {
+                            x: crosshairData[0].x,
+                            y:
+                                isMouseMoveForSubChart || isZoomForSubChart
+                                    ? -1
+                                    : scaleData.yScale.invert(event.sourceEvent.layerY),
+                        },
+                    ]);
+
                     setIsLineDrag(false);
+
                     d3.select(d3Container.current)
                         .select('.ghostLines')
                         .selectAll('.horizontal')
