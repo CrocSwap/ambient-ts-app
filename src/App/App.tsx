@@ -670,11 +670,6 @@ export default function App() {
                     console.log({ error });
                 }
                 try {
-                    const updatedTokens: TokenIF[] = [];
-                    connectedUserErc20Tokens
-                        ? updatedTokens.push(...connectedUserErc20Tokens)
-                        : null;
-                    // console.log('fetching connected user erc20 token balances');
                     const erc20Results: TokenIF[] = await cachedFetchErc20TokenBalances(
                         account,
                         chainData.chainId,
@@ -682,25 +677,9 @@ export default function App() {
                         crocEnv,
                     );
 
-                    erc20Results.map((newToken: TokenIF) => {
-                        const indexOfExistingToken = (connectedUserErc20Tokens ?? []).findIndex(
-                            (existingToken) => existingToken.address === newToken.address,
-                        );
-
-                        if (indexOfExistingToken === -1) {
-                            updatedTokens.push(newToken);
-                        } else if (
-                            JSON.stringify(
-                                (connectedUserErc20Tokens ?? [])[indexOfExistingToken],
-                            ) !== JSON.stringify(newToken)
-                        ) {
-                            updatedTokens[indexOfExistingToken] = newToken;
-                        }
-                    });
-                    if (
-                        JSON.stringify(connectedUserErc20Tokens) !== JSON.stringify(updatedTokens)
-                    ) {
-                        dispatch(setErc20Tokens(updatedTokens));
+                    if (JSON.stringify(connectedUserErc20Tokens) !== JSON.stringify(erc20Results)) {
+                        console.log({ erc20Results });
+                        dispatch(setErc20Tokens(erc20Results));
                     }
                 } catch (error) {
                     console.log({ error });
