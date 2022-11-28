@@ -613,18 +613,21 @@ export default function Chart(props: ChartData) {
                 .zoom()
                 .scaleExtent([0.3, 5])
                 .on('start', (event: any) => {
-                    clickedForLine = false;
+                    if (event.sourceEvent && event.sourceEvent.type !== 'dblclick') {
+                        clickedForLine = false;
 
-                    if (event.sourceEvent && event.sourceEvent.type != 'wheel') {
-                        d3.select(d3Container.current).style('cursor', 'grabbing');
-                    }
+                        if (event.sourceEvent && event.sourceEvent.type != 'wheel') {
+                            d3.select(d3Container.current).style('cursor', 'grabbing');
+                        }
 
-                    if (date === undefined) {
-                        date = parsedChartData?.chartData[0].date;
+                        if (date === undefined) {
+                            date = parsedChartData?.chartData[0].date;
+                        }
                     }
                 })
                 .on('zoom', (event: any) => {
                     if (event.sourceEvent && event.sourceEvent.type !== 'dblclick') {
+                        console.log(scaleData.lastY);
                         setBandwidth(candlestick.bandwidth());
                         const t = event.transform;
 
@@ -693,10 +696,10 @@ export default function Chart(props: ChartData) {
                         scaleData.lastY = t.y;
                         clickedForLine = true;
                         render();
-                    }
 
-                    snapForCandle(event.sourceEvent);
-                    setZoomAndYdragControl(event);
+                        snapForCandle(event.sourceEvent);
+                        setZoomAndYdragControl(event);
+                    }
                 })
                 .on('end', (event: any) => {
                     if (event.sourceEvent && event.sourceEvent.type != 'wheel') {
@@ -709,7 +712,7 @@ export default function Chart(props: ChartData) {
                                 event.sourceEvent.offsetY,
                             );
                             onBlurlimitRate(newLimitValue);
-                        } else {
+                        } else if (location.pathname.includes('range')) {
                             // onClickRange(event);
                         }
                     }
@@ -1624,9 +1627,6 @@ export default function Chart(props: ChartData) {
 
         const clickedValue = scaleData.yScale.invert(d3.pointer(event)[1]);
         const displayValue = poolPriceDisplay !== undefined ? poolPriceDisplay : 0;
-
-        console.log({ clickedValue });
-        console.log(event.sourceEvent);
 
         const lineToBeSet = clickedValue > displayValue ? 'Max' : 'Min';
 
@@ -2638,7 +2638,7 @@ export default function Chart(props: ChartData) {
                     scaleData.xScaleCopy.range([0, event.detail.width]);
                     scaleData.yScaleCopy.range([event.detail.height, 0]);
 
-                    svg.call(zoomUtils.zoom);
+                    svg.call(zoomUtils.zoom).on('dblclick.zoom', null);
                 });
 
                 const setCrossHairLocation = (event: any) => {
