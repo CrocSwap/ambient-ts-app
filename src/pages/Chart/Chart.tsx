@@ -627,7 +627,6 @@ export default function Chart(props: ChartData) {
                 })
                 .on('zoom', (event: any) => {
                     if (event.sourceEvent && event.sourceEvent.type !== 'dblclick') {
-                        console.log(scaleData.lastY);
                         setBandwidth(candlestick.bandwidth());
                         const t = event.transform;
 
@@ -2642,7 +2641,6 @@ export default function Chart(props: ChartData) {
                 });
 
                 const setCrossHairLocation = (event: any) => {
-                    // console.log({event});
                     crosshairData[0] = snap(candlestick, chartData, event)[0];
                     setIsMouseMoveCrosshair(true);
 
