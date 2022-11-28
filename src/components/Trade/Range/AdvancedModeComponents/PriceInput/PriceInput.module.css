@@ -52,7 +52,7 @@
 
 .price_input_container {
     display: grid;
-    grid-template-columns: 30px 1fr 30px;
+    grid-template-columns: 18px 1fr 18px;
     color: var(--text-grey-white);
     font-size: var(--header1-size);
     line-height: var(--header1-lh);

@@ -1,4 +1,5 @@
-import goerliLogo from '../../../../assets/images/networks/goerli.png'; // https://github.com/goerli/goer-logo
+// import goerliLogo from '../../../../assets/images/networks/goerli.png';
+// https://github.com/goerli/goer-logo
 
 // import ethereumLogo from '../../../../assets/images/networks/ethereum.png';
 
@@ -14,7 +15,7 @@ export default function NetworkButtons(props: NetworkButtonsPropsIF) {
         {
             name: 'Görli ',
             id: '0x5',
-            icon: goerliLogo,
+            icon: '',
             theme: '#36364a',
         },
     ];
