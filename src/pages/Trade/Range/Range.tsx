@@ -428,9 +428,6 @@ export default function Range(props: RangePropsIF) {
     };
 
     useEffect(() => {
-        console.log({ defaultLowTick });
-        console.log({ defaultHighTick });
-
         if (tradeData.advancedMode) {
             const pinnedDisplayPrices = getPinnedPriceValuesFromTicks(
                 denominationsInBase,
