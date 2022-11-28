@@ -43,6 +43,7 @@ export default function TvlSubChart(props: TvlData) {
         mouseMoveChartName,
     } = props;
 
+    const tvlMainDiv = useRef(null);
     const d3PlotTvl = useRef(null);
     const d3Yaxis = useRef(null);
 
@@ -251,11 +252,14 @@ export default function TvlSubChart(props: TvlData) {
                     setMouseMoveEventForSubChart(event);
                     setsubChartValues((prevState: any) => {
                         const newTargets = [...prevState];
-                        newTargets.filter((target: any) => target.name === 'volume')[0].value =
-                            snap(areaSeries, tvlData, {
+                        newTargets.filter((target: any) => target.name === 'tvl')[0].value = snap(
+                            areaSeries,
+                            tvlData,
+                            {
                                 x: xScale(crosshairDataLocal[0].x),
                                 y: crosshairDataLocal[0].y,
-                            });
+                            },
+                        );
 
                         return newTargets;
                     });
@@ -275,6 +279,7 @@ export default function TvlSubChart(props: TvlData) {
     return (
         <div
             className='main_layout_chart'
+            ref={tvlMainDiv}
             id='tvl_chart'
             data-testid={'chart'}
             style={{ display: 'flex', flexDirection: 'row', height: '10%', width: '100%' }}
