@@ -22,7 +22,6 @@ interface TvlData {
     getNewCandleData: any;
     setMouseMoveChartName: React.Dispatch<React.SetStateAction<string | undefined>>;
     mouseMoveChartName: string | undefined;
-    tvlMainDiv: any;
 }
 
 export default function TvlSubChart(props: TvlData) {
@@ -42,10 +41,9 @@ export default function TvlSubChart(props: TvlData) {
         getNewCandleData,
         setMouseMoveChartName,
         mouseMoveChartName,
-        tvlMainDiv,
     } = props;
 
-    // const tvlMainDiv =useRef(null);
+    const tvlMainDiv = useRef(null);
     const d3PlotTvl = useRef(null);
     const d3Yaxis = useRef(null);
 

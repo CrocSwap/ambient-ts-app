@@ -131,7 +131,6 @@ export default function Chart(props: ChartData) {
     const tokenBDecimals = tokenB.decimals;
     const baseTokenDecimals = isTokenABase ? tokenADecimals : tokenBDecimals;
     const quoteTokenDecimals = !isTokenABase ? tokenADecimals : tokenBDecimals;
-    const tvlMainDiv = useRef(null);
     const [ranges, setRanges] = useState([
         {
             name: 'Min',
@@ -2958,7 +2957,6 @@ export default function Chart(props: ChartData) {
                                 render={render}
                                 mouseMoveChartName={mouseMoveChartName}
                                 setMouseMoveChartName={setMouseMoveChartName}
-                                tvlMainDiv={tvlMainDiv}
                             />
                         </>
                     )}
