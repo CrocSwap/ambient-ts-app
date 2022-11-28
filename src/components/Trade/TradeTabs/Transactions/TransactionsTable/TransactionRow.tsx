@@ -229,7 +229,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                 onClick={openDetailsModal}
                 data-label='wallet'
                 className={usernameStyle}
-                style={{ textTransform: 'lowercase' }}
+                style={userNameToDisplay !== 'You' ? { textTransform: 'lowercase' } : undefined}
             >
                 {userNameToDisplay}
             </li>
@@ -321,15 +321,34 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
     //     // minute: '2-digit',
     // }).format(tx.time * 1000);
 
-    const txTimeInDays = moment(Date.now()).diff(tx.time * 1000, 'days');
+    // const txTimeInDays = moment(Date.now()).diff(tx.time * 1000, 'days');
     // const txTimeInHours = moment(Date.now()).diff(tx.time * 1000, 'hours');
 
-    const txTimeDisplay =
-        txTimeInDays === 0
-            ? 'Today'
-            : txTimeInDays === 1
-            ? '1 day ago'
-            : `${txTimeInDays} days ago`;
+    const elapsedTimeInSecondsNum = moment(Date.now()).diff(tx.time * 1000, 'seconds');
+
+    // const txTimeDisplay =
+    //     txTimeInDays === 0
+    //         ? 'Today'
+    //         : txTimeInDays === 1
+    //         ? '1 day ago'
+    //         : `${txTimeInDays} days ago`;
+
+    const elapsedTimeString =
+        elapsedTimeInSecondsNum !== undefined
+            ? elapsedTimeInSecondsNum < 60
+                ? '< 1 min. ago'
+                : elapsedTimeInSecondsNum < 120
+                ? '1 min. ago'
+                : elapsedTimeInSecondsNum < 3600
+                ? `${Math.floor(elapsedTimeInSecondsNum / 60)} min. ago`
+                : elapsedTimeInSecondsNum < 7200
+                ? '1 hour ago'
+                : elapsedTimeInSecondsNum < 86400
+                ? `${Math.floor(elapsedTimeInSecondsNum / 3600)} hrs. ago`
+                : elapsedTimeInSecondsNum < 172800
+                ? '1 day ago'
+                : `${Math.floor(elapsedTimeInSecondsNum / 86400)} days ago`
+            : 'Pending...';
 
     const TxDateWithTooltip = (
         <DefaultTooltip
@@ -340,8 +359,8 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
             enterDelay={750}
             leaveDelay={200}
         >
-            <li onClick={openDetailsModal}>
-                <p className='base_color'>{txTimeDisplay}</p>
+            <li onClick={openDetailsModal} style={{ textTransform: 'lowercase' }}>
+                <p className='base_color'>{elapsedTimeString}</p>
                 {/* <p className='base_color'> Nov 9 10:36:23 AM</p> */}
             </li>
         </DefaultTooltip>
