@@ -350,7 +350,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                 : `${Math.floor(elapsedTimeInSecondsNum / 86400)} days ago`
             : 'Pending...';
 
-    const TxDateWithTooltip = (
+    const TxTimeWithTooltip = (
         <DefaultTooltip
             interactive
             title={moment(tx.time * 1000).format('MM/DD/YYYY HH:mm')}
@@ -435,7 +435,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
             }
             id={txDomId}
         >
-            {!showColumns && TxDateWithTooltip}
+            {!showColumns && TxTimeWithTooltip}
             {isOnPortfolioPage && !desktopView && tokenPair}
             {/* {isOnPortfolioPage && !showSidebar && poolName} */}
             {!showColumns && IDWithTooltip}
