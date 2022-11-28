@@ -389,12 +389,12 @@ export default function Transactions(props: TransactionsProps) {
 
     const headerColumns = [
         {
-            name: 'Date',
+            name: 'Time',
             className: '',
             show: !showColumns,
             // && !showSidebar
             //   &&  !isOnPortfolioPage,
-            slug: 'date',
+            slug: 'time',
             sortable: true,
         },
         {

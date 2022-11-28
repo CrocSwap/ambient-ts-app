@@ -358,6 +358,7 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
                                 <div
                                     style={{
                                         color: '#f6385b',
+                                        fontSize: '9px',
                                     }}
                                 >
                                     {isTokenASelector

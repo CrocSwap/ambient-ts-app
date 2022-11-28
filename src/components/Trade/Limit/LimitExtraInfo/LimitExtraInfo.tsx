@@ -9,6 +9,7 @@ import { TokenPairIF } from '../../../../utils/interfaces/exports';
 import TooltipComponent from '../../../Global/TooltipComponent/TooltipComponent';
 // import truncateDecimals from '../../../../utils/data/truncateDecimals';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
+import DenominationSwitch from '../../../Swap/DenominationSwitch/DenominationSwitch';
 // import makePriceDisplay from './makePriceDisplay';
 
 // interface for component props
@@ -245,10 +246,21 @@ export default function LimitExtraInfo(props: LimitExtraInfoPropsIF) {
     //     poolPriceDisplay,
     //     didUserFlipDenom,
     // );
-    const extraInfoSectionOrNull = isQtyEntered ? (
+
+    const dropDownOrNull = isQtyEntered ? (
+        <div style={{ cursor: 'pointer' }}>
+            <RiArrowDownSLine size={20} />
+        </div>
+    ) : null;
+
+    const extraInfoSectionOrNull = (
         <div
             className={styles.extra_info_content}
-            onClick={() => setShowExtraDetails(!showExtraDetails)}
+            onClick={
+                isQtyEntered
+                    ? () => setShowExtraDetails(!showExtraDetails)
+                    : () => setShowExtraDetails(false)
+            }
         >
             <div className={styles.gas_pump}>
                 <FaGasPump size={15} /> {orderGasPriceInDollars ? orderGasPriceInDollars : '…'}
@@ -257,10 +269,11 @@ export default function LimitExtraInfo(props: LimitExtraInfoPropsIF) {
                 {isDenomBase
                     ? `1 ${baseTokenSymbol} ≈ ${displayPriceString} ${quoteTokenSymbol}`
                     : `1 ${quoteTokenSymbol} ≈ ${displayPriceString} ${baseTokenSymbol}`}
-                <RiArrowDownSLine size={27} />{' '}
             </div>
+            <DenominationSwitch />
+            {dropDownOrNull}
         </div>
-    ) : null;
+    );
     return (
         <>
             {extraInfoSectionOrNull}

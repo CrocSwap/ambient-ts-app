@@ -147,15 +147,6 @@ export default function Account(props: AccountPropsIF) {
     );
     return (
         <div className={styles.account_container}>
-            {/* <IconWithTooltip title='Wallet balance' placement='bottom'>
-                <span className={styles.white}>
-                    {isUserLoggedIn
-                        ? nativeBalance
-                            ?  parseFloat(nativeBalance).toPrecision(4)
-                            : '...'
-                        : ''}
-                </span>
-            </IconWithTooltip> */}
             {isUserLoggedIn && walletDisplay}
             <NavItem
                 icon={<FiMoreHorizontal size={20} color='#CDC1FF' />}
@@ -164,8 +155,6 @@ export default function Account(props: AccountPropsIF) {
             >
                 <DropdownMenu
                     isUserLoggedIn={isUserLoggedIn}
-                    // isAuthenticated={isAuthenticated}
-                    // isWeb3Enabled={isWeb3Enabled}
                     clickLogout={clickLogout}
                     openModal={openModal}
                     chainId={chainId}
