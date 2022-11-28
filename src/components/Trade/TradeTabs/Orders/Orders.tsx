@@ -314,10 +314,10 @@ export default function Orders(props: propsIF) {
     );
     const headerColumns = [
         {
-            name: 'Date',
+            name: 'Time',
             className: '',
             show: !showColumns,
-            slug: 'date',
+            slug: 'time',
             sortable: true,
         },
         // {
