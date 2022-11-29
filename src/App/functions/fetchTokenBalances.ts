@@ -33,7 +33,7 @@ export interface IDepositedTokenBalance {
     token: string;
     symbol: string;
     decimals: number;
-    balance: number;
+    balance: string;
     balanceDecimalCorrected: number;
     balanceStorageSlot: string;
 }
@@ -245,6 +245,9 @@ export const fetchErc20TokenBalances = async (
             walletBalance: moralisErc20Balance,
             walletBalanceDisplay: moralisErc20BalanceDisplay,
             walletBalanceDisplayTruncated: moralisErc20BalanceDisplayTruncated,
+            combinedBalance: moralisErc20Balance,
+            combinedBalanceDisplay: moralisErc20BalanceDisplay,
+            combinedBalanceDisplayTruncated: moralisErc20BalanceDisplayTruncated,
         };
     };
 
@@ -277,9 +280,12 @@ export const fetchErc20TokenBalances = async (
             address: tokenBalance.token,
             symbol: tokenBalance.symbol,
             decimals: tokenBalance.decimals,
-            dexBalance: erc20DexBalance.toString(),
+            dexBalance: erc20DexBalance,
             dexBalanceDisplay: erc20DexBalanceDisplay,
             dexBalanceDisplayTruncated: erc20DexBalanceDisplayTruncated,
+            combinedBalance: erc20DexBalance,
+            combinedBalanceDisplay: erc20DexBalanceDisplay,
+            combinedBalanceDisplayTruncated: erc20DexBalanceDisplayTruncated,
         };
     };
 
@@ -310,9 +316,35 @@ export const fetchErc20TokenBalances = async (
 
                 const updatedToken = { ...existingToken };
 
+                const combinedBalance = BigNumber.from(existingToken.combinedBalance)
+                    .add(BigNumber.from(newToken.dexBalance))
+                    .toString();
+
+                const combinedBalanceDisplay = toDisplayQty(
+                    combinedBalance,
+                    existingToken.decimals,
+                );
+                const combinedBalanceDisplayNum = parseFloat(combinedBalanceDisplay);
+
+                const combinedBalanceDisplayTruncated = combinedBalanceDisplayNum
+                    ? combinedBalanceDisplayNum < 0.0001
+                        ? combinedBalanceDisplayNum.toExponential(2)
+                        : combinedBalanceDisplayNum < 2
+                        ? combinedBalanceDisplayNum.toPrecision(3)
+                        : combinedBalanceDisplayNum >= 100000
+                        ? formatAmountOld(combinedBalanceDisplayNum)
+                        : combinedBalanceDisplayNum.toLocaleString(undefined, {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2,
+                          })
+                    : undefined;
+
                 updatedToken.dexBalance = newToken.dexBalance;
                 updatedToken.dexBalanceDisplay = newToken.dexBalanceDisplay;
                 updatedToken.dexBalanceDisplayTruncated = newToken.dexBalanceDisplayTruncated;
+                updatedToken.combinedBalance = combinedBalance;
+                updatedToken.combinedBalanceDisplay = combinedBalanceDisplay;
+                updatedToken.combinedBalanceDisplayTruncated = combinedBalanceDisplayTruncated;
 
                 combinedErc20Balances[indexOfExistingToken] = updatedToken;
             }
