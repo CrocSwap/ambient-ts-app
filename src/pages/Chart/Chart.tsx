@@ -87,6 +87,14 @@ interface ChartData {
     poolPriceNonDisplay: number | undefined;
 }
 
+function getWindowDimensions() {
+    const { innerWidth: width, innerHeight: height } = window;
+    return {
+        width,
+        height,
+    };
+}
+
 export default function Chart(props: ChartData) {
     const {
         pool,
@@ -188,8 +196,9 @@ export default function Chart(props: ChartData) {
     const [mouseMoveEventForSubChart, setMouseMoveEventForSubChart] = useState<any>();
     const [isZoomForSubChart, setIsZoomForSubChart] = useState(false);
     const [isLineDrag, setIsLineDrag] = useState(false);
-
     const [mouseMoveChartName, setMouseMoveChartName] = useState<string | undefined>(undefined);
+    const [windowDimensions, setWindowDimensions] = useState(getWindowDimensions());
+
     // Data
     const [crosshairData, setCrosshairData] = useState([{ x: 0, y: -1 }]);
     const [currentPriceData] = useState([{ value: -1 }]);
@@ -267,6 +276,15 @@ export default function Chart(props: ChartData) {
 
     useEffect(() => {
         addDefsStyle();
+    }, []);
+
+    useEffect(() => {
+        function handleResize() {
+            setWindowDimensions(getWindowDimensions());
+        }
+
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
     }, []);
 
     const render = useCallback(() => {
@@ -441,12 +459,43 @@ export default function Chart(props: ChartData) {
         }
     }
 
-    // crosshair x text
+    function getXAxisTick() {
+        const oldTickValues = scaleData.xScale.ticks();
+        console.log({ oldTickValues });
+        const tempArray = [];
+        if ((windowDimensions.width > 1800 && oldTickValues.length < 13) || oldTickValues.length < 6 ) {
+            return oldTickValues;
+        }
+
+        if (oldTickValues.length < 15){
+            for (let index = 0; index < oldTickValues.length; index++) {
+                tempArray.push(oldTickValues[index]);
+                tempArray.push(index+2 > oldTickValues.length-1  ? oldTickValues[oldTickValues.length-1]:  oldTickValues[index + 2]);
+                index = index + 3;
+            }
+        }
+
+        else {
+            for (let index = oldTickValues.length-1; index >= 0; index=index-1) {
+
+                tempArray.push(oldTickValues[index]);
+                if (index-3 > 0)
+                     tempArray.push(oldTickValues[index - 3]);
+                index = index - 5;
+            }
+
+        }       
+
+        return tempArray;
+    }
+    // x axis text
     useEffect(() => {
         if (scaleData && xAxis) {
+            const oldTickValues = getXAxisTick();
+
             xAxis
                 .tickValues([
-                    ...scaleData.xScale.ticks(),
+                    ...oldTickValues,
                     ...(isMouseMoveCrosshair ? [crosshairData[0].x] : []),
                 ])
                 .tickFormat((d: any) => {
@@ -472,11 +521,19 @@ export default function Chart(props: ChartData) {
                     });
             });
         }
-    }, [crosshairData, isMouseMoveCrosshair, zoomAndYdragControl]);
+    }, [
+        crosshairData,
+        isMouseMoveCrosshair,
+        zoomAndYdragControl,
+        scaleData,
+        xAxis,
+        windowDimensions,
+    ]);
 
     useEffect(() => {
         if (scaleData && yAxis) {
             addText(scaleData.yScale);
+            render();
         }
     }, [
         dragControl,
@@ -1237,7 +1294,6 @@ export default function Chart(props: ChartData) {
             const _xAxis = d3fc
                 .axisBottom()
                 .scale(scaleData.xScale)
-                .tickArguments([6])
                 .tickFormat((d: any) => {
                     return d3.timeFormat('%d/%m/%y')(d);
                 });
