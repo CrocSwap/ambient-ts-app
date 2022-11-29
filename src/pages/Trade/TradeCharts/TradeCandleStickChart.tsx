@@ -51,6 +51,7 @@ interface ChartData {
     truncatedPoolPrice: number | undefined;
     poolPriceDisplay: number | undefined;
     setCurrentData: React.Dispatch<React.SetStateAction<CandleChartData | undefined>>;
+    setCurrentVolumeData: React.Dispatch<React.SetStateAction<number | undefined>>;
     upBodyColor: string;
     upBorderColor: string;
     downBodyColor: string;
@@ -338,10 +339,14 @@ export default function TradeCandleStickChart(props: ChartData) {
 
     // Scale
     useEffect(() => {
-        if (!isLoading && parsedChartData !== undefined && liquidityData !== undefined) {
+        if (parsedChartData !== undefined && liquidityData !== undefined) {
             if (parsedChartData.chartData.length > 100) {
                 parsedChartData.chartData = parsedChartData.chartData.slice(0, 100);
             }
+
+            setScaleData(() => {
+                return undefined;
+            });
 
             const priceRange = d3fc
                 .extentLinear()
@@ -379,6 +384,13 @@ export default function TradeCandleStickChart(props: ChartData) {
             const liquidityScale = d3.scaleLinear();
             const ghostScale = d3.scaleLinear();
 
+            const yExtent = d3fc
+                .extentLinear()
+                .include([0])
+                .accessors([(d: any) => d.value]);
+            const volumeScale = d3.scaleLinear();
+            volumeScale.domain(yExtent(parsedChartData.volumeChartData));
+
             // bar chart
             const liquidityExtent = d3fc
                 .extentLinear(liquidityData.liqBidData.concat(liquidityData.liqAskData))
@@ -406,11 +418,12 @@ export default function TradeCandleStickChart(props: ChartData) {
                     yScaleCopy: yScaleCopy,
                     ghostScale: ghostScale,
                     subChartxScale: subChartxScale,
+                    volumeScale: volumeScale,
                     lastY: 0,
                 };
             });
         }
-    }, [parsedChartData?.period, denominationsInBase, liquidityData, isLoading]);
+    }, [parsedChartData?.period, denominationsInBase, liquidityData]);
 
     const loading = (
         <div style={{ height: '100%', width: '100%' }} className='animatedImg_container'>
@@ -424,14 +437,17 @@ export default function TradeCandleStickChart(props: ChartData) {
     useEffect(() => {
         const timer = setTimeout(() => {
             setIsLoading(
-                parsedChartData === undefined ||
+                scaleData === undefined ||
+                    parsedChartData === undefined ||
                     parsedChartData.chartData.length === 0 ||
                     props.poolPriceDisplay === 0 ||
+                    liquidityData.liqAskData.length === 0 ||
+                    liquidityData.liqBidData.length === 0 ||
                     poolPriceNonDisplay === 0,
             );
         }, 500);
         return () => clearTimeout(timer);
-    }, [parsedChartData?.chartData, props.poolPriceDisplay, poolPriceNonDisplay]);
+    }, [parsedChartData?.chartData, props.poolPriceDisplay, poolPriceNonDisplay, scaleData]);
 
     return (
         <>
@@ -455,6 +471,7 @@ export default function TradeCandleStickChart(props: ChartData) {
                         truncatedPoolPrice={props.truncatedPoolPrice}
                         chartItemStates={props.chartItemStates}
                         setCurrentData={props.setCurrentData}
+                        setCurrentVolumeData={props.setCurrentVolumeData}
                         upBodyColor={props.upBodyColor}
                         upBorderColor={props.upBorderColor}
                         downBodyColor={props.downBodyColor}

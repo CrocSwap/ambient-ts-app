@@ -30,7 +30,15 @@ export const fetchContractDetails = async (
         console.log({ error });
     }
 
-    return { address: address, chainId: parseInt(_chainId), decimals: decimals, symbol: symbol, name: name, fromList: 'custom_token', logoURI: ''};
+    return {
+        address: address,
+        chainId: parseInt(_chainId),
+        decimals: decimals,
+        symbol: symbol,
+        name: name,
+        fromList: 'custom_token',
+        logoURI: '',
+    };
 };
 
 type FetchContractDetailsFn = (
