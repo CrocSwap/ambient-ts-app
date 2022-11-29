@@ -188,6 +188,7 @@ export default function Chart(props: ChartData) {
     const [isMouseMoveForSubChart, setIsMouseMoveForSubChart] = useState(false);
     const [mouseMoveEventForSubChart, setMouseMoveEventForSubChart] = useState<any>();
     const [isZoomForSubChart, setIsZoomForSubChart] = useState(false);
+    const [isLineDrag, setIsLineDrag] = useState(false);
 
     const [mouseMoveChartName, setMouseMoveChartName] = useState<string | undefined>(undefined);
     // Data
@@ -326,7 +327,7 @@ export default function Chart(props: ChartData) {
             yAxis.tickValues([
                 ...scale.ticks(),
                 ...[isSameLocation ? sameLocationData : limit[0].value, market[0].value],
-                ...(isMouseMoveCrosshair ? [crosshairData[0].y] : []),
+                ...(isMouseMoveCrosshair && !isLineDrag ? [crosshairData[0].y] : []),
             ]);
 
             yAxis.decorate((selection: any) => {
@@ -386,7 +387,7 @@ export default function Chart(props: ChartData) {
                     isSameLocationMax ? sameLocationDataMax : ranges[1].value,
                     market[0].value,
                 ],
-                ...(isMouseMoveCrosshair ? [crosshairData[0].y] : []),
+                ...(isMouseMoveCrosshair && !isLineDrag ? [crosshairData[0].y] : []),
             ]);
 
             yAxis.tickFormat((d: any) => {
@@ -992,6 +993,7 @@ export default function Chart(props: ChartData) {
 
                     // const ghostJoin = d3fc.dataJoin('g', 'ghostLines');
 
+                    setIsLineDrag(true);
                     const dragedValue = scaleData.yScale.invert(event.y);
                     const displayValue = poolPriceDisplay !== undefined ? poolPriceDisplay : 0;
 
@@ -1103,9 +1105,18 @@ export default function Chart(props: ChartData) {
                         });
                     }
                 })
-                .on('end', () => {
+                .on('end', (event: any) => {
                     d3.select(d3Container.current).style('cursor', 'default');
-
+                    setCrosshairData([
+                        {
+                            x: crosshairData[0].x,
+                            y:
+                                isMouseMoveForSubChart || isZoomForSubChart
+                                    ? -1
+                                    : scaleData.yScale.invert(event.sourceEvent.layerY),
+                        },
+                    ]);
+                    setIsLineDrag(false);
                     d3.select(d3Container.current)
                         .select('.ghostLines')
                         .selectAll('.horizontal')
@@ -1152,7 +1163,7 @@ export default function Chart(props: ChartData) {
                     // }
 
                     // const ghostJoin = d3fc.dataJoin('g', 'ghostLines');
-
+                    setIsLineDrag(true);
                     newLimitValue = scaleData.yScale.invert(event.y);
 
                     newLimitValue =
@@ -1164,8 +1175,20 @@ export default function Chart(props: ChartData) {
                         return [{ name: 'Limit', value: newLimitValue }];
                     });
                 })
-                .on('end', () => {
+                .on('end', (event: any) => {
                     d3.select(d3Container.current).style('cursor', 'default');
+
+                    setCrosshairData([
+                        {
+                            x: crosshairData[0].x,
+                            y:
+                                isMouseMoveForSubChart || isZoomForSubChart
+                                    ? -1
+                                    : scaleData.yScale.invert(event.sourceEvent.layerY),
+                        },
+                    ]);
+
+                    setIsLineDrag(false);
 
                     d3.select(d3Container.current)
                         .select('.ghostLines')
