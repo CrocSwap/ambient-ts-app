@@ -86,7 +86,7 @@ export default function TvlSubChart(props: TvlData) {
 
                 const areaJoin = d3fc.dataJoin('g', 'areaJoin');
                 const lineJoin = d3fc.dataJoin('g', 'lineJoin');
-                const crosshairHorizontalJoin = d3fc.dataJoin('g', 'crosshairHorizontal');
+                // const crosshairHorizontalJoin = d3fc.dataJoin('g', 'crosshairHorizontal');
                 const crosshairVerticalJoin = d3fc.dataJoin('g', 'crosshairVertical');
 
                 const crosshairHorizontal = d3fc
