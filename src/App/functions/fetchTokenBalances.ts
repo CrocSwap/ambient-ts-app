@@ -214,8 +214,8 @@ export const fetchErc20TokenBalances = async (
 
     const erc20DexBalancesFromCache = await fetchDepositBalances({ chainId: chain, user: address });
 
-    console.log({ erc20WalletBalancesFromMoralis });
-    console.log({ erc20DexBalancesFromCache });
+    // console.log({ erc20WalletBalancesFromMoralis });
+    // console.log({ erc20DexBalancesFromCache });
 
     const combinedErc20Balances: TokenIF[] = [];
 

@@ -15,11 +15,6 @@ interface ExchangeCardPropsIF {
 
 export default function ExchangeCard(props: ExchangeCardPropsIF) {
     const { token, chainId, tokenMap, cachedFetchTokenPrice } = props;
-    if (
-        !token ||
-        (token.address !== ZERO_ADDRESS && (!token.dexBalance || token.dexBalance === '0'))
-    )
-        return <></>;
 
     // const tokenMap = useTokenMap();
 
@@ -57,7 +52,7 @@ export default function ExchangeCard(props: ExchangeCardPropsIF) {
 
     const tokenUsdPrice = tokenPrice?.usdPrice ?? 0;
 
-    const exchangeBalanceNum = token.dexBalanceDisplay ? parseFloat(token.dexBalanceDisplay) : 0;
+    const exchangeBalanceNum = token?.dexBalanceDisplay ? parseFloat(token?.dexBalanceDisplay) : 0;
     const exchangeBalanceTruncated =
         exchangeBalanceNum === 0 ? '0' : token?.dexBalanceDisplayTruncated;
 
@@ -104,6 +99,14 @@ export default function ExchangeCard(props: ExchangeCardPropsIF) {
             <p>{tokenFromMap?.name ? tokenFromMap?.name : token?.name ? token?.name : '???'}</p>
         </div>
     );
+
+    if (
+        !token ||
+        !tokenFromMap ||
+        (token.address !== ZERO_ADDRESS && (!token.dexBalance || token.dexBalance === '0'))
+    )
+        return <></>;
+
     return (
         <div className={styles.exchange_row}>
             {tokenInfo}
