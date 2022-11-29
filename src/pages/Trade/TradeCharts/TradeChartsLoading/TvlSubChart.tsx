@@ -17,7 +17,7 @@ interface TvlData {
     zoomAndYdragControl: any;
     isMouseMoveForSubChart: any;
     setIsMouseMoveForSubChart: React.Dispatch<React.SetStateAction<boolean>>;
-    setMouseMoveEventForSubChart: React.Dispatch<React.SetStateAction<any>>;
+    setMouseMoveEventCharts: React.Dispatch<React.SetStateAction<any>>;
     setIsZoomForSubChart: React.Dispatch<React.SetStateAction<boolean>>;
     getNewCandleData: any;
     setMouseMoveChartName: React.Dispatch<React.SetStateAction<string | undefined>>;
@@ -33,7 +33,7 @@ export default function TvlSubChart(props: TvlData) {
         crosshairForSubChart,
         zoomAndYdragControl,
         setZoomAndYdragControl,
-        setMouseMoveEventForSubChart,
+        setMouseMoveEventCharts,
         setIsMouseMoveForSubChart,
         setIsZoomForSubChart,
         setsubChartValues,
@@ -194,7 +194,7 @@ export default function TvlSubChart(props: TvlData) {
                             setZoomAndYdragControl(event);
                             setIsMouseMoveForSubChart(false);
                             setIsZoomForSubChart(true);
-                            setMouseMoveEventForSubChart(event);
+                            setMouseMoveEventCharts(event);
                         }) as any;
 
                     svg.call(zoom);
@@ -202,9 +202,8 @@ export default function TvlSubChart(props: TvlData) {
 
                 d3.select(d3PlotTvl.current).on('draw', function (event: any) {
                     const svg = d3.select(event.target).select('svg');
-                    areaJoin(svg, [tvlData]).call(areaSeries);
-                    lineJoin(svg, [tvlData]).call(lineSeries);
-                    crosshairHorizontalJoin(svg, [crosshairDataLocal]).call(crosshairHorizontal);
+                    areaJoin(svg, [tvlData]).lower().call(areaSeries);
+                    lineJoin(svg, [tvlData]).lower().call(lineSeries);
                     crosshairVerticalJoin(svg, [crosshairDataLocal]).call(crosshairVertical);
                 });
 
@@ -256,7 +255,7 @@ export default function TvlSubChart(props: TvlData) {
                         .style('visibility', 'visible');
                     setIsMouseMoveForSubChart(true);
                     setIsZoomForSubChart(false);
-                    setMouseMoveEventForSubChart(event);
+                    setMouseMoveEventCharts(event);
                     setsubChartValues((prevState: any) => {
                         const newTargets = [...prevState];
                         newTargets.filter((target: any) => target.name === 'tvl')[0].value = snap(
