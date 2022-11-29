@@ -20,13 +20,10 @@ import {
     targetData,
     candleDomain,
     setCandleDomains,
-    setAdvancedLowTick,
-    setAdvancedHighTick,
 } from '../../utils/state/tradeDataSlice';
 import { CandleChartData } from '../Trade/TradeCharts/TradeCharts';
 import FeeRateSubChart from '../Trade/TradeCharts/TradeChartsLoading/FeeRateSubChart';
 import TvlSubChart from '../Trade/TradeCharts/TradeChartsLoading/TvlSubChart';
-import VolumeSubChart from '../Trade/TradeCharts/TradeChartsLoading/VolumeSubChart';
 import { ChartUtils } from '../Trade/TradeCharts/TradeCandleStickChart';
 import './Chart.css';
 import {
@@ -77,6 +74,7 @@ interface ChartData {
     poolPriceDisplay: number | undefined;
     chartItemStates: chartItemStates;
     setCurrentData: React.Dispatch<React.SetStateAction<CandleChartData | undefined>>;
+    setCurrentVolumeData: React.Dispatch<React.SetStateAction<number | undefined>>;
     upBodyColor: string;
     upBorderColor: string;
     downBodyColor: string;
@@ -85,6 +83,14 @@ interface ChartData {
     scaleData: any;
     chainId: string;
     poolPriceNonDisplay: number | undefined;
+}
+
+function getWindowDimensions() {
+    const { innerWidth: width, innerHeight: height } = window;
+    return {
+        width,
+        height,
+    };
 }
 
 export default function Chart(props: ChartData) {
@@ -131,7 +137,6 @@ export default function Chart(props: ChartData) {
     const tokenBDecimals = tokenB.decimals;
     const baseTokenDecimals = isTokenABase ? tokenADecimals : tokenBDecimals;
     const quoteTokenDecimals = !isTokenABase ? tokenADecimals : tokenBDecimals;
-
     const [ranges, setRanges] = useState([
         {
             name: 'Min',
@@ -180,16 +185,18 @@ export default function Chart(props: ChartData) {
     const [dragControl, setDragControl] = useState(false);
     const [rescale, setRescale] = useState(true);
     const [zoomAndYdragControl, setZoomAndYdragControl] = useState();
-    const [rescaleText, setRescaleText] = useState<any>();
     const [isMouseMoveCrosshair, setIsMouseMoveCrosshair] = useState(false);
+    const [bandwidth, setBandwidth] = useState(5);
 
     const [crosshairForSubChart, setCrosshairForSubChart] = useState([{ x: 0, y: -1 }]);
 
     const [isMouseMoveForSubChart, setIsMouseMoveForSubChart] = useState(false);
     const [mouseMoveEventForSubChart, setMouseMoveEventForSubChart] = useState<any>();
     const [isZoomForSubChart, setIsZoomForSubChart] = useState(false);
-
+    const [isLineDrag, setIsLineDrag] = useState(false);
     const [mouseMoveChartName, setMouseMoveChartName] = useState<string | undefined>(undefined);
+    const [windowDimensions, setWindowDimensions] = useState(getWindowDimensions());
+
     // Data
     const [crosshairData, setCrosshairData] = useState([{ x: 0, y: -1 }]);
     const [currentPriceData] = useState([{ value: -1 }]);
@@ -210,7 +217,7 @@ export default function Chart(props: ChartData) {
     const [crosshairHorizontal, setCrosshairHorizontal] = useState<any>();
     const [crosshairVertical, setCrosshairVertical] = useState<any>();
     const [candlestick, setCandlestick] = useState<any>();
-
+    const [barSeries, setBarSeries] = useState<any>();
     // Line Series
     // const [ghostLines, setGhostLines] = useState<any>();
     const [horizontalLine, setHorizontalLine] = useState<any>();
@@ -244,6 +251,7 @@ export default function Chart(props: ChartData) {
     const [popupHeight, setPopupHeight] = useState<any>();
     const [dragRange, setDragRange] = useState<any>();
     const [dragLimit, setDragLimit] = useState<any>();
+    const [autoToolTip, setAutoToolTip] = useState<any>();
 
     // const valueFormatter = d3.format('.5f');
     const currentPoolPriceTick =
@@ -268,6 +276,15 @@ export default function Chart(props: ChartData) {
         addDefsStyle();
     }, []);
 
+    useEffect(() => {
+        function handleResize() {
+            setWindowDimensions(getWindowDimensions());
+        }
+
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
     const render = useCallback(() => {
         const nd = d3.select('#d3fc_group').node() as any;
         nd.requestRedraw();
@@ -283,7 +300,8 @@ export default function Chart(props: ChartData) {
         if (location.pathname.includes('market')) {
             yAxis.tickValues([
                 ...scale.ticks(),
-                ...[market[0].value, isMouseMoveCrosshair ? crosshairData[0].y : 0],
+                ...[market[0].value],
+                ...(isMouseMoveCrosshair ? [crosshairData[0].y] : []),
             ]);
 
             yAxis.decorate((selection: any) => {
@@ -324,11 +342,8 @@ export default function Chart(props: ChartData) {
 
             yAxis.tickValues([
                 ...scale.ticks(),
-                ...[
-                    isSameLocation ? sameLocationData : limit[0].value,
-                    market[0].value,
-                    isMouseMoveCrosshair ? crosshairData[0].y : 0,
-                ],
+                ...[isSameLocation ? sameLocationData : limit[0].value, market[0].value],
+                ...(isMouseMoveCrosshair && !isLineDrag ? [crosshairData[0].y] : []),
             ]);
 
             yAxis.decorate((selection: any) => {
@@ -376,7 +391,7 @@ export default function Chart(props: ChartData) {
             const resultDataMax =
                 scaleData.yScale(ranges[1].value) - scaleData.yScale(market[0].value);
             const resultLocationDataMax = resultDataMax < 0 ? -20 : 20;
-            const isSameLocationMax = Math.abs(resultLocationDataMax) < 20;
+            const isSameLocationMax = Math.abs(resultDataMax) < 20;
             const sameLocationDataMax = scaleData.yScale.invert(
                 scaleData.yScale(market[0].value) + resultLocationDataMax,
             );
@@ -387,8 +402,8 @@ export default function Chart(props: ChartData) {
                     isSameLocationMin ? sameLocationDataMin : ranges[0].value,
                     isSameLocationMax ? sameLocationDataMax : ranges[1].value,
                     market[0].value,
-                    isMouseMoveCrosshair ? crosshairData[0].y : 0,
                 ],
+                ...(isMouseMoveCrosshair && !isLineDrag ? [crosshairData[0].y] : []),
             ]);
 
             yAxis.tickFormat((d: any) => {
@@ -396,7 +411,7 @@ export default function Chart(props: ChartData) {
                     return formatAmountChartData(ranges[0].value);
                 }
                 if (isSameLocationMax && d === sameLocationDataMax) {
-                    return formatAmountChartData(ranges[0].value);
+                    return formatAmountChartData(ranges[1].value);
                 }
 
                 return formatAmountChartData(d);
@@ -442,41 +457,82 @@ export default function Chart(props: ChartData) {
         }
     }
 
-    // crosshair x text
-    useEffect(() => {
-        if (scaleData && xAxis) {
-            if (isMouseMoveCrosshair) {
-                xAxis
-                    .tickValues([...scaleData.xScale.ticks(), ...[crosshairData[0].x]])
-                    .tickFormat((d: any) => {
-                        if (d === crosshairData[0].x) {
-                            return moment(d).format('DD MMM  HH:mm');
-                        }
+    function getXAxisTick() {
+        const oldTickValues = scaleData.xScale.ticks();
+        const tempArray = [];
+        if (
+            (windowDimensions.width > 1800 && oldTickValues.length < 13) ||
+            oldTickValues.length < 6
+        ) {
+            return oldTickValues;
+        }
 
-                        return d3.timeFormat('%d/%m/%y')(d);
-                    });
-
-                xAxis.decorate((selection: any) => {
-                    selection
-                        .attr('filter', (d: any) => {
-                            if (d === crosshairData[0].x) {
-                                return 'url(#crossHairBg)';
-                            }
-                        })
-                        .select('text')
-                        .attr('class', (d: any) => {
-                            if (d === crosshairData[0].x) {
-                                return 'crossHairText';
-                            }
-                        });
-                });
+        if (oldTickValues.length < 15) {
+            for (let index = 0; index < oldTickValues.length; index++) {
+                tempArray.push(oldTickValues[index]);
+                tempArray.push(
+                    index + 2 > oldTickValues.length - 1
+                        ? oldTickValues[oldTickValues.length - 1]
+                        : oldTickValues[index + 2],
+                );
+                index = index + 3;
+            }
+        } else {
+            for (let index = oldTickValues.length - 1; index >= 0; index = index - 1) {
+                tempArray.push(oldTickValues[index]);
+                if (index - 3 > 0) tempArray.push(oldTickValues[index - 3]);
+                index = index - 5;
             }
         }
-    }, [crosshairData, isMouseMoveCrosshair, zoomAndYdragControl]);
+
+        return tempArray;
+    }
+    // x axis text
+    useEffect(() => {
+        if (scaleData && xAxis) {
+            const oldTickValues = getXAxisTick();
+
+            xAxis
+                .tickValues([
+                    ...oldTickValues,
+                    ...(isMouseMoveCrosshair ? [crosshairData[0].x] : []),
+                ])
+                .tickFormat((d: any) => {
+                    if (d === crosshairData[0].x) {
+                        return moment(d).format('DD MMM  HH:mm');
+                    }
+
+                    return d3.timeFormat('%d/%m/%y')(d);
+                });
+
+            xAxis.decorate((selection: any) => {
+                selection
+                    .attr('filter', (d: any) => {
+                        if (d === crosshairData[0].x) {
+                            return 'url(#crossHairBg)';
+                        }
+                    })
+                    .select('text')
+                    .attr('class', (d: any) => {
+                        if (d === crosshairData[0].x) {
+                            return 'crossHairText';
+                        }
+                    });
+            });
+        }
+    }, [
+        crosshairData,
+        isMouseMoveCrosshair,
+        zoomAndYdragControl,
+        scaleData,
+        xAxis,
+        windowDimensions,
+    ]);
 
     useEffect(() => {
         if (scaleData && yAxis) {
             addText(scaleData.yScale);
+            render();
         }
     }, [
         dragControl,
@@ -488,6 +544,7 @@ export default function Chart(props: ChartData) {
         limit,
         market,
         crosshairData,
+        isMouseMoveCrosshair,
     ]);
 
     useEffect(() => {
@@ -607,21 +664,27 @@ export default function Chart(props: ChartData) {
     useEffect(() => {
         if (scaleData !== undefined) {
             let date: any | undefined = undefined;
+            let clickedForLine = false;
 
             const zoom = d3
                 .zoom()
                 .scaleExtent([0.3, 5])
                 .on('start', (event: any) => {
-                    if (event.sourceEvent && event.sourceEvent.type != 'wheel') {
-                        d3.select(d3Container.current).style('cursor', 'grabbing');
-                    }
+                    if (event.sourceEvent && event.sourceEvent.type !== 'dblclick') {
+                        clickedForLine = false;
 
-                    if (date === undefined) {
-                        date = parsedChartData?.chartData[0].date;
+                        if (event.sourceEvent && event.sourceEvent.type != 'wheel') {
+                            d3.select(d3Container.current).style('cursor', 'grabbing');
+                        }
+
+                        if (date === undefined) {
+                            date = parsedChartData?.chartData[0].date;
+                        }
                     }
                 })
                 .on('zoom', (event: any) => {
                     if (event.sourceEvent && event.sourceEvent.type !== 'dblclick') {
+                        setBandwidth(candlestick.bandwidth());
                         const t = event.transform;
 
                         getNewCandleData(event, date, scaleData.xScale);
@@ -664,21 +727,50 @@ export default function Chart(props: ChartData) {
                             const deltaY = linearY(t.y - scaleData.lastY);
 
                             scaleData.yScale.domain([domainY[0] + deltaY, domainY[1] + deltaY]);
+
+                            scaleData.yScaleIndicator.range([
+                                event.sourceEvent.offsetY,
+                                scaleData.yScale(poolPriceDisplay),
+                            ]);
+
+                            const topPlacement =
+                                event.sourceEvent.y -
+                                80 -
+                                (event.sourceEvent.offsetY - scaleData.yScale(poolPriceDisplay)) /
+                                    2;
+
+                            liqTooltip
+                                .style(
+                                    'top',
+                                    topPlacement > 500
+                                        ? 500
+                                        : (topPlacement < 115 ? 115 : topPlacement) + 'px',
+                                )
+                                .style('left', event.sourceEvent.offsetX - 80 + 'px');
                         }
 
-                        // setCrosshairXForSubChart(scaleData.xScale(crosshairData[0].x));
-
                         scaleData.lastY = t.y;
-
+                        clickedForLine = true;
                         render();
-                    }
 
-                    snapForCandle(event.sourceEvent);
-                    setZoomAndYdragControl(event);
+                        snapForCandle(event.sourceEvent);
+                        setZoomAndYdragControl(event);
+                    }
                 })
                 .on('end', (event: any) => {
                     if (event.sourceEvent && event.sourceEvent.type != 'wheel') {
                         d3.select(d3Container.current).style('cursor', 'default');
+                    }
+
+                    if (!clickedForLine) {
+                        if (location.pathname.includes('limit')) {
+                            const newLimitValue = scaleData.yScale.invert(
+                                event.sourceEvent.offsetY,
+                            );
+                            onBlurlimitRate(newLimitValue);
+                        } else if (location.pathname.includes('range')) {
+                            // onClickRange(event);
+                        }
                     }
                     // dispatch(setCandleDomains(candleDomain));
                 }) as any;
@@ -706,7 +798,15 @@ export default function Chart(props: ChartData) {
                 };
             });
         }
-    }, [parsedChartData?.chartData, scaleData, rescale, location, candlestick, isZoomForSubChart]);
+    }, [
+        parsedChartData?.chartData,
+        scaleData,
+        rescale,
+        location,
+        candlestick,
+        isZoomForSubChart,
+        location,
+    ]);
 
     useEffect(() => {
         if (scaleData !== undefined) {
@@ -730,7 +830,7 @@ export default function Chart(props: ChartData) {
                 }
             }
         }
-    }, [parsedChartData?.chartData]);
+    }, [parsedChartData?.chartData, rescale]);
 
     const setMarketLineValue = () => {
         const lastCandlePrice = parsedChartData?.chartData[0]?.close;
@@ -951,69 +1051,109 @@ export default function Chart(props: ChartData) {
 
                     // const ghostJoin = d3fc.dataJoin('g', 'ghostLines');
 
-                    const dragedValue = scaleData.yScale.invert(d3.pointer(event)[1] - 200);
-
+                    setIsLineDrag(true);
+                    const dragedValue = scaleData.yScale.invert(event.y);
                     const displayValue = poolPriceDisplay !== undefined ? poolPriceDisplay : 0;
 
+                    const low = ranges.filter((target: any) => target.name === 'Min')[0].value;
+                    const high = ranges.filter((target: any) => target.name === 'Max')[0].value;
+
+                    const lineToBeSet = dragedValue > displayValue ? 'Max' : 'Min';
+
+                    let pinnedDisplayPrices: any;
+
                     if (!isAdvancedModeActive) {
-                        rangeWidthPercentage = Math.round(
-                            Math.abs(dragedValue - displayValue) / (displayValue / 100),
-                        );
+                        let tickValue: any;
 
-                        const lowTick =
-                            currentPoolPriceTick -
-                            (rangeWidthPercentage < 1 ? 1 : rangeWidthPercentage) * 100;
-                        const highTick =
-                            currentPoolPriceTick +
-                            (rangeWidthPercentage < 1 ? 1 : rangeWidthPercentage) * 100;
+                        if (lineToBeSet === 'Max') {
+                            tickValue = getPinnedPriceValuesFromDisplayPrices(
+                                denomInBase,
+                                baseTokenDecimals,
+                                quoteTokenDecimals,
+                                low.toString(),
+                                dragedValue,
+                                lookupChain(chainId).gridSize,
+                            );
 
-                        const pinnedDisplayPrices = getPinnedPriceValuesFromTicks(
-                            denomInBase,
-                            baseTokenDecimals,
-                            quoteTokenDecimals,
-                            lowTick,
-                            highTick,
-                            lookupChain(chainId).gridSize,
-                        );
+                            rangeWidthPercentage =
+                                Math.abs(tickValue.pinnedLowTick - currentPoolPriceTick) / 100;
 
-                        setRanges((prevState) => {
-                            const newTargets = [...prevState];
+                            const lowTick =
+                                currentPoolPriceTick -
+                                (rangeWidthPercentage < 1 ? 1 : rangeWidthPercentage) * 100;
+                            const highTick =
+                                currentPoolPriceTick +
+                                (rangeWidthPercentage < 1 ? 1 : rangeWidthPercentage) * 100;
 
-                            newTargets.filter((target: any) => target.name === 'Min')[0].value =
-                                parseFloat(pinnedDisplayPrices.pinnedMinPriceDisplayTruncated);
+                            pinnedDisplayPrices = getPinnedPriceValuesFromTicks(
+                                denomInBase,
+                                baseTokenDecimals,
+                                quoteTokenDecimals,
+                                lowTick,
+                                highTick,
+                                lookupChain(chainId).gridSize,
+                            );
+                        } else {
+                            tickValue = getPinnedPriceValuesFromDisplayPrices(
+                                denomInBase,
+                                baseTokenDecimals,
+                                quoteTokenDecimals,
+                                dragedValue,
+                                high.toString(),
+                                lookupChain(chainId).gridSize,
+                            );
 
-                            newTargets.filter((target: any) => target.name === 'Max')[0].value =
-                                parseFloat(pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated);
+                            rangeWidthPercentage =
+                                Math.abs(tickValue.pinnedHighTick - currentPoolPriceTick) / 100;
 
-                            newRangeValue = newTargets;
+                            const highTick =
+                                currentPoolPriceTick +
+                                (rangeWidthPercentage < 1 ? 1 : rangeWidthPercentage) * 100;
+                            const lowTick =
+                                currentPoolPriceTick -
+                                (rangeWidthPercentage < 1 ? 1 : rangeWidthPercentage) * 100;
 
-                            setLiqHighlightedLinesAndArea(newTargets);
-                            return newTargets;
-                        });
+                            pinnedDisplayPrices = getPinnedPriceValuesFromTicks(
+                                denomInBase,
+                                baseTokenDecimals,
+                                quoteTokenDecimals,
+                                lowTick,
+                                highTick,
+                                lookupChain(chainId).gridSize,
+                            );
+                        }
 
-                        // const lowDomain = parseFloat(
-                        //     pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
-                        // );
-                        // const highDomain = parseFloat(
-                        //     pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
-                        // );
+                        if (pinnedDisplayPrices !== undefined) {
+                            setRanges((prevState) => {
+                                const newTargets = [...prevState];
 
-                        // const buffer = 2 * (poolPriceDisplay! / 100);
+                                newTargets.filter((target: any) => target.name === 'Min')[0].value =
+                                    parseFloat(pinnedDisplayPrices.pinnedMinPriceDisplayTruncated);
 
-                        // scaleData.yScale.domain([lowDomain - buffer, highDomain + buffer]);
+                                newTargets.filter((target: any) => target.name === 'Max')[0].value =
+                                    parseFloat(pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated);
+
+                                newRangeValue = newTargets;
+
+                                setLiqHighlightedLinesAndArea(newTargets);
+                                return newTargets;
+                            });
+
+                            const dy = event.dy;
+                            const factor = Math.pow(2, -dy * 0.008);
+
+                            const domain = scaleData.yScale.domain();
+                            const center = (domain[1] + domain[0]) / 2;
+                            const size = (domain[1] - domain[0]) / 2 / factor;
+
+                            scaleData.yScale.domain([center - size, center + size]);
+                        }
                     } else {
-                        const lineToBeSet = dragedValue > displayValue ? 'Max' : 'Min';
-
                         highLineMoved = lineToBeSet === 'Max';
                         lowLineMoved = lineToBeSet === 'Min';
 
-                        const low = ranges.filter((target: any) => target.name === 'Min')[0].value;
-                        const high = ranges.filter((target: any) => target.name === 'Max')[0].value;
-
-                        let pinnedDisplayPrices;
-
-                        let pinnedMaxPriceDisplayTruncated = 0;
-                        let pinnedMinPriceDisplayTruncated = 0;
+                        let pinnedMaxPriceDisplayTruncated = high;
+                        let pinnedMinPriceDisplayTruncated = low;
 
                         if (dragedValue >= 0) {
                             if (lineToBeSet === 'Max') {
@@ -1061,17 +1201,19 @@ export default function Chart(props: ChartData) {
                             return newTargets;
                         });
                     }
-
-                    d3.select(d3PlotArea.current).on('draw', async function (event: any) {
-                        const svg = d3.select(event.target).select('svg');
-
-                        // ghostJoin(svg, [neighborValues]).call(ghostLines);
-                        targetsJoin(svg, [newRangeValue]).call(horizontalLine);
-                    });
                 })
-                .on('end', () => {
+                .on('end', (event: any) => {
                     d3.select(d3Container.current).style('cursor', 'default');
-
+                    setCrosshairData([
+                        {
+                            x: crosshairData[0].x,
+                            y:
+                                isMouseMoveForSubChart || isZoomForSubChart
+                                    ? -1
+                                    : scaleData.yScale.invert(event.sourceEvent.layerY),
+                        },
+                    ]);
+                    setIsLineDrag(false);
                     d3.select(d3Container.current)
                         .select('.ghostLines')
                         .selectAll('.horizontal')
@@ -1080,7 +1222,13 @@ export default function Chart(props: ChartData) {
                     if (!isAdvancedModeActive) {
                         dispatch(
                             setSimpleRangeWidth(
-                                rangeWidthPercentage < 1 ? 1 : rangeWidthPercentage,
+                                Math.floor(
+                                    rangeWidthPercentage < 1
+                                        ? 1
+                                        : rangeWidthPercentage > 100
+                                        ? 100
+                                        : rangeWidthPercentage,
+                                ),
                             ),
                         );
                     }
@@ -1102,7 +1250,7 @@ export default function Chart(props: ChartData) {
 
                     // const snapResponse = snap(
                     //     props.liquidityData.liqSnapData,
-                    //     scaleData.yScale.invert(d3.pointer(event)[1] - 215),
+                    //     scaleData.yScale.invert(event.y),
                     // );
 
                     // const snappedValueIndex = snapResponse[0].index;
@@ -1114,22 +1262,32 @@ export default function Chart(props: ChartData) {
                     // }
 
                     // const ghostJoin = d3fc.dataJoin('g', 'ghostLines');
+                    setIsLineDrag(true);
+                    newLimitValue = scaleData.yScale.invert(event.y);
 
-                    newLimitValue = scaleData.yScale.invert(d3.pointer(event)[1] - 215);
-
-                    d3.select(d3PlotArea.current).on('draw', async function (event: any) {
-                        const svg = d3.select(event.target).select('svg');
-
-                        // ghostJoin(svg, [neighborValues]).call(ghostLines);
-                        limitJoin(svg, [[{ name: 'Limit', value: newLimitValue }]]).call(limitLine);
-                    });
+                    newLimitValue =
+                        poolPriceDisplay !== undefined && newLimitValue > poolPriceDisplay * 10
+                            ? poolPriceDisplay * 10
+                            : newLimitValue;
 
                     setLimit(() => {
                         return [{ name: 'Limit', value: newLimitValue }];
                     });
                 })
-                .on('end', () => {
+                .on('end', (event: any) => {
                     d3.select(d3Container.current).style('cursor', 'default');
+
+                    setCrosshairData([
+                        {
+                            x: crosshairData[0].x,
+                            y:
+                                isMouseMoveForSubChart || isZoomForSubChart
+                                    ? -1
+                                    : scaleData.yScale.invert(event.sourceEvent.layerY),
+                        },
+                    ]);
+
+                    setIsLineDrag(false);
 
                     d3.select(d3Container.current)
                         .select('.ghostLines')
@@ -1154,72 +1312,12 @@ export default function Chart(props: ChartData) {
     }, [parsedChartData]);
 
     useEffect(() => {
-        if (rescaleText !== undefined) {
-            rescaleText.style('fill', () =>
-                rescale ? 'rgb(58, 60, 120)' : 'rgba(237, 231, 225, 0.2)',
+        if (autoToolTip !== undefined) {
+            autoToolTip.style('color', () =>
+                rescale ? 'rgb(97, 100, 189)' : 'rgba(237, 231, 225, 0.2)',
             );
         }
     }, [rescale]);
-
-    useEffect(() => {
-        if (d3.select(d3Xaxis.current).select('svg').select('#rescale').node() == null) {
-            const rescaleText = d3
-                .select(d3Xaxis.current)
-                .select('svg')
-                .append('text')
-                .attr('dx', '95%')
-                .attr('dy', '60%')
-                .attr('id', 'rescale')
-                .style('font-size', '14px')
-                .style('font-weight', 'bold')
-                .style('fill', 'rgb(58, 60, 120)')
-                .text('AUTO');
-
-            rescaleText
-                .on('mouseover', (event: any) => {
-                    d3.select(event.currentTarget).style('cursor', 'pointer');
-                })
-                .on('click', () => {
-                    setRescale((prevState) => {
-                        rescaleText.style('fill', () =>
-                            !prevState ? 'rgb(58, 60, 120)' : 'rgba(237, 231, 225, 0.2)',
-                        );
-
-                        return !prevState;
-                    });
-                });
-
-            setRescaleText(() => {
-                return rescaleText;
-            });
-        }
-
-        if (d3.select(d3Xaxis.current).select('svg').select('#scroll').node() == null) {
-            d3.select(d3Xaxis.current)
-                .select('svg')
-                .append('circle')
-                .attr('id', 'scroll')
-                .attr('cx', '90%')
-                .attr('cy', '55%')
-                .attr('r', 12)
-                .attr('fill', 'rgba(41,47,63,0.8)')
-                .attr('class', 'scroll')
-                .on('mouseover', (event: any) => {
-                    d3.select(event.currentTarget).style('cursor', 'pointer');
-                    d3.select(d3Xaxis.current)
-                        .select('svg')
-                        .select('#scroll')
-                        .attr('fill', 'rgba(41,47,63,1)');
-                })
-                .on('mouseleave', (event: any) => {
-                    d3.select(event.currentTarget).style('cursor', 'pointer');
-                    d3.select(d3Xaxis.current)
-                        .select('svg')
-                        .select('#scroll')
-                        .attr('fill', 'rgba(41,47,63,0.8)');
-                });
-        }
-    }, []);
 
     // y Axis
     useEffect(() => {
@@ -1236,7 +1334,6 @@ export default function Chart(props: ChartData) {
             const _xAxis = d3fc
                 .axisBottom()
                 .scale(scaleData.xScale)
-                .tickArguments([6])
                 .tickFormat((d: any) => {
                     return d3.timeFormat('%d/%m/%y')(d);
                 });
@@ -1338,6 +1435,67 @@ export default function Chart(props: ChartData) {
                 });
             }
 
+            if (d3.select(d3Container.current).select('.zoomUtilsTooltip').node() === null) {
+                const zoomUtilsTooltip = d3
+                    .select(d3Container.current)
+                    .append('div')
+                    .attr('class', 'zoomUtilsTooltip');
+
+                if (d3.select(d3Container.current).select('.zoomUtilsTooltip').node() !== null) {
+                    const latestToolTip = d3
+                        .select(d3Container.current)
+                        .select('.zoomUtilsTooltip')
+                        .append('div')
+                        .attr('class', 'latestToolTip')
+                        .on('mouseover', (event: any) => {
+                            d3.select(event.currentTarget).style('cursor', 'pointer');
+                        })
+                        .on('click', () => {
+                            scaleData.xScale.domain(scaleData.xScaleCopy.domain());
+                            scaleData.yScale.domain(scaleData.yScaleCopy.domain());
+                            render();
+                        });
+
+                    latestToolTip.html('<p><span style="font-weight: bold">LATEST</span></p>');
+
+                    const autoToolTip = d3
+                        .select(d3Container.current)
+                        .select('.zoomUtilsTooltip')
+                        .append('div')
+                        .attr('class', 'autoToolTip')
+                        .style('color', () =>
+                            rescale ? 'rgb(97, 100, 189)' : 'rgba(237, 231, 225, 0.2)',
+                        )
+                        .on('mouseover', (event: any) => {
+                            d3.select(event.currentTarget).style('cursor', 'pointer');
+                        })
+                        .on('click', () => {
+                            setRescale((prevState) => {
+                                autoToolTip.style('color', () =>
+                                    !prevState ? 'rgb(97, 100, 189)' : 'rgba(237, 231, 225, 0.2)',
+                                );
+
+                                return !prevState;
+                            });
+                        });
+
+                    autoToolTip.html('<p><span style="font-weight: bold">AUTO</span></p>');
+
+                    setAutoToolTip(() => {
+                        return autoToolTip;
+                    });
+                }
+
+                const placement = document.querySelector('#d3fc_group');
+
+                zoomUtilsTooltip
+                    .style('top', (placement !== null ? placement.clientHeight + 95 : 557) + 'px')
+                    .style(
+                        'left',
+                        (placement !== null ? placement.clientWidth - 115 : 1180) + 'px',
+                    );
+            }
+
             setTargetsJoin(() => {
                 return targetsJoin;
             });
@@ -1366,7 +1524,7 @@ export default function Chart(props: ChartData) {
                 return limitLine;
             });
         }
-    }, [scaleData, market]);
+    }, [parsedChartData?.chartData, scaleData, market, rescale]);
 
     // easy drag and triangle to horizontal lines for range
     async function addTriangleAndRect() {
@@ -1565,119 +1723,199 @@ export default function Chart(props: ChartData) {
         }
 
         if (location.pathname.includes('range') && scaleData !== undefined) {
-            let newRangeValue: any;
-
             d3.select(d3PlotArea.current).on('click', async (event: any) => {
                 if (
                     (event.target.__data__ as CandleChartData) === undefined ||
                     event.target.__data__ instanceof Array
                 ) {
-                    const clickedValue = scaleData.yScale.invert(d3.pointer(event)[1]);
-                    const displayValue = poolPriceDisplay !== undefined ? poolPriceDisplay : 0;
-
-                    const lineToBeSet = clickedValue > displayValue ? 'Max' : 'Min';
-
-                    if (!isAdvancedModeActive) {
-                        const rangeWidthPercentage = Math.round(
-                            Math.abs(clickedValue - displayValue) / (displayValue / 100),
-                        );
-
-                        const lowTick =
-                            currentPoolPriceTick -
-                            (rangeWidthPercentage < 1 ? 1 : rangeWidthPercentage) * 100;
-                        const highTick =
-                            currentPoolPriceTick +
-                            (rangeWidthPercentage < 1 ? 1 : rangeWidthPercentage) * 100;
-
-                        const pinnedDisplayPrices = getPinnedPriceValuesFromTicks(
-                            denomInBase,
-                            baseTokenDecimals,
-                            quoteTokenDecimals,
-                            lowTick,
-                            highTick,
-                            lookupChain(chainId).gridSize,
-                        );
-
-                        dispatch(setAdvancedLowTick(pinnedDisplayPrices.pinnedLowTick));
-                        dispatch(setAdvancedHighTick(pinnedDisplayPrices.pinnedHighTick));
-
-                        await setRanges((prevState) => {
-                            const newTargets = [...prevState];
-
-                            newTargets.filter((target: any) => target.name === 'Min')[0].value =
-                                parseFloat(pinnedDisplayPrices.pinnedMinPriceDisplayTruncated);
-
-                            newTargets.filter((target: any) => target.name === 'Max')[0].value =
-                                parseFloat(pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated);
-
-                            newRangeValue = newTargets;
-
-                            setLiqHighlightedLinesAndArea(newTargets);
-                            return newTargets;
-                        });
-
-                        dispatch(
-                            setSimpleRangeWidth(
-                                rangeWidthPercentage < 1 ? 1 : rangeWidthPercentage,
-                            ),
-                        );
-                    } else {
-                        const low = ranges.filter((target: any) => target.name === 'Min')[0].value;
-                        const high = ranges.filter((target: any) => target.name === 'Max')[0].value;
-
-                        let pinnedDisplayPrices;
-                        if (lineToBeSet === 'Max') {
-                            pinnedDisplayPrices = getPinnedPriceValuesFromDisplayPrices(
-                                denomInBase,
-                                baseTokenDecimals,
-                                quoteTokenDecimals,
-                                low.toString(),
-                                scaleData.yScale.invert(d3.pointer(event)[1]).toString(),
-                                lookupChain(chainId).gridSize,
-                            );
-                        } else {
-                            pinnedDisplayPrices = getPinnedPriceValuesFromDisplayPrices(
-                                denomInBase,
-                                baseTokenDecimals,
-                                quoteTokenDecimals,
-                                scaleData.yScale.invert(d3.pointer(event)[1]).toString(),
-                                high.toString(),
-                                lookupChain(chainId).gridSize,
-                            );
-                        }
-
-                        const pinnedMaxPriceDisplayTruncated = parseFloat(
-                            pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
-                        );
-                        const pinnedMinPriceDisplayTruncated = parseFloat(
-                            pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
-                        );
-
-                        await setRanges((prevState) => {
-                            const newTargets = [...prevState];
-
-                            if (lineToBeSet === 'Max') {
-                                newTargets.filter((target: any) => target.name === 'Max')[0].value =
-                                    pinnedMaxPriceDisplayTruncated;
-                            } else {
-                                newTargets.filter((target: any) => target.name === 'Min')[0].value =
-                                    pinnedMinPriceDisplayTruncated;
-                            }
-
-                            render();
-
-                            newRangeValue = newTargets;
-
-                            setLiqHighlightedLinesAndArea(newTargets);
-                            return newTargets;
-                        });
-
-                        onBlurRange(newRangeValue, lineToBeSet === 'Max', lineToBeSet === 'Min');
-                    }
+                    onClickRange(event);
                 }
             });
         }
-    }, [dragLimit, dragRange, parsedChartData?.period, location, horizontalLine]);
+    }, [
+        dragLimit,
+        dragRange,
+        parsedChartData?.period,
+        location,
+        horizontalLine,
+        currentPoolPriceTick,
+    ]);
+
+    const onClickRange = async (event: any) => {
+        let newRangeValue: any;
+
+        const clickedValue = scaleData.yScale.invert(d3.pointer(event)[1]);
+        const displayValue = poolPriceDisplay !== undefined ? poolPriceDisplay : 0;
+
+        const lineToBeSet = clickedValue > displayValue ? 'Max' : 'Min';
+
+        if (!isAdvancedModeActive) {
+            let rangeWidthPercentage;
+            let tickValue;
+            let pinnedDisplayPrices: any;
+
+            const low = ranges.filter((target: any) => target.name === 'Min')[0].value;
+            const high = ranges.filter((target: any) => target.name === 'Max')[0].value;
+
+            if (lineToBeSet === 'Max') {
+                tickValue = getPinnedPriceValuesFromDisplayPrices(
+                    denomInBase,
+                    baseTokenDecimals,
+                    quoteTokenDecimals,
+                    low.toString(),
+                    clickedValue,
+                    lookupChain(chainId).gridSize,
+                );
+
+                rangeWidthPercentage =
+                    Math.abs(tickValue.pinnedLowTick - currentPoolPriceTick) / 100;
+
+                const lowTick =
+                    currentPoolPriceTick -
+                    (rangeWidthPercentage < 1 ? 1 : rangeWidthPercentage) * 100;
+                const highTick =
+                    currentPoolPriceTick +
+                    (rangeWidthPercentage < 1 ? 1 : rangeWidthPercentage) * 100;
+
+                pinnedDisplayPrices = getPinnedPriceValuesFromTicks(
+                    denomInBase,
+                    baseTokenDecimals,
+                    quoteTokenDecimals,
+                    lowTick,
+                    highTick,
+                    lookupChain(chainId).gridSize,
+                );
+            } else {
+                tickValue = getPinnedPriceValuesFromDisplayPrices(
+                    denomInBase,
+                    baseTokenDecimals,
+                    quoteTokenDecimals,
+                    clickedValue,
+                    high.toString(),
+                    lookupChain(chainId).gridSize,
+                );
+
+                rangeWidthPercentage =
+                    Math.abs(tickValue.pinnedHighTick - currentPoolPriceTick) / 100;
+
+                const highTick =
+                    currentPoolPriceTick +
+                    (rangeWidthPercentage < 1 ? 1 : rangeWidthPercentage) * 100;
+                const lowTick =
+                    currentPoolPriceTick -
+                    (rangeWidthPercentage < 1 ? 1 : rangeWidthPercentage) * 100;
+
+                pinnedDisplayPrices = getPinnedPriceValuesFromTicks(
+                    denomInBase,
+                    baseTokenDecimals,
+                    quoteTokenDecimals,
+                    lowTick,
+                    highTick,
+                    lookupChain(chainId).gridSize,
+                );
+            }
+
+            if (pinnedDisplayPrices !== undefined) {
+                setRanges((prevState) => {
+                    const newTargets = [...prevState];
+
+                    newTargets.filter((target: any) => target.name === 'Min')[0].value = parseFloat(
+                        pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
+                    );
+
+                    newTargets.filter((target: any) => target.name === 'Max')[0].value = parseFloat(
+                        pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
+                    );
+
+                    newRangeValue = newTargets;
+
+                    setLiqHighlightedLinesAndArea(newTargets);
+                    return newTargets;
+                });
+            }
+
+            await setRanges((prevState) => {
+                const newTargets = [...prevState];
+
+                newTargets.filter((target: any) => target.name === 'Min')[0].value = parseFloat(
+                    pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
+                );
+
+                newTargets.filter((target: any) => target.name === 'Max')[0].value = parseFloat(
+                    pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
+                );
+
+                newRangeValue = newTargets;
+
+                setLiqHighlightedLinesAndArea(newTargets);
+                return newTargets;
+            });
+
+            dispatch(
+                setSimpleRangeWidth(
+                    Math.floor(
+                        rangeWidthPercentage < 1
+                            ? 1
+                            : rangeWidthPercentage > 100
+                            ? 100
+                            : rangeWidthPercentage,
+                    ),
+                ),
+            );
+        } else {
+            const low = ranges.filter((target: any) => target.name === 'Min')[0].value;
+            const high = ranges.filter((target: any) => target.name === 'Max')[0].value;
+
+            let pinnedDisplayPrices;
+            if (lineToBeSet === 'Max') {
+                pinnedDisplayPrices = getPinnedPriceValuesFromDisplayPrices(
+                    denomInBase,
+                    baseTokenDecimals,
+                    quoteTokenDecimals,
+                    low.toString(),
+                    scaleData.yScale.invert(event.offsetY).toString(),
+                    lookupChain(chainId).gridSize,
+                );
+            } else {
+                pinnedDisplayPrices = getPinnedPriceValuesFromDisplayPrices(
+                    denomInBase,
+                    baseTokenDecimals,
+                    quoteTokenDecimals,
+                    scaleData.yScale.invert(event.offsetY).toString(),
+                    high.toString(),
+                    lookupChain(chainId).gridSize,
+                );
+            }
+
+            const pinnedMaxPriceDisplayTruncated = parseFloat(
+                pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
+            );
+            const pinnedMinPriceDisplayTruncated = parseFloat(
+                pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
+            );
+
+            await setRanges((prevState) => {
+                const newTargets = [...prevState];
+
+                if (lineToBeSet === 'Max') {
+                    newTargets.filter((target: any) => target.name === 'Max')[0].value =
+                        pinnedMaxPriceDisplayTruncated;
+                } else {
+                    newTargets.filter((target: any) => target.name === 'Min')[0].value =
+                        pinnedMinPriceDisplayTruncated;
+                }
+
+                render();
+
+                newRangeValue = newTargets;
+
+                setLiqHighlightedLinesAndArea(newTargets);
+                return newTargets;
+            });
+
+            onBlurRange(newRangeValue, lineToBeSet === 'Max', lineToBeSet === 'Min');
+        }
+    };
 
     useEffect(() => {
         if (scaleData !== undefined) {
@@ -1801,7 +2039,8 @@ export default function Chart(props: ChartData) {
                         .on('click', (event: any) => {
                             if (
                                 selectedDate === undefined ||
-                                selectedDate !== event.target.__data__.date
+                                selectedDate.getTime() !==
+                                    new Date(event.target.__data__.date).getTime()
                             ) {
                                 d3.select(event.currentTarget)
                                     .style('fill', '#E480FF')
@@ -1833,6 +2072,58 @@ export default function Chart(props: ChartData) {
             });
         }
     }, [scaleData, selectedDate]);
+
+    useEffect(() => {
+        if (scaleData !== undefined) {
+            const barSeries = d3fc
+                .seriesSvgBar()
+                .align('center')
+                .bandwidth(bandwidth)
+                .xScale(scaleData.xScale)
+                .yScale(scaleData.volumeScale)
+                .crossValue((d: any) => d.time)
+                .mainValue((d: any) => d.value)
+                .decorate((selection: any) => {
+                    selection.style('fill', (d: any) => {
+                        return selectedDate !== undefined &&
+                            selectedDate.getTime() === d.time.getTime()
+                            ? '#E480FF'
+                            : 'rgba(115,113,252, 0.6)';
+                    });
+                    selection.style('stroke', (d: any) =>
+                        selectedDate !== undefined && selectedDate.getTime() === d.time.getTime()
+                            ? '#E480FF'
+                            : 'rgba(115,113,252, 0.6)',
+                    );
+                    selection.on('mouseover', (event: any) => {
+                        d3.select(event.currentTarget).style('cursor', 'pointer');
+                    });
+                    selection.on('click', (event: any) => {
+                        if (
+                            selectedDate === undefined ||
+                            selectedDate.getTime() !==
+                                new Date(event.target.__data__.time).getTime()
+                        ) {
+                            d3.select(event.currentTarget)
+                                .style('fill', '#E480FF')
+                                .style('stroke', '#E480FF');
+
+                            setSelectedDate(() => {
+                                return event.target.__data__.time;
+                            });
+                        } else {
+                            setSelectedDate(() => {
+                                return undefined;
+                            });
+                        }
+                    });
+                });
+
+            setBarSeries(() => {
+                return barSeries;
+            });
+        }
+    }, [scaleData, selectedDate, bandwidth]);
 
     useEffect(() => {
         if (!location.pathname.includes('range')) {
@@ -1868,6 +2159,21 @@ export default function Chart(props: ChartData) {
                 (a: any, b: any) => b.liqPrices - a.liqPrices,
             );
 
+            props.liquidityData.lineAskSeries.push({
+                activeLiq:
+                    props.liquidityData.lineAskSeries[props.liquidityData.lineAskSeries.length - 1]
+                        .activeLiq,
+                liqPrices: low,
+                deltaAverageUSD: 0,
+                cumAverageUSD: 0,
+            });
+            props.liquidityData.lineBidSeries.unshift({
+                activeLiq: props.liquidityData.lineBidSeries[0].activeLiq,
+                liqPrices: high,
+                deltaAverageUSD: 0,
+                cumAverageUSD: 0,
+            });
+
             setHorizontalBandData([
                 [
                     isAmbient ? 0 : ranges.filter((item: any) => item.name === 'Min')[0].value,
@@ -1896,6 +2202,10 @@ export default function Chart(props: ChartData) {
                 .decorate((selection: any) => {
                     selection.enter().style('stroke', () => 'rgba(205, 193, 255)');
                     selection.attr('stroke-width', '2');
+                    selection.style(
+                        'visibility',
+                        location.pathname.includes('range') ? 'visible' : 'hidden',
+                    );
                 });
 
             setLineAskSeries(() => {
@@ -1913,6 +2223,10 @@ export default function Chart(props: ChartData) {
                 .decorate((selection: any) => {
                     selection.enter().style('stroke', () => '#7371FC');
                     selection.attr('stroke-width', '2');
+                    selection.style(
+                        'visibility',
+                        location.pathname.includes('range') ? 'visible' : 'hidden',
+                    );
                 });
 
             setLineBidSeries(() => {
@@ -2009,7 +2323,7 @@ export default function Chart(props: ChartData) {
                 return liqHighligtedBidJoin;
             });
         }
-    }, [scaleData, props.liquidityData]);
+    }, [scaleData, props.liquidityData, location]);
 
     // Call drawChart()
     useEffect(() => {
@@ -2048,6 +2362,8 @@ export default function Chart(props: ChartData) {
                 market: market,
             };
 
+            const volumeData = parsedChartData?.volumeChartData.sort((a, b) => b.time - a.time);
+
             drawChart(
                 parsedChartData.chartData,
                 targetData,
@@ -2084,6 +2400,9 @@ export default function Chart(props: ChartData) {
                 isMouseMoveForSubChart,
                 isZoomForSubChart,
                 horizontalBandData,
+                barSeries,
+                volumeData,
+                showVolume,
             );
         }
     }, [
@@ -2104,6 +2423,7 @@ export default function Chart(props: ChartData) {
         crosshairHorizontal,
         marketLine,
         candlestick,
+        barSeries,
         liqAskSeries,
         liqBidSeries,
         lineBidSeries,
@@ -2121,6 +2441,7 @@ export default function Chart(props: ChartData) {
         mouseMoveEventForSubChart,
         isZoomForSubChart,
         horizontalBandData,
+        showVolume,
     ]);
 
     const minimum = (data: any, accessor: any) => {
@@ -2174,10 +2495,12 @@ export default function Chart(props: ChartData) {
             isMouseMoveForSubChart: boolean,
             isZoomForSubChart: boolean,
             horizontalBandData: any,
+            barSeries: any,
+            volumeData: any,
+            showVolume: boolean,
         ) => {
             if (chartData.length > 0) {
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-
                 const snap = (series: any, data: any, point: any) => {
                     if (point == undefined) return [];
                     const xScale = series.xScale(),
@@ -2186,18 +2509,24 @@ export default function Chart(props: ChartData) {
                     const filtered =
                         data.length > 1 ? data.filter((d: any) => xValue(d) != null) : data;
                     const nearest = minimum(filtered, (d: any) =>
-                        Math.abs(point.offsetX - xScale(xValue(d))),
+                        Math.abs(point.layerX - xScale(xValue(d))),
                     )[1];
 
                     setCrosshairForSubChart((prevState) => {
                         const newData = [...prevState];
 
                         newData[0].x = nearest?.date;
-                        newData[0].y = point.offsetY;
+                        newData[0].y = point.layerY;
 
                         return newData;
                     });
                     props.setCurrentData(nearest);
+
+                    props.setCurrentVolumeData(
+                        volumeData.find(
+                            (item: any) => item.time.getTime() === nearest?.date.getTime(),
+                        ).value,
+                    );
                     return [
                         {
                             x: nearest?.date,
@@ -2226,6 +2555,8 @@ export default function Chart(props: ChartData) {
                 // );
                 const indicatorLineJoin = d3fc.dataJoin('g', 'indicatorLine');
 
+                const barJoin = d3fc.dataJoin('g', 'bar');
+
                 // handle the plot area measure event in order to compute the scale ranges
                 d3.select(d3PlotArea.current).on('measure', function (event: any) {
                     scaleData.xScale.range([0, event.detail.width]);
@@ -2240,6 +2571,8 @@ export default function Chart(props: ChartData) {
                         event.detail.width,
                         (event.detail.width / 10) * 8,
                     ]);
+
+                    scaleData.volumeScale.range([event.detail.height, event.detail.height * 0.998]);
                 });
 
                 d3.select(d3PlotArea.current).on('draw', function (event: any) {
@@ -2271,6 +2604,8 @@ export default function Chart(props: ChartData) {
                         areaBidJoin(svg, [liquidityData.liqBidData]).call(liqBidSeries);
                         lineAskSeriesJoin(svg, [liquidityData.lineBidSeries]).call(lineBidSeries);
                         lineBidSeriesJoin(svg, [liquidityData.lineAskSeries]).call(lineAskSeries);
+
+                        barJoin(svg, [showVolume ? volumeData : []]).call(barSeries);
                     }
 
                     const mouseOutFunc = () => {
@@ -2294,7 +2629,7 @@ export default function Chart(props: ChartData) {
                             .on('mousemove', (event: any) => {
                                 indicatorLineData[0] = {
                                     x: scaleData.xScale.invert(event.offsetX),
-                                    y: event.offsetY,
+                                    y: scaleData.yScale.invert(event.offsetY),
                                 };
 
                                 currentPriceData[0] = {
@@ -2336,16 +2671,14 @@ export default function Chart(props: ChartData) {
                                     return nearest;
                                 });
 
+                                const topPlacement =
+                                    event.y -
+                                    80 -
+                                    (event.offsetY - scaleData.yScale(poolPriceDisplay)) / 2;
+
                                 liqTooltip
                                     .style('visibility', 'visible')
-                                    .style(
-                                        'top',
-                                        event.y -
-                                            80 -
-                                            (event.offsetY - scaleData.yScale(poolPriceDisplay)) /
-                                                2 +
-                                            'px',
-                                    )
+                                    .style('top', (topPlacement < 115 ? 115 : topPlacement) + 'px')
                                     .style('left', event.offsetX - 80 + 'px');
 
                                 liquidityData.liqHighligtedBidSeries = [];
@@ -2387,7 +2720,7 @@ export default function Chart(props: ChartData) {
                             .on('mousemove', (event: any) => {
                                 indicatorLineData[0] = {
                                     x: scaleData.xScale.invert(event.offsetX),
-                                    y: event.offsetY,
+                                    y: scaleData.yScale.invert(event.offsetY),
                                 };
 
                                 currentPriceData[0] = {
@@ -2429,16 +2762,14 @@ export default function Chart(props: ChartData) {
                                     return nearest;
                                 });
 
+                                const topPlacement =
+                                    event.y -
+                                    80 -
+                                    (event.offsetY - scaleData.yScale(poolPriceDisplay)) / 2;
+
                                 liqTooltip
                                     .style('visibility', 'visible')
-                                    .style(
-                                        'top',
-                                        event.y -
-                                            80 -
-                                            (event.offsetY - scaleData.yScale(poolPriceDisplay)) /
-                                                2 +
-                                            'px',
-                                    )
+                                    .style('top', (topPlacement > 500 ? 500 : topPlacement) + 'px')
                                     .style('left', event.offsetX - 80 + 'px');
 
                                 liquidityData.liqHighligtedAskSeries = [];
@@ -2492,7 +2823,7 @@ export default function Chart(props: ChartData) {
                     scaleData.xScaleCopy.range([0, event.detail.width]);
                     scaleData.yScaleCopy.range([event.detail.height, 0]);
 
-                    svg.call(zoomUtils.zoom);
+                    svg.call(zoomUtils.zoom).on('dblclick.zoom', null);
                 });
 
                 const setCrossHairLocation = (event: any) => {
@@ -2505,7 +2836,7 @@ export default function Chart(props: ChartData) {
                             y:
                                 isMouseMoveForSubChart || isZoomForSubChart
                                     ? -1
-                                    : scaleData.yScale.invert(event.offsetY),
+                                    : scaleData.yScale.invert(event.layerY),
                         },
                     ]);
 
@@ -2532,6 +2863,38 @@ export default function Chart(props: ChartData) {
 
                 render();
 
+                d3.select(d3Container.current).on('mouseleave', () => {
+                    d3.select(d3PlotArea.current)
+                        .select('svg')
+                        .select('.crosshairHorizontal')
+                        .style('visibility', 'hidden');
+
+                    d3.select('#tvl_chart')
+                        .select('svg')
+                        .select('.crosshairHorizontal')
+                        .selectChild()
+                        .style('visibility', 'hidden');
+
+                    d3.select('#tvl_chart')
+                        .select('svg')
+                        .select('.crosshairVertical')
+                        .selectChild()
+                        .style('visibility', 'hidden');
+
+                    d3.select('#fee_rate_chart')
+                        .select('svg')
+                        .select('.crosshairHorizontal')
+                        .selectChild()
+                        .style('visibility', 'hidden');
+
+                    d3.select('#fee_rate_chart')
+                        .select('svg')
+                        .select('.crosshairVertical')
+                        .selectChild()
+                        .style('visibility', 'hidden');
+
+                    setIsMouseMoveCrosshair(false);
+                });
                 d3.select(d3PlotArea.current).on('mouseleave', () => {
                     liquidityData.liqHighligtedBidSeries = [];
                     liquidityData.liqHighligtedAskSeries = [];
@@ -2540,10 +2903,40 @@ export default function Chart(props: ChartData) {
                         .select('svg')
                         .select('.crosshairVertical')
                         .style('visibility', 'hidden');
-
                     setIsMouseMoveCrosshair(false);
 
                     render();
+                });
+
+                d3.select(d3Container.current).on('mouseenter', () => {
+                    d3.select(d3PlotArea.current)
+                        .select('svg')
+                        .select('.crosshairHorizontal')
+                        .style('visibility', 'visible');
+
+                    d3.select('#tvl_chart')
+                        .select('svg')
+                        .select('.crosshairHorizontal')
+                        .selectChild()
+                        .style('visibility', 'visible');
+
+                    d3.select('#tvl_chart')
+                        .select('svg')
+                        .select('.crosshairVertical')
+                        .selectChild()
+                        .style('visibility', 'visible');
+
+                    d3.select('#fee_rate_chart')
+                        .select('svg')
+                        .select('.crosshairHorizontal')
+                        .selectChild()
+                        .style('visibility', 'visible');
+
+                    d3.select('#fee_rate_chart')
+                        .select('svg')
+                        .select('.crosshairVertical')
+                        .selectChild()
+                        .style('visibility', 'visible');
                 });
 
                 d3.select(d3PlotArea.current).on('mouseenter', () => {
@@ -2676,6 +3069,9 @@ export default function Chart(props: ChartData) {
     };
 
     const onBlurlimitRate = (newLimitValue: any) => {
+        if (newLimitValue === undefined) {
+            return;
+        }
         const limitNonDisplay = denomInBase
             ? pool?.fromDisplayPrice(parseFloat(newLimitValue))
             : pool?.fromDisplayPrice(1 / parseFloat(newLimitValue));
@@ -2717,11 +3113,17 @@ export default function Chart(props: ChartData) {
                                   maximumFractionDigits: 2,
                               });
 
+                    const limitValue =
+                        poolPriceDisplay !== undefined &&
+                        parseFloat(limitRateTruncated.replace(',', '')) > poolPriceDisplay * 10
+                            ? poolPriceDisplay * 10
+                            : parseFloat(limitRateTruncated.replace(',', ''));
+
                     setLimit(() => {
                         return [
                             {
                                 name: 'Limit',
-                                value: parseFloat(limitRateTruncated.replace(',', '')),
+                                value: limitValue,
                             },
                         ];
                     });
@@ -2838,47 +3240,6 @@ export default function Chart(props: ChartData) {
                                 mouseMoveChartName={mouseMoveChartName}
                                 setMouseMoveChartName={setMouseMoveChartName}
                             />
-                        </>
-                    )}
-
-                    {showVolume === true && candlestick !== undefined && (
-                        <>
-                            <hr />
-                            <label>
-                                Volume{' '}
-                                {formatDollarAmountAxis(
-                                    subChartValues.filter(
-                                        (value: any) => value.name === 'volume',
-                                    )[0].value,
-                                )}
-                            </label>
-                            {
-                                <VolumeSubChart
-                                    volumeData={parsedChartData?.volumeChartData.sort(
-                                        (a, b) => b.time - a.time,
-                                    )}
-                                    period={parsedChartData?.period}
-                                    crosshairForSubChart={crosshairForSubChart}
-                                    setsubChartValues={setsubChartValues}
-                                    setSelectedDate={setSelectedDate}
-                                    selectedDate={selectedDate}
-                                    candlestick={candlestick}
-                                    xScale={scaleData !== undefined ? scaleData.xScale : undefined}
-                                    xScaleCopy={
-                                        scaleData !== undefined ? scaleData.xScaleCopy : undefined
-                                    }
-                                    getNewCandleData={getNewCandleData}
-                                    setZoomAndYdragControl={setZoomAndYdragControl}
-                                    zoomAndYdragControl={zoomAndYdragControl}
-                                    setIsMouseMoveForSubChart={setIsMouseMoveForSubChart}
-                                    setIsZoomForSubChart={setIsZoomForSubChart}
-                                    setMouseMoveEventForSubChart={setMouseMoveEventForSubChart}
-                                    isMouseMoveForSubChart={isMouseMoveForSubChart}
-                                    mouseMoveChartName={mouseMoveChartName}
-                                    setMouseMoveChartName={setMouseMoveChartName}
-                                    render={render}
-                                />
-                            }
                         </>
                     )}
 
