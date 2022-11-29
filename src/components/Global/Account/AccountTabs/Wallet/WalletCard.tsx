@@ -6,6 +6,7 @@ import { TokenIF } from '../../../../../utils/interfaces/TokenIF';
 import styles from './WalletCard.module.css';
 import { useEffect, useState } from 'react';
 import { TokenPriceFn } from '../../../../../App/functions/fetchTokenPrice';
+import { ZERO_ADDRESS } from '../../../../../constants';
 // import { formatAmountOld } from '../../../../../utils/numbers';
 interface WalletPropsIF {
     cachedFetchTokenPrice: TokenPriceFn;
@@ -16,7 +17,8 @@ interface WalletPropsIF {
 
 export default function WalletCard(props: WalletPropsIF) {
     const { token, chainId, tokenMap, cachedFetchTokenPrice } = props;
-    if (token === undefined) return <></>;
+
+    if (token?.address !== ZERO_ADDRESS && !token?.walletBalance) return <></>;
 
     // const tokenMap = useTokenMap();
 

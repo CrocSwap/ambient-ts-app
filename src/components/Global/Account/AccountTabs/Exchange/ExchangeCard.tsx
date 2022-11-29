@@ -15,8 +15,7 @@ interface ExchangeCardPropsIF {
 
 export default function ExchangeCard(props: ExchangeCardPropsIF) {
     const { token, chainId, tokenMap, cachedFetchTokenPrice } = props;
-    if (token?.address !== ZERO_ADDRESS && token?.dexBalanceDisplayTruncated === undefined)
-        return <></>;
+    if (!token || (token.address !== ZERO_ADDRESS && token.dexBalance === '0')) return <></>;
 
     // const tokenMap = useTokenMap();
 

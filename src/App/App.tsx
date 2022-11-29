@@ -673,7 +673,7 @@ export default function App() {
                     const erc20Results: TokenIF[] = await cachedFetchErc20TokenBalances(
                         account,
                         chainData.chainId,
-                        Math.floor(lastBlockNumber / 4),
+                        Math.floor(lastBlockNumber / 5),
                         crocEnv,
                     );
 
