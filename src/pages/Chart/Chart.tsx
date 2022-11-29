@@ -191,7 +191,7 @@ export default function Chart(props: ChartData) {
     const [crosshairForSubChart, setCrosshairForSubChart] = useState([{ x: 0, y: -1 }]);
 
     const [isMouseMoveForSubChart, setIsMouseMoveForSubChart] = useState(false);
-    const [mouseMoveEventForSubChart, setMouseMoveEventForSubChart] = useState<any>();
+    const [mouseMoveEventCharts, setMouseMoveEventCharts] = useState<any>();
     const [isZoomForSubChart, setIsZoomForSubChart] = useState(false);
     const [isLineDrag, setIsLineDrag] = useState(false);
     const [mouseMoveChartName, setMouseMoveChartName] = useState<string | undefined>(undefined);
@@ -527,6 +527,7 @@ export default function Chart(props: ChartData) {
         scaleData,
         xAxis,
         windowDimensions,
+        mouseMoveEventCharts,
     ]);
 
     useEffect(() => {
@@ -1975,6 +1976,7 @@ export default function Chart(props: ChartData) {
 
             crosshairHorizontal.decorate((selection: any) => {
                 selection.enter().select('line').attr('class', 'crosshair');
+                selection.enter().style('visibility', 'hidden');
                 selection
                     .enter()
                     .append('line')
@@ -2396,7 +2398,7 @@ export default function Chart(props: ChartData) {
                 liqHighligtedBidSeries,
                 yAxis,
                 xAxis,
-                mouseMoveEventForSubChart,
+                mouseMoveEventCharts,
                 isMouseMoveForSubChart,
                 isZoomForSubChart,
                 horizontalBandData,
@@ -2438,7 +2440,7 @@ export default function Chart(props: ChartData) {
         liqHighligtedBidSeries,
         yAxis,
         xAxis,
-        mouseMoveEventForSubChart,
+        mouseMoveEventCharts,
         isZoomForSubChart,
         horizontalBandData,
         showVolume,
@@ -2491,7 +2493,7 @@ export default function Chart(props: ChartData) {
             liqHighligtedBidSeries: any,
             yAxis: any,
             xAxis: any,
-            mouseMoveEventForSubChart: any,
+            mouseMoveEventCharts: any,
             isMouseMoveForSubChart: boolean,
             isZoomForSubChart: boolean,
             horizontalBandData: any,
@@ -2520,6 +2522,7 @@ export default function Chart(props: ChartData) {
 
                         return newData;
                     });
+
                     props.setCurrentData(nearest);
 
                     props.setCurrentVolumeData(
@@ -2578,12 +2581,27 @@ export default function Chart(props: ChartData) {
                 d3.select(d3PlotArea.current).on('draw', function (event: any) {
                     async function createElements() {
                         const svg = d3.select(event.target).select('svg');
+                        const svgFeeRateSub = d3.select('#fee_rate_chart').select('svg');
+                        const svgTvlSub = d3.select('#d3PlotTvl').select('svg');
 
                         horizontalBandJoin(svg, [horizontalBandData]).call(horizontalBand);
 
                         crosshairHorizontalJoin(svg, [crosshairData]).call(crosshairHorizontal);
                         crosshairVerticalJoin(svg, [crosshairData]).call(crosshairVertical);
 
+                        if (svgFeeRateSub.node() !== null)
+                            crosshairHorizontalJoin(svgFeeRateSub, [crosshairData]).call(
+                                crosshairHorizontal,
+                            );
+
+                        if (svgTvlSub.node() !== null)
+                            crosshairHorizontalJoin(svgTvlSub, [crosshairData]).call(
+                                crosshairHorizontal,
+                            );
+
+                        // d3.select('#fee_rate_chart')
+                        // .select('svg')
+                        // .select('.crosshairHorizontal').call(crosshairHorizontal);
                         targetsJoin(svg, [targets.ranges]).call(horizontalLine);
                         marketJoin(svg, [targets.market]).call(marketLine);
                         limitJoin(svg, [targets.limit]).call(limitLine);
@@ -2844,15 +2862,16 @@ export default function Chart(props: ChartData) {
                 };
 
                 if (isMouseMoveForSubChart) {
-                    setCrossHairLocation(mouseMoveEventForSubChart);
+                    setCrossHairLocation(mouseMoveEventCharts);
                 } else if (isZoomForSubChart) {
-                    setCrossHairLocation(mouseMoveEventForSubChart.sourceEvent);
+                    setCrossHairLocation(mouseMoveEventCharts.sourceEvent);
                 }
 
                 d3.select(d3PlotArea.current).on('mousemove', async function (event: any) {
                     isMouseMoveForSubChart = false;
                     isZoomForSubChart = false;
                     setCrossHairLocation(event);
+                    setMouseMoveEventCharts(event);
                 });
 
                 d3.select(d3Yaxis.current)
@@ -2867,6 +2886,7 @@ export default function Chart(props: ChartData) {
                     d3.select(d3PlotArea.current)
                         .select('svg')
                         .select('.crosshairHorizontal')
+                        .selectChild()
                         .style('visibility', 'hidden');
 
                     d3.select('#tvl_chart')
@@ -2912,6 +2932,7 @@ export default function Chart(props: ChartData) {
                     d3.select(d3PlotArea.current)
                         .select('svg')
                         .select('.crosshairHorizontal')
+                        .selectChild()
                         .style('visibility', 'visible');
 
                     d3.select('#tvl_chart')
@@ -3200,7 +3221,7 @@ export default function Chart(props: ChartData) {
                                 setIsMouseMoveForSubChart={setIsMouseMoveForSubChart}
                                 isMouseMoveForSubChart={isMouseMoveForSubChart}
                                 setIsZoomForSubChart={setIsZoomForSubChart}
-                                setMouseMoveEventForSubChart={setMouseMoveEventForSubChart}
+                                setMouseMoveEventCharts={setMouseMoveEventCharts}
                                 render={render}
                                 mouseMoveChartName={mouseMoveChartName}
                                 setMouseMoveChartName={setMouseMoveChartName}
@@ -3235,7 +3256,7 @@ export default function Chart(props: ChartData) {
                                 isMouseMoveForSubChart={isMouseMoveForSubChart}
                                 setIsMouseMoveForSubChart={setIsMouseMoveForSubChart}
                                 setIsZoomForSubChart={setIsZoomForSubChart}
-                                setMouseMoveEventForSubChart={setMouseMoveEventForSubChart}
+                                setMouseMoveEventCharts={setMouseMoveEventCharts}
                                 render={render}
                                 mouseMoveChartName={mouseMoveChartName}
                                 setMouseMoveChartName={setMouseMoveChartName}
