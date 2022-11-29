@@ -2162,13 +2162,13 @@ export default function Chart(props: ChartData) {
             props.liquidityData.lineAskSeries.push({
                 activeLiq:
                     props.liquidityData.lineAskSeries[props.liquidityData.lineAskSeries.length - 1]
-                        .activeLiq,
+                        ?.activeLiq,
                 liqPrices: low,
                 deltaAverageUSD: 0,
                 cumAverageUSD: 0,
             });
             props.liquidityData.lineBidSeries.unshift({
-                activeLiq: props.liquidityData.lineBidSeries[0].activeLiq,
+                activeLiq: props.liquidityData.lineBidSeries[0]?.activeLiq,
                 liqPrices: high,
                 deltaAverageUSD: 0,
                 cumAverageUSD: 0,
@@ -2525,7 +2525,7 @@ export default function Chart(props: ChartData) {
                     props.setCurrentVolumeData(
                         volumeData.find(
                             (item: any) => item.time.getTime() === nearest?.date.getTime(),
-                        ).value,
+                        )?.value,
                     );
                     return [
                         {
