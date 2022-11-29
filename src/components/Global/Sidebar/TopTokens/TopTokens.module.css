@@ -23,7 +23,7 @@
     /* background-color: yellow; */
 
    
-    background-color: var(--dark2);
+    /* background-color: var(--dark2); */
     background-repeat: no-repeat;
     background-attachment: local, local, scroll, scroll;
     background-size: 100% 81px, 100% 81px, 100% 27px, 100% 27px;
