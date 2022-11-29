@@ -2,6 +2,7 @@ import styles from './TransferCurrencySelector.module.css';
 import { RiArrowDownSLine } from 'react-icons/ri';
 import { TokenIF } from '../../../../../utils/interfaces/TokenIF';
 import { Dispatch, SetStateAction } from 'react';
+import { fromDisplayQty } from '@crocswap-libs/sdk';
 
 interface TransferCurrencySelectorProps {
     fieldId: string;
@@ -10,7 +11,7 @@ interface TransferCurrencySelectorProps {
     sellToken?: boolean;
     disable?: boolean;
     selectedToken: TokenIF;
-    setTransferQty: Dispatch<SetStateAction<number>>; // updateOtherQuantity: (evt: ChangeEvent<HTMLInputElement>) => void;
+    setTransferQty: Dispatch<SetStateAction<string | undefined>>;
 }
 
 export default function TransferCurrencySelector(props: TransferCurrencySelectorProps) {
@@ -23,7 +24,15 @@ export default function TransferCurrencySelector(props: TransferCurrencySelector
                 className={styles.currency_quantity}
                 placeholder='0'
                 onChange={(event) => {
-                    setTransferQty(parseFloat(event.target.value));
+                    if (parseFloat(event.target.value) > 0) {
+                        const nonDisplayQty = fromDisplayQty(
+                            event.target.value,
+                            selectedToken.decimals,
+                        );
+                        setTransferQty(nonDisplayQty.toString());
+                    } else {
+                        setTransferQty(undefined);
+                    }
                 }}
                 type='string'
                 inputMode='decimal'

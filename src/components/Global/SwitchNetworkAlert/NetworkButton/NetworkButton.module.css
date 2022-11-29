@@ -17,17 +17,16 @@
     transition: color 0.15s ease-in-out;
     text-align: center;
 
-    color: #EBEBFF;
+    color: #ebebff;
     border: 1px solid #565656;
     border-radius: 4px;
     outline: none;
     border: none;
 }
 .networkButton:hover {
-
     filter: brightness(85%);
 }
 
 .networkButton img {
-    width: 20px;
+    width: 50px;
 }

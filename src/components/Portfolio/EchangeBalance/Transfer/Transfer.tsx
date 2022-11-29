@@ -1,4 +1,4 @@
-import { CrocEnv } from '@crocswap-libs/sdk';
+import { CrocEnv, toDisplayQty } from '@crocswap-libs/sdk';
 import { TokenIF } from '../../../../utils/interfaces/TokenIF';
 import styles from './Transfer.module.css';
 import TransferAddressInput from './TransferAddressInput/TransferAddressInput';
@@ -18,6 +18,7 @@ import {
     isTransactionReplacedError,
     TransactionError,
 } from '../../../../utils/TransactionError';
+import { BigNumber } from 'ethers';
 
 interface PortfolioTransferProps {
     crocEnv: CrocEnv | undefined;
@@ -55,12 +56,56 @@ export default function Transfer(props: PortfolioTransferProps) {
 
     const dispatch = useAppDispatch();
 
-    const [transferQty, setTransferQty] = useState<number>(0);
+    const selectedTokenDecimals = selectedToken.decimals;
+
+    const tokenExchangeDepositsDisplay = tokenDexBalance
+        ? toDisplayQty(tokenDexBalance, selectedTokenDecimals)
+        : undefined;
+
+    const tokenExchangeDepositsDisplayNum = tokenExchangeDepositsDisplay
+        ? parseFloat(tokenExchangeDepositsDisplay)
+        : undefined;
+
+    const tokenDexBalanceTruncated = tokenExchangeDepositsDisplayNum
+        ? tokenExchangeDepositsDisplayNum < 0.0001
+            ? tokenExchangeDepositsDisplayNum.toExponential(2)
+            : tokenExchangeDepositsDisplayNum < 2
+            ? tokenExchangeDepositsDisplayNum.toPrecision(3)
+            : // : tokenDexBalanceNum >= 100000
+              // ? formatAmountOld(tokenDexBalanceNum)
+              tokenExchangeDepositsDisplayNum.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+              })
+        : undefined;
+
+    const [transferQtyNonDisplay, setTransferQtyNonDisplay] = useState<string | undefined>();
     const [buttonMessage, setButtonMessage] = useState<string>('...');
     const [isButtonDisabled, setIsButtonDisabled] = useState<boolean>(true);
     const [sendToAddressDexBalance, setSendToAddressDexBalance] = useState<string>('');
     const [recheckSendToAddressDexBalance, setRecheckSendToAddressDexBalance] =
         useState<boolean>(false);
+
+    const sendToAddressDexBalanceDisplay = sendToAddressDexBalance
+        ? toDisplayQty(sendToAddressDexBalance, selectedTokenDecimals)
+        : undefined;
+
+    const sendToAddressDexBalanceDisplayNum = sendToAddressDexBalanceDisplay
+        ? parseFloat(sendToAddressDexBalanceDisplay)
+        : undefined;
+
+    const sendToAddressBalanceTruncated = sendToAddressDexBalanceDisplayNum
+        ? sendToAddressDexBalanceDisplayNum < 0.0001
+            ? sendToAddressDexBalanceDisplayNum.toExponential(2)
+            : sendToAddressDexBalanceDisplayNum < 2
+            ? sendToAddressDexBalanceDisplayNum.toPrecision(3)
+            : // : tokenWalletBalanceNum >= 100000
+              // ? formatAmountOld(tokenWalletBalanceNum)
+              sendToAddressDexBalanceDisplayNum.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+              })
+        : undefined;
 
     const isResolvedAddressValid = useMemo(
         () => resolvedAddress?.length === 42 && resolvedAddress.startsWith('0x'),
@@ -70,9 +115,9 @@ export default function Transfer(props: PortfolioTransferProps) {
         if (crocEnv && selectedToken.address && resolvedAddress && isResolvedAddressValid) {
             crocEnv
                 .token(selectedToken.address)
-                .balanceDisplay(resolvedAddress)
-                .then((bal: string) => {
-                    setSendToAddressDexBalance(bal);
+                .balance(resolvedAddress)
+                .then((bal: BigNumber) => {
+                    setSendToAddressDexBalance(bal.toString());
                 })
                 .catch(console.log);
         } else {
@@ -88,11 +133,17 @@ export default function Transfer(props: PortfolioTransferProps) {
     ]);
 
     const isDexBalanceSufficient = useMemo(
-        () => (tokenDexBalance !== '0.0' ? parseFloat(tokenDexBalance) >= transferQty : false),
-        [tokenDexBalance, transferQty],
+        () =>
+            tokenDexBalance && !!transferQtyNonDisplay
+                ? BigNumber.from(tokenDexBalance).gte(BigNumber.from(transferQtyNonDisplay))
+                : false,
+        [tokenDexBalance, transferQtyNonDisplay],
     );
 
-    const isTransferQtyValid = useMemo(() => transferQty > 0, [transferQty]);
+    const isTransferQtyValid = useMemo(
+        () => transferQtyNonDisplay !== undefined,
+        [transferQtyNonDisplay],
+    );
 
     // const [isApprovalPending, setIsApprovalPending] = useState(false);
     const [isTransferPending, setIsTransferPending] = useState(false);
@@ -109,7 +160,7 @@ export default function Transfer(props: PortfolioTransferProps) {
         if (!isResolvedAddressValid) {
             setIsButtonDisabled(true);
             setButtonMessage('Please Enter a Valid Address');
-        } else if (!transferQty) {
+        } else if (!transferQtyNonDisplay) {
             setIsButtonDisabled(true);
             setButtonMessage('Enter a Transfer Amount');
         } else if (!isDexBalanceSufficient) {
@@ -183,13 +234,15 @@ export default function Transfer(props: PortfolioTransferProps) {
     ) : null;
 */
 
-    const transfer = async (transferQty: number) => {
+    const transfer = async (transferQty: string) => {
         if (crocEnv && transferQty && resolvedAddress) {
             try {
+                const transferQtyDisplay = toDisplayQty(transferQty, selectedTokenDecimals);
+
                 setIsTransferPending(true);
                 const tx = await crocEnv
                     .token(selectedToken.address)
-                    .transfer(transferQty, resolvedAddress);
+                    .transfer(transferQtyDisplay, resolvedAddress);
                 dispatch(addPendingTx(tx?.hash));
                 let receipt;
                 try {
@@ -239,6 +292,7 @@ export default function Transfer(props: PortfolioTransferProps) {
                 if (receipt) {
                     dispatch(addReceipt(JSON.stringify(receipt)));
                     dispatch(removePendingTx(receipt.transactionHash));
+                    resetTransferQty();
                 }
             } catch (error) {
                 console.warn({ error });
@@ -251,28 +305,54 @@ export default function Transfer(props: PortfolioTransferProps) {
     };
 
     const transferFn = async () => {
-        await transfer(transferQty);
+        if (transferQtyNonDisplay) await transfer(transferQtyNonDisplay);
     };
 
     const isResolvedAddressDifferent = resolvedAddress !== sendToAddress;
 
     const resolvedAddressOrNull = isResolvedAddressDifferent ? (
-        <div className={styles.info_text}>
+        <div className={styles.info_text_non_clickable}>
             Resolved Destination Address:
             <div className={styles.hex_address}>{resolvedAddress}</div>
         </div>
     ) : null;
 
     const secondaryEnsOrNull = secondaryEnsName ? (
-        <div className={styles.info_text}>
+        <div className={styles.info_text_non_clickable}>
             Destination ENS Address: {secondaryEnsName}
             {/* <div className={styles.hex_address}>{secondaryEnsName}</div> */}
         </div>
     ) : null;
 
+    const transferInput = document.getElementById(
+        'exchange-balance-transfer-exchange-balance-transfer-quantity',
+    ) as HTMLInputElement;
+
+    const resetTransferQty = () => {
+        if (transferInput) {
+            setTransferQtyNonDisplay(undefined);
+            transferInput.value = '';
+        }
+    };
+
+    useEffect(() => {
+        resetTransferQty();
+    }, [selectedToken.address]);
+
+    const isTokenDexBalanceGreaterThanZero = parseFloat(tokenDexBalance) > 0;
+
+    const handleBalanceClick = () => {
+        if (isTokenDexBalanceGreaterThanZero) {
+            setTransferQtyNonDisplay(tokenDexBalance);
+
+            if (transferInput && tokenExchangeDepositsDisplay)
+                transferInput.value = tokenExchangeDepositsDisplay;
+        }
+    };
+
     return (
         <div className={styles.deposit_container}>
-            <div className={styles.info_text}>
+            <div className={styles.info_text_non_clickable}>
                 Transfer deposited collateral to another deposit account:
             </div>
             <TransferAddressInput
@@ -284,13 +364,21 @@ export default function Transfer(props: PortfolioTransferProps) {
                 fieldId='exchange-balance-transfer'
                 onClick={() => openTokenModal()}
                 selectedToken={selectedToken}
-                setTransferQty={setTransferQty}
+                setTransferQty={setTransferQtyNonDisplay}
             />
-            <div className={styles.info_text}>
-                Your Exchange Balance ({selectedToken.symbol}): {tokenDexBalance}
+            <div
+                onClick={handleBalanceClick}
+                className={
+                    isTokenDexBalanceGreaterThanZero
+                        ? styles.info_text_clickable
+                        : styles.info_text_non_clickable
+                }
+            >
+                Your Exchange Balance ({selectedToken.symbol}): {tokenDexBalanceTruncated || '0.0'}
             </div>
-            <div className={styles.info_text}>
-                Destination Exchange Balance ({selectedToken.symbol}): {sendToAddressDexBalance}
+            <div className={styles.info_text_non_clickable}>
+                Destination Exchange Balance ({selectedToken.symbol}):{' '}
+                {sendToAddressBalanceTruncated || '0.0'}
             </div>
             {resolvedAddressOrNull}
             {secondaryEnsOrNull}

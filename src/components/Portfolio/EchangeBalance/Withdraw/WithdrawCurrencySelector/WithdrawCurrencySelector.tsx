@@ -2,6 +2,7 @@ import styles from './WithdrawCurrencySelector.module.css';
 import { RiArrowDownSLine } from 'react-icons/ri';
 import { Dispatch, SetStateAction } from 'react';
 import { TokenIF } from '../../../../../utils/interfaces/TokenIF';
+import { fromDisplayQty } from '@crocswap-libs/sdk';
 
 interface WithdrawCurrencySelectorProps {
     fieldId: string;
@@ -11,7 +12,7 @@ interface WithdrawCurrencySelectorProps {
     sellToken?: boolean;
     disable?: boolean;
     selectedToken: TokenIF;
-    setWithdrawQty: Dispatch<SetStateAction<number>>; // updateOtherQuantity: (evt: ChangeEvent<HTMLInputElement>) => void;
+    setWithdrawQty: Dispatch<SetStateAction<string | undefined>>;
 }
 
 export default function WithdrawCurrencySelector(props: WithdrawCurrencySelectorProps) {
@@ -24,9 +25,15 @@ export default function WithdrawCurrencySelector(props: WithdrawCurrencySelector
                 className={styles.currency_quantity}
                 placeholder='0'
                 onChange={(event) => {
-                    setWithdrawQty(
-                        parseFloat(event.target.value) > 0 ? parseFloat(event.target.value) : 0,
-                    );
+                    if (parseFloat(event.target.value) > 0) {
+                        const nonDisplayQty = fromDisplayQty(
+                            event.target.value,
+                            selectedToken.decimals,
+                        );
+                        setWithdrawQty(nonDisplayQty.toString());
+                    } else {
+                        setWithdrawQty(undefined);
+                    }
                 }}
                 type='string'
                 inputMode='decimal'
