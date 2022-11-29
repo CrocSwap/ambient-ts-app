@@ -12,6 +12,7 @@ import { LimitOrderIF } from '../../../../../utils/interfaces/exports';
 import { tradeData } from '../../../../../utils/state/tradeDataSlice';
 import { useAppDispatch } from '../../../../../utils/hooks/reduxToolkit';
 import { setDataLoadingStatus } from '../../../../../utils/state/graphDataSlice';
+import moment from 'moment';
 
 interface OrderRowPropsIF {
     crocEnv: CrocEnv | undefined;
@@ -244,14 +245,33 @@ export default function OrderRow(props: OrderRowPropsIF) {
 
     // if (!orderMatchesSelectedTokens) return null;
 
-    const fillTime = new Intl.DateTimeFormat('en-US', {
-        month: 'short',
-        day: 'numeric',
-        // hour12: false,
-        hour: '2-digit',
-        minute: '2-digit',
-        // second: '2-digit',
-    }).format(limitOrder.time * 1000);
+    // const fillTime = new Intl.DateTimeFormat('en-US', {
+    //     month: 'short',
+    //     day: 'numeric',
+    //     // hour12: false,
+    //     hour: '2-digit',
+    //     minute: '2-digit',
+    //     // second: '2-digit',
+    // }).format(limitOrder.time * 1000);
+
+    const elapsedTimeInSecondsNum = moment(Date.now()).diff(limitOrder.time * 1000, 'seconds');
+
+    const elapsedTimeString =
+        elapsedTimeInSecondsNum !== undefined
+            ? elapsedTimeInSecondsNum < 60
+                ? '< 1 min. ago'
+                : elapsedTimeInSecondsNum < 120
+                ? '1 min. ago'
+                : elapsedTimeInSecondsNum < 3600
+                ? `${Math.floor(elapsedTimeInSecondsNum / 60)} min. ago`
+                : elapsedTimeInSecondsNum < 7200
+                ? '1 hour ago'
+                : elapsedTimeInSecondsNum < 86400
+                ? `${Math.floor(elapsedTimeInSecondsNum / 3600)} hrs. ago`
+                : elapsedTimeInSecondsNum < 172800
+                ? '1 day ago'
+                : `${Math.floor(elapsedTimeInSecondsNum / 86400)} days ago`
+            : 'Pending...';
 
     const baseQtyToolTipStyle = <p className={styles.tooltip_style}>{baseTokenSymbol + ' Qty'}</p>;
     const quoteQtyToolTipStyle = (
@@ -310,6 +330,22 @@ export default function OrderRow(props: OrderRowPropsIF) {
         </DefaultTooltip>
     );
 
+    const OrderTimeWithTooltip = (
+        <DefaultTooltip
+            interactive
+            title={moment(limitOrder.time * 1000).format('MM/DD/YYYY HH:mm')}
+            placement={'right'}
+            arrow
+            enterDelay={750}
+            leaveDelay={200}
+        >
+            <li onClick={openDetailsModal} style={{ textTransform: 'lowercase' }}>
+                <p className='base_color'>{elapsedTimeString}</p>
+                {/* <p className='base_color'> Nov 9 10:36:23 AM</p> */}
+            </li>
+        </DefaultTooltip>
+    );
+
     return (
         <ul
             className={`${styles.row_container} ${activePositionStyle} ${userPositionStyle}`}
@@ -322,12 +358,7 @@ export default function OrderRow(props: OrderRowPropsIF) {
             }
         >
             {/* {isOnPortfolioPage && accountTokenImages} */}
-            {!showColumns && (
-                <li onClick={openDetailsModal}>
-                    <p className='base_color'> {fillTime}</p>
-                    {/* <p className='base_color'> Nov 9 10:36:23 AM</p> */}
-                </li>
-            )}
+            {!showColumns && OrderTimeWithTooltip}
             {isOnPortfolioPage && !showSidebar && poolName}
             {!showColumns && IDWithTooltip}
             {!showColumns && walletWithTooltip}

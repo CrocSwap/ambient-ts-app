@@ -13,6 +13,7 @@ import Medal from '../../../../Global/Medal/Medal';
 import NoTokenIcon from '../../../../Global/NoTokenIcon/NoTokenIcon';
 import { useAppDispatch } from '../../../../../utils/hooks/reduxToolkit';
 import { setDataLoadingStatus } from '../../../../../utils/state/graphDataSlice';
+import moment from 'moment';
 
 interface RangesRowPropsIF {
     isUserLoggedIn: boolean | undefined;
@@ -362,6 +363,41 @@ export default function RangesRow(props: RangesRowPropsIF) {
         </DefaultTooltip>
     );
 
+    const elapsedTimeInSecondsNum = moment(Date.now()).diff(position.time * 1000, 'seconds');
+
+    const elapsedTimeString =
+        elapsedTimeInSecondsNum !== undefined
+            ? elapsedTimeInSecondsNum < 60
+                ? '< 1 min. ago'
+                : elapsedTimeInSecondsNum < 120
+                ? '1 min. ago'
+                : elapsedTimeInSecondsNum < 3600
+                ? `${Math.floor(elapsedTimeInSecondsNum / 60)} min. ago`
+                : elapsedTimeInSecondsNum < 7200
+                ? '1 hour ago'
+                : elapsedTimeInSecondsNum < 86400
+                ? `${Math.floor(elapsedTimeInSecondsNum / 3600)} hrs. ago`
+                : elapsedTimeInSecondsNum < 172800
+                ? '1 day ago'
+                : `${Math.floor(elapsedTimeInSecondsNum / 86400)} days ago`
+            : 'Pending...';
+
+    const RangeTimeWithTooltip = (
+        <DefaultTooltip
+            interactive
+            title={moment(position.time * 1000).format('MM/DD/YYYY HH:mm')}
+            placement={'right'}
+            arrow
+            enterDelay={750}
+            leaveDelay={200}
+        >
+            <li onClick={openDetailsModal} style={{ textTransform: 'lowercase' }}>
+                <p className='base_color'>{elapsedTimeString}</p>
+                {/* <p className='base_color'> Nov 9 10:36:23 AM</p> */}
+            </li>
+        </DefaultTooltip>
+    );
+
     return (
         <ul
             className={`${styles.row_container} ${activePositionStyle} ${userPositionStyle}`}
@@ -372,11 +408,7 @@ export default function RangesRow(props: RangesRowPropsIF) {
             }
             id={positionDomId}
         >
-            {!showColumns && (
-                <li onClick={openDetailsModal}>
-                    <p className='base_color'> {'2 days ago'}</p>
-                </li>
-            )}
+            {!showColumns && RangeTimeWithTooltip}
             {/* {isOnPortfolioPage && accountTokenImages} */}
             {isOnPortfolioPage && poolName}
             {displayIDorRanking}
