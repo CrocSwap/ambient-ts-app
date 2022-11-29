@@ -649,7 +649,7 @@ export default function App() {
     const connectedUserNativeToken = connectedUserTokens.nativeToken;
     const connectedUserErc20Tokens = connectedUserTokens.erc20Tokens;
 
-    // check for token balances on each new block
+    // check for token balances every four blocks
     useEffect(() => {
         (async () => {
             if (crocEnv && isUserLoggedIn && account && chainData.chainId) {
@@ -673,7 +673,7 @@ export default function App() {
                     const erc20Results: TokenIF[] = await cachedFetchErc20TokenBalances(
                         account,
                         chainData.chainId,
-                        lastBlockNumber,
+                        Math.floor(lastBlockNumber / 4),
                         crocEnv,
                     );
 
