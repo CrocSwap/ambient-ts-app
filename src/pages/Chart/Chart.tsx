@@ -461,30 +461,31 @@ export default function Chart(props: ChartData) {
 
     function getXAxisTick() {
         const oldTickValues = scaleData.xScale.ticks();
-        console.log({ oldTickValues });
         const tempArray = [];
-        if ((windowDimensions.width > 1800 && oldTickValues.length < 13) || oldTickValues.length < 6 ) {
+        if (
+            (windowDimensions.width > 1800 && oldTickValues.length < 13) ||
+            oldTickValues.length < 6
+        ) {
             return oldTickValues;
         }
 
-        if (oldTickValues.length < 15){
+        if (oldTickValues.length < 15) {
             for (let index = 0; index < oldTickValues.length; index++) {
                 tempArray.push(oldTickValues[index]);
-                tempArray.push(index+2 > oldTickValues.length-1  ? oldTickValues[oldTickValues.length-1]:  oldTickValues[index + 2]);
+                tempArray.push(
+                    index + 2 > oldTickValues.length - 1
+                        ? oldTickValues[oldTickValues.length - 1]
+                        : oldTickValues[index + 2],
+                );
                 index = index + 3;
             }
-        }
-
-        else {
-            for (let index = oldTickValues.length-1; index >= 0; index=index-1) {
-
+        } else {
+            for (let index = oldTickValues.length - 1; index >= 0; index = index - 1) {
                 tempArray.push(oldTickValues[index]);
-                if (index-3 > 0)
-                     tempArray.push(oldTickValues[index - 3]);
+                if (index - 3 > 0) tempArray.push(oldTickValues[index - 3]);
                 index = index - 5;
             }
-
-        }       
+        }
 
         return tempArray;
     }
