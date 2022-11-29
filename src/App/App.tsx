@@ -645,11 +645,12 @@ export default function App() {
         })();
     }, [isUserLoggedIn, account, chainData.chainId]);
 
-    const connectedUserTokens = useAppSelector((state) => state.userData.tokens);
-    const connectedUserNativeToken = connectedUserTokens.nativeToken;
-    const connectedUserErc20Tokens = connectedUserTokens.erc20Tokens;
+    // const connectedUserTokens = useAppSelector((state) => state.userData.tokens);
+    // const connectedUserNativeToken = connectedUserTokens.nativeToken;
+    // const connectedUserErc20Tokens = connectedUserTokens.erc20Tokens;
 
-    // check for token balances on each new block
+    const everyEigthBlock = Math.floor(lastBlockNumber / 8);
+    // check for token balances every four blocks
     useEffect(() => {
         (async () => {
             if (crocEnv && isUserLoggedIn && account && chainData.chainId) {
@@ -658,14 +659,11 @@ export default function App() {
                     const newNativeToken: TokenIF = await cachedFetchNativeTokenBalance(
                         account,
                         chainData.chainId,
-                        lastBlockNumber,
+                        everyEigthBlock,
                         crocEnv,
                     );
-                    if (
-                        JSON.stringify(connectedUserNativeToken) !== JSON.stringify(newNativeToken)
-                    ) {
-                        dispatch(setNativeToken(newNativeToken));
-                    }
+
+                    dispatch(setNativeToken(newNativeToken));
                 } catch (error) {
                     console.log({ error });
                 }
@@ -673,14 +671,12 @@ export default function App() {
                     const erc20Results: TokenIF[] = await cachedFetchErc20TokenBalances(
                         account,
                         chainData.chainId,
-                        lastBlockNumber,
+                        everyEigthBlock,
                         crocEnv,
                     );
 
-                    if (JSON.stringify(connectedUserErc20Tokens) !== JSON.stringify(erc20Results)) {
-                        console.log({ erc20Results });
-                        dispatch(setErc20Tokens(erc20Results));
-                    }
+                    console.log({ erc20Results });
+                    dispatch(setErc20Tokens(erc20Results));
                 } catch (error) {
                     console.log({ error });
                 }
@@ -691,8 +687,8 @@ export default function App() {
         isUserLoggedIn,
         account,
         chainData.chainId,
-        lastBlockNumber,
-        JSON.stringify(connectedUserTokens),
+        everyEigthBlock,
+        // JSON.stringify(connectedUserTokens),
     ]);
 
     const [baseTokenAddress, setBaseTokenAddress] = useState<string>('');
