@@ -322,7 +322,7 @@ export default function PoolInfo(props: PoolInfoPropsIF) {
     );
 
     return (
-        <main className={styles.container} style={{ height: '250px' }}>
+        <main className={styles.container}>
             <div className={styles.content}>
                 {baseTokenDisplay}
                 {quoteTokenDisplay}

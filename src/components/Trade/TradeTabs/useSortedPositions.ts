@@ -12,8 +12,8 @@ export const useSortedPositions = (
     PositionIF[],
 ] => {
     // default sort function
-    const sortByUpdateTime = (unsortedData: PositionIF[]) =>
-        [...unsortedData].sort((a, b) => b.latestUpdateTime - a.latestUpdateTime);
+    const sortByTime = (unsortedData: PositionIF[]) =>
+        [...unsortedData].sort((a, b) => b.time - a.time);
     // sort by positionHash
     const sortById = (unsortedData: PositionIF[]) =>
         [...unsortedData].sort((a, b) =>
@@ -72,12 +72,12 @@ export const useSortedPositions = (
             case 'value':
                 sortedData = sortByValue(data);
                 break;
-            case 'lastUpdate':
-                sortedData = sortByUpdateTime(data);
+            case 'time':
+                sortedData = sortByTime(data);
                 break;
             // return data unsorted if user did not choose a sortable column
             default:
-                return sortByUpdateTime(data);
+                return sortByTime(data);
         }
         // return reversed data if user wants data reversed
         return reverseSort ? [...sortedData].reverse() : sortedData;

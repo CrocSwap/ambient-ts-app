@@ -19,7 +19,6 @@ import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import ContentContainer from '../../../components/Global/ContentContainer/ContentContainer';
 import LimitButton from '../../../components/Trade/Limit/LimitButton/LimitButton';
 import LimitCurrencyConverter from '../../../components/Trade/Limit/LimitCurrencyConverter/LimitCurrencyConverter';
-import DenominationSwitch from '../../../components/Swap/DenominationSwitch/DenominationSwitch';
 import LimitExtraInfo from '../../../components/Trade/Limit/LimitExtraInfo/LimitExtraInfo';
 import LimitHeader from '../../../components/Trade/Limit/LimitHeader/LimitHeader';
 import DividerDark from '../../../components/Global/DividerDark/DividerDark';
@@ -675,7 +674,7 @@ export default function Limit(props: LimitPropsIF) {
                 </motion.div>
                 <div className={styles.header_container}>
                     <DividerDark addMarginTop />
-                    <DenominationSwitch />
+                    {/* <DenominationSwitch /> */}
                 </div>
                 <LimitExtraInfo
                     isQtyEntered={tokenAInputQty !== '' || tokenBInputQty !== ''}

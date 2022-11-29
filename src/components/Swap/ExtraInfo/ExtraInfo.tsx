@@ -219,15 +219,19 @@ export default function ExtraInfo(props: ExtraInfoPropsIF) {
         </div>
     );
     const dropDownOrNull = priceImpact ? (
-        <div onClick={() => setShowExtraDetails(!showExtraDetails)} style={{ cursor: 'pointer' }}>
-            <RiArrowDownSLine size={27} />
+        <div style={{ cursor: 'pointer' }}>
+            <RiArrowDownSLine size={20} />
         </div>
     ) : null;
 
     const extraDetailsDropdown = (
         <div
             className={styles.extra_info_content}
-            onClick={() => setShowExtraDetails(!showExtraDetails)}
+            onClick={
+                priceImpact
+                    ? () => setShowExtraDetails(!showExtraDetails)
+                    : () => setShowExtraDetails(false)
+            }
         >
             <div className={styles.gas_pump}>
                 <FaGasPump size={12} /> {swapGasPriceinDollars ? swapGasPriceinDollars : '…'}
@@ -239,38 +243,34 @@ export default function ExtraInfo(props: ExtraInfoPropsIF) {
                     : `1 ${quoteTokenSymbol} ≈ ${displayPriceString} ${baseTokenSymbol}`}
             </div>
             <DenominationSwitch />
-            {/* <div className={styles.header_container}>
-                <DividerDark addMarginTop />
-                <DenominationSwitch />
-            </div> */}
+
+            {dropDownOrNull}
         </div>
     );
-    const extraDetailsNoDropdown = (
-        <div className={styles.extra_info_content} style={{ cursor: 'default' }}>
-            <div className={styles.gas_pump}>
-                <FaGasPump size={15} /> {swapGasPriceinDollars ? swapGasPriceinDollars : '…'}
-                {/* {truncatedGasInGwei ? `${truncatedGasInGwei} gwei` : '…'} */}
-            </div>
-            <div className={styles.token_amount}>
-                {isDenomBase
-                    ? `1 ${baseTokenSymbol} ≈ ${displayPriceString} ${quoteTokenSymbol}`
-                    : `1 ${quoteTokenSymbol} ≈ ${displayPriceString} ${baseTokenSymbol}`}
-            </div>
-            <DenominationSwitch />
-            {/* <div className={styles.header_container}>
-            </div> */}
-        </div>
-    );
-    const extraDetailsNoDropDownOrNull = !priceImpact ? extraDetailsNoDropdown : null;
-    const extraDetailsDropDownOrNull = priceImpact ? extraDetailsDropdown : null;
+    // const extraDetailsNoDropdown = (
+    //     <div className={styles.extra_info_content} style={{ cursor: 'default' }}>
+    //         <div className={styles.gas_pump}>
+    //             <FaGasPump size={15} /> {swapGasPriceinDollars ? swapGasPriceinDollars : '…'}
+    //         </div>
+    //         <div className={styles.token_amount}>
+    //             {isDenomBase
+    //                 ? `1 ${baseTokenSymbol} ≈ ${displayPriceString} ${quoteTokenSymbol}`
+    //                 : `1 ${quoteTokenSymbol} ≈ ${displayPriceString} ${baseTokenSymbol}`}
+    //         </div>
+    //         <DenominationSwitch />
+
+    //     </div>
+    // );
+    // const extraDetailsNoDropDownOrNull = !priceImpact ? extraDetailsNoDropdown : null;
+    // const extraDetailsDropDownOrNull = priceImpact ? extraDetailsDropdown : null;
     const extraDetailsOrNull = showExtraDetails && priceImpact ? extraInfoDetails : null;
     const feesAndSlippageOrNull = showExtraDetails && priceImpact ? feesAndSlippageDetails : null;
 
     return (
         <>
-            {extraDetailsNoDropDownOrNull}
-            {extraDetailsDropDownOrNull}
-            {dropDownOrNull}
+            {/* {extraDetailsNoDropDownOrNull} */}
+            {extraDetailsDropdown}
+            {/* {dropDownOrNull} */}
             {extraDetailsOrNull}
             {feesAndSlippageOrNull}
         </>

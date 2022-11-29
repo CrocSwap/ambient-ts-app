@@ -4,12 +4,19 @@
     gap: 1rem;
     padding: 1rem;
 }
-.info_text {
+
+.hex_address {
+    user-select: all;
+}
+
+.info_text_non_clickable {
     font-size: var(--body-size);
     line-height: var(--body-lh);
     color: var(--text-grey-dark);
 }
-
-.hex_address {
-    user-select: all;
+.info_text_clickable {
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+    color: var(--text-grey-dark);
+    cursor: pointer;
 }
