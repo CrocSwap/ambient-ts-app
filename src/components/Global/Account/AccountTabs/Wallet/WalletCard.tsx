@@ -18,7 +18,11 @@ interface WalletPropsIF {
 export default function WalletCard(props: WalletPropsIF) {
     const { token, chainId, tokenMap, cachedFetchTokenPrice } = props;
 
-    if (token?.address !== ZERO_ADDRESS && !token?.walletBalance) return <></>;
+    if (
+        !token ||
+        (token?.address !== ZERO_ADDRESS && (!token.walletBalance || token.walletBalance === '0'))
+    )
+        return <></>;
 
     // const tokenMap = useTokenMap();
 

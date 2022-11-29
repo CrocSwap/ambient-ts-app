@@ -161,7 +161,7 @@ export default function Portfolio(props: PortfolioPropsIF) {
         dexBalanceDisplay: string,
         dexBalanceDisplayTruncated: string,
     ) => {
-        console.log({ indexOfExistingErc20Token });
+        // console.log({ indexOfExistingErc20Token });
         if (indexOfExistingErc20Token !== -1) {
             dispatch(
                 updateErc20TokenDexBalance({
