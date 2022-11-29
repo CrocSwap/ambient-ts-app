@@ -8,17 +8,23 @@ import { useEffect, useState, Dispatch, SetStateAction } from 'react';
 import { fetchAddress } from '../../App/functions/fetchAddress';
 import { useMoralis } from 'react-moralis';
 import { BigNumber, ethers } from 'ethers';
-import { CrocEnv, ChainSpec } from '@crocswap-libs/sdk';
+import { CrocEnv, ChainSpec, toDisplayQty } from '@crocswap-libs/sdk';
 import Modal from '../../components/Global/Modal/Modal';
 import { useModal } from '../../components/Global/Modal/useModal';
 import { TokenIF } from '../../utils/interfaces/exports';
 
 import { Erc20TokenBalanceFn, nativeTokenBalanceFn } from '../../App/functions/fetchTokenBalances';
-import { useAppSelector } from '../../utils/hooks/reduxToolkit';
+import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { TokenPriceFn } from '../../App/functions/fetchTokenPrice';
 import NotFound from '../NotFound/NotFound';
 import ProfileSettings from '../../components/Portfolio/ProfileSettings/ProfileSettings';
 import { SoloTokenSelect } from '../../components/Global/TokenSelectContainer/SoloTokenSelect';
+import {
+    updateNativeTokenDexBalance,
+    updateNativeTokenWalletBalance,
+} from '../../utils/state/userDataSlice';
+import { ZERO_ADDRESS } from '../../constants';
+import { formatAmountOld } from '../../utils/numbers';
 
 const mainnetProvider = new ethers.providers.WebSocketProvider(
     // 'wss://mainnet.infura.io/ws/v3/4a162c75bd514925890174ca13cdb6a2', // benwolski@gmail.com
@@ -120,18 +126,73 @@ export default function Portfolio(props: PortfolioPropsIF) {
     const selectedTokenAddress = selectedToken.address;
     const selectedTokenDecimals = selectedToken.decimals;
 
+    const dispatch = useAppDispatch();
+
     useEffect(() => {
         if (crocEnv && selectedToken.address && connectedAccount) {
             crocEnv
                 .token(selectedToken.address)
                 .wallet(connectedAccount)
-                .then((bal: BigNumber) => setTokenWalletBalance(bal.toString()))
+                .then((bal: BigNumber) => {
+                    setTokenWalletBalance(bal.toString());
+                    // console.log({ selectedToken });
+                    if (selectedToken.address === ZERO_ADDRESS) {
+                        const nativeWalletBalanceDisplay = toDisplayQty(bal, 18);
+                        const nativeWalletBalanceDisplayNum = parseFloat(
+                            nativeWalletBalanceDisplay,
+                        );
+
+                        const nativeWalletBalanceDisplayTruncated = nativeWalletBalanceDisplayNum
+                            ? nativeWalletBalanceDisplayNum < 0.0001
+                                ? nativeWalletBalanceDisplayNum.toExponential(2)
+                                : nativeWalletBalanceDisplayNum < 2
+                                ? nativeWalletBalanceDisplayNum.toPrecision(3)
+                                : nativeWalletBalanceDisplayNum >= 100000
+                                ? formatAmountOld(nativeWalletBalanceDisplayNum)
+                                : nativeWalletBalanceDisplayNum.toLocaleString(undefined, {
+                                      minimumFractionDigits: 2,
+                                      maximumFractionDigits: 2,
+                                  })
+                            : undefined;
+                        dispatch(
+                            updateNativeTokenWalletBalance({
+                                walletBalance: bal.toString(),
+                                walletBalanceDisplay: nativeWalletBalanceDisplay,
+                                walletBalanceDisplayTruncated:
+                                    nativeWalletBalanceDisplayTruncated || '',
+                            }),
+                        );
+                    }
+                })
                 .catch(console.log);
             crocEnv
                 .token(selectedToken.address)
                 .balance(connectedAccount)
                 .then((bal: BigNumber) => {
                     setTokenDexBalance(bal.toString());
+                    if (selectedToken.address === ZERO_ADDRESS) {
+                        const nativeDexBalanceDisplay = toDisplayQty(bal, 18);
+                        const nativeDexBalanceDisplayNum = parseFloat(nativeDexBalanceDisplay);
+                        const nativeDexBalanceDisplayTruncated = nativeDexBalanceDisplayNum
+                            ? nativeDexBalanceDisplayNum < 0.0001
+                                ? nativeDexBalanceDisplayNum.toExponential(2)
+                                : nativeDexBalanceDisplayNum < 2
+                                ? nativeDexBalanceDisplayNum.toPrecision(3)
+                                : nativeDexBalanceDisplayNum >= 100000
+                                ? formatAmountOld(nativeDexBalanceDisplayNum)
+                                : nativeDexBalanceDisplayNum.toLocaleString(undefined, {
+                                      minimumFractionDigits: 2,
+                                      maximumFractionDigits: 2,
+                                  })
+                            : undefined;
+                        dispatch(
+                            updateNativeTokenDexBalance({
+                                dexBalance: bal.toString(),
+                                dexBalanceDisplay: nativeDexBalanceDisplay,
+                                dexBalanceDisplayTruncated: nativeDexBalanceDisplayTruncated || '',
+                            }),
+                        );
+                    }
                 })
                 .catch(console.log);
         }

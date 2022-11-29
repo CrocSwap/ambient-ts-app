@@ -61,6 +61,34 @@ export const userDataSlice = createSlice({
         setNativeToken: (state, action: PayloadAction<TokenIF>) => {
             state.tokens.nativeToken = action.payload;
         },
+        updateNativeTokenWalletBalance: (
+            state,
+            action: PayloadAction<{
+                walletBalance: string;
+                walletBalanceDisplay: string;
+                walletBalanceDisplayTruncated: string;
+            }>,
+        ) => {
+            if (!state.tokens.nativeToken) return;
+            state.tokens.nativeToken.walletBalance = action.payload.walletBalance;
+            state.tokens.nativeToken.walletBalanceDisplay = action.payload.walletBalanceDisplay;
+            state.tokens.nativeToken.walletBalanceDisplayTruncated =
+                action.payload.walletBalanceDisplayTruncated;
+        },
+        updateNativeTokenDexBalance: (
+            state,
+            action: PayloadAction<{
+                dexBalance: string;
+                dexBalanceDisplay: string;
+                dexBalanceDisplayTruncated: string;
+            }>,
+        ) => {
+            if (!state.tokens.nativeToken) return;
+            state.tokens.nativeToken.dexBalance = action.payload.dexBalance;
+            state.tokens.nativeToken.dexBalanceDisplay = action.payload.dexBalanceDisplay;
+            state.tokens.nativeToken.dexBalanceDisplayTruncated =
+                action.payload.dexBalanceDisplayTruncated;
+        },
         setErc20Tokens: (state, action: PayloadAction<TokenIF[]>) => {
             state.tokens.erc20Tokens = action.payload;
         },
@@ -94,6 +122,8 @@ export const {
     setErc20Tokens,
     setRecentTokens,
     //  addNativeBalance,
+    updateNativeTokenWalletBalance,
+    updateNativeTokenDexBalance,
     resetTokenData,
     resetUserAddresses,
 } = userDataSlice.actions;
