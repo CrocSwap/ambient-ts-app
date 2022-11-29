@@ -645,9 +645,9 @@ export default function App() {
         })();
     }, [isUserLoggedIn, account, chainData.chainId]);
 
-    const connectedUserTokens = useAppSelector((state) => state.userData.tokens);
-    const connectedUserNativeToken = connectedUserTokens.nativeToken;
-    const connectedUserErc20Tokens = connectedUserTokens.erc20Tokens;
+    // const connectedUserTokens = useAppSelector((state) => state.userData.tokens);
+    // const connectedUserNativeToken = connectedUserTokens.nativeToken;
+    // const connectedUserErc20Tokens = connectedUserTokens.erc20Tokens;
 
     const everyFifthBlock = Math.floor(lastBlockNumber / 5);
     // check for token balances every four blocks
@@ -662,11 +662,8 @@ export default function App() {
                         everyFifthBlock,
                         crocEnv,
                     );
-                    if (
-                        JSON.stringify(connectedUserNativeToken) !== JSON.stringify(newNativeToken)
-                    ) {
-                        dispatch(setNativeToken(newNativeToken));
-                    }
+
+                    dispatch(setNativeToken(newNativeToken));
                 } catch (error) {
                     console.log({ error });
                 }
@@ -678,10 +675,8 @@ export default function App() {
                         crocEnv,
                     );
 
-                    if (JSON.stringify(connectedUserErc20Tokens) !== JSON.stringify(erc20Results)) {
-                        console.log({ erc20Results });
-                        dispatch(setErc20Tokens(erc20Results));
-                    }
+                    console.log({ erc20Results });
+                    dispatch(setErc20Tokens(erc20Results));
                 } catch (error) {
                     console.log({ error });
                 }

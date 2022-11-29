@@ -20,6 +20,8 @@ import NotFound from '../NotFound/NotFound';
 import ProfileSettings from '../../components/Portfolio/ProfileSettings/ProfileSettings';
 import { SoloTokenSelect } from '../../components/Global/TokenSelectContainer/SoloTokenSelect';
 import {
+    updateErc20TokenDexBalance,
+    updateErc20TokenWalletBalance,
     updateNativeTokenDexBalance,
     updateNativeTokenWalletBalance,
 } from '../../utils/state/userDataSlice';
@@ -115,7 +117,10 @@ export default function Portfolio(props: PortfolioPropsIF) {
     const { isInitialized } = useMoralis();
 
     const selectedToken: TokenIF = useAppSelector((state) => state.temp.token);
+    const connectedUserNativeToken = useAppSelector((state) => state.userData.tokens.nativeToken);
+    const connectedUserErc20Tokens = useAppSelector((state) => state.userData.tokens.erc20Tokens);
 
+    const connectedUserTokens = [connectedUserNativeToken].concat(connectedUserErc20Tokens);
     const [tokenAllowance, setTokenAllowance] = useState<string>('');
     const [recheckTokenAllowance, setRecheckTokenAllowance] = useState<boolean>(false);
     const [recheckTokenBalances, setRecheckTokenBalances] = useState<boolean>(false);
@@ -127,6 +132,47 @@ export default function Portfolio(props: PortfolioPropsIF) {
     const selectedTokenDecimals = selectedToken.decimals;
 
     const dispatch = useAppDispatch();
+
+    const indexOfExistingErc20Token = (connectedUserErc20Tokens ?? []).findIndex(
+        (existingToken) =>
+            existingToken.address.toLowerCase() === selectedToken.address.toLowerCase(),
+    );
+
+    const dispatchErc20WalletBalanceUpdate = (
+        walletBalance: string,
+        walletBalanceDisplay: string,
+        walletBalanceDisplayTruncated: string,
+    ) => {
+        // console.log({ indexOfExistingErc20Token });
+        if (indexOfExistingErc20Token !== -1) {
+            dispatch(
+                updateErc20TokenWalletBalance({
+                    indexOfExistingErc20Token: indexOfExistingErc20Token,
+                    walletBalance: walletBalance,
+                    walletBalanceDisplay: walletBalanceDisplay,
+                    walletBalanceDisplayTruncated: walletBalanceDisplayTruncated,
+                }),
+            );
+        }
+    };
+
+    const dispatchErc20DexBalanceUpdate = (
+        dexBalance: string,
+        dexBalanceDisplay: string,
+        dexBalanceDisplayTruncated: string,
+    ) => {
+        console.log({ indexOfExistingErc20Token });
+        if (indexOfExistingErc20Token !== -1) {
+            dispatch(
+                updateErc20TokenDexBalance({
+                    indexOfExistingErc20Token: indexOfExistingErc20Token,
+                    dexBalance: dexBalance,
+                    dexBalanceDisplay: dexBalanceDisplay,
+                    dexBalanceDisplayTruncated: dexBalanceDisplayTruncated,
+                }),
+            );
+        }
+    };
 
     useEffect(() => {
         if (crocEnv && selectedToken.address && connectedAccount) {
@@ -162,6 +208,32 @@ export default function Portfolio(props: PortfolioPropsIF) {
                                     nativeWalletBalanceDisplayTruncated || '',
                             }),
                         );
+                    } else {
+                        const erc20TokenWalletBalanceDisplay = toDisplayQty(
+                            bal,
+                            selectedToken.decimals,
+                        );
+                        const erc20TokenWalletBalanceDisplayNum = parseFloat(
+                            erc20TokenWalletBalanceDisplay,
+                        );
+
+                        const erc20WalletBalanceDisplayTruncated = erc20TokenWalletBalanceDisplayNum
+                            ? erc20TokenWalletBalanceDisplayNum < 0.0001
+                                ? erc20TokenWalletBalanceDisplayNum.toExponential(2)
+                                : erc20TokenWalletBalanceDisplayNum < 2
+                                ? erc20TokenWalletBalanceDisplayNum.toPrecision(3)
+                                : erc20TokenWalletBalanceDisplayNum >= 100000
+                                ? formatAmountOld(erc20TokenWalletBalanceDisplayNum)
+                                : erc20TokenWalletBalanceDisplayNum.toLocaleString(undefined, {
+                                      minimumFractionDigits: 2,
+                                      maximumFractionDigits: 2,
+                                  })
+                            : undefined;
+                        dispatchErc20WalletBalanceUpdate(
+                            bal.toString(),
+                            erc20TokenWalletBalanceDisplay,
+                            erc20WalletBalanceDisplayTruncated || '',
+                        );
                     }
                 })
                 .catch(console.log);
@@ -191,6 +263,32 @@ export default function Portfolio(props: PortfolioPropsIF) {
                                 dexBalanceDisplay: nativeDexBalanceDisplay,
                                 dexBalanceDisplayTruncated: nativeDexBalanceDisplayTruncated || '',
                             }),
+                        );
+                    } else {
+                        const erc20TokenDexBalanceDisplay = toDisplayQty(
+                            bal,
+                            selectedToken.decimals,
+                        );
+                        const erc20TokenDexBalanceDisplayNum = parseFloat(
+                            erc20TokenDexBalanceDisplay,
+                        );
+
+                        const erc20DexBalanceDisplayTruncated = erc20TokenDexBalanceDisplayNum
+                            ? erc20TokenDexBalanceDisplayNum < 0.0001
+                                ? erc20TokenDexBalanceDisplayNum.toExponential(2)
+                                : erc20TokenDexBalanceDisplayNum < 2
+                                ? erc20TokenDexBalanceDisplayNum.toPrecision(3)
+                                : erc20TokenDexBalanceDisplayNum >= 100000
+                                ? formatAmountOld(erc20TokenDexBalanceDisplayNum)
+                                : erc20TokenDexBalanceDisplayNum.toLocaleString(undefined, {
+                                      minimumFractionDigits: 2,
+                                      maximumFractionDigits: 2,
+                                  })
+                            : undefined;
+                        dispatchErc20DexBalanceUpdate(
+                            bal.toString(),
+                            erc20TokenDexBalanceDisplay,
+                            erc20DexBalanceDisplayTruncated || '',
                         );
                     }
                 })
@@ -347,11 +445,6 @@ export default function Portfolio(props: PortfolioPropsIF) {
             </section>
         </div>
     );
-
-    const connectedUserNativeToken = useAppSelector((state) => state.userData.tokens.nativeToken);
-    const connectedUserErc20Tokens = useAppSelector((state) => state.userData.tokens.erc20Tokens);
-
-    const connectedUserTokens = [connectedUserNativeToken].concat(connectedUserErc20Tokens);
 
     const [resolvedAddressNativeToken, setResolvedAddressNativeToken] = useState<
         TokenIF | undefined

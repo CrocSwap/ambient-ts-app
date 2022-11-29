@@ -89,6 +89,39 @@ export const userDataSlice = createSlice({
             state.tokens.nativeToken.dexBalanceDisplayTruncated =
                 action.payload.dexBalanceDisplayTruncated;
         },
+        updateErc20TokenWalletBalance: (
+            state,
+            action: PayloadAction<{
+                indexOfExistingErc20Token: number;
+                walletBalance: string;
+                walletBalanceDisplay: string;
+                walletBalanceDisplayTruncated: string;
+            }>,
+        ) => {
+            if (!state.tokens.erc20Tokens) return;
+            const index = action.payload.indexOfExistingErc20Token;
+            state.tokens.erc20Tokens[index].walletBalance = action.payload.walletBalance;
+            state.tokens.erc20Tokens[index].walletBalanceDisplay =
+                action.payload.walletBalanceDisplay;
+            state.tokens.erc20Tokens[index].walletBalanceDisplayTruncated =
+                action.payload.walletBalanceDisplayTruncated;
+        },
+        updateErc20TokenDexBalance: (
+            state,
+            action: PayloadAction<{
+                indexOfExistingErc20Token: number;
+                dexBalance: string;
+                dexBalanceDisplay: string;
+                dexBalanceDisplayTruncated: string;
+            }>,
+        ) => {
+            if (!state.tokens.erc20Tokens) return;
+            const index = action.payload.indexOfExistingErc20Token;
+            state.tokens.erc20Tokens[index].dexBalance = action.payload.dexBalance;
+            state.tokens.erc20Tokens[index].dexBalanceDisplay = action.payload.dexBalanceDisplay;
+            state.tokens.erc20Tokens[index].dexBalanceDisplayTruncated =
+                action.payload.dexBalanceDisplayTruncated;
+        },
         setErc20Tokens: (state, action: PayloadAction<TokenIF[]>) => {
             state.tokens.erc20Tokens = action.payload;
         },
@@ -124,6 +157,8 @@ export const {
     //  addNativeBalance,
     updateNativeTokenWalletBalance,
     updateNativeTokenDexBalance,
+    updateErc20TokenWalletBalance,
+    updateErc20TokenDexBalance,
     resetTokenData,
     resetUserAddresses,
 } = userDataSlice.actions;
