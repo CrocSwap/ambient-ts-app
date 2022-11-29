@@ -649,7 +649,7 @@ export default function App() {
     // const connectedUserNativeToken = connectedUserTokens.nativeToken;
     // const connectedUserErc20Tokens = connectedUserTokens.erc20Tokens;
 
-    const everyFifthBlock = Math.floor(lastBlockNumber / 5);
+    const everyEigthBlock = Math.floor(lastBlockNumber / 8);
     // check for token balances every four blocks
     useEffect(() => {
         (async () => {
@@ -659,7 +659,7 @@ export default function App() {
                     const newNativeToken: TokenIF = await cachedFetchNativeTokenBalance(
                         account,
                         chainData.chainId,
-                        everyFifthBlock,
+                        everyEigthBlock,
                         crocEnv,
                     );
 
@@ -671,7 +671,7 @@ export default function App() {
                     const erc20Results: TokenIF[] = await cachedFetchErc20TokenBalances(
                         account,
                         chainData.chainId,
-                        everyFifthBlock,
+                        everyEigthBlock,
                         crocEnv,
                     );
 
@@ -687,7 +687,7 @@ export default function App() {
         isUserLoggedIn,
         account,
         chainData.chainId,
-        everyFifthBlock,
+        everyEigthBlock,
         // JSON.stringify(connectedUserTokens),
     ]);
 
