@@ -2131,6 +2131,9 @@ export default function App() {
     };
 
     // props for <Limit/> React element on trade route
+
+    const [checkLimitOrder, setCheckLimitOrder] = useState<boolean>(false);
+
     const limitPropsTrade = {
         pool: pool,
         crocEnv: crocEnv,
@@ -2166,6 +2169,8 @@ export default function App() {
         poolExists: poolExists,
 
         isOrderCopied: isOrderCopied,
+        checkLimitOrder: checkLimitOrder,
+        setCheckLimitOrder: setCheckLimitOrder,
 
         // limitRate: limitRate,
         // setLimitRate: setLimitRate,
@@ -2432,6 +2437,7 @@ export default function App() {
                                     setTokenPairLocal={setTokenPairLocal}
                                     showSidebar={showSidebar}
                                     handlePulseAnimation={handlePulseAnimation}
+                                    checkLimitOrder={checkLimitOrder}
                                     // handleTxCopiedClick={handleTxCopiedClick}
                                     // handleOrderCopiedClick={handleOrderCopiedClick}
                                     // handleRangeCopiedClick={handleRangeCopiedClick}

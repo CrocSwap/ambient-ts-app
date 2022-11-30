@@ -59,6 +59,7 @@ interface ChartData {
     baseTokenAddress: string;
     chainId: string;
     poolPriceNonDisplay: number | undefined;
+    checkLimitOrder: boolean;
 }
 
 export interface ChartUtils {
@@ -77,7 +78,8 @@ type chartItemStates = {
 };
 
 export default function TradeCandleStickChart(props: ChartData) {
-    const { pool, chainData, baseTokenAddress, chainId, poolPriceNonDisplay } = props;
+    const { pool, chainData, baseTokenAddress, chainId, poolPriceNonDisplay, checkLimitOrder } =
+        props;
 
     const [scaleData, setScaleData] = useState<any>();
 
@@ -202,7 +204,7 @@ export default function TradeCandleStickChart(props: ChartData) {
                         return d.value;
                     }),
                 ])
-                .range([30, 1000000]);
+                .range([30, 1000]);
 
             volumeData.map((data: any) => {
                 data.value = volumeLogScale(data.value);
@@ -510,6 +512,7 @@ export default function TradeCandleStickChart(props: ChartData) {
                         scaleData={scaleData}
                         chainId={chainId}
                         poolPriceNonDisplay={poolPriceNonDisplay}
+                        checkLimitOrder={checkLimitOrder}
                     />
                 ) : (
                     <>{loading}</>
