@@ -251,7 +251,7 @@ export default function Chart(props: ChartData) {
 
     // Utils
     const [zoomUtils, setZoomUtils] = useState<any>();
-    const [popupHeight, setPopupHeight] = useState<any>();
+    // const [popupHeight, setPopupHeight] = useState<any>();
     const [dragRange, setDragRange] = useState<any>();
     const [dragLimit, setDragLimit] = useState<any>();
     const [autoToolTip, setAutoToolTip] = useState<any>();
@@ -3011,7 +3011,7 @@ export default function Chart(props: ChartData) {
         render();
     }, [upBodyColor, downBodyColor, upBorderColor, downBorderColor]);
 
-    // Candle transactions
+    // // Candle transactions
     useEffect(() => {
         console.log({ selectedDate });
         if (selectedDate !== undefined) {
@@ -3020,24 +3020,24 @@ export default function Chart(props: ChartData) {
             ) as any;
 
             if (candle !== undefined) {
-                d3.select('#transactionPopup')
-                    .style('visibility', 'visible')
-                    .html(
-                        '<p>Showing Transactions for <span style="color: #E480FF">' +
-                            moment(candle.date).calendar() +
-                            '</span></p>',
-                    );
-                // .html(
-                //     '<p>Showing Transactions for <span style="color: #E480FF">' +
-                //         moment(candle.date).format('DD MMM  HH:mm') +
-                //         '</span></p>',
-                // );
-                console.log('changing show all to false');
+                // d3.select('#transactionPopup')
+                //     .style('visibility', 'visible')
+                //     .html(
+                //         '<p>Showing Transactions for <span style="color: #E480FF">' +
+                //             moment(candle.date).calendar() +
+                //             '</span></p>',
+                //     );
+                // // .html(
+                // //     '<p>Showing Transactions for <span style="color: #E480FF">' +
+                // //         moment(candle.date).format('DD MMM  HH:mm') +
+                // //         '</span></p>',
+                // // );
+                // console.log('changing show all to false');
                 props.changeState(true, candle);
             }
         } else {
-            d3.select('#transactionPopup').style('visibility', 'hidden');
-            console.log('changing pop up state to false');
+            // d3.select('#transactionPopup').style('visibility', 'hidden');
+            // console.log('changing pop up state to false');
             props.changeState(false, undefined);
         }
     }, [selectedDate]);
@@ -3128,15 +3128,16 @@ export default function Chart(props: ChartData) {
         });
     };
 
-    useEffect(() => {
-        let popupHeight = 60;
-        Object.values(props.chartItemStates).map((value: any) => {
-            if (value) popupHeight -= 7.8;
-        });
-        setPopupHeight(() => {
-            return popupHeight;
-        });
-    }, [props.chartItemStates]);
+    // useEffect(() => {
+    //     const popupHeight = 15;
+    //     // let popupHeight = 22;
+    //     // Object.values(props.chartItemStates).map((value: any) => {
+    //     //     if (value) popupHeight -= 7.8;
+    //     // });
+    //     setPopupHeight(() => {
+    //         return popupHeight;
+    //     });
+    // }, [props.chartItemStates]);
 
     return (
         <div ref={d3Container} className='main_layout_chart' data-testid={'chart'}>
@@ -3248,7 +3249,7 @@ export default function Chart(props: ChartData) {
                 </div>
             </d3fc-group>
 
-            <div
+            {/* <div
                 className='popup'
                 id='transactionPopup'
                 style={{ visibility: 'hidden', top: popupHeight + '%' }}
@@ -3258,7 +3259,7 @@ export default function Chart(props: ChartData) {
                     d3.select('#transactionPopup').style('visibility', 'hidden');
                     props.changeState(false, undefined);
                 }}
-            ></div>
+            ></div> */}
         </div>
     );
 }

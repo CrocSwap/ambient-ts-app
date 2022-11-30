@@ -5,6 +5,7 @@ import { MdExpand, MdCloseFullscreen } from 'react-icons/md';
 import { CandleData } from '../../../../utils/state/graphDataSlice';
 import { GiLaurelsTrophy } from 'react-icons/gi';
 import { NavLink } from 'react-router-dom';
+import moment from 'moment';
 interface PositionsOnlyToggleProps {
     isShowAllEnabled: boolean;
     isAuthenticated: boolean;
@@ -44,7 +45,7 @@ export default function PositionsOnlyToggle(props: PositionsOnlyToggleProps) {
         leader,
         leaderOwnerId,
         changeState,
-        // selectedDate,
+        selectedDate,
         setSelectedDate,
         // setShowPositionsOnlyToggle
     } = props;
@@ -66,6 +67,36 @@ export default function PositionsOnlyToggle(props: PositionsOnlyToggleProps) {
 
     if (leader !== '' && !showPositionsOnlyToggle) return leaderName;
 
+    const toggleOrNull = isCandleSelected ? null : (
+        <Toggle2
+            isOn={!isShowAllEnabled}
+            handleToggle={() => {
+                setHasInitialized(true);
+                // console.log('toggle on', !isShowAllEnabled);
+                console.log('toggling show all');
+                setIsShowAllEnabled(!isShowAllEnabled);
+                if (!isShowAllEnabled) {
+                    setIsCandleSelected(false);
+                    setTransactionFilter(undefined);
+                }
+            }}
+            id='positions_only_toggle'
+            disabled={!isAuthenticated || !isWeb3Enabled || isCandleSelected}
+        />
+    );
+
+    const unselectCandle = () => {
+        setSelectedDate(undefined);
+        changeState(false, undefined);
+        setIsCandleSelected(false);
+    };
+
+    const clearButtonOrNull = isCandleSelected ? (
+        <button className={styles.option_button} onClick={() => unselectCandle()}>
+            Clear
+        </button>
+    ) : null;
+
     return (
         <div className={styles.main_container}>
             <div
@@ -77,35 +108,19 @@ export default function PositionsOnlyToggle(props: PositionsOnlyToggleProps) {
 
                 <p
                     onClick={() => {
-                        if (isCandleSelected) {
-                            setSelectedDate(undefined);
-                            changeState(false, undefined);
-                            setIsCandleSelected(false);
-                        }
+                        unselectCandle();
                         // setIsCandleSelected(false);
                         // setTransactionFilter(undefined);
                     }}
                     style={isCandleSelected ? { cursor: 'pointer' } : { cursor: 'default' }}
                 >
-                    {isCandleSelected ? 'Candle Selected' : `My ${props.currentTab}`}
+                    {isCandleSelected
+                        ? `Showing Transactions for ${moment(selectedDate).calendar()}`
+                        : `My ${props.currentTab}`}
                 </p>
                 {/* <p>{`All ${props.currentTab}`}</p> */}
-
-                <Toggle2
-                    isOn={!isShowAllEnabled}
-                    handleToggle={() => {
-                        setHasInitialized(true);
-                        // console.log('toggle on', !isShowAllEnabled);
-                        console.log('toggling show all');
-                        setIsShowAllEnabled(!isShowAllEnabled);
-                        if (!isShowAllEnabled) {
-                            setIsCandleSelected(false);
-                            setTransactionFilter(undefined);
-                        }
-                    }}
-                    id='positions_only_toggle'
-                    disabled={!isAuthenticated || !isWeb3Enabled || isCandleSelected}
-                />
+                {clearButtonOrNull}
+                {toggleOrNull}
             </div>
             {expandIcon}
         </div>
