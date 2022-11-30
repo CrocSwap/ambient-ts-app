@@ -86,6 +86,8 @@ interface TradeChartsPropsIF {
     downBorderColor: string;
     baseTokenAddress: string;
     poolPriceNonDisplay: number | undefined;
+    selectedDate: Date | undefined;
+    setSelectedDate: Dispatch<Date | undefined>;
 }
 
 export interface CandleChartData {
@@ -151,6 +153,8 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
         removePoolFromFaves,
         favePools,
         expandTradeTable,
+        selectedDate,
+        setSelectedDate,
     } = props;
 
     const dispatch = useAppDispatch();
@@ -803,6 +807,8 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
                         baseTokenAddress={props.baseTokenAddress}
                         chainId={chainId}
                         poolPriceNonDisplay={props.poolPriceNonDisplay}
+                        selectedDate={selectedDate}
+                        setSelectedDate={setSelectedDate}
                     />
                 </div>
             )}

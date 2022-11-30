@@ -154,6 +154,8 @@ export default function Trade(props: TradePropsIF) {
     ];
     const [fullScreenChart, setFullScreenChart] = useState(false);
 
+    const [selectedDate, setSelectedDate] = useState<Date | undefined>();
+
     const { tradeData, graphData } = useAppSelector((state) => state);
     const {
         isDenomBase,
@@ -207,7 +209,15 @@ export default function Trade(props: TradePropsIF) {
 
     const changeState = (isOpen: boolean | undefined, candleData: CandleData | undefined) => {
         setIsCandleSelected(isOpen);
-        setIsShowAllEnabled(!isOpen);
+        console.log(
+            'changing show all based on whether the user is viewing data for a specific candle',
+        );
+        if (isOpen && isShowAllEnabled) {
+            setIsShowAllEnabled(false);
+        } else if (!isOpen && !isShowAllEnabled) {
+            setIsShowAllEnabled(true);
+        }
+        // setIsShowAllEnabled(!isOpen);
         setTransactionFilter(candleData);
     };
 
@@ -504,6 +514,8 @@ export default function Trade(props: TradePropsIF) {
                             downBorderColor={downBorderColor}
                             baseTokenAddress={baseTokenAddress}
                             poolPriceNonDisplay={poolPriceNonDisplay}
+                            selectedDate={selectedDate}
+                            setSelectedDate={setSelectedDate}
                         />
                     </div>
                 </div>
@@ -556,6 +568,9 @@ export default function Trade(props: TradePropsIF) {
                             importedTokens={importedTokens}
                             showSidebar={showSidebar}
                             handlePulseAnimation={handlePulseAnimation}
+                            changeState={changeState}
+                            selectedDate={selectedDate}
+                            setSelectedDate={setSelectedDate}
                             // handleTxCopiedClick={handleTxCopiedClick}
                             // handleOrderCopiedClick={handleOrderCopiedClick}
                             // handleRangeCopiedClick={handleRangeCopiedClick}

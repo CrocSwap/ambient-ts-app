@@ -83,6 +83,8 @@ interface ChartData {
     scaleData: any;
     chainId: string;
     poolPriceNonDisplay: number | undefined;
+    selectedDate: Date | undefined;
+    setSelectedDate: React.Dispatch<Date | undefined>;
 }
 
 function getWindowDimensions() {
@@ -109,6 +111,8 @@ export default function Chart(props: ChartData) {
         scaleData,
         chainId,
         poolPriceNonDisplay,
+        selectedDate,
+        setSelectedDate,
     } = props;
 
     const tradeData = useAppSelector((state) => state.tradeData);
@@ -208,7 +212,6 @@ export default function Chart(props: ChartData) {
     const [horizontalBandData, setHorizontalBandData] = useState([[0, 0]]);
 
     // d3
-    const [selectedDate, setSelectedDate] = useState<any>();
 
     // Crosshairs
     const [liqTooltip, setLiqTooltip] = useState<any>();
@@ -2046,9 +2049,7 @@ export default function Chart(props: ChartData) {
                                     .style('fill', '#E480FF')
                                     .style('stroke', '#E480FF');
 
-                                setSelectedDate(() => {
-                                    return event.target.__data__.date;
-                                });
+                                setSelectedDate(event.target.__data__.date);
                             } else {
                                 d3.select(event.currentTarget)
                                     .style('fill', (d: any) =>
@@ -2058,9 +2059,7 @@ export default function Chart(props: ChartData) {
                                         d.close > d.open ? upBorderColor : downBorderColor,
                                     );
 
-                                setSelectedDate(() => {
-                                    return undefined;
-                                });
+                                setSelectedDate(undefined);
                             }
                         });
                 })
@@ -2108,13 +2107,9 @@ export default function Chart(props: ChartData) {
                                 .style('fill', '#E480FF')
                                 .style('stroke', '#E480FF');
 
-                            setSelectedDate(() => {
-                                return event.target.__data__.time;
-                            });
+                            setSelectedDate(event.target.__data__.time);
                         } else {
-                            setSelectedDate(() => {
-                                return undefined;
-                            });
+                            setSelectedDate(undefined);
                         }
                     });
                 });
@@ -3036,11 +3031,12 @@ export default function Chart(props: ChartData) {
                 //         moment(candle.date).format('DD MMM  HH:mm') +
                 //         '</span></p>',
                 // );
-
+                console.log('changing show all to false');
                 props.changeState(true, candle);
             }
         } else {
             d3.select('#transactionPopup').style('visibility', 'hidden');
+            console.log('changing pop up state to false');
 
             props.changeState(false, undefined);
         }
@@ -3257,9 +3253,7 @@ export default function Chart(props: ChartData) {
                 id='transactionPopup'
                 style={{ visibility: 'hidden', top: popupHeight + '%' }}
                 onClick={() => {
-                    setSelectedDate(() => {
-                        return undefined;
-                    });
+                    setSelectedDate(undefined);
 
                     d3.select('#transactionPopup').style('visibility', 'hidden');
                     props.changeState(false, undefined);

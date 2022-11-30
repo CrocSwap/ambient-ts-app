@@ -78,6 +78,7 @@ export default function TradeTabs(props: ITabsProps) {
                 isOn={isShowAllEnabled}
                 handleToggle={() => {
                     setHasInitialized(true);
+                    console.log('toggling');
                     setIsShowAllEnabled(!isShowAllEnabled);
                 }}
                 id='positions_only_toggle'
