@@ -44,17 +44,16 @@ interface TransactionsProps {
     setIsShowAllEnabled?: Dispatch<SetStateAction<boolean>>;
     account: string;
     expandTradeTable: boolean;
-
+    setIsCandleSelected?: Dispatch<SetStateAction<boolean | undefined>>;
     isCandleSelected: boolean | undefined;
     filter?: CandleData | undefined;
-
+    changeState?: (isOpen: boolean | undefined, candleData: CandleData | undefined) => void;
     openGlobalModal: (content: React.ReactNode) => void;
     closeGlobalModal: () => void;
     handlePulseAnimation?: (type: string) => void;
     showSidebar: boolean;
-
     isOnPortfolioPage: boolean;
-
+    setSelectedDate?: Dispatch<Date | undefined>;
     // setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
 }
 export default function Transactions(props: TransactionsProps) {
@@ -81,6 +80,9 @@ export default function Transactions(props: TransactionsProps) {
         isOnPortfolioPage,
         handlePulseAnimation,
         setIsShowAllEnabled,
+        // setIsCandleSelected,
+        changeState,
+        setSelectedDate,
         // setExpandTradeTable,
     } = props;
 
@@ -568,6 +570,9 @@ export default function Transactions(props: TransactionsProps) {
         <NoTableData
             isShowAllEnabled={isShowAllEnabled}
             setIsShowAllEnabled={setIsShowAllEnabled}
+            setSelectedDate={setSelectedDate}
+            // setIsCandleSelected={setIsCandleSelected}
+            changeState={changeState}
             type='transactions'
         />
     ) : (

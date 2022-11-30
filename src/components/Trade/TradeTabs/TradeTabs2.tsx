@@ -392,14 +392,14 @@ export default function TradeTabs2(props: ITabsProps) {
         setCurrentTxActiveInTransactions: setCurrentTxActiveInTransactions,
         expandTradeTable: expandTradeTable,
         setIsShowAllEnabled: setIsShowAllEnabled,
-
+        setIsCandleSelected: setIsCandleSelected,
         isCandleSelected: isCandleSelected,
         filter: filter,
         closeGlobalModal: props.closeGlobalModal,
-
+        changeState: changeState,
         openGlobalModal: props.openGlobalModal,
         showSidebar: showSidebar,
-
+        setSelectedDate: setSelectedDate,
         isOnPortfolioPage: false,
 
         handlePulseAnimation: handlePulseAnimation,
@@ -423,6 +423,8 @@ export default function TradeTabs2(props: ITabsProps) {
         handlePulseAnimation: handlePulseAnimation,
         // handleOrderCopiedClick: handleOrderCopiedClick,
         setIsShowAllEnabled: setIsShowAllEnabled,
+        setIsCandleSelected: setIsCandleSelected,
+        changeState: changeState,
     };
     // props for <PositionsOnlyToggle/> React Element
 
