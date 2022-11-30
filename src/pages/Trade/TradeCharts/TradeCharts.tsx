@@ -683,24 +683,27 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
     }
 
     const currentDataInfo = (
-        <div className={styles.current_data_info}>
-            {/* {denomInBase ? tradeData.baseToken.symbol : tradeData.quoteToken.symbol} /{' '}
+        <div className={styles.chart_tooltips}>
+            <div className={styles.current_data_info}>
+                {/* {denomInBase ? tradeData.baseToken.symbol : tradeData.quoteToken.symbol} /{' '}
             {denomInBase ? tradeData.quoteToken.symbol : tradeData.baseToken.symbol}·{' '}
             {activeTimeFrame} ·{' '} */}
-            {'O: ' +
-                formattedCurrentData(currentData?.open) +
-                ' H: ' +
-                formattedCurrentData(currentData?.high) +
-                ' L: ' +
-                formattedCurrentData(currentData?.low) +
-                ' C: ' +
-                formattedCurrentData(currentData?.close)}
-        </div>
-    );
+                {'O: ' +
+                    formattedCurrentData(currentData?.open) +
+                    ' H: ' +
+                    formattedCurrentData(currentData?.high) +
+                    ' L: ' +
+                    formattedCurrentData(currentData?.low) +
+                    ' C: ' +
+                    formattedCurrentData(currentData?.close) +
+                    ' V: ' +
+                    formatDollarAmountAxis(currentVolumeData)}
+            </div>
 
-    const currentVolumeDataDisplay = (
-        <div className={styles.current_data_info}>
-            {'Volume : ' + formatDollarAmountAxis(currentVolumeData)}
+            <div className={styles.zoom_utils_tooltip}>
+                <div className={styles.latest_tooltip}>LATEST</div>
+                <div className={styles.auto_tooltip}>AUTO</div>
+            </div>
         </div>
     );
 
@@ -769,7 +772,6 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
                 {tokenInfo}
                 {timeFrameContent}
                 {currentDataInfo}
-                {currentVolumeDataDisplay}
                 {/* {liquidityTypeContent} */}
             </div>
             {graphIsLoading ? (

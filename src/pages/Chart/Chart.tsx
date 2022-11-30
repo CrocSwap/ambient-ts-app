@@ -1473,14 +1473,9 @@ export default function Chart(props: ChartData) {
     useEffect(() => {
         if (
             scaleData !== undefined &&
-            d3.select(d3Container.current).select('.zoomUtilsTooltip').node() === null
+            d3.select(d3Container.current).select('.zoomUtilsTooltip').node() !== null
         ) {
-            const zoomUtilsTooltip = d3
-                .select(d3Container.current)
-                .append('div')
-                .attr('class', 'zoomUtilsTooltip');
-
-            if (d3.select(d3Container.current).select('.zoomUtilsTooltip').node() !== null) {
+            if (d3.select(d3Container.current).select('.latestToolTip').node() === null) {
                 const latestToolTip = d3
                     .select(d3Container.current)
                     .select('.zoomUtilsTooltip')
@@ -1524,16 +1519,6 @@ export default function Chart(props: ChartData) {
                     return autoToolTip;
                 });
             }
-
-            const placement = document.querySelector('#d3fc_group');
-
-            if (placement !== null) {
-                console.log(placement.clientHeight, placement.clientWidth);
-            }
-
-            zoomUtilsTooltip
-                .style('top', (placement !== null ? placement.clientHeight + 95 : 557) + 'px')
-                .style('left', (placement !== null ? placement.clientWidth - 115 : 1180) + 'px');
         }
     }, [parsedChartData?.chartData, scaleData, rescale]);
 

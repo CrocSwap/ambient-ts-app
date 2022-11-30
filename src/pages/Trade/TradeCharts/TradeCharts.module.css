@@ -449,3 +449,51 @@
     }
   */
 }
+
+.chart_tooltips {
+    display: flex;
+}
+
+.zoom_utils_tooltip {
+    position: relative;
+    font-size: 14px;
+    font-weight: bold;
+    background: #171d27;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-end,
+
+}
+
+.latest_tooltip {
+    cursor: pointer;
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+    text-align: center;
+    color: var(--text-grey-light);
+    outline: none;
+
+    border-radius: 50px;
+    padding: 5px 8px;
+    position: relative;
+    background: var(--dark1);
+    border: 1px solid #242f3f;
+}
+
+.auto_tooltip {
+    cursor: pointer;
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+    text-align: center;
+    color: var(--text-grey-light);
+    outline: none;
+
+    border-radius: 50px;
+    padding: 5px 8px;
+    position: relative;
+    background: var(--dark1);
+    border: 1px solid #242f3f;
+    margin-right: 20px;
+}
