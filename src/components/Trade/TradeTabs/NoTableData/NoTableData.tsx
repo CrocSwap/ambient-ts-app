@@ -11,6 +11,7 @@ export default function NoTableData(props: NoTableDataPropsIF) {
     const { isShowAllEnabled, setIsShowAllEnabled, type } = props;
 
     const toggleAllEnabled = () => {
+        console.log('setting show all to true');
         setIsShowAllEnabled ? setIsShowAllEnabled(true) : '';
     };
 
