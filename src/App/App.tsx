@@ -2364,7 +2364,7 @@ export default function App() {
                 {currentLocation !== '/404' && <PageHeader {...headerProps} />}
 
                 {/* <MobileSidebar/> */}
-                <main className={`${showSidebarOrNullStyle} ${swapBodyStyle}`}>
+                <section className={`${showSidebarOrNullStyle} ${swapBodyStyle}`}>
                     {!currentLocation.startsWith('/swap') && sidebarRender}
                     <Routes>
                         <Route
@@ -2715,7 +2715,7 @@ export default function App() {
                         />
                         <Route path='/404' element={<NotFound />} />
                     </Routes>
-                </main>
+                </section>
                 {snackbarContent}
             </div>
 

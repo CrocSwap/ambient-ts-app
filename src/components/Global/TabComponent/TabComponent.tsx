@@ -176,7 +176,7 @@ export default function TabComponent(props: TabPropsIF) {
                     {rightTabOptions ? tabsWithRightOption : fullTabs}
                 </AnimateSharedLayout>
             </nav>
-            <main className={styles.main_tab_content}>
+            <section className={styles.main_tab_content}>
                 <AnimateSharedLayout>
                     <motion.div
                         key={selectedTab ? selectedTab.label : 'empty'}
@@ -188,7 +188,7 @@ export default function TabComponent(props: TabPropsIF) {
                         {selectedTab ? selectedTab.content : null}
                     </motion.div>
                 </AnimateSharedLayout>
-            </main>
+            </section>
         </div>
     );
 }

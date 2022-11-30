@@ -467,10 +467,13 @@ export default function Ranges(props: RangesPropsIF) {
     );
 
     return (
-        <main className={`${styles.main_list_container} `} style={{ height: portfolioPageStyle }}>
+        <section
+            className={`${styles.main_list_container} `}
+            style={{ height: portfolioPageStyle }}
+        >
             {headerColumnsDisplay}
             {debouncedShouldDisplayLoadingAnimation ? <TableSkeletons /> : rangeDataOrNull}
             {footerDisplay}
-        </main>
+        </section>
     );
 }
