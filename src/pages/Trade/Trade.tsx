@@ -304,7 +304,7 @@ export default function Trade(props: TradePropsIF) {
         ) : null;
 
     return (
-        <main className={styles.main_layout}>
+        <section className={styles.main_layout}>
             <div className={styles.middle_col}>
                 {poolNotInitializedContent}
                 {mobileDataToggle}
@@ -564,7 +564,7 @@ export default function Trade(props: TradePropsIF) {
                 </motion.div>
             </div>
             {mainContent}
-        </main>
+        </section>
     );
 }
 

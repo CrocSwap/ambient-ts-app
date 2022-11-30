@@ -73,7 +73,7 @@
         grid-template-columns: auto auto;
         /* grid-template-columns: auto 380px; */
         gap: 1rem;
-        max-height: calc(100vh - 20rem);
+        /* max-height: calc(100vh - 20rem); */
         padding: 1rem 0;
     }
     .full_layout_container{
