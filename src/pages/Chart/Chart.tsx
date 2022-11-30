@@ -252,6 +252,7 @@ export default function Chart(props: ChartData) {
     const [dragRange, setDragRange] = useState<any>();
     const [dragLimit, setDragLimit] = useState<any>();
     const [autoToolTip, setAutoToolTip] = useState<any>();
+    const [zoomUtilsTooltip, setZoomUtilsTooltip] = useState<any>();
 
     // const valueFormatter = d3.format('.5f');
     const currentPoolPriceTick =
@@ -726,12 +727,14 @@ export default function Chart(props: ChartData) {
 
                             const deltaY = linearY(t.y - scaleData.lastY);
 
-                            scaleData.yScale.domain([domainY[0] + deltaY, domainY[1] + deltaY]);
+                            if (domainY[0] + deltaY > 0) {
+                                scaleData.yScale.domain([domainY[0] + deltaY, domainY[1] + deltaY]);
 
-                            scaleData.yScaleIndicator.range([
-                                event.sourceEvent.offsetY,
-                                scaleData.yScale(poolPriceDisplay),
-                            ]);
+                                scaleData.yScaleIndicator.range([
+                                    event.sourceEvent.offsetY,
+                                    scaleData.yScale(poolPriceDisplay),
+                                ]);
+                            }
 
                             const topPlacement =
                                 event.sourceEvent.y -
@@ -781,7 +784,9 @@ export default function Chart(props: ChartData) {
                 const domain = scaleData.yScale.domain();
                 const center = (domain[1] + domain[0]) / 2;
                 const size = (domain[1] - domain[0]) / 2 / factor;
-                await scaleData.yScale.domain([center - size, center + size]);
+                if (center - size > 0) {
+                    await scaleData.yScale.domain([center - size, center + size]);
+                }
                 setZoomAndYdragControl(event);
                 setRescale(() => {
                     return false;
@@ -1435,67 +1440,6 @@ export default function Chart(props: ChartData) {
                 });
             }
 
-            if (d3.select(d3Container.current).select('.zoomUtilsTooltip').node() === null) {
-                const zoomUtilsTooltip = d3
-                    .select(d3Container.current)
-                    .append('div')
-                    .attr('class', 'zoomUtilsTooltip');
-
-                if (d3.select(d3Container.current).select('.zoomUtilsTooltip').node() !== null) {
-                    const latestToolTip = d3
-                        .select(d3Container.current)
-                        .select('.zoomUtilsTooltip')
-                        .append('div')
-                        .attr('class', 'latestToolTip')
-                        .on('mouseover', (event: any) => {
-                            d3.select(event.currentTarget).style('cursor', 'pointer');
-                        })
-                        .on('click', () => {
-                            scaleData.xScale.domain(scaleData.xScaleCopy.domain());
-                            scaleData.yScale.domain(scaleData.yScaleCopy.domain());
-                            render();
-                        });
-
-                    latestToolTip.html('<p><span style="font-weight: bold">LATEST</span></p>');
-
-                    const autoToolTip = d3
-                        .select(d3Container.current)
-                        .select('.zoomUtilsTooltip')
-                        .append('div')
-                        .attr('class', 'autoToolTip')
-                        .style('color', () =>
-                            rescale ? 'rgb(97, 100, 189)' : 'rgba(237, 231, 225, 0.2)',
-                        )
-                        .on('mouseover', (event: any) => {
-                            d3.select(event.currentTarget).style('cursor', 'pointer');
-                        })
-                        .on('click', () => {
-                            setRescale((prevState) => {
-                                autoToolTip.style('color', () =>
-                                    !prevState ? 'rgb(97, 100, 189)' : 'rgba(237, 231, 225, 0.2)',
-                                );
-
-                                return !prevState;
-                            });
-                        });
-
-                    autoToolTip.html('<p><span style="font-weight: bold">AUTO</span></p>');
-
-                    setAutoToolTip(() => {
-                        return autoToolTip;
-                    });
-                }
-
-                const placement = document.querySelector('#d3fc_group');
-
-                zoomUtilsTooltip
-                    .style('top', (placement !== null ? placement.clientHeight + 95 : 557) + 'px')
-                    .style(
-                        'left',
-                        (placement !== null ? placement.clientWidth - 115 : 1180) + 'px',
-                    );
-            }
-
             setTargetsJoin(() => {
                 return targetsJoin;
             });
@@ -1524,7 +1468,78 @@ export default function Chart(props: ChartData) {
                 return limitLine;
             });
         }
-    }, [parsedChartData?.chartData, scaleData, market, rescale]);
+    }, [parsedChartData?.chartData, scaleData, market]);
+
+    useEffect(() => {
+        if (
+            scaleData !== undefined &&
+            d3.select(d3Container.current).select('.zoomUtilsTooltip').node() === null
+        ) {
+            const zoomUtilsTooltip = d3
+                .select(d3Container.current)
+                .append('div')
+                .attr('class', 'zoomUtilsTooltip');
+
+            if (d3.select(d3Container.current).select('.zoomUtilsTooltip').node() !== null) {
+                const latestToolTip = d3
+                    .select(d3Container.current)
+                    .select('.zoomUtilsTooltip')
+                    .append('div')
+                    .attr('class', 'latestToolTip')
+                    .on('mouseover', (event: any) => {
+                        d3.select(event.currentTarget).style('cursor', 'pointer');
+                    })
+                    .on('click', () => {
+                        scaleData.xScale.domain(scaleData.xScaleCopy.domain());
+                        scaleData.yScale.domain(scaleData.yScaleCopy.domain());
+                        render();
+                    });
+
+                latestToolTip.html('<p><span style="font-weight: bold">LATEST</span></p>');
+
+                const autoToolTip = d3
+                    .select(d3Container.current)
+                    .select('.zoomUtilsTooltip')
+                    .append('div')
+                    .attr('class', 'autoToolTip')
+                    .style('color', () =>
+                        rescale ? 'rgb(97, 100, 189)' : 'rgba(237, 231, 225, 0.2)',
+                    )
+                    .on('mouseover', (event: any) => {
+                        d3.select(event.currentTarget).style('cursor', 'pointer');
+                    })
+                    .on('click', () => {
+                        setRescale((prevState) => {
+                            autoToolTip.style('color', () =>
+                                !prevState ? 'rgb(97, 100, 189)' : 'rgba(237, 231, 225, 0.2)',
+                            );
+
+                            return !prevState;
+                        });
+                    });
+
+                autoToolTip.html('<p><span style="font-weight: bold">AUTO</span></p>');
+
+                setAutoToolTip(() => {
+                    return autoToolTip;
+                });
+            }
+
+            const placement = document.querySelector('#d3fc_group');
+
+            if (placement !== null) {
+                console.log(placement.clientHeight, placement.clientWidth);
+            }
+
+            zoomUtilsTooltip
+                .style('top', (placement !== null ? placement.clientHeight + 95 : 557) + 'px')
+                .style('left', (placement !== null ? placement.clientWidth - 115 : 1180) + 'px');
+
+            setZoomUtilsTooltip(() => {
+                return zoomUtilsTooltip;
+            });
+        }
+    }, [parsedChartData?.chartData, scaleData, rescale]);
 
     // easy drag and triangle to horizontal lines for range
     async function addTriangleAndRect() {
