@@ -12,13 +12,13 @@ interface NoTableDataPropsIF {
     setSelectedDate?: Dispatch<Date | undefined>;
 }
 export default function NoTableData(props: NoTableDataPropsIF) {
-    const { isShowAllEnabled, setIsShowAllEnabled, type, changeState, setSelectedDate } = props;
+    const { isShowAllEnabled, setIsShowAllEnabled, type, setSelectedDate } = props;
 
     const toggleAllEnabled = () => {
         console.log('setting show all to true');
         setIsShowAllEnabled ? setIsShowAllEnabled(true) : null;
         // setIsCandleSelected ? setIsCandleSelected(false) : null;
-        changeState ? changeState(false, undefined) : null;
+        // changeState ? changeState(false, undefined) : null;
         setSelectedDate ? setSelectedDate(undefined) : null;
     };
 
