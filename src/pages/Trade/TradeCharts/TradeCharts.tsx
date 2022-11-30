@@ -226,7 +226,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
     // const [openSettingsTooltip, setOpenSettingsTooltip] = useState(false);
     const [showTvl, setShowTvl] = useState(false);
     const [showFeeRate, setShowFeeRate] = useState(false);
-    const [showVolume, setShowVolume] = useState(false);
+    const [showVolume, setShowVolume] = useState(true);
 
     const chartItemStates = { showFeeRate, showTvl, showVolume };
 
