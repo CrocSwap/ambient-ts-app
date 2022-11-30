@@ -229,7 +229,7 @@ export default function App() {
         onIdle,
         onActive,
         //    onAction,
-        timeout: 1000 * 60 * 1, // set user to idle after 1 minute
+        timeout: 1000 * 60 * 5, // set user to idle after 5 minutes
         promptTimeout: 0,
         events: [
             'mousemove',
