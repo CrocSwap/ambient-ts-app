@@ -3013,6 +3013,7 @@ export default function Chart(props: ChartData) {
 
     // Candle transactions
     useEffect(() => {
+        console.log({ selectedDate });
         if (selectedDate !== undefined) {
             const candle = parsedChartData?.chartData.find(
                 (candle: any) => candle.date.toString() === selectedDate.toString(),
@@ -3037,7 +3038,6 @@ export default function Chart(props: ChartData) {
         } else {
             d3.select('#transactionPopup').style('visibility', 'hidden');
             console.log('changing pop up state to false');
-
             props.changeState(false, undefined);
         }
     }, [selectedDate]);

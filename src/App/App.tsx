@@ -1146,6 +1146,13 @@ export default function App() {
                             .then((json) => {
                                 const poolLimitOrderStates = json?.data;
 
+                                dispatch(
+                                    setDataLoadingStatus({
+                                        datasetName: 'poolOrderData',
+                                        loadingStatus: false,
+                                    }),
+                                );
+
                                 if (poolLimitOrderStates) {
                                     Promise.all(
                                         poolLimitOrderStates.map((limitOrder: LimitOrderIF) => {
