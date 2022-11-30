@@ -2052,7 +2052,7 @@ export default function App() {
         lastBlockNumber: lastBlockNumber,
         isMobileSidebarOpen: isMobileSidebarOpen,
         setIsMobileSidebarOpen: setIsMobileSidebarOpen,
-
+        poolPriceDisplay: poolPriceDisplay,
         openGlobalModal: openGlobalModal,
         closeGlobalModal: closeGlobalModal,
         isAppOverlayActive: isAppOverlayActive,
