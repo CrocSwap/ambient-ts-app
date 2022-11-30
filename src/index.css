@@ -2,6 +2,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Lexend+Exa:wght@100;200;300;400;500;600;700;800;900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@100;200;400;500;600&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@100;300;400;500&display=swap');
+
+/* For simple theme change(special occasion), change portfolio and swap background. No need for a different color scheme*/
 :root {
     --font-logo: 'Lexend Exa', sans-serif;
     --font-family: 'Lexend Deca', sans-serif;
@@ -9,6 +11,8 @@
     --mono: monospace, 'Lexend Deca' sans-serif, ;
 
     --title-gradient: linear-gradient(90deg, #7371fc 0%, #cdc1ff 49.48%, #7371fc 100%);
+    --swap-box-shadow: none;
+    --swap-border: var(--title-gradient);
     --text-highlight: #cdc1ff;
     --text-highlight-dark: #7371fc;
 
@@ -70,17 +74,19 @@
 [data-theme='light'] {
     --shimmer: linear-gradient(to right, #ece9e6, #ffffff);
     --blur-bg: #ebebed;
+    --swap-box-shadow:   0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);;
+    --swap-border: none;
    
     --navbar-border: #cacbcd;
     /* --body-bg: linear-gradient(to right, #ece9e6, #ffffff); */
     /* --body-bg: linear-gradient(to right, #cdd0d3, #dce2eb); */
-    --body-bg: #ffffff;
+    --body-bg: #E6EAF2;
     /* --dark1: linear-gradient(to right, #ece9e6, #ffffff); */
-    --dark1: #ffffff;
+    --dark1: #E6EAF2;;
     /* --dark2: rgb(226, 221, 221); */
     --dark2: #f6f6f7;
 
-    --dark3: #ebebed;
+    --dark3: rgb(247, 251, 254);;
     --text-grey-light: #19222d;
     --text-grey-dark: #0e131a;
     --border: #cacbcd;
