@@ -320,6 +320,7 @@ export default function PoolInfo(props: PoolInfoPropsIF) {
             </section>
         </div>
     );
+    //
 
     return (
         <section className={styles.container}>
