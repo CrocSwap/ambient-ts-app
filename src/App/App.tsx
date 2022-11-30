@@ -2169,7 +2169,6 @@ export default function App() {
         poolExists: poolExists,
 
         isOrderCopied: isOrderCopied,
-        checkLimitOrder: checkLimitOrder,
         setCheckLimitOrder: setCheckLimitOrder,
 
         // limitRate: limitRate,

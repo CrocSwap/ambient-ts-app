@@ -1443,9 +1443,7 @@ export default function Chart(props: ChartData) {
                     .attr('stroke', 'none');
 
                 selection.enter().select('g.right-handle').remove();
-                selection
-                    .select('line')
-                    .attr('class', (d: any) => (checkLimitOrder ? 'lowline' : 'line'));
+                selection.select('line').attr('class', checkLimitOrder ? 'lowline' : 'line');
             });
 
             const marketLine = d3fc

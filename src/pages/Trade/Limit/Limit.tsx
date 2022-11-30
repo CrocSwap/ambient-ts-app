@@ -78,7 +78,6 @@ interface LimitPropsIF {
     chainData: ChainSpec;
 
     isOrderCopied: boolean;
-    checkLimitOrder: boolean;
     setCheckLimitOrder: Dispatch<SetStateAction<boolean>>;
 }
 
@@ -114,7 +113,6 @@ export default function Limit(props: LimitPropsIF) {
         poolExists,
         lastBlockNumber,
         isOrderCopied,
-        checkLimitOrder,
         setCheckLimitOrder,
     } = props;
 
