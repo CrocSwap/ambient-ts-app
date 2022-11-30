@@ -516,7 +516,7 @@ export default function Portfolio(props: PortfolioPropsIF) {
     const [showProfileSettings, setShowProfileSettings] = useState(false);
 
     return (
-        <main data-testid={'portfolio'} className={styles.portfolio_container}>
+        <section data-testid={'portfolio'} className={styles.portfolio_container}>
             {userAccount && showProfileSettings && (
                 <ProfileSettings
                     showProfileSettings={showProfileSettings}
@@ -602,6 +602,6 @@ export default function Portfolio(props: PortfolioPropsIF) {
                     />
                 </Modal>
             )}
-        </main>
+        </section>
     );
 }

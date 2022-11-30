@@ -349,7 +349,7 @@ export default function InitPool(props: InitPoolPropsIF) {
     );
 
     return (
-        <main className={styles.main}>
+        <section className={styles.main}>
             {poolExists && (
                 <Navigate
                     to={'/trade/market/chain=0x5&tokenA=' + baseAddr + '&tokenB=' + quoteAddr}
@@ -479,6 +479,6 @@ export default function InitPool(props: InitPoolPropsIF) {
                     </ContentContainer>
                 </div>
             </div>
-        </main>
+        </section>
     );
 }

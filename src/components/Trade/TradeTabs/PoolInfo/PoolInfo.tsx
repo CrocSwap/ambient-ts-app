@@ -322,7 +322,7 @@ export default function PoolInfo(props: PoolInfoPropsIF) {
     );
 
     return (
-        <main className={styles.container}>
+        <section className={styles.container}>
             <div className={styles.content}>
                 {baseTokenDisplay}
                 {quoteTokenDisplay}
@@ -340,6 +340,6 @@ export default function PoolInfo(props: PoolInfoPropsIF) {
                     {timeTabDisplay}
                 </section>
             </div>
-        </main>
+        </section>
     );
 }

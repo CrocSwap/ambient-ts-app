@@ -486,10 +486,10 @@ export default function Orders(props: propsIF) {
     const portfolioPageStyle = props.isOnPortfolioPage ? 'calc(100vh - 19.5rem)' : expandStyle;
 
     return (
-        <main className={styles.main_list_container} style={{ height: portfolioPageStyle }}>
+        <section className={styles.main_list_container} style={{ height: portfolioPageStyle }}>
             {headerColumnsDisplay}
             {debouncedShouldDisplayLoadingAnimation ? <TableSkeletons /> : orderDataOrNull}
             {/* {isDataLoading ? <TableSkeletons /> : orderDataOrNull} */}
-        </main>
+        </section>
     );
 }
