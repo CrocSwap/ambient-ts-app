@@ -21,7 +21,7 @@ import {
     candleDomain,
     setCandleDomains,
 } from '../../utils/state/tradeDataSlice';
-import { CandleChartData } from '../Trade/TradeCharts/TradeCharts';
+import { CandleChartData, VolumeChartData } from '../Trade/TradeCharts/TradeCharts';
 import FeeRateSubChart from '../Trade/TradeCharts/TradeChartsLoading/FeeRateSubChart';
 import TvlSubChart from '../Trade/TradeCharts/TradeChartsLoading/TvlSubChart';
 import { ChartUtils } from '../Trade/TradeCharts/TradeCandleStickChart';
@@ -83,6 +83,7 @@ interface ChartData {
     scaleData: any;
     chainId: string;
     poolPriceNonDisplay: number | undefined;
+    volumeData: VolumeChartData;
 }
 
 function getWindowDimensions() {
@@ -117,7 +118,7 @@ export default function Chart(props: ChartData) {
 
     const rangeLowLineTriggered = tradeData.rangeLowLineTriggered;
     const rangeHighLineTriggered = tradeData.rangeHighLineTriggered;
-
+    const volumeData = props.volumeData;
     const { showFeeRate, showTvl, showVolume } = props.chartItemStates;
     const { upBodyColor, upBorderColor, downBodyColor, downBorderColor } = props;
 
@@ -2430,15 +2431,14 @@ export default function Chart(props: ChartData) {
             liqHighligtedAskSeries !== undefined &&
             liqHighligtedBidSeries !== undefined &&
             horizontalBandData !== undefined &&
-            horizontalBandJoin !== undefined
+            horizontalBandJoin !== undefined &&
+            volumeData !== undefined
         ) {
             const targetData = {
                 limit: limit,
                 ranges: ranges,
                 market: market,
             };
-
-            const volumeData = parsedChartData?.volumeChartData.sort((a, b) => b.time - a.time);
 
             drawChart(
                 parsedChartData.chartData,
@@ -2649,7 +2649,10 @@ export default function Chart(props: ChartData) {
                         (event.detail.width / 10) * 8,
                     ]);
 
-                    scaleData.volumeScale.range([event.detail.height, event.detail.height * 0.998]);
+                    scaleData.volumeScale.range([
+                        event.detail.height,
+                        event.detail.height - event.detail.height / 10,
+                    ]);
                 });
 
                 d3.select(d3PlotArea.current).on('draw', function (event: any) {
