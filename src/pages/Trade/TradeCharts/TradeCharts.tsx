@@ -48,6 +48,7 @@ import {
 import TradeChartsLoading from './TradeChartsLoading/TradeChartsLoading';
 import NoTokenIcon from '../../../components/Global/NoTokenIcon/NoTokenIcon';
 import { ChainSpec, CrocPoolView } from '@crocswap-libs/sdk';
+import { formatDollarAmountAxis } from '../../../utils/numbers';
 // import { formatAmountOld } from '../../../utils/numbers';
 
 // interface for React functional component props
@@ -225,7 +226,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
     // const [openSettingsTooltip, setOpenSettingsTooltip] = useState(false);
     const [showTvl, setShowTvl] = useState(false);
     const [showFeeRate, setShowFeeRate] = useState(false);
-    const [showVolume, setShowVolume] = useState(false);
+    const [showVolume, setShowVolume] = useState(true);
 
     const chartItemStates = { showFeeRate, showTvl, showVolume };
 
@@ -663,19 +664,22 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
     // END OF TIME FRAME CONTENT--------------------------------------------------------------
 
     // CURRENT DATA INFO----------------------------------------------------------------
-    const [currentData, setCurrentData] = useState<CandleChartData>();
+    const [currentData, setCurrentData] = useState<CandleChartData | undefined>();
+    const [currentVolumeData, setCurrentVolumeData] = useState<number | undefined>();
 
-    function formattedCurrentData(data: number): string {
-        if (data > 2) {
-            return data
-                ? data.toLocaleString(undefined, {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                  })
-                : '';
-        } else {
-            return data ? data.toPrecision(3) : '';
+    function formattedCurrentData(data: number | undefined): string {
+        if (data) {
+            if (data > 2) {
+                return data.toLocaleString(undefined, {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                });
+            } else {
+                return data.toPrecision(3);
+            }
         }
+
+        return '-';
     }
 
     const currentDataInfo = (
@@ -683,16 +687,20 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
             {/* {denomInBase ? tradeData.baseToken.symbol : tradeData.quoteToken.symbol} /{' '}
             {denomInBase ? tradeData.quoteToken.symbol : tradeData.baseToken.symbol}·{' '}
             {activeTimeFrame} ·{' '} */}
-            {currentData
-                ? 'O: ' +
-                  formattedCurrentData(currentData.open) +
-                  ' H: ' +
-                  formattedCurrentData(currentData.high) +
-                  ' L: ' +
-                  formattedCurrentData(currentData.low) +
-                  ' C: ' +
-                  formattedCurrentData(currentData.close)
-                : ''}
+            {'O: ' +
+                formattedCurrentData(currentData?.open) +
+                ' H: ' +
+                formattedCurrentData(currentData?.high) +
+                ' L: ' +
+                formattedCurrentData(currentData?.low) +
+                ' C: ' +
+                formattedCurrentData(currentData?.close)}
+        </div>
+    );
+
+    const currentVolumeDataDisplay = (
+        <div className={styles.current_data_info}>
+            {'Volume : ' + formatDollarAmountAxis(currentVolumeData)}
         </div>
     );
 
@@ -761,6 +769,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
                 {tokenInfo}
                 {timeFrameContent}
                 {currentDataInfo}
+                {currentVolumeDataDisplay}
                 {/* {liquidityTypeContent} */}
             </div>
             {graphIsLoading ? (
@@ -786,6 +795,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
                         poolPriceDisplay={poolPriceDisplay}
                         truncatedPoolPrice={parseFloat(truncatedPoolPrice)}
                         setCurrentData={setCurrentData}
+                        setCurrentVolumeData={setCurrentVolumeData}
                         upBodyColor={props.upBodyColor}
                         upBorderColor={props.upBorderColor}
                         downBodyColor={props.downBodyColor}

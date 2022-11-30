@@ -69,10 +69,11 @@ export default function PositionsOnlyToggle(props: PositionsOnlyToggleProps) {
             >
                 {/* <p>{isShowAllEnabled ? 'All ' + label : 'My ' + label}</p> */}
 
-                <p>{`All ${props.currentTab}`}</p>
+                <p>{`My ${props.currentTab}`}</p>
+                {/* <p>{`All ${props.currentTab}`}</p> */}
 
                 <Toggle2
-                    isOn={isShowAllEnabled}
+                    isOn={!isShowAllEnabled}
                     handleToggle={() => {
                         setHasInitialized(true);
                         console.log('toggle on', !isShowAllEnabled);

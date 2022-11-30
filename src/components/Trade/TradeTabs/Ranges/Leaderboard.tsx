@@ -343,13 +343,13 @@ export default function Leaderboard(props: LeaderboardPropsIF) {
     ));
 
     return (
-        <main
+        <section
             className={`${styles.main_list_container} ${styles.leaderboard}`}
             style={{ height: expandTradeTable ? 'calc(100vh - 10rem)' : '250px' }}
         >
             {headerColumnsDisplay}
             {rowItemContent}
             {footerDisplay}
-        </main>
+        </section>
     );
 }

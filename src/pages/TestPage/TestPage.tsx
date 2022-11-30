@@ -38,7 +38,7 @@ export default function TestPage(props: TestPageProps) {
     };
 
     return (
-        <main className={styles.main}>
+        <section className={styles.main}>
             <h1>Hi there!</h1>
             <p>{tosText}</p>
             <p>
@@ -69,6 +69,6 @@ export default function TestPage(props: TestPageProps) {
             />
             <Medal ranking={1} />
             <PulseLoading />
-        </main>
+        </section>
     );
 }

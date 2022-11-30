@@ -645,11 +645,12 @@ export default function App() {
         })();
     }, [isUserLoggedIn, account, chainData.chainId]);
 
-    const connectedUserTokens = useAppSelector((state) => state.userData.tokens);
-    const connectedUserNativeToken = connectedUserTokens.nativeToken;
-    const connectedUserErc20Tokens = connectedUserTokens.erc20Tokens;
+    // const connectedUserTokens = useAppSelector((state) => state.userData.tokens);
+    // const connectedUserNativeToken = connectedUserTokens.nativeToken;
+    // const connectedUserErc20Tokens = connectedUserTokens.erc20Tokens;
 
-    // check for token balances on each new block
+    const everyEigthBlock = Math.floor(lastBlockNumber / 8);
+    // check for token balances every four blocks
     useEffect(() => {
         (async () => {
             if (crocEnv && isUserLoggedIn && account && chainData.chainId) {
@@ -658,50 +659,24 @@ export default function App() {
                     const newNativeToken: TokenIF = await cachedFetchNativeTokenBalance(
                         account,
                         chainData.chainId,
-                        lastBlockNumber,
+                        everyEigthBlock,
                         crocEnv,
                     );
-                    if (
-                        JSON.stringify(connectedUserNativeToken) !== JSON.stringify(newNativeToken)
-                    ) {
-                        dispatch(setNativeToken(newNativeToken));
-                    }
+
+                    dispatch(setNativeToken(newNativeToken));
                 } catch (error) {
                     console.log({ error });
                 }
                 try {
-                    const updatedTokens: TokenIF[] = [];
-                    connectedUserErc20Tokens
-                        ? updatedTokens.push(...connectedUserErc20Tokens)
-                        : null;
-                    // console.log('fetching connected user erc20 token balances');
                     const erc20Results: TokenIF[] = await cachedFetchErc20TokenBalances(
                         account,
                         chainData.chainId,
-                        lastBlockNumber,
+                        everyEigthBlock,
                         crocEnv,
                     );
 
-                    erc20Results.map((newToken: TokenIF) => {
-                        const indexOfExistingToken = (connectedUserErc20Tokens ?? []).findIndex(
-                            (existingToken) => existingToken.address === newToken.address,
-                        );
-
-                        if (indexOfExistingToken === -1) {
-                            updatedTokens.push(newToken);
-                        } else if (
-                            JSON.stringify(
-                                (connectedUserErc20Tokens ?? [])[indexOfExistingToken],
-                            ) !== JSON.stringify(newToken)
-                        ) {
-                            updatedTokens[indexOfExistingToken] = newToken;
-                        }
-                    });
-                    if (
-                        JSON.stringify(connectedUserErc20Tokens) !== JSON.stringify(updatedTokens)
-                    ) {
-                        dispatch(setErc20Tokens(updatedTokens));
-                    }
+                    console.log({ erc20Results });
+                    dispatch(setErc20Tokens(erc20Results));
                 } catch (error) {
                     console.log({ error });
                 }
@@ -712,8 +687,8 @@ export default function App() {
         isUserLoggedIn,
         account,
         chainData.chainId,
-        lastBlockNumber,
-        JSON.stringify(connectedUserTokens),
+        everyEigthBlock,
+        // JSON.stringify(connectedUserTokens),
     ]);
 
     const [baseTokenAddress, setBaseTokenAddress] = useState<string>('');
@@ -2077,7 +2052,7 @@ export default function App() {
         lastBlockNumber: lastBlockNumber,
         isMobileSidebarOpen: isMobileSidebarOpen,
         setIsMobileSidebarOpen: setIsMobileSidebarOpen,
-
+        poolPriceDisplay: poolPriceDisplay,
         openGlobalModal: openGlobalModal,
         closeGlobalModal: closeGlobalModal,
         isAppOverlayActive: isAppOverlayActive,
@@ -2385,7 +2360,7 @@ export default function App() {
                 {currentLocation !== '/404' && <PageHeader {...headerProps} />}
 
                 {/* <MobileSidebar/> */}
-                <main className={`${showSidebarOrNullStyle} ${swapBodyStyle}`}>
+                <section className={`${showSidebarOrNullStyle} ${swapBodyStyle}`}>
                     {!currentLocation.startsWith('/swap') && sidebarRender}
                     <Routes>
                         <Route
@@ -2736,7 +2711,7 @@ export default function App() {
                         />
                         <Route path='/404' element={<NotFound />} />
                     </Routes>
-                </main>
+                </section>
                 {snackbarContent}
             </div>
 

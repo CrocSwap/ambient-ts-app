@@ -43,6 +43,7 @@ export default function TvlSubChart(props: TvlData) {
         mouseMoveChartName,
     } = props;
 
+    const tvlMainDiv = useRef(null);
     const d3PlotTvl = useRef(null);
     const d3Yaxis = useRef(null);
 
@@ -98,6 +99,7 @@ export default function TvlSubChart(props: TvlData) {
 
                 crosshairHorizontal.decorate((selection: any) => {
                     selection.enter().select('line').attr('class', 'crosshair');
+                    selection.enter().style('visibility', 'hidden');
                     selection
                         .enter()
                         .append('line')
@@ -114,6 +116,7 @@ export default function TvlSubChart(props: TvlData) {
 
                 crosshairVertical.decorate((selection: any) => {
                     selection.enter().select('line').attr('class', 'crosshair');
+                    selection.enter().style('visibility', 'hidden');
                     selection
                         .enter()
                         .append('line')
@@ -246,16 +249,24 @@ export default function TvlSubChart(props: TvlData) {
 
                 d3.select(d3PlotTvl.current).on('mousemove', function (event: any) {
                     setMouseMoveChartName('tvl');
+                    d3.select(d3PlotTvl.current)
+                        .select('svg')
+                        .select('.crosshairVertical')
+                        .selectChildren()
+                        .style('visibility', 'visible');
                     setIsMouseMoveForSubChart(true);
                     setIsZoomForSubChart(false);
                     setMouseMoveEventForSubChart(event);
                     setsubChartValues((prevState: any) => {
                         const newTargets = [...prevState];
-                        newTargets.filter((target: any) => target.name === 'volume')[0].value =
-                            snap(areaSeries, tvlData, {
+                        newTargets.filter((target: any) => target.name === 'tvl')[0].value = snap(
+                            areaSeries,
+                            tvlData,
+                            {
                                 x: xScale(crosshairDataLocal[0].x),
                                 y: crosshairDataLocal[0].y,
-                            });
+                            },
+                        );
 
                         return newTargets;
                     });
@@ -265,6 +276,11 @@ export default function TvlSubChart(props: TvlData) {
                     setMouseMoveChartName(undefined);
                     props.setIsMouseMoveForSubChart(false);
                     props.setIsZoomForSubChart(false);
+                    d3.select(d3PlotTvl.current)
+                        .select('svg')
+                        .select('.crosshairVertical')
+                        .style('visibility', 'hidden');
+
                     render();
                 });
             }
@@ -275,6 +291,7 @@ export default function TvlSubChart(props: TvlData) {
     return (
         <div
             className='main_layout_chart'
+            ref={tvlMainDiv}
             id='tvl_chart'
             data-testid={'chart'}
             style={{ display: 'flex', flexDirection: 'row', height: '10%', width: '100%' }}

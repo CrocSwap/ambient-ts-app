@@ -28,7 +28,7 @@ export default function Home(props: HomeProps) {
 
     return (
         <>
-            <main data-testid={'home'} className={styles.home_container}>
+            <section data-testid={'home'} className={styles.home_container}>
                 {/* <Landing /> */}
                 {/* <Slides /> */}
                 <HomeSlider />
@@ -56,7 +56,7 @@ export default function Home(props: HomeProps) {
                 {/* <Investors /> */}
                 {/* <DividerDark /> */}
                 <Links />
-            </main>
+            </section>
         </>
     );
 }

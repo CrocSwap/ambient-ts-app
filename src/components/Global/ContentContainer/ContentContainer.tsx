@@ -18,12 +18,12 @@ export default function ContentContainer(props: ContentContainerPropsIF) {
 
     // TODO:   @Junior do we need the wrapper in the return below?  -Emily
     return (
-        <main
+        <section
             className={`$ ${customWidthStyle} ${customWidthAutoStyle} ${tradeRouteStyle} ${swapRouteStyle}`}
         >
             <section className={`${styles.window} ${tradeRouteStyle}`}>
                 <div className={styles.main_content}>{children}</div>
             </section>
-        </main>
+        </section>
     );
 }
