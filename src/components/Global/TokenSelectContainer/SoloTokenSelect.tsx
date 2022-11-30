@@ -149,7 +149,11 @@ export const SoloTokenSelect = (props: propsIF) => {
                 </>
             ) : null}
             {searchType && otherTokensForDOM?.length === 0 ? (
-                <SoloTokenImport customToken={customToken} closeModal={closeModal} />
+                <SoloTokenImport
+                    customToken={customToken}
+                    closeModal={closeModal}
+                    chooseToken={chooseToken}
+                />
             ) : null}
         </section>
     );
