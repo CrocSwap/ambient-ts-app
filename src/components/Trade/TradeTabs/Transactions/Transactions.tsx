@@ -146,8 +146,9 @@ export default function Transactions(props: TransactionsProps) {
         (!connectedAccountActive && isLookupUserTxDataLoading);
 
     const isTxDataLoadingForTradeTable =
-        (isShowAllEnabled && isPoolTxDataLoading) ||
-        (!isShowAllEnabled && isConnectedUserTxDataLoading);
+        !isCandleSelected &&
+        ((isShowAllEnabled && isPoolTxDataLoading) ||
+            (!isShowAllEnabled && isConnectedUserTxDataLoading));
 
     const shouldDisplayLoadingAnimation =
         (isOnPortfolioPage && isTxDataLoadingForPortfolio) ||
