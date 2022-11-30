@@ -588,6 +588,19 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
 
     // ------------  END OF MIDDLE TOP HEADER OF TRADE CHARTS
 
+    const amountWithTooltip = (
+        <DefaultTooltip
+            interactive
+            title={poolPriceChange}
+            placement={'left'}
+            arrow
+            enterDelay={100}
+            leaveDelay={200}
+        >
+            {currentAmountDisplay}
+        </DefaultTooltip>
+    );
+
     const tokenInfo = (
         <div className={styles.token_info_container}>
             <div className={styles.tokens_info}>
@@ -625,8 +638,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
                     gap: '8px',
                 }}
             >
-                {poolPriceChange}
-                {currentAmountDisplay}
+                {amountWithTooltip}
                 <div>{tvlDisplay}</div>
             </div>
             <div>{graphSettingsContent}</div>
