@@ -252,7 +252,6 @@ export default function Chart(props: ChartData) {
     const [dragRange, setDragRange] = useState<any>();
     const [dragLimit, setDragLimit] = useState<any>();
     const [autoToolTip, setAutoToolTip] = useState<any>();
-    const [zoomUtilsTooltip, setZoomUtilsTooltip] = useState<any>();
 
     // const valueFormatter = d3.format('.5f');
     const currentPoolPriceTick =
@@ -1534,10 +1533,6 @@ export default function Chart(props: ChartData) {
             zoomUtilsTooltip
                 .style('top', (placement !== null ? placement.clientHeight + 95 : 557) + 'px')
                 .style('left', (placement !== null ? placement.clientWidth - 115 : 1180) + 'px');
-
-            setZoomUtilsTooltip(() => {
-                return zoomUtilsTooltip;
-            });
         }
     }, [parsedChartData?.chartData, scaleData, rescale]);
 
