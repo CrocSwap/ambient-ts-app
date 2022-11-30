@@ -382,27 +382,94 @@ export default function Chart(props: ChartData) {
                     });
             });
         } else if (location.pathname.includes('range')) {
-            const resultDataMin =
-                scaleData.yScale(ranges[0].value) - scaleData.yScale(market[0].value);
-            const resultLocationDataMin = resultDataMin < 0 ? -20 : 20;
-            const isSameLocationMin = Math.abs(resultDataMin) < 20;
-            const sameLocationDataMin = scaleData.yScale.invert(
-                scaleData.yScale(market[0].value) + resultLocationDataMin,
-            );
+            let resultDataMin = 0;
+            let resultLocationDataMin = 0;
 
-            const resultDataMax =
-                scaleData.yScale(ranges[1].value) - scaleData.yScale(market[0].value);
-            const resultLocationDataMax = resultDataMax < 0 ? -20 : 20;
-            const isSameLocationMax = Math.abs(resultDataMax) < 20;
-            const sameLocationDataMax = scaleData.yScale.invert(
-                scaleData.yScale(market[0].value) + resultLocationDataMax,
-            );
+            let isSameLocationMin = false;
+            let sameLocationDataMin = false;
+
+            let resultDataMax = 0;
+            let resultLocationDataMax = 0;
+
+            let isSameLocationMax = false;
+            let sameLocationDataMax = false;
+
+            const low = ranges.filter((target: any) => target.name === 'Min')[0].value;
+            const high = ranges.filter((target: any) => target.name === 'Max')[0].value;
+            if (low > market[0].value || market[0].value > high) {
+                resultDataMin = scaleData.yScale(low) - scaleData.yScale(high);
+                resultLocationDataMin = resultDataMin < 0 ? -20 : 20;
+                isSameLocationMin = Math.abs(resultDataMin) < 20;
+                sameLocationDataMin = scaleData.yScale.invert(
+                    scaleData.yScale(high) + resultLocationDataMin,
+                );
+
+                let marketControl = 0;
+                let resultLocationDataMarket = 0;
+                if (low > market[0].value) {
+                    marketControl = scaleData.yScale(low) - scaleData.yScale(market[0].value);
+                    resultLocationDataMarket = marketControl <= 0 ? -20 : 20;
+                    isSameLocationMin = Math.abs(marketControl) < 30 || isSameLocationMin;
+                    if (Math.abs(marketControl) < 30) {
+                        sameLocationDataMin = scaleData.yScale.invert(
+                            scaleData.yScale(market[0].value) + resultLocationDataMarket,
+                        );
+                        isSameLocationMax = Math.abs(resultDataMin) < 20;
+
+                        if (isSameLocationMax) {
+                            sameLocationDataMax = scaleData.yScale.invert(
+                                scaleData.yScale(market[0].value) +
+                                    resultLocationDataMarket -
+                                    resultLocationDataMin,
+                            );
+                        }
+                    }
+                }
+
+                if (market[0].value > high) {
+                    marketControl = scaleData.yScale(high) - scaleData.yScale(market[0].value);
+                    resultLocationDataMarket = marketControl <= 0 ? -20 : 20;
+                    isSameLocationMin = Math.abs(marketControl) < 30 || isSameLocationMin;
+
+                    if (Math.abs(marketControl) < 30) {
+                        sameLocationDataMax = scaleData.yScale.invert(
+                            scaleData.yScale(market[0].value) + resultLocationDataMarket,
+                        );
+                        isSameLocationMax = Math.abs(resultDataMin) < 20;
+                        sameLocationDataMin = scaleData.yScale.invert(
+                            scaleData.yScale(market[0].value) +
+                                resultLocationDataMarket +
+                                resultLocationDataMin,
+                        );
+                    }
+                }
+            } else {
+                resultDataMin = scaleData.yScale(low) - scaleData.yScale(market[0].value);
+                resultLocationDataMin = resultDataMin < 0 ? -20 : 20;
+                isSameLocationMin = Math.abs(resultDataMin) < 20;
+                sameLocationDataMin = scaleData.yScale.invert(
+                    scaleData.yScale(market[0].value) + resultLocationDataMin,
+                );
+
+                resultDataMax = scaleData.yScale(high) - scaleData.yScale(market[0].value);
+                resultLocationDataMax = resultDataMax < 0 ? -20 : 20;
+                isSameLocationMax = Math.abs(resultDataMax) < 20;
+                sameLocationDataMax = scaleData.yScale.invert(
+                    scaleData.yScale(market[0].value) + resultLocationDataMax,
+                );
+
+                if (sameLocationDataMin === sameLocationDataMax) {
+                    sameLocationDataMax = scaleData.yScale.invert(
+                        scaleData.yScale(market[0].value) + resultLocationDataMax - 40,
+                    );
+                }
+            }
 
             yAxis.tickValues([
                 ...scale.ticks(),
                 ...[
-                    isSameLocationMin ? sameLocationDataMin : ranges[0].value,
-                    isSameLocationMax ? sameLocationDataMax : ranges[1].value,
+                    isSameLocationMin ? sameLocationDataMin : low,
+                    isSameLocationMax ? sameLocationDataMax : high,
                     market[0].value,
                 ],
                 ...(isMouseMoveCrosshair && !isLineDrag ? [crosshairData[0].y] : []),
@@ -410,10 +477,11 @@ export default function Chart(props: ChartData) {
 
             yAxis.tickFormat((d: any) => {
                 if (isSameLocationMin && d === sameLocationDataMin) {
-                    return formatAmountChartData(ranges[0].value);
+                    return formatAmountChartData(low);
                 }
+
                 if (isSameLocationMax && d === sameLocationDataMax) {
-                    return formatAmountChartData(ranges[1].value);
+                    return formatAmountChartData(high);
                 }
 
                 return formatAmountChartData(d);
@@ -427,10 +495,8 @@ export default function Chart(props: ChartData) {
                         }
 
                         if (
-                            (isSameLocationMin
-                                ? d === sameLocationDataMin
-                                : d === ranges[0].value) ||
-                            (isSameLocationMax ? d === sameLocationDataMax : d === ranges[1].value)
+                            (isSameLocationMin ? d === sameLocationDataMin : d === low) ||
+                            (isSameLocationMax ? d === sameLocationDataMax : d === high)
                         ) {
                             return 'url(#textBg)';
                         }
@@ -447,10 +513,8 @@ export default function Chart(props: ChartData) {
                             return 'crossHairText';
                         }
                         if (
-                            (isSameLocationMin
-                                ? d === sameLocationDataMin
-                                : d === ranges[0].value) ||
-                            (isSameLocationMax ? d === sameLocationDataMax : d === ranges[1].value)
+                            (isSameLocationMin ? d === sameLocationDataMin : d === low) ||
+                            (isSameLocationMax ? d === sameLocationDataMax : d === high)
                         ) {
                             return 'y_axis';
                         }
@@ -2772,6 +2836,7 @@ export default function Chart(props: ChartData) {
                 d3.select(d3Yaxis.current)
                     .on('mouseover', (event: any) => {
                         d3.select(event.currentTarget).style('cursor', 'row-resize');
+                        crosshairData[0].x = -1;
                     })
                     .call(zoomUtils.yAxisDrag);
 
