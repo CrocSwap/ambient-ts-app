@@ -154,7 +154,10 @@ export default function Transactions(props: TransactionsProps) {
         (isOnPortfolioPage && isTxDataLoadingForPortfolio) ||
         (!isOnPortfolioPage && isTxDataLoadingForTradeTable);
 
-    const debouncedShouldDisplayLoadingAnimation = useDebounce(shouldDisplayLoadingAnimation, 1000); // debounce 1/4 second
+    const shouldDisplayNoTableData = !transactionData.length;
+
+    const debouncedShouldDisplayLoadingAnimation = useDebounce(shouldDisplayLoadingAnimation, 2000); // debounce 1 second
+    const debouncedShouldDisplayNoTableData = useDebounce(shouldDisplayNoTableData, 1000); // debounce 1 second
 
     const [debouncedIsShowAllEnabled, setDebouncedIsShowAllEnabled] = useState(false);
 
@@ -561,16 +564,15 @@ export default function Transactions(props: TransactionsProps) {
         />
     ));
 
-    const transactionDataOrNull =
-        transactionData.length > 0 ? (
-            rowItemContent
-        ) : (
-            <NoTableData
-                isShowAllEnabled={isShowAllEnabled}
-                setIsShowAllEnabled={setIsShowAllEnabled}
-                type='transactions'
-            />
-        );
+    const transactionDataOrNull = debouncedShouldDisplayNoTableData ? (
+        <NoTableData
+            isShowAllEnabled={isShowAllEnabled}
+            setIsShowAllEnabled={setIsShowAllEnabled}
+            type='transactions'
+        />
+    ) : (
+        rowItemContent
+    );
 
     const expandStyle = expandTradeTable ? 'calc(100vh - 10rem)' : '250px';
 

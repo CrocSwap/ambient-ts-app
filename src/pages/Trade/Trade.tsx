@@ -207,16 +207,20 @@ export default function Trade(props: TradePropsIF) {
     const expandGraphStyle = expandTradeTable ? styles.hide_graph : '';
     const fullScreenStyle = fullScreenChart ? styles.chart_full_screen : styles.main__chart;
 
+    const [hasInitialized, setHasInitialized] = useState(false);
+
     const changeState = (isOpen: boolean | undefined, candleData: CandleData | undefined) => {
         setIsCandleSelected(isOpen);
         console.log(
             'changing show all based on whether the user is viewing data for a specific candle',
         );
-        if (isOpen && isShowAllEnabled) {
-            setIsShowAllEnabled(false);
-        } else if (!isOpen && !isShowAllEnabled) {
-            setIsShowAllEnabled(true);
-        }
+        setHasInitialized(false);
+        // if (isOpen && isShowAllEnabled) {
+        //     setIsShowAllEnabled(false);
+        // } else if (!isOpen && !isShowAllEnabled) {
+        //     console.log('setting to show all');
+        //     setIsShowAllEnabled(true);
+        // }
         // setIsShowAllEnabled(!isOpen);
         setTransactionFilter(candleData);
     };
@@ -571,6 +575,8 @@ export default function Trade(props: TradePropsIF) {
                             changeState={changeState}
                             selectedDate={selectedDate}
                             setSelectedDate={setSelectedDate}
+                            hasInitialized={hasInitialized}
+                            setHasInitialized={setHasInitialized}
                             // handleTxCopiedClick={handleTxCopiedClick}
                             // handleOrderCopiedClick={handleOrderCopiedClick}
                             // handleRangeCopiedClick={handleRangeCopiedClick}

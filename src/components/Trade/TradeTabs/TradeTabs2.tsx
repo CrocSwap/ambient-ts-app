@@ -68,6 +68,8 @@ interface ITabsProps {
     changeState: (isOpen: boolean | undefined, candleData: CandleData | undefined) => void;
     selectedDate: Date | undefined;
     setSelectedDate: React.Dispatch<Date | undefined>;
+    hasInitialized: boolean;
+    setHasInitialized: Dispatch<SetStateAction<boolean>>;
     // handleTxCopiedClick: () => void;
     // handleOrderCopiedClick: () => void;
     // handleRangeCopiedClick: () => void;
@@ -114,6 +116,8 @@ export default function TradeTabs2(props: ITabsProps) {
         changeState,
         selectedDate,
         setSelectedDate,
+        hasInitialized,
+        setHasInitialized,
         // handleTxCopiedClick,
         // handleOrderCopiedClick,
         // handleRangeCopiedClick,
@@ -135,8 +139,6 @@ export default function TradeTabs2(props: ITabsProps) {
     const userLimitOrders = graphData?.limitOrdersByUser?.limitOrders;
     const userPositions = graphData?.positionsByUser?.positions;
     // const poolPositions = graphData?.positionsByPool?.positions;
-
-    const [hasInitialized, setHasInitialized] = useState(false);
 
     const [selectedInsideTab, setSelectedInsideTab] = useState<number>(0);
 
@@ -191,8 +193,10 @@ export default function TradeTabs2(props: ITabsProps) {
                 (outsideControl && selectedOutsideTab === 0) ||
                 (!outsideControl && selectedInsideTab === 0)
             ) {
-                if (
-                    !isUserLoggedIn ||
+                if (isCandleSelected) {
+                    setIsShowAllEnabled(false);
+                } else if (
+                    (!isUserLoggedIn && !isCandleSelected) ||
                     (!isCandleSelected && !isShowAllEnabled && matchingUserChangesLength < 1)
                 ) {
                     console.log('1');
@@ -244,6 +248,7 @@ export default function TradeTabs2(props: ITabsProps) {
     }, [
         isUserLoggedIn,
         hasInitialized,
+        isCandleSelected,
         outsideControl,
         selectedInsideTab,
         selectedOutsideTab,
