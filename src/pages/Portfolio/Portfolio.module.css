@@ -53,6 +53,19 @@
     background: var(--title-gradient);
 }
 
+.non_connected_content{
+    width: 100%;
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: center;
+gap: 8px;
+}
+
+.non_connected_content button{
+    width: 30%;
+}
+
 @media (min-width: 900px) {
     .tabs_exchange_balance_container,
     .full_layout_container {
