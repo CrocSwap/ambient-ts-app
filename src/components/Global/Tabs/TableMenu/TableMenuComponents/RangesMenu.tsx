@@ -173,7 +173,7 @@ export default function RangesMenu(props: RangesMenuIF) {
             }
             onClick={handleCopyClick}
         >
-            Copy
+            Copy Trade
         </Link>
     );
 

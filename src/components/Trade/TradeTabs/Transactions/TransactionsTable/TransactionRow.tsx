@@ -303,14 +303,26 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
     //     </li>
     // );
 
+    const pair = [`${tx.baseSymbol}: ${tx.base}`, `${tx.quoteSymbol}: ${tx.quote}`];
+    const tip = pair.join('\n');
+
     const tokenPair = (
-        <li className='base_color'>
-            {/* {tokensTogether} */}
-            <p>
-                {' '}
-                {baseTokenSymbol} / {quoteTokenSymbol}
-            </p>
-        </li>
+        <DefaultTooltip
+            interactive
+            title={<div style={{ whiteSpace: 'pre-line' }}>{tip}</div>}
+            placement={'right'}
+            arrow
+            enterDelay={150}
+            leaveDelay={200}
+        >
+            <li className='base_color'>
+                {/* {tokensTogether} */}
+                <p>
+                    {' '}
+                    {baseTokenSymbol} / {quoteTokenSymbol}
+                </p>
+            </li>
+        </DefaultTooltip>
     );
 
     // const fillTime = new Intl.DateTimeFormat('en-US', {
@@ -366,61 +378,61 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
         </DefaultTooltip>
     );
 
-    const baseQtyToolTipStyle = <p className={styles.tooltip_style}>{baseTokenSymbol + ' Qty'}</p>;
-    const quoteQtyToolTipStyle = (
-        <p className={styles.tooltip_style}>{quoteTokenSymbol + ' Qty'}</p>
-    );
+    // const baseQtyToolTipStyle = <p className={styles.tooltip_style}>{baseTokenSymbol + ' Qty'}</p>;
+    // const quoteQtyToolTipStyle = (
+    //     <p className={styles.tooltip_style}>{quoteTokenSymbol + ' Qty'}</p>
+    // );
     const baseQtyDisplayWithTooltip = (
-        <DefaultTooltip
-            interactive
-            title={baseQtyToolTipStyle}
-            placement={'right'}
-            arrow
-            enterDelay={150}
-            leaveDelay={200}
-        >
-            <li onClick={openDetailsModal} data-label={baseTokenSymbol} className='color_white'>
-                <p
-                    style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'flex-end',
-                        gap: '4px',
-                        textAlign: 'right',
-                        fontFamily: 'monospace',
-                    }}
-                >
-                    {baseDisplay}
-                    {isOnPortfolioPage && <img src={baseTokenLogo} width='15px' alt='' />}
-                </p>
-            </li>
-        </DefaultTooltip>
+        // <DefaultTooltip
+        //     interactive
+        //     title={baseQtyToolTipStyle}
+        //     placement={'right'}
+        //     arrow
+        //     enterDelay={150}
+        //     leaveDelay={200}
+        // >
+        <li onClick={openDetailsModal} data-label={baseTokenSymbol} className='color_white'>
+            <p
+                style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'flex-end',
+                    gap: '4px',
+                    textAlign: 'right',
+                    fontFamily: 'monospace',
+                }}
+            >
+                {baseDisplay}
+                {isOnPortfolioPage && <img src={baseTokenLogo} width='15px' alt='' />}
+            </p>
+        </li>
+        /* </DefaultTooltip> */
     );
     const quoteQtyDisplayWithTooltip = (
-        <DefaultTooltip
-            interactive
-            title={quoteQtyToolTipStyle}
-            placement={'right'}
-            arrow
-            enterDelay={150}
-            leaveDelay={200}
-        >
-            <li onClick={openDetailsModal} data-label={quoteTokenSymbol} className='color_white'>
-                <p
-                    style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'flex-end',
-                        gap: '4px',
-                        textAlign: 'right',
-                        fontFamily: 'monospace',
-                    }}
-                >
-                    {quoteDisplay}
-                    {isOnPortfolioPage && <img src={quoteTokenLogo} width='15px' alt='' />}
-                </p>
-            </li>
-        </DefaultTooltip>
+        // <DefaultTooltip
+        //     interactive
+        //     title={quoteQtyToolTipStyle}
+        //     placement={'right'}
+        //     arrow
+        //     enterDelay={150}
+        //     leaveDelay={200}
+        // >
+        <li onClick={openDetailsModal} data-label={quoteTokenSymbol} className='color_white'>
+            <p
+                style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'flex-end',
+                    gap: '4px',
+                    textAlign: 'right',
+                    fontFamily: 'monospace',
+                }}
+            >
+                {quoteDisplay}
+                {isOnPortfolioPage && <img src={quoteTokenLogo} width='15px' alt='' />}
+            </p>
+        </li>
+        /* </DefaultTooltip> */
     );
 
     // end of portfolio page li element ---------------

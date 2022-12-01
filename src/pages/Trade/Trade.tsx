@@ -154,6 +154,8 @@ export default function Trade(props: TradePropsIF) {
     ];
     const [fullScreenChart, setFullScreenChart] = useState(false);
 
+    const [selectedDate, setSelectedDate] = useState<Date | undefined>();
+
     const { tradeData, graphData } = useAppSelector((state) => state);
     const {
         isDenomBase,
@@ -205,9 +207,21 @@ export default function Trade(props: TradePropsIF) {
     const expandGraphStyle = expandTradeTable ? styles.hide_graph : '';
     const fullScreenStyle = fullScreenChart ? styles.chart_full_screen : styles.main__chart;
 
+    const [hasInitialized, setHasInitialized] = useState(false);
+
     const changeState = (isOpen: boolean | undefined, candleData: CandleData | undefined) => {
         setIsCandleSelected(isOpen);
-        setIsShowAllEnabled(!isOpen);
+        console.log(
+            'changing show all based on whether the user is viewing data for a specific candle',
+        );
+        setHasInitialized(false);
+        // if (isOpen && isShowAllEnabled) {
+        //     setIsShowAllEnabled(false);
+        // } else if (!isOpen && !isShowAllEnabled) {
+        //     console.log('setting to show all');
+        //     setIsShowAllEnabled(true);
+        // }
+        // setIsShowAllEnabled(!isOpen);
         setTransactionFilter(candleData);
     };
 
@@ -304,7 +318,7 @@ export default function Trade(props: TradePropsIF) {
         ) : null;
 
     return (
-        <main className={styles.main_layout}>
+        <section className={styles.main_layout}>
             <div className={styles.middle_col}>
                 {poolNotInitializedContent}
                 {mobileDataToggle}
@@ -504,6 +518,8 @@ export default function Trade(props: TradePropsIF) {
                             downBorderColor={downBorderColor}
                             baseTokenAddress={baseTokenAddress}
                             poolPriceNonDisplay={poolPriceNonDisplay}
+                            selectedDate={selectedDate}
+                            setSelectedDate={setSelectedDate}
                         />
                     </div>
                 </div>
@@ -556,6 +572,11 @@ export default function Trade(props: TradePropsIF) {
                             importedTokens={importedTokens}
                             showSidebar={showSidebar}
                             handlePulseAnimation={handlePulseAnimation}
+                            changeState={changeState}
+                            selectedDate={selectedDate}
+                            setSelectedDate={setSelectedDate}
+                            hasInitialized={hasInitialized}
+                            setHasInitialized={setHasInitialized}
                             // handleTxCopiedClick={handleTxCopiedClick}
                             // handleOrderCopiedClick={handleOrderCopiedClick}
                             // handleRangeCopiedClick={handleRangeCopiedClick}
@@ -564,7 +585,7 @@ export default function Trade(props: TradePropsIF) {
                 </motion.div>
             </div>
             {mainContent}
-        </main>
+        </section>
     );
 }
 

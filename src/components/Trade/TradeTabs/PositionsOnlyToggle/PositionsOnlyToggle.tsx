@@ -5,12 +5,14 @@ import { MdExpand, MdCloseFullscreen } from 'react-icons/md';
 import { CandleData } from '../../../../utils/state/graphDataSlice';
 import { GiLaurelsTrophy } from 'react-icons/gi';
 import { NavLink } from 'react-router-dom';
+import moment from 'moment';
 interface PositionsOnlyToggleProps {
     isShowAllEnabled: boolean;
     isAuthenticated: boolean;
     isWeb3Enabled: boolean;
     setHasInitialized: Dispatch<SetStateAction<boolean>>;
     setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
+    isCandleSelected: boolean | undefined;
     setIsCandleSelected: Dispatch<SetStateAction<boolean | undefined>>;
     setTransactionFilter: Dispatch<SetStateAction<CandleData | undefined>>;
 
@@ -22,6 +24,9 @@ interface PositionsOnlyToggleProps {
     setShowPositionsOnlyToggle?: Dispatch<SetStateAction<boolean>>;
     leader: string;
     leaderOwnerId: string;
+    changeState: (isOpen: boolean | undefined, candleData: CandleData | undefined) => void;
+    selectedDate: Date | undefined;
+    setSelectedDate: React.Dispatch<Date | undefined>;
 }
 
 export default function PositionsOnlyToggle(props: PositionsOnlyToggleProps) {
@@ -30,6 +35,7 @@ export default function PositionsOnlyToggle(props: PositionsOnlyToggleProps) {
         isAuthenticated,
         isWeb3Enabled,
         setIsShowAllEnabled,
+        isCandleSelected,
         setIsCandleSelected,
         setTransactionFilter,
         setHasInitialized,
@@ -38,10 +44,11 @@ export default function PositionsOnlyToggle(props: PositionsOnlyToggleProps) {
         showPositionsOnlyToggle,
         leader,
         leaderOwnerId,
+        changeState,
+        selectedDate,
+        setSelectedDate,
         // setShowPositionsOnlyToggle
     } = props;
-
-    // console.log(props);
 
     const expandIcon = (
         <div className={styles.icon} onClick={() => setExpandTradeTable(!expandTradeTable)}>
@@ -60,6 +67,36 @@ export default function PositionsOnlyToggle(props: PositionsOnlyToggleProps) {
 
     if (leader !== '' && !showPositionsOnlyToggle) return leaderName;
 
+    const toggleOrNull = isCandleSelected ? null : (
+        <Toggle2
+            isOn={!isShowAllEnabled}
+            handleToggle={() => {
+                setHasInitialized(true);
+                // console.log('toggle on', !isShowAllEnabled);
+                console.log('toggling show all');
+                setIsShowAllEnabled(!isShowAllEnabled);
+                if (!isShowAllEnabled) {
+                    setIsCandleSelected(false);
+                    setTransactionFilter(undefined);
+                }
+            }}
+            id='positions_only_toggle'
+            disabled={!isAuthenticated || !isWeb3Enabled || isCandleSelected}
+        />
+    );
+
+    const unselectCandle = () => {
+        setSelectedDate(undefined);
+        changeState(false, undefined);
+        setIsCandleSelected(false);
+    };
+
+    const clearButtonOrNull = isCandleSelected ? (
+        <button className={styles.option_button} onClick={() => unselectCandle()}>
+            Clear
+        </button>
+    ) : null;
+
     return (
         <div className={styles.main_container}>
             <div
@@ -69,23 +106,21 @@ export default function PositionsOnlyToggle(props: PositionsOnlyToggleProps) {
             >
                 {/* <p>{isShowAllEnabled ? 'All ' + label : 'My ' + label}</p> */}
 
-                <p>{`My ${props.currentTab}`}</p>
-                {/* <p>{`All ${props.currentTab}`}</p> */}
-
-                <Toggle2
-                    isOn={!isShowAllEnabled}
-                    handleToggle={() => {
-                        setHasInitialized(true);
-                        console.log('toggle on', !isShowAllEnabled);
-                        setIsShowAllEnabled(!isShowAllEnabled);
-                        if (!isShowAllEnabled) {
-                            setIsCandleSelected(false);
-                            setTransactionFilter(undefined);
-                        }
+                <p
+                    onClick={() => {
+                        unselectCandle();
+                        // setIsCandleSelected(false);
+                        // setTransactionFilter(undefined);
                     }}
-                    id='positions_only_toggle'
-                    disabled={!isAuthenticated || !isWeb3Enabled}
-                />
+                    style={isCandleSelected ? { cursor: 'pointer' } : { cursor: 'default' }}
+                >
+                    {isCandleSelected
+                        ? `Showing Transactions for ${moment(selectedDate).calendar()}`
+                        : `My ${props.currentTab}`}
+                </p>
+                {/* <p>{`All ${props.currentTab}`}</p> */}
+                {clearButtonOrNull}
+                {toggleOrNull}
             </div>
             {expandIcon}
         </div>
