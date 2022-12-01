@@ -11,29 +11,29 @@ interface TvlData {
     setsubChartValues: React.Dispatch<React.SetStateAction<any>>;
     setZoomAndYdragControl: React.Dispatch<React.SetStateAction<any>>;
     crosshairForSubChart: any;
-    xScale: any;
-    xScaleCopy: any;
+    scaleData: any;
     render: any;
     zoomAndYdragControl: any;
     isMouseMoveForSubChart: any;
     setIsMouseMoveForSubChart: React.Dispatch<React.SetStateAction<boolean>>;
-    setMouseMoveEventForSubChart: React.Dispatch<React.SetStateAction<any>>;
+    setMouseMoveEventCharts: React.Dispatch<React.SetStateAction<any>>;
     setIsZoomForSubChart: React.Dispatch<React.SetStateAction<boolean>>;
     getNewCandleData: any;
     setMouseMoveChartName: React.Dispatch<React.SetStateAction<string | undefined>>;
     mouseMoveChartName: string | undefined;
+    setTransformX: React.Dispatch<React.SetStateAction<any>>;
+    transformX: any;
 }
 
 export default function TvlSubChart(props: TvlData) {
     const {
         tvlData,
         period,
-        xScale,
-        xScaleCopy,
+        scaleData,
         crosshairForSubChart,
         zoomAndYdragControl,
         setZoomAndYdragControl,
-        setMouseMoveEventForSubChart,
+        setMouseMoveEventCharts,
         setIsMouseMoveForSubChart,
         setIsZoomForSubChart,
         setsubChartValues,
@@ -49,12 +49,20 @@ export default function TvlSubChart(props: TvlData) {
 
     // Tvl Chart
     useEffect(() => {
-        if (tvlData !== undefined) {
-            drawChart(tvlData, xScale);
+        if (tvlData !== undefined && scaleData !== undefined) {
+            drawChart(tvlData);
 
             props.render();
         }
-    }, [xScale, crosshairForSubChart, period, tvlData, zoomAndYdragControl]);
+    }, [
+        scaleData,
+        scaleData.lastX,
+        crosshairForSubChart,
+        period,
+        tvlData,
+        zoomAndYdragControl,
+        JSON.stringify(scaleData.xScale.domain()[0]),
+    ]);
 
     const render = useCallback(() => {
         const nd = d3.select('#d3PlotTvl').node() as any;
@@ -62,7 +70,7 @@ export default function TvlSubChart(props: TvlData) {
     }, []);
 
     const drawChart = useCallback(
-        (tvlData: any, xScale: any) => {
+        (tvlData: any) => {
             if (tvlData.length > 0) {
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
                 const yExtent = d3fc.extentLinear().accessors([(d: any) => d.value]);
@@ -86,14 +94,14 @@ export default function TvlSubChart(props: TvlData) {
 
                 const areaJoin = d3fc.dataJoin('g', 'areaJoin');
                 const lineJoin = d3fc.dataJoin('g', 'lineJoin');
-                const crosshairHorizontalJoin = d3fc.dataJoin('g', 'crosshairHorizontal');
+                // const crosshairHorizontalJoin = d3fc.dataJoin('g', 'crosshairHorizontal');
                 const crosshairVerticalJoin = d3fc.dataJoin('g', 'crosshairVertical');
 
                 const crosshairHorizontal = d3fc
                     .annotationSvgLine()
                     .orient('vertical')
                     .value((d: any) => d.x)
-                    .xScale(xScale)
+                    .xScale(scaleData.xScale)
                     .yScale(yScale)
                     .label('');
 
@@ -111,7 +119,7 @@ export default function TvlSubChart(props: TvlData) {
                 const crosshairVertical = d3fc
                     .annotationSvgLine()
                     .value((d: any) => yScale.invert(d.y))
-                    .xScale(xScale)
+                    .xScale(scaleData.xScale)
                     .yScale(yScale);
 
                 crosshairVertical.decorate((selection: any) => {
@@ -150,7 +158,7 @@ export default function TvlSubChart(props: TvlData) {
 
                 const areaSeries = d3fc
                     .seriesSvgArea()
-                    .xScale(xScale)
+                    .xScale(scaleData.xScale)
                     .yScale(yScale)
                     .mainValue((d: any) => d.value)
                     .crossValue((d: any) => d.time)
@@ -162,7 +170,7 @@ export default function TvlSubChart(props: TvlData) {
 
                 const lineSeries = d3fc
                     .seriesSvgLine()
-                    .xScale(xScale)
+                    .xScale(scaleData.xScale)
                     .yScale(yScale)
                     .mainValue((d: any) => d.value)
                     .crossValue((d: any) => d.time)
@@ -172,7 +180,7 @@ export default function TvlSubChart(props: TvlData) {
                     });
 
                 d3.select(d3PlotTvl.current).on('measure', function (event: any) {
-                    xScale.range([0, event.detail.width]);
+                    scaleData.xScale.range([0, event.detail.width]);
                     yScale.range([event.detail.height, 0]);
                 });
 
@@ -188,13 +196,26 @@ export default function TvlSubChart(props: TvlData) {
                             }
                         })
                         .on('zoom', (event: any) => {
-                            getNewCandleData(event, date, xScale);
-                            xScale.domain(event.transform.rescaleX(xScaleCopy).domain());
+                            getNewCandleData(event, date, scaleData.xScale);
+
+                            const domainX = scaleData.xScale.domain();
+                            const linearX = d3
+                                .scaleTime()
+                                .domain(scaleData.xScale.range())
+                                .range([0, domainX[1] - domainX[0]]);
+
+                            const deltaX = linearX(scaleData.lastX - event.transform.x);
+                            scaleData.xScale.domain([
+                                new Date(domainX[0].getTime() + deltaX),
+                                new Date(domainX[1].getTime() + deltaX),
+                            ]);
+
+                            scaleData.lastX = event.transform.x;
 
                             setZoomAndYdragControl(event);
                             setIsMouseMoveForSubChart(false);
                             setIsZoomForSubChart(true);
-                            setMouseMoveEventForSubChart(event);
+                            setMouseMoveEventCharts(event);
                         }) as any;
 
                     svg.call(zoom);
@@ -202,9 +223,8 @@ export default function TvlSubChart(props: TvlData) {
 
                 d3.select(d3PlotTvl.current).on('draw', function (event: any) {
                     const svg = d3.select(event.target).select('svg');
-                    areaJoin(svg, [tvlData]).call(areaSeries);
-                    lineJoin(svg, [tvlData]).call(lineSeries);
-                    crosshairHorizontalJoin(svg, [crosshairDataLocal]).call(crosshairHorizontal);
+                    areaJoin(svg, [tvlData]).lower().call(areaSeries);
+                    lineJoin(svg, [tvlData]).lower().call(lineSeries);
                     crosshairVerticalJoin(svg, [crosshairDataLocal]).call(crosshairVertical);
                 });
 
@@ -256,14 +276,14 @@ export default function TvlSubChart(props: TvlData) {
                         .style('visibility', 'visible');
                     setIsMouseMoveForSubChart(true);
                     setIsZoomForSubChart(false);
-                    setMouseMoveEventForSubChart(event);
+                    setMouseMoveEventCharts(event);
                     setsubChartValues((prevState: any) => {
                         const newTargets = [...prevState];
                         newTargets.filter((target: any) => target.name === 'tvl')[0].value = snap(
                             areaSeries,
                             tvlData,
                             {
-                                x: xScale(crosshairDataLocal[0].x),
+                                x: scaleData.xScale(crosshairDataLocal[0].x),
                                 y: crosshairDataLocal[0].y,
                             },
                         );
@@ -285,7 +305,7 @@ export default function TvlSubChart(props: TvlData) {
                 });
             }
         },
-        [crosshairForSubChart],
+        [crosshairForSubChart, JSON.stringify(scaleData.xScale.domain()[0])],
     );
 
     return (

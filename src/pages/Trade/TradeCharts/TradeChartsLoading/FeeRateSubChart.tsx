@@ -12,12 +12,12 @@ interface FreeRateData {
     setZoomAndYdragControl: React.Dispatch<React.SetStateAction<any>>;
     crosshairForSubChart: any;
     xScale: any;
-    xScaleCopy: any;
+    lastX: any;
     render: any;
     zoomAndYdragControl: any;
     isMouseMoveForSubChart: any;
     setIsMouseMoveForSubChart: React.Dispatch<React.SetStateAction<boolean>>;
-    setMouseMoveEventForSubChart: React.Dispatch<React.SetStateAction<any>>;
+    setMouseMoveEventCharts: React.Dispatch<React.SetStateAction<any>>;
     setIsZoomForSubChart: React.Dispatch<React.SetStateAction<boolean>>;
     getNewCandleData: any;
     setMouseMoveChartName: React.Dispatch<React.SetStateAction<string | undefined>>;
@@ -29,19 +29,18 @@ export default function FeeRateSubChart(props: FreeRateData) {
         feeData,
         period,
         xScale,
-        xScaleCopy,
-        //     crosshairXForSubChart,
         crosshairForSubChart,
         zoomAndYdragControl,
         setsubChartValues,
         setZoomAndYdragControl,
-        setMouseMoveEventForSubChart,
+        setMouseMoveEventCharts,
         setIsMouseMoveForSubChart,
         isMouseMoveForSubChart,
         setIsZoomForSubChart,
         getNewCandleData,
         setMouseMoveChartName,
         mouseMoveChartName,
+        lastX,
     } = props;
 
     const d3PlotFeeRate = useRef(null);
@@ -54,7 +53,7 @@ export default function FeeRateSubChart(props: FreeRateData) {
 
             props.render();
         }
-    }, [xScale, crosshairForSubChart, period, feeData, zoomAndYdragControl]);
+    }, [xScale, crosshairForSubChart, period, feeData, zoomAndYdragControl, lastX]);
 
     const render = useCallback(() => {
         const nd = d3.select('#d3PlotFeeRate').node() as any;
@@ -67,7 +66,10 @@ export default function FeeRateSubChart(props: FreeRateData) {
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 
                 //  const result = feeData.filter((v: number, i: number, a: any) => a.indexOf(v) !== i);
-                const yExtent = d3fc.extentLinear().accessors([(d: any) => d.value]);
+                const yExtent = d3fc
+                    .extentLinear()
+                    .accessors([(d: any) => d.value])
+                    .include([0]);
 
                 const yScale = d3.scaleLinear();
                 yScale.domain(yExtent(feeData));
@@ -87,12 +89,8 @@ export default function FeeRateSubChart(props: FreeRateData) {
                                 : -1,
                     },
                 ];
-                // if (yDomain[0]===yDomain[1]){
-                //     yAxis.tickValues([yDomain[0]-1,yDomain[0]+1])
-                // }
 
                 const lineJoin = d3fc.dataJoin('g', 'lineJoin');
-                const crosshairHorizontalJoin = d3fc.dataJoin('g', 'crosshairHorizontal');
                 const crosshairVerticalJoin = d3fc.dataJoin('g', 'crosshairVertical');
 
                 const crosshairHorizontal = d3fc
@@ -162,12 +160,23 @@ export default function FeeRateSubChart(props: FreeRateData) {
                         })
                         .on('zoom', (event: any) => {
                             getNewCandleData(event, date, xScale);
-                            xScale.domain(event.transform.rescaleX(xScaleCopy).domain());
+
+                            const domainX = xScale.domain();
+                            const linearX = d3
+                                .scaleTime()
+                                .domain(xScale.range())
+                                .range([0, domainX[1] - domainX[0]]);
+
+                            const deltaX = linearX(lastX - event.transform.x);
+                            xScale.domain([
+                                new Date(domainX[0].getTime() + deltaX),
+                                new Date(domainX[1].getTime() + deltaX),
+                            ]);
 
                             setZoomAndYdragControl(event);
                             setIsMouseMoveForSubChart(false);
                             setIsZoomForSubChart(true);
-                            setMouseMoveEventForSubChart(event);
+                            setMouseMoveEventCharts(event);
                         }) as any;
 
                     svg.call(zoom);
@@ -175,8 +184,7 @@ export default function FeeRateSubChart(props: FreeRateData) {
 
                 d3.select(d3PlotFeeRate.current).on('draw', function (event: any) {
                     const svg = d3.select(event.target).select('svg');
-                    lineJoin(svg, [feeData]).call(lineSeries);
-                    crosshairHorizontalJoin(svg, [crosshairDataLocal]).call(crosshairHorizontal);
+                    lineJoin(svg, [feeData]).lower().call(lineSeries);
                     crosshairVerticalJoin(svg, [crosshairDataLocal]).call(crosshairVertical);
                 });
 
@@ -215,7 +223,7 @@ export default function FeeRateSubChart(props: FreeRateData) {
                     setMouseMoveChartName('feeRate');
                     setIsMouseMoveForSubChart(true);
                     setIsZoomForSubChart(false);
-                    setMouseMoveEventForSubChart(event);
+                    setMouseMoveEventCharts(event);
                     d3.select('#fee_rate_chart')
                         .select('svg')
                         .select('.crosshairVertical')
@@ -226,7 +234,7 @@ export default function FeeRateSubChart(props: FreeRateData) {
                         const newTargets = [...prevState];
                         newTargets.filter((target: any) => target.name === 'feeRate')[0].value =
                             snap(lineSeries, feeData, {
-                                x: xScale(crosshairDataLocal[0].x),
+                                x: crosshairDataLocal[0].x,
                                 y: crosshairDataLocal[0].y,
                             });
 
