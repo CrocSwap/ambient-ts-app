@@ -38,6 +38,7 @@ import {
     getPinnedPriceValuesFromTicks,
 } from '../Trade/Range/rangeFunctions';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
+import { useMoralis } from 'react-moralis';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -134,6 +135,7 @@ export default function Chart(props: ChartData) {
     const dispatch = useAppDispatch();
 
     const location = useLocation();
+    const { isAuthenticated } = useMoralis();
 
     const { tokenA, tokenB } = tradeData;
     const tokenADecimals = tokenA.decimals;
@@ -356,7 +358,11 @@ export default function Chart(props: ChartData) {
                             return 'url(#crossHairBg)';
                         }
                         if (isSameLocation ? d === sameLocationData : d === limit[0].value) {
-                            if (checkLimitOrder && limit[0].value > currentPriceData[0].value) {
+                            if (
+                                isAuthenticated
+                                    ? checkLimitOrder || limit[0].value > currentPriceData[0].value
+                                    : false
+                            ) {
                                 return 'url(#textLowBg)';
                             }
                             return 'url(#textBg)';
@@ -370,8 +376,9 @@ export default function Chart(props: ChartData) {
                         if (
                             d === market[0].value ||
                             ((isSameLocation ? d === sameLocationData : d === limit[0].value) &&
-                                checkLimitOrder &&
-                                limit[0].value > currentPriceData[0].value)
+                                (isAuthenticated
+                                    ? checkLimitOrder || limit[0].value > currentPriceData[0].value
+                                    : false))
                         ) {
                             return 'market';
                         }
@@ -1448,7 +1455,11 @@ export default function Chart(props: ChartData) {
                     .select('line')
                     .attr(
                         'class',
-                        checkLimitOrder && limit[0].value > currentPriceData[0].value
+                        (
+                            isAuthenticated
+                                ? checkLimitOrder || limit[0].value > currentPriceData[0].value
+                                : false
+                        )
                             ? 'lowline'
                             : 'line',
                     );
@@ -1541,7 +1552,7 @@ export default function Chart(props: ChartData) {
                 return limitLine;
             });
         }
-    }, [parsedChartData?.chartData, scaleData, market, checkLimitOrder, limit]);
+    }, [parsedChartData?.chartData, scaleData, market, checkLimitOrder, limit, isAuthenticated]);
 
     useEffect(() => {
         if (
@@ -1650,7 +1661,12 @@ export default function Chart(props: ChartData) {
                     .attr(
                         'stroke',
                         selectClass.includes('limit')
-                            ? checkLimitOrder && limit[0].value > currentPriceData[0].value
+                            ? (
+                                  isAuthenticated
+                                      ? checkLimitOrder ||
+                                        limit[0].value > currentPriceData[0].value
+                                      : false
+                              )
                                 ? 'rgb(139, 253, 244)'
                                 : 'rgba(235, 235, 255)'
                             : 'rgba(235, 235, 255)',
@@ -1658,7 +1674,12 @@ export default function Chart(props: ChartData) {
                     .attr(
                         'fill',
                         selectClass.includes('limit')
-                            ? checkLimitOrder && limit[0].value > currentPriceData[0].value
+                            ? (
+                                  isAuthenticated
+                                      ? checkLimitOrder ||
+                                        limit[0].value > currentPriceData[0].value
+                                      : false
+                              )
                                 ? 'rgb(139, 253, 244)'
                                 : 'rgba(235, 235, 255)'
                             : 'rgba(235, 235, 255)',
@@ -1671,7 +1692,12 @@ export default function Chart(props: ChartData) {
                     .attr(
                         'stroke',
                         selectClass.includes('limit')
-                            ? checkLimitOrder && limit[0].value > currentPriceData[0].value
+                            ? (
+                                  isAuthenticated
+                                      ? checkLimitOrder ||
+                                        limit[0].value > currentPriceData[0].value
+                                      : false
+                              )
                                 ? 'rgb(139, 253, 244)'
                                 : 'rgba(235, 235, 255)'
                             : 'rgba(235, 235, 255)',
@@ -1679,7 +1705,12 @@ export default function Chart(props: ChartData) {
                     .attr(
                         'fill',
                         selectClass.includes('limit')
-                            ? checkLimitOrder && limit[0].value > currentPriceData[0].value
+                            ? (
+                                  isAuthenticated
+                                      ? checkLimitOrder ||
+                                        limit[0].value > currentPriceData[0].value
+                                      : false
+                              )
                                 ? 'rgb(139, 253, 244)'
                                 : 'rgba(235, 235, 255)'
                             : 'rgba(235, 235, 255)',
@@ -1752,7 +1783,15 @@ export default function Chart(props: ChartData) {
 
     useEffect(() => {
         addTriangleAndRect();
-    }, [dragControl, location, market, limit, parsedChartData?.period, checkLimitOrder]);
+    }, [
+        dragControl,
+        location,
+        market,
+        limit,
+        parsedChartData?.period,
+        checkLimitOrder,
+        isAuthenticated,
+    ]);
 
     // Line Rules
     useEffect(() => {
