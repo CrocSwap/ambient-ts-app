@@ -204,8 +204,6 @@ export default function TvlSubChart(props: TvlData) {
                                 .domain(scaleData.xScale.range())
                                 .range([0, domainX[1] - domainX[0]]);
 
-                            console.log(domainX[0]);
-
                             const deltaX = linearX(scaleData.lastX - event.transform.x);
                             scaleData.xScale.domain([
                                 new Date(domainX[0].getTime() + deltaX),

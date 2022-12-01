@@ -726,8 +726,6 @@ export default function Chart(props: ChartData) {
                             .domain(scaleData.xScale.range())
                             .range([0, domainX[1] - domainX[0]]);
 
-                        console.log(domainX[0]);
-
                         const deltaX = linearX(scaleData.lastX - t.x);
                         scaleData.xScale.domain([
                             new Date(domainX[0].getTime() + deltaX),
