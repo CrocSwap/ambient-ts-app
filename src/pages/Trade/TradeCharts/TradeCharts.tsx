@@ -779,8 +779,11 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
     }, []);
 
     return (
-        <>
-            <div className={`${styles.graph_style} ${expandGraphStyle}`}>
+        <div
+            className={styles.main_container_chart}
+            style={{ padding: fullScreenChart ? '1rem' : '0' }}
+        >
+            <div className={`${styles.graph_style} ${expandGraphStyle}  `}>
                 {/* {graphSettingsContent} */}
                 {tokenInfo}
                 {timeFrameContent}
@@ -791,7 +794,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
             {graphIsLoading ? (
                 <TradeChartsLoading />
             ) : (
-                <div style={{ width: '100%', height: '100%' }} ref={canvasRef}>
+                <div style={{ width: '100%', height: '100%', zIndex: '2' }} ref={canvasRef}>
                     <TradeCandleStickChart
                         pool={pool}
                         chainData={chainData}
@@ -824,7 +827,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
                     />
                 </div>
             )}
-        </>
+        </div>
     );
 }
 
