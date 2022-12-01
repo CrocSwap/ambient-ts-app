@@ -59,6 +59,10 @@ interface ChartData {
     baseTokenAddress: string;
     chainId: string;
     poolPriceNonDisplay: number | undefined;
+    rescale: boolean | undefined;
+    setRescale: React.Dispatch<React.SetStateAction<boolean>>;
+    latest: boolean | undefined;
+    setLatest: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export interface ChartUtils {
@@ -420,6 +424,7 @@ export default function TradeCandleStickChart(props: ChartData) {
                     subChartxScale: subChartxScale,
                     volumeScale: volumeScale,
                     lastY: 0,
+                    lastX: 0,
                 };
             });
         }
@@ -480,6 +485,10 @@ export default function TradeCandleStickChart(props: ChartData) {
                         scaleData={scaleData}
                         chainId={chainId}
                         poolPriceNonDisplay={poolPriceNonDisplay}
+                        rescale={props.rescale}
+                        setRescale={props.setRescale}
+                        latest={props.latest}
+                        setLatest={props.setLatest}
                     />
                 ) : (
                     <>{loading}</>

@@ -166,6 +166,9 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
     const { tradeData } = useAppSelector((state) => state);
     const { poolIndex } = lookupChain(chainId);
 
+    const [rescale, setRescale] = useState(true);
+    const [latest, setLatest] = useState(false);
+
     const setActivePeriod = (period: number) => {
         dispatch(setActiveChartPeriod(period));
     };
@@ -700,9 +703,50 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
                     formatDollarAmountAxis(currentVolumeData)}
             </div>
 
-            <div className={styles.zoom_utils_tooltip}>
-                <div className={styles.latest_tooltip}>LATEST</div>
-                <div className={styles.auto_tooltip}>AUTO</div>
+            <div
+                style={{
+                    display: 'flex',
+                    justifyContent: 'end',
+                    alignItems: 'end',
+                }}
+                className={styles.chart_overlay_container}
+            >
+                <div className={styles.settings_container}>
+                    <button
+                        onClick={() => {
+                            setLatest(true);
+                        }}
+                        style={{
+                            fontSize: '12px',
+                            fontWeight: 'bold',
+                        }}
+                        className={styles.non_active_selected_button}
+                    >
+                        LATEST
+                    </button>
+                </div>
+
+                <div className={styles.settings_container}>
+                    <button
+                        onClick={() => {
+                            setRescale((prevState) => {
+                                return !prevState;
+                            });
+                        }}
+                        style={{
+                            color: rescale ? 'rgb(97, 100, 189)' : 'rgba(237, 231, 225, 0.2)',
+                            fontSize: '12px',
+                            fontWeight: 'bold',
+                        }}
+                        className={
+                            rescale
+                                ? styles.active_selected_button
+                                : styles.non_active_selected_button
+                        }
+                    >
+                        AUTO
+                    </button>
+                </div>
             </div>
         </div>
     );
@@ -805,6 +849,10 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
                         baseTokenAddress={props.baseTokenAddress}
                         chainId={chainId}
                         poolPriceNonDisplay={props.poolPriceNonDisplay}
+                        rescale={rescale}
+                        setRescale={setRescale}
+                        latest={latest}
+                        setLatest={setLatest}
                     />
                 </div>
             )}
