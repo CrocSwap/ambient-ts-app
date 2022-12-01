@@ -21,7 +21,7 @@ import {
     candleDomain,
     setCandleDomains,
 } from '../../utils/state/tradeDataSlice';
-import { CandleChartData } from '../Trade/TradeCharts/TradeCharts';
+import { CandleChartData, VolumeChartData } from '../Trade/TradeCharts/TradeCharts';
 import FeeRateSubChart from '../Trade/TradeCharts/TradeChartsLoading/FeeRateSubChart';
 import TvlSubChart from '../Trade/TradeCharts/TradeChartsLoading/TvlSubChart';
 import { ChartUtils } from '../Trade/TradeCharts/TradeCandleStickChart';
@@ -83,6 +83,8 @@ interface ChartData {
     scaleData: any;
     chainId: string;
     poolPriceNonDisplay: number | undefined;
+    volumeData: VolumeChartData;
+    checkLimitOrder: boolean;
     rescale: boolean | undefined;
     setRescale: React.Dispatch<React.SetStateAction<boolean>>;
     latest: boolean | undefined;
@@ -113,6 +115,7 @@ export default function Chart(props: ChartData) {
         scaleData,
         chainId,
         poolPriceNonDisplay,
+        checkLimitOrder,
         rescale,
         setRescale,
         latest,
@@ -125,7 +128,7 @@ export default function Chart(props: ChartData) {
 
     const rangeLowLineTriggered = tradeData.rangeLowLineTriggered;
     const rangeHighLineTriggered = tradeData.rangeHighLineTriggered;
-
+    const volumeData = props.volumeData;
     const { showFeeRate, showTvl, showVolume } = props.chartItemStates;
     const { upBodyColor, upBorderColor, downBodyColor, downBorderColor } = props;
 
@@ -360,7 +363,7 @@ export default function Chart(props: ChartData) {
                             return 'url(#crossHairBg)';
                         }
                         if (isSameLocation ? d === sameLocationData : d === limit[0].value) {
-                            if (market[0].value > d) {
+                            if (checkLimitOrder && limit[0].value > currentPriceData[0].value) {
                                 return 'url(#textLowBg)';
                             }
                             return 'url(#textBg)';
@@ -374,7 +377,8 @@ export default function Chart(props: ChartData) {
                         if (
                             d === market[0].value ||
                             ((isSameLocation ? d === sameLocationData : d === limit[0].value) &&
-                                market[0].value > d)
+                                checkLimitOrder &&
+                                limit[0].value > currentPriceData[0].value)
                         ) {
                             return 'market';
                         }
@@ -387,27 +391,94 @@ export default function Chart(props: ChartData) {
                     });
             });
         } else if (location.pathname.includes('range')) {
-            const resultDataMin =
-                scaleData.yScale(ranges[0].value) - scaleData.yScale(market[0].value);
-            const resultLocationDataMin = resultDataMin < 0 ? -20 : 20;
-            const isSameLocationMin = Math.abs(resultDataMin) < 20;
-            const sameLocationDataMin = scaleData.yScale.invert(
-                scaleData.yScale(market[0].value) + resultLocationDataMin,
-            );
+            let resultDataMin = 0;
+            let resultLocationDataMin = 0;
 
-            const resultDataMax =
-                scaleData.yScale(ranges[1].value) - scaleData.yScale(market[0].value);
-            const resultLocationDataMax = resultDataMax < 0 ? -20 : 20;
-            const isSameLocationMax = Math.abs(resultDataMax) < 20;
-            const sameLocationDataMax = scaleData.yScale.invert(
-                scaleData.yScale(market[0].value) + resultLocationDataMax,
-            );
+            let isSameLocationMin = false;
+            let sameLocationDataMin = false;
+
+            let resultDataMax = 0;
+            let resultLocationDataMax = 0;
+
+            let isSameLocationMax = false;
+            let sameLocationDataMax = false;
+
+            const low = ranges.filter((target: any) => target.name === 'Min')[0].value;
+            const high = ranges.filter((target: any) => target.name === 'Max')[0].value;
+            if (low > market[0].value || market[0].value > high) {
+                resultDataMin = scaleData.yScale(low) - scaleData.yScale(high);
+                resultLocationDataMin = resultDataMin < 0 ? -20 : 20;
+                isSameLocationMin = Math.abs(resultDataMin) < 20;
+                sameLocationDataMin = scaleData.yScale.invert(
+                    scaleData.yScale(high) + resultLocationDataMin,
+                );
+
+                let marketControl = 0;
+                let resultLocationDataMarket = 0;
+                if (low > market[0].value) {
+                    marketControl = scaleData.yScale(low) - scaleData.yScale(market[0].value);
+                    resultLocationDataMarket = marketControl <= 0 ? -20 : 20;
+                    isSameLocationMin = Math.abs(marketControl) < 30 || isSameLocationMin;
+                    if (Math.abs(marketControl) < 30) {
+                        sameLocationDataMin = scaleData.yScale.invert(
+                            scaleData.yScale(market[0].value) + resultLocationDataMarket,
+                        );
+                        isSameLocationMax = Math.abs(resultDataMin) < 20;
+
+                        if (isSameLocationMax) {
+                            sameLocationDataMax = scaleData.yScale.invert(
+                                scaleData.yScale(market[0].value) +
+                                    resultLocationDataMarket -
+                                    resultLocationDataMin,
+                            );
+                        }
+                    }
+                }
+
+                if (market[0].value > high) {
+                    marketControl = scaleData.yScale(high) - scaleData.yScale(market[0].value);
+                    resultLocationDataMarket = marketControl <= 0 ? -20 : 20;
+                    isSameLocationMin = Math.abs(marketControl) < 30 || isSameLocationMin;
+
+                    if (Math.abs(marketControl) < 30) {
+                        sameLocationDataMax = scaleData.yScale.invert(
+                            scaleData.yScale(market[0].value) + resultLocationDataMarket,
+                        );
+                        isSameLocationMax = Math.abs(resultDataMin) < 20;
+                        sameLocationDataMin = scaleData.yScale.invert(
+                            scaleData.yScale(market[0].value) +
+                                resultLocationDataMarket +
+                                resultLocationDataMin,
+                        );
+                    }
+                }
+            } else {
+                resultDataMin = scaleData.yScale(low) - scaleData.yScale(market[0].value);
+                resultLocationDataMin = resultDataMin < 0 ? -20 : 20;
+                isSameLocationMin = Math.abs(resultDataMin) < 20;
+                sameLocationDataMin = scaleData.yScale.invert(
+                    scaleData.yScale(market[0].value) + resultLocationDataMin,
+                );
+
+                resultDataMax = scaleData.yScale(high) - scaleData.yScale(market[0].value);
+                resultLocationDataMax = resultDataMax < 0 ? -20 : 20;
+                isSameLocationMax = Math.abs(resultDataMax) < 20;
+                sameLocationDataMax = scaleData.yScale.invert(
+                    scaleData.yScale(market[0].value) + resultLocationDataMax,
+                );
+
+                if (sameLocationDataMin === sameLocationDataMax) {
+                    sameLocationDataMax = scaleData.yScale.invert(
+                        scaleData.yScale(market[0].value) + resultLocationDataMax - 40,
+                    );
+                }
+            }
 
             yAxis.tickValues([
                 ...scale.ticks(),
                 ...[
-                    isSameLocationMin ? sameLocationDataMin : ranges[0].value,
-                    isSameLocationMax ? sameLocationDataMax : ranges[1].value,
+                    isSameLocationMin ? sameLocationDataMin : low,
+                    isSameLocationMax ? sameLocationDataMax : high,
                     market[0].value,
                 ],
                 ...(isMouseMoveCrosshair && !isLineDrag ? [crosshairData[0].y] : []),
@@ -415,10 +486,11 @@ export default function Chart(props: ChartData) {
 
             yAxis.tickFormat((d: any) => {
                 if (isSameLocationMin && d === sameLocationDataMin) {
-                    return formatAmountChartData(ranges[0].value);
+                    return formatAmountChartData(low);
                 }
+
                 if (isSameLocationMax && d === sameLocationDataMax) {
-                    return formatAmountChartData(ranges[1].value);
+                    return formatAmountChartData(high);
                 }
 
                 return formatAmountChartData(d);
@@ -432,10 +504,8 @@ export default function Chart(props: ChartData) {
                         }
 
                         if (
-                            (isSameLocationMin
-                                ? d === sameLocationDataMin
-                                : d === ranges[0].value) ||
-                            (isSameLocationMax ? d === sameLocationDataMax : d === ranges[1].value)
+                            (isSameLocationMin ? d === sameLocationDataMin : d === low) ||
+                            (isSameLocationMax ? d === sameLocationDataMax : d === high)
                         ) {
                             return 'url(#textBg)';
                         }
@@ -452,10 +522,8 @@ export default function Chart(props: ChartData) {
                             return 'crossHairText';
                         }
                         if (
-                            (isSameLocationMin
-                                ? d === sameLocationDataMin
-                                : d === ranges[0].value) ||
-                            (isSameLocationMax ? d === sameLocationDataMax : d === ranges[1].value)
+                            (isSameLocationMin ? d === sameLocationDataMin : d === low) ||
+                            (isSameLocationMax ? d === sameLocationDataMax : d === high)
                         ) {
                             return 'y_axis';
                         }
@@ -1385,7 +1453,12 @@ export default function Chart(props: ChartData) {
                 selection.enter().select('g.right-handle').remove();
                 selection
                     .select('line')
-                    .attr('class', (d: any) => (d.value > market[0].value ? 'line' : 'lowline'));
+                    .attr(
+                        'class',
+                        checkLimitOrder && limit[0].value > currentPriceData[0].value
+                            ? 'lowline'
+                            : 'line',
+                    );
             });
 
             const marketLine = d3fc
@@ -1475,7 +1548,7 @@ export default function Chart(props: ChartData) {
                 return limitLine;
             });
         }
-    }, [parsedChartData?.chartData, scaleData, market]);
+    }, [parsedChartData?.chartData, scaleData, market, checkLimitOrder, limit]);
 
     useEffect(() => {
         if (scaleData !== undefined && latest) {
@@ -1525,7 +1598,7 @@ export default function Chart(props: ChartData) {
                     .attr(
                         'stroke',
                         selectClass.includes('limit')
-                            ? market[0].value > limit[0].value
+                            ? checkLimitOrder && limit[0].value > currentPriceData[0].value
                                 ? 'rgb(139, 253, 244)'
                                 : 'rgba(235, 235, 255)'
                             : 'rgba(235, 235, 255)',
@@ -1533,7 +1606,7 @@ export default function Chart(props: ChartData) {
                     .attr(
                         'fill',
                         selectClass.includes('limit')
-                            ? market[0].value > limit[0].value
+                            ? checkLimitOrder && limit[0].value > currentPriceData[0].value
                                 ? 'rgb(139, 253, 244)'
                                 : 'rgba(235, 235, 255)'
                             : 'rgba(235, 235, 255)',
@@ -1546,7 +1619,7 @@ export default function Chart(props: ChartData) {
                     .attr(
                         'stroke',
                         selectClass.includes('limit')
-                            ? market[0].value > limit[0].value
+                            ? checkLimitOrder && limit[0].value > currentPriceData[0].value
                                 ? 'rgb(139, 253, 244)'
                                 : 'rgba(235, 235, 255)'
                             : 'rgba(235, 235, 255)',
@@ -1554,7 +1627,7 @@ export default function Chart(props: ChartData) {
                     .attr(
                         'fill',
                         selectClass.includes('limit')
-                            ? market[0].value > limit[0].value
+                            ? checkLimitOrder && limit[0].value > currentPriceData[0].value
                                 ? 'rgb(139, 253, 244)'
                                 : 'rgba(235, 235, 255)'
                             : 'rgba(235, 235, 255)',
@@ -1627,7 +1700,7 @@ export default function Chart(props: ChartData) {
 
     useEffect(() => {
         addTriangleAndRect();
-    }, [dragControl, location, market, limit, parsedChartData?.period]);
+    }, [dragControl, location, market, limit, parsedChartData?.period, checkLimitOrder]);
 
     // Line Rules
     useEffect(() => {
@@ -2314,15 +2387,14 @@ export default function Chart(props: ChartData) {
             liqHighligtedAskSeries !== undefined &&
             liqHighligtedBidSeries !== undefined &&
             horizontalBandData !== undefined &&
-            horizontalBandJoin !== undefined
+            horizontalBandJoin !== undefined &&
+            volumeData !== undefined
         ) {
             const targetData = {
                 limit: limit,
                 ranges: ranges,
                 market: market,
             };
-
-            const volumeData = parsedChartData?.volumeChartData.sort((a, b) => b.time - a.time);
 
             drawChart(
                 parsedChartData.chartData,
@@ -2533,7 +2605,10 @@ export default function Chart(props: ChartData) {
                         (event.detail.width / 10) * 8,
                     ]);
 
-                    scaleData.volumeScale.range([event.detail.height, event.detail.height * 0.998]);
+                    scaleData.volumeScale.range([
+                        event.detail.height,
+                        event.detail.height - event.detail.height / 10,
+                    ]);
                 });
 
                 d3.select(d3PlotArea.current).on('draw', function (event: any) {
@@ -2835,6 +2910,7 @@ export default function Chart(props: ChartData) {
                 d3.select(d3Yaxis.current)
                     .on('mouseover', (event: any) => {
                         d3.select(event.currentTarget).style('cursor', 'row-resize');
+                        crosshairData[0].x = -1;
                     })
                     .call(zoomUtils.yAxisDrag);
 

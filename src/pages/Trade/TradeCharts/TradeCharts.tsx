@@ -86,6 +86,7 @@ interface TradeChartsPropsIF {
     downBorderColor: string;
     baseTokenAddress: string;
     poolPriceNonDisplay: number | undefined;
+    checkLimitOrder: boolean;
 }
 
 export interface CandleChartData {
@@ -151,6 +152,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
         removePoolFromFaves,
         favePools,
         expandTradeTable,
+        checkLimitOrder,
     } = props;
 
     const dispatch = useAppDispatch();
@@ -849,6 +851,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
                         baseTokenAddress={props.baseTokenAddress}
                         chainId={chainId}
                         poolPriceNonDisplay={props.poolPriceNonDisplay}
+                        checkLimitOrder={checkLimitOrder}
                         rescale={rescale}
                         setRescale={setRescale}
                         latest={latest}

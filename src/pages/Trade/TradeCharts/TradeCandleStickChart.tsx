@@ -59,6 +59,7 @@ interface ChartData {
     baseTokenAddress: string;
     chainId: string;
     poolPriceNonDisplay: number | undefined;
+    checkLimitOrder: boolean;
     rescale: boolean | undefined;
     setRescale: React.Dispatch<React.SetStateAction<boolean>>;
     latest: boolean | undefined;
@@ -81,7 +82,8 @@ type chartItemStates = {
 };
 
 export default function TradeCandleStickChart(props: ChartData) {
-    const { pool, chainData, baseTokenAddress, chainId, poolPriceNonDisplay } = props;
+    const { pool, chainData, baseTokenAddress, chainId, poolPriceNonDisplay, checkLimitOrder } =
+        props;
 
     const [scaleData, setScaleData] = useState<any>();
 
@@ -189,6 +191,33 @@ export default function TradeCandleStickChart(props: ChartData) {
                 (arr.length - (usePopulation ? 0 : 1)),
         );
     };
+
+    // volume data
+
+    const volumeData = useMemo(() => {
+        const volumeData = parsedChartData?.volumeChartData;
+        const volumeTempData: any = [];
+        if (volumeData) {
+            const volumeLogScale = d3
+                .scaleLog()
+                .domain([
+                    d3.min(volumeData, function (d: any) {
+                        return d.value;
+                    }),
+                    d3.max(parsedChartData?.volumeChartData, function (d: any) {
+                        return d.value;
+                    }),
+                ])
+                .range([30, 1000]);
+
+            volumeData.map((data: any) => {
+                data.value = volumeLogScale(data.value);
+                volumeTempData.push(data);
+            });
+        }
+
+        return volumeTempData;
+    }, [parsedChartData?.volumeChartData]);
 
     // Parse liquidtiy data
     const liquidityData = useMemo(() => {
@@ -388,12 +417,14 @@ export default function TradeCandleStickChart(props: ChartData) {
             const liquidityScale = d3.scaleLinear();
             const ghostScale = d3.scaleLinear();
 
-            const yExtent = d3fc
-                .extentLinear()
+            const volumeScale = d3.scaleLinear();
+
+            const yExtentVolume = d3fc
+                .extentLinear(volumeData)
                 .include([0])
                 .accessors([(d: any) => d.value]);
-            const volumeScale = d3.scaleLinear();
-            volumeScale.domain(yExtent(parsedChartData.volumeChartData));
+
+            volumeScale.domain(yExtentVolume(volumeData));
 
             // bar chart
             const liquidityExtent = d3fc
@@ -465,6 +496,7 @@ export default function TradeCandleStickChart(props: ChartData) {
                         candleData={parsedChartData}
                         expandTradeTable={expandTradeTable}
                         liquidityData={liquidityData}
+                        volumeData={volumeData}
                         changeState={props.changeState}
                         limitTick={props.limitTick}
                         denomInBase={denominationsInBase}
@@ -485,6 +517,7 @@ export default function TradeCandleStickChart(props: ChartData) {
                         scaleData={scaleData}
                         chainId={chainId}
                         poolPriceNonDisplay={poolPriceNonDisplay}
+                        checkLimitOrder={checkLimitOrder}
                         rescale={props.rescale}
                         setRescale={props.setRescale}
                         latest={props.latest}
