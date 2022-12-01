@@ -30,15 +30,12 @@ export const SoloTokenSelect = (props: propsIF) => {
         searchableTokens
     } = props;
     false && searchableTokens;
-    console.log(importedTokens);
 
     const [tokensForDOM, otherTokensForDOM, validatedInput, setInput, searchType] = useSoloSearch(
         chainId,
         importedTokens,
         tokensOnActiveLists,
     );
-    useEffect(() => console.log({searchType}), [searchType]);
-    useEffect(() => console.log(otherTokensForDOM), [otherTokensForDOM]);
 
     const dispatch = useAppDispatch();
 
@@ -136,13 +133,9 @@ export const SoloTokenSelect = (props: propsIF) => {
                 });
         }
     }, [searchType, validatedInput]);
+    // EDS Test Token 2 address (please do not delete!)
     // '0x0B0322d75bad9cA72eC7708708B54e6b38C26adA'
 
-    const customTokenReturn = JSON.stringify(customToken);
-
-    console.log(customToken);
-
-    console.log({ customTokenReturn });
     return (
         <section className={styles.container}>
             <input

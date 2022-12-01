@@ -23,7 +23,7 @@ export const useSoloSearch = (
         ) {
             setSearchAs('address');
             // if not an apparent token address search name and symbol
-        } else if (cleanInput.length >= 3) {
+        } else if (cleanInput.length >= 2) {
             setSearchAs('nameOrSymbol');
             return cleanInput;
             // otherwise treat as if there is no input entered
@@ -72,17 +72,35 @@ export const useSoloSearch = (
         };
 
         const searchByNameOrSymbol = (searchString: string) => {
-            const importedMatches = importedTokensOnChain.filter(
-                (tkn: TokenIF) =>
-                    tkn.name.toLowerCase().includes(searchString) ||
-                    tkn.symbol.toLowerCase().includes(searchString),
-            );
+            let importedMatches = [];
+            if (searchString.length === 2) {
+                importedMatches = importedTokensOnChain.filter(
+                    (tkn: TokenIF) =>
+                        tkn.name.toLowerCase() === searchString ||
+                        tkn.symbol.toLowerCase() === searchString,
+                );
+            } else {
+                importedMatches = importedTokensOnChain.filter(
+                    (tkn: TokenIF) =>
+                        tkn.name.toLowerCase().includes(searchString) ||
+                        tkn.symbol.toLowerCase().includes(searchString),
+                );
+            }
             setImportedTokensForDOM(importedMatches);
-            const otherMatches = otherTokensOnChain.filter(
-                (tkn: TokenIF) =>
-                    tkn.name.toLowerCase().includes(searchString) ||
-                    tkn.symbol.toLowerCase().includes(searchString),
-            );
+            let otherMatches = [];
+            if (searchString.length === 2) {
+                otherMatches = otherTokensOnChain.filter(
+                    (tkn: TokenIF) =>
+                        tkn.name.toLowerCase() === searchString ||
+                        tkn.symbol.toLowerCase() === searchString,
+                );
+            } else {
+                otherMatches = otherTokensOnChain.filter(
+                    (tkn: TokenIF) =>
+                        tkn.name.toLowerCase().includes(searchString) ||
+                        tkn.symbol.toLowerCase().includes(searchString),
+                );
+            }
             setOtherTokensForDOM(otherMatches);
         };
 
