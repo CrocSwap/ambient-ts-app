@@ -21,7 +21,7 @@ import {
     candleDomain,
     setCandleDomains,
 } from '../../utils/state/tradeDataSlice';
-import { CandleChartData } from '../Trade/TradeCharts/TradeCharts';
+import { CandleChartData, VolumeChartData } from '../Trade/TradeCharts/TradeCharts';
 import FeeRateSubChart from '../Trade/TradeCharts/TradeChartsLoading/FeeRateSubChart';
 import TvlSubChart from '../Trade/TradeCharts/TradeChartsLoading/TvlSubChart';
 import { ChartUtils } from '../Trade/TradeCharts/TradeCandleStickChart';
@@ -83,6 +83,8 @@ interface ChartData {
     scaleData: any;
     chainId: string;
     poolPriceNonDisplay: number | undefined;
+    volumeData: VolumeChartData;
+    checkLimitOrder: boolean;
 }
 
 function getWindowDimensions() {
@@ -109,6 +111,7 @@ export default function Chart(props: ChartData) {
         scaleData,
         chainId,
         poolPriceNonDisplay,
+        checkLimitOrder,
     } = props;
 
     const tradeData = useAppSelector((state) => state.tradeData);
@@ -117,7 +120,7 @@ export default function Chart(props: ChartData) {
 
     const rangeLowLineTriggered = tradeData.rangeLowLineTriggered;
     const rangeHighLineTriggered = tradeData.rangeHighLineTriggered;
-
+    const volumeData = props.volumeData;
     const { showFeeRate, showTvl, showVolume } = props.chartItemStates;
     const { upBodyColor, upBorderColor, downBodyColor, downBorderColor } = props;
 
@@ -353,7 +356,7 @@ export default function Chart(props: ChartData) {
                             return 'url(#crossHairBg)';
                         }
                         if (isSameLocation ? d === sameLocationData : d === limit[0].value) {
-                            if (market[0].value > d) {
+                            if (checkLimitOrder) {
                                 return 'url(#textLowBg)';
                             }
                             return 'url(#textBg)';
@@ -367,7 +370,7 @@ export default function Chart(props: ChartData) {
                         if (
                             d === market[0].value ||
                             ((isSameLocation ? d === sameLocationData : d === limit[0].value) &&
-                                market[0].value > d)
+                                checkLimitOrder)
                         ) {
                             return 'market';
                         }
@@ -1440,9 +1443,7 @@ export default function Chart(props: ChartData) {
                     .attr('stroke', 'none');
 
                 selection.enter().select('g.right-handle').remove();
-                selection
-                    .select('line')
-                    .attr('class', (d: any) => (d.value > market[0].value ? 'line' : 'lowline'));
+                selection.select('line').attr('class', checkLimitOrder ? 'lowline' : 'line');
             });
 
             const marketLine = d3fc
@@ -1532,7 +1533,7 @@ export default function Chart(props: ChartData) {
                 return limitLine;
             });
         }
-    }, [parsedChartData?.chartData, scaleData, market]);
+    }, [parsedChartData?.chartData, scaleData, market, checkLimitOrder]);
 
     useEffect(() => {
         if (
@@ -1641,7 +1642,7 @@ export default function Chart(props: ChartData) {
                     .attr(
                         'stroke',
                         selectClass.includes('limit')
-                            ? market[0].value > limit[0].value
+                            ? checkLimitOrder
                                 ? 'rgb(139, 253, 244)'
                                 : 'rgba(235, 235, 255)'
                             : 'rgba(235, 235, 255)',
@@ -1649,7 +1650,7 @@ export default function Chart(props: ChartData) {
                     .attr(
                         'fill',
                         selectClass.includes('limit')
-                            ? market[0].value > limit[0].value
+                            ? checkLimitOrder
                                 ? 'rgb(139, 253, 244)'
                                 : 'rgba(235, 235, 255)'
                             : 'rgba(235, 235, 255)',
@@ -1662,7 +1663,7 @@ export default function Chart(props: ChartData) {
                     .attr(
                         'stroke',
                         selectClass.includes('limit')
-                            ? market[0].value > limit[0].value
+                            ? checkLimitOrder
                                 ? 'rgb(139, 253, 244)'
                                 : 'rgba(235, 235, 255)'
                             : 'rgba(235, 235, 255)',
@@ -1670,7 +1671,7 @@ export default function Chart(props: ChartData) {
                     .attr(
                         'fill',
                         selectClass.includes('limit')
-                            ? market[0].value > limit[0].value
+                            ? checkLimitOrder
                                 ? 'rgb(139, 253, 244)'
                                 : 'rgba(235, 235, 255)'
                             : 'rgba(235, 235, 255)',
@@ -1743,7 +1744,7 @@ export default function Chart(props: ChartData) {
 
     useEffect(() => {
         addTriangleAndRect();
-    }, [dragControl, location, market, limit, parsedChartData?.period]);
+    }, [dragControl, location, market, limit, parsedChartData?.period, checkLimitOrder]);
 
     // Line Rules
     useEffect(() => {
@@ -2430,15 +2431,14 @@ export default function Chart(props: ChartData) {
             liqHighligtedAskSeries !== undefined &&
             liqHighligtedBidSeries !== undefined &&
             horizontalBandData !== undefined &&
-            horizontalBandJoin !== undefined
+            horizontalBandJoin !== undefined &&
+            volumeData !== undefined
         ) {
             const targetData = {
                 limit: limit,
                 ranges: ranges,
                 market: market,
             };
-
-            const volumeData = parsedChartData?.volumeChartData.sort((a, b) => b.time - a.time);
 
             drawChart(
                 parsedChartData.chartData,
@@ -2649,7 +2649,10 @@ export default function Chart(props: ChartData) {
                         (event.detail.width / 10) * 8,
                     ]);
 
-                    scaleData.volumeScale.range([event.detail.height, event.detail.height * 0.998]);
+                    scaleData.volumeScale.range([
+                        event.detail.height,
+                        event.detail.height - event.detail.height / 10,
+                    ]);
                 });
 
                 d3.select(d3PlotArea.current).on('draw', function (event: any) {
