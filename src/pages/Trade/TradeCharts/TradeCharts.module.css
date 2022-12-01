@@ -368,6 +368,11 @@
 
     /* text/grey light */
 
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 4px;
+
     color: rgba(235, 235, 255, 0.4);
 }
 
@@ -449,3 +454,15 @@
     }
   */
 }
+
+.chart_tooltips {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    align-items: center;
+    padding: 0.3rem 0;
+}
+

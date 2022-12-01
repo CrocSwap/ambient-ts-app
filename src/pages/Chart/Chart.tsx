@@ -85,6 +85,10 @@ interface ChartData {
     poolPriceNonDisplay: number | undefined;
     volumeData: VolumeChartData;
     checkLimitOrder: boolean;
+    rescale: boolean | undefined;
+    setRescale: React.Dispatch<React.SetStateAction<boolean>>;
+    latest: boolean | undefined;
+    setLatest: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 function getWindowDimensions() {
@@ -112,6 +116,10 @@ export default function Chart(props: ChartData) {
         chainId,
         poolPriceNonDisplay,
         checkLimitOrder,
+        rescale,
+        setRescale,
+        latest,
+        setLatest,
     } = props;
 
     const tradeData = useAppSelector((state) => state.tradeData);
@@ -186,7 +194,6 @@ export default function Chart(props: ChartData) {
 
     // Rules
     const [dragControl, setDragControl] = useState(false);
-    const [rescale, setRescale] = useState(true);
     const [zoomAndYdragControl, setZoomAndYdragControl] = useState();
     const [isMouseMoveCrosshair, setIsMouseMoveCrosshair] = useState(false);
     const [bandwidth, setBandwidth] = useState(5);
@@ -254,7 +261,7 @@ export default function Chart(props: ChartData) {
     const [popupHeight, setPopupHeight] = useState<any>();
     const [dragRange, setDragRange] = useState<any>();
     const [dragLimit, setDragLimit] = useState<any>();
-    const [autoToolTip, setAutoToolTip] = useState<any>();
+    const [transformX, setTransformX] = useState<any>(0);
 
     // const valueFormatter = d3.format('.5f');
     const currentPoolPriceTick =
@@ -781,9 +788,17 @@ export default function Chart(props: ChartData) {
                             }
                         }
 
-                        scaleData.xScale.domain(
-                            event.transform.rescaleX(scaleData.xScaleCopy).domain(),
-                        );
+                        const domainX = scaleData.xScale.domain();
+                        const linearX = d3
+                            .scaleTime()
+                            .domain(scaleData.xScale.range())
+                            .range([0, domainX[1] - domainX[0]]);
+
+                        const deltaX = linearX(scaleData.lastX - t.x);
+                        scaleData.xScale.domain([
+                            new Date(domainX[0].getTime() + deltaX),
+                            new Date(domainX[1].getTime() + deltaX),
+                        ]);
 
                         // PANNING
                         if (!rescale && event.sourceEvent && event.sourceEvent.type != 'wheel') {
@@ -821,6 +836,8 @@ export default function Chart(props: ChartData) {
                         }
 
                         scaleData.lastY = t.y;
+                        scaleData.lastX = t.x;
+
                         clickedForLine = true;
                         render();
 
@@ -843,6 +860,10 @@ export default function Chart(props: ChartData) {
                             // onClickRange(event);
                         }
                     }
+
+                    setTransformX(() => {
+                        return scaleData.lastX;
+                    });
                     // dispatch(setCandleDomains(candleDomain));
                 }) as any;
 
@@ -879,6 +900,9 @@ export default function Chart(props: ChartData) {
         candlestick,
         isZoomForSubChart,
         location,
+        JSON.stringify(scaleData.lastX),
+        JSON.stringify(scaleData.xScale.domain()[0]),
+        transformX,
     ]);
 
     useEffect(() => {
@@ -1211,15 +1235,6 @@ export default function Chart(props: ChartData) {
                                 setLiqHighlightedLinesAndArea(newTargets);
                                 return newTargets;
                             });
-
-                            const dy = event.dy;
-                            const factor = Math.pow(2, -dy * 0.008);
-
-                            const domain = scaleData.yScale.domain();
-                            const center = (domain[1] + domain[0]) / 2;
-                            const size = (domain[1] - domain[0]) / 2 / factor;
-
-                            scaleData.yScale.domain([center - size, center + size]);
                         }
                     } else {
                         highLineMoved = lineToBeSet === 'Max';
@@ -1384,14 +1399,6 @@ export default function Chart(props: ChartData) {
         setDragControl(false);
     }, [parsedChartData]);
 
-    useEffect(() => {
-        if (autoToolTip !== undefined) {
-            autoToolTip.style('color', () =>
-                rescale ? 'rgb(97, 100, 189)' : 'rgba(237, 231, 225, 0.2)',
-            );
-        }
-    }, [rescale]);
-
     // y Axis
     useEffect(() => {
         if (scaleData) {
@@ -1544,71 +1551,12 @@ export default function Chart(props: ChartData) {
     }, [parsedChartData?.chartData, scaleData, market, checkLimitOrder, limit]);
 
     useEffect(() => {
-        if (
-            scaleData !== undefined &&
-            d3.select(d3Container.current).select('.zoomUtilsTooltip').node() === null
-        ) {
-            const zoomUtilsTooltip = d3
-                .select(d3Container.current)
-                .append('div')
-                .attr('class', 'zoomUtilsTooltip');
-
-            if (d3.select(d3Container.current).select('.zoomUtilsTooltip').node() !== null) {
-                const latestToolTip = d3
-                    .select(d3Container.current)
-                    .select('.zoomUtilsTooltip')
-                    .append('div')
-                    .attr('class', 'latestToolTip')
-                    .on('mouseover', (event: any) => {
-                        d3.select(event.currentTarget).style('cursor', 'pointer');
-                    })
-                    .on('click', () => {
-                        scaleData.xScale.domain(scaleData.xScaleCopy.domain());
-                        scaleData.yScale.domain(scaleData.yScaleCopy.domain());
-                        render();
-                    });
-
-                latestToolTip.html('<p><span style="font-weight: bold">LATEST</span></p>');
-
-                const autoToolTip = d3
-                    .select(d3Container.current)
-                    .select('.zoomUtilsTooltip')
-                    .append('div')
-                    .attr('class', 'autoToolTip')
-                    .style('color', () =>
-                        rescale ? 'rgb(97, 100, 189)' : 'rgba(237, 231, 225, 0.2)',
-                    )
-                    .on('mouseover', (event: any) => {
-                        d3.select(event.currentTarget).style('cursor', 'pointer');
-                    })
-                    .on('click', () => {
-                        setRescale((prevState) => {
-                            autoToolTip.style('color', () =>
-                                !prevState ? 'rgb(97, 100, 189)' : 'rgba(237, 231, 225, 0.2)',
-                            );
-
-                            return !prevState;
-                        });
-                    });
-
-                autoToolTip.html('<p><span style="font-weight: bold">AUTO</span></p>');
-
-                setAutoToolTip(() => {
-                    return autoToolTip;
-                });
-            }
-
-            const placement = document.querySelector('#d3fc_group');
-
-            if (placement !== null) {
-                console.log(placement.clientHeight, placement.clientWidth);
-            }
-
-            zoomUtilsTooltip
-                .style('top', (placement !== null ? placement.clientHeight + 95 : 557) + 'px')
-                .style('left', (placement !== null ? placement.clientWidth - 115 : 1180) + 'px');
+        if (scaleData !== undefined && latest) {
+            scaleData.xScale.domain(scaleData.xScaleCopy.domain());
+            scaleData.yScale.domain(scaleData.yScaleCopy.domain());
+            setLatest(false);
         }
-    }, [parsedChartData?.chartData, scaleData, rescale]);
+    }, [scaleData, latest]);
 
     // easy drag and triangle to horizontal lines for range
     async function addTriangleAndRect() {
@@ -3298,9 +3246,7 @@ export default function Chart(props: ChartData) {
                                 crosshairForSubChart={crosshairForSubChart}
                                 setsubChartValues={setsubChartValues}
                                 xScale={scaleData !== undefined ? scaleData.xScale : undefined}
-                                xScaleCopy={
-                                    scaleData !== undefined ? scaleData.xScaleCopy : undefined
-                                }
+                                lastX={scaleData !== undefined ? scaleData.lastX : 0}
                                 getNewCandleData={getNewCandleData}
                                 setZoomAndYdragControl={setZoomAndYdragControl}
                                 zoomAndYdragControl={zoomAndYdragControl}
@@ -3332,10 +3278,7 @@ export default function Chart(props: ChartData) {
                                 period={parsedChartData?.period}
                                 crosshairForSubChart={crosshairForSubChart}
                                 setsubChartValues={setsubChartValues}
-                                xScale={scaleData !== undefined ? scaleData.xScale : undefined}
-                                xScaleCopy={
-                                    scaleData !== undefined ? scaleData.xScaleCopy : undefined
-                                }
+                                scaleData={scaleData}
                                 getNewCandleData={getNewCandleData}
                                 setZoomAndYdragControl={setZoomAndYdragControl}
                                 zoomAndYdragControl={zoomAndYdragControl}
@@ -3346,6 +3289,8 @@ export default function Chart(props: ChartData) {
                                 render={render}
                                 mouseMoveChartName={mouseMoveChartName}
                                 setMouseMoveChartName={setMouseMoveChartName}
+                                setTransformX={setTransformX}
+                                transformX={transformX}
                             />
                         </>
                     )}

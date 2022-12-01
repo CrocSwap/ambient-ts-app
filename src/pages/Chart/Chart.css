@@ -113,22 +113,6 @@ div.liqTooltip {
     border-radius: var(--border-radius);
 }
 
-.zoomUtilsTooltip {
-    position: absolute;
-    display: flex;
-    padding-left: 10px;
-    font-size: 14px;
-    font-weight: bold;
-    background: #171d27;
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
-    border-radius: var(--border-radius);
-}
-
-
-.latestToolTip {
-    margin-right: 20px;
-}
 
 div.tooltip {
     position: absolute;

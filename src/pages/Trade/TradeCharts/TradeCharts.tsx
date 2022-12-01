@@ -168,6 +168,9 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
     const { tradeData } = useAppSelector((state) => state);
     const { poolIndex } = lookupChain(chainId);
 
+    const [rescale, setRescale] = useState(true);
+    const [latest, setLatest] = useState(false);
+
     const setActivePeriod = (period: number) => {
         dispatch(setActiveChartPeriod(period));
     };
@@ -685,24 +688,68 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
     }
 
     const currentDataInfo = (
-        <div className={styles.current_data_info}>
-            {/* {denomInBase ? tradeData.baseToken.symbol : tradeData.quoteToken.symbol} /{' '}
+        <div className={styles.chart_tooltips}>
+            <div className={styles.current_data_info}>
+                {/* {denomInBase ? tradeData.baseToken.symbol : tradeData.quoteToken.symbol} /{' '}
             {denomInBase ? tradeData.quoteToken.symbol : tradeData.baseToken.symbol}·{' '}
             {activeTimeFrame} ·{' '} */}
-            {'O: ' +
-                formattedCurrentData(currentData?.open) +
-                ' H: ' +
-                formattedCurrentData(currentData?.high) +
-                ' L: ' +
-                formattedCurrentData(currentData?.low) +
-                ' C: ' +
-                formattedCurrentData(currentData?.close)}
-        </div>
-    );
+                {'O: ' +
+                    formattedCurrentData(currentData?.open) +
+                    ' H: ' +
+                    formattedCurrentData(currentData?.high) +
+                    ' L: ' +
+                    formattedCurrentData(currentData?.low) +
+                    ' C: ' +
+                    formattedCurrentData(currentData?.close) +
+                    ' V: ' +
+                    formatDollarAmountAxis(currentVolumeData)}
+            </div>
 
-    const currentVolumeDataDisplay = (
-        <div className={styles.current_data_info}>
-            {'Volume : ' + formatDollarAmountAxis(currentVolumeData)}
+            <div
+                style={{
+                    display: 'flex',
+                    justifyContent: 'end',
+                    alignItems: 'end',
+                }}
+                className={styles.chart_overlay_container}
+            >
+                <div className={styles.settings_container}>
+                    <button
+                        onClick={() => {
+                            setLatest(true);
+                        }}
+                        style={{
+                            fontSize: '12px',
+                            fontWeight: 'bold',
+                        }}
+                        className={styles.non_active_selected_button}
+                    >
+                        LATEST
+                    </button>
+                </div>
+
+                <div className={styles.settings_container}>
+                    <button
+                        onClick={() => {
+                            setRescale((prevState) => {
+                                return !prevState;
+                            });
+                        }}
+                        style={{
+                            color: rescale ? 'rgb(97, 100, 189)' : 'rgba(237, 231, 225, 0.2)',
+                            fontSize: '12px',
+                            fontWeight: 'bold',
+                        }}
+                        className={
+                            rescale
+                                ? styles.active_selected_button
+                                : styles.non_active_selected_button
+                        }
+                    >
+                        AUTO
+                    </button>
+                </div>
+            </div>
         </div>
     );
 
@@ -771,7 +818,6 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
                 {tokenInfo}
                 {timeFrameContent}
                 {currentDataInfo}
-                {currentVolumeDataDisplay}
                 {/* {liquidityTypeContent} */}
             </div>
             {graphIsLoading ? (
@@ -806,6 +852,10 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
                         chainId={chainId}
                         poolPriceNonDisplay={props.poolPriceNonDisplay}
                         checkLimitOrder={checkLimitOrder}
+                        rescale={rescale}
+                        setRescale={setRescale}
+                        latest={latest}
+                        setLatest={setLatest}
                     />
                 </div>
             )}

@@ -60,6 +60,10 @@ interface ChartData {
     chainId: string;
     poolPriceNonDisplay: number | undefined;
     checkLimitOrder: boolean;
+    rescale: boolean | undefined;
+    setRescale: React.Dispatch<React.SetStateAction<boolean>>;
+    latest: boolean | undefined;
+    setLatest: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export interface ChartUtils {
@@ -451,6 +455,7 @@ export default function TradeCandleStickChart(props: ChartData) {
                     subChartxScale: subChartxScale,
                     volumeScale: volumeScale,
                     lastY: 0,
+                    lastX: 0,
                 };
             });
         }
@@ -513,6 +518,10 @@ export default function TradeCandleStickChart(props: ChartData) {
                         chainId={chainId}
                         poolPriceNonDisplay={poolPriceNonDisplay}
                         checkLimitOrder={checkLimitOrder}
+                        rescale={props.rescale}
+                        setRescale={props.setRescale}
+                        latest={props.latest}
+                        setLatest={props.setLatest}
                     />
                 ) : (
                     <>{loading}</>
