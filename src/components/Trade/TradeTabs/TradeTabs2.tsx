@@ -452,38 +452,71 @@ export default function TradeTabs2(props: ITabsProps) {
         setSelectedDate: setSelectedDate,
     };
     // data for headings of each of the three tabs
-    const tradeTabData = [
-        {
-            label: 'Transactions',
-            content: <Transactions {...transactionsProps} />,
-            icon: recentTransactionsImage,
-            showRightSideOption: true,
-        },
-        {
-            label: 'Limit Orders',
-            content: <Orders {...ordersProps} />,
-            icon: openOrdersImage,
-            showRightSideOption: true,
-        },
-        {
-            label: 'Ranges',
-            content: <Ranges {...rangesProps} />,
-            icon: rangePositionsImage,
-            showRightSideOption: true,
-        },
-        {
-            label: 'Leaderboard',
-            content: <Leaderboard {...rangesProps} />,
-            icon: rangePositionsImage,
-            showRightSideOption: false,
-        },
-        {
-            label: 'Info',
-            content: <PoolInfo {...poolInfoProps} />,
-            icon: rangePositionsImage,
-            showRightSideOption: false,
-        },
-    ];
+    const tradeTabData = isCandleSelected
+        ? [
+              {
+                  label: 'Transactions',
+                  content: <Transactions {...transactionsProps} />,
+                  icon: recentTransactionsImage,
+                  showRightSideOption: true,
+              },
+              //   {
+              //       label: 'Limit Orders',
+              //       content: <Orders {...ordersProps} />,
+              //       icon: openOrdersImage,
+              //       showRightSideOption: true,
+              //   },
+              //   {
+              //       label: 'Ranges',
+              //       content: <Ranges {...rangesProps} />,
+              //       icon: rangePositionsImage,
+              //       showRightSideOption: true,
+              //   },
+              {
+                  label: 'Leaderboard',
+                  content: <Leaderboard {...rangesProps} />,
+                  icon: rangePositionsImage,
+                  showRightSideOption: false,
+              },
+              {
+                  label: 'Info',
+                  content: <PoolInfo {...poolInfoProps} />,
+                  icon: rangePositionsImage,
+                  showRightSideOption: false,
+              },
+          ]
+        : [
+              {
+                  label: 'Transactions',
+                  content: <Transactions {...transactionsProps} />,
+                  icon: recentTransactionsImage,
+                  showRightSideOption: true,
+              },
+              {
+                  label: 'Limit Orders',
+                  content: <Orders {...ordersProps} />,
+                  icon: openOrdersImage,
+                  showRightSideOption: true,
+              },
+              {
+                  label: 'Ranges',
+                  content: <Ranges {...rangesProps} />,
+                  icon: rangePositionsImage,
+                  showRightSideOption: true,
+              },
+              {
+                  label: 'Leaderboard',
+                  content: <Leaderboard {...rangesProps} />,
+                  icon: rangePositionsImage,
+                  showRightSideOption: false,
+              },
+              {
+                  label: 'Info',
+                  content: <PoolInfo {...poolInfoProps} />,
+                  icon: rangePositionsImage,
+                  showRightSideOption: false,
+              },
+          ];
 
     // -------------------------------END OF DATA-----------------------------------------
     const tabComponentRef = useRef<HTMLDivElement>(null);

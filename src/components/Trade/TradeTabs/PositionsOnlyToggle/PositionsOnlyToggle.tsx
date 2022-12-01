@@ -116,7 +116,7 @@ export default function PositionsOnlyToggle(props: PositionsOnlyToggleProps) {
                     }}
                     style={isCandleSelected ? { cursor: 'pointer' } : { cursor: 'default' }}
                 >
-                    {isLoggedIn ? `My ${props.currentTab}` : null}
+                    {isLoggedIn && !isCandleSelected ? `My ${props.currentTab}` : null}
                 </p>
                 {/* <p>{`All ${props.currentTab}`}</p> */}
                 {/* {clearButtonOrNull} */}
