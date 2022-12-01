@@ -6,6 +6,8 @@ import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
 import Transactions from './Transactions/Transactions';
 import styles from './TradeTabs2.module.css';
 import Orders from './Orders/Orders';
+import moment from 'moment';
+
 // import DropdownMenu from '../../Global/DropdownMenu/DropdownMenu';
 // import DropdownMenuContainer from '../../Global/DropdownMenu/DropdownMenuContainer/DropdownMenuContainer';
 // import DropdownMenuItem from '../../Global/DropdownMenu/DropdownMenuItem/DropdownMenuItem';
@@ -490,12 +492,40 @@ export default function TradeTabs2(props: ITabsProps) {
         setCurrentTxActiveInTransactions('');
         setCurrentPositionActive('');
     };
+    const unselectCandle = () => {
+        setSelectedDate(undefined);
+        changeState(false, undefined);
+        setIsCandleSelected(false);
+    };
+
+    const clearButtonOrNull = isCandleSelected ? (
+        <button className={styles.option_button} onClick={() => unselectCandle()}>
+            Clear
+        </button>
+    ) : null;
+
+    const selectedMessageContent = (
+        <div className={styles.show_tx_message}>
+            <p
+                onClick={() => {
+                    unselectCandle();
+                    // setIsCandleSelected(false);
+                    // setTransactionFilter(undefined);
+                }}
+                style={isCandleSelected ? { cursor: 'pointer' } : { cursor: 'default' }}
+            >
+                {isCandleSelected && `Showing Transactions for ${moment(selectedDate).calendar()}`}
+            </p>
+            {clearButtonOrNull}
+        </div>
+    );
 
     useOnClickOutside(tabComponentRef, clickOutsideHandler);
 
     return (
         <div ref={tabComponentRef} className={styles.trade_tab_container}>
-            {
+            <>
+                {selectedMessageContent}
                 <TabComponent
                     data={tradeTabData}
                     rightTabOptions={<PositionsOnlyToggle {...positionsOnlyToggleProps} />}
@@ -507,7 +537,7 @@ export default function TradeTabs2(props: ITabsProps) {
                     showPositionsOnlyToggle={showPositionsOnlyToggle}
                     setShowPositionsOnlyToggle={setShowPositionsOnlyToggle}
                 />
-            }
+            </>
         </div>
     );
 }

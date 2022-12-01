@@ -5,7 +5,6 @@ import { MdExpand, MdCloseFullscreen } from 'react-icons/md';
 import { CandleData } from '../../../../utils/state/graphDataSlice';
 import { GiLaurelsTrophy } from 'react-icons/gi';
 import { NavLink } from 'react-router-dom';
-import moment from 'moment';
 interface PositionsOnlyToggleProps {
     isShowAllEnabled: boolean;
     isAuthenticated: boolean;
@@ -45,7 +44,7 @@ export default function PositionsOnlyToggle(props: PositionsOnlyToggleProps) {
         leader,
         leaderOwnerId,
         changeState,
-        selectedDate,
+
         setSelectedDate,
         // setShowPositionsOnlyToggle
     } = props;
@@ -91,11 +90,11 @@ export default function PositionsOnlyToggle(props: PositionsOnlyToggleProps) {
         setIsCandleSelected(false);
     };
 
-    const clearButtonOrNull = isCandleSelected ? (
-        <button className={styles.option_button} onClick={() => unselectCandle()}>
-            Clear
-        </button>
-    ) : null;
+    // const clearButtonOrNull = isCandleSelected ? (
+    //     <button className={styles.option_button} onClick={() => unselectCandle()}>
+    //         Clear
+    //     </button>
+    // ) : null;
 
     return (
         <div className={styles.main_container}>
@@ -114,12 +113,10 @@ export default function PositionsOnlyToggle(props: PositionsOnlyToggleProps) {
                     }}
                     style={isCandleSelected ? { cursor: 'pointer' } : { cursor: 'default' }}
                 >
-                    {isCandleSelected
-                        ? `Showing Transactions for ${moment(selectedDate).calendar()}`
-                        : `My ${props.currentTab}`}
+                    {`My ${props.currentTab}`}
                 </p>
                 {/* <p>{`All ${props.currentTab}`}</p> */}
-                {clearButtonOrNull}
+                {/* {clearButtonOrNull} */}
                 {toggleOrNull}
             </div>
             {expandIcon}
