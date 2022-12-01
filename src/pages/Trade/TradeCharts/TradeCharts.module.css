@@ -466,27 +466,3 @@
     padding: 0.3rem 0;
 }
 
-.zoom_utils_tooltip {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 4px;
-
-}
-
-.latest_tooltip {
-    cursor: pointer;
-    font-size: var(--body-size);
-    line-height: var(--body-lh);
-    text-align: center;
-    color: var(--text-grey-light);
-    outline: none;
-    font-size: 12px;
-    font-weight: bold;
-
-    border-radius: 50px;
-    padding: 5px 8px;
-    position: relative;
-    background: var(--dark1);
-    border: 1px solid #242f3f;
-}
