@@ -8,11 +8,11 @@ interface SoloTokenImportPropsIF {
 }
 export default function SoloTokenImport(props: SoloTokenImportPropsIF) {
     const { customToken, chooseToken } = props;
-    console.log(customToken);
+    console.log({customToken});
     const tokenLogo = customToken?.logoURI ? (
         <img src={customToken.logoURI} alt='' width='30px' />
     ) : (
-        <NoTokenIcon tokenInitial={customToken?.symbol.charAt(0) || '?'} width='30px' />
+        <NoTokenIcon tokenInitial={customToken?.symbol?.charAt(0) || '?'} width='30px' />
     );
 
     if (!customToken) return <p style={{ textAlign: 'center' }}>No matches found</p>;

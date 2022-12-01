@@ -67,6 +67,7 @@ interface PortfolioPropsIF {
     currentTxActiveInTransactions: string;
     setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
     gasPriceInGwei: number | undefined;
+    searchableTokens: TokenIF[];
 }
 
 // const cachedFetchAddress = memoizePromiseFn(fetchAddress);
@@ -105,6 +106,7 @@ export default function Portfolio(props: PortfolioPropsIF) {
         isUserLoggedIn,
         handlePulseAnimation,
         gasPriceInGwei,
+        searchableTokens
     } = props;
     const { isInitialized } = useMoralis();
 
@@ -452,6 +454,7 @@ export default function Portfolio(props: PortfolioPropsIF) {
                         importedTokens={getImportedTokensPlus()}
                         setImportedTokens={setImportedTokens}
                         tokensOnActiveLists={tokensOnActiveLists}
+                        searchableTokens={searchableTokens}
                     />
                 </Modal>
             )}

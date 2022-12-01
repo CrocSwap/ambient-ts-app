@@ -16,6 +16,7 @@ interface propsIF {
     setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
     tokensOnActiveLists: Map<string, TokenIF>;
     closeModal: () => void;
+    searchableTokens: TokenIF[];
 }
 
 export const SoloTokenSelect = (props: propsIF) => {
@@ -26,7 +27,9 @@ export const SoloTokenSelect = (props: propsIF) => {
         setImportedTokens,
         closeModal,
         tokensOnActiveLists,
+        searchableTokens
     } = props;
+    false && searchableTokens;
     console.log(importedTokens);
 
     const [tokensForDOM, otherTokensForDOM, validatedInput, setInput, searchType] = useSoloSearch(
@@ -34,6 +37,8 @@ export const SoloTokenSelect = (props: propsIF) => {
         importedTokens,
         tokensOnActiveLists,
     );
+    useEffect(() => console.log({searchType}), [searchType]);
+    useEffect(() => console.log(otherTokensForDOM), [otherTokensForDOM]);
 
     const dispatch = useAppDispatch();
 
@@ -61,18 +66,18 @@ export const SoloTokenSelect = (props: propsIF) => {
 
     const importedTokenButtons = tokensForDOM
         ? tokensForDOM.map((token: TokenIF) => (
-              <TokenSelect
-                  key={JSON.stringify(token)}
-                  token={token}
-                  tokensBank={importedTokens}
-                  undeletableTokens={undeletableTokens}
-                  chainId={chainId}
-                  setImportedTokens={setImportedTokens}
-                  chooseToken={chooseToken}
-                  isOnPortfolio={true}
-                  fromListsText='Imported'
-              />
-          ))
+            <TokenSelect
+                key={JSON.stringify(token)}
+                token={token}
+                tokensBank={importedTokens}
+                undeletableTokens={undeletableTokens}
+                chainId={chainId}
+                setImportedTokens={setImportedTokens}
+                chooseToken={chooseToken}
+                isOnPortfolio={true}
+                fromListsText='Imported'
+            />
+        ))
         : null;
 
     const findDupes = (addr: string) => {
@@ -104,18 +109,18 @@ export const SoloTokenSelect = (props: propsIF) => {
 
     const otherTokenButtons = otherTokensForDOM
         ? otherTokensForDOM.map((token: TokenIF) => (
-              <TokenSelect
-                  key={JSON.stringify(token)}
-                  token={token}
-                  tokensBank={importedTokens}
-                  undeletableTokens={undeletableTokens}
-                  chainId={chainId}
-                  setImportedTokens={setImportedTokens}
-                  chooseToken={chooseToken}
-                  isOnPortfolio={true}
-                  fromListsText={findDupes(token.address)}
-              />
-          ))
+            <TokenSelect
+                key={JSON.stringify(token)}
+                token={token}
+                tokensBank={importedTokens}
+                undeletableTokens={undeletableTokens}
+                chainId={chainId}
+                setImportedTokens={setImportedTokens}
+                chooseToken={chooseToken}
+                isOnPortfolio={true}
+                fromListsText={findDupes(token.address)}
+            />
+        ))
         : null;
 
     const [customToken, setCustomToken] = useState<TokenIF | null>(null);
@@ -123,7 +128,12 @@ export const SoloTokenSelect = (props: propsIF) => {
         if (provider && searchType === 'address' && !otherTokensForDOM?.length) {
             const cachedFetchContractDetails = memoizeFetchContractDetails();
             const promise = cachedFetchContractDetails(provider, validatedInput, chainId);
-            Promise.resolve(promise).then((res) => res && setCustomToken(res));
+            Promise.resolve(promise)
+                .then((res) => res && setCustomToken(res))
+                .catch((err) => {
+                    console.log(err);
+                    setCustomToken(null);
+                });
         }
     }, [searchType, validatedInput]);
     // '0x0B0322d75bad9cA72eC7708708B54e6b38C26adA'
@@ -148,7 +158,7 @@ export const SoloTokenSelect = (props: propsIF) => {
                     <div className={styles.scrollable_container}>{otherTokenButtons}</div>
                 </>
             ) : null}
-            {searchType && otherTokensForDOM?.length === 0 ? (
+            {searchType === 'address' && otherTokensForDOM?.length === 0 ? (
                 <SoloTokenImport
                     customToken={customToken}
                     chooseToken={chooseToken}

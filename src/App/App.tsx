@@ -2603,6 +2603,7 @@ export default function App() {
                                     }
                                     handlePulseAnimation={handlePulseAnimation}
                                     gasPriceInGwei={gasPriceInGwei}
+                                    searchableTokens={searchableTokens}
                                 />
                             }
                         />
@@ -2649,6 +2650,7 @@ export default function App() {
                                     }
                                     handlePulseAnimation={handlePulseAnimation}
                                     gasPriceInGwei={gasPriceInGwei}
+                                    searchableTokens={searchableTokens}
                                 />
                             }
                         />
@@ -2706,6 +2708,7 @@ export default function App() {
                                     }
                                     handlePulseAnimation={handlePulseAnimation}
                                     gasPriceInGwei={gasPriceInGwei}
+                                    searchableTokens={searchableTokens}
                                 />
                             }
                         />
