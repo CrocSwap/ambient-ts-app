@@ -356,7 +356,7 @@ export default function Chart(props: ChartData) {
                             return 'url(#crossHairBg)';
                         }
                         if (isSameLocation ? d === sameLocationData : d === limit[0].value) {
-                            if (checkLimitOrder) {
+                            if (checkLimitOrder && limit[0].value > currentPriceData[0].value) {
                                 return 'url(#textLowBg)';
                             }
                             return 'url(#textBg)';
@@ -370,7 +370,8 @@ export default function Chart(props: ChartData) {
                         if (
                             d === market[0].value ||
                             ((isSameLocation ? d === sameLocationData : d === limit[0].value) &&
-                                checkLimitOrder)
+                                checkLimitOrder &&
+                                limit[0].value > currentPriceData[0].value)
                         ) {
                             return 'market';
                         }
@@ -1443,7 +1444,14 @@ export default function Chart(props: ChartData) {
                     .attr('stroke', 'none');
 
                 selection.enter().select('g.right-handle').remove();
-                selection.select('line').attr('class', checkLimitOrder ? 'lowline' : 'line');
+                selection
+                    .select('line')
+                    .attr(
+                        'class',
+                        checkLimitOrder && limit[0].value > currentPriceData[0].value
+                            ? 'lowline'
+                            : 'line',
+                    );
             });
 
             const marketLine = d3fc
@@ -1533,7 +1541,7 @@ export default function Chart(props: ChartData) {
                 return limitLine;
             });
         }
-    }, [parsedChartData?.chartData, scaleData, market, checkLimitOrder]);
+    }, [parsedChartData?.chartData, scaleData, market, checkLimitOrder, limit]);
 
     useEffect(() => {
         if (
@@ -1642,7 +1650,7 @@ export default function Chart(props: ChartData) {
                     .attr(
                         'stroke',
                         selectClass.includes('limit')
-                            ? checkLimitOrder
+                            ? checkLimitOrder && limit[0].value > currentPriceData[0].value
                                 ? 'rgb(139, 253, 244)'
                                 : 'rgba(235, 235, 255)'
                             : 'rgba(235, 235, 255)',
@@ -1650,7 +1658,7 @@ export default function Chart(props: ChartData) {
                     .attr(
                         'fill',
                         selectClass.includes('limit')
-                            ? checkLimitOrder
+                            ? checkLimitOrder && limit[0].value > currentPriceData[0].value
                                 ? 'rgb(139, 253, 244)'
                                 : 'rgba(235, 235, 255)'
                             : 'rgba(235, 235, 255)',
@@ -1663,7 +1671,7 @@ export default function Chart(props: ChartData) {
                     .attr(
                         'stroke',
                         selectClass.includes('limit')
-                            ? checkLimitOrder
+                            ? checkLimitOrder && limit[0].value > currentPriceData[0].value
                                 ? 'rgb(139, 253, 244)'
                                 : 'rgba(235, 235, 255)'
                             : 'rgba(235, 235, 255)',
@@ -1671,7 +1679,7 @@ export default function Chart(props: ChartData) {
                     .attr(
                         'fill',
                         selectClass.includes('limit')
-                            ? checkLimitOrder
+                            ? checkLimitOrder && limit[0].value > currentPriceData[0].value
                                 ? 'rgb(139, 253, 244)'
                                 : 'rgba(235, 235, 255)'
                             : 'rgba(235, 235, 255)',
