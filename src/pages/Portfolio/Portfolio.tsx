@@ -12,7 +12,7 @@ import { CrocEnv, ChainSpec } from '@crocswap-libs/sdk';
 import Modal from '../../components/Global/Modal/Modal';
 import { useModal } from '../../components/Global/Modal/useModal';
 import { TokenIF } from '../../utils/interfaces/exports';
-
+import Button from '../../components/Global/Button/Button';
 import { Erc20TokenBalanceFn, nativeTokenBalanceFn } from '../../App/functions/fetchTokenBalances';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { TokenPriceFn } from '../../App/functions/fetchTokenPrice';
@@ -48,6 +48,7 @@ interface PortfolioPropsIF {
     userAccount?: boolean;
     openGlobalModal: (content: React.ReactNode, title?: string) => void;
     closeGlobalModal: () => void;
+    openModalWallet: () => void;
     importedTokens: TokenIF[];
     chainData: ChainSpec;
 
@@ -106,7 +107,8 @@ export default function Portfolio(props: PortfolioPropsIF) {
         isUserLoggedIn,
         handlePulseAnimation,
         gasPriceInGwei,
-        searchableTokens
+        searchableTokens,
+        openModalWallet,
     } = props;
     const { isInitialized } = useMoralis();
 
@@ -372,6 +374,8 @@ export default function Portfolio(props: PortfolioPropsIF) {
 
     const [showProfileSettings, setShowProfileSettings] = useState(false);
 
+    const showLoggedInButton = userAccount && !isUserLoggedIn;
+
     return (
         <main data-testid={'portfolio'} className={styles.portfolio_container}>
             {userAccount && showProfileSettings && (
@@ -398,43 +402,50 @@ export default function Portfolio(props: PortfolioPropsIF) {
                         : styles.tabs_exchange_balance_container
                 }
             >
-                <PortfolioTabs
-                    crocEnv={crocEnv}
-                    isTokenABase={isTokenABase}
-                    provider={provider}
-                    cachedFetchTokenPrice={cachedFetchTokenPrice}
-                    importedTokens={importedTokens}
-                    connectedUserTokens={connectedUserTokens}
-                    resolvedAddressTokens={resolvedAddressTokens}
-                    resolvedAddress={resolvedAddress}
-                    lastBlockNumber={lastBlockNumber}
-                    activeAccount={address ?? connectedAccount}
-                    connectedAccountActive={connectedAccountActive}
-                    chainId={chainId}
-                    tokenMap={tokensOnActiveLists}
-                    selectedOutsideTab={selectedOutsideTab}
-                    setSelectedOutsideTab={setSelectedOutsideTab}
-                    setOutsideControl={setOutsideControl}
-                    outsideControl={outsideControl}
-                    openTokenModal={openTokenModal}
-                    openGlobalModal={openGlobalModal}
-                    closeGlobalModal={closeGlobalModal}
-                    showSidebar={showSidebar}
-                    account={props.account}
-                    chainData={props.chainData}
-                    currentPositionActive={props.currentPositionActive}
-                    setCurrentPositionActive={props.setCurrentPositionActive}
-                    isUserLoggedIn={isUserLoggedIn}
-                    isAuthenticated={isAuthenticated}
-                    baseTokenBalance={baseTokenBalance}
-                    quoteTokenBalance={quoteTokenBalance}
-                    baseTokenDexBalance={baseTokenDexBalance}
-                    quoteTokenDexBalance={quoteTokenDexBalance}
-                    currentTxActiveInTransactions={currentTxActiveInTransactions}
-                    setCurrentTxActiveInTransactions={setCurrentTxActiveInTransactions}
-                    fullLayoutToggle={fullLayerToggle}
-                    handlePulseAnimation={handlePulseAnimation}
-                />
+                {!showLoggedInButton ? (
+                    <PortfolioTabs
+                        crocEnv={crocEnv}
+                        isTokenABase={isTokenABase}
+                        provider={provider}
+                        cachedFetchTokenPrice={cachedFetchTokenPrice}
+                        importedTokens={importedTokens}
+                        connectedUserTokens={connectedUserTokens}
+                        resolvedAddressTokens={resolvedAddressTokens}
+                        resolvedAddress={resolvedAddress}
+                        lastBlockNumber={lastBlockNumber}
+                        activeAccount={address ?? connectedAccount}
+                        connectedAccountActive={connectedAccountActive}
+                        chainId={chainId}
+                        tokenMap={tokensOnActiveLists}
+                        selectedOutsideTab={selectedOutsideTab}
+                        setSelectedOutsideTab={setSelectedOutsideTab}
+                        setOutsideControl={setOutsideControl}
+                        outsideControl={outsideControl}
+                        openTokenModal={openTokenModal}
+                        openGlobalModal={openGlobalModal}
+                        closeGlobalModal={closeGlobalModal}
+                        showSidebar={showSidebar}
+                        account={props.account}
+                        chainData={props.chainData}
+                        currentPositionActive={props.currentPositionActive}
+                        setCurrentPositionActive={props.setCurrentPositionActive}
+                        isUserLoggedIn={isUserLoggedIn}
+                        isAuthenticated={isAuthenticated}
+                        baseTokenBalance={baseTokenBalance}
+                        quoteTokenBalance={quoteTokenBalance}
+                        baseTokenDexBalance={baseTokenDexBalance}
+                        quoteTokenDexBalance={quoteTokenDexBalance}
+                        currentTxActiveInTransactions={currentTxActiveInTransactions}
+                        setCurrentTxActiveInTransactions={setCurrentTxActiveInTransactions}
+                        fullLayoutToggle={fullLayerToggle}
+                        handlePulseAnimation={handlePulseAnimation}
+                    />
+                ) : (
+                    <div className={styles.non_connected_content}>
+                        <p>Please connect wallet to view your transactions.</p>
+                        <Button flat title='Connect Wallet' action={() => openModalWallet()} />
+                    </div>
+                )}
                 {/* {connectedAccountActive && !fullLayoutActive ? exchangeBalanceComponent : null} */}
                 {connectedAccountActive && exchangeBalanceComponent}
             </div>

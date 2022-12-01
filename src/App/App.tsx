@@ -1146,6 +1146,13 @@ export default function App() {
                             .then((json) => {
                                 const poolLimitOrderStates = json?.data;
 
+                                dispatch(
+                                    setDataLoadingStatus({
+                                        datasetName: 'poolOrderData',
+                                        loadingStatus: false,
+                                    }),
+                                );
+
                                 if (poolLimitOrderStates) {
                                     Promise.all(
                                         poolLimitOrderStates.map((limitOrder: LimitOrderIF) => {
@@ -2131,6 +2138,9 @@ export default function App() {
     };
 
     // props for <Limit/> React element on trade route
+
+    const [checkLimitOrder, setCheckLimitOrder] = useState<boolean>(false);
+
     const limitPropsTrade = {
         pool: pool,
         crocEnv: crocEnv,
@@ -2166,6 +2176,7 @@ export default function App() {
         poolExists: poolExists,
 
         isOrderCopied: isOrderCopied,
+        setCheckLimitOrder: setCheckLimitOrder,
 
         // limitRate: limitRate,
         // setLimitRate: setLimitRate,
@@ -2432,6 +2443,7 @@ export default function App() {
                                     setTokenPairLocal={setTokenPairLocal}
                                     showSidebar={showSidebar}
                                     handlePulseAnimation={handlePulseAnimation}
+                                    checkLimitOrder={checkLimitOrder}
                                     // handleTxCopiedClick={handleTxCopiedClick}
                                     // handleOrderCopiedClick={handleOrderCopiedClick}
                                     // handleRangeCopiedClick={handleRangeCopiedClick}
@@ -2604,6 +2616,7 @@ export default function App() {
                                     handlePulseAnimation={handlePulseAnimation}
                                     gasPriceInGwei={gasPriceInGwei}
                                     searchableTokens={searchableTokens}
+                                    openModalWallet={openModalWallet}
                                 />
                             }
                         />
@@ -2651,6 +2664,7 @@ export default function App() {
                                     handlePulseAnimation={handlePulseAnimation}
                                     gasPriceInGwei={gasPriceInGwei}
                                     searchableTokens={searchableTokens}
+                                    openModalWallet={openModalWallet}
                                 />
                             }
                         />
@@ -2709,6 +2723,7 @@ export default function App() {
                                     handlePulseAnimation={handlePulseAnimation}
                                     gasPriceInGwei={gasPriceInGwei}
                                     searchableTokens={searchableTokens}
+                                    openModalWallet={openModalWallet}
                                 />
                             }
                         />

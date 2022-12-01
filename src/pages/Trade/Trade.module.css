@@ -394,7 +394,11 @@
         height: 100%;
         left: 0;
         top: 0;
-        /* background: rgba(51,51,51,0.7); */
         z-index: 10;
+        /* background-image: radial-gradient(circle,var(--dark3), var(--dark1) ); 
+        background-image: radial-gradient(circle,rgb(0, 25, 51), rgba(4, 12, 24, 1) );  */
+        background: var(--chart-gradient)
+        /* background:radial-gradient(circle at 3% 25%, rgb(1, 28, 56) 0%, rgba(4, 12, 24, 1) 25%); */
+        /* padding: 1rem; */
     }
 }

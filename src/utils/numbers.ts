@@ -28,7 +28,8 @@ export const formatDollarAmountAxis = (num: number | undefined) => {
 
     return numbro(num).formatCurrency({
         average: true,
-        mantissa: num > 1000 ? 2 : num < 100 ? 5 : digits,
+        mantissa: 2,
+        // mantissa: num > 1000 ? 2 : num < 100 ? 5 : digits,
         abbreviations: {
             million: 'M',
             billion: 'B',

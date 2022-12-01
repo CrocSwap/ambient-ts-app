@@ -44,17 +44,16 @@ interface TransactionsProps {
     setIsShowAllEnabled?: Dispatch<SetStateAction<boolean>>;
     account: string;
     expandTradeTable: boolean;
-
+    setIsCandleSelected?: Dispatch<SetStateAction<boolean | undefined>>;
     isCandleSelected: boolean | undefined;
     filter?: CandleData | undefined;
-
+    changeState?: (isOpen: boolean | undefined, candleData: CandleData | undefined) => void;
     openGlobalModal: (content: React.ReactNode) => void;
     closeGlobalModal: () => void;
     handlePulseAnimation?: (type: string) => void;
     showSidebar: boolean;
-
     isOnPortfolioPage: boolean;
-
+    setSelectedDate?: Dispatch<Date | undefined>;
     // setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
 }
 export default function Transactions(props: TransactionsProps) {
@@ -81,6 +80,9 @@ export default function Transactions(props: TransactionsProps) {
         isOnPortfolioPage,
         handlePulseAnimation,
         setIsShowAllEnabled,
+        // setIsCandleSelected,
+        changeState,
+        setSelectedDate,
         // setExpandTradeTable,
     } = props;
 
@@ -146,14 +148,18 @@ export default function Transactions(props: TransactionsProps) {
         (!connectedAccountActive && isLookupUserTxDataLoading);
 
     const isTxDataLoadingForTradeTable =
-        (isShowAllEnabled && isPoolTxDataLoading) ||
-        (!isShowAllEnabled && isConnectedUserTxDataLoading);
+        !isCandleSelected &&
+        ((isShowAllEnabled && isPoolTxDataLoading) ||
+            (!isShowAllEnabled && isConnectedUserTxDataLoading));
 
     const shouldDisplayLoadingAnimation =
         (isOnPortfolioPage && isTxDataLoadingForPortfolio) ||
         (!isOnPortfolioPage && isTxDataLoadingForTradeTable);
 
-    const debouncedShouldDisplayLoadingAnimation = useDebounce(shouldDisplayLoadingAnimation, 1000); // debounce 1/4 second
+    const shouldDisplayNoTableData = !transactionData.length;
+
+    const debouncedShouldDisplayLoadingAnimation = useDebounce(shouldDisplayLoadingAnimation, 2000); // debounce 1 second
+    const debouncedShouldDisplayNoTableData = useDebounce(shouldDisplayNoTableData, 1000); // debounce 1 second
 
     const [debouncedIsShowAllEnabled, setDebouncedIsShowAllEnabled] = useState(false);
 
@@ -560,16 +566,18 @@ export default function Transactions(props: TransactionsProps) {
         />
     ));
 
-    const transactionDataOrNull =
-        transactionData.length > 0 ? (
-            rowItemContent
-        ) : (
-            <NoTableData
-                isShowAllEnabled={isShowAllEnabled}
-                setIsShowAllEnabled={setIsShowAllEnabled}
-                type='transactions'
-            />
-        );
+    const transactionDataOrNull = debouncedShouldDisplayNoTableData ? (
+        <NoTableData
+            isShowAllEnabled={isShowAllEnabled}
+            setIsShowAllEnabled={setIsShowAllEnabled}
+            setSelectedDate={setSelectedDate}
+            // setIsCandleSelected={setIsCandleSelected}
+            changeState={changeState}
+            type='transactions'
+        />
+    ) : (
+        rowItemContent
+    );
 
     const expandStyle = expandTradeTable ? 'calc(100vh - 10rem)' : '250px';
 

@@ -68,8 +68,8 @@ export default function PortfolioBannerAccount(props: IPortfolioBannerAccountPro
         setOpenSnackbar(true);
     }
     function handleCopyAddress() {
-        copy(addressToDisplay);
-        setCopiedData(addressToDisplay);
+        copy(activeAccount);
+        setCopiedData(activeAccount);
 
         setOpenSnackbar(true);
     }
