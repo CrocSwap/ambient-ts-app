@@ -170,13 +170,13 @@
     }
   }
 
-@media (min-width: 580px) 
+/* @media (min-width: 580px) 
   and (max-width: 1000px)
   {
 .primary_navigation{
     display: none;
 }
-}
+} */
 
 @media (max-width: 35em) {
     .account,
