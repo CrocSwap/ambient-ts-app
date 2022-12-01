@@ -254,7 +254,10 @@ export default function OrderRow(props: OrderRowPropsIF) {
     //     // second: '2-digit',
     // }).format(limitOrder.time * 1000);
 
-    const elapsedTimeInSecondsNum = moment(Date.now()).diff(limitOrder.time * 1000, 'seconds');
+    const elapsedTimeInSecondsNum = moment(Date.now()).diff(
+        limitOrder.timeFirstMint * 1000,
+        'seconds',
+    );
 
     const elapsedTimeString =
         elapsedTimeInSecondsNum !== undefined

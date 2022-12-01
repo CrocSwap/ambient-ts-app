@@ -65,6 +65,11 @@ interface ITabsProps {
     importedTokens: TokenIF[];
     showSidebar: boolean;
     handlePulseAnimation: (type: string) => void;
+    changeState: (isOpen: boolean | undefined, candleData: CandleData | undefined) => void;
+    selectedDate: Date | undefined;
+    setSelectedDate: React.Dispatch<Date | undefined>;
+    hasInitialized: boolean;
+    setHasInitialized: Dispatch<SetStateAction<boolean>>;
     // handleTxCopiedClick: () => void;
     // handleOrderCopiedClick: () => void;
     // handleRangeCopiedClick: () => void;
@@ -108,6 +113,11 @@ export default function TradeTabs2(props: ITabsProps) {
         importedTokens,
         showSidebar,
         handlePulseAnimation,
+        changeState,
+        selectedDate,
+        setSelectedDate,
+        hasInitialized,
+        setHasInitialized,
         // handleTxCopiedClick,
         // handleOrderCopiedClick,
         // handleRangeCopiedClick,
@@ -129,8 +139,6 @@ export default function TradeTabs2(props: ITabsProps) {
     const userLimitOrders = graphData?.limitOrdersByUser?.limitOrders;
     const userPositions = graphData?.positionsByUser?.positions;
     // const poolPositions = graphData?.positionsByPool?.positions;
-
-    const [hasInitialized, setHasInitialized] = useState(false);
 
     const [selectedInsideTab, setSelectedInsideTab] = useState<number>(0);
 
@@ -185,17 +193,19 @@ export default function TradeTabs2(props: ITabsProps) {
                 (outsideControl && selectedOutsideTab === 0) ||
                 (!outsideControl && selectedInsideTab === 0)
             ) {
-                if (
-                    !isUserLoggedIn ||
+                if (isCandleSelected) {
+                    setIsShowAllEnabled(false);
+                } else if (
+                    (!isUserLoggedIn && !isCandleSelected) ||
                     (!isCandleSelected && !isShowAllEnabled && matchingUserChangesLength < 1)
                 ) {
-                    // console.log('1');
+                    console.log('1');
                     setIsShowAllEnabled(true);
                 } else if (matchingUserChangesLength < 1) {
-                    // console.log('2');
+                    console.log('2');
                     return;
                 } else if (isShowAllEnabled && matchingUserChangesLength >= 1) {
-                    // console.log('3');
+                    console.log('3');
                     setIsShowAllEnabled(false);
                 }
             } else if (
@@ -206,13 +216,13 @@ export default function TradeTabs2(props: ITabsProps) {
                     !isUserLoggedIn ||
                     (!isCandleSelected && !isShowAllEnabled && matchingUserLimitOrdersLength < 1)
                 ) {
-                    // console.log('4');
+                    console.log('4');
                     setIsShowAllEnabled(true);
                 } else if (matchingUserLimitOrdersLength < 1) {
-                    // console.log('5');
+                    console.log('5');
                     return;
                 } else if (isShowAllEnabled && matchingUserLimitOrdersLength >= 1) {
-                    // console.log('6');
+                    console.log('6');
                     setIsShowAllEnabled(false);
                 }
             } else if (
@@ -223,13 +233,13 @@ export default function TradeTabs2(props: ITabsProps) {
                     !isUserLoggedIn ||
                     (!isCandleSelected && !isShowAllEnabled && matchingUserPositionsLength < 1)
                 ) {
-                    // console.log('7');
+                    console.log('7');
                     setIsShowAllEnabled(true);
                 } else if (matchingUserPositionsLength < 1) {
                     // console.log('8');
                     return;
                 } else if (isShowAllEnabled && matchingUserPositionsLength >= 1) {
-                    // console.log('9');
+                    console.log('9');
                     setIsShowAllEnabled(false);
                 }
             }
@@ -238,6 +248,7 @@ export default function TradeTabs2(props: ITabsProps) {
     }, [
         isUserLoggedIn,
         hasInitialized,
+        isCandleSelected,
         outsideControl,
         selectedInsideTab,
         selectedOutsideTab,
@@ -250,7 +261,7 @@ export default function TradeTabs2(props: ITabsProps) {
     const dispatch = useAppDispatch();
 
     useEffect(() => {
-        if (isServerEnabled && !isShowAllEnabled) {
+        if (account && isServerEnabled && !isShowAllEnabled) {
             try {
                 fetchUserRecentChanges({
                     importedTokens: importedTokens,
@@ -278,7 +289,7 @@ export default function TradeTabs2(props: ITabsProps) {
                 console.log;
             }
         }
-    }, [isServerEnabled, isShowAllEnabled]);
+    }, [isServerEnabled, account, isShowAllEnabled]);
 
     const [changesInSelectedCandle, setChangesInSelectedCandle] = useState<ITransaction[]>([]);
 
@@ -381,14 +392,14 @@ export default function TradeTabs2(props: ITabsProps) {
         setCurrentTxActiveInTransactions: setCurrentTxActiveInTransactions,
         expandTradeTable: expandTradeTable,
         setIsShowAllEnabled: setIsShowAllEnabled,
-
+        setIsCandleSelected: setIsCandleSelected,
         isCandleSelected: isCandleSelected,
         filter: filter,
         closeGlobalModal: props.closeGlobalModal,
-
+        changeState: changeState,
         openGlobalModal: props.openGlobalModal,
         showSidebar: showSidebar,
-
+        setSelectedDate: setSelectedDate,
         isOnPortfolioPage: false,
 
         handlePulseAnimation: handlePulseAnimation,
@@ -412,18 +423,22 @@ export default function TradeTabs2(props: ITabsProps) {
         handlePulseAnimation: handlePulseAnimation,
         // handleOrderCopiedClick: handleOrderCopiedClick,
         setIsShowAllEnabled: setIsShowAllEnabled,
+        setIsCandleSelected: setIsCandleSelected,
+        changeState: changeState,
     };
     // props for <PositionsOnlyToggle/> React Element
 
     const [showPositionsOnlyToggle, setShowPositionsOnlyToggle] = useState(true);
 
     const positionsOnlyToggleProps = {
+        changeState: changeState,
         isShowAllEnabled: isShowAllEnabled,
         isAuthenticated: isAuthenticated,
         isWeb3Enabled: isWeb3Enabled,
         setHasInitialized: setHasInitialized,
         setIsShowAllEnabled: setIsShowAllEnabled,
         setIsCandleSelected: setIsCandleSelected,
+        isCandleSelected: isCandleSelected,
         setTransactionFilter: setTransactionFilter,
         expandTradeTable: expandTradeTable,
         setExpandTradeTable: setExpandTradeTable,
@@ -431,6 +446,8 @@ export default function TradeTabs2(props: ITabsProps) {
         setShowPositionsOnlyToggle: setShowPositionsOnlyToggle,
         leader: leader,
         leaderOwnerId: leaderOwnerId,
+        selectedDate: selectedDate,
+        setSelectedDate: setSelectedDate,
     };
     // data for headings of each of the three tabs
     const tradeTabData = [

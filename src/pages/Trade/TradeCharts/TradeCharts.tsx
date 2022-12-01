@@ -86,6 +86,8 @@ interface TradeChartsPropsIF {
     downBorderColor: string;
     baseTokenAddress: string;
     poolPriceNonDisplay: number | undefined;
+    selectedDate: Date | undefined;
+    setSelectedDate: Dispatch<Date | undefined>;
     checkLimitOrder: boolean;
 }
 
@@ -152,6 +154,8 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
         removePoolFromFaves,
         favePools,
         expandTradeTable,
+        selectedDate,
+        setSelectedDate,
         checkLimitOrder,
     } = props;
 
@@ -589,6 +593,19 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
 
     // ------------  END OF MIDDLE TOP HEADER OF TRADE CHARTS
 
+    const amountWithTooltip = (
+        <DefaultTooltip
+            interactive
+            title={poolPriceChange}
+            placement={'left'}
+            arrow
+            enterDelay={100}
+            leaveDelay={200}
+        >
+            {currentAmountDisplay}
+        </DefaultTooltip>
+    );
+
     const tokenInfo = (
         <div className={styles.token_info_container}>
             <div className={styles.tokens_info}>
@@ -626,8 +643,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
                     gap: '8px',
                 }}
             >
-                {poolPriceChange}
-                {currentAmountDisplay}
+                {amountWithTooltip}
                 <div>{tvlDisplay}</div>
             </div>
             <div>{graphSettingsContent}</div>
@@ -812,8 +828,11 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
     }, []);
 
     return (
-        <>
-            <div className={`${styles.graph_style} ${expandGraphStyle}`}>
+        <div
+            className={styles.main_container_chart}
+            style={{ padding: fullScreenChart ? '1rem' : '0' }}
+        >
+            <div className={`${styles.graph_style} ${expandGraphStyle}  `}>
                 {/* {graphSettingsContent} */}
                 {tokenInfo}
                 {timeFrameContent}
@@ -823,7 +842,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
             {graphIsLoading ? (
                 <TradeChartsLoading />
             ) : (
-                <div style={{ width: '100%', height: '100%' }} ref={canvasRef}>
+                <div style={{ width: '100%', height: '100%', zIndex: '2' }} ref={canvasRef}>
                     <TradeCandleStickChart
                         pool={pool}
                         chainData={chainData}
@@ -851,6 +870,8 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
                         baseTokenAddress={props.baseTokenAddress}
                         chainId={chainId}
                         poolPriceNonDisplay={props.poolPriceNonDisplay}
+                        selectedDate={selectedDate}
+                        setSelectedDate={setSelectedDate}
                         checkLimitOrder={checkLimitOrder}
                         rescale={rescale}
                         setRescale={setRescale}
@@ -859,7 +880,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
                     />
                 </div>
             )}
-        </>
+        </div>
     );
 }
 

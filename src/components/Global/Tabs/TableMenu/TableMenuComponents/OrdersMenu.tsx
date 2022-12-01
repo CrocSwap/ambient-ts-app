@@ -261,7 +261,7 @@ export default function OrdersMenu(props: OrdersMenuIF) {
                     handleCopyOrder();
                 }}
             >
-                Copy
+                Copy Trade
             </button>
         ) : null;
     const detailsButton = (

@@ -291,7 +291,7 @@ export default function TransactionsMenu(props: TransactionMenuIF) {
                     handleCopyClick();
                 }}
             >
-                Copy
+                Copy Trade
             </button>
         ) : // <Link
         //     className={styles.option_button}
@@ -327,7 +327,7 @@ export default function TransactionsMenu(props: TransactionMenuIF) {
                     handleCopyClick();
                 }}
             >
-                Copy
+                Copy Trade
             </button>
         ) : (
             // <Link
@@ -360,7 +360,7 @@ export default function TransactionsMenu(props: TransactionMenuIF) {
                     handleCopyClick();
                 }}
             >
-                Copy
+                Copy Trade
             </button>
             // <Link
             //     className={styles.option_button}

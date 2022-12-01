@@ -45,7 +45,7 @@ interface HeaderPropsIF {
     closeGlobalModal: () => void;
 
     isAppOverlayActive: boolean;
-
+    poolPriceDisplay: number | undefined;
     setIsAppOverlayActive: Dispatch<SetStateAction<boolean>>;
     switchTheme: () => void;
     theme: string;
@@ -71,6 +71,7 @@ export default function PageHeader(props: HeaderPropsIF) {
         setIsAppOverlayActive,
         switchTheme,
         theme,
+        poolPriceDisplay,
     } = props;
 
     const {
@@ -185,6 +186,28 @@ export default function PageHeader(props: HeaderPropsIF) {
     const quoteSymbol = tradeData.quoteToken.symbol;
     const isDenomBase = tradeData.isDenomBase;
 
+    const poolPriceDisplayWithDenom = poolPriceDisplay
+        ? isDenomBase
+            ? 1 / poolPriceDisplay
+            : poolPriceDisplay
+        : undefined;
+
+    const truncatedPoolPrice =
+        !poolPriceDisplayWithDenom ||
+        poolPriceDisplayWithDenom === Infinity ||
+        poolPriceDisplayWithDenom === 0
+            ? ''
+            : // ? '…'
+            poolPriceDisplayWithDenom < 2
+            ? poolPriceDisplayWithDenom.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 6,
+              })
+            : poolPriceDisplayWithDenom.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+              });
+
     useEffect(() => {
         const path = location.pathname;
 
@@ -206,15 +229,15 @@ export default function PageHeader(props: HeaderPropsIF) {
                     ? trimString(pathNoLeadingSlash, 10, 3, '…')
                     : pathNoLeadingSlash
                 : trimString(pathNoLeadingSlash, 6, 0, '…');
-            document.title = `${ensNameOrAddressTruncated} - ambient.finance`;
+            document.title = `${ensNameOrAddressTruncated} ~ ambient.finance`;
         } else if (location.pathname.includes('swap') || location.pathname.includes('trade')) {
             document.title = isDenomBase
-                ? `${baseSymbol}/${quoteSymbol} ~ ambient.finance`
-                : `${quoteSymbol}/${baseSymbol} ~ ambient.finance`;
+                ? `${baseSymbol}/${quoteSymbol} ${truncatedPoolPrice} ~ ambient.finance`
+                : `${quoteSymbol}/${baseSymbol} ${truncatedPoolPrice} ~ ambient.finance`;
         } else {
             document.title = 'Home ~ ambient.finance';
         }
-    }, [baseSymbol, quoteSymbol, isDenomBase, location]);
+    }, [baseSymbol, quoteSymbol, isDenomBase, location, truncatedPoolPrice]);
 
     const tradeDestination = location.pathname.includes('trade/market')
         ? '/trade/market'

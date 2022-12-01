@@ -229,7 +229,7 @@ export default function App() {
         onIdle,
         onActive,
         //    onAction,
-        timeout: 1000 * 60 * 1, // set user to idle after 1 minute
+        timeout: 1000 * 60 * 5, // set user to idle after 5 minutes
         promptTimeout: 0,
         events: [
             'mousemove',
@@ -1146,6 +1146,13 @@ export default function App() {
                             .then((json) => {
                                 const poolLimitOrderStates = json?.data;
 
+                                dispatch(
+                                    setDataLoadingStatus({
+                                        datasetName: 'poolOrderData',
+                                        loadingStatus: false,
+                                    }),
+                                );
+
                                 if (poolLimitOrderStates) {
                                     Promise.all(
                                         poolLimitOrderStates.map((limitOrder: LimitOrderIF) => {
@@ -2052,7 +2059,7 @@ export default function App() {
         lastBlockNumber: lastBlockNumber,
         isMobileSidebarOpen: isMobileSidebarOpen,
         setIsMobileSidebarOpen: setIsMobileSidebarOpen,
-
+        poolPriceDisplay: poolPriceDisplay,
         openGlobalModal: openGlobalModal,
         closeGlobalModal: closeGlobalModal,
         isAppOverlayActive: isAppOverlayActive,
@@ -2364,7 +2371,7 @@ export default function App() {
                 {currentLocation !== '/404' && <PageHeader {...headerProps} />}
 
                 {/* <MobileSidebar/> */}
-                <main className={`${showSidebarOrNullStyle} ${swapBodyStyle}`}>
+                <section className={`${showSidebarOrNullStyle} ${swapBodyStyle}`}>
                     {!currentLocation.startsWith('/swap') && sidebarRender}
                     <Routes>
                         <Route
@@ -2608,6 +2615,7 @@ export default function App() {
                                     }
                                     handlePulseAnimation={handlePulseAnimation}
                                     gasPriceInGwei={gasPriceInGwei}
+                                    openModalWallet={openModalWallet}
                                 />
                             }
                         />
@@ -2654,6 +2662,7 @@ export default function App() {
                                     }
                                     handlePulseAnimation={handlePulseAnimation}
                                     gasPriceInGwei={gasPriceInGwei}
+                                    openModalWallet={openModalWallet}
                                 />
                             }
                         />
@@ -2711,12 +2720,13 @@ export default function App() {
                                     }
                                     handlePulseAnimation={handlePulseAnimation}
                                     gasPriceInGwei={gasPriceInGwei}
+                                    openModalWallet={openModalWallet}
                                 />
                             }
                         />
                         <Route path='/404' element={<NotFound />} />
                     </Routes>
-                </main>
+                </section>
                 {snackbarContent}
             </div>
 

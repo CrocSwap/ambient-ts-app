@@ -9,6 +9,7 @@
     --mono: monospace, 'Lexend Deca' sans-serif, ;
 
     --title-gradient: linear-gradient(90deg, #7371fc 0%, #cdc1ff 49.48%, #7371fc 100%);
+    --chart-gradient: radial-gradient(circle,rgb(0, 25, 51), rgba(4, 12, 24, 1) );
     --text-highlight: #cdc1ff;
     --text-highlight-dark: #7371fc;
 
@@ -69,6 +70,7 @@
 [data-theme='light'] {
     --shimmer: linear-gradient(to right, #ece9e6, #ffffff);
     --blur-bg: rgba(159, 165, 174, 0.5);
+    --chart-gradient: linear-gradient(to right, #d8d4d1, #ffffff);;
    
     --navbar-border: #cacbcd;
     --body-bg: linear-gradient(to right, #ece9e6, #ffffff);

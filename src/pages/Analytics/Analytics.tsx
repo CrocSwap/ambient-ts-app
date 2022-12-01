@@ -25,7 +25,7 @@ interface AnalyticsProps {
 
 export default function Analytics(props: AnalyticsProps) {
     return (
-        <main data-testid={'analytics'} className={styles.analytics_container}>
+        <section data-testid={'analytics'} className={styles.analytics_container}>
             <GraphContainer />
             <AnalyticsTabs
                 setOutsideControl={props.setOutsideControl}
@@ -34,6 +34,6 @@ export default function Analytics(props: AnalyticsProps) {
                 removePoolFromFaves={props.removePoolFromFaves}
                 addPoolToFaves={props.addPoolToFaves}
             />
-        </main>
+        </section>
     );
 }
