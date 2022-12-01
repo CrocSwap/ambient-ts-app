@@ -77,6 +77,7 @@ interface TradePropsIF {
     showSidebar: boolean;
     setTokenPairLocal: Dispatch<SetStateAction<string[] | null>>;
     handlePulseAnimation: (type: string) => void;
+    checkLimitOrder: boolean;
     // handleTxCopiedClick: () => void;
     // handleOrderCopiedClick: () => void;
     // handleRangeCopiedClick: () => void;
@@ -122,6 +123,7 @@ export default function Trade(props: TradePropsIF) {
         setTokenPairLocal,
         showSidebar,
         handlePulseAnimation,
+        checkLimitOrder,
         // handleTxCopiedClick,
         // handleOrderCopiedClick,
         // handleRangeCopiedClick,
@@ -520,6 +522,7 @@ export default function Trade(props: TradePropsIF) {
                             poolPriceNonDisplay={poolPriceNonDisplay}
                             selectedDate={selectedDate}
                             setSelectedDate={setSelectedDate}
+                            checkLimitOrder={checkLimitOrder}
                         />
                     </div>
                 </div>

@@ -374,17 +374,22 @@
 .current_data_info {
     padding: 0.3rem 0;
 
-    /* extra small */
 
     font-family: 'Lexend Deca';
     font-style: normal;
     font-weight: 300;
-    font-size: 12px;
-    line-height: 12px;
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
 
-    /* text/grey light */
+
 
     color: var(--text-grey-light);
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 4px;
+
+
 }
 
 @media only screen and (min-device-width: 200px) and (max-device-width: 568px) and (-webkit-min-device-pixel-ratio: 2) {
@@ -452,3 +457,15 @@
     }
 
 }
+
+.chart_tooltips {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    align-items: center;
+    padding: 0.3rem 0;
+}
+
