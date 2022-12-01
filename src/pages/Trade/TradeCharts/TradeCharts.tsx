@@ -376,9 +376,9 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
     ];
 
     const chartOverlayButtonData2 = [
-        { name: 'Off', selected: false, action: exampleAction },
-        { name: 'Curve', selected: true, action: exampleAction },
-        { name: 'Depth', selected: false, action: exampleAction },
+        { name: 'Off', action: exampleAction },
+        { name: 'Curve', action: exampleAction },
+        { name: 'Depth', action: exampleAction },
     ];
 
     const chartOverlayButtons1 = chartOverlayButtonData1.map((button, idx) => (
@@ -395,13 +395,14 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
             </button>
         </div>
     ));
+    const [selectedCurveDepth, setSelectedCurveDepth] = useState(chartOverlayButtonData2[0]);
 
     const chartOverlayButtons2 = chartOverlayButtonData2.map((button, idx) => (
         <div className={styles.settings_container} key={idx}>
             <button
-                onClick={button.action}
+                onClick={() => setSelectedCurveDepth(button)}
                 className={
-                    button.selected
+                    button.name.toLowerCase() === selectedCurveDepth.name.toLowerCase()
                         ? styles.active_selected_button
                         : styles.non_active_selected_button
                 }
@@ -463,54 +464,54 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
     // --------------------------- END OF TIME FRAME BUTTON FUNCTIONALITY-------------------------------
 
     // --------------------------- LIQUIDITY TYPE BUTTON FUNCTIONALITY-------------------------------
-    const liquidityTypeData = [{ label: 'Depth' }, { label: 'Curve' }];
-    const [liquidityType, setLiquidityType] = useState('depth');
+    // const liquidityTypeData = [{ label: 'Depth' }, { label: 'Curve' }];
+    // const [liquidityType, setLiquidityType] = useState('depth');
 
-    function handleLiquidityTypeButtonClick(label: string) {
-        setLiquidityType(label.toLowerCase());
-    }
+    // function handleLiquidityTypeButtonClick(label: string) {
+    //     setLiquidityType(label.toLowerCase());
+    // }
 
-    const liquidityTypeDisplay = liquidityTypeData.map((type, idx) => (
-        <motion.div
-            initial={{ y: 10, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: -10, opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className={`${styles.settings_container} `}
-            key={idx}
-        >
-            <button
-                onClick={() => handleLiquidityTypeButtonClick(type.label)}
-                className={
-                    type.label.toLowerCase() === liquidityType
-                        ? styles.active_button2
-                        : styles.non_active_button2
-                }
-            >
-                {type.label}
+    // const liquidityTypeDisplay = liquidityTypeData.map((type, idx) => (
+    //     <motion.div
+    //         initial={{ y: 10, opacity: 0 }}
+    //         animate={{ y: 0, opacity: 1 }}
+    //         exit={{ y: -10, opacity: 0 }}
+    //         transition={{ duration: 0.2 }}
+    //         className={`${styles.settings_container} `}
+    //         key={idx}
+    //     >
+    //         <button
+    //             onClick={() => handleLiquidityTypeButtonClick(type.label)}
+    //             className={
+    //                 type.label.toLowerCase() === liquidityType
+    //                     ? styles.active_button2
+    //                     : styles.non_active_button2
+    //             }
+    //         >
+    //             {type.label}
 
-                {type.label.toLowerCase() === liquidityType && (
-                    <motion.div
-                        layoutId='outline'
-                        className={styles.outline}
-                        initial={false}
-                        transition={spring}
-                    />
-                )}
-            </button>
-        </motion.div>
-    ));
+    //             {type.label.toLowerCase() === liquidityType && (
+    //                 <motion.div
+    //                     layoutId='outline'
+    //                     className={styles.outline}
+    //                     initial={false}
+    //                     transition={spring}
+    //                 />
+    //             )}
+    //         </button>
+    //     </motion.div>
+    // ));
     // eslint-disable-next-line
-    const liquidityTypeContent = (
-        <div className={styles.liquidity_type_container}>
-            <div />
-            <div className={styles.liquidity_type_content}>
-                <span>Liquidity Type</span>
+    // const liquidityTypeContent = (
+    //     <div className={styles.liquidity_type_container}>
+    //         <div />
+    //         <div className={styles.liquidity_type_content}>
+    //             <span>Liquidity Type</span>
 
-                {liquidityTypeDisplay}
-            </div>
-        </div>
-    );
+    //             {liquidityTypeDisplay}
+    //         </div>
+    //     </div>
+    // );
     // --------------------------- END OF LIQUIDITY TYPE BUTTON FUNCTIONALITY-------------------------------
     // TOKEN INFO----------------------------------------------------------------
 
