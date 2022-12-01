@@ -9,6 +9,7 @@
     --font-family: 'Lexend Deca', sans-serif;
     --roboto: 'Roboto Mono', monospace;
     --mono: monospace, 'Lexend Deca' sans-serif, ;
+    --portfolio-banner: url('./assets/images/backgrounds/account_image.png') no-repeat center center;
 
     --title-gradient: linear-gradient(90deg, #7371fc 0%, #cdc1ff 49.48%, #7371fc 100%);
     --swap-box-shadow: none;
@@ -72,6 +73,8 @@
 }
 
 [data-theme='light'] {
+    --portfolio-banner: linear-gradient(to right, #f0f2f0, #000c40);;
+
     --shimmer: linear-gradient(to right, #ece9e6, #ffffff);
     --blur-bg: #ebebed;
     --swap-box-shadow:   0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);;
