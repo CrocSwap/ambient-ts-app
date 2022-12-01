@@ -384,6 +384,7 @@
 
 
     color: var(--text-grey-light);
+    /*  */
     display: flex;
     flex-direction: row;
     align-items: center;
