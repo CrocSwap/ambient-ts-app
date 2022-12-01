@@ -7,12 +7,12 @@
     bottom: 20px;
     height: 30px;
     width: 30px;
-    background: #7371fc;
+    background: var(--text-highlight-dark);
     text-align: center;
     line-height: 55px;
     border-radius: 50px;
     font-size: 30px;
-    color: #fff;
+    color: var(--text-grey-white);
     cursor: pointer;
 }
 
@@ -26,7 +26,7 @@
 }
 .line {
     fill: none;
-    stroke: #ffffff;
+    stroke: var(--text-grey-white);
     stroke-width: 2.75;
     stroke-linecap: round;
     transition: stroke-dashoffset 500ms cubic-bezier(0.4, 0, 0.2, 1);
@@ -40,7 +40,7 @@
     stroke-dashoffset: -18;
 }
 .circle {
-    fill: #ffffff;
+    fill: var(--text-grey-white);
     stroke: none;
     transform-origin: 50%;
     transition: transform 500ms cubic-bezier(0.4, 0, 0.2, 1);

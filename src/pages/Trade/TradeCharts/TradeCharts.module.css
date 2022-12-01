@@ -73,7 +73,7 @@
     font-size: var(--body-size);
     line-height: var(--body-lh);
     font-weight: 400;
-    color: white;
+    color: var(--text-grey-white);
     cursor: pointer;
 }
 .tokens_images,
@@ -120,7 +120,7 @@
     padding: 1px;
     /* control the border thickness */
     background: var(--title-gradient);
-    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask: linear-gradient(var(--text-grey-white) 0 0) content-box, linear-gradient(var(--text-grey-white) 0 0);
     -webkit-mask-composite: xor;
     mask-composite: exclude;
     pointer-events: none;
@@ -142,7 +142,7 @@
     padding: 1px;
     /* control the border thickness */
     background: var(--text-highlight-dark);
-    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask: linear-gradient(var(--text-grey-white) 0 0) content-box, linear-gradient(var(--text-grey-white) 0 0);
     -webkit-mask-composite: xor;
     mask-composite: exclude;
     pointer-events: none;
@@ -225,7 +225,7 @@
     padding: 5px 8px;
     position: relative;
     background: var(--dark1);
-    border: 1px solid #242f3f;
+    border: 1px solid var(--border-color);
 }
 
 .time_frame_container {
@@ -341,8 +341,8 @@
 
 .chart_item_container input[type='checkbox']:checked + label:before {
     background: var(--title-gradient);
-    border-color: #7371fc;
-    color: #fff;
+    border-color: var(--text-highlight-dark);
+    color: var(--text-grey-white);
 }
 
 .liquidity_type_container {
@@ -395,7 +395,7 @@
 
     /* text/grey light */
 
-    color: rgba(235, 235, 255, 0.4);
+    color: var(--text-grey-light);
 }
 
 @media only screen and (min-device-width: 200px) and (max-device-width: 568px) and (-webkit-min-device-pixel-ratio: 2) {

@@ -9,10 +9,10 @@
     width: 100%;
     padding: 10px 0;
     font-size: 16px;
-    color: #fff;
+    color: var(--text-grey-white);
     margin-bottom: 30px;
     border: none;
-    border-bottom: 1px solid #fff;
+    border-bottom: 1px solid var(--text-grey-white);
     outline: none;
     background: transparent;
 }
@@ -22,7 +22,7 @@
     left: 0;
     padding: 10px 0;
     font-size: 16px;
-    color: #fff;
+    color: var(--text-grey-white);
     pointer-events: none;
     transition: 0.5s;
 }
@@ -31,6 +31,6 @@
 .user_box input:valid ~ label {
     top: -20px;
     left: 0;
-    color: #03e9f4;
+    color: var(--text-accent);
     font-size: 12px;
 }
