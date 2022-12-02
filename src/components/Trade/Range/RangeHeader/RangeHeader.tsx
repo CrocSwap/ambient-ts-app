@@ -14,6 +14,7 @@ import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
 import { toggleDidUserFlipDenom } from '../../../../utils/state/tradeDataSlice';
 import IconWithTooltip from '../../../Global/IconWithTooltip/IconWithTooltip';
 import { AiOutlineShareAlt } from 'react-icons/ai';
+import ShareModal from '../../../Global/ShareModal/ShareModal';
 
 // interface for component props
 interface RangeHeaderPropsIF {
@@ -54,7 +55,7 @@ export default function RangeHeader(props: RangeHeaderPropsIF) {
         <ContentHeader>
             <div
                 className={styles.share_button}
-                onClick={() => openGlobalModal(props.shareOptionsDisplay, 'Share')}
+                onClick={() => openGlobalModal(<ShareModal />, 'Share')}
             >
                 <AiOutlineShareAlt />
             </div>

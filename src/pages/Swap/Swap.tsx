@@ -454,8 +454,43 @@ export default function Swap(props: SwapPropsIF) {
         setShareOptions(modifiedShareOptions);
     };
 
+    const swapLink =
+        'https://ambient-finance.netlify.app/swap/chain=0x5&tokenA=0x0000000000000000000000000000000000000000&tokenB=0xD87Ba7A50B2E7E660f678A895E4B72E7CB4CCd9C';
+
+    const shareIconsContent = (
+        <section>
+            <a
+                target='_blank'
+                rel='noreferrer'
+                href={`https://telegram.me/share/url?url=${swapLink}`}
+                className={styles.share_icon}
+            >
+                Telegram{' '}
+            </a>
+            <a
+                target='_blank'
+                rel='noreferrer'
+                href={`https://twitter.com/intent/tweet?text=${swapLink}`}
+                className={styles.share_icon}
+            >
+                Twitter{' '}
+            </a>
+            <a
+                target='_blank'
+                rel='noreferrer'
+                href={`https://www.facebook.com/sharer/sharer.php?u=${swapLink}`}
+                className={styles.share_icon}
+            >
+                Facebook{' '}
+            </a>
+            <a target='_blank' rel='noreferrer' href='' className={styles.share_icon}>
+                Discord{' '}
+            </a>
+        </section>
+    );
     const shareOptionsDisplay = (
         <div className={styles.option_control_container}>
+            {shareIconsContent}
             <div className={styles.options_control_display_container}>
                 <p className={styles.control_title}>Options</p>
                 <ul>
