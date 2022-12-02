@@ -13,6 +13,7 @@ import { tradeData } from '../../../../../utils/state/tradeDataSlice';
 import { useAppDispatch } from '../../../../../utils/hooks/reduxToolkit';
 import { setDataLoadingStatus } from '../../../../../utils/state/graphDataSlice';
 import moment from 'moment';
+import { ZERO_ADDRESS } from '../../../../../constants';
 
 interface OrderRowPropsIF {
     crocEnv: CrocEnv | undefined;
@@ -236,11 +237,39 @@ export default function OrderRow(props: OrderRowPropsIF) {
     //     </li>
     // );
 
-    const poolName = (
-        <li className='base_color'>
-            {baseTokenSymbol} / {quoteTokenSymbol}
-        </li>
+    const pair =
+        limitOrder.base !== ZERO_ADDRESS
+            ? [
+                  `${limitOrder.baseSymbol}: ${limitOrder.base}`,
+                  `${limitOrder.quoteSymbol}: ${limitOrder.quote}`,
+              ]
+            : [`${limitOrder.quoteSymbol}: ${limitOrder.quote}`];
+    const tip = pair.join('\n');
+
+    const tokenPair = (
+        <DefaultTooltip
+            interactive
+            title={<div style={{ whiteSpace: 'pre-line' }}>{tip}</div>}
+            placement={'right'}
+            arrow
+            enterDelay={150}
+            leaveDelay={200}
+        >
+            <li className='base_color'>
+                {/* {tokensTogether} */}
+                <p>
+                    {' '}
+                    {baseTokenSymbol} / {quoteTokenSymbol}
+                </p>
+            </li>
+        </DefaultTooltip>
     );
+
+    // const poolName = (
+    //     <li className='base_color'>
+    //         {baseTokenSymbol} / {quoteTokenSymbol}
+    //     </li>
+    // );
     // end of portfolio page li element ---------------
 
     // if (!orderMatchesSelectedTokens) return null;
@@ -362,7 +391,7 @@ export default function OrderRow(props: OrderRowPropsIF) {
         >
             {/* {isOnPortfolioPage && accountTokenImages} */}
             {!showColumns && OrderTimeWithTooltip}
-            {isOnPortfolioPage && !showSidebar && poolName}
+            {isOnPortfolioPage && !showSidebar && tokenPair}
             {!showColumns && IDWithTooltip}
             {!showColumns && walletWithTooltip}
             {showColumns && (

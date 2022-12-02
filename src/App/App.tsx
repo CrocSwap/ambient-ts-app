@@ -1956,7 +1956,11 @@ export default function App() {
             return;
         } else {
             setShowSidebar(true);
-            if (currentLocation === '/' || currentLocation === '/swap') {
+            if (
+                currentLocation === '/' ||
+                currentLocation === '/swap' ||
+                currentLocation.includes('/account')
+            ) {
                 setShowSidebar(false);
             }
         }

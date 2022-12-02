@@ -12,6 +12,7 @@ import TransactionDetails from '../../../../Global/TransactionDetails/Transactio
 import { tradeData } from '../../../../../utils/state/tradeDataSlice';
 import { useAppDispatch } from '../../../../../utils/hooks/reduxToolkit';
 import moment from 'moment';
+import { ZERO_ADDRESS } from '../../../../../constants';
 // import { light } from '@material-ui/core/styles/createPalette';
 interface TransactionRowPropsIF {
     tx: ITransaction;
@@ -99,8 +100,10 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
     const valueArrows = tx.entityType !== 'liqchange';
     // const valueArrows = sideType !== 'add' && sideType !== 'remove';
 
-    const positiveArrow = valueArrows && '↑';
-    const negativeArrow = valueArrows && '↓';
+    const positiveArrow = '↑';
+    // const positiveArrow = valueArrows && '↑';
+    const negativeArrow = '↓';
+    // const negativeArrow = valueArrows && '↓';
     // const baseFlowArrow =
     //     valueArrows && baseDisplay !== '0.00' ? (!isBaseFlowPositive ? '↑' : '↓') : null;
     // const quoteFlowArrow =
@@ -303,7 +306,10 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
     //     </li>
     // );
 
-    const pair = [`${tx.baseSymbol}: ${tx.base}`, `${tx.quoteSymbol}: ${tx.quote}`];
+    const pair =
+        tx.base !== ZERO_ADDRESS
+            ? [`${tx.baseSymbol}: ${tx.base}`, `${tx.quoteSymbol}: ${tx.quote}`]
+            : [`${tx.quoteSymbol}: ${tx.quote}`];
     const tip = pair.join('\n');
 
     const tokenPair = (
@@ -571,21 +577,22 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                         //     console.log(tx.isBid);
                         // }}
                         className={`${styles.token_qty} ${positiveDisplayStyle}`}
-                        style={{ fontFamily: 'monospace' }}
+                        style={{ fontFamily: 'monospace', whiteSpace: 'nowrap' }}
                     >
                         {isBuy ? quoteDisplay : baseDisplay}
-                        {positiveArrow}
+                        {valueArrows ? positiveArrow : ' '}
                         {/* {isBuy ? quoteFlowArrow : baseFlowArrow} */}
                         {isBuy ? quoteTokenLogoComponent : baseTokenLogoComponent}
                     </p>
 
                     <p
                         className={`${styles.token_qty} ${negativeDisplayStyle}`}
-                        style={{ fontFamily: 'monospace' }}
+                        style={{ fontFamily: 'monospace', whiteSpace: 'nowrap' }}
                     >
                         {' '}
-                        {isBuy ? baseDisplay : quoteDisplay}
-                        {negativeArrow}
+                        {isBuy
+                            ? `${baseDisplay}${valueArrows ? negativeArrow : ' '}`
+                            : `${quoteDisplay}${valueArrows ? negativeArrow : ' '}`}
                         {/* {isBuy ? baseFlowArrow : quoteFlowArrow} */}
                         {isBuy ? baseTokenLogoComponent : quoteTokenLogoComponent}
                     </p>
