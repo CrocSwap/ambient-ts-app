@@ -3,7 +3,7 @@ import { ITransaction } from '../../utils/state/graphDataSlice';
 import { getTransactionData } from './getTransactionData';
 
 interface IFetchUserRecentChangesProps {
-    importedTokens: TokenIF[];
+    tokensOnActiveLists: Map<string, TokenIF>;
     user: string;
     chainId: string;
     annotate: boolean;
@@ -17,7 +17,7 @@ interface IFetchUserRecentChangesProps {
 
 export const fetchUserRecentChanges = (props: IFetchUserRecentChangesProps) => {
     const {
-        importedTokens,
+        tokensOnActiveLists,
         user,
         chainId,
         annotate,
@@ -54,7 +54,7 @@ export const fetchUserRecentChanges = (props: IFetchUserRecentChangesProps) => {
 
             const updatedTransactions = Promise.all(
                 userTransactions.map((tx: ITransaction) => {
-                    return getTransactionData(tx, importedTokens);
+                    return getTransactionData(tx, tokensOnActiveLists);
                 }),
             ).then((updatedTransactions) => {
                 return updatedTransactions;

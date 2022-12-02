@@ -58,7 +58,7 @@ interface TransactionsProps {
 }
 export default function Transactions(props: TransactionsProps) {
     const {
-        importedTokens,
+        // importedTokens,
         isTokenABase,
         activeAccountTransactionData,
         connectedAccountActive,
@@ -66,7 +66,7 @@ export default function Transactions(props: TransactionsProps) {
         account,
         changesInSelectedCandle,
         graphData,
-
+        tokenMap,
         chainData,
         blockExplorer,
         currentTxActiveInTransactions,
@@ -250,7 +250,7 @@ export default function Transactions(props: TransactionsProps) {
     useEffect(() => {
         if (isServerEnabled && isShowAllEnabled) {
             fetchPoolRecentChanges({
-                importedTokens: importedTokens,
+                tokensOnActiveLists: tokenMap,
                 base: baseTokenAddress,
                 quote: quoteTokenAddress,
                 poolIdx: chainData.poolIndex,
@@ -313,7 +313,8 @@ export default function Transactions(props: TransactionsProps) {
                 // repeat fetch with the interval of 30 seconds
                 const timerId = setInterval(() => {
                     fetchPoolRecentChanges({
-                        importedTokens: importedTokens,
+                        tokensOnActiveLists: tokenMap,
+
                         base: baseTokenAddress,
                         quote: quoteTokenAddress,
                         poolIdx: chainData.poolIndex,

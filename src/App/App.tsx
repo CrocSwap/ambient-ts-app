@@ -676,19 +676,10 @@ export default function App() {
         const newToken = { ...token };
         const tokenAddress = token.address;
         const key = tokenAddress.toLowerCase() + '_0x' + token.chainId.toString(16);
-        console.log({ key });
-
-        console.log({ tokensOnActiveLists });
-        const foundToken = tokensOnActiveLists.get(key);
-        const testToken = tokensOnActiveLists.get('0xd5a98e77d1feb091344096301ea336a5c07a6a41_0x1');
-        console.log({ foundToken });
-        console.log({ testToken });
 
         const tokenName = tokensOnActiveLists.get(key)?.name;
-        console.log({ tokenName });
 
         const tokenLogoURI = tokensOnActiveLists.get(key)?.logoURI;
-        console.log({ tokenLogoURI });
 
         newToken.name = tokenName ?? '';
 
@@ -1149,7 +1140,7 @@ export default function App() {
 
                         // retrieve pool recent changes
                         fetchPoolRecentChanges({
-                            importedTokens: importedTokens,
+                            tokensOnActiveLists: tokensOnActiveLists,
                             base: sortedTokens[0],
                             quote: sortedTokens[1],
                             poolIdx: chainData.poolIndex,
@@ -1600,7 +1591,7 @@ export default function App() {
             if (lastMessageData) {
                 Promise.all(
                     lastMessageData.map((tx: ITransaction) => {
-                        return getTransactionData(tx, importedTokens);
+                        return getTransactionData(tx, tokensOnActiveLists);
                     }),
                 )
                     .then((updatedTransactions) => {
@@ -1906,7 +1897,7 @@ export default function App() {
 
             try {
                 fetchUserRecentChanges({
-                    importedTokens: importedTokens,
+                    tokensOnActiveLists: tokensOnActiveLists,
                     user: account,
                     chainId: chainData.chainId,
                     annotate: true,

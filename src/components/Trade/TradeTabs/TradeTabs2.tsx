@@ -266,7 +266,7 @@ export default function TradeTabs2(props: ITabsProps) {
         if (account && isServerEnabled && !isShowAllEnabled) {
             try {
                 fetchUserRecentChanges({
-                    importedTokens: importedTokens,
+                    tokensOnActiveLists: tokenMap,
                     user: account,
                     chainId: chainData.chainId,
                     annotate: true,
@@ -299,7 +299,7 @@ export default function TradeTabs2(props: ITabsProps) {
         // console.log({ filter });
         if (isServerEnabled && isCandleSelected && filter?.time) {
             fetchPoolRecentChanges({
-                importedTokens: importedTokens,
+                tokensOnActiveLists: tokenMap,
                 base: selectedBase,
                 quote: selectedQuote,
                 poolIdx: chainData.poolIndex,
