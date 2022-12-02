@@ -418,7 +418,7 @@ export default function Swap(props: SwapPropsIF) {
             const gasPriceInDollarsNum = gasPriceInGwei * 79079 * 1e-9 * ethMainnetUsdPrice;
 
             setSwapGasPriceinDollars(
-                '~$' +
+                '$' +
                     gasPriceInDollarsNum.toLocaleString(undefined, {
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 2,
