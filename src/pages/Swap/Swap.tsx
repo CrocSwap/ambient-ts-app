@@ -491,7 +491,7 @@ export default function Swap(props: SwapPropsIF) {
     // console.log({ swapAllowed });
 
     return (
-        <main data-testid={'swap'} className={swapPageStyle}>
+        <section data-testid={'swap'} className={swapPageStyle}>
             <div className={`${swapContainerStyle}`}>
                 <ContentContainer isOnTradeRoute={isOnTradeRoute}>
                     <SwapHeader
@@ -579,6 +579,6 @@ export default function Swap(props: SwapPropsIF) {
                 {confirmSwapModalOrNull}
                 {relativeModalOrNull}
             </div>
-        </main>
+        </section>
     );
 }

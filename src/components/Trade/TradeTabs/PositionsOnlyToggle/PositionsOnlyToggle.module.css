@@ -4,8 +4,7 @@
     align-items: center;
     gap: 8px;
     min-height: 20px;
-    transition: var(--animation-speed) ease-in-out
-
+    transition: var(--animation-speed) ease-in-out;
 }
 
 .options_toggles {
@@ -37,27 +36,24 @@
     cursor: pointer;
 }
 
-.disable_right{
+.disable_right {
     filter: blur(7px);
     pointer-events: none;
     display: none;
-    transition: var(--animation-speed) ease-in-out
-
+    transition: var(--animation-speed) ease-in-out;
 }
 
-.leader{
+.leader {
     cursor: pointer;
     display: flex;
     flex-direction: row;
     align-items: center;
     gap: 4px;
     font-family: var(--font-logo);
-    transition: all var(--animation-speed) ease-in-out
-
-  
+    transition: all var(--animation-speed) ease-in-out;
 }
 
-.leader h3{
+.leader h3 {
     /* background: var(--title-gradient);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -67,4 +63,26 @@
     line-height: 12px;
 
     color: #cdc1ff;
+}
+
+.option_button {
+    background: var(--dark3);
+    width: 40px;
+    border: none;
+    outline: none;
+    display: flex;
+    /* justify-content: center; */
+    align-items: center;
+    /* border: 1px solid #242f3f; */
+    box-shadow: 2px 1000px 1px var(--dark3) inset;
+    transition: box-shadow var(--animation-speed) ease-in-out;
+
+    height: 23px;
+    padding: 5px 8px;
+    text-decoration: none;
+    border-radius: 6.25rem;
+    cursor: pointer;
+    font-size: 10px;
+    /* line-height: var(--body-lh); */
+    color: var(--text-grey-light);
 }

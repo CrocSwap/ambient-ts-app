@@ -19,7 +19,7 @@ export default function Analytics2(props: Analytics2Props) {
 
     return (
         <>
-            <main data-testid={'analytics'} className={styles.analytics_container}>
+            <section data-testid={'analytics'} className={styles.analytics_container}>
                 <AnalyticsHeader />
                 {currentLocation === '/analytics2/overview' && graphContainerOrNull}
                 <Outlet context={[analyticsSearchInput, setAnalyticsSearchInput]} />
@@ -29,7 +29,7 @@ export default function Analytics2(props: Analytics2Props) {
             <TopRanges />
             <TrendingPools />
         <AnalyticsTransactions /> */}
-            </main>
+            </section>
         </>
     );
 }

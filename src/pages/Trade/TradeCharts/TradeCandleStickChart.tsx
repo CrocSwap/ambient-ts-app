@@ -59,6 +59,8 @@ interface ChartData {
     baseTokenAddress: string;
     chainId: string;
     poolPriceNonDisplay: number | undefined;
+    selectedDate: Date | undefined;
+    setSelectedDate: React.Dispatch<Date | undefined>;
     checkLimitOrder: boolean;
     rescale: boolean | undefined;
     setRescale: React.Dispatch<React.SetStateAction<boolean>>;
@@ -82,8 +84,16 @@ type chartItemStates = {
 };
 
 export default function TradeCandleStickChart(props: ChartData) {
-    const { pool, chainData, baseTokenAddress, chainId, poolPriceNonDisplay, checkLimitOrder } =
-        props;
+    const {
+        pool,
+        chainData,
+        baseTokenAddress,
+        chainId,
+        poolPriceNonDisplay,
+        selectedDate,
+        setSelectedDate,
+        checkLimitOrder,
+    } = props;
 
     const [scaleData, setScaleData] = useState<any>();
 
@@ -517,6 +527,8 @@ export default function TradeCandleStickChart(props: ChartData) {
                         scaleData={scaleData}
                         chainId={chainId}
                         poolPriceNonDisplay={poolPriceNonDisplay}
+                        selectedDate={selectedDate}
+                        setSelectedDate={setSelectedDate}
                         checkLimitOrder={checkLimitOrder}
                         rescale={props.rescale}
                         setRescale={props.setRescale}

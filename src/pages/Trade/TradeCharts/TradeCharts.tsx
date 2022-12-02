@@ -86,6 +86,8 @@ interface TradeChartsPropsIF {
     downBorderColor: string;
     baseTokenAddress: string;
     poolPriceNonDisplay: number | undefined;
+    selectedDate: Date | undefined;
+    setSelectedDate: Dispatch<Date | undefined>;
     checkLimitOrder: boolean;
 }
 
@@ -152,6 +154,8 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
         removePoolFromFaves,
         favePools,
         expandTradeTable,
+        selectedDate,
+        setSelectedDate,
         checkLimitOrder,
     } = props;
 
@@ -372,9 +376,9 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
     ];
 
     const chartOverlayButtonData2 = [
-        { name: 'Off', selected: false, action: exampleAction },
-        { name: 'Curve', selected: true, action: exampleAction },
-        { name: 'Depth', selected: false, action: exampleAction },
+        { name: 'Off', action: exampleAction },
+        { name: 'Curve', action: exampleAction },
+        { name: 'Depth', action: exampleAction },
     ];
 
     const chartOverlayButtons1 = chartOverlayButtonData1.map((button, idx) => (
@@ -391,13 +395,14 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
             </button>
         </div>
     ));
+    const [selectedCurveDepth, setSelectedCurveDepth] = useState(chartOverlayButtonData2[0]);
 
     const chartOverlayButtons2 = chartOverlayButtonData2.map((button, idx) => (
         <div className={styles.settings_container} key={idx}>
             <button
-                onClick={button.action}
+                onClick={() => setSelectedCurveDepth(button)}
                 className={
-                    button.selected
+                    button.name.toLowerCase() === selectedCurveDepth.name.toLowerCase()
                         ? styles.active_selected_button
                         : styles.non_active_selected_button
                 }
@@ -459,54 +464,54 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
     // --------------------------- END OF TIME FRAME BUTTON FUNCTIONALITY-------------------------------
 
     // --------------------------- LIQUIDITY TYPE BUTTON FUNCTIONALITY-------------------------------
-    const liquidityTypeData = [{ label: 'Depth' }, { label: 'Curve' }];
-    const [liquidityType, setLiquidityType] = useState('depth');
+    // const liquidityTypeData = [{ label: 'Depth' }, { label: 'Curve' }];
+    // const [liquidityType, setLiquidityType] = useState('depth');
 
-    function handleLiquidityTypeButtonClick(label: string) {
-        setLiquidityType(label.toLowerCase());
-    }
+    // function handleLiquidityTypeButtonClick(label: string) {
+    //     setLiquidityType(label.toLowerCase());
+    // }
 
-    const liquidityTypeDisplay = liquidityTypeData.map((type, idx) => (
-        <motion.div
-            initial={{ y: 10, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: -10, opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className={`${styles.settings_container} `}
-            key={idx}
-        >
-            <button
-                onClick={() => handleLiquidityTypeButtonClick(type.label)}
-                className={
-                    type.label.toLowerCase() === liquidityType
-                        ? styles.active_button2
-                        : styles.non_active_button2
-                }
-            >
-                {type.label}
+    // const liquidityTypeDisplay = liquidityTypeData.map((type, idx) => (
+    //     <motion.div
+    //         initial={{ y: 10, opacity: 0 }}
+    //         animate={{ y: 0, opacity: 1 }}
+    //         exit={{ y: -10, opacity: 0 }}
+    //         transition={{ duration: 0.2 }}
+    //         className={`${styles.settings_container} `}
+    //         key={idx}
+    //     >
+    //         <button
+    //             onClick={() => handleLiquidityTypeButtonClick(type.label)}
+    //             className={
+    //                 type.label.toLowerCase() === liquidityType
+    //                     ? styles.active_button2
+    //                     : styles.non_active_button2
+    //             }
+    //         >
+    //             {type.label}
 
-                {type.label.toLowerCase() === liquidityType && (
-                    <motion.div
-                        layoutId='outline'
-                        className={styles.outline}
-                        initial={false}
-                        transition={spring}
-                    />
-                )}
-            </button>
-        </motion.div>
-    ));
+    //             {type.label.toLowerCase() === liquidityType && (
+    //                 <motion.div
+    //                     layoutId='outline'
+    //                     className={styles.outline}
+    //                     initial={false}
+    //                     transition={spring}
+    //                 />
+    //             )}
+    //         </button>
+    //     </motion.div>
+    // ));
     // eslint-disable-next-line
-    const liquidityTypeContent = (
-        <div className={styles.liquidity_type_container}>
-            <div />
-            <div className={styles.liquidity_type_content}>
-                <span>Liquidity Type</span>
+    // const liquidityTypeContent = (
+    //     <div className={styles.liquidity_type_container}>
+    //         <div />
+    //         <div className={styles.liquidity_type_content}>
+    //             <span>Liquidity Type</span>
 
-                {liquidityTypeDisplay}
-            </div>
-        </div>
-    );
+    //             {liquidityTypeDisplay}
+    //         </div>
+    //     </div>
+    // );
     // --------------------------- END OF LIQUIDITY TYPE BUTTON FUNCTIONALITY-------------------------------
     // TOKEN INFO----------------------------------------------------------------
 
@@ -589,6 +594,19 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
 
     // ------------  END OF MIDDLE TOP HEADER OF TRADE CHARTS
 
+    const amountWithTooltip = (
+        <DefaultTooltip
+            interactive
+            title={poolPriceChange}
+            placement={'left'}
+            arrow
+            enterDelay={100}
+            leaveDelay={200}
+        >
+            {currentAmountDisplay}
+        </DefaultTooltip>
+    );
+
     const tokenInfo = (
         <div className={styles.token_info_container}>
             <div className={styles.tokens_info}>
@@ -626,8 +644,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
                     gap: '8px',
                 }}
             >
-                {poolPriceChange}
-                {currentAmountDisplay}
+                {amountWithTooltip}
                 <div>{tvlDisplay}</div>
             </div>
             <div>{graphSettingsContent}</div>
@@ -812,8 +829,11 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
     }, []);
 
     return (
-        <>
-            <div className={`${styles.graph_style} ${expandGraphStyle}`}>
+        <div
+            className={styles.main_container_chart}
+            style={{ padding: fullScreenChart ? '1rem' : '0' }}
+        >
+            <div className={`${styles.graph_style} ${expandGraphStyle}  `}>
                 {/* {graphSettingsContent} */}
                 {tokenInfo}
                 {timeFrameContent}
@@ -823,7 +843,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
             {graphIsLoading ? (
                 <TradeChartsLoading />
             ) : (
-                <div style={{ width: '100%', height: '100%' }} ref={canvasRef}>
+                <div style={{ width: '100%', height: '100%', zIndex: '2' }} ref={canvasRef}>
                     <TradeCandleStickChart
                         pool={pool}
                         chainData={chainData}
@@ -851,6 +871,8 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
                         baseTokenAddress={props.baseTokenAddress}
                         chainId={chainId}
                         poolPriceNonDisplay={props.poolPriceNonDisplay}
+                        selectedDate={selectedDate}
+                        setSelectedDate={setSelectedDate}
                         checkLimitOrder={checkLimitOrder}
                         rescale={rescale}
                         setRescale={setRescale}
@@ -859,7 +881,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
                     />
                 </div>
             )}
-        </>
+        </div>
     );
 }
 
