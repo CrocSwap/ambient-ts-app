@@ -65,6 +65,14 @@
             "decimals": 8,
             "chainId": 5,
             "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599/logo.png"
+        },
+        {
+            "name": "Token",
+            "address": "0x4420A3EDB47056E0586f49Cfc3C9625f7B407305",
+            "symbol": "WT",
+            "decimals": 18,
+            "chainId": 5,
+            "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599/logo.png"
         }
     ]
 }
