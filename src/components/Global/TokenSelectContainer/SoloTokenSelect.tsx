@@ -30,12 +30,14 @@ export const SoloTokenSelect = (props: propsIF) => {
         searchableTokens
     } = props;
     false && searchableTokens;
+    console.log(importedTokens);
 
     const [tokensForDOM, otherTokensForDOM, validatedInput, setInput, searchType] = useSoloSearch(
         chainId,
         importedTokens,
         tokensOnActiveLists,
     );
+    useEffect(() => {tokensForDOM}, [tokensForDOM?.length]);
 
     const dispatch = useAppDispatch();
 
@@ -151,8 +153,8 @@ export const SoloTokenSelect = (props: propsIF) => {
                 placeholder='&#61442; Search name or enter an Address'
                 onChange={(e) => setInput(e.target.value)}
             />
-            {!searchType ? importedTokenButtons : null}
-            {searchType && otherTokensForDOM?.length ? (
+            {importedTokenButtons}
+            {importedTokenButtons?.length === 0 && searchType && otherTokensForDOM?.length ? (
                 <>
                     <h2>More Available Tokens</h2>
                     <div className={styles.scrollable_container}>{otherTokenButtons}</div>

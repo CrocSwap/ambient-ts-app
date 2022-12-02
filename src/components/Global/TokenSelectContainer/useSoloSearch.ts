@@ -52,6 +52,7 @@ export const useSoloSearch = (
     const [importedTokensForDOM, setImportedTokensForDOM] = useState<TokenIF[]>([]);
     const [otherTokensForDOM, setOtherTokensForDOM] = useState<TokenIF[]>([]);
     useEffect(() => {
+        console.log('ran a new search!');
         const importedTokensOnChain = importedTokens.filter(
             (tkn: TokenIF) => tkn.chainId === parseInt(chainId),
         );
@@ -72,6 +73,7 @@ export const useSoloSearch = (
         };
 
         const searchByNameOrSymbol = (searchString: string) => {
+            console.log('searchin by name!');
             let importedMatches = [];
             if (searchString.length === 2) {
                 importedMatches = importedTokensOnChain.filter(
@@ -80,6 +82,7 @@ export const useSoloSearch = (
                         tkn.symbol.toLowerCase() === searchString,
                 );
             } else {
+                console.log('this one!');
                 importedMatches = importedTokensOnChain.filter(
                     (tkn: TokenIF) =>
                         tkn.name.toLowerCase().includes(searchString) ||
