@@ -99,8 +99,10 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
     const valueArrows = tx.entityType !== 'liqchange';
     // const valueArrows = sideType !== 'add' && sideType !== 'remove';
 
-    const positiveArrow = valueArrows && '↑';
-    const negativeArrow = valueArrows && '↓';
+    const positiveArrow = '↑';
+    // const positiveArrow = valueArrows && '↑';
+    const negativeArrow = '↓';
+    // const negativeArrow = valueArrows && '↓';
     // const baseFlowArrow =
     //     valueArrows && baseDisplay !== '0.00' ? (!isBaseFlowPositive ? '↑' : '↓') : null;
     // const quoteFlowArrow =
@@ -571,21 +573,22 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                         //     console.log(tx.isBid);
                         // }}
                         className={`${styles.token_qty} ${positiveDisplayStyle}`}
-                        style={{ fontFamily: 'monospace' }}
+                        style={{ fontFamily: 'monospace', whiteSpace: 'nowrap' }}
                     >
                         {isBuy ? quoteDisplay : baseDisplay}
-                        {positiveArrow}
+                        {valueArrows ? positiveArrow : ''}
                         {/* {isBuy ? quoteFlowArrow : baseFlowArrow} */}
                         {isBuy ? quoteTokenLogoComponent : baseTokenLogoComponent}
                     </p>
 
                     <p
                         className={`${styles.token_qty} ${negativeDisplayStyle}`}
-                        style={{ fontFamily: 'monospace' }}
+                        style={{ fontFamily: 'monospace', whiteSpace: 'nowrap' }}
                     >
                         {' '}
-                        {isBuy ? baseDisplay : quoteDisplay}
-                        {negativeArrow}
+                        {isBuy
+                            ? `${baseDisplay}${valueArrows ? negativeArrow : ''}`
+                            : `${quoteDisplay}${valueArrows ? negativeArrow : ''}`}
                         {/* {isBuy ? baseFlowArrow : quoteFlowArrow} */}
                         {isBuy ? baseTokenLogoComponent : quoteTokenLogoComponent}
                     </p>
