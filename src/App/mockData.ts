@@ -26,17 +26,8 @@ export const topPools = [
     },
 
     {
-        name: 'WBTC / ETH',
+        name: 'ETH / WBTC',
         base: {
-            name: 'Wrapped BTC',
-            address: '0xC04B0d3107736C32e19F1c62b2aF67BE61d63a05',
-            symbol: 'WBTC',
-            decimals: 8,
-            chainId: 0x5,
-            logoURI:
-                'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599/logo.png',
-        },
-        quote: {
             name: 'Native Ether',
             address: '0x0000000000000000000000000000000000000000',
             symbol: 'ETH',
@@ -44,6 +35,15 @@ export const topPools = [
             chainId: 0x5,
             logoURI:
                 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png',
+        },
+        quote: {
+            name: 'Wrapped BTC',
+            address: '0xC04B0d3107736C32e19F1c62b2aF67BE61d63a05',
+            symbol: 'WBTC',
+            decimals: 8,
+            chainId: 0x5,
+            logoURI:
+                'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599/logo.png',
         },
         chainId: '0x5',
         poolId: 36000,
