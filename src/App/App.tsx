@@ -670,7 +670,33 @@ export default function App() {
     }, [JSON.stringify(userTopTokens)]);
 
     const everyEigthBlock = Math.floor(lastBlockNumber / 8);
-    // check for token balances every four blocks
+    // check for token balances every eight blocks
+
+    const addTokenInfo = (token: TokenIF): TokenIF => {
+        const newToken = { ...token };
+        const tokenAddress = token.address;
+        const key = tokenAddress.toLowerCase() + '_0x' + token.chainId.toString(16);
+        console.log({ key });
+
+        console.log({ tokensOnActiveLists });
+        const foundToken = tokensOnActiveLists.get(key);
+        const testToken = tokensOnActiveLists.get('0xd5a98e77d1feb091344096301ea336a5c07a6a41_0x1');
+        console.log({ foundToken });
+        console.log({ testToken });
+
+        const tokenName = tokensOnActiveLists.get(key)?.name;
+        console.log({ tokenName });
+
+        const tokenLogoURI = tokensOnActiveLists.get(key)?.logoURI;
+        console.log({ tokenLogoURI });
+
+        newToken.name = tokenName ?? '';
+
+        newToken.logoURI = tokenLogoURI ?? '';
+
+        return newToken;
+    };
+
     useEffect(() => {
         (async () => {
             if (crocEnv && isUserLoggedIn && account && chainData.chainId) {
@@ -694,9 +720,11 @@ export default function App() {
                         everyEigthBlock,
                         crocEnv,
                     );
-
+                    console.log({ tokensOnActiveLists });
                     console.log({ erc20Results });
-                    dispatch(setErc20Tokens(erc20Results));
+                    const erc20TokensWithLogos = erc20Results.map((token) => addTokenInfo(token));
+                    console.log({ erc20TokensWithLogos });
+                    dispatch(setErc20Tokens(erc20TokensWithLogos));
                 } catch (error) {
                     console.log({ error });
                 }
