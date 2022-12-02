@@ -361,9 +361,8 @@ export default function Transactions(props: TransactionsProps) {
 
     const ipadView = useMediaQuery('(max-width: 480px)');
     const desktopView = useMediaQuery('(max-width: 768px)');
+    const showColumns = useMediaQuery('(max-width: 1440px)');
     const view2 = useMediaQuery('(max-width: 1568px)');
-
-    const showColumns = desktopView;
 
     const quoteTokenSymbol = tradeData.quoteToken?.symbol;
     const baseTokenSymbol = tradeData.baseToken?.symbol;
@@ -383,13 +382,6 @@ export default function Transactions(props: TransactionsProps) {
         <>
             <p>Side</p>
             <p>Type</p>
-        </>
-    );
-    // const tokens = <></>;
-    const tokens = (
-        <>
-            <p>{`${baseTokenSymbol} `}</p>
-            <p>{`${quoteTokenSymbol} `}</p>
         </>
     );
 
@@ -480,7 +472,8 @@ export default function Transactions(props: TransactionsProps) {
             alignRight: true,
         },
         {
-            name: isOnPortfolioPage ? 'Qty A' : `${baseTokenSymbol}`,
+            name: isOnPortfolioPage ? <></> : `${baseTokenSymbol}`,
+            // name: isOnPortfolioPage ? 'Qty A' : `${baseTokenSymbol}`,
 
             show: !showColumns,
             slug: baseTokenSymbol,
@@ -488,7 +481,8 @@ export default function Transactions(props: TransactionsProps) {
             alignRight: true,
         },
         {
-            name: isOnPortfolioPage ? 'Qty B' : `${quoteTokenSymbol}`,
+            name: isOnPortfolioPage ? <></> : `${quoteTokenSymbol}`,
+            // name: isOnPortfolioPage ? 'Qty B' : `${quoteTokenSymbol}`,
 
             show: !showColumns,
             slug: quoteTokenSymbol,
@@ -496,9 +490,18 @@ export default function Transactions(props: TransactionsProps) {
             alignRight: true,
         },
         {
-            name: tokens,
+            name: 'Tokens',
 
-            show: showColumns,
+            show: !isOnPortfolioPage && showColumns,
+
+            slug: 'tokens',
+            sortable: false,
+            alignRight: true,
+        },
+        {
+            name: <></>,
+
+            show: isOnPortfolioPage && showColumns,
 
             slug: 'tokens',
             sortable: false,

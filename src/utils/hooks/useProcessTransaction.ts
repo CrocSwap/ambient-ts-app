@@ -299,16 +299,16 @@ export const useProcessTransaction = (tx: ITransaction) => {
                     ? '0.00'
                     : baseFlowAbsNum < 0.0001
                     ? baseFlowAbsNum.toExponential(2)
-                    : baseFlowAbsNum >= 1000000
+                    : baseFlowAbsNum >= 10000
                     ? formatAmountOld(baseFlowAbsNum)
                     : // ? baseLiqDisplayNum.toExponential(2)
                       baseFlowAbsNum.toLocaleString(undefined, {
                           minimumFractionDigits: 2,
                           maximumFractionDigits: 2,
-                      });
+                      }) + ' ';
             const baseFlowDisplayString =
                 tx.entityType !== 'liqchange' && isBaseFlowPositive
-                    ? `${baseFlowDisplayTruncated}  `
+                    ? `${baseFlowDisplayTruncated} `
                     : `${baseFlowDisplayTruncated} `;
             setBaseFlowDisplay(baseFlowDisplayString);
         }
@@ -322,18 +322,18 @@ export const useProcessTransaction = (tx: ITransaction) => {
                     ? '0.00'
                     : quoteFlowAbsNum < 0.0001
                     ? quoteFlowAbsNum.toExponential(2)
-                    : quoteFlowAbsNum >= 1000000
+                    : quoteFlowAbsNum >= 10000
                     ? formatAmountOld(quoteFlowAbsNum)
                     : // ? quoteLiqDisplayNum.toExponential(2)
                       quoteFlowAbsNum.toLocaleString(undefined, {
                           minimumFractionDigits: 2,
                           maximumFractionDigits: 2,
-                      });
+                      }) + ' ';
             const quoteFlowDisplayString =
                 tx.entityType !== 'liqchange' && isQuoteFlowPositive
                     ? // (isQuoteFlowNegative && tx.entityType !== 'liqchange') ||
                       // (!isQuoteFlowNegative && tx.entityType === 'liqchange')
-                      `${quoteFlowDisplayTruncated}  `
+                      `${quoteFlowDisplayTruncated} `
                     : `${quoteFlowDisplayTruncated} `;
             setQuoteFlowDisplay(quoteFlowDisplayString);
         }
