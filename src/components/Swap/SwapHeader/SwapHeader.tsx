@@ -79,7 +79,12 @@ export default function SwapHeader(props: SwapHeaderPropsIF) {
 
     const mainHeader = (
         <ContentHeader>
-            <div />
+            <div
+                className={styles.share_button}
+                onClick={() => openGlobalModal(<ShareModal />, 'Share')}
+            >
+                <AiOutlineShareAlt />
+            </div>
             <span className={styles.title}>Swap</span>
             <IconWithTooltip title='Settings' placement='left'>
                 <div
