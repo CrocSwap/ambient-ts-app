@@ -8,7 +8,7 @@ import styles from './SoloTokenSelect.module.css';
 import { memoizeFetchContractDetails } from '../../../App/functions/fetchContractDetails';
 import { ethers } from 'ethers';
 import SoloTokenImport from './SoloTokenImport';
-
+import { AiOutlineQuestionCircle } from 'react-icons/ai';
 interface propsIF {
     provider: ethers.providers.Provider | undefined;
     importedTokens: TokenIF[];
@@ -132,6 +132,15 @@ export const SoloTokenSelect = (props: propsIF) => {
     console.log(customToken);
 
     console.log({ customTokenReturn });
+
+    // Todo: @Emily, this is the token not found variable
+    // eslint-disable-next-line
+    const tokenNotFound = (
+        <div className={styles.token_not_found}>
+            <p>Cound not find matching token</p>
+            <AiOutlineQuestionCircle />
+        </div>
+    );
     return (
         <section className={styles.container}>
             <input
