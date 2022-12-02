@@ -576,7 +576,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                         style={{ fontFamily: 'monospace', whiteSpace: 'nowrap' }}
                     >
                         {isBuy ? quoteDisplay : baseDisplay}
-                        {valueArrows ? positiveArrow : ''}
+                        {valueArrows ? positiveArrow : ' '}
                         {/* {isBuy ? quoteFlowArrow : baseFlowArrow} */}
                         {isBuy ? quoteTokenLogoComponent : baseTokenLogoComponent}
                     </p>
@@ -587,8 +587,8 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                     >
                         {' '}
                         {isBuy
-                            ? `${baseDisplay}${valueArrows ? negativeArrow : ''}`
-                            : `${quoteDisplay}${valueArrows ? negativeArrow : ''}`}
+                            ? `${baseDisplay}${valueArrows ? negativeArrow : ' '}`
+                            : `${quoteDisplay}${valueArrows ? negativeArrow : ' '}`}
                         {/* {isBuy ? baseFlowArrow : quoteFlowArrow} */}
                         {isBuy ? baseTokenLogoComponent : quoteTokenLogoComponent}
                     </p>
