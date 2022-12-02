@@ -378,7 +378,9 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
             leaveDelay={200}
         >
             <li onClick={openDetailsModal} style={{ textTransform: 'lowercase' }}>
-                <p className='base_color'>{elapsedTimeString}</p>
+                <p className='base_color' style={{ fontFamily: 'monospace' }}>
+                    {elapsedTimeString}
+                </p>
                 {/* <p className='base_color'> Nov 9 10:36:23 AM</p> */}
             </li>
         </DefaultTooltip>
