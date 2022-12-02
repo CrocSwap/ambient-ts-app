@@ -645,9 +645,29 @@ export default function App() {
         })();
     }, [isUserLoggedIn, account, chainData.chainId]);
 
-    // const connectedUserTokens = useAppSelector((state) => state.userData.tokens);
+    const connectedUserTokens = useAppSelector((state) => state.userData.tokens);
     // const connectedUserNativeToken = connectedUserTokens.nativeToken;
-    // const connectedUserErc20Tokens = connectedUserTokens.erc20Tokens;
+    const connectedUserErc20Tokens = connectedUserTokens.erc20Tokens;
+
+    const userTopTokens = connectedUserErc20Tokens
+        ? [...connectedUserErc20Tokens]?.sort((a, b) => {
+              if (b.dexBalanceDisplay) {
+                  return (
+                      parseFloat(b.dexBalanceDisplay || '0') -
+                      parseFloat(a.dexBalanceDisplay || '0')
+                  );
+              } else {
+                  return (
+                      parseFloat(b.walletBalanceDisplay || '0') -
+                      parseFloat(a.walletBalanceDisplay || '0')
+                  );
+              }
+          })
+        : undefined;
+
+    useEffect(() => {
+        console.log({ userTopTokens });
+    }, [JSON.stringify(userTopTokens)]);
 
     const everyEigthBlock = Math.floor(lastBlockNumber / 8);
     // check for token balances every four blocks
