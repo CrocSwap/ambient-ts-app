@@ -4,6 +4,8 @@ import { Dispatch, SetStateAction, useEffect } from 'react';
 import { useProcessTransaction } from '../../../../../utils/hooks/useProcessTransaction';
 import TransactionsMenu from '../../../../Global/Tabs/TableMenu/TableMenuComponents/TransactionsMenu';
 import { DefaultTooltip } from '../../../../Global/StyledTooltip/StyledTooltip';
+import { FiExternalLink } from 'react-icons/fi';
+
 import { NavLink } from 'react-router-dom';
 // import { AiOutlineDash } from 'react-icons/ai';
 import NoTokenIcon from '../../../../Global/NoTokenIcon/NoTokenIcon';
@@ -168,6 +170,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
             title={
                 <div onClick={handleOpenExplorer} style={{ cursor: 'pointer' }}>
                     {txHash}
+                    <FiExternalLink />
                 </div>
             }
             placement={'right'}
@@ -378,7 +381,9 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
             leaveDelay={200}
         >
             <li onClick={openDetailsModal} style={{ textTransform: 'lowercase' }}>
-                <p className='base_color'>{elapsedTimeString}</p>
+                <p className='base_color' style={{ fontFamily: 'monospace' }}>
+                    {elapsedTimeString}
+                </p>
                 {/* <p className='base_color'> Nov 9 10:36:23 AM</p> */}
             </li>
         </DefaultTooltip>
