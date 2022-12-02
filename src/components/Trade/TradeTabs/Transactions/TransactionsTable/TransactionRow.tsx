@@ -12,6 +12,7 @@ import TransactionDetails from '../../../../Global/TransactionDetails/Transactio
 import { tradeData } from '../../../../../utils/state/tradeDataSlice';
 import { useAppDispatch } from '../../../../../utils/hooks/reduxToolkit';
 import moment from 'moment';
+import { ZERO_ADDRESS } from '../../../../../constants';
 // import { light } from '@material-ui/core/styles/createPalette';
 interface TransactionRowPropsIF {
     tx: ITransaction;
@@ -305,7 +306,10 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
     //     </li>
     // );
 
-    const pair = [`${tx.baseSymbol}: ${tx.base}`, `${tx.quoteSymbol}: ${tx.quote}`];
+    const pair =
+        tx.base !== ZERO_ADDRESS
+            ? [`${tx.baseSymbol}: ${tx.base}`, `${tx.quoteSymbol}: ${tx.quote}`]
+            : [`${tx.quoteSymbol}: ${tx.quote}`];
     const tip = pair.join('\n');
 
     const tokenPair = (

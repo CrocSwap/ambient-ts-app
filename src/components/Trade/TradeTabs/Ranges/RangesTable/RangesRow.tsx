@@ -14,6 +14,7 @@ import NoTokenIcon from '../../../../Global/NoTokenIcon/NoTokenIcon';
 import { useAppDispatch } from '../../../../../utils/hooks/reduxToolkit';
 import { setDataLoadingStatus } from '../../../../../utils/state/graphDataSlice';
 import moment from 'moment';
+import { ZERO_ADDRESS } from '../../../../../constants';
 
 interface RangesRowPropsIF {
     isUserLoggedIn: boolean | undefined;
@@ -290,11 +291,40 @@ export default function RangesRow(props: RangesRowPropsIF) {
     //     </li>
     // );
 
-    const poolName = (
-        <li className='base_color'>
-            {baseTokenSymbol} / {quoteTokenSymbol}
-        </li>
+    const pair =
+        position.base !== ZERO_ADDRESS
+            ? [
+                  `${position.baseSymbol}: ${position.base}`,
+                  `${position.quoteSymbol}: ${position.quote}`,
+              ]
+            : [`${position.quoteSymbol}: ${position.quote}`];
+
+    const tip = pair.join('\n');
+
+    const tokenPair = (
+        <DefaultTooltip
+            interactive
+            title={<div style={{ whiteSpace: 'pre-line' }}>{tip}</div>}
+            placement={'right'}
+            arrow
+            enterDelay={150}
+            leaveDelay={200}
+        >
+            <li className='base_color'>
+                {/* {tokensTogether} */}
+                <p>
+                    {' '}
+                    {baseTokenSymbol} / {quoteTokenSymbol}
+                </p>
+            </li>
+        </DefaultTooltip>
     );
+
+    // const poolName = (
+    //     <li className='base_color'>
+    //         {baseTokenSymbol} / {quoteTokenSymbol}
+    //     </li>
+    // );
     // end of portfolio page li element ---------------
 
     // Leaderboard content--------------------------------
@@ -410,7 +440,7 @@ export default function RangesRow(props: RangesRowPropsIF) {
         >
             {!showColumns && RangeTimeWithTooltip}
             {/* {isOnPortfolioPage && accountTokenImages} */}
-            {isOnPortfolioPage && poolName}
+            {isOnPortfolioPage && tokenPair}
             {displayIDorRanking}
             {!showColumns && !isOnPortfolioPage && walletWithTooltip}
             {showColumns && (
