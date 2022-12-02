@@ -90,6 +90,10 @@ interface ChartData {
     setRescale: React.Dispatch<React.SetStateAction<boolean>>;
     latest: boolean | undefined;
     setLatest: React.Dispatch<React.SetStateAction<boolean>>;
+    reset: boolean | undefined;
+    setReset: React.Dispatch<React.SetStateAction<boolean>>;
+    showLatest: boolean | undefined;
+    setShowLatest: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 function getWindowDimensions() {
@@ -119,6 +123,10 @@ export default function Chart(props: ChartData) {
         checkLimitOrder,
         rescale,
         setRescale,
+        reset,
+        setReset,
+        showLatest,
+        setShowLatest,
         latest,
         setLatest,
     } = props;
@@ -807,6 +815,18 @@ export default function Chart(props: ChartData) {
                             new Date(domainX[1].getTime() + deltaX),
                         ]);
 
+                        if (
+                            !showLatest &&
+                            scaleData.xScale.domain()[1] < parsedChartData?.chartData[1].date
+                        ) {
+                            setShowLatest(true);
+                        } else if (
+                            showLatest &&
+                            !(scaleData.xScale.domain()[1] < parsedChartData?.chartData[1].date)
+                        ) {
+                            setShowLatest(false);
+                        }
+
                         // PANNING
                         if (!rescale && event.sourceEvent && event.sourceEvent.type != 'wheel') {
                             const domainY = scaleData.yScale.domain();
@@ -910,6 +930,7 @@ export default function Chart(props: ChartData) {
         JSON.stringify(scaleData.lastX),
         JSON.stringify(scaleData.xScale.domain()[0]),
         transformX,
+        showLatest,
     ]);
 
     useEffect(() => {
@@ -1562,12 +1583,39 @@ export default function Chart(props: ChartData) {
     }, [parsedChartData?.chartData, scaleData, market, checkLimitOrder, limit, isAuthenticated]);
 
     useEffect(() => {
-        if (scaleData !== undefined && latest) {
+        if (scaleData !== undefined && reset) {
             scaleData.xScale.domain(scaleData.xScaleCopy.domain());
             scaleData.yScale.domain(scaleData.yScaleCopy.domain());
-            setLatest(false);
+            setReset(false);
         }
-    }, [scaleData, latest]);
+    }, [scaleData, reset]);
+
+    useEffect(() => {
+        if (scaleData !== undefined && latest && parsedChartData !== undefined) {
+            const diff =
+                scaleData.xScale.domain()[1].getTime() - scaleData.xScale.domain()[0].getTime();
+            scaleData.xScale.domain([
+                new Date(scaleData.xScaleCopy.domain()[1].getTime() - diff),
+                scaleData.xScaleCopy.domain()[1],
+            ]);
+
+            if (rescale) {
+                scaleData.yScale.domain(scaleData.yScaleCopy.domain());
+            } else {
+                const diffY = scaleData.yScale.domain()[1] - scaleData.yScale.domain()[0];
+                const center =
+                    parsedChartData?.chartData[1].high -
+                    Math.abs(
+                        parsedChartData?.chartData[1].low - parsedChartData?.chartData[1].high,
+                    ) /
+                        2;
+                scaleData.yScale.domain([center - diffY / 2, center + diffY / 2]);
+            }
+
+            setLatest(false);
+            setShowLatest(false);
+        }
+    }, [scaleData, latest, parsedChartData?.chartData]);
 
     // easy drag and triangle to horizontal lines for range
     async function addTriangleAndRect() {

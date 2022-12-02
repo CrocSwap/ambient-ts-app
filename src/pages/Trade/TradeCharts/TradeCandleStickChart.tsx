@@ -64,6 +64,10 @@ interface ChartData {
     setRescale: React.Dispatch<React.SetStateAction<boolean>>;
     latest: boolean | undefined;
     setLatest: React.Dispatch<React.SetStateAction<boolean>>;
+    reset: boolean | undefined;
+    setReset: React.Dispatch<React.SetStateAction<boolean>>;
+    showLatest: boolean | undefined;
+    setShowLatest: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export interface ChartUtils {
@@ -522,6 +526,10 @@ export default function TradeCandleStickChart(props: ChartData) {
                         setRescale={props.setRescale}
                         latest={props.latest}
                         setLatest={props.setLatest}
+                        reset={props.reset}
+                        setReset={props.setReset}
+                        showLatest={props.showLatest}
+                        setShowLatest={props.setShowLatest}
                     />
                 ) : (
                     <>{loading}</>

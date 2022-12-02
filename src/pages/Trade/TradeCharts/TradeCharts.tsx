@@ -170,6 +170,8 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
 
     const [rescale, setRescale] = useState(true);
     const [latest, setLatest] = useState(false);
+    const [showLatest, setShowLatest] = useState(false);
+    const [reset, setReset] = useState(false);
 
     const setActivePeriod = (period: number) => {
         dispatch(setActiveChartPeriod(period));
@@ -713,10 +715,27 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
                 }}
                 className={styles.chart_overlay_container}
             >
+                {showLatest && (
+                    <div className={styles.settings_container}>
+                        <button
+                            onClick={() => {
+                                setLatest(true);
+                            }}
+                            style={{
+                                fontSize: '12px',
+                                fontWeight: 'bold',
+                            }}
+                            className={styles.non_active_selected_button}
+                        >
+                            LATEST
+                        </button>
+                    </div>
+                )}
+
                 <div className={styles.settings_container}>
                     <button
                         onClick={() => {
-                            setLatest(true);
+                            setReset(true);
                         }}
                         style={{
                             fontSize: '12px',
@@ -724,7 +743,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
                         }}
                         className={styles.non_active_selected_button}
                     >
-                        LATEST
+                        RESET
                     </button>
                 </div>
 
@@ -856,6 +875,10 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
                         setRescale={setRescale}
                         latest={latest}
                         setLatest={setLatest}
+                        reset={reset}
+                        setReset={setReset}
+                        showLatest={showLatest}
+                        setShowLatest={setShowLatest}
                     />
                 </div>
             )}
