@@ -9,6 +9,7 @@ interface RecentTokenProps {
 }
 export default function RecentToken(props: RecentTokenProps) {
     const { token, clickHandler } = props;
+    // console.log({ token });
     return (
         <div className={styles.recent_token} onClick={clickHandler}>
             {token.logoURI ? (

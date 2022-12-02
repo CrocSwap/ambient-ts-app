@@ -9,7 +9,7 @@ export const useTokenMap = (activeTokenListsChanged: boolean, tokenListsNeeded: 
     useEffect(() => {
         // JSON value of 'allTokenLists' from local storage
         const allTokenLists = JSON.parse(localStorage.getItem('allTokenLists') as string);
-
+        if (!allTokenLists) return;
         // function to pull a single token list from local storage by its URI
         const getTokensByURI = (uri: string) => {
             // declare an output variable and apply type protection
