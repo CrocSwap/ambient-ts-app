@@ -12,6 +12,7 @@ import { useAppDispatch, useAppSelector } from '../../../utils/hooks/reduxToolki
 import { toggleDidUserFlipDenom } from '../../../utils/state/tradeDataSlice';
 import IconWithTooltip from '../../Global/IconWithTooltip/IconWithTooltip';
 import { AiOutlineShareAlt } from 'react-icons/ai';
+import ShareModal from '../../Global/ShareModal/ShareModal';
 
 // interface for props
 interface SwapHeaderPropsIF {
@@ -55,7 +56,7 @@ export default function SwapHeader(props: SwapHeaderPropsIF) {
         <ContentHeader>
             <div
                 className={styles.share_button}
-                onClick={() => openGlobalModal(props.shareOptionsDisplay, 'Share')}
+                onClick={() => openGlobalModal(<ShareModal />, 'Share')}
             >
                 <AiOutlineShareAlt />
             </div>
@@ -78,7 +79,12 @@ export default function SwapHeader(props: SwapHeaderPropsIF) {
 
     const mainHeader = (
         <ContentHeader>
-            <div />
+            <div
+                className={styles.share_button}
+                onClick={() => openGlobalModal(<ShareModal />, 'Share')}
+            >
+                <AiOutlineShareAlt />
+            </div>
             <span className={styles.title}>Swap</span>
             <IconWithTooltip title='Settings' placement='left'>
                 <div

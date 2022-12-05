@@ -63,8 +63,7 @@ export const SoloTokenSelect = (props: propsIF) => {
         closeModal();
     };
 
-    const importedTokenButtons = tokensForDOM
-        ? tokensForDOM.map((token: TokenIF) => (
+    const importedTokenButtons = tokensForDOM?.map((token: TokenIF) => (
             <TokenSelect
                 key={JSON.stringify(token)}
                 token={token}
@@ -76,8 +75,7 @@ export const SoloTokenSelect = (props: propsIF) => {
                 isOnPortfolio={true}
                 fromListsText='Imported'
             />
-        ))
-        : null;
+        ));
 
     const findDupes = (addr: string) => {
         const allTokenLists = JSON.parse(localStorage.getItem('allTokenLists') as string);
@@ -106,21 +104,19 @@ export const SoloTokenSelect = (props: propsIF) => {
         return outputMessage;
     };
 
-    const otherTokenButtons = otherTokensForDOM
-        ? otherTokensForDOM.map((token: TokenIF) => (
-            <TokenSelect
-                key={JSON.stringify(token)}
-                token={token}
-                tokensBank={importedTokens}
-                undeletableTokens={undeletableTokens}
-                chainId={chainId}
-                setImportedTokens={setImportedTokens}
-                chooseToken={chooseToken}
-                isOnPortfolio={true}
-                fromListsText={findDupes(token.address)}
-            />
-        ))
-        : null;
+    const otherTokenButtons = otherTokensForDOM?.map((token: TokenIF) => (
+        <TokenSelect
+            key={JSON.stringify(token)}
+            token={token}
+            tokensBank={importedTokens}
+            undeletableTokens={undeletableTokens}
+            chainId={chainId}
+            setImportedTokens={setImportedTokens}
+            chooseToken={chooseToken}
+            isOnPortfolio={true}
+            fromListsText={findDupes(token.address)}
+        />
+    ));
 
     const [customToken, setCustomToken] = useState<TokenIF | null>(null);
     useEffect(() => {
@@ -145,6 +141,20 @@ export const SoloTokenSelect = (props: propsIF) => {
         </div>
     );
 
+    const whatToShow = useMemo<string>(() => {
+        let display = '';
+        if (tokensForDOM && tokensForDOM.length > 0) {
+            display = 'imported';
+        } else if (otherTokensForDOM?.length) {
+            display = 'searched';
+        } else if (searchType === 'address' && otherTokensForDOM?.length === 0) {
+            display = 'from chain';
+        } else {
+            display = 'not found';
+        }
+        return display;
+    }, [searchType, tokensForDOM?.length, otherTokensForDOM?.length]);
+
     return (
         <section className={styles.container}>
             <input
@@ -153,19 +163,20 @@ export const SoloTokenSelect = (props: propsIF) => {
                 placeholder='&#61442; Search name or enter an Address'
                 onChange={(e) => setInput(e.target.value)}
             />
-            {importedTokenButtons}
-            {importedTokenButtons?.length === 0 && searchType && otherTokensForDOM?.length ? (
+            {(whatToShow === 'imported') && importedTokenButtons}
+            {(whatToShow === 'searched') && (
                 <>
                     <h2>More Available Tokens</h2>
                     <div className={styles.scrollable_container}>{otherTokenButtons}</div>
                 </>
-            ) : null}
-            {searchType === 'address' && otherTokensForDOM?.length === 0 ? (
+            )}
+            {(whatToShow === 'from chain') && (
                 <SoloTokenImport
                     customToken={customToken}
                     chooseToken={chooseToken}
                 />
-            ) : tokenNotFound}
+            )}
+            {whatToShow === 'not found' && tokenNotFound}
         </section>
     );
 };

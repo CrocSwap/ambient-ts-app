@@ -218,7 +218,7 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
 
     const getLookupUserTransactions = async (accountToSearch: string) =>
         fetchUserRecentChanges({
-            importedTokens: importedTokens,
+            tokensOnActiveLists: tokenMap,
             user: accountToSearch,
             chainId: chainId,
             annotate: true,

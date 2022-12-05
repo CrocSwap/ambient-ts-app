@@ -670,7 +670,24 @@ export default function App() {
     }, [JSON.stringify(userTopTokens)]);
 
     const everyEigthBlock = Math.floor(lastBlockNumber / 8);
-    // check for token balances every four blocks
+    // check for token balances every eight blocks
+
+    const addTokenInfo = (token: TokenIF): TokenIF => {
+        const newToken = { ...token };
+        const tokenAddress = token.address;
+        const key = tokenAddress.toLowerCase() + '_0x' + token.chainId.toString(16);
+
+        const tokenName = tokensOnActiveLists.get(key)?.name;
+
+        const tokenLogoURI = tokensOnActiveLists.get(key)?.logoURI;
+
+        newToken.name = tokenName ?? '';
+
+        newToken.logoURI = tokenLogoURI ?? '';
+
+        return newToken;
+    };
+
     useEffect(() => {
         (async () => {
             if (crocEnv && isUserLoggedIn && account && chainData.chainId) {
@@ -694,9 +711,11 @@ export default function App() {
                         everyEigthBlock,
                         crocEnv,
                     );
-
+                    console.log({ tokensOnActiveLists });
                     console.log({ erc20Results });
-                    dispatch(setErc20Tokens(erc20Results));
+                    const erc20TokensWithLogos = erc20Results.map((token) => addTokenInfo(token));
+                    console.log({ erc20TokensWithLogos });
+                    dispatch(setErc20Tokens(erc20TokensWithLogos));
                 } catch (error) {
                     console.log({ error });
                 }
@@ -1121,7 +1140,7 @@ export default function App() {
 
                         // retrieve pool recent changes
                         fetchPoolRecentChanges({
-                            importedTokens: importedTokens,
+                            tokensOnActiveLists: tokensOnActiveLists,
                             base: sortedTokens[0],
                             quote: sortedTokens[1],
                             poolIdx: chainData.poolIndex,
@@ -1572,7 +1591,7 @@ export default function App() {
             if (lastMessageData) {
                 Promise.all(
                     lastMessageData.map((tx: ITransaction) => {
-                        return getTransactionData(tx, importedTokens);
+                        return getTransactionData(tx, tokensOnActiveLists);
                     }),
                 )
                     .then((updatedTransactions) => {
@@ -1878,7 +1897,7 @@ export default function App() {
 
             try {
                 fetchUserRecentChanges({
-                    importedTokens: importedTokens,
+                    tokensOnActiveLists: tokensOnActiveLists,
                     user: account,
                     chainId: chainData.chainId,
                     annotate: true,
