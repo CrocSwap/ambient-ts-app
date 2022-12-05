@@ -1634,7 +1634,10 @@ export default function App() {
         if (lastUserLimitOrderChangesMessage !== null) {
             const lastMessageData = JSON.parse(lastUserLimitOrderChangesMessage.data).data;
 
-            if (lastMessageData) dispatch(addLimitOrderChangesByUser(lastMessageData));
+            if (lastMessageData) {
+                console.log({ lastMessageData });
+                dispatch(addLimitOrderChangesByUser(lastMessageData));
+            }
         }
     }, [lastUserLimitOrderChangesMessage]);
 
@@ -1791,6 +1794,9 @@ export default function App() {
 
     const graphData = useAppSelector((state) => state.graphData);
 
+    const userLimitOrderStatesCacheEndpoint =
+        httpGraphCacheServerDomain + '/user_limit_order_states?';
+
     useEffect(() => {
         if (isServerEnabled && isUserLoggedIn && account) {
             dispatch(resetConnectedUserDataLoadingStatus());
@@ -1856,46 +1862,40 @@ export default function App() {
 
             console.log('fetching user limit orders ');
 
-            const userLimitOrderStatesCacheEndpoint =
-                httpGraphCacheServerDomain + '/user_limit_order_states?';
-            try {
-                fetch(
-                    userLimitOrderStatesCacheEndpoint +
-                        new URLSearchParams({
-                            user: account,
-                            chainId: chainData.chainId,
-                            ensResolution: 'true',
-                            omitEmpty: 'true',
+            fetch(
+                userLimitOrderStatesCacheEndpoint +
+                    new URLSearchParams({
+                        user: account,
+                        chainId: chainData.chainId,
+                        ensResolution: 'true',
+                        omitEmpty: 'true',
+                    }),
+            )
+                .then((response) => response?.json())
+                .then((json) => {
+                    const userLimitOrderStates = json?.data;
+                    dispatch(
+                        setDataLoadingStatus({
+                            datasetName: 'connectedUserOrderData',
+                            loadingStatus: false,
                         }),
-                )
-                    .then((response) => response?.json())
-                    .then((json) => {
-                        const userLimitOrderStates = json?.data;
-                        dispatch(
-                            setDataLoadingStatus({
-                                datasetName: 'connectedUserOrderData',
-                                loadingStatus: false,
+                    );
+                    if (userLimitOrderStates) {
+                        Promise.all(
+                            userLimitOrderStates.map((limitOrder: LimitOrderIF) => {
+                                return getLimitOrderData(limitOrder, importedTokens);
                             }),
-                        );
-                        if (userLimitOrderStates) {
-                            Promise.all(
-                                userLimitOrderStates.map((limitOrder: LimitOrderIF) => {
-                                    return getLimitOrderData(limitOrder, importedTokens);
+                        ).then((updatedLimitOrderStates) => {
+                            dispatch(
+                                setLimitOrdersByUser({
+                                    dataReceived: true,
+                                    limitOrders: updatedLimitOrderStates,
                                 }),
-                            ).then((updatedLimitOrderStates) => {
-                                dispatch(
-                                    setLimitOrdersByUser({
-                                        dataReceived: true,
-                                        limitOrders: updatedLimitOrderStates,
-                                    }),
-                                );
-                            });
-                        }
-                    })
-                    .catch(console.log);
-            } catch (error) {
-                console.log;
-            }
+                            );
+                        });
+                    }
+                })
+                .catch(console.log);
 
             try {
                 fetchUserRecentChanges({
