@@ -64,18 +64,18 @@ export const SoloTokenSelect = (props: propsIF) => {
     };
 
     const importedTokenButtons = tokensForDOM?.map((token: TokenIF) => (
-            <TokenSelect
-                key={JSON.stringify(token)}
-                token={token}
-                tokensBank={importedTokens}
-                undeletableTokens={undeletableTokens}
-                chainId={chainId}
-                setImportedTokens={setImportedTokens}
-                chooseToken={chooseToken}
-                isOnPortfolio={true}
-                fromListsText='Imported'
-            />
-        ));
+        <TokenSelect
+            key={JSON.stringify(token)}
+            token={token}
+            tokensBank={importedTokens}
+            undeletableTokens={undeletableTokens}
+            chainId={chainId}
+            setImportedTokens={setImportedTokens}
+            chooseToken={chooseToken}
+            isOnPortfolio={true}
+            fromListsText='Imported'
+        />
+    ));
 
     const findDupes = (addr: string) => {
         const allTokenLists = JSON.parse(localStorage.getItem('allTokenLists') as string);
