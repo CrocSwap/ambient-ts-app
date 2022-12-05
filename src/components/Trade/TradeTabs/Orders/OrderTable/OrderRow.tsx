@@ -366,7 +366,7 @@ export default function OrderRow(props: OrderRowPropsIF) {
     const OrderTimeWithTooltip = (
         <DefaultTooltip
             interactive
-            title={moment(limitOrder.time * 1000).format('MM/DD/YYYY HH:mm')}
+            title={'Last Updated: ' + moment(limitOrder.time * 1000).format('MM/DD/YYYY HH:mm')}
             placement={'right'}
             arrow
             enterDelay={750}

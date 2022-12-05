@@ -201,7 +201,7 @@ export default function Leaderboard(props: LeaderboardPropsIF) {
             className: '',
             show: !showColumns,
             slug: 'time',
-            sortable: true,
+            sortable: false,
         },
         {
             name: 'Rank',

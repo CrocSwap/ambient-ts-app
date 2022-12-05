@@ -418,7 +418,7 @@ export default function RangesRow(props: RangesRowPropsIF) {
     const RangeTimeWithTooltip = (
         <DefaultTooltip
             interactive
-            title={moment(positionTime * 1000).format('MM/DD/YYYY HH:mm')}
+            title={'Last Updated: ' + moment(position.time * 1000).format('MM/DD/YYYY HH:mm')}
             placement={'right'}
             arrow
             enterDelay={750}
