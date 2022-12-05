@@ -375,7 +375,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
         <DefaultTooltip
             interactive
             title={moment(tx.time * 1000).format('MM/DD/YYYY HH:mm')}
-            placement={'right'}
+            placement={'left'}
             arrow
             enterDelay={750}
             leaveDelay={200}
