@@ -92,6 +92,10 @@ interface ChartData {
     setRescale: React.Dispatch<React.SetStateAction<boolean>>;
     latest: boolean | undefined;
     setLatest: React.Dispatch<React.SetStateAction<boolean>>;
+    reset: boolean | undefined;
+    setReset: React.Dispatch<React.SetStateAction<boolean>>;
+    showLatest: boolean | undefined;
+    setShowLatest: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 function getWindowDimensions() {
@@ -123,6 +127,10 @@ export default function Chart(props: ChartData) {
         checkLimitOrder,
         rescale,
         setRescale,
+        reset,
+        setReset,
+        showLatest,
+        setShowLatest,
         latest,
         setLatest,
     } = props;
@@ -775,6 +783,35 @@ export default function Chart(props: ChartData) {
 
                         getNewCandleData(event, date, scaleData.xScale);
 
+                        if (event.sourceEvent.type === 'wheel') {
+                            const dx = event.sourceEvent.deltaY / 2;
+
+                            const domainX = scaleData.xScale.domain();
+                            const linearX = d3
+                                .scaleTime()
+                                .domain(scaleData.xScale.range())
+                                .range([0, domainX[1] - domainX[0]]);
+
+                            const deltaX = linearX(dx);
+
+                            scaleData.xScale.domain([
+                                new Date(domainX[0].getTime() - deltaX),
+                                new Date(domainX[1].getTime() + deltaX),
+                            ]);
+                        } else {
+                            const domainX = scaleData.xScale.domain();
+                            const linearX = d3
+                                .scaleTime()
+                                .domain(scaleData.xScale.range())
+                                .range([0, domainX[1] - domainX[0]]);
+
+                            const deltaX = linearX(scaleData.lastX - t.x);
+                            scaleData.xScale.domain([
+                                new Date(domainX[0].getTime() + deltaX),
+                                new Date(domainX[1].getTime() + deltaX),
+                            ]);
+                        }
+
                         if (rescale) {
                             const xmin = new Date(Math.floor(scaleData.xScale.domain()[0]));
                             const xmax = new Date(Math.floor(scaleData.xScale.domain()[1]));
@@ -798,17 +835,17 @@ export default function Chart(props: ChartData) {
                             }
                         }
 
-                        const domainX = scaleData.xScale.domain();
-                        const linearX = d3
-                            .scaleTime()
-                            .domain(scaleData.xScale.range())
-                            .range([0, domainX[1] - domainX[0]]);
-
-                        const deltaX = linearX(scaleData.lastX - t.x);
-                        scaleData.xScale.domain([
-                            new Date(domainX[0].getTime() + deltaX),
-                            new Date(domainX[1].getTime() + deltaX),
-                        ]);
+                        if (
+                            !showLatest &&
+                            scaleData.xScale.domain()[1] < parsedChartData?.chartData[1].date
+                        ) {
+                            setShowLatest(true);
+                        } else if (
+                            showLatest &&
+                            !(scaleData.xScale.domain()[1] < parsedChartData?.chartData[1].date)
+                        ) {
+                            setShowLatest(false);
+                        }
 
                         // PANNING
                         if (!rescale && event.sourceEvent && event.sourceEvent.type != 'wheel') {
@@ -818,16 +855,13 @@ export default function Chart(props: ChartData) {
                                 .domain(scaleData.yScale.range())
                                 .range([domainY[1] - domainY[0], 0]);
 
-                            const deltaY = linearY(t.y - scaleData.lastY);
+                            const deltaY = linearY(t.y - scaleData.lastZoomedY);
+                            scaleData.yScale.domain([domainY[0] + deltaY, domainY[1] + deltaY]);
 
-                            if (domainY[0] + deltaY > 0) {
-                                scaleData.yScale.domain([domainY[0] + deltaY, domainY[1] + deltaY]);
-
-                                scaleData.yScaleIndicator.range([
-                                    event.sourceEvent.offsetY,
-                                    scaleData.yScale(poolPriceDisplay),
-                                ]);
-                            }
+                            scaleData.yScaleIndicator.range([
+                                event.sourceEvent.offsetY,
+                                scaleData.yScale(poolPriceDisplay),
+                            ]);
 
                             const topPlacement =
                                 event.sourceEvent.y -
@@ -845,7 +879,7 @@ export default function Chart(props: ChartData) {
                                 .style('left', event.sourceEvent.offsetX - 80 + 'px');
                         }
 
-                        scaleData.lastY = t.y;
+                        scaleData.lastZoomedY = t.y;
                         scaleData.lastX = t.x;
 
                         clickedForLine = true;
@@ -877,15 +911,29 @@ export default function Chart(props: ChartData) {
                     // dispatch(setCandleDomains(candleDomain));
                 }) as any;
 
-            const yAxisDrag = d3.drag().on('drag', async (event: any) => {
-                const dy = event.dy;
-                const factor = Math.pow(2, -dy * 0.003);
-                const domain = scaleData.yScale.domain();
-                const center = (domain[1] + domain[0]) / 2;
-                const size = (domain[1] - domain[0]) / 2 / factor;
-                if (center - size > 0) {
-                    await scaleData.yScale.domain([center - size, center + size]);
+            const yAxisZoom = d3.zoom().on('zoom', async (event: any) => {
+                const domainY = scaleData.yScale.domain();
+                const center = (domainY[1] + domainY[0]) / 2;
+                let factor: any;
+
+                if (event.sourceEvent.type === 'wheel') {
+                    const dy = event.sourceEvent.deltaY / 3;
+                    factor = Math.pow(2, -dy * 0.003);
+                } else if (event.sourceEvent.type !== 'dblclick') {
+                    const linearY = d3
+                        .scaleLinear()
+                        .domain(scaleData.yScale.range())
+                        .range([domainY[1] - domainY[0], 0]);
+
+                    const deltaY = linearY(event.transform.y - scaleData.lastDragedY);
+                    factor = Math.pow(2, -deltaY * 0.01);
+
+                    scaleData.lastDragedY = event.transform.y;
                 }
+
+                const size = (domainY[1] - domainY[0]) / 2 / factor;
+                await scaleData.yScale.domain([center - size, center + size]);
+
                 setZoomAndYdragControl(event);
                 setRescale(() => {
                     return false;
@@ -893,12 +941,12 @@ export default function Chart(props: ChartData) {
 
                 setMarketLineValue();
                 render();
-            });
+            }) as any;
 
             setZoomUtils(() => {
                 return {
                     zoom: zoom,
-                    yAxisDrag: yAxisDrag,
+                    yAxisZoom: yAxisZoom,
                 };
             });
         }
@@ -913,6 +961,7 @@ export default function Chart(props: ChartData) {
         JSON.stringify(scaleData.lastX),
         JSON.stringify(scaleData.xScale.domain()[0]),
         transformX,
+        showLatest,
     ]);
 
     useEffect(() => {
@@ -1144,6 +1193,8 @@ export default function Chart(props: ChartData) {
 
             let rangeWidthPercentage: any;
 
+            let dragSwitched = false;
+
             const dragRange = d3
                 .drag()
                 .on('start', () => {
@@ -1247,14 +1298,16 @@ export default function Chart(props: ChartData) {
                             });
                         }
                     } else {
-                        highLineMoved = lineToBeSet === 'Max';
-                        lowLineMoved = lineToBeSet === 'Min';
+                        const draggingLine = event.subject.name;
+
+                        highLineMoved = draggingLine === 'Max';
+                        lowLineMoved = draggingLine === 'Min';
 
                         let pinnedMaxPriceDisplayTruncated = high;
                         let pinnedMinPriceDisplayTruncated = low;
 
                         if (dragedValue >= 0) {
-                            if (lineToBeSet === 'Max') {
+                            if (draggingLine === 'Max') {
                                 pinnedDisplayPrices = getPinnedPriceValuesFromDisplayPrices(
                                     denomInBase,
                                     baseTokenDecimals,
@@ -1285,12 +1338,34 @@ export default function Chart(props: ChartData) {
                         setRanges((prevState) => {
                             const newTargets = [...prevState];
 
-                            if (lineToBeSet === 'Max') {
-                                newTargets.filter((target: any) => target.name === 'Max')[0].value =
-                                    pinnedMaxPriceDisplayTruncated;
+                            if (draggingLine === 'Max') {
+                                if (
+                                    dragSwitched ||
+                                    pinnedMaxPriceDisplayTruncated < pinnedMinPriceDisplayTruncated
+                                ) {
+                                    newTargets.filter(
+                                        (target: any) => target.name === 'Min',
+                                    )[0].value = pinnedMaxPriceDisplayTruncated;
+                                    dragSwitched = true;
+                                } else {
+                                    newTargets.filter(
+                                        (target: any) => target.name === 'Max',
+                                    )[0].value = pinnedMaxPriceDisplayTruncated;
+                                }
                             } else {
-                                newTargets.filter((target: any) => target.name === 'Min')[0].value =
-                                    pinnedMinPriceDisplayTruncated;
+                                if (
+                                    dragSwitched ||
+                                    pinnedMinPriceDisplayTruncated > pinnedMaxPriceDisplayTruncated
+                                ) {
+                                    newTargets.filter(
+                                        (target: any) => target.name === 'Max',
+                                    )[0].value = pinnedMinPriceDisplayTruncated;
+                                    dragSwitched = true;
+                                } else {
+                                    newTargets.filter(
+                                        (target: any) => target.name === 'Min',
+                                    )[0].value = pinnedMinPriceDisplayTruncated;
+                                }
                             }
 
                             newRangeValue = newTargets;
@@ -1332,6 +1407,7 @@ export default function Chart(props: ChartData) {
                     }
 
                     onBlurRange(newRangeValue, highLineMoved, lowLineMoved);
+                    dragSwitched = false;
                 });
 
             const dragLimit = d3
@@ -1565,12 +1641,39 @@ export default function Chart(props: ChartData) {
     }, [parsedChartData?.chartData, scaleData, market, checkLimitOrder, limit, isAuthenticated]);
 
     useEffect(() => {
-        if (scaleData !== undefined && latest) {
+        if (scaleData !== undefined && reset) {
             scaleData.xScale.domain(scaleData.xScaleCopy.domain());
             scaleData.yScale.domain(scaleData.yScaleCopy.domain());
-            setLatest(false);
+            setReset(false);
         }
-    }, [scaleData, latest]);
+    }, [scaleData, reset]);
+
+    useEffect(() => {
+        if (scaleData !== undefined && latest && parsedChartData !== undefined) {
+            const diff =
+                scaleData.xScale.domain()[1].getTime() - scaleData.xScale.domain()[0].getTime();
+            scaleData.xScale.domain([
+                new Date(scaleData.xScaleCopy.domain()[1].getTime() - diff),
+                scaleData.xScaleCopy.domain()[1],
+            ]);
+
+            if (rescale) {
+                scaleData.yScale.domain(scaleData.yScaleCopy.domain());
+            } else {
+                const diffY = scaleData.yScale.domain()[1] - scaleData.yScale.domain()[0];
+                const center =
+                    parsedChartData?.chartData[1].high -
+                    Math.abs(
+                        parsedChartData?.chartData[1].low - parsedChartData?.chartData[1].high,
+                    ) /
+                        2;
+                scaleData.yScale.domain([center - diffY / 2, center + diffY / 2]);
+            }
+
+            setLatest(false);
+            setShowLatest(false);
+        }
+    }, [scaleData, latest, parsedChartData?.chartData]);
 
     // easy drag and triangle to horizontal lines for range
     async function addTriangleAndRect() {
@@ -2208,23 +2311,16 @@ export default function Chart(props: ChartData) {
             const high = ranges.filter((target: any) => target.name === 'Max')[0].value;
 
             props.liquidityData.liqAskData.map((askData: any) => {
-                if (askData.liqPrices > low) {
+                if (askData.liqPrices > low && askData.liqPrices < high) {
                     props.liquidityData.lineAskSeries.push(askData);
                 }
             });
 
             props.liquidityData.liqBidData.map((bidData: any) => {
-                if (bidData.liqPrices < high) {
+                if (bidData.liqPrices < high && bidData.liqPrices > low) {
                     props.liquidityData.lineBidSeries.unshift(bidData);
                 }
             });
-
-            props.liquidityData.lineBidSeries = props.liquidityData.lineBidSeries.sort(
-                (a: any, b: any) => b.liqPrices - a.liqPrices,
-            );
-            props.liquidityData.lineAskSeries = props.liquidityData.lineAskSeries.sort(
-                (a: any, b: any) => b.liqPrices - a.liqPrices,
-            );
 
             props.liquidityData.lineAskSeries.push({
                 activeLiq:
@@ -2240,6 +2336,13 @@ export default function Chart(props: ChartData) {
                 deltaAverageUSD: 0,
                 cumAverageUSD: 0,
             });
+
+            props.liquidityData.lineBidSeries = props.liquidityData.lineBidSeries.sort(
+                (a: any, b: any) => b.liqPrices - a.liqPrices,
+            );
+            props.liquidityData.lineAskSeries = props.liquidityData.lineAskSeries.sort(
+                (a: any, b: any) => b.liqPrices - a.liqPrices,
+            );
 
             setHorizontalBandData([
                 [
@@ -2941,12 +3044,16 @@ export default function Chart(props: ChartData) {
                     setMouseMoveEventCharts(event);
                 });
 
-                d3.select(d3Yaxis.current)
-                    .on('mouseover', (event: any) => {
-                        d3.select(event.currentTarget).style('cursor', 'row-resize');
-                        crosshairData[0].x = -1;
-                    })
-                    .call(zoomUtils.yAxisDrag);
+                d3.select(d3Yaxis.current).on('mouseover', (event: any) => {
+                    d3.select(event.currentTarget).style('cursor', 'row-resize');
+                    crosshairData[0].x = -1;
+                });
+
+                d3.select(d3Yaxis.current).on('measure.range', function (event: any) {
+                    const svg = d3.select(event.target).select('svg');
+
+                    svg.call(zoomUtils.yAxisZoom).on('dblclick.zoom', null);
+                });
 
                 render();
 
