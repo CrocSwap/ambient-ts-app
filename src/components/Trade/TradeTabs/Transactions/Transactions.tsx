@@ -44,22 +44,21 @@ interface TransactionsProps {
     setIsShowAllEnabled?: Dispatch<SetStateAction<boolean>>;
     account: string;
     expandTradeTable: boolean;
-
+    setIsCandleSelected?: Dispatch<SetStateAction<boolean | undefined>>;
     isCandleSelected: boolean | undefined;
     filter?: CandleData | undefined;
-
+    changeState?: (isOpen: boolean | undefined, candleData: CandleData | undefined) => void;
     openGlobalModal: (content: React.ReactNode) => void;
     closeGlobalModal: () => void;
     handlePulseAnimation?: (type: string) => void;
     showSidebar: boolean;
-
     isOnPortfolioPage: boolean;
-
+    setSelectedDate?: Dispatch<Date | undefined>;
     // setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
 }
 export default function Transactions(props: TransactionsProps) {
     const {
-        importedTokens,
+        // importedTokens,
         isTokenABase,
         activeAccountTransactionData,
         connectedAccountActive,
@@ -67,7 +66,7 @@ export default function Transactions(props: TransactionsProps) {
         account,
         changesInSelectedCandle,
         graphData,
-
+        tokenMap,
         chainData,
         blockExplorer,
         currentTxActiveInTransactions,
@@ -81,6 +80,9 @@ export default function Transactions(props: TransactionsProps) {
         isOnPortfolioPage,
         handlePulseAnimation,
         setIsShowAllEnabled,
+        // setIsCandleSelected,
+        changeState,
+        setSelectedDate,
         // setExpandTradeTable,
     } = props;
 
@@ -154,7 +156,10 @@ export default function Transactions(props: TransactionsProps) {
         (isOnPortfolioPage && isTxDataLoadingForPortfolio) ||
         (!isOnPortfolioPage && isTxDataLoadingForTradeTable);
 
-    const debouncedShouldDisplayLoadingAnimation = useDebounce(shouldDisplayLoadingAnimation, 1000); // debounce 1/4 second
+    const shouldDisplayNoTableData = !transactionData.length;
+
+    const debouncedShouldDisplayLoadingAnimation = useDebounce(shouldDisplayLoadingAnimation, 2000); // debounce 1 second
+    const debouncedShouldDisplayNoTableData = useDebounce(shouldDisplayNoTableData, 1000); // debounce 1 second
 
     const [debouncedIsShowAllEnabled, setDebouncedIsShowAllEnabled] = useState(false);
 
@@ -245,7 +250,7 @@ export default function Transactions(props: TransactionsProps) {
     useEffect(() => {
         if (isServerEnabled && isShowAllEnabled) {
             fetchPoolRecentChanges({
-                importedTokens: importedTokens,
+                tokensOnActiveLists: tokenMap,
                 base: baseTokenAddress,
                 quote: quoteTokenAddress,
                 poolIdx: chainData.poolIndex,
@@ -308,7 +313,8 @@ export default function Transactions(props: TransactionsProps) {
                 // repeat fetch with the interval of 30 seconds
                 const timerId = setInterval(() => {
                     fetchPoolRecentChanges({
-                        importedTokens: importedTokens,
+                        tokensOnActiveLists: tokenMap,
+
                         base: baseTokenAddress,
                         quote: quoteTokenAddress,
                         poolIdx: chainData.poolIndex,
@@ -356,9 +362,8 @@ export default function Transactions(props: TransactionsProps) {
 
     const ipadView = useMediaQuery('(max-width: 480px)');
     const desktopView = useMediaQuery('(max-width: 768px)');
+    const showColumns = useMediaQuery('(max-width: 1440px)');
     const view2 = useMediaQuery('(max-width: 1568px)');
-
-    const showColumns = desktopView;
 
     const quoteTokenSymbol = tradeData.quoteToken?.symbol;
     const baseTokenSymbol = tradeData.baseToken?.symbol;
@@ -378,13 +383,6 @@ export default function Transactions(props: TransactionsProps) {
         <>
             <p>Side</p>
             <p>Type</p>
-        </>
-    );
-    // const tokens = <></>;
-    const tokens = (
-        <>
-            <p>{`${baseTokenSymbol} `}</p>
-            <p>{`${quoteTokenSymbol} `}</p>
         </>
     );
 
@@ -475,7 +473,8 @@ export default function Transactions(props: TransactionsProps) {
             alignRight: true,
         },
         {
-            name: isOnPortfolioPage ? 'Qty A' : `${baseTokenSymbol}`,
+            name: isOnPortfolioPage ? <></> : `${baseTokenSymbol}`,
+            // name: isOnPortfolioPage ? 'Qty A' : `${baseTokenSymbol}`,
 
             show: !showColumns,
             slug: baseTokenSymbol,
@@ -483,7 +482,8 @@ export default function Transactions(props: TransactionsProps) {
             alignRight: true,
         },
         {
-            name: isOnPortfolioPage ? 'Qty B' : `${quoteTokenSymbol}`,
+            name: isOnPortfolioPage ? <></> : `${quoteTokenSymbol}`,
+            // name: isOnPortfolioPage ? 'Qty B' : `${quoteTokenSymbol}`,
 
             show: !showColumns,
             slug: quoteTokenSymbol,
@@ -491,9 +491,18 @@ export default function Transactions(props: TransactionsProps) {
             alignRight: true,
         },
         {
-            name: tokens,
+            name: 'Tokens',
 
-            show: showColumns,
+            show: !isOnPortfolioPage && showColumns,
+
+            slug: 'tokens',
+            sortable: false,
+            alignRight: true,
+        },
+        {
+            name: <></>,
+
+            show: isOnPortfolioPage && showColumns,
 
             slug: 'tokens',
             sortable: false,
@@ -561,16 +570,18 @@ export default function Transactions(props: TransactionsProps) {
         />
     ));
 
-    const transactionDataOrNull =
-        transactionData.length > 0 ? (
-            rowItemContent
-        ) : (
-            <NoTableData
-                isShowAllEnabled={isShowAllEnabled}
-                setIsShowAllEnabled={setIsShowAllEnabled}
-                type='transactions'
-            />
-        );
+    const transactionDataOrNull = debouncedShouldDisplayNoTableData ? (
+        <NoTableData
+            isShowAllEnabled={isShowAllEnabled}
+            setIsShowAllEnabled={setIsShowAllEnabled}
+            setSelectedDate={setSelectedDate}
+            // setIsCandleSelected={setIsCandleSelected}
+            changeState={changeState}
+            type='transactions'
+        />
+    ) : (
+        rowItemContent
+    );
 
     const expandStyle = expandTradeTable ? 'calc(100vh - 10rem)' : '250px';
 

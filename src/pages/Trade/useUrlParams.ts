@@ -47,15 +47,11 @@ export const useUrlParams = (
     };
 
     const tokenPair = useMemo(() => {
-        return [
-            getAddress('tokenA'),
-            getAddress('tokenB')
-        ];
+        return [getAddress('tokenA'), getAddress('tokenB')];
     }, [urlParams]);
 
     // make a list of params found in the URL queried
     const paramsUsed = useMemo(() => urlParams.map((param) => param[0]), [urlParams]);
-
 
     // determine which chain to use
     const chainToUse = useMemo(() => {
@@ -113,7 +109,7 @@ export const useUrlParams = (
 
             // function to find token if not the native token
             const findToken = (listNames: string[]): TokenIF | undefined => {
-                console.log('looking for token!!')
+                console.log('looking for token!!');
                 const allTokenLists = tokenList ? JSON.parse(tokenList as string) : undefined;
                 // extract CoinGecko list from allTokenLists
                 if (
@@ -148,7 +144,7 @@ export const useUrlParams = (
                     }
                 }
             };
-            return findToken(['Ambient Token List', 'CoinGecko']);
+            return findToken(['Ambient Token List', 'CoinGecko', 'Testnet Token List']);
         };
 
         // TODO: find a way to correctly type this return
@@ -190,6 +186,7 @@ export const useUrlParams = (
                         'Missing token data in useUrlParams.ts, refer to file for troubleshooting',
                     ),
                 );
+
                 res[0] && dispatch(setTokenA(res[0] as TokenIF));
                 res[1] && dispatch(setTokenB(res[1] as TokenIF));
             });

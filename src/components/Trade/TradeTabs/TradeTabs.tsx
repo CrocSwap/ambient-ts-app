@@ -45,6 +45,7 @@ export default function TradeTabs(props: ITabsProps) {
         // console.log({ userPositions });
         if (!hasInitialized) {
             if (!isShowAllEnabled && userPositions.length < 1) {
+                console.log('setting to show all');
                 setIsShowAllEnabled(true);
             } else if (userPositions.length < 1) {
                 return;

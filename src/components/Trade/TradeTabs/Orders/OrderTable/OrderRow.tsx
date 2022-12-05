@@ -3,6 +3,7 @@ import { useProcessOrder } from '../../../../../utils/hooks/useProcessOrder';
 import OpenOrderStatus from '../../../../Global/OpenOrderStatus/OpenOrderStatus';
 import OrdersMenu from '../../../../Global/Tabs/TableMenu/TableMenuComponents/OrdersMenu';
 import OrderDetails from '../../../../OrderDetails/OrderDetails';
+
 import { Dispatch, SetStateAction, useEffect } from 'react';
 import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
 import { DefaultTooltip } from '../../../../Global/StyledTooltip/StyledTooltip';
@@ -13,6 +14,7 @@ import { tradeData } from '../../../../../utils/state/tradeDataSlice';
 import { useAppDispatch } from '../../../../../utils/hooks/reduxToolkit';
 import { setDataLoadingStatus } from '../../../../../utils/state/graphDataSlice';
 import moment from 'moment';
+import { ZERO_ADDRESS } from '../../../../../constants';
 
 interface OrderRowPropsIF {
     crocEnv: CrocEnv | undefined;
@@ -236,11 +238,39 @@ export default function OrderRow(props: OrderRowPropsIF) {
     //     </li>
     // );
 
-    const poolName = (
-        <li className='base_color'>
-            {baseTokenSymbol} / {quoteTokenSymbol}
-        </li>
+    const pair =
+        limitOrder.base !== ZERO_ADDRESS
+            ? [
+                  `${limitOrder.baseSymbol}: ${limitOrder.base}`,
+                  `${limitOrder.quoteSymbol}: ${limitOrder.quote}`,
+              ]
+            : [`${limitOrder.quoteSymbol}: ${limitOrder.quote}`];
+    const tip = pair.join('\n');
+
+    const tokenPair = (
+        <DefaultTooltip
+            interactive
+            title={<div style={{ whiteSpace: 'pre-line' }}>{tip}</div>}
+            placement={'right'}
+            arrow
+            enterDelay={150}
+            leaveDelay={200}
+        >
+            <li className='base_color'>
+                {/* {tokensTogether} */}
+                <p>
+                    {' '}
+                    {baseTokenSymbol} / {quoteTokenSymbol}
+                </p>
+            </li>
+        </DefaultTooltip>
     );
+
+    // const poolName = (
+    //     <li className='base_color'>
+    //         {baseTokenSymbol} / {quoteTokenSymbol}
+    //     </li>
+    // );
     // end of portfolio page li element ---------------
 
     // if (!orderMatchesSelectedTokens) return null;
@@ -343,7 +373,9 @@ export default function OrderRow(props: OrderRowPropsIF) {
             leaveDelay={200}
         >
             <li onClick={openDetailsModal} style={{ textTransform: 'lowercase' }}>
-                <p className='base_color'>{elapsedTimeString}</p>
+                <p className='base_color' style={{ fontFamily: 'monospace' }}>
+                    {elapsedTimeString}
+                </p>
                 {/* <p className='base_color'> Nov 9 10:36:23 AM</p> */}
             </li>
         </DefaultTooltip>
@@ -362,7 +394,7 @@ export default function OrderRow(props: OrderRowPropsIF) {
         >
             {/* {isOnPortfolioPage && accountTokenImages} */}
             {!showColumns && OrderTimeWithTooltip}
-            {isOnPortfolioPage && !showSidebar && poolName}
+            {isOnPortfolioPage && !showSidebar && tokenPair}
             {!showColumns && IDWithTooltip}
             {!showColumns && walletWithTooltip}
             {showColumns && (

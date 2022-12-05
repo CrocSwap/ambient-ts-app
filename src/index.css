@@ -21,6 +21,7 @@
 
     --apr-gradient-secondary: linear-gradient(90deg, #c7d80c 0%, #e0ea74 49.48%, #c7d80c 100%);
 
+
     /* font */
     --title-ts: 0px 0px 150px rgba(70, 183, 219, 0.5), 0px 0px 100px rgba(70, 183, 219, 0.5),
         0px 0px 30px rgba(70, 183, 219, 0.5), 0px 0px 20px rgba(70, 183, 219, 0.5),
@@ -79,6 +80,8 @@
     --blur-bg: #ebebed;
     --swap-box-shadow:   0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);;
     --swap-border: none;
+
+    --chart-gradient: linear-gradient(to right, #d8d4d1, #ffffff);;
    
     --navbar-border: #cacbcd;
     /* --body-bg: linear-gradient(to right, #ece9e6, #ffffff); */

@@ -30,3 +30,9 @@
 .scrollable_container::-webkit-scrollbar {
     width: 3px;
 }
+
+.token_not_found{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}

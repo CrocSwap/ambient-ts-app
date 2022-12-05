@@ -9,6 +9,7 @@ import styles from './Orders.module.css';
 import { useAppDispatch, useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import {
     addLimitOrderChangesByPool,
+    CandleData,
     graphData,
     setDataLoadingStatus,
     setLimitOrdersByPool,
@@ -46,6 +47,7 @@ interface propsIF {
     currentPositionActive: string;
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
     isOnPortfolioPage: boolean;
+    changeState?: (isOpen: boolean | undefined, candleData: CandleData | undefined) => void;
 
     showSidebar: boolean;
     handlePulseAnimation?: (type: string) => void;
@@ -69,6 +71,7 @@ export default function Orders(props: propsIF) {
         isOnPortfolioPage,
         handlePulseAnimation,
         setIsShowAllEnabled,
+        changeState,
     } = props;
 
     const limitOrdersByUser = graphData.limitOrdersByUser.limitOrders;
@@ -479,6 +482,8 @@ export default function Orders(props: propsIF) {
             isShowAllEnabled={isShowAllEnabled}
             type='orders'
             setIsShowAllEnabled={setIsShowAllEnabled}
+            changeState={changeState}
+            // setIsCandleSelected={setIsCandleSelected}
         />
     );
     const expandStyle = expandTradeTable ? 'calc(100vh - 10rem)' : '250px';
