@@ -197,19 +197,20 @@ export default function Leaderboard(props: LeaderboardPropsIF) {
     );
     const headerColumns = [
         {
-            name: 'Time',
-            className: '',
-            show: !showColumns,
-            slug: 'time',
-            sortable: false,
-        },
-        {
             name: 'Rank',
             className: 'ID',
             show: !showColumns,
             slug: 'id',
             sortable: false,
         },
+        {
+            name: 'Time',
+            className: '',
+            show: !showColumns,
+            slug: 'time',
+            sortable: false,
+        },
+
         {
             name: 'Wallet',
             className: 'wallet',

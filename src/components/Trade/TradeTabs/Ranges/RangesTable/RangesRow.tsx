@@ -330,10 +330,15 @@ export default function RangesRow(props: RangesRowPropsIF) {
 
     // Leaderboard content--------------------------------
 
-    const idDisplay = !showColumns && IDWithTooltip;
-    const displayIDorRanking = isLeaderboard
-        ? !showColumns && <Medal ranking={props.rank ?? 80} />
-        : idDisplay;
+    // const idDisplay = !showColumns && IDWithTooltip;
+    // const displayIDorRanking = isLeaderboard
+    //     ? !showColumns && <Medal ranking={props.rank ?? 80} />
+    //     : idDisplay;
+
+    const idOrNull = !isLeaderboard && !showColumns ? IDWithTooltip : null;
+
+    const rankingOrNull =
+        isLeaderboard && !showColumns ? <Medal ranking={props.rank ?? 80} /> : null;
 
     // End of Leaderboard content--------------------------------
 
@@ -443,10 +448,11 @@ export default function RangesRow(props: RangesRowPropsIF) {
             }
             id={positionDomId}
         >
+            {rankingOrNull}
             {!showColumns && RangeTimeWithTooltip}
+            {idOrNull}
             {/* {isOnPortfolioPage && accountTokenImages} */}
             {isOnPortfolioPage && tokenPair}
-            {displayIDorRanking}
             {!showColumns && !isOnPortfolioPage && walletWithTooltip}
             {showColumns && (
                 <li data-label='id'>
