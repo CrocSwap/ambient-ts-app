@@ -2,14 +2,18 @@
 @import url('https://fonts.googleapis.com/css2?family=Lexend+Exa:wght@100;200;300;400;500;600;700;800;900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@100;200;400;500;600&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@100;300;400;500&display=swap');
+
+/* For simple theme change(special occasion), change portfolio and swap background. No need for a different color scheme*/
 :root {
     --font-logo: 'Lexend Exa', sans-serif;
     --font-family: 'Lexend Deca', sans-serif;
     --roboto: 'Roboto Mono', monospace;
     --mono: monospace, 'Lexend Deca' sans-serif, ;
+    --portfolio-banner: url('./assets/images/backgrounds/account_image.png') no-repeat center center;
 
     --title-gradient: linear-gradient(90deg, #7371fc 0%, #cdc1ff 49.48%, #7371fc 100%);
-    --chart-gradient: radial-gradient(circle,rgb(0, 25, 51), rgba(4, 12, 24, 1) );
+    --swap-box-shadow: none;
+    --swap-border: var(--title-gradient);
     --text-highlight: #cdc1ff;
     --text-highlight-dark: #7371fc;
 
@@ -54,6 +58,7 @@
     --text-accent: #cdc1ff;
     --light-blue: #cdc1ff;
 
+    --accent-5: #5FFFF2;
     --accent-secondary: #e480ff;
 
     /* border */
