@@ -1,9 +1,10 @@
 import styles from './NotificationCenter.module.css';
 import { AnimateSharedLayout } from 'framer-motion';
-import { Dispatch, SetStateAction } from 'react';
+import { Dispatch, SetStateAction, useRef } from 'react';
 import NotificationTable from './NotificationTable/NotificationTable';
 import ActivityIndicator from './ActivityIndicator/ActivityIndicator';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
+import UseOnClickOutside from '../../../utils/hooks/useOnClickOutside';
 
 interface NotificationCenterPropsIF {
     showNotificationTable: boolean;
@@ -31,6 +32,12 @@ const NotificationCenter = (props: NotificationCenterPropsIF) => {
     const currentPendingTransactionsArray = pendingTransactions.filter(
         (hash: string) => !receiveReceiptHashes.includes(hash),
     );
+    const notificationItemRef = useRef<HTMLDivElement>(null);
+
+    const clickOutsideHandler = () => {
+        setShowNotificationTable(false);
+    };
+    UseOnClickOutside(notificationItemRef, clickOutsideHandler);
 
     return (
         <AnimateSharedLayout>
@@ -41,13 +48,14 @@ const NotificationCenter = (props: NotificationCenterPropsIF) => {
                     showNotificationTable={showNotificationTable}
                     setShowNotificationTable={setShowNotificationTable}
                 />
-
-                <NotificationTable
-                    showNotificationTable={showNotificationTable}
-                    setShowNotificationTable={setShowNotificationTable}
-                    pendingTransactions={currentPendingTransactionsArray}
-                    lastBlockNumber={lastBlockNumber}
-                />
+                <div ref={notificationItemRef}>
+                    <NotificationTable
+                        showNotificationTable={showNotificationTable}
+                        setShowNotificationTable={setShowNotificationTable}
+                        pendingTransactions={currentPendingTransactionsArray}
+                        lastBlockNumber={lastBlockNumber}
+                    />
+                </div>
             </div>
         </AnimateSharedLayout>
     );
