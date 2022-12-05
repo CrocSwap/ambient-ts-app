@@ -321,9 +321,9 @@ export default function App() {
     // useEffect(() => console.warn(chainData.chainId), [chainData.chainId]);
 
     const [tokenPairLocal, setTokenPairLocal] = useState<string[] | null>(null);
-    useEffect(() => {
-        console.log({ tokenPairLocal });
-    }, [tokenPairLocal]);
+    // useEffect(() => {
+    //     console.log({ tokenPairLocal });
+    // }, [tokenPairLocal]);
 
     const tokenUniverse = useTokenUniverse(chainData.chainId);
     useEffect(() => {
@@ -645,30 +645,6 @@ export default function App() {
         })();
     }, [isUserLoggedIn, account, chainData.chainId]);
 
-    const connectedUserTokens = useAppSelector((state) => state.userData.tokens);
-    // const connectedUserNativeToken = connectedUserTokens.nativeToken;
-    const connectedUserErc20Tokens = connectedUserTokens.erc20Tokens;
-
-    const userTopTokens = connectedUserErc20Tokens
-        ? [...connectedUserErc20Tokens]?.sort((a, b) => {
-              if (b.dexBalanceDisplay) {
-                  return (
-                      parseFloat(b.dexBalanceDisplay || '0') -
-                      parseFloat(a.dexBalanceDisplay || '0')
-                  );
-              } else {
-                  return (
-                      parseFloat(b.walletBalanceDisplay || '0') -
-                      parseFloat(a.walletBalanceDisplay || '0')
-                  );
-              }
-          })
-        : undefined;
-
-    useEffect(() => {
-        console.log({ userTopTokens });
-    }, [JSON.stringify(userTopTokens)]);
-
     const everyEigthBlock = Math.floor(lastBlockNumber / 8);
     // check for token balances every eight blocks
 
@@ -711,10 +687,10 @@ export default function App() {
                         everyEigthBlock,
                         crocEnv,
                     );
-                    console.log({ tokensOnActiveLists });
-                    console.log({ erc20Results });
+                    // console.log({ tokensOnActiveLists });
+                    // console.log({ erc20Results });
                     const erc20TokensWithLogos = erc20Results.map((token) => addTokenInfo(token));
-                    console.log({ erc20TokensWithLogos });
+                    // console.log({ erc20TokensWithLogos });
                     dispatch(setErc20Tokens(erc20TokensWithLogos));
                 } catch (error) {
                     console.log({ error });
@@ -1095,7 +1071,7 @@ export default function App() {
                                     // omitKnockout: 'true',
                                     addValue: 'true',
                                     sortByAPY: 'true',
-                                    n: '30',
+                                    n: '50',
                                 }),
                         )
                             .then((response) => response.json())
@@ -1119,7 +1095,10 @@ export default function App() {
                                                 .filter((updatedPosition: PositionIF) => {
                                                     return updatedPosition.isPositionInRange;
                                                 })
-                                                .slice(1, 10);
+                                                .slice(0, 10);
+
+                                            // console.log({ top10Positions });
+
                                             if (
                                                 JSON.stringify(
                                                     graphData.leaderboardByPool.positions,

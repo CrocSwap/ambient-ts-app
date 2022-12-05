@@ -12,6 +12,7 @@ import { useSearch } from './useSearch';
 import { importToken } from './importToken';
 import RecentToken from './RecentToken/RecentToken';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
+import { ZERO_ADDRESS } from '../../../constants';
 // import CustomTokens from '../TokenList/CustomTokens';
 
 interface TokenSelectContainerPropsIF {
@@ -177,16 +178,19 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
 
     const recentTokens = (
         <div className={styles.recent_tokens_container}>
-            {recentTokensInRTK?.slice(0, 5).map((token, idx) => (
-                <RecentToken
-                    key={idx}
-                    token={token}
-                    clickHandler={() => {
-                        chooseToken(token);
-                        // importToken(token, tokensBank, setImportedTokens, () => chooseToken(token));
-                    }}
-                />
-            ))}
+            {recentTokensInRTK
+                ?.filter((token) => token.address !== ZERO_ADDRESS)
+                ?.slice(0, 4)
+                .map((token, idx) => (
+                    <RecentToken
+                        key={idx}
+                        token={token}
+                        clickHandler={() => {
+                            chooseToken(token);
+                            // importToken(token, tokensBank, setImportedTokens, () => chooseToken(token));
+                        }}
+                    />
+                ))}
         </div>
     );
 
