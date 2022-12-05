@@ -48,6 +48,7 @@ export interface PositionIF {
     feesLiqQuote?: string;
     apy: number;
     time: number;
+    timeFirstMint?: number;
     latestUpdateTime: number;
     positionLiq: string;
     positionLiqTotalUSD: number;
