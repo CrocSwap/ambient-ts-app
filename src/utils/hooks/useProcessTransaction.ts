@@ -299,6 +299,8 @@ export const useProcessTransaction = (tx: ITransaction) => {
                     ? '0.00 '
                     : baseFlowAbsNum < 0.0001
                     ? baseFlowAbsNum.toExponential(2)
+                    : baseFlowAbsNum < 0.01
+                    ? baseFlowAbsNum.toPrecision(3)
                     : baseFlowAbsNum >= 10000
                     ? formatAmountOld(baseFlowAbsNum)
                     : // ? baseLiqDisplayNum.toExponential(2)
@@ -322,6 +324,8 @@ export const useProcessTransaction = (tx: ITransaction) => {
                     ? '0.00 '
                     : quoteFlowAbsNum < 0.0001
                     ? quoteFlowAbsNum.toExponential(2)
+                    : quoteFlowAbsNum < 0.01
+                    ? quoteFlowAbsNum.toPrecision(3)
                     : quoteFlowAbsNum >= 10000
                     ? formatAmountOld(quoteFlowAbsNum)
                     : // ? quoteLiqDisplayNum.toExponential(2)

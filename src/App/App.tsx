@@ -321,9 +321,9 @@ export default function App() {
     // useEffect(() => console.warn(chainData.chainId), [chainData.chainId]);
 
     const [tokenPairLocal, setTokenPairLocal] = useState<string[] | null>(null);
-    useEffect(() => {
-        console.log({ tokenPairLocal });
-    }, [tokenPairLocal]);
+    // useEffect(() => {
+    //     console.log({ tokenPairLocal });
+    // }, [tokenPairLocal]);
 
     const tokenUniverse = useTokenUniverse(chainData.chainId);
     useEffect(() => {
@@ -645,30 +645,6 @@ export default function App() {
         })();
     }, [isUserLoggedIn, account, chainData.chainId]);
 
-    const connectedUserTokens = useAppSelector((state) => state.userData.tokens);
-    // const connectedUserNativeToken = connectedUserTokens.nativeToken;
-    const connectedUserErc20Tokens = connectedUserTokens.erc20Tokens;
-
-    const userTopTokens = connectedUserErc20Tokens
-        ? [...connectedUserErc20Tokens]?.sort((a, b) => {
-              if (b.dexBalanceDisplay) {
-                  return (
-                      parseFloat(b.dexBalanceDisplay || '0') -
-                      parseFloat(a.dexBalanceDisplay || '0')
-                  );
-              } else {
-                  return (
-                      parseFloat(b.walletBalanceDisplay || '0') -
-                      parseFloat(a.walletBalanceDisplay || '0')
-                  );
-              }
-          })
-        : undefined;
-
-    useEffect(() => {
-        console.log({ userTopTokens });
-    }, [JSON.stringify(userTopTokens)]);
-
     const everyEigthBlock = Math.floor(lastBlockNumber / 8);
     // check for token balances every eight blocks
 
@@ -711,10 +687,10 @@ export default function App() {
                         everyEigthBlock,
                         crocEnv,
                     );
-                    console.log({ tokensOnActiveLists });
-                    console.log({ erc20Results });
+                    // console.log({ tokensOnActiveLists });
+                    // console.log({ erc20Results });
                     const erc20TokensWithLogos = erc20Results.map((token) => addTokenInfo(token));
-                    console.log({ erc20TokensWithLogos });
+                    // console.log({ erc20TokensWithLogos });
                     dispatch(setErc20Tokens(erc20TokensWithLogos));
                 } catch (error) {
                     console.log({ error });
@@ -1095,7 +1071,7 @@ export default function App() {
                                     // omitKnockout: 'true',
                                     addValue: 'true',
                                     sortByAPY: 'true',
-                                    n: '30',
+                                    n: '50',
                                 }),
                         )
                             .then((response) => response.json())
@@ -1119,7 +1095,10 @@ export default function App() {
                                                 .filter((updatedPosition: PositionIF) => {
                                                     return updatedPosition.isPositionInRange;
                                                 })
-                                                .slice(1, 10);
+                                                .slice(0, 10);
+
+                                            // console.log({ top10Positions });
+
                                             if (
                                                 JSON.stringify(
                                                     graphData.leaderboardByPool.positions,
@@ -1177,6 +1156,7 @@ export default function App() {
                                     poolIdx: chainData.poolIndex.toString(),
                                     chainId: chainData.chainId,
                                     ensResolution: 'true',
+                                    omitEmpty: 'true',
                                     // n: 10 // positive integer	(Optional.) If n and page are provided, query returns a page of results with at most n entries.
                                     // page: 0 // nonnegative integer	(Optional.) If n and page are provided, query returns the page-th page of results. Page numbers are 0-indexed.
                                 }),
@@ -1633,7 +1613,10 @@ export default function App() {
         if (lastUserLimitOrderChangesMessage !== null) {
             const lastMessageData = JSON.parse(lastUserLimitOrderChangesMessage.data).data;
 
-            if (lastMessageData) dispatch(addLimitOrderChangesByUser(lastMessageData));
+            if (lastMessageData) {
+                console.log({ lastMessageData });
+                dispatch(addLimitOrderChangesByUser(lastMessageData));
+            }
         }
     }, [lastUserLimitOrderChangesMessage]);
 
@@ -1790,6 +1773,9 @@ export default function App() {
 
     const graphData = useAppSelector((state) => state.graphData);
 
+    const userLimitOrderStatesCacheEndpoint =
+        httpGraphCacheServerDomain + '/user_limit_order_states?';
+
     useEffect(() => {
         if (isServerEnabled && isUserLoggedIn && account) {
             dispatch(resetConnectedUserDataLoadingStatus());
@@ -1855,45 +1841,40 @@ export default function App() {
 
             console.log('fetching user limit orders ');
 
-            const userLimitOrderStatesCacheEndpoint =
-                httpGraphCacheServerDomain + '/user_limit_order_states?';
-            try {
-                fetch(
-                    userLimitOrderStatesCacheEndpoint +
-                        new URLSearchParams({
-                            user: account,
-                            chainId: chainData.chainId,
-                            ensResolution: 'true',
+            fetch(
+                userLimitOrderStatesCacheEndpoint +
+                    new URLSearchParams({
+                        user: account,
+                        chainId: chainData.chainId,
+                        ensResolution: 'true',
+                        omitEmpty: 'true',
+                    }),
+            )
+                .then((response) => response?.json())
+                .then((json) => {
+                    const userLimitOrderStates = json?.data;
+                    dispatch(
+                        setDataLoadingStatus({
+                            datasetName: 'connectedUserOrderData',
+                            loadingStatus: false,
                         }),
-                )
-                    .then((response) => response?.json())
-                    .then((json) => {
-                        const userLimitOrderStates = json?.data;
-                        dispatch(
-                            setDataLoadingStatus({
-                                datasetName: 'connectedUserOrderData',
-                                loadingStatus: false,
+                    );
+                    if (userLimitOrderStates) {
+                        Promise.all(
+                            userLimitOrderStates.map((limitOrder: LimitOrderIF) => {
+                                return getLimitOrderData(limitOrder, importedTokens);
                             }),
-                        );
-                        if (userLimitOrderStates) {
-                            Promise.all(
-                                userLimitOrderStates.map((limitOrder: LimitOrderIF) => {
-                                    return getLimitOrderData(limitOrder, importedTokens);
+                        ).then((updatedLimitOrderStates) => {
+                            dispatch(
+                                setLimitOrdersByUser({
+                                    dataReceived: true,
+                                    limitOrders: updatedLimitOrderStates,
                                 }),
-                            ).then((updatedLimitOrderStates) => {
-                                dispatch(
-                                    setLimitOrdersByUser({
-                                        dataReceived: true,
-                                        limitOrders: updatedLimitOrderStates,
-                                    }),
-                                );
-                            });
-                        }
-                    })
-                    .catch(console.log);
-            } catch (error) {
-                console.log;
-            }
+                            );
+                        });
+                    }
+                })
+                .catch(console.log);
 
             try {
                 fetchUserRecentChanges({

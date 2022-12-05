@@ -153,7 +153,7 @@ export default function Orders(props: propsIF) {
     }, [isShowAllEnabled]);
 
     const [sortBy, setSortBy, reverseSort, setReverseSort, sortedLimits] = useSortedLimits(
-        'lastUpdate',
+        'time',
         isShowAllEnabled ? limitOrdersByPool : limitOrderData,
     );
     useEffect(() => {

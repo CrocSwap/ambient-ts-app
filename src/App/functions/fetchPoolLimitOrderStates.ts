@@ -22,6 +22,7 @@ export const fetchPoolLimitOrderStates = (props: IFetchPoolLimitOrderStatesProps
                 quote: quote,
                 poolIdx: poolIdx.toString(),
                 ensResolution: ensResolution.toString(),
+                omitEmpty: 'true',
             }),
     )
         .then((response) => response?.json())

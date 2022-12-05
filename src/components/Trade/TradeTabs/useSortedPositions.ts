@@ -13,7 +13,7 @@ export const useSortedPositions = (
 ] => {
     // default sort function
     const sortByTime = (unsortedData: PositionIF[]) =>
-        [...unsortedData].sort((a, b) => b.time - a.time);
+        [...unsortedData].sort((a, b) => b.timeFirstMint - a.timeFirstMint);
     // sort by positionHash
     const sortById = (unsortedData: PositionIF[]) =>
         [...unsortedData].sort((a, b) =>
