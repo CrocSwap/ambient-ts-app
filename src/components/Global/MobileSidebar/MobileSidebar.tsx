@@ -1,4 +1,4 @@
-import { useState, Dispatch, SetStateAction, useRef } from 'react';
+import { Dispatch, SetStateAction, useRef } from 'react';
 import styles from './MobileSidebar.module.css';
 import { motion } from 'framer-motion';
 import { MenuButton } from '../MenuButton/MenuButton';
