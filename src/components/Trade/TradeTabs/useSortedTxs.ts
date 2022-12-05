@@ -73,7 +73,9 @@ export const useSortedTransactions = (
             case 'value':
                 sortedData = sortByValue(data);
                 break;
-            case 'lastUpdate':
+            case 'time':
+                sortedData = sortByUpdateTime(data);
+                break;
             default:
                 return sortByUpdateTime(data);
         }

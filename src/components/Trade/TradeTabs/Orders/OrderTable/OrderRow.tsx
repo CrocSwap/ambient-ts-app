@@ -285,7 +285,7 @@ export default function OrderRow(props: OrderRowPropsIF) {
     // }).format(limitOrder.time * 1000);
 
     const elapsedTimeInSecondsNum = moment(Date.now()).diff(
-        limitOrder.timeFirstMint * 1000,
+        (limitOrder.timeFirstMint || limitOrder.time) * 1000,
         'seconds',
     );
 
@@ -306,67 +306,67 @@ export default function OrderRow(props: OrderRowPropsIF) {
                 : `${Math.floor(elapsedTimeInSecondsNum / 86400)} days ago`
             : 'Pending...';
 
-    const baseQtyToolTipStyle = <p className={styles.tooltip_style}>{baseTokenSymbol + ' Qty'}</p>;
-    const quoteQtyToolTipStyle = (
-        <p className={styles.tooltip_style}>{quoteTokenSymbol + ' Qty'}</p>
-    );
+    // const baseQtyToolTipStyle = <p className={styles.tooltip_style}>{baseTokenSymbol + ' Qty'}</p>;
+    // const quoteQtyToolTipStyle = (
+    //     <p className={styles.tooltip_style}>{quoteTokenSymbol + ' Qty'}</p>
+    // );
     const baseQtyDisplayWithTooltip = (
-        <DefaultTooltip
-            interactive
-            title={baseQtyToolTipStyle}
-            placement={'right'}
-            arrow
-            enterDelay={150}
-            leaveDelay={200}
-        >
-            <li onClick={openDetailsModal} data-label={baseTokenSymbol} className='color_white'>
-                <p
-                    style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'flex-end',
-                        gap: '4px',
-                        textAlign: 'right',
-                        fontFamily: 'monospace',
-                    }}
-                >
-                    {baseDisplay}
-                    {isOnPortfolioPage && <img src={baseTokenLogo} width='15px' alt='' />}
-                </p>
-            </li>
-        </DefaultTooltip>
+        // <DefaultTooltip
+        //     interactive
+        //     title={baseQtyToolTipStyle}
+        //     placement={'right'}
+        //     arrow
+        //     enterDelay={150}
+        //     leaveDelay={200}
+        // >
+        <li onClick={openDetailsModal} data-label={baseTokenSymbol} className='color_white'>
+            <p
+                style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'flex-end',
+                    gap: '4px',
+                    textAlign: 'right',
+                    fontFamily: 'monospace',
+                }}
+            >
+                {baseDisplay}
+                {isOnPortfolioPage && <img src={baseTokenLogo} width='15px' alt='' />}
+            </p>
+        </li>
+        /* </DefaultTooltip> */
     );
     const quoteQtyDisplayWithTooltip = (
-        <DefaultTooltip
-            interactive
-            title={quoteQtyToolTipStyle}
-            placement={'right'}
-            arrow
-            enterDelay={150}
-            leaveDelay={200}
-        >
-            <li onClick={openDetailsModal} data-label={quoteTokenSymbol} className='color_white'>
-                <p
-                    style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'flex-end',
-                        gap: '4px',
-                        textAlign: 'right',
-                        fontFamily: 'monospace',
-                    }}
-                >
-                    {quoteDisplay}
-                    {isOnPortfolioPage && <img src={quoteTokenLogo} width='15px' alt='' />}
-                </p>
-            </li>
-        </DefaultTooltip>
+        // <DefaultTooltip
+        //     interactive
+        //     title={quoteQtyToolTipStyle}
+        //     placement={'right'}
+        //     arrow
+        //     enterDelay={150}
+        //     leaveDelay={200}
+        // >
+        <li onClick={openDetailsModal} data-label={quoteTokenSymbol} className='color_white'>
+            <p
+                style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'flex-end',
+                    gap: '4px',
+                    textAlign: 'right',
+                    fontFamily: 'monospace',
+                }}
+            >
+                {quoteDisplay}
+                {isOnPortfolioPage && <img src={quoteTokenLogo} width='15px' alt='' />}
+            </p>
+        </li>
+        /* </DefaultTooltip> */
     );
 
     const OrderTimeWithTooltip = (
         <DefaultTooltip
             interactive
-            title={moment(limitOrder.time * 1000).format('MM/DD/YYYY HH:mm')}
+            title={'Last Updated: ' + moment(limitOrder.time * 1000).format('MM/DD/YYYY HH:mm')}
             placement={'right'}
             arrow
             enterDelay={750}

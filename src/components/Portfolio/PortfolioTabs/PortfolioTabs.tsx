@@ -186,6 +186,7 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
                     user: accountToSearch,
                     chainId: chainId,
                     ensResolution: 'true',
+                    omitEmpty: 'true',
                 }),
         )
             .then((response) => response?.json())

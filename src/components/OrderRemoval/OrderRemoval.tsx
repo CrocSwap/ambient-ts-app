@@ -135,12 +135,13 @@ export default function OrderRemoval(props: IOrderRemovalProps) {
             setShowConfirmation(true);
             setShowSettings(false);
             console.log({ limitOrder });
+            console.log({ positionLiquidity });
             let tx;
             try {
                 if (limitOrder.isBid === true) {
                     tx = await crocEnv
                         .buy(limitOrder.quote, 0)
-                        .atLimit(limitOrder.base, limitOrder.askTick)
+                        .atLimit(limitOrder.base, limitOrder.bidTick)
                         // .burnLiq(BigNumber.from('1000'));
                         .burnLiq(BigNumber.from(positionLiquidity));
                     setNewRemovalTransactionHash(tx.hash);
