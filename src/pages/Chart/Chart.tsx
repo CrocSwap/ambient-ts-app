@@ -104,6 +104,20 @@ function getWindowDimensions() {
     };
 }
 
+function stopWheelZoom(event: any) {
+    if (event.ctrlKey == true) {
+        event.preventDefault();
+    }
+}
+function stopKeyZoom(event: any) {
+    if (event.ctrlKey && [48, 61, 96, 107, 109, 187, 189].indexOf(event.keyCode) > -1) {
+        event.preventDefault();
+    }
+}
+document.addEventListener('keydown', stopKeyZoom);
+document.addEventListener('mousewheel', stopWheelZoom);
+document.addEventListener('DOMMouseScroll', stopWheelZoom);
+
 export default function Chart(props: ChartData) {
     const {
         pool,
@@ -759,7 +773,6 @@ export default function Chart(props: ChartData) {
 
             const zoom = d3
                 .zoom()
-                .scaleExtent([0.3, 5])
                 .on('start', (event: any) => {
                     if (event.sourceEvent && event.sourceEvent.type !== 'dblclick') {
                         clickedForLine = false;
@@ -791,10 +804,17 @@ export default function Chart(props: ChartData) {
 
                             const deltaX = linearX(dx);
 
-                            scaleData.xScale.domain([
-                                new Date(domainX[0].getTime() - deltaX),
-                                new Date(domainX[1].getTime() + deltaX),
-                            ]);
+                            if (!event.sourceEvent.ctrlKey) {
+                                scaleData.xScale.domain([
+                                    new Date(domainX[0].getTime() - deltaX),
+                                    domainX[1],
+                                ]);
+                            } else {
+                                scaleData.xScale.domain([
+                                    new Date(domainX[0].getTime() - deltaX),
+                                    new Date(domainX[1].getTime() + deltaX),
+                                ]);
+                            }
                         } else {
                             const domainX = scaleData.xScale.domain();
                             const linearX = d3
