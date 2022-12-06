@@ -57,69 +57,6 @@ export default function TokenSelect(props: TokenSelectPropsIF) {
             ? connectedUserTokens[indexOfToken]?.combinedBalanceDisplayTruncated
             : undefined;
 
-    // const noTokenImage = <CgUnavailable size={20} />;
-
-    // As much as I dislike directing using svgs in code, this is the only way we can style the fill on hover...unless we want to bring in two different SVGS.
-    // const starIcon = (
-    //     <svg
-    //         width='18'
-    //         height='18'
-    //         viewBox='0 0 23 23'
-    //         fill='none'
-    //         xmlns='http://www.w3.org/2000/svg'
-    //     >
-    //         <path
-    //             d='M11.5 1.58301L14.7187 8.10384L21.9166 9.15593L16.7083 14.2288L17.9375 21.3955L11.5 18.0101L5.06248 21.3955L6.29165 14.2288L1.08331 9.15593L8.28123 8.10384L11.5 1.58301Z'
-    //             stroke='#BDBDBD'
-    //             strokeWidth='2'
-    //             strokeLinecap='round'
-    //             strokeLinejoin='round'
-    //             className={styles.star_svg}
-    //         />
-    //     </svg>
-    // );
-
-    // const deleteIcon = (
-    //     <div className={styles.close_icon} onClick={() => setShowDelete(true)}>
-    //         <AiFillCloseSquare size={20} className={styles.close_icon_svg} />
-    //     </div>
-    // );
-
-    // function handleToggleDelete() {
-    //     if (toggleDeleteOn) removeToken(token, tokensBank, chainId, setImportedTokens);
-    //     setShowDelete(false);
-    // }
-
-    // const confirmStyle = toggleDeleteOn ? styles.danger_style : styles.primary_style;
-
-    // const toggleButtons = (
-    //     <div className={styles.toggle_container}>
-    //         <div className={styles.liqtype_buttons_container}>
-    //             <button
-    //                 className={!toggleDeleteOn ? styles.active_button : styles.non_active_button}
-    //                 onClick={() => setToggleDeleteOn(!toggleDeleteOn)}
-    //             >
-    //                 No
-    //             </button>
-    //             <button
-    //                 className={toggleDeleteOn ? styles.active_button : styles.non_active_button}
-    //                 onClick={() => setToggleDeleteOn(!toggleDeleteOn)}
-    //             >
-    //                 Yes
-    //             </button>
-    //         </div>
-    //         <div
-    //             className={`${styles.confirm} ${confirmStyle}`}
-    //             onClick={() => handleToggleDelete()}
-    //         >
-    //             {toggleDeleteOn ? 'REMOVE' : 'CANCEL'}
-    //         </div>
-    //     </div>
-    // );
-
-    // const deleteStateStyle = !showDelete ? styles.delete_active : styles.delete_inactive;
-    // const [ pinned, setPinned] = useState(false)
-
     return (
         <>
             <div className={styles.main_container} onClick={() => chooseToken(token)}>
