@@ -106,20 +106,6 @@ function getWindowDimensions() {
     };
 }
 
-function stopWheelZoom(event: any) {
-    if (event.ctrlKey == true) {
-        event.preventDefault();
-    }
-}
-function stopKeyZoom(event: any) {
-    if (event.ctrlKey && [48, 61, 96, 107, 109, 187, 189].indexOf(event.keyCode) > -1) {
-        event.preventDefault();
-    }
-}
-document.addEventListener('keydown', stopKeyZoom);
-document.addEventListener('mousewheel', stopWheelZoom);
-document.addEventListener('DOMMouseScroll', stopWheelZoom);
-
 export default function Chart(props: ChartData) {
     const {
         pool,
@@ -312,6 +298,10 @@ export default function Chart(props: ChartData) {
     useEffect(() => {
         addDefsStyle();
     }, []);
+
+    useEffect(() => {
+        setRescale(true);
+    }, [denomInBase]);
 
     useEffect(() => {
         function handleResize() {
@@ -967,29 +957,17 @@ export default function Chart(props: ChartData) {
                     // dispatch(setCandleDomains(candleDomain));
                 }) as any;
 
-            const yAxisZoom = d3.zoom().on('zoom', async (event: any) => {
-                const domainY = scaleData.yScale.domain();
-                const center = (domainY[1] + domainY[0]) / 2;
-                let factor: any;
+            const yAxisDrag = d3.drag().on('drag', async (event: any) => {
+                console.log('dragged');
 
-                if (event.sourceEvent.type === 'wheel') {
-                    const dy = event.sourceEvent.deltaY / 3;
-                    factor = Math.pow(2, -dy * 0.003);
-                } else if (event.sourceEvent.type !== 'dblclick') {
-                    const linearY = d3
-                        .scaleLinear()
-                        .domain(scaleData.yScale.range())
-                        .range([domainY[1] - domainY[0], 0]);
-
-                    const deltaY = linearY(event.transform.y - scaleData.lastDragedY);
-                    factor = Math.pow(2, -deltaY * 0.01);
-
-                    scaleData.lastDragedY = event.transform.y;
+                const dy = event.dy;
+                const factor = Math.pow(2, -dy * 0.003);
+                const domain = scaleData.yScale.domain();
+                const center = (domain[1] + domain[0]) / 2;
+                const size = (domain[1] - domain[0]) / 2 / factor;
+                if (center - size > 0) {
+                    await scaleData.yScale.domain([center - size, center + size]);
                 }
-
-                const size = (domainY[1] - domainY[0]) / 2 / factor;
-                await scaleData.yScale.domain([center - size, center + size]);
-
                 setZoomAndYdragControl(event);
                 setRescale(() => {
                     return false;
@@ -997,12 +975,35 @@ export default function Chart(props: ChartData) {
 
                 setMarketLineValue();
                 render();
+            });
+
+            const yAxisZoom = d3.zoom().on('zoom', async (event: any) => {
+                if (event.sourceEvent.type === 'wheel') {
+                    const domainY = scaleData.yScale.domain();
+                    const center = (domainY[1] + domainY[0]) / 2;
+                    const dy = event.sourceEvent.deltaY / 3;
+                    const factor = Math.pow(2, -dy * 0.003);
+
+                    const size = (domainY[1] - domainY[0]) / 2 / factor;
+                    await scaleData.yScale.domain([center - size, center + size]);
+
+                    scaleData.lastDragedY = event.transform.y;
+
+                    setZoomAndYdragControl(event);
+                    setRescale(() => {
+                        return false;
+                    });
+
+                    setMarketLineValue();
+                    render();
+                }
             }) as any;
 
             setZoomUtils(() => {
                 return {
                     zoom: zoom,
                     yAxisZoom: yAxisZoom,
+                    yAxisDrag: yAxisDrag,
                 };
             });
         }
@@ -1059,7 +1060,7 @@ export default function Chart(props: ChartData) {
 
     useEffect(() => {
         setLimitLineValue();
-    }, [tradeData.limitTick]);
+    }, [tradeData.limitTick, denomInBase]);
 
     const setLimitLineValue = () => {
         const limitDisplayPrice = denomInBase
@@ -2304,7 +2305,7 @@ export default function Chart(props: ChartData) {
     }, [scaleData, selectedDate]);
 
     useEffect(() => {
-        if (scaleData !== undefined) {
+        if (scaleData !== undefined && candlestick !== undefined) {
             const barSeries = d3fc
                 .seriesSvgBar()
                 .align('center')
@@ -2349,7 +2350,7 @@ export default function Chart(props: ChartData) {
                 return barSeries;
             });
         }
-    }, [scaleData, selectedDate, bandwidth]);
+    }, [scaleData, selectedDate, bandwidth, candlestick, candlestick && candlestick.bandwidth()]);
 
     useEffect(() => {
         if (!location.pathname.includes('range')) {
@@ -3101,15 +3102,19 @@ export default function Chart(props: ChartData) {
                     showCrosshair();
                 });
 
-                d3.select(d3Yaxis.current).on('mouseover', (event: any) => {
-                    d3.select(event.currentTarget).style('cursor', 'row-resize');
-                    crosshairData[0].x = -1;
-                });
+                d3.select(d3Yaxis.current)
+                    .on('mouseover', (event: any) => {
+                        d3.select(event.currentTarget).style('cursor', 'row-resize');
+                        crosshairData[0].x = -1;
+                    })
+                    .call(zoomUtils.yAxisDrag);
 
                 d3.select(d3Yaxis.current).on('measure.range', function (event: any) {
                     const svg = d3.select(event.target).select('svg');
 
-                    svg.call(zoomUtils.yAxisZoom).on('dblclick.zoom', null);
+                    svg.call(zoomUtils.yAxisZoom)
+                        .on('dblclick.zoom', null)
+                        .on('dblclick.drag', null);
                 });
 
                 render();
