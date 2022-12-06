@@ -32,23 +32,25 @@ const NotificationCenter = (props: NotificationCenterPropsIF) => {
     const currentPendingTransactionsArray = pendingTransactions.filter(
         (hash: string) => !receiveReceiptHashes.includes(hash),
     );
-    const notificationItemRef = useRef<HTMLDivElement>(null);
+    // const notificationItemRef = useRef<HTMLDivElement>(null);
+    const activityCenterRef = useRef<HTMLDivElement>(null);
 
     const clickOutsideHandler = () => {
         setShowNotificationTable(false);
     };
-    UseOnClickOutside(notificationItemRef, clickOutsideHandler);
+    UseOnClickOutside(activityCenterRef, clickOutsideHandler);
 
     return (
         <AnimateSharedLayout>
-            <div className={styles.container}>
+            <div ref={activityCenterRef} className={styles.container}>
                 <ActivityIndicator
                     value={receiveReceiptHashes.length}
                     pending={currentPendingTransactionsArray.length > 0}
                     showNotificationTable={showNotificationTable}
                     setShowNotificationTable={setShowNotificationTable}
                 />
-                <div ref={notificationItemRef}>
+
+                <div>
                     <NotificationTable
                         showNotificationTable={showNotificationTable}
                         setShowNotificationTable={setShowNotificationTable}
