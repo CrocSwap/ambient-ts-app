@@ -256,9 +256,6 @@ export default function Portfolio(props: PortfolioPropsIF) {
         !connectedAccountActive ? setFullLayoutActive(true) : setFullLayoutActive(false);
     }, [connectedAccountActive]);
 
-    // useEffect(() => {
-    //     .userAccount ? setFullLayoutActive(true) : null;
-    // }, [userAccount]);
     const fullLayerToggle = (
         <div
             className={styles.right_tab_option}
@@ -298,7 +295,12 @@ export default function Portfolio(props: PortfolioPropsIF) {
         const importedAddresses = importedTokens.map((tkn) => tkn.address.toLowerCase());
         const output = importedTokens;
         connectedUserErc20Tokens?.forEach((tkn) => {
-        importedAddresses.includes(tkn.address.toLowerCase()) || output.push(tkn);
+        if (
+            !importedAddresses.includes(tkn.address.toLowerCase()) &&
+            tokensOnActiveLists.get(tkn.address + '_' + chainId)
+        ) {
+            output.push({...tkn, fromList: 'wallet'});
+        }
         });
         return output;
     }

@@ -14,6 +14,7 @@ interface propsIF {
     importedTokens: TokenIF[];
     chainId: string;
     setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
+    // TODO: rewrite logic to build this Map from all lists not just active ones
     tokensOnActiveLists: Map<string, TokenIF>;
     closeModal: () => void;
     searchableTokens: TokenIF[];
@@ -31,6 +32,7 @@ export const SoloTokenSelect = (props: propsIF) => {
     } = props;
     false && searchableTokens;
     console.log(importedTokens);
+    console.log(tokensOnActiveLists);
 
     const [tokensForDOM, otherTokensForDOM, validatedInput, setInput, searchType] = useSoloSearch(
         chainId,
@@ -87,11 +89,7 @@ export const SoloTokenSelect = (props: propsIF) => {
             )
             .map((tokenList: TokenListIF) => tokenList.name);
         let outputMessage = '';
-        if (listNames.length > 2) {
-            outputMessage = `from ${listNames[0]}, ${listNames[1]}, and ${
-                listNames.length - 2
-            } more`;
-        } else if (listNames.length === 2) {
+        if (listNames.length > 1) {
             outputMessage = `from ${listNames[0]} and ${listNames[1]}`;
         } else if (listNames.length === 1) {
             outputMessage = `from ${listNames[0]}`;
@@ -142,7 +140,7 @@ export const SoloTokenSelect = (props: propsIF) => {
     );
 
     const whatToShow = useMemo<string>(() => {
-        let display = '';
+        let display: string;
         if (tokensForDOM && tokensForDOM.length > 0) {
             display = 'imported';
         } else if (otherTokensForDOM?.length) {
