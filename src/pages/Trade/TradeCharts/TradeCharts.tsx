@@ -20,7 +20,12 @@ import { HiOutlineExternalLink } from 'react-icons/hi';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 
 // START: Import JSX Components
-import { DefaultTooltip } from '../../../components/Global/StyledTooltip/StyledTooltip';
+import {
+    DefaultTooltip,
+    GreenTextTooltip,
+    NoColorTooltip,
+    RedTextTooltip,
+} from '../../../components/Global/StyledTooltip/StyledTooltip';
 
 // START: Import Local Files
 import styles from './TradeCharts.module.css';
@@ -568,7 +573,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
     );
 
     const poolPriceChange = (
-        <DefaultTooltip
+        <NoColorTooltip
             title={'24 hour price change'}
             interactive
             placement={'right'}
@@ -577,14 +582,14 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
             leaveDelay={200}
         >
             <span
-                className={
-                    isPoolPriceChangePositive ? styles.change_positive : styles.change_negative
-                }
+            // className={
+            //     isPoolPriceChangePositive ? styles.change_positive : styles.change_negative
+            // }
             >
                 {poolPriceChangePercent === undefined ? '…' : poolPriceChangePercent}
                 {/* {poolPriceChangePercent === undefined ? '…' : poolPriceChangePercent + ' | 24h'} */}
             </span>
-        </DefaultTooltip>
+        </NoColorTooltip>
     );
 
     const tvlDisplay = <p className={styles.tvl_display}></p>;
@@ -596,8 +601,8 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
 
     // ------------  END OF MIDDLE TOP HEADER OF TRADE CHARTS
 
-    const amountWithTooltip = (
-        <DefaultTooltip
+    const amountWithTooltipGreen = (
+        <GreenTextTooltip
             interactive
             title={poolPriceChange}
             placement={'right'}
@@ -606,7 +611,20 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
             leaveDelay={200}
         >
             {currentAmountDisplay}
-        </DefaultTooltip>
+        </GreenTextTooltip>
+    );
+
+    const amountWithTooltipRed = (
+        <RedTextTooltip
+            interactive
+            title={poolPriceChange}
+            placement={'right'}
+            arrow
+            enterDelay={100}
+            leaveDelay={200}
+        >
+            {currentAmountDisplay}
+        </RedTextTooltip>
     );
 
     const tokenInfo = (
@@ -636,7 +654,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
                     {denomInBase ? tradeData.baseToken.symbol : tradeData.quoteToken.symbol} /{' '}
                     {denomInBase ? tradeData.quoteToken.symbol : tradeData.baseToken.symbol}
                 </span>
-                {amountWithTooltip}
+                {isPoolPriceChangePositive ? amountWithTooltipGreen : amountWithTooltipRed}
             </div>
             <div
                 style={{
