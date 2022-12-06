@@ -280,7 +280,15 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
                     }
                     onClick={() => setSelectedChartSetting(item)}
                 >
-                    {item.icon}
+                    <DefaultTooltip
+                        title={item.label}
+                        placement={'right'}
+                        arrow
+                        enterDelay={100}
+                        leaveDelay={200}
+                    >
+                        <>{item.icon}</>
+                    </DefaultTooltip>
                 </li>
             ))}
         </ul>
@@ -294,6 +302,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
         >
             {chartSettingNavs}
             <section className={styles.main_chart_settings_content}>
+                <h1>{selectedChartSetting.label}</h1>
                 Lorem ipsum dolor sit amet consectetur adipisicing elit. Totam sit, voluptates
                 similique odit rerum veniam laudantium? Voluptatibus hic labore culpa.
             </section>

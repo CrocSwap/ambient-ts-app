@@ -440,6 +440,7 @@ width: 100%;
 
     list-style: none;
     border-right: 1px solid var(--text-grey-light);
+    transition: all var(--animation-speed) ease-in-out
 
 }
 .chart_settings_nav li{
@@ -454,8 +455,10 @@ width: 100%;
 .main_chart_settings_content{
     width: 100%;
     display: flex;
-    justify-content: flex-end;
-    text-align: end;
+    flex-direction: column;
+   /* justify-content: center; */
+   align-items: center;
+    
 }
 @media only screen and (min-device-width: 200px) and (max-device-width: 568px) and (-webkit-min-device-pixel-ratio: 2) {
     .graph_container {
