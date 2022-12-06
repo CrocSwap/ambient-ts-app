@@ -267,6 +267,24 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
     ];
 
     const [showChartSettings, setShowChartSettings] = useState(false);
+    const [selectedChartSetting, setSelectedChartSetting] = useState(chartSettingsData[0]);
+    const chartSettingNavs = (
+        <ul className={styles.chart_settings_nav}>
+            {chartSettingsData.map((item, idx) => (
+                <li
+                    key={idx}
+                    className={
+                        item.label === selectedChartSetting.label
+                            ? styles.setting_active
+                            : styles.setting
+                    }
+                    onClick={() => setSelectedChartSetting(item)}
+                >
+                    {item.icon}
+                </li>
+            ))}
+        </ul>
+    );
 
     const mainChartSettingsContent = (
         <div
@@ -274,9 +292,11 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
                 showChartSettings && styles.main_settings_container_active
             }`}
         >
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quas similique ea quasi!
-            Molestias adipisci quo quam. Molestiae voluptatum sapiente nobis quidem blanditiis
-            labore sit perferendis delectus, asperiores et eligendi dolorem?
+            {chartSettingNavs}
+            <section className={styles.main_chart_settings_content}>
+                Lorem ipsum dolor sit amet consectetur adipisicing elit. Totam sit, voluptates
+                similique odit rerum veniam laudantium? Voluptatibus hic labore culpa.
+            </section>
         </div>
     );
     const graphSettingsContent = (

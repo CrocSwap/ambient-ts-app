@@ -403,15 +403,19 @@
 }
 .main_settings_container, .main_settings_container_active{
     max-width: 700px;
-  padding: 20px;
+  padding: 20px 0;
   width: 100%;
-  height: 400px;
+  height: 80%;
   position: absolute;
   background: var(--dark3);
   border-radius: 15px;
   box-shadow: 0px 35px 20px rgba(0, 0, 0, 0.3);
   transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
   right: 30px;
+
+  display: grid;
+  grid-template-columns: 60px 1fr;
+  gap: 1rem;
 }
 
 .main_settings_container{
@@ -429,6 +433,30 @@ width: 100%;
     z-index: 5;
 }
 
+.chart_settings_nav{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    list-style: none;
+    border-right: 1px solid var(--text-grey-light);
+
+}
+.chart_settings_nav li{
+    cursor: pointer;
+ padding: 1rem;
+}
+
+.setting_active{
+    background: var(--dark2)
+}
+
+.main_chart_settings_content{
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    text-align: end;
+}
 @media only screen and (min-device-width: 200px) and (max-device-width: 568px) and (-webkit-min-device-pixel-ratio: 2) {
     .graph_container {
         /* display: none; */
