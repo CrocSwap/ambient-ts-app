@@ -2850,7 +2850,8 @@ export default function Chart(props: ChartData) {
                         lineAskSeriesJoin(svg, [liquidityData.lineBidSeries]).call(lineBidSeries);
                         lineBidSeriesJoin(svg, [liquidityData.lineAskSeries]).call(lineAskSeries);
 
-                        barJoin(svg, [showVolume ? volumeData : []]).call(barSeries);
+                        // barJoin(svg, [showVolume ? volumeData : []]).call(barSeries);
+                        if (barSeries) barJoin(svg, [showVolume ? volumeData : []]).call(barSeries);
                     }
 
                     const mouseOutFunc = () => {
