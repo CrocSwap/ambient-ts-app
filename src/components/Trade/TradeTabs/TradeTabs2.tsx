@@ -201,13 +201,13 @@ export default function TradeTabs2(props: ITabsProps) {
                     (!isUserLoggedIn && !isCandleSelected) ||
                     (!isCandleSelected && !isShowAllEnabled && matchingUserChangesLength < 1)
                 ) {
-                    console.log('1');
+                    // console.log('1');
                     setIsShowAllEnabled(true);
                 } else if (matchingUserChangesLength < 1) {
-                    console.log('2');
+                    // console.log('2');
                     return;
                 } else if (isShowAllEnabled && matchingUserChangesLength >= 1) {
-                    console.log('3');
+                    // console.log('3');
                     setIsShowAllEnabled(false);
                 }
             } else if (
@@ -218,13 +218,13 @@ export default function TradeTabs2(props: ITabsProps) {
                     !isUserLoggedIn ||
                     (!isCandleSelected && !isShowAllEnabled && matchingUserLimitOrdersLength < 1)
                 ) {
-                    console.log('4');
+                    // console.log('4');
                     setIsShowAllEnabled(true);
                 } else if (matchingUserLimitOrdersLength < 1) {
-                    console.log('5');
+                    // console.log('5');
                     return;
                 } else if (isShowAllEnabled && matchingUserLimitOrdersLength >= 1) {
-                    console.log('6');
+                    // console.log('6');
                     setIsShowAllEnabled(false);
                 }
             } else if (
@@ -235,13 +235,13 @@ export default function TradeTabs2(props: ITabsProps) {
                     !isUserLoggedIn ||
                     (!isCandleSelected && !isShowAllEnabled && matchingUserPositionsLength < 1)
                 ) {
-                    console.log('7');
+                    // console.log('7');
                     setIsShowAllEnabled(true);
                 } else if (matchingUserPositionsLength < 1) {
                     // console.log('8');
                     return;
                 } else if (isShowAllEnabled && matchingUserPositionsLength >= 1) {
-                    console.log('9');
+                    // console.log('9');
                     setIsShowAllEnabled(false);
                 }
             }
@@ -266,7 +266,7 @@ export default function TradeTabs2(props: ITabsProps) {
         if (account && isServerEnabled && !isShowAllEnabled) {
             try {
                 fetchUserRecentChanges({
-                    importedTokens: importedTokens,
+                    tokensOnActiveLists: tokenMap,
                     user: account,
                     chainId: chainData.chainId,
                     annotate: true,
@@ -299,7 +299,7 @@ export default function TradeTabs2(props: ITabsProps) {
         // console.log({ filter });
         if (isServerEnabled && isCandleSelected && filter?.time) {
             fetchPoolRecentChanges({
-                importedTokens: importedTokens,
+                tokensOnActiveLists: tokenMap,
                 base: selectedBase,
                 quote: selectedQuote,
                 poolIdx: chainData.poolIndex,

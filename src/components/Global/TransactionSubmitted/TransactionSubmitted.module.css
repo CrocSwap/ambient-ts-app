@@ -16,7 +16,7 @@
 }
 .completed_animation {
     display: flex;
-
+    min-height: 190px;
     /* min-width: 400px;
     max-width: 400px; */
 

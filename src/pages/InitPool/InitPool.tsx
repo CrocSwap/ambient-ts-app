@@ -186,7 +186,7 @@ export default function InitPool(props: InitPoolPropsIF) {
             const gasPriceInDollarsNum = gasPriceInGwei * 157922 * 1e-9 * ethMainnetUsdPrice;
 
             setInitGasPriceinDollars(
-                '~$' +
+                '$' +
                     gasPriceInDollarsNum.toLocaleString(undefined, {
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 2,

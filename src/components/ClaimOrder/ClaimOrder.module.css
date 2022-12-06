@@ -1,6 +1,5 @@
-.remove_range_container{
+.remove_range_container {
     max-width: 400px;
-   
 }
 
 .main_content {
@@ -12,32 +11,31 @@
     /* padding: 0 2rem; */
 }
 
-.remove_range_container{
-
+.remove_range_container {
     position: relative;
     width: 100%;
     height: 100%;
 }
 
-.settings_button{
+.settings_button {
     cursor: pointer;
 }
 
-.remove_range_settings_container{
+.remove_range_settings_container {
     position: absolute;
     width: 100%;
     height: 100%;
     max-height: 100%;
-   top: 40px;
+    top: 40px;
 }
-.header_container{
+.header_container {
     display: grid;
     grid-template-columns: auto 50px;
     gap: 10px;
     align-items: center;
 }
 
-.settings_icon{
+.settings_icon {
     cursor: pointer;
     padding: 1rem;
     animation: all 500ms ease-in-out;
@@ -45,7 +43,7 @@
     justify-content: flex-end;
 }
 
-.confirmation_container{
+.confirmation_container {
     width: 100%;
     max-width: 380px;
     display: flex;
@@ -54,30 +52,29 @@
     /* align-items: center; */
 }
 
-.button{
+.button {
     cursor: pointer;
 }
 
-.confirmation_content{
+.confirmation_content {
     width: 100%;
- 
 }
 
-.removal_pending{
+.removal_pending {
     width: 100%;
-  min-height: 300px;
+    min-height: 300px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     align-items: center;
-   /* margin-left: 10px; */
-   text-align: center;
-   gap: 1rem;
-
+    /* margin-left: 10px; */
+    text-align: center;
+    gap: 1rem;
 }
 
 .completed_animation {
     display: flex;
+    min-height: 190px;
 
     /* min-width: 400px;
     max-width: 400px; */
@@ -85,7 +82,6 @@
     justify-content: center;
     align-items: center;
 }
-
 
 .view_etherscan {
     padding: 0.3rem;
@@ -107,93 +103,84 @@
 .view_etherscan:hover {
     cursor: pointer;
     background: linear-gradient(90deg, #6361d7 0%, #b0a6db 49.48%, #6361d7 100%);
-
-   
 }
-
-
 
 /* -----------------------------------LOADER------------------- */
 
-.loader{
-	position: relative;
-	width: 150px;
-	height: 150px;
-	border-radius: 50%;
+.loader {
+    position: relative;
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
     background: linear-gradient(45deg, transparent, transparent 40%, #7371fc);
 
-	animation: animate 2s linear infinite;
+    animation: animate 2s linear infinite;
 
-	display: flex;
-	justify-content: center;
-	align-items: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
-.loader img{
-	max-width: 100%;
-	z-index: 3;
+.loader img {
+    max-width: 100%;
+    z-index: 3;
     opacity: 0;
 }
 
-.loader:before{
-	content: '';
-	position: absolute;
-	top: 6px;
-	left: 6px;
-	right: 6px;
-	bottom: 6px;
-	background: var(--body-bg);
-	border-radius: 50%;
-	z-index: 2;
+.loader:before {
+    content: '';
+    position: absolute;
+    top: 6px;
+    left: 6px;
+    right: 6px;
+    bottom: 6px;
+    background: var(--body-bg);
+    border-radius: 50%;
+    z-index: 2;
 }
-.loader:after{
-	background: linear-gradient(45deg, transparent, transparent 40%, #7371fc);
+.loader:after {
+    background: linear-gradient(45deg, transparent, transparent 40%, #7371fc);
 
-	content: '';
-	position: absolute;
-	top: 0px;
-	left: 0px;
-	right: 0px;
-	bottom: 0px;
-	
-	border-radius: 50%;
-	z-index: 1;
-	filter: blur(60px);
+    content: '';
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
+
+    border-radius: 50%;
+    z-index: 1;
+    filter: blur(60px);
 }
 
 @keyframes animate {
-	0% {
-		transform: rotate(0deg);
-		filter: hue-rotate(0deg)
-	}
-	100% {
-		transform: rotate(360deg);
-		filter: hue-rotate(10deg)
-	}
+    0% {
+        transform: rotate(0deg);
+        filter: hue-rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+        filter: hue-rotate(10deg);
+    }
 }
 
 /* gasless container */
 
-.gasless_container{
+.gasless_container {
     display: flex;
     justify-content: space-between;
     flex-direction: row;
     align-items: center;
-   padding: 8px 0;
-
+    padding: 8px 0;
 }
 .gasless_container h3 {
-  
-        font-size: var(--body-size);
-        line-height: var(--body-lh);
-        color: var(--text-grey-light);
-    
-    
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+    color: var(--text-grey-light);
 }
 
 /* tooltip explanation */
 .explanation_details {
-
     display: flex;
     flex-direction: column;
     border-radius: var(--border-radius);
@@ -207,11 +194,10 @@
 
 .extra_row {
     display: flex;
-   flex-direction: row;
+    flex-direction: row;
     padding: 5px 0;
     justify-content: space-between;
     align-items: center;
-   
 }
 
 .align_center {

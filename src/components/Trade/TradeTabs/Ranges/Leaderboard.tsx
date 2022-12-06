@@ -204,6 +204,14 @@ export default function Leaderboard(props: LeaderboardPropsIF) {
             sortable: false,
         },
         {
+            name: 'Time',
+            className: '',
+            show: !showColumns,
+            slug: 'time',
+            sortable: false,
+        },
+
+        {
             name: 'Wallet',
             className: 'wallet',
             show: !showColumns,

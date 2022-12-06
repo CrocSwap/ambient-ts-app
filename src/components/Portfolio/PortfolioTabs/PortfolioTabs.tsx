@@ -186,6 +186,7 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
                     user: accountToSearch,
                     chainId: chainId,
                     ensResolution: 'true',
+                    omitEmpty: 'true',
                 }),
         )
             .then((response) => response?.json())
@@ -218,7 +219,7 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
 
     const getLookupUserTransactions = async (accountToSearch: string) =>
         fetchUserRecentChanges({
-            importedTokens: importedTokens,
+            tokensOnActiveLists: tokenMap,
             user: accountToSearch,
             chainId: chainId,
             annotate: true,
