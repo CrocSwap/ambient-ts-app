@@ -255,6 +255,16 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
             document.body.removeEventListener('keydown', closeOnEscapeKeyDown);
         };
     });
+    const exDataContent = (
+        <div>Lorem ipsum dolor sit amet consectetur adipisicing elit. Perferendis, doloremque.</div>
+    );
+    const chartSettingsData = [
+        { icon: '🍅', label: 'Tomato', content: exDataContent },
+        { icon: '🥬', label: 'Lettuce', content: exDataContent },
+        { icon: '🥕', label: 'Carrot', content: exDataContent },
+        { icon: '🫐', label: 'Blueberries', content: exDataContent },
+        { icon: '🥂', label: 'Champers?', content: exDataContent },
+    ];
 
     const [showChartSettings, setShowChartSettings] = useState(false);
 
