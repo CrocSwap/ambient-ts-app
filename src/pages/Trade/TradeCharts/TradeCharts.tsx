@@ -15,6 +15,7 @@ import {
     AiOutlineCopy,
     AiOutlineLink,
     AiOutlineTwitter,
+    AiOutlineSetting,
 } from 'react-icons/ai';
 import { HiOutlineExternalLink } from 'react-icons/hi';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
@@ -254,6 +255,20 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
             document.body.removeEventListener('keydown', closeOnEscapeKeyDown);
         };
     });
+
+    const [showChartSettings, setShowChartSettings] = useState(false);
+
+    const mainChartSettingsContent = (
+        <div
+            className={`${styles.main_settings_container} ${
+                showChartSettings && styles.main_settings_container_active
+            }`}
+        >
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quas similique ea quasi!
+            Molestias adipisci quo quam. Molestiae voluptatum sapiente nobis quidem blanditiis
+            labore sit perferendis delectus, asperiores et eligendi dolorem?
+        </div>
+    );
     const graphSettingsContent = (
         <div className={styles.graph_settings_container}>
             <div onClick={() => setFullScreenChart(!fullScreenChart)}>
@@ -264,6 +279,9 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
                     <AiOutlineCamera size={20} />
                 </div>
             </DefaultTooltip>
+            <div onClick={() => setShowChartSettings(!showChartSettings)}>
+                <AiOutlineSetting size={20} />
+            </div>
         </div>
     );
 
@@ -853,6 +871,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
             style={{ padding: fullScreenChart ? '1rem' : '0' }}
             ref={canvasRef}
         >
+            {mainChartSettingsContent}
             <div className={`${styles.graph_style} ${expandGraphStyle}  `}>
                 {/* {graphSettingsContent} */}
                 {tokenInfo}
