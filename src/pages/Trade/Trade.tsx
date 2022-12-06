@@ -213,9 +213,7 @@ export default function Trade(props: TradePropsIF) {
 
     const changeState = (isOpen: boolean | undefined, candleData: CandleData | undefined) => {
         setIsCandleSelected(isOpen);
-        console.log(
-            'changing show all based on whether the user is viewing data for a specific candle',
-        );
+
         setHasInitialized(false);
         // if (isOpen && isShowAllEnabled) {
         //     setIsShowAllEnabled(false);

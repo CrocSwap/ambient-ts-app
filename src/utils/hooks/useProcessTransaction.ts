@@ -296,20 +296,22 @@ export const useProcessTransaction = (tx: ITransaction) => {
             setIsBaseFlowPositive(isBaseFlowPositive);
             const baseFlowDisplayTruncated =
                 baseFlowAbsNum === 0
-                    ? '0.00'
+                    ? '0.00 '
                     : baseFlowAbsNum < 0.0001
                     ? baseFlowAbsNum.toExponential(2)
-                    : baseFlowAbsNum >= 1000000
+                    : baseFlowAbsNum < 0.01
+                    ? baseFlowAbsNum.toPrecision(3)
+                    : baseFlowAbsNum >= 10000
                     ? formatAmountOld(baseFlowAbsNum)
                     : // ? baseLiqDisplayNum.toExponential(2)
                       baseFlowAbsNum.toLocaleString(undefined, {
                           minimumFractionDigits: 2,
                           maximumFractionDigits: 2,
-                      });
+                      }) + ' ';
             const baseFlowDisplayString =
                 tx.entityType !== 'liqchange' && isBaseFlowPositive
-                    ? `${baseFlowDisplayTruncated}  `
-                    : `${baseFlowDisplayTruncated} `;
+                    ? `${baseFlowDisplayTruncated}`
+                    : `${baseFlowDisplayTruncated}`;
             setBaseFlowDisplay(baseFlowDisplayString);
         }
         if (tx.quoteFlowDecimalCorrected !== undefined && tx.quoteFlowDecimalCorrected !== null) {
@@ -319,22 +321,24 @@ export const useProcessTransaction = (tx: ITransaction) => {
             setIsQuoteFlowPositive(isQuoteFlowPositive);
             const quoteFlowDisplayTruncated =
                 quoteFlowAbsNum === 0
-                    ? '0.00'
+                    ? '0.00 '
                     : quoteFlowAbsNum < 0.0001
                     ? quoteFlowAbsNum.toExponential(2)
-                    : quoteFlowAbsNum >= 1000000
+                    : quoteFlowAbsNum < 0.01
+                    ? quoteFlowAbsNum.toPrecision(3)
+                    : quoteFlowAbsNum >= 10000
                     ? formatAmountOld(quoteFlowAbsNum)
                     : // ? quoteLiqDisplayNum.toExponential(2)
                       quoteFlowAbsNum.toLocaleString(undefined, {
                           minimumFractionDigits: 2,
                           maximumFractionDigits: 2,
-                      });
+                      }) + ' ';
             const quoteFlowDisplayString =
                 tx.entityType !== 'liqchange' && isQuoteFlowPositive
                     ? // (isQuoteFlowNegative && tx.entityType !== 'liqchange') ||
                       // (!isQuoteFlowNegative && tx.entityType === 'liqchange')
-                      `${quoteFlowDisplayTruncated}  `
-                    : `${quoteFlowDisplayTruncated} `;
+                      `${quoteFlowDisplayTruncated}`
+                    : `${quoteFlowDisplayTruncated}`;
             setQuoteFlowDisplay(quoteFlowDisplayString);
         }
     }, [JSON.stringify(tx), isDenomBase, isBaseTokenMoneynessGreaterOrEqual]);

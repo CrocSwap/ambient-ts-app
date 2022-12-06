@@ -4,6 +4,7 @@ import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
 import { ethers } from 'ethers';
 import { useProcessRange } from '../../../../../utils/hooks/useProcessRange';
 import styles from '../Ranges.module.css';
+
 import RangeStatus from '../../../../Global/RangeStatus/RangeStatus';
 import RangesMenu from '../../../../Global/Tabs/TableMenu/TableMenuComponents/RangesMenu';
 import RangeDetails from '../../../../RangeDetails/RangeDetails';
@@ -14,6 +15,7 @@ import NoTokenIcon from '../../../../Global/NoTokenIcon/NoTokenIcon';
 import { useAppDispatch } from '../../../../../utils/hooks/reduxToolkit';
 import { setDataLoadingStatus } from '../../../../../utils/state/graphDataSlice';
 import moment from 'moment';
+import { ZERO_ADDRESS } from '../../../../../constants';
 
 interface RangesRowPropsIF {
     isUserLoggedIn: boolean | undefined;
@@ -290,80 +292,116 @@ export default function RangesRow(props: RangesRowPropsIF) {
     //     </li>
     // );
 
-    const poolName = (
-        <li className='base_color'>
-            {baseTokenSymbol} / {quoteTokenSymbol}
-        </li>
+    const pair =
+        position.base !== ZERO_ADDRESS
+            ? [
+                  `${position.baseSymbol}: ${position.base}`,
+                  `${position.quoteSymbol}: ${position.quote}`,
+              ]
+            : [`${position.quoteSymbol}: ${position.quote}`];
+
+    const tip = pair.join('\n');
+
+    const tokenPair = (
+        <DefaultTooltip
+            interactive
+            title={<div style={{ whiteSpace: 'pre-line' }}>{tip}</div>}
+            placement={'right'}
+            arrow
+            enterDelay={150}
+            leaveDelay={200}
+        >
+            <li className='base_color'>
+                {/* {tokensTogether} */}
+                <p>
+                    {' '}
+                    {baseTokenSymbol} / {quoteTokenSymbol}
+                </p>
+            </li>
+        </DefaultTooltip>
     );
+
+    // const poolName = (
+    //     <li className='base_color'>
+    //         {baseTokenSymbol} / {quoteTokenSymbol}
+    //     </li>
+    // );
     // end of portfolio page li element ---------------
 
     // Leaderboard content--------------------------------
 
-    const idDisplay = !showColumns && IDWithTooltip;
-    const displayIDorRanking = isLeaderboard
-        ? !showColumns && <Medal ranking={props.rank ?? 80} />
-        : idDisplay;
+    // const idDisplay = !showColumns && IDWithTooltip;
+    // const displayIDorRanking = isLeaderboard
+    //     ? !showColumns && <Medal ranking={props.rank ?? 80} />
+    //     : idDisplay;
+
+    const idOrNull = !isLeaderboard && !showColumns ? IDWithTooltip : null;
+
+    const rankingOrNull =
+        isLeaderboard && !showColumns ? <Medal ranking={props.rank ?? 80} /> : null;
 
     // End of Leaderboard content--------------------------------
 
-    const baseQtyToolTipStyle = <p className={styles.tooltip_style}>{baseTokenSymbol + ' Qty'}</p>;
-    const quoteQtyToolTipStyle = (
-        <p className={styles.tooltip_style}>{quoteTokenSymbol + ' Qty'}</p>
-    );
+    // const baseQtyToolTipStyle = <p className={styles.tooltip_style}>{baseTokenSymbol + ' Qty'}</p>;
+    // const quoteQtyToolTipStyle = (
+    //     <p className={styles.tooltip_style}>{quoteTokenSymbol + ' Qty'}</p>
+    // );
     const baseQtyDisplayWithTooltip = (
-        <DefaultTooltip
-            interactive
-            title={baseQtyToolTipStyle}
-            placement={'right'}
-            arrow
-            enterDelay={150}
-            leaveDelay={200}
-        >
-            <li onClick={openDetailsModal} data-label={baseTokenSymbol} className='color_white'>
-                <p
-                    style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'flex-end',
-                        gap: '4px',
-                        textAlign: 'right',
-                        fontFamily: 'monospace',
-                    }}
-                >
-                    {baseDisplay}
-                    {isOnPortfolioPage && <img src={baseTokenLogo} width='15px' alt='' />}
-                </p>
-            </li>
-        </DefaultTooltip>
+        // <DefaultTooltip
+        //     interactive
+        //     title={baseQtyToolTipStyle}
+        //     placement={'right'}
+        //     arrow
+        //     enterDelay={150}
+        //     leaveDelay={200}
+        // >
+        <li onClick={openDetailsModal} data-label={baseTokenSymbol} className='color_white'>
+            <p
+                style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'flex-end',
+                    gap: '4px',
+                    textAlign: 'right',
+                    fontFamily: 'monospace',
+                }}
+            >
+                {baseDisplay}
+                {isOnPortfolioPage && <img src={baseTokenLogo} width='15px' alt='' />}
+            </p>
+        </li>
+        /* </DefaultTooltip> */
     );
     const quoteQtyDisplayWithTooltip = (
-        <DefaultTooltip
-            interactive
-            title={quoteQtyToolTipStyle}
-            placement={'right'}
-            arrow
-            enterDelay={150}
-            leaveDelay={200}
-        >
-            <li onClick={openDetailsModal} data-label={quoteTokenSymbol} className='color_white'>
-                <p
-                    style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'flex-end',
-                        gap: '4px',
-                        textAlign: 'right',
-                        fontFamily: 'monospace',
-                    }}
-                >
-                    {quoteDisplay}
-                    {isOnPortfolioPage && <img src={quoteTokenLogo} width='15px' alt='' />}
-                </p>
-            </li>
-        </DefaultTooltip>
+        // <DefaultTooltip
+        //     interactive
+        //     title={quoteQtyToolTipStyle}
+        //     placement={'right'}
+        //     arrow
+        //     enterDelay={150}
+        //     leaveDelay={200}
+        // >
+        <li onClick={openDetailsModal} data-label={quoteTokenSymbol} className='color_white'>
+            <p
+                style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'flex-end',
+                    gap: '4px',
+                    textAlign: 'right',
+                    fontFamily: 'monospace',
+                }}
+            >
+                {quoteDisplay}
+                {isOnPortfolioPage && <img src={quoteTokenLogo} width='15px' alt='' />}
+            </p>
+        </li>
+        /* </DefaultTooltip> */
     );
 
-    const elapsedTimeInSecondsNum = moment(Date.now()).diff(position.time * 1000, 'seconds');
+    const positionTime = position.timeFirstMint || position.time;
+
+    const elapsedTimeInSecondsNum = moment(Date.now()).diff(positionTime * 1000, 'seconds');
 
     const elapsedTimeString =
         elapsedTimeInSecondsNum !== undefined
@@ -385,14 +423,16 @@ export default function RangesRow(props: RangesRowPropsIF) {
     const RangeTimeWithTooltip = (
         <DefaultTooltip
             interactive
-            title={moment(position.time * 1000).format('MM/DD/YYYY HH:mm')}
-            placement={'right'}
+            title={'Last Updated: ' + moment(position.time * 1000).format('MM/DD/YYYY HH:mm')}
+            placement={'left'}
             arrow
             enterDelay={750}
             leaveDelay={200}
         >
             <li onClick={openDetailsModal} style={{ textTransform: 'lowercase' }}>
-                <p className='base_color'>{elapsedTimeString}</p>
+                <p className='base_color' style={{ fontFamily: 'monospace' }}>
+                    {elapsedTimeString}
+                </p>
                 {/* <p className='base_color'> Nov 9 10:36:23 AM</p> */}
             </li>
         </DefaultTooltip>
@@ -408,10 +448,11 @@ export default function RangesRow(props: RangesRowPropsIF) {
             }
             id={positionDomId}
         >
+            {rankingOrNull}
             {!showColumns && RangeTimeWithTooltip}
+            {idOrNull}
             {/* {isOnPortfolioPage && accountTokenImages} */}
-            {isOnPortfolioPage && poolName}
-            {displayIDorRanking}
+            {isOnPortfolioPage && tokenPair}
             {!showColumns && !isOnPortfolioPage && walletWithTooltip}
             {showColumns && (
                 <li data-label='id'>

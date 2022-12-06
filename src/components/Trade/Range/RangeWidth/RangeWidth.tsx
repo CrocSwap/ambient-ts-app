@@ -23,8 +23,8 @@ export default function RangeWidth(props: RangeWidthPropsIF) {
         <>
             <div className={styles.percentage_options}>
                 <div className={styles.add_minus_icons}>
-                    <MdAdd size={22} />
-                    <FiMinus size={22} />
+                    <MdAdd size={12} />
+                    <FiMinus size={12} />
                 </div>
                 <button
                     className={styles.percentage_option_buttons}

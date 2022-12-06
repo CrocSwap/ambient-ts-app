@@ -98,7 +98,7 @@ export default function ClaimOrder(props: IClaimOrderProps) {
                 if (limitOrder.isBid === true) {
                     tx = await crocEnv
                         .buy(limitOrder.quote, 0)
-                        .atLimit(limitOrder.base, limitOrder.askTick)
+                        .atLimit(limitOrder.base, limitOrder.bidTick)
                         .recoverPost(limitOrder.latestCrossPivotTime, { surplus: false });
                     setNewClaimTransactionHash(tx.hash);
                     dispatch(addPendingTx(tx?.hash));

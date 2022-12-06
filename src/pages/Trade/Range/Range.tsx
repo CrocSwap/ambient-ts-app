@@ -839,7 +839,7 @@ export default function Range(props: RangePropsIF) {
             const gasPriceInDollarsNum = gasPriceInGwei * 120269 * 1e-9 * ethMainnetUsdPrice;
 
             setRangeGasPriceinDollars(
-                '~$' +
+                '$' +
                     gasPriceInDollarsNum.toLocaleString(undefined, {
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 2,

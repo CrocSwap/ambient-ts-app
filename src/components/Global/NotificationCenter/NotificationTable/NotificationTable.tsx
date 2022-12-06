@@ -1,5 +1,5 @@
 import styles from './NotificationTable.module.css';
-import { Dispatch, SetStateAction } from 'react';
+import { Dispatch, RefObject, SetStateAction } from 'react';
 import ReceiptDisplay from '../ReceiptDisplay/ReceiptDisplay';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 
@@ -8,9 +8,11 @@ interface NotificationTableProps {
     setShowNotificationTable: Dispatch<SetStateAction<boolean>>;
     pendingTransactions: string[];
     lastBlockNumber: number;
+    notificationItemRef: RefObject<HTMLDivElement>;
 }
 const NotificationTable = (props: NotificationTableProps) => {
-    const { showNotificationTable, pendingTransactions, lastBlockNumber } = props;
+    const { showNotificationTable, pendingTransactions, lastBlockNumber, notificationItemRef } =
+        props;
 
     const receiptData = useAppSelector((state) => state.receiptData);
 
@@ -45,7 +47,7 @@ const NotificationTable = (props: NotificationTableProps) => {
     if (!showNotificationTable) return null;
     return (
         <div className={styles.main_container}>
-            <div className={styles.container}>
+            <div ref={notificationItemRef} className={styles.container}>
                 <section className={styles.header}>Recent Transactions</section>
 
                 <section className={styles.content}>

@@ -557,7 +557,7 @@ export default function Limit(props: LimitPropsIF) {
             const gasPriceInDollarsNum = gasPriceInGwei * 82459 * 1e-9 * ethMainnetUsdPrice;
 
             setOrderGasPriceInDollars(
-                '~$' +
+                '$' +
                     gasPriceInDollarsNum.toLocaleString(undefined, {
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 2,

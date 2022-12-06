@@ -598,7 +598,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
         <DefaultTooltip
             interactive
             title={poolPriceChange}
-            placement={'left'}
+            placement={'right'}
             arrow
             enterDelay={100}
             leaveDelay={200}
@@ -616,15 +616,15 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
                     onClick={() => dispatch(toggleDidUserFlipDenom())}
                 >
                     {baseTokenLogo ? (
-                        <img src={baseTokenLogo} alt={baseTokenSymbol} width='30px' />
+                        <img src={baseTokenLogo} alt={baseTokenSymbol} />
                     ) : (
-                        <NoTokenIcon tokenInitial={baseTokenSymbol.charAt(0)} width='30px' />
+                        <NoTokenIcon tokenInitial={baseTokenSymbol.charAt(0)} width='25px' />
                     )}
 
                     {quoteTokenLogo ? (
-                        <img src={quoteTokenLogo} alt={quoteTokenSymbol} width='30px' />
+                        <img src={quoteTokenLogo} alt={quoteTokenSymbol} />
                     ) : (
-                        <NoTokenIcon tokenInitial={quoteTokenSymbol.charAt(0)} width='30px' />
+                        <NoTokenIcon tokenInitial={quoteTokenSymbol.charAt(0)} width='25px' />
                     )}
                 </div>
                 <span
@@ -634,6 +634,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
                     {denomInBase ? tradeData.baseToken.symbol : tradeData.quoteToken.symbol} /{' '}
                     {denomInBase ? tradeData.quoteToken.symbol : tradeData.baseToken.symbol}
                 </span>
+                {amountWithTooltip}
             </div>
             <div
                 style={{
@@ -644,7 +645,6 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
                     gap: '8px',
                 }}
             >
-                {amountWithTooltip}
                 <div>{tvlDisplay}</div>
             </div>
             <div>{graphSettingsContent}</div>
@@ -832,6 +832,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
         <div
             className={styles.main_container_chart}
             style={{ padding: fullScreenChart ? '1rem' : '0' }}
+            ref={canvasRef}
         >
             <div className={`${styles.graph_style} ${expandGraphStyle}  `}>
                 {/* {graphSettingsContent} */}
@@ -843,7 +844,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
             {graphIsLoading ? (
                 <TradeChartsLoading />
             ) : (
-                <div style={{ width: '100%', height: '100%', zIndex: '2' }} ref={canvasRef}>
+                <div style={{ width: '100%', height: '100%', zIndex: '2' }}>
                     <TradeCandleStickChart
                         pool={pool}
                         chainData={chainData}
