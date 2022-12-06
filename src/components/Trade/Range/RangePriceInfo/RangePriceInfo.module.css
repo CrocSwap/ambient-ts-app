@@ -58,7 +58,7 @@
 }
 
 .current_price {
-    color: #ffffff;
+    color: var(--text-grey-white);
 }
 
 .max_price {

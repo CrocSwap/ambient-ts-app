@@ -341,6 +341,7 @@
     .middle_col {
         padding: 1rem;
         background: var(--dark3);
+
         display: grid;
         grid-template-rows: auto 300px;
         /* background: red; */
@@ -395,6 +396,7 @@
         left: 0;
         top: 0;
         z-index: 10;
+    
         /* background-image: radial-gradient(circle,var(--dark3), var(--dark1) ); 
         background-image: radial-gradient(circle,rgb(0, 25, 51), rgba(4, 12, 24, 1) );  */
         background: var(--chart-gradient)

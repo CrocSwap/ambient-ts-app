@@ -2,20 +2,25 @@
 @import url('https://fonts.googleapis.com/css2?family=Lexend+Exa:wght@100;200;300;400;500;600;700;800;900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@100;200;400;500;600&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@100;300;400;500&display=swap');
+
+/* For simple theme change(special occasion), change portfolio and swap background. No need for a different color scheme*/
 :root {
     --font-logo: 'Lexend Exa', sans-serif;
     --font-family: 'Lexend Deca', sans-serif;
     --roboto: 'Roboto Mono', monospace;
     --mono: monospace, 'Lexend Deca' sans-serif, ;
+    --portfolio-banner: url('./assets/images/backgrounds/account_image.png') no-repeat center center;
 
     --title-gradient: linear-gradient(90deg, #7371fc 0%, #cdc1ff 49.48%, #7371fc 100%);
-    --chart-gradient: radial-gradient(circle,rgb(0, 25, 51), rgba(4, 12, 24, 1) );
+    --swap-box-shadow: none;
+    --swap-border: var(--title-gradient);
     --text-highlight: #cdc1ff;
     --text-highlight-dark: #7371fc;
 
     --apr-gradient-primary: linear-gradient(90deg, #15be6f 0%, #8fe9bf 49.48%, #15be6f 100%);
 
     --apr-gradient-secondary: linear-gradient(90deg, #c7d80c 0%, #e0ea74 49.48%, #c7d80c 100%);
+
 
     /* font */
     --title-ts: 0px 0px 150px rgba(70, 183, 219, 0.5), 0px 0px 100px rgba(70, 183, 219, 0.5),
@@ -54,6 +59,7 @@
     --text-accent: #cdc1ff;
     --light-blue: #cdc1ff;
 
+    --accent-5: #5FFFF2;
     --accent-secondary: #e480ff;
 
     /* border */
@@ -68,15 +74,25 @@
 }
 
 [data-theme='light'] {
+    --portfolio-banner: linear-gradient(to right, #f0f2f0, #000c40);;
+
     --shimmer: linear-gradient(to right, #ece9e6, #ffffff);
-    --blur-bg: rgba(159, 165, 174, 0.5);
+    --blur-bg: #ebebed;
+    --swap-box-shadow:   0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);;
+    --swap-border: none;
+
     --chart-gradient: linear-gradient(to right, #d8d4d1, #ffffff);;
    
     --navbar-border: #cacbcd;
-    --body-bg: linear-gradient(to right, #ece9e6, #ffffff);
-    --dark1: linear-gradient(to right, #ece9e6, #ffffff);
-    --dark2: rgb(226, 221, 221);
-    --dark3: #e7ebed;
+    /* --body-bg: linear-gradient(to right, #ece9e6, #ffffff); */
+    /* --body-bg: linear-gradient(to right, #cdd0d3, #dce2eb); */
+    --body-bg: #E6EAF2;
+    /* --dark1: linear-gradient(to right, #ece9e6, #ffffff); */
+    --dark1: #E6EAF2;;
+    /* --dark2: rgb(226, 221, 221); */
+    --dark2: #f6f6f7;
+
+    --dark3: rgb(247, 251, 254);;
     --text-grey-light: #19222d;
     --text-grey-dark: #0e131a;
     --border: #cacbcd;
@@ -84,10 +100,16 @@
     --select:  #acb6c4;
     --text-accent: #625984;
 
+    
+    --accent-secondary: #347fe7;
+    --accent-5: #15726a;
+
+
     --text-highlight: #7371fc;
     --text-highlight-dark: #7371fc;
   
     --title-gradient: linear-gradient(90deg, #4f4db3 0%, #aa9fd4 49.48%, #4f4db3 100%);
 
 }
+
 
