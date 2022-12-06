@@ -32,11 +32,12 @@ const ActivityIndicator = (props: AcitivtyIndicatorProps) => {
         }
     }, [controls, value]);
 
+    const toggleNotificationCenter: React.MouseEventHandler<HTMLDivElement> = () => {
+        setShowNotificationTable(!showNotificationTable);
+    };
+
     const pendingCircle = (
-        <div
-            className={styles.circle}
-            onClick={() => setShowNotificationTable(!showNotificationTable)}
-        >
+        <div className={styles.circle} onClick={toggleNotificationCenter}>
             <div className={styles.ring} />
         </div>
     );
@@ -51,7 +52,7 @@ const ActivityIndicator = (props: AcitivtyIndicatorProps) => {
                     animate='visible'
                     variants={animStates}
                     style={{ cursor: 'pointer' }}
-                    onClick={() => setShowNotificationTable(!showNotificationTable)}
+                    onClick={toggleNotificationCenter}
                 >
                     <motion.div
                         className={styles.activity_indicator}
