@@ -45,7 +45,7 @@ export const formatAmountChartData = (num: number | undefined, digits = 2) => {
 
     const a = numbro(num).format({
         average: num > 0 || num < 10000 ? false : true,
-        mantissa: num > 1000 ? 2 : num < 1 ? 7 : num < 100 ? 5 : digits,
+        mantissa: num > 1000 ? 2 : num < 1 ? 5 : num < 100 ? 5 : digits,
 
         // mantissa: num > 1000 ? 2 : digits,
         abbreviations: {
