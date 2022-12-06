@@ -17,7 +17,7 @@
   color: var(--text-grey-light)
 }
 .order_sell{
-   color:  #E480FF
+   color: var(--accent-secondary)
 }
 
 .order_buy{
@@ -26,16 +26,16 @@
 
 /* transactions */
 .add_style{
- color: #5FFFF2
+ color: var(--accent-5)
 }
 .remove_style{
   color: #5FA2FF;
 }
 .buy_style{
-  color: #7371FC
+  color: var(--text-highlight)
 }
 .sell_style{
-  color: #E480FF;
+  color: var(--accent-secondary)
 }
 
 /* apy */
@@ -67,5 +67,5 @@
 /* sort */
 
 .active_sort{
-  background: #12171f;
+  background: var(--dark2);
 }

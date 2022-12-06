@@ -118,6 +118,7 @@ backdrop-filter: blur( 7.5px );
     display: flex;
     justify-content: center;
     align-items: center;
+    color: var(--text-highlight)
   }
 
 
@@ -132,12 +133,17 @@ backdrop-filter: blur( 7.5px );
     line-height: var(--body-lh);
     gap: 4px;
   }
+  .simple_data{
+    color: var(--text-grey-white)
+
+  }
 
   .ecosystem_container p{
     display: flex;
     flex-direction: row;
     align-items: center;
     gap: 8px;
+    color: var(--text-grey-white)
   
   }
   .ecosystem_container p svg{
@@ -168,8 +174,8 @@ line-height: var(--body-lh);
 }
 
 .theme_toggler_light{
-  background: white;
-  color: black;
+  background: var(--text-grey-white);
+  color: var(--dark2);
 }
   /* end of theme toggler */
 
@@ -190,14 +196,14 @@ line-height: var(--body-lh);
   background: linear-gradient(45deg, transparent, transparent 40%, yellow),
       linear-gradient(#262626, #141414);
   animation: rotate 9.5s linear infinite;
-  color: white;
+  color: var(--text-grey-white);
 }
 .page_block_sign:before,
 .page_block_sign:after {
   content: ' ';
   position: absolute;
 
-  background: linear-gradient(#161616, #262626);
+  background: linear-gradient(var(--dark2), var(--dark3));
   border-radius: inherit;
 }
 .page_block_sign:before {

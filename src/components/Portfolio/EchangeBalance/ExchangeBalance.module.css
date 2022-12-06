@@ -9,7 +9,8 @@
     display: flex;
     flex-direction: column;
     background: var(--dark1);
-    height: calc(100vh - 17rem);
+    height: 100%;
+    /* height: calc(100vh - 17rem); */
     /* justify-content: center; */
     /* align-items: center; */
 
@@ -131,8 +132,8 @@ ul.tab_navs {
 
 @media only screen and (min-width: 768px) {
     .container{
-        height: calc(100vh - 16rem);
-
+        /* height: calc(100vh - 16rem); */
+        height: 100%;
             max-width: 400px;
             
    
@@ -140,9 +141,9 @@ ul.tab_navs {
     }
     
     .main_container {
-  
+        height: 100%;
         background: var(--dark1);
-        height: calc(100vh - 17rem);
+        /* height: calc(100vh - 17rem); */
         /* width: 100%; */
     }
 	

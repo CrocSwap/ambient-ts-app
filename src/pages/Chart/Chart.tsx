@@ -2850,7 +2850,8 @@ export default function Chart(props: ChartData) {
                         lineAskSeriesJoin(svg, [liquidityData.lineBidSeries]).call(lineBidSeries);
                         lineBidSeriesJoin(svg, [liquidityData.lineAskSeries]).call(lineAskSeries);
 
-                        barJoin(svg, [showVolume ? volumeData : []]).call(barSeries);
+                        // barJoin(svg, [showVolume ? volumeData : []]).call(barSeries);
+                        if (barSeries) barJoin(svg, [showVolume ? volumeData : []]).call(barSeries);
                     }
 
                     const mouseOutFunc = () => {
@@ -3423,7 +3424,7 @@ export default function Chart(props: ChartData) {
                         <d3fc-svg
                             className='y-axis'
                             ref={d3Yaxis}
-                            style={{ flexGrow: 1 }}
+                            style={{ width: '4rem' }}
                         ></d3fc-svg>
                     </div>
 
@@ -3504,7 +3505,7 @@ export default function Chart(props: ChartData) {
                     <d3fc-svg
                         ref={d3Xaxis}
                         className='x-axis'
-                        style={{ height: '2em', width: '100%' }}
+                        style={{ height: '1.1em', width: '100%' }}
                     ></d3fc-svg>
                 </div>
             </d3fc-group>

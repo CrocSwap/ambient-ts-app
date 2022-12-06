@@ -331,6 +331,8 @@ export default function PageHeader(props: HeaderPropsIF) {
                     chainId={chainId}
                     isMobileSidebarOpen={isMobileSidebarOpen}
                     setIsMobileSidebarOpen={setIsMobileSidebarOpen}
+                    theme={theme}
+                    switchTheme={switchTheme}
                 />
                 <div className={styles.account}>
                     <NetworkSelector chainId={chainId} switchChain={switchChain} />

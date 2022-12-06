@@ -3,7 +3,7 @@ import styles from './PoolCard.module.css';
 // import { ethers } from 'ethers';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { CrocEnv, toDisplayPrice } from '@crocswap-libs/sdk';
+import { CrocEnv, sortBaseQuoteTokens, toDisplayPrice } from '@crocswap-libs/sdk';
 import { SpotPriceFn } from '../../../App/functions/querySpotPrice';
 import getUnicodeCharacter from '../../../utils/functions/getUnicodeCharacter';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
@@ -53,7 +53,7 @@ export default function PoolCard(props: PoolCardProps) {
     const tokenBFromMap = tokenMap && tokenB?.address ? tokenMap.get(tokenBKey) : null;
 
     const [poolPriceDisplay, setPoolPriceDisplay] = useState<string | undefined>();
-    const [shouldInvertDisplay, setShouldInvertDisplay] = useState(true);
+    const [shouldInvertDisplay, setShouldInvertDisplay] = useState<boolean | undefined>();
 
     const tokenACharacter = tokenA && poolPriceDisplay ? getUnicodeCharacter(tokenA?.symbol) : '';
     const tokenBCharacter = tokenB && poolPriceDisplay ? getUnicodeCharacter(tokenB?.symbol) : '';
@@ -123,7 +123,14 @@ export default function PoolCard(props: PoolCardProps) {
 
     const fetchPoolStats = () => {
         (async () => {
-            if (tokenAAddress && tokenBAddress && poolIndex && chainId && lastBlockNumber) {
+            if (
+                tokenAAddress &&
+                tokenBAddress &&
+                poolIndex &&
+                chainId &&
+                lastBlockNumber &&
+                shouldInvertDisplay !== undefined
+            ) {
                 const poolStats = await cachedPoolStatsFetch(
                     chainId,
                     tokenAAddress,
@@ -152,13 +159,15 @@ export default function PoolCard(props: PoolCardProps) {
                     setPoolApy(apyString);
                 }
 
+                const sortedTokens = sortBaseQuoteTokens(tokenAAddress, tokenBAddress);
+
                 try {
                     const priceChangeResult = await get24hChange(
                         chainId,
-                        tokenAAddress,
-                        tokenBAddress,
+                        sortedTokens[0],
+                        sortedTokens[1],
                         poolIndex,
-                        true, // denomInBase
+                        shouldInvertDisplay,
                     );
                     if (priceChangeResult > -0.01 && priceChangeResult < 0.01) {
                         setPoolPriceChangePercent('No Change');
@@ -193,7 +202,7 @@ export default function PoolCard(props: PoolCardProps) {
     useEffect(() => {
         // console.log({ isUserIdle });
         if (isServerEnabled && !isUserIdle) fetchPoolStats();
-    }, [isServerEnabled, isUserIdle, lastBlockNumber]);
+    }, [isServerEnabled, isUserIdle, lastBlockNumber, shouldInvertDisplay]);
 
     const tokenImagesDisplay = (
         <div className={styles.token_images}>

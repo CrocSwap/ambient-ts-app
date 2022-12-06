@@ -1,4 +1,4 @@
-import { useState, Dispatch, SetStateAction, useRef } from 'react';
+import { Dispatch, SetStateAction, useRef } from 'react';
 import styles from './MobileSidebar.module.css';
 import { motion } from 'framer-motion';
 import { MenuButton } from '../MenuButton/MenuButton';
@@ -37,10 +37,20 @@ interface MobileSidebarPropsIF {
     isMobileSidebarOpen: boolean;
     setIsMobileSidebarOpen: Dispatch<SetStateAction<boolean>>;
     chainId: string;
+
+    theme: string;
+    switchTheme: () => void;
 }
 
 export default function MobileSidebar(props: MobileSidebarPropsIF) {
-    const { lastBlockNumber, chainId, isMobileSidebarOpen, setIsMobileSidebarOpen } = props;
+    const {
+        lastBlockNumber,
+        chainId,
+        isMobileSidebarOpen,
+        setIsMobileSidebarOpen,
+        theme,
+        switchTheme,
+    } = props;
 
     const navigationVariants = {
         open: {
@@ -65,7 +75,7 @@ export default function MobileSidebar(props: MobileSidebarPropsIF) {
         { name: 'Connect Wallet/ Logout ' },
     ];
     const dataToDisplay = (
-        <motion.div variants={navigationVariants}>
+        <motion.div variants={navigationVariants} className={styles.simple_data}>
             {simpleData.map((item, idx) => (
                 <MobileSidebarItem key={idx}>{item.name}</MobileSidebarItem>
             ))}
@@ -82,12 +92,12 @@ export default function MobileSidebar(props: MobileSidebarPropsIF) {
     ];
     const ecosystemDisplay = (
         <motion.div variants={navigationVariants} className={styles.ecosystem_container}>
-            <p style={{ color: '#555555' }}>Ecosystem</p>
+            <p>Ecosystem</p>
             {ecosystemData.map((item, idx) => (
                 <MobileSidebarItem key={idx}>
                     <p>
                         {item.name}
-                        <FiExternalLink size={10} color='#555555' />
+                        <FiExternalLink size={10} />
                     </p>
                 </MobileSidebarItem>
             ))}
@@ -142,21 +152,20 @@ export default function MobileSidebar(props: MobileSidebarPropsIF) {
             </div>
         </MobileSidebarItem>
     );
-    const [lightMode, setLightMode] = useState(true);
     const themeTogglerDisplay = (
         <MobileSidebarItem>
             <div
                 className={`${styles.theme_toggler_content} ${
-                    !lightMode && styles.theme_toggler_light
+                    theme === 'light' && styles.theme_toggler_light
                 }`}
-                onClick={() => setLightMode(!lightMode)}
+                onClick={switchTheme}
             >
-                {!lightMode ? (
+                {theme === 'light' ? (
                     <BsFillMoonStarsFill color='#f0c420' />
                 ) : (
                     <BsFillSunFill color='#f9d71c' />
                 )}
-                <p>{!lightMode ? 'Dark mode' : 'Light mode'}</p>
+                <p>{theme === 'light' ? 'Dark mode' : 'Light mode'}</p>
             </div>
         </MobileSidebarItem>
     );
