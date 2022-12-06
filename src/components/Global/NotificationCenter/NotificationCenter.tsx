@@ -32,23 +32,34 @@ const NotificationCenter = (props: NotificationCenterPropsIF) => {
     const currentPendingTransactionsArray = pendingTransactions.filter(
         (hash: string) => !receiveReceiptHashes.includes(hash),
     );
-    // const notificationItemRef = useRef<HTMLDivElement>(null);
+    const notificationItemRef = useRef<HTMLDivElement>(null);
     const activityCenterRef = useRef<HTMLDivElement>(null);
 
-    const clickOutsideHandler = () => {
-        setShowNotificationTable(false);
+    const clickOutsideHandler = (event: Event) => {
+        if (
+            !activityCenterRef.current?.contains(event?.target as Node) &&
+            !notificationItemRef.current?.contains(event?.target as Node)
+
+            // event.target !== activityCenterRef.current &&
+            // event.target !== notificationItemRef.current
+        ) {
+            setShowNotificationTable(false);
+        }
     };
     UseOnClickOutside(activityCenterRef, clickOutsideHandler);
+    UseOnClickOutside(notificationItemRef, clickOutsideHandler);
 
     return (
         <AnimateSharedLayout>
-            <div ref={activityCenterRef} className={styles.container}>
-                <ActivityIndicator
-                    value={receiveReceiptHashes.length}
-                    pending={currentPendingTransactionsArray.length > 0}
-                    showNotificationTable={showNotificationTable}
-                    setShowNotificationTable={setShowNotificationTable}
-                />
+            <div className={styles.container}>
+                <span ref={activityCenterRef}>
+                    <ActivityIndicator
+                        value={receiveReceiptHashes.length}
+                        pending={currentPendingTransactionsArray.length > 0}
+                        showNotificationTable={showNotificationTable}
+                        setShowNotificationTable={setShowNotificationTable}
+                    />
+                </span>
 
                 <div>
                     <NotificationTable
@@ -56,8 +67,10 @@ const NotificationCenter = (props: NotificationCenterPropsIF) => {
                         setShowNotificationTable={setShowNotificationTable}
                         pendingTransactions={currentPendingTransactionsArray}
                         lastBlockNumber={lastBlockNumber}
+                        notificationItemRef={notificationItemRef}
                     />
                 </div>
+                <div></div>
             </div>
         </AnimateSharedLayout>
     );
