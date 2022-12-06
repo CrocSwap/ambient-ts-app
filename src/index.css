@@ -92,7 +92,8 @@
     /* --dark2: rgb(226, 221, 221); */
     --dark2: #f6f6f7;
 
-    --dark3: rgb(247, 251, 254);;
+    /* --dark3: rgb(247, 251, 254);; */
+    --dark3: #EFF1F4;
     --text-grey-light: #19222d;
     --text-grey-dark: #0e131a;
     --border: #cacbcd;
