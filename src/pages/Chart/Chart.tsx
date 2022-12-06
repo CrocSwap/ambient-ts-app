@@ -92,6 +92,10 @@ interface ChartData {
     setRescale: React.Dispatch<React.SetStateAction<boolean>>;
     latest: boolean | undefined;
     setLatest: React.Dispatch<React.SetStateAction<boolean>>;
+    reset: boolean | undefined;
+    setReset: React.Dispatch<React.SetStateAction<boolean>>;
+    showLatest: boolean | undefined;
+    setShowLatest: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 function getWindowDimensions() {
@@ -123,6 +127,10 @@ export default function Chart(props: ChartData) {
         checkLimitOrder,
         rescale,
         setRescale,
+        reset,
+        setReset,
+        showLatest,
+        setShowLatest,
         latest,
         setLatest,
     } = props;
@@ -292,6 +300,10 @@ export default function Chart(props: ChartData) {
     }, []);
 
     useEffect(() => {
+        setRescale(true);
+    }, [denomInBase]);
+
+    useEffect(() => {
         function handleResize() {
             setWindowDimensions(getWindowDimensions());
         }
@@ -401,86 +413,121 @@ export default function Chart(props: ChartData) {
                     });
             });
         } else if (location.pathname.includes('range')) {
-            let resultDataMin = 0;
-            let resultLocationDataMin = 0;
-
             let isSameLocationMin = false;
             let sameLocationDataMin = false;
-
-            let resultDataMax = 0;
-            let resultLocationDataMax = 0;
-
             let isSameLocationMax = false;
             let sameLocationDataMax = false;
 
             const low = ranges.filter((target: any) => target.name === 'Min')[0].value;
             const high = ranges.filter((target: any) => target.name === 'Max')[0].value;
-            if (low > market[0].value || market[0].value > high) {
-                resultDataMin = scaleData.yScale(low) - scaleData.yScale(high);
-                resultLocationDataMin = resultDataMin < 0 ? -20 : 20;
-                isSameLocationMin = Math.abs(resultDataMin) < 20;
-                sameLocationDataMin = scaleData.yScale.invert(
-                    scaleData.yScale(high) + resultLocationDataMin,
-                );
+            const marketValue = market[0].value;
 
-                let marketControl = 0;
-                let resultLocationDataMarket = 0;
-                if (low > market[0].value) {
-                    marketControl = scaleData.yScale(low) - scaleData.yScale(market[0].value);
-                    resultLocationDataMarket = marketControl <= 0 ? -20 : 20;
-                    isSameLocationMin = Math.abs(marketControl) < 30 || isSameLocationMin;
-                    if (Math.abs(marketControl) < 30) {
+            const differenceLowHigh = scaleData.yScale(low) - scaleData.yScale(high);
+            const differenceLowMarket = scaleData.yScale(low) - scaleData.yScale(marketValue);
+            const differenceHighMarket = scaleData.yScale(high) - scaleData.yScale(marketValue);
+
+            const isSameLocationLowHigh = Math.abs(differenceLowHigh) <= 20;
+            const differenceLowHighData = differenceLowHigh < 0 ? -20 : 20;
+
+            const isSameLocationLowMarket = Math.abs(differenceLowMarket) <= 20;
+            const differenceLowMarketData = differenceLowMarket < 0 ? -20 : 20;
+
+            const isSameLocationHighMarket = Math.abs(differenceHighMarket) <= 20;
+
+            const differenceHighMarketData = differenceHighMarket < 0 ? -20 : 20;
+
+            if (marketValue > low && marketValue < high) {
+                isSameLocationMax = isSameLocationHighMarket;
+                isSameLocationMin = isSameLocationLowMarket;
+
+                if (isSameLocationHighMarket) {
+                    sameLocationDataMax = scaleData.yScale.invert(
+                        scaleData.yScale(marketValue) + differenceHighMarketData,
+                    );
+                }
+
+                if (isSameLocationLowMarket) {
+                    sameLocationDataMin = scaleData.yScale.invert(
+                        scaleData.yScale(marketValue) + differenceLowMarketData,
+                    );
+                }
+            } else if (low > marketValue && high > marketValue) {
+                isSameLocationMax = isSameLocationHighMarket || isSameLocationLowHigh;
+                isSameLocationMin = isSameLocationLowMarket;
+
+                if (isSameLocationLowHigh) {
+                    sameLocationDataMax = scaleData.yScale.invert(
+                        scaleData.yScale(low) - differenceLowHighData,
+                    );
+                }
+
+                if (isSameLocationHighMarket) {
+                    sameLocationDataMax = scaleData.yScale.invert(
+                        scaleData.yScale(low) + differenceLowHighData,
+                    );
+                }
+
+                if (isSameLocationLowMarket) {
+                    sameLocationDataMin = scaleData.yScale.invert(
+                        scaleData.yScale(marketValue) + differenceLowMarketData,
+                    );
+                }
+
+                if (isSameLocationLowHigh && isSameLocationLowMarket) {
+                    sameLocationDataMin = scaleData.yScale.invert(
+                        scaleData.yScale(marketValue) + differenceLowMarketData,
+                    );
+
+                    sameLocationDataMax = scaleData.yScale.invert(
+                        scaleData.yScale(marketValue) +
+                            differenceLowMarketData -
+                            differenceLowHighData,
+                    );
+                }
+            } else if (low < marketValue && high < marketValue) {
+                isSameLocationMax = isSameLocationHighMarket;
+                isSameLocationMin = isSameLocationLowHigh || isSameLocationLowMarket;
+
+                if (isSameLocationLowHigh) {
+                    sameLocationDataMin = scaleData.yScale.invert(
+                        scaleData.yScale(high) + differenceLowHighData,
+                    );
+                }
+
+                if (isSameLocationHighMarket) {
+                    sameLocationDataMax = scaleData.yScale.invert(
+                        scaleData.yScale(marketValue) + differenceHighMarketData,
+                    );
+
+                    if (Math.abs(differenceLowHigh) <= 35) {
+                        isSameLocationMin = true;
                         sameLocationDataMin = scaleData.yScale.invert(
-                            scaleData.yScale(market[0].value) + resultLocationDataMarket,
+                            scaleData.yScale(marketValue) +
+                                differenceHighMarketData +
+                                differenceLowHighData,
                         );
-                        isSameLocationMax = Math.abs(resultDataMin) < 20;
+                    }
+                } else {
+                    if (low > high) {
+                        isSameLocationMax = isSameLocationHighMarket;
+                        isSameLocationMin = isSameLocationLowMarket || isSameLocationLowHigh;
+                        if (isSameLocationLowHigh) {
+                            sameLocationDataMin = scaleData.yScale.invert(
+                                scaleData.yScale(high) + differenceLowHighData,
+                            );
+                        }
+                        if (isSameLocationHighMarket) {
+                            sameLocationDataMin = scaleData.yScale.invert(
+                                scaleData.yScale(marketValue) + differenceHighMarketData,
+                            );
+                        }
 
-                        if (isSameLocationMax) {
-                            sameLocationDataMax = scaleData.yScale.invert(
-                                scaleData.yScale(market[0].value) +
-                                    resultLocationDataMarket -
-                                    resultLocationDataMin,
+                        if (isSameLocationLowMarket) {
+                            sameLocationDataMin = scaleData.yScale.invert(
+                                scaleData.yScale(marketValue) + differenceLowMarketData,
                             );
                         }
                     }
-                }
-
-                if (market[0].value > high) {
-                    marketControl = scaleData.yScale(high) - scaleData.yScale(market[0].value);
-                    resultLocationDataMarket = marketControl <= 0 ? -20 : 20;
-                    isSameLocationMin = Math.abs(marketControl) < 30 || isSameLocationMin;
-
-                    if (Math.abs(marketControl) < 30) {
-                        sameLocationDataMax = scaleData.yScale.invert(
-                            scaleData.yScale(market[0].value) + resultLocationDataMarket,
-                        );
-                        isSameLocationMax = Math.abs(resultDataMin) < 20;
-                        sameLocationDataMin = scaleData.yScale.invert(
-                            scaleData.yScale(market[0].value) +
-                                resultLocationDataMarket +
-                                resultLocationDataMin,
-                        );
-                    }
-                }
-            } else {
-                resultDataMin = scaleData.yScale(low) - scaleData.yScale(market[0].value);
-                resultLocationDataMin = resultDataMin < 0 ? -20 : 20;
-                isSameLocationMin = Math.abs(resultDataMin) < 20;
-                sameLocationDataMin = scaleData.yScale.invert(
-                    scaleData.yScale(market[0].value) + resultLocationDataMin,
-                );
-
-                resultDataMax = scaleData.yScale(high) - scaleData.yScale(market[0].value);
-                resultLocationDataMax = resultDataMax < 0 ? -20 : 20;
-                isSameLocationMax = Math.abs(resultDataMax) < 20;
-                sameLocationDataMax = scaleData.yScale.invert(
-                    scaleData.yScale(market[0].value) + resultLocationDataMax,
-                );
-
-                if (sameLocationDataMin === sameLocationDataMax) {
-                    sameLocationDataMax = scaleData.yScale.invert(
-                        scaleData.yScale(market[0].value) + resultLocationDataMax - 40,
-                    );
                 }
             }
 
@@ -545,8 +592,9 @@ export default function Chart(props: ChartData) {
     function getXAxisTick() {
         const oldTickValues = scaleData.xScale.ticks();
         const tempArray = [];
+
         if (
-            (windowDimensions.width > 1800 && oldTickValues.length < 13) ||
+            (windowDimensions.width > 1800 && oldTickValues.length < 15) ||
             oldTickValues.length < 6
         ) {
             return oldTickValues;
@@ -754,7 +802,6 @@ export default function Chart(props: ChartData) {
 
             const zoom = d3
                 .zoom()
-                .scaleExtent([0.3, 5])
                 .on('start', (event: any) => {
                     if (event.sourceEvent && event.sourceEvent.type !== 'dblclick') {
                         clickedForLine = false;
@@ -774,6 +821,42 @@ export default function Chart(props: ChartData) {
                         const t = event.transform;
 
                         getNewCandleData(event, date, scaleData.xScale);
+
+                        if (event.sourceEvent.type === 'wheel') {
+                            const dx = event.sourceEvent.deltaY / 2;
+
+                            const domainX = scaleData.xScale.domain();
+                            const linearX = d3
+                                .scaleTime()
+                                .domain(scaleData.xScale.range())
+                                .range([0, domainX[1] - domainX[0]]);
+
+                            const deltaX = linearX(dx);
+
+                            if (!event.sourceEvent.ctrlKey) {
+                                scaleData.xScale.domain([
+                                    new Date(domainX[0].getTime() - deltaX),
+                                    domainX[1],
+                                ]);
+                            } else {
+                                scaleData.xScale.domain([
+                                    new Date(domainX[0].getTime() - deltaX),
+                                    new Date(domainX[1].getTime() + deltaX),
+                                ]);
+                            }
+                        } else {
+                            const domainX = scaleData.xScale.domain();
+                            const linearX = d3
+                                .scaleTime()
+                                .domain(scaleData.xScale.range())
+                                .range([0, domainX[1] - domainX[0]]);
+
+                            const deltaX = linearX(scaleData.lastX - t.x);
+                            scaleData.xScale.domain([
+                                new Date(domainX[0].getTime() + deltaX),
+                                new Date(domainX[1].getTime() + deltaX),
+                            ]);
+                        }
 
                         if (rescale) {
                             const xmin = new Date(Math.floor(scaleData.xScale.domain()[0]));
@@ -798,17 +881,17 @@ export default function Chart(props: ChartData) {
                             }
                         }
 
-                        const domainX = scaleData.xScale.domain();
-                        const linearX = d3
-                            .scaleTime()
-                            .domain(scaleData.xScale.range())
-                            .range([0, domainX[1] - domainX[0]]);
-
-                        const deltaX = linearX(scaleData.lastX - t.x);
-                        scaleData.xScale.domain([
-                            new Date(domainX[0].getTime() + deltaX),
-                            new Date(domainX[1].getTime() + deltaX),
-                        ]);
+                        if (
+                            !showLatest &&
+                            scaleData.xScale.domain()[1] < parsedChartData?.chartData[1].date
+                        ) {
+                            setShowLatest(true);
+                        } else if (
+                            showLatest &&
+                            !(scaleData.xScale.domain()[1] < parsedChartData?.chartData[1].date)
+                        ) {
+                            setShowLatest(false);
+                        }
 
                         // PANNING
                         if (!rescale && event.sourceEvent && event.sourceEvent.type != 'wheel') {
@@ -818,16 +901,13 @@ export default function Chart(props: ChartData) {
                                 .domain(scaleData.yScale.range())
                                 .range([domainY[1] - domainY[0], 0]);
 
-                            const deltaY = linearY(t.y - scaleData.lastY);
+                            const deltaY = linearY(t.y - scaleData.lastZoomedY);
+                            scaleData.yScale.domain([domainY[0] + deltaY, domainY[1] + deltaY]);
 
-                            if (domainY[0] + deltaY > 0) {
-                                scaleData.yScale.domain([domainY[0] + deltaY, domainY[1] + deltaY]);
-
-                                scaleData.yScaleIndicator.range([
-                                    event.sourceEvent.offsetY,
-                                    scaleData.yScale(poolPriceDisplay),
-                                ]);
-                            }
+                            scaleData.yScaleIndicator.range([
+                                event.sourceEvent.offsetY,
+                                scaleData.yScale(poolPriceDisplay),
+                            ]);
 
                             const topPlacement =
                                 event.sourceEvent.y -
@@ -845,7 +925,7 @@ export default function Chart(props: ChartData) {
                                 .style('left', event.sourceEvent.offsetX - 80 + 'px');
                         }
 
-                        scaleData.lastY = t.y;
+                        scaleData.lastZoomedY = t.y;
                         scaleData.lastX = t.x;
 
                         clickedForLine = true;
@@ -878,6 +958,8 @@ export default function Chart(props: ChartData) {
                 }) as any;
 
             const yAxisDrag = d3.drag().on('drag', async (event: any) => {
+                console.log('dragged');
+
                 const dy = event.dy;
                 const factor = Math.pow(2, -dy * 0.003);
                 const domain = scaleData.yScale.domain();
@@ -895,9 +977,32 @@ export default function Chart(props: ChartData) {
                 render();
             });
 
+            const yAxisZoom = d3.zoom().on('zoom', async (event: any) => {
+                if (event.sourceEvent.type === 'wheel') {
+                    const domainY = scaleData.yScale.domain();
+                    const center = (domainY[1] + domainY[0]) / 2;
+                    const dy = event.sourceEvent.deltaY / 3;
+                    const factor = Math.pow(2, -dy * 0.003);
+
+                    const size = (domainY[1] - domainY[0]) / 2 / factor;
+                    await scaleData.yScale.domain([center - size, center + size]);
+
+                    scaleData.lastDragedY = event.transform.y;
+
+                    setZoomAndYdragControl(event);
+                    setRescale(() => {
+                        return false;
+                    });
+
+                    setMarketLineValue();
+                    render();
+                }
+            }) as any;
+
             setZoomUtils(() => {
                 return {
                     zoom: zoom,
+                    yAxisZoom: yAxisZoom,
                     yAxisDrag: yAxisDrag,
                 };
             });
@@ -913,6 +1018,7 @@ export default function Chart(props: ChartData) {
         JSON.stringify(scaleData.lastX),
         JSON.stringify(scaleData.xScale.domain()[0]),
         transformX,
+        showLatest,
     ]);
 
     useEffect(() => {
@@ -954,7 +1060,7 @@ export default function Chart(props: ChartData) {
 
     useEffect(() => {
         setLimitLineValue();
-    }, [tradeData.limitTick]);
+    }, [tradeData.limitTick, denomInBase]);
 
     const setLimitLineValue = () => {
         const limitDisplayPrice = denomInBase
@@ -1144,6 +1250,8 @@ export default function Chart(props: ChartData) {
 
             let rangeWidthPercentage: any;
 
+            let dragSwitched = false;
+
             const dragRange = d3
                 .drag()
                 .on('start', () => {
@@ -1247,14 +1355,16 @@ export default function Chart(props: ChartData) {
                             });
                         }
                     } else {
-                        highLineMoved = lineToBeSet === 'Max';
-                        lowLineMoved = lineToBeSet === 'Min';
+                        const draggingLine = event.subject.name;
+
+                        highLineMoved = draggingLine === 'Max';
+                        lowLineMoved = draggingLine === 'Min';
 
                         let pinnedMaxPriceDisplayTruncated = high;
                         let pinnedMinPriceDisplayTruncated = low;
 
                         if (dragedValue >= 0) {
-                            if (lineToBeSet === 'Max') {
+                            if (draggingLine === 'Max') {
                                 pinnedDisplayPrices = getPinnedPriceValuesFromDisplayPrices(
                                     denomInBase,
                                     baseTokenDecimals,
@@ -1285,12 +1395,34 @@ export default function Chart(props: ChartData) {
                         setRanges((prevState) => {
                             const newTargets = [...prevState];
 
-                            if (lineToBeSet === 'Max') {
-                                newTargets.filter((target: any) => target.name === 'Max')[0].value =
-                                    pinnedMaxPriceDisplayTruncated;
+                            if (draggingLine === 'Max') {
+                                if (
+                                    dragSwitched ||
+                                    pinnedMaxPriceDisplayTruncated < pinnedMinPriceDisplayTruncated
+                                ) {
+                                    newTargets.filter(
+                                        (target: any) => target.name === 'Min',
+                                    )[0].value = pinnedMaxPriceDisplayTruncated;
+                                    dragSwitched = true;
+                                } else {
+                                    newTargets.filter(
+                                        (target: any) => target.name === 'Max',
+                                    )[0].value = pinnedMaxPriceDisplayTruncated;
+                                }
                             } else {
-                                newTargets.filter((target: any) => target.name === 'Min')[0].value =
-                                    pinnedMinPriceDisplayTruncated;
+                                if (
+                                    dragSwitched ||
+                                    pinnedMinPriceDisplayTruncated > pinnedMaxPriceDisplayTruncated
+                                ) {
+                                    newTargets.filter(
+                                        (target: any) => target.name === 'Max',
+                                    )[0].value = pinnedMinPriceDisplayTruncated;
+                                    dragSwitched = true;
+                                } else {
+                                    newTargets.filter(
+                                        (target: any) => target.name === 'Min',
+                                    )[0].value = pinnedMinPriceDisplayTruncated;
+                                }
                             }
 
                             newRangeValue = newTargets;
@@ -1332,6 +1464,7 @@ export default function Chart(props: ChartData) {
                     }
 
                     onBlurRange(newRangeValue, highLineMoved, lowLineMoved);
+                    dragSwitched = false;
                 });
 
             const dragLimit = d3
@@ -1565,12 +1698,39 @@ export default function Chart(props: ChartData) {
     }, [parsedChartData?.chartData, scaleData, market, checkLimitOrder, limit, isAuthenticated]);
 
     useEffect(() => {
-        if (scaleData !== undefined && latest) {
+        if (scaleData !== undefined && reset) {
             scaleData.xScale.domain(scaleData.xScaleCopy.domain());
             scaleData.yScale.domain(scaleData.yScaleCopy.domain());
-            setLatest(false);
+            setReset(false);
         }
-    }, [scaleData, latest]);
+    }, [scaleData, reset]);
+
+    useEffect(() => {
+        if (scaleData !== undefined && latest && parsedChartData !== undefined) {
+            const diff =
+                scaleData.xScale.domain()[1].getTime() - scaleData.xScale.domain()[0].getTime();
+            scaleData.xScale.domain([
+                new Date(scaleData.xScaleCopy.domain()[1].getTime() - diff),
+                scaleData.xScaleCopy.domain()[1],
+            ]);
+
+            if (rescale) {
+                scaleData.yScale.domain(scaleData.yScaleCopy.domain());
+            } else {
+                const diffY = scaleData.yScale.domain()[1] - scaleData.yScale.domain()[0];
+                const center =
+                    parsedChartData?.chartData[1].high -
+                    Math.abs(
+                        parsedChartData?.chartData[1].low - parsedChartData?.chartData[1].high,
+                    ) /
+                        2;
+                scaleData.yScale.domain([center - diffY / 2, center + diffY / 2]);
+            }
+
+            setLatest(false);
+            setShowLatest(false);
+        }
+    }, [scaleData, latest, parsedChartData?.chartData]);
 
     // easy drag and triangle to horizontal lines for range
     async function addTriangleAndRect() {
@@ -2145,7 +2305,7 @@ export default function Chart(props: ChartData) {
     }, [scaleData, selectedDate]);
 
     useEffect(() => {
-        if (scaleData !== undefined) {
+        if (scaleData !== undefined && candlestick !== undefined) {
             const barSeries = d3fc
                 .seriesSvgBar()
                 .align('center')
@@ -2190,7 +2350,7 @@ export default function Chart(props: ChartData) {
                 return barSeries;
             });
         }
-    }, [scaleData, selectedDate, bandwidth]);
+    }, [scaleData, selectedDate, bandwidth, candlestick, candlestick && candlestick.bandwidth()]);
 
     useEffect(() => {
         if (!location.pathname.includes('range')) {
@@ -2208,23 +2368,16 @@ export default function Chart(props: ChartData) {
             const high = ranges.filter((target: any) => target.name === 'Max')[0].value;
 
             props.liquidityData.liqAskData.map((askData: any) => {
-                if (askData.liqPrices > low) {
+                if (askData.liqPrices > low && askData.liqPrices < high) {
                     props.liquidityData.lineAskSeries.push(askData);
                 }
             });
 
             props.liquidityData.liqBidData.map((bidData: any) => {
-                if (bidData.liqPrices < high) {
+                if (bidData.liqPrices < high && bidData.liqPrices > low) {
                     props.liquidityData.lineBidSeries.unshift(bidData);
                 }
             });
-
-            props.liquidityData.lineBidSeries = props.liquidityData.lineBidSeries.sort(
-                (a: any, b: any) => b.liqPrices - a.liqPrices,
-            );
-            props.liquidityData.lineAskSeries = props.liquidityData.lineAskSeries.sort(
-                (a: any, b: any) => b.liqPrices - a.liqPrices,
-            );
 
             props.liquidityData.lineAskSeries.push({
                 activeLiq:
@@ -2240,6 +2393,13 @@ export default function Chart(props: ChartData) {
                 deltaAverageUSD: 0,
                 cumAverageUSD: 0,
             });
+
+            props.liquidityData.lineBidSeries = props.liquidityData.lineBidSeries.sort(
+                (a: any, b: any) => b.liqPrices - a.liqPrices,
+            );
+            props.liquidityData.lineAskSeries = props.liquidityData.lineAskSeries.sort(
+                (a: any, b: any) => b.liqPrices - a.liqPrices,
+            );
 
             setHorizontalBandData([
                 [
@@ -2939,6 +3099,7 @@ export default function Chart(props: ChartData) {
                     isZoomForSubChart = false;
                     setCrossHairLocation(event);
                     setMouseMoveEventCharts(event);
+                    showCrosshair();
                 });
 
                 d3.select(d3Yaxis.current)
@@ -2947,6 +3108,14 @@ export default function Chart(props: ChartData) {
                         crosshairData[0].x = -1;
                     })
                     .call(zoomUtils.yAxisDrag);
+
+                d3.select(d3Yaxis.current).on('measure.range', function (event: any) {
+                    const svg = d3.select(event.target).select('svg');
+
+                    svg.call(zoomUtils.yAxisZoom)
+                        .on('dblclick.zoom', null)
+                        .on('dblclick.drag', null);
+                });
 
                 render();
 
@@ -2996,38 +3165,6 @@ export default function Chart(props: ChartData) {
                     render();
                 });
 
-                d3.select(d3Container.current).on('mouseenter', () => {
-                    d3.select(d3PlotArea.current)
-                        .select('svg')
-                        .select('.crosshairHorizontal')
-                        .selectChild()
-                        .style('visibility', 'visible');
-
-                    d3.select('#tvl_chart')
-                        .select('svg')
-                        .select('.crosshairHorizontal')
-                        .selectChild()
-                        .style('visibility', 'visible');
-
-                    d3.select('#tvl_chart')
-                        .select('svg')
-                        .select('.crosshairVertical')
-                        .selectChild()
-                        .style('visibility', 'visible');
-
-                    d3.select('#fee_rate_chart')
-                        .select('svg')
-                        .select('.crosshairHorizontal')
-                        .selectChild()
-                        .style('visibility', 'visible');
-
-                    d3.select('#fee_rate_chart')
-                        .select('svg')
-                        .select('.crosshairVertical')
-                        .selectChild()
-                        .style('visibility', 'visible');
-                });
-
                 d3.select(d3PlotArea.current).on('mouseenter', () => {
                     d3.select(d3PlotArea.current)
                         .select('svg')
@@ -3038,6 +3175,38 @@ export default function Chart(props: ChartData) {
         },
         [],
     );
+
+    function showCrosshair() {
+        d3.select(d3PlotArea.current)
+            .select('svg')
+            .select('.crosshairHorizontal')
+            .selectChild()
+            .style('visibility', 'visible');
+
+        d3.select('#tvl_chart')
+            .select('svg')
+            .select('.crosshairHorizontal')
+            .selectChild()
+            .style('visibility', 'visible');
+
+        d3.select('#tvl_chart')
+            .select('svg')
+            .select('.crosshairVertical')
+            .selectChild()
+            .style('visibility', 'visible');
+
+        d3.select('#fee_rate_chart')
+            .select('svg')
+            .select('.crosshairHorizontal')
+            .selectChild()
+            .style('visibility', 'visible');
+
+        d3.select('#fee_rate_chart')
+            .select('svg')
+            .select('.crosshairVertical')
+            .selectChild()
+            .style('visibility', 'visible');
+    }
 
     useEffect(() => {
         if (
