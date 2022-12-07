@@ -18,4 +18,26 @@ export const TextOnlyTooltip = withStyles({
     },
 })(Tooltip);
 
+export const NoColorTooltip = withStyles({
+    tooltip: {
+        backgroundColor: 'transparent',
+    },
+})(Tooltip);
+
+export const GreenTextTooltip = withStyles({
+    tooltip: {
+        color: 'green',
+        backgroundColor: 'transparent',
+        fontSize: '.8rem',
+    },
+})(Tooltip);
+
+export const RedTextTooltip = withStyles({
+    tooltip: {
+        color: 'red',
+        backgroundColor: 'transparent',
+        fontSize: '.8rem',
+    },
+})(Tooltip);
+
 //   https://stackoverflow.com/questions/36759985/how-to-style-mui-tooltip
