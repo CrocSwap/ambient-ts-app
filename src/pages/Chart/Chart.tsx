@@ -833,38 +833,52 @@ export default function Chart(props: ChartData) {
 
                             const deltaX = linearX(dx);
 
-                            if (!event.sourceEvent.ctrlKey) {
-                                scaleData.xScale.domain([
-                                    new Date(domainX[0].getTime() - deltaX),
-                                    domainX[1],
-                                ]);
-                            } else {
-                                const gapTop =
-                                    domainX[1].getTime() -
-                                    scaleData.xScale.invert(event.sourceEvent.offsetX).getTime();
-                                const gapBot =
-                                    scaleData.xScale.invert(event.sourceEvent.offsetX).getTime() -
-                                    domainX[0].getTime();
-
-                                const minGap = Math.min(gapTop, gapBot);
-                                const maxGap = Math.max(gapTop, gapBot);
-
-                                const baseMovement = deltaX / (maxGap / minGap + 1);
-
-                                if (gapBot < gapTop) {
+                            if (
+                                (deltaX < 0 ||
+                                    Math.abs(domainX[1].getTime() - domainX[0].getTime()) <=
+                                        parsedChartData.period * 1000 * 300) &&
+                                (deltaX > 0 ||
+                                    Math.abs(domainX[1].getTime() - domainX[0].getTime()) >=
+                                        parsedChartData.period * 1000)
+                            ) {
+                                if (!event.sourceEvent.ctrlKey) {
                                     scaleData.xScale.domain([
-                                        new Date(domainX[0].getTime() - baseMovement),
-                                        new Date(
-                                            domainX[1].getTime() + baseMovement * (maxGap / minGap),
-                                        ),
+                                        new Date(domainX[0].getTime() - deltaX),
+                                        domainX[1],
                                     ]);
                                 } else {
-                                    scaleData.xScale.domain([
-                                        new Date(
-                                            domainX[0].getTime() - baseMovement * (maxGap / minGap),
-                                        ),
-                                        new Date(domainX[1].getTime() + baseMovement),
-                                    ]);
+                                    const gapTop =
+                                        domainX[1].getTime() -
+                                        scaleData.xScale
+                                            .invert(event.sourceEvent.offsetX)
+                                            .getTime();
+                                    const gapBot =
+                                        scaleData.xScale
+                                            .invert(event.sourceEvent.offsetX)
+                                            .getTime() - domainX[0].getTime();
+
+                                    const minGap = Math.min(gapTop, gapBot);
+                                    const maxGap = Math.max(gapTop, gapBot);
+
+                                    const baseMovement = deltaX / (maxGap / minGap + 1);
+
+                                    if (gapBot < gapTop) {
+                                        scaleData.xScale.domain([
+                                            new Date(domainX[0].getTime() - baseMovement),
+                                            new Date(
+                                                domainX[1].getTime() +
+                                                    baseMovement * (maxGap / minGap),
+                                            ),
+                                        ]);
+                                    } else {
+                                        scaleData.xScale.domain([
+                                            new Date(
+                                                domainX[0].getTime() -
+                                                    baseMovement * (maxGap / minGap),
+                                            ),
+                                            new Date(domainX[1].getTime() + baseMovement),
+                                        ]);
+                                    }
                                 }
                             }
                         } else {
@@ -937,6 +951,10 @@ export default function Chart(props: ChartData) {
                         }
 
                         scaleData.lastZoomedY = t.y;
+
+                        console.log(event);
+                        console.log(t.x);
+
                         scaleData.lastX = t.x;
 
                         clickedForLine = true;
@@ -1041,7 +1059,7 @@ export default function Chart(props: ChartData) {
         candlestick,
         isZoomForSubChart,
         location,
-        JSON.stringify(scaleData.lastX),
+        scaleData.lastX,
         JSON.stringify(scaleData.xScale.domain()[0]),
         JSON.stringify(scaleData.xScale.domain()[1]),
         transformX,
