@@ -136,6 +136,13 @@ export default function Chart(props: ChartData) {
     } = props;
 
     const tradeData = useAppSelector((state) => state.tradeData);
+
+    const isDenomBase = tradeData.isDenomBase;
+    const isBid = tradeData.isTokenABase;
+
+    const side = (isDenomBase && !isBid) || (!isDenomBase && isBid) ? 'buy' : 'sell';
+    const sellOrderStyle = side === 'sell' ? 'order_sell' : 'order_buy';
+
     const targetData = tradeData.targetData;
     const rangeModuleTriggered = tradeData.rangeModuleTriggered;
 
