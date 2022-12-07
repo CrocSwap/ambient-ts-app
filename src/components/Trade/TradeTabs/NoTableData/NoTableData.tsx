@@ -1,5 +1,5 @@
 import styles from './NoTableData.module.css';
-import { AiFillFolderOpen } from 'react-icons/ai';
+// import { AiFillFolderOpen } from 'react-icons/ai';
 import { Dispatch, SetStateAction } from 'react';
 import { CandleData } from '../../../../utils/state/graphDataSlice';
 
@@ -31,8 +31,8 @@ export default function NoTableData(props: NoTableDataPropsIF) {
 
     return (
         <div className={styles.container}>
-            <AiFillFolderOpen size={90} color={'var(--text-grey-highlight)'} />
-            <h2>NO DATA FOUND</h2>
+            {/* <AiFillFolderOpen size={90} color={'var(--text-grey-highlight)'} /> */}
+            <h2>NO {type.toUpperCase()} FOUND</h2>
             {!isShowAllEnabled && toggleAllEnabledContent}
         </div>
     );

@@ -1,4 +1,4 @@
-.container{
+.container {
     width: 100%;
     height: 80%;
 
@@ -9,18 +9,18 @@
     gap: 4px;
 }
 
-.container h2{
+.container h2 {
     font-size: var(--header2-size);
     line-height: var(--header2-lh);
-    color: var(--text-grey-white)
+    color: var(--text-grey-light);
 }
-.container p{
+.container p {
     font-size: var(--body-size);
     line-height: var(--body-lh);
-    color: var(--text-grey-light)
+    color: var(--text-grey-light);
 }
 
-.container button{
+.container button {
     outline: none;
     border: none;
     background: #7371fc;
@@ -29,9 +29,9 @@
     border-radius: 4px;
     cursor: pointer;
     text-transform: capitalize;
-    transition: all var(--animation-speed) ease-in-out
+    transition: all var(--animation-speed) ease-in-out;
 }
-.container button:hover{
+.container button:hover {
     background: #cdc1ff;
     color: var(--text-grey-dark);
 }
