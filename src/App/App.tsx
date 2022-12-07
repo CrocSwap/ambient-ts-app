@@ -2383,7 +2383,7 @@ export default function App() {
     // app overlay-----------------------------------------------
     // end of app overlay-----------------------------------------------
 
-    useToken();
+    useToken(chainData.chainId);
 
     return (
         <>

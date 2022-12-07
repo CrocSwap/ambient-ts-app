@@ -5,8 +5,11 @@ import { TokenIF, TokenListIF } from '../../utils/interfaces/exports';
 // TODO: ... this will eliminate the need for recursive calls
 // TODO: ... it will also update data automatically
 
-export const useToken = () => {
+export const useToken = (
+    chainId: string
+) => {
     console.log('triggered useToken() hook!');
+    console.log(chainId);
 
     const [tokenMap, setTokenMap] = useState(new Map<string, TokenIF>());
 
@@ -21,7 +24,7 @@ export const useToken = () => {
                     .flatMap((tokenList: TokenListIF) => tokenList.tokens)
                     .forEach((tkn: TokenIF) =>
                         newTokenMap.set(
-                            tkn.address.toLowerCase() + '_0x' + tkn.chainId.toString(16).toLowerCase(),
+                            tkn.address.toLowerCase() + '_' + chainId.toLowerCase(),
                             tkn
                         )
                     );
