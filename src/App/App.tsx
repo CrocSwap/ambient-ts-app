@@ -142,6 +142,7 @@ import TopTokens from '../components/Analytics/TopTokens/TopTokens';
 import AnalyticsTransactions from '../components/Analytics/AnalyticsTransactions/AnalyticsTransactions';
 import trimString from '../utils/functions/trimString';
 import { memoizeFetchContractDetails } from './functions/fetchContractDetails';
+import useDebounce from './hooks/useDebounce';
 // import { memoizeQuerySpotTick } from './functions/querySpotTick';
 // import PhishingWarning from '../components/Global/PhisingWarning/PhishingWarning';
 
@@ -1363,6 +1364,8 @@ export default function App() {
     const candleDomains = tradeData.candleDomains;
     const domainBoundaryInSeconds = Math.floor((candleDomains?.domainBoundry || 0) / 1000);
 
+    const domainBoundaryInSecondsDebounced = useDebounce(domainBoundaryInSeconds, 500);
+
     useEffect(() => {
         // console.log({ debouncedBoundary });
         // console.log({ activePeriod });
@@ -1382,9 +1385,16 @@ export default function App() {
         const minTime = getMinTime();
         // console.log({ minTime });
 
-        const numDurationsNeeded = Math.floor((minTime - domainBoundaryInSeconds) / activePeriod);
+        const numDurationsNeeded = Math.floor(
+            (minTime - domainBoundaryInSecondsDebounced) / activePeriod,
+        );
 
-        if (isServerEnabled && httpGraphCacheServerDomain && domainBoundaryInSeconds && minTime) {
+        if (
+            isServerEnabled &&
+            httpGraphCacheServerDomain &&
+            domainBoundaryInSecondsDebounced &&
+            minTime
+        ) {
             // console.log('fetching candles');
             const candleSeriesCacheEndpoint = httpGraphCacheServerDomain + '/candle_series?';
 
@@ -1443,7 +1453,7 @@ export default function App() {
                 })
                 .catch(console.log);
         }
-    }, [domainBoundaryInSeconds]);
+    }, [domainBoundaryInSecondsDebounced]);
 
     useEffect(() => {
         if (candlesMessage) {

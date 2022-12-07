@@ -96,6 +96,7 @@ interface ChartData {
     setReset: React.Dispatch<React.SetStateAction<boolean>>;
     showLatest: boolean | undefined;
     setShowLatest: React.Dispatch<React.SetStateAction<boolean>>;
+    activeTimeFrame: string;
 }
 
 function getWindowDimensions() {
@@ -133,6 +134,7 @@ export default function Chart(props: ChartData) {
         setShowLatest,
         latest,
         setLatest,
+        activeTimeFrame,
     } = props;
 
     const tradeData = useAppSelector((state) => state.tradeData);
@@ -630,7 +632,12 @@ export default function Chart(props: ChartData) {
                 ])
                 .tickFormat((d: any) => {
                     if (d === crosshairData[0].x) {
-                        return moment(d).format('MMM  DD HH:mm');
+                        if (activeTimeFrame === '1d') {
+                            return moment(d).add(5, 'hours').format('MMM DD YYYY');
+                        } else {
+                            return moment(d).format('MMM DD HH:mm');
+                        }
+                        // return moment(d).format('  DD HH:mm');
                     }
 
                     return d3.timeFormat('%m/%d/%y')(d);
