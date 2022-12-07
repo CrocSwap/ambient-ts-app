@@ -210,8 +210,6 @@ export default function Chart(props: ChartData) {
     const [dragControl, setDragControl] = useState(false);
     const [zoomAndYdragControl, setZoomAndYdragControl] = useState();
     const [isMouseMoveCrosshair, setIsMouseMoveCrosshair] = useState(false);
-    const [bandwidth, setBandwidth] = useState(5);
-
     const [crosshairForSubChart, setCrosshairForSubChart] = useState([{ x: 0, y: -1 }]);
 
     const [isMouseMoveForSubChart, setIsMouseMoveForSubChart] = useState(false);
@@ -817,7 +815,6 @@ export default function Chart(props: ChartData) {
                 })
                 .on('zoom', (event: any) => {
                     if (event.sourceEvent && event.sourceEvent.type !== 'dblclick') {
-                        setBandwidth(candlestick.bandwidth());
                         const t = event.transform;
 
                         getNewCandleData(event, date, scaleData.xScale);
@@ -2307,9 +2304,8 @@ export default function Chart(props: ChartData) {
     useEffect(() => {
         if (scaleData !== undefined && candlestick !== undefined) {
             const barSeries = d3fc
-                .seriesSvgBar()
+                .autoBandwidth(d3fc.seriesSvgBar())
                 .align('center')
-                .bandwidth(bandwidth)
                 .xScale(scaleData.xScale)
                 .yScale(scaleData.volumeScale)
                 .crossValue((d: any) => d.time)
@@ -2350,7 +2346,7 @@ export default function Chart(props: ChartData) {
                 return barSeries;
             });
         }
-    }, [scaleData, selectedDate, bandwidth, candlestick, candlestick && candlestick.bandwidth()]);
+    }, [scaleData, selectedDate, candlestick, candlestick && candlestick.bandwidth()]);
 
     useEffect(() => {
         if (!location.pathname.includes('range')) {
