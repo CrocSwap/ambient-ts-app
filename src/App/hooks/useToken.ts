@@ -7,7 +7,9 @@ import { TokenIF, TokenListIF } from '../../utils/interfaces/exports';
 
 export const useToken = (
     chainId: string
-) => {
+) : [
+    verifyToken: (addr: string, chn: string) => boolean
+] => {
     const [tokenMap, setTokenMap] = useState(new Map<string, TokenIF>());
 
     // get allTokenLists from local storage after initial render
@@ -43,4 +45,10 @@ export const useToken = (
         checkForTokenLists();
     }, []);
     useEffect(() => console.log({tokenMap}), [tokenMap]);
+
+    const verifyToken = (addr: string, chn: string) => {
+        return !!tokenMap.get(addr.toLowerCase() + '_' + chn.toLowerCase());
+    }
+
+    return [verifyToken];
 }
