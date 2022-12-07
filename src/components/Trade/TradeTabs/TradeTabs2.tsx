@@ -277,7 +277,7 @@ export default function TradeTabs2(props: ITabsProps) {
                     simpleCalc: true,
                     annotateMEV: false,
                     ensResolution: true,
-                    n: 1000,
+                    n: 500, // fetch last 500 changes,
                 })
                     .then((updatedTransactions) => {
                         if (updatedTransactions) {
