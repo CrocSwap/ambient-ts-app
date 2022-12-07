@@ -75,6 +75,7 @@ interface ITabsProps {
     // handleTxCopiedClick: () => void;
     // handleOrderCopiedClick: () => void;
     // handleRangeCopiedClick: () => void;
+    activeTimeFrame: string;
 }
 
 // const httpGraphCacheServerDomain = 'https://809821320828123.de:5000';
@@ -120,6 +121,7 @@ export default function TradeTabs2(props: ITabsProps) {
         setSelectedDate,
         hasInitialized,
         setHasInitialized,
+        activeTimeFrame,
         // handleTxCopiedClick,
         // handleOrderCopiedClick,
         // handleRangeCopiedClick,
@@ -547,7 +549,21 @@ export default function TradeTabs2(props: ITabsProps) {
                 }}
                 style={isCandleSelected ? { cursor: 'pointer' } : { cursor: 'default' }}
             >
-                {isCandleSelected && `Showing Transactions for ${moment(selectedDate).calendar()}`}
+                {isCandleSelected &&
+                    activeTimeFrame === '1d' &&
+                    `Showing Transactions for ${moment(selectedDate)
+                        .add(5, 'hours')
+                        .calendar(null, {
+                            sameDay: '[Today]',
+                            nextDay: '[Tomorrow]',
+                            nextWeek: 'dddd',
+                            lastDay: '[Yesterday]',
+                            lastWeek: '[Last] dddd',
+                            sameElse: 'DD/MM/YYYY',
+                        })}`}
+                {isCandleSelected &&
+                    activeTimeFrame !== '1d' &&
+                    `Showing Transactions for ${moment(selectedDate).calendar()}`}
             </p>
             {clearButtonOrNull}
         </div>

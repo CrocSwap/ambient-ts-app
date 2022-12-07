@@ -94,6 +94,8 @@ interface TradeChartsPropsIF {
     selectedDate: Date | undefined;
     setSelectedDate: Dispatch<Date | undefined>;
     checkLimitOrder: boolean;
+    activeTimeFrame: string;
+    setActiveTimeFrame: Dispatch<SetStateAction<string>>;
 }
 
 export interface CandleChartData {
@@ -162,6 +164,8 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
         selectedDate,
         setSelectedDate,
         checkLimitOrder,
+        activeTimeFrame,
+        setActiveTimeFrame,
     } = props;
 
     const dispatch = useAppDispatch();
@@ -430,7 +434,6 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
         { label: '4h', activePeriod: 14400 },
         { label: '1d', activePeriod: 86400 },
     ];
-    const [activeTimeFrame, setActiveTimeFrame] = useState('1h');
 
     function handleTimeFrameButtonClick(label: string, time: number) {
         setActiveTimeFrame(label);
