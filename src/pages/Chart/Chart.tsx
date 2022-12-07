@@ -794,7 +794,7 @@ export default function Chart(props: ChartData) {
 
     // Zoom
     useEffect(() => {
-        if (scaleData !== undefined) {
+        if (scaleData !== undefined && parsedChartData !== undefined) {
             let date: any | undefined = undefined;
             let clickedForLine = false;
 
@@ -830,16 +830,53 @@ export default function Chart(props: ChartData) {
 
                             const deltaX = linearX(dx);
 
-                            if (!event.sourceEvent.ctrlKey) {
-                                scaleData.xScale.domain([
-                                    new Date(domainX[0].getTime() - deltaX),
-                                    domainX[1],
-                                ]);
-                            } else {
-                                scaleData.xScale.domain([
-                                    new Date(domainX[0].getTime() - deltaX),
-                                    new Date(domainX[1].getTime() + deltaX),
-                                ]);
+                            if (
+                                (deltaX < 0 ||
+                                    Math.abs(domainX[1].getTime() - domainX[0].getTime()) <=
+                                        parsedChartData.period * 1000 * 300) &&
+                                (deltaX > 0 ||
+                                    Math.abs(domainX[1].getTime() - domainX[0].getTime()) >=
+                                        parsedChartData.period * 1000)
+                            ) {
+                                if (!event.sourceEvent.ctrlKey) {
+                                    scaleData.xScale.domain([
+                                        new Date(domainX[0].getTime() - deltaX),
+                                        domainX[1],
+                                    ]);
+                                } else {
+                                    const gapTop =
+                                        domainX[1].getTime() -
+                                        scaleData.xScale
+                                            .invert(event.sourceEvent.offsetX)
+                                            .getTime();
+                                    const gapBot =
+                                        scaleData.xScale
+                                            .invert(event.sourceEvent.offsetX)
+                                            .getTime() - domainX[0].getTime();
+
+                                    const minGap = Math.min(gapTop, gapBot);
+                                    const maxGap = Math.max(gapTop, gapBot);
+
+                                    const baseMovement = deltaX / (maxGap / minGap + 1);
+
+                                    if (gapBot < gapTop) {
+                                        scaleData.xScale.domain([
+                                            new Date(domainX[0].getTime() - baseMovement),
+                                            new Date(
+                                                domainX[1].getTime() +
+                                                    baseMovement * (maxGap / minGap),
+                                            ),
+                                        ]);
+                                    } else {
+                                        scaleData.xScale.domain([
+                                            new Date(
+                                                domainX[0].getTime() -
+                                                    baseMovement * (maxGap / minGap),
+                                            ),
+                                            new Date(domainX[1].getTime() + baseMovement),
+                                        ]);
+                                    }
+                                }
                             }
                         } else {
                             const domainX = scaleData.xScale.domain();
@@ -855,14 +892,14 @@ export default function Chart(props: ChartData) {
                             ]);
                         }
 
-                        if (rescale) {
-                            const xmin = new Date(Math.floor(scaleData.xScale.domain()[0]));
-                            const xmax = new Date(Math.floor(scaleData.xScale.domain()[1]));
+                        const xmin = new Date(Math.floor(scaleData.xScale.domain()[0]));
+                        const xmax = new Date(Math.floor(scaleData.xScale.domain()[1]));
 
-                            const filtered = parsedChartData?.chartData.filter(
-                                (data: any) => data.date >= xmin && data.date <= xmax,
-                            );
+                        const filtered = parsedChartData?.chartData.filter(
+                            (data: any) => data.date >= xmin && data.date <= xmax,
+                        );
 
+                        if (rescale && filtered && filtered?.length > 10) {
                             if (filtered !== undefined) {
                                 const minYBoundary = d3.min(filtered, (d) => d.low);
                                 const maxYBoundary = d3.max(filtered, (d) => d.high);
@@ -876,18 +913,6 @@ export default function Chart(props: ChartData) {
                                     ]);
                                 }
                             }
-                        }
-
-                        if (
-                            !showLatest &&
-                            scaleData.xScale.domain()[1] < parsedChartData?.chartData[1].date
-                        ) {
-                            setShowLatest(true);
-                        } else if (
-                            showLatest &&
-                            !(scaleData.xScale.domain()[1] < parsedChartData?.chartData[1].date)
-                        ) {
-                            setShowLatest(false);
                         }
 
                         // PANNING
@@ -923,6 +948,10 @@ export default function Chart(props: ChartData) {
                         }
 
                         scaleData.lastZoomedY = t.y;
+
+                        console.log(event);
+                        console.log(t.x);
+
                         scaleData.lastX = t.x;
 
                         clickedForLine = true;
@@ -948,6 +977,23 @@ export default function Chart(props: ChartData) {
                         }
                     }
 
+                    const latestCandle = d3.max(parsedChartData.chartData, (d) => d.date);
+
+                    if (
+                        !showLatest &&
+                        latestCandle &&
+                        (scaleData.xScale.domain()[1] < latestCandle ||
+                            scaleData.xScale.domain()[0] > latestCandle)
+                    ) {
+                        setShowLatest(true);
+                    } else if (
+                        showLatest &&
+                        !(scaleData.xScale.domain()[1] < latestCandle) &&
+                        !(scaleData.xScale.domain()[0] > latestCandle)
+                    ) {
+                        setShowLatest(false);
+                    }
+
                     setTransformX(() => {
                         return scaleData.lastX;
                     });
@@ -955,8 +1001,6 @@ export default function Chart(props: ChartData) {
                 }) as any;
 
             const yAxisDrag = d3.drag().on('drag', async (event: any) => {
-                console.log('dragged');
-
                 const dy = event.dy;
                 const factor = Math.pow(2, -dy * 0.003);
                 const domain = scaleData.yScale.domain();
@@ -1012,11 +1056,16 @@ export default function Chart(props: ChartData) {
         candlestick,
         isZoomForSubChart,
         location,
-        JSON.stringify(scaleData.lastX),
+        scaleData.lastX,
         JSON.stringify(scaleData.xScale.domain()[0]),
+        JSON.stringify(scaleData.xScale.domain()[1]),
         transformX,
-        showLatest,
+        JSON.stringify(showLatest),
     ]);
+
+    useEffect(() => {
+        setShowLatest(false);
+    }, [JSON.stringify(parsedChartData?.period)]);
 
     useEffect(() => {
         if (scaleData !== undefined) {
@@ -1704,24 +1753,35 @@ export default function Chart(props: ChartData) {
 
     useEffect(() => {
         if (scaleData !== undefined && latest && parsedChartData !== undefined) {
+            const latestCandleIndex = d3.maxIndex(parsedChartData?.chartData, (d) => d.date);
+
             const diff =
                 scaleData.xScale.domain()[1].getTime() - scaleData.xScale.domain()[0].getTime();
-            scaleData.xScale.domain([
-                new Date(scaleData.xScaleCopy.domain()[1].getTime() - diff),
-                scaleData.xScaleCopy.domain()[1],
-            ]);
 
             if (rescale) {
                 scaleData.yScale.domain(scaleData.yScaleCopy.domain());
+
+                scaleData.xScale.domain([
+                    new Date(scaleData.xScaleCopy.domain()[1].getTime() - diff),
+                    scaleData.xScaleCopy.domain()[1],
+                ]);
             } else {
                 const diffY = scaleData.yScale.domain()[1] - scaleData.yScale.domain()[0];
-                const center =
-                    parsedChartData?.chartData[1].high -
+
+                const centerY =
+                    parsedChartData?.chartData[latestCandleIndex].high -
                     Math.abs(
-                        parsedChartData?.chartData[1].low - parsedChartData?.chartData[1].high,
+                        parsedChartData?.chartData[latestCandleIndex].low -
+                            parsedChartData?.chartData[latestCandleIndex].high,
                     ) /
                         2;
-                scaleData.yScale.domain([center - diffY / 2, center + diffY / 2]);
+                scaleData.yScale.domain([centerY - diffY / 2, centerY + diffY / 2]);
+
+                const centerX = parsedChartData?.chartData[latestCandleIndex].time * 1000;
+                scaleData.xScale.domain([
+                    new Date(centerX - diff / 2),
+                    new Date(centerX + diff / 2),
+                ]);
             }
 
             setLatest(false);
@@ -2578,6 +2638,7 @@ export default function Chart(props: ChartData) {
             liqHighligtedBidSeries !== undefined &&
             horizontalBandData !== undefined &&
             horizontalBandJoin !== undefined &&
+            barSeries !== undefined &&
             volumeData !== undefined
         ) {
             const targetData = {
@@ -2748,7 +2809,7 @@ export default function Chart(props: ChartData) {
                     props.setCurrentVolumeData(
                         volumeData.find(
                             (item: any) => item.time.getTime() === nearest?.date.getTime(),
-                        )?.value,
+                        )?.volume,
                     );
                     return [
                         {
@@ -3273,7 +3334,6 @@ export default function Chart(props: ChartData) {
 
     // // Candle transactions
     useEffect(() => {
-        console.log({ selectedDate });
         if (selectedDate !== undefined) {
             const candle = parsedChartData?.chartData.find(
                 (candle: any) => candle.date.toString() === selectedDate.toString(),
