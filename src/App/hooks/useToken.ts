@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { TokenListIF } from '../../utils/interfaces/exports';
 
 // TODO: refactor to accept tokens from another hook in params
 // TODO: ... this will eliminate the need for recursive calls
@@ -13,11 +14,12 @@ export const useToken = () => {
         const checkForTokenLists = (limiter=0) => {
             // execute if local storage has token lists
             if (localStorage.getItem('allTokenLists')) {
-                console.log('we have token lists');
+                const listedTokens = JSON.parse(
+                    localStorage.getItem('allTokenLists') as string
+                ).flatMap((tokenList: TokenListIF) => tokenList.tokens);
             // call fn recursively if local storage does not have token lists
             // limit recursive calls to 100
             } else if (limiter < 100) {
-                console.log('I do not see any lists yet');
                 setTimeout(() => checkForTokenLists(limiter + 1), 250);
             } else {
                 // console warning if max recursion depth is reached
