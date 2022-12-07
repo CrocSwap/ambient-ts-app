@@ -10,5 +10,9 @@ export const useToken = () => {
         localStorage.getItem('allTokenLists')
             ? console.log('we have token lists')
             : console.log('I do not see any lists yet');
+        const checkForTokenLists = () => {
+            console.log('trigger function checForTokenLists()');
+        }
+        checkForTokenLists();
     }, []);
 }
