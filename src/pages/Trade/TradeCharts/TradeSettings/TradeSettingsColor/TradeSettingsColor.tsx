@@ -2,6 +2,7 @@ import styles from './TradeSettingsColor.module.css';
 import { Dispatch, SetStateAction } from 'react';
 
 import { SketchPicker, SketchPickerProps } from 'react-color';
+import { DefaultTooltip } from '../../../../../components/Global/StyledTooltip/StyledTooltip';
 
 interface TradeSettingsColorPropsIF {
     upBodyColorPicker: boolean;
@@ -45,7 +46,10 @@ export default function TradeSettingsColor(props: TradeSettingsColorPropsIF) {
         <>
             {upBodyColorPicker ? (
                 <div className={styles.color_picker_container}>
-                    <div onClick={() => setUpBodyColorPicker(false)} />
+                    <div
+                        className={styles.color_picker_content}
+                        onClick={() => setUpBodyColorPicker(false)}
+                    />
                     <SketchPicker
                         color={upBodyColor}
                         onChangeComplete={handleBodyColorPickerChange}
@@ -98,6 +102,7 @@ export default function TradeSettingsColor(props: TradeSettingsColorPropsIF) {
                     />
                 </div>
             ) : null}
+
             <div
                 className={styles.square_picker_container}
                 onClick={() => setDownBorderColorPicker(true)}
@@ -130,6 +135,19 @@ export default function TradeSettingsColor(props: TradeSettingsColorPropsIF) {
         </>
     );
 
+    // const dbPicker = (
+    //     <DefaultTooltip
+    //     interactive
+    //     title={openAllButton}
+    //     placement={'bottom'}
+    //     arrow
+    //     enterDelay={100}
+    //     leaveDelay={200}
+    // >
+    //     {downBorder}
+    // </DefaultTooltip>
+    // )
+
     const upBodyColorPickerSquare = (
         <div className={styles.square_picker_container} onClick={() => setUpBodyColorPicker(true)}>
             <div
@@ -138,7 +156,7 @@ export default function TradeSettingsColor(props: TradeSettingsColorPropsIF) {
                     background: upBodyColor,
                 }}
             />
-            <label style={{ padding: '0px' }}>Body</label>
+            <label>Body</label>
         </div>
     );
 
@@ -150,6 +168,35 @@ export default function TradeSettingsColor(props: TradeSettingsColorPropsIF) {
             <div className={styles.square_picker} style={{ background: downBodyColor }} />
             <label>Body</label>
         </div>
+    );
+
+    const downBorderWithTooltip = (
+        <DefaultTooltip
+            interactive
+            title={
+                <SketchPicker
+                    color={downBorderColor}
+                    onChangeComplete={handleDownBorderColorPickerChange}
+                />
+            }
+            placement={'bottom'}
+            arrow
+            enterDelay={100}
+            leaveDelay={200}
+        >
+            <div
+                className={styles.square_picker_container}
+                onClick={() => setDownBorderColorPicker(true)}
+            >
+                <div
+                    className={styles.square_picker}
+                    style={{
+                        background: downBorderColor,
+                    }}
+                />
+                <label>Border</label>
+            </div>
+        </DefaultTooltip>
     );
 
     return (
@@ -170,6 +217,7 @@ export default function TradeSettingsColor(props: TradeSettingsColorPropsIF) {
                         {downBodyColorPickerSquare}
                         {downBodyColorPickerContent}
                         {downBorderColorPickerContent}
+                        {downBorderWithTooltip}
                     </div>
                 </section>
             </div>

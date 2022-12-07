@@ -301,7 +301,12 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
             ))}
         </ul>
     );
-
+    useEffect(() => {
+        const currentTabData = chartSettingsData.find(
+            (item) => item.label === selectedChartSetting.label,
+        );
+        if (currentTabData) setSelectedChartSetting(currentTabData);
+    }, [chartSettingsData]);
     const mainChartSettingsContent = (
         <div
             className={`${styles.main_settings_container} ${

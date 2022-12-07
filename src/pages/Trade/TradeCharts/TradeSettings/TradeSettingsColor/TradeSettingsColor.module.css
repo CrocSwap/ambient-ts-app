@@ -33,12 +33,12 @@
 }
 .color_picker_container{
     z-index: 100;
+
 }
 
+
+
 .color_picker_content{
-    position: fixed;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
+position: absolute;
+top: 0;
 }
