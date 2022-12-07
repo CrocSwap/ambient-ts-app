@@ -550,8 +550,8 @@ export default function TradeTabs2(props: ITabsProps) {
                 interactive
                 title={
                     activeTimeFrame === '1d'
-                        ? 'Transactions since Midnight UTC'
-                        : `Transactions during ${activeTimeFrame} timeframe`
+                        ? 'Transactions for 24 hours since Midnight UTC'
+                        : `Transactions for ${activeTimeFrame} timeframe`
                 }
                 placement={'bottom'}
                 arrow
