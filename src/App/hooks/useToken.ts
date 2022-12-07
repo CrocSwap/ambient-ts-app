@@ -17,14 +17,12 @@ export const useToken = (
             // execute if local storage has token lists
             if (localStorage.getItem('allTokenLists')) {
                 const newTokenMap = new Map<string, TokenIF>();
+                const addTokenToMap = (tkn: TokenIF) => newTokenMap.set(
+                    tkn.address.toLowerCase() + '_' + chainId.toLowerCase(), tkn
+                );
                 JSON.parse(localStorage.getItem('allTokenLists') as string)
                     .flatMap((tokenList: TokenListIF) => tokenList.tokens)
-                    .forEach((tkn: TokenIF) =>
-                        newTokenMap.set(
-                            tkn.address.toLowerCase() + '_' + chainId.toLowerCase(),
-                            tkn
-                        )
-                    );
+                    .forEach((tkn: TokenIF) => addTokenToMap(tkn));
                 setTokenMap(newTokenMap);
             } else if (limiter < 100) {
                 // call fn recursively if local storage does not have token lists
