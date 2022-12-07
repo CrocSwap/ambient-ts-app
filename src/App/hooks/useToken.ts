@@ -45,7 +45,6 @@ export const useToken = (
         }
         checkForTokenLists();
     }, []);
-    useEffect(() => console.log({tokenMap}), [tokenMap]);
 
     // fn to determine if a token exists in a recognized token list
     const verifyToken = (addr: string, chn: string) => {
