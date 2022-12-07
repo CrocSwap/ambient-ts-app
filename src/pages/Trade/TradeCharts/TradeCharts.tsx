@@ -17,6 +17,8 @@ import {
     AiOutlineTwitter,
     AiOutlineSetting,
 } from 'react-icons/ai';
+import { VscClose } from 'react-icons/vsc';
+
 import { HiOutlineExternalLink } from 'react-icons/hi';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 
@@ -50,6 +52,7 @@ import TradeChartsLoading from './TradeChartsLoading/TradeChartsLoading';
 import NoTokenIcon from '../../../components/Global/NoTokenIcon/NoTokenIcon';
 import { ChainSpec, CrocPoolView } from '@crocswap-libs/sdk';
 import { formatDollarAmountAxis } from '../../../utils/numbers';
+import IconWithTooltip from '../../../components/Global/IconWithTooltip/IconWithTooltip';
 // import { formatAmountOld } from '../../../utils/numbers';
 
 // interface for React functional component props
@@ -280,15 +283,9 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
                     }
                     onClick={() => setSelectedChartSetting(item)}
                 >
-                    <DefaultTooltip
-                        title={item.label}
-                        placement={'right'}
-                        arrow
-                        enterDelay={100}
-                        leaveDelay={200}
-                    >
-                        <>{item.icon}</>
-                    </DefaultTooltip>
+                    <IconWithTooltip title={item.label} placement='left'>
+                        {item.icon}
+                    </IconWithTooltip>
                 </li>
             ))}
         </ul>
@@ -300,12 +297,21 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
                 showChartSettings && styles.main_settings_container_active
             }`}
         >
-            {chartSettingNavs}
-            <section className={styles.main_chart_settings_content}>
-                <h1>{selectedChartSetting.label}</h1>
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. Totam sit, voluptates
-                similique odit rerum veniam laudantium? Voluptatibus hic labore culpa.
-            </section>
+            <header>
+                <p />
+                <h2>Chart Settings</h2>
+                <div>
+                    <VscClose size={24} />
+                </div>
+            </header>
+            <div className={styles.chart_settings_inner}>
+                {chartSettingNavs}
+                <section className={styles.main_chart_settings_content}>
+                    <h1>{selectedChartSetting.label}</h1>
+                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Totam sit, voluptates
+                    similique odit rerum veniam laudantium? Voluptatibus hic labore culpa.
+                </section>
+            </div>
         </div>
     );
     const graphSettingsContent = (
