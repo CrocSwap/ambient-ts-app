@@ -287,6 +287,16 @@ export default function Trade(props: TradePropsIF) {
 
     const [activeTimeFrame, setActiveTimeFrame] = useState('1h');
 
+    const unselectCandle = () => {
+        setSelectedDate(undefined);
+        changeState(false, undefined);
+        setIsCandleSelected(false);
+    };
+
+    useEffect(() => {
+        unselectCandle();
+    }, [activeTimeFrame]);
+
     const initLinkPath =
         '/initpool/chain=0x5&tokenA=' + baseTokenAddress + '&tokenB=' + quoteTokenAddress;
 
@@ -583,6 +593,7 @@ export default function Trade(props: TradePropsIF) {
                             hasInitialized={hasInitialized}
                             setHasInitialized={setHasInitialized}
                             activeTimeFrame={activeTimeFrame}
+                            unselectCandle={unselectCandle}
                             // handleTxCopiedClick={handleTxCopiedClick}
                             // handleOrderCopiedClick={handleOrderCopiedClick}
                             // handleRangeCopiedClick={handleRangeCopiedClick}

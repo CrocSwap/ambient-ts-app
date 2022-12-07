@@ -77,6 +77,7 @@ interface ITabsProps {
     // handleOrderCopiedClick: () => void;
     // handleRangeCopiedClick: () => void;
     activeTimeFrame: string;
+    unselectCandle: () => void;
 }
 
 // const httpGraphCacheServerDomain = 'https://809821320828123.de:5000';
@@ -123,6 +124,7 @@ export default function TradeTabs2(props: ITabsProps) {
         hasInitialized,
         setHasInitialized,
         activeTimeFrame,
+        unselectCandle,
         // handleTxCopiedClick,
         // handleOrderCopiedClick,
         // handleRangeCopiedClick,
@@ -528,11 +530,11 @@ export default function TradeTabs2(props: ITabsProps) {
         setCurrentTxActiveInTransactions('');
         setCurrentPositionActive('');
     };
-    const unselectCandle = () => {
-        setSelectedDate(undefined);
-        changeState(false, undefined);
-        setIsCandleSelected(false);
-    };
+    // const unselectCandle = () => {
+    //     setSelectedDate(undefined);
+    //     changeState(false, undefined);
+    //     setIsCandleSelected(false);
+    // };
 
     const clearButtonOrNull = isCandleSelected ? (
         <button className={styles.option_button} onClick={() => unselectCandle()}>
