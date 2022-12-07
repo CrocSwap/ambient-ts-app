@@ -444,14 +444,13 @@
     bottom: 0px;
 
     opacity: 0;
-    pointer-events: none;
 }
 .main_settings_container_active{
     opacity: 1;
 width: 100%;
    top: 30px;
    right: 10px;
-    pointer-events: auto;
+
     z-index: 5;
 }
 
