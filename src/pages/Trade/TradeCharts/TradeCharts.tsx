@@ -15,7 +15,10 @@ import {
     AiOutlineCopy,
     AiOutlineLink,
     AiOutlineTwitter,
+    AiOutlineSetting,
 } from 'react-icons/ai';
+import { VscClose } from 'react-icons/vsc';
+
 import { HiOutlineExternalLink } from 'react-icons/hi';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 
@@ -54,6 +57,7 @@ import TradeChartsLoading from './TradeChartsLoading/TradeChartsLoading';
 import NoTokenIcon from '../../../components/Global/NoTokenIcon/NoTokenIcon';
 import { ChainSpec, CrocPoolView } from '@crocswap-libs/sdk';
 import { formatDollarAmountAxis } from '../../../utils/numbers';
+import IconWithTooltip from '../../../components/Global/IconWithTooltip/IconWithTooltip';
 // import { formatAmountOld } from '../../../utils/numbers';
 
 // interface for React functional component props
@@ -263,6 +267,62 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
             document.body.removeEventListener('keydown', closeOnEscapeKeyDown);
         };
     });
+    const exDataContent = (
+        <div>Lorem ipsum dolor sit amet consectetur adipisicing elit. Perferendis, doloremque.</div>
+    );
+    const chartSettingsData = [
+        { icon: '🍅', label: 'Tomato', content: exDataContent },
+        { icon: '🥬', label: 'Lettuce', content: exDataContent },
+        { icon: '🥕', label: 'Carrot', content: exDataContent },
+        { icon: '🫐', label: 'Blueberries', content: exDataContent },
+        { icon: '🥂', label: 'Champers?', content: exDataContent },
+    ];
+
+    const [showChartSettings, setShowChartSettings] = useState(false);
+    const [selectedChartSetting, setSelectedChartSetting] = useState(chartSettingsData[0]);
+    const chartSettingNavs = (
+        <ul className={styles.chart_settings_nav}>
+            {chartSettingsData.map((item, idx) => (
+                <li
+                    key={idx}
+                    className={
+                        item.label === selectedChartSetting.label
+                            ? styles.setting_active
+                            : styles.setting
+                    }
+                    onClick={() => setSelectedChartSetting(item)}
+                >
+                    <IconWithTooltip title={item.label} placement='left'>
+                        {item.icon}
+                    </IconWithTooltip>
+                </li>
+            ))}
+        </ul>
+    );
+
+    const mainChartSettingsContent = (
+        <div
+            className={`${styles.main_settings_container} ${
+                showChartSettings && styles.main_settings_container_active
+            }`}
+        >
+            <header>
+                <p />
+                <h2>Chart Settings</h2>
+                <div>
+                    <VscClose size={24} />
+                </div>
+            </header>
+            <div className={styles.chart_settings_inner}>
+                {chartSettingNavs}
+                <section className={styles.main_chart_settings_content}>
+                    <h1>{selectedChartSetting.label}</h1>
+                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Totam sit, voluptates
+                    similique odit rerum veniam laudantium? Voluptatibus hic labore culpa.
+                </section>
+            </div>
+        </div>
+    );
     const graphSettingsContent = (
         <div className={styles.graph_settings_container}>
             <div onClick={() => setFullScreenChart(!fullScreenChart)}>
@@ -273,6 +333,9 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
                     <AiOutlineCamera size={20} />
                 </div>
             </DefaultTooltip>
+            <div onClick={() => setShowChartSettings(!showChartSettings)}>
+                <AiOutlineSetting size={20} />
+            </div>
         </div>
     );
 
@@ -874,6 +937,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
             style={{ padding: fullScreenChart ? '1rem' : '0' }}
             ref={canvasRef}
         >
+            {mainChartSettingsContent}
             <div className={`${styles.graph_style} ${expandGraphStyle}  `}>
                 {/* {graphSettingsContent} */}
                 {tokenInfo}
