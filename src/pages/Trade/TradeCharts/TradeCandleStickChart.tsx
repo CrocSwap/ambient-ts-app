@@ -69,6 +69,7 @@ interface ChartData {
     reset: boolean | undefined;
     setReset: React.Dispatch<React.SetStateAction<boolean>>;
     showLatest: boolean | undefined;
+    activeTimeFrame: string;
     setShowLatest: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
@@ -97,6 +98,7 @@ export default function TradeCandleStickChart(props: ChartData) {
         selectedDate,
         setSelectedDate,
         checkLimitOrder,
+        activeTimeFrame,
     } = props;
 
     const [scaleData, setScaleData] = useState<any>();
@@ -543,6 +545,7 @@ export default function TradeCandleStickChart(props: ChartData) {
                         setReset={props.setReset}
                         showLatest={props.showLatest}
                         setShowLatest={props.setShowLatest}
+                        activeTimeFrame={activeTimeFrame}
                     />
                 ) : (
                     <>{loading}</>

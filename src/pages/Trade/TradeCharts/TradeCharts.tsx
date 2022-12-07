@@ -923,6 +923,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
                         setReset={setReset}
                         showLatest={showLatest}
                         setShowLatest={setShowLatest}
+                        activeTimeFrame={activeTimeFrame}
                     />
                 </div>
             )}
