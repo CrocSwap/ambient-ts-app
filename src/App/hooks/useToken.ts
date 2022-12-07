@@ -42,5 +42,5 @@ export const useToken = (
         }
         checkForTokenLists();
     }, []);
-    useEffect(() => console.log({tokenMap}), [tokenMap])
+    useEffect(() => console.log({tokenMap}), [tokenMap]);
 }
