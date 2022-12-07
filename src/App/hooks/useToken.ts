@@ -8,7 +8,8 @@ import { TokenIF, TokenListIF } from '../../utils/interfaces/exports';
 export const useToken = (
     chainId: string
 ) : [
-    verifyToken: (addr: string, chn: string) => boolean
+    verifyToken: (addr: string, chn: string) => boolean,
+    getToken: (addr: string, chn: string) => TokenIF | undefined
 ] => {
     const [tokenMap, setTokenMap] = useState(new Map<string, TokenIF>());
 
@@ -46,9 +47,15 @@ export const useToken = (
     }, []);
     useEffect(() => console.log({tokenMap}), [tokenMap]);
 
+    // fn to determine if a token exists in a recognized token list
     const verifyToken = (addr: string, chn: string) => {
         return !!tokenMap.get(addr.toLowerCase() + '_' + chn.toLowerCase());
     }
 
-    return [verifyToken];
+    // fn to return a given token by name and address
+    const getToken = (addr: string, chn: string) => {
+        return tokenMap.get(addr.toLowerCase() + '_' + chn.toLowerCase());
+    }
+
+    return [verifyToken, getToken];
 }
