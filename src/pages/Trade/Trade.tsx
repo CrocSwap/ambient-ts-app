@@ -19,6 +19,7 @@ import { CandleData, CandlesByPoolAndDuration } from '../../utils/state/graphDat
 import { PoolIF, TokenIF, TokenPairIF } from '../../utils/interfaces/exports';
 import { useUrlParams } from './useUrlParams';
 import NoTokenIcon from '../../components/Global/NoTokenIcon/NoTokenIcon';
+import TradeSettingsColor from './TradeCharts/TradeSettings/TradeSettingsColor/TradeSettingsColor';
 
 // interface for React functional component props
 interface TradePropsIF {
@@ -257,6 +258,24 @@ export default function Trade(props: TradePropsIF) {
     const handleDownBorderColorPickerChange = (color: any) => {
         setDownBorderColor(color.hex);
     };
+    const tradeSettingsColorProps = {
+        upBodyColorPicker: upBodyColorPicker,
+        setUpBodyColorPicker: setUpBodyColorPicker,
+        upBodyColor: upBodyColor,
+        handleBodyColorPickerChange: handleBodyColorPickerChange,
+        handleBorderColorPickerChange: handleBorderColorPickerChange,
+        handleDownBodyColorPickerChange: handleDownBodyColorPickerChange,
+        handleDownBorderColorPickerChange: handleDownBorderColorPickerChange,
+        setUpBorderColorPicker: setUpBorderColorPicker,
+        setDownBodyColorPicker: setDownBodyColorPicker,
+        setDownBorderColorPicker: setDownBorderColorPicker,
+        upBorderColor: upBorderColor,
+        upBorderColorPicker: upBorderColorPicker,
+        downBodyColor: downBodyColor,
+        downBodyColorPicker: downBodyColorPicker,
+        downBorderColor: downBorderColor,
+        downBorderColorPicker: downBorderColorPicker,
+    };
 
     const [showChartAndNotTab, setShowChartAndNotTab] = useState(false);
 
@@ -325,7 +344,7 @@ export default function Trade(props: TradePropsIF) {
                 {poolNotInitializedContent}
                 {mobileDataToggle}
                 <div className={` ${expandGraphStyle} ${fullScreenStyle}`}>
-                    <div style={{ textAlign: 'center', display: 'flex' }}>
+                    {/* <div style={{ textAlign: 'center', display: 'flex' }}>
                         <label style={{ padding: '0px' }}>Up</label>
                         <div style={{ marginLeft: '4px' }}>
                             <div
@@ -484,7 +503,7 @@ export default function Trade(props: TradePropsIF) {
                                 </div>
                             ) : null}
                         </div>
-                    </div>
+                    </div> */}
 
                     <div
                         className={`${styles.main__chart_container} ${
@@ -525,6 +544,7 @@ export default function Trade(props: TradePropsIF) {
                             checkLimitOrder={checkLimitOrder}
                             activeTimeFrame={activeTimeFrame}
                             setActiveTimeFrame={setActiveTimeFrame}
+                            TradeSettingsColor={<TradeSettingsColor {...tradeSettingsColorProps} />}
                         />
                     </div>
                 </div>

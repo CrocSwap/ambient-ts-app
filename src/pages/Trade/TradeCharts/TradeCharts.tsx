@@ -100,6 +100,7 @@ interface TradeChartsPropsIF {
     checkLimitOrder: boolean;
     activeTimeFrame: string;
     setActiveTimeFrame: Dispatch<SetStateAction<string>>;
+    TradeSettingsColor: JSX.Element;
 }
 
 export interface CandleChartData {
@@ -170,6 +171,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
         checkLimitOrder,
         activeTimeFrame,
         setActiveTimeFrame,
+        TradeSettingsColor,
     } = props;
 
     const dispatch = useAppDispatch();
@@ -276,6 +278,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
         { icon: '🥕', label: 'Carrot', content: exDataContent },
         { icon: '🫐', label: 'Blueberries', content: exDataContent },
         { icon: '🥂', label: 'Champers?', content: exDataContent },
+        { icon: '🥂 🥂', label: 'Colors', content: TradeSettingsColor },
     ];
 
     const [showChartSettings, setShowChartSettings] = useState(false);
