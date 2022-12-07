@@ -8,9 +8,6 @@ import { TokenIF, TokenListIF } from '../../utils/interfaces/exports';
 export const useToken = (
     chainId: string
 ) => {
-    console.log('triggered useToken() hook!');
-    console.log(chainId);
-
     const [tokenMap, setTokenMap] = useState(new Map<string, TokenIF>());
 
     // get allTokenLists from local storage after initial render
