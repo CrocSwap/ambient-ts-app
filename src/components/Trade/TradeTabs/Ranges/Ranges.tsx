@@ -462,6 +462,7 @@ export default function Ranges(props: RangesPropsIF) {
         <NoTableData
             isShowAllEnabled={isShowAllEnabled}
             type='ranges'
+            isOnPortfolioPage={isOnPortfolioPage}
             setIsShowAllEnabled={setIsShowAllEnabled}
         />
     );

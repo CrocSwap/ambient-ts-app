@@ -227,7 +227,7 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
             simpleCalc: true,
             annotateMEV: false,
             ensResolution: true,
-            n: 100,
+            n: 500, // fetch last 500 changes,
         })
             .then((updatedTransactions) => {
                 if (updatedTransactions) {
