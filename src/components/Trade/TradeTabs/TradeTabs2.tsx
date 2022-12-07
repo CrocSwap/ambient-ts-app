@@ -277,7 +277,7 @@ export default function TradeTabs2(props: ITabsProps) {
                     simpleCalc: true,
                     annotateMEV: false,
                     ensResolution: true,
-                    n: 100,
+                    n: 1000,
                 })
                     .then((updatedTransactions) => {
                         if (updatedTransactions) {

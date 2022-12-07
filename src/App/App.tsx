@@ -1897,7 +1897,7 @@ export default function App() {
                     simpleCalc: true,
                     annotateMEV: false,
                     ensResolution: true,
-                    n: 100,
+                    n: 1000,
                 })
                     .then((updatedTransactions) => {
                         dispatch(
