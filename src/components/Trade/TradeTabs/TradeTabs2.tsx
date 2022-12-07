@@ -541,7 +541,8 @@ export default function TradeTabs2(props: ITabsProps) {
     ) : null;
 
     const utcDiff = moment().utcOffset();
-    const utcDiffHours = Math.abs(Math.floor(utcDiff / 60));
+    const utcDiffHours = Math.floor(utcDiff / 60);
+
     // console.log({ utcDiffHours });
 
     const selectedMessageContent = (
@@ -569,7 +570,7 @@ export default function TradeTabs2(props: ITabsProps) {
                     {isCandleSelected &&
                         activeTimeFrame === '1d' &&
                         `Showing Transactions ${moment(selectedDate)
-                            .add(utcDiffHours, 'hours')
+                            .subtract(utcDiffHours, 'hours')
                             .calendar(null, {
                                 sameDay: 'for [Today]',
                                 // sameDay: '[Today]',
