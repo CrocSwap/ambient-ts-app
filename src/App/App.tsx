@@ -142,6 +142,7 @@ import TopTokens from '../components/Analytics/TopTokens/TopTokens';
 import AnalyticsTransactions from '../components/Analytics/AnalyticsTransactions/AnalyticsTransactions';
 import trimString from '../utils/functions/trimString';
 import { memoizeFetchContractDetails } from './functions/fetchContractDetails';
+import { useToken } from './hooks/useToken';
 // import { memoizeQuerySpotTick } from './functions/querySpotTick';
 // import PhishingWarning from '../components/Global/PhisingWarning/PhishingWarning';
 
@@ -2381,6 +2382,8 @@ export default function App() {
 
     // app overlay-----------------------------------------------
     // end of app overlay-----------------------------------------------
+
+    useToken();
 
     return (
         <>
