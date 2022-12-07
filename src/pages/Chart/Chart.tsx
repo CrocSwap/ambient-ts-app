@@ -949,8 +949,8 @@ export default function Chart(props: ChartData) {
 
                         scaleData.lastZoomedY = t.y;
 
-                        console.log(event);
-                        console.log(t.x);
+                        // console.log(event);
+                        // console.log(t.x);
 
                         scaleData.lastX = t.x;
 
