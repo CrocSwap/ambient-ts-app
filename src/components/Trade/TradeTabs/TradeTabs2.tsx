@@ -27,6 +27,7 @@ import { fetchPoolRecentChanges } from '../../../App/functions/fetchPoolRecentCh
 import { fetchUserRecentChanges } from '../../../App/functions/fetchUserRecentChanges';
 import Leaderboard from './Ranges/Leaderboard';
 import PoolInfo from './PoolInfo/PoolInfo';
+import { DefaultTooltip } from '../../Global/StyledTooltip/StyledTooltip';
 
 interface ITabsProps {
     isUserLoggedIn: boolean | undefined;
@@ -539,32 +540,51 @@ export default function TradeTabs2(props: ITabsProps) {
         </button>
     ) : null;
 
+    const utcDiff = moment().utcOffset();
+    const utcDiffHours = Math.abs(Math.floor(utcDiff / 60));
+    // console.log({ utcDiffHours });
+
     const selectedMessageContent = (
         <div className={styles.show_tx_message}>
-            <p
-                onClick={() => {
-                    unselectCandle();
-                    // setIsCandleSelected(false);
-                    // setTransactionFilter(undefined);
-                }}
-                style={isCandleSelected ? { cursor: 'pointer' } : { cursor: 'default' }}
+            <DefaultTooltip
+                interactive
+                title={
+                    activeTimeFrame === '1d'
+                        ? 'Transactions since Midnight UTC'
+                        : `Transactions during ${activeTimeFrame} timeframe`
+                }
+                placement={'bottom'}
+                arrow
+                enterDelay={300}
+                leaveDelay={200}
             >
-                {isCandleSelected &&
-                    activeTimeFrame === '1d' &&
-                    `Showing Transactions for ${moment(selectedDate)
-                        .add(5, 'hours')
-                        .calendar(null, {
-                            sameDay: '[Today]',
-                            nextDay: '[Tomorrow]',
-                            nextWeek: 'dddd',
-                            lastDay: '[Yesterday]',
-                            lastWeek: '[Last] dddd',
-                            sameElse: 'DD/MM/YYYY',
-                        })}`}
-                {isCandleSelected &&
-                    activeTimeFrame !== '1d' &&
-                    `Showing Transactions for ${moment(selectedDate).calendar()}`}
-            </p>
+                <p
+                    onClick={() => {
+                        unselectCandle();
+                        // setIsCandleSelected(false);
+                        // setTransactionFilter(undefined);
+                    }}
+                    style={isCandleSelected ? { cursor: 'pointer' } : { cursor: 'default' }}
+                >
+                    {isCandleSelected &&
+                        activeTimeFrame === '1d' &&
+                        `Showing Transactions ${moment(selectedDate)
+                            .add(utcDiffHours, 'hours')
+                            .calendar(null, {
+                                sameDay: 'for [Today]',
+                                // sameDay: '[Today]',
+                                nextDay: 'for ' + '[Tomorrow]',
+                                nextWeek: 'for' + 'dddd',
+                                lastDay: 'for ' + '[Yesterday]',
+                                lastWeek: 'for ' + '[Last] dddd',
+                                sameElse: 'for ' + 'MM/DD/YYYY',
+                            })}`}
+                    {isCandleSelected &&
+                        activeTimeFrame !== '1d' &&
+                        `Showing Transactions for ${moment(selectedDate).calendar()}`}
+                </p>
+            </DefaultTooltip>
+
             {clearButtonOrNull}
         </div>
     );
