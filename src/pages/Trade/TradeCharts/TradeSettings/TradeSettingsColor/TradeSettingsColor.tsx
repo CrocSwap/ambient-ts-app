@@ -44,17 +44,8 @@ export default function TradeSettingsColor(props: TradeSettingsColorPropsIF) {
     const upBodyColorPickerContent = (
         <>
             {upBodyColorPicker ? (
-                <div style={{ position: 'absolute', zIndex: '2' }}>
-                    <div
-                        style={{
-                            position: 'fixed',
-                            top: '0px',
-                            right: '0px',
-                            bottom: '0px',
-                            left: '0px',
-                        }}
-                        onClick={() => setUpBodyColorPicker(false)}
-                    />
+                <div className={styles.color_picker_container}>
+                    <div onClick={() => setUpBodyColorPicker(false)} />
                     <SketchPicker
                         color={upBodyColor}
                         onChangeComplete={handleBodyColorPickerChange}
@@ -79,17 +70,8 @@ export default function TradeSettingsColor(props: TradeSettingsColorPropsIF) {
     const upBorderColorContent = (
         <>
             {upBorderColorPicker ? (
-                <div style={{ position: 'absolute', zIndex: '2' }}>
-                    <div
-                        style={{
-                            position: 'fixed',
-                            top: '0px',
-                            right: '0px',
-                            bottom: '0px',
-                            left: '0px',
-                        }}
-                        onClick={() => setUpBorderColorPicker(false)}
-                    />
+                <div className={styles.color_picker_container}>
+                    <div onClick={() => setUpBorderColorPicker(false)} />
                     <SketchPicker
                         color={upBorderColor}
                         onChangeComplete={handleBorderColorPickerChange}
