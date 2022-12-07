@@ -10,9 +10,11 @@ interface NoTableDataPropsIF {
     // setIsCandleSelected?: Dispatch<SetStateAction<boolean | undefined>>;
     changeState?: (isOpen: boolean | undefined, candleData: CandleData | undefined) => void;
     setSelectedDate?: Dispatch<Date | undefined>;
+    isOnPortfolioPage: boolean;
 }
 export default function NoTableData(props: NoTableDataPropsIF) {
-    const { isShowAllEnabled, setIsShowAllEnabled, type, setSelectedDate } = props;
+    const { isShowAllEnabled, setIsShowAllEnabled, type, setSelectedDate, isOnPortfolioPage } =
+        props;
 
     const toggleAllEnabled = () => {
         console.log('setting show all to true');
@@ -22,7 +24,7 @@ export default function NoTableData(props: NoTableDataPropsIF) {
         setSelectedDate ? setSelectedDate(undefined) : null;
     };
 
-    const toggleAllEnabledContent = (
+    const toggleAllEnabledContentOrNull = isOnPortfolioPage ? null : (
         <>
             <p>Consider turning on all {type}</p>
             <button onClick={toggleAllEnabled}>All {type}</button>
@@ -33,7 +35,7 @@ export default function NoTableData(props: NoTableDataPropsIF) {
         <div className={styles.container}>
             {/* <AiFillFolderOpen size={90} color={'var(--text-grey-highlight)'} /> */}
             <h2>NO {type.toUpperCase()} FOUND</h2>
-            {!isShowAllEnabled && toggleAllEnabledContent}
+            {!isShowAllEnabled && toggleAllEnabledContentOrNull}
         </div>
     );
 }
