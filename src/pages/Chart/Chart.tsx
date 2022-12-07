@@ -643,8 +643,15 @@ export default function Chart(props: ChartData) {
                         }
                         // return moment(d).format('  DD HH:mm');
                     }
-
-                    return d3.timeFormat('%m/%d/%y')(d);
+                    if (activeTimeFrame === '1d') {
+                        return d3.timeFormat('%m/%d/%y')(d);
+                    } else if (activeTimeFrame.match(/^(1m|5m|15m)$/)) {
+                        return d3.timeFormat('%a %H:%M')(d);
+                    } else if (activeTimeFrame.match(/^(1h|4h)$/)) {
+                        return d3.timeFormat('%m/%d/%y')(d);
+                    } else {
+                        return d3.timeFormat('%m/%d/%y')(d);
+                    }
                 });
 
             xAxis.decorate((selection: any) => {
@@ -670,6 +677,7 @@ export default function Chart(props: ChartData) {
         xAxis,
         windowDimensions,
         mouseMoveEventCharts,
+        activeTimeFrame,
     ]);
 
     useEffect(() => {
