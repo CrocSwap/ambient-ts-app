@@ -84,17 +84,8 @@ export default function TradeSettingsColor(props: TradeSettingsColorPropsIF) {
     const downBodyColorPickerContent = (
         <>
             {downBodyColorPicker ? (
-                <div style={{ position: 'absolute', zIndex: '2' }}>
-                    <div
-                        style={{
-                            position: 'fixed',
-                            top: '0px',
-                            right: '0px',
-                            bottom: '0px',
-                            left: '0px',
-                        }}
-                        onClick={() => setDownBodyColorPicker(false)}
-                    />
+                <div className={styles.color_picker_container}>
+                    <div onClick={() => setDownBodyColorPicker(false)} />
                     <SketchPicker
                         color={downBodyColor}
                         onChangeComplete={handleDownBodyColorPickerChange}
@@ -119,17 +110,8 @@ export default function TradeSettingsColor(props: TradeSettingsColorPropsIF) {
     const downBorderColorPickerContent = (
         <>
             {downBorderColorPicker ? (
-                <div style={{ position: 'absolute', zIndex: '2' }}>
-                    <div
-                        style={{
-                            position: 'fixed',
-                            top: '0px',
-                            right: '0px',
-                            bottom: '0px',
-                            left: '0px',
-                        }}
-                        onClick={() => setDownBorderColorPicker(false)}
-                    />
+                <div className={styles.color_picker_container}>
+                    <div onClick={() => setDownBorderColorPicker(false)} />
                     <SketchPicker
                         color={downBorderColor}
                         onChangeComplete={handleDownBorderColorPickerChange}
@@ -147,7 +129,7 @@ export default function TradeSettingsColor(props: TradeSettingsColorPropsIF) {
                     background: upBodyColor,
                 }}
             />
-            <label style={{ padding: '0px' }}>Body</label>
+            <label>Body</label>
         </div>
     );
 
