@@ -3572,7 +3572,7 @@ export default function Chart(props: ChartData) {
                     <d3fc-svg
                         ref={d3Xaxis}
                         className='x-axis'
-                        style={{ height: '1.1em', width: '100%' }}
+                        style={{ height: '1.25em', width: '100%' }}
                     ></d3fc-svg>
                 </div>
             </d3fc-group>
