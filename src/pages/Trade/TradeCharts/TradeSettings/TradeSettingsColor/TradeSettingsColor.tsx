@@ -58,7 +58,7 @@ export default function TradeSettingsColor(props: TradeSettingsColorPropsIF) {
         handleDownBorderColorPickerChange,
 
         chartBg,
-        setChartBg,
+
         handleChartBgColorPickerChange,
     } = props;
 
