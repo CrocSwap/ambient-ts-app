@@ -35,6 +35,7 @@ export default function IncomingMessage(props: IncomingMessageProps) {
     function handleCopyAddress(item: string) {
         copy(item);
         setOpenSnackbar(true);
+        console.log('handleCopy');
     }
 
     const snackbarContent = (
