@@ -952,10 +952,6 @@ export default function Chart(props: ChartData) {
                         }
 
                         scaleData.lastZoomedY = t.y;
-
-                        console.log(event);
-                        console.log(t.x);
-
                         scaleData.lastX = t.x;
 
                         clickedForLine = true;
@@ -3245,7 +3241,9 @@ export default function Chart(props: ChartData) {
 
                     setIsMouseMoveCrosshair(false);
 
-                    props.setShowTooltip(false);
+                    if (selectedDate === undefined) {
+                        props.setShowTooltip(false);
+                    }
                 });
                 d3.select(d3PlotArea.current).on('mouseleave', () => {
                     liquidityData.liqHighligtedBidSeries = [];
