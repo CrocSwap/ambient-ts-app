@@ -127,14 +127,21 @@ export default function TradeCandleStickChart(props: ChartData) {
 
     useEffect(() => {
         setIsLoading(true);
-
-        parseData();
+        setParsedChartData(() => {
+            return undefined;
+        });
     }, [activeChartPeriod, denominationsInBase]);
 
     useEffect(() => {
         parseData();
         setIsCandleAdded(true);
     }, [props.candleData]);
+
+    useEffect(() => {
+        if (parsedChartData === undefined) {
+            parseData();
+        }
+    }, [parsedChartData]);
 
     // Parse price data
     const parseData = () => {
@@ -386,19 +393,21 @@ export default function TradeCandleStickChart(props: ChartData) {
             lineAskSeries: [],
             totalLiq: props.liquidityData?.totals?.totalLiq,
         };
-    }, [props.liquidityData, denominationsInBase, props.poolPriceDisplay]);
+    }, [props.liquidityData, props.poolPriceDisplay]);
+
+    useEffect(() => {
+        setScaleData(() => {
+            return undefined;
+        });
+        setScaleForChart(parsedChartData, liquidityData);
+    }, [parsedChartData?.period, liquidityData]);
 
     // Scale
-    useEffect(() => {
+    const setScaleForChart = (parsedChartData: any, liquidityData: any) => {
         if (parsedChartData !== undefined && liquidityData !== undefined) {
             if (parsedChartData.chartData.length > 100) {
                 parsedChartData.chartData = parsedChartData.chartData.slice(0, 100);
             }
-
-            setScaleData(() => {
-                return undefined;
-            });
-
             const priceRange = d3fc
                 .extentLinear()
                 .accessors([(d: any) => d.high, (d: any) => d.low])
@@ -478,7 +487,7 @@ export default function TradeCandleStickChart(props: ChartData) {
                 };
             });
         }
-    }, [parsedChartData?.period, denominationsInBase, liquidityData]);
+    };
 
     const loading = (
         <div style={{ height: '100%', width: '100%' }} className='animatedImg_container'>
