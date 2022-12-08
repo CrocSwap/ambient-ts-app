@@ -347,12 +347,17 @@ export default function Trade(props: TradePropsIF) {
             </div>
         ) : null;
 
+    const [chartBg, setChartBg] = useState('red');
+
     return (
         <section className={styles.main_layout}>
             <div className={styles.middle_col}>
                 {poolNotInitializedContent}
                 {mobileDataToggle}
-                <div className={` ${expandGraphStyle} ${fullScreenStyle}`}>
+                <div
+                    className={` ${expandGraphStyle} ${fullScreenStyle}`}
+                    style={{ background: chartBg }}
+                >
                     <div
                         className={`${styles.main__chart_container} ${
                             showChartAndNotTab && styles.hide
