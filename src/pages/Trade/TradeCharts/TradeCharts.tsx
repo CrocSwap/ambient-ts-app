@@ -59,6 +59,7 @@ import { ChainSpec, CrocPoolView } from '@crocswap-libs/sdk';
 import { formatDollarAmountAxis } from '../../../utils/numbers';
 import IconWithTooltip from '../../../components/Global/IconWithTooltip/IconWithTooltip';
 // import { formatAmountOld } from '../../../utils/numbers';
+import UseOnClickOutside from '../../../utils/hooks/useOnClickOutside';
 
 // interface for React functional component props
 interface TradeChartsPropsIF {
@@ -270,6 +271,13 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
             document.body.removeEventListener('keydown', closeOnEscapeKeyDown);
         };
     });
+    const chartSettingsRef = useRef<HTMLDivElement>(null);
+
+    const chartSettingsOutsideClickHandler = () => {
+        setShowChartSettings(false);
+    };
+    UseOnClickOutside(chartSettingsRef, chartSettingsOutsideClickHandler);
+
     const exDataContent = (
         <div>Lorem ipsum dolor sit amet consectetur adipisicing elit. Perferendis, doloremque.</div>
     );
@@ -310,6 +318,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
     }, [chartSettingsData]);
     const mainChartSettingsContent = (
         <div
+            ref={chartSettingsRef}
             className={`${styles.main_settings_container} ${
                 showChartSettings && styles.main_settings_container_active
             }`}
@@ -317,7 +326,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
             <header>
                 <p />
                 <h2>Chart Settings</h2>
-                <div>
+                <div onClick={() => setShowChartSettings(false)}>
                     <VscClose size={24} />
                 </div>
             </header>
