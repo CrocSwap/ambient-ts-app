@@ -1053,7 +1053,6 @@ export default function Chart(props: ChartData) {
         candlestick,
         isZoomForSubChart,
         location,
-        scaleData.lastX,
         JSON.stringify(scaleData.xScale.domain()[0]),
         JSON.stringify(scaleData.xScale.domain()[1]),
         transformX,
@@ -1745,6 +1744,7 @@ export default function Chart(props: ChartData) {
             scaleData.xScale.domain(scaleData.xScaleCopy.domain());
             scaleData.yScale.domain(scaleData.yScaleCopy.domain());
             setReset(false);
+            setShowLatest(false);
         }
     }, [scaleData, reset]);
 
@@ -1762,8 +1762,6 @@ export default function Chart(props: ChartData) {
                     new Date(scaleData.xScaleCopy.domain()[1].getTime() - diff),
                     scaleData.xScaleCopy.domain()[1],
                 ]);
-
-                console.log(scaleData.yScaleCopy.domain());
             } else {
                 const diffY = scaleData.yScale.domain()[1] - scaleData.yScale.domain()[0];
 
@@ -1787,12 +1785,7 @@ export default function Chart(props: ChartData) {
             setLatest(false);
             setShowLatest(false);
         }
-    }, [
-        scaleData,
-        latest,
-        parsedChartData?.chartData,
-        JSON.stringify(scaleData.yScaleCopy.domain()),
-    ]);
+    }, [scaleData, latest, parsedChartData?.chartData, denomInBase]);
 
     // easy drag and triangle to horizontal lines for range
     async function addTriangleAndRect() {
