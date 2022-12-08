@@ -11,7 +11,6 @@ interface FreeRateData {
     setZoomAndYdragControl: React.Dispatch<React.SetStateAction<any>>;
     crosshairForSubChart: any;
     xScale: any;
-    lastX: any;
     render: any;
     zoomAndYdragControl: any;
     isMouseMoveForSubChart: any;
@@ -39,7 +38,6 @@ export default function FeeRateSubChart(props: FreeRateData) {
         getNewCandleData,
         setMouseMoveChartName,
         mouseMoveChartName,
-        lastX,
     } = props;
 
     const d3PlotFeeRate = useRef(null);
@@ -52,7 +50,7 @@ export default function FeeRateSubChart(props: FreeRateData) {
 
             props.render();
         }
-    }, [xScale, crosshairForSubChart, period, feeData, zoomAndYdragControl, lastX]);
+    }, [xScale, crosshairForSubChart, period, feeData, zoomAndYdragControl]);
 
     const render = useCallback(() => {
         const nd = d3.select('#d3PlotFeeRate').node() as any;
@@ -168,7 +166,7 @@ export default function FeeRateSubChart(props: FreeRateData) {
                                 .domain(xScale.range())
                                 .range([0, domainX[1] - domainX[0]]);
 
-                            const deltaX = linearX(lastX - event.transform.x);
+                            const deltaX = linearX(-event.sourceEvent.movementX);
                             xScale.domain([
                                 new Date(domainX[0].getTime() + deltaX),
                                 new Date(domainX[1].getTime() + deltaX),
