@@ -201,6 +201,12 @@ export default function TradeSettingsColor(props: TradeSettingsColorPropsIF) {
                         {/* {downBodyColorPickerSquare} */}
                         {/* {downBodyColorPickerContent} */}
                         {/* {downBorderColorPickerContent} */}
+                        <ColorPickerDisplay
+                            color={downBodyColor}
+                            onChangeComplete={handleDownBodyColorPickerChange}
+                            onClick={() => setDownBodyColorPicker(true)}
+                            label={'Body'}
+                        />
                         {downBodyWithTooltip}
                         {downBorderWithTooltip}
                     </div>
