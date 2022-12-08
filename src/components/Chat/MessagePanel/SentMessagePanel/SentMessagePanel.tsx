@@ -4,6 +4,7 @@ import { Message } from '../../Model/MessageModel';
 import PositionBox from '../PositionBox/PositionBox';
 import { useEffect, useState } from 'react';
 import { useMoralis } from 'react-moralis';
+import DividerDark from '../../../Global/DividerDark/DividerDark';
 
 interface SentMessageProps {
     message: Message;

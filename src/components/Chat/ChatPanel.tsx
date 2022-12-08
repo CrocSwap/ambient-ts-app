@@ -5,7 +5,7 @@ import DividerDark from '../Global/DividerDark/DividerDark';
 import MessageInput from './MessagePanel/InputBox/MessageInput';
 import IncomingMessage from './MessagePanel/Inbox/IncomingMessage';
 import Room from './MessagePanel/Room/Room';
-import { RiCloseFill } from 'react-icons/ri';
+import { RiCloseFill, RiArrowDownSLine } from 'react-icons/ri';
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
 import useSocket, { receiveUsername, recieveMessageByRoomRoute } from './Service/useSocket';
 import axios from 'axios';
@@ -19,7 +19,8 @@ import { MdClose, MdOpenInFull } from 'react-icons/md';
 import { Link } from 'react-router-dom';
 import useChatApi from './Service/ChatApi';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
-
+import { GiConsoleController } from 'react-icons/gi';
+import { BsChatLeftFill } from 'react-icons/bs';
 interface currentPoolInfo {
     tokenA: TokenIF;
     tokenB: TokenIF;
@@ -46,7 +47,7 @@ interface ChatProps {
     onClose: () => void;
     favePools: PoolIF[];
     currentPool: currentPoolInfo;
-    isFullScreen?: boolean;
+    isFullScreen: boolean;
     setChatStatus: Dispatch<SetStateAction<boolean>>;
     fullScreen?: boolean;
 }
@@ -59,10 +60,15 @@ export default function ChatPanel(props: ChatProps) {
     const { user, account, enableWeb3, isWeb3Enabled, isAuthenticated } = useMoralis();
     const [currentUser, setCurrentUser] = useState<string | undefined>(undefined);
     const [name, setName] = useState('');
-
+    const [minutes, setMinute] = useState(1);
+    const [isSequential, setIsSequential] = useState(false);
+    const [scrollTop, setScrollTop] = useState(0);
+    const [scrollDirection, setScrollDirection] = useState(String);
     const wrapperStyleFull = styles.chat_wrapper_full;
     const wrapperStyle = props.chatStatus ? styles.chat_wrapper_active : styles.chat_wrapper;
     const [isPosition, setIsPosition] = useState(false);
+    const [messagesArray, setMessagesArray] = useState<Message[]>([]);
+    const [notification, setNotification] = useState(0);
 
     useEffect(() => {
         props.isFullScreen ? setShowChatPanel(true) : null;
@@ -70,16 +76,53 @@ export default function ChatPanel(props: ChatProps) {
 
     const [scrollBottomControl, setScrollBottomControl] = useState(true);
 
-    const { messages, getMsg } = useSocket(room);
+    const { messages, getMsg, lastMessage, messageUser } = useSocket(room);
 
     const { getID, getNameOrWallet } = useChatApi();
     const userData = useAppSelector((state) => state.userData);
     const isUserLoggedIn = userData.isLoggedIn;
     const name_ = userData.ensNameCurrent;
 
+    function interval(str: string, string: string) {
+        const endDate = new Date(str);
+        const purchaseDate = new Date(string);
+        const diffMs = +endDate - +purchaseDate; // milliseconds
+        const diffDays = Math.floor(diffMs / 86400000); // days
+        const diffHrs = Math.floor((diffMs % 86400000) / 3600000); // hours
+        const diffMins = Math.round(((diffMs % 86400000) % 3600000) / 60000); // minutes
+        return diffMins;
+    }
+
     useEffect(() => {
-        // 👇️ scroll to bottom every time messages change
-        messageEnd.current?.scrollIntoView({ behavior: 'smooth' });
+        if (scrollDirection === 'Scroll Up') {
+            if (messageUser !== currentUser) {
+                setNotification((notification) => notification + 1);
+            } else if (messageUser === currentUser) {
+                const timer = setTimeout(() => {
+                    messageEnd.current?.scrollTo(
+                        messageEnd.current?.scrollHeight,
+                        messageEnd.current?.scrollHeight,
+                    );
+                }, 100);
+
+                setNotification(0);
+                return () => clearTimeout(timer);
+            }
+        } else {
+            messageEnd.current?.scrollTo(
+                messageEnd.current?.scrollHeight,
+                messageEnd.current?.scrollHeight,
+            );
+        }
+    }, [lastMessage]);
+
+    useEffect(() => {
+        setMinute(interval(messages[0]?.createdAt, messages[1]?.createdAt));
+        if (minutes <= 10) {
+            setIsSequential(true);
+        } else {
+            setIsSequential(false);
+        }
     }, [messages]);
 
     useEffect(() => {
@@ -109,32 +152,29 @@ export default function ChatPanel(props: ChatProps) {
     }, [isUserLoggedIn]);
 
     useEffect(() => {
-        scrollToBottomRoom();
-    }, [room]);
-
-    useEffect(() => {
         scrollToBottom();
-    }, [messages]);
+        setNotification(0);
+    }, [room]);
 
     function handleCloseChatPanel() {
         props.setChatStatus(false);
     }
 
-    const scrollToBottomRoom = async () => {
+    const scrollToBottomButton = async () => {
+        messageEnd.current?.scrollTo(
+            messageEnd.current?.scrollHeight,
+            messageEnd.current?.scrollHeight,
+        );
+    };
+
+    const scrollToBottom = async () => {
         const timer = setTimeout(() => {
             messageEnd.current?.scrollTo(
                 messageEnd.current?.scrollHeight,
                 messageEnd.current?.scrollHeight,
             );
-        }, 500);
+        }, 750);
         return () => clearTimeout(timer);
-    };
-
-    const scrollToBottom = async () => {
-        messageEnd.current?.scrollTo(
-            messageEnd.current?.scrollHeight,
-            messageEnd.current?.scrollHeight,
-        );
     };
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleScroll = (e: any) => {
@@ -143,6 +183,19 @@ export default function ChatPanel(props: ChatProps) {
                 e.target.scrollHeight - e.target.scrollTop <
                 e.target.clientHeight,
         );
+
+        if (e.target.scrollTop === 0 || e.target.scrollTop === 1) {
+            setNotification(0);
+            setScrollDirection('Scroll Down');
+        } else {
+            setScrollDirection('Scroll Up');
+        }
+    };
+
+    const handleWheel = (e: any) => {
+        if (e.nativeEvent.wheelDelta > 0) {
+            setScrollDirection('Scroll Up');
+        }
     };
 
     const header = (
@@ -190,10 +243,25 @@ export default function ChatPanel(props: ChatProps) {
             return currentUser;
         }
     }
+
+    function incomingMessages() {
+        const messageArr: Message[] = [];
+        messages &&
+            messages.map((item, i) => {
+                if (item.sender !== currentUser && currentUser !== undefined) {
+                    messageArr.push(item);
+                }
+
+                setMessagesArray((messagesArray) => {
+                    return messageArr;
+                });
+            });
+    }
+
     const messageList = (
         <>
             {messages &&
-                messages.map((item) => (
+                messages.map((item, i) => (
                     <div key={item._id} style={{ width: '90%', marginBottom: 4 }}>
                         {item.sender === currentUser && currentUser !== undefined ? (
                             <>
@@ -201,7 +269,12 @@ export default function ChatPanel(props: ChatProps) {
                                 <SentMessagePanel message={item} />
                             </>
                         ) : (
-                            <IncomingMessage message={item} name={getName(item)} />
+                            <IncomingMessage
+                                message={item}
+                                name={getName(item)}
+                                isSequential={i === 0 ? isSequential : false}
+                                messagesArray={messagesArray}
+                            />
                         )}
                     </div>
                 ))}
@@ -236,21 +309,15 @@ export default function ChatPanel(props: ChatProps) {
                     >
                         <div className={styles.chat_body}>
                             {header}
-                            {props.isFullScreen ? (
-                                <Room
-                                    favePools={favePools}
-                                    selectedRoom={room}
-                                    setRoom={setRoom}
-                                    currentPool={currentPool}
-                                />
-                            ) : (
-                                <Room
-                                    favePools={favePools}
-                                    selectedRoom={room}
-                                    setRoom={setRoom}
-                                    currentPool={currentPool}
-                                />
-                            )}
+
+                            <Room
+                                favePools={favePools}
+                                selectedRoom={room}
+                                setRoom={setRoom}
+                                currentPool={currentPool}
+                                isFullScreen={props.isFullScreen}
+                                room={room}
+                            />
 
                             <div style={{ width: '90%' }}>
                                 <DividerDark changeColor addMarginTop addMarginBottom />
@@ -260,10 +327,36 @@ export default function ChatPanel(props: ChatProps) {
                                 ref={messageEnd}
                                 className={styles.scrollable_div}
                                 onScroll={handleScroll}
+                                onWheel={handleWheel}
                                 id='chatmessage'
                             >
                                 {messageList}
                             </div>
+                            <div className={styles.chat_notification}>
+                                {notification > 0 && scrollDirection === 'Scroll Up' ? (
+                                    <div className={styles.chat_notification}>
+                                        <span>
+                                            <BsChatLeftFill size={25} color='#7371fc' />
+                                            <span className={styles.text}>{notification}</span>
+                                        </span>
+                                        <RiArrowDownSLine
+                                            role='button'
+                                            size={27}
+                                            color='#7371fc'
+                                            onClick={() => scrollToBottom()}
+                                        />
+                                    </div>
+                                ) : scrollDirection === 'Scroll Up' && notification <= 0 ? (
+                                    <RiArrowDownSLine
+                                        size={27}
+                                        color='#7371fc'
+                                        onClick={() => scrollToBottomButton()}
+                                    />
+                                ) : (
+                                    ''
+                                )}
+                            </div>
+
                             <MessageInput
                                 currentUser={currentUser as string}
                                 message={messages[0]}

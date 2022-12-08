@@ -1,3 +1,4 @@
+import { setUseProxies } from 'immer';
 import { useEffect, useState, useRef } from 'react';
 import io from 'socket.io-client';
 import { Message } from '../Model/MessageModel';
@@ -12,6 +13,8 @@ const useSocket = (room: any) => {
     const socketRef: any = useRef();
 
     const [messages, setMessages] = useState<Message[]>([]);
+    const [lastMessage, setLastMessage] = useState<any>();
+    const [messageUser, setMessageUser] = useState<any>();
 
     useEffect(() => {
         const roomId = room;
@@ -24,6 +27,8 @@ const useSocket = (room: any) => {
         socketRef.current.on('send-msg', () => {
             socketRef.current.on('msg-recieve', (data: any) => {
                 setMessages(data);
+                setLastMessage(data[0]);
+                setMessageUser(data[0].sender);
             });
         });
 
@@ -53,7 +58,7 @@ const useSocket = (room: any) => {
         });
     }
 
-    return { messages, getMsg, sendMsg };
+    return { messages, getMsg, sendMsg, lastMessage, messageUser };
 };
 
 export default useSocket;

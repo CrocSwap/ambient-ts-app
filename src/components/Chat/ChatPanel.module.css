@@ -91,6 +91,22 @@
     color: var(--text-grey-light);
     margin-left: 254px;
 }
+.chat_notification {
+    display: flex;
+    position: relative;
+    justify-content: right;
+    width: 95%;
+    height: 5%;
+    
+}
+
+.text{
+    display: block;
+    margin-top: -32px;
+    margin-left: 9px;
+}
+
+
 
 .chat_wrapper_full {
     display: flex;

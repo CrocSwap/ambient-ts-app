@@ -5,6 +5,7 @@ import { TokenIF } from '../../../../utils/interfaces/TokenIF';
 import { targetData } from '../../../../utils/state/tradeDataSlice';
 import def from 'ajv/dist/vocabularies/applicator/additionalItems';
 import { RiArrowDownSLine, RiStarSFill, RiStarLine } from 'react-icons/ri';
+import { BsSuitHeart, BsSuitHeartFill } from 'react-icons/bs';
 import { useState, useEffect } from 'react';
 
 interface currentPoolInfo {
@@ -30,12 +31,16 @@ interface currentPoolInfo {
 
 interface RoomProps {
     favePools: PoolIF[];
-    selectedRoom: string;
+    selectedRoom: any;
     setRoom: any;
     currentPool: currentPoolInfo;
+    isFullScreen: boolean;
+    room: any;
 }
 export default function RoomDropdown(props: RoomProps) {
-    const { currentPool } = props;
+    const { currentPool, isFullScreen } = props;
+    // eslint-disable-next-line @typescript-eslint/ban-types
+    const [roomArray, setRoomArray] = useState<string[]>([]);
 
     const defaultRooms = [
         {
@@ -49,6 +54,15 @@ export default function RoomDropdown(props: RoomProps) {
             value: currentPool.baseToken.symbol + currentPool.quoteToken.symbol,
         },
     ];
+
+    const isFullScreenDefaultRooms = [
+        {
+            id: 100,
+            name: 'Global',
+            value: 'Global',
+        },
+    ];
+
     useEffect(() => {
         defaultRooms.pop;
         defaultRooms.push({
@@ -57,6 +71,47 @@ export default function RoomDropdown(props: RoomProps) {
             value: currentPool.baseToken.symbol + currentPool.quoteToken.symbol,
         });
     }, [currentPool.baseToken.symbol, currentPool.quoteToken.symbol]);
+
+    useEffect(() => {
+        const roomArr: string[] = [];
+        rooms.map((pool: PoolIF) => {
+            roomArr.push(pool.base.symbol + pool.quote.symbol);
+        });
+
+        setRoomArray((roomArray) => {
+            return roomArr;
+        });
+        const middleIndex = Math.ceil(roomArray.length / 2);
+        roomArray.splice(0, middleIndex);
+    }, []);
+
+    useEffect(() => {
+        if (props.selectedRoom === 'Global') {
+            const roomArr: string[] = [];
+            rooms.map((pool: PoolIF) => {
+                roomArr.push(pool.base.symbol + pool.quote.symbol);
+            });
+            setRoomArray((roomArray) => {
+                return roomArr;
+            });
+        } else {
+            const roomArr: string[] = [];
+            rooms.map((pool: PoolIF) => {
+                roomArr.push(pool.base.symbol + pool.quote.symbol);
+            });
+            setRoomArray((roomArray) => {
+                return roomArr;
+            });
+            const index = roomArr.indexOf(props.selectedRoom);
+            roomArr.splice(index, 1);
+            if (index > -1) {
+                // only splice array when item is found
+                setRoomArray((roomArray) => {
+                    return roomArr;
+                });
+            }
+        }
+    }, [props.selectedRoom]);
 
     const rooms = props.favePools;
     const [isActive, setIsActive] = useState(false);
@@ -73,7 +128,7 @@ export default function RoomDropdown(props: RoomProps) {
         if (room === 'Global') {
             return '';
         } else {
-            return <RiStarLine className={styles.star_icon} />;
+            return <BsSuitHeartFill className={styles.star_icon} />;
         }
     }
 
@@ -81,36 +136,63 @@ export default function RoomDropdown(props: RoomProps) {
         if (selectedRoom === 'Global') {
             return '';
         } else {
-            return <RiStarSFill className={styles.star_icon_selected_room} />;
+            return <BsSuitHeartFill className={styles.star_icon_selected_room} />;
         }
     }
 
     function handleShowRoomsExceptGlobal(selectedRoom: string) {
-        if (selectedRoom === 'Global') {
-            return (
-                <div
-                    className={styles.dropdown_item}
-                    key={defaultRooms[1].id}
-                    data-value={defaultRooms[1].value}
-                    onClick={(event: any) => handleRoomClick(event)}
-                >
-                    {handleShowRooms(defaultRooms[1].name)}
-                    {defaultRooms[1].name}
-                </div>
-            );
-        } else {
-            {
-                return defaultRooms.reverse().map((tab) => (
+        if (isFullScreen) {
+            if (selectedRoom === 'Global') {
+                return (
                     <div
                         className={styles.dropdown_item}
-                        key={tab.id}
-                        data-value={tab.value}
+                        key={defaultRooms[1].id}
+                        data-value={defaultRooms[1].value}
+                        onClick={(event: any) => handleRoomClick(event)}
+                    ></div>
+                );
+            } else {
+                {
+                    return isFullScreenDefaultRooms.map((tab) => (
+                        <div
+                            className={styles.dropdown_item}
+                            key={tab.id}
+                            data-value={tab.value}
+                            onClick={(event: any) => handleRoomClick(event)}
+                        >
+                            {handleShowRooms(tab.name)}
+                            {tab.name}
+                        </div>
+                    ));
+                }
+            }
+        } else {
+            if (selectedRoom === 'Global') {
+                return (
+                    <div
+                        className={styles.dropdown_item}
+                        key={defaultRooms[1].id}
+                        data-value={defaultRooms[1].value}
                         onClick={(event: any) => handleRoomClick(event)}
                     >
-                        {handleShowRooms(tab.name)}
-                        {tab.name}
+                        {handleShowRooms(defaultRooms[1].name)}
+                        {defaultRooms[1].name}
                     </div>
-                ));
+                );
+            } else {
+                {
+                    return defaultRooms.reverse().map((tab) => (
+                        <div
+                            className={styles.dropdown_item}
+                            key={tab.id}
+                            data-value={tab.value}
+                            onClick={(event: any) => handleRoomClick(event)}
+                        >
+                            {handleShowRooms(tab.name)}
+                            {tab.name}
+                        </div>
+                    ));
+                }
             }
         }
     }
@@ -127,20 +209,20 @@ export default function RoomDropdown(props: RoomProps) {
                     <RiArrowDownSLine className={styles.star_icon} />
                 </div>
             </div>
-
             {isActive && (
                 <div className={styles.dropdow_content}>
                     <div className={styles.item}>
-                        {rooms.map((pool: PoolIF, i) => (
+                        {roomArray.map((pool, i) => (
                             <div
                                 className={styles.dropdown_item}
                                 key={i}
-                                data-value={pool.base.symbol + pool.quote.symbol}
+                                data-value={pool}
                                 data-icon='glyphicon glyphicon-eye-open'
                                 onClick={(event: any) => handleRoomClick(event)}
                             >
-                                <RiStarSFill className={styles.star_icon} /> {pool.base.symbol}
-                                {pool.quote.symbol}
+                                <BsSuitHeart className={styles.star_icon} />
+
+                                {pool}
                             </div>
                         ))}
 

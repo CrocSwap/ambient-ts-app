@@ -234,6 +234,7 @@ export default function App() {
     }, [isAuthenticated, isWeb3Enabled, isUserLoggedIn, account]);
 
     useEffect(() => {
+        console.log(isAuthenticated, isWeb3Enabled, isUserLoggedIn);
         const isLoggedIn = isAuthenticated && isWeb3Enabled;
 
         if (userData.isLoggedIn !== isLoggedIn) {
