@@ -185,14 +185,14 @@ export default function ExchangeBalance(props: ExchangeBalanceProps) {
             className={styles.control_container}
             onClick={() => setFullLayoutActive(!fullLayoutActive)}
         >
-            <IconWithTooltip title='Exchange Balance' placement='bottom'>
+            <IconWithTooltip title='Contract Balance' placement='bottom'>
                 <img
                     src={!fullLayoutActive ? closeSidebarImage : vaultImage}
                     alt='toggleSidebar'
                     width='20px'
                 />
             </IconWithTooltip>
-            {/* { fullLayoutActive && <p>Exchange Balance</p>} */}
+            {/* { fullLayoutActive && <p>Contract Balance</p>} */}
         </section>
     );
 
@@ -205,7 +205,7 @@ export default function ExchangeBalance(props: ExchangeBalanceProps) {
         >
             <motion.div className={styles.main_container}>
                 {/* <div style={{ opacity: titleOpacity }} className={styles.title}>
-                    Exchange Balance
+                    Contract Balance
                 </div> */}
                 <div className={styles.tabs_container}>
                     {!fullLayoutActive && (
