@@ -816,8 +816,6 @@ export default function Chart(props: ChartData) {
                 })
                 .on('zoom', (event: any) => {
                     if (event.sourceEvent && event.sourceEvent.type !== 'dblclick') {
-                        const t = event.transform;
-
                         getNewCandleData(event, date, scaleData.xScale);
 
                         if (event.sourceEvent.type === 'wheel') {
