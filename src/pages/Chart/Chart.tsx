@@ -1026,7 +1026,7 @@ export default function Chart(props: ChartData) {
                     const size = (domainY[1] - domainY[0]) / 2 / factor;
                     await scaleData.yScale.domain([center - size, center + size]);
 
-                    console.log(event.sourceEvent);
+                    // console.log(event.sourceEvent);
 
                     scaleData.lastDragedY = event.transform.y;
 
@@ -1046,7 +1046,7 @@ export default function Chart(props: ChartData) {
                         .domain(scaleData.yScale.range())
                         .range([domainY[1] - domainY[0], 0]);
 
-                    console.log(event.sourceEvent);
+                    // console.log(event.sourceEvent);
 
                     const deltaY =
                         linearY(t.y - scaleData.lastDragedY) > 10
