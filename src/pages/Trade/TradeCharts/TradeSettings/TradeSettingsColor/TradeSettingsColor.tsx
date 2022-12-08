@@ -207,6 +207,12 @@ export default function TradeSettingsColor(props: TradeSettingsColorPropsIF) {
                             onClick={() => setDownBodyColorPicker(true)}
                             label={'Body'}
                         />
+                        <ColorPickerDisplay
+                            color={downBorderColor}
+                            onChangeComplete={handleDownBorderColorPickerChange}
+                            onClick={() => setDownBorderColorPicker(true)}
+                            label={'Border'}
+                        />
                         {downBodyWithTooltip}
                         {downBorderWithTooltip}
                     </div>
