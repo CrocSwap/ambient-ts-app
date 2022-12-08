@@ -25,7 +25,7 @@ interface TradeSettingsColorPropsIF {
 interface ColorPickerDisplayTooltipPropsIF {
     onClick: MouseEventHandler<HTMLDivElement>;
     onChangeComplete: (color: any) => void;
-    background: string;
+    color: string;
     label: string;
 }
 export default function TradeSettingsColor(props: TradeSettingsColorPropsIF) {
@@ -49,20 +49,20 @@ export default function TradeSettingsColor(props: TradeSettingsColorPropsIF) {
     } = props;
 
     function ColorPickerDisplay(props: ColorPickerDisplayTooltipPropsIF) {
-        const { onClick, onChangeComplete, background, label } = props;
+        const { onClick, onChangeComplete, color, label } = props;
 
         return (
             <DefaultTooltip
                 interactive
-                title={<SketchPicker color={background} onChangeComplete={onChangeComplete} />}
+                title={<SketchPicker color={color} onChangeComplete={onChangeComplete} />}
                 placement={'bottom'}
                 arrow
                 enterDelay={100}
                 leaveDelay={200}
             >
                 <div className={styles.square_picker_container} onClick={onClick}>
-                    <div className={styles.square_picker} style={{ background: background }} />
-                    <label>Body</label>
+                    <div className={styles.square_picker} style={{ background: color }} />
+                    <label>{label}</label>
                 </div>
             </DefaultTooltip>
         );
@@ -178,7 +178,13 @@ export default function TradeSettingsColor(props: TradeSettingsColorPropsIF) {
                         {/* {upBodyColorPickerSquare}
                         {upBodyColorPickerContent} */}
                         {/* {upBorderColorContent} */}
-                        {upBodyWithTooltip}
+                        <ColorPickerDisplay
+                            color={upBodyColor}
+                            onChangeComplete={handleBodyColorPickerChange}
+                            onClick={() => setUpBodyColorPicker(true)}
+                            label={'Body'}
+                        />
+
                         {upBorderWithTooltip}
                     </div>
                 </section>
