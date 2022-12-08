@@ -857,7 +857,6 @@ export default function Chart(props: ChartData) {
 
                                     const minGap = Math.min(gapTop, gapBot);
                                     const maxGap = Math.max(gapTop, gapBot);
-
                                     const baseMovement = deltaX / (maxGap / minGap + 1);
 
                                     if (gapBot < gapTop) {
@@ -886,7 +885,7 @@ export default function Chart(props: ChartData) {
                                 .domain(scaleData.xScale.range())
                                 .range([0, domainX[1] - domainX[0]]);
 
-                            const deltaX = linearX(scaleData.lastX - t.x);
+                            const deltaX = linearX(-event.sourceEvent.movementX);
                             scaleData.xScale.domain([
                                 new Date(domainX[0].getTime() + deltaX),
                                 new Date(domainX[1].getTime() + deltaX),
@@ -924,7 +923,7 @@ export default function Chart(props: ChartData) {
                                 .domain(scaleData.yScale.range())
                                 .range([domainY[1] - domainY[0], 0]);
 
-                            const deltaY = linearY(t.y - scaleData.lastZoomedY);
+                            const deltaY = linearY(event.sourceEvent.movementY);
                             scaleData.yScale.domain([domainY[0] + deltaY, domainY[1] + deltaY]);
 
                             scaleData.yScaleIndicator.range([
@@ -947,9 +946,6 @@ export default function Chart(props: ChartData) {
                                 )
                                 .style('left', event.sourceEvent.offsetX - 80 + 'px');
                         }
-
-                        scaleData.lastZoomedY = t.y;
-                        scaleData.lastX = t.x;
 
                         clickedForLine = true;
                         render();
@@ -990,11 +986,6 @@ export default function Chart(props: ChartData) {
                     ) {
                         setShowLatest(false);
                     }
-
-                    setTransformX(() => {
-                        return scaleData.lastX;
-                    });
-                    // dispatch(setCandleDomains(candleDomain));
                 }) as any;
 
             const yAxisZoom = d3.zoom().on('zoom', async (event: any) => {
@@ -3544,7 +3535,6 @@ export default function Chart(props: ChartData) {
                                 crosshairForSubChart={crosshairForSubChart}
                                 setsubChartValues={setsubChartValues}
                                 xScale={scaleData !== undefined ? scaleData.xScale : undefined}
-                                lastX={scaleData !== undefined ? scaleData.lastX : 0}
                                 getNewCandleData={getNewCandleData}
                                 setZoomAndYdragControl={setZoomAndYdragControl}
                                 zoomAndYdragControl={zoomAndYdragControl}
