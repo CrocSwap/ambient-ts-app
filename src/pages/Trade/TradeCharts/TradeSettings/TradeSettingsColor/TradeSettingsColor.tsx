@@ -169,6 +169,31 @@ export default function TradeSettingsColor(props: TradeSettingsColorPropsIF) {
             <label>Body</label>
         </div>
     );
+    const upBodyWithTooltip = (
+        <DefaultTooltip
+            interactive
+            title={
+                <SketchPicker color={upBodyColor} onChangeComplete={handleBodyColorPickerChange} />
+            }
+            placement={'bottom'}
+            arrow
+            enterDelay={100}
+            leaveDelay={200}
+        >
+            <div
+                className={styles.square_picker_container}
+                onClick={() => setUpBorderColorPicker(true)}
+            >
+                <div
+                    className={styles.square_picker}
+                    style={{
+                        background: upBorderColor,
+                    }}
+                />
+                <label>Border</label>
+            </div>
+        </DefaultTooltip>
+    );
     const upBorderWithTooltip = (
         <DefaultTooltip
             interactive
@@ -258,7 +283,8 @@ export default function TradeSettingsColor(props: TradeSettingsColorPropsIF) {
                     <div>
                         {upBodyColorPickerSquare}
                         {upBodyColorPickerContent}
-                        {upBorderColorContent}
+                        {/* {upBorderColorContent} */}
+                        {upBodyWithTooltip}
                         {upBorderWithTooltip}
                     </div>
                 </section>
