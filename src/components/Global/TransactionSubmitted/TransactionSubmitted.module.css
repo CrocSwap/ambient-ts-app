@@ -44,7 +44,7 @@
     padding: 0.3rem;
     background: var(--title-gradient);
     text-decoration: none;
-    color: var(--text-grey-light);
+    color: black;
     border-radius: 4px;
     width: 100%;
     display: flex;

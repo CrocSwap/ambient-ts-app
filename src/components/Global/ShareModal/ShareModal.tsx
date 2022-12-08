@@ -27,6 +27,8 @@ export default function ShareModal() {
     const currentPathname = location.pathname;
 
     const [linkToShare, setLinkToShare] = useState(`ambient-finance.netlify.app${currentPathname}`);
+
+    const linkToShareTruncated = linkToShare.slice(0, 50) + '...';
     const socialLinksData = [
         {
             name: 'Telegram',
@@ -129,7 +131,8 @@ export default function ShareModal() {
             <p className={styles.url_link}>
                 <input
                     type='text'
-                    placeholder={`ambient-finance.netlify.app${linkToShare}`}
+                    placeholder={`${linkToShareTruncated}`}
+                    disabled={true}
                     onChange={(e) => setLinkToShare(e?.target.value)}
                 />
 

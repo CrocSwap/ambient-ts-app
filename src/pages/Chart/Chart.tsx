@@ -97,6 +97,7 @@ interface ChartData {
     showLatest: boolean | undefined;
     setShowLatest: React.Dispatch<React.SetStateAction<boolean>>;
     setShowTooltip: React.Dispatch<React.SetStateAction<boolean>>;
+    activeTimeFrame: string;
 }
 
 function getWindowDimensions() {
@@ -134,6 +135,7 @@ export default function Chart(props: ChartData) {
         setShowLatest,
         latest,
         setLatest,
+        activeTimeFrame,
     } = props;
 
     const tradeData = useAppSelector((state) => state.tradeData);
@@ -619,6 +621,10 @@ export default function Chart(props: ChartData) {
 
         return tempArray;
     }
+
+    const utcDiff = moment().utcOffset();
+    const utcDiffHours = Math.floor(utcDiff / 60);
+
     // x axis text
     useEffect(() => {
         if (scaleData && xAxis) {
@@ -631,10 +637,22 @@ export default function Chart(props: ChartData) {
                 ])
                 .tickFormat((d: any) => {
                     if (d === crosshairData[0].x) {
-                        return moment(d).format('MMM  DD HH:mm');
+                        if (activeTimeFrame === '1d') {
+                            return moment(d).subtract(utcDiffHours, 'hours').format('MMM DD YYYY');
+                        } else {
+                            return moment(d).format('MMM DD HH:mm');
+                        }
+                        // return moment(d).format('  DD HH:mm');
                     }
-
-                    return d3.timeFormat('%m/%d/%y')(d);
+                    if (activeTimeFrame === '1d') {
+                        return d3.timeFormat('%m/%d/%y')(d);
+                    } else if (activeTimeFrame.match(/^(1m|5m|15m)$/)) {
+                        return d3.timeFormat('%a %H:%M')(d);
+                    } else if (activeTimeFrame.match(/^(1h|4h)$/)) {
+                        return d3.timeFormat('%m/%d/%y')(d);
+                    } else {
+                        return d3.timeFormat('%m/%d/%y')(d);
+                    }
                 });
 
             xAxis.decorate((selection: any) => {
@@ -660,6 +678,7 @@ export default function Chart(props: ChartData) {
         xAxis,
         windowDimensions,
         mouseMoveEventCharts,
+        activeTimeFrame,
     ]);
 
     useEffect(() => {
@@ -3589,7 +3608,7 @@ export default function Chart(props: ChartData) {
                     <d3fc-svg
                         ref={d3Xaxis}
                         className='x-axis'
-                        style={{ height: '1.1em', width: '100%' }}
+                        style={{ height: '1.25em', width: '100%' }}
                     ></d3fc-svg>
                 </div>
             </d3fc-group>

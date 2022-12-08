@@ -483,6 +483,7 @@ export default function Orders(props: propsIF) {
             type='orders'
             setIsShowAllEnabled={setIsShowAllEnabled}
             changeState={changeState}
+            isOnPortfolioPage={isOnPortfolioPage}
             // setIsCandleSelected={setIsCandleSelected}
         />
     );
