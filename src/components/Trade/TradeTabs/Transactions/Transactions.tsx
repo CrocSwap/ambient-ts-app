@@ -578,6 +578,7 @@ export default function Transactions(props: TransactionsProps) {
             // setIsCandleSelected={setIsCandleSelected}
             changeState={changeState}
             type='transactions'
+            isOnPortfolioPage={isOnPortfolioPage}
         />
     ) : (
         rowItemContent

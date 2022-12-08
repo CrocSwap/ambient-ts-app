@@ -141,7 +141,7 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
 
     const WithdrawTokensContent = (
         <span className={styles.surplus_toggle}>
-            <IconWithTooltip title='Use Exchange Balance' placement='bottom'>
+            <IconWithTooltip title='Use Contract Balance' placement='bottom'>
                 <Toggle2
                     isOn={isWithdrawFromDexChecked}
                     handleToggle={() => setIsWithdrawFromDexChecked(!isWithdrawFromDexChecked)}
@@ -273,7 +273,7 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
                 </IconWithTooltip>
                 <IconWithTooltip
                     title={
-                        'Exchange Balance'
+                        'Contract Balance'
                         // userHasEnteredAmount
                         //     ? 'Exchange Surplus Balance After Swap'
                         //     : 'Current Exchange Surplus Balance'
