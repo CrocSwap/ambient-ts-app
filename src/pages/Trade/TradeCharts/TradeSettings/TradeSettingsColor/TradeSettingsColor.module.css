@@ -11,6 +11,12 @@
     align-items: center;
     gap: 4px;
 }
+
+.bg_picker_container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
 .colors_container section{
     display: flex;
     flex-direction: column;
@@ -30,6 +36,7 @@
     width: 36px;
                 height: 14px;
                 border-radius: 4px;
+                border: 1px solid var(--border)
 }
 .color_picker_container{
     z-index: 100;

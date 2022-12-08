@@ -224,6 +224,7 @@ export default function Trade(props: TradePropsIF) {
         // setIsShowAllEnabled(!isOpen);
         setTransactionFilter(candleData);
     };
+    const [chartBg, setChartBg] = useState('transparent');
 
     const [upBodyColorPicker, setUpBodyColorPicker] = useState<boolean>(false);
     const [upBorderColorPicker, setUpBorderColorPicker] = useState<boolean>(false);
@@ -245,6 +246,9 @@ export default function Trade(props: TradePropsIF) {
     // console.log({ downBodyColor });
     // console.log({ downBorderColor });
 
+    const handleChartBgColorPickerChange = (color: any) => {
+        setChartBg(color.hex);
+    };
     const handleBodyColorPickerChange = (color: any) => {
         setUpBodyColor(color.hex);
     };
@@ -274,6 +278,9 @@ export default function Trade(props: TradePropsIF) {
         downBodyColorPicker: downBodyColorPicker,
         downBorderColor: downBorderColor,
         downBorderColorPicker: downBorderColorPicker,
+        chartBg: chartBg,
+        setChartBg: setChartBg,
+        handleChartBgColorPickerChange: handleChartBgColorPickerChange,
     };
 
     const [showChartAndNotTab, setShowChartAndNotTab] = useState(false);
@@ -346,8 +353,6 @@ export default function Trade(props: TradePropsIF) {
                 </div>
             </div>
         ) : null;
-
-    const [chartBg, setChartBg] = useState('red');
 
     return (
         <section className={styles.main_layout}>

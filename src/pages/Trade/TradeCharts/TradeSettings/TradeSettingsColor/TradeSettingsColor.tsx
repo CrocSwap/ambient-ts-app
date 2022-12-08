@@ -16,6 +16,8 @@ interface TradeSettingsColorPropsIF {
     handleDownBodyColorPickerChange: (color: any) => void;
     // eslint-disable-next-line
     handleDownBorderColorPickerChange: (color: any) => void;
+    // eslint-disable-next-line
+    handleChartBgColorPickerChange: (color: any) => void;
     setUpBorderColorPicker: Dispatch<SetStateAction<boolean>>;
     setDownBodyColorPicker: Dispatch<SetStateAction<boolean>>;
     setDownBorderColorPicker: Dispatch<SetStateAction<boolean>>;
@@ -25,6 +27,9 @@ interface TradeSettingsColorPropsIF {
     downBodyColorPicker: boolean;
     downBorderColor: string;
     downBorderColorPicker: boolean;
+
+    chartBg: string;
+    setChartBg: Dispatch<SetStateAction<string>>;
 }
 interface ColorPickerDisplayTooltipPropsIF {
     onClick: MouseEventHandler<HTMLDivElement>;
@@ -51,6 +56,10 @@ export default function TradeSettingsColor(props: TradeSettingsColorPropsIF) {
         downBorderColor,
         // downBorderColorPicker,
         handleDownBorderColorPickerChange,
+
+        chartBg,
+        setChartBg,
+        handleChartBgColorPickerChange,
     } = props;
 
     function ColorPickerDisplay(props: ColorPickerDisplayTooltipPropsIF) {
@@ -73,45 +82,60 @@ export default function TradeSettingsColor(props: TradeSettingsColorPropsIF) {
         );
     }
 
+    const backgroundPickerContent = (
+        <div className={styles.bg_picker_container}>
+            <ColorPickerDisplay
+                color={chartBg}
+                onChangeComplete={handleChartBgColorPickerChange}
+                onClick={() => setDownBorderColorPicker(true)}
+                label={'Background'}
+            />
+        </div>
+    );
+    const colorsPickerContent = (
+        <div className={styles.colors_container}>
+            <section>
+                <label>Up</label>
+                <div>
+                    <ColorPickerDisplay
+                        color={upBodyColor}
+                        onChangeComplete={handleBodyColorPickerChange}
+                        onClick={() => setUpBodyColorPicker(true)}
+                        label={'Body'}
+                    />
+                    <ColorPickerDisplay
+                        color={upBorderColor}
+                        onChangeComplete={handleBorderColorPickerChange}
+                        onClick={() => setUpBorderColorPicker(true)}
+                        label={'Border'}
+                    />
+                </div>
+            </section>
+
+            <section>
+                <label>Down</label>
+                <div>
+                    <ColorPickerDisplay
+                        color={downBodyColor}
+                        onChangeComplete={handleDownBodyColorPickerChange}
+                        onClick={() => setDownBodyColorPicker(true)}
+                        label={'Body'}
+                    />
+                    <ColorPickerDisplay
+                        color={downBorderColor}
+                        onChangeComplete={handleDownBorderColorPickerChange}
+                        onClick={() => setDownBorderColorPicker(true)}
+                        label={'Border'}
+                    />
+                </div>
+            </section>
+        </div>
+    );
+
     return (
         <div className={styles.main_container}>
-            <div className={styles.colors_container}>
-                <section>
-                    <label>Up</label>
-                    <div>
-                        <ColorPickerDisplay
-                            color={upBodyColor}
-                            onChangeComplete={handleBodyColorPickerChange}
-                            onClick={() => setUpBodyColorPicker(true)}
-                            label={'Body'}
-                        />
-                        <ColorPickerDisplay
-                            color={upBorderColor}
-                            onChangeComplete={handleBorderColorPickerChange}
-                            onClick={() => setUpBorderColorPicker(true)}
-                            label={'Border'}
-                        />
-                    </div>
-                </section>
-
-                <section>
-                    <label>Down</label>
-                    <div>
-                        <ColorPickerDisplay
-                            color={downBodyColor}
-                            onChangeComplete={handleDownBodyColorPickerChange}
-                            onClick={() => setDownBodyColorPicker(true)}
-                            label={'Body'}
-                        />
-                        <ColorPickerDisplay
-                            color={downBorderColor}
-                            onChangeComplete={handleDownBorderColorPickerChange}
-                            onClick={() => setDownBorderColorPicker(true)}
-                            label={'Border'}
-                        />
-                    </div>
-                </section>
-            </div>
+            {backgroundPickerContent}
+            {colorsPickerContent}
         </div>
     );
 }
