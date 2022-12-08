@@ -99,7 +99,7 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
 
         // user is updating token A
         if (tokenToUpdate === 'A') {
-            if (tokenPair.dataTokenB.address === tok.address) {
+            if (tokenPair.dataTokenB.address.toLowerCase() === tok.address.toLowerCase()) {
                 reverseTokens();
                 closeModal();
                 return;
@@ -108,13 +108,13 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
                 locationSlug,
                 '0x5',
                 tok.address,
-                tokenPair.dataTokenB.address === tok.address
+                tokenPair.dataTokenB.address.toLowerCase() === tok.address.toLowerCase()
                     ? tokenPair.dataTokenA.address
                     : tokenPair.dataTokenB.address,
             );
             // user is updating token B
         } else if (tokenToUpdate === 'B') {
-            if (tokenPair.dataTokenA.address === tok.address) {
+            if (tokenPair.dataTokenA.address.toLowerCase() === tok.address.toLowerCase()) {
                 reverseTokens();
                 closeModal();
                 return;
@@ -122,7 +122,7 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
             goToNewUrlParams(
                 locationSlug,
                 '0x5',
-                tokenPair.dataTokenA.address === tok.address
+                tokenPair.dataTokenA.address.toLowerCase() === tok.address.toLowerCase()
                     ? tokenPair.dataTokenB.address
                     : tokenPair.dataTokenA.address,
                 tok.address,
@@ -187,7 +187,9 @@ export default function TokenSelectContainer(props: TokenSelectContainerPropsIF)
                         token={token}
                         clickHandler={() => {
                             chooseToken(token);
-                            // importToken(token, tokensBank, setImportedTokens, () => chooseToken(token));
+                            // importToken(token, tokensBank, setImportedTokens, () =>
+                            //     chooseToken(token),
+                            // );
                         }}
                     />
                 ))}
