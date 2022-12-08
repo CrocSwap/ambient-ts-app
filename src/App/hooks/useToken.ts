@@ -47,14 +47,19 @@ export const useToken = (
     }, []);
 
     // fn to determine if a token exists in a recognized token list
+    // parameter for chain is optional, app uses the current chain by default
+    // but we can verify tokens on other chains too as needed
     const verifyToken = (addr: string, chn=chainId) => {
         return !!tokenMap.get(addr.toLowerCase() + '_' + chn.toLowerCase());
     }
 
     // fn to return a given token by name and address
+    // parameter for chain is optional, app uses the current chain by default
+    // but we can verify tokens on other chains too as needed
     const getToken = (addr: string, chn=chainId) => {
         return tokenMap.get(addr.toLowerCase() + '_' + chn.toLowerCase());
     }
 
+    // return function to verify a token and retrieve token metadata
     return [verifyToken, getToken];
 }
