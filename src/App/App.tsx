@@ -2393,7 +2393,7 @@ export default function App() {
     // app overlay-----------------------------------------------
     // end of app overlay-----------------------------------------------
 
-    const [verifyToken, getToken] = useToken(chainData.chainId);
+    const [verifyToken, getToken] = useToken();
     false && verifyToken('', '');
     false && getToken('', '');
 

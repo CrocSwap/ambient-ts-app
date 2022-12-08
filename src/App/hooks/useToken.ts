@@ -23,7 +23,7 @@ export const useToken = (
                 const newTokenMap = new Map<string, TokenIF>();
                 // abstracted logic to add a new token to the map
                 const addTokenToMap = (tkn: TokenIF) => newTokenMap.set(
-                    tkn.address.toLowerCase() + '_' + chainId.toLowerCase(), tkn
+                    tkn.address.toLowerCase() + '_0x' + tkn.chainId.toString().toLowerCase(), tkn
                 );
                 // get 'allTokenLists' from local storage
                 JSON.parse(localStorage.getItem('allTokenLists') as string)
@@ -47,12 +47,12 @@ export const useToken = (
     }, []);
 
     // fn to determine if a token exists in a recognized token list
-    const verifyToken = (addr: string, chn: string) => {
+    const verifyToken = (addr: string, chn=chainId) => {
         return !!tokenMap.get(addr.toLowerCase() + '_' + chn.toLowerCase());
     }
 
     // fn to return a given token by name and address
-    const getToken = (addr: string, chn: string) => {
+    const getToken = (addr: string, chn=chainId) => {
         return tokenMap.get(addr.toLowerCase() + '_' + chn.toLowerCase());
     }
 
