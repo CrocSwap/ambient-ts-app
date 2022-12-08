@@ -56,7 +56,6 @@ export default function TvlSubChart(props: TvlData) {
         }
     }, [
         scaleData,
-        scaleData.lastX,
         crosshairForSubChart,
         period,
         tvlData,
@@ -204,13 +203,11 @@ export default function TvlSubChart(props: TvlData) {
                                 .domain(scaleData.xScale.range())
                                 .range([0, domainX[1] - domainX[0]]);
 
-                            const deltaX = linearX(scaleData.lastX - event.transform.x);
+                            const deltaX = linearX(-event.sourceEvent.movementX);
                             scaleData.xScale.domain([
                                 new Date(domainX[0].getTime() + deltaX),
                                 new Date(domainX[1].getTime() + deltaX),
                             ]);
-
-                            scaleData.lastX = event.transform.x;
 
                             setZoomAndYdragControl(event);
                             setIsMouseMoveForSubChart(false);
