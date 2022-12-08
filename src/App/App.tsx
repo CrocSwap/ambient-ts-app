@@ -743,6 +743,7 @@ export default function App() {
     useEffect(() => {
         setPoolExists(undefined);
         if (crocEnv && tokenPairLocal) {
+            if (tokenPairLocal[0].toLowerCase() === tokenPairLocal[1].toLowerCase()) return;
             // token pair has an initialized pool on-chain
             // returns a promise object
             const doesPoolExist = crocEnv
