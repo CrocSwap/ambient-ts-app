@@ -96,6 +96,7 @@ interface ChartData {
     setReset: React.Dispatch<React.SetStateAction<boolean>>;
     showLatest: boolean | undefined;
     setShowLatest: React.Dispatch<React.SetStateAction<boolean>>;
+    setShowTooltip: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 function getWindowDimensions() {
@@ -948,10 +949,6 @@ export default function Chart(props: ChartData) {
                         }
 
                         scaleData.lastZoomedY = t.y;
-
-                        console.log(event);
-                        console.log(t.x);
-
                         scaleData.lastX = t.x;
 
                         clickedForLine = true;
@@ -1765,6 +1762,8 @@ export default function Chart(props: ChartData) {
                     new Date(scaleData.xScaleCopy.domain()[1].getTime() - diff),
                     scaleData.xScaleCopy.domain()[1],
                 ]);
+
+                console.log(scaleData.yScaleCopy.domain());
             } else {
                 const diffY = scaleData.yScale.domain()[1] - scaleData.yScale.domain()[0];
 
@@ -1775,6 +1774,7 @@ export default function Chart(props: ChartData) {
                             parsedChartData?.chartData[latestCandleIndex].high,
                     ) /
                         2;
+
                 scaleData.yScale.domain([centerY - diffY / 2, centerY + diffY / 2]);
 
                 const centerX = parsedChartData?.chartData[latestCandleIndex].time * 1000;
@@ -1787,7 +1787,12 @@ export default function Chart(props: ChartData) {
             setLatest(false);
             setShowLatest(false);
         }
-    }, [scaleData, latest, parsedChartData?.chartData]);
+    }, [
+        scaleData,
+        latest,
+        parsedChartData?.chartData,
+        JSON.stringify(scaleData.yScaleCopy.domain()),
+    ]);
 
     // easy drag and triangle to horizontal lines for range
     async function addTriangleAndRect() {
@@ -2686,6 +2691,7 @@ export default function Chart(props: ChartData) {
                 barSeries,
                 volumeData,
                 showVolume,
+                selectedDate,
             );
         }
     }, [
@@ -2725,6 +2731,7 @@ export default function Chart(props: ChartData) {
         isZoomForSubChart,
         horizontalBandData,
         showVolume,
+        selectedDate,
     ]);
 
     const minimum = (data: any, accessor: any) => {
@@ -2781,6 +2788,7 @@ export default function Chart(props: ChartData) {
             barSeries: any,
             volumeData: any,
             showVolume: boolean,
+            selectedDate: any,
         ) => {
             if (chartData.length > 0) {
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -2804,13 +2812,33 @@ export default function Chart(props: ChartData) {
                         return newData;
                     });
 
-                    props.setCurrentData(nearest);
+                    if (selectedDate === undefined) {
+                        props.setCurrentData(nearest);
 
-                    props.setCurrentVolumeData(
-                        volumeData.find(
-                            (item: any) => item.time.getTime() === nearest?.date.getTime(),
-                        )?.volume,
-                    );
+                        props.setCurrentVolumeData(
+                            volumeData.find(
+                                (item: any) => item.time.getTime() === nearest?.date.getTime(),
+                            )?.volume,
+                        );
+                    }
+
+                    setsubChartValues((prevState: any) => {
+                        const newData = [...prevState];
+
+                        newData.filter((target: any) => target.name === 'tvl')[0].value =
+                            parsedChartData?.tvlChartData.find(
+                                (item: any) =>
+                                    moment(item.time.getTime()).add(30, 'm').toDate().getTime() ===
+                                    nearest?.date.getTime(),
+                            )?.value;
+
+                        newData.filter((target: any) => target.name === 'feeRate')[0].value =
+                            parsedChartData?.feeChartData.find(
+                                (item: any) => item.time.getTime() === nearest?.date.getTime(),
+                            )?.value;
+
+                        return newData;
+                    });
                     return [
                         {
                             x: nearest?.date,
@@ -3209,6 +3237,10 @@ export default function Chart(props: ChartData) {
                         .style('visibility', 'hidden');
 
                     setIsMouseMoveCrosshair(false);
+
+                    if (selectedDate === undefined) {
+                        props.setShowTooltip(false);
+                    }
                 });
                 d3.select(d3PlotArea.current).on('mouseleave', () => {
                     liquidityData.liqHighligtedBidSeries = [];
@@ -3228,6 +3260,8 @@ export default function Chart(props: ChartData) {
                         .select('svg')
                         .select('.crosshairVertical')
                         .style('visibility', 'visible');
+
+                    props.setShowTooltip(true);
                 });
             }
         },

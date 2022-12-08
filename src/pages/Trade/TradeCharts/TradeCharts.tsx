@@ -180,6 +180,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
     const [rescale, setRescale] = useState(true);
     const [latest, setLatest] = useState(false);
     const [showLatest, setShowLatest] = useState(false);
+    const [showTooltip, setShowTooltip] = useState(false);
     const [reset, setReset] = useState(false);
 
     const setActivePeriod = (period: number) => {
@@ -726,21 +727,25 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
 
     const currentDataInfo = (
         <div className={styles.chart_tooltips}>
-            <div className={styles.current_data_info}>
-                {/* {denomInBase ? tradeData.baseToken.symbol : tradeData.quoteToken.symbol} /{' '}
+            {showTooltip ? (
+                <div className={styles.current_data_info}>
+                    {/* {denomInBase ? tradeData.baseToken.symbol : tradeData.quoteToken.symbol} /{' '}
             {denomInBase ? tradeData.quoteToken.symbol : tradeData.baseToken.symbol}·{' '}
             {activeTimeFrame} ·{' '} */}
-                {'O: ' +
-                    formattedCurrentData(currentData?.open) +
-                    ' H: ' +
-                    formattedCurrentData(currentData?.high) +
-                    ' L: ' +
-                    formattedCurrentData(currentData?.low) +
-                    ' C: ' +
-                    formattedCurrentData(currentData?.close) +
-                    ' V: ' +
-                    formatDollarAmountAxis(currentVolumeData)}
-            </div>
+                    {'O: ' +
+                        formattedCurrentData(currentData?.open) +
+                        ' H: ' +
+                        formattedCurrentData(currentData?.high) +
+                        ' L: ' +
+                        formattedCurrentData(currentData?.low) +
+                        ' C: ' +
+                        formattedCurrentData(currentData?.close) +
+                        ' V: ' +
+                        formatDollarAmountAxis(currentVolumeData)}
+                </div>
+            ) : (
+                <div className={styles.current_data_info}></div>
+            )}
 
             <div
                 style={{
@@ -920,6 +925,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
                         setReset={setReset}
                         showLatest={showLatest}
                         setShowLatest={setShowLatest}
+                        setShowTooltip={setShowTooltip}
                     />
                 </div>
             )}

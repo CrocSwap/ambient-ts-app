@@ -70,6 +70,7 @@ interface ChartData {
     setReset: React.Dispatch<React.SetStateAction<boolean>>;
     showLatest: boolean | undefined;
     setShowLatest: React.Dispatch<React.SetStateAction<boolean>>;
+    setShowTooltip: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export interface ChartUtils {
@@ -546,6 +547,7 @@ export default function TradeCandleStickChart(props: ChartData) {
                         setReset={props.setReset}
                         showLatest={props.showLatest}
                         setShowLatest={props.setShowLatest}
+                        setShowTooltip={props.setShowTooltip}
                     />
                 ) : (
                     <>{loading}</>
