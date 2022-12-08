@@ -317,7 +317,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
             <header>
                 <p />
                 <h2>Chart Settings</h2>
-                <div>
+                <div onClick={() => setShowChartSettings(false)}>
                     <VscClose size={24} />
                 </div>
             </header>
