@@ -96,7 +96,11 @@ export default function MessageInput(props: MessageInputProps, prop: ChatProps) 
     };
 
     const handleEmojiPickerHideShow = () => {
-        setShowEmojiPicker(!showEmojiPicker);
+        if (!isUserLoggedIn) {
+            setShowEmojiPicker(false);
+        } else {
+            setShowEmojiPicker(!showEmojiPicker);
+        }
     };
 
     const dontShowEmojiPanel = () => {
@@ -127,7 +131,11 @@ export default function MessageInput(props: MessageInputProps, prop: ChatProps) 
     };
 
     const handleSendMsg = async (msg: string, roomId: any) => {
-        sendMsg(props.currentUser, message, roomId, props.ensName, account);
+        if (msg === '') {
+            // do nothing
+        } else {
+            sendMsg(props.currentUser, message, roomId, props.ensName, account);
+        }
     };
 
     const onChangeMessage = async (e: any) => {
@@ -154,7 +162,11 @@ export default function MessageInput(props: MessageInputProps, prop: ChatProps) 
     };
 
     return (
-        <div className={styles.input_box}>
+        <div
+            className={
+                !isAuthenticated || !isWeb3Enabled ? styles.input_box_not_allowed : styles.input_box
+            }
+        >
             <PositionBox
                 message={message}
                 isInput={true}
@@ -162,19 +174,30 @@ export default function MessageInput(props: MessageInputProps, prop: ChatProps) 
                 setIsPosition={setIsPosition}
             />
 
-            <div className={styles.input}>
+            <div
+                className={
+                    !isAuthenticated || !isWeb3Enabled ? styles.input_not_allowed : styles.input
+                }
+            >
                 <input
                     type='text'
                     id='box'
                     placeholder={messageInputText()}
                     disabled={!isAuthenticated || !isWeb3Enabled}
-                    className={styles.input_text}
+                    className={
+                        !isAuthenticated || !isWeb3Enabled
+                            ? styles.input_text_not_allowed
+                            : styles.input_text
+                    }
                     onKeyDown={_handleKeyDown}
                     value={message}
                     onChange={onChangeMessage}
                 />
 
-                <BsEmojiSmileFill onClick={handleEmojiPickerHideShow} />
+                <BsEmojiSmileFill
+                    style={{ pointerEvents: !isUserLoggedIn ? 'none' : 'auto' }}
+                    onClick={handleEmojiPickerHideShow}
+                />
             </div>
             {showEmojiPicker && (
                 <div className={styles.emojiPicker}>

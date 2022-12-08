@@ -45,8 +45,8 @@
 }
 
 .star_icon{
-height: 27px;
-width: 27px;
+    height: 20px;
+    width: 20px;;
 color: rgba(235, 235, 255, 0.4);
 pointer-events: none;
 opacity: 0.5; 
@@ -67,9 +67,10 @@ opacity: 0.5;
 
 
 .star_icon_selected_room{
-    height: 27px;
-    width: 27px;
+    height: 20px;
+    width: 20px;
     color: rgba(235, 235, 255, 0.4);
+    pointer-events: none;
     
     
     
