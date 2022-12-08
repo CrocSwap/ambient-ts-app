@@ -40,13 +40,20 @@ text.y_axis {
     border: 2px dashed rgba(235, 235, 255, 0.4);
 }
 
-.annotation-line > .lowline {
-    stroke: rgb(139, 253, 244);
+.annotation-line > .order_sell {
+    stroke:var(--accent-secondary);
     stroke-width: 3;
     stroke-dasharray: 16 16;
-    border: 2px dashed rgb(139, 253, 244);
+    border: 2px dashed var(--accent-secondary);
+
 }
 
+.annotation-line > .order_buy {
+    stroke: #7371FC;
+    stroke-width: 3;
+    stroke-dasharray: 16 16;
+    border: 2px dashed #7371FC;
+}
 .annotation-line > .marketLine {
     stroke: rgba(235, 235, 255, 0.4);
     stroke-width: 1;

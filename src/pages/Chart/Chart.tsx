@@ -139,6 +139,13 @@ export default function Chart(props: ChartData) {
     } = props;
 
     const tradeData = useAppSelector((state) => state.tradeData);
+
+    const isDenomBase = tradeData.isDenomBase;
+    const isBid = tradeData.isTokenABase;
+
+    const side = (isDenomBase && !isBid) || (!isDenomBase && isBid) ? 'buy' : 'sell';
+    const sellOrderStyle = side === 'sell' ? 'order_sell' : 'order_buy';
+
     const targetData = tradeData.targetData;
     const rangeModuleTriggered = tradeData.rangeModuleTriggered;
 
@@ -386,7 +393,9 @@ export default function Chart(props: ChartData) {
                                     ? checkLimitOrder || limit[0].value > currentPriceData[0].value
                                     : false
                             ) {
-                                return 'url(#textLowBg)';
+                                return sellOrderStyle === 'order_sell'
+                                    ? 'url(#textOrderSellBg)'
+                                    : 'url(#textOrderBuyBg)';
                             }
                             return 'url(#textBg)';
                         }
@@ -396,14 +405,16 @@ export default function Chart(props: ChartData) {
                     })
                     .select('text')
                     .attr('class', (d: any) => {
-                        if (
-                            d === market[0].value ||
-                            ((isSameLocation ? d === sameLocationData : d === limit[0].value) &&
-                                (isAuthenticated
-                                    ? checkLimitOrder || limit[0].value > currentPriceData[0].value
-                                    : false))
-                        ) {
+                        if (d === market[0].value) {
                             return 'market';
+                        }
+                        if (
+                            (isSameLocation ? d === sameLocationData : d === limit[0].value) &&
+                            (isAuthenticated
+                                ? checkLimitOrder || limit[0].value > currentPriceData[0].value
+                                : false)
+                        ) {
+                            return sellOrderStyle === 'order_sell' ? 'market' : 'y_axis';
                         }
                         if (isMouseMoveCrosshair && d === crosshairData[0].y) {
                             return 'crossHairText';
@@ -1668,7 +1679,7 @@ export default function Chart(props: ChartData) {
                                 ? checkLimitOrder || limit[0].value > currentPriceData[0].value
                                 : false
                         )
-                            ? 'lowline'
+                            ? sellOrderStyle
                             : 'line',
                     );
             });
@@ -1856,7 +1867,9 @@ export default function Chart(props: ChartData) {
                                         limit[0].value > currentPriceData[0].value
                                       : false
                               )
-                                ? 'rgb(139, 253, 244)'
+                                ? sellOrderStyle === 'order_sell'
+                                    ? 'var(--accent-secondary)'
+                                    : '#7371FC'
                                 : 'rgba(235, 235, 255)'
                             : 'rgba(235, 235, 255)',
                     )
@@ -1869,7 +1882,9 @@ export default function Chart(props: ChartData) {
                                         limit[0].value > currentPriceData[0].value
                                       : false
                               )
-                                ? 'rgb(139, 253, 244)'
+                                ? sellOrderStyle === 'order_sell'
+                                    ? 'var(--accent-secondary)'
+                                    : '#7371FC'
                                 : 'rgba(235, 235, 255)'
                             : 'rgba(235, 235, 255)',
                     )
@@ -1887,7 +1902,9 @@ export default function Chart(props: ChartData) {
                                         limit[0].value > currentPriceData[0].value
                                       : false
                               )
-                                ? 'rgb(139, 253, 244)'
+                                ? sellOrderStyle === 'order_sell'
+                                    ? 'var(--accent-secondary)'
+                                    : '#7371FC'
                                 : 'rgba(235, 235, 255)'
                             : 'rgba(235, 235, 255)',
                     )
@@ -1900,7 +1917,9 @@ export default function Chart(props: ChartData) {
                                         limit[0].value > currentPriceData[0].value
                                       : false
                               )
-                                ? 'rgb(139, 253, 244)'
+                                ? sellOrderStyle === 'order_sell'
+                                    ? 'var(--accent-secondary)'
+                                    : '#7371FC'
                                 : 'rgba(235, 235, 255)'
                             : 'rgba(235, 235, 255)',
                     )
@@ -1954,19 +1973,36 @@ export default function Chart(props: ChartData) {
             feMergeTagYaxisText.append('feMergeNode').attr('in', 'bg');
             feMergeTagYaxisText.append('feMergeNode').attr('in', 'SourceGraphic');
 
-            const yAxisTextLow = svgmain
+            const yAxisTextOrderSell = svgmain
                 .append('defs')
                 .append('filter')
                 .attr('x', 0)
                 .attr('y', 0)
                 .attr('height', 1)
                 .attr('width', 1)
-                .attr('id', 'textLowBg');
+                .attr('id', 'textOrderSellBg');
 
-            yAxisTextLow.append('feFlood').attr('flood-color', '#5FFFF2').attr('result', 'bg');
-            const feMergeTagYaxisTextLow = yAxisTextLow.append('feMerge');
-            feMergeTagYaxisTextLow.append('feMergeNode').attr('in', 'bg');
-            feMergeTagYaxisTextLow.append('feMergeNode').attr('in', 'SourceGraphic');
+            yAxisTextOrderSell
+                .append('feFlood')
+                .attr('flood-color', '#e480ff')
+                .attr('result', 'bg');
+            const feMergeTagYaxisTextSell = yAxisTextOrderSell.append('feMerge');
+            feMergeTagYaxisTextSell.append('feMergeNode').attr('in', 'bg');
+            feMergeTagYaxisTextSell.append('feMergeNode').attr('in', 'SourceGraphic');
+
+            const yAxisTextOrderBuy = svgmain
+                .append('defs')
+                .append('filter')
+                .attr('x', 0)
+                .attr('y', 0)
+                .attr('height', 1)
+                .attr('width', 1)
+                .attr('id', 'textOrderBuyBg');
+
+            yAxisTextOrderBuy.append('feFlood').attr('flood-color', '#7371FC').attr('result', 'bg');
+            const feMergeTagYaxisTextBuy = yAxisTextOrderBuy.append('feMerge');
+            feMergeTagYaxisTextBuy.append('feMergeNode').attr('in', 'bg');
+            feMergeTagYaxisTextBuy.append('feMergeNode').attr('in', 'SourceGraphic');
         }
     }
 
