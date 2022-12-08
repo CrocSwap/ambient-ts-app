@@ -7,6 +7,10 @@
     /* position: relative; */
 }
 
+.sign {
+    cursor: pointer;
+}
+
 /* .overlay_container{
     width: 100%;
     height: 100%;
@@ -48,7 +52,7 @@
 
 .price_input_container {
     display: grid;
-    grid-template-columns: 30px 1fr 30px;
+    grid-template-columns: 18px 1fr 18px;
     color: var(--text-grey-white);
     font-size: var(--header1-size);
     line-height: var(--header1-lh);
@@ -80,4 +84,23 @@
     color: var(--text-grey-dark);
     font-size: var(--header1-size);
     line-height: var(--header1-lh);
+}
+
+@keyframes shadow-pulse {
+    0% {
+        box-shadow: 0 0 0 0px rgba(131, 119, 220, 0.8);
+        border-radius: var(--border-radius);
+    }
+    /* 50% {
+    box-shadow: 0 0 0 6px rgba(131, 119, 220, 0.5);
+    border-radius: var(--border-radius);
+  } */
+    100% {
+        box-shadow: 0 0 0 12px rgba(0, 0, 0, 0);
+        border-radius: var(--border-radius);
+    }
+}
+
+.pulse_animation {
+    animation: shadow-pulse 1s 6;
 }

@@ -55,14 +55,14 @@
     font-size: 18px;
     line-height: 22px;
     letter-spacing: -0.02em;
-    color: var(--text-grey-white);
+    color: var(--text-grey-light);
 
     transition: all var(--animation-speed) ease-in-out;
 }
 
 .navigation_menu a[class='active'],
 .navigation_menu a:hover {
-    background: var(--title-gradient);
+    background: var(--text-highlight-dark);
     color: var(--dark3);
 }
 
@@ -75,7 +75,7 @@
 .right_col {
     display: flex;
     flex-direction: column;
-    background-color: var(--dark1);
+    /* background-color: var(--dark1); */
     position: relative;
     background: url(../../assets/images/backgrounds/background.png) no-repeat center center;
     -webkit-background-size: cover;
@@ -148,7 +148,7 @@
     /* background: var(--dark2); */
     backdrop-filter: blur(6px);
     -webkit-backdrop-filter: blur(6px);
-    z-index: 3;
+    z-index: 999;
 
     display: flex;
     justify-content: center;
@@ -339,8 +339,9 @@
         /* grid-gap: 1em; */
     }
     .middle_col {
-        padding: 1rem;
+        padding: 0.5rem 0rem 0rem 0.5rem;
         background: var(--dark3);
+
         display: grid;
         grid-template-rows: auto 300px;
         /* background: red; */
@@ -348,7 +349,7 @@
     }
 
     .right_col {
-        background: var(--dark1);
+        background: transparent;
     }
 
     .middle_col,
@@ -357,12 +358,11 @@
     }
 
     .middle_col {
-        align-items: stretch;
-        display: flex;
+        /* align-items: stretch; */
+        /* display: flex; */
         flex-flow: column;
         /* gap: 40px; */
-        height: 95%;
-        justify-content: flex-start;
+        height: 100%;
         position: relative;
     }
     @-moz-document url-prefix() {
@@ -395,7 +395,12 @@
         height: 100%;
         left: 0;
         top: 0;
-        /* background: rgba(51,51,51,0.7); */
         z-index: 10;
+
+        /* background-image: radial-gradient(circle,var(--dark3), var(--dark1) ); 
+        background-image: radial-gradient(circle,rgb(0, 25, 51), rgba(4, 12, 24, 1) );  */
+        background: var(--chart-gradient);
+        /* background:radial-gradient(circle at 3% 25%, rgb(1, 28, 56) 0%, rgba(4, 12, 24, 1) 25%); */
+        /* padding: 1rem; */
     }
 }

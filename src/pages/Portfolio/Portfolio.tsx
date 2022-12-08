@@ -7,24 +7,31 @@ import { getNFTs } from '../../App/functions/getNFTs';
 import { useEffect, useState, Dispatch, SetStateAction } from 'react';
 import { fetchAddress } from '../../App/functions/fetchAddress';
 import { useMoralis } from 'react-moralis';
-import { ethers } from 'ethers';
-import { CrocEnv, toDisplayQty, ChainSpec } from '@crocswap-libs/sdk';
+import { BigNumber, ethers } from 'ethers';
+import { CrocEnv, ChainSpec, toDisplayQty } from '@crocswap-libs/sdk';
 import Modal from '../../components/Global/Modal/Modal';
 import { useModal } from '../../components/Global/Modal/useModal';
 import { TokenIF } from '../../utils/interfaces/exports';
-
+import Button from '../../components/Global/Button/Button';
 import { Erc20TokenBalanceFn, nativeTokenBalanceFn } from '../../App/functions/fetchTokenBalances';
-import { useAppSelector } from '../../utils/hooks/reduxToolkit';
+import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { TokenPriceFn } from '../../App/functions/fetchTokenPrice';
 import NotFound from '../NotFound/NotFound';
 import ProfileSettings from '../../components/Portfolio/ProfileSettings/ProfileSettings';
 import { SoloTokenSelect } from '../../components/Global/TokenSelectContainer/SoloTokenSelect';
+import {
+    updateErc20TokenDexBalance,
+    updateErc20TokenWalletBalance,
+    updateNativeTokenDexBalance,
+    updateNativeTokenWalletBalance,
+} from '../../utils/state/userDataSlice';
+import { ZERO_ADDRESS } from '../../constants';
+import { formatAmountOld } from '../../utils/numbers';
 
 const mainnetProvider = new ethers.providers.WebSocketProvider(
-    // 'wss://mainnet.infura.io/ws/v3/cbb2856ea8804fc5ba59be0a2e8a9f88', // croc
-    'wss://mainnet.infura.io/ws/v3/4a162c75bd514925890174ca13cdb6a2', // benwolski@gmail.com
+    // 'wss://mainnet.infura.io/ws/v3/4a162c75bd514925890174ca13cdb6a2', // benwolski@gmail.com
     // 'wss://mainnet.infura.io/ws/v3/170b7b65781c422d82a94b8b289ca605',
-    // 'wss://mainnet.infura.io/ws/v3/e0aa879e36fc4c9e91b826ad961a36fd',
+    'wss://mainnet.infura.io/ws/v3/e0aa879e36fc4c9e91b826ad961a36fd',
 );
 // import { ambientTokenList } from '../../utils/data/ambientTokenList';
 
@@ -40,7 +47,8 @@ interface PortfolioPropsIF {
     connectedAccount: string;
     userImageData: string[];
     chainId: string;
-    tokenMap: Map<string, TokenIF>;
+    ambientTokens: Map<string, TokenIF>;
+    tokensOnActiveLists: Map<string, TokenIF>;
     selectedOutsideTab: number;
     setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
     outsideControl: boolean;
@@ -48,6 +56,7 @@ interface PortfolioPropsIF {
     userAccount?: boolean;
     openGlobalModal: (content: React.ReactNode, title?: string) => void;
     closeGlobalModal: () => void;
+    openModalWallet: () => void;
     importedTokens: TokenIF[];
     chainData: ChainSpec;
 
@@ -56,22 +65,22 @@ interface PortfolioPropsIF {
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
     account: string;
     showSidebar: boolean;
-    isUserLoggedIn: boolean;
+    isUserLoggedIn: boolean | undefined;
     isAuthenticated: boolean;
     baseTokenBalance: string;
     quoteTokenBalance: string;
     baseTokenDexBalance: string;
     quoteTokenDexBalance: string;
+    handlePulseAnimation: (type: string) => void;
 
     currentTxActiveInTransactions: string;
     setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
+    gasPriceInGwei: number | undefined;
 }
 
 // const cachedFetchAddress = memoizePromiseFn(fetchAddress);
 
 export default function Portfolio(props: PortfolioPropsIF) {
-    const { isInitialized } = useMoralis();
-
     const {
         crocEnv,
         isTokenABase,
@@ -84,7 +93,7 @@ export default function Portfolio(props: PortfolioPropsIF) {
         userImageData,
         connectedAccount,
         chainId,
-        tokenMap,
+        tokensOnActiveLists,
         openGlobalModal,
         closeGlobalModal,
         userAccount,
@@ -99,16 +108,21 @@ export default function Portfolio(props: PortfolioPropsIF) {
         quoteTokenBalance,
         baseTokenDexBalance,
         quoteTokenDexBalance,
-
         currentTxActiveInTransactions,
         setCurrentTxActiveInTransactions,
-
         showSidebar,
         isUserLoggedIn,
+        handlePulseAnimation,
+        gasPriceInGwei,
+        openModalWallet,
     } = props;
+    const { isInitialized } = useMoralis();
 
     const selectedToken: TokenIF = useAppSelector((state) => state.temp.token);
+    const connectedUserNativeToken = useAppSelector((state) => state.userData.tokens.nativeToken);
+    const connectedUserErc20Tokens = useAppSelector((state) => state.userData.tokens.erc20Tokens);
 
+    const connectedUserTokens = [connectedUserNativeToken].concat(connectedUserErc20Tokens);
     const [tokenAllowance, setTokenAllowance] = useState<string>('');
     const [recheckTokenAllowance, setRecheckTokenAllowance] = useState<boolean>(false);
     const [recheckTokenBalances, setRecheckTokenBalances] = useState<boolean>(false);
@@ -119,18 +133,166 @@ export default function Portfolio(props: PortfolioPropsIF) {
     const selectedTokenAddress = selectedToken.address;
     const selectedTokenDecimals = selectedToken.decimals;
 
+    const dispatch = useAppDispatch();
+
+    const indexOfExistingErc20Token = (connectedUserErc20Tokens ?? []).findIndex(
+        (existingToken) =>
+            existingToken.address.toLowerCase() === selectedToken.address.toLowerCase(),
+    );
+
+    const dispatchErc20WalletBalanceUpdate = (
+        walletBalance: string,
+        walletBalanceDisplay: string,
+        walletBalanceDisplayTruncated: string,
+    ) => {
+        // console.log({ indexOfExistingErc20Token });
+        if (indexOfExistingErc20Token !== -1) {
+            dispatch(
+                updateErc20TokenWalletBalance({
+                    indexOfExistingErc20Token: indexOfExistingErc20Token,
+                    walletBalance: walletBalance,
+                    walletBalanceDisplay: walletBalanceDisplay,
+                    walletBalanceDisplayTruncated: walletBalanceDisplayTruncated,
+                }),
+            );
+        }
+    };
+
+    const dispatchErc20DexBalanceUpdate = (
+        dexBalance: string,
+        dexBalanceDisplay: string,
+        dexBalanceDisplayTruncated: string,
+    ) => {
+        // console.log({ indexOfExistingErc20Token });
+        if (indexOfExistingErc20Token !== -1) {
+            dispatch(
+                updateErc20TokenDexBalance({
+                    indexOfExistingErc20Token: indexOfExistingErc20Token,
+                    dexBalance: dexBalance,
+                    dexBalanceDisplay: dexBalanceDisplay,
+                    dexBalanceDisplayTruncated: dexBalanceDisplayTruncated,
+                }),
+            );
+        }
+    };
+
     useEffect(() => {
         if (crocEnv && selectedToken.address && connectedAccount) {
             crocEnv
                 .token(selectedToken.address)
-                .walletDisplay(connectedAccount)
-                .then((bal: string) => setTokenWalletBalance(bal))
+                .wallet(connectedAccount)
+                .then((bal: BigNumber) => {
+                    setTokenWalletBalance(bal.toString());
+                    // console.log({ selectedToken });
+                    if (selectedToken.address === ZERO_ADDRESS) {
+                        const nativeWalletBalanceDisplay = toDisplayQty(bal, 18);
+                        const nativeWalletBalanceDisplayNum = parseFloat(
+                            nativeWalletBalanceDisplay,
+                        );
+
+                        const nativeWalletBalanceDisplayTruncated = nativeWalletBalanceDisplayNum
+                            ? nativeWalletBalanceDisplayNum < 0.0001
+                                ? nativeWalletBalanceDisplayNum.toExponential(2)
+                                : nativeWalletBalanceDisplayNum < 2
+                                ? nativeWalletBalanceDisplayNum.toPrecision(3)
+                                : nativeWalletBalanceDisplayNum >= 100000
+                                ? formatAmountOld(nativeWalletBalanceDisplayNum)
+                                : nativeWalletBalanceDisplayNum.toLocaleString(undefined, {
+                                      minimumFractionDigits: 2,
+                                      maximumFractionDigits: 2,
+                                  })
+                            : undefined;
+                        dispatch(
+                            updateNativeTokenWalletBalance({
+                                walletBalance: bal.toString(),
+                                walletBalanceDisplay: nativeWalletBalanceDisplay,
+                                walletBalanceDisplayTruncated:
+                                    nativeWalletBalanceDisplayTruncated || '',
+                            }),
+                        );
+                    } else {
+                        const erc20TokenWalletBalanceDisplay = toDisplayQty(
+                            bal,
+                            selectedToken.decimals,
+                        );
+                        const erc20TokenWalletBalanceDisplayNum = parseFloat(
+                            erc20TokenWalletBalanceDisplay,
+                        );
+
+                        const erc20WalletBalanceDisplayTruncated = erc20TokenWalletBalanceDisplayNum
+                            ? erc20TokenWalletBalanceDisplayNum < 0.0001
+                                ? erc20TokenWalletBalanceDisplayNum.toExponential(2)
+                                : erc20TokenWalletBalanceDisplayNum < 2
+                                ? erc20TokenWalletBalanceDisplayNum.toPrecision(3)
+                                : erc20TokenWalletBalanceDisplayNum >= 100000
+                                ? formatAmountOld(erc20TokenWalletBalanceDisplayNum)
+                                : erc20TokenWalletBalanceDisplayNum.toLocaleString(undefined, {
+                                      minimumFractionDigits: 2,
+                                      maximumFractionDigits: 2,
+                                  })
+                            : undefined;
+                        dispatchErc20WalletBalanceUpdate(
+                            bal.toString(),
+                            erc20TokenWalletBalanceDisplay,
+                            erc20WalletBalanceDisplayTruncated || '',
+                        );
+                    }
+                })
                 .catch(console.log);
             crocEnv
                 .token(selectedToken.address)
-                .balanceDisplay(connectedAccount)
-                .then((bal: string) => {
-                    setTokenDexBalance(bal);
+                .balance(connectedAccount)
+                .then((bal: BigNumber) => {
+                    setTokenDexBalance(bal.toString());
+                    if (selectedToken.address === ZERO_ADDRESS) {
+                        const nativeDexBalanceDisplay = toDisplayQty(bal, 18);
+                        const nativeDexBalanceDisplayNum = parseFloat(nativeDexBalanceDisplay);
+                        const nativeDexBalanceDisplayTruncated = nativeDexBalanceDisplayNum
+                            ? nativeDexBalanceDisplayNum < 0.0001
+                                ? nativeDexBalanceDisplayNum.toExponential(2)
+                                : nativeDexBalanceDisplayNum < 2
+                                ? nativeDexBalanceDisplayNum.toPrecision(3)
+                                : nativeDexBalanceDisplayNum >= 100000
+                                ? formatAmountOld(nativeDexBalanceDisplayNum)
+                                : nativeDexBalanceDisplayNum.toLocaleString(undefined, {
+                                      minimumFractionDigits: 2,
+                                      maximumFractionDigits: 2,
+                                  })
+                            : undefined;
+                        dispatch(
+                            updateNativeTokenDexBalance({
+                                dexBalance: bal.toString(),
+                                dexBalanceDisplay: nativeDexBalanceDisplay,
+                                dexBalanceDisplayTruncated: nativeDexBalanceDisplayTruncated || '',
+                            }),
+                        );
+                    } else {
+                        const erc20TokenDexBalanceDisplay = toDisplayQty(
+                            bal,
+                            selectedToken.decimals,
+                        );
+                        const erc20TokenDexBalanceDisplayNum = parseFloat(
+                            erc20TokenDexBalanceDisplay,
+                        );
+
+                        const erc20DexBalanceDisplayTruncated = erc20TokenDexBalanceDisplayNum
+                            ? erc20TokenDexBalanceDisplayNum < 0.0001
+                                ? erc20TokenDexBalanceDisplayNum.toExponential(2)
+                                : erc20TokenDexBalanceDisplayNum < 2
+                                ? erc20TokenDexBalanceDisplayNum.toPrecision(3)
+                                : erc20TokenDexBalanceDisplayNum >= 100000
+                                ? formatAmountOld(erc20TokenDexBalanceDisplayNum)
+                                : erc20TokenDexBalanceDisplayNum.toLocaleString(undefined, {
+                                      minimumFractionDigits: 2,
+                                      maximumFractionDigits: 2,
+                                  })
+                            : undefined;
+                        dispatchErc20DexBalanceUpdate(
+                            bal.toString(),
+                            erc20TokenDexBalanceDisplay,
+                            erc20DexBalanceDisplayTruncated || '',
+                        );
+                    }
                 })
                 .catch(console.log);
         }
@@ -144,7 +306,8 @@ export default function Portfolio(props: PortfolioPropsIF) {
                     const allowance = await crocEnv
                         .token(selectedTokenAddress)
                         .allowance(connectedAccount);
-                    setTokenAllowance(toDisplayQty(allowance, selectedTokenDecimals));
+                    setTokenAllowance(allowance.toString());
+                    // setTokenAllowance(toDisplayQty(allowance, selectedTokenDecimals));
                 } catch (err) {
                     console.log(err);
                 }
@@ -240,6 +403,8 @@ export default function Portfolio(props: PortfolioPropsIF) {
                 openTokenModal={openTokenModal}
                 fullLayoutActive={fullLayoutActive}
                 setFullLayoutActive={setFullLayoutActive}
+                selectedTokenDecimals={selectedTokenDecimals}
+                gasPriceInGwei={gasPriceInGwei}
             />
         </div>
     );
@@ -282,11 +447,6 @@ export default function Portfolio(props: PortfolioPropsIF) {
             </section>
         </div>
     );
-
-    const connectedUserNativeToken = useAppSelector((state) => state.userData.tokens.nativeToken);
-    const connectedUserErc20Tokens = useAppSelector((state) => state.userData.tokens.erc20Tokens);
-
-    const connectedUserTokens = [connectedUserNativeToken].concat(connectedUserErc20Tokens);
 
     const [resolvedAddressNativeToken, setResolvedAddressNativeToken] = useState<
         TokenIF | undefined
@@ -357,8 +517,10 @@ export default function Portfolio(props: PortfolioPropsIF) {
 
     const [showProfileSettings, setShowProfileSettings] = useState(false);
 
+    const showLoggedInButton = userAccount && !isUserLoggedIn;
+
     return (
-        <main data-testid={'portfolio'} className={styles.portfolio_container}>
+        <section data-testid={'portfolio'} className={styles.portfolio_container}>
             {userAccount && showProfileSettings && (
                 <ProfileSettings
                     showProfileSettings={showProfileSettings}
@@ -380,47 +542,55 @@ export default function Portfolio(props: PortfolioPropsIF) {
             />
             <div
                 className={
-                    // fullLayoutActive
-                    // ?styles.full_layout_container:
-                    styles.tabs_exchange_balance_container
+                    fullLayoutActive
+                        ? styles.full_layout_container
+                        : styles.tabs_exchange_balance_container
                 }
             >
-                <PortfolioTabs
-                    crocEnv={crocEnv}
-                    isTokenABase={isTokenABase}
-                    provider={provider}
-                    cachedFetchTokenPrice={cachedFetchTokenPrice}
-                    importedTokens={importedTokens}
-                    connectedUserTokens={connectedUserTokens}
-                    resolvedAddressTokens={resolvedAddressTokens}
-                    resolvedAddress={resolvedAddress}
-                    lastBlockNumber={lastBlockNumber}
-                    activeAccount={address ?? connectedAccount}
-                    connectedAccountActive={connectedAccountActive}
-                    chainId={chainId}
-                    tokenMap={tokenMap}
-                    selectedOutsideTab={selectedOutsideTab}
-                    setSelectedOutsideTab={setSelectedOutsideTab}
-                    setOutsideControl={setOutsideControl}
-                    outsideControl={outsideControl}
-                    openTokenModal={openTokenModal}
-                    openGlobalModal={openGlobalModal}
-                    closeGlobalModal={closeGlobalModal}
-                    showSidebar={showSidebar}
-                    account={props.account}
-                    chainData={props.chainData}
-                    currentPositionActive={props.currentPositionActive}
-                    setCurrentPositionActive={props.setCurrentPositionActive}
-                    isUserLoggedIn={isUserLoggedIn}
-                    isAuthenticated={isAuthenticated}
-                    baseTokenBalance={baseTokenBalance}
-                    quoteTokenBalance={quoteTokenBalance}
-                    baseTokenDexBalance={baseTokenDexBalance}
-                    quoteTokenDexBalance={quoteTokenDexBalance}
-                    currentTxActiveInTransactions={currentTxActiveInTransactions}
-                    setCurrentTxActiveInTransactions={setCurrentTxActiveInTransactions}
-                    fullLayoutToggle={fullLayerToggle}
-                />
+                {!showLoggedInButton ? (
+                    <PortfolioTabs
+                        crocEnv={crocEnv}
+                        isTokenABase={isTokenABase}
+                        provider={provider}
+                        cachedFetchTokenPrice={cachedFetchTokenPrice}
+                        importedTokens={importedTokens}
+                        connectedUserTokens={connectedUserTokens}
+                        resolvedAddressTokens={resolvedAddressTokens}
+                        resolvedAddress={resolvedAddress}
+                        lastBlockNumber={lastBlockNumber}
+                        activeAccount={address ?? connectedAccount}
+                        connectedAccountActive={connectedAccountActive}
+                        chainId={chainId}
+                        tokenMap={tokensOnActiveLists}
+                        selectedOutsideTab={selectedOutsideTab}
+                        setSelectedOutsideTab={setSelectedOutsideTab}
+                        setOutsideControl={setOutsideControl}
+                        outsideControl={outsideControl}
+                        openTokenModal={openTokenModal}
+                        openGlobalModal={openGlobalModal}
+                        closeGlobalModal={closeGlobalModal}
+                        showSidebar={showSidebar}
+                        account={props.account}
+                        chainData={props.chainData}
+                        currentPositionActive={props.currentPositionActive}
+                        setCurrentPositionActive={props.setCurrentPositionActive}
+                        isUserLoggedIn={isUserLoggedIn}
+                        isAuthenticated={isAuthenticated}
+                        baseTokenBalance={baseTokenBalance}
+                        quoteTokenBalance={quoteTokenBalance}
+                        baseTokenDexBalance={baseTokenDexBalance}
+                        quoteTokenDexBalance={quoteTokenDexBalance}
+                        currentTxActiveInTransactions={currentTxActiveInTransactions}
+                        setCurrentTxActiveInTransactions={setCurrentTxActiveInTransactions}
+                        fullLayoutToggle={fullLayerToggle}
+                        handlePulseAnimation={handlePulseAnimation}
+                    />
+                ) : (
+                    <div className={styles.non_connected_content}>
+                        <p>Please connect wallet to view your transactions.</p>
+                        <Button flat title='Connect Wallet' action={() => openModalWallet()} />
+                    </div>
+                )}
                 {/* {connectedAccountActive && !fullLayoutActive ? exchangeBalanceComponent : null} */}
                 {connectedAccountActive && exchangeBalanceComponent}
             </div>
@@ -434,13 +604,15 @@ export default function Portfolio(props: PortfolioPropsIF) {
                     footer={null}
                 >
                     <SoloTokenSelect
+                        provider={provider}
                         closeModal={closeTokenModal}
                         chainId={chainId}
-                        tokensBank={importedTokens}
+                        importedTokens={importedTokens}
                         setImportedTokens={setImportedTokens}
+                        tokensOnActiveLists={tokensOnActiveLists}
                     />
                 </Modal>
             )}
-        </main>
+        </section>
     );
 }

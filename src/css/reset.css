@@ -44,10 +44,10 @@ a:not([className]) {
 }
 
 /* Make images easier to work with */
-img,
+/* img,
 picture {
     max-width: 100%;
-}
+} */
 
 /* Inherit fonts for inputs and buttons */
 input,

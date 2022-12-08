@@ -36,7 +36,7 @@
 
 
   .header{
-    background: #012B39;
+    /* background: #012B39; */
     position: sticky;
     top: 0; /* Don't forget this, required for the stickiness */
     box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4);
@@ -65,7 +65,7 @@
   }
 
 
-.header{
+  .header{
  
     position: sticky;
     top: 0; /* Don't forget this, required for the stickiness */
@@ -80,7 +80,7 @@
 font-size: 10px;
 line-height: 13px;
 
-color: rgba(235, 235, 255, 0.4);
+color: var(--text-grey-light)
 }
 .row_container:hover{
   background: var(--dark2)
@@ -130,10 +130,11 @@ text-transform: capitalize;
   }
 
 .align_center{
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 4px;
+text-align: center;
+}
+
+.align_right{
+  text-align: right;
 }
 /* .token_images_account{
   display: flex;
@@ -162,38 +163,38 @@ text-transform: capitalize;
   
 }
 
-.trade_header li:nth-of-type(3), .trade_header li:nth-of-type(6), .trade_header li:nth-of-type(7), .trade_header li:nth-of-type(8){
+/* .trade_header li:nth-of-type(3), .trade_header li:nth-of-type(6), .trade_header li:nth-of-type(7), .trade_header li:nth-of-type(8){
 
   text-align: right;
  
-}
+} */
 
-.trade_header li:nth-of-type(4){
+/* .trade_header li:nth-of-type(4){
   text-align: center;
   
 }
 .trade_header li:nth-of-type(9){
   text-align: center;
-}
+} */
 
 
 
 
-.portfolio_header li:nth-of-type(4),
+/* .portfolio_header li:nth-of-type(4),
  .portfolio_header li:nth-of-type(7),
   .portfolio_header li:nth-of-type(8){
 
   text-align: right;
  
-}
+} */
 
-.portfolio_header li:nth-of-type(5){
+/* .portfolio_header li:nth-of-type(5){
   text-align: center;
   
 }
 .portfolio_header li:nth-of-type(9){
   text-align: center;
-}
+} */
 
 .token_qty{
   display: flex;

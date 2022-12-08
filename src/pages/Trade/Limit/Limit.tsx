@@ -19,7 +19,6 @@ import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import ContentContainer from '../../../components/Global/ContentContainer/ContentContainer';
 import LimitButton from '../../../components/Trade/Limit/LimitButton/LimitButton';
 import LimitCurrencyConverter from '../../../components/Trade/Limit/LimitCurrencyConverter/LimitCurrencyConverter';
-import DenominationSwitch from '../../../components/Swap/DenominationSwitch/DenominationSwitch';
 import LimitExtraInfo from '../../../components/Trade/Limit/LimitExtraInfo/LimitExtraInfo';
 import LimitHeader from '../../../components/Trade/Limit/LimitHeader/LimitHeader';
 import DividerDark from '../../../components/Global/DividerDark/DividerDark';
@@ -47,7 +46,7 @@ import { memoizeQuerySpotPrice } from '../../../App/functions/querySpotPrice';
 interface LimitPropsIF {
     pool: CrocPoolView | undefined;
     crocEnv: CrocEnv | undefined;
-    isUserLoggedIn: boolean;
+    isUserLoggedIn: boolean | undefined;
     importedTokens: Array<TokenIF>;
     searchableTokens: Array<TokenIF>;
     mintSlippage: SlippagePairIF;
@@ -75,8 +74,11 @@ interface LimitPropsIF {
     openModalWallet: () => void;
     openGlobalModal: (content: React.ReactNode) => void;
     closeGlobalModal: () => void;
-    poolExists: boolean | null;
+    poolExists: boolean | undefined;
     chainData: ChainSpec;
+
+    isOrderCopied: boolean;
+    setCheckLimitOrder: Dispatch<SetStateAction<boolean>>;
 }
 
 const cachedQuerySpotPrice = memoizeQuerySpotPrice();
@@ -110,11 +112,13 @@ export default function Limit(props: LimitPropsIF) {
         openModalWallet,
         poolExists,
         lastBlockNumber,
+        isOrderCopied,
+        setCheckLimitOrder,
     } = props;
 
     const { tradeData, navigationMenu } = useTradeData();
     const dispatch = useAppDispatch();
-    const { account, isWeb3Enabled, isAuthenticated } = useMoralis();
+    const { account } = useMoralis();
     const [isModalOpen, openModal, closeModal] = useModal();
     const [limitAllowed, setLimitAllowed] = useState<boolean>(false);
 
@@ -316,6 +320,11 @@ export default function Limit(props: LimitPropsIF) {
 
     const [isOrderValid, setIsOrderValid] = useState<boolean>(true);
 
+    // check limit order
+    useEffect(() => {
+        setCheckLimitOrder(isOrderValid && poolPriceNonDisplay !== 0 && limitAllowed);
+    }, [isOrderValid, poolPriceNonDisplay, limitAllowed]);
+
     useEffect(() => {
         // if (!provider) return;
         if (!crocEnv) return;
@@ -495,7 +504,12 @@ export default function Limit(props: LimitPropsIF) {
     ) : null;
 
     const isTokenAAllowanceSufficient = parseFloat(tokenAAllowance) >= parseFloat(tokenAInputQty);
-    const loginButton = <Button title='Login' action={openModalWallet} />;
+    const loginButton = (
+        <button onClick={openModalWallet} className={styles.authenticate_button}>
+            Connect Wallet
+        </button>
+    );
+
     const [isApprovalPending, setIsApprovalPending] = useState(false);
 
     const approve = async (tokenAddress: string) => {
@@ -543,7 +557,7 @@ export default function Limit(props: LimitPropsIF) {
             const gasPriceInDollarsNum = gasPriceInGwei * 82459 * 1e-9 * ethMainnetUsdPrice;
 
             setOrderGasPriceInDollars(
-                '~$' +
+                '$' +
                     gasPriceInDollarsNum.toLocaleString(undefined, {
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 2,
@@ -563,6 +577,7 @@ export default function Limit(props: LimitPropsIF) {
             action={async () => {
                 await approve(tokenPair.dataTokenA.address);
             }}
+            flat={true}
         />
     );
 
@@ -661,13 +676,15 @@ export default function Limit(props: LimitPropsIF) {
                         indicateActiveTokenListsChanged={indicateActiveTokenListsChanged}
                         poolExists={poolExists}
                         gasPriceInGwei={gasPriceInGwei}
+                        isOrderCopied={isOrderCopied}
                     />
                 </motion.div>
                 <div className={styles.header_container}>
                     <DividerDark addMarginTop />
-                    <DenominationSwitch />
+                    {/* <DenominationSwitch /> */}
                 </div>
                 <LimitExtraInfo
+                    isQtyEntered={tokenAInputQty !== '' || tokenBInputQty !== ''}
                     tokenPair={tokenPair}
                     orderGasPriceInDollars={orderGasPriceInDollars}
                     poolPriceDisplay={poolPriceDisplay || 0}
@@ -682,7 +699,7 @@ export default function Limit(props: LimitPropsIF) {
                     middleDisplayPrice={middleDisplayPrice}
                     endDisplayPrice={endDisplayPrice}
                 />
-                {isAuthenticated && isWeb3Enabled ? (
+                {isUserLoggedIn === undefined ? null : isUserLoggedIn === true ? (
                     !isTokenAAllowanceSufficient && parseFloat(tokenAInputQty) > 0 ? (
                         approvalButton
                     ) : (

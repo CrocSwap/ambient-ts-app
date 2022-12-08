@@ -6,6 +6,8 @@ import { TokenIF } from '../../../../../utils/interfaces/TokenIF';
 import styles from './WalletCard.module.css';
 import { useEffect, useState } from 'react';
 import { TokenPriceFn } from '../../../../../App/functions/fetchTokenPrice';
+import { ZERO_ADDRESS } from '../../../../../constants';
+import { DefaultTooltip } from '../../../StyledTooltip/StyledTooltip';
 // import { formatAmountOld } from '../../../../../utils/numbers';
 interface WalletPropsIF {
     cachedFetchTokenPrice: TokenPriceFn;
@@ -16,7 +18,6 @@ interface WalletPropsIF {
 
 export default function WalletCard(props: WalletPropsIF) {
     const { token, chainId, tokenMap, cachedFetchTokenPrice } = props;
-    if (token === undefined) return <></>;
 
     // const tokenMap = useTokenMap();
 
@@ -54,8 +55,8 @@ export default function WalletCard(props: WalletPropsIF) {
 
     const tokenUsdPrice = tokenPrice?.usdPrice ?? 0;
 
-    const walletBalanceNum = token.walletBalanceDisplay
-        ? parseFloat(token.walletBalanceDisplay)
+    const walletBalanceNum = token?.walletBalanceDisplay
+        ? parseFloat(token?.walletBalanceDisplay)
         : 0;
 
     const walletBalanceTruncated =
@@ -63,8 +64,16 @@ export default function WalletCard(props: WalletPropsIF) {
             ? token.walletBalanceDisplayTruncated
             : '0';
 
-    const tokenInfo = (
-        <div className={styles.token_info}>
+    const iconAndSymbolWithTooltip = (
+        <DefaultTooltip
+            interactive
+            title={`${tokenFromMap?.symbol}: ${tokenFromMap?.address}`}
+            disableHoverListener={tokenFromMap?.address === ZERO_ADDRESS}
+            placement={'right'}
+            arrow
+            enterDelay={400}
+            leaveDelay={200}
+        >
             <div className={styles.token_icon}>
                 <img
                     src={
@@ -85,9 +94,23 @@ export default function WalletCard(props: WalletPropsIF) {
                         : '???'}
                 </p>
             </div>
+        </DefaultTooltip>
+    );
+
+    const tokenInfo = (
+        <div className={styles.token_info}>
+            {iconAndSymbolWithTooltip}
             <p>{tokenFromMap?.name ? tokenFromMap?.name : token?.name ? token?.name : '???'}</p>
         </div>
     );
+
+    if (
+        !token ||
+        !tokenFromMap ||
+        (token?.address !== ZERO_ADDRESS && (!token.walletBalance || token.walletBalance === '0'))
+    )
+        return <></>;
+
     return (
         <div className={styles.wallet_row}>
             {tokenInfo}

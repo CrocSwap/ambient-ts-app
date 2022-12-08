@@ -21,7 +21,7 @@ import { useNavigate } from 'react-router-dom';
 
 // interface for component props
 interface RangeCurrencyConverterPropsIF {
-    isUserLoggedIn: boolean;
+    isUserLoggedIn: boolean | undefined;
     tokensBank: Array<TokenIF>;
     setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
     searchableTokens: Array<TokenIF>;
@@ -56,6 +56,12 @@ interface RangeCurrencyConverterPropsIF {
     activeTokenListsChanged: boolean;
     indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
     gasPriceInGwei: number | undefined;
+
+    isRangeCopied: boolean;
+    tokenAQtyLocal: number;
+    tokenBQtyLocal: number;
+    setTokenAQtyLocal: Dispatch<SetStateAction<number>>;
+    setTokenBQtyLocal: Dispatch<SetStateAction<number>>;
 }
 
 // central React functional component
@@ -94,23 +100,25 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
         rangeSpanAboveCurrentPrice,
         activeTokenListsChanged,
         indicateActiveTokenListsChanged,
+        isRangeCopied,
+        tokenAQtyLocal,
+        tokenBQtyLocal,
+        setTokenAQtyLocal,
+        setTokenBQtyLocal,
     } = props;
 
     const dispatch = useAppDispatch();
-
-    const [tokenAQtyLocal, setTokenAQtyLocal] = useState<number>(0);
-    const [tokenBQtyLocal, setTokenBQtyLocal] = useState<number>(0);
 
     const [tokenAAllowed, setTokenAAllowed] = useState(false);
     const [tokenBAllowed, setTokenBAllowed] = useState(false);
 
     useEffect(() => {
-        if (tokenAAllowed || tokenBAllowed) {
+        if (tokenAAllowed && tokenBAllowed) {
             setRangeAllowed(true);
         } else {
             setRangeAllowed(false);
         }
-    }, [tokenAAllowed, tokenBAllowed]);
+    }, [isOutOfRange, tokenAAllowed, tokenBAllowed]);
 
     const tokenABalance = isTokenABase ? baseTokenBalance : quoteTokenBalance;
     const tokenBBalance = isTokenABase ? quoteTokenBalance : baseTokenBalance;
@@ -188,11 +196,6 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
     useEffect(() => {
         if (tradeData) {
             if (tradeData.isTokenAPrimaryRange) {
-                if (tradeData.primaryQuantityRange) {
-                    setTokenAQtyLocal(parseFloat(tradeData.primaryQuantityRange));
-                    setTokenAInputQty(tradeData.primaryQuantityRange);
-                }
-
                 const sellQtyField = document.getElementById(
                     'A-range-quantity',
                 ) as HTMLInputElement;
@@ -204,10 +207,6 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
                             : tradeData.primaryQuantityRange;
                 }
             } else {
-                if (tradeData.primaryQuantityRange) {
-                    setTokenBQtyLocal(parseFloat(tradeData.primaryQuantityRange));
-                    setTokenBInputQty(tradeData.primaryQuantityRange);
-                }
                 const buyQtyField = document.getElementById('B-range-quantity') as HTMLInputElement;
                 if (buyQtyField) {
                     buyQtyField.value =
@@ -224,6 +223,7 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
         setTokenAQtyLocal(parseFloat(truncateDecimals(value, tokenPair.dataTokenA.decimals)));
         setTokenAInputQty(truncateDecimals(value, tokenPair.dataTokenA.decimals));
         handleRangeButtonMessageTokenA(value);
+
         if (poolPriceNonDisplay === undefined) return;
 
         const qtyTokenB =
@@ -240,10 +240,13 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
 
         handleSecondaryTokenQty('B', value, qtyTokenB);
 
-        const truncatedTokenBQty = truncateDecimals(
-            qtyTokenB,
-            tokenPair.dataTokenB.decimals > 10 ? 10 : tokenPair.dataTokenB.decimals,
-        ).toString();
+        const truncatedTokenBQty = qtyTokenB
+            ? qtyTokenB < 0.00001
+                ? truncateDecimals(qtyTokenB, tokenPair.dataTokenA.decimals)
+                : qtyTokenB < 2
+                ? qtyTokenB.toPrecision(3)
+                : truncateDecimals(qtyTokenB, 2)
+            : '';
 
         const tokenBQtyField = document.getElementById('B-range-quantity') as HTMLInputElement;
 
@@ -258,7 +261,9 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
         } else {
             tokenBQtyField.value = '';
             dispatch(setIsTokenAPrimaryRange(true));
+
             setTokenBQtyLocal(0);
+            setTokenBInputQty('');
         }
     };
 
@@ -266,6 +271,7 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
         setTokenBQtyLocal(parseFloat(truncateDecimals(value, tokenPair.dataTokenB.decimals)));
         setTokenBInputQty(truncateDecimals(value, tokenPair.dataTokenB.decimals));
         handleRangeButtonMessageTokenB(value);
+
         if (poolPriceNonDisplay === undefined) return;
 
         const qtyTokenA =
@@ -281,12 +287,14 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
             ) ?? 0;
 
         handleSecondaryTokenQty('A', value, qtyTokenA);
-        // handleRangeButtonMessageTokenA(qtyTokenA);
 
-        const truncatedTokenAQty = truncateDecimals(
-            qtyTokenA,
-            tokenPair.dataTokenA.decimals > 10 ? 10 : tokenPair.dataTokenA.decimals,
-        ).toString();
+        const truncatedTokenAQty = qtyTokenA
+            ? qtyTokenA < 0.00001
+                ? truncateDecimals(qtyTokenA, tokenPair.dataTokenA.decimals)
+                : qtyTokenA < 2
+                ? qtyTokenA.toPrecision(3)
+                : truncateDecimals(qtyTokenA, 2)
+            : '';
 
         const tokenAQtyField = document.getElementById('A-range-quantity') as HTMLInputElement;
         if (truncatedTokenAQty !== '0' && truncatedTokenAQty !== '') {
@@ -295,13 +303,13 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
                 dispatch(setPrimaryQuantityRange(value.toString()));
             }
             dispatch(setIsTokenAPrimaryRange(false));
-
             setTokenAQtyLocal(parseFloat(truncatedTokenAQty));
             setTokenAInputQty(truncatedTokenAQty);
         } else {
             tokenAQtyField.value = '';
             dispatch(setIsTokenAPrimaryRange(false));
             setTokenAQtyLocal(0);
+            setTokenAInputQty('');
         }
     };
     const navigate = useNavigate();
@@ -448,8 +456,16 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
 
     const handleTokenAQtyFieldUpdate = (evt?: ChangeEvent<HTMLInputElement>) => {
         if (evt) {
-            const input = evt.target.value;
-            if (input === '' || parseFloat(input) <= 0) {
+            const tokenAInputField = document.getElementById('A-range-quantity');
+
+            const input = evt.target.value.startsWith('.')
+                ? '0' + evt.target.value
+                : evt.target.value;
+
+            if (tokenAInputField) {
+                (tokenAInputField as HTMLInputElement).value = input;
+            }
+            if (input === '' || isNaN(parseFloat(input)) || parseFloat(input) <= 0) {
                 setTokenAAllowed(false);
                 setRangeButtonErrorMessage('Enter an Amount');
                 setTokenAQtyValue(0);
@@ -464,6 +480,7 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
                 if (tokenAQtyLocal === 0 && tokenBQtyLocal === 0) {
                     setTokenAAllowed(false);
                     setTokenBAllowed(false);
+                    setRangeButtonErrorMessage('Enter an Amount');
                 } else if (tokenAQtyLocal) setTokenAQtyValue(tokenAQtyLocal);
             } else {
                 if (rangeSpanAboveCurrentPrice < 0) {
@@ -541,8 +558,16 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
 
     const handleTokenBQtyFieldUpdate = (evt?: ChangeEvent<HTMLInputElement>) => {
         if (evt) {
-            const input = evt.target.value;
-            if (input === '' || parseFloat(input) <= 0) {
+            const tokenBInputField = document.getElementById('B-range-quantity');
+
+            const input = evt.target.value.startsWith('.')
+                ? '0' + evt.target.value
+                : evt.target.value;
+
+            if (tokenBInputField) {
+                (tokenBInputField as HTMLInputElement).value = input;
+            }
+            if (input === '' || isNaN(parseFloat(input)) || parseFloat(input) <= 0) {
                 setTokenBAllowed(false);
                 setRangeButtonErrorMessage('Enter an Amount');
                 setTokenBQtyValue(0);
@@ -600,6 +625,8 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
         }
     };
 
+    // const isQtyEntered = tokenAInputQty !== '' && tokenBInputQty !== '';
+
     useEffect(() => {
         tradeData.isTokenAPrimaryRange
             ? handleTokenAQtyFieldUpdate()
@@ -614,6 +641,7 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
         tokenBBalance,
         tokenADexBalance,
         tokenBDexBalance,
+        isAdvancedMode,
     ]);
 
     const tokenAQtyCoveredByWalletBalance = isWithdrawTokenAFromDexChecked
@@ -678,6 +706,7 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
         tokenBSurplusMinusTokenBQtyNum: tokenBSurplusMinusTokenBQtyNum,
         activeTokenListsChanged: activeTokenListsChanged,
         indicateActiveTokenListsChanged: indicateActiveTokenListsChanged,
+        isRangeCopied: isRangeCopied,
     };
 
     return (

@@ -143,7 +143,7 @@ export const useUrlParams = (
                     }
                 }
             };
-            return findToken(['Ambient Token List', 'CoinGecko']);
+            return findToken(['Ambient Token List', 'CoinGecko', 'Testnet Token List']);
         };
 
         // TODO: find a way to correctly type this return
@@ -183,6 +183,7 @@ export const useUrlParams = (
                 //         'Missing token data in useUrlParams.ts, refer to file for troubleshooting',
                 //     ),
                 // );
+
                 res[0] && dispatch(setTokenA(res[0] as TokenIF));
                 res[1] && dispatch(setTokenB(res[1] as TokenIF));
             });

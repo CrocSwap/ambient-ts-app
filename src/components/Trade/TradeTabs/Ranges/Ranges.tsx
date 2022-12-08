@@ -26,13 +26,16 @@ import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
 import RangeHeader from './RangesTable/RangeHeader';
 import RangesRow from './RangesTable/RangesRow';
+import TableSkeletons from '../TableSkeletons/TableSkeletons';
+import useDebounce from '../../../../App/hooks/useDebounce';
+import NoTableData from '../NoTableData/NoTableData';
 // import RangeAccordions from './RangeAccordions/RangeAccordions';
 
 // interface for props
 interface RangesPropsIF {
     activeAccountPositionData?: PositionIF[];
     connectedAccountActive?: boolean;
-    isUserLoggedIn: boolean;
+    isUserLoggedIn: boolean | undefined;
     crocEnv: CrocEnv | undefined;
     chainData: ChainSpec;
     provider: ethers.providers.Provider | undefined;
@@ -40,6 +43,7 @@ interface RangesPropsIF {
     account: string;
     chainId: string;
     isShowAllEnabled: boolean;
+    setIsShowAllEnabled?: Dispatch<SetStateAction<boolean>>;
     notOnTradeRoute?: boolean;
     graphData: graphData;
     lastBlockNumber: number;
@@ -59,6 +63,7 @@ interface RangesPropsIF {
 
     setLeader?: Dispatch<SetStateAction<string>>;
     setLeaderOwnerId?: Dispatch<SetStateAction<string>>;
+    handlePulseAnimation?: (type: string) => void;
 }
 
 // react functional component
@@ -84,11 +89,13 @@ export default function Ranges(props: RangesPropsIF) {
         setCurrentPositionActive,
         account,
         isOnPortfolioPage,
-
+        handlePulseAnimation,
+        setIsShowAllEnabled,
         showSidebar,
     } = props;
 
     const tradeData = useAppSelector((state) => state.tradeData);
+    const dataLoadingStatus = graphData?.dataLoadingStatus;
 
     const baseTokenAddress = tradeData.baseToken.address;
     const quoteTokenAddress = tradeData.quoteToken.address;
@@ -96,7 +103,25 @@ export default function Ranges(props: RangesPropsIF) {
     const baseTokenAddressLowerCase = tradeData.baseToken.address.toLowerCase();
     const quoteTokenAddressLowerCase = tradeData.quoteToken.address.toLowerCase();
 
-    const rangesByPool = graphData.positionsByPool?.positions;
+    const isConnectedUserRangeDataLoading = dataLoadingStatus?.isConnectedUserRangeDataLoading;
+    const isLookupUserRangeDataLoading = dataLoadingStatus?.isLookupUserRangeDataLoading;
+    const isPoolRangeDataLoading = dataLoadingStatus?.isPoolRangeDataLoading;
+
+    const isRangeDataLoadingForPortfolio =
+        (connectedAccountActive && isConnectedUserRangeDataLoading) ||
+        (!connectedAccountActive && isLookupUserRangeDataLoading);
+
+    const isRangeDataLoadingForTradeTable =
+        (isShowAllEnabled && isPoolRangeDataLoading) ||
+        (!isShowAllEnabled && isConnectedUserRangeDataLoading);
+
+    const shouldDisplayLoadingAnimation =
+        (isOnPortfolioPage && isRangeDataLoadingForPortfolio) ||
+        (!isOnPortfolioPage && isRangeDataLoadingForTradeTable);
+
+    const debouncedShouldDisplayLoadingAnimation = useDebounce(shouldDisplayLoadingAnimation, 1000); // debounce 1/4 second
+
+    const positionsByPool = graphData.positionsByPool?.positions;
 
     const positionsByUserMatchingSelectedTokens = graphData?.positionsByUser?.positions.filter(
         (position) => {
@@ -112,7 +137,7 @@ export default function Ranges(props: RangesPropsIF) {
     );
 
     const [rangeData, setRangeData] = useState(
-        isOnPortfolioPage ? activeAccountPositionData || [] : rangesByPool,
+        isOnPortfolioPage ? activeAccountPositionData || [] : positionsByPool,
     );
 
     const top3Positions = useMemo(() => {
@@ -132,13 +157,19 @@ export default function Ranges(props: RangesPropsIF) {
             setRangeData(activeAccountPositionData || []);
         } else if (!isShowAllEnabled) {
             setRangeData(positionsByUserMatchingSelectedTokens);
-        } else if (rangesByPool) {
-            setRangeData(rangesByPool);
+        } else if (positionsByPool) {
+            setRangeData(positionsByPool);
         }
-    }, [isShowAllEnabled, connectedAccountActive, activeAccountPositionData, rangesByPool]);
+    }, [
+        isShowAllEnabled,
+        connectedAccountActive,
+        JSON.stringify(activeAccountPositionData),
+        JSON.stringify(positionsByUserMatchingSelectedTokens),
+        JSON.stringify(positionsByPool),
+    ]);
 
     const [sortBy, setSortBy, reverseSort, setReverseSort, sortedPositions] = useSortedPositions(
-        'lastUpdate',
+        'time',
         rangeData,
     );
 
@@ -253,17 +284,24 @@ export default function Ranges(props: RangesPropsIF) {
         </>
     );
     const headerColumns = [
+        // {
+        //     name: '',
+        //     className: '',
+        //     show: isOnPortfolioPage,
+        //     slug: 'token_images',
+        //     sortable: false,
+        // },
         {
-            name: '',
+            name: 'Time',
             className: '',
-            show: isOnPortfolioPage,
-            slug: 'token_images',
-            sortable: false,
+            show: !showColumns,
+            slug: 'time',
+            sortable: true,
         },
         {
             name: 'Pool',
             className: '',
-            show: isOnPortfolioPage && !showSidebar,
+            show: isOnPortfolioPage,
             slug: 'pool',
             sortable: false,
         },
@@ -277,7 +315,7 @@ export default function Ranges(props: RangesPropsIF) {
         {
             name: 'Wallet',
             className: 'wallet',
-            show: !showColumns,
+            show: !showColumns && !isOnPortfolioPage,
             slug: 'wallet',
             sortable: isShowAllEnabled,
         },
@@ -294,6 +332,7 @@ export default function Ranges(props: RangesPropsIF) {
             show: !showColumns,
             slug: 'min',
             sortable: false,
+            alignRight: true,
         },
         {
             name: 'Max',
@@ -301,6 +340,7 @@ export default function Ranges(props: RangesPropsIF) {
             show: !showColumns,
             slug: 'max',
             sortable: false,
+            alignRight: true,
         },
 
         {
@@ -309,6 +349,7 @@ export default function Ranges(props: RangesPropsIF) {
             show: showColumns && !ipadView,
             slug: 'minMax',
             sortable: false,
+            alignRight: true,
         },
         {
             name: 'Value (USD)',
@@ -316,27 +357,31 @@ export default function Ranges(props: RangesPropsIF) {
             show: true,
             slug: 'value',
             sortable: true,
+            alignRight: true,
         },
-        // {
-        //     name: isOnPortfolioPage ? 'Qty A' : `${baseTokenSymbol}`,
+        {
+            name: isOnPortfolioPage ? 'Qty A' : `${baseTokenSymbol}`,
 
-        //     show: !showColumns,
-        //     slug: baseTokenSymbol,
-        //     sortable: false,
-        // },
-        // {
-        //     name: isOnPortfolioPage ? 'Qty B' : `${quoteTokenSymbol}`,
+            show: !showColumns,
+            slug: baseTokenSymbol,
+            sortable: false,
+            alignRight: true,
+        },
+        {
+            name: isOnPortfolioPage ? 'Qty B' : `${quoteTokenSymbol}`,
 
-        //     show: !showColumns,
-        //     slug: quoteTokenSymbol,
-        //     sortable: false,
-        // },
+            show: !showColumns,
+            slug: quoteTokenSymbol,
+            sortable: false,
+            alignRight: true,
+        },
         {
             name: tokens,
             className: 'tokens',
-            show: true,
+            show: showColumns,
             slug: 'tokens',
             sortable: false,
+            alignRight: true,
         },
         {
             name: 'APR',
@@ -344,6 +389,7 @@ export default function Ranges(props: RangesPropsIF) {
             show: true,
             slug: 'apr',
             sortable: true,
+            alignRight: true,
         },
         {
             name: ' ',
@@ -401,6 +447,7 @@ export default function Ranges(props: RangesPropsIF) {
             lastBlockNumber={lastBlockNumber}
             isOnPortfolioPage={isOnPortfolioPage}
             idx={idx}
+            handlePulseAnimation={handlePulseAnimation}
 
             // blockExplorer={blockExplorer}
         />
@@ -409,12 +456,24 @@ export default function Ranges(props: RangesPropsIF) {
     const expandStyle = expandTradeTable ? 'calc(100vh - 10rem)' : '250px';
 
     const portfolioPageStyle = props.isOnPortfolioPage ? 'calc(100vh - 19.5rem)' : expandStyle;
+    const rangeDataOrNull = rangeData.length ? (
+        rowItemContent
+    ) : (
+        <NoTableData
+            isShowAllEnabled={isShowAllEnabled}
+            type='ranges'
+            setIsShowAllEnabled={setIsShowAllEnabled}
+        />
+    );
 
     return (
-        <main className={`${styles.main_list_container} `} style={{ height: portfolioPageStyle }}>
+        <section
+            className={`${styles.main_list_container} `}
+            style={{ height: portfolioPageStyle }}
+        >
             {headerColumnsDisplay}
-            {rowItemContent}
+            {debouncedShouldDisplayLoadingAnimation ? <TableSkeletons /> : rangeDataOrNull}
             {footerDisplay}
-        </main>
+        </section>
     );
 }

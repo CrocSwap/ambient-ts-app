@@ -6,17 +6,22 @@ import { ITransaction } from '../../utils/state/graphDataSlice';
 
 export const getTransactionData = async (
     tx: ITransaction,
-    importedTokens: TokenIF[],
+    tokensOnActiveLists: Map<string, TokenIF>,
 ): Promise<ITransaction> => {
     const baseTokenAddress = tx.base;
     const quoteTokenAddress = tx.quote;
 
-    const baseTokenLogoURI = importedTokens.find(
-        (token) => token.address.toLowerCase() === baseTokenAddress.toLowerCase(),
-    )?.logoURI;
-    const quoteTokenLogoURI = importedTokens.find(
-        (token) => token.address.toLowerCase() === quoteTokenAddress.toLowerCase(),
-    )?.logoURI;
+    const baseKey = baseTokenAddress.toLowerCase() + '_' + tx.chainId;
+    const quoteKey = quoteTokenAddress.toLowerCase() + '_' + tx.chainId;
+
+    const baseTokenName = tokensOnActiveLists.get(baseKey)?.name;
+    const quoteTokenName = tokensOnActiveLists.get(quoteKey)?.name;
+
+    const baseTokenLogoURI = tokensOnActiveLists.get(baseKey)?.logoURI;
+    const quoteTokenLogoURI = tokensOnActiveLists.get(quoteKey)?.logoURI;
+
+    tx.baseName = baseTokenName ?? '';
+    tx.quoteName = quoteTokenName ?? '';
 
     tx.baseTokenLogoURI = baseTokenLogoURI ?? '';
     tx.quoteTokenLogoURI = quoteTokenLogoURI ?? '';

@@ -30,6 +30,8 @@ import {
     addLimitOrderChangesByUser,
     ITransaction,
     setLeaderboardByPool,
+    setDataLoadingStatus,
+    resetConnectedUserDataLoadingStatus,
     // ChangesByUser,
 } from '../utils/state/graphDataSlice';
 import { ethers } from 'ethers';
@@ -106,6 +108,7 @@ import {
     setIsLoggedIn,
     setIsUserIdle,
     setNativeToken,
+    setRecentTokens,
 } from '../utils/state/userDataSlice';
 import { checkIsStable } from '../utils/data/stablePairs';
 import { useTokenMap } from '../utils/hooks/useTokenMap';
@@ -138,6 +141,7 @@ import TopRanges from '../components/Analytics/TopRanges/TopRanges';
 import TopTokens from '../components/Analytics/TopTokens/TopTokens';
 import AnalyticsTransactions from '../components/Analytics/AnalyticsTransactions/AnalyticsTransactions';
 import trimString from '../utils/functions/trimString';
+import { memoizeFetchContractDetails } from './functions/fetchContractDetails';
 // import { memoizeQuerySpotTick } from './functions/querySpotTick';
 // import PhishingWarning from '../components/Global/PhisingWarning/PhishingWarning';
 import useChatApi from '../components/Chat/Service/ChatApi';
@@ -147,6 +151,7 @@ const cachedFetchNativeTokenBalance = memoizeFetchNativeTokenBalance();
 const cachedFetchErc20TokenBalances = memoizeFetchErc20TokenBalances();
 const cachedFetchTokenPrice = memoizeTokenPrice();
 const cachedQuerySpotPrice = memoizeQuerySpotPrice();
+const cachedFetchContractDetails = memoizeFetchContractDetails();
 // const cachedQuerySpotTick = memoizeQuerySpotTick();
 
 const httpGraphCacheServerDomain = 'https://809821320828123.de:5000';
@@ -169,6 +174,45 @@ export default function App() {
         enableWeb3,
     } = useMoralis();
 
+    const tradeData = useAppSelector((state) => state.tradeData);
+    const location = useLocation();
+
+    // hook to check if token addresses in URL match token addresses in RTK
+    const rtkMatchesParams = useMemo(() => {
+        // output value, false is default return
+        let matching = false;
+        // address of token A as held by RTK
+        const rtkTokenA = tradeData.tokenA.address;
+        // address of token B as held by RTK
+        const rtkTokenB = tradeData.tokenB.address;
+        // current URL pathway
+        const { pathname } = location;
+        // make sure app is on a pathway with two URLs in params
+        if (pathname.includes('tokenA') && pathname.includes('tokenB')) {
+            // function to extract token addresses from URL string (absolute)
+            const getAddrFromParams = (token: string) => {
+                const idx = pathname.indexOf(token);
+                const address = pathname.substring(idx + 7, idx + 49);
+                return address;
+            };
+            // address of token A from URL params
+            const addrTokenA = getAddrFromParams('tokenA');
+            // address of token B from URL params
+            const addrTokenB = getAddrFromParams('tokenB');
+            // check if URL param addresses match RTK token addresses
+            if (
+                addrTokenA.toLowerCase() === rtkTokenA.toLowerCase() &&
+                addrTokenB.toLowerCase() === rtkTokenB.toLowerCase()
+            ) {
+                // if match set return value as true
+                matching = true;
+            }
+        }
+        // return output variable (boolean)
+        return matching;
+        // run hook when URL or token addresses in RTK change
+    }, [location, tradeData.tokenA.address, tradeData.tokenB.address]);
+
     const onIdle = () => {
         console.log('user is idle');
         dispatch(setIsUserIdle(true));
@@ -186,7 +230,7 @@ export default function App() {
         onIdle,
         onActive,
         //    onAction,
-        timeout: 1000 * 60 * 1, // set user to idle after 1 minute
+        timeout: 1000 * 60 * 5, // set user to idle after 5 minutes
         promptTimeout: 0,
         events: [
             'mousemove',
@@ -216,22 +260,40 @@ export default function App() {
     });
 
     const userData = useAppSelector((state) => state.userData);
+
     const isUserLoggedIn = userData.isLoggedIn;
     const isUserIdle = userData.isUserIdle;
 
     const { getID } = useChatApi();
 
+    // allow a local environment variable to be defined in [app_repo]/.env.local to turn off connections to the cache server
+    const isServerEnabled =
+        process.env.REACT_APP_CACHE_SERVER_IS_ENABLED !== undefined
+            ? process.env.REACT_APP_CACHE_SERVER_IS_ENABLED === 'true'
+            : true;
+
+    const [loginCheckDelayElapsed, setLoginCheckDelayElapsed] = useState(false);
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setLoginCheckDelayElapsed(true);
+        }, 3000);
+        return () => clearTimeout(timer);
+    }, []);
+
     useEffect(() => {
         const isLoggedIn = isAuthenticated && isWeb3Enabled;
 
-        if (isLoggedIn && userData.isLoggedIn !== isLoggedIn && account) {
-            dispatch(setIsLoggedIn(isLoggedIn));
-            dispatch(setAddressAtLogin(account));
-        } else if (!isLoggedIn && userData.isLoggedIn !== isLoggedIn) {
-            dispatch(setIsLoggedIn(isLoggedIn));
-            dispatch(resetUserAddresses());
+        if (isLoggedIn || (isLoggedIn === false && loginCheckDelayElapsed)) {
+            if (isLoggedIn && userData.isLoggedIn !== isLoggedIn && account) {
+                dispatch(setIsLoggedIn(isLoggedIn));
+                dispatch(setAddressAtLogin(account));
+            } else if (!isLoggedIn && userData.isLoggedIn !== isLoggedIn) {
+                dispatch(setIsLoggedIn(isLoggedIn));
+                dispatch(resetUserAddresses());
+            }
         }
-    }, [isAuthenticated, isWeb3Enabled, isUserLoggedIn, account]);
+    }, [loginCheckDelayElapsed, isAuthenticated, isWeb3Enabled, isUserLoggedIn, account]);
 
     useEffect(() => {
         console.log(isAuthenticated, isWeb3Enabled, isUserLoggedIn);
@@ -246,8 +308,19 @@ export default function App() {
         });
     }, [isAuthenticated, isWeb3Enabled, isUserLoggedIn]);
 
-    const tokenMap = useTokenMap();
-    const location = useLocation();
+    // this is another case where true vs false is an arbitrary distinction
+    const [activeTokenListsChanged, indicateActiveTokenListsChanged] = useState(false);
+
+    const ambientTokens = useTokenMap(false, ['/ambient-token-list.json']);
+    const tokensOnActiveLists = useTokenMap(
+        activeTokenListsChanged,
+        JSON.parse(localStorage.getItem('user') as string)?.activeTokenLists ?? [
+            '/ambient-token-list.json',
+        ],
+    );
+    useEffect(() => {
+        console.log({ tokensOnActiveLists });
+    }, [tokensOnActiveLists]);
 
     const [candleData, setCandleData] = useState<CandlesByPoolAndDuration | undefined>();
 
@@ -264,9 +337,9 @@ export default function App() {
     // useEffect(() => console.warn(chainData.chainId), [chainData.chainId]);
 
     const [tokenPairLocal, setTokenPairLocal] = useState<string[] | null>(null);
-    useEffect(() => {
-        console.log({ tokenPairLocal });
-    }, [tokenPairLocal]);
+    // useEffect(() => {
+    //     console.log({ tokenPairLocal });
+    // }, [tokenPairLocal]);
 
     const tokenUniverse = useTokenUniverse(chainData.chainId);
     useEffect(() => {
@@ -354,7 +427,7 @@ export default function App() {
                 const chainSpec = lookupChain(chainData.chainId);
                 const url = chainSpec.nodeUrl;
                 // const url = chainSpec.wsUrl ? chainSpec.wsUrl : chainSpec.nodeUrl;
-                // console.log('Chain URL ' + url);
+                console.log('setting up new provider: ' + url);
                 setProvider(new ethers.providers.JsonRpcProvider(url));
             }
         } catch (error) {
@@ -368,11 +441,8 @@ export default function App() {
     }, [chainData.chainId]);
 
     useEffect(() => {
-        // console.log({ isUserLoggedIn });
-        // console.log({ account });
-        if (!isUserLoggedIn) {
-            dispatch(resetTokenData());
-        } else if (account) {
+        dispatch(resetTokenData());
+        if (account) {
             dispatch(setAddressCurrent(account));
         } else {
             dispatch(setAddressCurrent(undefined));
@@ -382,7 +452,6 @@ export default function App() {
     const dispatch = useAppDispatch();
 
     // current configurations of trade as specified by the user
-    const tradeData = useAppSelector((state) => state.tradeData);
     const currentPoolInfo = tradeData;
 
     // tokens specifically imported by the end user
@@ -396,9 +465,6 @@ export default function App() {
     // true vs false is an arbitrary distinction here
     const [tokenListsReceived, indicateTokenListsReceived] = useState(false);
 
-    // this is another case where true vs false is an arbitrary distinction
-    const [activeTokenListsChanged, indicateActiveTokenListsChanged] = useState(false);
-
     if (needTokenLists) {
         setNeedTokenLists(false);
         fetchTokenLists(tokenListsReceived, indicateTokenListsReceived);
@@ -411,7 +477,7 @@ export default function App() {
 
     useEffect(() => {
         console.log(chainData.nodeUrl);
-        fetch(chainData.nodeUrl, {
+        fetch(chainData.nodeUrl2, {
             method: 'POST',
             headers: {
                 Accept: 'application/json',
@@ -596,11 +662,25 @@ export default function App() {
         })();
     }, [isUserLoggedIn, account, chainData.chainId]);
 
-    const connectedUserTokens = useAppSelector((state) => state.userData.tokens);
-    const connectedUserNativeToken = connectedUserTokens.nativeToken;
-    const connectedUserErc20Tokens = connectedUserTokens.erc20Tokens;
+    const everyEigthBlock = Math.floor(lastBlockNumber / 8);
+    // check for token balances every eight blocks
 
-    // check for token balances on each new block
+    const addTokenInfo = (token: TokenIF): TokenIF => {
+        const newToken = { ...token };
+        const tokenAddress = token.address;
+        const key = tokenAddress.toLowerCase() + '_0x' + token.chainId.toString(16);
+
+        const tokenName = tokensOnActiveLists.get(key)?.name;
+
+        const tokenLogoURI = tokensOnActiveLists.get(key)?.logoURI;
+
+        newToken.name = tokenName ?? '';
+
+        newToken.logoURI = tokenLogoURI ?? '';
+
+        return newToken;
+    };
+
     useEffect(() => {
         (async () => {
             if (crocEnv && isUserLoggedIn && account && chainData.chainId) {
@@ -609,50 +689,26 @@ export default function App() {
                     const newNativeToken: TokenIF = await cachedFetchNativeTokenBalance(
                         account,
                         chainData.chainId,
-                        lastBlockNumber,
+                        everyEigthBlock,
                         crocEnv,
                     );
-                    if (
-                        JSON.stringify(connectedUserNativeToken) !== JSON.stringify(newNativeToken)
-                    ) {
-                        dispatch(setNativeToken(newNativeToken));
-                    }
+
+                    dispatch(setNativeToken(newNativeToken));
                 } catch (error) {
                     console.log({ error });
                 }
                 try {
-                    const updatedTokens: TokenIF[] = [];
-                    connectedUserErc20Tokens
-                        ? updatedTokens.push(...connectedUserErc20Tokens)
-                        : null;
-                    // console.log('fetching connected user erc20 token balances');
                     const erc20Results: TokenIF[] = await cachedFetchErc20TokenBalances(
                         account,
                         chainData.chainId,
-                        lastBlockNumber,
+                        everyEigthBlock,
                         crocEnv,
                     );
-
-                    erc20Results.map((newToken: TokenIF) => {
-                        const indexOfExistingToken = (connectedUserErc20Tokens ?? []).findIndex(
-                            (existingToken) => existingToken.address === newToken.address,
-                        );
-
-                        if (indexOfExistingToken === -1) {
-                            updatedTokens.push(newToken);
-                        } else if (
-                            JSON.stringify(
-                                (connectedUserErc20Tokens ?? [])[indexOfExistingToken],
-                            ) !== JSON.stringify(newToken)
-                        ) {
-                            updatedTokens[indexOfExistingToken] = newToken;
-                        }
-                    });
-                    if (
-                        JSON.stringify(connectedUserErc20Tokens) !== JSON.stringify(updatedTokens)
-                    ) {
-                        dispatch(setErc20Tokens(updatedTokens));
-                    }
+                    // console.log({ tokensOnActiveLists });
+                    // console.log({ erc20Results });
+                    const erc20TokensWithLogos = erc20Results.map((token) => addTokenInfo(token));
+                    // console.log({ erc20TokensWithLogos });
+                    dispatch(setErc20Tokens(erc20TokensWithLogos));
                 } catch (error) {
                     console.log({ error });
                 }
@@ -663,8 +719,8 @@ export default function App() {
         isUserLoggedIn,
         account,
         chainData.chainId,
-        lastBlockNumber,
-        JSON.stringify(connectedUserTokens),
+        everyEigthBlock,
+        // JSON.stringify(connectedUserTokens),
     ]);
 
     const [baseTokenAddress, setBaseTokenAddress] = useState<string>('');
@@ -695,12 +751,12 @@ export default function App() {
     // ... true => pool exists
     // ... false => pool does not exist
     // ... null => no crocEnv to check if pool exists
-    const [poolExists, setPoolExists] = useState<boolean | null>(null);
+    const [poolExists, setPoolExists] = useState<boolean | undefined>();
     useEffect(() => console.log({ poolExists }), [poolExists]);
 
     // hook to update `poolExists` when crocEnv changes
     useEffect(() => {
-        setPoolExists(null);
+        setPoolExists(undefined);
         if (crocEnv && tokenPairLocal) {
             // token pair has an initialized pool on-chain
             // returns a promise object
@@ -739,7 +795,7 @@ export default function App() {
 
     useEffect(() => {
         (async () => {
-            if (baseTokenAddress && quoteTokenAddress) {
+            if (isServerEnabled && baseTokenAddress && quoteTokenAddress) {
                 const poolAmbientApyCacheEndpoint =
                     'https://809821320828123.de:5000' + '/pool_ambient_apy_cached?';
 
@@ -763,146 +819,160 @@ export default function App() {
                     });
             }
         })();
-    }, [JSON.stringify({ base: baseTokenAddress, quote: quoteTokenAddress })]);
+    }, [isServerEnabled, JSON.stringify({ base: baseTokenAddress, quote: quoteTokenAddress })]);
 
     // useEffect that runs when token pair changes
     useEffect(() => {
-        // reset rtk values for user specified range in ticks
-        dispatch(setAdvancedLowTick(0));
-        dispatch(setAdvancedHighTick(0));
-
-        const tokenAAddress = tokenPair?.dataTokenA?.address;
-        const tokenBAddress = tokenPair?.dataTokenB?.address;
-
-        if (tokenAAddress && tokenBAddress) {
-            const sortedTokens = sortBaseQuoteTokens(tokenAAddress, tokenBAddress);
-            const tokenAMainnetEquivalent =
-                tokenAAddress === ZERO_ADDRESS
-                    ? tokenAAddress
-                    : testTokenMap
-                          .get(tokenAAddress.toLowerCase() + '_' + chainData.chainId)
-                          ?.split('_')[0];
-            const tokenBMainnetEquivalent =
-                tokenBAddress === ZERO_ADDRESS
-                    ? tokenBAddress
-                    : testTokenMap
-                          .get(tokenBAddress.toLowerCase() + '_' + chainData.chainId)
-                          ?.split('_')[0];
-
-            if (tokenAMainnetEquivalent && tokenBMainnetEquivalent) {
-                const sortedMainnetTokens = sortBaseQuoteTokens(
-                    tokenAMainnetEquivalent,
-                    tokenBMainnetEquivalent,
-                );
-
-                setMainnetBaseTokenAddress(sortedMainnetTokens[0]);
-                setMainnetQuoteTokenAddress(sortedMainnetTokens[1]);
-            } else {
-                setMainnetBaseTokenAddress('');
-                setMainnetQuoteTokenAddress('');
+        if (rtkMatchesParams) {
+            if (provider) {
+                (async () => {
+                    const contractDetails = await cachedFetchContractDetails(
+                        provider,
+                        tradeData.tokenB.address,
+                        chainData.chainId,
+                    );
+                    console.log({ contractDetails });
+                })();
             }
 
-            setBaseTokenAddress(sortedTokens[0]);
-            setQuoteTokenAddress(sortedTokens[1]);
-            if (tokenPair.dataTokenA.address === sortedTokens[0]) {
-                setIsTokenABase(true);
-                setBaseTokenDecimals(tokenPair.dataTokenA.decimals);
-                setQuoteTokenDecimals(tokenPair.dataTokenB.decimals);
-            } else {
-                setIsTokenABase(false);
-                setBaseTokenDecimals(tokenPair.dataTokenB.decimals);
-                setQuoteTokenDecimals(tokenPair.dataTokenA.decimals);
-            }
+            // console.log(tradeData.tokenA.address);
+            // console.log(tradeData.tokenB.address);
 
-            // retrieve pool liquidity provider fee
+            // reset rtk values for user specified range in ticks
+            console.log('resetting advanced ticks');
+            dispatch(setAdvancedLowTick(0));
+            dispatch(setAdvancedHighTick(0));
 
-            getLiquidityFee(
-                sortedTokens[0],
-                sortedTokens[1],
-                chainData.poolIndex,
-                chainData.chainId,
-            )
-                .then((liquidityFeeNum) => {
-                    if (liquidityFeeNum) dispatch(setLiquidityFee(liquidityFeeNum));
-                })
-                .catch(console.log);
+            const tokenAAddress = tokenPair?.dataTokenA?.address;
+            const tokenBAddress = tokenPair?.dataTokenB?.address;
 
-            // retrieve pool TVL series
-            getTvlSeries(
-                sortedTokens[0],
-                sortedTokens[1],
-                chainData.poolIndex,
-                chainData.chainId,
-                600, // 10 minute resolution
-            )
-                .then((tvlSeries) => {
-                    if (
-                        tvlSeries &&
-                        tvlSeries.base &&
-                        tvlSeries.quote &&
-                        tvlSeries.poolIdx &&
-                        tvlSeries.seriesData
+            if (tokenAAddress && tokenBAddress) {
+                const sortedTokens = sortBaseQuoteTokens(tokenAAddress, tokenBAddress);
+                const tokenAMainnetEquivalent =
+                    tokenAAddress === ZERO_ADDRESS
+                        ? tokenAAddress
+                        : testTokenMap
+                              .get(tokenAAddress.toLowerCase() + '_' + chainData.chainId)
+                              ?.split('_')[0];
+                const tokenBMainnetEquivalent =
+                    tokenBAddress === ZERO_ADDRESS
+                        ? tokenBAddress
+                        : testTokenMap
+                              .get(tokenBAddress.toLowerCase() + '_' + chainData.chainId)
+                              ?.split('_')[0];
+
+                if (tokenAMainnetEquivalent && tokenBMainnetEquivalent) {
+                    const sortedMainnetTokens = sortBaseQuoteTokens(
+                        tokenAMainnetEquivalent,
+                        tokenBMainnetEquivalent,
+                    );
+
+                    setMainnetBaseTokenAddress(sortedMainnetTokens[0]);
+                    setMainnetQuoteTokenAddress(sortedMainnetTokens[1]);
+                } else {
+                    setMainnetBaseTokenAddress('');
+                    setMainnetQuoteTokenAddress('');
+                }
+
+                setBaseTokenAddress(sortedTokens[0]);
+                setQuoteTokenAddress(sortedTokens[1]);
+                if (tokenPair.dataTokenA.address === sortedTokens[0]) {
+                    setIsTokenABase(true);
+                    setBaseTokenDecimals(tokenPair.dataTokenA.decimals);
+                    setQuoteTokenDecimals(tokenPair.dataTokenB.decimals);
+                } else {
+                    setIsTokenABase(false);
+                    setBaseTokenDecimals(tokenPair.dataTokenB.decimals);
+                    setQuoteTokenDecimals(tokenPair.dataTokenA.decimals);
+                }
+
+                // retrieve pool liquidity provider fee
+
+                if (isServerEnabled && httpGraphCacheServerDomain) {
+                    getLiquidityFee(
+                        sortedTokens[0],
+                        sortedTokens[1],
+                        chainData.poolIndex,
+                        chainData.chainId,
                     )
-                        dispatch(
-                            setPoolTvlSeries({
-                                dataReceived: true,
-                                pools: [
-                                    {
-                                        dataReceived: true,
-                                        pool: {
-                                            base: tvlSeries.base,
-                                            quote: tvlSeries.quote,
-                                            poolIdx: tvlSeries.poolIdx,
-                                            chainId: chainData.chainId,
-                                        },
-                                        tvlData: tvlSeries,
-                                    },
-                                ],
-                            }),
-                        );
-                })
-                .catch(console.log);
+                        .then((liquidityFeeNum) => {
+                            if (liquidityFeeNum) dispatch(setLiquidityFee(liquidityFeeNum));
+                        })
+                        .catch(console.log);
 
-            // retrieve pool volume series
-            getVolumeSeries(
-                sortedTokens[0],
-                sortedTokens[1],
-                chainData.poolIndex,
-                chainData.chainId,
-                600, // 10 minute resolution
-            )
-                .then((volumeSeries) => {
-                    if (
-                        volumeSeries &&
-                        volumeSeries.base &&
-                        volumeSeries.quote &&
-                        volumeSeries.poolIdx &&
-                        volumeSeries.seriesData
+                    // retrieve pool TVL series
+                    getTvlSeries(
+                        sortedTokens[0],
+                        sortedTokens[1],
+                        chainData.poolIndex,
+                        chainData.chainId,
+                        600, // 10 minute resolution
                     )
-                        dispatch(
-                            setPoolVolumeSeries({
-                                dataReceived: true,
-                                pools: [
-                                    {
+                        .then((tvlSeries) => {
+                            if (
+                                tvlSeries &&
+                                tvlSeries.base &&
+                                tvlSeries.quote &&
+                                tvlSeries.poolIdx &&
+                                tvlSeries.seriesData
+                            )
+                                dispatch(
+                                    setPoolTvlSeries({
                                         dataReceived: true,
-                                        pool: {
-                                            base: volumeSeries.base,
-                                            quote: volumeSeries.quote,
-                                            poolIdx: volumeSeries.poolIdx,
-                                            chainId: chainData.chainId,
-                                        },
-                                        volumeData: volumeSeries,
-                                    },
-                                ],
-                            }),
-                        );
-                })
-                .catch(console.log);
+                                        pools: [
+                                            {
+                                                dataReceived: true,
+                                                pool: {
+                                                    base: tvlSeries.base,
+                                                    quote: tvlSeries.quote,
+                                                    poolIdx: tvlSeries.poolIdx,
+                                                    chainId: chainData.chainId,
+                                                },
+                                                tvlData: tvlSeries,
+                                            },
+                                        ],
+                                    }),
+                                );
+                        })
+                        .catch(console.log);
 
-            // retrieve pool liquidity
-            try {
-                if (httpGraphCacheServerDomain) {
-                    // console.log('fetching pool liquidity distribution');
+                    // retrieve pool volume series
+                    getVolumeSeries(
+                        sortedTokens[0],
+                        sortedTokens[1],
+                        chainData.poolIndex,
+                        chainData.chainId,
+                        600, // 10 minute resolution
+                    )
+                        .then((volumeSeries) => {
+                            if (
+                                volumeSeries &&
+                                volumeSeries.base &&
+                                volumeSeries.quote &&
+                                volumeSeries.poolIdx &&
+                                volumeSeries.seriesData
+                            )
+                                dispatch(
+                                    setPoolVolumeSeries({
+                                        dataReceived: true,
+                                        pools: [
+                                            {
+                                                dataReceived: true,
+                                                pool: {
+                                                    base: volumeSeries.base,
+                                                    quote: volumeSeries.quote,
+                                                    poolIdx: volumeSeries.poolIdx,
+                                                    chainId: chainData.chainId,
+                                                },
+                                                volumeData: volumeSeries,
+                                            },
+                                        ],
+                                    }),
+                                );
+                        })
+                        .catch(console.log);
+
+                    // retrieve pool liquidity
 
                     const poolLiquidityCacheEndpoint =
                         httpGraphCacheServerDomain + '/pool_liquidity_distribution?';
@@ -938,15 +1008,10 @@ export default function App() {
                             }
                         })
                         .catch(console.log);
-                }
-            } catch (error) {
-                console.log;
-            }
 
-            if (crocEnv) {
-                // retrieve pool_positions
-                try {
-                    if (httpGraphCacheServerDomain) {
+                    if (crocEnv) {
+                        // retrieve pool_positions
+
                         // console.log('fetching pool positions');
                         const allPositionsCacheEndpoint =
                             httpGraphCacheServerDomain + '/pool_positions?';
@@ -967,6 +1032,12 @@ export default function App() {
                             .then((response) => response.json())
                             .then((json) => {
                                 const poolPositions = json.data;
+                                dispatch(
+                                    setDataLoadingStatus({
+                                        datasetName: 'poolRangeData',
+                                        loadingStatus: false,
+                                    }),
+                                );
 
                                 if (poolPositions && crocEnv) {
                                     // console.log({ poolPositions });
@@ -1000,14 +1071,8 @@ export default function App() {
                                 }
                             })
                             .catch(console.log);
-                    }
-                } catch (error) {
-                    console.log;
-                }
 
-                // retrieve positions for leaderboard
-                try {
-                    if (httpGraphCacheServerDomain) {
+                        // retrieve positions for leaderboard
                         // console.log('fetching leaderboard positions');
                         const poolPositionsCacheEndpoint =
                             httpGraphCacheServerDomain + '/annotated_pool_positions?';
@@ -1023,7 +1088,7 @@ export default function App() {
                                     // omitKnockout: 'true',
                                     addValue: 'true',
                                     sortByAPY: 'true',
-                                    n: '10',
+                                    n: '50',
                                 }),
                         )
                             .then((response) => response.json())
@@ -1031,7 +1096,6 @@ export default function App() {
                                 const leaderboardPositions = json.data;
 
                                 if (leaderboardPositions && crocEnv) {
-                                    // console.log({ poolPositions });
                                     Promise.all(
                                         leaderboardPositions.map((position: PositionIF) => {
                                             return getPositionData(
@@ -1044,16 +1108,23 @@ export default function App() {
                                         }),
                                     )
                                         .then((updatedPositions) => {
-                                            // console.log({ updatedPositions });
+                                            const top10Positions = updatedPositions
+                                                .filter((updatedPosition: PositionIF) => {
+                                                    return updatedPosition.isPositionInRange;
+                                                })
+                                                .slice(0, 10);
+
+                                            // console.log({ top10Positions });
+
                                             if (
                                                 JSON.stringify(
                                                     graphData.leaderboardByPool.positions,
-                                                ) !== JSON.stringify(updatedPositions)
+                                                ) !== JSON.stringify(top10Positions)
                                             ) {
                                                 dispatch(
                                                     setLeaderboardByPool({
                                                         dataReceived: true,
-                                                        positions: updatedPositions,
+                                                        positions: top10Positions,
                                                     }),
                                                 );
                                             }
@@ -1062,41 +1133,34 @@ export default function App() {
                                 }
                             })
                             .catch(console.log);
-                    }
-                } catch (error) {
-                    console.log;
-                }
 
-                // retrieve pool recent changes
-                fetchPoolRecentChanges({
-                    importedTokens: importedTokens,
-                    base: sortedTokens[0],
-                    quote: sortedTokens[1],
-                    poolIdx: chainData.poolIndex,
-                    chainId: chainData.chainId,
-                    annotate: true,
-                    addValue: true,
-                    simpleCalc: true,
-                    annotateMEV: false,
-                    ensResolution: true,
-                    n: 100,
-                })
-                    .then((poolChangesJsonData) => {
-                        if (poolChangesJsonData) {
-                            dispatch(
-                                setChangesByPool({
-                                    dataReceived: true,
-                                    changes: poolChangesJsonData,
-                                }),
-                            );
-                        }
-                    })
-                    .catch(console.log);
+                        // retrieve pool recent changes
+                        fetchPoolRecentChanges({
+                            tokensOnActiveLists: tokensOnActiveLists,
+                            base: sortedTokens[0],
+                            quote: sortedTokens[1],
+                            poolIdx: chainData.poolIndex,
+                            chainId: chainData.chainId,
+                            annotate: true,
+                            addValue: true,
+                            simpleCalc: true,
+                            annotateMEV: false,
+                            ensResolution: true,
+                            n: 100,
+                        })
+                            .then((poolChangesJsonData) => {
+                                if (poolChangesJsonData) {
+                                    dispatch(
+                                        setChangesByPool({
+                                            dataReceived: true,
+                                            changes: poolChangesJsonData,
+                                        }),
+                                    );
+                                }
+                            })
+                            .catch(console.log);
 
-                // retrieve pool limit order states
-                try {
-                    if (httpGraphCacheServerDomain) {
-                        // console.log('fetching pool limit order states');
+                        // retrieve pool limit order states
 
                         const poolLimitOrderStatesCacheEndpoint =
                             httpGraphCacheServerDomain + '/pool_limit_order_states?';
@@ -1109,6 +1173,7 @@ export default function App() {
                                     poolIdx: chainData.poolIndex.toString(),
                                     chainId: chainData.chainId,
                                     ensResolution: 'true',
+                                    omitEmpty: 'true',
                                     // n: 10 // positive integer	(Optional.) If n and page are provided, query returns a page of results with at most n entries.
                                     // page: 0 // nonnegative integer	(Optional.) If n and page are provided, query returns the page-th page of results. Page numbers are 0-indexed.
                                 }),
@@ -1116,6 +1181,13 @@ export default function App() {
                             .then((response) => response?.json())
                             .then((json) => {
                                 const poolLimitOrderStates = json?.data;
+
+                                dispatch(
+                                    setDataLoadingStatus({
+                                        datasetName: 'poolOrderData',
+                                        loadingStatus: false,
+                                    }),
+                                );
 
                                 if (poolLimitOrderStates) {
                                     Promise.all(
@@ -1131,24 +1203,13 @@ export default function App() {
                                         );
                                     });
                                 }
-
-                                // if (poolLimitOrderStates) {
-                                //     dispatch(
-                                //         setLimitOrdersByPool({
-                                //             dataReceived: true,
-                                //             limitOrders: poolLimitOrderStates,
-                                //         }),
-                                //     );
-                                // }
                             })
                             .catch(console.log);
                     }
-                } catch (error) {
-                    console.log;
                 }
             }
         }
-    }, [tokenPairStringified, chainData.chainId, crocEnv]);
+    }, [rtkMatchesParams, isServerEnabled, tokenPairStringified, chainData.chainId, crocEnv]);
 
     const activePeriod = tradeData.activeChartPeriod;
 
@@ -1159,6 +1220,7 @@ export default function App() {
 
     const fetchCandles = () => {
         if (
+            isServerEnabled &&
             baseTokenAddress &&
             quoteTokenAddress &&
             mainnetBaseTokenAddress &&
@@ -1255,7 +1317,7 @@ export default function App() {
             shouldReconnect: () => shouldNonCandleSubscriptionsReconnect,
         },
         // only connect if base/quote token addresses are available
-        baseTokenAddress !== '' && quoteTokenAddress !== '',
+        isServerEnabled && baseTokenAddress !== '' && quoteTokenAddress !== '',
     );
 
     useEffect(() => {
@@ -1312,7 +1374,7 @@ export default function App() {
             shouldReconnect: () => shouldCandleSubscriptionsReconnect,
         },
         // only connect if base/quote token addresses are available
-        mainnetBaseTokenAddress !== '' && mainnetQuoteTokenAddress !== '',
+        isServerEnabled && mainnetBaseTokenAddress !== '' && mainnetQuoteTokenAddress !== '',
     );
 
     const candleDomains = tradeData.candleDomains;
@@ -1339,7 +1401,7 @@ export default function App() {
 
         const numDurationsNeeded = Math.floor((minTime - domainBoundaryInSeconds) / activePeriod);
 
-        if (httpGraphCacheServerDomain && domainBoundaryInSeconds && minTime) {
+        if (isServerEnabled && httpGraphCacheServerDomain && domainBoundaryInSeconds && minTime) {
             // console.log('fetching candles');
             const candleSeriesCacheEndpoint = httpGraphCacheServerDomain + '/candle_series?';
 
@@ -1466,7 +1528,7 @@ export default function App() {
             shouldReconnect: () => shouldNonCandleSubscriptionsReconnect,
         },
         // only connect is account is available
-        account !== null && account !== '',
+        isServerEnabled && account !== null && account !== '',
     );
 
     useEffect(() => {
@@ -1516,7 +1578,7 @@ export default function App() {
             shouldReconnect: () => shouldNonCandleSubscriptionsReconnect,
         },
         // only connect is account is available
-        account !== null && account !== '',
+        isServerEnabled && account !== null && account !== '',
     );
 
     useEffect(() => {
@@ -1526,7 +1588,7 @@ export default function App() {
             if (lastMessageData) {
                 Promise.all(
                     lastMessageData.map((tx: ITransaction) => {
-                        return getTransactionData(tx, importedTokens);
+                        return getTransactionData(tx, tokensOnActiveLists);
                     }),
                 )
                     .then((updatedTransactions) => {
@@ -1561,14 +1623,17 @@ export default function App() {
             shouldReconnect: () => shouldNonCandleSubscriptionsReconnect,
         },
         // only connect is account is available
-        account !== null && account !== '',
+        isServerEnabled && account !== null && account !== '',
     );
 
     useEffect(() => {
         if (lastUserLimitOrderChangesMessage !== null) {
             const lastMessageData = JSON.parse(lastUserLimitOrderChangesMessage.data).data;
 
-            if (lastMessageData) dispatch(addLimitOrderChangesByUser(lastMessageData));
+            if (lastMessageData) {
+                console.log({ lastMessageData });
+                dispatch(addLimitOrderChangesByUser(lastMessageData));
+            }
         }
     }, [lastUserLimitOrderChangesMessage]);
 
@@ -1725,8 +1790,13 @@ export default function App() {
 
     const graphData = useAppSelector((state) => state.graphData);
 
+    const userLimitOrderStatesCacheEndpoint =
+        httpGraphCacheServerDomain + '/user_limit_order_states?';
+
     useEffect(() => {
-        if (isUserLoggedIn && account) {
+        if (isServerEnabled && isUserLoggedIn && account) {
+            dispatch(resetConnectedUserDataLoadingStatus());
+
             console.log('fetching user positions');
 
             const userPositionsCacheEndpoint = httpGraphCacheServerDomain + '/user_positions?';
@@ -1747,6 +1817,13 @@ export default function App() {
                     .then((response) => response?.json())
                     .then((json) => {
                         const userPositions = json?.data;
+
+                        dispatch(
+                            setDataLoadingStatus({
+                                datasetName: 'connectedUserRangeData',
+                                loadingStatus: false,
+                            }),
+                        );
 
                         if (userPositions && crocEnv) {
                             Promise.all(
@@ -1781,44 +1858,44 @@ export default function App() {
 
             console.log('fetching user limit orders ');
 
-            const userLimitOrderStatesCacheEndpoint =
-                httpGraphCacheServerDomain + '/user_limit_order_states?';
-            try {
-                fetch(
-                    userLimitOrderStatesCacheEndpoint +
-                        new URLSearchParams({
-                            user: account,
-                            chainId: chainData.chainId,
-                            ensResolution: 'true',
+            fetch(
+                userLimitOrderStatesCacheEndpoint +
+                    new URLSearchParams({
+                        user: account,
+                        chainId: chainData.chainId,
+                        ensResolution: 'true',
+                        omitEmpty: 'true',
+                    }),
+            )
+                .then((response) => response?.json())
+                .then((json) => {
+                    const userLimitOrderStates = json?.data;
+                    dispatch(
+                        setDataLoadingStatus({
+                            datasetName: 'connectedUserOrderData',
+                            loadingStatus: false,
                         }),
-                )
-                    .then((response) => response?.json())
-                    .then((json) => {
-                        const userLimitOrderStates = json?.data;
-
-                        if (userLimitOrderStates) {
-                            Promise.all(
-                                userLimitOrderStates.map((limitOrder: LimitOrderIF) => {
-                                    return getLimitOrderData(limitOrder, importedTokens);
+                    );
+                    if (userLimitOrderStates) {
+                        Promise.all(
+                            userLimitOrderStates.map((limitOrder: LimitOrderIF) => {
+                                return getLimitOrderData(limitOrder, importedTokens);
+                            }),
+                        ).then((updatedLimitOrderStates) => {
+                            dispatch(
+                                setLimitOrdersByUser({
+                                    dataReceived: true,
+                                    limitOrders: updatedLimitOrderStates,
                                 }),
-                            ).then((updatedLimitOrderStates) => {
-                                dispatch(
-                                    setLimitOrdersByUser({
-                                        dataReceived: true,
-                                        limitOrders: updatedLimitOrderStates,
-                                    }),
-                                );
-                            });
-                        }
-                    })
-                    .catch(console.log);
-            } catch (error) {
-                console.log;
-            }
+                            );
+                        });
+                    }
+                })
+                .catch(console.log);
 
             try {
                 fetchUserRecentChanges({
-                    importedTokens: importedTokens,
+                    tokensOnActiveLists: tokensOnActiveLists,
                     user: account,
                     chainId: chainData.chainId,
                     annotate: true,
@@ -1829,6 +1906,12 @@ export default function App() {
                     n: 100,
                 })
                     .then((updatedTransactions) => {
+                        dispatch(
+                            setDataLoadingStatus({
+                                datasetName: 'connectedUserTxData',
+                                loadingStatus: false,
+                            }),
+                        );
                         if (updatedTransactions) {
                             dispatch(
                                 setChangesByUser({
@@ -1837,13 +1920,40 @@ export default function App() {
                                 }),
                             );
                         }
+                        const result: TokenIF[] = [];
+                        const tokenMap = new Map();
+                        for (const item of updatedTransactions as ITransaction[]) {
+                            if (!tokenMap.has(item.base)) {
+                                tokenMap.set(item.base, true); // set any value to Map
+                                result.push({
+                                    name: item.baseName,
+                                    address: item.base,
+                                    symbol: item.baseSymbol,
+                                    decimals: item.baseDecimals,
+                                    chainId: parseInt(item.chainId),
+                                    logoURI: item.baseTokenLogoURI,
+                                });
+                            }
+                            if (!tokenMap.has(item.quote)) {
+                                tokenMap.set(item.quote, true); // set any value to Map
+                                result.push({
+                                    name: item.quoteName,
+                                    address: item.quote,
+                                    symbol: item.quoteSymbol,
+                                    decimals: item.quoteDecimals,
+                                    chainId: parseInt(item.chainId),
+                                    logoURI: item.quoteTokenLogoURI,
+                                });
+                            }
+                        }
+                        dispatch(setRecentTokens(result));
                     })
                     .catch(console.log);
             } catch (error) {
                 console.log;
             }
         }
-    }, [isUserLoggedIn, account, chainData.chainId]);
+    }, [isServerEnabled, isUserLoggedIn, account, chainData.chainId]);
 
     // run function to initialize local storage
     // internal controls will only initialize values that don't exist
@@ -1863,7 +1973,11 @@ export default function App() {
             return;
         } else {
             setShowSidebar(true);
-            if (currentLocation === '/' || currentLocation === '/swap') {
+            if (
+                currentLocation === '/' ||
+                currentLocation === '/swap' ||
+                currentLocation.includes('/account')
+            ) {
                 setShowSidebar(false);
             }
         }
@@ -1878,7 +1992,6 @@ export default function App() {
         setBaseTokenDexBalance('');
         setQuoteTokenDexBalance('');
         dispatch(resetTradeData());
-        dispatch(resetTokenData());
         dispatch(resetUserGraphData());
         dispatch(resetReceiptData());
         dispatch(resetTokenData());
@@ -1914,6 +2027,64 @@ export default function App() {
     const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
     const [isAppOverlayActive, setIsAppOverlayActive] = useState(false);
+
+    // ------------------- FOLLOWING CODE IS PURELY RESPONSIBLE FOR PULSE ANIMATION------------
+
+    const [isSwapCopied, setIsSwapCopied] = useState(false);
+    const [isOrderCopied, setIsOrderCopied] = useState(false);
+    const [isRangeCopied, setIsRangeCopied] = useState(false);
+
+    const handlePulseAnimation = (type: string) => {
+        switch (type) {
+            case 'swap':
+                setIsSwapCopied(true);
+                setTimeout(() => {
+                    setIsSwapCopied(false);
+                }, 3000);
+                break;
+            case 'limitOrder':
+                setIsOrderCopied(true);
+                setTimeout(() => {
+                    setIsOrderCopied(false);
+                }, 3000);
+                break;
+            case 'range':
+                setIsRangeCopied(true);
+
+                setTimeout(() => {
+                    setIsRangeCopied(false);
+                }, 3000);
+                break;
+            default:
+                break;
+        }
+    };
+
+    // END OF------------------- FOLLOWING CODE IS PURELY RESPONSIBLE FOR PULSE ANIMATION------------
+
+    // --------------THEME--------------------------
+    // const defaultDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const [theme, setTheme] = useState('dark');
+
+    const switchTheme = () => {
+        const newTheme = theme === 'light' ? 'dark' : 'light';
+        setTheme(newTheme);
+    };
+
+    // const themeButtons = (
+    //     <div
+    //         style={{
+    //             display: 'flex',
+    //             flexDirection: 'column',
+    //             justifyContent: 'center',
+    //             alignItems: 'center',
+    //         }}
+    //     >
+    //         <button onClick={switchTheme}>Switch Theme</button>
+    //     </div>
+    // );
+
+    // --------------END OF THEME--------------------------
     // props for <PageHeader/> React element
     const headerProps = {
         isUserLoggedIn: isUserLoggedIn,
@@ -1929,11 +2100,14 @@ export default function App() {
         lastBlockNumber: lastBlockNumber,
         isMobileSidebarOpen: isMobileSidebarOpen,
         setIsMobileSidebarOpen: setIsMobileSidebarOpen,
-
+        poolPriceDisplay: poolPriceDisplay,
         openGlobalModal: openGlobalModal,
         closeGlobalModal: closeGlobalModal,
         isAppOverlayActive: isAppOverlayActive,
         setIsAppOverlayActive: setIsAppOverlayActive,
+
+        switchTheme: switchTheme,
+        theme: theme,
     };
 
     // props for <Swap/> React element
@@ -2001,9 +2175,13 @@ export default function App() {
         isInitialized: isInitialized,
         poolExists: poolExists,
         openGlobalModal: openGlobalModal,
+        isSwapCopied: isSwapCopied,
     };
 
     // props for <Limit/> React element on trade route
+
+    const [checkLimitOrder, setCheckLimitOrder] = useState<boolean>(false);
+
     const limitPropsTrade = {
         pool: pool,
         crocEnv: crocEnv,
@@ -2038,11 +2216,18 @@ export default function App() {
         closeGlobalModal: closeGlobalModal,
         poolExists: poolExists,
 
+        isOrderCopied: isOrderCopied,
+        setCheckLimitOrder: setCheckLimitOrder,
+
         // limitRate: limitRate,
         // setLimitRate: setLimitRate,
     };
 
     // props for <Range/> React element
+
+    const [rangetokenAQtyLocal, setRangeTokenAQtyLocal] = useState<number>(0);
+    const [rangetokenBQtyLocal, setRangeTokenBQtyLocal] = useState<number>(0);
+
     const rangeProps = {
         crocEnv: crocEnv,
         isUserLoggedIn: isUserLoggedIn,
@@ -2076,6 +2261,11 @@ export default function App() {
         openGlobalModal: openGlobalModal,
 
         poolExists: poolExists,
+        isRangeCopied: isRangeCopied,
+        tokenAQtyLocal: rangetokenAQtyLocal,
+        tokenBQtyLocal: rangetokenBQtyLocal,
+        setTokenAQtyLocal: setRangeTokenAQtyLocal,
+        setTokenBQtyLocal: setRangeTokenBQtyLocal,
     };
 
     function toggleSidebar() {
@@ -2104,7 +2294,7 @@ export default function App() {
         setIsShowAllEnabled: setIsShowAllEnabled,
         expandTradeTable: expandTradeTable,
         setExpandTradeTable: setExpandTradeTable,
-        tokenMap: tokenMap,
+        tokenMap: tokensOnActiveLists,
         lastBlockNumber: lastBlockNumber,
         favePools: favePools,
 
@@ -2118,6 +2308,7 @@ export default function App() {
 
         analyticsSearchInput: analyticsSearchInput,
         setAnalyticsSearchInput: setAnalyticsSearchInput,
+        openModalWallet: openModalWallet,
     };
 
     const analyticsProps = {
@@ -2210,7 +2401,7 @@ export default function App() {
 
     return (
         <>
-            <div className={containerStyle}>
+            <div className={containerStyle} data-theme={theme}>
                 {isMobileSidebarOpen && <div className='blur_app' />}
                 <AppOverlay
                     isAppOverlayActive={isAppOverlayActive}
@@ -2219,8 +2410,9 @@ export default function App() {
                 {/* {currentLocation == '/' && <PhishingWarning />} */}
 
                 {currentLocation !== '/404' && <PageHeader {...headerProps} />}
+
                 {/* <MobileSidebar/> */}
-                <main className={`${showSidebarOrNullStyle} ${swapBodyStyle}`}>
+                <section className={`${showSidebarOrNullStyle} ${swapBodyStyle}`}>
                     {!currentLocation.startsWith('/swap') && sidebarRender}
                     <Routes>
                         <Route
@@ -2228,10 +2420,11 @@ export default function App() {
                             element={
                                 <Home
                                     cachedQuerySpotPrice={cachedQuerySpotPrice}
-                                    tokenMap={tokenMap}
+                                    tokenMap={tokensOnActiveLists}
                                     lastBlockNumber={lastBlockNumber}
                                     crocEnv={crocEnv}
                                     chainId={chainData.chainId}
+                                    isServerEnabled={isServerEnabled}
                                 />
                             }
                         />
@@ -2268,7 +2461,7 @@ export default function App() {
                                     setIsShowAllEnabled={setIsShowAllEnabled}
                                     expandTradeTable={expandTradeTable}
                                     setExpandTradeTable={setExpandTradeTable}
-                                    tokenMap={tokenMap}
+                                    tokenMap={tokensOnActiveLists}
                                     favePools={favePools}
                                     addPoolToFaves={addPoolToFaves}
                                     removePoolFromFaves={removePoolFromFaves}
@@ -2281,7 +2474,7 @@ export default function App() {
                                     openGlobalModal={openGlobalModal}
                                     closeGlobalModal={closeGlobalModal}
                                     isInitialized={isInitialized}
-                                    poolPriceNonDisplay={undefined}
+                                    poolPriceNonDisplay={poolPriceNonDisplay}
                                     setLimitRate={function (): void {
                                         throw new Error('Function not implemented.');
                                     }}
@@ -2290,6 +2483,11 @@ export default function App() {
                                     poolExists={poolExists}
                                     setTokenPairLocal={setTokenPairLocal}
                                     showSidebar={showSidebar}
+                                    handlePulseAnimation={handlePulseAnimation}
+                                    checkLimitOrder={checkLimitOrder}
+                                    // handleTxCopiedClick={handleTxCopiedClick}
+                                    // handleOrderCopiedClick={handleOrderCopiedClick}
+                                    // handleRangeCopiedClick={handleRangeCopiedClick}
                                 />
                             }
                         >
@@ -2435,7 +2633,8 @@ export default function App() {
                                     connectedAccount={account ? account : ''}
                                     userImageData={imageData}
                                     chainId={chainData.chainId}
-                                    tokenMap={tokenMap}
+                                    ambientTokens={ambientTokens}
+                                    tokensOnActiveLists={tokensOnActiveLists}
                                     selectedOutsideTab={selectedOutsideTab}
                                     setSelectedOutsideTab={setSelectedOutsideTab}
                                     outsideControl={outsideControl}
@@ -2460,6 +2659,9 @@ export default function App() {
                                     setCurrentTxActiveInTransactions={
                                         setCurrentTxActiveInTransactions
                                     }
+                                    handlePulseAnimation={handlePulseAnimation}
+                                    gasPriceInGwei={gasPriceInGwei}
+                                    openModalWallet={openModalWallet}
                                 />
                             }
                         />
@@ -2478,7 +2680,7 @@ export default function App() {
                                     connectedAccount={account ? account : ''}
                                     chainId={chainData.chainId}
                                     userImageData={imageData}
-                                    tokenMap={tokenMap}
+                                    tokensOnActiveLists={tokensOnActiveLists}
                                     selectedOutsideTab={selectedOutsideTab}
                                     setSelectedOutsideTab={setSelectedOutsideTab}
                                     outsideControl={outsideControl}
@@ -2486,6 +2688,7 @@ export default function App() {
                                     userAccount={false}
                                     openGlobalModal={openGlobalModal}
                                     closeGlobalModal={closeGlobalModal}
+                                    ambientTokens={ambientTokens}
                                     importedTokens={importedTokens}
                                     setImportedTokens={setImportedTokens}
                                     chainData={chainData}
@@ -2503,6 +2706,9 @@ export default function App() {
                                     setCurrentTxActiveInTransactions={
                                         setCurrentTxActiveInTransactions
                                     }
+                                    handlePulseAnimation={handlePulseAnimation}
+                                    gasPriceInGwei={gasPriceInGwei}
+                                    openModalWallet={openModalWallet}
                                 />
                             }
                         />
@@ -2532,7 +2738,7 @@ export default function App() {
                                     connectedAccount={account ? account : ''}
                                     chainId={chainData.chainId}
                                     userImageData={imageData}
-                                    tokenMap={tokenMap}
+                                    tokensOnActiveLists={tokensOnActiveLists}
                                     selectedOutsideTab={selectedOutsideTab}
                                     setSelectedOutsideTab={setSelectedOutsideTab}
                                     outsideControl={outsideControl}
@@ -2540,6 +2746,7 @@ export default function App() {
                                     userAccount={false}
                                     openGlobalModal={openGlobalModal}
                                     closeGlobalModal={closeGlobalModal}
+                                    ambientTokens={ambientTokens}
                                     importedTokens={importedTokens}
                                     setImportedTokens={setImportedTokens}
                                     chainData={chainData}
@@ -2557,12 +2764,15 @@ export default function App() {
                                     setCurrentTxActiveInTransactions={
                                         setCurrentTxActiveInTransactions
                                     }
+                                    handlePulseAnimation={handlePulseAnimation}
+                                    gasPriceInGwei={gasPriceInGwei}
+                                    openModalWallet={openModalWallet}
                                 />
                             }
                         />
                         <Route path='/404' element={<NotFound />} />
                     </Routes>
-                </main>
+                </section>
                 {snackbarContent}
             </div>
 

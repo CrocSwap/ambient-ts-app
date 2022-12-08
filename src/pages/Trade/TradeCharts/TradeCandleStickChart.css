@@ -32,7 +32,7 @@ hr {
 }
 
 .img_shimmer{
-	color: grey;
+
 	display:inline-block;
 	-webkit-mask:linear-gradient(-60deg,#000 30%,rgba(119, 117, 117, 0.333),#000 70%) right/300% 100%;
 	background-repeat: no-repeat;
@@ -47,20 +47,47 @@ hr {
 width: 100%;
 height: 100%;
 cursor: progress;
+position: relative;
 
 display: flex;
 justify-content: center;
 align-items: center;
 flex-direction: column;
-position: relative;
+/* position: relative; */
+
+/* 
+background:     linear-gradient(
+    rgba(142, 118, 186, 0.3), 
+    rgba(172, 152, 210, 0.3)
+  ),
+
+  url('../../../assets/images/charts/candlestick.png') no-repeat center center ; 
+-webkit-background-size: cover;
+-moz-background-size: cover;
+-o-background-size: cover;
+background-size: cover; */
 
 /* filter: blur(4px) */
 }
 
+
+.animatedImg_container img{
+    object-fit: contain;
+
+}
 .fetching_text{
+    z-index: 9;
+    width: 100%;
+    height: 100%;
+/* backdrop-filter: blur(10px); */
+display: flex;
+justify-content: center;
+align-items: center;
 	position: absolute;
-	font-size: var(--header2-size);
-	line-height: var(--header2-lh);
+	font-size: var(--header1-size);
+	line-height: var(--header1-lh);
+    color: var(--text-grey-white);
+ 
 	
 }
 .animatedImg_container img{

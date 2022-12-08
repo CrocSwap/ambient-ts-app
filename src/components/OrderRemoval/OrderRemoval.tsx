@@ -13,20 +13,30 @@ import { FiExternalLink } from 'react-icons/fi';
 import RemoveOrderModalHeader from './RemoveOrderModalHeader/RemoveOrderModalHeader';
 import RemoveOrderSettings from './RemoveOrderSettings/RemoveOrderSettings';
 import { formatAmountOld } from '../../utils/numbers';
-import { CrocEnv } from '@crocswap-libs/sdk';
+import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
 import { BigNumber } from 'ethers';
 import Toggle2 from '../Global/Toggle/Toggle2';
 import TooltipComponent from '../Global/TooltipComponent/TooltipComponent';
 import { LimitOrderIF } from '../../utils/interfaces/exports';
+import { useAppDispatch } from '../../utils/hooks/reduxToolkit';
+import { addPendingTx, addReceipt, removePendingTx } from '../../utils/state/receiptDataSlice';
+import {
+    isTransactionFailedError,
+    isTransactionReplacedError,
+    TransactionError,
+} from '../../utils/TransactionError';
+import { useMoralis } from 'react-moralis';
+import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 
 interface IOrderRemovalProps {
     crocEnv: CrocEnv | undefined;
+    chainData: ChainSpec;
     limitOrder: LimitOrderIF;
     closeGlobalModal: () => void;
 }
 
 export default function OrderRemoval(props: IOrderRemovalProps) {
-    const { crocEnv, limitOrder, closeGlobalModal } = props;
+    const { chainData, crocEnv, limitOrder, closeGlobalModal } = props;
     const {
         posLiqBaseDecimalCorrected,
         posLiqQuoteDecimalCorrected,
@@ -76,6 +86,10 @@ export default function OrderRemoval(props: IOrderRemovalProps) {
     const baseQty = limitOrder.positionLiqBaseDecimalCorrected;
     const quoteQty = limitOrder.positionLiqQuoteDecimalCorrected;
 
+    const dispatch = useAppDispatch();
+
+    const { account } = useMoralis();
+
     useEffect(() => {
         const baseRemovalNum = baseQty * (removalPercentage / 100);
         const quoteRemovalNum = quoteQty * (removalPercentage / 100);
@@ -114,25 +128,105 @@ export default function OrderRemoval(props: IOrderRemovalProps) {
         if (quoteRemovalTruncated !== undefined) setQuoteQtyToBeRemoved(quoteRemovalTruncated);
     }, [removalPercentage]);
 
-    // const positionLiquidity = limitOrder.positionLiq;
+    const positionLiquidity = limitOrder.positionLiq;
 
     const removeFn = async () => {
         if (crocEnv) {
             setShowConfirmation(true);
             setShowSettings(false);
             console.log({ limitOrder });
-            if (limitOrder.isBid === true) {
-                crocEnv
-                    .sell(limitOrder.base, 0)
-                    .atLimit(limitOrder.quote, limitOrder.askTick)
-                    .burnLiq(BigNumber.from('1000'));
-                // .burnLiq(BigNumber.from(positionLiquidity));
-            } else {
-                crocEnv
-                    .sell(limitOrder.quote, 0)
-                    .atLimit(limitOrder.base, limitOrder.bidTick)
-                    .burnLiq(BigNumber.from('1000'));
-                // .burnLiq(BigNumber.from(positionLiquidity));
+            console.log({ positionLiquidity });
+            let tx;
+            try {
+                if (limitOrder.isBid === true) {
+                    tx = await crocEnv
+                        .buy(limitOrder.quote, 0)
+                        .atLimit(limitOrder.base, limitOrder.bidTick)
+                        // .burnLiq(BigNumber.from('1000'));
+                        .burnLiq(BigNumber.from(positionLiquidity));
+                    setNewRemovalTransactionHash(tx.hash);
+                    dispatch(addPendingTx(tx?.hash));
+                } else {
+                    tx = await crocEnv
+                        .buy(limitOrder.base, 0)
+                        .atLimit(limitOrder.quote, limitOrder.askTick)
+                        // .burnLiq(BigNumber.from('1000'));
+                        .burnLiq(BigNumber.from(positionLiquidity));
+                    setNewRemovalTransactionHash(tx.hash);
+                    dispatch(addPendingTx(tx?.hash));
+                }
+            } catch (error) {
+                console.log({ error });
+                setTxErrorCode(error?.code);
+                setTxErrorMessage(error?.message);
+            }
+
+            const newLimitOrderChangeCacheEndpoint =
+                'https://809821320828123.de:5000/new_limit_order_change?';
+
+            if (tx?.hash) {
+                fetch(
+                    newLimitOrderChangeCacheEndpoint +
+                        new URLSearchParams({
+                            chainId: limitOrder.chainId.toString(),
+                            tx: tx.hash,
+                            user: account ?? '',
+                            base: limitOrder.base,
+                            quote: limitOrder.quote,
+                            poolIdx: lookupChain(limitOrder.chainId).poolIndex.toString(),
+                            positionType: 'knockout',
+                            changeType: 'mint',
+                            limitTick: limitOrder.askTick.toString(),
+                            isBid: limitOrder.isBid.toString(), // boolean (Only applies if knockout is true.) Whether or not the knockout liquidity position is a bid (rather than an ask).
+                            liq: positionLiquidity, // boolean (Optional.) If true, transaction is immediately inserted into cache without checking whether tx has been mined.
+                        }),
+                );
+            }
+
+            let receipt;
+            try {
+                if (tx) receipt = await tx.wait();
+            } catch (e) {
+                const error = e as TransactionError;
+                console.log({ error });
+                // The user used "speed up" or something similar
+                // in their client, but we now have the updated info
+                if (isTransactionReplacedError(error)) {
+                    console.log('repriced');
+                    dispatch(removePendingTx(error.hash));
+                    const newTransactionHash = error.replacement.hash;
+                    dispatch(addPendingTx(newTransactionHash));
+                    setNewRemovalTransactionHash(newTransactionHash);
+                    console.log({ newTransactionHash });
+                    receipt = error.receipt;
+
+                    if (newTransactionHash) {
+                        fetch(
+                            newLimitOrderChangeCacheEndpoint +
+                                new URLSearchParams({
+                                    chainId: limitOrder.chainId.toString(),
+                                    tx: newTransactionHash,
+                                    user: account ?? '',
+                                    base: limitOrder.base,
+                                    quote: limitOrder.quote,
+                                    poolIdx: lookupChain(limitOrder.chainId).poolIndex.toString(),
+                                    positionType: 'knockout',
+                                    changeType: 'mint',
+                                    limitTick: limitOrder.askTick.toString(),
+                                    isBid: limitOrder.isBid.toString(), // boolean (Only applies if knockout is true.) Whether or not the knockout liquidity position is a bid (rather than an ask).
+                                    liq: positionLiquidity, // boolean (Optional.) If true, transaction is immediately inserted into cache without checking whether tx has been mined.
+                                }),
+                        );
+                    }
+                } else if (isTransactionFailedError(error)) {
+                    // console.log({ error });
+                    receipt = error.receipt;
+                }
+            }
+
+            if (receipt) {
+                dispatch(addReceipt(JSON.stringify(receipt)));
+                dispatch(removePendingTx(receipt.transactionHash));
             }
         }
     };
@@ -146,11 +240,11 @@ export default function OrderRemoval(props: IOrderRemovalProps) {
                 Check the Metamask extension in your browser for notifications, or click &quot;Try
                 Again&quot;. You can also click the left arrow above to try again.
             </p>
-            <Button title='Try Again' action={resetConfirmation} />
+            <Button title='Try Again' action={resetConfirmation} flat={true} />
         </div>
     );
 
-    const etherscanLink = 'chainData.blockExplorer' + 'tx/' + newRemovalTransactionHash;
+    const etherscanLink = chainData.blockExplorer + 'tx/' + newRemovalTransactionHash;
 
     const removalSuccess = (
         <div className={styles.removal_pending}>

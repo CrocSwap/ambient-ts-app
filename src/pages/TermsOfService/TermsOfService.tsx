@@ -58,10 +58,10 @@ export default function TermsOfService() {
     );
 
     return (
-        <main>
+        <section>
             <h1 className={styles.tos_title}>Terms of Service</h1>
             {firstSection}
             {secondSection}
-        </main>
+        </section>
     );
 }

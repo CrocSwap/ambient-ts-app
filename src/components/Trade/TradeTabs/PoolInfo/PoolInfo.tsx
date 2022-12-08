@@ -43,6 +43,12 @@ export default function PoolInfo(props: PoolInfoPropsIF) {
     //     </p>
     // );
 
+    // allow a local environment variable to be defined in [app_repo]/.env.local to turn off connections to the cache server
+    const isServerEnabled =
+        process.env.REACT_APP_CACHE_SERVER_IS_ENABLED !== undefined
+            ? process.env.REACT_APP_CACHE_SERVER_IS_ENABLED === 'true'
+            : true;
+
     function PoolInfoCard(props: PoolInfoCardPropsIF) {
         return (
             <DefaultTooltip
@@ -159,8 +165,9 @@ export default function PoolInfo(props: PoolInfoPropsIF) {
     };
 
     useEffect(() => {
-        fetchPoolStats();
+        if (isServerEnabled) fetchPoolStats();
     }, [
+        isServerEnabled,
         lastBlockNumber,
         JSON.stringify({ base: tradeData.baseToken.address, quote: tradeData.quoteToken.address }),
     ]);
@@ -313,9 +320,10 @@ export default function PoolInfo(props: PoolInfoPropsIF) {
             </section>
         </div>
     );
+    //
 
     return (
-        <main className={styles.container} style={{ height: '250px' }}>
+        <section className={styles.container}>
             <div className={styles.content}>
                 {baseTokenDisplay}
                 {quoteTokenDisplay}
@@ -333,6 +341,6 @@ export default function PoolInfo(props: PoolInfoPropsIF) {
                     {timeTabDisplay}
                 </section>
             </div>
-        </main>
+        </section>
     );
 }

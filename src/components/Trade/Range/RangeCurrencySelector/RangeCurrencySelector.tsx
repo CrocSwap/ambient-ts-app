@@ -13,7 +13,7 @@ import IconWithTooltip from '../../../Global/IconWithTooltip/IconWithTooltip';
 import NoTokenIcon from '../../../Global/NoTokenIcon/NoTokenIcon';
 
 interface RangeCurrencySelectorProps {
-    isUserLoggedIn: boolean;
+    isUserLoggedIn: boolean | undefined;
     gasPriceInGwei: number | undefined;
     resetTokenQuantities: () => void;
     fieldId: string;
@@ -54,6 +54,8 @@ interface RangeCurrencySelectorProps {
     activeTokenListsChanged: boolean;
     indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
     handleChangeClick: (input: string) => void;
+
+    isRangeCopied: boolean;
 }
 
 export default function RangeCurrencySelector(props: RangeCurrencySelectorProps) {
@@ -98,6 +100,8 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
         activeTokenListsChanged,
         indicateActiveTokenListsChanged,
         handleChangeClick,
+
+        isRangeCopied,
     } = props;
 
     const isTokenASelector = fieldId === 'A';
@@ -277,7 +281,10 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
                         isAdvancedMode={isAdvancedMode}
                     />
                 </div>
-                <div className={styles.token_select} onClick={openModal}>
+                <div
+                    className={`${styles.token_select} ${isRangeCopied && styles.pulse_animation}`}
+                    onClick={openModal}
+                >
                     {thisToken.logoURI ? (
                         <img
                             className={styles.token_list_img}
@@ -309,7 +316,7 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
                                 isWithdrawTokenBFromDexChecked &&
                                 tokenBSurplusMinusTokenBRemainderNum &&
                                 tokenBSurplusMinusTokenBRemainderNum < 0)
-                                ? '#ebebff'
+                                ? 'var(--text-highlight)'
                                 : '#555555',
                     }}
                 >
@@ -341,7 +348,7 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
                                             isWithdrawTokenBFromDexChecked &&
                                             tokenBSurplusMinusTokenBRemainderNum &&
                                             tokenBSurplusMinusTokenBRemainderNum < 0)
-                                            ? '#ebebff'
+                                            ? 'var(--text-highlight)'
                                             : '#555555'
                                     }
                                 />
@@ -351,6 +358,7 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
                                 <div
                                     style={{
                                         color: '#f6385b',
+                                        fontSize: '9px',
                                     }}
                                 >
                                     {isTokenASelector
@@ -380,7 +388,7 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
                                 color:
                                     (isTokenASelector && isWithdrawTokenAFromDexChecked) ||
                                     (!isTokenASelector && isWithdrawTokenBFromDexChecked)
-                                        ? '#ebebff'
+                                        ? 'var(--text-highlight)'
                                         : '#555555',
                             }}
                         >

@@ -13,6 +13,7 @@ import { userData } from '../../../utils/state/userDataSlice';
 import { tradeData } from '../../../utils/state/tradeDataSlice';
 
 interface TopPoolsProps {
+    isServerEnabled: boolean;
     tradeData: tradeData;
     userData: userData;
     crocEnv?: CrocEnv;
@@ -24,6 +25,7 @@ interface TopPoolsProps {
 
 export default function TopPools(props: TopPoolsProps) {
     const {
+        isServerEnabled,
         tradeData,
         userData,
         tokenMap,
@@ -53,6 +55,7 @@ export default function TopPools(props: TopPoolsProps) {
                 {topPools.map((pool, idx) => (
                     <NavLink key={idx} to='/trade/market'>
                         <PoolCard
+                            isServerEnabled={isServerEnabled}
                             isUserIdle={isUserIdle}
                             crocEnv={crocEnv}
                             tradeData={tradeData}

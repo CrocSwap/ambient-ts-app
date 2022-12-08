@@ -28,7 +28,7 @@ interface LimitCurrencyConverterProps {
     pool: CrocPoolView | undefined;
     gridSize: number;
     setPriceInputFieldBlurred: Dispatch<SetStateAction<boolean>>;
-    isUserLoggedIn: boolean;
+    isUserLoggedIn: boolean | undefined;
     tokenPair: TokenPairIF;
     tokensBank: Array<TokenIF>;
     setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
@@ -56,8 +56,10 @@ interface LimitCurrencyConverterProps {
     isDenominationInBase: boolean;
     activeTokenListsChanged: boolean;
     indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
-    poolExists: boolean | null;
+    poolExists: boolean | undefined;
     gasPriceInGwei: number | undefined;
+
+    isOrderCopied: boolean;
 }
 
 // central react functional component
@@ -93,6 +95,8 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
         indicateActiveTokenListsChanged,
         poolExists,
         gasPriceInGwei,
+
+        isOrderCopied,
     } = props;
 
     const dispatch = useAppDispatch();
@@ -211,7 +215,7 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
     const handleLimitButtonMessage = (tokenAAmount: number) => {
         if (!poolExists) {
             setLimitAllowed(false);
-            if (poolExists === null) setLimitButtonErrorMessage('...');
+            if (poolExists === undefined) setLimitButtonErrorMessage('...');
             if (poolExists === false) setLimitButtonErrorMessage('Pool Not Initialized');
         } else if (isNaN(tokenAAmount) || tokenAAmount <= 0) {
             setLimitAllowed(false);
@@ -270,7 +274,22 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
         // console.log({ isSellTokenBase });
 
         if (evt) {
-            const input = evt.target.value;
+            const tokenAInputField = document.getElementById('sell-limit-quantity');
+
+            const input = evt.target.value.startsWith('.')
+                ? '0' + evt.target.value
+                : evt.target.value;
+
+            if (tokenAInputField) {
+                (tokenAInputField as HTMLInputElement).value = input;
+            }
+            const parsedInput = parseFloat(input);
+            if (input === '' || isNaN(parsedInput) || parsedInput === 0) {
+                setLimitAllowed(false);
+                setLimitButtonErrorMessage('Enter an Amount');
+                if (input !== '') return;
+            }
+
             setTokenAQtyLocal(input);
             setTokenAInputQty(input);
             setIsTokenAPrimaryLocal(true);
@@ -304,9 +323,9 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
         }
 
         const truncatedTokenBQty = rawTokenBQty
-            ? rawTokenBQty < 100000
-                ? rawTokenBQty.toPrecision(6)
-                : truncateDecimals(rawTokenBQty, 0)
+            ? rawTokenBQty < 2
+                ? rawTokenBQty.toPrecision(3)
+                : truncateDecimals(rawTokenBQty, 2)
             : '';
 
         setTokenBQtyLocal(truncatedTokenBQty);
@@ -343,9 +362,9 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
 
         // handleLimitButtonMessage(parseFloat(input));
         const truncatedTokenBQty = rawTokenBQty
-            ? rawTokenBQty < 100000
-                ? rawTokenBQty.toPrecision(6)
-                : truncateDecimals(rawTokenBQty, 0)
+            ? rawTokenBQty < 2
+                ? rawTokenBQty.toPrecision(3)
+                : truncateDecimals(rawTokenBQty, 2)
             : '';
 
         // const truncatedTokenBQty = truncateDecimals(rawTokenBQty, tokenBDecimals).toString();
@@ -364,7 +383,21 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
         let rawTokenAQty;
         // console.log({ evt });
         if (evt) {
-            const input = evt.target.value;
+            const tokenBInputField = document.getElementById('buy-limit-quantity');
+
+            const input = evt.target.value.startsWith('.')
+                ? '0' + evt.target.value
+                : evt.target.value;
+
+            if (tokenBInputField) {
+                (tokenBInputField as HTMLInputElement).value = input;
+            }
+            const parsedInput = parseFloat(input);
+            if (input === '' || isNaN(parsedInput) || parsedInput === 0) {
+                setLimitAllowed(false);
+                setLimitButtonErrorMessage('Enter an Amount');
+                if (input !== '') return;
+            }
             setTokenBQtyLocal(input);
             setTokenBInputQty(input);
             setIsTokenAPrimaryLocal(false);
@@ -399,10 +432,11 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
             handleLimitButtonMessage(rawTokenAQty);
         }
         const truncatedTokenAQty = rawTokenAQty
-            ? rawTokenAQty < 100000
-                ? rawTokenAQty.toPrecision(6)
-                : truncateDecimals(rawTokenAQty, 0)
+            ? rawTokenAQty < 2
+                ? rawTokenAQty.toPrecision(3)
+                : truncateDecimals(rawTokenAQty, 2)
             : '';
+
         setTokenAQtyLocal(truncatedTokenAQty);
         // setTokenAInputQty(truncatedTokenAQty);
         const sellQtyField = document.getElementById('sell-limit-quantity') as HTMLInputElement;
@@ -455,6 +489,7 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
                 activeTokenListsChanged={activeTokenListsChanged}
                 indicateActiveTokenListsChanged={indicateActiveTokenListsChanged}
                 gasPriceInGwei={gasPriceInGwei}
+                isOrderCopied={isOrderCopied}
             />
 
             <div
@@ -493,6 +528,7 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
                 activeTokenListsChanged={activeTokenListsChanged}
                 indicateActiveTokenListsChanged={indicateActiveTokenListsChanged}
                 gasPriceInGwei={gasPriceInGwei}
+                isOrderCopied={isOrderCopied}
             />
             <DividerDark addMarginTop />
             <LimitRate
@@ -508,6 +544,7 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
                 // onBlur={priceInputOnBlur}
                 poolPriceNonDisplay={poolPriceNonDisplay}
                 limitTickDisplayPrice={limitTickDisplayPrice}
+                isOrderCopied={isOrderCopied}
             />
         </section>
     );

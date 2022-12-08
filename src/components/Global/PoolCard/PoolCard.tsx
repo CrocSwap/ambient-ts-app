@@ -3,7 +3,7 @@ import styles from './PoolCard.module.css';
 // import { ethers } from 'ethers';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { CrocEnv, toDisplayPrice } from '@crocswap-libs/sdk';
+import { CrocEnv, sortBaseQuoteTokens, toDisplayPrice } from '@crocswap-libs/sdk';
 import { SpotPriceFn } from '../../../App/functions/querySpotPrice';
 import getUnicodeCharacter from '../../../utils/functions/getUnicodeCharacter';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
@@ -15,6 +15,7 @@ import { tradeData } from '../../../utils/state/tradeDataSlice';
 const cachedPoolStatsFetch = memoizePoolStats();
 
 interface PoolCardProps {
+    isServerEnabled: boolean;
     isUserIdle: boolean;
     crocEnv?: CrocEnv;
     tradeData: tradeData;
@@ -29,6 +30,7 @@ interface PoolCardProps {
 
 export default function PoolCard(props: PoolCardProps) {
     const {
+        isServerEnabled,
         isUserIdle,
         crocEnv,
         tradeData,
@@ -51,13 +53,14 @@ export default function PoolCard(props: PoolCardProps) {
     const tokenBFromMap = tokenMap && tokenB?.address ? tokenMap.get(tokenBKey) : null;
 
     const [poolPriceDisplay, setPoolPriceDisplay] = useState<string | undefined>();
-    const [shouldInvertDisplay, setShouldInvertDisplay] = useState(true);
+    const [shouldInvertDisplay, setShouldInvertDisplay] = useState<boolean | undefined>();
 
     const tokenACharacter = tokenA && poolPriceDisplay ? getUnicodeCharacter(tokenA?.symbol) : '';
     const tokenBCharacter = tokenB && poolPriceDisplay ? getUnicodeCharacter(tokenB?.symbol) : '';
     // useEffect to get spot price when tokens change and block updates
     useEffect(() => {
         if (
+            isServerEnabled &&
             !isUserIdle &&
             crocEnv &&
             tokenAAddress &&
@@ -106,7 +109,7 @@ export default function PoolCard(props: PoolCardProps) {
                 }
             })();
         }
-    }, [isUserIdle, lastBlockNumber, tokenA, tokenB, chainId, crocEnv]);
+    }, [isServerEnabled, isUserIdle, lastBlockNumber, tokenA, tokenB, chainId, crocEnv]);
 
     const [poolVolume, setPoolVolume] = useState<string | undefined>(undefined);
     const [poolTvl, setPoolTvl] = useState<string | undefined>(undefined);
@@ -120,7 +123,14 @@ export default function PoolCard(props: PoolCardProps) {
 
     const fetchPoolStats = () => {
         (async () => {
-            if (tokenAAddress && tokenBAddress && poolIndex && chainId && lastBlockNumber) {
+            if (
+                tokenAAddress &&
+                tokenBAddress &&
+                poolIndex &&
+                chainId &&
+                lastBlockNumber &&
+                shouldInvertDisplay !== undefined
+            ) {
                 const poolStats = await cachedPoolStatsFetch(
                     chainId,
                     tokenAAddress,
@@ -149,13 +159,15 @@ export default function PoolCard(props: PoolCardProps) {
                     setPoolApy(apyString);
                 }
 
+                const sortedTokens = sortBaseQuoteTokens(tokenAAddress, tokenBAddress);
+
                 try {
                     const priceChangeResult = await get24hChange(
                         chainId,
-                        tokenAAddress,
-                        tokenBAddress,
+                        sortedTokens[0],
+                        sortedTokens[1],
                         poolIndex,
-                        true, // denomInBase
+                        shouldInvertDisplay,
                     );
                     if (priceChangeResult > -0.01 && priceChangeResult < 0.01) {
                         setPoolPriceChangePercent('No Change');
@@ -189,8 +201,8 @@ export default function PoolCard(props: PoolCardProps) {
 
     useEffect(() => {
         // console.log({ isUserIdle });
-        if (!isUserIdle) fetchPoolStats();
-    }, [isUserIdle, lastBlockNumber]);
+        if (isServerEnabled && !isUserIdle) fetchPoolStats();
+    }, [isServerEnabled, isUserIdle, lastBlockNumber, shouldInvertDisplay]);
 
     const tokenImagesDisplay = (
         <div className={styles.token_images}>

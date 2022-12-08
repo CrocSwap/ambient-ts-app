@@ -1,7 +1,7 @@
 .container{
     /* background: var(--dark1); */
 margin-top: 3rem;
-background: #141922;
+background: var(--dark1);
 
 border-radius: 4px;
     width: 100%;
@@ -68,7 +68,7 @@ border-radius: 4px;
     font-weight: 500;
 font-size: 12px;
 line-height: 15px;
-color: #CDC1FF;
+color: var(--text-highlight);
 
 }
 

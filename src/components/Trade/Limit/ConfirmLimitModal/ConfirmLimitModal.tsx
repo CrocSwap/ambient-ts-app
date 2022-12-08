@@ -233,6 +233,7 @@ export default function ConfirmLimitModal(props: ConfirmLimitModalProps) {
 
                 setShowConfirmation(false);
             }}
+            flat={true}
         />
     );
 

@@ -15,7 +15,6 @@
     transition: all var(--animation-speed) ease-in-out;
 }
 .main_container:hover {
-   
     box-shadow: 0px 0px 36px rgba(205, 193, 255, 0.2), 0px 0px 21px rgba(205, 193, 255, 0.2),
         0px 0px 12px rgba(205, 193, 255, 0.2), 0px 0px 7px rgba(205, 193, 255, 0.2),
         0px 0px 4px #cdc1ff, 0px 0px 2px rgba(205, 193, 255, 0.2);
@@ -51,10 +50,11 @@
 .tokens_name {
     font-family: var(--font-logo);
     font-weight: 100;
-    font-size: 18px;
+    font-size: 16px;
     line-height: 22px;
     display: flex;
-    justify-content: flex-end;
+    justify-content: center;
+    color: var(--text-grey-white);
 }
 
 .pool_price_change {
@@ -68,6 +68,7 @@
     font-style: normal;
     font-weight: 300;
     font-size: 12px;
+    color: var(--text-grey-white);
 }
 
 .row_title {
@@ -109,7 +110,7 @@
 
     /* text/white */
 
-    color: #ffffff;
+    color: var(--text-grey-white);
 }
 .change_positive {
     font-weight: 200;
@@ -139,7 +140,7 @@
     line-height: 30px;
 
     letter-spacing: -0.02em;
-    color: #ffffff;
+    color: var(--text-grey-white);
     font-family: var(--mono);
 }
 

@@ -41,8 +41,8 @@ export interface tradeData {
     pinnedMaxPriceDisplayTruncated: number | undefined;
     pinnedMinPriceDisplayTruncated: number | undefined;
     rangeModuleTriggered: boolean;
-    rangeLowLineTriggered: boolean;
-    rangeHighLineTriggered: boolean;
+    rangeLowLineTriggered: boolean | undefined;
+    rangeHighLineTriggered: boolean | undefined;
     candleDomains: candleDomain;
 }
 
@@ -78,8 +78,8 @@ const initialState: tradeData = {
     pinnedMaxPriceDisplayTruncated: undefined,
     pinnedMinPriceDisplayTruncated: undefined,
     rangeModuleTriggered: false,
-    rangeLowLineTriggered: false,
-    rangeHighLineTriggered: false,
+    rangeLowLineTriggered: undefined,
+    rangeHighLineTriggered: undefined,
 };
 
 export const tradeDataSlice = createSlice({

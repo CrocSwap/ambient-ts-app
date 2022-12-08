@@ -2,6 +2,7 @@
 import { MouseEvent, SetStateAction, Dispatch, useState, useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import { BiSearch } from 'react-icons/bi';
+import { BsChevronBarDown } from 'react-icons/bs';
 
 // START: Import JSX Elements
 import SidebarAccordion from './SidebarAccordion/SidebarAccordion';
@@ -30,6 +31,7 @@ import { MdClose } from 'react-icons/md';
 import closeSidebarImage from '../../../assets/images/sidebarImages/closeSidebar.svg';
 import { memoizePoolStats } from '../../functions/getPoolStats';
 import { tradeData } from '../../../utils/state/tradeDataSlice';
+import { DefaultTooltip } from '../../../components/Global/StyledTooltip/StyledTooltip';
 
 const cachedPoolStatsFetch = memoizePoolStats();
 
@@ -59,6 +61,8 @@ interface SidebarPropsIF {
     outsideControl: boolean;
     setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
     setOutsideControl: Dispatch<SetStateAction<boolean>>;
+
+    openModalWallet: () => void;
 }
 
 export default function Sidebar(props: SidebarPropsIF) {
@@ -84,6 +88,7 @@ export default function Sidebar(props: SidebarPropsIF) {
         setShowSidebar,
         // analyticsSearchInput,
         setAnalyticsSearchInput,
+        openModalWallet,
     } = props;
 
     const location = useLocation();
@@ -105,6 +110,7 @@ export default function Sidebar(props: SidebarPropsIF) {
         {
             name: 'Top Tokens',
             icon: topTokensImage,
+
             data: <TopTokens chainId={chainId} lastBlockNumber={lastBlockNumber} />,
         },
     ];
@@ -112,6 +118,7 @@ export default function Sidebar(props: SidebarPropsIF) {
         {
             name: 'Top Pools',
             icon: topPoolsImage,
+
             data: (
                 <TopPools
                     tradeData={tradeData}
@@ -182,6 +189,7 @@ export default function Sidebar(props: SidebarPropsIF) {
         {
             name: 'Favorite Pools',
             icon: favouritePoolsImage,
+
             data: (
                 <FavoritePools
                     favePools={favePools}
@@ -196,6 +204,7 @@ export default function Sidebar(props: SidebarPropsIF) {
         {
             name: 'Transactions',
             icon: recentTransactionsImage,
+
             data: (
                 <SidebarRecentTransactions
                     mostRecentTransactions={mostRecentTransactions}
@@ -302,14 +311,32 @@ export default function Sidebar(props: SidebarPropsIF) {
     );
 
     // console.log(searchInput);
+    const [openAllDefault, setOpenAllDefault] = useState(false);
+    const openAllButton = (
+        <button
+            onClick={() => setOpenAllDefault(!openAllDefault)}
+            className={styles.open_all_button}
+        >
+            <BsChevronBarDown size={18} color='var(--text-grey-light)' />{' '}
+            {!openAllDefault ? 'Open All' : 'Close All'}
+        </button>
+    );
 
     const searchContainerDisplay = (
         <div className={` ${styles.sidebar_link_search} ${styles.main_search_container}`}>
             {location.pathname.includes('analytics') ? AnalyticsSearchContainer : searchContainer}
-
-            <div style={{ cursor: 'pointer' }}>
-                <img src={closeSidebarImage} alt='close sidebar' onClick={toggleSidebar} />
-            </div>
+            <DefaultTooltip
+                interactive
+                title={openAllButton}
+                placement={'bottom'}
+                arrow
+                enterDelay={100}
+                leaveDelay={200}
+            >
+                <div style={{ cursor: 'pointer' }}>
+                    <img src={closeSidebarImage} alt='close sidebar' onClick={toggleSidebar} />
+                </div>
+            </DefaultTooltip>
         </div>
     );
 
@@ -326,11 +353,14 @@ export default function Sidebar(props: SidebarPropsIF) {
             {topTokens.map((item, idx) => (
                 <SidebarAccordion
                     showSidebar={showSidebar}
+                    shouldDisplayContentWhenUserNotLoggedIn={true}
                     idx={idx}
                     item={item}
                     toggleSidebar={toggleSidebar}
                     key={idx}
                     setShowSidebar={setShowSidebar}
+                    openAllDefault={openAllDefault}
+                    openModalWallet={openModalWallet}
 
                     // mostRecent={mostRecentPositions}
                 />
@@ -338,11 +368,14 @@ export default function Sidebar(props: SidebarPropsIF) {
             {topPoolsSection.map((item, idx) => (
                 <SidebarAccordion
                     showSidebar={showSidebar}
+                    shouldDisplayContentWhenUserNotLoggedIn={true}
                     idx={idx}
                     item={item}
                     toggleSidebar={toggleSidebar}
                     key={idx}
                     setShowSidebar={setShowSidebar}
+                    openAllDefault={openAllDefault}
+                    openModalWallet={openModalWallet}
                     // mostRecent={['should open automatically']}
                 />
             ))}
@@ -354,43 +387,55 @@ export default function Sidebar(props: SidebarPropsIF) {
             {recentTransactions.map((item, idx) => (
                 <SidebarAccordion
                     toggleSidebar={toggleSidebar}
+                    shouldDisplayContentWhenUserNotLoggedIn={false}
                     showSidebar={showSidebar}
                     idx={idx}
                     item={item}
                     key={idx}
                     setShowSidebar={setShowSidebar}
+                    openAllDefault={openAllDefault}
+                    openModalWallet={openModalWallet}
                     // mostRecent={mostRecentTransactions}
                 />
             ))}{' '}
             {recentLimitOrders.map((item, idx) => (
                 <SidebarAccordion
                     toggleSidebar={toggleSidebar}
+                    shouldDisplayContentWhenUserNotLoggedIn={false}
                     showSidebar={showSidebar}
                     idx={idx}
                     item={item}
                     key={idx}
                     setShowSidebar={setShowSidebar}
+                    openAllDefault={openAllDefault}
+                    openModalWallet={openModalWallet}
                 />
             ))}{' '}
             {rangePositions.map((item, idx) => (
                 <SidebarAccordion
                     toggleSidebar={toggleSidebar}
+                    shouldDisplayContentWhenUserNotLoggedIn={false}
                     showSidebar={showSidebar}
                     idx={idx}
                     item={item}
                     key={idx}
                     setShowSidebar={setShowSidebar}
+                    openAllDefault={openAllDefault}
+                    openModalWallet={openModalWallet}
                     // mostRecent={positionsByUser}
                 />
             ))}
             {favoritePools.map((item, idx) => (
                 <SidebarAccordion
                     toggleSidebar={toggleSidebar}
+                    shouldDisplayContentWhenUserNotLoggedIn={true}
                     showSidebar={showSidebar}
                     idx={idx}
                     item={item}
                     key={idx}
                     setShowSidebar={setShowSidebar}
+                    openAllDefault={openAllDefault}
+                    openModalWallet={openModalWallet}
                 />
             ))}
         </div>

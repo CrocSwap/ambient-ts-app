@@ -72,7 +72,7 @@ text.y_axis {
     cursor: pointer;
     /* pointer-events: none; */
 
-    width: 45%;
+    width: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
 
@@ -112,6 +112,7 @@ div.liqTooltip {
     -webkit-backdrop-filter: blur(4px);
     border-radius: var(--border-radius);
 }
+
 
 div.tooltip {
     position: absolute;

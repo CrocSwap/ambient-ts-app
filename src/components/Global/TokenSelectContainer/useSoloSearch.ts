@@ -1,13 +1,15 @@
 import { useEffect, useMemo, useState, Dispatch, SetStateAction } from 'react';
-import { TokenIF, TokenListIF } from '../../../utils/interfaces/exports';
-import { ambientTokenList } from '../../../utils/data/ambientTokenList';
+import { TokenIF } from '../../../utils/interfaces/exports';
 
 export const useSoloSearch = (
     chainId: string,
-): [TokenIF[] | null, string, Dispatch<SetStateAction<string>>, string] => {
+    importedTokens: TokenIF[],
+    tokensOnActiveLists: Map<string, TokenIF>,
+): [TokenIF[] | null, TokenIF[] | null, string, Dispatch<SetStateAction<string>>, string] => {
     // raw input from the user
     const [input, setInput] = useState('');
 
+    // search type => '' or 'address' or 'nameOrAddress'
     const [searchAs, setSearchAs] = useState('');
 
     // cleaned and validated version of raw user input
@@ -21,7 +23,7 @@ export const useSoloSearch = (
         ) {
             setSearchAs('address');
             // if not an apparent token address search name and symbol
-        } else if (cleanInput.length >= 2) {
+        } else if (cleanInput.length >= 3) {
             setSearchAs('nameOrSymbol');
             return cleanInput;
             // otherwise treat as if there is no input entered
@@ -47,86 +49,62 @@ export const useSoloSearch = (
         return output;
     }, [input]);
 
-    // data object for token matching user query
-    const [tokens, setTokens] = useState<TokenIF[] | null>(null);
-
-    // control flow to gatekeep secondary and tertiary calls
-    const [isTokenFound, setIsTokenFound] = useState(false);
-
+    const [importedTokensForDOM, setImportedTokensForDOM] = useState<TokenIF[]>([]);
+    const [otherTokensForDOM, setOtherTokensForDOM] = useState<TokenIF[]>([]);
     useEffect(() => {
-        // reset value to false used to gatekeep queries
-        setIsTokenFound(false);
+        const importedTokensOnChain = importedTokens.filter(
+            (tkn: TokenIF) => tkn.chainId === parseInt(chainId),
+        );
 
-        // make sure raw user input has been validated
-        // if not, set token data object to null
-        validatedInput || setTokens(null);
+        const otherTokensOnChain = [...tokensOnActiveLists.values()].filter(
+            (tkn: TokenIF) => tkn.chainId === parseInt(chainId),
+        );
 
-        // TODO:  @Emily refactor this to a switch (case)
-        // fn to find token in an array of tokens by address and chain ID
-        const findToken = (tokens: TokenIF[], searchType: string) => {
-            if (searchType === 'address') {
-                const tkn = tokens.find(
-                    (token) =>
-                        token.address.toLowerCase() === validatedInput &&
-                        token.chainId === parseInt(chainId),
-                );
-                return [tkn];
-            } else if (searchType === 'nameOrSymbol') {
-                const outputTokens: TokenIF[] = [];
-                // TODO: refactor this as a .filter()
-                tokens.forEach((token) => {
-                    if (
-                        token.name.toLowerCase().includes(validatedInput) ||
-                        token.symbol.toLowerCase().includes(validatedInput)
-                    ) {
-                        outputTokens.push(token);
-                    }
-                });
-                return outputTokens;
-            } else {
-                console.warn(
-                    `Error in fn findToken() in useSoloSearch.ts file.  Did not receive a valid value for parameter <<searchType>>. Acceptable values include <<'address'>> and <<'nameOrSymbol'>> of type <<string>>, received value <<${searchType}>> of type <<${typeof searchType}>>. Fn will return an empty array.`,
-                );
-                return [];
-            }
+        const searchByAddress = (searchString: string) => {
+            const importedMatches = importedTokensOnChain.filter(
+                (tkn: TokenIF) => tkn.address.toLowerCase() === searchString,
+            );
+            setImportedTokensForDOM(importedMatches);
+            const otherMatches = otherTokensOnChain.filter(
+                (tkn: TokenIF) => tkn.address.toLowerCase() === searchString,
+            );
+            setOtherTokensForDOM(otherMatches);
         };
 
-        // fn to update local state if a token is found
-        const updateToken = (tkn: TokenIF[]) => {
-            setIsTokenFound(true);
-            setTokens(tkn);
+        const searchByNameOrSymbol = (searchString: string) => {
+            const importedMatches = importedTokensOnChain.filter(
+                (tkn: TokenIF) =>
+                    tkn.name.toLowerCase().includes(searchString) ||
+                    tkn.symbol.toLowerCase().includes(searchString),
+            );
+            setImportedTokensForDOM(importedMatches);
+            const otherMatches = otherTokensOnChain.filter(
+                (tkn: TokenIF) =>
+                    tkn.name.toLowerCase().includes(searchString) ||
+                    tkn.symbol.toLowerCase().includes(searchString),
+            );
+            setOtherTokensForDOM(otherMatches);
         };
 
-        // first check ambient list
-        if (validatedInput && ambientTokenList) {
-            // find token in the ambient token list
-            const tkns = findToken(ambientTokenList.tokens, searchAs) as TokenIF[];
-            // update local state if a token is found
-            tkns && updateToken(tkns);
-            // next line prevents the app from running subsequent searches
-            return;
+        const noSort = () => {
+            setImportedTokensForDOM(importedTokensOnChain);
+            setOtherTokensForDOM([]);
+        };
+
+        switch (searchAs) {
+            case 'address':
+                searchByAddress(validatedInput);
+                break;
+            case 'nameOrSymbol':
+                searchByNameOrSymbol(validatedInput);
+                break;
+            default:
+                noSort();
         }
-
-        // if not found check CoinGecko
-        if (validatedInput && localStorage.allTokenLists && !isTokenFound) {
-            // get tokens array from CoinGecko list in local storage
-            const coinGeckoTokens = JSON.parse(
-                localStorage.getItem('allTokenLists') as string,
-            ).find((list: TokenListIF) => list.name === 'CoinGecko').tokens;
-            // find token in CoinGecko token list
-            const tkn = findToken(coinGeckoTokens, searchAs) as TokenIF[];
-            // update local state if a token is found
-            tkn && updateToken(tkn);
-        }
-
-        // TODO: if not found pull data from on-chain
-
-        // run hook when validated user input changes
-        // this prevents queries without valid input
-    }, [validatedInput]);
+    }, [importedTokens, validatedInput]);
 
     // token === token data object or null
     // input === raw input from the user
     // setInput === useState setter function for raw input
-    return [tokens, input.trim(), setInput, searchAs];
+    return [importedTokensForDOM, otherTokensForDOM, validatedInput, setInput, searchAs];
 };

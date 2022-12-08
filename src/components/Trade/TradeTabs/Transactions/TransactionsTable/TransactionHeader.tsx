@@ -1,6 +1,6 @@
 import { Dispatch, SetStateAction, useMemo } from 'react';
 import { BsSortDown, BsSortUpAlt } from 'react-icons/bs';
-
+import styles from '../Transactions.module.css';
 interface TransactionHeaderPropsIF {
     header: {
         name: string | JSX.Element;
@@ -8,6 +8,8 @@ interface TransactionHeaderPropsIF {
         show: boolean;
         slug: string;
         sortable: boolean;
+        alignRight?: boolean;
+        alignCenter?: boolean;
     };
 
     sortBy: string;
@@ -17,7 +19,7 @@ interface TransactionHeaderPropsIF {
 }
 export default function TransactionHeader(props: TransactionHeaderPropsIF) {
     const { header, sortBy, setSortBy, reverseSort, setReverseSort } = props;
-    const { name, show, slug, sortable } = header;
+    const { name, show, slug, sortable, alignRight, alignCenter } = header;
 
     function handleClick(slug: string) {
         if (sortable) {
@@ -63,7 +65,9 @@ export default function TransactionHeader(props: TransactionHeaderPropsIF) {
             {show && (
                 <li
                     style={{ cursor: sortable ? 'pointer' : 'default' }}
-                    className={activeSortStyle}
+                    className={`${activeSortStyle} ${alignRight && styles.align_right} ${
+                        alignCenter && styles.align_center
+                    }`}
                     onClick={() => handleClick(slug.toLowerCase())}
                 >
                     {name} {arrow}

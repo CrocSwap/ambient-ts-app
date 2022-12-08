@@ -1,14 +1,11 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import styles from './AnalyticsTabs.module.css';
 import { useMemo, SetStateAction, Dispatch, useState } from 'react';
 // import Positions from '../../Trade/TradeTabs/Positions/Positions';
 import TopTokens from '../../TopTokens/TopTokens';
 import Pools from '../../Pools/Pools';
 import TopRanges from '../../TopRanges/TopRanges';
-import { useAllTokenData } from '../../../state/tokens/hooks';
 import { notEmpty } from '../../../utils';
-import { useAllPoolData } from '../../../state/pools/hooks';
-import { TokenData } from '../../../state/tokens/models';
-import { PoolData } from '../../../state/pools/models';
 import TabComponent from '../../Global/TabComponent/TabComponent';
 import { PoolIF } from '../../../utils/interfaces/PoolIF';
 import { TokenIF } from '../../../utils/interfaces/TokenIF';
@@ -28,11 +25,11 @@ interface AnalyticsProps {
     ) => void;
 }
 export default function AnalyticsTabs(props: AnalyticsProps) {
-    const allTokens = useAllTokenData();
-    const allPoolData = useAllPoolData();
+    const allTokens: any = [];
+    const allPoolData: any = [];
 
-    const [tokens, setTokens] = useState<TokenData[]>([]);
-    const [pools, setPools] = useState<PoolData[]>([]);
+    const [tokens, setTokens] = useState<any[]>([]);
+    const [pools, setPools] = useState<any[]>([]);
     const [searchWord, setSearchWord] = useState('');
 
     const searchContainer = (
@@ -54,13 +51,13 @@ export default function AnalyticsTabs(props: AnalyticsProps) {
 
     const tokensResult = useMemo(() => {
         return Object.values(allTokens)
-            .map((t) => t.data)
+            .map((t: any) => t.data)
             .filter(notEmpty);
     }, [allTokens]);
 
     const poolsResult = useMemo(() => {
         return Object.values(allPoolData)
-            .map((p) => p.data)
+            .map((p: any) => p.data)
             .filter(notEmpty);
     }, [allPoolData]);
 

@@ -9,6 +9,7 @@ import { TokenPairIF } from '../../../../utils/interfaces/exports';
 import TooltipComponent from '../../../Global/TooltipComponent/TooltipComponent';
 // import truncateDecimals from '../../../../utils/data/truncateDecimals';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
+import DenominationSwitch from '../../../Swap/DenominationSwitch/DenominationSwitch';
 // import makePriceDisplay from './makePriceDisplay';
 
 // interface for component props
@@ -26,6 +27,7 @@ interface LimitExtraInfoPropsIF {
     startDisplayPrice: number;
     middleDisplayPrice: number;
     endDisplayPrice: number;
+    isQtyEntered: boolean;
 }
 
 // central react functional component
@@ -44,6 +46,7 @@ export default function LimitExtraInfo(props: LimitExtraInfoPropsIF) {
         startDisplayPrice,
         middleDisplayPrice,
         endDisplayPrice,
+        isQtyEntered,
     } = props;
     const [showExtraDetails, setShowExtraDetails] = useState<boolean>(false);
 
@@ -244,22 +247,36 @@ export default function LimitExtraInfo(props: LimitExtraInfoPropsIF) {
     //     didUserFlipDenom,
     // );
 
+    const dropDownOrNull = isQtyEntered ? (
+        <div style={{ cursor: 'pointer' }}>
+            <RiArrowDownSLine size={20} />
+        </div>
+    ) : null;
+
+    const extraInfoSectionOrNull = (
+        <div
+            className={styles.extra_info_content}
+            onClick={
+                isQtyEntered
+                    ? () => setShowExtraDetails(!showExtraDetails)
+                    : () => setShowExtraDetails(false)
+            }
+        >
+            <div className={styles.gas_pump}>
+                <FaGasPump size={15} /> {orderGasPriceInDollars ? orderGasPriceInDollars : '…'}
+            </div>
+            <div className={styles.token_amount}>
+                {isDenomBase
+                    ? `1 ${baseTokenSymbol} ≈ ${displayPriceString} ${quoteTokenSymbol}`
+                    : `1 ${quoteTokenSymbol} ≈ ${displayPriceString} ${baseTokenSymbol}`}
+            </div>
+            <DenominationSwitch />
+            {dropDownOrNull}
+        </div>
+    );
     return (
         <>
-            <div
-                className={styles.extra_info_content}
-                onClick={() => setShowExtraDetails(!showExtraDetails)}
-            >
-                <div className={styles.gas_pump}>
-                    <FaGasPump size={15} /> {orderGasPriceInDollars ? orderGasPriceInDollars : '…'}
-                </div>
-                <div className={styles.token_amount}>
-                    {isDenomBase
-                        ? `1 ${baseTokenSymbol} ≈ ${displayPriceString} ${quoteTokenSymbol}`
-                        : `1 ${quoteTokenSymbol} ≈ ${displayPriceString} ${baseTokenSymbol}`}
-                    <RiArrowDownSLine size={27} />{' '}
-                </div>
-            </div>
+            {extraInfoSectionOrNull}
             {extraDetailsOrNull}
         </>
     );

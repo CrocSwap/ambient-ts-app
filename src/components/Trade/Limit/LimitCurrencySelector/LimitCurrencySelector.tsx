@@ -19,7 +19,7 @@ import NoTokenIcon from '../../../Global/NoTokenIcon/NoTokenIcon';
 
 // interface for component props
 interface LimitCurrencySelectorProps {
-    isUserLoggedIn: boolean;
+    isUserLoggedIn: boolean | undefined;
     tokenPair: TokenPairIF;
     tokensBank: Array<TokenIF>;
     setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
@@ -48,6 +48,8 @@ interface LimitCurrencySelectorProps {
     activeTokenListsChanged: boolean;
     indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
     gasPriceInGwei: number | undefined;
+
+    isOrderCopied: boolean;
 }
 
 // central react functional component
@@ -79,6 +81,7 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
         indicateActiveTokenListsChanged,
         gasPriceInGwei,
         handleChangeClick,
+        isOrderCopied,
     } = props;
 
     const thisToken = fieldId === 'sell' ? tokenPair.dataTokenA : tokenPair.dataTokenB;
@@ -117,7 +120,10 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
     // ... a common element for those modules in the future.
 
     const tokenSelect = (
-        <div className={styles.token_select} onClick={openModal}>
+        <div
+            className={`${styles.token_select} ${isOrderCopied && styles.pulse_animation}`}
+            onClick={openModal}
+        >
             {thisToken.logoURI ? (
                 <img
                     className={styles.token_list_img}
@@ -248,7 +254,7 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
                                         isWithdrawFromDexChecked &&
                                         tokenASurplusMinusTokenARemainderNum &&
                                         tokenASurplusMinusTokenARemainderNum < 0)
-                                        ? '#ebebff'
+                                        ? 'var(--text-highlight)'
                                         : '#555555'
                                 }
                             />
@@ -260,7 +266,7 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
                                     color: isSellTokenSelector ? '#f6385b' : '#15be67',
                                 }}
                             >
-                                {sellTokenWalletBalanceChange}
+                                <p style={{ fontSize: '9px' }}> {sellTokenWalletBalanceChange}</p>
                             </div>
                         </div>
                     </div>
@@ -284,7 +290,7 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
                             color:
                                 isSellTokenSelector && !isWithdrawFromDexChecked
                                     ? '#555555'
-                                    : '#ebebff',
+                                    : 'var(--text-highlight)',
                         }}
                         onClick={() => {
                             if (props.sellToken) {
@@ -311,7 +317,7 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
                                     color: isSellTokenSelector ? '#f6385b' : '#15be67',
                                 }}
                             >
-                                {sellTokenSurplusChange}
+                                <p style={{ fontSize: '9px' }}> {sellTokenSurplusChange}</p>
                             </div>
                         </div>
                     </div>

@@ -9,7 +9,9 @@ import styles from './Orders.module.css';
 import { useAppDispatch, useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import {
     addLimitOrderChangesByPool,
+    CandleData,
     graphData,
+    setDataLoadingStatus,
     setLimitOrdersByPool,
 } from '../../../../utils/state/graphDataSlice';
 import { fetchPoolLimitOrderStates } from '../../../../App/functions/fetchPoolLimitOrderStates';
@@ -23,6 +25,8 @@ import TableSkeletons from '../TableSkeletons/TableSkeletons';
 import { useSortedLimits } from '../useSortedLimits';
 import { LimitOrderIF, TokenIF } from '../../../../utils/interfaces/exports';
 import { getLimitOrderData } from '../../../../App/functions/getLimitOrderData';
+import useDebounce from '../../../../App/hooks/useDebounce';
+import NoTableData from '../NoTableData/NoTableData';
 
 // import OrderAccordions from './OrderAccordions/OrderAccordions';
 
@@ -37,13 +41,16 @@ interface propsIF {
     account: string;
     graphData: graphData;
     isShowAllEnabled: boolean;
+    setIsShowAllEnabled?: Dispatch<SetStateAction<boolean>>;
     openGlobalModal: (content: React.ReactNode) => void;
     closeGlobalModal: () => void;
     currentPositionActive: string;
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
     isOnPortfolioPage: boolean;
+    changeState?: (isOpen: boolean | undefined, candleData: CandleData | undefined) => void;
 
     showSidebar: boolean;
+    handlePulseAnimation?: (type: string) => void;
 }
 
 // main react functional component
@@ -62,15 +69,45 @@ export default function Orders(props: propsIF) {
         currentPositionActive,
         showSidebar,
         isOnPortfolioPage,
+        handlePulseAnimation,
+        setIsShowAllEnabled,
+        changeState,
     } = props;
 
     const limitOrdersByUser = graphData.limitOrdersByUser.limitOrders;
     const limitOrdersByPool = graphData.limitOrdersByPool.limitOrders;
+    const dataLoadingStatus = graphData?.dataLoadingStatus;
+
+    // allow a local environment variable to be defined in [app_repo]/.env.local to turn off connections to the cache server
+    const isServerEnabled =
+        process.env.REACT_APP_CACHE_SERVER_IS_ENABLED !== undefined
+            ? process.env.REACT_APP_CACHE_SERVER_IS_ENABLED === 'true'
+            : true;
+
+    // const poolSwapsCacheEndpoint = httpGraphCacheServerDomain + '/pool_recent_changes?';
 
     const tradeData = useAppSelector((state) => state.tradeData);
 
     const baseTokenAddressLowerCase = tradeData.baseToken.address.toLowerCase();
     const quoteTokenAddressLowerCase = tradeData.quoteToken.address.toLowerCase();
+
+    const isConnectedUserOrderDataLoading = dataLoadingStatus?.isConnectedUserOrderDataLoading;
+    const isLookupUserOrderDataLoading = dataLoadingStatus?.isLookupUserOrderDataLoading;
+    const isPoolOrderDataLoading = dataLoadingStatus?.isPoolOrderDataLoading;
+
+    const isOrderDataLoadingForPortfolio =
+        (connectedAccountActive && isConnectedUserOrderDataLoading) ||
+        (!connectedAccountActive && isLookupUserOrderDataLoading);
+
+    const isOrderDataLoadingForTradeTable =
+        (isShowAllEnabled && isPoolOrderDataLoading) ||
+        (!isShowAllEnabled && isConnectedUserOrderDataLoading);
+
+    const shouldDisplayLoadingAnimation =
+        (isOnPortfolioPage && isOrderDataLoadingForPortfolio) ||
+        (!isOnPortfolioPage && isOrderDataLoadingForTradeTable);
+
+    const debouncedShouldDisplayLoadingAnimation = useDebounce(shouldDisplayLoadingAnimation, 1000); // debounce 1/4 second
 
     const ordersByUserMatchingSelectedTokens = limitOrdersByUser.filter((tx) => {
         if (
@@ -101,7 +138,13 @@ export default function Orders(props: propsIF) {
         } else if (limitOrdersByPool) {
             setLimitOrderData(limitOrdersByPool);
         }
-    }, [isShowAllEnabled, connectedAccountActive]);
+    }, [
+        isShowAllEnabled,
+        connectedAccountActive,
+        JSON.stringify(activeAccountLimitOrderData),
+        JSON.stringify(ordersByUserMatchingSelectedTokens),
+        JSON.stringify(limitOrdersByPool),
+    ]);
 
     // wait 5 seconds to open a subscription to pool changes
     useEffect(() => {
@@ -110,11 +153,11 @@ export default function Orders(props: propsIF) {
     }, [isShowAllEnabled]);
 
     const [sortBy, setSortBy, reverseSort, setReverseSort, sortedLimits] = useSortedLimits(
-        'lastUpdate',
+        'time',
         isShowAllEnabled ? limitOrdersByPool : limitOrderData,
     );
     useEffect(() => {
-        if (isShowAllEnabled) {
+        if (isServerEnabled && isShowAllEnabled) {
             fetchPoolLimitOrderStates({
                 chainId: chainData.chainId,
                 base: tradeData.baseToken.address,
@@ -122,18 +165,10 @@ export default function Orders(props: propsIF) {
                 poolIdx: chainData.poolIndex,
                 ensResolution: true,
             })
-                .then((poolChangesJsonData) => {
-                    // if (poolChangesJsonData) {
-                    //     dispatch(
-                    //         setLimitOrdersByPool({
-                    //             dataReceived: true,
-                    //             limitOrders: poolChangesJsonData,
-                    //         }),
-                    //     );
-                    // }
-                    if (poolChangesJsonData) {
+                .then((orderJsonData) => {
+                    if (orderJsonData) {
                         Promise.all(
-                            poolChangesJsonData.map((limitOrder: LimitOrderIF) => {
+                            orderJsonData.map((limitOrder: LimitOrderIF) => {
                                 return getLimitOrderData(limitOrder, importedTokens);
                             }),
                         ).then((updatedLimitOrderStates) => {
@@ -145,10 +180,16 @@ export default function Orders(props: propsIF) {
                             );
                         });
                     }
+                    dispatch(
+                        setDataLoadingStatus({
+                            datasetName: 'poolOrderData',
+                            loadingStatus: false,
+                        }),
+                    );
                 })
                 .catch(console.log);
         }
-    }, [isShowAllEnabled]);
+    }, [isServerEnabled, isShowAllEnabled]);
 
     const wssGraphCacheServerDomain = 'wss://809821320828123.de:5000';
 
@@ -212,7 +253,7 @@ export default function Orders(props: propsIF) {
             shouldReconnect: () => true,
         },
         // only connect if user is viewing pool changes
-        debouncedIsShowAllEnabled,
+        isServerEnabled && debouncedIsShowAllEnabled,
     );
 
     useEffect(() => {
@@ -227,27 +268,26 @@ export default function Orders(props: propsIF) {
 
     // -----------------------------
     // const dataReceivedByPool = graphData?.changesByPool?.dataReceived;
-    const [isDataLoading, setIsDataLoading] = useState(true);
-    const [dataToDisplay, setDataToDisplay] = useState(false);
-    const [dataReceived] = useState(limitOrderData.length > 0);
+    // const [isDataLoading, setIsDataLoading] = useState(true);
+    // const [dataToDisplay, setDataToDisplay] = useState(false);
+    // const [dataReceived] = useState(limitOrderData.length > 0);
 
-    function handleDataReceived() {
-        setIsDataLoading(false);
-        limitOrderData.length ? setDataToDisplay(true) : setDataToDisplay(false);
-    }
+    // function handleDataReceived() {
+    //     setIsDataLoading(false);
+    //     limitOrderData.length ? setDataToDisplay(true) : setDataToDisplay(false);
+    // }
 
-    useEffect(() => {
-        dataReceived ? handleDataReceived() : setIsDataLoading(true);
-    }, [graphData, limitOrderData, dataReceived]);
+    // useEffect(() => {
+    //     dataReceived ? handleDataReceived() : setIsDataLoading(true);
+    // }, [graphData, limitOrderData, dataReceived]);
 
     // -----------------------------
 
-    const sidebarOpen = false;
-
     const ipadView = useMediaQuery('(max-width: 480px)');
     const desktopView = useMediaQuery('(max-width: 768px)');
+    const view2 = useMediaQuery('(max-width: 1568px)');
 
-    const showColumns = sidebarOpen || desktopView;
+    const showColumns = desktopView;
 
     const quoteTokenSymbol = tradeData.quoteToken?.symbol;
     const baseTokenSymbol = tradeData.baseToken?.symbol;
@@ -277,14 +317,21 @@ export default function Orders(props: propsIF) {
     );
     const headerColumns = [
         {
-            name: '',
+            name: 'Time',
             className: '',
-            show: isOnPortfolioPage,
-            slug: 'token_images',
-            sortable: false,
+            show: !showColumns,
+            slug: 'time',
+            sortable: true,
         },
+        // {
+        //     name: '',
+        //     className: '',
+        //     show: isOnPortfolioPage,
+        //     slug: 'token_images',
+        //     sortable: false,
+        // },
         {
-            name: 'Pool',
+            name: 'Pair',
             className: '',
             show: isOnPortfolioPage && !showSidebar,
             slug: 'pool',
@@ -317,6 +364,7 @@ export default function Orders(props: propsIF) {
             show: !ipadView,
             slug: 'price',
             sortable: true,
+            alignRight: true,
         },
         {
             name: 'Side',
@@ -324,6 +372,7 @@ export default function Orders(props: propsIF) {
             show: !showColumns,
             slug: 'side',
             sortable: true,
+            alignCenter: true,
         },
         {
             name: 'Type',
@@ -331,6 +380,7 @@ export default function Orders(props: propsIF) {
             show: !showColumns,
             slug: 'type',
             sortable: true,
+            alignCenter: true,
         },
         {
             name: sideType,
@@ -345,27 +395,31 @@ export default function Orders(props: propsIF) {
             show: true,
             slug: 'value',
             sortable: true,
+            alignRight: true,
         },
-        // {
-        //     name: isOnPortfolioPage ? 'Qty A' : `${baseTokenSymbol}`,
+        {
+            name: isOnPortfolioPage ? 'Qty A' : `${baseTokenSymbol}`,
 
-        //     show: !showColumns,
-        //     slug: baseTokenSymbol,
-        //     sortable: false,
-        // },
-        // {
-        //     name: isOnPortfolioPage ? 'Qty B' : `${quoteTokenSymbol}`,
+            show: !showColumns,
+            slug: baseTokenSymbol,
+            sortable: false,
+            alignRight: true,
+        },
+        {
+            name: isOnPortfolioPage ? 'Qty B' : `${quoteTokenSymbol}`,
 
-        //     show: !showColumns,
-        //     slug: quoteTokenSymbol,
-        //     sortable: false,
-        // },
+            show: !showColumns,
+            slug: quoteTokenSymbol,
+            sortable: false,
+            alignRight: true,
+        },
         {
             name: tokens,
             className: 'tokens',
-            show: true,
+            show: showColumns,
             slug: 'tokens',
             sortable: false,
+            alignRight: true,
         },
         {
             name: ' ',
@@ -402,10 +456,13 @@ export default function Orders(props: propsIF) {
     const rowItemContent = sortedLimits.map((order, idx) => (
         <OrderRow
             crocEnv={crocEnv}
+            chainData={chainData}
+            tradeData={tradeData}
             expandTradeTable={expandTradeTable}
             showSidebar={showSidebar}
             showColumns={showColumns}
             ipadView={ipadView}
+            view2={view2}
             key={idx}
             limitOrder={order}
             openGlobalModal={props.openGlobalModal}
@@ -414,19 +471,30 @@ export default function Orders(props: propsIF) {
             setCurrentPositionActive={setCurrentPositionActive}
             isShowAllEnabled={isShowAllEnabled}
             isOnPortfolioPage={isOnPortfolioPage}
+            handlePulseAnimation={handlePulseAnimation}
         />
     ));
 
-    const orderDataOrNull = dataToDisplay ? rowItemContent : 'noData';
-
+    const orderDataOrNull = limitOrderData.length ? (
+        rowItemContent
+    ) : (
+        <NoTableData
+            isShowAllEnabled={isShowAllEnabled}
+            type='orders'
+            setIsShowAllEnabled={setIsShowAllEnabled}
+            changeState={changeState}
+            // setIsCandleSelected={setIsCandleSelected}
+        />
+    );
     const expandStyle = expandTradeTable ? 'calc(100vh - 10rem)' : '250px';
 
     const portfolioPageStyle = props.isOnPortfolioPage ? 'calc(100vh - 19.5rem)' : expandStyle;
 
     return (
-        <main className={styles.main_list_container} style={{ height: portfolioPageStyle }}>
+        <section className={styles.main_list_container} style={{ height: portfolioPageStyle }}>
             {headerColumnsDisplay}
-            {isDataLoading ? <TableSkeletons /> : orderDataOrNull}
-        </main>
+            {debouncedShouldDisplayLoadingAnimation ? <TableSkeletons /> : orderDataOrNull}
+            {/* {isDataLoading ? <TableSkeletons /> : orderDataOrNull} */}
+        </section>
     );
 }

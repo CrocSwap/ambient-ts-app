@@ -16,7 +16,7 @@
 }
 .completed_animation {
     display: flex;
-
+    min-height: 190px;
     /* min-width: 400px;
     max-width: 400px; */
 
@@ -37,14 +37,14 @@
 
     border: 4px solid var(--header-color);
     border-radius: var(--border-radius);
-    background-color: rgb(33, 36, 41);
+    background-color: var(--dark3);
 }
 
 .view_etherscan {
     padding: 0.3rem;
     background: var(--title-gradient);
     text-decoration: none;
-    color: black;
+    color: var(--text-grey-light);
     border-radius: 4px;
     width: 100%;
     display: flex;

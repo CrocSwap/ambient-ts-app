@@ -8,7 +8,7 @@ interface ConfirmRepositionModalProps {
 }
 
 export default function ConfirmRepositionModal(props: ConfirmRepositionModalProps) {
-    const closeButton = <Button title='Close' action={props.onClose} />;
+    const closeButton = <Button title='Close' action={props.onClose} flat={true} />;
 
     const fullTxDetails = (
         <div>

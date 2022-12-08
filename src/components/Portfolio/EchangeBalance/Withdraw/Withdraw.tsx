@@ -1,4 +1,4 @@
-import { CrocEnv } from '@crocswap-libs/sdk';
+import { CrocEnv, toDisplayQty } from '@crocswap-libs/sdk';
 import { TokenIF } from '../../../../utils/interfaces/TokenIF';
 import styles from './Withdraw.module.css';
 import WithdrawButton from './WithdrawButton/WithdrawButton';
@@ -19,6 +19,7 @@ import {
     isTransactionReplacedError,
     TransactionError,
 } from '../../../../utils/TransactionError';
+import { BigNumber } from 'ethers';
 interface PortfolioWithdrawProps {
     crocEnv: CrocEnv | undefined;
     connectedAccount: string;
@@ -34,6 +35,7 @@ interface PortfolioWithdrawProps {
     setSendToAddress: Dispatch<SetStateAction<string | undefined>>;
     secondaryEnsName: string | undefined;
     openTokenModal: () => void;
+    gasPriceInGwei: number | undefined;
 }
 
 export default function Withdraw(props: PortfolioWithdrawProps) {
@@ -58,7 +60,53 @@ export default function Withdraw(props: PortfolioWithdrawProps) {
 
     const dispatch = useAppDispatch();
 
-    const [withdrawQty, setWithdrawQty] = useState<number>(0);
+    const selectedTokenDecimals = selectedToken.decimals;
+
+    const tokenWalletBalanceDisplay = tokenWalletBalance
+        ? toDisplayQty(tokenWalletBalance, selectedTokenDecimals)
+        : undefined;
+
+    const tokenWalletBalanceDisplayNum = tokenWalletBalanceDisplay
+        ? parseFloat(tokenWalletBalanceDisplay)
+        : undefined;
+
+    const tokenWalletBalanceTruncated = tokenWalletBalanceDisplayNum
+        ? tokenWalletBalanceDisplayNum < 0.0001
+            ? tokenWalletBalanceDisplayNum.toExponential(2)
+            : tokenWalletBalanceDisplayNum < 2
+            ? tokenWalletBalanceDisplayNum.toPrecision(3)
+            : // : tokenWalletBalanceNum >= 100000
+              // ? formatAmountOld(tokenWalletBalanceNum)
+              tokenWalletBalanceDisplayNum.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+              })
+        : undefined;
+
+    const isTokenDexBalanceGreaterThanZero = parseFloat(tokenDexBalance) > 0;
+
+    const tokenExchangeDepositsDisplay = tokenDexBalance
+        ? toDisplayQty(tokenDexBalance, selectedTokenDecimals)
+        : undefined;
+
+    const tokenExchangeDepositsDisplayNum = tokenExchangeDepositsDisplay
+        ? parseFloat(tokenExchangeDepositsDisplay)
+        : undefined;
+
+    const tokenDexBalanceTruncated = tokenExchangeDepositsDisplayNum
+        ? tokenExchangeDepositsDisplayNum < 0.0001
+            ? tokenExchangeDepositsDisplayNum.toExponential(2)
+            : tokenExchangeDepositsDisplayNum < 2
+            ? tokenExchangeDepositsDisplayNum.toPrecision(3)
+            : // : tokenDexBalanceNum >= 100000
+              // ? formatAmountOld(tokenDexBalanceNum)
+              tokenExchangeDepositsDisplayNum.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+              })
+        : undefined;
+
+    const [withdrawQtyNonDisplay, setWithdrawQtyNonDisplay] = useState<string | undefined>();
     const [buttonMessage, setButtonMessage] = useState<string>('...');
     const [isButtonDisabled, setIsButtonDisabled] = useState<boolean>(true);
 
@@ -66,6 +114,27 @@ export default function Withdraw(props: PortfolioWithdrawProps) {
     const [sendToAddressWalletBalance, setSendToAddressWalletBalance] = useState<string>('');
     const [recheckSendToAddressWalletBalance, setRecheckSendToAddressWalletBalance] =
         useState<boolean>(false);
+
+    const sendToAddressBalanceDisplay = sendToAddressWalletBalance
+        ? toDisplayQty(sendToAddressWalletBalance, selectedTokenDecimals)
+        : undefined;
+
+    const sendToAddressBalanceDisplayNum = sendToAddressBalanceDisplay
+        ? parseFloat(sendToAddressBalanceDisplay)
+        : undefined;
+
+    const sendToAddressBalanceTruncated = sendToAddressBalanceDisplayNum
+        ? sendToAddressBalanceDisplayNum < 0.0001
+            ? sendToAddressBalanceDisplayNum.toExponential(2)
+            : sendToAddressBalanceDisplayNum < 2
+            ? sendToAddressBalanceDisplayNum.toPrecision(3)
+            : // : tokenWalletBalanceNum >= 100000
+              // ? formatAmountOld(tokenWalletBalanceNum)
+              sendToAddressBalanceDisplayNum.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+              })
+        : undefined;
 
     const isResolvedAddressValid = useMemo(
         () => resolvedAddress?.length === 42 && resolvedAddress.startsWith('0x'),
@@ -82,9 +151,9 @@ export default function Withdraw(props: PortfolioWithdrawProps) {
         ) {
             crocEnv
                 .token(selectedToken.address)
-                .walletDisplay(resolvedAddress)
-                .then((bal: string) => {
-                    setSendToAddressWalletBalance(bal);
+                .wallet(resolvedAddress)
+                .then((bal: BigNumber) => {
+                    setSendToAddressWalletBalance(bal.toString());
                 })
                 .catch(console.log);
         } else {
@@ -100,16 +169,18 @@ export default function Withdraw(props: PortfolioWithdrawProps) {
         recheckSendToAddressWalletBalance,
     ]);
 
-    // const isTokenAllowanceSufficient = useMemo(
-    //     () => (tokenAllowance !== '0.0' ? parseFloat(tokenAllowance) >= withdrawQty : false),
-    //     [tokenAllowance, withdrawQty],
-    // );
     const isDexBalanceSufficient = useMemo(
-        () => (tokenDexBalance !== '0.0' ? parseFloat(tokenDexBalance) >= withdrawQty : false),
-        [tokenDexBalance, withdrawQty],
+        () =>
+            tokenDexBalance && !!withdrawQtyNonDisplay
+                ? BigNumber.from(tokenDexBalance).gte(BigNumber.from(withdrawQtyNonDisplay))
+                : false,
+        [tokenDexBalance, withdrawQtyNonDisplay],
     );
 
-    const isWithdrawQtyValid = useMemo(() => withdrawQty > 0, [withdrawQty]);
+    const isWithdrawQtyValid = useMemo(
+        () => withdrawQtyNonDisplay !== undefined,
+        [withdrawQtyNonDisplay],
+    );
 
     // const [isApprovalPending, setIsApprovalPending] = useState(false);
     const [isWithdrawPending, setIsWithdrawPending] = useState(false);
@@ -125,7 +196,7 @@ export default function Withdraw(props: PortfolioWithdrawProps) {
         if (isSendToAddressChecked && !isResolvedAddressValid) {
             setIsButtonDisabled(true);
             setButtonMessage('Please Enter a Valid Address');
-        } else if (!withdrawQty) {
+        } else if (!withdrawQtyNonDisplay) {
             setIsButtonDisabled(true);
             setButtonMessage('Enter a Withdrawal Amount');
         } else if (!isDexBalanceSufficient) {
@@ -171,19 +242,24 @@ export default function Withdraw(props: PortfolioWithdrawProps) {
     //     </div>
     // );
 
-    const withdraw = async (withdrawQty: number) => {
-        if (crocEnv && withdrawQty) {
+    const withdraw = async (withdrawQtyNonDisplay: string) => {
+        if (crocEnv && withdrawQtyNonDisplay) {
             try {
+                const depositQtyDisplay = toDisplayQty(
+                    withdrawQtyNonDisplay,
+                    selectedTokenDecimals,
+                );
+
                 setIsWithdrawPending(true);
                 let tx;
                 if (isSendToAddressChecked && resolvedAddress) {
                     tx = await crocEnv
                         .token(selectedToken.address)
-                        .withdraw(withdrawQty, resolvedAddress);
+                        .withdraw(depositQtyDisplay, resolvedAddress);
                 } else {
                     tx = await crocEnv
                         .token(selectedToken.address)
-                        .withdraw(withdrawQty, connectedAccount);
+                        .withdraw(depositQtyDisplay, connectedAccount);
                 }
                 dispatch(addPendingTx(tx?.hash));
 
@@ -235,6 +311,7 @@ export default function Withdraw(props: PortfolioWithdrawProps) {
                 if (receipt) {
                     dispatch(addReceipt(JSON.stringify(receipt)));
                     dispatch(removePendingTx(receipt.transactionHash));
+                    resetWithdrawQty();
                 }
             } catch (error) {
                 console.warn({ error });
@@ -246,8 +323,23 @@ export default function Withdraw(props: PortfolioWithdrawProps) {
         }
     };
 
+    const withdrawInput = document.getElementById(
+        'exchange-balance-withdraw-exchange-balance-withdraw-quantity',
+    ) as HTMLInputElement;
+
+    const resetWithdrawQty = () => {
+        if (withdrawInput) {
+            setWithdrawQtyNonDisplay(undefined);
+            withdrawInput.value = '';
+        }
+    };
+
+    useEffect(() => {
+        resetWithdrawQty();
+    }, [selectedToken.address]);
+
     const withdrawFn = async () => {
-        await withdraw(withdrawQty);
+        if (withdrawQtyNonDisplay) await withdraw(withdrawQtyNonDisplay);
     };
 
     const transferAddressOrNull = isSendToAddressChecked ? (
@@ -281,7 +373,7 @@ export default function Withdraw(props: PortfolioWithdrawProps) {
 
     const resolvedAddressOrNull =
         isSendToAddressChecked && isResolvedAddressValid && isResolvedAddressDifferent ? (
-            <div className={styles.info_text}>
+            <div className={styles.info_text_non_clickable}>
                 Resolved Destination Address:
                 <div className={styles.hex_address}>{resolvedAddress}</div>
             </div>
@@ -289,7 +381,7 @@ export default function Withdraw(props: PortfolioWithdrawProps) {
 
     const secondaryEnsOrNull =
         isSendToAddressChecked && secondaryEnsName ? (
-            <div className={styles.info_text}>
+            <div className={styles.info_text_non_clickable}>
                 Destination ENS Address: {secondaryEnsName}
                 {/* <div className={styles.hex_address}>{secondaryEnsName}</div> */}
             </div>
@@ -309,27 +401,47 @@ export default function Withdraw(props: PortfolioWithdrawProps) {
         </span>
     );
 
+    const handleBalanceClick = () => {
+        if (isTokenDexBalanceGreaterThanZero) {
+            setWithdrawQtyNonDisplay(tokenDexBalance);
+
+            if (withdrawInput && tokenExchangeDepositsDisplay)
+                withdrawInput.value = tokenExchangeDepositsDisplay;
+        }
+    };
+
     return (
         <div className={styles.deposit_container}>
-            <div className={styles.info_text}>Withdraw deposited collateral to your wallet:</div>
+            <div className={styles.info_text_non_clickable}>
+                Withdraw deposited collateral to your wallet:
+            </div>
             {toggleContent}
             {transferAddressOrNull}
             <WithdrawCurrencySelector
                 fieldId='exchange-balance-withdraw'
                 onClick={() => openTokenModal()}
                 selectedToken={selectedToken}
-                setWithdrawQty={setWithdrawQty}
+                setWithdrawQty={setWithdrawQtyNonDisplay}
                 isSendToAddressChecked={isSendToAddressChecked}
                 setIsSendToAddressChecked={setIsSendToAddressChecked}
             />
-            <div className={styles.info_text}>
-                Your Exchange Balance ({selectedToken.symbol}): {tokenDexBalance}
+            <div
+                onClick={handleBalanceClick}
+                className={
+                    isTokenDexBalanceGreaterThanZero
+                        ? styles.info_text_clickable
+                        : styles.info_text_non_clickable
+                }
+            >
+                Your Exchange Balance ({selectedToken.symbol}): {tokenDexBalanceTruncated || '0.0'}
             </div>
-            <div className={styles.info_text}>
+            <div className={styles.info_text_non_clickable}>
                 {isSendToAddressChecked
                     ? `Destination Wallet Balance (${selectedToken.symbol}): `
                     : `Your Wallet Balance (${selectedToken.symbol}): `}
-                {isSendToAddressChecked ? sendToAddressWalletBalance : tokenWalletBalance}
+                {isSendToAddressChecked
+                    ? sendToAddressBalanceTruncated || '0.0'
+                    : tokenWalletBalanceTruncated || '0.0'}
             </div>
             {resolvedAddressOrNull}
             {secondaryEnsOrNull}

@@ -1,6 +1,6 @@
 import styles from './CurrencySelector.module.css';
 import CurrencyQuantity from '../CurrencyQuantity/CurrencyQuantity';
-import { RiArrowDownSLine, RiListCheck } from 'react-icons/ri';
+import { RiArrowDownSLine } from 'react-icons/ri';
 // import Toggle from '../../Global/Toggle/Toggle';
 import { useState, ChangeEvent, Dispatch, SetStateAction, useEffect } from 'react';
 import { TokenIF, TokenPairIF } from '../../../utils/interfaces/exports';
@@ -14,7 +14,7 @@ import IconWithTooltip from '../../Global/IconWithTooltip/IconWithTooltip';
 import NoTokenIcon from '../../Global/NoTokenIcon/NoTokenIcon';
 
 interface CurrencySelectorProps {
-    isUserLoggedIn: boolean;
+    isUserLoggedIn: boolean | undefined;
     tokenPair: TokenPairIF;
     tokensBank: Array<TokenIF>;
     setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
@@ -50,6 +50,8 @@ interface CurrencySelectorProps {
     activeTokenListsChanged: boolean;
     indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
     gasPriceInGwei: number | undefined;
+
+    isSwapCopied?: boolean;
 }
 
 export default function CurrencySelector(props: CurrencySelectorProps) {
@@ -73,6 +75,7 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
         tokenBBalance,
         tokenADexBalance,
         tokenBDexBalance,
+        isSwapCopied,
         // userHasEnteredAmount,
         isSellTokenEth,
         tokenAQtyCoveredBySurplusBalance,
@@ -129,16 +132,16 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
 
     const tokenToUpdate = isSellTokenSelector ? 'A' : 'B';
 
-    const footer = (
-        <div
-            className={styles.manage_token_list_container}
-            onClick={() => setShowManageTokenListContent(true)}
-        >
-            <RiListCheck size={20} color='#CDC1FF' />
-            Manage Token List
-        </div>
-    );
-    const footerOrNull = !showManageTokenListContent ? footer : null;
+    // const footer = (
+    //     <div
+    //         className={styles.manage_token_list_container}
+    //         onClick={() => setShowManageTokenListContent(true)}
+    //     >
+    //         <RiListCheck size={20} color='#CDC1FF' />
+    //         Manage Token List
+    //     </div>
+    // );
+    // const footerOrNull = !showManageTokenListContent ? footer : null;
 
     const tokenSelectModalOrNull = isModalOpen ? (
         <Modal
@@ -147,7 +150,7 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
             centeredTitle
             handleBack={() => setShowManageTokenListContent(false)}
             showBackButton={showManageTokenListContent}
-            footer={footerOrNull}
+            // footer={footerOrNull}
         >
             <TokenSelectContainer
                 tokenPair={tokenPair}
@@ -270,7 +273,10 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                         }}
                     />
                 </div>
-                <div className={styles.token_select} onClick={openModal}>
+                <div
+                    className={`${styles.token_select} ${isSwapCopied && styles.pulse_animation}`}
+                    onClick={openModal}
+                >
                     {thisToken.logoURI ? (
                         <img
                             className={styles.token_list_img}
@@ -297,7 +303,7 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                                 isWithdrawFromDexChecked &&
                                 tokenASurplusMinusTokenARemainderNum &&
                                 tokenASurplusMinusTokenARemainderNum < 0)
-                                ? '#ebebff'
+                                ? 'var(--text-highlight)'
                                 : '#555555',
                     }}
                 >
@@ -326,7 +332,7 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                                             isWithdrawFromDexChecked &&
                                             tokenASurplusMinusTokenARemainderNum &&
                                             tokenASurplusMinusTokenARemainderNum < 0)
-                                            ? '#ebebff'
+                                            ? 'var(--text-highlight)'
                                             : '#555555'
                                     }
                                 />
@@ -336,6 +342,7 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                                 <div
                                     style={{
                                         color: isSellTokenSelector ? '#f6385b' : '#15be67',
+                                        fontSize: '9px',
                                     }}
                                 >
                                     {isSellTokenSelector
@@ -358,7 +365,7 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                                     (isSellTokenSelector && !isWithdrawFromDexChecked) ||
                                     (!isSellTokenSelector && !isSaveAsDexSurplusChecked)
                                         ? '#555555'
-                                        : '#ebebff',
+                                        : 'var(--text-highlight)',
                             }}
                             onClick={() => {
                                 if (props.sellToken) {
@@ -382,7 +389,12 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                                         : null
                                 }`}
                             >
-                                <img src={ambientLogo} width='20' alt='surplus' color='#ebebff' />
+                                <img
+                                    src={ambientLogo}
+                                    width='20'
+                                    alt='surplus'
+                                    color='var(--text-highlight)'
+                                />
                             </div>
 
                             <div className={styles.balance_column}>
@@ -390,6 +402,7 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                                 <div
                                     style={{
                                         color: isSellTokenSelector ? '#f6385b' : '#15be67',
+                                        fontSize: '9px',
                                     }}
                                 >
                                     {isSellTokenSelector

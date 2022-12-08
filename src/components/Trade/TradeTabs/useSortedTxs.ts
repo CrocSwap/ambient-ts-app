@@ -15,6 +15,12 @@ export const useSortedTransactions = (
     const sortByUpdateTime = (unsortedData: ITransaction[]) =>
         [...unsortedData].sort((a, b) => b.time - a.time);
     // sort by wallet or ens address
+    const sortByPool = (unsortedData: ITransaction[]) =>
+        [...unsortedData].sort((a, b) => {
+            const poolA = a.base + a.quote;
+            const poolB = b.base + b.quote;
+            return poolA.localeCompare(poolB);
+        });
     const sortByWallet = (unsortedData: ITransaction[]) =>
         [...unsortedData].sort((a, b) => {
             const usernameA: string = a.ensResolution ?? a.user;
@@ -58,13 +64,18 @@ export const useSortedTransactions = (
             case 'wallet':
                 sortedData = sortByWallet(data);
                 break;
+            case 'pool':
+                sortedData = sortByPool(data);
+                break;
             case 'price':
                 sortedData = sortByPrice(data);
                 break;
             case 'value':
                 sortedData = sortByValue(data);
                 break;
-            case 'lastUpdate':
+            case 'time':
+                sortedData = sortByUpdateTime(data);
+                break;
             default:
                 return sortByUpdateTime(data);
         }

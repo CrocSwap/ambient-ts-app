@@ -16,23 +16,27 @@
 }
 
 .option_button {
+    background: var(--dark3);
+    width: 100%;
+    border: none;
+    outline: none;
     display: flex;
-    justify-content: center;
+    /* justify-content: center; */
     align-items: center;
-    border-radius: 6.25rem;
-    cursor: pointer;
-    font-size: var(--body-size);
-    line-height: var(--body-lh);
-    color: var(--text-grey-light);
+    /* border: 1px solid #242f3f; */
+    box-shadow: 2px 1000px 1px var(--dark3) inset;
+    transition: box-shadow var(--animation-speed) ease-in-out;
+
     height: 23px;
     padding: 5px 8px;
     text-decoration: none;
-
-    background: #0d1117;
-    border: 1px solid #242f3f;
-    box-shadow: 2px 1000px 1px var(--dark3) inset;
-    transition: box-shadow var(--animation-speed) ease-in-out;
+    border-radius: 6.25rem;
     cursor: pointer;
+    font-size: 10px;
+    /* line-height: var(--body-lh); */
+    color: var(--text-grey-light);
+
+  
 }
 
 .reposition_button {
@@ -131,7 +135,7 @@
   /* width: 100%; */
   /* height: 400px; */
   position: absolute;
-  background: #171d27;
+  background: var(--dark3);
 
 
   border-radius: 4px;
@@ -149,7 +153,7 @@
     left: 98%;
     top:0;
     border: 10px solid transparent;
-    border-left: 10px solid #171d27;
+    border-left: 10px solid var(--dark3);
 }
 
 .dropdown_wrapper {

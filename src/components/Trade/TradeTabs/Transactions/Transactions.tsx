@@ -9,6 +9,7 @@ import {
     graphData,
     ITransaction,
     setChangesByPool,
+    setDataLoadingStatus,
 } from '../../../../utils/state/graphDataSlice';
 import { TokenIF } from '../../../../utils/interfaces/TokenIF';
 import { useAppDispatch, useAppSelector } from '../../../../utils/hooks/reduxToolkit';
@@ -23,6 +24,8 @@ import TransactionHeader from './TransactionsTable/TransactionHeader';
 import TransactionRow from './TransactionsTable/TransactionRow';
 // import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
 import { useSortedTransactions } from '../useSortedTxs';
+import useDebounce from '../../../../App/hooks/useDebounce';
+import NoTableData from '../NoTableData/NoTableData';
 // import TransactionAccordions from './TransactionAccordions/TransactionAccordions';
 interface TransactionsProps {
     importedTokens: TokenIF[];
@@ -38,31 +41,32 @@ interface TransactionsProps {
     blockExplorer?: string;
     currentTxActiveInTransactions: string;
     setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
+    setIsShowAllEnabled?: Dispatch<SetStateAction<boolean>>;
     account: string;
     expandTradeTable: boolean;
-
+    setIsCandleSelected?: Dispatch<SetStateAction<boolean | undefined>>;
     isCandleSelected: boolean | undefined;
     filter?: CandleData | undefined;
-
+    changeState?: (isOpen: boolean | undefined, candleData: CandleData | undefined) => void;
     openGlobalModal: (content: React.ReactNode) => void;
     closeGlobalModal: () => void;
+    handlePulseAnimation?: (type: string) => void;
     showSidebar: boolean;
-
     isOnPortfolioPage: boolean;
-
+    setSelectedDate?: Dispatch<Date | undefined>;
     // setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
 }
 export default function Transactions(props: TransactionsProps) {
     const {
-        importedTokens,
+        // importedTokens,
         isTokenABase,
         activeAccountTransactionData,
-        // connectedAccountActive,
+        connectedAccountActive,
         isShowAllEnabled,
         account,
         changesInSelectedCandle,
         graphData,
-
+        tokenMap,
         chainData,
         blockExplorer,
         currentTxActiveInTransactions,
@@ -74,11 +78,25 @@ export default function Transactions(props: TransactionsProps) {
         openGlobalModal,
         closeGlobalModal,
         isOnPortfolioPage,
+        handlePulseAnimation,
+        setIsShowAllEnabled,
+        // setIsCandleSelected,
+        changeState,
+        setSelectedDate,
         // setExpandTradeTable,
     } = props;
 
+    const dispatch = useAppDispatch();
+
+    // allow a local environment variable to be defined in [app_repo]/.env.local to turn off connections to the cache server
+    const isServerEnabled =
+        process.env.REACT_APP_CACHE_SERVER_IS_ENABLED !== undefined
+            ? process.env.REACT_APP_CACHE_SERVER_IS_ENABLED === 'true'
+            : true;
+
     const changesByUser = graphData?.changesByUser?.changes;
     const changesByPool = graphData?.changesByPool?.changes;
+    const dataLoadingStatus = graphData?.dataLoadingStatus;
 
     const tradeData = useAppSelector((state) => state.tradeData);
 
@@ -97,6 +115,14 @@ export default function Transactions(props: TransactionsProps) {
         }
     });
 
+    // const changesByUserWithoutFills = changesByUser.filter((tx) => {
+    //     if (tx.changeType !== 'fill') {
+    //         return true;
+    //     } else {
+    //         return false;
+    //     }
+    // });
+
     const changesByPoolWithoutFills = changesByPool.filter((tx) => {
         if (
             tx.base.toLowerCase() === baseTokenAddressLowerCase &&
@@ -109,32 +135,31 @@ export default function Transactions(props: TransactionsProps) {
         }
     });
 
-    // console.log(changesByPool);
-
-    const dataReceivedByUser = graphData?.changesByUser?.dataReceived;
-    const dataReceivedByPool = graphData?.changesByPool?.dataReceived;
-
     const [transactionData, setTransactionData] = useState(
         isOnPortfolioPage ? activeAccountTransactionData || [] : changesByPoolWithoutFills,
     );
 
-    // console.log({ transactionData });
+    const isConnectedUserTxDataLoading = dataLoadingStatus?.isConnectedUserTxDataLoading;
+    const isLookupUserTxDataLoading = dataLoadingStatus?.isLookupUserTxDataLoading;
+    const isPoolTxDataLoading = dataLoadingStatus?.isPoolTxDataLoading;
 
-    useEffect(() => {
-        // console.log({ isOnPortfolioPage });
-        if (isOnPortfolioPage && activeAccountTransactionData) {
-            // console.log({ activeAccountTransactionData });
-            setTransactionData(activeAccountTransactionData);
-            setDataReceived(true);
-        }
-    }, [isOnPortfolioPage, activeAccountTransactionData]);
+    const isTxDataLoadingForPortfolio =
+        (connectedAccountActive && isConnectedUserTxDataLoading) ||
+        (!connectedAccountActive && isLookupUserTxDataLoading);
 
-    const [dataReceived, setDataReceived] = useState(false);
-    // todoJr: Finish this loading logic
-    const [isDataLoading, setIsDataLoading] = useState(true);
-    const [dataToDisplay, setDataToDisplay] = useState(false);
+    const isTxDataLoadingForTradeTable =
+        !isCandleSelected &&
+        ((isShowAllEnabled && isPoolTxDataLoading) ||
+            (!isShowAllEnabled && isConnectedUserTxDataLoading));
 
-    // console.log({ transactionData });
+    const shouldDisplayLoadingAnimation =
+        (isOnPortfolioPage && isTxDataLoadingForPortfolio) ||
+        (!isOnPortfolioPage && isTxDataLoadingForTradeTable);
+
+    const shouldDisplayNoTableData = !transactionData.length;
+
+    const debouncedShouldDisplayLoadingAnimation = useDebounce(shouldDisplayLoadingAnimation, 2000); // debounce 1 second
+    const debouncedShouldDisplayNoTableData = useDebounce(shouldDisplayNoTableData, 1000); // debounce 1 second
 
     const [debouncedIsShowAllEnabled, setDebouncedIsShowAllEnabled] = useState(false);
 
@@ -144,73 +169,56 @@ export default function Transactions(props: TransactionsProps) {
             isShowAllEnabled ? changesByPoolWithoutFills : transactionData,
         );
 
-    // check to see if data is received
-    // if it is, set data is loading to false
-    // check to see if we have items to display
-    // if we do, set data to display to true
-    // else set data to display to false
-    // else set data is loading to true
-
-    // 0x0000000000000000000000000000000000000000
-    // 0xdc31Ee1784292379Fbb2964b3B9C4124D8F89C60
-
-    function handleDataReceived() {
-        if (transactionData.length) {
-            setIsDataLoading(false);
-            setDataToDisplay(true);
-        } else {
-            setDataToDisplay(false);
-        }
-    }
     function handleUserSelected() {
         // console.log({ changesByUserMatchingSelectedTokens });
-        if (!isOnPortfolioPage) {
-            setTransactionData(changesByUserMatchingSelectedTokens);
-            setDataReceived(dataReceivedByUser);
-        }
+        setTransactionData(changesByUserMatchingSelectedTokens);
+        // setDataToDisplay(changesByUserMatchingSelectedTokens?.length > 0);
     }
     function handlePoolSelected() {
         if (!isOnPortfolioPage) {
             // console.log({ changesByPoolWithoutFills });
             setTransactionData(changesByPoolWithoutFills);
-            setDataReceived(dataReceivedByPool);
+            // setDataToDisplay(changesByPoolWithoutFills?.length > 0);
         }
     }
-    // console.log({ isCandleSelected });
+
     useEffect(() => {
-        // console.log({ changesInSelectedCandle });
-        isCandleSelected && changesInSelectedCandle
-            ? setTransactionData(changesInSelectedCandle)
-            : // ? setTransactionData(
-            //       changesByPool.filter((data) => {
-            //           filter?.allSwaps?.includes(data.id);
-            //       }),
-            //   )
-            !isShowAllEnabled
-            ? handleUserSelected()
-            : handlePoolSelected();
+        if (isOnPortfolioPage && activeAccountTransactionData) {
+            setTransactionData(activeAccountTransactionData);
+            // setDataToDisplay(true);
+        }
+    }, [isOnPortfolioPage, JSON.stringify(activeAccountTransactionData)]);
+
+    // update tx table content when candle selected or underlying data changes
+    useEffect(() => {
+        if (!isOnPortfolioPage) {
+            if (isCandleSelected) {
+                if (changesInSelectedCandle !== undefined) {
+                    setTransactionData(changesInSelectedCandle);
+                    dispatch(
+                        setDataLoadingStatus({ datasetName: 'candleData', loadingStatus: false }),
+                    );
+                }
+                // setIsDataLoading(false);
+            } else if (isShowAllEnabled) {
+                handlePoolSelected();
+            } else {
+                handleUserSelected();
+            }
+        }
     }, [
+        isOnPortfolioPage,
         isShowAllEnabled,
         isCandleSelected,
         filter,
-        changesInSelectedCandle,
+        JSON.stringify(changesInSelectedCandle),
         JSON.stringify(changesByUserMatchingSelectedTokens),
         JSON.stringify(changesByPoolWithoutFills),
     ]);
 
-    useEffect(() => {
-        // console.log({ dataReceived });
-        // console.log({ isDataLoading });
-        dataReceived ? handleDataReceived() : setIsDataLoading(true);
-    }, [graphData, transactionData, dataReceived]);
-
-    // const isDenomBase = tradeData.isDenomBase;
-
     const baseTokenAddress = tradeData.baseToken.address;
     const quoteTokenAddress = tradeData.quoteToken.address;
-    // console.log(changesByPool);
 
-    // const [transactions] = useState(transactionData);
     const [currentPage, setCurrentPage] = useState(1);
     const [transactionsPerPage] = useState(20);
 
@@ -226,21 +234,12 @@ export default function Transactions(props: TransactionsProps) {
         indexOfLastTransaction,
     );
 
-    // console.log({ expandTradeTable });
-    // console.log({ currentPage });
-    // console.log({ indexOfLastTransaction });
-    // console.log({ indexOfFirstTransaction });
-    // console.log({ currentTransactions });
-    // console.log({ transactionData });
-
     // Change page
     const paginate = (pageNumber: number) => {
         setCurrentPage(pageNumber);
     };
 
     const usePaginateDataOrNull = expandTradeTable ? currentTransactions : sortedTransactions;
-
-    // console.log({ transactionData });
 
     // wait 5 seconds to open a subscription to pool changes
     useEffect(() => {
@@ -249,9 +248,9 @@ export default function Transactions(props: TransactionsProps) {
     }, [isShowAllEnabled]);
 
     useEffect(() => {
-        if (isShowAllEnabled) {
+        if (isServerEnabled && isShowAllEnabled) {
             fetchPoolRecentChanges({
-                importedTokens: importedTokens,
+                tokensOnActiveLists: tokenMap,
                 base: baseTokenAddress,
                 quote: quoteTokenAddress,
                 poolIdx: chainData.poolIndex,
@@ -272,10 +271,13 @@ export default function Transactions(props: TransactionsProps) {
                             }),
                         );
                     }
+                    dispatch(
+                        setDataLoadingStatus({ datasetName: 'poolTxData', loadingStatus: false }),
+                    );
                 })
                 .catch(console.log);
         }
-    }, [isShowAllEnabled]);
+    }, [isServerEnabled, isShowAllEnabled]);
 
     const wssGraphCacheServerDomain = 'wss://809821320828123.de:5000';
 
@@ -311,7 +313,8 @@ export default function Transactions(props: TransactionsProps) {
                 // repeat fetch with the interval of 30 seconds
                 const timerId = setInterval(() => {
                     fetchPoolRecentChanges({
-                        importedTokens: importedTokens,
+                        tokensOnActiveLists: tokenMap,
+
                         base: baseTokenAddress,
                         quote: quoteTokenAddress,
                         poolIdx: chainData.poolIndex,
@@ -342,10 +345,8 @@ export default function Transactions(props: TransactionsProps) {
             shouldReconnect: () => true,
         },
         // only connect if user is viewing pool changes
-        debouncedIsShowAllEnabled,
+        isServerEnabled && debouncedIsShowAllEnabled,
     );
-
-    const dispatch = useAppDispatch();
 
     useEffect(() => {
         if (lastPoolChangeMessage !== null) {
@@ -357,15 +358,15 @@ export default function Transactions(props: TransactionsProps) {
 
     // const [expanded, setExpanded] = useState<false | number>(false);
 
-    const sidebarOpen = false;
+    // const sidebarOpen = false;
 
     const ipadView = useMediaQuery('(max-width: 480px)');
     const desktopView = useMediaQuery('(max-width: 768px)');
+    const showColumns = useMediaQuery('(max-width: 1440px)');
+    const view2 = useMediaQuery('(max-width: 1568px)');
 
-    const showColumns = sidebarOpen || desktopView;
-
-    // const quoteTokenSymbol = tradeData.quoteToken?.symbol;
-    // const baseTokenSymbol = tradeData.baseToken?.symbol;
+    const quoteTokenSymbol = tradeData.quoteToken?.symbol;
+    const baseTokenSymbol = tradeData.baseToken?.symbol;
 
     // const baseTokenCharacter = baseTokenSymbol ? getUnicodeCharacter(baseTokenSymbol) : '';
     // const quoteTokenCharacter = quoteTokenSymbol ? getUnicodeCharacter(quoteTokenSymbol) : '';
@@ -384,28 +385,31 @@ export default function Transactions(props: TransactionsProps) {
             <p>Type</p>
         </>
     );
-    const tokens = <></>;
-    // const tokens = (
-    //     <>
-    //         <p>{`${baseTokenSymbol} ( ${baseTokenCharacter} )`}</p>
-    //         <p>{`${quoteTokenSymbol} ( ${quoteTokenCharacter} )`}</p>
-    //     </>
-    // );
+
     const headerColumns = [
         {
-            name: '',
+            name: 'Time',
             className: '',
-            show: isOnPortfolioPage,
-            slug: 'token_images',
-            sortable: false,
+            show: !showColumns,
+            // && !showSidebar
+            //   &&  !isOnPortfolioPage,
+            slug: 'time',
+            sortable: true,
         },
         {
-            name: 'Pool',
+            name: 'Pair',
             className: '',
-            show: isOnPortfolioPage && !showSidebar,
+            show: isOnPortfolioPage && !desktopView,
             slug: 'pool',
-            sortable: false,
+            sortable: true,
         },
+        // {
+        //     name: 'Pool',
+        //     className: '',
+        //     show: isOnPortfolioPage && !showSidebar,
+        //     slug: 'pool',
+        //     sortable: false,
+        // },
         {
             name: 'ID',
 
@@ -416,7 +420,7 @@ export default function Transactions(props: TransactionsProps) {
         {
             name: 'Wallet',
 
-            show: !showColumns,
+            show: !showColumns && !isOnPortfolioPage,
             slug: 'wallet',
             sortable: isShowAllEnabled,
         },
@@ -426,6 +430,7 @@ export default function Transactions(props: TransactionsProps) {
             show: showColumns,
             slug: 'walletid',
             sortable: false,
+            alignCenter: true,
         },
         {
             name: 'Price',
@@ -433,6 +438,7 @@ export default function Transactions(props: TransactionsProps) {
             show: !ipadView,
             slug: 'price',
             sortable: false,
+            alignRight: true,
         },
         {
             name: 'Side',
@@ -440,6 +446,7 @@ export default function Transactions(props: TransactionsProps) {
             show: !showColumns,
             slug: 'side',
             sortable: false,
+            alignCenter: true,
         },
         {
             name: 'Type',
@@ -447,6 +454,7 @@ export default function Transactions(props: TransactionsProps) {
             show: !showColumns,
             slug: 'type',
             sortable: false,
+            alignCenter: true,
         },
         {
             name: sideType,
@@ -454,6 +462,7 @@ export default function Transactions(props: TransactionsProps) {
             show: showColumns && !ipadView,
             slug: 'sidetype',
             sortable: false,
+            alignCenter: true,
         },
         {
             name: 'Value (USD)',
@@ -461,27 +470,43 @@ export default function Transactions(props: TransactionsProps) {
             show: true,
             slug: 'value',
             sortable: true,
+            alignRight: true,
         },
-        // {
-        //     name: isOnPortfolioPage ? 'Qty A' : `${baseTokenSymbol}`,
-
-        //     show: !showColumns,
-        //     slug: baseTokenSymbol,
-        //     sortable: false,
-        // },
-        // {
-        //     name: isOnPortfolioPage ? 'Qty B' : `${quoteTokenSymbol}`,
-
-        //     show: !showColumns,
-        //     slug: quoteTokenSymbol,
-        //     sortable: false,
-        // },
         {
-            name: tokens,
+            name: isOnPortfolioPage ? <></> : `${baseTokenSymbol}`,
+            // name: isOnPortfolioPage ? 'Qty A' : `${baseTokenSymbol}`,
 
-            show: true,
+            show: !showColumns,
+            slug: baseTokenSymbol,
+            sortable: false,
+            alignRight: true,
+        },
+        {
+            name: isOnPortfolioPage ? <></> : `${quoteTokenSymbol}`,
+            // name: isOnPortfolioPage ? 'Qty B' : `${quoteTokenSymbol}`,
+
+            show: !showColumns,
+            slug: quoteTokenSymbol,
+            sortable: false,
+            alignRight: true,
+        },
+        {
+            name: 'Tokens',
+
+            show: !isOnPortfolioPage && showColumns,
+
             slug: 'tokens',
             sortable: false,
+            alignRight: true,
+        },
+        {
+            name: <></>,
+
+            show: isOnPortfolioPage && showColumns,
+
+            slug: 'tokens',
+            sortable: false,
+            alignRight: true,
         },
 
         {
@@ -535,25 +560,42 @@ export default function Transactions(props: TransactionsProps) {
             isShowAllEnabled={isShowAllEnabled}
             ipadView={ipadView}
             showColumns={showColumns}
+            view2={view2}
+            desktopView={desktopView}
             showSidebar={showSidebar}
             blockExplorer={blockExplorer}
             closeGlobalModal={closeGlobalModal}
             isOnPortfolioPage={isOnPortfolioPage}
+            handlePulseAnimation={handlePulseAnimation}
         />
     ));
 
-    const noData = <div className={styles.no_data}>No Data to Display</div>;
-    const transactionDataOrNull = dataToDisplay ? rowItemContent : noData;
+    const transactionDataOrNull = debouncedShouldDisplayNoTableData ? (
+        <NoTableData
+            isShowAllEnabled={isShowAllEnabled}
+            setIsShowAllEnabled={setIsShowAllEnabled}
+            setSelectedDate={setSelectedDate}
+            // setIsCandleSelected={setIsCandleSelected}
+            changeState={changeState}
+            type='transactions'
+        />
+    ) : (
+        rowItemContent
+    );
 
     const expandStyle = expandTradeTable ? 'calc(100vh - 10rem)' : '250px';
 
     const portfolioPageStyle = props.isOnPortfolioPage ? 'calc(100vh - 19.5rem)' : expandStyle;
 
     return (
-        <main className={styles.main_list_container} style={{ height: portfolioPageStyle }}>
+        <section className={styles.main_list_container} style={{ height: portfolioPageStyle }}>
             {headerColumnsDisplay}
-            {isDataLoading ? <TransactionsSkeletons /> : transactionDataOrNull}
+            {debouncedShouldDisplayLoadingAnimation ? (
+                <TransactionsSkeletons />
+            ) : (
+                transactionDataOrNull
+            )}
             {footerDisplay}
-        </main>
+        </section>
     );
 }

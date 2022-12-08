@@ -12,7 +12,6 @@ import ExtraInfo from '../../components/Swap/ExtraInfo/ExtraInfo';
 import ContentContainer from '../../components/Global/ContentContainer/ContentContainer';
 import SwapHeader from '../../components/Swap/SwapHeader/SwapHeader';
 import SwapButton from '../../components/Swap/SwapButton/SwapButton';
-import DenominationSwitch from '../../components/Swap/DenominationSwitch/DenominationSwitch';
 import DividerDark from '../../components/Global/DividerDark/DividerDark';
 import Modal from '../../components/Global/Modal/Modal';
 import RelativeModal from '../../components/Global/RelativeModal/RelativeModal';
@@ -40,7 +39,7 @@ import { FiCopy } from 'react-icons/fi';
 
 interface SwapPropsIF {
     crocEnv: CrocEnv | undefined;
-    isUserLoggedIn: boolean;
+    isUserLoggedIn: boolean | undefined;
     account: string | null;
     importedTokens: Array<TokenIF>;
     setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
@@ -67,10 +66,12 @@ interface SwapPropsIF {
     indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
     openModalWallet: () => void;
     isInitialized: boolean;
-    poolExists: boolean | null;
+    poolExists: boolean | undefined;
     setTokenPairLocal?: Dispatch<SetStateAction<string[] | null>>;
 
     openGlobalModal: (content: React.ReactNode) => void;
+
+    isSwapCopied?: boolean;
 }
 
 export default function Swap(props: SwapPropsIF) {
@@ -103,6 +104,7 @@ export default function Swap(props: SwapPropsIF) {
         isInitialized,
         poolExists,
         setTokenPairLocal,
+        isSwapCopied,
     } = props;
 
     const [isModalOpen, openModal, closeModal] = useModal();
@@ -136,7 +138,13 @@ export default function Swap(props: SwapPropsIF) {
         ? parseFloat(swapSlippage.stable.value)
         : parseFloat(swapSlippage.volatile.value);
 
-    const loginButton = <Button title='Connect Wallet' action={openModalWallet} />;
+    const loginButton = (
+        <button onClick={openModalWallet} className={styles.authenticate_button}>
+            Connect Wallet
+        </button>
+    );
+
+    // <Button title='Connect Wallet' action={openModalWallet} />;
 
     const [isApprovalPending, setIsApprovalPending] = useState(false);
 
@@ -213,16 +221,6 @@ export default function Swap(props: SwapPropsIF) {
         setTxErrorCode(0);
         setTxErrorMessage('');
     };
-
-    // useEffect(() =>
-    //     if (poolExists === null) {
-    //         setSwapAllowed(false);
-    //         setSwapButtonErrorMessage('...');
-    //     } else if (poolExists === false) {
-    //         setSwapAllowed(false);
-    //         setSwapButtonErrorMessage('Pool Not Initialized');
-    //     }
-    // }, [poolExists]);
 
     const [priceImpactExceedsTolerance, setPriceImpactExceedsTolerance] = useState(false);
 
@@ -420,7 +418,7 @@ export default function Swap(props: SwapPropsIF) {
             const gasPriceInDollarsNum = gasPriceInGwei * 79079 * 1e-9 * ethMainnetUsdPrice;
 
             setSwapGasPriceinDollars(
-                '~$' +
+                '$' +
                     gasPriceInDollarsNum.toLocaleString(undefined, {
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 2,
@@ -434,15 +432,6 @@ export default function Swap(props: SwapPropsIF) {
     const swapContainerStyle = pathname.startsWith('/swap') ? styles.swap_page_container : null;
 
     const swapPageStyle = pathname.startsWith('/swap') ? styles.swap_page : null;
-
-    const [connectButtonDelayElapsed, setConnectButtonDelayElapsed] = useState(false);
-
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            setConnectButtonDelayElapsed(true);
-        }, 3000);
-        return () => clearTimeout(timer);
-    }, []);
 
     // -------------------------Swap SHARE FUNCTIONALITY---------------------------
     const [shareOptions, setShareOptions] = useState([
@@ -465,8 +454,43 @@ export default function Swap(props: SwapPropsIF) {
         setShareOptions(modifiedShareOptions);
     };
 
+    const swapLink =
+        'https://ambient-finance.netlify.app/swap/chain=0x5&tokenA=0x0000000000000000000000000000000000000000&tokenB=0xD87Ba7A50B2E7E660f678A895E4B72E7CB4CCd9C';
+
+    const shareIconsContent = (
+        <section>
+            <a
+                target='_blank'
+                rel='noreferrer'
+                href={`https://telegram.me/share/url?url=${swapLink}`}
+                className={styles.share_icon}
+            >
+                Telegram{' '}
+            </a>
+            <a
+                target='_blank'
+                rel='noreferrer'
+                href={`https://twitter.com/intent/tweet?text=${swapLink}`}
+                className={styles.share_icon}
+            >
+                Twitter{' '}
+            </a>
+            <a
+                target='_blank'
+                rel='noreferrer'
+                href={`https://www.facebook.com/sharer/sharer.php?u=${swapLink}`}
+                className={styles.share_icon}
+            >
+                Facebook{' '}
+            </a>
+            <a target='_blank' rel='noreferrer' href='' className={styles.share_icon}>
+                Discord{' '}
+            </a>
+        </section>
+    );
     const shareOptionsDisplay = (
         <div className={styles.option_control_container}>
+            {shareIconsContent}
             <div className={styles.options_control_display_container}>
                 <p className={styles.control_title}>Options</p>
                 <ul>
@@ -491,8 +515,18 @@ export default function Swap(props: SwapPropsIF) {
 
     // -------------------------END OF Swap SHARE FUNCTIONALITY---------------------------
 
+    // const denominationSwitchOrNull = priceImpact ? (
+    //     <div className={styles.header_container}>
+    //         <DividerDark addMarginTop />
+    //         <DenominationSwitch />
+    //     </div>
+    // ) : null;
+
+    // console.log({ isUserLoggedIn });
+    // console.log({ swapAllowed });
+
     return (
-        <main data-testid={'swap'} className={swapPageStyle}>
+        <section data-testid={'swap'} className={swapPageStyle}>
             <div className={`${swapContainerStyle}`}>
                 <ContentContainer isOnTradeRoute={isOnTradeRoute}>
                     <SwapHeader
@@ -542,12 +576,10 @@ export default function Swap(props: SwapPropsIF) {
                             activeTokenListsChanged={activeTokenListsChanged}
                             indicateActiveTokenListsChanged={indicateActiveTokenListsChanged}
                             gasPriceInGwei={gasPriceInGwei}
+                            isSwapCopied={isSwapCopied}
                         />
                     </motion.div>
-                    <div className={styles.header_container}>
-                        <DividerDark addMarginTop />
-                        <DenominationSwitch />
-                    </div>
+                    {/* {denominationSwitchOrNull} */}
                     <ExtraInfo
                         tokenPair={{ dataTokenA: tokenA, dataTokenB: tokenB }}
                         priceImpact={priceImpact}
@@ -562,7 +594,7 @@ export default function Swap(props: SwapPropsIF) {
                         isDenomBase={tradeData.isDenomBase}
                         isOnTradeRoute={isOnTradeRoute}
                     />
-                    {isUserLoggedIn || !connectButtonDelayElapsed ? (
+                    {isUserLoggedIn === undefined ? null : isUserLoggedIn === true ? (
                         poolExists &&
                         !isTokenAAllowanceSufficient &&
                         parseFloat(tokenAInputQty) > 0 &&
@@ -582,6 +614,6 @@ export default function Swap(props: SwapPropsIF) {
                 {confirmSwapModalOrNull}
                 {relativeModalOrNull}
             </div>
-        </main>
+        </section>
     );
 }

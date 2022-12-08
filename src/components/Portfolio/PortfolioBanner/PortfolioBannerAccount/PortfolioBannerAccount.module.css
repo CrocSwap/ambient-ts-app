@@ -2,7 +2,7 @@
     display: flex;
     flex-direction: column;
     gap: 8px;
-    z-index: 5;
+    /* z-index: 5; */
     position:absolute;
     top: 5px;
     padding: 3px 1rem;
@@ -55,6 +55,8 @@
     flex-direction: row;
     align-items: center;
     gap: 8px;
+    cursor: pointer;
+  
 }
 .name div {
     cursor: pointer;
@@ -65,11 +67,12 @@
     font-weight: 300;
     font-size: 12px;
     line-height: 16px;
+    cursor: pointer;
     /* identical to box height */
 
     text-align: center;
 
     /* text/grey light */
 
-    color: #bdbdbd;
+    color: var(--text-grey-light);
 }

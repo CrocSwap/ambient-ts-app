@@ -1,15 +1,21 @@
 import styles from '../Transactions.module.css';
-import { ITransaction } from '../../../../../utils/state/graphDataSlice';
+import { ITransaction, setDataLoadingStatus } from '../../../../../utils/state/graphDataSlice';
 import { Dispatch, SetStateAction, useEffect } from 'react';
 import { useProcessTransaction } from '../../../../../utils/hooks/useProcessTransaction';
 import TransactionsMenu from '../../../../Global/Tabs/TableMenu/TableMenuComponents/TransactionsMenu';
 import { DefaultTooltip } from '../../../../Global/StyledTooltip/StyledTooltip';
+import { FiExternalLink } from 'react-icons/fi';
+
 import { NavLink } from 'react-router-dom';
 // import { AiOutlineDash } from 'react-icons/ai';
 import NoTokenIcon from '../../../../Global/NoTokenIcon/NoTokenIcon';
 import IconWithTooltip from '../../../../Global/IconWithTooltip/IconWithTooltip';
 import TransactionDetails from '../../../../Global/TransactionDetails/TransactionDetails';
 import { tradeData } from '../../../../../utils/state/tradeDataSlice';
+import { useAppDispatch } from '../../../../../utils/hooks/reduxToolkit';
+import moment from 'moment';
+import { ZERO_ADDRESS } from '../../../../../constants';
+// import { light } from '@material-ui/core/styles/createPalette';
 interface TransactionRowPropsIF {
     tx: ITransaction;
     tradeData: tradeData;
@@ -19,9 +25,12 @@ interface TransactionRowPropsIF {
     isShowAllEnabled: boolean;
     showSidebar: boolean;
     ipadView: boolean;
+    desktopView: boolean;
+    view2: boolean;
     showColumns: boolean;
     blockExplorer: string | undefined;
     closeGlobalModal: () => void;
+    handlePulseAnimation?: (type: string) => void;
 
     openGlobalModal: (content: React.ReactNode) => void;
     isOnPortfolioPage: boolean;
@@ -31,10 +40,12 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
         showColumns,
         tradeData,
         ipadView,
+        // view2,
         isTokenABase,
         tx,
-        showSidebar,
+        // showSidebar,
         blockExplorer,
+        handlePulseAnimation,
         // openGlobalModal,
         // closeGlobalModal,
         currentTxActiveInTransactions,
@@ -43,6 +54,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
         isOnPortfolioPage,
         closeGlobalModal,
         openGlobalModal,
+        desktopView,
     } = props;
 
     const {
@@ -81,6 +93,8 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
         // orderMatchesSelectedTokens,
     } = useProcessTransaction(tx);
 
+    const dispatch = useAppDispatch();
+
     const sideCharacter = isDenomBase ? baseTokenCharacter : quoteTokenCharacter;
 
     const sideTypeStyle = `${sideType}_style`;
@@ -88,8 +102,10 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
     const valueArrows = tx.entityType !== 'liqchange';
     // const valueArrows = sideType !== 'add' && sideType !== 'remove';
 
-    const positiveArrow = valueArrows && '↑';
-    const negativeArrow = valueArrows && '↓';
+    const positiveArrow = '↑';
+    // const positiveArrow = valueArrows && '↑';
+    const negativeArrow = '↓';
+    // const negativeArrow = valueArrows && '↓';
     // const baseFlowArrow =
     //     valueArrows && baseDisplay !== '0.00' ? (!isBaseFlowPositive ? '↑' : '↓') : null;
     // const quoteFlowArrow =
@@ -154,6 +170,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
             title={
                 <div onClick={handleOpenExplorer} style={{ cursor: 'pointer' }}>
                     {txHash}
+                    <FiExternalLink />
                 </div>
             }
             placement={'right'}
@@ -193,10 +210,18 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
             interactive
             title={
                 <div>
-                    <p>{ensName ? ensName : ownerId}</p>
                     <NavLink
+                        onClick={() => {
+                            dispatch(
+                                setDataLoadingStatus({
+                                    datasetName: 'lookupUserTxData',
+                                    loadingStatus: true,
+                                }),
+                            );
+                        }}
                         to={`/${isOwnerActiveAccount ? 'account' : ensName ? ensName : ownerId}`}
                     >
+                        <p>{ensName ? ensName : ownerId}</p>
                         View Account
                     </NavLink>
                 </div>
@@ -210,7 +235,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                 onClick={openDetailsModal}
                 data-label='wallet'
                 className={usernameStyle}
-                style={{ textTransform: 'lowercase' }}
+                style={userNameToDisplay !== 'You' ? { textTransform: 'lowercase' } : undefined}
             >
                 {userNameToDisplay}
             </li>
@@ -232,11 +257,11 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                 enterDelay={750}
                 leaveDelay={200}
             >
-                <img src={baseTokenLogo} alt='base token' width='15px' />
+                <img src={baseTokenLogo} alt='base token' width='20px' />
             </DefaultTooltip>
         ) : (
             <IconWithTooltip title={`${baseTokenSymbol}`} placement='bottom'>
-                <NoTokenIcon tokenInitial={tx.baseSymbol.charAt(0)} width='15px' />
+                <NoTokenIcon tokenInitial={tx.baseSymbol.charAt(0)} width='20px' />
             </IconWithTooltip>
         );
 
@@ -255,34 +280,172 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                 enterDelay={750}
                 leaveDelay={200}
             >
-                <img src={quoteTokenLogo} alt='quote token' width='15px' />
+                <img src={quoteTokenLogo} alt='quote token' width='20px' />
             </DefaultTooltip>
         ) : (
-            <NoTokenIcon tokenInitial={tx.quoteSymbol.charAt(0)} width='15px' />
+            <NoTokenIcon tokenInitial={tx.quoteSymbol.charAt(0)} width='20px' />
         );
 
-    const tokensTogether = (
-        <div
-            style={{
-                display: 'flex',
-                flexDirection: 'row',
-                alignItems: 'center',
-                gap: '4px',
-            }}
-        >
-            {baseTokenLogoComponent}
-            {quoteTokenLogoComponent}
-        </div>
-    );
+    // const tokensTogether = (
+    //     <div
+    //         style={{
+    //             display: 'flex',
+    //             flexDirection: 'row',
+    //             alignItems: 'center',
+    //             gap: '4px',
+    //         }}
+    //     >
+    //         {baseTokenLogoComponent}
+    //         {quoteTokenLogoComponent}
+    //     </div>
+    // );
 
     // portfolio page li element ---------------
-    const accountTokenImages = <li className={styles.token_images_account}>{tokensTogether}</li>;
+    // const accountTokenImages = <li className={styles.token_images_account}>{tokensTogether}</li>;
 
-    const poolName = (
-        <li className='base_color'>
-            {baseTokenSymbol} / {quoteTokenSymbol}
-        </li>
+    // const poolName = (
+    //     <li className='base_color'>
+    //         {baseTokenSymbol} / {quoteTokenSymbol}
+    //     </li>
+    // );
+
+    const pair =
+        tx.base !== ZERO_ADDRESS
+            ? [`${tx.baseSymbol}: ${tx.base}`, `${tx.quoteSymbol}: ${tx.quote}`]
+            : [`${tx.quoteSymbol}: ${tx.quote}`];
+    const tip = pair.join('\n');
+
+    const tokenPair = (
+        <DefaultTooltip
+            interactive
+            title={<div style={{ whiteSpace: 'pre-line' }}>{tip}</div>}
+            placement={'right'}
+            arrow
+            enterDelay={150}
+            leaveDelay={200}
+        >
+            <li className='base_color'>
+                {/* {tokensTogether} */}
+                <p>
+                    {' '}
+                    {baseTokenSymbol} / {quoteTokenSymbol}
+                </p>
+            </li>
+        </DefaultTooltip>
     );
+
+    // const fillTime = new Intl.DateTimeFormat('en-US', {
+    //     month: 'short',
+    //     day: 'numeric',
+    //     // hour12: false,
+    //     // hour: '2-digit',
+    //     // minute: '2-digit',
+    // }).format(tx.time * 1000);
+
+    // const txTimeInDays = moment(Date.now()).diff(tx.time * 1000, 'days');
+    // const txTimeInHours = moment(Date.now()).diff(tx.time * 1000, 'hours');
+
+    const elapsedTimeInSecondsNum = moment(Date.now()).diff(tx.time * 1000, 'seconds');
+
+    // const txTimeDisplay =
+    //     txTimeInDays === 0
+    //         ? 'Today'
+    //         : txTimeInDays === 1
+    //         ? '1 day ago'
+    //         : `${txTimeInDays} days ago`;
+
+    const elapsedTimeString =
+        elapsedTimeInSecondsNum !== undefined
+            ? elapsedTimeInSecondsNum < 60
+                ? '< 1 min. ago'
+                : elapsedTimeInSecondsNum < 120
+                ? '1 min. ago'
+                : elapsedTimeInSecondsNum < 3600
+                ? `${Math.floor(elapsedTimeInSecondsNum / 60)} min. ago`
+                : elapsedTimeInSecondsNum < 7200
+                ? '1 hour ago'
+                : elapsedTimeInSecondsNum < 86400
+                ? `${Math.floor(elapsedTimeInSecondsNum / 3600)} hrs. ago`
+                : elapsedTimeInSecondsNum < 172800
+                ? '1 day ago'
+                : `${Math.floor(elapsedTimeInSecondsNum / 86400)} days ago`
+            : 'Pending...';
+
+    const TxTimeWithTooltip = (
+        <DefaultTooltip
+            interactive
+            title={moment(tx.time * 1000).format('MM/DD/YYYY HH:mm')}
+            placement={'left'}
+            arrow
+            enterDelay={750}
+            leaveDelay={200}
+        >
+            <li onClick={openDetailsModal} style={{ textTransform: 'lowercase' }}>
+                <p className='base_color' style={{ fontFamily: 'monospace' }}>
+                    {elapsedTimeString}
+                </p>
+                {/* <p className='base_color'> Nov 9 10:36:23 AM</p> */}
+            </li>
+        </DefaultTooltip>
+    );
+
+    // const baseQtyToolTipStyle = <p className={styles.tooltip_style}>{baseTokenSymbol + ' Qty'}</p>;
+    // const quoteQtyToolTipStyle = (
+    //     <p className={styles.tooltip_style}>{quoteTokenSymbol + ' Qty'}</p>
+    // );
+    const baseQtyDisplayWithTooltip = (
+        // <DefaultTooltip
+        //     interactive
+        //     title={baseQtyToolTipStyle}
+        //     placement={'right'}
+        //     arrow
+        //     enterDelay={150}
+        //     leaveDelay={200}
+        // >
+        <li onClick={openDetailsModal} data-label={baseTokenSymbol} className='color_white'>
+            <p
+                style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'flex-end',
+                    gap: '4px',
+                    textAlign: 'right',
+                    fontFamily: 'monospace',
+                }}
+            >
+                {baseDisplay}
+                {isOnPortfolioPage && <img src={baseTokenLogo} width='15px' alt='' />}
+            </p>
+        </li>
+        /* </DefaultTooltip> */
+    );
+    const quoteQtyDisplayWithTooltip = (
+        // <DefaultTooltip
+        //     interactive
+        //     title={quoteQtyToolTipStyle}
+        //     placement={'right'}
+        //     arrow
+        //     enterDelay={150}
+        //     leaveDelay={200}
+        // >
+        <li onClick={openDetailsModal} data-label={quoteTokenSymbol} className='color_white'>
+            <p
+                style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'flex-end',
+                    gap: '4px',
+                    textAlign: 'right',
+                    fontFamily: 'monospace',
+                }}
+            >
+                {quoteDisplay}
+                {isOnPortfolioPage && <img src={quoteTokenLogo} width='15px' alt='' />}
+            </p>
+        </li>
+        /* </DefaultTooltip> */
+    );
+
     // end of portfolio page li element ---------------
     return (
         <ul
@@ -295,10 +458,11 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
             }
             id={txDomId}
         >
-            {isOnPortfolioPage && accountTokenImages}
-            {isOnPortfolioPage && !showSidebar && poolName}
+            {!showColumns && TxTimeWithTooltip}
+            {isOnPortfolioPage && !desktopView && tokenPair}
+            {/* {isOnPortfolioPage && !showSidebar && poolName} */}
             {!showColumns && IDWithTooltip}
-            {!showColumns && walletWithTooltip}
+            {!showColumns && !isOnPortfolioPage && walletWithTooltip}
             {showColumns && (
                 <li data-label='id'>
                     <p className='base_color' style={{ textAlign: 'center' }}>
@@ -318,7 +482,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                         <li
                             onClick={openDetailsModal}
                             data-label='price'
-                            className={sideTypeStyle}
+                            className={`${sideTypeStyle} ${styles.mono_font}`}
                             style={{ textAlign: 'right' }}
                         >
                             ambient
@@ -379,32 +543,29 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                 </li>
             )}
             {!showColumns && (
-                <li onClick={openDetailsModal} data-label='type' className={sideTypeStyle}>
+                <li
+                    onClick={openDetailsModal}
+                    data-label='type'
+                    className={sideTypeStyle}
+                    style={{ textAlign: 'center' }}
+                >
                     {type}
                 </li>
             )}
             {showColumns && !ipadView && (
-                <li data-label='side-type' className={sideTypeStyle}>
+                <li
+                    data-label='side-type'
+                    className={sideTypeStyle}
+                    style={{ textAlign: 'center' }}
+                >
                     <p>{sideType}</p>
                     <p>{type}</p>
                 </li>
             )}
             {usdValueWithTooltip}
-            {/* {!showColumns && (
-                <li onClick={openDetailsModal} data-label={baseTokenSymbol} className='color_white'>
-                    <p style={{ textAlign: 'right', fontFamily: 'monospace' }}>{baseDisplay}</p>
-                </li>
-            )}
-            {!showColumns && (
-                <li
-                    onClick={openDetailsModal}
-                    data-label={quoteTokenSymbol}
-                    className='color_white'
-                >
-                    <p style={{ textAlign: 'right', fontFamily: 'monospace' }}>{quoteDisplay}</p>
-                </li>
-            )} */}
-            {
+            {!showColumns && baseQtyDisplayWithTooltip}
+            {!showColumns && quoteQtyDisplayWithTooltip}
+            {showColumns && (
                 <li
                     data-label={baseTokenSymbol + quoteTokenSymbol}
                     className='color_white'
@@ -421,26 +582,27 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                         //     console.log(tx.isBid);
                         // }}
                         className={`${styles.token_qty} ${positiveDisplayStyle}`}
-                        style={{ fontFamily: 'monospace' }}
+                        style={{ fontFamily: 'monospace', whiteSpace: 'nowrap' }}
                     >
                         {isBuy ? quoteDisplay : baseDisplay}
-                        {positiveArrow}
+                        {valueArrows ? positiveArrow : ' '}
                         {/* {isBuy ? quoteFlowArrow : baseFlowArrow} */}
                         {isBuy ? quoteTokenLogoComponent : baseTokenLogoComponent}
                     </p>
 
                     <p
                         className={`${styles.token_qty} ${negativeDisplayStyle}`}
-                        style={{ fontFamily: 'monospace' }}
+                        style={{ fontFamily: 'monospace', whiteSpace: 'nowrap' }}
                     >
                         {' '}
-                        {isBuy ? baseDisplay : quoteDisplay}
-                        {negativeArrow}
+                        {isBuy
+                            ? `${baseDisplay}${valueArrows ? negativeArrow : ' '}`
+                            : `${quoteDisplay}${valueArrows ? negativeArrow : ' '}`}
                         {/* {isBuy ? baseFlowArrow : quoteFlowArrow} */}
                         {isBuy ? baseTokenLogoComponent : quoteTokenLogoComponent}
                     </p>
                 </li>
-            }
+            )}
             <li data-label='menu'>
                 {/* <OrdersMenu limitOrder={limitOrder} {...orderMenuProps} /> */}
                 <TransactionsMenu
@@ -453,6 +615,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                     openGlobalModal={props.openGlobalModal}
                     closeGlobalModal={props.closeGlobalModal}
                     isOnPortfolioPage={props.isOnPortfolioPage}
+                    handlePulseAnimation={handlePulseAnimation}
                 />
             </li>
         </ul>

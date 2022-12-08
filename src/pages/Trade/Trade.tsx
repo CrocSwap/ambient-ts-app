@@ -3,7 +3,7 @@
 import { Dispatch, SetStateAction, ReactNode, useEffect, useState } from 'react';
 import { useParams, Outlet, useOutletContext, Link, NavLink, useNavigate } from 'react-router-dom';
 import { ethers } from 'ethers';
-import { motion, AnimateSharedLayout } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { ChainSpec, CrocEnv, CrocPoolView } from '@crocswap-libs/sdk';
 import { VscClose } from 'react-icons/vsc';
 
@@ -24,7 +24,7 @@ import NoTokenIcon from '../../components/Global/NoTokenIcon/NoTokenIcon';
 interface TradePropsIF {
     pool: CrocPoolView | undefined;
     // poolPriceTick: number | undefined;
-    isUserLoggedIn: boolean;
+    isUserLoggedIn: boolean | undefined;
     crocEnv: CrocEnv | undefined;
     provider: ethers.providers.Provider | undefined;
     candleData: CandlesByPoolAndDuration | undefined;
@@ -66,15 +66,21 @@ interface TradePropsIF {
     outsideControl: boolean;
     setOutsideControl: Dispatch<SetStateAction<boolean>>;
     currentPositionActive: string;
+
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
     openGlobalModal: (content: ReactNode) => void;
     closeGlobalModal: () => void;
     isInitialized: boolean;
     poolPriceNonDisplay: number | undefined;
     importedTokens: TokenIF[];
-    poolExists: boolean | null;
+    poolExists: boolean | undefined;
     showSidebar: boolean;
     setTokenPairLocal: Dispatch<SetStateAction<string[] | null>>;
+    handlePulseAnimation: (type: string) => void;
+    checkLimitOrder: boolean;
+    // handleTxCopiedClick: () => void;
+    // handleOrderCopiedClick: () => void;
+    // handleRangeCopiedClick: () => void;
 }
 
 // React functional component
@@ -116,6 +122,11 @@ export default function Trade(props: TradePropsIF) {
         poolExists,
         setTokenPairLocal,
         showSidebar,
+        handlePulseAnimation,
+        checkLimitOrder,
+        // handleTxCopiedClick,
+        // handleOrderCopiedClick,
+        // handleRangeCopiedClick,
     } = props;
 
     const tokenPairFromParams = useUrlParams(chainId, isInitialized);
@@ -144,6 +155,8 @@ export default function Trade(props: TradePropsIF) {
         },
     ];
     const [fullScreenChart, setFullScreenChart] = useState(false);
+
+    const [selectedDate, setSelectedDate] = useState<Date | undefined>();
 
     const { tradeData, graphData } = useAppSelector((state) => state);
     const {
@@ -196,9 +209,19 @@ export default function Trade(props: TradePropsIF) {
     const expandGraphStyle = expandTradeTable ? styles.hide_graph : '';
     const fullScreenStyle = fullScreenChart ? styles.chart_full_screen : styles.main__chart;
 
+    const [hasInitialized, setHasInitialized] = useState(false);
+
     const changeState = (isOpen: boolean | undefined, candleData: CandleData | undefined) => {
         setIsCandleSelected(isOpen);
-        setIsShowAllEnabled(!isOpen);
+
+        setHasInitialized(false);
+        // if (isOpen && isShowAllEnabled) {
+        //     setIsShowAllEnabled(false);
+        // } else if (!isOpen && !isShowAllEnabled) {
+        //     console.log('setting to show all');
+        //     setIsShowAllEnabled(true);
+        // }
+        // setIsShowAllEnabled(!isOpen);
         setTransactionFilter(candleData);
     };
 
@@ -295,13 +318,12 @@ export default function Trade(props: TradePropsIF) {
         ) : null;
 
     return (
-        <AnimateSharedLayout>
-            <main className={styles.main_layout}>
-                <div className={styles.middle_col}>
-                    {poolNotInitializedContent}
-                    {mobileDataToggle}
-                    <div className={` ${expandGraphStyle} ${fullScreenStyle}`}>
-                        {/* <div style={{ textAlign: 'center', display: 'flex' }}>
+        <section className={styles.main_layout}>
+            <div className={styles.middle_col}>
+                {poolNotInitializedContent}
+                {mobileDataToggle}
+                <div className={` ${expandGraphStyle} ${fullScreenStyle}`}>
+                    {/* <div style={{ textAlign: 'center', display: 'flex' }}>
                             <label style={{ padding: '0px' }}>Up</label>
                             <div style={{ marginLeft: '4px' }}>
                                 <div
@@ -462,105 +484,109 @@ export default function Trade(props: TradePropsIF) {
                             </div>
                         </div> */}
 
-                        <motion.div
-                            initial={{ opacity: 0, scale: 0.5 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            transition={{
-                                duration: 0.8,
-                                delay: 0.5,
-                                ease: [0, 0.71, 0.2, 1.01],
-                            }}
-                            className={`${styles.main__chart_container} ${
-                                showChartAndNotTab && styles.hide
-                            }`}
-                        >
-                            <TradeCharts
-                                // poolPriceTick={poolPriceTick}
-                                pool={pool}
-                                chainData={chainData}
-                                poolPriceDisplay={poolPriceDisplayWithDenom}
-                                expandTradeTable={expandTradeTable}
-                                setExpandTradeTable={setExpandTradeTable}
-                                isTokenABase={isTokenABase}
-                                fullScreenChart={fullScreenChart}
-                                setFullScreenChart={setFullScreenChart}
-                                changeState={changeState}
-                                candleData={candleData}
-                                liquidityData={liquidityData}
-                                lastBlockNumber={lastBlockNumber}
-                                chainId={chainId}
-                                limitTick={limitTick}
-                                favePools={favePools}
-                                addPoolToFaves={addPoolToFaves}
-                                removePoolFromFaves={removePoolFromFaves}
-                                isAdvancedModeActive={advancedMode}
-                                simpleRangeWidth={simpleRangeWidth}
-                                pinnedMinPriceDisplayTruncated={pinnedMinPriceDisplayTruncated}
-                                pinnedMaxPriceDisplayTruncated={pinnedMaxPriceDisplayTruncated}
-                                upBodyColor={upBodyColor}
-                                upBorderColor={upBorderColor}
-                                downBodyColor={downBodyColor}
-                                downBorderColor={downBorderColor}
-                                baseTokenAddress={baseTokenAddress}
-                                poolPriceNonDisplay={poolPriceNonDisplay}
-                            />
-                        </motion.div>
-                    </div>
-
-                    <motion.div
-                        animate={{
-                            height: expandTradeTable ? '100%' : '30%',
-                            transition: {
-                                duration: 0.5,
-                                type: 'spring',
-                                damping: 10,
-                            },
-                        }}
+                    <div
+                        className={`${styles.main__chart_container} ${
+                            showChartAndNotTab && styles.hide
+                        }`}
                     >
-                        <div className={!showChartAndNotTab ? styles.hide : ''}>
-                            <TradeTabs2
-                                isUserLoggedIn={isUserLoggedIn}
-                                isTokenABase={isTokenABase}
-                                crocEnv={crocEnv}
-                                provider={provider}
-                                account={account}
-                                isAuthenticated={isAuthenticated}
-                                isWeb3Enabled={isWeb3Enabled}
-                                lastBlockNumber={lastBlockNumber}
-                                chainId={chainId}
-                                chainData={chainData}
-                                currentTxActiveInTransactions={currentTxActiveInTransactions}
-                                setCurrentTxActiveInTransactions={setCurrentTxActiveInTransactions}
-                                baseTokenBalance={baseTokenBalance}
-                                quoteTokenBalance={quoteTokenBalance}
-                                baseTokenDexBalance={baseTokenDexBalance}
-                                quoteTokenDexBalance={quoteTokenDexBalance}
-                                isShowAllEnabled={isShowAllEnabled}
-                                setIsShowAllEnabled={setIsShowAllEnabled}
-                                expandTradeTable={expandTradeTable}
-                                setExpandTradeTable={setExpandTradeTable}
-                                tokenMap={tokenMap}
-                                isCandleSelected={isCandleSelected}
-                                setIsCandleSelected={setIsCandleSelected}
-                                filter={transactionFilter}
-                                setTransactionFilter={setTransactionFilter}
-                                selectedOutsideTab={props.selectedOutsideTab}
-                                setSelectedOutsideTab={props.setSelectedOutsideTab}
-                                outsideControl={props.outsideControl}
-                                setOutsideControl={props.setOutsideControl}
-                                currentPositionActive={props.currentPositionActive}
-                                setCurrentPositionActive={props.setCurrentPositionActive}
-                                openGlobalModal={props.openGlobalModal}
-                                closeGlobalModal={props.closeGlobalModal}
-                                importedTokens={importedTokens}
-                                showSidebar={showSidebar}
-                            />
-                        </div>
-                    </motion.div>
+                        <TradeCharts
+                            // poolPriceTick={poolPriceTick}
+                            pool={pool}
+                            chainData={chainData}
+                            poolPriceDisplay={poolPriceDisplayWithDenom}
+                            expandTradeTable={expandTradeTable}
+                            setExpandTradeTable={setExpandTradeTable}
+                            isTokenABase={isTokenABase}
+                            fullScreenChart={fullScreenChart}
+                            setFullScreenChart={setFullScreenChart}
+                            changeState={changeState}
+                            candleData={candleData}
+                            liquidityData={liquidityData}
+                            lastBlockNumber={lastBlockNumber}
+                            chainId={chainId}
+                            limitTick={limitTick}
+                            favePools={favePools}
+                            addPoolToFaves={addPoolToFaves}
+                            removePoolFromFaves={removePoolFromFaves}
+                            isAdvancedModeActive={advancedMode}
+                            simpleRangeWidth={simpleRangeWidth}
+                            pinnedMinPriceDisplayTruncated={pinnedMinPriceDisplayTruncated}
+                            pinnedMaxPriceDisplayTruncated={pinnedMaxPriceDisplayTruncated}
+                            upBodyColor={upBodyColor}
+                            upBorderColor={upBorderColor}
+                            downBodyColor={downBodyColor}
+                            downBorderColor={downBorderColor}
+                            baseTokenAddress={baseTokenAddress}
+                            poolPriceNonDisplay={poolPriceNonDisplay}
+                            selectedDate={selectedDate}
+                            setSelectedDate={setSelectedDate}
+                            checkLimitOrder={checkLimitOrder}
+                        />
+                    </div>
                 </div>
-                {mainContent}
-            </main>
-        </AnimateSharedLayout>
+
+                <motion.div
+                    animate={{
+                        height: expandTradeTable ? '100%' : '30%',
+                        transition: {
+                            duration: 0.5,
+                            type: 'spring',
+                            damping: 10,
+                        },
+                    }}
+                >
+                    <div className={!showChartAndNotTab ? styles.hide : ''}>
+                        <TradeTabs2
+                            isUserLoggedIn={isUserLoggedIn}
+                            isTokenABase={isTokenABase}
+                            crocEnv={crocEnv}
+                            provider={provider}
+                            account={account}
+                            isAuthenticated={isAuthenticated}
+                            isWeb3Enabled={isWeb3Enabled}
+                            lastBlockNumber={lastBlockNumber}
+                            chainId={chainId}
+                            chainData={chainData}
+                            currentTxActiveInTransactions={currentTxActiveInTransactions}
+                            setCurrentTxActiveInTransactions={setCurrentTxActiveInTransactions}
+                            baseTokenBalance={baseTokenBalance}
+                            quoteTokenBalance={quoteTokenBalance}
+                            baseTokenDexBalance={baseTokenDexBalance}
+                            quoteTokenDexBalance={quoteTokenDexBalance}
+                            isShowAllEnabled={isShowAllEnabled}
+                            setIsShowAllEnabled={setIsShowAllEnabled}
+                            expandTradeTable={expandTradeTable}
+                            setExpandTradeTable={setExpandTradeTable}
+                            tokenMap={tokenMap}
+                            isCandleSelected={isCandleSelected}
+                            setIsCandleSelected={setIsCandleSelected}
+                            filter={transactionFilter}
+                            setTransactionFilter={setTransactionFilter}
+                            selectedOutsideTab={props.selectedOutsideTab}
+                            setSelectedOutsideTab={props.setSelectedOutsideTab}
+                            outsideControl={props.outsideControl}
+                            setOutsideControl={props.setOutsideControl}
+                            currentPositionActive={props.currentPositionActive}
+                            setCurrentPositionActive={props.setCurrentPositionActive}
+                            openGlobalModal={props.openGlobalModal}
+                            closeGlobalModal={props.closeGlobalModal}
+                            importedTokens={importedTokens}
+                            showSidebar={showSidebar}
+                            handlePulseAnimation={handlePulseAnimation}
+                            changeState={changeState}
+                            selectedDate={selectedDate}
+                            setSelectedDate={setSelectedDate}
+                            hasInitialized={hasInitialized}
+                            setHasInitialized={setHasInitialized}
+                            // handleTxCopiedClick={handleTxCopiedClick}
+                            // handleOrderCopiedClick={handleOrderCopiedClick}
+                            // handleRangeCopiedClick={handleRangeCopiedClick}
+                        />
+                    </div>
+                </motion.div>
+            </div>
+            {mainContent}
+        </section>
     );
 }
 

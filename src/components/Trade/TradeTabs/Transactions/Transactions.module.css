@@ -37,7 +37,7 @@
 
 
   .header{
-    background: #012B39;
+    /* background: #012B39; */
     position: sticky;
     top: 0; /* Don't forget this, required for the stickiness */
     box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4);
@@ -57,7 +57,7 @@
   /* Track */
   .main_list_container::-webkit-scrollbar-track {
     border-radius: 100vh;
-    background: #1f2937;
+    /* background: #1f2937; */
   }
   
   /* Handle */
@@ -86,7 +86,7 @@
 font-size: 10px;
 line-height: 13px;
 
-color: rgba(235, 235, 255, 0.4);
+color: var(--text-grey-light)
 }
 .row_container{
     width: 100%;
@@ -186,6 +186,11 @@ text-transform: capitalize;
 
 .align_right{
   text-align: right;
+ 
+}
+
+.align_center{
+  text-align: center;
 }
 
 .positive_value{
@@ -204,19 +209,24 @@ text-transform: capitalize;
 .mono_font{
   font-family: var(--mono);
 }
+
+.tooltip_style{
+  padding: 9px;
+  background: var(--dark3)
+}
 /* .trade_header li:nth-of-type(1), .trade_header li:nth-of-type(2){
   text-align: center;
 } */
 
-.trade_header li:nth-of-type(3), .trade_header li:nth-of-type(6), .trade_header li:nth-of-type(7){
+/* .trade_header li:nth-of-type(3), .trade_header li:nth-of-type(6), .trade_header li:nth-of-type(7){
   text-align: right;
  
-}
+} */
 
-.trade_header li:nth-of-type(4){
+/* .trade_header li:nth-of-type(4){
   text-align: center;
   
-}
+} */
 
 
 
@@ -228,13 +238,13 @@ text-transform: capitalize;
 
 } */
 
-.portfolio_header li:nth-of-type(4), .portfolio_header li:nth-of-type(7), .portfolio_header li:nth-of-type(8){
+/* .portfolio_header li:nth-of-type(4), .portfolio_header li:nth-of-type(7), .portfolio_header li:nth-of-type(8){
   text-align: right;
  
-}
+} */
 
-.portfolio_header li:nth-of-type(5){
+/* .portfolio_header li:nth-of-type(5){
   text-align: center;
   
-}
+} */
 

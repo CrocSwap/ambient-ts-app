@@ -10,22 +10,22 @@
    background-size: cover;
 } */
 
+.home_container{
+    background: var(--body-bg);
+}
+
 .pools_container {
-    position: relative;
+    /* position: relative;
 
     background: -moz-radial-gradient(circle at 3% 25%, rgb(0, 26, 47) 0%, var(--body-bg) 25%);
 
-    /* safari 5.1+,chrome 10+ */
     background: -webkit-radial-gradient(circle at 3% 25%, rgb(0, 26, 47) 0%, var(--body-bg) 25%);
 
-    /* opera 11.10+ */
     background: -o-radial-gradient(circle at 3% 25%, rgba(0, 40, 83, 1) 0%, var(--body-bg) 25%);
 
-    /* ie 10+ */
     background: -ms-radial-gradient(circle at 3% 25%, rgb(0, 26, 47) 0%, var(--body-bg) 25%);
 
-    /* global 92%+ browsers support */
-    background: radial-gradient(circle at 3% 25%, rgb(0, 26, 47) 0%, var(--body-bg) 25%);
+    background: radial-gradient(circle at 3% 25%, rgb(0, 26, 47) 0%, var(--body-bg) 25%); */
 }
 .blur_background {
     position: absolute;

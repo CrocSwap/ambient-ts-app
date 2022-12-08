@@ -1,8 +1,8 @@
 // START: Import React and Dongles
-import { useState, MouseEvent, ReactNode, Dispatch, SetStateAction } from 'react';
+import { useState, MouseEvent, ReactNode, Dispatch, SetStateAction, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MdPlayArrow } from 'react-icons/md';
-
+import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 // START: Import Local Files
 // import notificationStyles from './SidebarAccordion.module.css'
 import styles from '../Sidebar.module.css';
@@ -16,6 +16,9 @@ interface SidebarAccordionPropsIF {
     children?: ReactNode;
     showSidebar: boolean;
     setShowSidebar: Dispatch<SetStateAction<boolean>>;
+    shouldDisplayContentWhenUserNotLoggedIn: boolean;
+
+    openModalWallet: () => void;
 
     toggleSidebar: (event: MouseEvent<HTMLDivElement> | MouseEvent<HTMLLIElement>) => void;
     item: {
@@ -24,11 +27,20 @@ interface SidebarAccordionPropsIF {
         data: ReactNode;
     };
     idx: number | string;
+    openAllDefault?: boolean;
     // mostRecent?: PositionIF[] | ITransaction[] | string[];
 }
 
 export default function SidebarAccordion(props: SidebarAccordionPropsIF) {
-    const { showSidebar, idx, item, setShowSidebar } = props;
+    const {
+        showSidebar,
+        shouldDisplayContentWhenUserNotLoggedIn,
+        idx,
+        item,
+        setShowSidebar,
+        openModalWallet,
+    } = props;
+    const isUserLoggedIn = useAppSelector((state) => state.userData).isLoggedIn;
 
     const [isOpen, setIsOpen] = useState(false);
 
@@ -60,11 +72,29 @@ export default function SidebarAccordion(props: SidebarAccordionPropsIF) {
     //         <div className={notificationStyles.number}>3</div>
     //     </div>
     // )
-
+    // console.log(props.openAllDefault);
     function handleAccordionOpen() {
         setIsOpen(!isOpen);
         setShowSidebar(true);
     }
+
+    useEffect(() => {
+        setIsOpen(false);
+        if (props.openAllDefault) {
+            setIsOpen(true);
+        }
+    }, [props.openAllDefault]);
+    // if (props.openAllDefault){setIsOpen(true)}
+
+    const accordionContentToShow =
+        isUserLoggedIn || shouldDisplayContentWhenUserNotLoggedIn ? (
+            showOpenContentOrNull
+        ) : (
+            <div className={styles.connect_button}>
+                <p>Your recent {item.name.toLowerCase()} will display here.</p>
+                <button onClick={openModalWallet}>Connect Wallet</button>
+            </div>
+        );
 
     return (
         <>
@@ -78,9 +108,7 @@ export default function SidebarAccordion(props: SidebarAccordionPropsIF) {
             >
                 <div>
                     <div className={styles.sidebar_link}>
-                        {showSidebar && (
-                            <MdPlayArrow size={12} color='#ffffff' className={sidebarIconStyle} />
-                        )}
+                        {showSidebar && <MdPlayArrow size={12} className={sidebarIconStyle} />}
                         <img src={item.icon} alt={item.name} width='20px' />
 
                         <span className={styles.link_text}>{item.name}</span>
@@ -89,7 +117,7 @@ export default function SidebarAccordion(props: SidebarAccordionPropsIF) {
                     {/* { notificationBell} */}
                 </div>
             </motion.li>
-            <AnimatePresence>{isOpen && showOpenContentOrNull}</AnimatePresence>
+            <AnimatePresence>{isOpen && accordionContentToShow}</AnimatePresence>
         </>
     );
 }

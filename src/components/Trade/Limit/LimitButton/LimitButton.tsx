@@ -25,6 +25,7 @@ export default function LimitButton(props: ILimitButtonProps) {
                 // action={() => console.log('clicked')}
                 action={props.onClickFn}
                 disabled={!props.limitAllowed}
+                flat={true}
             />
         </div>
     );

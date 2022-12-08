@@ -27,11 +27,14 @@
 }
 
 .main_content {
-    background-color: var(--dark1);
+    background-color: transparent;
     padding: 1rem;
     border-radius: var(--border-radius);
 }
 
+.swap_bg{
+    background: var(--dark1);
+}
 .circle,
 .circle2 {
     display: none;
@@ -50,6 +53,15 @@
 .main_content:hover,
 .main_content:focus-within {
     transition: all var(--animation-speed) ease-in-out;
+}
+
+.swap_route{
+    background: var(--swap-border);
+    padding: 1px;
+    border-radius: var(--border-radius);
+    /* box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23); */
+
+    box-shadow: var(--swap-box-shadow);
 }
 
 /* media queries */

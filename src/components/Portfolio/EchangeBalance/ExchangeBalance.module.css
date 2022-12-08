@@ -9,7 +9,8 @@
     display: flex;
     flex-direction: column;
     background: var(--dark1);
-    height: calc(100vh - 17rem);
+    height: 100%;
+    /* height: calc(100vh - 17rem); */
     /* justify-content: center; */
     /* align-items: center; */
 
@@ -43,9 +44,9 @@ cursor: pointer;
 
 .tabs_container {
     width: 100%;
-    max-width: 516px;
+  
     height: auto;
-    margin-top: 1rem;
+    /* margin-top: 1rem; */
     /* height: 300px; */
     /* min-height: 260px; */
     border-radius: var(--border-radius);
@@ -131,15 +132,18 @@ ul.tab_navs {
 
 @media only screen and (min-width: 768px) {
     .container{
-        height: calc(100vh - 16rem);
-  
+        /* height: calc(100vh - 16rem); */
+        height: 100%;
+            max-width: 400px;
+            
+   
         
     }
     
     .main_container {
-  
+        height: 100%;
         background: var(--dark1);
-        height: calc(100vh - 17rem);
+        /* height: calc(100vh - 17rem); */
         /* width: 100%; */
     }
 	

@@ -19,8 +19,8 @@ import IconWithTooltip from '../../Global/IconWithTooltip/IconWithTooltip';
 import { ZERO_ADDRESS } from '../../../constants';
 interface CurrencyConverterPropsIF {
     crocEnv: CrocEnv | undefined;
-    poolExists: boolean | null;
-    isUserLoggedIn: boolean;
+    poolExists: boolean | undefined;
+    isUserLoggedIn: boolean | undefined;
     provider: ethers.providers.Provider | undefined;
     slippageTolerancePercentage: number;
     setPriceImpact: Dispatch<SetStateAction<CrocImpact | undefined>>;
@@ -51,6 +51,8 @@ interface CurrencyConverterPropsIF {
     activeTokenListsChanged: boolean;
     indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
     gasPriceInGwei: number | undefined;
+
+    isSwapCopied?: boolean;
 }
 
 export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
@@ -84,6 +86,7 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
         activeTokenListsChanged,
         indicateActiveTokenListsChanged,
         gasPriceInGwei,
+        isSwapCopied,
     } = props;
 
     // TODO: update name of functions with 'handle' verbiage
@@ -251,7 +254,7 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
     const handleSwapButtonMessage = (tokenAAmount: number) => {
         if (!poolExists) {
             setSwapAllowed(false);
-            if (poolExists === null) setSwapButtonErrorMessage('...');
+            if (poolExists === undefined) setSwapButtonErrorMessage('...');
             if (poolExists === false) setSwapButtonErrorMessage('Pool Not Initialized');
         } else if (poolPriceDisplay === 0 || poolPriceDisplay === Infinity) {
             setSwapAllowed(false);
@@ -317,11 +320,22 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
             if (tokenBInputField) {
                 (tokenBInputField as HTMLInputElement).value = '';
             }
-            const input = evt.target.value;
-            const parsedInput = parseFloat(input);
-            if ((input !== '' && isNaN(parsedInput)) || parsedInput === 0) return;
+            const tokenAInputField = document.getElementById('sell-quantity');
 
-            // console.log({ parsedInput });
+            const input = evt.target.value.startsWith('.')
+                ? '0' + evt.target.value
+                : evt.target.value;
+
+            if (tokenAInputField) {
+                (tokenAInputField as HTMLInputElement).value = input;
+            }
+
+            const parsedInput = parseFloat(input);
+            if (input === '' || isNaN(parsedInput) || parsedInput === 0) {
+                setSwapAllowed(false);
+                setSwapButtonErrorMessage('Enter an Amount');
+                if (input !== '') return;
+            }
 
             setTokenAQtyLocal(input);
             setTokenAInputQty(input);
@@ -377,9 +391,9 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
             rawTokenBQty = impact ? parseFloat(impact.buyQty) : undefined;
         }
         const truncatedTokenBQty = rawTokenBQty
-            ? rawTokenBQty < 100000
-                ? rawTokenBQty.toPrecision(6)
-                : truncateDecimals(rawTokenBQty, 0)
+            ? rawTokenBQty < 2
+                ? rawTokenBQty.toPrecision(3)
+                : truncateDecimals(rawTokenBQty, 2)
             : '';
         // const truncatedTokenBQty = truncateDecimals(rawTokenBQty, tokenBDecimals).toString();
 
@@ -447,9 +461,9 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
             rawTokenBQty = impact ? parseFloat(impact.buyQty) : undefined;
         }
         const truncatedTokenBQty = rawTokenBQty
-            ? rawTokenBQty < 100000
-                ? rawTokenBQty.toPrecision(6)
-                : truncateDecimals(rawTokenBQty, 0)
+            ? rawTokenBQty < 2
+                ? rawTokenBQty.toPrecision(3)
+                : truncateDecimals(rawTokenBQty, 2)
             : '';
 
         setTokenBQtyLocal(truncatedTokenBQty);
@@ -472,9 +486,24 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
             if (tokenAInputField) {
                 (tokenAInputField as HTMLInputElement).value = '';
             }
-            const input = evt.target.value;
+            const tokenBInputField = document.getElementById('buy-quantity');
+
+            const input = evt.target.value.startsWith('.')
+                ? '0' + evt.target.value
+                : evt.target.value;
+
+            if (tokenBInputField) {
+                (tokenBInputField as HTMLInputElement).value = input;
+            }
+
             const parsedInput = parseFloat(input);
-            if ((input !== '' && isNaN(parsedInput)) || parsedInput === 0) return;
+            if (input === '' || isNaN(parsedInput) || parsedInput === 0) {
+                setSwapAllowed(false);
+                setSwapButtonErrorMessage('Enter an Amount');
+                if (input !== '') return;
+            }
+
+            // if (input === '' || isNaN(parsedInput) || parsedInput === 0) return;
 
             // console.log({ parsedInput });
 
@@ -535,9 +564,9 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
         }
 
         const truncatedTokenAQty = rawTokenAQty
-            ? rawTokenAQty < 100000
-                ? rawTokenAQty.toPrecision(6)
-                : truncateDecimals(rawTokenAQty, 0)
+            ? rawTokenAQty < 2
+                ? rawTokenAQty.toPrecision(3)
+                : truncateDecimals(rawTokenAQty, 2)
             : '';
 
         setTokenAQtyLocal(truncatedTokenAQty);
@@ -589,6 +618,7 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
                 activeTokenListsChanged={activeTokenListsChanged}
                 indicateActiveTokenListsChanged={indicateActiveTokenListsChanged}
                 gasPriceInGwei={gasPriceInGwei}
+                isSwapCopied={isSwapCopied}
             />
             <div className={styles.arrow_container} onClick={reverseTokens}>
                 {isLiq ? null : (
@@ -627,6 +657,7 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
                 activeTokenListsChanged={activeTokenListsChanged}
                 indicateActiveTokenListsChanged={indicateActiveTokenListsChanged}
                 gasPriceInGwei={gasPriceInGwei}
+                isSwapCopied={isSwapCopied}
             />
         </section>
     );

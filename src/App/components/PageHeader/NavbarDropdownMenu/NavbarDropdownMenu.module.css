@@ -5,15 +5,13 @@
     top: 58px;
     width: 300px;
     transform: translateX(-45%);
-    background-color: blue;
     border: none;
-    border-radius: var(--border-radius);
     padding: 1rem;
     overflow: hidden;
     transition: all var(--animation-speed) ease;
     z-index: 99;
 
-    background: rgba(14, 19, 26, 0.5);
+    background: var(--blur-bg);
     /* box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37); */
     backdrop-filter: blur(16.5px);
     -webkit-backdrop-filter: blur(16.5px);
@@ -62,7 +60,7 @@
 
 .menu_item .icon_button {
     margin-right: 0.5rem;
-    background: rgb(28, 28, 5);
+    background: var(--blur-bg);
     border-radius: 50%;
     padding: 3px;
     display: flex;
@@ -76,13 +74,13 @@
 }
 
 .nonTopLevelContainer:hover {
-    background: #28364a;
+    background: var(--dark2);
 
     /* color: var(--text-grey-white);
     background-position: 99% 50%; */
 }
 .goBackStyle:hover {
-    background: rgba(14, 19, 26, 0.5);
+    background: var(--dark2);
 }
 
 .goBackStyle:hover .icon_button {
@@ -111,7 +109,7 @@
     border-radius: var(--border-radius);
     width: 100%;
     height: 30px;
-    color: #cdc1ff;
+    color: var(--text-accent);
     border-radius: 0;
     transition: all var(--animation-speed) ease-out;
     background: linear-gradient(

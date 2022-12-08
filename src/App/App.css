@@ -30,9 +30,16 @@ body::-webkit-scrollbar-thumb {
 
     box-shadow: 0px 0px 0px 100000vh black;
 }
+body{
+    background: var(--body-bg);
+
+    
+     
+}
 
 html {
     background: var(--body-bg);
+    
     color: var(--text-grey-white);
     height: 100%;
 }
@@ -104,7 +111,7 @@ footer {
 } */
 .swap-body {
     /* height: 100vh; */
-    background: var(--dark3);
+    /* background: var(--dark3); */
     height: calc(100vh - (var(--footer-height) + 2rem));
 
    
@@ -270,12 +277,12 @@ footer {
     .content-container {
         height: 100vh;
 
-        background: var(--dark3);
+        background: var(--body-bg);
     }
     .content-container-trade {
         /* height: calc(100vh - var(--footer-height)); */
         overflow: hidden;
 
-        background: var(--dark3);
+        background: var(--body-bg);
     }
 }

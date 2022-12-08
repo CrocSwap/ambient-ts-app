@@ -1,5 +1,4 @@
 import styles from './GraphContainer.module.css';
-import { useProtocolData } from '../../../state/protocol/hooks';
 import { useEffect, useMemo, useState } from 'react';
 import {
     formatAmount,
@@ -8,7 +7,6 @@ import {
 import AreaChart from '../../Global/Charts/AreaChart';
 import BarChart from '../../Global/Charts/BarChart';
 import logo from '../../../assets/images/logos/ambient_logo.svg';
-import { ChartDataTimeframe } from '../../../hooks/ChartDataTimeframe';
 import { getDexStatsFresh } from '../../../utils/functions/getDexStats';
 import {
     getDexTvlSeries,
@@ -25,8 +23,17 @@ const spring = {
     damping: 30,
 };
 
+export enum ChartDataTimeframe {
+    oneDay = '1',
+    oneMonth = '30',
+    sixMonth = '180',
+    oneYear = '365',
+    all = '60',
+}
+
 export default function GraphContainer() {
-    const [protocolData] = useProtocolData();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const [protocolData]: any = [];
     const [volumeHover, setVolumeHover] = useState<number | undefined>();
     const [liquidityHover, setLiquidityHover] = useState<number | undefined>();
 

@@ -5,6 +5,7 @@ import { TokenIF } from '../../../../../utils/interfaces/TokenIF';
 import { useEffect, useState } from 'react';
 import { ZERO_ADDRESS } from '../../../../../constants';
 import { TokenPriceFn } from '../../../../../App/functions/fetchTokenPrice';
+import { DefaultTooltip } from '../../../StyledTooltip/StyledTooltip';
 // import { formatAmountOld } from '../../../../../utils/numbers';
 interface ExchangeCardPropsIF {
     cachedFetchTokenPrice: TokenPriceFn;
@@ -15,8 +16,6 @@ interface ExchangeCardPropsIF {
 
 export default function ExchangeCard(props: ExchangeCardPropsIF) {
     const { token, chainId, tokenMap, cachedFetchTokenPrice } = props;
-    if (token?.address !== ZERO_ADDRESS && token?.dexBalanceDisplayTruncated === undefined)
-        return <></>;
 
     // const tokenMap = useTokenMap();
 
@@ -54,7 +53,7 @@ export default function ExchangeCard(props: ExchangeCardPropsIF) {
 
     const tokenUsdPrice = tokenPrice?.usdPrice ?? 0;
 
-    const exchangeBalanceNum = token.dexBalanceDisplay ? parseFloat(token.dexBalanceDisplay) : 0;
+    const exchangeBalanceNum = token?.dexBalanceDisplay ? parseFloat(token?.dexBalanceDisplay) : 0;
     const exchangeBalanceTruncated =
         exchangeBalanceNum === 0 ? '0' : token?.dexBalanceDisplayTruncated;
 
@@ -76,8 +75,16 @@ export default function ExchangeCard(props: ExchangeCardPropsIF) {
     //               maximumFractionDigits: 2,
     //           });
 
-    const tokenInfo = (
-        <div className={styles.token_info}>
+    const iconAndSymbolWithTooltip = (
+        <DefaultTooltip
+            interactive
+            title={`${tokenFromMap?.symbol}: ${tokenFromMap?.address}`}
+            disableHoverListener={tokenFromMap?.address === ZERO_ADDRESS}
+            placement={'right'}
+            arrow
+            enterDelay={400}
+            leaveDelay={200}
+        >
             <div className={styles.token_icon}>
                 <img
                     src={
@@ -98,9 +105,23 @@ export default function ExchangeCard(props: ExchangeCardPropsIF) {
                         : '???'}
                 </p>
             </div>
+        </DefaultTooltip>
+    );
+
+    const tokenInfo = (
+        <div className={styles.token_info}>
+            {iconAndSymbolWithTooltip}
             <p>{tokenFromMap?.name ? tokenFromMap?.name : token?.name ? token?.name : '???'}</p>
         </div>
     );
+
+    if (
+        !token ||
+        !tokenFromMap ||
+        (token.address !== ZERO_ADDRESS && (!token.dexBalance || token.dexBalance === '0'))
+    )
+        return <></>;
+
     return (
         <div className={styles.exchange_row}>
             {tokenInfo}

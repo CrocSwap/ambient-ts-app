@@ -68,10 +68,11 @@
 .add_minus_icons {
     display: flex;
     flex-direction: column;
+    margin-top: 3px;
 }
 
 .add_minus_icons svg:nth-of-type(2) {
-    margin-top: -10px;
+    margin-top: -5px;
 }
 .percentage_option_buttons {
     font-size: var(--header2-size);
@@ -270,4 +271,44 @@ input[type='range']:focus::-ms-fill-upper {
         #cdc1ff 49.48%,
         #7371fc 100%
     ); /* Otherwise white in Chrome */
+}
+
+@keyframes shadow-pulse {
+    0% {
+        box-shadow: 0 0 0 0px rgba(131, 119, 220, 0.3);
+        border-radius: var(--border-radius);
+    }
+    /* 50% {
+    box-shadow: 0 0 0 6px rgba(131, 119, 220, 0.5);
+    border-radius: var(--border-radius);
+  } */
+    100% {
+        box-shadow: 0 0 0 12px rgba(0, 0, 0, 0);
+        border-radius: var(--border-radius);
+    }
+}
+@keyframes flicker {
+    0%,
+    18%,
+    22%,
+    25%,
+    53%,
+    57%,
+    100% {
+        text-shadow: 0 0 7px rgb(144, 132, 216), 0 0 10px rgb(86, 153, 212),
+            0 0 21px rgb(83, 157, 222), 0 0 42px rgb(40, 160, 179), 0 0 82px rgb(84, 91, 220),
+            0 0 92px rgb(67, 99, 175), 0 0 102px rgb(75, 67, 213), 0 0 151px rgb(61, 108, 207);
+    }
+    20%,
+    24%,
+    55% {
+        text-shadow: none;
+    }
+}
+
+.pulse_animation {
+    animation: flicker 2s 3 alternate;
+    text-shadow: 0 0 7px rgb(144, 132, 216), 0 0 10px rgb(86, 153, 212), 0 0 21px rgb(83, 157, 222),
+        0 0 42px rgb(40, 160, 179), 0 0 82px rgb(84, 91, 220), 0 0 92px rgb(67, 99, 175),
+        0 0 102px rgb(75, 67, 213), 0 0 151px rgb(61, 108, 207);
 }

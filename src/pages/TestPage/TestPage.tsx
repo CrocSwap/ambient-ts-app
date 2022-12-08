@@ -2,6 +2,7 @@ import React from 'react';
 import { useTermsOfService } from '../../App/hooks/useTermsOfService';
 import Medal from '../../components/Global/Medal/Medal';
 import { MenuButton } from '../../components/Global/MenuButton/MenuButton';
+import PulseLoading from '../../components/Global/PulseLoading/PulseLoading';
 import styles from './TestPage.module.css';
 // import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
 // import { useProcessTransaction } from '../../utils/hooks/useProcessTransaction';
@@ -37,7 +38,7 @@ export default function TestPage(props: TestPageProps) {
     };
 
     return (
-        <main className={styles.main}>
+        <section className={styles.main}>
             <h1>Hi there!</h1>
             <p>{tosText}</p>
             <p>
@@ -67,6 +68,7 @@ export default function TestPage(props: TestPageProps) {
                 style={menuButtonStyle}
             />
             <Medal ranking={1} />
-        </main>
+            <PulseLoading />
+        </section>
     );
 }

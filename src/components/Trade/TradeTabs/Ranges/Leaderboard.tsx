@@ -31,7 +31,7 @@ import RangesRow from './RangesTable/RangesRow';
 
 // interface for props
 interface LeaderboardPropsIF {
-    isUserLoggedIn: boolean;
+    isUserLoggedIn: boolean | undefined;
     crocEnv: CrocEnv | undefined;
     chainData: ChainSpec;
     provider: ethers.providers.Provider | undefined;
@@ -57,6 +57,7 @@ interface LeaderboardPropsIF {
 
     setLeader?: Dispatch<SetStateAction<string>>;
     setLeaderOwnerId?: Dispatch<SetStateAction<string>>;
+    handlePulseAnimation?: (type: string) => void;
 }
 
 // react functional component
@@ -78,6 +79,7 @@ export default function Leaderboard(props: LeaderboardPropsIF) {
         currentPositionActive,
         setCurrentPositionActive,
         account,
+        handlePulseAnimation,
         // setLeader,
         // setLeaderOwnerId,
 
@@ -202,6 +204,14 @@ export default function Leaderboard(props: LeaderboardPropsIF) {
             sortable: false,
         },
         {
+            name: 'Time',
+            className: '',
+            show: !showColumns,
+            slug: 'time',
+            sortable: false,
+        },
+
+        {
             name: 'Wallet',
             className: 'wallet',
             show: !showColumns,
@@ -220,6 +230,7 @@ export default function Leaderboard(props: LeaderboardPropsIF) {
             show: !showColumns,
             slug: 'min',
             sortable: false,
+            alignRight: true,
         },
         {
             name: 'Max',
@@ -227,6 +238,7 @@ export default function Leaderboard(props: LeaderboardPropsIF) {
             show: !showColumns,
             slug: 'max',
             sortable: false,
+            alignRight: true,
         },
 
         {
@@ -235,6 +247,7 @@ export default function Leaderboard(props: LeaderboardPropsIF) {
             show: showColumns && !ipadView,
             slug: 'minMax',
             sortable: false,
+            alignRight: true,
         },
         {
             name: 'Value (USD)',
@@ -242,6 +255,7 @@ export default function Leaderboard(props: LeaderboardPropsIF) {
             show: true,
             slug: 'value',
             sortable: false,
+            alignRight: true,
         },
         {
             name: `${baseTokenSymbol}`,
@@ -249,6 +263,7 @@ export default function Leaderboard(props: LeaderboardPropsIF) {
             show: !showColumns,
             slug: baseTokenSymbol,
             sortable: false,
+            alignRight: true,
         },
         {
             name: `${quoteTokenSymbol}`,
@@ -256,6 +271,7 @@ export default function Leaderboard(props: LeaderboardPropsIF) {
             show: !showColumns,
             slug: quoteTokenSymbol,
             sortable: false,
+            alignRight: true,
         },
         {
             name: tokens,
@@ -263,6 +279,7 @@ export default function Leaderboard(props: LeaderboardPropsIF) {
             show: showColumns,
             slug: 'tokens',
             sortable: false,
+            alignRight: true,
         },
         {
             name: 'APR',
@@ -270,6 +287,7 @@ export default function Leaderboard(props: LeaderboardPropsIF) {
             show: true,
             slug: 'apr',
             sortable: false,
+            alignRight: true,
         },
         {
             name: ' ',
@@ -326,19 +344,20 @@ export default function Leaderboard(props: LeaderboardPropsIF) {
             isOnPortfolioPage={false}
             isLeaderboard={true}
             idx={idx + 1}
+            handlePulseAnimation={handlePulseAnimation}
 
             // blockExplorer={blockExplorer}
         />
     ));
 
     return (
-        <main
+        <section
             className={`${styles.main_list_container} ${styles.leaderboard}`}
             style={{ height: expandTradeTable ? 'calc(100vh - 10rem)' : '250px' }}
         >
             {headerColumnsDisplay}
             {rowItemContent}
             {footerDisplay}
-        </main>
+        </section>
     );
 }

@@ -1,6 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useCallback, useMemo, useState } from 'react';
 import { TOKEN_HIDE } from '../../constants';
-import { PoolData } from '../../state/pools/models';
 import { PoolIF } from '../../utils/interfaces/PoolIF';
 import { TokenIF } from '../../utils/interfaces/TokenIF';
 import PoolCardHeader from './PoolCardHeader';
@@ -16,7 +16,7 @@ export const SORT_FIELD = {
 };
 
 interface PoolProps {
-    pools: PoolData[];
+    pools: any[];
     maxItems?: number;
     poolType: string;
     favePools: PoolIF[];
@@ -40,7 +40,7 @@ export default function Pools(props: PoolProps) {
                   .filter((x) => !!x && !TOKEN_HIDE.includes(x.address))
                   .sort((a, b) => {
                       if (a && b) {
-                          return a[sortField as keyof PoolData] > b[sortField as keyof PoolData]
+                          return a[sortField as keyof any] > b[sortField as keyof any]
                               ? (sortDirection ? -1 : 1) * 1
                               : (sortDirection ? -1 : 1) * -1;
                       } else {

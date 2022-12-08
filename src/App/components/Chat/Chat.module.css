@@ -20,7 +20,7 @@
 }
 
 .welcome_back {
-    background: red;
+    
     width: 255px;
     padding: 1rem;
     font-size: var(--body-size);
@@ -103,7 +103,7 @@
 }
 /* chat input */
 .input_container {
-    background: #242f3f;
+    background: var(--dark2);
     padding: 0 8px;
     display: grid;
     grid-template-columns: auto 60px;
