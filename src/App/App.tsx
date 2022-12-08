@@ -71,7 +71,7 @@ import { LimitOrderIF, TokenIF, TokenListIF, PositionIF } from '../utils/interfa
 import { fetchTokenLists } from './functions/fetchTokenLists';
 import {
     resetTokens,
-    resetTradeData,
+    // resetTradeData,
     setAdvancedHighTick,
     setAdvancedLowTick,
     setAdvancedMode,
@@ -363,7 +363,7 @@ export default function App() {
                     '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
                     '0x1',
                 );
-                const usdPrice = mainnetEthPrice.usdPrice;
+                const usdPrice = mainnetEthPrice?.usdPrice;
                 setEthMainnetUsdPrice(usdPrice);
             })();
         }
@@ -1985,7 +1985,7 @@ export default function App() {
         setQuoteTokenBalance('');
         setBaseTokenDexBalance('');
         setQuoteTokenDexBalance('');
-        dispatch(resetTradeData());
+        // dispatch(resetTradeData());
         dispatch(resetUserGraphData());
         dispatch(resetReceiptData());
         dispatch(resetTokenData());
