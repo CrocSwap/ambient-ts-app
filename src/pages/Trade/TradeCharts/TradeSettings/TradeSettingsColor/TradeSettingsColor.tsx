@@ -184,8 +184,14 @@ export default function TradeSettingsColor(props: TradeSettingsColorPropsIF) {
                             onClick={() => setUpBodyColorPicker(true)}
                             label={'Body'}
                         />
+                        <ColorPickerDisplay
+                            color={upBorderColor}
+                            onChangeComplete={handleBorderColorPickerChange}
+                            onClick={() => setUpBorderColorPicker(true)}
+                            label={'Border'}
+                        />
 
-                        {upBorderWithTooltip}
+                        {/* {upBorderWithTooltip} */}
                     </div>
                 </section>
 
