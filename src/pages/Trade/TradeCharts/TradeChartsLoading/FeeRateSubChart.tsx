@@ -2,7 +2,6 @@
 import { useCallback, useEffect, useRef } from 'react';
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
-import { formatDollarAmountAxis } from '../../../../utils/numbers';
 import { FeeChartData } from '../TradeCharts';
 
 interface FreeRateData {
@@ -77,7 +76,9 @@ export default function FeeRateSubChart(props: FreeRateData) {
                 const yAxis = d3fc
                     .axisRight()
                     .scale(yScale)
-                    .tickFormat(formatDollarAmountAxis)
+                    .tickFormat((d: any) => {
+                        return d + '%';
+                    })
                     .tickArguments([2]);
 
                 const crosshairDataLocal = [
