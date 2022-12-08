@@ -997,24 +997,6 @@ export default function Chart(props: ChartData) {
                     // dispatch(setCandleDomains(candleDomain));
                 }) as any;
 
-            const yAxisDrag = d3.drag().on('drag', async (event: any) => {
-                const dy = event.dy;
-                const factor = Math.pow(2, -dy * 0.003);
-                const domain = scaleData.yScale.domain();
-                const center = (domain[1] + domain[0]) / 2;
-                const size = (domain[1] - domain[0]) / 2 / factor;
-                if (center - size > 0) {
-                    await scaleData.yScale.domain([center - size, center + size]);
-                }
-                setZoomAndYdragControl(event);
-                setRescale(() => {
-                    return false;
-                });
-
-                setMarketLineValue();
-                render();
-            });
-
             const yAxisZoom = d3.zoom().on('zoom', async (event: any) => {
                 if (event.sourceEvent.type === 'wheel') {
                     const domainY = scaleData.yScale.domain();
@@ -1034,6 +1016,36 @@ export default function Chart(props: ChartData) {
 
                     setMarketLineValue();
                     render();
+                } else if (event.sourceEvent.type === 'mousemove') {
+                    const t = event.transform;
+
+                    const domainY = scaleData.yScale.domain();
+                    const linearY = d3
+                        .scaleLinear()
+                        .domain(scaleData.yScale.range())
+                        .range([domainY[1] - domainY[0], 0]);
+
+                    const deltaY =
+                        linearY(t.y - scaleData.lastDragedY) > 10
+                            ? 10
+                            : linearY(t.y - scaleData.lastDragedY);
+
+                    const factor = Math.pow(2, -deltaY * 0.008);
+                    const domain = scaleData.yScale.domain();
+                    const center = (domain[1] + domain[0]) / 2;
+                    const size = (domain[1] - domain[0]) / 2 / factor;
+
+                    scaleData.yScale.domain([center - size, center + size]);
+
+                    scaleData.lastDragedY = event.transform.y;
+
+                    setZoomAndYdragControl(event);
+                    setRescale(() => {
+                        return false;
+                    });
+
+                    setMarketLineValue();
+                    render();
                 }
             }) as any;
 
@@ -1041,7 +1053,6 @@ export default function Chart(props: ChartData) {
                 return {
                     zoom: zoom,
                     yAxisZoom: yAxisZoom,
-                    yAxisDrag: yAxisDrag,
                 };
             });
         }
@@ -3181,12 +3192,10 @@ export default function Chart(props: ChartData) {
                     showCrosshair();
                 });
 
-                d3.select(d3Yaxis.current)
-                    .on('mouseover', (event: any) => {
-                        d3.select(event.currentTarget).style('cursor', 'row-resize');
-                        crosshairData[0].x = -1;
-                    })
-                    .call(zoomUtils.yAxisDrag);
+                d3.select(d3Yaxis.current).on('mouseover', (event: any) => {
+                    d3.select(event.currentTarget).style('cursor', 'row-resize');
+                    crosshairData[0].x = -1;
+                });
 
                 d3.select(d3Yaxis.current).on('measure.range', function (event: any) {
                     const svg = d3.select(event.target).select('svg');
