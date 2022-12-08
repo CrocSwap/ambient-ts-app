@@ -1,5 +1,5 @@
 import styles from './TradeSettingsColor.module.css';
-import { Dispatch, SetStateAction } from 'react';
+import { Dispatch, SetStateAction, MouseEventHandler } from 'react';
 
 import { SketchPicker, SketchPickerProps } from 'react-color';
 import { DefaultTooltip } from '../../../../../components/Global/StyledTooltip/StyledTooltip';
@@ -22,6 +22,12 @@ interface TradeSettingsColorPropsIF {
     downBorderColor: string;
     downBorderColorPicker: boolean;
 }
+interface ColorPickerDisplayTooltipPropsIF {
+    onClick: MouseEventHandler<HTMLDivElement>;
+    onChangeComplete: (color: any) => void;
+    background: string;
+    label: string;
+}
 export default function TradeSettingsColor(props: TradeSettingsColorPropsIF) {
     const {
         setUpBodyColorPicker,
@@ -41,6 +47,26 @@ export default function TradeSettingsColor(props: TradeSettingsColorPropsIF) {
         downBorderColorPicker,
         handleDownBorderColorPickerChange,
     } = props;
+
+    function ColorPickerDisplay(props: ColorPickerDisplayTooltipPropsIF) {
+        const { onClick, onChangeComplete, background, label } = props;
+
+        return (
+            <DefaultTooltip
+                interactive
+                title={<SketchPicker color={background} onChangeComplete={onChangeComplete} />}
+                placement={'bottom'}
+                arrow
+                enterDelay={100}
+                leaveDelay={200}
+            >
+                <div className={styles.square_picker_container} onClick={onClick}>
+                    <div className={styles.square_picker} style={{ background: background }} />
+                    <label>Body</label>
+                </div>
+            </DefaultTooltip>
+        );
+    }
 
     const upBodyWithTooltip = (
         <DefaultTooltip
