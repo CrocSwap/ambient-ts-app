@@ -1,16 +1,20 @@
 import styles from './TradeSettingsColor.module.css';
 import { Dispatch, SetStateAction, MouseEventHandler } from 'react';
 
-import { SketchPicker, SketchPickerProps } from 'react-color';
+import { SketchPicker } from 'react-color';
 import { DefaultTooltip } from '../../../../../components/Global/StyledTooltip/StyledTooltip';
 
 interface TradeSettingsColorPropsIF {
     upBodyColorPicker: boolean;
     setUpBodyColorPicker: Dispatch<SetStateAction<boolean>>;
     upBodyColor: string;
+    // eslint-disable-next-line
     handleBodyColorPickerChange: (color: any) => void;
+    // eslint-disable-next-line
     handleBorderColorPickerChange: (color: any) => void;
+    // eslint-disable-next-line
     handleDownBodyColorPickerChange: (color: any) => void;
+    // eslint-disable-next-line
     handleDownBorderColorPickerChange: (color: any) => void;
     setUpBorderColorPicker: Dispatch<SetStateAction<boolean>>;
     setDownBodyColorPicker: Dispatch<SetStateAction<boolean>>;
@@ -24,6 +28,7 @@ interface TradeSettingsColorPropsIF {
 }
 interface ColorPickerDisplayTooltipPropsIF {
     onClick: MouseEventHandler<HTMLDivElement>;
+    // eslint-disable-next-line
     onChangeComplete: (color: any) => void;
     color: string;
     label: string;
@@ -32,19 +37,19 @@ export default function TradeSettingsColor(props: TradeSettingsColorPropsIF) {
     const {
         setUpBodyColorPicker,
         upBodyColor,
-        upBodyColorPicker,
+        // upBodyColorPicker,
         handleBodyColorPickerChange,
         setUpBorderColorPicker,
         upBorderColor,
-        upBorderColorPicker,
+        // upBorderColorPicker,
         handleBorderColorPickerChange,
         setDownBodyColorPicker,
         downBodyColor,
-        downBodyColorPicker,
+        // downBodyColorPicker,
         handleDownBodyColorPickerChange,
         setDownBorderColorPicker,
         downBorderColor,
-        downBorderColorPicker,
+        // downBorderColorPicker,
         handleDownBorderColorPickerChange,
     } = props;
 
