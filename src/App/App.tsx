@@ -143,6 +143,7 @@ import AnalyticsTransactions from '../components/Analytics/AnalyticsTransactions
 import trimString from '../utils/functions/trimString';
 import { memoizeFetchContractDetails } from './functions/fetchContractDetails';
 import { useToken } from './hooks/useToken';
+import { useSidebar } from './hooks/useSidebar';
 import useDebounce from './hooks/useDebounce';
 // import { memoizeQuerySpotTick } from './functions/querySpotTick';
 // import PhishingWarning from '../components/Global/PhisingWarning/PhishingWarning';
@@ -2378,6 +2379,22 @@ export default function App() {
             ? 'hide_sidebar'
             : sidebarDislayStyle;
 
+    // hook to track user's sidebar preference open or closed
+    // also functions to toggle sidebar status between open and closed
+    const [
+        sidebarStatus,
+        openSidebar,
+        closeSidebar,
+        togggggggleSidebar
+    ] = useSidebar();
+    // these lines are just here to make the linter happy
+    // take them out before production, they serve no other purpose
+    false && sidebarStatus;
+    false && openSidebar();
+    false && closeSidebar();
+    false && togggggggleSidebar();
+
+
     const containerStyle = currentLocation.includes('trade')
         ? 'content-container-trade'
         : 'content-container';
@@ -2715,7 +2732,14 @@ export default function App() {
                         <Route path='tos' element={<TermsOfService />} />
                         <Route
                             path='testpage'
-                            element={<TestPage openGlobalModal={openGlobalModal} />}
+                            element={
+                                <TestPage
+                                    openGlobalModal={openGlobalModal}
+                                    openSidebar={openSidebar}
+                                    closeSidebar={closeSidebar}
+                                    togggggggleSidebar={togggggggleSidebar}
+                                />
+                            }
                         />
                         <Route
                             path='/:address'
