@@ -81,7 +81,7 @@ export default function FeeRateSubChart(props: FreeRateData) {
 
                 const crosshairDataLocal = [
                     {
-                        x: crosshairForSubChart[0].x,
+                        x: 0,
                         y:
                             isMouseMoveForSubChart && mouseMoveChartName === 'feeRate'
                                 ? crosshairForSubChart[0].y
@@ -91,25 +91,6 @@ export default function FeeRateSubChart(props: FreeRateData) {
 
                 const lineJoin = d3fc.dataJoin('g', 'lineJoin');
                 const crosshairVerticalJoin = d3fc.dataJoin('g', 'crosshairVertical');
-
-                const crosshairHorizontal = d3fc
-                    .annotationSvgLine()
-                    .orient('vertical')
-                    .value((d: any) => d.x)
-                    .xScale(xScale)
-                    .yScale(yScale)
-                    .label('');
-
-                crosshairHorizontal.decorate((selection: any) => {
-                    selection.enter().select('line').attr('class', 'crosshair');
-                    selection.enter().style('visibility', 'hidden');
-                    selection
-                        .enter()
-                        .append('line')
-                        .attr('stroke-width', 1)
-                        .style('pointer-events', 'all');
-                    selection.enter().select('g.top-handle').remove();
-                });
 
                 const crosshairVertical = d3fc
                     .annotationSvgLine()

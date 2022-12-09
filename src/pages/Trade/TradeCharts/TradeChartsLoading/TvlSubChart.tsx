@@ -83,7 +83,7 @@ export default function TvlSubChart(props: TvlData) {
 
                 const crosshairDataLocal = [
                     {
-                        x: crosshairForSubChart[0].x,
+                        x: 0,
                         y:
                             isMouseMoveForSubChart && mouseMoveChartName === 'tvl'
                                 ? crosshairForSubChart[0].y
@@ -93,27 +93,7 @@ export default function TvlSubChart(props: TvlData) {
 
                 const areaJoin = d3fc.dataJoin('g', 'areaJoin');
                 const lineJoin = d3fc.dataJoin('g', 'lineJoin');
-                // const crosshairHorizontalJoin = d3fc.dataJoin('g', 'crosshairHorizontal');
                 const crosshairVerticalJoin = d3fc.dataJoin('g', 'crosshairVertical');
-
-                const crosshairHorizontal = d3fc
-                    .annotationSvgLine()
-                    .orient('vertical')
-                    .value((d: any) => d.x)
-                    .xScale(scaleData.xScale)
-                    .yScale(yScale)
-                    .label('');
-
-                crosshairHorizontal.decorate((selection: any) => {
-                    selection.enter().select('line').attr('class', 'crosshair');
-                    selection.enter().style('visibility', 'hidden');
-                    selection
-                        .enter()
-                        .append('line')
-                        .attr('stroke-width', 1)
-                        .style('pointer-events', 'all');
-                    selection.enter().select('g.top-handle').remove();
-                });
 
                 const crosshairVertical = d3fc
                     .annotationSvgLine()
