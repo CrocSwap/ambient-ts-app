@@ -143,6 +143,7 @@ import AnalyticsTransactions from '../components/Analytics/AnalyticsTransactions
 import trimString from '../utils/functions/trimString';
 import { memoizeFetchContractDetails } from './functions/fetchContractDetails';
 import { useToken } from './hooks/useToken';
+import { useSidebar } from './hooks/useSidebar';
 import useDebounce from './hooks/useDebounce';
 // import { memoizeQuerySpotTick } from './functions/querySpotTick';
 // import PhishingWarning from '../components/Global/PhisingWarning/PhishingWarning';
@@ -2377,6 +2378,8 @@ export default function App() {
         currentLocation.startsWith('/swap')
             ? 'hide_sidebar'
             : sidebarDislayStyle;
+
+    useSidebar();
 
     const containerStyle = currentLocation.includes('trade')
         ? 'content-container-trade'
