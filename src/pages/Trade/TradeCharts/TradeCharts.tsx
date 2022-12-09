@@ -318,7 +318,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
     // }, [chartSettingsData]);
     const mainChartSettingsContent = (
         <div
-            ref={chartSettingsRef}
+            // ref={chartSettingsRef}
             className={`${styles.main_settings_container} ${
                 showChartSettings && styles.main_settings_container_active
             }`}
