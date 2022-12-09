@@ -1026,8 +1026,6 @@ export default function Chart(props: ChartData) {
                     const size = (domainY[1] - domainY[0]) / 2 / factor;
                     await scaleData.yScale.domain([center - size, center + size]);
 
-                    // console.log(event.sourceEvent);
-
                     scaleData.lastDragedY = event.transform.y;
 
                     setZoomAndYdragControl(event);
@@ -1045,8 +1043,6 @@ export default function Chart(props: ChartData) {
                         .scaleLinear()
                         .domain(scaleData.yScale.range())
                         .range([domainY[1] - domainY[0], 0]);
-
-                    // console.log(event.sourceEvent);
 
                     const deltaY =
                         linearY(t.y - scaleData.lastDragedY) > 10
@@ -1513,10 +1509,7 @@ export default function Chart(props: ChartData) {
                     setCrosshairData([
                         {
                             x: crosshairData[0].x,
-                            y:
-                                isMouseMoveForSubChart || isZoomForSubChart
-                                    ? -1
-                                    : scaleData.yScale.invert(event.sourceEvent.layerY),
+                            y: scaleData.yScale.invert(event.sourceEvent.layerY),
                         },
                     ]);
                     setIsLineDrag(false);
@@ -3210,20 +3203,22 @@ export default function Chart(props: ChartData) {
                 });
 
                 const setCrossHairLocation = (event: any) => {
-                    crosshairData[0] = snap(candlestick, chartData, event)[0];
-                    setIsMouseMoveCrosshair(true);
+                    if (snap(candlestick, chartData, event)[0] !== undefined) {
+                        crosshairData[0] = snap(candlestick, chartData, event)[0];
+                        setIsMouseMoveCrosshair(true);
 
-                    setCrosshairData([
-                        {
-                            x: crosshairData[0].x,
-                            y:
-                                isMouseMoveForSubChart || isZoomForSubChart
-                                    ? -1
-                                    : scaleData.yScale.invert(event.layerY),
-                        },
-                    ]);
+                        setCrosshairData([
+                            {
+                                x: crosshairData[0].x,
+                                y:
+                                    isMouseMoveForSubChart || isZoomForSubChart
+                                        ? -1
+                                        : scaleData.yScale.invert(event.layerY),
+                            },
+                        ]);
 
-                    render();
+                        render();
+                    }
                 };
 
                 if (isMouseMoveForSubChart) {
