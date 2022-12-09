@@ -420,7 +420,7 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
         }
         if (value) {
             const input = value;
-            console.log({ input });
+            // console.log({ input });
             setTokenAQtyLocal(input);
             setTokenAInputQty(input);
             setIsTokenAPrimaryLocal(true);
