@@ -6,9 +6,8 @@ export const useSidebar = (): [
     closeSidebar: () => void,
     toggleSidebar: () => void
 ] => {
-    console.log('called custom hook useSidebar()');
     const [sidebar, setSidebar] = useState(
-        JSON.parse(localStorage.getItem('user') as string).sidebar ?? 'open'
+        JSON.parse(localStorage.getItem('user') as string)?.sidebar ?? 'open'
     );
 
     useEffect(() => {
@@ -20,11 +19,16 @@ export const useSidebar = (): [
     const openSidebar = () => setSidebar('open');
     const closeSidebar = () => setSidebar('closed');
     const toggleSidebar = () => {
+        console.log('im gonna toggle it!');
         switch (sidebar) {
             case 'open':
+                console.log('we need to close it!');
                 closeSidebar();
                 break;
             case 'closed':
+                console.log('open the sidebar!');
+                openSidebar();
+                break;
             default:
                 openSidebar();
         }

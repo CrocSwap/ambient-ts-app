@@ -2732,7 +2732,14 @@ export default function App() {
                         <Route path='tos' element={<TermsOfService />} />
                         <Route
                             path='testpage'
-                            element={<TestPage openGlobalModal={openGlobalModal} />}
+                            element={
+                                <TestPage
+                                    openGlobalModal={openGlobalModal}
+                                    openSidebar={openSidebar}
+                                    closeSidebar={closeSidebar}
+                                    togggggggleSidebar={togggggggleSidebar}
+                                />
+                            }
                         />
                         <Route
                             path='/:address'
