@@ -120,7 +120,6 @@ import { useGlobalModal } from './components/GlobalModal/useGlobalModal';
 
 import { getVolumeSeries } from './functions/getVolumeSeries';
 import { getTvlSeries } from './functions/getTvlSeries';
-import Chat from './components/Chat/Chat';
 import GlobalModal from './components/GlobalModal/GlobalModal';
 import { memoizeTokenPrice } from './functions/fetchTokenPrice';
 import ChatPanel from '../components/Chat/ChatPanel';
@@ -144,7 +143,6 @@ import trimString from '../utils/functions/trimString';
 import { memoizeFetchContractDetails } from './functions/fetchContractDetails';
 // import { memoizeQuerySpotTick } from './functions/querySpotTick';
 // import PhishingWarning from '../components/Global/PhisingWarning/PhishingWarning';
-import useChatApi from '../components/Chat/Service/ChatApi';
 
 const cachedFetchAddress = memoizeFetchAddress();
 const cachedFetchNativeTokenBalance = memoizeFetchNativeTokenBalance();
@@ -264,8 +262,6 @@ export default function App() {
     const isUserLoggedIn = userData.isLoggedIn;
     const isUserIdle = userData.isUserIdle;
 
-    const { getID } = useChatApi();
-
     // allow a local environment variable to be defined in [app_repo]/.env.local to turn off connections to the cache server
     const isServerEnabled =
         process.env.REACT_APP_CACHE_SERVER_IS_ENABLED !== undefined
@@ -302,10 +298,6 @@ export default function App() {
         if (userData.isLoggedIn !== isLoggedIn) {
             dispatch(setIsLoggedIn(isLoggedIn));
         }
-
-        getID().then((result: any) => {
-            console.log(result);
-        });
     }, [isAuthenticated, isWeb3Enabled, isUserLoggedIn]);
 
     // this is another case where true vs false is an arbitrary distinction

@@ -11,8 +11,6 @@ import { PositionIF } from '../../../../utils/interfaces/PositionIF';
 import styles from './PositionBox.module.css';
 import { motion } from 'framer-motion';
 import { useSortedPositions } from '../../../Trade/TradeTabs/useSortedPositions';
-import { ambientPosSlot, concPosSlot } from '@crocswap-libs/sdk';
-import { applyMiddleware } from '@reduxjs/toolkit';
 import { FiCopy } from 'react-icons/fi';
 import useCopyToClipboard from '../../../../utils/hooks/useCopyToClipboard';
 import SnackbarComponent from '../../../Global/SnackbarComponent/SnackbarComponent';
@@ -26,8 +24,9 @@ interface PositionBoxProps {
 
 export default function PositionBox(props: PositionBoxProps) {
     const [openSnackbar, setOpenSnackbar] = useState<boolean>(false);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [value, copy] = useCopyToClipboard();
-    const [isPoolPriceChangePositive, setIsPoolPriceChangePositive] = useState<boolean>(false);
+    const [isPoolPriceChangePositive] = useState<boolean>(false);
     const message = props.message;
     const [hashMsg, setHashMsg] = useState('');
     const isInput = props.isInput;
@@ -37,6 +36,7 @@ export default function PositionBox(props: PositionBoxProps) {
     const tradeData = useAppSelector((state) => state.tradeData);
     const graphData = useAppSelector((state) => state?.graphData);
     const transactionsData = graphData?.changesByPool?.changes;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [sortBy, setSortBy, reverseSort, setReverseSort, sortedPositions] = useSortedPositions(
         'lastUpdate',
         graphData?.positionsByPool?.positions,
@@ -69,8 +69,6 @@ export default function PositionBox(props: PositionBoxProps) {
         }
     }, [message, sortedPositions, transactionsData]);
 
-    const sSideType = sPositions ? 'Range' : '';
-
     function financial(x: any) {
         return Number.parseFloat(x).toFixed(2);
     }
@@ -98,43 +96,10 @@ export default function PositionBox(props: PositionBoxProps) {
         if (position !== undefined) {
             if (position.entityType === 'limitOrder') {
                 if (position.limitPriceDecimalCorrected && position.invLimitPriceDecimalCorrected) {
+                    // eslint-disable-next-line @typescript-eslint/no-unused-vars
                     const priceDecimalCorrected = position.limitPriceDecimalCorrected;
+                    // eslint-disable-next-line @typescript-eslint/no-unused-vars
                     const invPriceDecimalCorrected = position.invLimitPriceDecimalCorrected;
-
-                    const nonInvertedPriceTruncated =
-                        priceDecimalCorrected === 0
-                            ? '0.00'
-                            : priceDecimalCorrected < 0.0001
-                            ? priceDecimalCorrected.toExponential(2)
-                            : priceDecimalCorrected < 2
-                            ? priceDecimalCorrected.toPrecision(3)
-                            : priceDecimalCorrected >= 100000
-                            ? formatAmount(priceDecimalCorrected)
-                            : priceDecimalCorrected.toLocaleString(undefined, {
-                                  minimumFractionDigits: 2,
-                                  maximumFractionDigits: 2,
-                              });
-                    const invertedPriceTruncated =
-                        invPriceDecimalCorrected === 0
-                            ? '0.00'
-                            : invPriceDecimalCorrected < 0.0001
-                            ? invPriceDecimalCorrected.toExponential(2)
-                            : invPriceDecimalCorrected < 2
-                            ? priceDecimalCorrected.toPrecision(3)
-                            : invPriceDecimalCorrected >= 100000
-                            ? formatAmount(invPriceDecimalCorrected)
-                            : invPriceDecimalCorrected.toLocaleString(undefined, {
-                                  minimumFractionDigits: 2,
-                                  maximumFractionDigits: 2,
-                              });
-
-                    const truncatedDisplayPrice = tradeData.isDenomBase
-                        ? position.quoteSymbol
-                            ? getUnicodeCharacter(position.quoteSymbol)
-                            : '' + invertedPriceTruncated
-                        : position.baseSymbol
-                        ? getUnicodeCharacter(position.baseSymbol)
-                        : '' + nonInvertedPriceTruncated;
 
                     setTruncatedDisplayPrice(
                         financial(position.askTickPriceDecimalCorrected).toString(),

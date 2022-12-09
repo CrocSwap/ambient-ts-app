@@ -6,7 +6,6 @@ import ProfileSettingsSkin from './ProfileSettingsSkin/ProfileSettingsSkin';
 import noAvatarImage from '../../../assets/images/icons/avatar.svg';
 
 import { motion } from 'framer-motion';
-import { useMoralis } from 'react-moralis';
 import useChatApi from '../../Chat/Service/ChatApi';
 import SnackbarComponent from '../../Global/SnackbarComponent/SnackbarComponent';
 
@@ -42,15 +41,11 @@ interface ProfileSettingsPropsIF {
 }
 
 export default function ProfileSettings(props: ProfileSettingsPropsIF) {
-    const { account } = useMoralis();
     const [name, setName] = useState('');
     const [id, setId] = useState('');
     const { setShowProfileSettings, imageData, openGlobalModal } = props;
     const [openSnackbar, setOpenSnackbar] = useState(false);
     const host = 'http://localhost:5000';
-    const onChangeName = async (e: any) => {
-        setName(e.target.value);
-    };
     const nameDisplay = (
         <div className={styles.row}>
             <h4>Name</h4>

@@ -2,8 +2,7 @@ import styles from './IncomingMessage.module.css';
 import noAvatarImage from '../../../../assets/images/icons/avatar.svg';
 import { Message } from '../../Model/MessageModel';
 import PositionBox from '../PositionBox/PositionBox';
-import { useEffect, useState } from 'react';
-import useSocket from '../../Service/useSocket';
+import { useState } from 'react';
 import useCopyToClipboard from '../../../../utils/hooks/useCopyToClipboard';
 import SnackbarComponent from '../../../Global/SnackbarComponent/SnackbarComponent';
 
@@ -16,8 +15,7 @@ export interface IncomingMessageProps {
 
 export default function IncomingMessage(props: IncomingMessageProps) {
     const [isPosition, setIsPosition] = useState(false);
-    const [messagesArray, setMessagesArray] = useState<Message[]>([]);
-    const formatAMPM = (str: any) => {
+    const formatAMPM = (str: string) => {
         const date = new Date(str);
         let hours = date.getHours();
         const minutes = date.getMinutes();

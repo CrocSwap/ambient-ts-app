@@ -142,3 +142,7 @@ p {
     display: flex;
     flex-direction: row;
 }
+img,
+picture {
+    max-width: 100%;
+} 

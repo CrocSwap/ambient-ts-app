@@ -1,4 +1,3 @@
-import { setUseProxies } from 'immer';
 import { useEffect, useState, useRef } from 'react';
 import io from 'socket.io-client';
 import { Message } from '../Model/MessageModel';
@@ -9,12 +8,13 @@ export const recieveMessageByRoomRoute = `${host}/api/messages/getmsgbyroom`;
 export const receiveUsername = `${host}/api/auth/getUserByUsername`;
 export const accountName = `${host}/api/auth/getUserByAccount`;
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const useSocket = (room: any) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const socketRef: any = useRef();
-
     const [messages, setMessages] = useState<Message[]>([]);
-    const [lastMessage, setLastMessage] = useState<any>();
-    const [messageUser, setMessageUser] = useState<any>();
+    const [lastMessage, setLastMessage] = useState<Message>();
+    const [messageUser, setMessageUser] = useState<string>();
 
     useEffect(() => {
         const roomId = room;
@@ -25,13 +25,14 @@ const useSocket = (room: any) => {
         });
 
         socketRef.current.on('send-msg', () => {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             socketRef.current.on('msg-recieve', (data: any) => {
                 setMessages(data);
                 setLastMessage(data[0]);
                 setMessageUser(data[0].sender);
             });
         });
-
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         socketRef.current.on('msg-recieve', (data: any) => {
             setMessages(data);
         });
@@ -48,7 +49,13 @@ const useSocket = (room: any) => {
         });
     }
 
-    async function sendMsg(currentUser: any, msg: any, room: any, ensName: any, walletID: any) {
+    async function sendMsg(
+        currentUser: string,
+        msg: string,
+        room: string,
+        ensName: string,
+        walletID: string | null,
+    ) {
         socketRef.current.emit('send-msg', {
             from: currentUser,
             message: msg,

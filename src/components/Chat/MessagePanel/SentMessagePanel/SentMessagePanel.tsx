@@ -2,19 +2,15 @@ import styles from './SentMessagePanel.module.css';
 import noAvatarImage from '../../../../assets/images/icons/avatar.svg';
 import { Message } from '../../Model/MessageModel';
 import PositionBox from '../PositionBox/PositionBox';
-import { useEffect, useState } from 'react';
-import { useMoralis } from 'react-moralis';
-import DividerDark from '../../../Global/DividerDark/DividerDark';
+import { useState } from 'react';
 
 interface SentMessageProps {
     message: Message;
 }
 
 export default function SentMessagePanel(props: SentMessageProps) {
-    const { user, account, enableWeb3, isWeb3Enabled, isAuthenticated } = useMoralis();
-    const [name, setName] = useState('');
     const [isPosition, setIsPosition] = useState(false);
-    const formatAMPM = (str: any) => {
+    const formatAMPM = (str: string) => {
         const date = new Date(str);
         let hours = date.getHours();
         const minutes = date.getMinutes();

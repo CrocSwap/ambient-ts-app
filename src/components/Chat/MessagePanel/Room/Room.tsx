@@ -3,8 +3,7 @@ import styles from './Room.module.css';
 import { PoolIF } from '../../../../utils/interfaces/PoolIF';
 import { TokenIF } from '../../../../utils/interfaces/TokenIF';
 import { targetData } from '../../../../utils/state/tradeDataSlice';
-import def from 'ajv/dist/vocabularies/applicator/additionalItems';
-import { RiArrowDownSLine, RiStarSFill, RiStarLine } from 'react-icons/ri';
+import { RiArrowDownSLine } from 'react-icons/ri';
 import { BsSuitHeart, BsSuitHeartFill } from 'react-icons/bs';
 import { useState, useEffect } from 'react';
 
@@ -78,7 +77,7 @@ export default function RoomDropdown(props: RoomProps) {
             roomArr.push(pool.base.symbol + pool.quote.symbol);
         });
 
-        setRoomArray((roomArray) => {
+        setRoomArray(() => {
             return roomArr;
         });
         const middleIndex = Math.ceil(roomArray.length / 2);
@@ -91,7 +90,7 @@ export default function RoomDropdown(props: RoomProps) {
             rooms.map((pool: PoolIF) => {
                 roomArr.push(pool.base.symbol + pool.quote.symbol);
             });
-            setRoomArray((roomArray) => {
+            setRoomArray(() => {
                 return roomArr;
             });
         } else {
@@ -99,14 +98,14 @@ export default function RoomDropdown(props: RoomProps) {
             rooms.map((pool: PoolIF) => {
                 roomArr.push(pool.base.symbol + pool.quote.symbol);
             });
-            setRoomArray((roomArray) => {
+            setRoomArray(() => {
                 return roomArr;
             });
             const index = roomArr.indexOf(props.selectedRoom);
             roomArr.splice(index, 1);
             if (index > -1) {
                 // only splice array when item is found
-                setRoomArray((roomArray) => {
+                setRoomArray(() => {
                     return roomArr;
                 });
             }
@@ -201,7 +200,7 @@ export default function RoomDropdown(props: RoomProps) {
         <div className={styles.dropdown}>
             <div
                 className={isActive ? styles.dropdown_btn_isActive : styles.dropdown_btn}
-                onClick={(e: any) => handleDropdownMenu()}
+                onClick={() => handleDropdownMenu()}
             >
                 <div style={{ flexGrow: '1' }}>{props.selectedRoom}</div>
                 <div> {handleShowSelectedRoom(props.selectedRoom)}</div>

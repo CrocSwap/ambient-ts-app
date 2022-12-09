@@ -7,19 +7,17 @@ import IncomingMessage from './MessagePanel/Inbox/IncomingMessage';
 import Room from './MessagePanel/Room/Room';
 import { RiCloseFill, RiArrowDownSLine } from 'react-icons/ri';
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
-import useSocket, { receiveUsername, recieveMessageByRoomRoute } from './Service/useSocket';
-import axios from 'axios';
+import useSocket from './Service/useSocket';
 import { Message } from './Model/MessageModel';
 import { PoolIF } from '../../utils/interfaces/PoolIF';
 import { TokenIF } from '../../utils/interfaces/TokenIF';
 import { targetData } from '../../utils/state/tradeDataSlice';
 import { useMoralis } from 'react-moralis';
 import ChatButton from '../../App/components/Chat/ChatButton/ChatButton';
-import { MdClose, MdOpenInFull } from 'react-icons/md';
+import { MdOpenInFull } from 'react-icons/md';
 import { Link } from 'react-router-dom';
 import useChatApi from './Service/ChatApi';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
-import { GiConsoleController } from 'react-icons/gi';
 import { BsChatLeftFill } from 'react-icons/bs';
 interface currentPoolInfo {
     tokenA: TokenIF;
@@ -54,41 +52,29 @@ interface ChatProps {
 
 export default function ChatPanel(props: ChatProps) {
     const { favePools, currentPool } = props;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const messageEnd = useRef<any>(null);
     const [room, setRoom] = useState('Global');
-    const [showChatPanel, setShowChatPanel] = useState(true);
-    const { user, account, enableWeb3, isWeb3Enabled, isAuthenticated } = useMoralis();
+    const { account } = useMoralis();
     const [currentUser, setCurrentUser] = useState<string | undefined>(undefined);
     const [name, setName] = useState('');
     const [minutes, setMinute] = useState(1);
     const [isSequential, setIsSequential] = useState(false);
-    const [scrollTop, setScrollTop] = useState(0);
     const [scrollDirection, setScrollDirection] = useState(String);
     const wrapperStyleFull = styles.chat_wrapper_full;
-    const wrapperStyle = props.chatStatus ? styles.chat_wrapper_active : styles.chat_wrapper;
-    const [isPosition, setIsPosition] = useState(false);
-    const [messagesArray, setMessagesArray] = useState<Message[]>([]);
+    const [messagesArray] = useState<Message[]>([]);
     const [notification, setNotification] = useState(0);
-
-    useEffect(() => {
-        props.isFullScreen ? setShowChatPanel(true) : null;
-    }, [props.isFullScreen]);
-
-    const [scrollBottomControl, setScrollBottomControl] = useState(true);
 
     const { messages, getMsg, lastMessage, messageUser } = useSocket(room);
 
-    const { getID, getNameOrWallet } = useChatApi();
+    const { getID } = useChatApi();
     const userData = useAppSelector((state) => state.userData);
     const isUserLoggedIn = userData.isLoggedIn;
-    const name_ = userData.ensNameCurrent;
 
     function interval(str: string, string: string) {
         const endDate = new Date(str);
         const purchaseDate = new Date(string);
-        const diffMs = +endDate - +purchaseDate; // milliseconds
-        const diffDays = Math.floor(diffMs / 86400000); // days
-        const diffHrs = Math.floor((diffMs % 86400000) / 3600000); // hours
+        const diffMs = +endDate - +purchaseDate;
         const diffMins = Math.round(((diffMs % 86400000) % 3600000) / 60000); // minutes
         return diffMins;
     }
@@ -134,6 +120,7 @@ export default function ChatPanel(props: ChatProps) {
     }, []);
 
     useEffect(() => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         getID().then((result: any) => {
             setCurrentUser(result.userData._id);
             setName(result.userData.ensName);
@@ -141,6 +128,7 @@ export default function ChatPanel(props: ChatProps) {
     }, [props.chatStatus, props.isFullScreen]);
 
     useEffect(() => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         getID().then((result: any) => {
             setCurrentUser(result.userData._id);
             setName(result.userData.ensName);
@@ -178,12 +166,6 @@ export default function ChatPanel(props: ChatProps) {
     };
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleScroll = (e: any) => {
-        setScrollBottomControl(
-            e.target.clientHeight - 10 <
-                e.target.scrollHeight - e.target.scrollTop <
-                e.target.clientHeight,
-        );
-
         if (e.target.scrollTop === 0 || e.target.scrollTop === 1) {
             setNotification(0);
             setScrollDirection('Scroll Down');
@@ -192,6 +174,7 @@ export default function ChatPanel(props: ChatProps) {
         }
     };
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleWheel = (e: any) => {
         if (e.nativeEvent.wheelDelta > 0) {
             setScrollDirection('Scroll Up');
@@ -224,6 +207,7 @@ export default function ChatPanel(props: ChatProps) {
         </div>
     );
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     function getName(item: any) {
         if (item.ensName === 'defaultValue') {
             return item.walletID;
@@ -232,30 +216,18 @@ export default function ChatPanel(props: ChatProps) {
         }
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     function isCurrentUser() {
         if (account === null) {
             return setCurrentUser(undefined);
         } else {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             getID().then((result: any) => {
                 setCurrentUser(result.userData._id);
                 setName(result.userData.ensName);
             });
             return currentUser;
         }
-    }
-
-    function incomingMessages() {
-        const messageArr: Message[] = [];
-        messages &&
-            messages.map((item, i) => {
-                if (item.sender !== currentUser && currentUser !== undefined) {
-                    messageArr.push(item);
-                }
-
-                setMessagesArray((messagesArray) => {
-                    return messageArr;
-                });
-            });
     }
 
     const messageList = (

@@ -114,3 +114,8 @@ align-self: stretch;
 p {
     word-break: break-all;
 }
+
+ img,
+picture {
+    max-width: 100%;
+} 
