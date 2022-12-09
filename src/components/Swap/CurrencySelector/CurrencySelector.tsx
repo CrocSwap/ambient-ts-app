@@ -284,9 +284,6 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                         onClick={() => {
                             if (props.sellToken) {
                                 setIsWithdrawFromDexChecked(false);
-                                if (handleChangeClick && !isWithdrawFromWalletDisabled) {
-                                    handleChangeClick(walletBalanceNonLocaleString);
-                                }
                             } else {
                                 setIsSaveAsDexSurplusChecked(false);
                             }
@@ -323,6 +320,23 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                         </div>
                     </div>
                 </IconWithTooltip>
+                {isSellTokenSelector && walletBalanceNonLocaleString !== '0.0' ? (
+                    <button
+                        onClick={() => {
+                            if (props.sellToken) {
+                                setIsWithdrawFromDexChecked(false);
+                            } else {
+                                setIsSaveAsDexSurplusChecked(false);
+                            }
+                            if (handleChangeClick && !isWithdrawFromWalletDisabled) {
+                                handleChangeClick(walletBalanceNonLocaleString);
+                            }
+                        }}
+                    >
+                        Max
+                    </button>
+                ) : null}
+
                 <IconWithTooltip title={'Contract Balance'} placement='bottom'>
                     <div
                         className={`${styles.balance_with_pointer} ${
@@ -341,9 +355,6 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                         onClick={() => {
                             if (props.sellToken) {
                                 setIsWithdrawFromDexChecked(true);
-                                if (handleChangeClick && !isWithdrawFromDexDisabled) {
-                                    handleChangeClick(surplusBalanceNonLocaleString);
-                                }
                             } else {
                                 setIsSaveAsDexSurplusChecked(true);
                             }
@@ -383,6 +394,22 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                         </div>
                     </div>
                 </IconWithTooltip>
+                {isSellTokenSelector && surplusBalanceNonLocaleString !== '0.0' ? (
+                    <button
+                        onClick={() => {
+                            if (props.sellToken) {
+                                setIsWithdrawFromDexChecked(true);
+                            } else {
+                                setIsSaveAsDexSurplusChecked(true);
+                            }
+                            if (handleChangeClick && !isWithdrawFromDexDisabled) {
+                                handleChangeClick(surplusBalanceNonLocaleString);
+                            }
+                        }}
+                    >
+                        Max
+                    </button>
+                ) : null}
             </div>
             {WithdrawTokensContent}
         </div>
