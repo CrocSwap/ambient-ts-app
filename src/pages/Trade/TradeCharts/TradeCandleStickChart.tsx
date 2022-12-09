@@ -33,6 +33,7 @@ declare global {
 }
 
 interface ChartData {
+    isUserLoggedIn: boolean | undefined;
     pool: CrocPoolView | undefined;
     chainData: ChainSpec;
     expandTradeTable: boolean;
@@ -70,6 +71,7 @@ interface ChartData {
     setReset: React.Dispatch<React.SetStateAction<boolean>>;
     showLatest: boolean | undefined;
     setShowLatest: React.Dispatch<React.SetStateAction<boolean>>;
+    poolSpotPrice: number | undefined;
 }
 
 export interface ChartUtils {
@@ -89,6 +91,7 @@ type chartItemStates = {
 
 export default function TradeCandleStickChart(props: ChartData) {
     const {
+        isUserLoggedIn,
         pool,
         chainData,
         baseTokenAddress,
@@ -97,6 +100,7 @@ export default function TradeCandleStickChart(props: ChartData) {
         selectedDate,
         setSelectedDate,
         checkLimitOrder,
+        poolSpotPrice,
     } = props;
 
     const [scaleData, setScaleData] = useState<any>();
@@ -505,6 +509,7 @@ export default function TradeCandleStickChart(props: ChartData) {
             <div style={{ height: '100%', width: '100%' }}>
                 {!isLoading && parsedChartData !== undefined ? (
                     <Chart
+                        isUserLoggedIn={isUserLoggedIn}
                         pool={pool}
                         chainData={chainData}
                         isTokenABase={isTokenABase}
@@ -543,6 +548,7 @@ export default function TradeCandleStickChart(props: ChartData) {
                         setReset={props.setReset}
                         showLatest={props.showLatest}
                         setShowLatest={props.setShowLatest}
+                        poolSpotPrice={poolSpotPrice}
                     />
                 ) : (
                     <>{loading}</>

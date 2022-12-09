@@ -58,6 +58,7 @@ import { formatDollarAmountAxis } from '../../../utils/numbers';
 
 // interface for React functional component props
 interface TradeChartsPropsIF {
+    isUserLoggedIn: boolean | undefined;
     pool: CrocPoolView | undefined;
     // poolPriceTick: number | undefined;
     chainData: ChainSpec;
@@ -94,6 +95,7 @@ interface TradeChartsPropsIF {
     selectedDate: Date | undefined;
     setSelectedDate: Dispatch<Date | undefined>;
     checkLimitOrder: boolean;
+    poolSpotPrice: number | undefined;
 }
 
 export interface CandleChartData {
@@ -146,6 +148,7 @@ export interface LiqSnap {
 // React functional component
 export default function TradeCharts(props: TradeChartsPropsIF) {
     const {
+        isUserLoggedIn,
         pool,
         // liquidityData,
         chainData,
@@ -162,6 +165,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
         selectedDate,
         setSelectedDate,
         checkLimitOrder,
+        poolSpotPrice,
     } = props;
 
     const dispatch = useAppDispatch();
@@ -883,6 +887,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
             ) : (
                 <div style={{ width: '100%', height: '100%', zIndex: '2' }}>
                     <TradeCandleStickChart
+                        isUserLoggedIn={isUserLoggedIn}
                         pool={pool}
                         chainData={chainData}
                         // tvlData={formattedTvlData}
@@ -920,6 +925,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
                         setReset={setReset}
                         showLatest={showLatest}
                         setShowLatest={setShowLatest}
+                        poolSpotPrice={poolSpotPrice}
                     />
                 </div>
             )}

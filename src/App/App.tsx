@@ -1628,6 +1628,7 @@ export default function App() {
     // const [poolPriceTick, setPoolPriceTick] = useState<number | undefined>();
     // const [poolPriceNonDisplay, setPoolPriceNonDisplay] = useState<number | undefined>();
     const [poolPriceDisplay, setPoolPriceDisplay] = useState<number | undefined>();
+
     const poolPriceNonDisplay = tradeData.poolPriceNonDisplay;
 
     useEffect(() => {

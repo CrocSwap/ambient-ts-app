@@ -322,8 +322,9 @@ export default function Limit(props: LimitPropsIF) {
 
     // check limit order
     useEffect(() => {
+        console.log({ isSellTokenBase });
         setCheckLimitOrder(isOrderValid && poolPriceNonDisplay !== 0 && limitAllowed);
-    }, [isOrderValid, poolPriceNonDisplay, limitAllowed]);
+    }, [isOrderValid, poolPriceNonDisplay, limitAllowed, isSellTokenBase]);
 
     useEffect(() => {
         // if (!provider) return;

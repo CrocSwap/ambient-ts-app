@@ -38,7 +38,6 @@ import {
     getPinnedPriceValuesFromTicks,
 } from '../Trade/Range/rangeFunctions';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
-import { useMoralis } from 'react-moralis';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -58,6 +57,7 @@ type chartItemStates = {
     showFeeRate: boolean;
 };
 interface ChartData {
+    isUserLoggedIn: boolean | undefined;
     pool: CrocPoolView | undefined;
     chainData: ChainSpec;
     isTokenABase: boolean;
@@ -96,6 +96,7 @@ interface ChartData {
     setReset: React.Dispatch<React.SetStateAction<boolean>>;
     showLatest: boolean | undefined;
     setShowLatest: React.Dispatch<React.SetStateAction<boolean>>;
+    poolSpotPrice: number | undefined;
 }
 
 function getWindowDimensions() {
@@ -108,6 +109,7 @@ function getWindowDimensions() {
 
 export default function Chart(props: ChartData) {
     const {
+        isUserLoggedIn,
         pool,
         chainData,
         isTokenABase,
@@ -133,12 +135,15 @@ export default function Chart(props: ChartData) {
         setShowLatest,
         latest,
         setLatest,
+        poolSpotPrice,
     } = props;
 
     const tradeData = useAppSelector((state) => state.tradeData);
 
     const isDenomBase = tradeData.isDenomBase;
     const isBid = tradeData.isTokenABase;
+    const limitTick = tradeData.limitTick;
+    const isSellTokenBase = tradeData.isTokenABase;
 
     const side = (isDenomBase && !isBid) || (!isDenomBase && isBid) ? 'buy' : 'sell';
     const sellOrderStyle = side === 'sell' ? 'order_sell' : 'order_buy';
@@ -162,7 +167,6 @@ export default function Chart(props: ChartData) {
     const dispatch = useAppDispatch();
 
     const location = useLocation();
-    const { isAuthenticated } = useMoralis();
 
     const { tokenA, tokenB } = tradeData;
     const tokenADecimals = tokenA.decimals;
@@ -386,7 +390,7 @@ export default function Chart(props: ChartData) {
                         }
                         if (isSameLocation ? d === sameLocationData : d === limit[0].value) {
                             if (
-                                isAuthenticated
+                                isUserLoggedIn
                                     ? checkLimitOrder || limit[0].value > currentPriceData[0].value
                                     : false
                             ) {
@@ -407,7 +411,7 @@ export default function Chart(props: ChartData) {
                         }
                         if (
                             (isSameLocation ? d === sameLocationData : d === limit[0].value) &&
-                            (isAuthenticated
+                            (isUserLoggedIn
                                 ? checkLimitOrder || limit[0].value > currentPriceData[0].value
                                 : false)
                         ) {
@@ -1607,7 +1611,7 @@ export default function Chart(props: ChartData) {
                     .attr(
                         'class',
                         (
-                            isAuthenticated
+                            isUserLoggedIn
                                 ? checkLimitOrder || limit[0].value > currentPriceData[0].value
                                 : false
                         )
@@ -1703,7 +1707,7 @@ export default function Chart(props: ChartData) {
                 return limitLine;
             });
         }
-    }, [parsedChartData?.chartData, scaleData, market, checkLimitOrder, limit, isAuthenticated]);
+    }, [parsedChartData?.chartData, scaleData, market, checkLimitOrder, limit, isUserLoggedIn]);
 
     useEffect(() => {
         if (scaleData !== undefined && reset) {
@@ -1781,7 +1785,7 @@ export default function Chart(props: ChartData) {
                         'stroke',
                         selectClass.includes('limit')
                             ? (
-                                  isAuthenticated
+                                  isUserLoggedIn
                                       ? checkLimitOrder ||
                                         limit[0].value > currentPriceData[0].value
                                       : false
@@ -1796,7 +1800,7 @@ export default function Chart(props: ChartData) {
                         'fill',
                         selectClass.includes('limit')
                             ? (
-                                  isAuthenticated
+                                  isUserLoggedIn
                                       ? checkLimitOrder ||
                                         limit[0].value > currentPriceData[0].value
                                       : false
@@ -1816,7 +1820,7 @@ export default function Chart(props: ChartData) {
                         'stroke',
                         selectClass.includes('limit')
                             ? (
-                                  isAuthenticated
+                                  isUserLoggedIn
                                       ? checkLimitOrder ||
                                         limit[0].value > currentPriceData[0].value
                                       : false
@@ -1831,7 +1835,7 @@ export default function Chart(props: ChartData) {
                         'fill',
                         selectClass.includes('limit')
                             ? (
-                                  isAuthenticated
+                                  isUserLoggedIn
                                       ? checkLimitOrder ||
                                         limit[0].value > currentPriceData[0].value
                                       : false
@@ -1934,8 +1938,70 @@ export default function Chart(props: ChartData) {
         limit,
         parsedChartData?.period,
         checkLimitOrder,
-        isAuthenticated,
+        isUserLoggedIn,
     ]);
+
+    // function calcuteOrderLimit() {
+    //     if (limitTick === 0) {
+    //         if (!pool) return;
+
+    //         const gridSize = lookupChain(chainId).gridSize;
+    //         const initialLimitRateNonDisplay = poolSpotPrice * (isSellTokenBase ? 0.985 : 1.015);
+
+    //         // console.log({ initialLimitRateNonDisplay });
+
+    //         const pinnedTick: number = isSellTokenBase
+    //             ? pinTickLower(initialLimitRateNonDisplay, gridSize)
+    //             : pinTickUpper(initialLimitRateNonDisplay, gridSize);
+    //         // pinTick.then(setLimitTick);
+    //         // pinTick.then((newTick) => {
+    //         // console.log({ pinnedTick });
+
+    //         const tickPrice = tickToPrice(pinnedTick);
+    //         const tickDispPrice = pool.toDisplayPrice(tickPrice);
+
+    //         tickDispPrice.then((tp) => {
+    //             const displayPriceWithDenom = isDenomBase ? tp : 1 / tp;
+    //             setEndDisplayPrice(displayPriceWithDenom);
+    //         });
+
+    //         }
+    //     } else if (limitTick) {
+    //         if (!pool) return;
+    //         // if (!provider) return;
+    //         if (poolPriceNonDisplay === 0) return;
+    //         // if (!priceInputFieldBlurred) return;
+
+    //         const gridSize = lookupChain(chainId).gridSize;
+
+    //         const tickPrice = tickToPrice(limitTick);
+
+    //         const tickDispPrice = pool.toDisplayPrice(tickPrice);
+
+    //         tickDispPrice.then((tp) => {
+    //             const displayPriceWithDenom = isDenomBase ? tp : 1 / tp;
+
+    //             // const limitPriceWithDenom = isDenomBase ? 1 / tp : tp;
+    //             setEndDisplayPrice(displayPriceWithDenom);
+    //             const limitRateTruncated =
+    //                 displayPriceWithDenom < 2
+    //                     ? displayPriceWithDenom.toLocaleString(undefined, {
+    //                           minimumFractionDigits: 2,
+    //                           maximumFractionDigits: 6,
+    //                       })
+    //                     : displayPriceWithDenom.toLocaleString(undefined, {
+    //                           minimumFractionDigits: 2,
+    //                           maximumFractionDigits: 2,
+    //                       });
+
+    //         });
+    // }
+    // useEffect(() => {
+
+    //   return () => {
+    //     second
+    //   }
+    // }, [third])
 
     // Line Rules
     useEffect(() => {
