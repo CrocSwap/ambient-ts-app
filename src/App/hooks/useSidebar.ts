@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export const useSidebar = (): [
     sidebar: string,
@@ -10,6 +10,12 @@ export const useSidebar = (): [
     const [sidebar, setSidebar] = useState(
         JSON.parse(localStorage.getItem('user') as string).sidebar ?? 'open'
     );
+
+    useEffect(() => {
+        const user = JSON.parse(localStorage.getItem('user') as string);
+        user.sidebar = sidebar;
+        localStorage.setItem('user', JSON.stringify(user));
+    }, [sidebar]);
 
     const openSidebar = () => setSidebar('open');
     const closeSidebar = () => setSidebar('closed');
