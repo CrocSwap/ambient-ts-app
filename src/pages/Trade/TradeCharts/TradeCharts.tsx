@@ -52,7 +52,7 @@ import {
 } from '../../../App/functions/getPoolStats';
 import TradeChartsLoading from './TradeChartsLoading/TradeChartsLoading';
 import NoTokenIcon from '../../../components/Global/NoTokenIcon/NoTokenIcon';
-import { ChainSpec, CrocPoolView } from '@crocswap-libs/sdk';
+import { ChainSpec, CrocEnv, CrocPoolView } from '@crocswap-libs/sdk';
 import { formatDollarAmountAxis } from '../../../utils/numbers';
 // import { formatAmountOld } from '../../../utils/numbers';
 
@@ -94,8 +94,7 @@ interface TradeChartsPropsIF {
     poolPriceNonDisplay: number | undefined;
     selectedDate: Date | undefined;
     setSelectedDate: Dispatch<Date | undefined>;
-    checkLimitOrder: boolean;
-    poolSpotPrice: number | undefined;
+    crocEnv: CrocEnv | undefined;
 }
 
 export interface CandleChartData {
@@ -164,8 +163,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
         expandTradeTable,
         selectedDate,
         setSelectedDate,
-        checkLimitOrder,
-        poolSpotPrice,
+        crocEnv,
     } = props;
 
     const dispatch = useAppDispatch();
@@ -916,7 +914,6 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
                         poolPriceNonDisplay={props.poolPriceNonDisplay}
                         selectedDate={selectedDate}
                         setSelectedDate={setSelectedDate}
-                        checkLimitOrder={checkLimitOrder}
                         rescale={rescale}
                         setRescale={setRescale}
                         latest={latest}
@@ -925,7 +922,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
                         setReset={setReset}
                         showLatest={showLatest}
                         setShowLatest={setShowLatest}
-                        poolSpotPrice={poolSpotPrice}
+                        crocEnv={crocEnv}
                     />
                 </div>
             )}

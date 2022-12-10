@@ -17,7 +17,7 @@ import { getPinnedPriceValuesFromDisplayPrices } from '../Range/rangeFunctions';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
-import { ChainSpec, CrocPoolView } from '@crocswap-libs/sdk';
+import { ChainSpec, CrocEnv, CrocPoolView } from '@crocswap-libs/sdk';
 import ChartSkeleton from './ChartSkeleton/ChartSkeleton';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -62,7 +62,6 @@ interface ChartData {
     poolPriceNonDisplay: number | undefined;
     selectedDate: Date | undefined;
     setSelectedDate: React.Dispatch<Date | undefined>;
-    checkLimitOrder: boolean;
     rescale: boolean | undefined;
     setRescale: React.Dispatch<React.SetStateAction<boolean>>;
     latest: boolean | undefined;
@@ -71,7 +70,7 @@ interface ChartData {
     setReset: React.Dispatch<React.SetStateAction<boolean>>;
     showLatest: boolean | undefined;
     setShowLatest: React.Dispatch<React.SetStateAction<boolean>>;
-    poolSpotPrice: number | undefined;
+    crocEnv: CrocEnv | undefined;
 }
 
 export interface ChartUtils {
@@ -99,8 +98,7 @@ export default function TradeCandleStickChart(props: ChartData) {
         poolPriceNonDisplay,
         selectedDate,
         setSelectedDate,
-        checkLimitOrder,
-        poolSpotPrice,
+        crocEnv,
     } = props;
 
     const [scaleData, setScaleData] = useState<any>();
@@ -539,7 +537,6 @@ export default function TradeCandleStickChart(props: ChartData) {
                         poolPriceNonDisplay={poolPriceNonDisplay}
                         selectedDate={selectedDate}
                         setSelectedDate={setSelectedDate}
-                        checkLimitOrder={checkLimitOrder}
                         rescale={props.rescale}
                         setRescale={props.setRescale}
                         latest={props.latest}
@@ -548,7 +545,7 @@ export default function TradeCandleStickChart(props: ChartData) {
                         setReset={props.setReset}
                         showLatest={props.showLatest}
                         setShowLatest={props.setShowLatest}
-                        poolSpotPrice={poolSpotPrice}
+                        crocEnv={crocEnv}
                     />
                 ) : (
                     <>{loading}</>

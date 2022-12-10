@@ -28,6 +28,7 @@ import { ChartUtils } from '../Trade/TradeCharts/TradeCandleStickChart';
 import './Chart.css';
 import {
     ChainSpec,
+    CrocEnv,
     CrocPoolView,
     pinTickLower,
     pinTickUpper,
@@ -87,7 +88,6 @@ interface ChartData {
     selectedDate: Date | undefined;
     setSelectedDate: React.Dispatch<Date | undefined>;
     volumeData: VolumeChartData;
-    checkLimitOrder: boolean;
     rescale: boolean | undefined;
     setRescale: React.Dispatch<React.SetStateAction<boolean>>;
     latest: boolean | undefined;
@@ -96,7 +96,7 @@ interface ChartData {
     setReset: React.Dispatch<React.SetStateAction<boolean>>;
     showLatest: boolean | undefined;
     setShowLatest: React.Dispatch<React.SetStateAction<boolean>>;
-    poolSpotPrice: number | undefined;
+    crocEnv: CrocEnv | undefined;
 }
 
 function getWindowDimensions() {
@@ -126,7 +126,6 @@ export default function Chart(props: ChartData) {
         poolPriceNonDisplay,
         selectedDate,
         setSelectedDate,
-        checkLimitOrder,
         rescale,
         setRescale,
         reset,
@@ -135,15 +134,13 @@ export default function Chart(props: ChartData) {
         setShowLatest,
         latest,
         setLatest,
-        poolSpotPrice,
+        crocEnv,
     } = props;
 
     const tradeData = useAppSelector((state) => state.tradeData);
 
     const isDenomBase = tradeData.isDenomBase;
     const isBid = tradeData.isTokenABase;
-    const limitTick = tradeData.limitTick;
-    const isSellTokenBase = tradeData.isTokenABase;
 
     const side = (isDenomBase && !isBid) || (!isDenomBase && isBid) ? 'buy' : 'sell';
     const sellOrderStyle = side === 'sell' ? 'order_sell' : 'order_buy';
@@ -229,6 +226,7 @@ export default function Chart(props: ChartData) {
     const [isLineDrag, setIsLineDrag] = useState(false);
     const [mouseMoveChartName, setMouseMoveChartName] = useState<string | undefined>(undefined);
     const [windowDimensions, setWindowDimensions] = useState(getWindowDimensions());
+    const [checkLimitOrder, setCheckLimitOrder] = useState<boolean>(false);
 
     // Data
     const [crosshairData, setCrosshairData] = useState([{ x: 0, y: -1 }]);
@@ -389,11 +387,7 @@ export default function Chart(props: ChartData) {
                             return 'url(#crossHairBg)';
                         }
                         if (isSameLocation ? d === sameLocationData : d === limit[0].value) {
-                            if (
-                                isUserLoggedIn
-                                    ? checkLimitOrder || limit[0].value > currentPriceData[0].value
-                                    : false
-                            ) {
+                            if (isUserLoggedIn ? checkLimitOrder : false) {
                                 return sellOrderStyle === 'order_sell'
                                     ? 'url(#textOrderSellBg)'
                                     : 'url(#textOrderBuyBg)';
@@ -411,9 +405,7 @@ export default function Chart(props: ChartData) {
                         }
                         if (
                             (isSameLocation ? d === sameLocationData : d === limit[0].value) &&
-                            (isUserLoggedIn
-                                ? checkLimitOrder || limit[0].value > currentPriceData[0].value
-                                : false)
+                            (isUserLoggedIn ? checkLimitOrder : false)
                         ) {
                             return sellOrderStyle === 'order_sell' ? 'market' : 'y_axis';
                         }
@@ -1610,13 +1602,7 @@ export default function Chart(props: ChartData) {
                     .select('line')
                     .attr(
                         'class',
-                        (
-                            isUserLoggedIn
-                                ? checkLimitOrder || limit[0].value > currentPriceData[0].value
-                                : false
-                        )
-                            ? sellOrderStyle
-                            : 'line',
+                        (isUserLoggedIn ? checkLimitOrder : false) ? sellOrderStyle : 'line',
                     );
             });
 
@@ -1784,12 +1770,7 @@ export default function Chart(props: ChartData) {
                     .attr(
                         'stroke',
                         selectClass.includes('limit')
-                            ? (
-                                  isUserLoggedIn
-                                      ? checkLimitOrder ||
-                                        limit[0].value > currentPriceData[0].value
-                                      : false
-                              )
+                            ? (isUserLoggedIn ? checkLimitOrder : false)
                                 ? sellOrderStyle === 'order_sell'
                                     ? 'var(--accent-secondary)'
                                     : '#7371FC'
@@ -1799,12 +1780,7 @@ export default function Chart(props: ChartData) {
                     .attr(
                         'fill',
                         selectClass.includes('limit')
-                            ? (
-                                  isUserLoggedIn
-                                      ? checkLimitOrder ||
-                                        limit[0].value > currentPriceData[0].value
-                                      : false
-                              )
+                            ? (isUserLoggedIn ? checkLimitOrder : false)
                                 ? sellOrderStyle === 'order_sell'
                                     ? 'var(--accent-secondary)'
                                     : '#7371FC'
@@ -1819,12 +1795,7 @@ export default function Chart(props: ChartData) {
                     .attr(
                         'stroke',
                         selectClass.includes('limit')
-                            ? (
-                                  isUserLoggedIn
-                                      ? checkLimitOrder ||
-                                        limit[0].value > currentPriceData[0].value
-                                      : false
-                              )
+                            ? (isUserLoggedIn ? checkLimitOrder : false)
                                 ? sellOrderStyle === 'order_sell'
                                     ? 'var(--accent-secondary)'
                                     : '#7371FC'
@@ -1834,12 +1805,7 @@ export default function Chart(props: ChartData) {
                     .attr(
                         'fill',
                         selectClass.includes('limit')
-                            ? (
-                                  isUserLoggedIn
-                                      ? checkLimitOrder ||
-                                        limit[0].value > currentPriceData[0].value
-                                      : false
-                              )
+                            ? (isUserLoggedIn ? checkLimitOrder : false)
                                 ? sellOrderStyle === 'order_sell'
                                     ? 'var(--accent-secondary)'
                                     : '#7371FC'
@@ -1941,67 +1907,29 @@ export default function Chart(props: ChartData) {
         isUserLoggedIn,
     ]);
 
-    // function calcuteOrderLimit() {
-    //     if (limitTick === 0) {
-    //         if (!pool) return;
+    useEffect(() => {
+        const limitNonDisplay = denomInBase
+            ? pool?.fromDisplayPrice(limit[0].value)
+            : pool?.fromDisplayPrice(1 / limit[0].value);
 
-    //         const gridSize = lookupChain(chainId).gridSize;
-    //         const initialLimitRateNonDisplay = poolSpotPrice * (isSellTokenBase ? 0.985 : 1.015);
+        limitNonDisplay?.then(async (res: any) => {
+            // const limitPriceInTick = Math.log(limit) / Math.log(1.0001);
+            const pinnedTick: number = isTokenABase
+                ? pinTickLower(res, chainData.gridSize)
+                : pinTickUpper(res, chainData.gridSize);
 
-    //         // console.log({ initialLimitRateNonDisplay });
+            const sellToken = tradeData.tokenA.address;
+            const buyToken = tradeData.tokenB.address;
+            const isTokenAPrimary = tradeData.isTokenAPrimary;
 
-    //         const pinnedTick: number = isSellTokenBase
-    //             ? pinTickLower(initialLimitRateNonDisplay, gridSize)
-    //             : pinTickUpper(initialLimitRateNonDisplay, gridSize);
-    //         // pinTick.then(setLimitTick);
-    //         // pinTick.then((newTick) => {
-    //         // console.log({ pinnedTick });
+            const testOrder = isTokenAPrimary
+                ? crocEnv?.sell(sellToken, 0)
+                : crocEnv?.buy(buyToken, 0);
 
-    //         const tickPrice = tickToPrice(pinnedTick);
-    //         const tickDispPrice = pool.toDisplayPrice(tickPrice);
-
-    //         tickDispPrice.then((tp) => {
-    //             const displayPriceWithDenom = isDenomBase ? tp : 1 / tp;
-    //             setEndDisplayPrice(displayPriceWithDenom);
-    //         });
-
-    //         }
-    //     } else if (limitTick) {
-    //         if (!pool) return;
-    //         // if (!provider) return;
-    //         if (poolPriceNonDisplay === 0) return;
-    //         // if (!priceInputFieldBlurred) return;
-
-    //         const gridSize = lookupChain(chainId).gridSize;
-
-    //         const tickPrice = tickToPrice(limitTick);
-
-    //         const tickDispPrice = pool.toDisplayPrice(tickPrice);
-
-    //         tickDispPrice.then((tp) => {
-    //             const displayPriceWithDenom = isDenomBase ? tp : 1 / tp;
-
-    //             // const limitPriceWithDenom = isDenomBase ? 1 / tp : tp;
-    //             setEndDisplayPrice(displayPriceWithDenom);
-    //             const limitRateTruncated =
-    //                 displayPriceWithDenom < 2
-    //                     ? displayPriceWithDenom.toLocaleString(undefined, {
-    //                           minimumFractionDigits: 2,
-    //                           maximumFractionDigits: 6,
-    //                       })
-    //                     : displayPriceWithDenom.toLocaleString(undefined, {
-    //                           minimumFractionDigits: 2,
-    //                           maximumFractionDigits: 2,
-    //                       });
-
-    //         });
-    // }
-    // useEffect(() => {
-
-    //   return () => {
-    //     second
-    //   }
-    // }, [third])
+            const ko = testOrder?.atLimit(isTokenAPrimary ? buyToken : sellToken, pinnedTick);
+            setCheckLimitOrder(!(await ko?.willMintFail()));
+        });
+    }, [limit]);
 
     // Line Rules
     useEffect(() => {
