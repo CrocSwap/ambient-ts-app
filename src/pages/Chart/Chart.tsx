@@ -1131,15 +1131,12 @@ export default function Chart(props: ChartData) {
     }, [tradeData.limitTick, denomInBase]);
 
     const setLimitLineValue = () => {
-        const limitDisplayPrice = denomInBase
-            ? pool?.toDisplayPrice(tickToPrice(tradeData.limitTick))
-            : pool?.toDisplayPrice(tickToPrice(tradeData.limitTick));
-
+        const limitDisplayPrice = pool?.toDisplayPrice(tickToPrice(tradeData.limitTick));
         limitDisplayPrice?.then((limit) => {
             setLimit([
                 {
                     name: 'Limit',
-                    value: limit || 0,
+                    value: denomInBase ? limit : 1 / limit || 0,
                 },
             ]);
         });
