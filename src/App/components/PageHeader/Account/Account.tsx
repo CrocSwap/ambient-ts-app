@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { useState, Dispatch, SetStateAction, useRef } from 'react';
+import { useState, Dispatch, SetStateAction, useRef, useEffect } from 'react';
 import { FiMoreHorizontal, FiCopy, FiExternalLink } from 'react-icons/fi';
 
 // START: Import Local Files
@@ -66,6 +66,10 @@ export default function Account(props: AccountPropsIF) {
 
     const [openNavbarMenu, setOpenNavbarMenu] = useState(false);
     const [showWalletDropdown, setShowWalletDropdown] = useState(false);
+
+    useEffect(() => {
+        !isUserLoggedIn ? setShowWalletDropdown(false) : null;
+    }, [isUserLoggedIn]);
 
     const walletWrapperStyle = showWalletDropdown
         ? styles.wallet_wrapper_active

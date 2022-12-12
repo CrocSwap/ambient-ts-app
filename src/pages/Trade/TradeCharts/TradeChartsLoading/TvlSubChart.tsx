@@ -56,7 +56,6 @@ export default function TvlSubChart(props: TvlData) {
         }
     }, [
         scaleData,
-        scaleData.lastX,
         crosshairForSubChart,
         period,
         tvlData,
@@ -84,7 +83,7 @@ export default function TvlSubChart(props: TvlData) {
 
                 const crosshairDataLocal = [
                     {
-                        x: crosshairForSubChart[0].x,
+                        x: 0,
                         y:
                             isMouseMoveForSubChart && mouseMoveChartName === 'tvl'
                                 ? crosshairForSubChart[0].y
@@ -94,27 +93,7 @@ export default function TvlSubChart(props: TvlData) {
 
                 const areaJoin = d3fc.dataJoin('g', 'areaJoin');
                 const lineJoin = d3fc.dataJoin('g', 'lineJoin');
-                // const crosshairHorizontalJoin = d3fc.dataJoin('g', 'crosshairHorizontal');
                 const crosshairVerticalJoin = d3fc.dataJoin('g', 'crosshairVertical');
-
-                const crosshairHorizontal = d3fc
-                    .annotationSvgLine()
-                    .orient('vertical')
-                    .value((d: any) => d.x)
-                    .xScale(scaleData.xScale)
-                    .yScale(yScale)
-                    .label('');
-
-                crosshairHorizontal.decorate((selection: any) => {
-                    selection.enter().select('line').attr('class', 'crosshair');
-                    selection.enter().style('visibility', 'hidden');
-                    selection
-                        .enter()
-                        .append('line')
-                        .attr('stroke-width', 1)
-                        .style('pointer-events', 'all');
-                    selection.enter().select('g.top-handle').remove();
-                });
 
                 const crosshairVertical = d3fc
                     .annotationSvgLine()
@@ -204,13 +183,11 @@ export default function TvlSubChart(props: TvlData) {
                                 .domain(scaleData.xScale.range())
                                 .range([0, domainX[1] - domainX[0]]);
 
-                            const deltaX = linearX(scaleData.lastX - event.transform.x);
+                            const deltaX = linearX(-event.sourceEvent.movementX);
                             scaleData.xScale.domain([
                                 new Date(domainX[0].getTime() + deltaX),
                                 new Date(domainX[1].getTime() + deltaX),
                             ]);
-
-                            scaleData.lastX = event.transform.x;
 
                             setZoomAndYdragControl(event);
                             setIsMouseMoveForSubChart(false);
@@ -278,17 +255,17 @@ export default function TvlSubChart(props: TvlData) {
                     setIsZoomForSubChart(false);
                     setMouseMoveEventCharts(event);
                     setsubChartValues((prevState: any) => {
-                        const newTargets = [...prevState];
-                        newTargets.filter((target: any) => target.name === 'tvl')[0].value = snap(
+                        const newData = [...prevState];
+                        newData.filter((target: any) => target.name === 'tvl')[0].value = snap(
                             areaSeries,
                             tvlData,
                             {
                                 x: scaleData.xScale(crosshairDataLocal[0].x),
                                 y: crosshairDataLocal[0].y,
                             },
-                        );
+                        )[0].value;
 
-                        return newTargets;
+                        return newData;
                     });
                 });
 

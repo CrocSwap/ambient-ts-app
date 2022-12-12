@@ -71,7 +71,7 @@ import { LimitOrderIF, TokenIF, TokenListIF, PositionIF } from '../utils/interfa
 import { fetchTokenLists } from './functions/fetchTokenLists';
 import {
     resetTokens,
-    resetTradeData,
+    // resetTradeData,
     setAdvancedHighTick,
     setAdvancedLowTick,
     setAdvancedMode,
@@ -142,6 +142,8 @@ import TopTokens from '../components/Analytics/TopTokens/TopTokens';
 import AnalyticsTransactions from '../components/Analytics/AnalyticsTransactions/AnalyticsTransactions';
 import trimString from '../utils/functions/trimString';
 import { memoizeFetchContractDetails } from './functions/fetchContractDetails';
+import { useToken } from './hooks/useToken';
+import useDebounce from './hooks/useDebounce';
 // import { memoizeQuerySpotTick } from './functions/querySpotTick';
 // import PhishingWarning from '../components/Global/PhisingWarning/PhishingWarning';
 
@@ -361,7 +363,7 @@ export default function App() {
                     '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
                     '0x1',
                 );
-                const usdPrice = mainnetEthPrice.usdPrice;
+                const usdPrice = mainnetEthPrice?.usdPrice;
                 setEthMainnetUsdPrice(usdPrice);
             })();
         }
@@ -1363,6 +1365,8 @@ export default function App() {
     const candleDomains = tradeData.candleDomains;
     const domainBoundaryInSeconds = Math.floor((candleDomains?.domainBoundry || 0) / 1000);
 
+    const domainBoundaryInSecondsDebounced = useDebounce(domainBoundaryInSeconds, 500);
+
     useEffect(() => {
         // console.log({ debouncedBoundary });
         // console.log({ activePeriod });
@@ -1382,9 +1386,16 @@ export default function App() {
         const minTime = getMinTime();
         // console.log({ minTime });
 
-        const numDurationsNeeded = Math.floor((minTime - domainBoundaryInSeconds) / activePeriod);
+        const numDurationsNeeded = Math.floor(
+            (minTime - domainBoundaryInSecondsDebounced) / activePeriod,
+        );
 
-        if (isServerEnabled && httpGraphCacheServerDomain && domainBoundaryInSeconds && minTime) {
+        if (
+            isServerEnabled &&
+            httpGraphCacheServerDomain &&
+            domainBoundaryInSecondsDebounced &&
+            minTime
+        ) {
             // console.log('fetching candles');
             const candleSeriesCacheEndpoint = httpGraphCacheServerDomain + '/candle_series?';
 
@@ -1443,7 +1454,7 @@ export default function App() {
                 })
                 .catch(console.log);
         }
-    }, [domainBoundaryInSeconds]);
+    }, [domainBoundaryInSecondsDebounced]);
 
     useEffect(() => {
         if (candlesMessage) {
@@ -1887,7 +1898,7 @@ export default function App() {
                     simpleCalc: true,
                     annotateMEV: false,
                     ensResolution: true,
-                    n: 100,
+                    n: 500, // fetch last 500 changes,
                 })
                     .then((updatedTransactions) => {
                         dispatch(
@@ -1975,7 +1986,7 @@ export default function App() {
         setQuoteTokenBalance('');
         setBaseTokenDexBalance('');
         setQuoteTokenDexBalance('');
-        dispatch(resetTradeData());
+        // dispatch(resetTradeData());
         dispatch(resetUserGraphData());
         dispatch(resetReceiptData());
         dispatch(resetTokenData());
@@ -2377,6 +2388,10 @@ export default function App() {
 
     // app overlay-----------------------------------------------
     // end of app overlay-----------------------------------------------
+
+    const [verifyToken, getToken] = useToken(chainData.chainId);
+    false && verifyToken('', '');
+    false && getToken('', '');
 
     return (
         <>

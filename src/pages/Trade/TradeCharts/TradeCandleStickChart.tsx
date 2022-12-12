@@ -69,7 +69,9 @@ interface ChartData {
     reset: boolean | undefined;
     setReset: React.Dispatch<React.SetStateAction<boolean>>;
     showLatest: boolean | undefined;
+    activeTimeFrame: string;
     setShowLatest: React.Dispatch<React.SetStateAction<boolean>>;
+    setShowTooltip: React.Dispatch<React.SetStateAction<boolean>>;
     crocEnv: CrocEnv | undefined;
 }
 
@@ -99,6 +101,7 @@ export default function TradeCandleStickChart(props: ChartData) {
         selectedDate,
         setSelectedDate,
         crocEnv,
+        activeTimeFrame,
     } = props;
 
     const [scaleData, setScaleData] = useState<any>();
@@ -128,14 +131,21 @@ export default function TradeCandleStickChart(props: ChartData) {
 
     useEffect(() => {
         setIsLoading(true);
-
-        parseData();
+        setParsedChartData(() => {
+            return undefined;
+        });
     }, [activeChartPeriod, denominationsInBase]);
 
     useEffect(() => {
         parseData();
         setIsCandleAdded(true);
     }, [props.candleData]);
+
+    useEffect(() => {
+        if (parsedChartData === undefined) {
+            parseData();
+        }
+    }, [parsedChartData]);
 
     // Parse price data
     const parseData = () => {
@@ -227,8 +237,11 @@ export default function TradeCandleStickChart(props: ChartData) {
                 .range([30, 1000]);
 
             volumeData.map((data: any) => {
-                data.value = volumeLogScale(data.value);
-                volumeTempData.push(data);
+                volumeTempData.push({
+                    time: data.time,
+                    value: volumeLogScale(data.value),
+                    volume: data.value,
+                });
             });
         }
 
@@ -384,19 +397,21 @@ export default function TradeCandleStickChart(props: ChartData) {
             lineAskSeries: [],
             totalLiq: props.liquidityData?.totals?.totalLiq,
         };
-    }, [props.liquidityData, denominationsInBase, props.poolPriceDisplay]);
+    }, [props.liquidityData, props.poolPriceDisplay]);
+
+    useEffect(() => {
+        setScaleData(() => {
+            return undefined;
+        });
+        setScaleForChart(parsedChartData, liquidityData);
+    }, [parsedChartData?.period, liquidityData]);
 
     // Scale
-    useEffect(() => {
+    const setScaleForChart = (parsedChartData: any, liquidityData: any) => {
         if (parsedChartData !== undefined && liquidityData !== undefined) {
             if (parsedChartData.chartData.length > 100) {
                 parsedChartData.chartData = parsedChartData.chartData.slice(0, 100);
             }
-
-            setScaleData(() => {
-                return undefined;
-            });
-
             const priceRange = d3fc
                 .extentLinear()
                 .accessors([(d: any) => d.high, (d: any) => d.low])
@@ -470,13 +485,11 @@ export default function TradeCandleStickChart(props: ChartData) {
                     ghostScale: ghostScale,
                     subChartxScale: subChartxScale,
                     volumeScale: volumeScale,
-                    lastZoomedY: 0,
                     lastDragedY: 0,
-                    lastX: 0,
                 };
             });
         }
-    }, [parsedChartData?.period, denominationsInBase, liquidityData]);
+    };
 
     const loading = (
         <div style={{ height: '100%', width: '100%' }} className='animatedImg_container'>
@@ -545,6 +558,8 @@ export default function TradeCandleStickChart(props: ChartData) {
                         setReset={props.setReset}
                         showLatest={props.showLatest}
                         setShowLatest={props.setShowLatest}
+                        setShowTooltip={props.setShowTooltip}
+                        activeTimeFrame={activeTimeFrame}
                         crocEnv={crocEnv}
                     />
                 ) : (

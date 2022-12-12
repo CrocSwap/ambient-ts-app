@@ -2,7 +2,6 @@
 import { useCallback, useEffect, useRef } from 'react';
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
-import { formatDollarAmountAxis } from '../../../../utils/numbers';
 import { FeeChartData } from '../TradeCharts';
 
 interface FreeRateData {
@@ -12,7 +11,6 @@ interface FreeRateData {
     setZoomAndYdragControl: React.Dispatch<React.SetStateAction<any>>;
     crosshairForSubChart: any;
     xScale: any;
-    lastX: any;
     render: any;
     zoomAndYdragControl: any;
     isMouseMoveForSubChart: any;
@@ -40,7 +38,6 @@ export default function FeeRateSubChart(props: FreeRateData) {
         getNewCandleData,
         setMouseMoveChartName,
         mouseMoveChartName,
-        lastX,
     } = props;
 
     const d3PlotFeeRate = useRef(null);
@@ -53,7 +50,7 @@ export default function FeeRateSubChart(props: FreeRateData) {
 
             props.render();
         }
-    }, [xScale, crosshairForSubChart, period, feeData, zoomAndYdragControl, lastX]);
+    }, [xScale, crosshairForSubChart, period, feeData, zoomAndYdragControl]);
 
     const render = useCallback(() => {
         const nd = d3.select('#d3PlotFeeRate').node() as any;
@@ -77,12 +74,14 @@ export default function FeeRateSubChart(props: FreeRateData) {
                 const yAxis = d3fc
                     .axisRight()
                     .scale(yScale)
-                    .tickFormat(formatDollarAmountAxis)
+                    .tickFormat((d: any) => {
+                        return d + '%';
+                    })
                     .tickArguments([2]);
 
                 const crosshairDataLocal = [
                     {
-                        x: crosshairForSubChart[0].x,
+                        x: 0,
                         y:
                             isMouseMoveForSubChart && mouseMoveChartName === 'feeRate'
                                 ? crosshairForSubChart[0].y
@@ -92,25 +91,6 @@ export default function FeeRateSubChart(props: FreeRateData) {
 
                 const lineJoin = d3fc.dataJoin('g', 'lineJoin');
                 const crosshairVerticalJoin = d3fc.dataJoin('g', 'crosshairVertical');
-
-                const crosshairHorizontal = d3fc
-                    .annotationSvgLine()
-                    .orient('vertical')
-                    .value((d: any) => d.x)
-                    .xScale(xScale)
-                    .yScale(yScale)
-                    .label('');
-
-                crosshairHorizontal.decorate((selection: any) => {
-                    selection.enter().select('line').attr('class', 'crosshair');
-                    selection.enter().style('visibility', 'hidden');
-                    selection
-                        .enter()
-                        .append('line')
-                        .attr('stroke-width', 1)
-                        .style('pointer-events', 'all');
-                    selection.enter().select('g.top-handle').remove();
-                });
 
                 const crosshairVertical = d3fc
                     .annotationSvgLine()
@@ -167,7 +147,7 @@ export default function FeeRateSubChart(props: FreeRateData) {
                                 .domain(xScale.range())
                                 .range([0, domainX[1] - domainX[0]]);
 
-                            const deltaX = linearX(lastX - event.transform.x);
+                            const deltaX = linearX(-event.sourceEvent.movementX);
                             xScale.domain([
                                 new Date(domainX[0].getTime() + deltaX),
                                 new Date(domainX[1].getTime() + deltaX),
