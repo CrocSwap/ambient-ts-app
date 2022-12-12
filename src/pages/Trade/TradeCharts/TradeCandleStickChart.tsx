@@ -407,9 +407,8 @@ export default function TradeCandleStickChart(props: ChartData) {
     // Scale
     const setScaleForChart = (parsedChartData: any, liquidityData: any) => {
         if (parsedChartData !== undefined && liquidityData !== undefined) {
-            if (parsedChartData.chartData.length > 100) {
-                parsedChartData.chartData = parsedChartData.chartData.slice(0, 100);
-            }
+            const temp = [...parsedChartData.chartData];
+
             const priceRange = d3fc
                 .extentLinear()
                 .accessors([(d: any) => d.high, (d: any) => d.low])
@@ -433,7 +432,7 @@ export default function TradeCandleStickChart(props: ChartData) {
             const subChartxScale = d3.scaleTime();
             const yScale = d3.scaleLinear();
 
-            xScale.domain(xExtent(parsedChartData.chartData));
+            xScale.domain(xExtent(temp.splice(0, 100)));
             subChartxScale.domain(subChartxExtent(parsedChartData.chartData));
             yScale.domain(priceRange(parsedChartData.chartData));
 
