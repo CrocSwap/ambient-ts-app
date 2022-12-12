@@ -237,7 +237,7 @@ export default function FeeRateSubChart(props: FreeRateData) {
                 });
             }
         },
-        [crosshairForSubChart],
+        [crosshairForSubChart, feeData],
     );
 
     return (

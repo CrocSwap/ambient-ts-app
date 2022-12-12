@@ -258,6 +258,7 @@ export default function TvlSubChart(props: TvlData) {
                     setIsMouseMoveForSubChart(true);
                     setIsZoomForSubChart(false);
                     setMouseMoveEventCharts(event);
+
                     setsubChartValues((prevState: any) => {
                         const newData = [...prevState];
                         newData.filter((target: any) => target.name === 'tvl')[0].value = snap(
@@ -286,7 +287,7 @@ export default function TvlSubChart(props: TvlData) {
                 });
             }
         },
-        [crosshairForSubChart, JSON.stringify(scaleData.xScale.domain()[0])],
+        [crosshairForSubChart, JSON.stringify(scaleData.xScale.domain()[0]), tvlData],
     );
 
     return (
