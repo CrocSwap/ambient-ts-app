@@ -2412,8 +2412,6 @@ export default function App() {
     // end of app overlay-----------------------------------------------
 
     const [verifyToken, getToken] = useToken(chainData.chainId);
-    false && verifyToken('', '');
-    false && getToken('', '');
 
     return (
         <>
@@ -2634,6 +2632,8 @@ export default function App() {
                             element={
                                 <Portfolio
                                     crocEnv={crocEnv}
+                                    verifyToken={verifyToken}
+                                    getToken={getToken}
                                     isTokenABase={isTokenABase}
                                     provider={provider}
                                     cachedFetchErc20TokenBalances={cachedFetchErc20TokenBalances}
@@ -2681,6 +2681,8 @@ export default function App() {
                             element={
                                 <Portfolio
                                     crocEnv={crocEnv}
+                                    verifyToken={verifyToken}
+                                    getToken={getToken}
                                     isTokenABase={isTokenABase}
                                     provider={provider}
                                     cachedFetchErc20TokenBalances={cachedFetchErc20TokenBalances}
@@ -2746,6 +2748,8 @@ export default function App() {
                             element={
                                 <Portfolio
                                     crocEnv={crocEnv}
+                                    verifyToken={verifyToken}
+                                    getToken={getToken}
                                     isTokenABase={isTokenABase}
                                     provider={provider}
                                     cachedFetchErc20TokenBalances={cachedFetchErc20TokenBalances}

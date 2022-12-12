@@ -37,6 +37,8 @@ const mainnetProvider = new ethers.providers.WebSocketProvider(
 
 interface PortfolioPropsIF {
     crocEnv: CrocEnv | undefined;
+    verifyToken: (addr: string, chn: string) => boolean;
+    getToken: (addr: string, chn: string) => TokenIF | undefined;
     isTokenABase: boolean;
     provider: ethers.providers.Provider | undefined;
     cachedFetchNativeTokenBalance: nativeTokenBalanceFn;
@@ -83,6 +85,8 @@ interface PortfolioPropsIF {
 export default function Portfolio(props: PortfolioPropsIF) {
     const {
         crocEnv,
+        getToken,
+        verifyToken,
         isTokenABase,
         provider,
         cachedFetchNativeTokenBalance,
@@ -117,6 +121,8 @@ export default function Portfolio(props: PortfolioPropsIF) {
         openModalWallet,
     } = props;
     const { isInitialized } = useMoralis();
+    false && getToken('', '');
+    false && verifyToken('', '');
 
     const selectedToken: TokenIF = useAppSelector((state) => state.temp.token);
     const connectedUserNativeToken = useAppSelector((state) => state.userData.tokens.nativeToken);
