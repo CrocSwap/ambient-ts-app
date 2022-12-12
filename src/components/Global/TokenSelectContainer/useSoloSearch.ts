@@ -6,6 +6,7 @@ export const useSoloSearch = (
     importedTokens: TokenIF[],
     verifyToken: (addr: string, chn: string) => boolean,
     getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined,
+    getTokensByName: (searchName: string, chn: string, exact: boolean) => TokenIF[]
 ): [TokenIF[], string, Dispatch<SetStateAction<string>>, string] => {
     // memoize default list of tokens to display in DOM
     const importedTokensOnChain = useMemo(() => (
@@ -60,10 +61,12 @@ export const useSoloSearch = (
         // make one set of tokens to render
         // default is the basic imported tokens wherever they come from now
         const tokenExists = verifyToken(validatedInput, chainId);
-        if (validatedInput) {
+        if (searchAs === 'address') {
             tokenExists && setOutputTokens(
                 [getTokenByAddress(validatedInput, chainId) as TokenIF]
             );
+        } else if (searchAs === 'nameOrSymbol') {
+            setOutputTokens(getTokensByName(validatedInput, chainId, false));
         } else {
             setOutputTokens(importedTokensOnChain);
         }

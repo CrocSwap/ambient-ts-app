@@ -39,6 +39,7 @@ interface PortfolioPropsIF {
     crocEnv: CrocEnv | undefined;
     localTokens: Map<string, TokenIF>;
     getTokensOnChain: (chn: string) => TokenIF[];
+    getTokensByName: (searchName: string, chn: string, exact: boolean) => TokenIF[];
     verifyToken: (addr: string, chn: string) => boolean;
     getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
     isTokenABase: boolean;
@@ -89,6 +90,7 @@ export default function Portfolio(props: PortfolioPropsIF) {
         crocEnv,
         // localTokens,
         getTokensOnChain,
+        getTokensByName,
         getTokenByAddress,
         verifyToken,
         isTokenABase,
@@ -619,6 +621,7 @@ export default function Portfolio(props: PortfolioPropsIF) {
                         setImportedTokens={setImportedTokens}
                         tokensOnActiveLists={tokensOnActiveLists}
                         getTokensOnChain={getTokensOnChain}
+                        getTokensByName={getTokensByName}
                         getTokenByAddress={getTokenByAddress}
                         verifyToken={verifyToken}
                     />

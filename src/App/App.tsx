@@ -2417,11 +2417,9 @@ export default function App() {
         getAllTokens,
         getTokensOnChain,
         getTokenByAddress,
-        getTokenByName
+        getTokensByName
     ] = useToken(chainData.chainId);
     false && getAllTokens;
-    false && getTokensOnChain;
-    false && getTokenByName;
 
     return (
         <>
@@ -2644,6 +2642,7 @@ export default function App() {
                                     crocEnv={crocEnv}
                                     localTokens={localTokens}
                                     getTokensOnChain={getTokensOnChain}
+                                    getTokensByName={getTokensByName}
                                     verifyToken={verifyToken}
                                     getTokenByAddress={getTokenByAddress}
                                     isTokenABase={isTokenABase}
@@ -2695,6 +2694,7 @@ export default function App() {
                                     crocEnv={crocEnv}
                                     localTokens={localTokens}
                                     getTokensOnChain={getTokensOnChain}
+                                    getTokensByName={getTokensByName}
                                     verifyToken={verifyToken}
                                     getTokenByAddress={getTokenByAddress}
                                     isTokenABase={isTokenABase}
@@ -2764,6 +2764,7 @@ export default function App() {
                                     crocEnv={crocEnv}
                                     localTokens={localTokens}
                                     getTokensOnChain={getTokensOnChain}
+                                    getTokensByName={getTokensByName}
                                     verifyToken={verifyToken}
                                     getTokenByAddress={getTokenByAddress}
                                     isTokenABase={isTokenABase}

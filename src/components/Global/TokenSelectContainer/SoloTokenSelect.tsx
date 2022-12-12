@@ -19,6 +19,7 @@ interface propsIF {
     closeModal: () => void;
     verifyToken: (addr: string, chn: string) => boolean;
     getTokensOnChain: (chn: string) => TokenIF[];
+    getTokensByName: (searchName: string, chn: string, exact: boolean) => TokenIF[];
     getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
 }
 
@@ -30,6 +31,7 @@ export const SoloTokenSelect = (props: propsIF) => {
         setImportedTokens,
         closeModal,
         // getTokensOnChain,
+        getTokensByName,
         getTokenByAddress,
         verifyToken
     } = props;
@@ -38,7 +40,8 @@ export const SoloTokenSelect = (props: propsIF) => {
         chainId,
         importedTokens,
         verifyToken,
-        getTokenByAddress
+        getTokenByAddress,
+        getTokensByName
     );
     false && validatedInput;
     false && searchType;

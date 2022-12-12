@@ -13,7 +13,7 @@ export const useToken = (
     getAllTokens: () => TokenIF[],
     getTokensOnChain: (chn: string) => TokenIF[],
     getToken: (addr: string, chn: string) => TokenIF | undefined,
-    getTokenByName: (searchName: string, chn: string, exact: boolean) => TokenIF[]
+    getTokensByName: (searchName: string, chn: string, exact: boolean) => TokenIF[]
 ] => {
     const [tokenMap, setTokenMap] = useState(new Map<string, TokenIF>());
 
@@ -80,22 +80,25 @@ export const useToken = (
         return tokenMap.get(addr.toLowerCase() + '_' + chn.toLowerCase());
     }
 
-    const getTokenByName = (searchName: string, chn=chainId, exact=false) => {
+    const getTokensByName = (searchName: string, chn=chainId, exact=false) => {
         const tokens = getTokensOnChain(chn);
         const searchExact = (input: string) => {
+            console.log('searching for exact match');
             const exactMatches = tokens.filter((tok: TokenIF) => (
-                tok.name === input || tok.symbol === input
+                tok.name.toLowerCase() === input.toLowerCase() ||
+                tok.symbol.toLowerCase() === input.toLowerCase()
             ));
             return exactMatches;
         }
         const searchPartial = (input: string) => {
-            const partialMatches = tokens.filter((tok: TokenIF) => {
+            const partialMatches = tokens.filter((tok: TokenIF) =>
                 tok.name.toLowerCase().includes(input.toLowerCase()) ||
                 tok.symbol.toLowerCase().includes(input.toLowerCase())
-            });
+            );
             return partialMatches;
         }
         const matches = exact ? searchExact(searchName) : searchPartial(searchName);
+        console.log({matches});
         return matches;
     }
 
@@ -106,6 +109,6 @@ export const useToken = (
         getAllTokens,
         getTokensOnChain,
         getTokenByAddress,
-        getTokenByName
+        getTokensByName
     ];
 }
