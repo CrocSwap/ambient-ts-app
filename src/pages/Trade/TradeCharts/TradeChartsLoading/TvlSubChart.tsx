@@ -75,11 +75,15 @@ export default function TvlSubChart(props: TvlData) {
                 const yExtent = d3fc.extentLinear().accessors([(d: any) => d.value]);
                 const yScale = d3.scaleLinear();
                 yScale.domain(yExtent(tvlData));
+
+                const highest = d3.max(tvlData, (d: any) => d.value) as any;
+                const lowest = d3.min(tvlData, (d: any) => d.value) as any;
+
                 const yAxis = d3fc
                     .axisRight()
                     .scale(yScale)
-                    .tickFormat(formatDollarAmountAxis)
-                    .tickArguments([2]);
+                    .tickValues([lowest + (highest - lowest) / 2, highest])
+                    .tickFormat(formatDollarAmountAxis);
 
                 const crosshairDataLocal = [
                     {
@@ -254,6 +258,7 @@ export default function TvlSubChart(props: TvlData) {
                     setIsMouseMoveForSubChart(true);
                     setIsZoomForSubChart(false);
                     setMouseMoveEventCharts(event);
+
                     setsubChartValues((prevState: any) => {
                         const newData = [...prevState];
                         newData.filter((target: any) => target.name === 'tvl')[0].value = snap(
@@ -282,7 +287,7 @@ export default function TvlSubChart(props: TvlData) {
                 });
             }
         },
-        [crosshairForSubChart, JSON.stringify(scaleData.xScale.domain()[0])],
+        [crosshairForSubChart, JSON.stringify(scaleData.xScale.domain()[0]), tvlData],
     );
 
     return (

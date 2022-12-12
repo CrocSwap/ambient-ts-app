@@ -2668,6 +2668,8 @@ export default function Chart(props: ChartData) {
 
             drawChart(
                 parsedChartData.chartData,
+                parsedChartData.tvlChartData,
+                parsedChartData.feeChartData,
                 targetData,
                 scaleData,
                 props.liquidityData,
@@ -2765,6 +2767,8 @@ export default function Chart(props: ChartData) {
     const drawChart = useCallback(
         (
             chartData: any,
+            tvlChartData: any,
+            feeChartData: any,
             targets: any,
             scaleData: any,
             liquidityData: any,
@@ -2840,14 +2844,14 @@ export default function Chart(props: ChartData) {
                         const newData = [...prevState];
 
                         newData.filter((target: any) => target.name === 'tvl')[0].value =
-                            parsedChartData?.tvlChartData.find(
+                            tvlChartData.find(
                                 (item: any) =>
                                     moment(item.time.getTime()).add(30, 'm').toDate().getTime() ===
                                     nearest?.date.getTime(),
                             )?.value;
 
                         newData.filter((target: any) => target.name === 'feeRate')[0].value =
-                            parsedChartData?.feeChartData.find(
+                            feeChartData.find(
                                 (item: any) => item.time.getTime() === nearest?.date.getTime(),
                             )?.value;
 
