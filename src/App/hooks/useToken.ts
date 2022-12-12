@@ -22,9 +22,13 @@ export const useToken = (
                 // create an empty map to put key-val pairs into
                 const newTokenMap = new Map<string, TokenIF>();
                 // abstracted logic to add a new token to the map
-                const addTokenToMap = (tkn: TokenIF) => newTokenMap.set(
-                    tkn.address.toLowerCase() + '_0x' + tkn.chainId.toString().toLowerCase(), tkn
-                );
+                const addTokenToMap = (tkn: TokenIF) => {
+                    // if token is already in map, add URI to array of URIs
+                    // if token is NOT in map, add it
+                        newTokenMap.set(
+                        tkn.address.toLowerCase() + '_0x' + tkn.chainId.toString().toLowerCase(), tkn
+                    )
+                };
                 // get 'allTokenLists' from local storage
                 JSON.parse(localStorage.getItem('allTokenLists') as string)
                     // create an array of all token data objects
