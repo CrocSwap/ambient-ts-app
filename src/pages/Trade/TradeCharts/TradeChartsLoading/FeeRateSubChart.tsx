@@ -71,13 +71,14 @@ export default function FeeRateSubChart(props: FreeRateData) {
                 const yScale = d3.scaleLinear();
                 yScale.domain(yExtent(feeData));
 
+                const highest = d3.max(feeData, (d: any) => d.value) as any;
                 const yAxis = d3fc
                     .axisRight()
                     .scale(yScale)
+                    .tickValues([highest / 2, highest])
                     .tickFormat((d: any) => {
-                        return d + '%';
-                    })
-                    .tickArguments([2]);
+                        return d * 100 + '%';
+                    });
 
                 const crosshairDataLocal = [
                     {
