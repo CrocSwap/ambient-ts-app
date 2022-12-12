@@ -23,11 +23,13 @@ export const useToken = (
                 const newTokenMap = new Map<string, TokenIF>();
                 // abstracted logic to add a new token to the map
                 const addTokenToMap = (tkn: TokenIF) => {
+                    const tokenKey = tkn.address.toLowerCase() +
+                        '_0x' +
+                        tkn.chainId.toString().toLowerCase();
                     // if token is already in map, add URI to array of URIs
                     // if token is NOT in map, add it
-                        newTokenMap.set(
-                        tkn.address.toLowerCase() + '_0x' + tkn.chainId.toString().toLowerCase(), tkn
-                    )
+                    // const alreadyInMap = newTokenMap.get();
+                    newTokenMap.set(tokenKey, tkn);
                 };
                 // get 'allTokenLists' from local storage
                 JSON.parse(localStorage.getItem('allTokenLists') as string)
@@ -37,6 +39,7 @@ export const useToken = (
                     // this will by nature remove duplicate entries across lists
                     .forEach((tkn: TokenIF) => addTokenToMap(tkn));
                 // send token map to be memoized in local state
+                console.log(newTokenMap);
                 setTokenMap(newTokenMap);
             } else if (limiter < 100) {
                 // call fn recursively if local storage does not have token lists
