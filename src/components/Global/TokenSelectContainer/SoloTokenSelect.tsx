@@ -9,6 +9,7 @@ import { memoizeFetchContractDetails } from '../../../App/functions/fetchContrac
 import { ethers } from 'ethers';
 import SoloTokenImport from './SoloTokenImport';
 import { AiOutlineQuestionCircle } from 'react-icons/ai';
+
 interface propsIF {
     provider: ethers.providers.Provider | undefined;
     importedTokens: TokenIF[];
@@ -16,6 +17,8 @@ interface propsIF {
     setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
     tokensOnActiveLists: Map<string, TokenIF>;
     closeModal: () => void;
+    verifyToken: (addr: string, chn: string) => boolean,
+    getToken: (addr: string, chn: string) => TokenIF | undefined
 }
 
 export const SoloTokenSelect = (props: propsIF) => {
@@ -26,7 +29,12 @@ export const SoloTokenSelect = (props: propsIF) => {
         setImportedTokens,
         closeModal,
         tokensOnActiveLists,
+        getToken,
+        verifyToken
     } = props;
+
+    false && getToken('', '');
+    false && verifyToken('', '');
 
     const [tokensForDOM, otherTokensForDOM, validatedInput, setInput, searchType] = useSoloSearch(
         chainId,

@@ -121,8 +121,6 @@ export default function Portfolio(props: PortfolioPropsIF) {
         openModalWallet,
     } = props;
     const { isInitialized } = useMoralis();
-    false && getToken('', '');
-    false && verifyToken('', '');
 
     const selectedToken: TokenIF = useAppSelector((state) => state.temp.token);
     const connectedUserNativeToken = useAppSelector((state) => state.userData.tokens.nativeToken);
@@ -616,6 +614,8 @@ export default function Portfolio(props: PortfolioPropsIF) {
                         importedTokens={importedTokens}
                         setImportedTokens={setImportedTokens}
                         tokensOnActiveLists={tokensOnActiveLists}
+                        getToken={getToken}
+                        verifyToken={verifyToken}
                     />
                 </Modal>
             )}
