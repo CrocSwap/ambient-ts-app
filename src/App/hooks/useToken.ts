@@ -26,11 +26,10 @@ export const useToken = (
                     const tokenKey = tkn.address.toLowerCase() +
                         '_0x' +
                         tkn.chainId.toString().toLowerCase();
-                    // if token is already in map, add URI to array of URIs
-                    // if token is NOT in map, add it
-                    // const alreadyInMap = newTokenMap.get();
-                    if (newTokenMap.get(tokenKey)) {
-                        console.log('found a dupe!');
+                    const tokenFromArray = newTokenMap.get(tokenKey);
+                    if (tokenFromArray) {
+                        tokenFromArray?.fromListArr?.push(tkn.fromList ?? '');
+                        newTokenMap.set(tokenKey, tokenFromArray);
                     } else {
                         tkn.fromListArr = [tkn.fromList ?? ''];
                         newTokenMap.set(tokenKey, tkn);
