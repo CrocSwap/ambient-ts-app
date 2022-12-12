@@ -29,7 +29,11 @@ export const useToken = (
                     // if token is already in map, add URI to array of URIs
                     // if token is NOT in map, add it
                     // const alreadyInMap = newTokenMap.get();
-                    newTokenMap.set(tokenKey, tkn);
+                    if (newTokenMap.get(tokenKey)) {
+                        console.log('found a dupe!');
+                    } else {
+                        newTokenMap.set(tokenKey, tkn);
+                    }
                 };
                 // get 'allTokenLists' from local storage
                 JSON.parse(localStorage.getItem('allTokenLists') as string)
