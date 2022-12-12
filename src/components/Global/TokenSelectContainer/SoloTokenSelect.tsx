@@ -1,13 +1,13 @@
-import { useMemo, useState, Dispatch, SetStateAction, useEffect } from 'react';
+import { useMemo, Dispatch, SetStateAction } from 'react';
 import { TokenListIF, TokenIF } from '../../../utils/interfaces/exports';
 import TokenSelect from '../TokenSelect/TokenSelect';
 import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
 import { setToken } from '../../../utils/state/temp';
 import { useSoloSearch } from './useSoloSearch';
 import styles from './SoloTokenSelect.module.css';
-import { memoizeFetchContractDetails } from '../../../App/functions/fetchContractDetails';
+// import { memoizeFetchContractDetails } from '../../../App/functions/fetchContractDetails';
 import { ethers } from 'ethers';
-import SoloTokenImport from './SoloTokenImport';
+// import SoloTokenImport from './SoloTokenImport';
 import { AiOutlineQuestionCircle } from 'react-icons/ai';
 
 interface propsIF {
@@ -17,31 +17,31 @@ interface propsIF {
     setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
     tokensOnActiveLists: Map<string, TokenIF>;
     closeModal: () => void;
-    verifyToken: (addr: string, chn: string) => boolean,
-    getToken: (addr: string, chn: string) => TokenIF | undefined
+    verifyToken: (addr: string, chn: string) => boolean;
+    getTokensOnChain: (chn: string) => TokenIF[];
+    getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
 }
 
 export const SoloTokenSelect = (props: propsIF) => {
     const {
-        provider,
+        // provider,
         importedTokens,
         chainId,
         setImportedTokens,
         closeModal,
-        tokensOnActiveLists,
-        getToken,
+        // getTokensOnChain,
+        getTokenByAddress,
         verifyToken
     } = props;
 
-    false && getToken('', '');
-    false && verifyToken('', '');
-
-    const [tokensForDOM, otherTokensForDOM, validatedInput, setInput, searchType] = useSoloSearch(
+    const [outputTokens, validatedInput, setInput, searchType] = useSoloSearch(
         chainId,
-        getToken,
         importedTokens,
-        tokensOnActiveLists,
+        verifyToken,
+        getTokenByAddress
     );
+    false && validatedInput;
+    false && searchType;
 
     const dispatch = useAppDispatch();
 
@@ -67,80 +67,29 @@ export const SoloTokenSelect = (props: propsIF) => {
         closeModal();
     };
 
-    const importedTokenButtons = tokensForDOM
-        ? tokensForDOM.map((token: TokenIF) => (
-              <TokenSelect
-                  key={JSON.stringify(token)}
-                  token={token}
-                  tokensBank={importedTokens}
-                  undeletableTokens={undeletableTokens}
-                  chainId={chainId}
-                  setImportedTokens={setImportedTokens}
-                  chooseToken={chooseToken}
-                  isOnPortfolio={true}
-                  fromListsText='Imported'
-              />
-          ))
-        : null;
+    const tokenButtons = outputTokens.map((token: TokenIF) => (
+        <TokenSelect
+            key={JSON.stringify(token)}
+            token={token}
+            tokensBank={importedTokens}
+            undeletableTokens={undeletableTokens}
+            chainId={chainId}
+            setImportedTokens={setImportedTokens}
+            chooseToken={chooseToken}
+            isOnPortfolio={true}
+            fromListsText='Imported'
+        />
+    ));
 
-    const findDupes = (addr: string) => {
-        const allTokenLists = JSON.parse(localStorage.getItem('allTokenLists') as string);
-        const listNames = allTokenLists
-            .filter((tokenList: TokenListIF) =>
-                tokenList.tokens.some(
-                    (token: TokenIF) => token.address.toLowerCase() === addr.toLowerCase(),
-                ),
-            )
-            .map((tokenList: TokenListIF) => tokenList.name);
-        let outputMessage = '';
-        if (listNames.length > 2) {
-            outputMessage = `from ${listNames[0]}, ${listNames[1]}, and ${
-                listNames.length - 2
-            } more`;
-        } else if (listNames.length === 2) {
-            outputMessage = `from ${listNames[0]} and ${listNames[1]}`;
-        } else if (listNames.length === 1) {
-            outputMessage = `from ${listNames[0]}`;
-        } else {
-            console.warn(
-                'Could not find a valid array length for listNames in fn findDupes() in SoloTokenSelect.tsx file. Will return empty string. Please troubleshoot.',
-            );
-            outputMessage = '';
-        }
-        return outputMessage;
-    };
-
-    const otherTokenButtons = otherTokensForDOM
-        ? otherTokensForDOM.map((token: TokenIF) => (
-              <TokenSelect
-                  key={JSON.stringify(token)}
-                  token={token}
-                  tokensBank={importedTokens}
-                  undeletableTokens={undeletableTokens}
-                  chainId={chainId}
-                  setImportedTokens={setImportedTokens}
-                  chooseToken={chooseToken}
-                  isOnPortfolio={true}
-                  fromListsText={findDupes(token.address)}
-              />
-          ))
-        : null;
-
-    const [customToken, setCustomToken] = useState<TokenIF | null>(null);
-    useEffect(() => {
-        if (provider && searchType === 'address' && !otherTokensForDOM?.length) {
-            const cachedFetchContractDetails = memoizeFetchContractDetails();
-            const promise = cachedFetchContractDetails(provider, validatedInput, chainId);
-            Promise.resolve(promise).then((res) => res && setCustomToken(res));
-        }
-    }, [searchType, validatedInput]);
+    // const [customToken, setCustomToken] = useState<TokenIF | null>(null);
+    // useEffect(() => {
+    //     if (provider && searchType === 'address' && !otherTokensForDOM?.length) {
+    //         const cachedFetchContractDetails = memoizeFetchContractDetails();
+    //         const promise = cachedFetchContractDetails(provider, validatedInput, chainId);
+    //         Promise.resolve(promise).then((res) => res && setCustomToken(res));
+    //     }
+    // }, [searchType, validatedInput]);
     // '0x0B0322d75bad9cA72eC7708708B54e6b38C26adA'
-
-    const customTokenReturn = JSON.stringify(customToken);
-
-    console.log(customToken);
-
-    console.log({ customTokenReturn });
 
     // Todo: @Emily, this is the token not found variable
     // eslint-disable-next-line
@@ -158,7 +107,10 @@ export const SoloTokenSelect = (props: propsIF) => {
                 placeholder='&#61442; Search name or enter an Address'
                 onChange={(e) => setInput(e.target.value)}
             />
-            {!searchType ? importedTokenButtons : null}
+
+            {tokenButtons}
+
+            {/* {!searchType ? importedTokenButtons : null}
             {searchType && otherTokensForDOM?.length ? (
                 <>
                     <h2>More Available Tokens</h2>
@@ -167,7 +119,7 @@ export const SoloTokenSelect = (props: propsIF) => {
             ) : null}
             {searchType && otherTokensForDOM?.length === 0 ? (
                 <SoloTokenImport customToken={customToken} closeModal={closeModal} />
-            ) : null}
+            ) : null} */}
         </section>
     );
 };

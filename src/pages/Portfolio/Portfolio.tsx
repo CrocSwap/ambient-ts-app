@@ -37,8 +37,10 @@ const mainnetProvider = new ethers.providers.WebSocketProvider(
 
 interface PortfolioPropsIF {
     crocEnv: CrocEnv | undefined;
+    localTokens: Map<string, TokenIF>;
+    getTokensOnChain: (chn: string) => TokenIF[];
     verifyToken: (addr: string, chn: string) => boolean;
-    getToken: (addr: string, chn: string) => TokenIF | undefined;
+    getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
     isTokenABase: boolean;
     provider: ethers.providers.Provider | undefined;
     cachedFetchNativeTokenBalance: nativeTokenBalanceFn;
@@ -85,7 +87,9 @@ interface PortfolioPropsIF {
 export default function Portfolio(props: PortfolioPropsIF) {
     const {
         crocEnv,
-        getToken,
+        // localTokens,
+        getTokensOnChain,
+        getTokenByAddress,
         verifyToken,
         isTokenABase,
         provider,
@@ -614,7 +618,8 @@ export default function Portfolio(props: PortfolioPropsIF) {
                         importedTokens={importedTokens}
                         setImportedTokens={setImportedTokens}
                         tokensOnActiveLists={tokensOnActiveLists}
-                        getToken={getToken}
+                        getTokensOnChain={getTokensOnChain}
+                        getTokenByAddress={getTokenByAddress}
                         verifyToken={verifyToken}
                     />
                 </Modal>

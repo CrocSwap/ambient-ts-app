@@ -3,10 +3,14 @@ import { TokenIF } from '../../../utils/interfaces/exports';
 
 export const useSoloSearch = (
     chainId: string,
-    getToken: (addr: string, chn: string) => TokenIF | undefined,
     importedTokens: TokenIF[],
-    tokensOnActiveLists: Map<string, TokenIF>,
-): [TokenIF[] | null, TokenIF[] | null, string, Dispatch<SetStateAction<string>>, string] => {
+    verifyToken: (addr: string, chn: string) => boolean,
+    getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined,
+): [TokenIF[], string, Dispatch<SetStateAction<string>>, string] => {
+    const importedTokensOnChain = useMemo(() => (
+        importedTokens.filter((tkn) => tkn.chainId === parseInt(chainId))
+    ), [chainId]);
+    
     // raw input from the user
     const [input, setInput] = useState('');
 
@@ -50,60 +54,19 @@ export const useSoloSearch = (
         return output;
     }, [input]);
 
-    const [importedTokensForDOM, setImportedTokensForDOM] = useState<TokenIF[]>([]);
-    const [otherTokensForDOM, setOtherTokensForDOM] = useState<TokenIF[]>([]);
+    const [outputTokens, setOutputTokens] = useState<TokenIF[]>(importedTokensOnChain);
     useEffect(() => {
-        const importedTokensOnChain = importedTokens.filter(
-            (tkn: TokenIF) => tkn.chainId === parseInt(chainId),
-        );
-
-        const otherTokensOnChain = [...tokensOnActiveLists.values()].filter(
-            (tkn: TokenIF) => tkn.chainId === parseInt(chainId),
-        );
-
-        const searchByAddress = (searchString: string) => {
-            const theToken = getToken(searchString, chainId);
-            setImportedTokensForDOM(theToken ? [theToken] : []);
-            const otherMatches = otherTokensOnChain.filter(
-                (tkn: TokenIF) => tkn.address.toLowerCase() === searchString,
+        // make one set of tokens to render
+        // default is the basic imported tokens wherever they come from now
+        const tokenExists = verifyToken(validatedInput, chainId);
+        if (validatedInput) {
+            tokenExists && setOutputTokens(
+                [getTokenByAddress(validatedInput, chainId) as TokenIF]
             );
-            setOtherTokensForDOM(otherMatches);
-        };
-
-        const searchByNameOrSymbol = (searchString: string) => {
-            const importedMatches = importedTokensOnChain.filter(
-                (tkn: TokenIF) =>
-                    tkn.name.toLowerCase().includes(searchString) ||
-                    tkn.symbol.toLowerCase().includes(searchString),
-            );
-            setImportedTokensForDOM(importedMatches);
-            const otherMatches = otherTokensOnChain.filter(
-                (tkn: TokenIF) =>
-                    tkn.name.toLowerCase().includes(searchString) ||
-                    tkn.symbol.toLowerCase().includes(searchString),
-            );
-            setOtherTokensForDOM(otherMatches);
-        };
-
-        const noSort = () => {
-            setImportedTokensForDOM(importedTokensOnChain);
-            setOtherTokensForDOM([]);
-        };
-
-        switch (searchAs) {
-            case 'address':
-                searchByAddress(validatedInput);
-                break;
-            case 'nameOrSymbol':
-                searchByNameOrSymbol(validatedInput);
-                break;
-            default:
-                noSort();
+        } else {
+            setOutputTokens(importedTokensOnChain);
         }
-    }, [importedTokens, validatedInput]);
+    }, [validatedInput]);
 
-    // token === token data object or null
-    // input === raw input from the user
-    // setInput === useState setter function for raw input
-    return [importedTokensForDOM, otherTokensForDOM, validatedInput, setInput, searchAs];
+    return [outputTokens, validatedInput, setInput, searchAs];
 };

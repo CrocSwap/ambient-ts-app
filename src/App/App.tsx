@@ -2411,7 +2411,17 @@ export default function App() {
     // app overlay-----------------------------------------------
     // end of app overlay-----------------------------------------------
 
-    const [verifyToken, getToken] = useToken(chainData.chainId);
+    const [
+        localTokens,
+        verifyToken,
+        getAllTokens,
+        getTokensOnChain,
+        getTokenByAddress,
+        getTokenByName
+    ] = useToken(chainData.chainId);
+    false && getAllTokens;
+    false && getTokensOnChain;
+    false && getTokenByName;
 
     return (
         <>
@@ -2632,8 +2642,10 @@ export default function App() {
                             element={
                                 <Portfolio
                                     crocEnv={crocEnv}
+                                    localTokens={localTokens}
+                                    getTokensOnChain={getTokensOnChain}
                                     verifyToken={verifyToken}
-                                    getToken={getToken}
+                                    getTokenByAddress={getTokenByAddress}
                                     isTokenABase={isTokenABase}
                                     provider={provider}
                                     cachedFetchErc20TokenBalances={cachedFetchErc20TokenBalances}
@@ -2681,8 +2693,10 @@ export default function App() {
                             element={
                                 <Portfolio
                                     crocEnv={crocEnv}
+                                    localTokens={localTokens}
+                                    getTokensOnChain={getTokensOnChain}
                                     verifyToken={verifyToken}
-                                    getToken={getToken}
+                                    getTokenByAddress={getTokenByAddress}
                                     isTokenABase={isTokenABase}
                                     provider={provider}
                                     cachedFetchErc20TokenBalances={cachedFetchErc20TokenBalances}
@@ -2748,8 +2762,10 @@ export default function App() {
                             element={
                                 <Portfolio
                                     crocEnv={crocEnv}
+                                    localTokens={localTokens}
+                                    getTokensOnChain={getTokensOnChain}
                                     verifyToken={verifyToken}
-                                    getToken={getToken}
+                                    getTokenByAddress={getTokenByAddress}
                                     isTokenABase={isTokenABase}
                                     provider={provider}
                                     cachedFetchErc20TokenBalances={cachedFetchErc20TokenBalances}
