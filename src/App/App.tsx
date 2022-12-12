@@ -1226,7 +1226,7 @@ export default function App() {
                                 poolIdx: chainData.poolIndex.toString(),
                                 period: activePeriod.toString(),
                                 // time: '1657833300', // optional
-                                n: '100', // positive integer
+                                n: '200', // positive integer
                                 // page: '0', // nonnegative integer
                                 chainId: '0x1',
                                 dex: 'all',

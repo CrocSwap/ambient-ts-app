@@ -1017,55 +1017,32 @@ export default function Chart(props: ChartData) {
                 }) as any;
 
             const yAxisZoom = d3.zoom().on('zoom', async (event: any) => {
-                if (event.sourceEvent.type === 'wheel') {
-                    const domainY = scaleData.yScale.domain();
-                    const center = (domainY[1] + domainY[0]) / 2;
-                    const dy = event.sourceEvent.deltaY / 3;
-                    const factor = Math.pow(2, -dy * 0.003);
+                const domainY = scaleData.yScale.domain();
+                const center = (domainY[1] + domainY[0]) / 2;
 
-                    const size = (domainY[1] - domainY[0]) / 2 / factor;
-                    await scaleData.yScale.domain([center - size, center + size]);
+                const deltaY = event.sourceEvent.movementY / 1.5;
+                const dy = event.sourceEvent.deltaY / 3;
 
-                    scaleData.lastDragedY = event.transform.y;
+                const factor = Math.pow(
+                    2,
+                    event.sourceEvent.type === 'wheel'
+                        ? -dy * 0.003
+                        : event.sourceEvent.type === 'mousemove'
+                        ? -deltaY * 0.003
+                        : 1,
+                );
 
-                    setZoomAndYdragControl(event);
-                    setRescale(() => {
-                        return false;
-                    });
+                const size = (domainY[1] - domainY[0]) / 2 / factor;
 
-                    setMarketLineValue();
-                    render();
-                } else if (event.sourceEvent.type === 'mousemove') {
-                    const t = event.transform;
+                await scaleData.yScale.domain([center - size, center + size]);
 
-                    const domainY = scaleData.yScale.domain();
-                    const linearY = d3
-                        .scaleLinear()
-                        .domain(scaleData.yScale.range())
-                        .range([domainY[1] - domainY[0], 0]);
+                setZoomAndYdragControl(event);
+                setRescale(() => {
+                    return false;
+                });
 
-                    const deltaY =
-                        linearY(t.y - scaleData.lastDragedY) > 10
-                            ? 10
-                            : linearY(t.y - scaleData.lastDragedY);
-
-                    const factor = Math.pow(2, -deltaY * 0.008);
-                    const domain = scaleData.yScale.domain();
-                    const center = (domain[1] + domain[0]) / 2;
-                    const size = (domain[1] - domain[0]) / 2 / factor;
-
-                    scaleData.yScale.domain([center - size, center + size]);
-
-                    scaleData.lastDragedY = event.transform.y;
-
-                    setZoomAndYdragControl(event);
-                    setRescale(() => {
-                        return false;
-                    });
-
-                    setMarketLineValue();
-                    render();
-                }
+                setMarketLineValue();
+                render();
             }) as any;
 
             setZoomUtils(() => {
