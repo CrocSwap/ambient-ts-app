@@ -1759,12 +1759,14 @@ export default function Chart(props: ChartData) {
             const diff =
                 scaleData.xScale.domain()[1].getTime() - scaleData.xScale.domain()[0].getTime();
 
+            const centerX = parsedChartData?.chartData[latestCandleIndex].time * 1000;
+
             if (rescale) {
                 scaleData.yScale.domain(scaleData.yScaleCopy.domain());
 
                 scaleData.xScale.domain([
-                    new Date(scaleData.xScaleCopy.domain()[1].getTime() - diff),
-                    scaleData.xScaleCopy.domain()[1],
+                    new Date(centerX - diff / 2),
+                    new Date(centerX + diff / 2),
                 ]);
             } else {
                 const diffY = scaleData.yScale.domain()[1] - scaleData.yScale.domain()[0];
@@ -1779,7 +1781,6 @@ export default function Chart(props: ChartData) {
 
                 scaleData.yScale.domain([centerY - diffY / 2, centerY + diffY / 2]);
 
-                const centerX = parsedChartData?.chartData[latestCandleIndex].time * 1000;
                 scaleData.xScale.domain([
                     new Date(centerX - diff / 2),
                     new Date(centerX + diff / 2),
