@@ -32,6 +32,7 @@ export const useToken = (
                     if (newTokenMap.get(tokenKey)) {
                         console.log('found a dupe!');
                     } else {
+                        tkn.fromListArr = [tkn.fromList ?? ''];
                         newTokenMap.set(tokenKey, tkn);
                     }
                 };
