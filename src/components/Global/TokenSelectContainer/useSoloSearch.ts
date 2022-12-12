@@ -7,6 +7,7 @@ export const useSoloSearch = (
     verifyToken: (addr: string, chn: string) => boolean,
     getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined,
 ): [TokenIF[], string, Dispatch<SetStateAction<string>>, string] => {
+    // memoize default list of tokens to display in DOM
     const importedTokensOnChain = useMemo(() => (
         importedTokens.filter((tkn) => tkn.chainId === parseInt(chainId))
     ), [chainId]);
