@@ -43,7 +43,6 @@ export const useToken = (
                     // this will by nature remove duplicate entries across lists
                     .forEach((tkn: TokenIF) => addTokenToMap(tkn));
                 // send token map to be memoized in local state
-                console.log(newTokenMap);
                 setTokenMap(newTokenMap);
             } else if (limiter < 100) {
                 // call fn recursively if local storage does not have token lists
