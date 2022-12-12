@@ -38,6 +38,7 @@ export const SoloTokenSelect = (props: propsIF) => {
 
     const [tokensForDOM, otherTokensForDOM, validatedInput, setInput, searchType] = useSoloSearch(
         chainId,
+        getToken,
         importedTokens,
         tokensOnActiveLists,
     );

@@ -3,6 +3,7 @@ import { TokenIF } from '../../../utils/interfaces/exports';
 
 export const useSoloSearch = (
     chainId: string,
+    getToken: (addr: string, chn: string) => TokenIF | undefined,
     importedTokens: TokenIF[],
     tokensOnActiveLists: Map<string, TokenIF>,
 ): [TokenIF[] | null, TokenIF[] | null, string, Dispatch<SetStateAction<string>>, string] => {
@@ -61,10 +62,8 @@ export const useSoloSearch = (
         );
 
         const searchByAddress = (searchString: string) => {
-            const importedMatches = importedTokensOnChain.filter(
-                (tkn: TokenIF) => tkn.address.toLowerCase() === searchString,
-            );
-            setImportedTokensForDOM(importedMatches);
+            const theToken = getToken(searchString, chainId);
+            setImportedTokensForDOM(theToken ? [theToken] : []);
             const otherMatches = otherTokensOnChain.filter(
                 (tkn: TokenIF) => tkn.address.toLowerCase() === searchString,
             );
