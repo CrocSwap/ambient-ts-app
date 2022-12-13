@@ -20,6 +20,7 @@ import {
     targetData,
     candleDomain,
     setCandleDomains,
+    setRescaleRangeBoundaries,
 } from '../../utils/state/tradeDataSlice';
 import { CandleChartData, VolumeChartData } from '../Trade/TradeCharts/TradeCharts';
 import FeeRateSubChart from '../Trade/TradeCharts/TradeChartsLoading/FeeRateSubChart';
@@ -150,6 +151,7 @@ export default function Chart(props: ChartData) {
 
     const targetData = tradeData.targetData;
     const rangeModuleTriggered = tradeData.rangeModuleTriggered;
+    const rescaleRangeBoundaries = tradeData.rescaleRangeBoundaries;
 
     const rangeLowLineTriggered = tradeData.rangeLowLineTriggered;
     const rangeHighLineTriggered = tradeData.rangeHighLineTriggered;
@@ -230,6 +232,7 @@ export default function Chart(props: ChartData) {
     const [mouseMoveChartName, setMouseMoveChartName] = useState<string | undefined>(undefined);
     const [windowDimensions, setWindowDimensions] = useState(getWindowDimensions());
     const [checkLimitOrder, setCheckLimitOrder] = useState<boolean>(false);
+    const [isRangeSet, setIsRangeSet] = useState(false);
 
     // Data
     const [crosshairData, setCrosshairData] = useState([{ x: 0, y: -1 }]);
@@ -332,6 +335,33 @@ export default function Chart(props: ChartData) {
 
         render();
     }, [props.chartItemStates, expandTradeTable, isCandleAdded]);
+
+    useEffect(() => {
+        if (
+            isRangeSet &&
+            pinnedMinPriceDisplayTruncated !== undefined &&
+            pinnedMaxPriceDisplayTruncated !== undefined &&
+            poolPriceDisplay !== undefined &&
+            scaleData !== undefined &&
+            rescaleRangeBoundaries &&
+            simpleRangeWidth !== 100
+        ) {
+            const buffer = poolPriceDisplay / 50;
+
+            scaleData.yScale.domain([
+                pinnedMinPriceDisplayTruncated - buffer,
+                pinnedMaxPriceDisplayTruncated + buffer,
+            ]);
+
+            dispatch(setRescaleRangeBoundaries(false));
+            setRescale(() => {
+                return false;
+            });
+            setIsRangeSet(() => {
+                return false;
+            });
+        }
+    }, [rescaleRangeBoundaries, simpleRangeWidth, isRangeSet]);
 
     function addText(scale: any) {
         if (location.pathname.includes('market')) {
@@ -1142,6 +1172,9 @@ export default function Chart(props: ChartData) {
                     return newTargets;
                 });
             }
+            setIsRangeSet(() => {
+                return true;
+            });
             dispatch(setRangeModuleTriggered(false));
         }
     };
