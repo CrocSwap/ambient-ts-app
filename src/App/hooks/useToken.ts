@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { TokenIF, TokenListIF } from '../../utils/interfaces/exports';
 
 // TODO: refactor to accept tokens from another hook in params
@@ -81,6 +81,7 @@ export const useToken = (
     }
 
     const getTokensByName = (searchName: string, chn=chainId, exact=false) => {
+        console.time();
         const tokens = getTokensOnChain(chn);
         const searchExact = (input: string) => {
             console.log('searching for exact match');
@@ -101,7 +102,21 @@ export const useToken = (
         }
         const matches = exact ? searchExact(searchName) : searchPartial(searchName);
         console.log({matches});
-        return matches;
+        const exactMatches: TokenIF[] = [];
+        const partialMatches: TokenIF[] = [];
+        matches.forEach((match) => {
+            if (
+                match.name.toLowerCase() === searchName.toLowerCase() ||
+                match.symbol.toLowerCase() === searchName.toLowerCase()
+            ) {
+                exactMatches.push(match);
+            } else {
+                partialMatches.push(match);
+            }
+        });
+        const rankedMatches = [...exactMatches, ...partialMatches]
+        console.timeEnd();
+        return rankedMatches;
     }
 
     // return function to verify a token and retrieve token metadata

@@ -30,7 +30,7 @@ export const useSoloSearch = (
         ) {
             setSearchAs('address');
             // if not an apparent token address search name and symbol
-        } else if (cleanInput.length >= 3) {
+        } else if (cleanInput.length >= 2) {
             setSearchAs('nameOrSymbol');
             return cleanInput;
             // otherwise treat as if there is no input entered
@@ -67,7 +67,9 @@ export const useSoloSearch = (
                 [getTokenByAddress(validatedInput, '0x1') as TokenIF]
             );
         } else if (searchAs === 'nameOrSymbol') {
-            setOutputTokens(getTokensByName(validatedInput, '0x1', false));
+            setOutputTokens(
+                getTokensByName(validatedInput, '0x1', false)
+            );
         } else {
             setOutputTokens(importedTokensOnChain);
         }
