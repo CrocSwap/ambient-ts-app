@@ -1228,7 +1228,7 @@ export default function App() {
                                 poolIdx: chainData.poolIndex.toString(),
                                 period: activePeriod.toString(),
                                 // time: '1657833300', // optional
-                                n: '100', // positive integer
+                                n: '200', // positive integer
                                 // page: '0', // nonnegative integer
                                 chainId: '0x1',
                                 dex: 'all',
@@ -1641,6 +1641,7 @@ export default function App() {
     // const [poolPriceTick, setPoolPriceTick] = useState<number | undefined>();
     // const [poolPriceNonDisplay, setPoolPriceNonDisplay] = useState<number | undefined>();
     const [poolPriceDisplay, setPoolPriceDisplay] = useState<number | undefined>();
+
     const poolPriceNonDisplay = tradeData.poolPriceNonDisplay;
 
     useEffect(() => {
@@ -2176,8 +2177,6 @@ export default function App() {
 
     // props for <Limit/> React element on trade route
 
-    const [checkLimitOrder, setCheckLimitOrder] = useState<boolean>(false);
-
     const limitPropsTrade = {
         pool: pool,
         crocEnv: crocEnv,
@@ -2211,10 +2210,7 @@ export default function App() {
         openGlobalModal: openGlobalModal,
         closeGlobalModal: closeGlobalModal,
         poolExists: poolExists,
-
         isOrderCopied: isOrderCopied,
-        setCheckLimitOrder: setCheckLimitOrder,
-
         // limitRate: limitRate,
         // setLimitRate: setLimitRate,
     };
@@ -2381,19 +2377,13 @@ export default function App() {
 
     // hook to track user's sidebar preference open or closed
     // also functions to toggle sidebar status between open and closed
-    const [
-        sidebarStatus,
-        openSidebar,
-        closeSidebar,
-        togggggggleSidebar
-    ] = useSidebar();
+    const [sidebarStatus, openSidebar, closeSidebar, togggggggleSidebar] = useSidebar();
     // these lines are just here to make the linter happy
     // take them out before production, they serve no other purpose
     false && sidebarStatus;
     false && openSidebar();
     false && closeSidebar();
     false && togggggggleSidebar();
-
 
     const containerStyle = currentLocation.includes('trade')
         ? 'content-container-trade'
@@ -2506,7 +2496,7 @@ export default function App() {
                                     setTokenPairLocal={setTokenPairLocal}
                                     showSidebar={showSidebar}
                                     handlePulseAnimation={handlePulseAnimation}
-                                    checkLimitOrder={checkLimitOrder}
+
                                     // handleTxCopiedClick={handleTxCopiedClick}
                                     // handleOrderCopiedClick={handleOrderCopiedClick}
                                     // handleRangeCopiedClick={handleRangeCopiedClick}

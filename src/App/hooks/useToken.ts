@@ -20,7 +20,7 @@ export const useToken = (
     // get allTokenLists from local storage after initial render
     useEffect(() => {
         // fn to check local storage for token lists with a recursion limiter
-        const checkForTokenLists = (limiter=0) => {
+        const checkForTokenLists = (limiter = 0) => {
             // execute if local storage has token lists
             if (localStorage.getItem('allTokenLists')) {
                 // create an empty map to put key-val pairs into
@@ -56,16 +56,16 @@ export const useToken = (
                 // console warning if max recursion depth is reached
                 console.warn('maximum recursion depth reached');
             }
-        }
+        };
         checkForTokenLists();
     }, []);
 
     // fn to determine if a token exists in a recognized token list
     // parameter for chain is optional, app uses the current chain by default
     // but we can verify tokens on other chains too as needed
-    const verifyToken = (addr: string, chn=chainId) => {
+    const verifyToken = (addr: string, chn = chainId) => {
         return !!tokenMap.get(addr.toLowerCase() + '_' + chn.toLowerCase());
-    }
+    };
 
     const getAllTokens = () => Array.from(tokenMap.values());
 
@@ -78,7 +78,7 @@ export const useToken = (
     // but we can verify tokens on other chains too as needed
     const getTokenByAddress = (addr: string, chn=chainId) => {
         return tokenMap.get(addr.toLowerCase() + '_' + chn.toLowerCase());
-    }
+    };
 
     const getTokensByName = (searchName: string, chn=chainId, exact=false) => {
         console.time();

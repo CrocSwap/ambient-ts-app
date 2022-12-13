@@ -55,7 +55,7 @@ import {
 } from '../../../App/functions/getPoolStats';
 import TradeChartsLoading from './TradeChartsLoading/TradeChartsLoading';
 import NoTokenIcon from '../../../components/Global/NoTokenIcon/NoTokenIcon';
-import { ChainSpec, CrocPoolView } from '@crocswap-libs/sdk';
+import { ChainSpec, CrocEnv, CrocPoolView } from '@crocswap-libs/sdk';
 import { formatDollarAmountAxis } from '../../../utils/numbers';
 import IconWithTooltip from '../../../components/Global/IconWithTooltip/IconWithTooltip';
 // import { formatAmountOld } from '../../../utils/numbers';
@@ -63,6 +63,7 @@ import UseOnClickOutside from '../../../utils/hooks/useOnClickOutside';
 
 // interface for React functional component props
 interface TradeChartsPropsIF {
+    isUserLoggedIn: boolean | undefined;
     pool: CrocPoolView | undefined;
     // poolPriceTick: number | undefined;
     chainData: ChainSpec;
@@ -98,7 +99,7 @@ interface TradeChartsPropsIF {
     poolPriceNonDisplay: number | undefined;
     selectedDate: Date | undefined;
     setSelectedDate: Dispatch<Date | undefined>;
-    checkLimitOrder: boolean;
+    crocEnv: CrocEnv | undefined;
     activeTimeFrame: string;
     setActiveTimeFrame: Dispatch<SetStateAction<string>>;
     TradeSettingsColor: JSX.Element;
@@ -154,6 +155,7 @@ export interface LiqSnap {
 // React functional component
 export default function TradeCharts(props: TradeChartsPropsIF) {
     const {
+        isUserLoggedIn,
         pool,
         // liquidityData,
         chainData,
@@ -169,7 +171,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
         expandTradeTable,
         selectedDate,
         setSelectedDate,
-        checkLimitOrder,
+        crocEnv,
         activeTimeFrame,
         setActiveTimeFrame,
         TradeSettingsColor,
@@ -318,7 +320,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
     // }, [chartSettingsData]);
     const mainChartSettingsContent = (
         <div
-            ref={chartSettingsRef}
+            // ref={chartSettingsRef}
             className={`${styles.main_settings_container} ${
                 showChartSettings && styles.main_settings_container_active
             }`}
@@ -970,6 +972,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
             ) : (
                 <div style={{ width: '100%', height: '100%', zIndex: '2' }}>
                     <TradeCandleStickChart
+                        isUserLoggedIn={isUserLoggedIn}
                         pool={pool}
                         chainData={chainData}
                         // tvlData={formattedTvlData}
@@ -998,7 +1001,6 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
                         poolPriceNonDisplay={props.poolPriceNonDisplay}
                         selectedDate={selectedDate}
                         setSelectedDate={setSelectedDate}
-                        checkLimitOrder={checkLimitOrder}
                         rescale={rescale}
                         setRescale={setRescale}
                         latest={latest}
@@ -1009,6 +1011,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
                         setShowLatest={setShowLatest}
                         activeTimeFrame={activeTimeFrame}
                         setShowTooltip={setShowTooltip}
+                        crocEnv={crocEnv}
                     />
                 </div>
             )}

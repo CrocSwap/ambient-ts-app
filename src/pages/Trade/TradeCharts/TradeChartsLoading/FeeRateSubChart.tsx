@@ -71,17 +71,18 @@ export default function FeeRateSubChart(props: FreeRateData) {
                 const yScale = d3.scaleLinear();
                 yScale.domain(yExtent(feeData));
 
+                const highest = d3.max(feeData, (d: any) => d.value) as any;
                 const yAxis = d3fc
                     .axisRight()
                     .scale(yScale)
+                    .tickValues([highest / 2, highest])
                     .tickFormat((d: any) => {
-                        return d + '%';
-                    })
-                    .tickArguments([2]);
+                        return d * 100 + '%';
+                    });
 
                 const crosshairDataLocal = [
                     {
-                        x: crosshairForSubChart[0].x,
+                        x: 0,
                         y:
                             isMouseMoveForSubChart && mouseMoveChartName === 'feeRate'
                                 ? crosshairForSubChart[0].y
@@ -91,25 +92,6 @@ export default function FeeRateSubChart(props: FreeRateData) {
 
                 const lineJoin = d3fc.dataJoin('g', 'lineJoin');
                 const crosshairVerticalJoin = d3fc.dataJoin('g', 'crosshairVertical');
-
-                const crosshairHorizontal = d3fc
-                    .annotationSvgLine()
-                    .orient('vertical')
-                    .value((d: any) => d.x)
-                    .xScale(xScale)
-                    .yScale(yScale)
-                    .label('');
-
-                crosshairHorizontal.decorate((selection: any) => {
-                    selection.enter().select('line').attr('class', 'crosshair');
-                    selection.enter().style('visibility', 'hidden');
-                    selection
-                        .enter()
-                        .append('line')
-                        .attr('stroke-width', 1)
-                        .style('pointer-events', 'all');
-                    selection.enter().select('g.top-handle').remove();
-                });
 
                 const crosshairVertical = d3fc
                     .annotationSvgLine()
@@ -255,7 +237,7 @@ export default function FeeRateSubChart(props: FreeRateData) {
                 });
             }
         },
-        [crosshairForSubChart],
+        [crosshairForSubChart, feeData],
     );
 
     return (

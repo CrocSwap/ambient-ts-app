@@ -76,9 +76,7 @@ interface LimitPropsIF {
     closeGlobalModal: () => void;
     poolExists: boolean | undefined;
     chainData: ChainSpec;
-
     isOrderCopied: boolean;
-    setCheckLimitOrder: Dispatch<SetStateAction<boolean>>;
 }
 
 const cachedQuerySpotPrice = memoizeQuerySpotPrice();
@@ -113,7 +111,6 @@ export default function Limit(props: LimitPropsIF) {
         poolExists,
         lastBlockNumber,
         isOrderCopied,
-        setCheckLimitOrder,
     } = props;
 
     const { tradeData, navigationMenu } = useTradeData();
@@ -319,11 +316,6 @@ export default function Limit(props: LimitPropsIF) {
     ]);
 
     const [isOrderValid, setIsOrderValid] = useState<boolean>(true);
-
-    // check limit order
-    useEffect(() => {
-        setCheckLimitOrder(isOrderValid && poolPriceNonDisplay !== 0 && limitAllowed);
-    }, [isOrderValid, poolPriceNonDisplay, limitAllowed]);
 
     useEffect(() => {
         // if (!provider) return;
