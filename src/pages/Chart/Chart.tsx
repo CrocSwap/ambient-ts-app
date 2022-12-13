@@ -1535,6 +1535,8 @@ export default function Chart(props: ChartData) {
                     setIsLineDrag(true);
                     newLimitValue = scaleData.yScale.invert(event.y);
 
+                    if (newLimitValue < 0) newLimitValue = 0;
+
                     newLimitValue =
                         poolPriceDisplay !== undefined && newLimitValue > poolPriceDisplay * 10
                             ? poolPriceDisplay * 10
@@ -1978,7 +1980,7 @@ export default function Chart(props: ChartData) {
             const ko = testOrder?.atLimit(isTokenAPrimary ? buyToken : sellToken, pinnedTick);
             setCheckLimitOrder(!(await ko?.willMintFail()));
         });
-    }, [limit]);
+    }, [limit, isDenomBase, chainData, tradeData]);
 
     // Line Rules
     useEffect(() => {
@@ -2026,7 +2028,15 @@ export default function Chart(props: ChartData) {
         if (location.pathname.includes('limit') && scaleData !== undefined) {
             d3.select(d3Container.current).on('click', (event: any) => {
                 if ((event.target.__data__ as CandleChartData) === undefined) {
-                    const newLimitValue = scaleData.yScale.invert(d3.pointer(event)[1]);
+                    let newLimitValue = scaleData.yScale.invert(d3.pointer(event)[1]);
+
+                    if (newLimitValue < 0) newLimitValue = 0;
+
+                    newLimitValue =
+                        poolPriceDisplay !== undefined && newLimitValue > poolPriceDisplay * 10
+                            ? poolPriceDisplay * 10
+                            : newLimitValue;
+
                     onBlurlimitRate(newLimitValue);
                 }
             });
