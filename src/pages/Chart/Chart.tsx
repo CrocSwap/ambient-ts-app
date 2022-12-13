@@ -28,6 +28,7 @@ import { ChartUtils } from '../Trade/TradeCharts/TradeCandleStickChart';
 import './Chart.css';
 import {
     ChainSpec,
+    CrocEnv,
     CrocPoolView,
     pinTickLower,
     pinTickUpper,
@@ -38,7 +39,6 @@ import {
     getPinnedPriceValuesFromTicks,
 } from '../Trade/Range/rangeFunctions';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
-import { useMoralis } from 'react-moralis';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -58,6 +58,7 @@ type chartItemStates = {
     showFeeRate: boolean;
 };
 interface ChartData {
+    isUserLoggedIn: boolean | undefined;
     pool: CrocPoolView | undefined;
     chainData: ChainSpec;
     isTokenABase: boolean;
@@ -87,7 +88,6 @@ interface ChartData {
     selectedDate: Date | undefined;
     setSelectedDate: React.Dispatch<Date | undefined>;
     volumeData: VolumeChartData;
-    checkLimitOrder: boolean;
     rescale: boolean | undefined;
     setRescale: React.Dispatch<React.SetStateAction<boolean>>;
     latest: boolean | undefined;
@@ -98,6 +98,7 @@ interface ChartData {
     setShowLatest: React.Dispatch<React.SetStateAction<boolean>>;
     setShowTooltip: React.Dispatch<React.SetStateAction<boolean>>;
     activeTimeFrame: string;
+    crocEnv: CrocEnv | undefined;
 }
 
 function getWindowDimensions() {
@@ -110,6 +111,7 @@ function getWindowDimensions() {
 
 export default function Chart(props: ChartData) {
     const {
+        isUserLoggedIn,
         pool,
         chainData,
         isTokenABase,
@@ -126,7 +128,6 @@ export default function Chart(props: ChartData) {
         poolPriceNonDisplay,
         selectedDate,
         setSelectedDate,
-        checkLimitOrder,
         rescale,
         setRescale,
         reset,
@@ -135,6 +136,7 @@ export default function Chart(props: ChartData) {
         setShowLatest,
         latest,
         setLatest,
+        crocEnv,
         activeTimeFrame,
     } = props;
 
@@ -165,7 +167,6 @@ export default function Chart(props: ChartData) {
     const dispatch = useAppDispatch();
 
     const location = useLocation();
-    const { isAuthenticated } = useMoralis();
 
     const { tokenA, tokenB } = tradeData;
     const tokenADecimals = tokenA.decimals;
@@ -228,6 +229,7 @@ export default function Chart(props: ChartData) {
     const [isLineDrag, setIsLineDrag] = useState(false);
     const [mouseMoveChartName, setMouseMoveChartName] = useState<string | undefined>(undefined);
     const [windowDimensions, setWindowDimensions] = useState(getWindowDimensions());
+    const [checkLimitOrder, setCheckLimitOrder] = useState<boolean>(false);
 
     // Data
     const [crosshairData, setCrosshairData] = useState([{ x: 0, y: -1 }]);
@@ -388,11 +390,7 @@ export default function Chart(props: ChartData) {
                             return 'url(#crossHairBg)';
                         }
                         if (isSameLocation ? d === sameLocationData : d === limit[0].value) {
-                            if (
-                                isAuthenticated
-                                    ? checkLimitOrder || limit[0].value > currentPriceData[0].value
-                                    : false
-                            ) {
+                            if (isUserLoggedIn ? checkLimitOrder : false) {
                                 return sellOrderStyle === 'order_sell'
                                     ? 'url(#textOrderSellBg)'
                                     : 'url(#textOrderBuyBg)';
@@ -410,9 +408,7 @@ export default function Chart(props: ChartData) {
                         }
                         if (
                             (isSameLocation ? d === sameLocationData : d === limit[0].value) &&
-                            (isAuthenticated
-                                ? checkLimitOrder || limit[0].value > currentPriceData[0].value
-                                : false)
+                            (isUserLoggedIn ? checkLimitOrder : false)
                         ) {
                             return sellOrderStyle === 'order_sell' ? 'market' : 'y_axis';
                         }
@@ -1017,59 +1013,32 @@ export default function Chart(props: ChartData) {
                 }) as any;
 
             const yAxisZoom = d3.zoom().on('zoom', async (event: any) => {
-                if (event.sourceEvent.type === 'wheel') {
-                    const domainY = scaleData.yScale.domain();
-                    const center = (domainY[1] + domainY[0]) / 2;
-                    const dy = event.sourceEvent.deltaY / 3;
-                    const factor = Math.pow(2, -dy * 0.003);
+                const domainY = scaleData.yScale.domain();
+                const center = (domainY[1] + domainY[0]) / 2;
 
-                    const size = (domainY[1] - domainY[0]) / 2 / factor;
-                    await scaleData.yScale.domain([center - size, center + size]);
+                const deltaY = event.sourceEvent.movementY / 1.5;
+                const dy = event.sourceEvent.deltaY / 3;
 
-                    // console.log(event.sourceEvent);
+                const factor = Math.pow(
+                    2,
+                    event.sourceEvent.type === 'wheel'
+                        ? -dy * 0.003
+                        : event.sourceEvent.type === 'mousemove'
+                        ? -deltaY * 0.003
+                        : 1,
+                );
 
-                    scaleData.lastDragedY = event.transform.y;
+                const size = (domainY[1] - domainY[0]) / 2 / factor;
 
-                    setZoomAndYdragControl(event);
-                    setRescale(() => {
-                        return false;
-                    });
+                await scaleData.yScale.domain([center - size, center + size]);
 
-                    setMarketLineValue();
-                    render();
-                } else if (event.sourceEvent.type === 'mousemove') {
-                    const t = event.transform;
+                setZoomAndYdragControl(event);
+                setRescale(() => {
+                    return false;
+                });
 
-                    const domainY = scaleData.yScale.domain();
-                    const linearY = d3
-                        .scaleLinear()
-                        .domain(scaleData.yScale.range())
-                        .range([domainY[1] - domainY[0], 0]);
-
-                    // console.log(event.sourceEvent);
-
-                    const deltaY =
-                        linearY(t.y - scaleData.lastDragedY) > 10
-                            ? 10
-                            : linearY(t.y - scaleData.lastDragedY);
-
-                    const factor = Math.pow(2, -deltaY * 0.008);
-                    const domain = scaleData.yScale.domain();
-                    const center = (domain[1] + domain[0]) / 2;
-                    const size = (domain[1] - domain[0]) / 2 / factor;
-
-                    scaleData.yScale.domain([center - size, center + size]);
-
-                    scaleData.lastDragedY = event.transform.y;
-
-                    setZoomAndYdragControl(event);
-                    setRescale(() => {
-                        return false;
-                    });
-
-                    setMarketLineValue();
-                    render();
-                }
+                setMarketLineValue();
+                render();
             }) as any;
 
             setZoomUtils(() => {
@@ -1139,15 +1108,12 @@ export default function Chart(props: ChartData) {
     }, [tradeData.limitTick, denomInBase]);
 
     const setLimitLineValue = () => {
-        const limitDisplayPrice = denomInBase
-            ? pool?.toDisplayPrice(tickToPrice(tradeData.limitTick))
-            : pool?.toDisplayPrice(tickToPrice(tradeData.limitTick));
-
+        const limitDisplayPrice = pool?.toDisplayPrice(tickToPrice(tradeData.limitTick));
         limitDisplayPrice?.then((limit) => {
             setLimit([
                 {
                     name: 'Limit',
-                    value: limit || 0,
+                    value: denomInBase ? limit : 1 / limit || 0,
                 },
             ]);
         });
@@ -1513,10 +1479,7 @@ export default function Chart(props: ChartData) {
                     setCrosshairData([
                         {
                             x: crosshairData[0].x,
-                            y:
-                                isMouseMoveForSubChart || isZoomForSubChart
-                                    ? -1
-                                    : scaleData.yScale.invert(event.sourceEvent.layerY),
+                            y: scaleData.yScale.invert(event.sourceEvent.layerY),
                         },
                     ]);
                     setIsLineDrag(false);
@@ -1674,13 +1637,7 @@ export default function Chart(props: ChartData) {
                     .select('line')
                     .attr(
                         'class',
-                        (
-                            isAuthenticated
-                                ? checkLimitOrder || limit[0].value > currentPriceData[0].value
-                                : false
-                        )
-                            ? sellOrderStyle
-                            : 'line',
+                        (isUserLoggedIn ? checkLimitOrder : false) ? sellOrderStyle : 'line',
                     );
             });
 
@@ -1771,7 +1728,7 @@ export default function Chart(props: ChartData) {
                 return limitLine;
             });
         }
-    }, [parsedChartData?.chartData, scaleData, market, checkLimitOrder, limit, isAuthenticated]);
+    }, [parsedChartData?.chartData, scaleData, market, checkLimitOrder, limit, isUserLoggedIn]);
 
     useEffect(() => {
         if (scaleData !== undefined && reset) {
@@ -1789,12 +1746,14 @@ export default function Chart(props: ChartData) {
             const diff =
                 scaleData.xScale.domain()[1].getTime() - scaleData.xScale.domain()[0].getTime();
 
+            const centerX = parsedChartData?.chartData[latestCandleIndex].time * 1000;
+
             if (rescale) {
                 scaleData.yScale.domain(scaleData.yScaleCopy.domain());
 
                 scaleData.xScale.domain([
-                    new Date(scaleData.xScaleCopy.domain()[1].getTime() - diff),
-                    scaleData.xScaleCopy.domain()[1],
+                    new Date(centerX - diff / 2),
+                    new Date(centerX + diff / 2),
                 ]);
             } else {
                 const diffY = scaleData.yScale.domain()[1] - scaleData.yScale.domain()[0];
@@ -1809,7 +1768,6 @@ export default function Chart(props: ChartData) {
 
                 scaleData.yScale.domain([centerY - diffY / 2, centerY + diffY / 2]);
 
-                const centerX = parsedChartData?.chartData[latestCandleIndex].time * 1000;
                 scaleData.xScale.domain([
                     new Date(centerX - diff / 2),
                     new Date(centerX + diff / 2),
@@ -1861,12 +1819,7 @@ export default function Chart(props: ChartData) {
                     .attr(
                         'stroke',
                         selectClass.includes('limit')
-                            ? (
-                                  isAuthenticated
-                                      ? checkLimitOrder ||
-                                        limit[0].value > currentPriceData[0].value
-                                      : false
-                              )
+                            ? (isUserLoggedIn ? checkLimitOrder : false)
                                 ? sellOrderStyle === 'order_sell'
                                     ? 'var(--accent-secondary)'
                                     : '#7371FC'
@@ -1876,12 +1829,7 @@ export default function Chart(props: ChartData) {
                     .attr(
                         'fill',
                         selectClass.includes('limit')
-                            ? (
-                                  isAuthenticated
-                                      ? checkLimitOrder ||
-                                        limit[0].value > currentPriceData[0].value
-                                      : false
-                              )
+                            ? (isUserLoggedIn ? checkLimitOrder : false)
                                 ? sellOrderStyle === 'order_sell'
                                     ? 'var(--accent-secondary)'
                                     : '#7371FC'
@@ -1896,12 +1844,7 @@ export default function Chart(props: ChartData) {
                     .attr(
                         'stroke',
                         selectClass.includes('limit')
-                            ? (
-                                  isAuthenticated
-                                      ? checkLimitOrder ||
-                                        limit[0].value > currentPriceData[0].value
-                                      : false
-                              )
+                            ? (isUserLoggedIn ? checkLimitOrder : false)
                                 ? sellOrderStyle === 'order_sell'
                                     ? 'var(--accent-secondary)'
                                     : '#7371FC'
@@ -1911,12 +1854,7 @@ export default function Chart(props: ChartData) {
                     .attr(
                         'fill',
                         selectClass.includes('limit')
-                            ? (
-                                  isAuthenticated
-                                      ? checkLimitOrder ||
-                                        limit[0].value > currentPriceData[0].value
-                                      : false
-                              )
+                            ? (isUserLoggedIn ? checkLimitOrder : false)
                                 ? sellOrderStyle === 'order_sell'
                                     ? 'var(--accent-secondary)'
                                     : '#7371FC'
@@ -2015,8 +1953,32 @@ export default function Chart(props: ChartData) {
         limit,
         parsedChartData?.period,
         checkLimitOrder,
-        isAuthenticated,
+        isUserLoggedIn,
     ]);
+
+    useEffect(() => {
+        const limitNonDisplay = denomInBase
+            ? pool?.fromDisplayPrice(limit[0].value)
+            : pool?.fromDisplayPrice(1 / limit[0].value);
+
+        limitNonDisplay?.then(async (res: any) => {
+            // const limitPriceInTick = Math.log(limit) / Math.log(1.0001);
+            const pinnedTick: number = isTokenABase
+                ? pinTickLower(res, chainData.gridSize)
+                : pinTickUpper(res, chainData.gridSize);
+
+            const sellToken = tradeData.tokenA.address;
+            const buyToken = tradeData.tokenB.address;
+            const isTokenAPrimary = tradeData.isTokenAPrimary;
+
+            const testOrder = isTokenAPrimary
+                ? crocEnv?.sell(sellToken, 0)
+                : crocEnv?.buy(buyToken, 0);
+
+            const ko = testOrder?.atLimit(isTokenAPrimary ? buyToken : sellToken, pinnedTick);
+            setCheckLimitOrder(!(await ko?.willMintFail()));
+        });
+    }, [limit]);
 
     // Line Rules
     useEffect(() => {
@@ -2706,6 +2668,8 @@ export default function Chart(props: ChartData) {
 
             drawChart(
                 parsedChartData.chartData,
+                parsedChartData.tvlChartData,
+                parsedChartData.feeChartData,
                 targetData,
                 scaleData,
                 props.liquidityData,
@@ -2803,6 +2767,8 @@ export default function Chart(props: ChartData) {
     const drawChart = useCallback(
         (
             chartData: any,
+            tvlChartData: any,
+            feeChartData: any,
             targets: any,
             scaleData: any,
             liquidityData: any,
@@ -2878,14 +2844,14 @@ export default function Chart(props: ChartData) {
                         const newData = [...prevState];
 
                         newData.filter((target: any) => target.name === 'tvl')[0].value =
-                            parsedChartData?.tvlChartData.find(
+                            tvlChartData.find(
                                 (item: any) =>
                                     moment(item.time.getTime()).add(30, 'm').toDate().getTime() ===
                                     nearest?.date.getTime(),
                             )?.value;
 
                         newData.filter((target: any) => target.name === 'feeRate')[0].value =
-                            parsedChartData?.feeChartData.find(
+                            feeChartData.find(
                                 (item: any) => item.time.getTime() === nearest?.date.getTime(),
                             )?.value;
 
@@ -3210,20 +3176,22 @@ export default function Chart(props: ChartData) {
                 });
 
                 const setCrossHairLocation = (event: any) => {
-                    crosshairData[0] = snap(candlestick, chartData, event)[0];
-                    setIsMouseMoveCrosshair(true);
+                    if (snap(candlestick, chartData, event)[0] !== undefined) {
+                        crosshairData[0] = snap(candlestick, chartData, event)[0];
+                        setIsMouseMoveCrosshair(true);
 
-                    setCrosshairData([
-                        {
-                            x: crosshairData[0].x,
-                            y:
-                                isMouseMoveForSubChart || isZoomForSubChart
-                                    ? -1
-                                    : scaleData.yScale.invert(event.layerY),
-                        },
-                    ]);
+                        setCrosshairData([
+                            {
+                                x: crosshairData[0].x,
+                                y:
+                                    isMouseMoveForSubChart || isZoomForSubChart
+                                        ? -1
+                                        : scaleData.yScale.invert(event.layerY),
+                            },
+                        ]);
 
-                    render();
+                        render();
+                    }
                 };
 
                 if (isMouseMoveForSubChart) {
