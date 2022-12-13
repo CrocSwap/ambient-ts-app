@@ -865,7 +865,7 @@ export default function Chart(props: ChartData) {
                                         parsedChartData.period * 1000 * 300) &&
                                 (deltaX > 0 ||
                                     Math.abs(domainX[1].getTime() - domainX[0].getTime()) >=
-                                        parsedChartData.period * 1000)
+                                        parsedChartData.period * 1000 * 2)
                             ) {
                                 if (!event.sourceEvent.ctrlKey) {
                                     scaleData.xScale.domain([
