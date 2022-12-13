@@ -434,7 +434,7 @@ export default function Chart(props: ChartData) {
             const differenceLowMarket = scaleData.yScale(low) - scaleData.yScale(marketValue);
             const differenceHighMarket = scaleData.yScale(high) - scaleData.yScale(marketValue);
 
-            const isSameLocationLowHigh = Math.abs(differenceLowHigh) <= 20;
+            const isSameLocationLowHigh = Math.abs(differenceLowHigh) <= 30;
             const differenceLowHighData = differenceLowHigh < 0 ? -20 : 20;
 
             const isSameLocationLowMarket = Math.abs(differenceLowMarket) <= 20;
