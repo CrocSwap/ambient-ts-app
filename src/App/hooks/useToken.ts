@@ -84,7 +84,6 @@ export const useToken = (
         console.time();
         const tokens = getTokensOnChain(chn);
         const searchExact = (input: string) => {
-            console.log('searching for exact match');
             const exactMatches = tokens.filter((tok: TokenIF) => (
                 tok.name.toLowerCase() === input.toLowerCase() ||
                 tok.symbol.toLowerCase() === input.toLowerCase()
@@ -92,8 +91,6 @@ export const useToken = (
             return exactMatches;
         }
         const searchPartial = (input: string) => {
-            console.log('searching PARTIAL matches!');
-            console.log({tokens});
             const partialMatches = tokens.filter((tok: TokenIF) =>
                 tok.name.toLowerCase().includes(input.toLowerCase()) ||
                 tok.symbol.toLowerCase().includes(input.toLowerCase())
@@ -101,7 +98,6 @@ export const useToken = (
             return partialMatches;
         }
         const matches = exact ? searchExact(searchName) : searchPartial(searchName);
-        console.log({matches});
         const exactMatches: TokenIF[] = [];
         const partialMatches: TokenIF[] = [];
         matches.forEach((match) => {
