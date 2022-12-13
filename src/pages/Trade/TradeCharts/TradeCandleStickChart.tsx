@@ -17,7 +17,7 @@ import { getPinnedPriceValuesFromDisplayPrices } from '../Range/rangeFunctions';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
-import { ChainSpec, CrocPoolView } from '@crocswap-libs/sdk';
+import { ChainSpec, CrocEnv, CrocPoolView } from '@crocswap-libs/sdk';
 import ChartSkeleton from './ChartSkeleton/ChartSkeleton';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -33,6 +33,7 @@ declare global {
 }
 
 interface ChartData {
+    isUserLoggedIn: boolean | undefined;
     pool: CrocPoolView | undefined;
     chainData: ChainSpec;
     expandTradeTable: boolean;
@@ -61,7 +62,6 @@ interface ChartData {
     poolPriceNonDisplay: number | undefined;
     selectedDate: Date | undefined;
     setSelectedDate: React.Dispatch<Date | undefined>;
-    checkLimitOrder: boolean;
     rescale: boolean | undefined;
     setRescale: React.Dispatch<React.SetStateAction<boolean>>;
     latest: boolean | undefined;
@@ -72,6 +72,7 @@ interface ChartData {
     activeTimeFrame: string;
     setShowLatest: React.Dispatch<React.SetStateAction<boolean>>;
     setShowTooltip: React.Dispatch<React.SetStateAction<boolean>>;
+    crocEnv: CrocEnv | undefined;
 }
 
 export interface ChartUtils {
@@ -91,6 +92,7 @@ type chartItemStates = {
 
 export default function TradeCandleStickChart(props: ChartData) {
     const {
+        isUserLoggedIn,
         pool,
         chainData,
         baseTokenAddress,
@@ -98,7 +100,7 @@ export default function TradeCandleStickChart(props: ChartData) {
         poolPriceNonDisplay,
         selectedDate,
         setSelectedDate,
-        checkLimitOrder,
+        crocEnv,
         activeTimeFrame,
     } = props;
 
@@ -407,9 +409,8 @@ export default function TradeCandleStickChart(props: ChartData) {
     // Scale
     const setScaleForChart = (parsedChartData: any, liquidityData: any) => {
         if (parsedChartData !== undefined && liquidityData !== undefined) {
-            if (parsedChartData.chartData.length > 100) {
-                parsedChartData.chartData = parsedChartData.chartData.slice(0, 100);
-            }
+            const temp = [...parsedChartData.chartData];
+
             const priceRange = d3fc
                 .extentLinear()
                 .accessors([(d: any) => d.high, (d: any) => d.low])
@@ -433,7 +434,7 @@ export default function TradeCandleStickChart(props: ChartData) {
             const subChartxScale = d3.scaleTime();
             const yScale = d3.scaleLinear();
 
-            xScale.domain(xExtent(parsedChartData.chartData));
+            xScale.domain(xExtent(temp.splice(0, 100)));
             subChartxScale.domain(subChartxExtent(parsedChartData.chartData));
             yScale.domain(priceRange(parsedChartData.chartData));
 
@@ -518,6 +519,7 @@ export default function TradeCandleStickChart(props: ChartData) {
             <div style={{ height: '100%', width: '100%' }}>
                 {!isLoading && parsedChartData !== undefined ? (
                     <Chart
+                        isUserLoggedIn={isUserLoggedIn}
                         pool={pool}
                         chainData={chainData}
                         isTokenABase={isTokenABase}
@@ -547,7 +549,6 @@ export default function TradeCandleStickChart(props: ChartData) {
                         poolPriceNonDisplay={poolPriceNonDisplay}
                         selectedDate={selectedDate}
                         setSelectedDate={setSelectedDate}
-                        checkLimitOrder={checkLimitOrder}
                         rescale={props.rescale}
                         setRescale={props.setRescale}
                         latest={props.latest}
@@ -558,6 +559,7 @@ export default function TradeCandleStickChart(props: ChartData) {
                         setShowLatest={props.setShowLatest}
                         setShowTooltip={props.setShowTooltip}
                         activeTimeFrame={activeTimeFrame}
+                        crocEnv={crocEnv}
                     />
                 ) : (
                     <>{loading}</>

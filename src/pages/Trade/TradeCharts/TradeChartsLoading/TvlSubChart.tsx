@@ -75,15 +75,19 @@ export default function TvlSubChart(props: TvlData) {
                 const yExtent = d3fc.extentLinear().accessors([(d: any) => d.value]);
                 const yScale = d3.scaleLinear();
                 yScale.domain(yExtent(tvlData));
+
+                const highest = d3.max(tvlData, (d: any) => d.value) as any;
+                const lowest = d3.min(tvlData, (d: any) => d.value) as any;
+
                 const yAxis = d3fc
                     .axisRight()
                     .scale(yScale)
-                    .tickFormat(formatDollarAmountAxis)
-                    .tickArguments([2]);
+                    .tickValues([lowest + (highest - lowest) / 2, highest])
+                    .tickFormat(formatDollarAmountAxis);
 
                 const crosshairDataLocal = [
                     {
-                        x: crosshairForSubChart[0].x,
+                        x: 0,
                         y:
                             isMouseMoveForSubChart && mouseMoveChartName === 'tvl'
                                 ? crosshairForSubChart[0].y
@@ -93,27 +97,7 @@ export default function TvlSubChart(props: TvlData) {
 
                 const areaJoin = d3fc.dataJoin('g', 'areaJoin');
                 const lineJoin = d3fc.dataJoin('g', 'lineJoin');
-                // const crosshairHorizontalJoin = d3fc.dataJoin('g', 'crosshairHorizontal');
                 const crosshairVerticalJoin = d3fc.dataJoin('g', 'crosshairVertical');
-
-                const crosshairHorizontal = d3fc
-                    .annotationSvgLine()
-                    .orient('vertical')
-                    .value((d: any) => d.x)
-                    .xScale(scaleData.xScale)
-                    .yScale(yScale)
-                    .label('');
-
-                crosshairHorizontal.decorate((selection: any) => {
-                    selection.enter().select('line').attr('class', 'crosshair');
-                    selection.enter().style('visibility', 'hidden');
-                    selection
-                        .enter()
-                        .append('line')
-                        .attr('stroke-width', 1)
-                        .style('pointer-events', 'all');
-                    selection.enter().select('g.top-handle').remove();
-                });
 
                 const crosshairVertical = d3fc
                     .annotationSvgLine()
@@ -274,6 +258,7 @@ export default function TvlSubChart(props: TvlData) {
                     setIsMouseMoveForSubChart(true);
                     setIsZoomForSubChart(false);
                     setMouseMoveEventCharts(event);
+
                     setsubChartValues((prevState: any) => {
                         const newData = [...prevState];
                         newData.filter((target: any) => target.name === 'tvl')[0].value = snap(
@@ -302,7 +287,7 @@ export default function TvlSubChart(props: TvlData) {
                 });
             }
         },
-        [crosshairForSubChart, JSON.stringify(scaleData.xScale.domain()[0])],
+        [crosshairForSubChart, JSON.stringify(scaleData.xScale.domain()[0]), tvlData],
     );
 
     return (
