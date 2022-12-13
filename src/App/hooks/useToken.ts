@@ -69,9 +69,9 @@ export const useToken = (
 
     const getAllTokens = () => Array.from(tokenMap.values());
 
-    const getTokensOnChain = useCallback((chn: string) => (
+    const getTokensOnChain = (chn: string) => (
         Array.from(tokenMap.values()).filter(tok => tok.chainId === parseInt(chn))
-    ), [chainId]);
+    );
 
     // fn to return a given token by name and address
     // parameter for chain is optional, app uses the current chain by default
@@ -91,6 +91,8 @@ export const useToken = (
             return exactMatches;
         }
         const searchPartial = (input: string) => {
+            console.log('searching PARTIAL matches!');
+            console.log({tokens});
             const partialMatches = tokens.filter((tok: TokenIF) =>
                 tok.name.toLowerCase().includes(input.toLowerCase()) ||
                 tok.symbol.toLowerCase().includes(input.toLowerCase())

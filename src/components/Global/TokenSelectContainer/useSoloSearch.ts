@@ -60,13 +60,14 @@ export const useSoloSearch = (
     useEffect(() => {
         // make one set of tokens to render
         // default is the basic imported tokens wherever they come from now
-        const tokenExists = verifyToken(validatedInput, chainId);
+        const tokenExists = verifyToken(validatedInput, '0x1');
+        console.log({searchAs});
         if (searchAs === 'address') {
             tokenExists && setOutputTokens(
-                [getTokenByAddress(validatedInput, chainId) as TokenIF]
+                [getTokenByAddress(validatedInput, '0x1') as TokenIF]
             );
         } else if (searchAs === 'nameOrSymbol') {
-            setOutputTokens(getTokensByName(validatedInput, chainId, false));
+            setOutputTokens(getTokensByName(validatedInput, '0x1', false));
         } else {
             setOutputTokens(importedTokensOnChain);
         }
