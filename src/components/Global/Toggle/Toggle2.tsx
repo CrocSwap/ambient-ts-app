@@ -23,7 +23,7 @@ export default function Toggle2(props: TogglePropsIF) {
         // </label>
         <div
             className={`${styles.switch} ${diabledStyle}`}
-            data-isOn={isOn}
+            data-ison={isOn}
             onClick={handleToggle}
             id={`${id}switch`}
         >
