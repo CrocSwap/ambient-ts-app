@@ -75,7 +75,7 @@
         "yarn": "^1.22.19"
     },
     "scripts": {
-        "start": "yarn && react-scripts --openssl-legacy-provider start",
+        "start": "yarn && react-scripts start --openssl-legacy-provider",
         "start-only": "react-scripts start",
         "build": "react-scripts --max_old_space_size=3072 build",
         "test": "react-scripts test ",

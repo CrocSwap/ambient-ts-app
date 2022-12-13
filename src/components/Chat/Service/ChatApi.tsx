@@ -1,5 +1,5 @@
 import { useMoralis } from 'react-moralis';
-export const host = 'http://crocswap-chat.herokuapp.com/';
+export const host = 'https://ambichat.link:5000';
 export const sendMessageRoute = `${host}/api/messages/addmsg`;
 export const recieveMessageRoute = `${host}/api/messages/getall`;
 export const recieveMessageByRoomRoute = `${host}/api/messages/getmsgbyroom`;
