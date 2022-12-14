@@ -53,9 +53,10 @@
 .right_bottom_container {
     display: flex;
     flex-direction: row;
-    justify-content: right;
+    justify-content: flex-end;
+    align-items: baseline;
 
-    gap: 3em;
+    gap: 0.5em;
 }
 
 .balance_column {
@@ -154,8 +155,7 @@
     align-items: center;
     gap: 8px;
     padding-top: 3px;
-    /* padding-left: 10px;
-    padding-right: 10px; */
+  
 }
 
 /* modal */
@@ -224,10 +224,7 @@
         box-shadow: 0 0 0 0px rgba(131, 119, 220, 0.8);
         border-radius: var(--border-radius);
     }
-    /* 50% {
-    box-shadow: 0 0 0 6px rgba(131, 119, 220, 0.5);
-    border-radius: var(--border-radius);
-  } */
+
     100% {
         box-shadow: 0 0 0 12px rgba(0, 0, 0, 0);
         border-radius: var(--border-radius);
