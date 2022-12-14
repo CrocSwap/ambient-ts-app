@@ -603,7 +603,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                     </p>
                 </li>
             )}
-            <li data-label='menu'>
+            <li data-label='menu' className={styles.menu}>
                 {/* <OrdersMenu limitOrder={limitOrder} {...orderMenuProps} /> */}
                 <TransactionsMenu
                     userPosition={userNameToDisplay === 'You'}
