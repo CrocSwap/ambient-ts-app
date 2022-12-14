@@ -517,47 +517,128 @@ export default function Chart(props: ChartData) {
                     }
                 }
             }
-        } else {
-            console.log('DSFSDF');
+        } else if (low > high) {
+            if (marketValue > low && marketValue > high) {
+                if (isSameLocationLowHigh) {
+                    isSameLocationMax = true;
+                    sameLocationDataMax = scaleData.yScale.invert(
+                        scaleData.yScale(low) - differenceLowHighData,
+                    );
+                }
 
-            if (isSameLocationLowHigh) {
-                isSameLocationMax = isSameLocationLowHigh;
+                if (isSameLocationLowMarket) {
+                    isSameLocationMin = true;
+                    sameLocationDataMin = scaleData.yScale.invert(
+                        scaleData.yScale(marketValue) + differenceLowMarketData,
+                    );
+                }
+
+                if (isSameLocationLowMarket && isSameLocationLowHigh) {
+                    isSameLocationMax = true;
+                    isSameLocationMin = true;
+                    sameLocationDataMin = scaleData.yScale.invert(
+                        scaleData.yScale(marketValue) + differenceLowMarketData,
+                    );
+
+                    sameLocationDataMax = scaleData.yScale.invert(
+                        scaleData.yScale(marketValue) +
+                            differenceLowMarketData -
+                            differenceLowHighData,
+                    );
+                }
+            }
+
+            if (marketValue < low && marketValue > high) {
+                if (isSameLocationLowMarket) {
+                    isSameLocationMin = true;
+                    sameLocationDataMin = scaleData.yScale.invert(
+                        scaleData.yScale(marketValue) + differenceLowMarketData,
+                    );
+                }
+
+                if (isSameLocationHighMarket) {
+                    isSameLocationMax = true;
+                    sameLocationDataMax = scaleData.yScale.invert(
+                        scaleData.yScale(marketValue) + differenceHighMarketData,
+                    );
+                }
+            }
+
+            if (marketValue < low && marketValue < high) {
+                if (isSameLocationLowHigh) {
+                    isSameLocationMin = true;
+                    sameLocationDataMin = scaleData.yScale.invert(
+                        scaleData.yScale(high) + differenceLowHighData,
+                    );
+                }
+
+                if (isSameLocationHighMarket) {
+                    isSameLocationMax = true;
+                    sameLocationDataMax = scaleData.yScale.invert(
+                        scaleData.yScale(marketValue) + differenceHighMarketData,
+                    );
+                }
+                if (isSameLocationHighMarket && isSameLocationLowHigh) {
+                    isSameLocationMax = true;
+                    isSameLocationMin = true;
+                    sameLocationDataMax = scaleData.yScale.invert(
+                        scaleData.yScale(marketValue) + differenceHighMarketData,
+                    );
+
+                    sameLocationDataMin = scaleData.yScale.invert(
+                        scaleData.yScale(marketValue) +
+                            differenceHighMarketData +
+                            differenceLowHighData,
+                    );
+                }
+            }
+        } else {
+            if (marketValue < low && marketValue < high) {
+                isSameLocationMax = true;
                 sameLocationDataMax = scaleData.yScale.invert(
                     scaleData.yScale(low) - differenceLowHighData,
                 );
+
+                if (isSameLocationHighMarket || isSameLocationLowMarket) {
+                    isSameLocationMin = true;
+                    sameLocationDataMin = scaleData.yScale.invert(
+                        scaleData.yScale(marketValue) + differenceLowMarketData,
+                    );
+
+                    sameLocationDataMax = scaleData.yScale.invert(
+                        scaleData.yScale(marketValue) + differenceLowMarketData * 2,
+                    );
+                }
             }
 
-            if (isSameLocationLowMarket) {
-                isSameLocationMin = isSameLocationLowMarket;
+            if (marketValue > low && marketValue > high) {
+                isSameLocationMin = true;
                 sameLocationDataMin = scaleData.yScale.invert(
-                    scaleData.yScale(marketValue) + differenceLowMarketData,
+                    scaleData.yScale(high) + differenceLowHighData,
                 );
+
+                if (isSameLocationLowMarket) {
+                    isSameLocationMax = true;
+
+                    sameLocationDataMax = scaleData.yScale.invert(
+                        scaleData.yScale(marketValue) + differenceHighMarketData,
+                    );
+
+                    sameLocationDataMin = scaleData.yScale.invert(
+                        scaleData.yScale(marketValue) + differenceHighMarketData * 2,
+                    );
+                }
             }
 
-            if (isSameLocationHighMarket) {
-                isSameLocationMax = isSameLocationHighMarket;
-                sameLocationDataMax = scaleData.yScale.invert(
-                    scaleData.yScale(marketValue) + differenceHighMarketData,
-                );
-            }
-
-            if (isSameLocationLowHigh && isSameLocationLowMarket) {
-                console.log('ASMASDA');
-
+            if (low === marketValue) {
                 isSameLocationMin = true;
                 isSameLocationMax = true;
-                sameLocationDataMax = sameLocationDataMin = scaleData.yScale.invert(
-                    scaleData.yScale(low) - differenceLowHighData,
-                );
-                // sameLocationDataMin = scaleData.yScale.invert(
-                //     scaleData.yScale(marketValue) - differenceLowMarketData,
-                // );
-            }
 
-            if (isSameLocationLowHigh && isSameLocationHighMarket) {
-                console.log('YETHER');
-                isSameLocationMax = true;
                 sameLocationDataMax = scaleData.yScale.invert(
+                    scaleData.yScale(marketValue) - differenceHighMarketData,
+                );
+
+                sameLocationDataMin = scaleData.yScale.invert(
                     scaleData.yScale(marketValue) + differenceHighMarketData,
                 );
             }
