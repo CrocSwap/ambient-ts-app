@@ -1367,8 +1367,8 @@ export default function Chart(props: ChartData) {
                             rangeWidthPercentage =
                                 Math.abs(pinnedTick - currentPoolPriceTick) / 100;
 
-                            const offset =
-                                (rangeWidthPercentage < 1 ? 1 : rangeWidthPercentage) * 100;
+                            const offset = rangeWidthPercentage * 100;
+                            // (rangeWidthPercentage < 1 ? 1 : rangeWidthPercentage) * 100;
 
                             const lowTick = currentPoolPriceTick - offset;
                             const highTick = currentPoolPriceTick + offset;
@@ -1392,14 +1392,11 @@ export default function Chart(props: ChartData) {
                             );
 
                             rangeWidthPercentage =
-                                Math.abs(pinnedTick - currentPoolPriceTick) / 100;
+                                Math.abs(currentPoolPriceTick - pinnedTick) / 100;
+                            const offset = rangeWidthPercentage * 100;
 
-                            const highTick =
-                                currentPoolPriceTick +
-                                (rangeWidthPercentage < 1 ? 1 : rangeWidthPercentage) * 100;
-                            const lowTick =
-                                currentPoolPriceTick -
-                                (rangeWidthPercentage < 1 ? 1 : rangeWidthPercentage) * 100;
+                            const lowTick = currentPoolPriceTick - offset;
+                            const highTick = currentPoolPriceTick + offset;
 
                             pinnedDisplayPrices = getPinnedPriceValuesFromTicks(
                                 denomInBase,
