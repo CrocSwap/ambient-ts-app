@@ -3,12 +3,14 @@ import styles from './RangeStatus.module.css';
 interface RangeStatusProps {
     isInRange: boolean;
     isAmbient: boolean;
-
+    fullText?: boolean;
     justSymbol?: boolean;
 }
 
 export default function RangeStatus(props: RangeStatusProps) {
-    const { isInRange, isAmbient } = props;
+    const { isInRange, isAmbient, fullText } = props;
+
+    const fullTextDisplay = fullText ? 'Out of Range' : 'Out of Rng';
 
     const symbolOnlyDisplay = (
         <div className={`${styles.range_container} ${styles.symbol_only_display}`}>
@@ -32,7 +34,7 @@ export default function RangeStatus(props: RangeStatusProps) {
             <div className={styles.range_container}>
                 {isAmbient ? ambientRange : nonAmbientRange}
             </div>
-            <p>{isAmbient ? 'Ambient' : isInRange ? 'In Range' : 'Out of Rng.'}</p>
+            <p>{isAmbient ? 'Ambient' : isInRange ? 'In Range' : fullTextDisplay}</p>
         </div>
     );
 
