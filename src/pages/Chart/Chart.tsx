@@ -38,6 +38,7 @@ import {
 import {
     getPinnedPriceValuesFromDisplayPrices,
     getPinnedPriceValuesFromTicks,
+    getPinnedTickFromDisplayPrice,
 } from '../Trade/Range/rangeFunctions';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 
@@ -1086,8 +1087,8 @@ export default function Chart(props: ChartData) {
         candlestick,
         isZoomForSubChart,
         location,
-        JSON.stringify(scaleData.xScale.domain()[0]),
-        JSON.stringify(scaleData.xScale.domain()[1]),
+        JSON.stringify(scaleData?.xScale.domain()[0]),
+        JSON.stringify(scaleData?.xScale?.domain()[1]),
         transformX,
         JSON.stringify(showLatest),
     ]);
@@ -1353,27 +1354,24 @@ export default function Chart(props: ChartData) {
                     let pinnedDisplayPrices: any;
 
                     if (!isAdvancedModeActive) {
-                        let tickValue: any;
-
                         if (lineToBeSet === 'Max') {
-                            tickValue = getPinnedPriceValuesFromDisplayPrices(
-                                denomInBase,
+                            const pinnedTick = getPinnedTickFromDisplayPrice(
+                                isDenomBase,
                                 baseTokenDecimals,
                                 quoteTokenDecimals,
-                                low.toString(),
+                                false, // isMinPrice
                                 dragedValue,
                                 lookupChain(chainId).gridSize,
                             );
 
                             rangeWidthPercentage =
-                                Math.abs(tickValue.pinnedLowTick - currentPoolPriceTick) / 100;
+                                Math.abs(pinnedTick - currentPoolPriceTick) / 100;
 
-                            const lowTick =
-                                currentPoolPriceTick -
-                                (rangeWidthPercentage < 1 ? 1 : rangeWidthPercentage) * 100;
-                            const highTick =
-                                currentPoolPriceTick +
-                                (rangeWidthPercentage < 1 ? 1 : rangeWidthPercentage) * 100;
+                            const offset = rangeWidthPercentage * 100;
+                            // (rangeWidthPercentage < 1 ? 1 : rangeWidthPercentage) * 100;
+
+                            const lowTick = currentPoolPriceTick - offset;
+                            const highTick = currentPoolPriceTick + offset;
 
                             pinnedDisplayPrices = getPinnedPriceValuesFromTicks(
                                 denomInBase,
@@ -1384,24 +1382,21 @@ export default function Chart(props: ChartData) {
                                 lookupChain(chainId).gridSize,
                             );
                         } else {
-                            tickValue = getPinnedPriceValuesFromDisplayPrices(
-                                denomInBase,
+                            const pinnedTick = getPinnedTickFromDisplayPrice(
+                                isDenomBase,
                                 baseTokenDecimals,
                                 quoteTokenDecimals,
+                                true, // isMinPrice
                                 dragedValue,
-                                high.toString(),
                                 lookupChain(chainId).gridSize,
                             );
 
                             rangeWidthPercentage =
-                                Math.abs(tickValue.pinnedHighTick - currentPoolPriceTick) / 100;
+                                Math.abs(currentPoolPriceTick - pinnedTick) / 100;
+                            const offset = rangeWidthPercentage * 100;
 
-                            const highTick =
-                                currentPoolPriceTick +
-                                (rangeWidthPercentage < 1 ? 1 : rangeWidthPercentage) * 100;
-                            const lowTick =
-                                currentPoolPriceTick -
-                                (rangeWidthPercentage < 1 ? 1 : rangeWidthPercentage) * 100;
+                            const lowTick = currentPoolPriceTick - offset;
+                            const highTick = currentPoolPriceTick + offset;
 
                             pinnedDisplayPrices = getPinnedPriceValuesFromTicks(
                                 denomInBase,
@@ -1418,10 +1413,10 @@ export default function Chart(props: ChartData) {
                                 const newTargets = [...prevState];
 
                                 newTargets.filter((target: any) => target.name === 'Min')[0].value =
-                                    parseFloat(pinnedDisplayPrices.pinnedMinPriceDisplayTruncated);
+                                    parseFloat(pinnedDisplayPrices.pinnedMinPriceDisplay);
 
                                 newTargets.filter((target: any) => target.name === 'Max')[0].value =
-                                    parseFloat(pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated);
+                                    parseFloat(pinnedDisplayPrices.pinnedMaxPriceDisplay);
 
                                 newRangeValue = newTargets;
 
