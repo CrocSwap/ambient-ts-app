@@ -1,14 +1,14 @@
-import { useMemo, Dispatch, SetStateAction } from 'react';
+import { useEffect, useMemo, useState, Dispatch, SetStateAction } from 'react';
 import { TokenListIF, TokenIF } from '../../../utils/interfaces/exports';
 import TokenSelect from '../TokenSelect/TokenSelect';
 import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
 import { setToken } from '../../../utils/state/temp';
 import { useSoloSearch } from './useSoloSearch';
 import styles from './SoloTokenSelect.module.css';
-// import { memoizeFetchContractDetails } from '../../../App/functions/fetchContractDetails';
+import { memoizeFetchContractDetails } from '../../../App/functions/fetchContractDetails';
 import { ethers } from 'ethers';
-// import SoloTokenImport from './SoloTokenImport';
-// import { AiOutlineQuestionCircle } from 'react-icons/ai';
+import SoloTokenImport from './SoloTokenImport';
+import { AiOutlineQuestionCircle } from 'react-icons/ai';
 
 interface propsIF {
     provider: ethers.providers.Provider | undefined;
@@ -26,7 +26,7 @@ interface propsIF {
 
 export const SoloTokenSelect = (props: propsIF) => {
     const {
-        // provider,
+        provider,
         importedTokens,
         chainId,
         setImportedTokens,
@@ -45,8 +45,8 @@ export const SoloTokenSelect = (props: propsIF) => {
         getTokenByAddress,
         getTokensByName
     );
-    false && validatedInput;
-    false && searchType;
+
+    useEffect(() => console.log(outputTokens), [outputTokens]);
 
     const dispatch = useAppDispatch();
 
@@ -86,28 +86,61 @@ export const SoloTokenSelect = (props: propsIF) => {
         />
     ));
 
-    // const [customToken, setCustomToken] = useState<TokenIF | null>(null);
-    // useEffect(() => {
-    //     if (provider && searchType === 'address' && !otherTokensForDOM?.length) {
-    //         const cachedFetchContractDetails = memoizeFetchContractDetails();
-    //         const promise = cachedFetchContractDetails(provider, validatedInput, chainId);
-    //         Promise.resolve(promise)
-    //             .then((res) => res && setCustomToken(res))
-    //             .catch((err) => {
-    //                 console.log(err);
-    //                 setCustomToken(null);
-    //             });
-    //     }
-    // }, [searchType, validatedInput]);
+    const [customToken, setCustomToken] = useState<TokenIF | null>(null);
+    useEffect(() => {
+        if (provider && searchType === 'address' && !outputTokens.length) {
+            const cachedFetchContractDetails = memoizeFetchContractDetails();
+            const promise = cachedFetchContractDetails(provider, validatedInput, chainId);
+            Promise.resolve(promise)
+                .then((res) => res && setCustomToken(res))
+                .catch((err) => {
+                    console.warn(err);
+                    setCustomToken(null);
+                });
+        }
+    }, [searchType, validatedInput]);
     // EDS Test Token 2 address (please do not delete!)
     // '0x0B0322d75bad9cA72eC7708708B54e6b38C26adA'
 
-    // const tokenNotFound = (
-    //     <div className={styles.token_not_found}>
-    //         <p>Cound not find matching token</p>
-    //         <AiOutlineQuestionCircle />
-    //     </div>
-    // );
+    const tokenNotFound = (
+        <div className={styles.token_not_found}>
+            <p>Cound not find matching token</p>
+            <AiOutlineQuestionCircle />
+        </div>
+    );
+
+    useEffect(() => console.log(outputTokens), [outputTokens]);
+
+    const figureOutWhatToShow = () => {
+        let showThis: string;
+        console.log(searchType);
+        console.log({validatedInput});
+        if (validatedInput) {
+            if (outputTokens.length) {
+                console.log('case 1');
+                showThis = 'token buttons';
+            } else {
+                if (customToken) {
+                    if (searchType === 'address') {
+                        console.log('case 2');
+                        showThis = 'custom token';
+                    } else {
+                        console.log('case 3');
+                        showThis = 'not found';
+                    }
+                } else {
+                    console.log('case 4');
+                    showThis = 'not found';
+                }
+            }
+        } else {
+            console.log('case 5');
+            showThis = 'token buttons';
+        }
+        console.log({showThis});
+        return showThis;
+    }
+    const whatToShow = figureOutWhatToShow();
 
     return (
         <section className={styles.container}>
@@ -117,19 +150,12 @@ export const SoloTokenSelect = (props: propsIF) => {
                 placeholder='&#61442; Search name or enter an Address'
                 onChange={(e) => setInput(e.target.value)}
             />
+            {whatToShow === 'token buttons' && tokenButtons}
+            {whatToShow === 'custom token' &&
+                <SoloTokenImport customToken={customToken} chooseToken={chooseToken} />
+            }
+            {whatToShow === 'not found' && tokenNotFound}
 
-            {tokenButtons}
-
-            {/* {!searchType ? importedTokenButtons : null}
-            {searchType && otherTokensForDOM?.length ? (
-                <>
-                    <h2>More Available Tokens</h2>
-                    <div className={styles.scrollable_container}>{otherTokenButtons}</div>
-                </>
-            ) : null}
-            {searchType && otherTokensForDOM?.length === 0 ? (
-                <SoloTokenImport customToken={customToken} closeModal={closeModal} />
-            ) : null} */}
         </section>
     );
 };

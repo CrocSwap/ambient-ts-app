@@ -73,6 +73,7 @@ export const useSoloSearch = (
             );
         } else {
             setOutputTokens(importedTokensOnChain);
+            console.log({importedTokensOnChain});
         }
     }, [validatedInput]);
 
