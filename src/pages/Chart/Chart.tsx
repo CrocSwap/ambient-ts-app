@@ -330,117 +330,120 @@ export default function Chart(props: ChartData) {
         render();
     }, [props.chartItemStates, expandTradeTable, isCandleAdded]);
 
-    function addText(scale: any) {
-        if (location.pathname.includes('market')) {
-            yAxis.tickValues([
-                ...scale.ticks(),
-                ...[market[0].value],
-                ...(isMouseMoveCrosshair ? [crosshairData[0].y] : []),
-            ]);
+    function addTextMarket(scale: any) {
+        yAxis.tickValues([
+            ...scale.ticks(),
+            ...[market[0].value],
+            ...(isMouseMoveCrosshair ? [crosshairData[0].y] : []),
+        ]);
 
-            yAxis.decorate((selection: any) => {
-                selection
-                    .attr('filter', (d: any) => {
-                        if (isMouseMoveCrosshair && d === crosshairData[0].y) {
-                            return 'url(#crossHairBg)';
-                        }
-                        if (d === market[0].value) {
-                            return 'url(#marketBg)';
-                        }
-                    })
-                    .select('text')
-                    .attr('class', (d: any) => {
-                        if (isMouseMoveCrosshair && d === crosshairData[0].y) {
-                            return 'crossHairText';
-                        }
-                        if (d === market[0].value) {
-                            return 'market';
-                        }
-                    });
-            });
-        } else if (location.pathname.includes('limit')) {
-            const resultData = scaleData.yScale(limit[0].value) - scaleData.yScale(market[0].value);
-            const resultLocationData = resultData < 0 ? -20 : 20;
-            const isSameLocation = Math.abs(resultData) < 20;
-            const sameLocationData = scaleData.yScale.invert(
-                scaleData.yScale(market[0].value) + resultLocationData,
-            );
+        yAxis.decorate((selection: any) => {
+            selection
+                .attr('filter', (d: any) => {
+                    if (isMouseMoveCrosshair && d === crosshairData[0].y) {
+                        return 'url(#crossHairBg)';
+                    }
+                    if (d === market[0].value) {
+                        return 'url(#marketBg)';
+                    }
+                })
+                .select('text')
+                .attr('class', (d: any) => {
+                    if (isMouseMoveCrosshair && d === crosshairData[0].y) {
+                        return 'crossHairText';
+                    }
+                    if (d === market[0].value) {
+                        return 'market';
+                    }
+                });
+        });
+    }
 
-            yAxis.tickFormat((d: any) =>
-                isSameLocation &&
-                d ===
-                    scaleData.yScale.invert(scaleData.yScale(market[0].value) + resultLocationData)
-                    ? formatAmountChartData(limit[0].value)
-                    : formatAmountChartData(d),
-            );
+    function addTextLimit(scale: any) {
+        const resultData = scaleData.yScale(limit[0].value) - scaleData.yScale(market[0].value);
+        const resultLocationData = resultData < 0 ? -20 : 20;
+        const isSameLocation = Math.abs(resultData) < 20;
+        const sameLocationData = scaleData.yScale.invert(
+            scaleData.yScale(market[0].value) + resultLocationData,
+        );
 
-            yAxis.tickValues([
-                ...scale.ticks(),
-                ...[isSameLocation ? sameLocationData : limit[0].value, market[0].value],
-                ...(isMouseMoveCrosshair && !isLineDrag ? [crosshairData[0].y] : []),
-            ]);
+        yAxis.tickFormat((d: any) =>
+            isSameLocation &&
+            d === scaleData.yScale.invert(scaleData.yScale(market[0].value) + resultLocationData)
+                ? formatAmountChartData(limit[0].value)
+                : formatAmountChartData(d),
+        );
 
-            yAxis.decorate((selection: any) => {
-                selection
-                    .attr('filter', (d: any) => {
-                        if (isMouseMoveCrosshair && d === crosshairData[0].y) {
-                            return 'url(#crossHairBg)';
+        yAxis.tickValues([
+            ...scale.ticks(),
+            ...[isSameLocation ? sameLocationData : limit[0].value, market[0].value],
+            ...(isMouseMoveCrosshair && !isLineDrag ? [crosshairData[0].y] : []),
+        ]);
+
+        yAxis.decorate((selection: any) => {
+            selection
+                .attr('filter', (d: any) => {
+                    if (isMouseMoveCrosshair && d === crosshairData[0].y) {
+                        return 'url(#crossHairBg)';
+                    }
+                    if (isSameLocation ? d === sameLocationData : d === limit[0].value) {
+                        if (checkLimitOrder) {
+                            return sellOrderStyle === 'order_sell'
+                                ? 'url(#textOrderSellBg)'
+                                : 'url(#textOrderBuyBg)';
                         }
-                        if (isSameLocation ? d === sameLocationData : d === limit[0].value) {
-                            if (checkLimitOrder) {
-                                return sellOrderStyle === 'order_sell'
-                                    ? 'url(#textOrderSellBg)'
-                                    : 'url(#textOrderBuyBg)';
-                            }
-                            return 'url(#textBg)';
-                        }
-                        if (d === market[0].value) {
-                            return 'url(#marketBg)';
-                        }
-                    })
-                    .select('text')
-                    .attr('class', (d: any) => {
-                        if (d === market[0].value) {
-                            return 'market';
-                        }
-                        if (
-                            (isSameLocation ? d === sameLocationData : d === limit[0].value) &&
-                            checkLimitOrder
-                        ) {
-                            return sellOrderStyle === 'order_sell' ? 'market' : 'y_axis';
-                        }
-                        if (isMouseMoveCrosshair && d === crosshairData[0].y) {
-                            return 'crossHairText';
-                        }
-                        if (isSameLocation ? d === sameLocationData : d === limit[0].value) {
-                            return 'y_axis';
-                        }
-                    });
-            });
-        } else if (location.pathname.includes('range')) {
-            let isSameLocationMin = false;
-            let sameLocationDataMin = false;
-            let isSameLocationMax = false;
-            let sameLocationDataMax = false;
+                        return 'url(#textBg)';
+                    }
+                    if (d === market[0].value) {
+                        return 'url(#marketBg)';
+                    }
+                })
+                .select('text')
+                .attr('class', (d: any) => {
+                    if (d === market[0].value) {
+                        return 'market';
+                    }
+                    if (
+                        (isSameLocation ? d === sameLocationData : d === limit[0].value) &&
+                        checkLimitOrder
+                    ) {
+                        return sellOrderStyle === 'order_sell' ? 'market' : 'y_axis';
+                    }
+                    if (isMouseMoveCrosshair && d === crosshairData[0].y) {
+                        return 'crossHairText';
+                    }
+                    if (isSameLocation ? d === sameLocationData : d === limit[0].value) {
+                        return 'y_axis';
+                    }
+                });
+        });
+    }
 
-            const low = ranges.filter((target: any) => target.name === 'Min')[0].value;
-            const high = ranges.filter((target: any) => target.name === 'Max')[0].value;
-            const marketValue = market[0].value;
+    function addTextRange(scale: any) {
+        let isSameLocationMin = false;
+        let sameLocationDataMin = false;
+        let isSameLocationMax = false;
+        let sameLocationDataMax = false;
 
-            const differenceLowHigh = scaleData.yScale(low) - scaleData.yScale(high);
-            const differenceLowMarket = scaleData.yScale(low) - scaleData.yScale(marketValue);
-            const differenceHighMarket = scaleData.yScale(high) - scaleData.yScale(marketValue);
+        const low = ranges.filter((target: any) => target.name === 'Min')[0].value;
+        const high = ranges.filter((target: any) => target.name === 'Max')[0].value;
+        const marketValue = market[0].value;
 
-            const isSameLocationLowHigh = Math.abs(differenceLowHigh) <= 30;
-            const differenceLowHighData = differenceLowHigh < 0 ? -20 : 20;
+        const differenceLowHigh = scaleData.yScale(low) - scaleData.yScale(high);
+        const differenceLowMarket = scaleData.yScale(low) - scaleData.yScale(marketValue);
+        const differenceHighMarket = scaleData.yScale(high) - scaleData.yScale(marketValue);
 
-            const isSameLocationLowMarket = Math.abs(differenceLowMarket) <= 20;
-            const differenceLowMarketData = differenceLowMarket < 0 ? -20 : 20;
+        const isSameLocationLowHigh = Math.abs(differenceLowHigh) <= 30;
+        const differenceLowHighData = differenceLowHigh < 0 ? -20 : 20;
 
-            const isSameLocationHighMarket = Math.abs(differenceHighMarket) <= 20;
+        const isSameLocationLowMarket = Math.abs(differenceLowMarket) <= 20;
+        const differenceLowMarketData = differenceLowMarket < 0 ? -20 : 20;
 
-            const differenceHighMarketData = differenceHighMarket < 0 ? -20 : 20;
+        const isSameLocationHighMarket = Math.abs(differenceHighMarket) <= 20;
 
+        const differenceHighMarketData = differenceHighMarket < 0 ? -20 : 20;
+
+        if (high > low) {
             if (marketValue > low && marketValue < high) {
                 isSameLocationMax = isSameLocationHighMarket;
                 isSameLocationMin = isSameLocationLowMarket;
@@ -461,26 +464,14 @@ export default function Chart(props: ChartData) {
                 isSameLocationMin = isSameLocationLowMarket;
 
                 if (isSameLocationLowHigh) {
-                    console.log('isSameLocationLowHigh');
-
-                    if (low < high) {
-                        sameLocationDataMax = scaleData.yScale.invert(
-                            scaleData.yScale(low) - differenceLowHighData,
-                        );
-                    } else {
-                        sameLocationDataMin = scaleData.yScale.invert(
-                            scaleData.yScale(high) + differenceLowHighData,
-                        );
-                    }
+                    sameLocationDataMax = scaleData.yScale.invert(
+                        scaleData.yScale(low) - differenceLowHighData,
+                    );
                 }
-
                 if (isSameLocationHighMarket) {
-                    console.log('isSameLocationHighMarket');
-                    if (low < high) {
-                        sameLocationDataMax = scaleData.yScale.invert(
-                            scaleData.yScale(low) + differenceLowHighData,
-                        );
-                    }
+                    sameLocationDataMax = scaleData.yScale.invert(
+                        scaleData.yScale(low) + differenceLowHighData,
+                    );
                 }
 
                 if (isSameLocationLowMarket) {
@@ -491,8 +482,6 @@ export default function Chart(props: ChartData) {
                 }
 
                 if (isSameLocationLowHigh && isSameLocationLowMarket) {
-                    console.log('isSameLocationLowHigh && isSameLocationLowMarket');
-
                     sameLocationDataMin = scaleData.yScale.invert(
                         scaleData.yScale(marketValue) + differenceLowMarketData,
                     );
@@ -526,86 +515,109 @@ export default function Chart(props: ChartData) {
                                 differenceLowHighData,
                         );
                     }
-                } else {
-                    if (low > high) {
-                        isSameLocationMax = isSameLocationHighMarket;
-                        isSameLocationMin = isSameLocationLowMarket || isSameLocationLowHigh;
-                        if (isSameLocationLowHigh) {
-                            sameLocationDataMin = scaleData.yScale.invert(
-                                scaleData.yScale(high) + differenceLowHighData,
-                            );
-                        }
-                        if (isSameLocationHighMarket) {
-                            sameLocationDataMin = scaleData.yScale.invert(
-                                scaleData.yScale(marketValue) + differenceHighMarketData,
-                            );
-                        }
-
-                        if (isSameLocationLowMarket) {
-                            sameLocationDataMin = scaleData.yScale.invert(
-                                scaleData.yScale(marketValue) + differenceLowMarketData,
-                            );
-                        }
-                    }
                 }
             }
+        } else {
+            console.log('DSFSDF');
 
-            yAxis.tickValues([
-                ...scale.ticks(),
-                ...[
-                    isSameLocationMin ? sameLocationDataMin : low,
-                    isSameLocationMax ? sameLocationDataMax : high,
-                    market[0].value,
-                ],
-                ...(isMouseMoveCrosshair && !isLineDrag ? [crosshairData[0].y] : []),
-            ]);
+            if (isSameLocationLowHigh) {
+                isSameLocationMax = isSameLocationLowHigh;
+                sameLocationDataMax = scaleData.yScale.invert(
+                    scaleData.yScale(low) - differenceLowHighData,
+                );
+            }
 
-            yAxis.tickFormat((d: any) => {
-                if (isSameLocationMin && d === sameLocationDataMin) {
-                    return formatAmountChartData(low);
-                }
+            if (isSameLocationLowMarket) {
+                isSameLocationMin = isSameLocationLowMarket;
+                sameLocationDataMin = scaleData.yScale.invert(
+                    scaleData.yScale(marketValue) + differenceLowMarketData,
+                );
+            }
 
-                if (isSameLocationMax && d === sameLocationDataMax) {
-                    return formatAmountChartData(high);
-                }
+            if (isSameLocationHighMarket) {
+                isSameLocationMax = isSameLocationHighMarket;
+                sameLocationDataMax = scaleData.yScale.invert(
+                    scaleData.yScale(marketValue) + differenceHighMarketData,
+                );
+            }
 
-                return formatAmountChartData(d);
-            });
+            if (isSameLocationLowHigh && isSameLocationLowMarket) {
+                console.log('ASMASDA');
 
-            yAxis.decorate((selection: any) => {
-                selection
-                    .attr('filter', (d: any) => {
-                        if (isMouseMoveCrosshair && d === crosshairData[0].y) {
-                            return 'url(#crossHairBg)';
-                        }
+                isSameLocationMin = true;
+                isSameLocationMax = true;
+                sameLocationDataMax = sameLocationDataMin = scaleData.yScale.invert(
+                    scaleData.yScale(low) - differenceLowHighData,
+                );
+                // sameLocationDataMin = scaleData.yScale.invert(
+                //     scaleData.yScale(marketValue) - differenceLowMarketData,
+                // );
+            }
 
-                        if (
-                            (isSameLocationMin ? d === sameLocationDataMin : d === low) ||
-                            (isSameLocationMax ? d === sameLocationDataMax : d === high)
-                        ) {
-                            return 'url(#textBg)';
-                        }
-                        if (d === market[0].value) {
-                            return 'url(#marketBg)';
-                        }
-                    })
-                    .select('text')
-                    .attr('class', (d: any) => {
-                        if (d === market[0].value) {
-                            return 'market';
-                        }
-                        if (isMouseMoveCrosshair && d === crosshairData[0].y) {
-                            return 'crossHairText';
-                        }
-                        if (
-                            (isSameLocationMin ? d === sameLocationDataMin : d === low) ||
-                            (isSameLocationMax ? d === sameLocationDataMax : d === high)
-                        ) {
-                            return 'y_axis';
-                        }
-                    });
-            });
+            if (isSameLocationLowHigh && isSameLocationHighMarket) {
+                console.log('YETHER');
+                isSameLocationMax = true;
+                sameLocationDataMax = scaleData.yScale.invert(
+                    scaleData.yScale(marketValue) + differenceHighMarketData,
+                );
+            }
         }
+
+        yAxis.tickValues([
+            ...scale.ticks(),
+            ...[
+                isSameLocationMin ? sameLocationDataMin : low,
+                isSameLocationMax ? sameLocationDataMax : high,
+                market[0].value,
+            ],
+            ...(isMouseMoveCrosshair && !isLineDrag ? [crosshairData[0].y] : []),
+        ]);
+
+        yAxis.tickFormat((d: any) => {
+            if (isSameLocationMin && d === sameLocationDataMin) {
+                return formatAmountChartData(low);
+            }
+
+            if (isSameLocationMax && d === sameLocationDataMax) {
+                return formatAmountChartData(high);
+            }
+
+            return formatAmountChartData(d);
+        });
+
+        yAxis.decorate((selection: any) => {
+            selection
+                .attr('filter', (d: any) => {
+                    if (isMouseMoveCrosshair && d === crosshairData[0].y) {
+                        return 'url(#crossHairBg)';
+                    }
+
+                    if (
+                        (isSameLocationMin ? d === sameLocationDataMin : d === low) ||
+                        (isSameLocationMax ? d === sameLocationDataMax : d === high)
+                    ) {
+                        return 'url(#textBg)';
+                    }
+                    if (d === market[0].value) {
+                        return 'url(#marketBg)';
+                    }
+                })
+                .select('text')
+                .attr('class', (d: any) => {
+                    if (d === market[0].value) {
+                        return 'market';
+                    }
+                    if (isMouseMoveCrosshair && d === crosshairData[0].y) {
+                        return 'crossHairText';
+                    }
+                    if (
+                        (isSameLocationMin ? d === sameLocationDataMin : d === low) ||
+                        (isSameLocationMax ? d === sameLocationDataMax : d === high)
+                    ) {
+                        return 'y_axis';
+                    }
+                });
+        });
     }
 
     function getXAxisTick() {
@@ -701,7 +713,13 @@ export default function Chart(props: ChartData) {
 
     useEffect(() => {
         if (scaleData && yAxis) {
-            addText(scaleData.yScale);
+            if (location.pathname.includes('market')) {
+                addTextMarket(scaleData.yScale);
+            } else if (location.pathname.includes('limit')) {
+                addTextLimit(scaleData.yScale);
+            } else if (location.pathname.includes('range')) {
+                addTextRange(scaleData.yScale);
+            }
             render();
         }
     }, [
