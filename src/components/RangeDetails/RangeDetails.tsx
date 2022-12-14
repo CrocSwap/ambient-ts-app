@@ -11,6 +11,7 @@ import APYGraphDisplay from './APYGraphDisplay/APYGraphDisplay';
 import RangeDetailsControl from './RangeDetailsControl/RangeDetailsControl';
 import RangeDetailsHeader from './RangeDetailsHeader/RangeDetailsHeader';
 import RangeDetailsActions from './RangeDetailsActions/RangeDetailsActions';
+import RangeStatus from '../Global/RangeStatus/RangeStatus';
 
 interface IRangeDetailsProps {
     provider: ethers.providers.Provider | undefined;
@@ -54,6 +55,8 @@ export default function RangeDetails(props: IRangeDetailsProps) {
         position,
         positionApy,
         closeGlobalModal,
+        isPositionInRange,
+        isAmbient,
     } = props;
 
     const detailsRef = useRef(null);
@@ -265,7 +268,7 @@ export default function RangeDetails(props: IRangeDetailsProps) {
                     <div className={styles.right_container}>
                         <APYGraphDisplay updatedPositionApy={updatedPositionApy} />
                     </div>
-
+                    <RangeStatus isInRange={isPositionInRange} isAmbient={isAmbient} fullText />
                     <RangeDetailsActions />
                 </div>
             </div>
