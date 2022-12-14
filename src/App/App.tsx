@@ -2673,6 +2673,7 @@ export default function App() {
                                     }
                                     handlePulseAnimation={handlePulseAnimation}
                                     gasPriceInGwei={gasPriceInGwei}
+                                    searchableTokens={searchableTokens}
                                     openModalWallet={openModalWallet}
                                 />
                             }
@@ -2725,6 +2726,7 @@ export default function App() {
                                     }
                                     handlePulseAnimation={handlePulseAnimation}
                                     gasPriceInGwei={gasPriceInGwei}
+                                    searchableTokens={searchableTokens}
                                     openModalWallet={openModalWallet}
                                 />
                             }
@@ -2795,6 +2797,7 @@ export default function App() {
                                     }
                                     handlePulseAnimation={handlePulseAnimation}
                                     gasPriceInGwei={gasPriceInGwei}
+                                    searchableTokens={searchableTokens}
                                     openModalWallet={openModalWallet}
                                 />
                             }

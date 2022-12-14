@@ -4,14 +4,15 @@ import NoTokenIcon from '../NoTokenIcon/NoTokenIcon';
 
 interface SoloTokenImportPropsIF {
     customToken: TokenIF | null;
-    closeModal: () => void;
+    chooseToken: (tkn: TokenIF) => void;
 }
 export default function SoloTokenImport(props: SoloTokenImportPropsIF) {
-    const { customToken, closeModal } = props;
+    const { customToken, chooseToken } = props;
+    console.log({customToken});
     const tokenLogo = customToken?.logoURI ? (
         <img src={customToken.logoURI} alt='' width='30px' />
     ) : (
-        <NoTokenIcon tokenInitial={customToken?.symbol.charAt(0) || '?'} width='30px' />
+        <NoTokenIcon tokenInitial={customToken?.symbol?.charAt(0) || '?'} width='30px' />
     );
 
     if (!customToken) return <p style={{ textAlign: 'center' }}>No matches found</p>;
@@ -23,7 +24,6 @@ export default function SoloTokenImport(props: SoloTokenImportPropsIF) {
             </p>
 
             <div className={styles.token_display}>
-                {/* {JSON.stringify(customToken)} */}
                 <div>
                     {tokenLogo}
                     <h2>{customToken?.symbol}</h2>
@@ -35,7 +35,7 @@ export default function SoloTokenImport(props: SoloTokenImportPropsIF) {
                 blanditiis repellat magnam officiis, omnis impedit nostrum?
             </p>
             <div className={styles.import_button}>
-                <button onClick={closeModal}>Import</button>
+                <button onClick={() => chooseToken(customToken)}>Import</button>
             </div>
         </div>
     );

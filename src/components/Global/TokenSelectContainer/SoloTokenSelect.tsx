@@ -8,13 +8,14 @@ import styles from './SoloTokenSelect.module.css';
 // import { memoizeFetchContractDetails } from '../../../App/functions/fetchContractDetails';
 import { ethers } from 'ethers';
 // import SoloTokenImport from './SoloTokenImport';
-import { AiOutlineQuestionCircle } from 'react-icons/ai';
+// import { AiOutlineQuestionCircle } from 'react-icons/ai';
 
 interface propsIF {
     provider: ethers.providers.Provider | undefined;
     importedTokens: TokenIF[];
     chainId: string;
     setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
+    // TODO: rewrite logic to build this Map from all lists not just active ones
     tokensOnActiveLists: Map<string, TokenIF>;
     closeModal: () => void;
     verifyToken: (addr: string, chn: string) => boolean;
@@ -35,6 +36,7 @@ export const SoloTokenSelect = (props: propsIF) => {
         getTokenByAddress,
         verifyToken
     } = props;
+    console.log(importedTokens);
 
     const [outputTokens, validatedInput, setInput, searchType] = useSoloSearch(
         chainId,
@@ -89,19 +91,24 @@ export const SoloTokenSelect = (props: propsIF) => {
     //     if (provider && searchType === 'address' && !otherTokensForDOM?.length) {
     //         const cachedFetchContractDetails = memoizeFetchContractDetails();
     //         const promise = cachedFetchContractDetails(provider, validatedInput, chainId);
-    //         Promise.resolve(promise).then((res) => res && setCustomToken(res));
+    //         Promise.resolve(promise)
+    //             .then((res) => res && setCustomToken(res))
+    //             .catch((err) => {
+    //                 console.log(err);
+    //                 setCustomToken(null);
+    //             });
     //     }
     // }, [searchType, validatedInput]);
+    // EDS Test Token 2 address (please do not delete!)
     // '0x0B0322d75bad9cA72eC7708708B54e6b38C26adA'
 
-    // Todo: @Emily, this is the token not found variable
-    // eslint-disable-next-line
-    const tokenNotFound = (
-        <div className={styles.token_not_found}>
-            <p>Cound not find matching token</p>
-            <AiOutlineQuestionCircle />
-        </div>
-    );
+    // const tokenNotFound = (
+    //     <div className={styles.token_not_found}>
+    //         <p>Cound not find matching token</p>
+    //         <AiOutlineQuestionCircle />
+    //     </div>
+    // );
+
     return (
         <section className={styles.container}>
             <input
