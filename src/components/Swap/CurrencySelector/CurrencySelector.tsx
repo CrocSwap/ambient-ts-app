@@ -194,7 +194,9 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
           })
         : '...';
 
-    const surplusBalanceNonLocaleString = props.sellToken
+    const surplusBalanceNonLocaleString = props.sellToken ? tokenADexBalance : tokenBDexBalance;
+
+    const surplusBalanceNonLocaleStringOffset = props.sellToken
         ? tokenADexBalance && gasPriceInGwei
             ? isSellTokenEth
                 ? (parseFloat(tokenADexBalance) - gasPriceInGwei * 400000 * 1e-9).toFixed(18)
@@ -321,7 +323,9 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                             </div>
                         </div>
                     </IconWithTooltip>
-                    {isSellTokenSelector && walletBalanceNonLocaleString !== '0.0' ? (
+                    {isSellTokenSelector &&
+                    !isWithdrawFromDexChecked &&
+                    walletBalanceNonLocaleString !== '0.0' ? (
                         <button
                             className={styles.max_button}
                             onClick={() => {
@@ -339,7 +343,9 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                         </button>
                     ) : null}
                 </section>
-                <section className={styles.left_bottom_container}>
+            </div>
+            <div className={styles.right_bottom_container}>
+                <div className={styles.left_bottom_container}>
                     <IconWithTooltip title={'Contract Balance'} placement='bottom'>
                         <div
                             className={`${styles.balance_with_pointer} ${
@@ -397,7 +403,9 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                             </div>
                         </div>
                     </IconWithTooltip>
-                    {isSellTokenSelector && surplusBalanceNonLocaleString !== '0.0' ? (
+                    {isSellTokenSelector &&
+                    isWithdrawFromDexChecked &&
+                    surplusBalanceNonLocaleString !== '0.0' ? (
                         <button
                             className={styles.max_button}
                             onClick={() => {
@@ -407,16 +415,16 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                                     setIsSaveAsDexSurplusChecked(true);
                                 }
                                 if (handleChangeClick && !isWithdrawFromDexDisabled) {
-                                    handleChangeClick(surplusBalanceNonLocaleString);
+                                    handleChangeClick(surplusBalanceNonLocaleStringOffset);
                                 }
                             }}
                         >
                             Max
                         </button>
                     ) : null}
-                </section>
+                </div>
+                {WithdrawTokensContent}
             </div>
-            {WithdrawTokensContent}
         </div>
     );
 
