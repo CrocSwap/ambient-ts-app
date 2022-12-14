@@ -32,10 +32,11 @@ export const useToken = (
                         tkn.chainId.toString().toLowerCase();
                     const tokenFromArray = newTokenMap.get(tokenKey);
                     if (tokenFromArray) {
-                        tokenFromArray?.fromListArr?.push(tkn.fromList ?? '');
+                        tkn.fromList &&
+                            tokenFromArray.fromListArr?.push(tkn.fromList);
                         newTokenMap.set(tokenKey, tokenFromArray);
                     } else {
-                        tkn.fromListArr = [tkn.fromList ?? ''];
+                        tkn.fromList && (tkn.fromListArr = [tkn.fromList]);
                         newTokenMap.set(tokenKey, tkn);
                     }
                 };

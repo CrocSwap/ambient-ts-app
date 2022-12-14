@@ -13,6 +13,8 @@ export const useSoloSearch = (
         importedTokens.filter((tkn) => tkn.chainId === parseInt(chainId))
     ), [chainId]);
     
+    // TODO: debounce this input later
+    // TODO: figure out if we need to update EVERYTHING to the debounced value
     // raw input from the user
     const [input, setInput] = useState('');
 
@@ -60,15 +62,14 @@ export const useSoloSearch = (
     useEffect(() => {
         // make one set of tokens to render
         // default is the basic imported tokens wherever they come from now
-        const tokenExists = verifyToken(validatedInput, '0x1');
-        console.log({searchAs});
+        const tokenExists = verifyToken(validatedInput, chainId);
         if (searchAs === 'address') {
             tokenExists && setOutputTokens(
-                [getTokenByAddress(validatedInput, '0x1') as TokenIF]
+                [getTokenByAddress(validatedInput, chainId) as TokenIF]
             );
         } else if (searchAs === 'nameOrSymbol') {
             setOutputTokens(
-                getTokensByName(validatedInput, '0x1', false)
+                getTokensByName(validatedInput, chainId, false)
             );
         } else {
             setOutputTokens(importedTokensOnChain);
