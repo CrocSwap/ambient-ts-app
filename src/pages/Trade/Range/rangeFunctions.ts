@@ -107,6 +107,44 @@ export function getPinnedPriceValuesFromTicks(
     };
 }
 
+export function getPinnedTickFromDisplayPrice(
+    isDenomInBase: boolean,
+    baseTokenDecimals: number,
+    quoteTokenDecimals: number,
+    isMinPrice: boolean,
+    priceDisplayString: string,
+    gridSize: number,
+): number {
+    const priceDisplayNum = parseFloat(priceDisplayString);
+    let priceNonDisplayNum, pinnedTick;
+    if (isDenomInBase) {
+        priceNonDisplayNum = fromDisplayPrice(
+            1 / priceDisplayNum,
+            baseTokenDecimals,
+            quoteTokenDecimals,
+        );
+        const tickExact = Math.log(priceNonDisplayNum) / Math.log(1.0001);
+        if (isMinPrice) {
+            pinnedTick = roundDownTick(tickExact, gridSize);
+        } else {
+            pinnedTick = roundUpTick(tickExact, gridSize);
+        }
+    } else {
+        priceNonDisplayNum = fromDisplayPrice(
+            priceDisplayNum,
+            baseTokenDecimals,
+            quoteTokenDecimals,
+        );
+        const tickExact = Math.log(priceNonDisplayNum) / Math.log(1.0001);
+        if (isMinPrice) {
+            pinnedTick = roundDownTick(tickExact, gridSize);
+        } else {
+            pinnedTick = roundUpTick(tickExact, gridSize);
+        }
+    }
+    return pinnedTick;
+}
+
 export function getPinnedPriceValuesFromDisplayPrices(
     isDenomInBase: boolean,
     baseTokenDecimals: number,
