@@ -142,7 +142,6 @@ export default function Chart(props: ChartData) {
 
     const isDenomBase = tradeData.isDenomBase;
     const isBid = tradeData.isTokenABase;
-    const isTokenAPrimary = tradeData.isTokenAPrimary;
     const side = (isDenomBase && !isBid) || (!isDenomBase && isBid) ? 'buy' : 'sell';
     const sellOrderStyle = side === 'sell' ? 'order_sell' : 'order_buy';
 
