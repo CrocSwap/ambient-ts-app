@@ -1,5 +1,5 @@
 import styles from './ChartSettings.module.css';
-import { Dispatch, SetStateAction, useState } from 'react';
+import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import TradeSettingsColor from '../TradeSettings/TradeSettingsColor/TradeSettingsColor';
 import { VscClose } from 'react-icons/vsc';
 import IconWithTooltip from '../../../../components/Global/IconWithTooltip/IconWithTooltip';
@@ -86,10 +86,33 @@ export default function ChartSettings(props: ChartSettingsPropsIF) {
         { icon: '🥬', label: 'Lettuce', content: exDataContent },
         { icon: '🥕', label: 'Carrot', content: exDataContent },
         { icon: '🫐', label: 'Blueberries', content: exDataContent },
-        { icon: '🥂 ', label: 'Colors', content: ' TradeSettingsColor' },
+        {
+            icon: '🥂 ',
+            label: 'Colors',
+            content: <TradeSettingsColor {...tradeSettingsColorProps} />,
+        },
     ];
 
     const [selectedChartSetting, setSelectedChartSetting] = useState(chartSettingsData[0]);
+
+    const [page, setPage] = useState(0);
+
+    const handlePage = () => {
+        if (page === 0) {
+            return 'this is first page';
+        } else if (page === 2) {
+            return 'this is second page';
+        } else if (page === 3) {
+            return <TradeSettingsColor {...tradeSettingsColorProps} />;
+        } else return <TradeSettingsColor {...tradeSettingsColorProps} />;
+    };
+
+    useEffect(() => {
+        handlePage();
+    }, [page]);
+
+    const pageDisplayer = handlePage();
+
     const chartSettingNavs = (
         <ul className={styles.chart_settings_nav}>
             {chartSettingsData.map((item, idx) => (
@@ -112,14 +135,13 @@ export default function ChartSettings(props: ChartSettingsPropsIF) {
 
     if (!showChartSettings) return null;
     return (
-        <div className={styles.container}>
-            <div
-                // ref={chartSettingsRef}
-                className={`${styles.main_settings_container} ${
-                    showChartSettings && styles.main_settings_container_active
-                }`}
-            >
-                <header>
+        <div
+            // ref={chartSettingsRef}
+            className={`${styles.main_settings_container} ${
+                showChartSettings && styles.main_settings_container_active
+            }`}
+        >
+            {/* <header>
                     <p />
                     <h2>Chart Settings</h2>
                     <div>
@@ -132,8 +154,10 @@ export default function ChartSettings(props: ChartSettingsPropsIF) {
                         <h1>{selectedChartSetting.label}</h1>
                         {selectedChartSetting.content}
                     </section>
-                </div>
-            </div>{' '}
+                </div> */}
+            {/* <TradeSettingsColor {...tradeSettingsColorProps} /> */}
+            <button onClick={() => setPage(3)}>My page</button>
+            {pageDisplayer}
         </div>
     );
 }
