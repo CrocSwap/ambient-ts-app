@@ -55,7 +55,7 @@ import {
 } from '../../../App/functions/getPoolStats';
 import TradeChartsLoading from './TradeChartsLoading/TradeChartsLoading';
 import NoTokenIcon from '../../../components/Global/NoTokenIcon/NoTokenIcon';
-import { ChainSpec, CrocEnv, CrocPoolView } from '@crocswap-libs/sdk';
+import { ChainSpec, CrocPoolView } from '@crocswap-libs/sdk';
 import { formatDollarAmountAxis } from '../../../utils/numbers';
 import IconWithTooltip from '../../../components/Global/IconWithTooltip/IconWithTooltip';
 // import { formatAmountOld } from '../../../utils/numbers';
@@ -98,7 +98,6 @@ interface TradeChartsPropsIF {
     poolPriceNonDisplay: number | undefined;
     selectedDate: Date | undefined;
     setSelectedDate: Dispatch<Date | undefined>;
-    crocEnv: CrocEnv | undefined;
     activeTimeFrame: string;
     setActiveTimeFrame: Dispatch<SetStateAction<string>>;
 }
@@ -169,7 +168,6 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
         expandTradeTable,
         selectedDate,
         setSelectedDate,
-        crocEnv,
         activeTimeFrame,
         setActiveTimeFrame,
     } = props;
@@ -996,7 +994,6 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
                         setShowLatest={setShowLatest}
                         activeTimeFrame={activeTimeFrame}
                         setShowTooltip={setShowTooltip}
-                        crocEnv={crocEnv}
                     />
                 </div>
             )}

@@ -531,7 +531,6 @@ export default function Trade(props: TradePropsIF) {
                             poolPriceNonDisplay={poolPriceNonDisplay}
                             selectedDate={selectedDate}
                             setSelectedDate={setSelectedDate}
-                            crocEnv={crocEnv}
                             activeTimeFrame={activeTimeFrame}
                             setActiveTimeFrame={setActiveTimeFrame}
                         />
