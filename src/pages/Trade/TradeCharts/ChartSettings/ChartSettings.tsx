@@ -78,22 +78,17 @@ export default function ChartSettings(props: ChartSettingsPropsIF) {
         handleChartBgColorPickerChange: handleChartBgColorPickerChange,
     };
 
-    const exDataContent = (
-        <div>Lorem ipsum dolor sit amet consectetur adipisicing elit. Perferendis, doloremque.</div>
-    );
     const [page, setPage] = useState(0);
     const chartSettingsData = [
-        { icon: '🍅', label: 'Tomato', content: exDataContent, action: () => setPage(1) },
-        { icon: '🥬', label: 'Lettuce', content: exDataContent, action: () => setPage(2) },
+        { icon: '🍅', label: 'Tomato', pageNumber: 1 },
+        { icon: '🥬', label: 'Lettuce', pageNumber: 2 },
         {
             icon: '🥂 ',
             label: 'Colors',
-            content: <TradeSettingsColor {...tradeSettingsColorProps} />,
-            action: () => setPage(3),
+            pageNumber: 3,
         },
     ];
-
-    const [selectedChartSetting, setSelectedChartSetting] = useState(chartSettingsData[0]);
+    // Todo: By Jr For Jr...Switch this if else to a switch case.
 
     const handlePage = () => {
         if (page === 0) {
@@ -116,12 +111,8 @@ export default function ChartSettings(props: ChartSettingsPropsIF) {
             {chartSettingsData.map((item, idx) => (
                 <li
                     key={idx}
-                    className={
-                        item.label === selectedChartSetting.label
-                            ? styles.setting_active
-                            : styles.setting
-                    }
-                    onClick={item.action}
+                    className={item.pageNumber === page ? styles.setting_active : styles.setting}
+                    onClick={() => setPage(item.pageNumber)}
                 >
                     <IconWithTooltip title={item.label} placement='left'>
                         {item.icon}
@@ -149,7 +140,7 @@ export default function ChartSettings(props: ChartSettingsPropsIF) {
             <div className={styles.chart_settings_inner}>
                 {chartSettingNavs}
                 <section className={styles.main_chart_settings_content}>
-                    <h1>{selectedChartSetting.label}</h1>
+                    {/* <h1>{selectedChartSetting.label}</h1> */}
                     {pageDisplayer}
                 </section>
             </div>
