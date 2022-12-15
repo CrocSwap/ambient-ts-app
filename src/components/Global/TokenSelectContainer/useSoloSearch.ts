@@ -78,18 +78,23 @@ export const useSoloSearch = (
                 userToken && setOutputTokens([userToken]);
             }
         } else if (searchAs === 'nameOrSymbol') {
-            let foundTokens: TokenIF[];
-            foundTokens = getTokensByName(validatedInput, chainId, false);
-            if (foundTokens.length === 0) {
-                console.log('checking backups...');
-                const userTokens = JSON.parse(
-                    localStorage.getItem('user') as string
-                ).tokens;
-                foundTokens = userTokens.filter((tkn: TokenIF) => (
-                    tkn.name.toLowerCase().includes(validatedInput.toLowerCase()) ||
-                    tkn.symbol.toLowerCase().includes(validatedInput.toLowerCase())
-                ));
-            }
+            const foundTokens = getTokensByName(validatedInput, chainId, false);
+            JSON.parse(localStorage.getItem('user') as string).tokens
+                .forEach((tkn: TokenIF) => {
+                    if (
+                        (
+                            tkn.name.toLowerCase().includes(validatedInput.toLowerCase()) ||
+                            tkn.symbol.toLowerCase().includes(validatedInput.toLowerCase())
+                        ) &&
+                        !foundTokens.map((tok: TokenIF) => tok.address.toLowerCase()).includes(tkn.address)
+                    ) {
+                        foundTokens.push(tkn);
+                    }
+                });
+                // foundTokens = userTokens.filter((tkn: TokenIF) => (
+                //     tkn.name.toLowerCase().includes(validatedInput.toLowerCase()) ||
+                //     tkn.symbol.toLowerCase().includes(validatedInput.toLowerCase())
+                // ));
             setOutputTokens(foundTokens);
         } else {
             setOutputTokens(importedTokensOnChain);
