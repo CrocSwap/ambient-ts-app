@@ -21,6 +21,7 @@ import {
     candleDomain,
     setCandleDomains,
     setRescaleRangeBoundaries,
+    setIsLinesSwitched,
 } from '../../utils/state/tradeDataSlice';
 import { CandleChartData, VolumeChartData } from '../Trade/TradeCharts/TradeCharts';
 import FeeRateSubChart from '../Trade/TradeCharts/TradeChartsLoading/FeeRateSubChart';
@@ -1600,6 +1601,8 @@ export default function Chart(props: ChartData) {
                                         (target: any) => target.name === 'Min',
                                     )[0].value = pinnedMaxPriceDisplayTruncated;
                                     dragSwitched = true;
+                                    highLineMoved = false;
+                                    lowLineMoved = true;
                                 } else {
                                     newTargets.filter(
                                         (target: any) => target.name === 'Max',
@@ -1614,6 +1617,8 @@ export default function Chart(props: ChartData) {
                                         (target: any) => target.name === 'Max',
                                     )[0].value = pinnedMinPriceDisplayTruncated;
                                     dragSwitched = true;
+                                    highLineMoved = true;
+                                    lowLineMoved = false;
                                 } else {
                                     newTargets.filter(
                                         (target: any) => target.name === 'Min',
@@ -1656,7 +1661,7 @@ export default function Chart(props: ChartData) {
                         );
                     }
 
-                    onBlurRange(newRangeValue, highLineMoved, lowLineMoved);
+                    onBlurRange(newRangeValue, highLineMoved, lowLineMoved, dragSwitched);
                     dragSwitched = false;
                 });
 
@@ -2329,7 +2334,6 @@ export default function Chart(props: ChartData) {
                 pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
             );
 
-            console.log('click');
             await setRanges((prevState) => {
                 const newTargets = [...prevState];
 
@@ -2349,7 +2353,7 @@ export default function Chart(props: ChartData) {
                 return newTargets;
             });
 
-            onBlurRange(newRangeValue, lineToBeSet === 'Max', lineToBeSet === 'Min');
+            onBlurRange(newRangeValue, lineToBeSet === 'Max', lineToBeSet === 'Min', false);
         }
     };
 
@@ -3540,7 +3544,12 @@ export default function Chart(props: ChartData) {
         }
     }, [selectedDate]);
 
-    const onBlurRange = (range: any, highLineMoved: boolean, lowLineMoved: boolean) => {
+    const onBlurRange = (
+        range: any,
+        highLineMoved: boolean,
+        lowLineMoved: boolean,
+        isLinesSwitched: boolean,
+    ) => {
         if (range !== undefined) {
             const low = range.filter((target: any) => target.name === 'Min')[0].value;
             const high = range.filter((target: any) => target.name === 'Max')[0].value;
@@ -3559,6 +3568,7 @@ export default function Chart(props: ChartData) {
             dispatch(setTargetData(newTargetData));
             dispatch(setRangeHighLineTriggered(highLineMoved));
             dispatch(setRangeLowLineTriggered(lowLineMoved));
+            dispatch(setIsLinesSwitched(isLinesSwitched));
         }
     };
 
