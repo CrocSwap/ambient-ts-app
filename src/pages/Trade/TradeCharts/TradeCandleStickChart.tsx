@@ -17,7 +17,7 @@ import { getPinnedPriceValuesFromDisplayPrices } from '../Range/rangeFunctions';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
-import { ChainSpec, CrocEnv, CrocPoolView } from '@crocswap-libs/sdk';
+import { ChainSpec, CrocPoolView } from '@crocswap-libs/sdk';
 import ChartSkeleton from './ChartSkeleton/ChartSkeleton';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -72,7 +72,6 @@ interface ChartData {
     activeTimeFrame: string;
     setShowLatest: React.Dispatch<React.SetStateAction<boolean>>;
     setShowTooltip: React.Dispatch<React.SetStateAction<boolean>>;
-    crocEnv: CrocEnv | undefined;
 }
 
 export interface ChartUtils {
@@ -100,7 +99,6 @@ export default function TradeCandleStickChart(props: ChartData) {
         poolPriceNonDisplay,
         selectedDate,
         setSelectedDate,
-        crocEnv,
         activeTimeFrame,
     } = props;
 
@@ -559,7 +557,6 @@ export default function TradeCandleStickChart(props: ChartData) {
                         setShowLatest={props.setShowLatest}
                         setShowTooltip={props.setShowTooltip}
                         activeTimeFrame={activeTimeFrame}
-                        crocEnv={crocEnv}
                     />
                 ) : (
                     <>{loading}</>
