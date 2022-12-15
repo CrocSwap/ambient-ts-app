@@ -81,21 +81,19 @@ export default function ChartSettings(props: ChartSettingsPropsIF) {
     const exDataContent = (
         <div>Lorem ipsum dolor sit amet consectetur adipisicing elit. Perferendis, doloremque.</div>
     );
+    const [page, setPage] = useState(0);
     const chartSettingsData = [
-        { icon: '🍅', label: 'Tomato', content: exDataContent },
-        { icon: '🥬', label: 'Lettuce', content: exDataContent },
-        { icon: '🥕', label: 'Carrot', content: exDataContent },
-        { icon: '🫐', label: 'Blueberries', content: exDataContent },
+        { icon: '🍅', label: 'Tomato', content: exDataContent, action: () => setPage(1) },
+        { icon: '🥬', label: 'Lettuce', content: exDataContent, action: () => setPage(2) },
         {
             icon: '🥂 ',
             label: 'Colors',
             content: <TradeSettingsColor {...tradeSettingsColorProps} />,
+            action: () => setPage(3),
         },
     ];
 
     const [selectedChartSetting, setSelectedChartSetting] = useState(chartSettingsData[0]);
-
-    const [page, setPage] = useState(0);
 
     const handlePage = () => {
         if (page === 0) {
@@ -123,7 +121,7 @@ export default function ChartSettings(props: ChartSettingsPropsIF) {
                             ? styles.setting_active
                             : styles.setting
                     }
-                    onClick={() => setSelectedChartSetting(item)}
+                    onClick={item.action}
                 >
                     <IconWithTooltip title={item.label} placement='left'>
                         {item.icon}
@@ -141,23 +139,20 @@ export default function ChartSettings(props: ChartSettingsPropsIF) {
                 showChartSettings && styles.main_settings_container_active
             }`}
         >
-            {/* <header>
-                    <p />
-                    <h2>Chart Settings</h2>
-                    <div>
-                        <VscClose size={24} />
-                    </div>
-                </header>
-                <div className={styles.chart_settings_inner}>
-                    {chartSettingNavs}
-                    <section className={styles.main_chart_settings_content}>
-                        <h1>{selectedChartSetting.label}</h1>
-                        {selectedChartSetting.content}
-                    </section>
-                </div> */}
-            {/* <TradeSettingsColor {...tradeSettingsColorProps} /> */}
-            <button onClick={() => setPage(3)}>My page</button>
-            {pageDisplayer}
+            <header>
+                <p />
+                <h2>Chart Settings</h2>
+                <div>
+                    <VscClose size={24} />
+                </div>
+            </header>
+            <div className={styles.chart_settings_inner}>
+                {chartSettingNavs}
+                <section className={styles.main_chart_settings_content}>
+                    <h1>{selectedChartSetting.label}</h1>
+                    {pageDisplayer}
+                </section>
+            </div>
         </div>
     );
 }
