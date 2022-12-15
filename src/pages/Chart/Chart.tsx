@@ -2199,28 +2199,23 @@ export default function Chart(props: ChartData) {
             let tickValue;
             let pinnedDisplayPrices: any;
 
-            const low = ranges.filter((target: any) => target.name === 'Min')[0].value;
-            const high = ranges.filter((target: any) => target.name === 'Max')[0].value;
-
             if (lineToBeSet === 'Max') {
-                tickValue = getPinnedPriceValuesFromDisplayPrices(
-                    denomInBase,
+                tickValue = getPinnedTickFromDisplayPrice(
+                    isDenomBase,
                     baseTokenDecimals,
                     quoteTokenDecimals,
-                    low.toString(),
+                    false, // isMinPrice
                     clickedValue,
                     lookupChain(chainId).gridSize,
                 );
 
-                rangeWidthPercentage =
-                    Math.abs(tickValue.pinnedLowTick - currentPoolPriceTick) / 100;
+                rangeWidthPercentage = Math.abs(tickValue - currentPoolPriceTick) / 100;
 
-                const lowTick =
-                    currentPoolPriceTick -
-                    (rangeWidthPercentage < 1 ? 1 : rangeWidthPercentage) * 100;
-                const highTick =
-                    currentPoolPriceTick +
-                    (rangeWidthPercentage < 1 ? 1 : rangeWidthPercentage) * 100;
+                const offset = rangeWidthPercentage * 100;
+                // (rangeWidthPercentage < 1 ? 1 : rangeWidthPercentage) * 100;
+
+                const lowTick = currentPoolPriceTick - offset;
+                const highTick = currentPoolPriceTick + offset;
 
                 pinnedDisplayPrices = getPinnedPriceValuesFromTicks(
                     denomInBase,
@@ -2231,24 +2226,20 @@ export default function Chart(props: ChartData) {
                     lookupChain(chainId).gridSize,
                 );
             } else {
-                tickValue = getPinnedPriceValuesFromDisplayPrices(
-                    denomInBase,
+                tickValue = getPinnedTickFromDisplayPrice(
+                    isDenomBase,
                     baseTokenDecimals,
                     quoteTokenDecimals,
+                    true, // isMinPrice
                     clickedValue,
-                    high.toString(),
                     lookupChain(chainId).gridSize,
                 );
 
-                rangeWidthPercentage =
-                    Math.abs(tickValue.pinnedHighTick - currentPoolPriceTick) / 100;
+                rangeWidthPercentage = Math.abs(currentPoolPriceTick - tickValue) / 100;
+                const offset = rangeWidthPercentage * 100;
 
-                const highTick =
-                    currentPoolPriceTick +
-                    (rangeWidthPercentage < 1 ? 1 : rangeWidthPercentage) * 100;
-                const lowTick =
-                    currentPoolPriceTick -
-                    (rangeWidthPercentage < 1 ? 1 : rangeWidthPercentage) * 100;
+                const lowTick = currentPoolPriceTick - offset;
+                const highTick = currentPoolPriceTick + offset;
 
                 pinnedDisplayPrices = getPinnedPriceValuesFromTicks(
                     denomInBase,
@@ -2265,11 +2256,11 @@ export default function Chart(props: ChartData) {
                     const newTargets = [...prevState];
 
                     newTargets.filter((target: any) => target.name === 'Min')[0].value = parseFloat(
-                        pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
+                        pinnedDisplayPrices.pinnedMinPriceDisplay,
                     );
 
                     newTargets.filter((target: any) => target.name === 'Max')[0].value = parseFloat(
-                        pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
+                        pinnedDisplayPrices.pinnedMaxPriceDisplay,
                     );
 
                     newRangeValue = newTargets;
@@ -2278,23 +2269,6 @@ export default function Chart(props: ChartData) {
                     return newTargets;
                 });
             }
-
-            await setRanges((prevState) => {
-                const newTargets = [...prevState];
-
-                newTargets.filter((target: any) => target.name === 'Min')[0].value = parseFloat(
-                    pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
-                );
-
-                newTargets.filter((target: any) => target.name === 'Max')[0].value = parseFloat(
-                    pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated,
-                );
-
-                newRangeValue = newTargets;
-
-                setLiqHighlightedLinesAndArea(newTargets);
-                return newTargets;
-            });
 
             dispatch(
                 setSimpleRangeWidth(
