@@ -8,7 +8,7 @@ import styles from './SoloTokenSelect.module.css';
 import { memoizeFetchContractDetails } from '../../../App/functions/fetchContractDetails';
 import { ethers } from 'ethers';
 import SoloTokenImport from './SoloTokenImport';
-import { AiOutlineQuestionCircle } from 'react-icons/ai';
+// import { AiOutlineQuestionCircle } from 'react-icons/ai';
 
 interface propsIF {
     provider: ethers.providers.Provider | undefined;
@@ -45,6 +45,15 @@ export const SoloTokenSelect = (props: propsIF) => {
         getTokenByAddress,
         getTokensByName
     );
+
+    useEffect(() => {
+        if (searchType === 'address') {
+            console.clear();
+            console.log('this looks like an address');
+            const isTokenLocal = verifyToken(validatedInput, chainId);
+            console.log({isTokenLocal});
+        }
+    }, [validatedInput]);
 
     useEffect(() => console.log(outputTokens), [outputTokens]);
 
@@ -88,59 +97,55 @@ export const SoloTokenSelect = (props: propsIF) => {
 
     const [customToken, setCustomToken] = useState<TokenIF | null>(null);
     useEffect(() => {
-        if (provider && searchType === 'address' && !outputTokens.length) {
+        // gatekeeping to pull token data from on-chain query
+        // make sure a provider exists
+        // validated input must appear to be a valid contract address
+        // app must fail to find token in local data
+        if (provider && searchType === 'address' && !verifyToken(validatedInput, chainId)) {
             const cachedFetchContractDetails = memoizeFetchContractDetails();
             const promise = cachedFetchContractDetails(provider, validatedInput, chainId);
             Promise.resolve(promise)
-                .then((res) => res && setCustomToken(res))
+                .then((res) => res?.decimals && setCustomToken(res))
                 .catch((err) => {
                     console.warn(err);
                     setCustomToken(null);
                 });
+        } else {
+            setCustomToken(null);
         }
     }, [searchType, validatedInput]);
     // EDS Test Token 2 address (please do not delete!)
     // '0x0B0322d75bad9cA72eC7708708B54e6b38C26adA'
 
-    const tokenNotFound = (
-        <div className={styles.token_not_found}>
-            <p>Cound not find matching token</p>
-            <AiOutlineQuestionCircle />
-        </div>
-    );
-
-    useEffect(() => console.log(outputTokens), [outputTokens]);
-
-    const figureOutWhatToShow = () => {
-        let showThis: string;
-        console.log(searchType);
-        console.log({validatedInput});
+    const contentRouter = useMemo(() => {
+        let output: string;
         if (validatedInput) {
-            if (outputTokens.length) {
-                console.log('case 1');
-                showThis = 'token buttons';
-            } else {
-                if (customToken) {
-                    if (searchType === 'address') {
-                        console.log('case 2');
-                        showThis = 'custom token';
-                    } else {
-                        console.log('case 3');
-                        showThis = 'not found';
-                    }
+            if (searchType === 'address') {
+                if (verifyToken(validatedInput, chainId)) {
+                    output = 'token buttons';
                 } else {
-                    console.log('case 4');
-                    showThis = 'not found';
+                    output = 'from chain';
                 }
+            } else if (searchType === 'nameOrSymbol') {
+                output = 'token buttons';
+            } else {
+                output = 'token buttons';
             }
         } else {
-            console.log('case 5');
-            showThis = 'token buttons';
+            output = 'token buttons';
         }
-        console.log({showThis});
-        return showThis;
-    }
-    const whatToShow = figureOutWhatToShow();
+        return output;
+    }, [validatedInput, searchType]);
+
+    // TODO: find the control flow to put this in the DOM
+    // const tokenNotFound = (
+    //     <div className={styles.token_not_found}>
+    //         <p>Cound not find matching token</p>
+    //         <AiOutlineQuestionCircle />
+    //     </div>
+    // );
+
+    useEffect(() => console.log(outputTokens), [outputTokens]);
 
     return (
         <section className={styles.container}>
@@ -150,12 +155,10 @@ export const SoloTokenSelect = (props: propsIF) => {
                 placeholder='&#61442; Search name or enter an Address'
                 onChange={(e) => setInput(e.target.value)}
             />
-            {whatToShow === 'token buttons' && tokenButtons}
-            {whatToShow === 'custom token' &&
-                <SoloTokenImport customToken={customToken} chooseToken={chooseToken} />
+            {contentRouter === 'token buttons' && tokenButtons}
+            {contentRouter === 'from chain' &&
+            <SoloTokenImport customToken={customToken} chooseToken={chooseToken} />
             }
-            {whatToShow === 'not found' && tokenNotFound}
-
         </section>
     );
 };

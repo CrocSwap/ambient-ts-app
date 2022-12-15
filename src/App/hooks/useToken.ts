@@ -79,6 +79,7 @@ export const useToken = (
     // but we can verify tokens on other chains too as needed
     const getTokenByAddress = (addr: string, chn=chainId) => {
         const x = (tokenMap.get(addr.toLowerCase() + '_' + chn.toLowerCase()));
+        console.clear();
         console.log({x});
         return tokenMap.get(addr.toLowerCase() + '_' + chn.toLowerCase());
     };
