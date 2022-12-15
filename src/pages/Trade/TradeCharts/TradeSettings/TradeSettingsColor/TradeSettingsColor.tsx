@@ -5,7 +5,7 @@ import { SketchPicker } from 'react-color';
 import { DefaultTooltip } from '../../../../../components/Global/StyledTooltip/StyledTooltip';
 
 interface TradeSettingsColorPropsIF {
-    upBodyColorPicker: boolean;
+    // upBodyColorPicker: boolean;
     setUpBodyColorPicker: Dispatch<SetStateAction<boolean>>;
     upBodyColor: string;
     // eslint-disable-next-line
@@ -22,11 +22,11 @@ interface TradeSettingsColorPropsIF {
     setDownBodyColorPicker: Dispatch<SetStateAction<boolean>>;
     setDownBorderColorPicker: Dispatch<SetStateAction<boolean>>;
     upBorderColor: string;
-    upBorderColorPicker: boolean;
+    // upBorderColorPicker: boolean;
     downBodyColor: string;
-    downBodyColorPicker: boolean;
+    // downBodyColorPicker: boolean;
     downBorderColor: string;
-    downBorderColorPicker: boolean;
+    // downBorderColorPicker: boolean;
 
     chartBg: string;
     setChartBg: Dispatch<SetStateAction<string>>;

@@ -1,5 +1,6 @@
 import styles from './ChartSettings.module.css';
 import { Dispatch, SetStateAction } from 'react';
+import TradeSettingsColor from '../TradeSettings/TradeSettingsColor/TradeSettingsColor';
 
 interface ChartSettingsPropsIF {
     showChartSettings: boolean;
@@ -52,6 +53,7 @@ export default function ChartSettings(props: ChartSettingsPropsIF) {
         handleDownBorderColorPickerChange,
 
         chartBg,
+        setChartBg,
 
         handleChartBgColorPickerChange,
         showChartSettings,
@@ -71,9 +73,14 @@ export default function ChartSettings(props: ChartSettingsPropsIF) {
         downBodyColor: downBodyColor,
         downBorderColor: downBorderColor,
         chartBg: chartBg,
+        setChartBg: setChartBg,
         handleChartBgColorPickerChange: handleChartBgColorPickerChange,
     };
 
     if (!showChartSettings) return null;
-    return <div className={styles.container}>chart</div>;
+    return (
+        <div className={styles.container}>
+            <TradeSettingsColor {...tradeSettingsColorProps} />
+        </div>
+    );
 }
