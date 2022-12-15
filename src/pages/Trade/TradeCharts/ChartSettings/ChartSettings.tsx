@@ -57,6 +57,23 @@ export default function ChartSettings(props: ChartSettingsPropsIF) {
         showChartSettings,
     } = props;
 
+    const tradeSettingsColorProps = {
+        setUpBodyColorPicker: setUpBodyColorPicker,
+        upBodyColor: upBodyColor,
+        handleBodyColorPickerChange: handleBodyColorPickerChange,
+        handleBorderColorPickerChange: handleBorderColorPickerChange,
+        handleDownBodyColorPickerChange: handleDownBodyColorPickerChange,
+        handleDownBorderColorPickerChange: handleDownBorderColorPickerChange,
+        setUpBorderColorPicker: setUpBorderColorPicker,
+        setDownBodyColorPicker: setDownBodyColorPicker,
+        setDownBorderColorPicker: setDownBorderColorPicker,
+        upBorderColor: upBorderColor,
+        downBodyColor: downBodyColor,
+        downBorderColor: downBorderColor,
+        chartBg: chartBg,
+        handleChartBgColorPickerChange: handleChartBgColorPickerChange,
+    };
+
     if (!showChartSettings) return null;
     return <div className={styles.container}>chart</div>;
 }
