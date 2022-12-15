@@ -119,7 +119,7 @@ footer {
 
 .footer_container {
 
-    color: white;
+    color: var(--text-grey-white);
 
     position: fixed;
     display: flex;
