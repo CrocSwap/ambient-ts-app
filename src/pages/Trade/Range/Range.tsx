@@ -50,6 +50,7 @@ import {
     setRangeModuleTriggered,
     setRangeLowLineTriggered,
     setRangeHighLineTriggered,
+    setIsLinesSwitched,
     targetData,
 } from '../../../utils/state/tradeDataSlice';
 import { addPendingTx, addReceipt, removePendingTx } from '../../../utils/state/receiptDataSlice';
@@ -167,6 +168,7 @@ export default function Range(props: RangePropsIF) {
 
     const rangeLowLineTriggered = tradeData.rangeLowLineTriggered;
     const rangeHighLineTriggered = tradeData.rangeHighLineTriggered;
+    const isLinesSwitched = tradeData.isLinesSwitched;
 
     const [rangeAllowed, setRangeAllowed] = useState<boolean>(false);
 
@@ -455,6 +457,8 @@ export default function Range(props: RangePropsIF) {
                 },
             ];
 
+            console.log({ newTargetData });
+
             dispatch(setTargetData(newTargetData));
 
             dispatch(setAdvancedLowTick(pinnedDisplayPrices.pinnedLowTick));
@@ -537,8 +541,6 @@ export default function Range(props: RangePropsIF) {
                 lookupChain(chainId).gridSize,
             );
 
-            // console.log({ pinnedDisplayPrices });
-
             !denominationsInBase
                 ? setRangeLowBoundNonDisplayPrice(pinnedDisplayPrices.pinnedMinPriceNonDisplay)
                 : setRangeHighBoundNonDisplayPrice(pinnedDisplayPrices.pinnedMaxPriceNonDisplay);
@@ -550,6 +552,12 @@ export default function Range(props: RangePropsIF) {
             !denominationsInBase
                 ? dispatch(setPinnedMinPrice(pinnedDisplayPrices.pinnedLowTick))
                 : dispatch(setPinnedMaxPrice(pinnedDisplayPrices.pinnedHighTick));
+
+            if (isLinesSwitched) {
+                denominationsInBase
+                    ? dispatch(setAdvancedLowTick(pinnedDisplayPrices.pinnedLowTick))
+                    : dispatch(setAdvancedHighTick(pinnedDisplayPrices.pinnedHighTick));
+            }
 
             const highGeometricDifferencePercentage = parseFloat(
                 truncateDecimals(
@@ -593,6 +601,7 @@ export default function Range(props: RangePropsIF) {
             setRangeLowBoundFieldBlurred(false);
             dispatch(setRangeLowLineTriggered(false));
             dispatch(setRangeModuleTriggered(true));
+            dispatch(setIsLinesSwitched(false));
         }
     }, [rangeLowBoundFieldBlurred, JSON.stringify(rangeLowLineTriggered)]);
 
@@ -623,10 +632,14 @@ export default function Range(props: RangePropsIF) {
                 ? setRangeLowBoundNonDisplayPrice(pinnedDisplayPrices.pinnedMinPriceNonDisplay)
                 : setRangeHighBoundNonDisplayPrice(pinnedDisplayPrices.pinnedMaxPriceNonDisplay);
 
-            // console.log({ pinnedDisplayPrices });
             denominationsInBase
                 ? dispatch(setAdvancedLowTick(pinnedDisplayPrices.pinnedLowTick))
                 : dispatch(setAdvancedHighTick(pinnedDisplayPrices.pinnedHighTick));
+            if (isLinesSwitched) {
+                !denominationsInBase
+                    ? dispatch(setAdvancedLowTick(pinnedDisplayPrices.pinnedLowTick))
+                    : dispatch(setAdvancedHighTick(pinnedDisplayPrices.pinnedHighTick));
+            }
 
             const highGeometricDifferencePercentage = parseFloat(
                 truncateDecimals(
@@ -668,6 +681,7 @@ export default function Range(props: RangePropsIF) {
             setRangeHighBoundFieldBlurred(false);
             dispatch(setRangeHighLineTriggered(false));
             dispatch(setRangeModuleTriggered(true));
+            dispatch(setIsLinesSwitched(false));
         }
     }, [rangeHighBoundFieldBlurred, JSON.stringify(rangeHighLineTriggered)]);
 

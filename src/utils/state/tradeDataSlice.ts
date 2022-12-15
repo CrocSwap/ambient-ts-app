@@ -42,6 +42,7 @@ export interface tradeData {
     pinnedMinPriceDisplayTruncated: number | undefined;
     rangeModuleTriggered: boolean;
     rangeLowLineTriggered: boolean | undefined;
+    isLinesSwitched: boolean | undefined;
     rangeHighLineTriggered: boolean | undefined;
     candleDomains: candleDomain;
     rescaleRangeBoundaries: boolean | undefined;
@@ -80,6 +81,7 @@ const initialState: tradeData = {
     pinnedMinPriceDisplayTruncated: undefined,
     rangeModuleTriggered: false,
     rangeLowLineTriggered: undefined,
+    isLinesSwitched: undefined,
     rangeHighLineTriggered: undefined,
     rescaleRangeBoundaries: undefined,
 };
@@ -217,6 +219,9 @@ export const tradeDataSlice = createSlice({
         setRangeLowLineTriggered: (state, action: PayloadAction<boolean>) => {
             state.rangeLowLineTriggered = action.payload;
         },
+        setIsLinesSwitched: (state, action: PayloadAction<boolean>) => {
+            state.isLinesSwitched = action.payload;
+        },
         setCandleDomains: (state, action: PayloadAction<candleDomain>) => {
             state.candleDomains = action.payload;
         },
@@ -259,6 +264,7 @@ export const {
     setTargetData,
     setRangeModuleTriggered,
     setRangeLowLineTriggered,
+    setIsLinesSwitched,
     setRangeHighLineTriggered,
     setRescaleRangeBoundaries,
     setCandleDomains,
