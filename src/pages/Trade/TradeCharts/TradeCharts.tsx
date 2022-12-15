@@ -60,6 +60,7 @@ import { formatDollarAmountAxis } from '../../../utils/numbers';
 import IconWithTooltip from '../../../components/Global/IconWithTooltip/IconWithTooltip';
 // import { formatAmountOld } from '../../../utils/numbers';
 import UseOnClickOutside from '../../../utils/hooks/useOnClickOutside';
+import ChartSettings from './ChartSettings/ChartSettings';
 
 // interface for React functional component props
 interface TradeChartsPropsIF {
@@ -959,7 +960,8 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
             style={{ padding: fullScreenChart ? '1rem' : '0' }}
             ref={canvasRef}
         >
-            {mainChartSettingsContent}
+            {/* {mainChartSettingsContent} */}
+            {<ChartSettings showChartSettings={showChartSettings} />}
             <div className={`${styles.graph_style} ${expandGraphStyle}  `}>
                 {/* {graphSettingsContent} */}
                 {tokenInfo}
