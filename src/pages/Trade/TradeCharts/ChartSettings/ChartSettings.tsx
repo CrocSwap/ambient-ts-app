@@ -1,7 +1,8 @@
 import styles from './ChartSettings.module.css';
-import { Dispatch, SetStateAction } from 'react';
+import { Dispatch, SetStateAction, useState } from 'react';
 import TradeSettingsColor from '../TradeSettings/TradeSettingsColor/TradeSettingsColor';
-
+import { VscClose } from 'react-icons/vsc';
+import IconWithTooltip from '../../../../components/Global/IconWithTooltip/IconWithTooltip';
 interface ChartSettingsPropsIF {
     showChartSettings: boolean;
 
@@ -77,10 +78,62 @@ export default function ChartSettings(props: ChartSettingsPropsIF) {
         handleChartBgColorPickerChange: handleChartBgColorPickerChange,
     };
 
+    const exDataContent = (
+        <div>Lorem ipsum dolor sit amet consectetur adipisicing elit. Perferendis, doloremque.</div>
+    );
+    const chartSettingsData = [
+        { icon: '🍅', label: 'Tomato', content: exDataContent },
+        { icon: '🥬', label: 'Lettuce', content: exDataContent },
+        { icon: '🥕', label: 'Carrot', content: exDataContent },
+        { icon: '🫐', label: 'Blueberries', content: exDataContent },
+        { icon: '🥂 ', label: 'Colors', content: ' TradeSettingsColor' },
+    ];
+
+    const [selectedChartSetting, setSelectedChartSetting] = useState(chartSettingsData[0]);
+    const chartSettingNavs = (
+        <ul className={styles.chart_settings_nav}>
+            {chartSettingsData.map((item, idx) => (
+                <li
+                    key={idx}
+                    className={
+                        item.label === selectedChartSetting.label
+                            ? styles.setting_active
+                            : styles.setting
+                    }
+                    onClick={() => setSelectedChartSetting(item)}
+                >
+                    <IconWithTooltip title={item.label} placement='left'>
+                        {item.icon}
+                    </IconWithTooltip>
+                </li>
+            ))}
+        </ul>
+    );
+
     if (!showChartSettings) return null;
     return (
         <div className={styles.container}>
-            <TradeSettingsColor {...tradeSettingsColorProps} />
+            <div
+                // ref={chartSettingsRef}
+                className={`${styles.main_settings_container} ${
+                    showChartSettings && styles.main_settings_container_active
+                }`}
+            >
+                <header>
+                    <p />
+                    <h2>Chart Settings</h2>
+                    <div>
+                        <VscClose size={24} />
+                    </div>
+                </header>
+                <div className={styles.chart_settings_inner}>
+                    {chartSettingNavs}
+                    <section className={styles.main_chart_settings_content}>
+                        <h1>{selectedChartSetting.label}</h1>
+                        {selectedChartSetting.content}
+                    </section>
+                </div>
+            </div>{' '}
         </div>
     );
 }
