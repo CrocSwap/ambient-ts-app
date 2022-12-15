@@ -44,6 +44,7 @@ export interface tradeData {
     rangeLowLineTriggered: boolean | undefined;
     rangeHighLineTriggered: boolean | undefined;
     candleDomains: candleDomain;
+    rescaleRangeBoundaries: boolean | undefined;
 }
 
 const initialState: tradeData = {
@@ -80,6 +81,7 @@ const initialState: tradeData = {
     rangeModuleTriggered: false,
     rangeLowLineTriggered: undefined,
     rangeHighLineTriggered: undefined,
+    rescaleRangeBoundaries: undefined,
 };
 
 export const tradeDataSlice = createSlice({
@@ -209,6 +211,9 @@ export const tradeDataSlice = createSlice({
         setRangeHighLineTriggered: (state, action: PayloadAction<boolean>) => {
             state.rangeHighLineTriggered = action.payload;
         },
+        setRescaleRangeBoundaries: (state, action: PayloadAction<boolean>) => {
+            state.rescaleRangeBoundaries = action.payload;
+        },
         setRangeLowLineTriggered: (state, action: PayloadAction<boolean>) => {
             state.rangeLowLineTriggered = action.payload;
         },
@@ -255,6 +260,7 @@ export const {
     setRangeModuleTriggered,
     setRangeLowLineTriggered,
     setRangeHighLineTriggered,
+    setRescaleRangeBoundaries,
     setCandleDomains,
 } = tradeDataSlice.actions;
 
