@@ -518,14 +518,8 @@ export default function Chart(props: ChartData) {
                 }
 
                 if (isSameLocationLowHigh && isSameLocationLowMarket) {
-                    sameLocationDataMin = scaleData.yScale.invert(
-                        scaleData.yScale(marketValue) + differenceLowMarketData,
-                    );
-
                     sameLocationDataMax = scaleData.yScale.invert(
-                        scaleData.yScale(marketValue) +
-                            differenceLowMarketData -
-                            differenceLowHighData,
+                        scaleData.yScale(marketValue) + differenceLowMarketData * 2,
                     );
 
                     if (differenceHighMarketData === differenceLowMarketData) {
@@ -545,7 +539,6 @@ export default function Chart(props: ChartData) {
                 }
 
                 if (isSameLocationHighMarket) {
-                    isSameLocationMax = true;
                     sameLocationDataMax = scaleData.yScale.invert(
                         scaleData.yScale(marketValue) + differenceHighMarketData,
                     );
@@ -562,9 +555,28 @@ export default function Chart(props: ChartData) {
                             differenceLowHighData,
                     );
 
-                    if (differenceHighMarketData === differenceLowMarketData) {
+                    if (differenceHighMarket === 0) {
+                        sameLocationDataMax = scaleData.yScale.invert(
+                            scaleData.yScale(marketValue) - differenceHighMarketData,
+                        );
                         sameLocationDataMin = scaleData.yScale.invert(
-                            scaleData.yScale(marketValue) + differenceHighMarketData * 2,
+                            scaleData.yScale(marketValue) - differenceHighMarketData * 2,
+                        );
+                    }
+
+                    if (differenceHighMarket === differenceLowMarket) {
+                        sameLocationDataMax = scaleData.yScale.invert(
+                            scaleData.yScale(marketValue) -
+                                (differenceLowMarket === 0
+                                    ? differenceHighMarketData
+                                    : -differenceHighMarketData),
+                        );
+
+                        sameLocationDataMin = scaleData.yScale.invert(
+                            scaleData.yScale(marketValue) -
+                                (differenceLowMarket === 0
+                                    ? differenceHighMarketData * 2
+                                    : -(differenceHighMarketData * 2)),
                         );
                     }
                 }
@@ -1025,7 +1037,7 @@ export default function Chart(props: ChartData) {
                                     Math.abs(domainX[1].getTime() - domainX[0].getTime()) >=
                                         parsedChartData.period * 1000 * 2)
                             ) {
-                                if (!event.sourceEvent.ctrlKey) {
+                                if (!event.sourceEvent.ctrlKey || !event.sourceEvent.metaKey) {
                                     scaleData.xScale.domain([
                                         new Date(domainX[0].getTime() - deltaX),
                                         domainX[1],
