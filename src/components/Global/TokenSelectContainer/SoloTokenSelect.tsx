@@ -48,7 +48,6 @@ export const SoloTokenSelect = (props: propsIF) => {
 
     useEffect(() => {
         if (searchType === 'address') {
-            console.clear();
             console.log('this looks like an address');
             const isTokenLocal = verifyToken(validatedInput, chainId);
             console.log({isTokenLocal});
@@ -121,7 +120,13 @@ export const SoloTokenSelect = (props: propsIF) => {
         let output: string;
         if (validatedInput) {
             if (searchType === 'address') {
-                if (verifyToken(validatedInput, chainId)) {
+                if (
+                    verifyToken(validatedInput, chainId) ||
+                    JSON.parse(localStorage.getItem('user') as string).tokens
+                        .some((tkn: TokenIF) => (
+                            tkn.address.toLowerCase() === validatedInput.toLowerCase()
+                        ))
+                ) {
                     output = 'token buttons';
                 } else {
                     output = 'from chain';

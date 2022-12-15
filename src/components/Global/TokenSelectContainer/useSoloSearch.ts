@@ -63,14 +63,34 @@ export const useSoloSearch = (
         // make one set of tokens to render
         // default is the basic imported tokens wherever they come from now
         const tokenExists = verifyToken(validatedInput, chainId);
+        console.log('looking for token!');
         if (searchAs === 'address') {
-            tokenExists && setOutputTokens(
-                [getTokenByAddress(validatedInput, chainId) as TokenIF]
-            );
+            if (tokenExists) {
+                setOutputTokens(
+                    [getTokenByAddress(validatedInput, chainId) as TokenIF]
+                )
+            } else {
+                const userToken = JSON.parse(
+                    localStorage.getItem('user') as string
+                ).tokens.find((tkn: TokenIF) =>
+                    tkn.address.toLowerCase() === validatedInput.toLowerCase()
+                );
+                userToken && setOutputTokens([userToken]);
+            }
         } else if (searchAs === 'nameOrSymbol') {
-            setOutputTokens(
-                getTokensByName(validatedInput, chainId, false)
-            );
+            let foundTokens: TokenIF[];
+            foundTokens = getTokensByName(validatedInput, chainId, false);
+            if (foundTokens.length === 0) {
+                console.log('checking backups...');
+                const userTokens = JSON.parse(
+                    localStorage.getItem('user') as string
+                ).tokens;
+                foundTokens = userTokens.filter((tkn: TokenIF) => (
+                    tkn.name.toLowerCase().includes(validatedInput.toLowerCase()) ||
+                    tkn.symbol.toLowerCase().includes(validatedInput.toLowerCase())
+                ));
+            }
+            setOutputTokens(foundTokens);
         } else {
             setOutputTokens(importedTokensOnChain);
             console.log({importedTokensOnChain});
