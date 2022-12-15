@@ -1260,6 +1260,22 @@ export default function Chart(props: ChartData) {
         });
     };
 
+    useEffect(() => {
+        setRanges((prevState) => {
+            const newTargets = [...prevState];
+
+            newTargets.filter((target: any) => target.name === 'Max')[0].value =
+                pinnedMaxPriceDisplayTruncated !== undefined ? pinnedMaxPriceDisplayTruncated : 0;
+
+            newTargets.filter((target: any) => target.name === 'Min')[0].value =
+                pinnedMinPriceDisplayTruncated !== undefined ? pinnedMinPriceDisplayTruncated : 0;
+
+            setLiqHighlightedLinesAndArea(newTargets);
+
+            return newTargets;
+        });
+    }, [denomInBase]);
+
     const setBalancedLines = () => {
         if (simpleRangeWidth === 100 || rangeModuleTriggered) {
             if (simpleRangeWidth === 100) {
@@ -2313,6 +2329,7 @@ export default function Chart(props: ChartData) {
                 pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
             );
 
+            console.log('click');
             await setRanges((prevState) => {
                 const newTargets = [...prevState];
 
@@ -2563,6 +2580,13 @@ export default function Chart(props: ChartData) {
                 }
             });
 
+            props.liquidityData.lineBidSeries = props.liquidityData.lineBidSeries.sort(
+                (a: any, b: any) => b.liqPrices - a.liqPrices,
+            );
+            props.liquidityData.lineAskSeries = props.liquidityData.lineAskSeries.sort(
+                (a: any, b: any) => b.liqPrices - a.liqPrices,
+            );
+
             props.liquidityData.lineAskSeries.push({
                 activeLiq:
                     props.liquidityData.lineAskSeries[props.liquidityData.lineAskSeries.length - 1]
@@ -2577,13 +2601,6 @@ export default function Chart(props: ChartData) {
                 deltaAverageUSD: 0,
                 cumAverageUSD: 0,
             });
-
-            props.liquidityData.lineBidSeries = props.liquidityData.lineBidSeries.sort(
-                (a: any, b: any) => b.liqPrices - a.liqPrices,
-            );
-            props.liquidityData.lineAskSeries = props.liquidityData.lineAskSeries.sort(
-                (a: any, b: any) => b.liqPrices - a.liqPrices,
-            );
 
             setHorizontalBandData([
                 [
