@@ -464,20 +464,19 @@ export default function Chart(props: ChartData) {
         const differenceHighMarket = scaleData.yScale(high) - scaleData.yScale(marketValue);
 
         const isSameLocationLowHigh = Math.abs(differenceLowHigh) <= 30;
-        const differenceLowHighData = differenceLowHigh < 0 ? -20 : 20;
+        const differenceLowHighData = differenceLowHigh <= 0 ? -20 : 20;
 
         const isSameLocationLowMarket = Math.abs(differenceLowMarket) <= 20;
-        const differenceLowMarketData = differenceLowMarket < 0 ? -20 : 20;
+        const differenceLowMarketData = differenceLowMarket <= 0 ? -20 : 20;
 
         const isSameLocationHighMarket = Math.abs(differenceHighMarket) <= 20;
 
-        const differenceHighMarketData = differenceHighMarket < 0 ? -20 : 20;
+        const differenceHighMarketData = differenceHighMarket <= 0 ? -20 : 20;
 
         if (high > low) {
             if (marketValue > low && marketValue < high) {
                 isSameLocationMax = isSameLocationHighMarket;
                 isSameLocationMin = isSameLocationLowMarket;
-
                 if (isSameLocationHighMarket) {
                     sameLocationDataMax = scaleData.yScale.invert(
                         scaleData.yScale(marketValue) + differenceHighMarketData,
@@ -487,6 +486,12 @@ export default function Chart(props: ChartData) {
                 if (isSameLocationLowMarket) {
                     sameLocationDataMin = scaleData.yScale.invert(
                         scaleData.yScale(marketValue) + differenceLowMarketData,
+                    );
+                }
+
+                if (differenceHighMarketData === differenceLowMarketData) {
+                    sameLocationDataMin = scaleData.yScale.invert(
+                        scaleData.yScale(marketValue) - differenceHighMarketData,
                     );
                 }
             } else if (low > marketValue && high > marketValue) {
@@ -521,6 +526,12 @@ export default function Chart(props: ChartData) {
                             differenceLowMarketData -
                             differenceLowHighData,
                     );
+
+                    if (differenceHighMarketData === differenceLowMarketData) {
+                        sameLocationDataMax = scaleData.yScale.invert(
+                            scaleData.yScale(marketValue) + differenceHighMarketData * 2,
+                        );
+                    }
                 }
             } else if (low < marketValue && high < marketValue) {
                 isSameLocationMax = isSameLocationHighMarket;
@@ -533,16 +544,26 @@ export default function Chart(props: ChartData) {
                 }
 
                 if (isSameLocationHighMarket) {
+                    isSameLocationMax = true;
+                    sameLocationDataMax = scaleData.yScale.invert(
+                        scaleData.yScale(marketValue) + differenceHighMarketData,
+                    );
+                }
+
+                if (isSameLocationLowHigh && isSameLocationHighMarket) {
                     sameLocationDataMax = scaleData.yScale.invert(
                         scaleData.yScale(marketValue) + differenceHighMarketData,
                     );
 
-                    if (Math.abs(differenceLowHigh) <= 35) {
-                        isSameLocationMin = true;
+                    sameLocationDataMin = scaleData.yScale.invert(
+                        scaleData.yScale(marketValue) +
+                            differenceHighMarketData +
+                            differenceLowHighData,
+                    );
+
+                    if (differenceHighMarketData === differenceLowMarketData) {
                         sameLocationDataMin = scaleData.yScale.invert(
-                            scaleData.yScale(marketValue) +
-                                differenceHighMarketData +
-                                differenceLowHighData,
+                            scaleData.yScale(marketValue) + differenceHighMarketData * 2,
                         );
                     }
                 }
@@ -2094,23 +2115,18 @@ export default function Chart(props: ChartData) {
         parsedChartData?.period,
         checkLimitOrder,
         isUserLoggedIn,
+        limitLine,
     ]);
 
     useEffect(() => {
-        const limitNonDisplay = denomInBase
-            ? pool?.fromDisplayPrice(limit[0].value)
-            : pool?.fromDisplayPrice(1 / limit[0].value);
-
-        limitNonDisplay?.then((res: any) => {
-            setCheckLimitOrder(
-                isUserLoggedIn
-                    ? isTokenAPrimary
-                        ? tradeData.poolPriceNonDisplay > res
-                        : tradeData.poolPriceNonDisplay < res
-                    : false,
-            );
-        });
-    }, [limit, denomInBase, tradeData, isUserLoggedIn]);
+        setCheckLimitOrder(
+            isUserLoggedIn
+                ? sellOrderStyle === 'order_sell'
+                    ? limit[0].value > currentPriceData[0].value
+                    : limit[0].value < currentPriceData[0].value
+                : false,
+        );
+    }, [limit, sellOrderStyle, isUserLoggedIn, currentPriceData]);
 
     // Line Rules
     useEffect(() => {
