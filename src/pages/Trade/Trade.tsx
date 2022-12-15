@@ -401,7 +401,26 @@ export default function Trade(props: TradePropsIF) {
                             crocEnv={crocEnv}
                             activeTimeFrame={activeTimeFrame}
                             setActiveTimeFrame={setActiveTimeFrame}
-                            TradeSettingsColor={<TradeSettingsColor {...tradeSettingsColorProps} />}
+                            // Trade Settings props
+                            upBodyColorPicker={upBodyColorPicker}
+                            setUpBodyColorPicker={setUpBodyColorPicker}
+                            handleBodyColorPickerChange={handleBodyColorPickerChange}
+                            handleBorderColorPickerChange={handleBorderColorPickerChange}
+                            handleDownBodyColorPickerChange={handleDownBodyColorPickerChange}
+                            handleDownBorderColorPickerChange={handleDownBorderColorPickerChange}
+                            setUpBorderColorPicker={setUpBorderColorPicker}
+                            setDownBodyColorPicker={setDownBodyColorPicker}
+                            setDownBorderColorPicker={setDownBorderColorPicker}
+                            upBorderColorPicker={upBorderColorPicker}
+                            downBodyColorPicker={downBodyColorPicker}
+                            downBorderColorPicker={downBorderColorPicker}
+                            chartBg={chartBg}
+                            setChartBg={setChartBg}
+                            handleChartBgColorPickerChange={handleChartBgColorPickerChange}
+
+                            // {...tradeSettingsColorProps}
+
+                            // TradeSettingsColor={<TradeSettingsColor {...tradeSettingsColorProps} />
                         />
                     </div>
                 </div>

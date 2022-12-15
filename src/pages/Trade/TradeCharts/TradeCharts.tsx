@@ -103,7 +103,28 @@ interface TradeChartsPropsIF {
     crocEnv: CrocEnv | undefined;
     activeTimeFrame: string;
     setActiveTimeFrame: Dispatch<SetStateAction<string>>;
-    TradeSettingsColor: JSX.Element;
+    // TradeSettingsColor: JSX.Element;
+    upBodyColorPicker: boolean;
+    setUpBodyColorPicker: Dispatch<SetStateAction<boolean>>;
+    // eslint-disable-next-line
+    handleBodyColorPickerChange: (color: any) => void;
+    // eslint-disable-next-line
+    handleBorderColorPickerChange: (color: any) => void;
+    // eslint-disable-next-line
+    handleDownBodyColorPickerChange: (color: any) => void;
+    // eslint-disable-next-line
+    handleDownBorderColorPickerChange: (color: any) => void;
+    // eslint-disable-next-line
+    handleChartBgColorPickerChange: (color: any) => void;
+    setUpBorderColorPicker: Dispatch<SetStateAction<boolean>>;
+    setDownBodyColorPicker: Dispatch<SetStateAction<boolean>>;
+    setDownBorderColorPicker: Dispatch<SetStateAction<boolean>>;
+    upBorderColorPicker: boolean;
+    downBodyColorPicker: boolean;
+    downBorderColorPicker: boolean;
+
+    chartBg: string;
+    setChartBg: Dispatch<SetStateAction<string>>;
 }
 
 export interface CandleChartData {
@@ -175,7 +196,6 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
         crocEnv,
         activeTimeFrame,
         setActiveTimeFrame,
-        TradeSettingsColor,
     } = props;
 
     const dispatch = useAppDispatch();
@@ -289,7 +309,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
         { icon: '🥬', label: 'Lettuce', content: exDataContent },
         { icon: '🥕', label: 'Carrot', content: exDataContent },
         { icon: '🫐', label: 'Blueberries', content: exDataContent },
-        { icon: '🥂 ', label: 'Colors', content: TradeSettingsColor },
+        { icon: '🥂 ', label: 'Colors', content: ' TradeSettingsColor' },
     ];
 
     const [showChartSettings, setShowChartSettings] = useState(false);
@@ -943,6 +963,29 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
     // END OF CANDLE STICK DATA---------------------------------------------------
     // This is a simple loading that last for 1 sec before displaying the graph. The graph is already in the dom by then. We will just positon this in front of it and then remove it after 1 sec.
 
+    const chartSettingsProps = {
+        showChartSettings: showChartSettings,
+
+        upBodyColorPicker: props.upBodyColorPicker,
+        setUpBodyColorPicker: props.setUpBodyColorPicker,
+        upBodyColor: props.upBodyColor,
+        handleBodyColorPickerChange: props.handleBodyColorPickerChange,
+        handleBorderColorPickerChange: props.handleBorderColorPickerChange,
+        handleDownBodyColorPickerChange: props.handleDownBodyColorPickerChange,
+        handleDownBorderColorPickerChange: props.handleDownBorderColorPickerChange,
+        setUpBorderColorPicker: props.setUpBorderColorPicker,
+        setDownBodyColorPicker: props.setDownBodyColorPicker,
+        setDownBorderColorPicker: props.setDownBorderColorPicker,
+        upBorderColor: props.upBorderColor,
+        upBorderColorPicker: props.upBorderColorPicker,
+        downBodyColor: props.downBodyColor,
+        downBodyColorPicker: props.downBodyColorPicker,
+        downBorderColor: props.downBorderColor,
+        downBorderColorPicker: props.downBorderColorPicker,
+        chartBg: props.chartBg,
+        setChartBg: props.setChartBg,
+        handleChartBgColorPickerChange: props.handleChartBgColorPickerChange,
+    };
     const expandGraphStyle = props.expandTradeTable ? styles.hide_graph : '';
 
     const [graphIsLoading, setGraphIsLoading] = useState(true);
@@ -961,7 +1004,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
             ref={canvasRef}
         >
             {/* {mainChartSettingsContent} */}
-            {<ChartSettings showChartSettings={showChartSettings} />}
+            {<ChartSettings {...chartSettingsProps} />}
             <div className={`${styles.graph_style} ${expandGraphStyle}  `}>
                 {/* {graphSettingsContent} */}
                 {tokenInfo}
