@@ -76,6 +76,7 @@ export const useToken = (
         return !!tokenMap.get(addr.toLowerCase() + '_' + chn.toLowerCase());
     };
 
+    // fn to retrieve all tokens from token map
     const getAllTokens = () => Array.from(tokenMap.values());
 
     const getTokensOnChain = (chn: string) => (
