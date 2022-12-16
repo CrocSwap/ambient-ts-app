@@ -62,12 +62,20 @@ export const useSoloSearch = (
     const [outputTokens, setOutputTokens] = useState<TokenIF[]>(importedTokensOnChain);
     // hook to update the value of outputTokens based on user input
     useEffect(() => {
-        const tokenExists = verifyToken(validatedInput, chainId);
+        // logic in this hook branches based on user input type
+        // code to run if user input appears to be a contract address
         if (searchAs === 'address') {
+            // determined whether a known token exists for user input as an address
+            // this check is run against tokens listed in `allTokenLists`
+            const tokenExists = verifyToken(validatedInput, chainId);
+            // if token exists in an imported list, send it to the output value
             if (tokenExists) {
-                setOutputTokens(
-                    [getTokenByAddress(validatedInput, chainId) as TokenIF]
-                )
+                // get the token for the given address and chain
+                const tokenAtAddress = getTokenByAddress(validatedInput, chainId);
+                // send the value to local state
+                // local state needs an array of tokens, so we put it in an array
+                // technically value can be undefined but gatekeeping prevents that
+                setOutputTokens([tokenAtAddress as TokenIF]);
             } else {
                 const userToken = JSON.parse(
                     localStorage.getItem('user') as string
