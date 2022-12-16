@@ -1,5 +1,5 @@
 import styles from './TradeSettingsColor.module.css';
-import { Dispatch, SetStateAction, MouseEventHandler } from 'react';
+import { Dispatch, SetStateAction, MouseEventHandler, useState } from 'react';
 
 import { SketchPicker } from 'react-color';
 import { DefaultTooltip } from '../../../../../components/Global/StyledTooltip/StyledTooltip';
@@ -65,16 +65,32 @@ export default function TradeSettingsColor(props: TradeSettingsColorPropsIF) {
     function ColorPickerDisplay(props: ColorPickerDisplayTooltipPropsIF) {
         const { onClick, onChangeComplete, color, label } = props;
 
+        const [tooltipIsOpen, setTooltipIsOpen] = useState(false);
+
+        const toggleClick = () => {
+            setTooltipIsOpen(!tooltipIsOpen);
+            onClick;
+        };
+
         return (
             <DefaultTooltip
+                open={tooltipIsOpen}
+                onOpen={() => setTooltipIsOpen(true)}
+                onClose={() => setTooltipIsOpen(false)}
                 interactive
                 title={<SketchPicker color={color} onChangeComplete={onChangeComplete} />}
                 placement={'bottom'}
                 arrow
                 enterDelay={100}
                 leaveDelay={200}
+                PopperProps={{
+                    disablePortal: true,
+                }}
+                disableFocusListener
+                disableHoverListener
+                disableTouchListener
             >
-                <div className={styles.square_picker_container} onClick={onClick}>
+                <div className={styles.square_picker_container} onClick={toggleClick}>
                     <div className={styles.square_picker} style={{ background: color }} />
                     <label>{label}</label>
                 </div>

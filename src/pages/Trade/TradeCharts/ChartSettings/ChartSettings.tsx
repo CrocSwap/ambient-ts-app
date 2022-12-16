@@ -145,7 +145,7 @@ export default function ChartSettings(props: ChartSettingsPropsIF) {
             <header>
                 <p />
                 <h2>Chart Settings</h2>
-                <div>
+                <div onClick={() => setShowChartSettings(false)}>
                     <VscClose size={24} />
                 </div>
             </header>
