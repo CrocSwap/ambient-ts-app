@@ -1,10 +1,13 @@
 import styles from './ChartSettings.module.css';
-import { Dispatch, SetStateAction, useEffect, useState } from 'react';
+import { Dispatch, SetStateAction, useEffect, useState, useRef } from 'react';
 import TradeSettingsColor from '../TradeSettings/TradeSettingsColor/TradeSettingsColor';
 import { VscClose } from 'react-icons/vsc';
 import IconWithTooltip from '../../../../components/Global/IconWithTooltip/IconWithTooltip';
+import UseOnClickOutside from '../../../../utils/hooks/useOnClickOutside';
+
 interface ChartSettingsPropsIF {
     showChartSettings: boolean;
+    setShowChartSettings: Dispatch<SetStateAction<boolean>>;
 
     // TRADE SETTINGS COLOR PROPS
     upBodyColorPicker: boolean;
@@ -58,6 +61,7 @@ export default function ChartSettings(props: ChartSettingsPropsIF) {
 
         handleChartBgColorPickerChange,
         showChartSettings,
+        setShowChartSettings,
     } = props;
 
     const tradeSettingsColorProps = {
@@ -122,6 +126,13 @@ export default function ChartSettings(props: ChartSettingsPropsIF) {
         </ul>
     );
 
+    const chartSettingsRef = useRef<HTMLDivElement>(null);
+
+    const chartSettingsOutsideClickHandler = () => {
+        setShowChartSettings(false);
+    };
+    UseOnClickOutside(chartSettingsRef, chartSettingsOutsideClickHandler);
+
     if (!showChartSettings) return null;
     return (
         <div
@@ -129,6 +140,7 @@ export default function ChartSettings(props: ChartSettingsPropsIF) {
             className={`${styles.main_settings_container} ${
                 showChartSettings && styles.main_settings_container_active
             }`}
+            ref={chartSettingsRef}
         >
             <header>
                 <p />
