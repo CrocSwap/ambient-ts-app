@@ -79,7 +79,8 @@ export const useToken = (
     // fn to retrieve all tokens from token map
     const getAllTokens = () => Array.from(tokenMap.values());
 
-    const getTokensOnChain = (chn: string) => (
+    // fn to retrieve all tokens from token map on current chain
+    const getTokensOnChain = (chn=chainId) => (
         Array.from(tokenMap.values()).filter(tok => tok.chainId === parseInt(chn))
     );
 
