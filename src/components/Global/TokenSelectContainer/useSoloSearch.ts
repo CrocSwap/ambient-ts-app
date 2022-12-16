@@ -16,13 +16,13 @@ export const useSoloSearch = (
     // TODO: debounce this input later
     // TODO: figure out if we need to update EVERYTHING to the debounced value
     // raw input from the user
-    const [input, setInput] = useState('');
+    const [input, setInput] = useState<string>('');
 
     // search type ➜ '' or 'address' or 'nameOrAddress'
-    const [searchAs, setSearchAs] = useState('');
+    const [searchAs, setSearchAs] = useState<string>('');
 
     // cleaned and validated version of raw user input
-    const validatedInput = useMemo(() => {
+    const validatedInput = useMemo<string>(() => {
         // trim string and make it lower case
         const cleanInput = input.trim().toLowerCase();
         // action if input appears to be a contract address
@@ -64,7 +64,7 @@ export const useSoloSearch = (
     // hook to update the value of outputTokens based on user input
     useEffect(() => {
         // fn to run a token search by contract address
-        function searchAsAddress() {
+        function searchAsAddress(): TokenIF[] {
             // declare an output variable
             // fn will never return null, this is used for gatekeeping the return
             let foundToken: TokenIF | null = null;
@@ -93,7 +93,7 @@ export const useSoloSearch = (
         }
 
         // fn to run a token search by name or symbol
-        function searchAsNameOrSymbol() {
+        function searchAsNameOrSymbol(): TokenIF[] {
             // determine if the validated input is exactly two characters
             // for two-character input, app should only return exact matches
             const exactOnly = validatedInput.length === 2;
@@ -133,7 +133,7 @@ export const useSoloSearch = (
         }
 
         // fn to run if the app does not recognize input as an address or name or symbol
-        function noSearch() {
+        function noSearch(): TokenIF[] {
             return importedTokensOnChain;
         };
 
