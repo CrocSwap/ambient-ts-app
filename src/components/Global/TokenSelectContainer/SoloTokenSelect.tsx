@@ -108,10 +108,18 @@ export const SoloTokenSelect = (props: propsIF) => {
     // EDS Test Token 2 address (please do not delete!)
     // '0x0B0322d75bad9cA72eC7708708B54e6b38C26adA'
 
+    // value to determine what should be displayed in the DOM
+    // this approach is necessary because not all data takes the same shape
     const contentRouter = useMemo(() => {
+        // declare an output variable for the hook
         let output: string;
+        // check that the user has provided valid input
+        // note that this is the cleaned value, not raw
         if (validatedInput) {
+            // pathway if validated input appears to be a contract address
             if (searchType === 'address') {
+                // pathway if input can be validated to a real extant token
+                // can be in `allTokenLists` or in imported tokens list
                 if (
                     verifyToken(validatedInput, chainId) ||
                     JSON.parse(localStorage.getItem('user') as string).tokens
@@ -120,18 +128,26 @@ export const SoloTokenSelect = (props: propsIF) => {
                         ))
                 ) {
                     output = 'token buttons';
+                // pathway if the address cannot be validated to any token in local storage
                 } else {
                     output = 'from chain';
                 }
+            // pathway if validated input is processed as a name or symbol
             } else if (searchType === 'nameOrSymbol') {
                 output = 'token buttons';
+            // fallback pathway if searchType is not 'address' or 'nameOrSymbol'
             } else {
                 output = 'token buttons';
             }
+        // fallback pathway if there is no validated input
         } else {
             output = 'token buttons';
         }
+        // return output string
         return output;
+    // run hook when validated input or type of search changes
+    // searchType is redundant but may be relevant in the future
+    // until then it does not hurt anything to put it there
     }, [validatedInput, searchType]);
 
     // TODO: find the control flow to put this in the DOM
