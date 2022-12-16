@@ -20,7 +20,7 @@ export const useToken = (
     // get allTokenLists from local storage after initial render
     useEffect(() => {
         // fn to check local storage for token lists with a recursion limiter
-        const checkForTokenLists = (limiter = 0) => {
+        const checkForTokenLists = (limiter = 0): void => {
             // execute if local storage has token lists
             if (localStorage.getItem('allTokenLists')) {
                 // create an empty map to put key-val pairs into
@@ -82,7 +82,7 @@ export const useToken = (
     const getAllTokens = (): TokenIF[] => Array.from(tokenMap.values());
 
     // fn to retrieve all tokens from token map on current chain
-    const getTokensOnChain = (chn=chainId) => {
+    const getTokensOnChain = (chn=chainId): TokenIF[] => {
         // return all values from the token map on current chain
         return getAllTokens().filter(tok => tok.chainId === parseInt(chn))
     };
@@ -90,17 +90,17 @@ export const useToken = (
     // fn to return a given token by name and address
     // parameter for chain is optional, app uses the current chain by default
     // but we can verify tokens on other chains too as needed
-    const getTokenByAddress = (addr: string, chn=chainId) => {
+    const getTokenByAddress = (addr: string, chn=chainId): TokenIF | undefined => {
         return tokenMap.get(addr.toLowerCase() + '_' + chn.toLowerCase());
     };
 
     // fn to return an array of tokens matching either name or symbol
     // can return exact or partial matches
-    const getTokensByName = (searchName: string, chn=chainId, exact=false) => {
+    const getTokensByName = (searchName: string, chn=chainId, exact=false): TokenIF[] => {
         // array of all on-chain tokens in the Map
         const tokens = getTokensOnChain(chn);
         // search logic for exact matches only
-        const searchExact = (input: string) => {
+        const searchExact = (input: string): TokenIF[] => {
             // return filtered array of on-chain tokens
             return tokens.filter((tok: TokenIF) =>
                 // return token if name is exact match for search input
@@ -110,7 +110,7 @@ export const useToken = (
             );
         }
         // search logic for exact and partial matches
-        const searchPartial = (input: string) => {
+        const searchPartial = (input: string): TokenIF[] => {
             // return filtered array of on-chain tokens
             return tokens.filter((tok: TokenIF) =>
                 // return token if name includes search string
@@ -120,14 +120,16 @@ export const useToken = (
             );
         }
         // array of matches, either exact or partial, depending on arg in fn call
-        const matches = exact ? searchExact(searchName) : searchPartial(searchName);
+        const matches: TokenIF[] = exact
+            ? searchExact(searchName)
+            : searchPartial(searchName);
         // array to hold exact-string token matches
         const exactMatches: TokenIF[] = [];
         // array to hold partial-string token matches
         const partialMatches: TokenIF[] = [];
         // iterate over the list of matches once
         // push all values to output array for exact or partial matches
-        matches.forEach((match) => {
+        matches.forEach((match: TokenIF) => {
             if (
                 match.name.toLowerCase() === searchName.toLowerCase() ||
                 match.symbol.toLowerCase() === searchName.toLowerCase()
