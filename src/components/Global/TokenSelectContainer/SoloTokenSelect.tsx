@@ -73,6 +73,8 @@ export const SoloTokenSelect = (props: propsIF) => {
         closeModal();
     };
 
+    // hook to hold data for a token pulled from on-chain
+    // null value is allowed to clear the hook when needed or on error
     const [customToken, setCustomToken] = useState<TokenIF | null>(null);
     useEffect(() => {
         // gatekeeping to pull token data from on-chain query
@@ -80,17 +82,28 @@ export const SoloTokenSelect = (props: propsIF) => {
         // validated input must appear to be a valid contract address
         // app must fail to find token in local data
         if (provider && searchType === 'address' && !verifyToken(validatedInput, chainId)) {
+            // local instance of function to pull back token data from chain
             const cachedFetchContractDetails = memoizeFetchContractDetails();
+            // promise holding query to get token metadata from on-chain
             const promise = cachedFetchContractDetails(provider, validatedInput, chainId);
+            // resolve the promise
             Promise.resolve(promise)
+                // if response has a `decimals` value treat it as valid
                 .then((res) => res?.decimals && setCustomToken(res))
+                // error handling
                 .catch((err) => {
+                    // log error to console
                     console.warn(err);
+                    // set custom token as `null`
                     setCustomToken(null);
                 });
         } else {
+            // clear token data if conditions do not indicate necessity
             setCustomToken(null);
         }
+    // run hook when validated input or type of search changes
+    // searchType is redundant but may be relevant in the future
+    // until then it does not hurt anything to put it there
     }, [searchType, validatedInput]);
     // EDS Test Token 2 address (please do not delete!)
     // '0x0B0322d75bad9cA72eC7708708B54e6b38C26adA'
