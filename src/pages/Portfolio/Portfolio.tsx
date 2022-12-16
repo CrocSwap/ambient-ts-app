@@ -304,7 +304,7 @@ export default function Portfolio(props: PortfolioPropsIF) {
     const getImportedTokensPlus = () => {
         const importedAddresses = importedTokens.map((tkn) => tkn.address.toLowerCase());
         const output = importedTokens;
-        console.warn({connectedUserErc20Tokens});
+        // console.warn({connectedUserErc20Tokens});
         connectedUserErc20Tokens?.forEach((tkn) => {
         if (
             !importedAddresses.includes(tkn.address.toLowerCase()) &&

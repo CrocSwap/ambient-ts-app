@@ -117,7 +117,7 @@ export const SoloTokenSelect = (props: propsIF) => {
         // TODO: there must be a cleaner way of doing this, there is a specific
         // TODO: ... situation in which we need to show the user token data from
         // TODO: ... on-chain, in all other situations we just need token buttons
-        switch (validatedInput) {
+        switch (searchType) {
             case 'address':
                 // pathway if input can be validated to a real extant token
                 // can be in `allTokenLists` or in imported tokens list

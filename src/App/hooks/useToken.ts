@@ -25,8 +25,9 @@ export const useToken = (
             if (localStorage.getItem('allTokenLists')) {
                 // create an empty map to put key-val pairs into
                 const newTokenMap = new Map<string, TokenIF>();
+
                 // abstracted logic to add a new token to the map
-                const addTokenToMap = (tkn: TokenIF) => {
+                const addTokenToMap = (tkn: TokenIF): void => {
                     // generate a key for the key value pair
                     const tokenKey = tkn.address.toLowerCase() +
                         '_0x' +
@@ -72,20 +73,18 @@ export const useToken = (
     // fn to determine if a token exists in a recognized token list
     // parameter for chain is optional, app uses the current chain by default
     // but we can verify tokens on other chains too as needed
-    const verifyToken = (addr: string, chn = chainId) => {
+    const verifyToken = (addr: string, chn = chainId): boolean => {
         return !!tokenMap.get(addr.toLowerCase() + '_' + chn.toLowerCase());
     };
 
     // fn to retrieve all tokens from token map
-    const getAllTokens = () => Array.from(tokenMap.values());
+    // this is the correct syntax to do so
+    const getAllTokens = (): TokenIF[] => Array.from(tokenMap.values());
 
     // fn to retrieve all tokens from token map on current chain
     const getTokensOnChain = (chn=chainId) => {
-        // create an array with all values from the token map
-        // this is the correct syntax to do so
-        return Array.from(tokenMap.values())
-            // filter tokens to only return tokens on current chain
-            .filter(tok => tok.chainId === parseInt(chn))
+        // return all values from the token map on current chain
+        return getAllTokens().filter(tok => tok.chainId === parseInt(chn))
     };
 
     // fn to return a given token by name and address
