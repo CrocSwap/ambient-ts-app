@@ -300,14 +300,16 @@ export default function Portfolio(props: PortfolioPropsIF) {
     const connectedUserNativeToken = useAppSelector((state) => state.userData.tokens.nativeToken);
     const connectedUserErc20Tokens = useAppSelector((state) => state.userData.tokens.erc20Tokens);
 
+    // TODO: move this function up to App.tsx
     const getImportedTokensPlus = () => {
         const importedAddresses = importedTokens.map((tkn) => tkn.address.toLowerCase());
         const output = importedTokens;
-        console.log({connectedUserErc20Tokens});
+        console.warn({connectedUserErc20Tokens});
         connectedUserErc20Tokens?.forEach((tkn) => {
         if (
             !importedAddresses.includes(tkn.address.toLowerCase()) &&
-            tokensOnActiveLists.get(tkn.address + '_' + chainId)
+            tokensOnActiveLists.get(tkn.address + '_' + chainId) &&
+            parseInt(tkn.combinedBalance as string) > 0
         ) {
             output.push({...tkn, fromList: 'wallet'});
         }

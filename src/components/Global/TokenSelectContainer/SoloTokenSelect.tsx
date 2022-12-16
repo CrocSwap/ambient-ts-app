@@ -90,7 +90,7 @@ export const SoloTokenSelect = (props: propsIF) => {
             setImportedTokens={setImportedTokens}
             chooseToken={chooseToken}
             isOnPortfolio={true}
-            fromListsText='Imported'
+            fromListsText=''
         />
     ));
 
