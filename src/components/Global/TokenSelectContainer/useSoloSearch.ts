@@ -58,10 +58,10 @@ export const useSoloSearch = (
         return output;
     }, [input]);
 
+    // hook to track tokens to output and render in DOM
     const [outputTokens, setOutputTokens] = useState<TokenIF[]>(importedTokensOnChain);
+    // hook to update the value of outputTokens based on user input
     useEffect(() => {
-        // make one set of tokens to render
-        // default is the basic imported tokens wherever they come from now
         const tokenExists = verifyToken(validatedInput, chainId);
         if (searchAs === 'address') {
             if (tokenExists) {
