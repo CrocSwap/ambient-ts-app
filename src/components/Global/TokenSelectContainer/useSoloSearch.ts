@@ -18,7 +18,7 @@ export const useSoloSearch = (
     // raw input from the user
     const [input, setInput] = useState('');
 
-    // search type => '' or 'address' or 'nameOrAddress'
+    // search type ➜ '' or 'address' or 'nameOrAddress'
     const [searchAs, setSearchAs] = useState('');
 
     // cleaned and validated version of raw user input
@@ -60,9 +60,23 @@ export const useSoloSearch = (
 
     // hook to track tokens to output and render in DOM
     const [outputTokens, setOutputTokens] = useState<TokenIF[]>(importedTokensOnChain);
+
     // hook to update the value of outputTokens based on user input
     useEffect(() => {
-        const searchAsAddress = () => {
+        // logic router based on the type of user input
+        switch (searchAs) {
+            case 'address':
+                searchAsAddress();
+                break;
+            case 'nameOrSymbol':
+                searchAsNameOrSymbol();
+                break;
+            default:
+                noSearch();
+        }
+
+        // fn to run a token search by contract address
+        function searchAsAddress() {
             // determined whether a known token exists for user input as an address
             // this check is run against tokens listed in `allTokenLists`
             const tokenExistsOnList = verifyToken(validatedInput, chainId);
@@ -89,7 +103,9 @@ export const useSoloSearch = (
                 userToken && setOutputTokens([userToken]);
             }
         }
-        const searchAsNameOrSymbol = () => {
+
+        // fn to run a token search by name or symbol
+        function searchAsNameOrSymbol() {
             // determine if the validated input is exactly two characters
             // for two-character input, app should only return exact matches
             const exactOnly = validatedInput.length === 2;
@@ -114,7 +130,6 @@ export const useSoloSearch = (
                     // this logic runs when matches MUST be exact
                     // if the token name or symbol EQUALS validated input and was not
                     // ... already found on an imported list, add it to the search results
-
                     } else if (
                         exactOnly && (
                             tkn.name.toLowerCase() === validatedInput.toLowerCase() ||
@@ -128,22 +143,11 @@ export const useSoloSearch = (
             // send accumulated array of matched tokens to the output variable
             setOutputTokens(foundTokens);
         }
-        const noSearch = () => setOutputTokens(importedTokensOnChain);
-        // logic in this hook branches based on user input type
-        // code to run if user input appears to be a contract address
-        if (searchAs === 'address') {
-            searchAsAddress();
-        // code to run if user input appears to be a name or symbol
-        // this is technically any validated input which does not resemble an address
-        } else if (searchAs === 'nameOrSymbol') {
-            searchAsNameOrSymbol();
-        // code to run if user input is not apparently a name, symbol, or address
-        // this is for no input or validated input < two characters
-        } else {
-            // send original raw token list to the output variable
-            // this is simply the starting condition of the modal
-            noSearch();
-        }
+
+        // fn to run if the app does not recognize input as an address or name or symbol
+        function noSearch() {
+            setOutputTokens(importedTokensOnChain)
+        };
     // run hook every time the validated input from the user changes
     // will ignore changes that do not pass validation (eg adding whitespace)
     }, [validatedInput]);
