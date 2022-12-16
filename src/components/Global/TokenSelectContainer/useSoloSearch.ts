@@ -62,9 +62,7 @@ export const useSoloSearch = (
     const [outputTokens, setOutputTokens] = useState<TokenIF[]>(importedTokensOnChain);
     // hook to update the value of outputTokens based on user input
     useEffect(() => {
-        // logic in this hook branches based on user input type
-        // code to run if user input appears to be a contract address
-        if (searchAs === 'address') {
+        const searchAsAddress = () => {
             // determined whether a known token exists for user input as an address
             // this check is run against tokens listed in `allTokenLists`
             const tokenExistsOnList = verifyToken(validatedInput, chainId);
@@ -90,9 +88,8 @@ export const useSoloSearch = (
                 // if a token was found in user data, send it to the return value
                 userToken && setOutputTokens([userToken]);
             }
-        // code to run if user input appears to be a name or symbol
-        // this is technically any validated input which does not resemble an address
-        } else if (searchAs === 'nameOrSymbol') {
+        }
+        const searchAsNameOrSymbol = () => {
             // determine if the validated input is exactly two characters
             // for two-character input, app should only return exact matches
             const exactOnly = validatedInput.length === 2;
@@ -130,12 +127,22 @@ export const useSoloSearch = (
                 });
             // send accumulated array of matched tokens to the output variable
             setOutputTokens(foundTokens);
+        }
+        const noSearch = () => setOutputTokens(importedTokensOnChain);
+        // logic in this hook branches based on user input type
+        // code to run if user input appears to be a contract address
+        if (searchAs === 'address') {
+            searchAsAddress();
+        // code to run if user input appears to be a name or symbol
+        // this is technically any validated input which does not resemble an address
+        } else if (searchAs === 'nameOrSymbol') {
+            searchAsNameOrSymbol();
         // code to run if user input is not apparently a name, symbol, or address
         // this is for no input or validated input < two characters
         } else {
             // send original raw token list to the output variable
             // this is simply the starting condition of the modal
-            setOutputTokens(importedTokensOnChain);
+            noSearch();
         }
     // run hook every time the validated input from the user changes
     // will ignore changes that do not pass validation (eg adding whitespace)
