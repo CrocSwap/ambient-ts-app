@@ -31,12 +31,13 @@ export const SoloTokenSelect = (props: propsIF) => {
         chainId,
         setImportedTokens,
         closeModal,
-        // getTokensOnChain,
         getTokensByName,
         getTokenByAddress,
         verifyToken
     } = props;
 
+    // hook to process search input and return an array of relevant tokens
+    // also returns state setter function and values for control flow
     const [outputTokens, validatedInput, setInput, searchType] = useSoloSearch(
         chainId,
         importedTokens,
@@ -45,6 +46,7 @@ export const SoloTokenSelect = (props: propsIF) => {
         getTokensByName
     );
 
+    // instance of hook used to retrieve data from RTK
     const dispatch = useAppDispatch();
 
     const undeletableTokens = useMemo(
