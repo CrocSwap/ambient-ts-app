@@ -102,10 +102,6 @@ export const useSoloSearch = (
                         foundTokens.push(tkn);
                     }
                 });
-                // foundTokens = userTokens.filter((tkn: TokenIF) => (
-                //     tkn.name.toLowerCase().includes(validatedInput.toLowerCase()) ||
-                //     tkn.symbol.toLowerCase().includes(validatedInput.toLowerCase())
-                // ));
             setOutputTokens(foundTokens);
         } else {
             setOutputTokens(importedTokensOnChain);
