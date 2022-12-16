@@ -85,6 +85,7 @@ export const useToken = (
     };
 
     const getTokensByName = (searchName: string, chn=chainId, exact=false) => {
+        console.log({exact});
         console.time();
         const tokens = getTokensOnChain(chn);
         const searchExact = (input: string) => {

@@ -78,13 +78,24 @@ export const useSoloSearch = (
                 userToken && setOutputTokens([userToken]);
             }
         } else if (searchAs === 'nameOrSymbol') {
-            const foundTokens = getTokensByName(validatedInput, chainId, false);
+            const exactOnly = validatedInput.length === 2;
+            console.log({exactOnly});
+            const foundTokens = getTokensByName(validatedInput, chainId, exactOnly);
+            console.log({foundTokens});
             JSON.parse(localStorage.getItem('user') as string).tokens
                 .forEach((tkn: TokenIF) => {
                     if (
-                        (
+                        !exactOnly && (
                             tkn.name.toLowerCase().includes(validatedInput.toLowerCase()) ||
                             tkn.symbol.toLowerCase().includes(validatedInput.toLowerCase())
+                        ) &&
+                        !foundTokens.map((tok: TokenIF) => tok.address.toLowerCase()).includes(tkn.address)
+                    ) {
+                        foundTokens.push(tkn);
+                    } else if (
+                        exactOnly && (
+                            tkn.name.toLowerCase() === validatedInput.toLowerCase() ||
+                            tkn.symbol.toLowerCase() === validatedInput.toLowerCase()
                         ) &&
                         !foundTokens.map((tok: TokenIF) => tok.address.toLowerCase()).includes(tkn.address)
                     ) {

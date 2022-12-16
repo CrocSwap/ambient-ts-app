@@ -21,7 +21,7 @@
         {
             "name": "Emily Test Token 1",
             "address": "0x60b14e5cbb77dA9a96D36D43EaD9CD448114f320",
-            "symbol": "EDS1",
+            "symbol": "ED",
             "decimals": 18,
             "chainId": 5,
             "logoURI": "https://tokens.1inch.io/0x6b175474e89094c44da98b954eedeac495271d0f.png"
