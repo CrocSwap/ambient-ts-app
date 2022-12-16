@@ -154,7 +154,7 @@ export const SoloTokenSelect = (props: propsIF) => {
     return (
         <section className={styles.container}>
             <input
-                spellCheck={'false'}
+                spellCheck='false'
                 type='text'
                 placeholder='&#61442; Search name or enter an Address'
                 onChange={(e) => setInput(e.target.value)}
