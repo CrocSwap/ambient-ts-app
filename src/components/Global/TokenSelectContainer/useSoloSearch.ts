@@ -67,21 +67,27 @@ export const useSoloSearch = (
         if (searchAs === 'address') {
             // determined whether a known token exists for user input as an address
             // this check is run against tokens listed in `allTokenLists`
-            const tokenExists = verifyToken(validatedInput, chainId);
+            const tokenExistsOnList = verifyToken(validatedInput, chainId);
             // if token exists in an imported list, send it to the output value
-            if (tokenExists) {
+            if (tokenExistsOnList) {
                 // get the token for the given address and chain
                 const tokenAtAddress = getTokenByAddress(validatedInput, chainId);
                 // send the value to local state
                 // local state needs an array of tokens, so we put it in an array
-                // technically value can be undefined but gatekeeping prevents that
+                // value can be technically be undefined but gatekeeping prevents that
                 setOutputTokens([tokenAtAddress as TokenIF]);
-            } else {
+            // if token is not on an imported list, check tokens in user data
+            } else if (!tokenExistsOnList) {
+                // retrieve and parse user data object from local storage
+                // isolate tokens listed in user data
+                // return one that has an address matching user input on current chain
                 const userToken = JSON.parse(
                     localStorage.getItem('user') as string
-                ).tokens.find((tkn: TokenIF) =>
-                    tkn.address.toLowerCase() === validatedInput.toLowerCase()
-                );
+                ).tokens.find((tkn: TokenIF) => (
+                    tkn.address.toLowerCase() === validatedInput.toLowerCase() &&
+                    tkn.chainId === parseInt(chainId)
+                ));
+                // if a token was found in user data, send it to the return value
                 userToken && setOutputTokens([userToken]);
             }
         } else if (searchAs === 'nameOrSymbol') {
