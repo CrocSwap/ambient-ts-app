@@ -113,11 +113,9 @@ export const SoloTokenSelect = (props: propsIF) => {
     const contentRouter = useMemo(() => {
         // declare an output variable for the hook
         let output: string;
-        // check that the user has provided valid input
-        // note that this is the cleaned value, not raw
-        if (validatedInput) {
-            // pathway if validated input appears to be a contract address
-            if (searchType === 'address') {
+        // router based on value of `validatedInput`
+        switch (validatedInput) {
+            case 'address':
                 // pathway if input can be validated to a real extant token
                 // can be in `allTokenLists` or in imported tokens list
                 if (
@@ -132,16 +130,11 @@ export const SoloTokenSelect = (props: propsIF) => {
                 } else {
                     output = 'from chain';
                 }
-            // pathway if validated input is processed as a name or symbol
-            } else if (searchType === 'nameOrSymbol') {
+                break;
+            case 'nameOrSymbol':
+            case '':
+            default:
                 output = 'token buttons';
-            // fallback pathway if searchType is not 'address' or 'nameOrSymbol'
-            } else {
-                output = 'token buttons';
-            }
-        // fallback pathway if there is no validated input
-        } else {
-            output = 'token buttons';
         }
         // return output string
         return output;
