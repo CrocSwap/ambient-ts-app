@@ -27,16 +27,24 @@ export const useToken = (
                 const newTokenMap = new Map<string, TokenIF>();
                 // abstracted logic to add a new token to the map
                 const addTokenToMap = (tkn: TokenIF) => {
+                    // generate a key for the key value pair
                     const tokenKey = tkn.address.toLowerCase() +
                         '_0x' +
                         tkn.chainId.toString().toLowerCase();
+                    // boolean showing if token is already in the Map
                     const tokenFromArray = newTokenMap.get(tokenKey);
+                    // if token is already in the Map, update the array of origin URIs
                     if (tokenFromArray) {
+                        // if current token has a `fromList` value, add it to the URI array
                         tkn.fromList &&
                             tokenFromArray.fromListArr?.push(tkn.fromList);
+                        // update value on the Map with the new URI listed in URI array
                         newTokenMap.set(tokenKey, tokenFromArray);
+                    // if token is NOT in the Map, add it
                     } else {
+                        // initialize an array to hold multiple list URI references
                         tkn.fromList && (tkn.fromListArr = [tkn.fromList]);
+                        // add updated token data object to the array
                         newTokenMap.set(tokenKey, tkn);
                     }
                 };
