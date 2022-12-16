@@ -63,45 +63,30 @@ export const useSoloSearch = (
 
     // hook to update the value of outputTokens based on user input
     useEffect(() => {
-        // logic router based on the type of user input
-        switch (searchAs) {
-            case 'address':
-                searchAsAddress();
-                break;
-            case 'nameOrSymbol':
-                searchAsNameOrSymbol();
-                break;
-            default:
-                noSearch();
-        }
-
         // fn to run a token search by contract address
         function searchAsAddress() {
+            let foundToken: TokenIF | null = null;
             // determined whether a known token exists for user input as an address
             // this check is run against tokens listed in `allTokenLists`
             const tokenExistsOnList = verifyToken(validatedInput, chainId);
             // if token exists in an imported list, send it to the output value
             if (tokenExistsOnList) {
                 // get the token for the given address and chain
-                const tokenAtAddress = getTokenByAddress(validatedInput, chainId);
-                // send the value to local state
-                // local state needs an array of tokens, so we put it in an array
                 // value can be technically be undefined but gatekeeping prevents that
-                setOutputTokens([tokenAtAddress as TokenIF]);
+                foundToken = getTokenByAddress(validatedInput, chainId) as TokenIF;
             // if token is not on an imported list, check tokens in user data
             } else if (!tokenExistsOnList) {
                 // retrieve and parse user data object from local storage
                 // isolate tokens listed in user data
                 // return one that has an address matching user input on current chain
-                const userToken = JSON.parse(
+                foundToken = JSON.parse(
                     localStorage.getItem('user') as string
                 ).tokens.find((tkn: TokenIF) => (
                     tkn.address.toLowerCase() === validatedInput.toLowerCase() &&
                     tkn.chainId === parseInt(chainId)
                 ));
-                // if a token was found in user data, send it to the return value
-                userToken && setOutputTokens([userToken]);
             }
+            return foundToken ? [foundToken] : []
         }
 
         // fn to run a token search by name or symbol
@@ -141,13 +126,28 @@ export const useSoloSearch = (
                     }
                 });
             // send accumulated array of matched tokens to the output variable
-            setOutputTokens(foundTokens);
+            return foundTokens;
         }
 
         // fn to run if the app does not recognize input as an address or name or symbol
         function noSearch() {
-            setOutputTokens(importedTokensOnChain)
+            return importedTokensOnChain;
         };
+
+        let tokens: TokenIF[];
+        // logic router based on the type of user input
+        switch (searchAs) {
+            case 'address':
+                tokens = searchAsAddress();
+                break;
+            case 'nameOrSymbol':
+                tokens = searchAsNameOrSymbol();
+                break;
+            default:
+                tokens = noSearch();
+        }
+        setOutputTokens(tokens);
+
     // run hook every time the validated input from the user changes
     // will ignore changes that do not pass validation (eg adding whitespace)
     }, [validatedInput]);
