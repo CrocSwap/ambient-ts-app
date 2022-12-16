@@ -63,7 +63,6 @@ export const useSoloSearch = (
         // make one set of tokens to render
         // default is the basic imported tokens wherever they come from now
         const tokenExists = verifyToken(validatedInput, chainId);
-        console.log('looking for token!');
         if (searchAs === 'address') {
             if (tokenExists) {
                 setOutputTokens(
@@ -79,9 +78,7 @@ export const useSoloSearch = (
             }
         } else if (searchAs === 'nameOrSymbol') {
             const exactOnly = validatedInput.length === 2;
-            console.log({exactOnly});
             const foundTokens = getTokensByName(validatedInput, chainId, exactOnly);
-            console.log({foundTokens});
             JSON.parse(localStorage.getItem('user') as string).tokens
                 .forEach((tkn: TokenIF) => {
                     if (
@@ -105,7 +102,6 @@ export const useSoloSearch = (
             setOutputTokens(foundTokens);
         } else {
             setOutputTokens(importedTokensOnChain);
-            console.log({importedTokensOnChain});
         }
     }, [validatedInput]);
 
