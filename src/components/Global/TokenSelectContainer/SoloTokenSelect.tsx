@@ -114,6 +114,9 @@ export const SoloTokenSelect = (props: propsIF) => {
         // declare an output variable for the hook
         let output: string;
         // router based on value of `validatedInput`
+        // TODO: there must be a cleaner way of doing this, there is a specific
+        // TODO: ... situation in which we need to show the user token data from
+        // TODO: ... on-chain, in all other situations we just need token buttons
         switch (validatedInput) {
             case 'address':
                 // pathway if input can be validated to a real extant token
