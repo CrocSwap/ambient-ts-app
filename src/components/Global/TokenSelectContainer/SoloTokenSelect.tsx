@@ -63,20 +63,6 @@ export const SoloTokenSelect = (props: propsIF) => {
         closeModal();
     };
 
-    const tokenButtons = outputTokens.map((token: TokenIF) => (
-        <TokenSelect
-            key={JSON.stringify(token)}
-            token={token}
-            tokensBank={importedTokens}
-            undeletableTokens={[]}
-            chainId={chainId}
-            setImportedTokens={setImportedTokens}
-            chooseToken={chooseToken}
-            isOnPortfolio={true}
-            fromListsText=''
-        />
-    ));
-
     const [customToken, setCustomToken] = useState<TokenIF | null>(null);
     useEffect(() => {
         // gatekeeping to pull token data from on-chain query
@@ -141,7 +127,24 @@ export const SoloTokenSelect = (props: propsIF) => {
                 placeholder='&#61442; Search name or enter an Address'
                 onChange={(e) => setInput(e.target.value)}
             />
-            {contentRouter === 'token buttons' && tokenButtons}
+            {contentRouter === 'token buttons' &&
+                outputTokens.map((token: TokenIF) => (
+                    <TokenSelect
+                        key={JSON.stringify(token)}
+                        token={token}
+                        tokensBank={importedTokens}
+                        // TODO: refactor TokenSelect.tsx to remove this value and
+                        // TODO: ... functionality, it is still here for now because we
+                        // TODO: ... call this component from multiple places in the App
+                        undeletableTokens={[]}
+                        chainId={chainId}
+                        setImportedTokens={setImportedTokens}
+                        chooseToken={chooseToken}
+                        isOnPortfolio={true}
+                        fromListsText=''
+                    />
+                )
+            )}
             {contentRouter === 'from chain' &&
             <SoloTokenImport customToken={customToken} chooseToken={chooseToken} />
             }
