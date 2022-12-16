@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState, Dispatch, SetStateAction } from 'react';
-import { TokenListIF, TokenIF } from '../../../utils/interfaces/exports';
+import { TokenIF } from '../../../utils/interfaces/exports';
 import TokenSelect from '../TokenSelect/TokenSelect';
 import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
 import { setToken } from '../../../utils/state/temp';
