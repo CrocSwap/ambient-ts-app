@@ -156,6 +156,8 @@ export const SoloTokenSelect = (props: propsIF) => {
     //     </div>
     // );
 
+    useEffect(() => console.log(outputTokens), [JSON.stringify(outputTokens)]);
+
     return (
         <section className={styles.container}>
             <input

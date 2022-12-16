@@ -112,7 +112,8 @@ export const useSoloSearch = (
                             tkn.name.toLowerCase().includes(validatedInput.toLowerCase()) ||
                             tkn.symbol.toLowerCase().includes(validatedInput.toLowerCase())
                         ) &&
-                        !foundTokens.map((tok: TokenIF) => tok.address.toLowerCase()).includes(tkn.address)
+                        tkn.chainId === parseInt(chainId) &&
+                        !foundTokens.map((tok: TokenIF) => tok.address.toLowerCase()).includes(tkn.address.toLowerCase())
                     ) {
                         foundTokens.push(tkn);
                     // this logic runs when matches MUST be exact
@@ -123,7 +124,8 @@ export const useSoloSearch = (
                             tkn.name.toLowerCase() === validatedInput.toLowerCase() ||
                             tkn.symbol.toLowerCase() === validatedInput.toLowerCase()
                         ) &&
-                        !foundTokens.map((tok: TokenIF) => tok.address.toLowerCase()).includes(tkn.address)
+                        tkn.chainId === parseInt(chainId) &&
+                        !foundTokens.map((tok: TokenIF) => tok.address.toLowerCase()).includes(tkn.address.toLowerCase())
                     ) {
                         foundTokens.push(tkn);
                     }

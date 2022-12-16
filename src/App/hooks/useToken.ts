@@ -98,11 +98,11 @@ export const useToken = (
     // can return exact or partial matches
     const getTokensByName = (searchName: string, chn=chainId, exact=false): TokenIF[] => {
         // array of all on-chain tokens in the Map
-        const tokens = getTokensOnChain(chn);
+        const tokensOnChain = getTokensOnChain(chn);
         // search logic for exact matches only
         const searchExact = (input: string): TokenIF[] => {
             // return filtered array of on-chain tokens
-            return tokens.filter((tok: TokenIF) =>
+            return tokensOnChain.filter((tok: TokenIF) =>
                 // return token if name is exact match for search input
                 tok.name.toLowerCase() === input.toLowerCase() ||
                 // return token if symbol is exact match for search input
@@ -112,7 +112,7 @@ export const useToken = (
         // search logic for exact and partial matches
         const searchPartial = (input: string): TokenIF[] => {
             // return filtered array of on-chain tokens
-            return tokens.filter((tok: TokenIF) =>
+            return tokensOnChain.filter((tok: TokenIF) =>
                 // return token if name includes search string
                 tok.name.toLowerCase().includes(input.toLowerCase()) ||
                 // return token if symbol includes search string
@@ -142,6 +142,7 @@ export const useToken = (
         // return the two match arrays as a single unified array
         // this ranks exact matches higher than partial matches
         // will work even when only exact matches are wanted
+        console.log([...exactMatches, ...partialMatches]);
         return [...exactMatches, ...partialMatches];
     }
 
