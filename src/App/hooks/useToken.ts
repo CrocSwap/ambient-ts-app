@@ -86,15 +86,10 @@ export const useToken = (
     // parameter for chain is optional, app uses the current chain by default
     // but we can verify tokens on other chains too as needed
     const getTokenByAddress = (addr: string, chn=chainId) => {
-        const x = (tokenMap.get(addr.toLowerCase() + '_' + chn.toLowerCase()));
-        console.clear();
-        console.log({x});
         return tokenMap.get(addr.toLowerCase() + '_' + chn.toLowerCase());
     };
 
     const getTokensByName = (searchName: string, chn=chainId, exact=false) => {
-        console.log({exact});
-        console.time();
         const tokens = getTokensOnChain(chn);
         const searchExact = (input: string) => {
             const exactMatches = tokens.filter((tok: TokenIF) => (
@@ -124,7 +119,6 @@ export const useToken = (
             }
         });
         const rankedMatches = [...exactMatches, ...partialMatches]
-        console.timeEnd();
         return rankedMatches;
     }
 
