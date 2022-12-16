@@ -30,6 +30,7 @@ import {
     tradeData,
 } from '../../../../../utils/state/tradeDataSlice';
 import { useNavigate } from 'react-router-dom';
+import useHover from '../../../../../utils/hooks/useHover';
 
 // interface for React functional component props
 interface TransactionMenuIF {
@@ -447,6 +448,7 @@ export default function TransactionsMenu(props: TransactionMenuIF) {
     const clickOutsideHandler = () => {
         setShowDropdownMenu(false);
     };
+    const [hoverRef, isHovered] = useHover<HTMLDivElement>();
 
     UseOnClickOutside(menuItemRef, clickOutsideHandler);
     const dropdownTransactionsMenu = (
@@ -460,6 +462,8 @@ export default function TransactionsMenu(props: TransactionMenuIF) {
 
     return (
         <div className={styles.main_container}>
+            <div ref={hoverRef}>{isHovered ? '😁' : '☹️'}</div>
+
             {!desktopView && transactionsMenu}
             {dropdownTransactionsMenu}
             {/* {modalOrNull} */}
