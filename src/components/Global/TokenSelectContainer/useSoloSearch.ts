@@ -31,11 +31,11 @@ export const useSoloSearch = (
             (cleanInput.length === 40 && !cleanInput.startsWith('0x'))
         ) {
             setSearchAs('address');
-            // if not an apparent token address search name and symbol
+        // if not an apparent token address, search name and symbol
         } else if (cleanInput.length >= 2) {
             setSearchAs('nameOrSymbol');
             return cleanInput;
-            // otherwise treat as if there is no input entered
+        // otherwise treat as if there is no input entered
         } else {
             setSearchAs('');
             return '';
@@ -65,6 +65,8 @@ export const useSoloSearch = (
     useEffect(() => {
         // fn to run a token search by contract address
         function searchAsAddress() {
+            // declare an output variable
+            // fn will never return null, this is used for gatekeeping the return
             let foundToken: TokenIF | null = null;
             // determined whether a known token exists for user input as an address
             // this check is run against tokens listed in `allTokenLists`
@@ -86,6 +88,7 @@ export const useSoloSearch = (
                     tkn.chainId === parseInt(chainId)
                 ));
             }
+            // return token in an array if found, or an empty array if not
             return foundToken ? [foundToken] : []
         }
 
@@ -125,7 +128,7 @@ export const useSoloSearch = (
                         foundTokens.push(tkn);
                     }
                 });
-            // send accumulated array of matched tokens to the output variable
+            // return accumulated array of matched tokens
             return foundTokens;
         }
 
@@ -134,8 +137,9 @@ export const useSoloSearch = (
             return importedTokensOnChain;
         };
 
+        // declare an output variable
         let tokens: TokenIF[];
-        // logic router based on the type of user input
+        // logic router to assign search results to output based on input type
         switch (searchAs) {
             case 'address':
                 tokens = searchAsAddress();
@@ -146,6 +150,8 @@ export const useSoloSearch = (
             default:
                 tokens = noSearch();
         }
+        // send found tokens to local state hook
+        // this will be the array of tokens returned by the hook
         setOutputTokens(tokens);
 
     // run hook every time the validated input from the user changes
