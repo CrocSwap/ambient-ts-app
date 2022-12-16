@@ -49,17 +49,27 @@ export const SoloTokenSelect = (props: propsIF) => {
     // instance of hook used to retrieve data from RTK
     const dispatch = useAppDispatch();
 
+    // fn to respond to a user clicking to select a token
     const chooseToken = (tkn: TokenIF) => {
+        // dispatch token data object to RTK
         dispatch(setToken(tkn));
+        // determine if the token is a previously imported token
         const isTokenImported = importedTokens.some(
             (tk: TokenIF) => tk.address.toLowerCase() === tkn.address.toLowerCase(),
         );
+        // if token is NOT imported, update local storage accordingly
         if (!isTokenImported) {
+            // retrieve and parse user data object from local storage
             const userData = JSON.parse(localStorage.getItem('user') as string);
+            // update value of `tokens` on user data object
             userData.tokens = [...importedTokens, tkn];
+            // write updated value to local storage
             localStorage.setItem('user', JSON.stringify(userData));
+            // update local state record of imported tokens
+            // necessary as there is no event listener on local storage 😱
             setImportedTokens([...importedTokens, tkn]);
         }
+        // close the token modal
         closeModal();
     };
 
