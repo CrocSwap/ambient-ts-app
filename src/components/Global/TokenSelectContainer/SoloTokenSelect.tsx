@@ -36,7 +36,6 @@ export const SoloTokenSelect = (props: propsIF) => {
         getTokenByAddress,
         verifyToken
     } = props;
-    console.log(importedTokens);
 
     const [outputTokens, validatedInput, setInput, searchType] = useSoloSearch(
         chainId,
@@ -45,16 +44,6 @@ export const SoloTokenSelect = (props: propsIF) => {
         getTokenByAddress,
         getTokensByName
     );
-
-    useEffect(() => {
-        if (searchType === 'address') {
-            console.log('this looks like an address');
-            const isTokenLocal = verifyToken(validatedInput, chainId);
-            console.log({isTokenLocal});
-        }
-    }, [validatedInput]);
-
-    useEffect(() => console.log(outputTokens), [outputTokens]);
 
     const dispatch = useAppDispatch();
 
@@ -149,8 +138,6 @@ export const SoloTokenSelect = (props: propsIF) => {
     //         <AiOutlineQuestionCircle />
     //     </div>
     // );
-
-    useEffect(() => console.log(outputTokens), [outputTokens]);
 
     return (
         <section className={styles.container}>
