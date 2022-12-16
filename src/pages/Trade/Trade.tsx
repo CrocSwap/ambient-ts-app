@@ -162,7 +162,7 @@ export default function Trade(props: TradePropsIF) {
         limitTick,
         advancedMode,
         simpleRangeWidth,
-
+        activeChartPeriod,
         pinnedMaxPriceDisplayTruncated,
         pinnedMinPriceDisplayTruncated,
     } = tradeData;
@@ -308,7 +308,19 @@ export default function Trade(props: TradePropsIF) {
         </div>
     );
 
-    const [activeTimeFrame, setActiveTimeFrame] = useState('1h');
+    const [activeTimeFrame, setActiveTimeFrame] = useState(
+        activeChartPeriod === 60
+            ? '1m'
+            : activeChartPeriod === 300
+            ? '5m'
+            : activeChartPeriod === 900
+            ? '15m'
+            : activeChartPeriod === 3600
+            ? '1h'
+            : activeChartPeriod === 14400
+            ? '4h'
+            : '1d',
+    );
 
     const unselectCandle = () => {
         setSelectedDate(undefined);
