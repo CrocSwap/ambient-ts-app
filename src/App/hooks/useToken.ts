@@ -142,7 +142,6 @@ export const useToken = (
         // return the two match arrays as a single unified array
         // this ranks exact matches higher than partial matches
         // will work even when only exact matches are wanted
-        console.log([...exactMatches, ...partialMatches]);
         return [...exactMatches, ...partialMatches];
     }
 
