@@ -80,9 +80,13 @@ export const useToken = (
     const getAllTokens = () => Array.from(tokenMap.values());
 
     // fn to retrieve all tokens from token map on current chain
-    const getTokensOnChain = (chn=chainId) => (
-        Array.from(tokenMap.values()).filter(tok => tok.chainId === parseInt(chn))
-    );
+    const getTokensOnChain = (chn=chainId) => {
+        // create an array with all values from the token map
+        // this is the correct syntax to do so
+        return Array.from(tokenMap.values())
+            // filter tokens to only return tokens on current chain
+            .filter(tok => tok.chainId === parseInt(chn))
+    };
 
     // fn to return a given token by name and address
     // parameter for chain is optional, app uses the current chain by default
