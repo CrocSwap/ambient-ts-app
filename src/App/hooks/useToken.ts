@@ -95,25 +95,39 @@ export const useToken = (
         return tokenMap.get(addr.toLowerCase() + '_' + chn.toLowerCase());
     };
 
+    // fn to return an array of tokens matching either name or symbol
+    // can return exact or partial matches
     const getTokensByName = (searchName: string, chn=chainId, exact=false) => {
+        // array of all on-chain tokens in the Map
         const tokens = getTokensOnChain(chn);
+        // search logic for exact matches only
         const searchExact = (input: string) => {
-            const exactMatches = tokens.filter((tok: TokenIF) => (
+            // return filtered array of on-chain tokens
+            return tokens.filter((tok: TokenIF) =>
+                // return token if name is exact match for search input
                 tok.name.toLowerCase() === input.toLowerCase() ||
+                // return token if symbol is exact match for search input
                 tok.symbol.toLowerCase() === input.toLowerCase()
-            ));
-            return exactMatches;
+            );
         }
+        // search logic for exact and partial matches
         const searchPartial = (input: string) => {
-            const partialMatches = tokens.filter((tok: TokenIF) =>
+            // return filtered array of on-chain tokens
+            return tokens.filter((tok: TokenIF) =>
+                // return token if name includes search string
                 tok.name.toLowerCase().includes(input.toLowerCase()) ||
+                // return token if symbol includes search string
                 tok.symbol.toLowerCase().includes(input.toLowerCase())
             );
-            return partialMatches;
         }
+        // array of matches, either exact or partial, depending on arg in fn call
         const matches = exact ? searchExact(searchName) : searchPartial(searchName);
+        // array to hold exact-string token matches
         const exactMatches: TokenIF[] = [];
+        // array to hold partial-string token matches
         const partialMatches: TokenIF[] = [];
+        // iterate over the list of matches once
+        // push all values to output array for exact or partial matches
         matches.forEach((match) => {
             if (
                 match.name.toLowerCase() === searchName.toLowerCase() ||
@@ -124,8 +138,10 @@ export const useToken = (
                 partialMatches.push(match);
             }
         });
-        const rankedMatches = [...exactMatches, ...partialMatches]
-        return rankedMatches;
+        // return the two match arrays as a single unified array
+        // this ranks exact matches higher than partial matches
+        // will work even when only exact matches are wanted
+        return [...exactMatches, ...partialMatches];
     }
 
     // return function to verify a token and retrieve token metadata
