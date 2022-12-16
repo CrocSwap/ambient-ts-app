@@ -2145,7 +2145,6 @@ export default function Chart(props: ChartData) {
         checkLimitOrder,
         isUserLoggedIn,
         poolPriceDisplay,
-        JSON.stringify(d3.select(d3PlotArea.current).html()),
     ]);
 
     useEffect(() => {
