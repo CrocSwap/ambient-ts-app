@@ -3,6 +3,8 @@ import { RiArrowDownSLine } from 'react-icons/ri';
 import { TokenIF } from '../../../../../utils/interfaces/TokenIF';
 import { Dispatch, SetStateAction } from 'react';
 import { fromDisplayQty } from '@crocswap-libs/sdk';
+import uriToHttp from '../../../../../utils/functions/uriToHttp';
+import NoTokenIcon from '../../../../Global/NoTokenIcon/NoTokenIcon';
 
 interface DepositCurrencySelectorProps {
     fieldId: string;
@@ -53,12 +55,18 @@ export default function DepositCurrencySelector(props: DepositCurrencySelectorPr
             <div className={styles.swapbox_top}>
                 <div className={styles.swap_input}>{rateInput}</div>
                 <div className={styles.token_select} onClick={onClick}>
-                    <img
-                        className={styles.token_list_img}
-                        src={selectedToken.logoURI}
-                        alt={selectedToken.name}
-                        width='30px'
-                    />
+                    {selectedToken.logoURI ? (
+                        <img
+                            className={styles.token_list_img}
+                            src={uriToHttp(selectedToken.logoURI)}
+                            alt={selectedToken.symbol.charAt(0)}
+                            // alt={`logo for token ${token.name}`}
+                            width='30px'
+                        />
+                    ) : (
+                        <NoTokenIcon tokenInitial={selectedToken.symbol.charAt(0)} width='30px' />
+                    )}
+
                     <span className={styles.token_list_text}>{selectedToken.symbol}</span>
                     <RiArrowDownSLine size={27} />
                 </div>
