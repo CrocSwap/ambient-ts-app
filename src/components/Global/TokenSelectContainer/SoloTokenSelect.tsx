@@ -50,11 +50,11 @@ export const SoloTokenSelect = (props: propsIF) => {
     const dispatch = useAppDispatch();
 
     // fn to respond to a user clicking to select a token
-    const chooseToken = (tkn: TokenIF) => {
+    const chooseToken = (tkn: TokenIF): void => {
         // dispatch token data object to RTK
         dispatch(setToken(tkn));
         // determine if the token is a previously imported token
-        const isTokenImported = importedTokens.some(
+        const isTokenImported: boolean = importedTokens.some(
             (tk: TokenIF) => tk.address.toLowerCase() === tkn.address.toLowerCase(),
         );
         // if token is NOT imported, update local storage accordingly
@@ -85,11 +85,13 @@ export const SoloTokenSelect = (props: propsIF) => {
             // local instance of function to pull back token data from chain
             const cachedFetchContractDetails = memoizeFetchContractDetails();
             // promise holding query to get token metadata from on-chain
-            const promise = cachedFetchContractDetails(provider, validatedInput, chainId);
+            const promise: Promise<TokenIF|undefined> = cachedFetchContractDetails(
+                provider, validatedInput, chainId
+            );
             // resolve the promise
             Promise.resolve(promise)
                 // if response has a `decimals` value treat it as valid
-                .then((res) => res?.decimals && setCustomToken(res))
+                .then((res: TokenIF|undefined) => res?.decimals && setCustomToken(res))
                 // error handling
                 .catch((err) => {
                     // log error to console
@@ -110,7 +112,7 @@ export const SoloTokenSelect = (props: propsIF) => {
 
     // value to determine what should be displayed in the DOM
     // this approach is necessary because not all data takes the same shape
-    const contentRouter = useMemo(() => {
+    const contentRouter = useMemo<string>(() => {
         // declare an output variable for the hook
         let output: string;
         // router based on value of `validatedInput`
