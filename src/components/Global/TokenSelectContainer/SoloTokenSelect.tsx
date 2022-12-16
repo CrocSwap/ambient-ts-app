@@ -49,14 +49,6 @@ export const SoloTokenSelect = (props: propsIF) => {
     // instance of hook used to retrieve data from RTK
     const dispatch = useAppDispatch();
 
-    const undeletableTokens = useMemo(
-        () =>
-            JSON.parse(localStorage.getItem('allTokenLists') as string)
-                .find((tokenList: TokenListIF) => tokenList.uri === '/ambient-token-list.json')
-                .tokens.map((tkn: TokenIF) => tkn.address),
-        [],
-    );
-
     const chooseToken = (tkn: TokenIF) => {
         dispatch(setToken(tkn));
         const isTokenImported = importedTokens.some(
@@ -76,7 +68,7 @@ export const SoloTokenSelect = (props: propsIF) => {
             key={JSON.stringify(token)}
             token={token}
             tokensBank={importedTokens}
-            undeletableTokens={undeletableTokens}
+            undeletableTokens={[]}
             chainId={chainId}
             setImportedTokens={setImportedTokens}
             chooseToken={chooseToken}
