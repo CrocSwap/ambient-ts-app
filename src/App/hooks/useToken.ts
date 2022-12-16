@@ -11,6 +11,7 @@ export const useToken = (
     tokenMap: Map<string, TokenIF>,
     verifyToken: (addr: string, chn: string) => boolean,
     getAllTokens: () => TokenIF[],
+    getAmbientTokens: () => TokenIF[],
     getTokensOnChain: (chn: string) => TokenIF[],
     getToken: (addr: string, chn: string) => TokenIF | undefined,
     getTokensByName: (searchName: string, chn: string, exact: boolean) => TokenIF[]
@@ -81,6 +82,11 @@ export const useToken = (
     // this is the correct syntax to do so
     const getAllTokens = (): TokenIF[] => Array.from(tokenMap.values());
 
+    // fn to get all Ambient tokens agnostic of chain
+    const getAmbientTokens = (): TokenIF[] => {
+        return getAllTokens().filter((tok: TokenIF) => tok.fromList === '/ambient-token-list.json');
+    }
+
     // fn to retrieve all tokens from token map on current chain
     const getTokensOnChain = (chn=chainId): TokenIF[] => {
         // return all values from the token map on current chain
@@ -150,6 +156,7 @@ export const useToken = (
         tokenMap,
         verifyToken,
         getAllTokens,
+        getAmbientTokens,
         getTokensOnChain,
         getTokenByAddress,
         getTokensByName

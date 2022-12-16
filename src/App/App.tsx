@@ -2405,6 +2405,7 @@ export default function App() {
         localTokens,
         verifyToken,
         getAllTokens,
+        getAmbientTokens,
         getTokensOnChain,
         getTokenByAddress,
         getTokensByName
@@ -2631,6 +2632,7 @@ export default function App() {
                                 <Portfolio
                                     crocEnv={crocEnv}
                                     localTokens={localTokens}
+                                    getAmbientTokens={getAmbientTokens}
                                     getTokensOnChain={getTokensOnChain}
                                     getTokensByName={getTokensByName}
                                     verifyToken={verifyToken}
@@ -2685,6 +2687,7 @@ export default function App() {
                                     crocEnv={crocEnv}
                                     localTokens={localTokens}
                                     getTokensOnChain={getTokensOnChain}
+                                    getAmbientTokens={getAmbientTokens}
                                     getTokensByName={getTokensByName}
                                     verifyToken={verifyToken}
                                     getTokenByAddress={getTokenByAddress}
@@ -2755,6 +2758,7 @@ export default function App() {
                                 <Portfolio
                                     crocEnv={crocEnv}
                                     localTokens={localTokens}
+                                    getAmbientTokens={getAmbientTokens}
                                     getTokensOnChain={getTokensOnChain}
                                     getTokensByName={getTokensByName}
                                     verifyToken={verifyToken}

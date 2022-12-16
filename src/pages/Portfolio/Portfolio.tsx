@@ -30,6 +30,7 @@ const mainnetProvider = new ethers.providers.WebSocketProvider(
 interface PortfolioPropsIF {
     crocEnv: CrocEnv | undefined;
     localTokens: Map<string, TokenIF>;
+    getAmbientTokens: () => TokenIF[];
     getTokensOnChain: (chn: string) => TokenIF[];
     getTokensByName: (searchName: string, chn: string, exact: boolean) => TokenIF[];
     verifyToken: (addr: string, chn: string) => boolean;
@@ -82,6 +83,7 @@ export default function Portfolio(props: PortfolioPropsIF) {
     const {
         crocEnv,
         // localTokens,
+        getAmbientTokens,
         getTokensOnChain,
         getTokensByName,
         getTokenByAddress,
@@ -302,14 +304,18 @@ export default function Portfolio(props: PortfolioPropsIF) {
 
     // TODO: move this function up to App.tsx
     const getImportedTokensPlus = () => {
-        const importedAddresses = importedTokens.map((tkn) => tkn.address.toLowerCase());
-        const output = importedTokens;
+        const ambientTokens = getAmbientTokens();
+        const ambientAddresses = ambientTokens.map((tkn) => tkn.address.toLowerCase());
+        const output = ambientTokens;
+        let tokensAdded = 0;
         connectedUserErc20Tokens?.forEach((tkn) => {
         if (
-            !importedAddresses.includes(tkn.address.toLowerCase()) &&
+            !ambientAddresses.includes(tkn.address.toLowerCase()) &&
             tokensOnActiveLists.get(tkn.address + '_' + chainId) &&
-            parseInt(tkn.combinedBalance as string) > 0
+            parseInt(tkn.combinedBalance as string) > 0 &&
+            tokensAdded < 4
         ) {
+            tokensAdded ++;
             output.push({...tkn, fromList: 'wallet'});
         }
         });
