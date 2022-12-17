@@ -124,7 +124,6 @@ import Chat from './components/Chat/Chat';
 import GlobalModal from './components/GlobalModal/GlobalModal';
 import { memoizeTokenPrice } from './functions/fetchTokenPrice';
 import ChatPanel from '../components/Chat/ChatPanel';
-import { useTokenUniverse } from './hooks/useTokenUniverse';
 import { getPositionData } from './functions/getPositionData';
 import { getLimitOrderData } from './functions/getLimitOrderData';
 // import { getTransactionData } from './functions/getTransactionData';
@@ -321,17 +320,8 @@ export default function App() {
     // `switchChain` is a function to switch to a different chain
     // `'0x5'` is the chain the app should be on by default
     const [chainData, isChainSupported, switchChain, switchNetworkInMoralis] = useAppChain('0x5');
-    // useEffect(() => console.warn(chainData.chainId), [chainData.chainId]);
 
     const [tokenPairLocal, setTokenPairLocal] = useState<string[] | null>(null);
-    // useEffect(() => {
-    //     console.log({ tokenPairLocal });
-    // }, [tokenPairLocal]);
-
-    const tokenUniverse = useTokenUniverse(chainData.chainId);
-    useEffect(() => {
-        false && console.log({ tokenUniverse });
-    }, [tokenUniverse]);
 
     const [isShowAllEnabled, setIsShowAllEnabled] = useState(true);
     const [currentTxActiveInTransactions, setCurrentTxActiveInTransactions] = useState('');
