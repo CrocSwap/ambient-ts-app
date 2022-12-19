@@ -383,6 +383,8 @@ export default function Portfolio(props: PortfolioPropsIF) {
 
     const [showProfileSettings, setShowProfileSettings] = useState(false);
 
+    const [showSoloSelectTokenButtons, setShowSoloSelectTokenButtons] = useState(true);
+
     const showLoggedInButton = userAccount && !isUserLoggedIn;
 
     return (
@@ -475,6 +477,8 @@ export default function Portfolio(props: PortfolioPropsIF) {
                         getTokensByName={getTokensByName}
                         getTokenByAddress={getTokenByAddress}
                         verifyToken={verifyToken}
+                        showSoloSelectTokenButtons={showSoloSelectTokenButtons}
+                        setShowSoloSelectTokenButtons={setShowSoloSelectTokenButtons}
                     />
                 </Modal>
             )}

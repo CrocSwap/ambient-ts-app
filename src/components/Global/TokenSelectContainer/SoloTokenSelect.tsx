@@ -20,6 +20,9 @@ interface propsIF {
     verifyToken: (addr: string, chn: string) => boolean;
     getTokensByName: (searchName: string, chn: string, exact: boolean) => TokenIF[];
     getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
+
+    showSoloSelectTokenButtons: boolean;
+    setShowSoloSelectTokenButtons: Dispatch<SetStateAction<boolean>>;
 }
 
 export const SoloTokenSelect = (props: propsIF) => {
@@ -32,6 +35,9 @@ export const SoloTokenSelect = (props: propsIF) => {
         getTokensByName,
         getTokenByAddress,
         verifyToken,
+
+        setShowSoloSelectTokenButtons,
+        showSoloSelectTokenButtons,
     } = props;
 
     // hook to process search input and return an array of relevant tokens
