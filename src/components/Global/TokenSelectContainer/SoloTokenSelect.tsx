@@ -78,7 +78,7 @@ export const SoloTokenSelect = (props: propsIF) => {
         const recentTokens = getRecentTokens();
         // determine if clicked token is already in the recent tokens array
         // if not in recent tokens array, add it
-        !recentTokens.some((recentToken: TokenIF) => (
+        recentTokens.some((recentToken: TokenIF) => (
             recentToken.address.toLowerCase() === tkn.address.toLowerCase() &&
             recentToken.chainId === tkn.chainId
         )) || addRecentToken(tkn);

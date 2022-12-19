@@ -316,6 +316,22 @@ export default function Portfolio(props: PortfolioPropsIF) {
             output.push({...tkn, fromList: 'wallet'});
         }
         });
+        console.log(getRecentTokens());
+        let recentTokensAdded = 0;
+        getRecentTokens().forEach((tkn) => {
+            if (
+                !output.some((tk) => (
+                    tk.address.toLowerCase() === tkn.address.toLowerCase() &&
+                    tk.chainId === tkn.chainId
+                )) &&
+                tkn.chainId === parseInt(chainId) &&
+                recentTokensAdded < 2
+            ) {
+                console.log(`showing recent token: ${tkn}`);
+                recentTokensAdded ++;
+                output.push(tkn);
+            }
+        });
         return output;
     }
 
