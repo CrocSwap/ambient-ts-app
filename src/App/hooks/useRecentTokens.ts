@@ -17,15 +17,17 @@ export const useRecentTokens = (
     const [recentTokens, setRecentTokens] = useState<TokenIF[]>([]);
 
     // fn to add a token to the recentTokens array
-    const addRecentToken = (tkn: TokenIF): void => setRecentTokens([tkn, ...recentTokens]);
+    function addRecentToken(tkn: TokenIF): void {
+        setRecentTokens([tkn, ...recentTokens])
+    };
 
     // fn to return recent tokens from local state
-    const getRecentTokens = (
+    function getRecentTokens(
         {
             onCurrentChain=false,
             count=null
         }: getRecentTokensParamsIF
-    ): TokenIF[] => {
+    ): TokenIF[] {
         const relevantTokens = onCurrentChain 
             ? recentTokens.filter((tkn: TokenIF) => tkn.chainId === parseInt(chainId))
             : recentTokens;
@@ -33,7 +35,9 @@ export const useRecentTokens = (
     }
 
     // fn to clear list of recent tokens
-    const resetRecentTokens = (): void => setRecentTokens([]);
+    function resetRecentTokens(): void {
+        setRecentTokens([]);
+    };
 
     return {
         addRecentToken,
