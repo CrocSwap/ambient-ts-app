@@ -162,13 +162,11 @@ export const SoloTokenSelect = (props: propsIF) => {
     //     </div>
     // );
 
-    const [showTokenButtons, setShowTokenButtons] = useState(true);
-
     useEffect(() => {
         if (contentRouter === 'from chain') {
-            setShowTokenButtons(false);
+            setShowSoloSelectTokenButtons(false);
         } else {
-            setShowTokenButtons(true);
+            setShowSoloSelectTokenButtons(true);
         }
     }, [contentRouter]);
 
@@ -181,7 +179,7 @@ export const SoloTokenSelect = (props: propsIF) => {
                 onChange={(e) => setInput(e.target.value)}
             />
 
-            {showTokenButtons ? (
+            {showSoloSelectTokenButtons ? (
                 outputTokens.map((token: TokenIF) => (
                     <TokenSelect
                         key={JSON.stringify(token)}

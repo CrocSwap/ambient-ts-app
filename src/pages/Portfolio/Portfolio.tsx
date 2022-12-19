@@ -465,7 +465,7 @@ export default function Portfolio(props: PortfolioPropsIF) {
                     title='Select Token'
                     centeredTitle
                     handleBack={closeTokenModal}
-                    showBackButton={true}
+                    showBackButton={!showSoloSelectTokenButtons}
                     footer={null}
                 >
                     <SoloTokenSelect
