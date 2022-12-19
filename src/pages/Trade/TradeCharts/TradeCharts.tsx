@@ -258,7 +258,9 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
     const [showFeeRate, setShowFeeRate] = useState(false);
     const [showVolume, setShowVolume] = useState(true);
 
-    const chartItemStates = { showFeeRate, showTvl, showVolume };
+    const [liqMode, setLiqMode] = useState('Curve');
+
+    const chartItemStates = { showFeeRate, showTvl, showVolume, liqMode };
 
     // END OF CHART SETTINGS------------------------------------------------------------
 
@@ -447,7 +449,12 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
     const handleTvlToggle = () => setShowTvl(!showTvl);
     const handleFeeRateToggle = () => setShowFeeRate(!showFeeRate);
 
-    const exampleAction = () => console.log('example');
+    const handleLiqToggle = (mode: string) =>
+        setLiqMode(() => {
+            return mode;
+        });
+
+    // const exampleAction = () => console.log('example');
 
     const chartOverlayButtonData1 = [
         { name: 'Volume', selected: showVolume, action: handleVolumeToggle },
@@ -456,9 +463,9 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
     ];
 
     const chartOverlayButtonData2 = [
-        { name: 'Off', action: exampleAction },
-        { name: 'Curve', action: exampleAction },
-        { name: 'Depth', action: exampleAction },
+        { name: 'Off', action: () => handleLiqToggle('Off') },
+        { name: 'Curve', action: () => handleLiqToggle('Curve') },
+        { name: 'Depth', action: () => handleLiqToggle('Depth') },
     ];
 
     const chartOverlayButtons1 = chartOverlayButtonData1.map((button, idx) => (
@@ -475,14 +482,13 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
             </button>
         </div>
     ));
-    const [selectedCurveDepth, setSelectedCurveDepth] = useState(chartOverlayButtonData2[0]);
 
     const chartOverlayButtons2 = chartOverlayButtonData2.map((button, idx) => (
         <div className={styles.settings_container} key={idx}>
             <button
-                onClick={() => setSelectedCurveDepth(button)}
+                onClick={button.action}
                 className={
-                    button.name.toLowerCase() === selectedCurveDepth.name.toLowerCase()
+                    button.name.toLowerCase() === liqMode.toLowerCase()
                         ? styles.active_selected_button
                         : styles.non_active_selected_button
                 }

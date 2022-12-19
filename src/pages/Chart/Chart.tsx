@@ -58,6 +58,7 @@ type chartItemStates = {
     showTvl: boolean;
     showVolume: boolean;
     showFeeRate: boolean;
+    liqMode: string;
 };
 interface ChartData {
     isUserLoggedIn: boolean | undefined;
@@ -154,7 +155,7 @@ export default function Chart(props: ChartData) {
     const rangeLowLineTriggered = tradeData.rangeLowLineTriggered;
     const rangeHighLineTriggered = tradeData.rangeHighLineTriggered;
     const volumeData = props.volumeData;
-    const { showFeeRate, showTvl, showVolume } = props.chartItemStates;
+    const { showFeeRate, showTvl, showVolume, liqMode } = props.chartItemStates;
     const { upBodyColor, upBorderColor, downBodyColor, downBorderColor } = props;
 
     const parsedChartData = props.candleData;
@@ -271,6 +272,8 @@ export default function Chart(props: ChartData) {
     const [liqBidSeries, setLiqBidSeries] = useState<any>();
     const [liqHighligtedAskSeries, setLiqHighligtedAskSeries] = useState<any>();
     const [liqHighligtedBidSeries, setLiqHighligtedBidSeries] = useState<any>();
+    const [depthLiqBidSeries, setDepthLiqBidSeries] = useState<any>();
+    const [depthLiqAskSeries, setDepthLiqAskSeries] = useState<any>();
 
     // Liq Joins
     const [lineBidSeriesJoin, setLineBidSeriesJoin] = useState<any>();
@@ -279,6 +282,8 @@ export default function Chart(props: ChartData) {
     const [areaBidJoin, setAreaBidJoin] = useState<any>();
     const [liqHighligtedAskJoin, setLiqHighligtedAskJoin] = useState<any>();
     const [liqHighligtedBidJoin, setLiqHighligtedBidJoin] = useState<any>();
+    const [depthLiqAskSeriesJoin, setDepthLiqAskSeriesJoin] = useState<any>();
+    const [depthLiqBidSeriesJoin, setDepthLiqBidSeriesJoin] = useState<any>();
 
     // Utils
     const [zoomUtils, setZoomUtils] = useState<any>();
@@ -2756,12 +2761,46 @@ export default function Chart(props: ChartData) {
                 return liqHighligtedBidSeries;
             });
 
+            const depthLiqBidSeries = d3fc
+                .seriesSvgArea()
+                .orient('horizontal')
+                .curve(d3.curveBasis)
+                .mainValue((d: any) => d.activeLiq)
+                .crossValue((d: any) => d.liqPrices)
+                .xScale(scaleData.liquidityScale)
+                .yScale(scaleData.yScale)
+                .decorate((selection: any) => {
+                    selection.style('fill', 'rgba(115, 113, 252, 0.6)');
+                });
+
+            setDepthLiqBidSeries(() => {
+                return depthLiqBidSeries;
+            });
+
+            const depthLiqAskSeries = d3fc
+                .seriesSvgArea()
+                .orient('horizontal')
+                .curve(d3.curveBasis)
+                .mainValue((d: any) => d.activeLiq)
+                .crossValue((d: any) => d.liqPrices)
+                .xScale(scaleData.liquidityScale)
+                .yScale(scaleData.yScale)
+                .decorate((selection: any) => {
+                    selection.style('fill', 'rgba(205, 193, 255, 0.3)');
+                });
+
+            setDepthLiqAskSeries(() => {
+                return depthLiqAskSeries;
+            });
+
             const areaAskJoin = d3fc.dataJoin('g', 'areaAsk');
             const areaBidJoin = d3fc.dataJoin('g', 'areaBid');
             const liqHighligtedAskJoin = d3fc.dataJoin('g', 'liqHighligtedAsk');
             const liqHighligtedBidJoin = d3fc.dataJoin('g', 'liqHighligtedBid');
             const lineBidSeriesJoin = d3fc.dataJoin('g', 'lineBidSeries');
             const lineAskSeriesJoin = d3fc.dataJoin('g', 'lineAskSeries');
+            const depthLiqBidSeriesJoin = d3fc.dataJoin('g', 'depthLiqBidSeriesJoin');
+            const depthLiqAskSeriesJoin = d3fc.dataJoin('g', 'depthLiqAskSeriesJoin');
 
             setLineBidSeriesJoin(() => {
                 return lineBidSeriesJoin;
@@ -2780,6 +2819,12 @@ export default function Chart(props: ChartData) {
             });
             setLiqHighligtedBidJoin(() => {
                 return liqHighligtedBidJoin;
+            });
+            setDepthLiqBidSeriesJoin(() => {
+                return depthLiqBidSeriesJoin;
+            });
+            setDepthLiqAskSeriesJoin(() => {
+                return depthLiqAskSeriesJoin;
             });
         }
     }, [scaleData, props.liquidityData, location]);
@@ -2804,10 +2849,14 @@ export default function Chart(props: ChartData) {
             liqBidSeries !== undefined &&
             lineBidSeries !== undefined &&
             lineAskSeries !== undefined &&
+            depthLiqBidSeries !== undefined &&
+            depthLiqAskSeries !== undefined &&
             areaAskJoin !== undefined &&
             areaBidJoin !== undefined &&
             lineBidSeriesJoin !== undefined &&
             lineAskSeriesJoin !== undefined &&
+            depthLiqBidSeriesJoin !== undefined &&
+            depthLiqAskSeriesJoin !== undefined &&
             liqHighligtedAskJoin !== undefined &&
             liqHighligtedBidJoin !== undefined &&
             liqHighligtedAskSeries !== undefined &&
@@ -2847,10 +2896,14 @@ export default function Chart(props: ChartData) {
                 liqBidSeries,
                 lineBidSeries,
                 lineAskSeries,
+                depthLiqBidSeries,
+                depthLiqAskSeries,
                 areaAskJoin,
                 areaBidJoin,
                 lineBidSeriesJoin,
                 lineAskSeriesJoin,
+                depthLiqBidSeriesJoin,
+                depthLiqAskSeriesJoin,
                 liqHighligtedAskJoin,
                 liqHighligtedBidJoin,
                 liqHighligtedAskSeries,
@@ -2865,6 +2918,7 @@ export default function Chart(props: ChartData) {
                 volumeData,
                 showVolume,
                 selectedDate,
+                liqMode,
             );
         }
     }, [
@@ -2890,10 +2944,14 @@ export default function Chart(props: ChartData) {
         liqBidSeries,
         lineBidSeries,
         lineAskSeries,
+        depthLiqBidSeries,
+        depthLiqAskSeries,
         areaAskJoin,
         areaBidJoin,
         lineBidSeriesJoin,
         lineAskSeriesJoin,
+        depthLiqBidSeriesJoin,
+        depthLiqAskSeriesJoin,
         liqHighligtedAskJoin,
         liqHighligtedBidJoin,
         liqHighligtedAskSeries,
@@ -2905,6 +2963,7 @@ export default function Chart(props: ChartData) {
         horizontalBandData,
         showVolume,
         selectedDate,
+        liqMode,
     ]);
 
     const minimum = (data: any, accessor: any) => {
@@ -2946,10 +3005,14 @@ export default function Chart(props: ChartData) {
             liqBidSeries: any,
             lineBidSeries: any,
             lineAskSeries: any,
+            depthLiqBidSeries: any,
+            depthLiqAskSeries: any,
             areaAskJoin: any,
             areaBidJoin: any,
             lineBidSeriesJoin: any,
             lineAskSeriesJoin: any,
+            depthLiqBidSeriesJoin: any,
+            depthLiqAskSeriesJoin: any,
             liqHighligtedAskJoin: any,
             liqHighligtedBidJoin: any,
             liqHighligtedAskSeries: any,
@@ -2964,6 +3027,7 @@ export default function Chart(props: ChartData) {
             volumeData: any,
             showVolume: boolean,
             selectedDate: any,
+            liqMode: any,
         ) => {
             if (chartData.length > 0) {
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -3098,6 +3162,7 @@ export default function Chart(props: ChartData) {
                         indicatorLineJoin(svg, [indicatorLineData]).call(indicatorLine);
 
                         candleJoin(svg, [chartData]).call(candlestick);
+
                         liqHighligtedAskJoin(svg, [liquidityData.liqHighligtedAskSeries]).call(
                             liqHighligtedAskSeries,
                         );
@@ -3105,10 +3170,25 @@ export default function Chart(props: ChartData) {
                             liqHighligtedBidSeries,
                         );
 
-                        areaAskJoin(svg, [liquidityData.liqAskData]).call(liqAskSeries);
-                        areaBidJoin(svg, [liquidityData.liqBidData]).call(liqBidSeries);
-                        lineAskSeriesJoin(svg, [liquidityData.lineBidSeries]).call(lineBidSeries);
-                        lineBidSeriesJoin(svg, [liquidityData.lineAskSeries]).call(lineAskSeries);
+                        areaAskJoin(svg, [
+                            liqMode === 'Curve' ? liquidityData.liqAskData : [],
+                        ]).call(liqAskSeries);
+                        areaBidJoin(svg, [
+                            liqMode === 'Curve' ? liquidityData.liqBidData : [],
+                        ]).call(liqBidSeries);
+                        lineAskSeriesJoin(svg, [
+                            liqMode === 'Curve' ? liquidityData.lineBidSeries : [],
+                        ]).call(lineBidSeries);
+                        lineBidSeriesJoin(svg, [
+                            liqMode === 'Curve' ? liquidityData.lineAskSeries : [],
+                        ]).call(lineAskSeries);
+
+                        depthLiqBidSeriesJoin(svg, [
+                            liqMode === 'Depth' ? liquidityData.depthLiqBidData : [],
+                        ]).call(depthLiqBidSeries);
+                        depthLiqAskSeriesJoin(svg, [
+                            liqMode === 'Depth' ? liquidityData.depthLiqAskData : [],
+                        ]).call(depthLiqAskSeries);
 
                         // barJoin(svg, [showVolume ? volumeData : []]).call(barSeries);
                         if (barSeries) barJoin(svg, [showVolume ? volumeData : []]).call(barSeries);
