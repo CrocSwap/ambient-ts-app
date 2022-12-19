@@ -285,7 +285,8 @@ export default function OrderRow(props: OrderRowPropsIF) {
     // }).format(limitOrder.time * 1000);
 
     const elapsedTimeInSecondsNum = moment(Date.now()).diff(
-        (limitOrder.timeFirstMint || limitOrder.time) * 1000,
+        limitOrder.time * 1000,
+        // (limitOrder.timeFirstMint || limitOrder.time) * 1000,
         'seconds',
     );
 
@@ -366,7 +367,10 @@ export default function OrderRow(props: OrderRowPropsIF) {
     const OrderTimeWithTooltip = (
         <DefaultTooltip
             interactive
-            title={'Last Updated: ' + moment(limitOrder.time * 1000).format('MM/DD/YYYY HH:mm')}
+            title={
+                'First Minted: ' +
+                moment(limitOrder.timeFirstMint * 1000).format('MM/DD/YYYY HH:mm')
+            }
             placement={'left'}
             arrow
             enterDelay={750}
