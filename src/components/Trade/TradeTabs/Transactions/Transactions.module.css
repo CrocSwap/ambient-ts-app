@@ -248,3 +248,11 @@ text-transform: capitalize;
   
 } */
 
+.menu {
+  opacity: 0.2;
+  transition: all var(--animation-speed) ease-in-out;
+}
+
+.row_container:hover .menu{
+  opacity: 1;
+}

@@ -223,8 +223,8 @@ export default function ExchangeBalance(props: ExchangeBalanceProps) {
                 {!fullLayoutActive && (
                     <>
                         <div className={styles.info_text}>
-                            Collateral deposited into the Ambient Finance exchange can be traded at
-                            lower gas costs.
+                            Collateral deposited into the Ambient Finance exchange contract can be
+                            traded at lower gas costs.
                         </div>
                         <div className={styles.info_text}>
                             {' '}

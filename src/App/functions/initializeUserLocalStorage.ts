@@ -67,6 +67,12 @@ export default function initializeUserLocalStorage() {
         userUpdated = true;
     }
 
+    // create a value to track whether the sidebar is open or closed
+    if (!user.sidebar) {
+        user.sidebar = 'open';
+        userUpdated = true;
+    }
+
     if (!user.termsOfService) {
         user.termsOfService = {
             agreed: false,

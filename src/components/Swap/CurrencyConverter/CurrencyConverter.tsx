@@ -345,6 +345,8 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
             handleSwapButtonMessage(parseFloat(input));
             if (!poolPriceDisplay) return;
 
+            if (tokenPair.dataTokenA.address === tokenPair.dataTokenB.address) return;
+
             const impact =
                 input !== ''
                     ? await calcImpact(
@@ -373,6 +375,8 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
 
             handleSwapButtonMessage(parseFloat(tokenAQty));
             // console.log(tokenPair.dataTokenA.address);
+
+            if (tokenPair.dataTokenA.address === tokenPair.dataTokenB.address) return;
             const impact =
                 tokenAQtyLocal !== ''
                     ? await calcImpact(
@@ -416,7 +420,7 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
         }
         if (value) {
             const input = value;
-            console.log({ input });
+            // console.log({ input });
             setTokenAQtyLocal(input);
             setTokenAInputQty(input);
             setIsTokenAPrimaryLocal(true);
@@ -513,6 +517,8 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
             dispatch(setIsTokenAPrimary(false));
             dispatch(setPrimaryQuantity(input));
 
+            if (tokenPair.dataTokenA.address === tokenPair.dataTokenB.address) return;
+
             const impact =
                 input !== ''
                     ? await calcImpact(
@@ -543,6 +549,7 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
             }
             handleSwapButtonMessage(parseFloat(tokenBQty));
 
+            if (tokenPair.dataTokenA.address === tokenPair.dataTokenB.address) return;
             const impact =
                 tokenBQty !== ''
                     ? await calcImpact(

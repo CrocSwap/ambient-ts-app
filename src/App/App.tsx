@@ -143,6 +143,7 @@ import AnalyticsTransactions from '../components/Analytics/AnalyticsTransactions
 import trimString from '../utils/functions/trimString';
 import { memoizeFetchContractDetails } from './functions/fetchContractDetails';
 import { useToken } from './hooks/useToken';
+import { useSidebar } from './hooks/useSidebar';
 import useDebounce from './hooks/useDebounce';
 // import { memoizeQuerySpotTick } from './functions/querySpotTick';
 // import PhishingWarning from '../components/Global/PhisingWarning/PhishingWarning';
@@ -743,6 +744,7 @@ export default function App() {
     useEffect(() => {
         setPoolExists(undefined);
         if (crocEnv && tokenPairLocal) {
+            if (tokenPairLocal[0].toLowerCase() === tokenPairLocal[1].toLowerCase()) return;
             // token pair has an initialized pool on-chain
             // returns a promise object
             const doesPoolExist = crocEnv
@@ -2373,6 +2375,16 @@ export default function App() {
             ? 'hide_sidebar'
             : sidebarDislayStyle;
 
+    // hook to track user's sidebar preference open or closed
+    // also functions to toggle sidebar status between open and closed
+    const [sidebarStatus, openSidebar, closeSidebar, togggggggleSidebar] = useSidebar();
+    // these lines are just here to make the linter happy
+    // take them out before production, they serve no other purpose
+    false && sidebarStatus;
+    false && openSidebar();
+    false && closeSidebar();
+    false && togggggggleSidebar();
+
     const containerStyle = currentLocation.includes('trade')
         ? 'content-container-trade'
         : 'content-container';
@@ -2389,9 +2401,16 @@ export default function App() {
     // app overlay-----------------------------------------------
     // end of app overlay-----------------------------------------------
 
-    const [verifyToken, getToken] = useToken(chainData.chainId);
-    false && verifyToken('', '');
-    false && getToken('', '');
+    const [
+        localTokens,
+        verifyToken,
+        getAllTokens,
+        getAmbientTokens,
+        getTokensOnChain,
+        getTokenByAddress,
+        getTokensByName
+    ] = useToken(chainData.chainId);
+    false && getAllTokens;
 
     return (
         <>
@@ -2612,6 +2631,12 @@ export default function App() {
                             element={
                                 <Portfolio
                                     crocEnv={crocEnv}
+                                    localTokens={localTokens}
+                                    getAmbientTokens={getAmbientTokens}
+                                    getTokensOnChain={getTokensOnChain}
+                                    getTokensByName={getTokensByName}
+                                    verifyToken={verifyToken}
+                                    getTokenByAddress={getTokenByAddress}
                                     isTokenABase={isTokenABase}
                                     provider={provider}
                                     cachedFetchErc20TokenBalances={cachedFetchErc20TokenBalances}
@@ -2650,6 +2675,7 @@ export default function App() {
                                     }
                                     handlePulseAnimation={handlePulseAnimation}
                                     gasPriceInGwei={gasPriceInGwei}
+                                    searchableTokens={searchableTokens}
                                     openModalWallet={openModalWallet}
                                 />
                             }
@@ -2659,6 +2685,12 @@ export default function App() {
                             element={
                                 <Portfolio
                                     crocEnv={crocEnv}
+                                    localTokens={localTokens}
+                                    getTokensOnChain={getTokensOnChain}
+                                    getAmbientTokens={getAmbientTokens}
+                                    getTokensByName={getTokensByName}
+                                    verifyToken={verifyToken}
+                                    getTokenByAddress={getTokenByAddress}
                                     isTokenABase={isTokenABase}
                                     provider={provider}
                                     cachedFetchErc20TokenBalances={cachedFetchErc20TokenBalances}
@@ -2697,6 +2729,7 @@ export default function App() {
                                     }
                                     handlePulseAnimation={handlePulseAnimation}
                                     gasPriceInGwei={gasPriceInGwei}
+                                    searchableTokens={searchableTokens}
                                     openModalWallet={openModalWallet}
                                 />
                             }
@@ -2710,13 +2743,26 @@ export default function App() {
                         <Route path='tos' element={<TermsOfService />} />
                         <Route
                             path='testpage'
-                            element={<TestPage openGlobalModal={openGlobalModal} />}
+                            element={
+                                <TestPage
+                                    openGlobalModal={openGlobalModal}
+                                    openSidebar={openSidebar}
+                                    closeSidebar={closeSidebar}
+                                    togggggggleSidebar={togggggggleSidebar}
+                                />
+                            }
                         />
                         <Route
                             path='/:address'
                             element={
                                 <Portfolio
                                     crocEnv={crocEnv}
+                                    localTokens={localTokens}
+                                    getAmbientTokens={getAmbientTokens}
+                                    getTokensOnChain={getTokensOnChain}
+                                    getTokensByName={getTokensByName}
+                                    verifyToken={verifyToken}
+                                    getTokenByAddress={getTokenByAddress}
                                     isTokenABase={isTokenABase}
                                     provider={provider}
                                     cachedFetchErc20TokenBalances={cachedFetchErc20TokenBalances}
@@ -2755,6 +2801,7 @@ export default function App() {
                                     }
                                     handlePulseAnimation={handlePulseAnimation}
                                     gasPriceInGwei={gasPriceInGwei}
+                                    searchableTokens={searchableTokens}
                                     openModalWallet={openModalWallet}
                                 />
                             }

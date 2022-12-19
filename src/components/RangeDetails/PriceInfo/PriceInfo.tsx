@@ -180,6 +180,10 @@ export default function PriceInfo(props: IPriceInfoProps) {
                 <span className={styles.min_price}>{lowRangeDisplay ?? 0}</span>
             </div>
             <div className={styles.min_max_content}>
+                Current Price
+                <span className={styles.min_price}>{0.0}</span>
+            </div>
+            <div className={styles.min_max_content}>
                 Max Price
                 <span className={styles.max_price}>{highRangeDisplay ?? 'Infinity'}</span>
             </div>
@@ -195,6 +199,7 @@ export default function PriceInfo(props: IPriceInfoProps) {
             {/* {controlItems[0].checked && timesContent} */}
             {controlItems[0].checked && collateralContent}
             {minMaxPriceDipslay}
+
             {/* <div className={styles.graph_image_container}>
                     <img src={graphImage} alt='chart' />
                 </div> */}
