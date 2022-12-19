@@ -301,24 +301,39 @@ export default function Portfolio(props: PortfolioPropsIF) {
 
     // TODO: move this function up to App.tsx
     const getImportedTokensPlus = () => {
+        // array of all tokens on Ambient list
         const ambientTokens = getAmbientTokens();
+        // array of addresses on Ambient list
         const ambientAddresses = ambientTokens.map((tkn) => tkn.address.toLowerCase());
+        // use Ambient token list as scaffold to build larger token array
         const output = ambientTokens;
+        // limiter for tokens to add from connected wallet
         let tokensAdded = 0;
+        // iterate over tokens in connected wallet
         connectedUserErc20Tokens?.forEach((tkn) => {
-        if (
-            !ambientAddresses.includes(tkn.address.toLowerCase()) &&
-            tokensOnActiveLists.get(tkn.address + '_' + chainId) &&
-            parseInt(tkn.combinedBalance as string) > 0 &&
-            tokensAdded < 4
-        ) {
-            tokensAdded ++;
-            output.push({...tkn, fromList: 'wallet'});
-        }
+            // gatekeep to make sure token is not already in the array,
+            // ... that the token can be verified against a known list,
+            // ... that user has a positive balance of the token, and
+            // ... that the limiter has not been reached
+            if (
+                !ambientAddresses.includes(tkn.address.toLowerCase()) &&
+                tokensOnActiveLists.get(tkn.address + '_' + chainId) &&
+                parseInt(tkn.combinedBalance as string) > 0 &&
+                tokensAdded < 4
+            ) {
+                // increment the limiter by one
+                tokensAdded ++;
+                // add the token to the output array
+                output.push({...tkn, fromList: 'wallet'});
+            }
         });
-        console.log(getRecentTokens());
+        // limiter for tokens to add from in-session recent tokens list
         let recentTokensAdded = 0;
+        // iterate over tokens in recent tokens list
         getRecentTokens().forEach((tkn) => {
+            // gatekeep to make sure the token isn't already in the list,
+            // ... is on the current chain, and that the limiter has not
+            // ... yet been reached
             if (
                 !output.some((tk) => (
                     tk.address.toLowerCase() === tkn.address.toLowerCase() &&
@@ -327,11 +342,13 @@ export default function Portfolio(props: PortfolioPropsIF) {
                 tkn.chainId === parseInt(chainId) &&
                 recentTokensAdded < 2
             ) {
-                console.log(`showing recent token: ${tkn}`);
+                // increment the limiter by one
                 recentTokensAdded ++;
+                // add the token to the output array
                 output.push(tkn);
             }
         });
+        // return compiled array of tokens
         return output;
     }
 
