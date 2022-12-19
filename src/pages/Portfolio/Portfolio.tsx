@@ -395,6 +395,14 @@ export default function Portfolio(props: PortfolioPropsIF) {
         getTokensByName,
     );
 
+    const handleInputClear = () => {
+        setInput('');
+        const soloTokenSelectInput = document.getElementById(
+            'solo-token-select-input',
+        ) as HTMLInputElement;
+        soloTokenSelectInput.value = '';
+    };
+
     const showLoggedInButton = userAccount && !isUserLoggedIn;
 
     return (
@@ -474,7 +482,7 @@ export default function Portfolio(props: PortfolioPropsIF) {
                     onClose={closeTokenModal}
                     title='Select Token'
                     centeredTitle
-                    handleBack={() => setShowSoloSelectTokenButtons(true)}
+                    handleBack={handleInputClear}
                     showBackButton={!showSoloSelectTokenButtons}
                     footer={null}
                 >

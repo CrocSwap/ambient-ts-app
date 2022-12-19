@@ -187,6 +187,7 @@ export const SoloTokenSelect = (props: propsIF) => {
                 type='text'
                 placeholder='&#61442; Search name or enter an Address'
                 onChange={(e) => setInput(e.target.value)}
+                id='solo-token-select-input'
             />
 
             {showSoloSelectTokenButtons ? (
