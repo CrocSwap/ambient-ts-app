@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { useState, ReactNode, useRef } from 'react';
+import { useState, ReactNode, useRef, useEffect } from 'react';
 // import { Link } from 'react-router-dom';
 import { FiExternalLink, FiMoreHorizontal } from 'react-icons/fi';
 
@@ -448,6 +448,15 @@ export default function TransactionsMenu(props: TransactionMenuIF) {
         setShowDropdownMenu(false);
     };
 
+    useEffect(() => {
+        if (showDropdownMenu) {
+            const interval = setTimeout(() => {
+                setShowDropdownMenu(false);
+            }, 5000);
+            return () => clearTimeout(interval);
+        } else return;
+    }, [showDropdownMenu]);
+
     UseOnClickOutside(menuItemRef, clickOutsideHandler);
     const dropdownTransactionsMenu = (
         <div className={styles.dropdown_menu} ref={menuItemRef}>
@@ -461,7 +470,9 @@ export default function TransactionsMenu(props: TransactionMenuIF) {
     return (
         <div className={styles.main_container}>
             {!desktopView && transactionsMenu}
+
             {dropdownTransactionsMenu}
+
             {/* {modalOrNull} */}
             {/* {snackbarContent} */}
         </div>
