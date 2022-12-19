@@ -233,8 +233,8 @@ export default function Trade(props: TradePropsIF) {
     const [downBodyColor] = useState<string>('#171D27');
     // const [downBodyColor] = useState<string>('#24243e');
     const [downBorderColor] = useState<string>('#7371FC');
-    const [upVolumeColor] = useState<string>('rgba(115,113,252, 0.8)');
-    const [downVolumeColor] = useState<string>('rgba(205,193,255, 0.8)');
+    const [upVolumeColor] = useState<string>('#CDC1FF');
+    const [downVolumeColor] = useState<string>('#7371FC');
     // const [upBodyColor, setUpBodyColor] = useState<string>('#CDC1FF');
     // const [upBorderColor, setUpBorderColor] = useState<string>('#CDC1FF');
     // const [downBodyColor, setDownBodyColor] = useState<string>('#24243e');
