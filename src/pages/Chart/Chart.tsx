@@ -2148,7 +2148,7 @@ export default function Chart(props: ChartData) {
     ]);
 
     useEffect(() => {
-        poolPriceDisplay &&
+        if (poolPriceDisplay) {
             setCheckLimitOrder(
                 isUserLoggedIn
                     ? sellOrderStyle === 'order_sell'
@@ -2156,6 +2156,7 @@ export default function Chart(props: ChartData) {
                         : limit[0].value < poolPriceDisplay
                     : false,
             );
+        }
     }, [limit, sellOrderStyle, isUserLoggedIn, poolPriceDisplay]);
 
     // Line Rules
