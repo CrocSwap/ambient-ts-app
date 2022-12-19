@@ -16,10 +16,8 @@ interface propsIF {
     chainId: string;
     setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
     // TODO: rewrite logic to build this Map from all lists not just active ones
-    tokensOnActiveLists: Map<string, TokenIF>;
     closeModal: () => void;
     verifyToken: (addr: string, chn: string) => boolean;
-    getTokensOnChain: (chn: string) => TokenIF[];
     getTokensByName: (searchName: string, chn: string, exact: boolean) => TokenIF[];
     getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
 }

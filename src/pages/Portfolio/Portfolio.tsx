@@ -25,15 +25,11 @@ const mainnetProvider = new ethers.providers.WebSocketProvider(
     // 'wss://mainnet.infura.io/ws/v3/170b7b65781c422d82a94b8b289ca605',
     'wss://mainnet.infura.io/ws/v3/e0aa879e36fc4c9e91b826ad961a36fd',
 );
-// import { ambientTokenList } from '../../utils/data/ambientTokenList';
-
 interface PortfolioPropsIF {
     crocEnv: CrocEnv | undefined;
-    localTokens: Map<string, TokenIF>;
     getAmbientTokens: () => TokenIF[];
-    getTokensOnChain: (chn: string) => TokenIF[];
-    getTokensByName: (searchName: string, chn: string, exact: boolean) => TokenIF[];
     verifyToken: (addr: string, chn: string) => boolean;
+    getTokensByName: (searchName: string, chn: string, exact: boolean) => TokenIF[];
     getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
     isTokenABase: boolean;
     provider: ethers.providers.Provider | undefined;
@@ -45,7 +41,6 @@ interface PortfolioPropsIF {
     connectedAccount: string;
     userImageData: string[];
     chainId: string;
-    ambientTokens: Map<string, TokenIF>;
     tokensOnActiveLists: Map<string, TokenIF>;
     selectedOutsideTab: number;
     setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
@@ -74,17 +69,12 @@ interface PortfolioPropsIF {
     currentTxActiveInTransactions: string;
     setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
     gasPriceInGwei: number | undefined;
-    searchableTokens: TokenIF[];
 }
-
-// const cachedFetchAddress = memoizePromiseFn(fetchAddress);
 
 export default function Portfolio(props: PortfolioPropsIF) {
     const {
         crocEnv,
-        // localTokens,
         getAmbientTokens,
-        getTokensOnChain,
         getTokensByName,
         getTokenByAddress,
         verifyToken,
@@ -465,7 +455,6 @@ export default function Portfolio(props: PortfolioPropsIF) {
                         <Button flat title='Connect Wallet' action={() => openModalWallet()} />
                     </div>
                 )}
-                {/* {connectedAccountActive && !fullLayoutActive ? exchangeBalanceComponent : null} */}
                 {connectedAccountActive && exchangeBalanceComponent}
             </div>
             {isTokenModalOpen && (
@@ -483,8 +472,6 @@ export default function Portfolio(props: PortfolioPropsIF) {
                         chainId={chainId}
                         importedTokens={getImportedTokensPlus()}
                         setImportedTokens={setImportedTokens}
-                        tokensOnActiveLists={tokensOnActiveLists}
-                        getTokensOnChain={getTokensOnChain}
                         getTokensByName={getTokensByName}
                         getTokenByAddress={getTokenByAddress}
                         verifyToken={verifyToken}
