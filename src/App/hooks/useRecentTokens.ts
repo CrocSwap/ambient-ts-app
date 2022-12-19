@@ -10,7 +10,8 @@ export const useRecentTokens = (
     chainId: string
 ): {
     addRecentToken: (tkn: TokenIF) => void,
-    getRecentTokens: (options: getRecentTokensParamsIF) => TokenIF[]
+    getRecentTokens: (options: getRecentTokensParamsIF) => TokenIF[],
+    resetRecentTokens: () => void
 } => {
     // console.log('ran hook useRecentTokens()');
     const [recentTokens, setRecentTokens] = useState<TokenIF[]>([]);
@@ -31,8 +32,12 @@ export const useRecentTokens = (
         return relevantTokens.slice(0, count ?? relevantTokens.length+1);
     }
 
+    // fn to clear list of recent tokens
+    const resetRecentTokens = (): void => setRecentTokens([]);
+
     return {
         addRecentToken,
-        getRecentTokens
+        getRecentTokens,
+        resetRecentTokens
     };
 }
