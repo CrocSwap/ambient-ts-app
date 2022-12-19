@@ -144,6 +144,7 @@ import { memoizeFetchContractDetails } from './functions/fetchContractDetails';
 import { useToken } from './hooks/useToken';
 import { useSidebar } from './hooks/useSidebar';
 import useDebounce from './hooks/useDebounce';
+import { useRecentTokens } from './hooks/useRecentTokens';
 // import { memoizeQuerySpotTick } from './functions/querySpotTick';
 // import PhishingWarning from '../components/Global/PhisingWarning/PhishingWarning';
 
@@ -2386,6 +2387,8 @@ export default function App() {
     false && localTokens;
     false && getAllTokens;
     false && getTokensOnChain;
+
+    useRecentTokens();
 
     return (
         <>
