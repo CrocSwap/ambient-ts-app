@@ -1842,7 +1842,7 @@ export default function App() {
                         user: account,
                         chainId: chainData.chainId,
                         ensResolution: 'true',
-                        omitEmpty: 'true',
+                        // omitEmpty: 'true',
                     }),
             )
                 .then((response) => response?.json())
@@ -2381,7 +2381,7 @@ export default function App() {
         getAmbientTokens,
         getTokensOnChain,
         getTokenByAddress,
-        getTokensByName
+        getTokensByName,
     ] = useToken(chainData.chainId);
     false && localTokens;
     false && getAllTokens;

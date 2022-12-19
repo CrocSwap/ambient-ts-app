@@ -135,7 +135,9 @@ export default function OrderRemoval(props: IOrderRemovalProps) {
             setShowConfirmation(true);
             setShowSettings(false);
             console.log({ limitOrder });
-            console.log({ positionLiquidity });
+
+            const liqToRemove = BigNumber.from(positionLiquidity).mul(removalPercentage).div(100);
+
             let tx;
             try {
                 if (limitOrder.isBid === true) {
@@ -143,7 +145,7 @@ export default function OrderRemoval(props: IOrderRemovalProps) {
                         .buy(limitOrder.quote, 0)
                         .atLimit(limitOrder.base, limitOrder.bidTick)
                         // .burnLiq(BigNumber.from('1000'));
-                        .burnLiq(BigNumber.from(positionLiquidity));
+                        .burnLiq(liqToRemove);
                     setNewRemovalTransactionHash(tx.hash);
                     dispatch(addPendingTx(tx?.hash));
                 } else {
@@ -151,7 +153,7 @@ export default function OrderRemoval(props: IOrderRemovalProps) {
                         .buy(limitOrder.base, 0)
                         .atLimit(limitOrder.quote, limitOrder.askTick)
                         // .burnLiq(BigNumber.from('1000'));
-                        .burnLiq(BigNumber.from(positionLiquidity));
+                        .burnLiq(liqToRemove);
                     setNewRemovalTransactionHash(tx.hash);
                     dispatch(addPendingTx(tx?.hash));
                 }
