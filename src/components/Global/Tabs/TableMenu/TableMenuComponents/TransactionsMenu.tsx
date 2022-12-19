@@ -453,7 +453,6 @@ export default function TransactionsMenu(props: TransactionMenuIF) {
             const interval = setTimeout(() => {
                 setShowDropdownMenu(false);
             }, 5000);
-            console.log('running');
             return () => clearTimeout(interval);
         } else return;
     }, [showDropdownMenu]);
