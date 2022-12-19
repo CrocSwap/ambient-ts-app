@@ -28,6 +28,10 @@ const mainnetProvider = new ethers.providers.WebSocketProvider(
 interface PortfolioPropsIF {
     crocEnv: CrocEnv | undefined;
     addRecentToken: (tkn: TokenIF) => void;
+    getRecentTokens: (options?: {
+        onCurrentChain?: boolean,
+        count?: number | null
+    }) => TokenIF[];
     getAmbientTokens: () => TokenIF[];
     verifyToken: (addr: string, chn: string) => boolean;
     getTokensByName: (searchName: string, chn: string, exact: boolean) => TokenIF[];
@@ -76,6 +80,7 @@ export default function Portfolio(props: PortfolioPropsIF) {
     const {
         crocEnv,
         addRecentToken,
+        getRecentTokens,
         getAmbientTokens,
         getTokensByName,
         getTokenByAddress,
@@ -478,6 +483,7 @@ export default function Portfolio(props: PortfolioPropsIF) {
                         getTokenByAddress={getTokenByAddress}
                         verifyToken={verifyToken}
                         addRecentToken={addRecentToken}
+                        getRecentTokens={getRecentTokens}
                     />
                 </Modal>
             )}

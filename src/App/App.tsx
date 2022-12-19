@@ -2389,8 +2389,6 @@ export default function App() {
     false && getTokensOnChain;
 
     const {addRecentToken, getRecentTokens} = useRecentTokens(chainData.chainId);
-    false && addRecentToken;
-    false && getRecentTokens;
 
     return (
         <>
@@ -2610,6 +2608,7 @@ export default function App() {
                                 <Portfolio
                                     crocEnv={crocEnv}
                                     addRecentToken={addRecentToken}
+                                    getRecentTokens={getRecentTokens}
                                     getAmbientTokens={getAmbientTokens}
                                     getTokensByName={getTokensByName}
                                     verifyToken={verifyToken}
@@ -2661,6 +2660,7 @@ export default function App() {
                                 <Portfolio
                                     crocEnv={crocEnv}
                                     addRecentToken={addRecentToken}
+                                    getRecentTokens={getRecentTokens}
                                     getAmbientTokens={getAmbientTokens}
                                     getTokensByName={getTokensByName}
                                     verifyToken={verifyToken}
@@ -2730,6 +2730,7 @@ export default function App() {
                                 <Portfolio
                                     crocEnv={crocEnv}
                                     addRecentToken={addRecentToken}
+                                    getRecentTokens={getRecentTokens}
                                     getAmbientTokens={getAmbientTokens}
                                     getTokensByName={getTokensByName}
                                     verifyToken={verifyToken}
