@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { FiMoreHorizontal } from 'react-icons/fi';
 
@@ -258,6 +258,16 @@ export default function RangesMenu(props: RangesMenuIF) {
             <div className={wrapperStyle}>{menuContent}</div>
         </div>
     );
+
+    useEffect(() => {
+        if (showDropdownMenu) {
+            const interval = setTimeout(() => {
+                setShowDropdownMenu(false);
+            }, 5000);
+            console.log('running');
+            return () => clearTimeout(interval);
+        } else return;
+    }, [showDropdownMenu]);
 
     return (
         <div className={styles.main_container}>
