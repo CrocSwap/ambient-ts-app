@@ -28,7 +28,9 @@ export interface LimitOrderIF {
     baseFlowDecimalCorrected: number;
     quoteFlowDecimalCorrected: number;
     positionLiqBaseDecimalCorrected: number;
+    claimableLiqBaseDecimalCorrected: number;
     positionLiqQuoteDecimalCorrected: number;
+    claimableLiqQuoteDecimalCorrected: number;
     positionLiqQuote: string;
     updateType: string;
     latestUpdateBlock: number;

@@ -118,8 +118,14 @@ export const useProcessOrder = (limitOrder: LimitOrderIF) => {
         selectedBaseToken === baseTokenAddressLowerCase &&
         selectedQuoteToken === quoteTokenAddressLowerCase;
 
-    const liqBaseNum = limitOrder.positionLiqBaseDecimalCorrected;
-    const liqQuoteNum = limitOrder.positionLiqQuoteDecimalCorrected;
+    const liqBaseNum =
+        limitOrder.positionLiqBaseDecimalCorrected !== 0
+            ? limitOrder.positionLiqBaseDecimalCorrected
+            : limitOrder.claimableLiqBaseDecimalCorrected;
+    const liqQuoteNum =
+        limitOrder.positionLiqQuoteDecimalCorrected !== 0
+            ? limitOrder.positionLiqQuoteDecimalCorrected
+            : limitOrder.claimableLiqQuoteDecimalCorrected;
 
     const baseQty =
         liqBaseNum === 0
