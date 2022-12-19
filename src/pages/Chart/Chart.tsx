@@ -869,6 +869,7 @@ export default function Chart(props: ChartData) {
         }
     }, [
         dragControl,
+        yAxis,
         scaleData,
         location,
         scaleData && scaleData.yScale.domain(),
@@ -2139,21 +2140,23 @@ export default function Chart(props: ChartData) {
         location,
         market,
         limit,
+        ranges,
         parsedChartData?.period,
         checkLimitOrder,
         isUserLoggedIn,
-        limitLine,
+        poolPriceDisplay,
     ]);
 
     useEffect(() => {
-        setCheckLimitOrder(
-            isUserLoggedIn
-                ? sellOrderStyle === 'order_sell'
-                    ? limit[0].value > currentPriceData[0].value
-                    : limit[0].value < currentPriceData[0].value
-                : false,
-        );
-    }, [limit, sellOrderStyle, isUserLoggedIn, currentPriceData]);
+        poolPriceDisplay &&
+            setCheckLimitOrder(
+                isUserLoggedIn
+                    ? sellOrderStyle === 'order_sell'
+                        ? limit[0].value > poolPriceDisplay
+                        : limit[0].value < poolPriceDisplay
+                    : false,
+            );
+    }, [limit, sellOrderStyle, isUserLoggedIn, poolPriceDisplay]);
 
     // Line Rules
     useEffect(() => {
@@ -3108,6 +3111,7 @@ export default function Chart(props: ChartData) {
 
                         // barJoin(svg, [showVolume ? volumeData : []]).call(barSeries);
                         if (barSeries) barJoin(svg, [showVolume ? volumeData : []]).call(barSeries);
+                        setDragControl(true);
                     }
 
                     const mouseOutFunc = () => {
