@@ -20,6 +20,7 @@ interface propsIF {
     verifyToken: (addr: string, chn: string) => boolean;
     getTokensByName: (searchName: string, chn: string, exact: boolean) => TokenIF[];
     getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
+    addRecentToken: (tkn: TokenIF) => void;
 }
 
 export const SoloTokenSelect = (props: propsIF) => {
@@ -31,7 +32,8 @@ export const SoloTokenSelect = (props: propsIF) => {
         closeModal,
         getTokensByName,
         getTokenByAddress,
-        verifyToken
+        verifyToken,
+        addRecentToken
     } = props;
 
     // hook to process search input and return an array of relevant tokens
@@ -67,6 +69,8 @@ export const SoloTokenSelect = (props: propsIF) => {
             // necessary as there is no event listener on local storage 😱
             setImportedTokens([...importedTokens, tkn]);
         }
+        // add the token to the array of recent tokens (in-session)
+        addRecentToken(tkn);
         // close the token modal
         closeModal();
     };

@@ -2609,6 +2609,7 @@ export default function App() {
                             element={
                                 <Portfolio
                                     crocEnv={crocEnv}
+                                    addRecentToken={addRecentToken}
                                     getAmbientTokens={getAmbientTokens}
                                     getTokensByName={getTokensByName}
                                     verifyToken={verifyToken}
@@ -2659,6 +2660,7 @@ export default function App() {
                             element={
                                 <Portfolio
                                     crocEnv={crocEnv}
+                                    addRecentToken={addRecentToken}
                                     getAmbientTokens={getAmbientTokens}
                                     getTokensByName={getTokensByName}
                                     verifyToken={verifyToken}
@@ -2727,6 +2729,7 @@ export default function App() {
                             element={
                                 <Portfolio
                                     crocEnv={crocEnv}
+                                    addRecentToken={addRecentToken}
                                     getAmbientTokens={getAmbientTokens}
                                     getTokensByName={getTokensByName}
                                     verifyToken={verifyToken}
