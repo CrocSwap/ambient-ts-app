@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { useState, ReactNode, useRef } from 'react';
+import { useState, ReactNode, useRef, useEffect } from 'react';
 // import { Link } from 'react-router-dom';
 import { FiExternalLink, FiMoreHorizontal } from 'react-icons/fi';
 
@@ -30,7 +30,6 @@ import {
     tradeData,
 } from '../../../../../utils/state/tradeDataSlice';
 import { useNavigate } from 'react-router-dom';
-import useHover from '../../../../../utils/hooks/useHover';
 
 // interface for React functional component props
 interface TransactionMenuIF {
@@ -448,7 +447,16 @@ export default function TransactionsMenu(props: TransactionMenuIF) {
     const clickOutsideHandler = () => {
         setShowDropdownMenu(false);
     };
-    const [hoverRef, isHovered] = useHover<HTMLDivElement>();
+
+    useEffect(() => {
+        if (showDropdownMenu) {
+            const interval = setTimeout(() => {
+                setShowDropdownMenu(false);
+            }, 5000);
+            console.log('running');
+            return () => clearTimeout(interval);
+        } else return;
+    }, [showDropdownMenu]);
 
     UseOnClickOutside(menuItemRef, clickOutsideHandler);
     const dropdownTransactionsMenu = (
@@ -462,10 +470,10 @@ export default function TransactionsMenu(props: TransactionMenuIF) {
 
     return (
         <div className={styles.main_container}>
-            <div ref={hoverRef}>{isHovered ? '😁' : '☹️'}</div>
-
             {!desktopView && transactionsMenu}
+
             {dropdownTransactionsMenu}
+
             {/* {modalOrNull} */}
             {/* {snackbarContent} */}
         </div>
