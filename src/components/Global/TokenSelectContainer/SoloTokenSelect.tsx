@@ -77,15 +77,11 @@ export const SoloTokenSelect = (props: propsIF) => {
         // array of recent tokens from App.tsx (current session only)
         const recentTokens = getRecentTokens();
         // determine if clicked token is already in the recent tokens array
-        if (
-            !recentTokens.some((recentToken: TokenIF) => (
-                recentToken.address.toLowerCase() === tkn.address.toLowerCase() &&
-                recentToken.chainId === tkn.chainId
-            ))
-        ) {
-            // if not in recent tokens array, add it
-            addRecentToken(tkn);
-        }
+        // if not in recent tokens array, add it
+        !recentTokens.some((recentToken: TokenIF) => (
+            recentToken.address.toLowerCase() === tkn.address.toLowerCase() &&
+            recentToken.chainId === tkn.chainId
+        )) || addRecentToken(tkn);
         // close the token modal
         closeModal();
     };
