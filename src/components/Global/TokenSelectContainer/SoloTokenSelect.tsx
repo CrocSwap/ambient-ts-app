@@ -23,6 +23,11 @@ interface propsIF {
 
     showSoloSelectTokenButtons: boolean;
     setShowSoloSelectTokenButtons: Dispatch<SetStateAction<boolean>>;
+
+    outputTokens: TokenIF[];
+    validatedInput: string;
+    setInput: Dispatch<SetStateAction<string>>;
+    searchType: string;
 }
 
 export const SoloTokenSelect = (props: propsIF) => {
@@ -38,17 +43,22 @@ export const SoloTokenSelect = (props: propsIF) => {
 
         setShowSoloSelectTokenButtons,
         showSoloSelectTokenButtons,
+
+        outputTokens,
+        validatedInput,
+        setInput,
+        searchType,
     } = props;
 
     // hook to process search input and return an array of relevant tokens
     // also returns state setter function and values for control flow
-    const [outputTokens, validatedInput, setInput, searchType] = useSoloSearch(
-        chainId,
-        importedTokens,
-        verifyToken,
-        getTokenByAddress,
-        getTokensByName,
-    );
+    // const [outputTokens, validatedInput, setInput, searchType] = useSoloSearch(
+    //     chainId,
+    //     importedTokens,
+    //     verifyToken,
+    //     getTokenByAddress,
+    //     getTokensByName,
+    // );
 
     // instance of hook used to retrieve data from RTK
     const dispatch = useAppDispatch();

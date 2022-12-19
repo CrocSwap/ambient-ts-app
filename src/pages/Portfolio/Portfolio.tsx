@@ -385,7 +385,8 @@ export default function Portfolio(props: PortfolioPropsIF) {
     const [showProfileSettings, setShowProfileSettings] = useState(false);
 
     const [showSoloSelectTokenButtons, setShowSoloSelectTokenButtons] = useState(true);
-
+    // hook to process search input and return an array of relevant tokens
+    // also returns state setter function and values for control flow
     const [outputTokens, validatedInput, setInput, searchType] = useSoloSearch(
         chainId,
         importedTokens,
@@ -393,7 +394,6 @@ export default function Portfolio(props: PortfolioPropsIF) {
         getTokenByAddress,
         getTokensByName,
     );
-    console.log('from portfolio', outputTokens);
 
     const showLoggedInButton = userAccount && !isUserLoggedIn;
 
@@ -489,6 +489,10 @@ export default function Portfolio(props: PortfolioPropsIF) {
                         verifyToken={verifyToken}
                         showSoloSelectTokenButtons={showSoloSelectTokenButtons}
                         setShowSoloSelectTokenButtons={setShowSoloSelectTokenButtons}
+                        outputTokens={outputTokens}
+                        validatedInput={validatedInput}
+                        setInput={setInput}
+                        searchType={searchType}
                     />
                 </Modal>
             )}
