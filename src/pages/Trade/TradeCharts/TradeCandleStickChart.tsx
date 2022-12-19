@@ -57,6 +57,8 @@ interface ChartData {
     upBorderColor: string;
     downBodyColor: string;
     downBorderColor: string;
+    upVolumeColor: string;
+    downVolumeColor: string;
     baseTokenAddress: string;
     chainId: string;
     poolPriceNonDisplay: number | undefined;
@@ -153,14 +155,18 @@ export default function TradeCandleStickChart(props: ChartData) {
         const feeChartData: FeeChartData[] = [];
 
         props.candleData?.candles.map((data) => {
+            const close = denominationsInBase
+                ? data.invPriceCloseExclMEVDecimalCorrected
+                : data.priceCloseExclMEVDecimalCorrected;
+
+            const open = denominationsInBase
+                ? data.invPriceOpenExclMEVDecimalCorrected
+                : data.priceOpenExclMEVDecimalCorrected;
+
             chartData.push({
                 date: new Date(data.time * 1000),
-                open: denominationsInBase
-                    ? data.invPriceOpenExclMEVDecimalCorrected
-                    : data.priceOpenExclMEVDecimalCorrected,
-                close: denominationsInBase
-                    ? data.invPriceCloseExclMEVDecimalCorrected
-                    : data.priceCloseExclMEVDecimalCorrected,
+                open: open,
+                close: close,
                 high: denominationsInBase
                     ? data.invMinPriceExclMEVDecimalCorrected
                     : data.maxPriceExclMEVDecimalCorrected,
@@ -169,6 +175,8 @@ export default function TradeCandleStickChart(props: ChartData) {
                     : data.minPriceExclMEVDecimalCorrected,
                 time: data.time,
                 allSwaps: [],
+                color: close > open ? props.upBodyColor : props.downBodyColor,
+                stroke: close > open ? props.upBorderColor : props.downBorderColor,
             });
 
             tvlChartData.push({
@@ -179,6 +187,7 @@ export default function TradeCandleStickChart(props: ChartData) {
             volumeChartData.push({
                 time: new Date(data.time * 1000),
                 value: data.volumeUSD,
+                color: close > open ? props.upVolumeColor : props.downVolumeColor,
             });
 
             feeChartData.push({
@@ -239,6 +248,7 @@ export default function TradeCandleStickChart(props: ChartData) {
                     time: data.time,
                     value: volumeLogScale(data.value),
                     volume: data.value,
+                    color: data.color,
                 });
             });
         }
