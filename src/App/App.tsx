@@ -144,6 +144,7 @@ import { memoizeFetchContractDetails } from './functions/fetchContractDetails';
 import { useToken } from './hooks/useToken';
 import { useSidebar } from './hooks/useSidebar';
 import useDebounce from './hooks/useDebounce';
+import { useRecentTokens } from './hooks/useRecentTokens';
 // import { memoizeQuerySpotTick } from './functions/querySpotTick';
 // import PhishingWarning from '../components/Global/PhisingWarning/PhishingWarning';
 
@@ -2387,6 +2388,8 @@ export default function App() {
     false && getAllTokens;
     false && getTokensOnChain;
 
+    const {addRecentToken, getRecentTokens} = useRecentTokens(chainData.chainId);
+
     return (
         <>
             <div className={containerStyle} data-theme={theme}>
@@ -2604,6 +2607,8 @@ export default function App() {
                             element={
                                 <Portfolio
                                     crocEnv={crocEnv}
+                                    addRecentToken={addRecentToken}
+                                    getRecentTokens={getRecentTokens}
                                     getAmbientTokens={getAmbientTokens}
                                     getTokensByName={getTokensByName}
                                     verifyToken={verifyToken}
@@ -2654,6 +2659,8 @@ export default function App() {
                             element={
                                 <Portfolio
                                     crocEnv={crocEnv}
+                                    addRecentToken={addRecentToken}
+                                    getRecentTokens={getRecentTokens}
                                     getAmbientTokens={getAmbientTokens}
                                     getTokensByName={getTokensByName}
                                     verifyToken={verifyToken}
@@ -2722,6 +2729,8 @@ export default function App() {
                             element={
                                 <Portfolio
                                     crocEnv={crocEnv}
+                                    addRecentToken={addRecentToken}
+                                    getRecentTokens={getRecentTokens}
                                     getAmbientTokens={getAmbientTokens}
                                     getTokensByName={getTokensByName}
                                     verifyToken={verifyToken}
