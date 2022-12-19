@@ -2388,9 +2388,9 @@ export default function App() {
     false && getAllTokens;
     false && getTokensOnChain;
 
-    const {recentTokens, addRecentToken} = useRecentTokens();
-    false && recentTokens;
+    const {addRecentToken, getRecentTokens} = useRecentTokens(chainData.chainId);
     false && addRecentToken;
+    false && getRecentTokens;
 
     return (
         <>
