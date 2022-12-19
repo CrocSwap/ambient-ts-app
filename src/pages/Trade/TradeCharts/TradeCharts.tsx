@@ -842,6 +842,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
                     <button
                         onClick={() => {
                             setReset(true);
+                            setRescale(true);
                         }}
                         style={{
                             fontSize: '12px',
