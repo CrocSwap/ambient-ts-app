@@ -94,6 +94,8 @@ interface TradeChartsPropsIF {
     upBorderColor: string;
     downBodyColor: string;
     downBorderColor: string;
+    upVolumeColor: string;
+    downVolumeColor: string;
     baseTokenAddress: string;
     poolPriceNonDisplay: number | undefined;
     selectedDate: Date | undefined;
@@ -111,6 +113,8 @@ export interface CandleChartData {
     close: number;
     time: number;
     allSwaps: unknown;
+    color: string;
+    stroke: string;
 }
 
 export interface TvlChartData {
@@ -123,6 +127,7 @@ export interface VolumeChartData {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     time: any;
     value: number;
+    color: string;
 }
 export interface FeeChartData {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -979,6 +984,8 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
                         upBorderColor={props.upBorderColor}
                         downBodyColor={props.downBodyColor}
                         downBorderColor={props.downBorderColor}
+                        upVolumeColor={props.upVolumeColor}
+                        downVolumeColor={props.downVolumeColor}
                         baseTokenAddress={props.baseTokenAddress}
                         chainId={chainId}
                         poolPriceNonDisplay={props.poolPriceNonDisplay}

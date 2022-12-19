@@ -2488,17 +2488,13 @@ export default function Chart(props: ChartData) {
                             return selectedDate !== undefined &&
                                 selectedDate.getTime() === d.date.getTime()
                                 ? '#E480FF'
-                                : d.close > d.open
-                                ? upBodyColor
-                                : downBodyColor;
+                                : d.color;
                         })
                         .style('stroke', (d: any) => {
                             return selectedDate !== undefined &&
                                 selectedDate.getTime() === d.date.getTime()
                                 ? '#E480FF'
-                                : d.close > d.open
-                                ? upBorderColor
-                                : downBorderColor;
+                                : d.stroke;
                         });
                     selection
                         .on('mouseover', (event: any) => {
@@ -2551,12 +2547,12 @@ export default function Chart(props: ChartData) {
                         return selectedDate !== undefined &&
                             selectedDate.getTime() === d.time.getTime()
                             ? '#E480FF'
-                            : 'rgba(115,113,252, 0.6)';
+                            : d.color;
                     });
                     selection.style('stroke', (d: any) =>
                         selectedDate !== undefined && selectedDate.getTime() === d.time.getTime()
                             ? '#E480FF'
-                            : 'rgba(115,113,252, 0.6)',
+                            : d.color,
                     );
                     selection.on('mouseover', (event: any) => {
                         d3.select(event.currentTarget).style('cursor', 'pointer');
