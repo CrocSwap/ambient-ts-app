@@ -74,14 +74,16 @@ export const SoloTokenSelect = (props: propsIF) => {
             // necessary as there is no event listener on local storage 😱
             setImportedTokens([...importedTokens, tkn]);
         }
-        // add the token to the array of recent tokens (in-session)
+        // array of recent tokens from App.tsx (current session only)
         const recentTokens = getRecentTokens();
+        // determine if clicked token is already in the recent tokens array
         if (
             !recentTokens.some((recentToken: TokenIF) => (
                 recentToken.address.toLowerCase() === tkn.address.toLowerCase() &&
                 recentToken.chainId === tkn.chainId
             ))
         ) {
+            // if not in recent tokens array, add it
             addRecentToken(tkn);
         }
         // close the token modal
