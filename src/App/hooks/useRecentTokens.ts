@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { TokenIF } from '../../utils/interfaces/exports';
 
 interface getRecentTokensParamsIF {
@@ -15,6 +15,9 @@ export const useRecentTokens = (
 } => {
     // console.log('ran hook useRecentTokens()');
     const [recentTokens, setRecentTokens] = useState<TokenIF[]>([]);
+
+    // hook to reset recent tokens when the user switches chains
+    useEffect(() => resetRecentTokens(), [chainId]);
 
     // fn to add a token to the recentTokens array
     function addRecentToken(tkn: TokenIF): void {
