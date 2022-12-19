@@ -19,6 +19,7 @@ import { TokenPriceFn } from '../../App/functions/fetchTokenPrice';
 import NotFound from '../NotFound/NotFound';
 import ProfileSettings from '../../components/Portfolio/ProfileSettings/ProfileSettings';
 import { SoloTokenSelect } from '../../components/Global/TokenSelectContainer/SoloTokenSelect';
+import { useSoloSearch } from '../../components/Global/TokenSelectContainer/useSoloSearch';
 
 const mainnetProvider = new ethers.providers.WebSocketProvider(
     // 'wss://mainnet.infura.io/ws/v3/4a162c75bd514925890174ca13cdb6a2', // benwolski@gmail.com
@@ -385,6 +386,15 @@ export default function Portfolio(props: PortfolioPropsIF) {
 
     const [showSoloSelectTokenButtons, setShowSoloSelectTokenButtons] = useState(true);
 
+    const [outputTokens, validatedInput, setInput, searchType] = useSoloSearch(
+        chainId,
+        importedTokens,
+        verifyToken,
+        getTokenByAddress,
+        getTokensByName,
+    );
+    console.log('from portfolio', outputTokens);
+
     const showLoggedInButton = userAccount && !isUserLoggedIn;
 
     return (
@@ -464,7 +474,7 @@ export default function Portfolio(props: PortfolioPropsIF) {
                     onClose={closeTokenModal}
                     title='Select Token'
                     centeredTitle
-                    handleBack={closeTokenModal}
+                    handleBack={() => setShowSoloSelectTokenButtons(true)}
                     showBackButton={!showSoloSelectTokenButtons}
                     footer={null}
                 >
