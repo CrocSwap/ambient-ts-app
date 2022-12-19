@@ -1,11 +1,16 @@
 import { useState } from 'react';
 import { TokenIF } from '../../utils/interfaces/exports';
 
+interface getRecentTokensParamsIF {
+    onCurrentChain: boolean,
+    count: number | null
+}
+
 export const useRecentTokens = (
     chainId: string
 ): {
     addRecentToken: (tkn: TokenIF) => void,
-    getRecentTokens: (onCurrentChain?: boolean) => TokenIF[]
+    getRecentTokens: (options: getRecentTokensParamsIF) => TokenIF[]
 } => {
     // console.log('ran hook useRecentTokens()');
     const [recentTokens, setRecentTokens] = useState<TokenIF[]>([]);
@@ -14,10 +19,16 @@ export const useRecentTokens = (
     const addRecentToken = (tkn: TokenIF): void => setRecentTokens([tkn, ...recentTokens]);
 
     // fn to return recent tokens from local state
-    const getRecentTokens = (onCurrentChain=false): TokenIF[] => {
-        return onCurrentChain
+    const getRecentTokens = (
+        {
+            onCurrentChain=false,
+            count=null
+        }: getRecentTokensParamsIF
+    ): TokenIF[] => {
+        const relevantTokens = onCurrentChain 
             ? recentTokens.filter((tkn: TokenIF) => tkn.chainId === parseInt(chainId))
             : recentTokens;
+        return relevantTokens.slice(0, count ?? relevantTokens.length+1);
     }
 
     return {
