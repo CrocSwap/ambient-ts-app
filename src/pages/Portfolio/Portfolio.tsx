@@ -299,18 +299,18 @@ export default function Portfolio(props: PortfolioPropsIF) {
         const output = ambientTokens;
         let tokensAdded = 0;
         connectedUserErc20Tokens?.forEach((tkn) => {
-        if (
-            !ambientAddresses.includes(tkn.address.toLowerCase()) &&
-            tokensOnActiveLists.get(tkn.address + '_' + chainId) &&
-            parseInt(tkn.combinedBalance as string) > 0 &&
-            tokensAdded < 4
-        ) {
-            tokensAdded ++;
-            output.push({...tkn, fromList: 'wallet'});
-        }
+            if (
+                !ambientAddresses.includes(tkn.address.toLowerCase()) &&
+                tokensOnActiveLists.get(tkn.address + '_' + chainId) &&
+                parseInt(tkn.combinedBalance as string) > 0 &&
+                tokensAdded < 4
+            ) {
+                tokensAdded++;
+                output.push({ ...tkn, fromList: 'wallet' });
+            }
         });
         return output;
-    }
+    };
 
     const connectedUserTokens = [connectedUserNativeToken].concat(connectedUserErc20Tokens);
 
