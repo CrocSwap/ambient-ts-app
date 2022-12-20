@@ -16,12 +16,15 @@ interface propsIF {
     chainId: string;
     setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
     // TODO: rewrite logic to build this Map from all lists not just active ones
-    tokensOnActiveLists: Map<string, TokenIF>;
     closeModal: () => void;
     verifyToken: (addr: string, chn: string) => boolean;
-    getTokensOnChain: (chn: string) => TokenIF[];
     getTokensByName: (searchName: string, chn: string, exact: boolean) => TokenIF[];
     getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
+    addRecentToken: (tkn: TokenIF) => void;
+    getRecentTokens: (options?: {
+        onCurrentChain?: boolean,
+        count?: number | null
+    }) => TokenIF[];
 }
 
 export const SoloTokenSelect = (props: propsIF) => {
@@ -33,7 +36,9 @@ export const SoloTokenSelect = (props: propsIF) => {
         closeModal,
         getTokensByName,
         getTokenByAddress,
-        verifyToken
+        verifyToken,
+        addRecentToken,
+        getRecentTokens
     } = props;
 
     // hook to process search input and return an array of relevant tokens
@@ -69,6 +74,14 @@ export const SoloTokenSelect = (props: propsIF) => {
             // necessary as there is no event listener on local storage 😱
             setImportedTokens([...importedTokens, tkn]);
         }
+        // array of recent tokens from App.tsx (current session only)
+        const recentTokens = getRecentTokens();
+        // determine if clicked token is already in the recent tokens array
+        // if not in recent tokens array, add it
+        recentTokens.some((recentToken: TokenIF) => (
+            recentToken.address.toLowerCase() === tkn.address.toLowerCase() &&
+            recentToken.chainId === tkn.chainId
+        )) || addRecentToken(tkn);
         // close the token modal
         closeModal();
     };

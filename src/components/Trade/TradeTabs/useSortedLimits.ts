@@ -12,8 +12,10 @@ export const useSortedLimits = (
     LimitOrderIF[],
 ] => {
     // default sort function
-    const sortByTimeFirstMint = (unsortedData: LimitOrderIF[]) =>
-        [...unsortedData].sort((a, b) => b.timeFirstMint - a.timeFirstMint);
+    const sortByTime = (unsortedData: LimitOrderIF[]) =>
+        [...unsortedData].sort((a, b) => b.time - a.time);
+    // const sortByTimeFirstMint = (unsortedData: LimitOrderIF[]) =>
+    //     [...unsortedData].sort((a, b) => b.timeFirstMint - a.timeFirstMint);
     // sort by wallet or ens address
     const sortByWallet = (unsortedData: LimitOrderIF[]) =>
         [...unsortedData].sort((a, b) => {
@@ -50,10 +52,10 @@ export const useSortedLimits = (
                 sortedData = sortByValue(data);
                 break;
             case 'time':
-                sortedData = sortByTimeFirstMint(data);
+                sortedData = sortByTime(data);
                 break;
             default:
-                return sortByTimeFirstMint(data);
+                return sortByTime(data);
         }
         // return reversed data if user wants data reversed
         return reverseSort ? [...sortedData].reverse() : sortedData;

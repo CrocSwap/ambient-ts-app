@@ -21,12 +21,16 @@ export interface LimitOrderIF {
     price: number;
     deflator: number;
     concGrowth: number;
+    claimableLiq: string;
+    claimableLiqPivotTimes: string;
     positionLiq: string;
     positionLiqBase: string;
     baseFlowDecimalCorrected: number;
     quoteFlowDecimalCorrected: number;
     positionLiqBaseDecimalCorrected: number;
+    claimableLiqBaseDecimalCorrected: number;
     positionLiqQuoteDecimalCorrected: number;
+    claimableLiqQuoteDecimalCorrected: number;
     positionLiqQuote: string;
     updateType: string;
     latestUpdateBlock: number;

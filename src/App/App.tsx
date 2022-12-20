@@ -124,7 +124,6 @@ import Chat from './components/Chat/Chat';
 import GlobalModal from './components/GlobalModal/GlobalModal';
 import { memoizeTokenPrice } from './functions/fetchTokenPrice';
 import ChatPanel from '../components/Chat/ChatPanel';
-import { useTokenUniverse } from './hooks/useTokenUniverse';
 import { getPositionData } from './functions/getPositionData';
 import { getLimitOrderData } from './functions/getLimitOrderData';
 // import { getTransactionData } from './functions/getTransactionData';
@@ -145,6 +144,7 @@ import { memoizeFetchContractDetails } from './functions/fetchContractDetails';
 import { useToken } from './hooks/useToken';
 import { useSidebar } from './hooks/useSidebar';
 import useDebounce from './hooks/useDebounce';
+import { useRecentTokens } from './hooks/useRecentTokens';
 // import { memoizeQuerySpotTick } from './functions/querySpotTick';
 // import PhishingWarning from '../components/Global/PhisingWarning/PhishingWarning';
 
@@ -298,22 +298,14 @@ export default function App() {
     // this is another case where true vs false is an arbitrary distinction
     const [activeTokenListsChanged, indicateActiveTokenListsChanged] = useState(false);
 
-    const ambientTokens = useTokenMap(false, ['/ambient-token-list.json']);
     const tokensOnActiveLists = useTokenMap(
         activeTokenListsChanged,
         JSON.parse(localStorage.getItem('user') as string)?.activeTokenLists ?? [
             '/ambient-token-list.json',
         ],
     );
-    useEffect(() => {
-        console.log({ tokensOnActiveLists });
-    }, [tokensOnActiveLists]);
 
     const [candleData, setCandleData] = useState<CandlesByPoolAndDuration | undefined>();
-
-    // useEffect(() => {
-    //     if (candleData) console.log({ candleData });
-    // }, [candleData]);
 
     // custom hook to manage chain the app is using
     // `chainData` is data on the current chain retrieved from our SDK
@@ -321,17 +313,8 @@ export default function App() {
     // `switchChain` is a function to switch to a different chain
     // `'0x5'` is the chain the app should be on by default
     const [chainData, isChainSupported, switchChain, switchNetworkInMoralis] = useAppChain('0x5');
-    // useEffect(() => console.warn(chainData.chainId), [chainData.chainId]);
 
     const [tokenPairLocal, setTokenPairLocal] = useState<string[] | null>(null);
-    // useEffect(() => {
-    //     console.log({ tokenPairLocal });
-    // }, [tokenPairLocal]);
-
-    const tokenUniverse = useTokenUniverse(chainData.chainId);
-    useEffect(() => {
-        false && console.log({ tokenUniverse });
-    }, [tokenUniverse]);
 
     const [isShowAllEnabled, setIsShowAllEnabled] = useState(true);
     const [currentTxActiveInTransactions, setCurrentTxActiveInTransactions] = useState('');
@@ -690,7 +673,6 @@ export default function App() {
                         everyEigthBlock,
                         crocEnv,
                     );
-                    // console.log({ tokensOnActiveLists });
                     // console.log({ erc20Results });
                     const erc20TokensWithLogos = erc20Results.map((token) => addTokenInfo(token));
                     // console.log({ erc20TokensWithLogos });
@@ -1861,7 +1843,7 @@ export default function App() {
                         user: account,
                         chainId: chainData.chainId,
                         ensResolution: 'true',
-                        omitEmpty: 'true',
+                        // omitEmpty: 'true',
                     }),
             )
                 .then((response) => response?.json())
@@ -2381,15 +2363,10 @@ export default function App() {
     // these lines are just here to make the linter happy
     // take them out before production, they serve no other purpose
     false && sidebarStatus;
-    false && openSidebar();
-    false && closeSidebar();
-    false && togggggggleSidebar();
 
     const containerStyle = currentLocation.includes('trade')
         ? 'content-container-trade'
         : 'content-container';
-
-    // const [isGlobalModalOpen, openGlobalModal, closeGlobalModal, currentContent] = useGlobalModal();
 
     const defaultUrlParams = {
         swap: '/swap/chain=0x5&tokenA=0x0000000000000000000000000000000000000000&tokenB=0xD87Ba7A50B2E7E660f678A895E4B72E7CB4CCd9C',
@@ -2398,9 +2375,6 @@ export default function App() {
         range: '/trade/range/chain=0x5&tokenA=0x0000000000000000000000000000000000000000&tokenB=0xD87Ba7A50B2E7E660f678A895E4B72E7CB4CCd9C',
     };
 
-    // app overlay-----------------------------------------------
-    // end of app overlay-----------------------------------------------
-
     const [
         localTokens,
         verifyToken,
@@ -2408,9 +2382,13 @@ export default function App() {
         getAmbientTokens,
         getTokensOnChain,
         getTokenByAddress,
-        getTokensByName
+        getTokensByName,
     ] = useToken(chainData.chainId);
+    false && localTokens;
     false && getAllTokens;
+    false && getTokensOnChain;
+
+    const {addRecentToken, getRecentTokens} = useRecentTokens(chainData.chainId);
 
     return (
         <>
@@ -2423,8 +2401,6 @@ export default function App() {
                 {/* {currentLocation == '/' && <PhishingWarning />} */}
 
                 {currentLocation !== '/404' && <PageHeader {...headerProps} />}
-
-                {/* <MobileSidebar/> */}
                 <section className={`${showSidebarOrNullStyle} ${swapBodyStyle}`}>
                     {!currentLocation.startsWith('/swap') && sidebarRender}
                     <Routes>
@@ -2631,9 +2607,9 @@ export default function App() {
                             element={
                                 <Portfolio
                                     crocEnv={crocEnv}
-                                    localTokens={localTokens}
+                                    addRecentToken={addRecentToken}
+                                    getRecentTokens={getRecentTokens}
                                     getAmbientTokens={getAmbientTokens}
-                                    getTokensOnChain={getTokensOnChain}
                                     getTokensByName={getTokensByName}
                                     verifyToken={verifyToken}
                                     getTokenByAddress={getTokenByAddress}
@@ -2647,7 +2623,6 @@ export default function App() {
                                     connectedAccount={account ? account : ''}
                                     userImageData={imageData}
                                     chainId={chainData.chainId}
-                                    ambientTokens={ambientTokens}
                                     tokensOnActiveLists={tokensOnActiveLists}
                                     selectedOutsideTab={selectedOutsideTab}
                                     setSelectedOutsideTab={setSelectedOutsideTab}
@@ -2675,7 +2650,6 @@ export default function App() {
                                     }
                                     handlePulseAnimation={handlePulseAnimation}
                                     gasPriceInGwei={gasPriceInGwei}
-                                    searchableTokens={searchableTokens}
                                     openModalWallet={openModalWallet}
                                 />
                             }
@@ -2685,8 +2659,8 @@ export default function App() {
                             element={
                                 <Portfolio
                                     crocEnv={crocEnv}
-                                    localTokens={localTokens}
-                                    getTokensOnChain={getTokensOnChain}
+                                    addRecentToken={addRecentToken}
+                                    getRecentTokens={getRecentTokens}
                                     getAmbientTokens={getAmbientTokens}
                                     getTokensByName={getTokensByName}
                                     verifyToken={verifyToken}
@@ -2709,7 +2683,6 @@ export default function App() {
                                     userAccount={false}
                                     openGlobalModal={openGlobalModal}
                                     closeGlobalModal={closeGlobalModal}
-                                    ambientTokens={ambientTokens}
                                     importedTokens={importedTokens}
                                     setImportedTokens={setImportedTokens}
                                     chainData={chainData}
@@ -2729,7 +2702,6 @@ export default function App() {
                                     }
                                     handlePulseAnimation={handlePulseAnimation}
                                     gasPriceInGwei={gasPriceInGwei}
-                                    searchableTokens={searchableTokens}
                                     openModalWallet={openModalWallet}
                                 />
                             }
@@ -2757,9 +2729,9 @@ export default function App() {
                             element={
                                 <Portfolio
                                     crocEnv={crocEnv}
-                                    localTokens={localTokens}
+                                    addRecentToken={addRecentToken}
+                                    getRecentTokens={getRecentTokens}
                                     getAmbientTokens={getAmbientTokens}
-                                    getTokensOnChain={getTokensOnChain}
                                     getTokensByName={getTokensByName}
                                     verifyToken={verifyToken}
                                     getTokenByAddress={getTokenByAddress}
@@ -2781,7 +2753,6 @@ export default function App() {
                                     userAccount={false}
                                     openGlobalModal={openGlobalModal}
                                     closeGlobalModal={closeGlobalModal}
-                                    ambientTokens={ambientTokens}
                                     importedTokens={importedTokens}
                                     setImportedTokens={setImportedTokens}
                                     chainData={chainData}
@@ -2801,7 +2772,6 @@ export default function App() {
                                     }
                                     handlePulseAnimation={handlePulseAnimation}
                                     gasPriceInGwei={gasPriceInGwei}
-                                    searchableTokens={searchableTokens}
                                     openModalWallet={openModalWallet}
                                 />
                             }
