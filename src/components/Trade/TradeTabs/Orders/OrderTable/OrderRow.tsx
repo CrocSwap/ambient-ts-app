@@ -285,7 +285,7 @@ export default function OrderRow(props: OrderRowPropsIF) {
     // }).format(limitOrder.time * 1000);
 
     const elapsedTimeInSecondsNum = moment(Date.now()).diff(
-        limitOrder.time * 1000,
+        (limitOrder.pivotTime !== 0 ? limitOrder.pivotTime : limitOrder.timeFirstMint) * 1000,
         // (limitOrder.timeFirstMint || limitOrder.time) * 1000,
         'seconds',
     );

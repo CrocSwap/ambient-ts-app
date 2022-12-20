@@ -13,7 +13,11 @@ export const useSortedLimits = (
 ] => {
     // default sort function
     const sortByTime = (unsortedData: LimitOrderIF[]) =>
-        [...unsortedData].sort((a, b) => b.time - a.time);
+        [...unsortedData].sort(
+            (a, b) =>
+                (b.pivotTime !== 0 ? b.pivotTime : b.timeFirstMint) -
+                (a.pivotTime !== 0 ? a.pivotTime : a.timeFirstMint),
+        );
     // const sortByTimeFirstMint = (unsortedData: LimitOrderIF[]) =>
     //     [...unsortedData].sort((a, b) => b.timeFirstMint - a.timeFirstMint);
     // sort by wallet or ens address
