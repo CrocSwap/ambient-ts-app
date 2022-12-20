@@ -3,7 +3,7 @@ import { TokenIF } from '../../../utils/interfaces/exports';
 import TokenSelect from '../TokenSelect/TokenSelect';
 import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
 import { setToken } from '../../../utils/state/temp';
-import { useSoloSearch } from './useSoloSearch';
+// import { useSoloSearch } from './useSoloSearch';
 import styles from './SoloTokenSelect.module.css';
 import { memoizeFetchContractDetails } from '../../../App/functions/fetchContractDetails';
 import { ethers } from 'ethers';
@@ -37,8 +37,8 @@ export const SoloTokenSelect = (props: propsIF) => {
         chainId,
         setImportedTokens,
         closeModal,
-        getTokensByName,
-        getTokenByAddress,
+        // getTokensByName,
+        // getTokenByAddress,
         verifyToken,
 
         setShowSoloSelectTokenButtons,
