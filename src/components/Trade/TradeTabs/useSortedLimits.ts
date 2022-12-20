@@ -15,8 +15,8 @@ export const useSortedLimits = (
     const sortByTime = (unsortedData: LimitOrderIF[]) =>
         [...unsortedData].sort(
             (a, b) =>
-                (b.pivotTime !== 0 ? b.pivotTime : b.timeFirstMint) -
-                (a.pivotTime !== 0 ? a.pivotTime : a.timeFirstMint),
+                (b.latestUpdateTime !== 0 ? b.latestUpdateTime : b.timeFirstMint) -
+                (a.latestUpdateTime !== 0 ? a.latestUpdateTime : a.timeFirstMint),
         );
     // const sortByTimeFirstMint = (unsortedData: LimitOrderIF[]) =>
     //     [...unsortedData].sort((a, b) => b.timeFirstMint - a.timeFirstMint);

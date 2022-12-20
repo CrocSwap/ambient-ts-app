@@ -285,7 +285,9 @@ export default function OrderRow(props: OrderRowPropsIF) {
     // }).format(limitOrder.time * 1000);
 
     const elapsedTimeInSecondsNum = moment(Date.now()).diff(
-        (limitOrder.pivotTime !== 0 ? limitOrder.pivotTime : limitOrder.timeFirstMint) * 1000,
+        (limitOrder.latestUpdateTime !== 0
+            ? limitOrder.latestUpdateTime
+            : limitOrder.timeFirstMint) * 1000,
         // (limitOrder.timeFirstMint || limitOrder.time) * 1000,
         'seconds',
     );
@@ -364,7 +366,7 @@ export default function OrderRow(props: OrderRowPropsIF) {
         /* </DefaultTooltip> */
     );
 
-    const OrderTimeWithTooltip = (
+    const OrderTimeWithTooltip = limitOrder.timeFirstMint ? (
         <DefaultTooltip
             interactive
             title={
@@ -383,6 +385,12 @@ export default function OrderRow(props: OrderRowPropsIF) {
                 {/* <p className='base_color'> Nov 9 10:36:23 AM</p> */}
             </li>
         </DefaultTooltip>
+    ) : (
+        <li onClick={openDetailsModal} style={{ textTransform: 'lowercase' }}>
+            <p className='base_color' style={{ fontFamily: 'monospace' }}>
+                {elapsedTimeString}
+            </p>
+        </li>
     );
 
     return (

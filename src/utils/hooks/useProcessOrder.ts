@@ -31,7 +31,7 @@ export const useProcessOrder = (limitOrder: LimitOrderIF) => {
     const isOrderFilled = limitOrder.claimableLiq !== '0';
     // const isOrderFilled = !!limitOrder.latestCrossPivotTime;
 
-    const posHash = limitOrder.limitOrderIdentifier.slice(42);
+    const posHash = limitOrder.limitOrderIdentifier?.slice(42);
     const [truncatedDisplayPrice, setTruncatedDisplayPrice] = useState<string | undefined>();
 
     const [truncatedDisplayPriceDenomByMoneyness, setTruncatedDisplayPriceDenomByMoneyness] =
