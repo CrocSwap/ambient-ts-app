@@ -224,28 +224,28 @@ export default function Orders(props: propsIF) {
             onOpen: () => {
                 console.log('pool limit orders subscription opened');
 
-                // repeat fetch with the interval of 30 seconds
-                const timerId = setInterval(() => {
-                    fetchPoolLimitOrderStates({
-                        chainId: chainData.chainId,
-                        base: tradeData.baseToken.address,
-                        quote: tradeData.quoteToken.address,
-                        poolIdx: chainData.poolIndex,
-                        ensResolution: true,
-                    })
-                        .then((poolChangesJsonData) => {
-                            if (poolChangesJsonData) {
-                                // console.log({ poolChangesJsonData });
-                                dispatch(addLimitOrderChangesByPool(poolChangesJsonData));
-                            }
-                        })
-                        .catch(console.log);
-                }, 30000);
+                // // repeat fetch with the interval of 30 seconds
+                // const timerId = setInterval(() => {
+                //     fetchPoolLimitOrderStates({
+                //         chainId: chainData.chainId,
+                //         base: tradeData.baseToken.address,
+                //         quote: tradeData.quoteToken.address,
+                //         poolIdx: chainData.poolIndex,
+                //         ensResolution: true,
+                //     })
+                //         .then((poolChangesJsonData) => {
+                //             if (poolChangesJsonData) {
+                //                 // console.log({ poolChangesJsonData });
+                //                 dispatch(addLimitOrderChangesByPool(poolChangesJsonData));
+                //             }
+                //         })
+                //         .catch(console.log);
+                // }, 30000);
 
-                // after 90 seconds stop
-                setTimeout(() => {
-                    clearInterval(timerId);
-                }, 90000);
+                // // after 90 seconds stop
+                // setTimeout(() => {
+                //     clearInterval(timerId);
+                // }, 90000);
             },
             onClose: (event: CloseEvent) => console.log({ event }),
             // onClose: () => console.log('allPositions websocket connection closed'),
@@ -317,7 +317,7 @@ export default function Orders(props: propsIF) {
     );
     const headerColumns = [
         {
-            name: 'Time Updated',
+            name: 'Last Updated',
             className: '',
             show: !showColumns,
             slug: 'time',
@@ -359,7 +359,7 @@ export default function Orders(props: propsIF) {
             sortable: false,
         },
         {
-            name: 'Price',
+            name: 'Limit Price',
 
             show: !ipadView,
             slug: 'price',

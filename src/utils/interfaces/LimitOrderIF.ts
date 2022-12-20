@@ -16,6 +16,10 @@ export interface LimitOrderIF {
     poolIdx: number;
     poolHash: string;
     bidTick: number;
+    askTickInvPriceDecimalCorrected: number;
+    askTickPriceDecimalCorrected: number;
+    bidTickInvPriceDecimalCorrected: number;
+    bidTickPriceDecimalCorrected: number;
     askTick: number;
     isBid: boolean;
     price: number;
