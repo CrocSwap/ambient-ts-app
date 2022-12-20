@@ -52,6 +52,9 @@ export const useProcessOrder = (limitOrder: LimitOrderIF) => {
         [limitOrder.base, limitOrder.base, limitOrder.chainId],
     );
 
+    const [lowPriceDisplay, setLowPriceDisplay] = useState<string | undefined>();
+    const [highPriceDisplay, setHighPriceDisplay] = useState<string | undefined>();
+
     useEffect(() => {
         // console.log({ limitOrder });
         if (limitOrder.limitPriceDecimalCorrected && limitOrder.invLimitPriceDecimalCorrected) {
@@ -98,6 +101,48 @@ export const useProcessOrder = (limitOrder: LimitOrderIF) => {
             setTruncatedDisplayPriceDenomByMoneyness(truncatedDisplayPriceDenomByMoneyness);
         } else {
             setTruncatedDisplayPrice(undefined);
+        }
+        const askTickInvPrice = limitOrder.askTickInvPriceDecimalCorrected;
+        const askTickPrice = limitOrder.askTickPriceDecimalCorrected;
+        const bidTickInvPrice = limitOrder.bidTickInvPriceDecimalCorrected;
+        const bidTickPrice = limitOrder.bidTickPriceDecimalCorrected;
+
+        if (askTickPrice && askTickInvPrice && bidTickPrice && bidTickInvPrice) {
+            const lowPriceDisplayNum = isDenomBase ? askTickInvPrice : askTickPrice;
+            const highPriceDisplayNum = isDenomBase ? bidTickInvPrice : bidTickPrice;
+
+            const lowPriceDisplay =
+                lowPriceDisplayNum === 0
+                    ? '0'
+                    : lowPriceDisplayNum < 0.0001
+                    ? lowPriceDisplayNum.toExponential(2)
+                    : lowPriceDisplayNum < 2
+                    ? lowPriceDisplayNum.toPrecision(3)
+                    : lowPriceDisplayNum >= 100000
+                    ? formatAmountOld(lowPriceDisplayNum)
+                    : // ? baseLiqDisplayNum.toExponential(2)
+                      lowPriceDisplayNum.toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                      });
+
+            const highPriceDisplay =
+                highPriceDisplayNum === 0
+                    ? '0'
+                    : highPriceDisplayNum < 0.0001
+                    ? highPriceDisplayNum.toExponential(2)
+                    : highPriceDisplayNum < 2
+                    ? highPriceDisplayNum.toPrecision(3)
+                    : highPriceDisplayNum >= 100000
+                    ? formatAmountOld(highPriceDisplayNum)
+                    : // ? baseLiqDisplayNum.toExponential(2)
+                      highPriceDisplayNum.toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                      });
+
+            setLowPriceDisplay(lowPriceDisplay);
+            setHighPriceDisplay(highPriceDisplay);
         }
     }, [JSON.stringify(limitOrder), isDenomBase]);
 
@@ -186,10 +231,7 @@ export const useProcessOrder = (limitOrder: LimitOrderIF) => {
     // -----------------------------------------------------------------------------------------
     // eslint-disable-next-line
     const [positionLiqTotalUSD, setTotalValueUSD] = useState<number | undefined>();
-    // eslint-disable-next-line
-    const [lowPriceDisplay, setLowPriceDisplay] = useState<string | undefined>();
-    // eslint-disable-next-line
-    const [highPriceDisplay, setHighPriceDisplay] = useState<string | undefined>();
+
     // eslint-disable-next-line
     const [bidTick, setBidTick] = useState<number | undefined>();
     // eslint-disable-next-line
