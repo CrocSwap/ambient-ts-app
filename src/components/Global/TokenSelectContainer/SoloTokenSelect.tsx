@@ -169,9 +169,17 @@ export const SoloTokenSelect = (props: propsIF) => {
     //     </div>
     // );
 
+    // hook to add focus to the input on after initial render, this is
+    // preferable to autofocusing the element to ensure the DOM does not
+    // ... have multiple autofocuses at once, background included
+    useEffect(() => {
+        document.getElementById('token_select_input_field')?.focus();
+    }, []);
+
     return (
         <section className={styles.container}>
             <input
+                id='token_select_input_field'
                 spellCheck='false'
                 type='text'
                 placeholder='&#61442; Search name or enter an Address'
