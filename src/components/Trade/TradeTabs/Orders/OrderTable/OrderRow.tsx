@@ -334,7 +334,8 @@ export default function OrderRow(props: OrderRowPropsIF) {
                 }}
             >
                 {baseDisplay}
-                {isOnPortfolioPage && <img src={baseTokenLogo} width='15px' alt='' />}
+                {<img src={baseTokenLogo} width='15px' alt='' />}
+                {/* {isOnPortfolioPage && <img src={baseTokenLogo} width='15px' alt='' />} */}
             </p>
         </li>
         /* </DefaultTooltip> */
@@ -360,7 +361,8 @@ export default function OrderRow(props: OrderRowPropsIF) {
                 }}
             >
                 {quoteDisplay}
-                {isOnPortfolioPage && <img src={quoteTokenLogo} width='15px' alt='' />}
+                {<img src={quoteTokenLogo} width='15px' alt='' />}
+                {/* {isOnPortfolioPage && <img src={quoteTokenLogo} width='15px' alt='' />} */}
             </p>
         </li>
         /* </DefaultTooltip> */

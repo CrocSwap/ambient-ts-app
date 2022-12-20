@@ -500,7 +500,7 @@ export default function Transactions(props: TransactionsProps) {
             alignRight: true,
         },
         {
-            name: <></>,
+            name: <>Tokensㅤㅤ</>,
 
             show: isOnPortfolioPage && showColumns,
 

@@ -1014,7 +1014,7 @@ export default function App() {
                                         poolPositions.map((position: PositionIF) => {
                                             return getPositionData(
                                                 position,
-                                                importedTokens,
+                                                searchableTokens,
                                                 crocEnv,
                                                 chainData.chainId,
                                                 lastBlockNumber,
@@ -1069,7 +1069,7 @@ export default function App() {
                                         leaderboardPositions.map((position: PositionIF) => {
                                             return getPositionData(
                                                 position,
-                                                importedTokens,
+                                                searchableTokens,
                                                 crocEnv,
                                                 chainData.chainId,
                                                 lastBlockNumber,
@@ -1299,7 +1299,7 @@ export default function App() {
                     lastMessageData.map((position: PositionIF) => {
                         return getPositionData(
                             position,
-                            importedTokens,
+                            searchableTokens,
                             crocEnv,
                             chainData.chainId,
                             lastBlockNumber,
@@ -1519,7 +1519,7 @@ export default function App() {
                     lastMessageData.map((position: PositionIF) => {
                         return getPositionData(
                             position,
-                            importedTokens,
+                            searchableTokens,
                             crocEnv,
                             chainData.chainId,
                             lastBlockNumber,
@@ -1810,7 +1810,7 @@ export default function App() {
                                 userPositions.map((position: PositionIF) => {
                                     return getPositionData(
                                         position,
-                                        importedTokens,
+                                        searchableTokens,
                                         crocEnv,
                                         chainData.chainId,
                                         lastBlockNumber,
