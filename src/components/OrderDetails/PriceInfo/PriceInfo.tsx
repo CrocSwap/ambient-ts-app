@@ -6,6 +6,7 @@ import Divider from '../../Global/Divider/Divider';
 import { motion } from 'framer-motion';
 import { useProcessOrder } from '../../../utils/hooks/useProcessOrder';
 import { LimitOrderIF } from '../../../utils/interfaces/exports';
+import NoTokenIcon from '../../Global/NoTokenIcon/NoTokenIcon';
 
 type ItemIF = {
     slug: string;
@@ -140,8 +141,29 @@ export default function PriceInfo(props: IPriceInfoProps) {
             }}
         >
             <div className={styles.token_pair_images}>
-                <img src={isDenomBase ? baseTokenLogo : quoteTokenLogo} alt={baseTokenSymbol} />
-                <img src={isDenomBase ? quoteTokenLogo : baseTokenLogo} alt={quoteTokenSymbol} />
+                <div>
+                    {isDenomBase && baseTokenLogo ? (
+                        <img src={baseTokenLogo} alt={baseTokenSymbol} />
+                    ) : isDenomBase && !baseTokenLogo ? (
+                        <NoTokenIcon tokenInitial={baseTokenSymbol.charAt(0)} width='30px' />
+                    ) : !isDenomBase && quoteTokenLogo ? (
+                        <img src={quoteTokenLogo} alt={quoteTokenSymbol} />
+                    ) : (
+                        <NoTokenIcon tokenInitial={quoteTokenSymbol.charAt(0)} width='30px' />
+                    )}
+                </div>
+                <div>
+                    {isDenomBase && quoteTokenLogo ? (
+                        <img src={quoteTokenLogo} alt={quoteTokenSymbol} />
+                    ) : isDenomBase && !quoteTokenLogo ? (
+                        <NoTokenIcon tokenInitial={quoteTokenSymbol.charAt(0)} width='30px' />
+                    ) : !isDenomBase && baseTokenLogo ? (
+                        <img src={baseTokenLogo} alt={baseTokenSymbol} />
+                    ) : (
+                        <NoTokenIcon tokenInitial={baseTokenSymbol.charAt(0)} width='30px' />
+                    )}
+                </div>
+                {/* <img src={isDenomBase ? quoteTokenLogo : baseTokenLogo} alt={quoteTokenSymbol} /> */}
             </div>
             <p>
                 {isDenomBase ? baseTokenSymbol : quoteTokenSymbol} /{' '}

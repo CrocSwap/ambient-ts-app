@@ -17,7 +17,7 @@ interface IOrderDetailsProps {
 
 export default function OrderDetails(props: IOrderDetailsProps) {
     const { limitOrder } = props;
-    console.log({ limitOrder });
+    // console.log({ limitOrder });
     const { isOrderFilled, userNameToDisplay } = useProcessOrder(limitOrder);
 
     const [showSettings, setShowSettings] = useState(false);

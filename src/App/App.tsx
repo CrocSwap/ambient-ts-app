@@ -1161,9 +1161,10 @@ export default function App() {
                                 if (poolLimitOrderStates) {
                                     Promise.all(
                                         poolLimitOrderStates.map((limitOrder: LimitOrderIF) => {
-                                            return getLimitOrderData(limitOrder, importedTokens);
+                                            return getLimitOrderData(limitOrder, searchableTokens);
                                         }),
                                     ).then((updatedLimitOrderStates) => {
+                                        console.log({ updatedLimitOrderStates });
                                         dispatch(
                                             setLimitOrdersByPool({
                                                 dataReceived: true,
@@ -1858,7 +1859,7 @@ export default function App() {
                     if (userLimitOrderStates) {
                         Promise.all(
                             userLimitOrderStates.map((limitOrder: LimitOrderIF) => {
-                                return getLimitOrderData(limitOrder, importedTokens);
+                                return getLimitOrderData(limitOrder, searchableTokens);
                             }),
                         ).then((updatedLimitOrderStates) => {
                             dispatch(
@@ -2483,7 +2484,7 @@ export default function App() {
                                         throw new Error('Function not implemented.');
                                     }}
                                     limitRate={''}
-                                    importedTokens={importedTokens}
+                                    importedTokens={searchableTokens}
                                     poolExists={poolExists}
                                     setTokenPairLocal={setTokenPairLocal}
                                     showSidebar={showSidebar}
