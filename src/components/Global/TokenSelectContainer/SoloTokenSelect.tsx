@@ -176,6 +176,13 @@ export const SoloTokenSelect = (props: propsIF) => {
         document.getElementById('token_select_input_field')?.focus();
     }, []);
 
+    // TODO: this is a function to clear the input field on click
+    // TODO: we just need a button in the DOM to attach it
+    // const clearInputField = () => {
+    //     const input = document.getElementById('token_select_input_field') as HTMLInputElement;
+    //     if (input) input.value = '';
+    // }
+
     return (
         <section className={styles.container}>
             <input
