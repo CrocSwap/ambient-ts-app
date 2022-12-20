@@ -434,7 +434,8 @@ export const graphDataSlice = createSlice({
         addLimitOrderChangesByPool: (state, action: PayloadAction<LimitOrderIF[]>) => {
             for (let index = 0; index < action.payload.length; index++) {
                 const updatedTx = action.payload[index];
-                const idToFind = updatedTx.limitOrderIdentifier.toLowerCase();
+                console.log({ updatedTx });
+                const idToFind = updatedTx.limitOrderIdentifier?.toLowerCase();
                 const indexOfOrderInState = state.limitOrdersByPool.limitOrders.findIndex(
                     (order) => order.limitOrderIdentifier.toLowerCase() === idToFind,
                 );
