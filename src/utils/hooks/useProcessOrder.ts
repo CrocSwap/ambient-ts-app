@@ -106,37 +106,55 @@ export const useProcessOrder = (limitOrder: LimitOrderIF) => {
         const askTickPrice = limitOrder.askTickPriceDecimalCorrected;
         const bidTickInvPrice = limitOrder.bidTickInvPriceDecimalCorrected;
         const bidTickPrice = limitOrder.bidTickPriceDecimalCorrected;
+        const isBid = limitOrder.isBid;
 
         if (askTickPrice && askTickInvPrice && bidTickPrice && bidTickInvPrice) {
-            const lowPriceDisplayNum = isDenomBase ? askTickInvPrice : askTickPrice;
-            const highPriceDisplayNum = isDenomBase ? bidTickInvPrice : bidTickPrice;
+            const startPriceDisplayNum = isDenomBase
+                ? isBid
+                    ? askTickInvPrice
+                    : bidTickInvPrice
+                : isBid
+                ? askTickPrice
+                : bidTickPrice;
+
+            const finishPriceDisplayNum = isDenomBase
+                ? isBid
+                    ? bidTickInvPrice
+                    : askTickInvPrice
+                : isBid
+                ? bidTickPrice
+                : askTickPrice;
 
             const startPriceDisplay =
-                lowPriceDisplayNum === 0
+                startPriceDisplayNum === 0
                     ? '0'
-                    : lowPriceDisplayNum < 0.0001
-                    ? lowPriceDisplayNum.toExponential(2)
-                    : lowPriceDisplayNum < 2
-                    ? lowPriceDisplayNum.toPrecision(3)
-                    : lowPriceDisplayNum >= 100000
-                    ? formatAmountOld(lowPriceDisplayNum)
+                    : startPriceDisplayNum < 0.0001
+                    ? startPriceDisplayNum.toExponential(2)
+                    : startPriceDisplayNum < 1
+                    ? startPriceDisplayNum.toPrecision(3)
+                    : startPriceDisplayNum < 2
+                    ? startPriceDisplayNum.toPrecision(5)
+                    : startPriceDisplayNum >= 100000
+                    ? formatAmountOld(startPriceDisplayNum)
                     : // ? baseLiqDisplayNum.toExponential(2)
-                      lowPriceDisplayNum.toLocaleString(undefined, {
+                      startPriceDisplayNum.toLocaleString(undefined, {
                           minimumFractionDigits: 2,
                           maximumFractionDigits: 2,
                       });
 
             const finishPriceDisplay =
-                highPriceDisplayNum === 0
+                finishPriceDisplayNum === 0
                     ? '0'
-                    : highPriceDisplayNum < 0.0001
-                    ? highPriceDisplayNum.toExponential(2)
-                    : highPriceDisplayNum < 2
-                    ? highPriceDisplayNum.toPrecision(3)
-                    : highPriceDisplayNum >= 100000
-                    ? formatAmountOld(highPriceDisplayNum)
+                    : finishPriceDisplayNum < 0.0001
+                    ? finishPriceDisplayNum.toExponential(2)
+                    : finishPriceDisplayNum < 1
+                    ? finishPriceDisplayNum.toPrecision(3)
+                    : startPriceDisplayNum < 2
+                    ? startPriceDisplayNum.toPrecision(5)
+                    : finishPriceDisplayNum >= 100000
+                    ? formatAmountOld(finishPriceDisplayNum)
                     : // ? baseLiqDisplayNum.toExponential(2)
-                      highPriceDisplayNum.toLocaleString(undefined, {
+                      finishPriceDisplayNum.toLocaleString(undefined, {
                           minimumFractionDigits: 2,
                           maximumFractionDigits: 2,
                       });

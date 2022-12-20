@@ -193,6 +193,7 @@ export default function PriceInfo(props: IPriceInfoProps) {
     // console.log(controlItems);
 
     const isOrderClaimable = limitOrder.claimableLiq !== '0';
+    const isBid = limitOrder.isBid;
 
     const descriptionContent = (
         <motion.div
@@ -211,11 +212,19 @@ export default function PriceInfo(props: IPriceInfoProps) {
                 ${
                     isDenomBase
                         ? isOrderClaimable
-                            ? 'increased'
-                            : 'increases'
+                            ? isBid
+                                ? 'increased'
+                                : 'decreased'
+                            : isBid
+                            ? 'increases'
+                            : 'decreases'
                         : isOrderClaimable
-                        ? 'decreased'
-                        : 'decreases'
+                        ? isBid
+                            ? 'decreased'
+                            : 'increased'
+                        : isBid
+                        ? 'decreases'
+                        : 'increases'
                 } to  ${finishPriceDisplay} ${isDenomBase ? quoteTokenSymbol : baseTokenSymbol}.`}
             </span>
         </motion.div>
