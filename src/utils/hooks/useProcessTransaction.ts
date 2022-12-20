@@ -355,6 +355,8 @@ export const useProcessTransaction = (tx: ITransaction) => {
             : tx.entityType === 'limitOrder'
             ? tx.changeType === 'mint'
                 ? 'add'
+                : tx.changeType === 'recover'
+                ? 'recover'
                 : 'remove'
             : (isDenomBase && tx.isBuy) || (!isDenomBase && !tx.isBuy)
             ? 'sell'

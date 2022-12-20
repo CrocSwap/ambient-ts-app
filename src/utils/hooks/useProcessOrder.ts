@@ -31,7 +31,7 @@ export const useProcessOrder = (limitOrder: LimitOrderIF) => {
     const isOrderFilled = limitOrder.claimableLiq !== '0';
     // const isOrderFilled = !!limitOrder.latestCrossPivotTime;
 
-    const posHash = limitOrder.limitOrderIdentifier.slice(42);
+    const posHash = limitOrder.limitOrderIdentifier?.slice(42);
     const [truncatedDisplayPrice, setTruncatedDisplayPrice] = useState<string | undefined>();
 
     const [truncatedDisplayPriceDenomByMoneyness, setTruncatedDisplayPriceDenomByMoneyness] =
@@ -156,7 +156,11 @@ export const useProcessOrder = (limitOrder: LimitOrderIF) => {
                   maximumFractionDigits: 2,
               });
 
-    const usdValueNum = limitOrder.positionLiqTotalUSD;
+    const usdValueNum =
+        limitOrder.positionLiqTotalUSD !== 0
+            ? limitOrder.positionLiqTotalUSD
+            : limitOrder.claimableLiqTotalUSD;
+
     const usdValueTruncated = !usdValueNum
         ? undefined
         : usdValueNum < 0.001

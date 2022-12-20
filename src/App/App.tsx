@@ -1962,7 +1962,22 @@ export default function App() {
         }
     }
 
-    useEffect(() => toggleSidebarBasedOnRoute(), [location]);
+    function toggleTradeTabBasedOnRoute() {
+        setOutsideControl(true);
+        // console.log({ currentLocation });
+        if (currentLocation.includes('/market')) {
+            setSelectedOutsideTab(0);
+        } else if (currentLocation.includes('/limit')) {
+            setSelectedOutsideTab(1);
+        } else if (currentLocation.includes('/range')) {
+            setSelectedOutsideTab(2);
+        }
+    }
+
+    useEffect(() => {
+        toggleSidebarBasedOnRoute();
+        toggleTradeTabBasedOnRoute();
+    }, [location]);
 
     // function to sever connection between user wallet and Moralis server
     const clickLogout = async () => {
