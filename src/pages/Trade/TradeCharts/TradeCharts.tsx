@@ -59,6 +59,7 @@ import { ChainSpec, CrocPoolView } from '@crocswap-libs/sdk';
 import { formatDollarAmountAxis } from '../../../utils/numbers';
 import IconWithTooltip from '../../../components/Global/IconWithTooltip/IconWithTooltip';
 // import { formatAmountOld } from '../../../utils/numbers';
+import UseOnClickOutside from '../../../utils/hooks/useOnClickOutside';
 
 // interface for React functional component props
 interface TradeChartsPropsIF {
@@ -102,6 +103,7 @@ interface TradeChartsPropsIF {
     setSelectedDate: Dispatch<Date | undefined>;
     activeTimeFrame: string;
     setActiveTimeFrame: Dispatch<SetStateAction<string>>;
+    TradeSettingsColor: JSX.Element;
 }
 
 export interface CandleChartData {
@@ -175,6 +177,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
         setSelectedDate,
         activeTimeFrame,
         setActiveTimeFrame,
+        TradeSettingsColor,
     } = props;
 
     const dispatch = useAppDispatch();
@@ -275,6 +278,13 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
             document.body.removeEventListener('keydown', closeOnEscapeKeyDown);
         };
     });
+    const chartSettingsRef = useRef<HTMLDivElement>(null);
+
+    const chartSettingsOutsideClickHandler = () => {
+        setShowChartSettings(false);
+    };
+    UseOnClickOutside(chartSettingsRef, chartSettingsOutsideClickHandler);
+
     const exDataContent = (
         <div>Lorem ipsum dolor sit amet consectetur adipisicing elit. Perferendis, doloremque.</div>
     );
@@ -283,7 +293,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
         { icon: '🥬', label: 'Lettuce', content: exDataContent },
         { icon: '🥕', label: 'Carrot', content: exDataContent },
         { icon: '🫐', label: 'Blueberries', content: exDataContent },
-        { icon: '🥂', label: 'Champers?', content: exDataContent },
+        { icon: '🥂 ', label: 'Colors', content: TradeSettingsColor },
     ];
 
     const [showChartSettings, setShowChartSettings] = useState(false);
@@ -307,9 +317,15 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
             ))}
         </ul>
     );
-
+    // useEffect(() => {
+    //     const currentTabData = chartSettingsData.find(
+    //         (item) => item.label === selectedChartSetting.label,
+    //     );
+    //     if (currentTabData) setSelectedChartSetting(currentTabData);
+    // }, [chartSettingsData]);
     const mainChartSettingsContent = (
         <div
+            // ref={chartSettingsRef}
             className={`${styles.main_settings_container} ${
                 showChartSettings && styles.main_settings_container_active
             }`}
@@ -317,7 +333,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
             <header>
                 <p />
                 <h2>Chart Settings</h2>
-                <div>
+                <div onClick={() => setShowChartSettings(false)}>
                     <VscClose size={24} />
                 </div>
             </header>
@@ -325,8 +341,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
                 {chartSettingNavs}
                 <section className={styles.main_chart_settings_content}>
                     <h1>{selectedChartSetting.label}</h1>
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Totam sit, voluptates
-                    similique odit rerum veniam laudantium? Voluptatibus hic labore culpa.
+                    {selectedChartSetting.content}
                 </section>
             </div>
         </div>
