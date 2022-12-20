@@ -21,10 +21,7 @@ interface propsIF {
     getTokensByName: (searchName: string, chn: string, exact: boolean) => TokenIF[];
     getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
     addRecentToken: (tkn: TokenIF) => void;
-    getRecentTokens: (options?: {
-        onCurrentChain?: boolean,
-        count?: number | null
-    }) => TokenIF[];
+    getRecentTokens: (options?: { onCurrentChain?: boolean; count?: number | null }) => TokenIF[];
 }
 
 export const SoloTokenSelect = (props: propsIF) => {
@@ -38,7 +35,7 @@ export const SoloTokenSelect = (props: propsIF) => {
         getTokenByAddress,
         verifyToken,
         addRecentToken,
-        getRecentTokens
+        getRecentTokens,
     } = props;
 
     // hook to process search input and return an array of relevant tokens
@@ -48,7 +45,7 @@ export const SoloTokenSelect = (props: propsIF) => {
         importedTokens,
         verifyToken,
         getTokenByAddress,
-        getTokensByName
+        getTokensByName,
     );
 
     // instance of hook used to retrieve data from RTK
@@ -78,10 +75,11 @@ export const SoloTokenSelect = (props: propsIF) => {
         const recentTokens = getRecentTokens();
         // determine if clicked token is already in the recent tokens array
         // if not in recent tokens array, add it
-        recentTokens.some((recentToken: TokenIF) => (
-            recentToken.address.toLowerCase() === tkn.address.toLowerCase() &&
-            recentToken.chainId === tkn.chainId
-        )) || addRecentToken(tkn);
+        recentTokens.some(
+            (recentToken: TokenIF) =>
+                recentToken.address.toLowerCase() === tkn.address.toLowerCase() &&
+                recentToken.chainId === tkn.chainId,
+        ) || addRecentToken(tkn);
         // close the token modal
         closeModal();
     };
@@ -98,13 +96,15 @@ export const SoloTokenSelect = (props: propsIF) => {
             // local instance of function to pull back token data from chain
             const cachedFetchContractDetails = memoizeFetchContractDetails();
             // promise holding query to get token metadata from on-chain
-            const promise: Promise<TokenIF|undefined> = cachedFetchContractDetails(
-                provider, validatedInput, chainId
+            const promise: Promise<TokenIF | undefined> = cachedFetchContractDetails(
+                provider,
+                validatedInput,
+                chainId,
             );
             // resolve the promise
             Promise.resolve(promise)
                 // if response has a `decimals` value treat it as valid
-                .then((res: TokenIF|undefined) => res?.decimals && setCustomToken(res))
+                .then((res: TokenIF | undefined) => res?.decimals && setCustomToken(res))
                 // error handling
                 .catch((err) => {
                     // log error to console
@@ -116,9 +116,9 @@ export const SoloTokenSelect = (props: propsIF) => {
             // clear token data if conditions do not indicate necessity
             setCustomToken(null);
         }
-    // run hook when validated input or type of search changes
-    // searchType is redundant but may be relevant in the future
-    // until then it does not hurt anything to put it there
+        // run hook when validated input or type of search changes
+        // searchType is redundant but may be relevant in the future
+        // until then it does not hurt anything to put it there
     }, [searchType, validatedInput]);
     // EDS Test Token 2 address (please do not delete!)
     // '0x0B0322d75bad9cA72eC7708708B54e6b38C26adA'
@@ -138,13 +138,13 @@ export const SoloTokenSelect = (props: propsIF) => {
                 // can be in `allTokenLists` or in imported tokens list
                 if (
                     verifyToken(validatedInput, chainId) ||
-                    JSON.parse(localStorage.getItem('user') as string).tokens
-                        .some((tkn: TokenIF) => (
-                            tkn.address.toLowerCase() === validatedInput.toLowerCase()
-                        ))
+                    JSON.parse(localStorage.getItem('user') as string).tokens.some(
+                        (tkn: TokenIF) =>
+                            tkn.address.toLowerCase() === validatedInput.toLowerCase(),
+                    )
                 ) {
                     output = 'token buttons';
-                // pathway if the address cannot be validated to any token in local storage
+                    // pathway if the address cannot be validated to any token in local storage
                 } else {
                     output = 'from chain';
                 }
@@ -156,9 +156,9 @@ export const SoloTokenSelect = (props: propsIF) => {
         }
         // return output string
         return output;
-    // run hook when validated input or type of search changes
-    // searchType is redundant but may be relevant in the future
-    // until then it does not hurt anything to put it there
+        // run hook when validated input or type of search changes
+        // searchType is redundant but may be relevant in the future
+        // until then it does not hurt anything to put it there
     }, [validatedInput, searchType]);
 
     // TODO: find the control flow to put this in the DOM
@@ -185,13 +185,16 @@ export const SoloTokenSelect = (props: propsIF) => {
 
     return (
         <section className={styles.container}>
-            <input
-                id='token_select_input_field'
-                spellCheck='false'
-                type='text'
-                placeholder='&#61442; Search name or enter an Address'
-                onChange={(e) => setInput(e.target.value)}
-            />
+            <div className={styles.input_control_container}>
+                <input
+                    id='token_select_input_field'
+                    spellCheck='false'
+                    type='text'
+                    placeholder='&#61442; Search name or enter an Address'
+                    onChange={(e) => setInput(e.target.value)}
+                />
+                <button>Clear</button>
+            </div>
             {contentRouter === 'token buttons' &&
                 outputTokens.map((token: TokenIF) => (
                     <TokenSelect
@@ -208,11 +211,10 @@ export const SoloTokenSelect = (props: propsIF) => {
                         isOnPortfolio={true}
                         fromListsText=''
                     />
-                )
+                ))}
+            {contentRouter === 'from chain' && (
+                <SoloTokenImport customToken={customToken} chooseToken={chooseToken} />
             )}
-            {contentRouter === 'from chain' &&
-            <SoloTokenImport customToken={customToken} chooseToken={chooseToken} />
-            }
         </section>
     );
 };
