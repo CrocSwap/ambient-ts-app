@@ -65,6 +65,13 @@ export const SoloTokenSelect = (props: propsIF) => {
     //     getTokenByAddress,
     //     getTokensByName,
     // );
+    // const [outputTokens, validatedInput, setInput, searchType] = useSoloSearch(
+    //     chainId,
+    //     importedTokens,
+    //     verifyToken,
+    //     getTokenByAddress,
+    //     getTokensByName,
+    // );
 
     // instance of hook used to retrieve data from RTK
     const dispatch = useAppDispatch();
@@ -210,13 +217,16 @@ export const SoloTokenSelect = (props: propsIF) => {
 
     return (
         <section className={styles.container}>
-            <input
-                id='token_select_input_field'
-                spellCheck='false'
-                type='text'
-                placeholder='&#61442; Search name or enter an Address'
-                onChange={(e) => setInput(e.target.value)}
-            />
+            <div className={styles.input_control_container}>
+                <input
+                    id='token_select_input_field'
+                    spellCheck='false'
+                    type='text'
+                    placeholder='&#61442; Search name or enter an Address'
+                    onChange={(e) => setInput(e.target.value)}
+                />
+                <button>Clear</button>
+            </div>
 
             {showSoloSelectTokenButtons ? (
                 outputTokens.map((token: TokenIF) => (
