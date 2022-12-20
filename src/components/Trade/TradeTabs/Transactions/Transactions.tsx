@@ -388,7 +388,7 @@ export default function Transactions(props: TransactionsProps) {
 
     const headerColumns = [
         {
-            name: 'Time',
+            name: 'Timestamp',
             className: '',
             show: !showColumns,
             // && !showSidebar

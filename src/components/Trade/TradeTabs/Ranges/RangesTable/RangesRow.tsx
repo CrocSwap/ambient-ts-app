@@ -399,7 +399,7 @@ export default function RangesRow(props: RangesRowPropsIF) {
         /* </DefaultTooltip> */
     );
 
-    const positionTime = position.timeFirstMint || position.time;
+    const positionTime = position.latestUpdateTime || position.timeFirstMint;
 
     const elapsedTimeInSecondsNum = moment(Date.now()).diff(positionTime * 1000, 'seconds');
 
@@ -423,7 +423,13 @@ export default function RangesRow(props: RangesRowPropsIF) {
     const RangeTimeWithTooltip = (
         <DefaultTooltip
             interactive
-            title={'Last Updated: ' + moment(position.time * 1000).format('MM/DD/YYYY HH:mm')}
+            title={
+                'First Minted: ' + moment(position.timeFirstMint * 1000).format('MM/DD/YYYY HH:mm')
+            }
+            // title={
+            //     'Last Updated: ' +
+            //     moment(position.latestUpdateTime * 1000).format('MM/DD/YYYY HH:mm')
+            // }
             placement={'left'}
             arrow
             enterDelay={750}

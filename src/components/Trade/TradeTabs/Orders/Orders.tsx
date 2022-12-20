@@ -317,7 +317,7 @@ export default function Orders(props: propsIF) {
     );
     const headerColumns = [
         {
-            name: 'Time Updated',
+            name: 'Last Updated',
             className: '',
             show: !showColumns,
             slug: 'time',

@@ -292,7 +292,7 @@ export default function Ranges(props: RangesPropsIF) {
         //     sortable: false,
         // },
         {
-            name: 'Time',
+            name: 'Last Updated',
             className: '',
             show: !showColumns,
             slug: 'time',
