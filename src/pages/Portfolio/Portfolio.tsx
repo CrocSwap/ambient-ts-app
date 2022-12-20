@@ -28,6 +28,8 @@ const mainnetProvider = new ethers.providers.WebSocketProvider(
 );
 interface PortfolioPropsIF {
     crocEnv: CrocEnv | undefined;
+    addRecentToken: (tkn: TokenIF) => void;
+    getRecentTokens: (options?: { onCurrentChain?: boolean; count?: number | null }) => TokenIF[];
     getAmbientTokens: () => TokenIF[];
     verifyToken: (addr: string, chn: string) => boolean;
     getTokensByName: (searchName: string, chn: string, exact: boolean) => TokenIF[];
@@ -75,6 +77,8 @@ interface PortfolioPropsIF {
 export default function Portfolio(props: PortfolioPropsIF) {
     const {
         crocEnv,
+        addRecentToken,
+        getRecentTokens,
         getAmbientTokens,
         getTokensByName,
         getTokenByAddress,
@@ -295,11 +299,20 @@ export default function Portfolio(props: PortfolioPropsIF) {
 
     // TODO: move this function up to App.tsx
     const getImportedTokensPlus = () => {
+        // array of all tokens on Ambient list
         const ambientTokens = getAmbientTokens();
+        // array of addresses on Ambient list
         const ambientAddresses = ambientTokens.map((tkn) => tkn.address.toLowerCase());
+        // use Ambient token list as scaffold to build larger token array
         const output = ambientTokens;
+        // limiter for tokens to add from connected wallet
         let tokensAdded = 0;
+        // iterate over tokens in connected wallet
         connectedUserErc20Tokens?.forEach((tkn) => {
+            // gatekeep to make sure token is not already in the array,
+            // ... that the token can be verified against a known list,
+            // ... that user has a positive balance of the token, and
+            // ... that the limiter has not been reached
             if (
                 !ambientAddresses.includes(tkn.address.toLowerCase()) &&
                 tokensOnActiveLists.get(tkn.address + '_' + chainId) &&
@@ -308,8 +321,35 @@ export default function Portfolio(props: PortfolioPropsIF) {
             ) {
                 tokensAdded++;
                 output.push({ ...tkn, fromList: 'wallet' });
+                // increment the limiter by one
+                tokensAdded++;
+                // add the token to the output array
+                output.push({ ...tkn, fromList: 'wallet' });
             }
         });
+        // limiter for tokens to add from in-session recent tokens list
+        let recentTokensAdded = 0;
+        // iterate over tokens in recent tokens list
+        getRecentTokens().forEach((tkn) => {
+            // gatekeep to make sure the token isn't already in the list,
+            // ... is on the current chain, and that the limiter has not
+            // ... yet been reached
+            if (
+                !output.some(
+                    (tk) =>
+                        tk.address.toLowerCase() === tkn.address.toLowerCase() &&
+                        tk.chainId === tkn.chainId,
+                ) &&
+                tkn.chainId === parseInt(chainId) &&
+                recentTokensAdded < 2
+            ) {
+                // increment the limiter by one
+                recentTokensAdded++;
+                // add the token to the output array
+                output.push(tkn);
+            }
+        });
+        // return compiled array of tokens
         return output;
     };
 
@@ -501,6 +541,8 @@ export default function Portfolio(props: PortfolioPropsIF) {
                         validatedInput={validatedInput}
                         setInput={setInput}
                         searchType={searchType}
+                        addRecentToken={addRecentToken}
+                        getRecentTokens={getRecentTokens}
                     />
                 </Modal>
             )}

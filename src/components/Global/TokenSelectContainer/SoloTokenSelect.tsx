@@ -28,6 +28,8 @@ interface propsIF {
     validatedInput: string;
     setInput: Dispatch<SetStateAction<string>>;
     searchType: string;
+    addRecentToken: (tkn: TokenIF) => void;
+    getRecentTokens: (options?: { onCurrentChain?: boolean; count?: number | null }) => TokenIF[];
 }
 
 export const SoloTokenSelect = (props: propsIF) => {
@@ -48,6 +50,10 @@ export const SoloTokenSelect = (props: propsIF) => {
         validatedInput,
         setInput,
         searchType,
+
+        // verifyToken,
+        addRecentToken,
+        getRecentTokens,
     } = props;
 
     // hook to process search input and return an array of relevant tokens
@@ -83,6 +89,15 @@ export const SoloTokenSelect = (props: propsIF) => {
             // necessary as there is no event listener on local storage 😱
             setImportedTokens([...importedTokens, tkn]);
         }
+        // array of recent tokens from App.tsx (current session only)
+        const recentTokens = getRecentTokens();
+        // determine if clicked token is already in the recent tokens array
+        // if not in recent tokens array, add it
+        recentTokens.some(
+            (recentToken: TokenIF) =>
+                recentToken.address.toLowerCase() === tkn.address.toLowerCase() &&
+                recentToken.chainId === tkn.chainId,
+        ) || addRecentToken(tkn);
         // close the token modal
         closeModal();
     };
