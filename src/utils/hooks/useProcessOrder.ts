@@ -52,8 +52,8 @@ export const useProcessOrder = (limitOrder: LimitOrderIF) => {
         [limitOrder.base, limitOrder.base, limitOrder.chainId],
     );
 
-    const [lowPriceDisplay, setLowPriceDisplay] = useState<string | undefined>();
-    const [highPriceDisplay, setHighPriceDisplay] = useState<string | undefined>();
+    const [startPriceDisplay, setStartPriceDisplay] = useState<string | undefined>();
+    const [finishPriceDisplay, setFinishPriceDisplay] = useState<string | undefined>();
 
     useEffect(() => {
         // console.log({ limitOrder });
@@ -111,7 +111,7 @@ export const useProcessOrder = (limitOrder: LimitOrderIF) => {
             const lowPriceDisplayNum = isDenomBase ? askTickInvPrice : askTickPrice;
             const highPriceDisplayNum = isDenomBase ? bidTickInvPrice : bidTickPrice;
 
-            const lowPriceDisplay =
+            const startPriceDisplay =
                 lowPriceDisplayNum === 0
                     ? '0'
                     : lowPriceDisplayNum < 0.0001
@@ -126,7 +126,7 @@ export const useProcessOrder = (limitOrder: LimitOrderIF) => {
                           maximumFractionDigits: 2,
                       });
 
-            const highPriceDisplay =
+            const finishPriceDisplay =
                 highPriceDisplayNum === 0
                     ? '0'
                     : highPriceDisplayNum < 0.0001
@@ -141,8 +141,8 @@ export const useProcessOrder = (limitOrder: LimitOrderIF) => {
                           maximumFractionDigits: 2,
                       });
 
-            setLowPriceDisplay(lowPriceDisplay);
-            setHighPriceDisplay(highPriceDisplay);
+            setStartPriceDisplay(startPriceDisplay);
+            setFinishPriceDisplay(finishPriceDisplay);
         }
     }, [JSON.stringify(limitOrder), isDenomBase]);
 
@@ -376,8 +376,8 @@ export const useProcessOrder = (limitOrder: LimitOrderIF) => {
         isOrderFilled,
 
         // price
-        lowPriceDisplay,
-        highPriceDisplay,
+        startPriceDisplay,
+        finishPriceDisplay,
 
         // tik
         bidTick,

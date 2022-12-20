@@ -42,8 +42,8 @@ export default function PriceInfo(props: IPriceInfoProps) {
         isDenomBase,
         baseTokenLogo,
         quoteTokenLogo,
-        lowPriceDisplay,
-        highPriceDisplay,
+        startPriceDisplay,
+        finishPriceDisplay,
         // bidTick,
         // askTick,
         // positionLiqTotalUSD,
@@ -172,25 +172,54 @@ export default function PriceInfo(props: IPriceInfoProps) {
         </div>
     );
 
-    const minMaxPriceDisplay = (
+    const startFinishPriceDisplay = (
         <div className={styles.min_max_price}>
             <div className={styles.min_max_content}>
                 Start Price
                 <span className={styles.min_price}>
-                    {lowPriceDisplay ? lowPriceDisplay : '0'}
+                    {startPriceDisplay ? startPriceDisplay : '...'}
                     {/* {lowPriceDisplay ? parseFloat(lowPriceDisplay).toFixed(2) : 0} */}
                 </span>
             </div>
             <div className={styles.min_max_content}>
                 Finish Price
                 <span className={styles.max_price}>
-                    {highPriceDisplay ? highPriceDisplay : 'Infinity'}
+                    {finishPriceDisplay ? finishPriceDisplay : '...'}
                     {/* {highPriceDisplay ? parseFloat(highPriceDisplay).toFixed(2) : 'Infinity'} */}
                 </span>
             </div>
         </div>
     );
     // console.log(controlItems);
+
+    const isOrderClaimable = limitOrder.claimableLiq !== '0';
+
+    const descriptionContent = (
+        <motion.div
+            layout
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className={styles.info_container}
+        >
+            <span>
+                {`This limit order ${
+                    isOrderClaimable ? 'completed' : 'will complete'
+                }  execution and  ${
+                    isOrderClaimable ? 'became' : 'become'
+                } claimable when the price of ${isDenomBase ? baseTokenSymbol : quoteTokenSymbol}
+                ${
+                    isDenomBase
+                        ? isOrderClaimable
+                            ? 'increased'
+                            : 'increases'
+                        : isOrderClaimable
+                        ? 'decreased'
+                        : 'decreases'
+                } to  ${finishPriceDisplay} ${isDenomBase ? quoteTokenSymbol : baseTokenSymbol}.`}
+            </span>
+        </motion.div>
+    );
 
     return (
         <div className={styles.main_container}>
@@ -202,7 +231,10 @@ export default function PriceInfo(props: IPriceInfoProps) {
                 <Divider />
                 {controlItems[1] && liquidityContent}
                 <Divider />
-                {minMaxPriceDisplay}
+                {startFinishPriceDisplay}
+                <Divider />
+                {descriptionContent}
+                <Divider />
             </div>
         </div>
     );
