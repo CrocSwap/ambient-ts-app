@@ -1843,7 +1843,7 @@ export default function App() {
                         user: account,
                         chainId: chainData.chainId,
                         ensResolution: 'true',
-                        // omitEmpty: 'true',
+                        omitEmpty: 'true',
                     }),
             )
                 .then((response) => response?.json())
@@ -2388,7 +2388,7 @@ export default function App() {
     false && getAllTokens;
     false && getTokensOnChain;
 
-    const {addRecentToken, getRecentTokens} = useRecentTokens(chainData.chainId);
+    const { addRecentToken, getRecentTokens } = useRecentTokens(chainData.chainId);
 
     return (
         <>
