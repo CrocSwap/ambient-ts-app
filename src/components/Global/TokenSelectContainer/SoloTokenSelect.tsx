@@ -3,7 +3,7 @@ import { TokenIF } from '../../../utils/interfaces/exports';
 import TokenSelect from '../TokenSelect/TokenSelect';
 import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
 import { setToken } from '../../../utils/state/temp';
-import { useSoloSearch } from './useSoloSearch';
+// import { useSoloSearch } from './useSoloSearch';
 import styles from './SoloTokenSelect.module.css';
 import { memoizeFetchContractDetails } from '../../../App/functions/fetchContractDetails';
 import { ethers } from 'ethers';
@@ -20,6 +20,14 @@ interface propsIF {
     verifyToken: (addr: string, chn: string) => boolean;
     getTokensByName: (searchName: string, chn: string, exact: boolean) => TokenIF[];
     getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
+
+    showSoloSelectTokenButtons: boolean;
+    setShowSoloSelectTokenButtons: Dispatch<SetStateAction<boolean>>;
+
+    outputTokens: TokenIF[];
+    validatedInput: string;
+    setInput: Dispatch<SetStateAction<string>>;
+    searchType: string;
     addRecentToken: (tkn: TokenIF) => void;
     getRecentTokens: (options?: { onCurrentChain?: boolean; count?: number | null }) => TokenIF[];
 }
@@ -31,22 +39,39 @@ export const SoloTokenSelect = (props: propsIF) => {
         chainId,
         setImportedTokens,
         closeModal,
-        getTokensByName,
-        getTokenByAddress,
+        // getTokensByName,
+        // getTokenByAddress,
         verifyToken,
+
+        setShowSoloSelectTokenButtons,
+        showSoloSelectTokenButtons,
+
+        outputTokens,
+        validatedInput,
+        setInput,
+        searchType,
+
+        // verifyToken,
         addRecentToken,
         getRecentTokens,
     } = props;
 
     // hook to process search input and return an array of relevant tokens
     // also returns state setter function and values for control flow
-    const [outputTokens, validatedInput, setInput, searchType] = useSoloSearch(
-        chainId,
-        importedTokens,
-        verifyToken,
-        getTokenByAddress,
-        getTokensByName,
-    );
+    // const [outputTokens, validatedInput, setInput, searchType] = useSoloSearch(
+    //     chainId,
+    //     importedTokens,
+    //     verifyToken,
+    //     getTokenByAddress,
+    //     getTokensByName,
+    // );
+    // const [outputTokens, validatedInput, setInput, searchType] = useSoloSearch(
+    //     chainId,
+    //     importedTokens,
+    //     verifyToken,
+    //     getTokenByAddress,
+    //     getTokensByName,
+    // );
 
     // instance of hook used to retrieve data from RTK
     const dispatch = useAppDispatch();
@@ -169,6 +194,13 @@ export const SoloTokenSelect = (props: propsIF) => {
     //     </div>
     // );
 
+    useEffect(() => {
+        if (contentRouter === 'from chain') {
+            setShowSoloSelectTokenButtons(false);
+        } else {
+            setShowSoloSelectTokenButtons(true);
+        }
+    }, [contentRouter]);
     // hook to add focus to the input on after initial render, this is
     // preferable to autofocusing the element to ensure the DOM does not
     // ... have multiple autofocuses at once, background included
@@ -195,7 +227,8 @@ export const SoloTokenSelect = (props: propsIF) => {
                 />
                 <button>Clear</button>
             </div>
-            {contentRouter === 'token buttons' &&
+
+            {showSoloSelectTokenButtons ? (
                 outputTokens.map((token: TokenIF) => (
                     <TokenSelect
                         key={JSON.stringify(token)}
@@ -211,8 +244,8 @@ export const SoloTokenSelect = (props: propsIF) => {
                         isOnPortfolio={true}
                         fromListsText=''
                     />
-                ))}
-            {contentRouter === 'from chain' && (
+                ))
+            ) : (
                 <SoloTokenImport customToken={customToken} chooseToken={chooseToken} />
             )}
         </section>

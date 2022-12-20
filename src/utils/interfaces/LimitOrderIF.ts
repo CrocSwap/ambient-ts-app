@@ -31,6 +31,7 @@ export interface LimitOrderIF {
     claimableLiqBaseDecimalCorrected: number;
     positionLiqQuoteDecimalCorrected: number;
     claimableLiqQuoteDecimalCorrected: number;
+    claimableLiqTotalUSD: number;
     positionLiqQuote: string;
     updateType: string;
     latestUpdateBlock: number;
