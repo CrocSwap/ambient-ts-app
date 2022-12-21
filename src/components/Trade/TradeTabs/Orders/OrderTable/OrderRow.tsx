@@ -15,6 +15,7 @@ import { useAppDispatch } from '../../../../../utils/hooks/reduxToolkit';
 import { setDataLoadingStatus } from '../../../../../utils/state/graphDataSlice';
 import moment from 'moment';
 import { ZERO_ADDRESS } from '../../../../../constants';
+import { FiExternalLink } from 'react-icons/fi';
 
 interface OrderRowPropsIF {
     crocEnv: CrocEnv | undefined;
@@ -183,7 +184,8 @@ export default function OrderRow(props: OrderRowPropsIF) {
                         }}
                         to={`/${isOwnerActiveAccount ? 'account' : ensName ? ensName : ownerId}`}
                     >
-                        View Account
+                        {'View Account' + 'ㅤ'}
+                        <FiExternalLink size={'12px'} />
                     </NavLink>
                 </div>
             }
