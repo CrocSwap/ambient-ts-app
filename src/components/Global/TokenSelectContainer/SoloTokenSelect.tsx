@@ -210,13 +210,13 @@ export const SoloTokenSelect = (props: propsIF) => {
 
     // // TODO: this is a function to clear the input field on click
     // // TODO: we just need a button in the DOM to attach it
-    // const input = document.getElementById('token_select_input_field') as HTMLInputElement;
-    // const clearInputField = () => {
-    //     if (input) input.value = '';
+    const input = document.getElementById('token_select_input_field') as HTMLInputElement;
+    const clearInputField = () => {
+        if (input) input.value = '';
 
-    //     setInput('');
-    //     document.getElementById('token_select_input_field')?.focus();
-    // };
+        setInput('');
+        document.getElementById('token_select_input_field')?.focus();
+    };
 
     return (
         <section className={styles.container}>
@@ -228,6 +228,7 @@ export const SoloTokenSelect = (props: propsIF) => {
                     placeholder=' Search name or enter an Address'
                     onChange={(e) => setInput(e.target.value)}
                 />
+                {input?.value && <button onClick={clearInputField}>Clear</button>}
                 {/* {input.value && <button onClick={clearInputField}>Clear</button>} */}
             </div>
 
