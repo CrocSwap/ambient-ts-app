@@ -1611,7 +1611,13 @@ export default function App() {
 
             if (lastMessageData) {
                 console.log({ lastMessageData });
-                dispatch(addLimitOrderChangesByUser(lastMessageData));
+                Promise.all(
+                    lastMessageData.map((limitOrder: LimitOrderIF) => {
+                        return getLimitOrderData(limitOrder, searchableTokens);
+                    }),
+                ).then((updatedLimitOrderStates) => {
+                    dispatch(addLimitOrderChangesByUser(updatedLimitOrderStates));
+                });
             }
         }
     }, [lastUserLimitOrderChangesMessage]);
