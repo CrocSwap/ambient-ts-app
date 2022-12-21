@@ -204,15 +204,15 @@ export default function OrderRow(props: OrderRowPropsIF) {
     );
 
     const baseTokenLogoComponent = baseTokenLogo ? (
-        <img src={baseTokenLogo} alt='base token' width='15px' />
+        <img src={baseTokenLogo} alt='base token' width='20px' />
     ) : (
-        <NoTokenIcon tokenInitial={limitOrder.baseSymbol.charAt(0)} width='15px' />
+        <NoTokenIcon tokenInitial={limitOrder.baseSymbol.charAt(0)} width='20px' />
     );
 
     const quoteTokenLogoComponent = quoteTokenLogo ? (
-        <img src={quoteTokenLogo} alt='quote token' width='15px' />
+        <img src={quoteTokenLogo} alt='quote token' width='20px' />
     ) : (
-        <NoTokenIcon tokenInitial={limitOrder.quoteSymbol.charAt(0)} width='15px' />
+        <NoTokenIcon tokenInitial={limitOrder.quoteSymbol.charAt(0)} width='20px' />
     );
 
     // const tokensTogether = (
@@ -334,7 +334,9 @@ export default function OrderRow(props: OrderRowPropsIF) {
                 }}
             >
                 {baseDisplay}
-                {isOnPortfolioPage && <img src={baseTokenLogo} width='15px' alt='' />}
+                {baseTokenLogoComponent}
+                {/* {<img src={baseTokenLogo} width='15px' alt='' />} */}
+                {/* {isOnPortfolioPage && <img src={baseTokenLogo} width='15px' alt='' />} */}
             </p>
         </li>
         /* </DefaultTooltip> */
@@ -360,7 +362,9 @@ export default function OrderRow(props: OrderRowPropsIF) {
                 }}
             >
                 {quoteDisplay}
-                {isOnPortfolioPage && <img src={quoteTokenLogo} width='15px' alt='' />}
+                {quoteTokenLogoComponent}
+                {/* {<img src={quoteTokenLogo} width='15px' alt='' />} */}
+                {/* {isOnPortfolioPage && <img src={quoteTokenLogo} width='15px' alt='' />} */}
             </p>
         </li>
         /* </DefaultTooltip> */

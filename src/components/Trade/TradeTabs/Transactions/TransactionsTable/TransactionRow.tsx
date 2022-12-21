@@ -414,7 +414,8 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                 }}
             >
                 {baseDisplay}
-                {<img src={baseTokenLogo} width='15px' alt='' />}
+                {baseTokenLogoComponent}
+                {/* {<img src={baseTokenLogo} width='15px' alt='' />} */}
                 {/* {isOnPortfolioPage && <img src={baseTokenLogo} width='15px' alt='' />} */}
             </p>
         </li>
@@ -441,7 +442,8 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                 }}
             >
                 {quoteDisplay}
-                {<img src={quoteTokenLogo} width='15px' alt='' />}
+                {/* {<img src={quoteTokenLogo} width='15px' alt='' />} */}
+                {quoteTokenLogoComponent}
                 {/* {isOnPortfolioPage && <img src={quoteTokenLogo} width='15px' alt='' />} */}
             </p>
         </li>

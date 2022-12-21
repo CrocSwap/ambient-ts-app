@@ -284,10 +284,11 @@ export default function Orders(props: propsIF) {
     // -----------------------------
 
     const ipadView = useMediaQuery('(max-width: 480px)');
-    const desktopView = useMediaQuery('(max-width: 768px)');
+    // const desktopView = useMediaQuery('(max-width: 768px)');
     const view2 = useMediaQuery('(max-width: 1568px)');
+    const showColumns = useMediaQuery('(max-width: 1440px)');
 
-    const showColumns = desktopView;
+    // const showColumns = desktopView;
 
     const quoteTokenSymbol = tradeData.quoteToken?.symbol;
     const baseTokenSymbol = tradeData.baseToken?.symbol;
@@ -309,7 +310,9 @@ export default function Orders(props: propsIF) {
             <p>Type</p>
         </>
     );
-    const tokens = (
+    const tokens = isOnPortfolioPage ? (
+        <>Tokens</>
+    ) : (
         <>
             <p>{`${baseTokenSymbol} ( ${baseTokenCharacter} )`}</p>
             <p>{`${quoteTokenSymbol} ( ${quoteTokenCharacter} )`}</p>
@@ -398,7 +401,7 @@ export default function Orders(props: propsIF) {
             alignRight: true,
         },
         {
-            name: isOnPortfolioPage ? 'Qty A' : `${baseTokenSymbol}`,
+            name: isOnPortfolioPage ? '' : `${baseTokenSymbol}`,
 
             show: !showColumns,
             slug: baseTokenSymbol,
@@ -406,7 +409,7 @@ export default function Orders(props: propsIF) {
             alignRight: true,
         },
         {
-            name: isOnPortfolioPage ? 'Qty B' : `${quoteTokenSymbol}`,
+            name: isOnPortfolioPage ? '' : `${quoteTokenSymbol}`,
 
             show: !showColumns,
             slug: quoteTokenSymbol,
@@ -422,11 +425,13 @@ export default function Orders(props: propsIF) {
             alignRight: true,
         },
         {
-            name: ' ',
+            name: 'Claimable',
+            // name: ' ',
             className: '',
             show: !ipadView,
             slug: 'status',
             sortable: false,
+            alignCenter: true,
         },
         {
             name: '',

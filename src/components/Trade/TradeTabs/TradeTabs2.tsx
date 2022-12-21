@@ -597,7 +597,7 @@ export default function TradeTabs2(props: ITabsProps) {
     return (
         <div ref={tabComponentRef} className={styles.trade_tab_container}>
             <>
-                {selectedMessageContent}
+                {isCandleSelected ? selectedMessageContent : null}
                 <TabComponent
                     data={tradeTabData}
                     rightTabOptions={<PositionsOnlyToggle {...positionsOnlyToggleProps} />}

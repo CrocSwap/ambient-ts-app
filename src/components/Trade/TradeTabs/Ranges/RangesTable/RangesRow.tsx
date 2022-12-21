@@ -256,18 +256,18 @@ export default function RangesRow(props: RangesRowPropsIF) {
         </DefaultTooltip>
     );
 
-    // const baseTokenLogoComponent =
-    //     baseTokenLogo !== '' ? (
-    //         <img src={baseTokenLogo} alt='base token' width='15px' />
-    //     ) : (
-    //         <NoTokenIcon tokenInitial={position.baseSymbol.charAt(0)} width='30px' />
-    //     );
+    const baseTokenLogoComponent =
+        baseTokenLogo !== '' ? (
+            <img src={baseTokenLogo} alt='base token' width='20px' />
+        ) : (
+            <NoTokenIcon tokenInitial={position.baseSymbol.charAt(0)} width='20px' />
+        );
 
     const quoteTokenLogoComponent =
         quoteTokenLogo !== '' ? (
-            <img src={quoteTokenLogo} alt='quote token' width='15px' />
+            <img src={quoteTokenLogo} alt='quote token' width='20px' />
         ) : (
-            <NoTokenIcon tokenInitial={position.quoteSymbol.charAt(0)} width='30px' />
+            <NoTokenIcon tokenInitial={position.quoteSymbol.charAt(0)} width='20px' />
         );
 
     // const tokensTogether = (
@@ -367,7 +367,8 @@ export default function RangesRow(props: RangesRowPropsIF) {
                 }}
             >
                 {baseDisplay}
-                {isOnPortfolioPage && <img src={baseTokenLogo} width='15px' alt='' />}
+                {baseTokenLogoComponent}
+                {/* {isOnPortfolioPage && <img src={baseTokenLogo} width='15px' alt='' />} */}
             </p>
         </li>
         /* </DefaultTooltip> */
@@ -393,7 +394,9 @@ export default function RangesRow(props: RangesRowPropsIF) {
                 }}
             >
                 {quoteDisplay}
-                {isOnPortfolioPage && <img src={quoteTokenLogo} width='15px' alt='' />}
+                {quoteTokenLogoComponent}
+
+                {/* {isOnPortfolioPage && <img src={quoteTokenLogo} width='15px' alt='' />} */}
             </p>
         </li>
         /* </DefaultTooltip> */
@@ -456,9 +459,9 @@ export default function RangesRow(props: RangesRowPropsIF) {
         >
             {rankingOrNull}
             {!showColumns && RangeTimeWithTooltip}
+            {isOnPortfolioPage && tokenPair}
             {idOrNull}
             {/* {isOnPortfolioPage && accountTokenImages} */}
-            {isOnPortfolioPage && tokenPair}
             {!showColumns && !isOnPortfolioPage && walletWithTooltip}
             {showColumns && (
                 <li data-label='id'>
@@ -505,7 +508,7 @@ export default function RangesRow(props: RangesRowPropsIF) {
                 >
                     <p className={styles.token_qty} style={{ fontFamily: 'monospace' }}>
                         {baseDisplay}
-                        <img src={baseTokenLogo} alt='' width='15px' />
+                        {baseTokenLogoComponent}
                     </p>
 
                     <p className={styles.token_qty} style={{ fontFamily: 'monospace' }}>

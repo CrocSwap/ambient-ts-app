@@ -1014,7 +1014,7 @@ export default function App() {
                                         poolPositions.map((position: PositionIF) => {
                                             return getPositionData(
                                                 position,
-                                                importedTokens,
+                                                searchableTokens,
                                                 crocEnv,
                                                 chainData.chainId,
                                                 lastBlockNumber,
@@ -1069,7 +1069,7 @@ export default function App() {
                                         leaderboardPositions.map((position: PositionIF) => {
                                             return getPositionData(
                                                 position,
-                                                importedTokens,
+                                                searchableTokens,
                                                 crocEnv,
                                                 chainData.chainId,
                                                 lastBlockNumber,
@@ -1299,7 +1299,7 @@ export default function App() {
                     lastMessageData.map((position: PositionIF) => {
                         return getPositionData(
                             position,
-                            importedTokens,
+                            searchableTokens,
                             crocEnv,
                             chainData.chainId,
                             lastBlockNumber,
@@ -1519,7 +1519,7 @@ export default function App() {
                     lastMessageData.map((position: PositionIF) => {
                         return getPositionData(
                             position,
-                            importedTokens,
+                            searchableTokens,
                             crocEnv,
                             chainData.chainId,
                             lastBlockNumber,
@@ -1611,7 +1611,13 @@ export default function App() {
 
             if (lastMessageData) {
                 console.log({ lastMessageData });
-                dispatch(addLimitOrderChangesByUser(lastMessageData));
+                Promise.all(
+                    lastMessageData.map((limitOrder: LimitOrderIF) => {
+                        return getLimitOrderData(limitOrder, searchableTokens);
+                    }),
+                ).then((updatedLimitOrderStates) => {
+                    dispatch(addLimitOrderChangesByUser(updatedLimitOrderStates));
+                });
             }
         }
     }, [lastUserLimitOrderChangesMessage]);
@@ -1810,7 +1816,7 @@ export default function App() {
                                 userPositions.map((position: PositionIF) => {
                                     return getPositionData(
                                         position,
-                                        importedTokens,
+                                        searchableTokens,
                                         crocEnv,
                                         chainData.chainId,
                                         lastBlockNumber,
