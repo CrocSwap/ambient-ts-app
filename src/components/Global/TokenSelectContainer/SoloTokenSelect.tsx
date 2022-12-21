@@ -228,7 +228,7 @@ export const SoloTokenSelect = (props: propsIF) => {
                     placeholder=' Search name or enter an Address'
                     onChange={(e) => setInput(e.target.value)}
                 />
-                {input.value && <button onClick={clearInputField}>Clear</button>}
+                {input?.value && <button onClick={clearInputField}>Clear</button>}
             </div>
 
             {showSoloSelectTokenButtons ? (
