@@ -204,12 +204,12 @@ export const SoloTokenSelect = (props: propsIF) => {
     // hook to add focus to the input on after initial render, this is
     // preferable to autofocusing the element to ensure the DOM does not
     // ... have multiple autofocuses at once, background included
-    useEffect(() => {
-        document.getElementById('token_select_input_field')?.focus();
-    }, []);
+    // useEffect(() => {
+    //     document.getElementById('token_select_input_field')?.focus();
+    // }, []);
 
-    // TODO: this is a function to clear the input field on click
-    // TODO: we just need a button in the DOM to attach it
+    // // TODO: this is a function to clear the input field on click
+    // // TODO: we just need a button in the DOM to attach it
     const input = document.getElementById('token_select_input_field') as HTMLInputElement;
     const clearInputField = () => {
         if (input) input.value = '';
@@ -229,6 +229,7 @@ export const SoloTokenSelect = (props: propsIF) => {
                     onChange={(e) => setInput(e.target.value)}
                 />
                 {input?.value && <button onClick={clearInputField}>Clear</button>}
+                {/* {input.value && <button onClick={clearInputField}>Clear</button>} */}
             </div>
 
             {showSoloSelectTokenButtons ? (

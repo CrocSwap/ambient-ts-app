@@ -224,28 +224,28 @@ export default function Orders(props: propsIF) {
             onOpen: () => {
                 console.log('pool limit orders subscription opened');
 
-                // repeat fetch with the interval of 30 seconds
-                const timerId = setInterval(() => {
-                    fetchPoolLimitOrderStates({
-                        chainId: chainData.chainId,
-                        base: tradeData.baseToken.address,
-                        quote: tradeData.quoteToken.address,
-                        poolIdx: chainData.poolIndex,
-                        ensResolution: true,
-                    })
-                        .then((poolChangesJsonData) => {
-                            if (poolChangesJsonData) {
-                                // console.log({ poolChangesJsonData });
-                                dispatch(addLimitOrderChangesByPool(poolChangesJsonData));
-                            }
-                        })
-                        .catch(console.log);
-                }, 30000);
+                // // repeat fetch with the interval of 30 seconds
+                // const timerId = setInterval(() => {
+                //     fetchPoolLimitOrderStates({
+                //         chainId: chainData.chainId,
+                //         base: tradeData.baseToken.address,
+                //         quote: tradeData.quoteToken.address,
+                //         poolIdx: chainData.poolIndex,
+                //         ensResolution: true,
+                //     })
+                //         .then((poolChangesJsonData) => {
+                //             if (poolChangesJsonData) {
+                //                 // console.log({ poolChangesJsonData });
+                //                 dispatch(addLimitOrderChangesByPool(poolChangesJsonData));
+                //             }
+                //         })
+                //         .catch(console.log);
+                // }, 30000);
 
-                // after 90 seconds stop
-                setTimeout(() => {
-                    clearInterval(timerId);
-                }, 90000);
+                // // after 90 seconds stop
+                // setTimeout(() => {
+                //     clearInterval(timerId);
+                // }, 90000);
             },
             onClose: (event: CloseEvent) => console.log({ event }),
             // onClose: () => console.log('allPositions websocket connection closed'),
@@ -284,10 +284,11 @@ export default function Orders(props: propsIF) {
     // -----------------------------
 
     const ipadView = useMediaQuery('(max-width: 480px)');
-    const desktopView = useMediaQuery('(max-width: 768px)');
+    // const desktopView = useMediaQuery('(max-width: 768px)');
     const view2 = useMediaQuery('(max-width: 1568px)');
+    const showColumns = useMediaQuery('(max-width: 1440px)');
 
-    const showColumns = desktopView;
+    // const showColumns = desktopView;
 
     const quoteTokenSymbol = tradeData.quoteToken?.symbol;
     const baseTokenSymbol = tradeData.baseToken?.symbol;
@@ -309,7 +310,9 @@ export default function Orders(props: propsIF) {
             <p>Type</p>
         </>
     );
-    const tokens = (
+    const tokens = isOnPortfolioPage ? (
+        <>Tokens</>
+    ) : (
         <>
             <p>{`${baseTokenSymbol} ( ${baseTokenCharacter} )`}</p>
             <p>{`${quoteTokenSymbol} ( ${quoteTokenCharacter} )`}</p>
@@ -317,7 +320,7 @@ export default function Orders(props: propsIF) {
     );
     const headerColumns = [
         {
-            name: 'Time Updated',
+            name: 'Last Updated',
             className: '',
             show: !showColumns,
             slug: 'time',
@@ -359,7 +362,7 @@ export default function Orders(props: propsIF) {
             sortable: false,
         },
         {
-            name: 'Price',
+            name: 'Limit Price',
 
             show: !ipadView,
             slug: 'price',
@@ -398,7 +401,7 @@ export default function Orders(props: propsIF) {
             alignRight: true,
         },
         {
-            name: isOnPortfolioPage ? 'Qty A' : `${baseTokenSymbol}`,
+            name: isOnPortfolioPage ? '' : `${baseTokenSymbol}`,
 
             show: !showColumns,
             slug: baseTokenSymbol,
@@ -406,7 +409,7 @@ export default function Orders(props: propsIF) {
             alignRight: true,
         },
         {
-            name: isOnPortfolioPage ? 'Qty B' : `${quoteTokenSymbol}`,
+            name: isOnPortfolioPage ? '' : `${quoteTokenSymbol}`,
 
             show: !showColumns,
             slug: quoteTokenSymbol,
@@ -422,11 +425,13 @@ export default function Orders(props: propsIF) {
             alignRight: true,
         },
         {
-            name: ' ',
+            name: 'Claimable',
+            // name: ' ',
             className: '',
             show: !ipadView,
             slug: 'status',
             sortable: false,
+            alignCenter: true,
         },
         {
             name: '',
