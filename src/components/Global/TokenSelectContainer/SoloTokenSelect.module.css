@@ -1,5 +1,7 @@
 .container{
     max-width: 350px;
+    display: flex;
+    flex-direction: column;
 }
 
 .container h2{
@@ -57,4 +59,12 @@
 }
 .input_control_container button:hover{
     color: var(--text-grey-white)
+}
+
+.loader{
+    
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
