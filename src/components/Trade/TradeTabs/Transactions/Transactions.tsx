@@ -388,7 +388,7 @@ export default function Transactions(props: TransactionsProps) {
 
     const headerColumns = [
         {
-            name: 'Time',
+            name: 'Timestamp',
             className: '',
             show: !showColumns,
             // && !showSidebar
@@ -473,7 +473,7 @@ export default function Transactions(props: TransactionsProps) {
             alignRight: true,
         },
         {
-            name: isOnPortfolioPage ? <></> : `${baseTokenSymbol}`,
+            name: isOnPortfolioPage ? <></> : `${baseTokenSymbol}ㅤㅤ`,
             // name: isOnPortfolioPage ? 'Qty A' : `${baseTokenSymbol}`,
 
             show: !showColumns,
@@ -482,7 +482,7 @@ export default function Transactions(props: TransactionsProps) {
             alignRight: true,
         },
         {
-            name: isOnPortfolioPage ? <></> : `${quoteTokenSymbol}`,
+            name: isOnPortfolioPage ? <></> : `${quoteTokenSymbol}ㅤㅤ`, // invisible character added
             // name: isOnPortfolioPage ? 'Qty B' : `${quoteTokenSymbol}`,
 
             show: !showColumns,
@@ -491,7 +491,7 @@ export default function Transactions(props: TransactionsProps) {
             alignRight: true,
         },
         {
-            name: 'Tokens',
+            name: 'Tokensㅤㅤ',
 
             show: !isOnPortfolioPage && showColumns,
 
@@ -500,7 +500,7 @@ export default function Transactions(props: TransactionsProps) {
             alignRight: true,
         },
         {
-            name: <></>,
+            name: <>Tokensㅤㅤ</>,
 
             show: isOnPortfolioPage && showColumns,
 

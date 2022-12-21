@@ -2,16 +2,16 @@ import { useEffect, useState } from 'react';
 import { TokenIF } from '../../utils/interfaces/exports';
 
 interface getRecentTokensParamsIF {
-    onCurrentChain?: boolean,
-    count?: number | null
+    onCurrentChain?: boolean;
+    count?: number | null;
 }
 
 export const useRecentTokens = (
-    chainId: string
+    chainId: string,
 ): {
-    addRecentToken: (tkn: TokenIF) => void,
-    getRecentTokens: (options?: getRecentTokensParamsIF) => TokenIF[],
-    resetRecentTokens: () => void
+    addRecentToken: (tkn: TokenIF) => void;
+    getRecentTokens: (options?: getRecentTokensParamsIF) => TokenIF[];
+    resetRecentTokens: () => void;
 } => {
     // console.log('ran hook useRecentTokens()');
     const [recentTokens, setRecentTokens] = useState<TokenIF[]>([]);
@@ -21,30 +21,30 @@ export const useRecentTokens = (
 
     // fn to add a token to the recentTokens array
     function addRecentToken(tkn: TokenIF): void {
-        setRecentTokens([tkn, ...recentTokens])
-    };
+        setRecentTokens([tkn, ...recentTokens]);
+    }
 
     // fn to return recent tokens from local state
     function getRecentTokens(
         options: getRecentTokensParamsIF = {
             onCurrentChain: false,
-            count: null
-        }
+            count: null,
+        },
     ): TokenIF[] {
-        const relevantTokens = options.onCurrentChain 
+        const relevantTokens = options.onCurrentChain
             ? recentTokens.filter((tkn: TokenIF) => tkn.chainId === parseInt(chainId))
             : recentTokens;
-        return relevantTokens.slice(0, options.count ?? relevantTokens.length+1);
+        return relevantTokens.slice(0, options.count ?? relevantTokens.length + 1);
     }
 
     // fn to clear list of recent tokens
     function resetRecentTokens(): void {
         setRecentTokens([]);
-    };
+    }
 
     return {
         addRecentToken,
         getRecentTokens,
-        resetRecentTokens
+        resetRecentTokens,
     };
-}
+};

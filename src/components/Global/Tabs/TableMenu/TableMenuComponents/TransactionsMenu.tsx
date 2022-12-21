@@ -449,7 +449,7 @@ export default function TransactionsMenu(props: TransactionMenuIF) {
     };
 
     useEffect(() => {
-        if (showDropdownMenu) {
+        if (showDropdownMenu && document.activeElement !== menuItemRef.current) {
             const interval = setTimeout(() => {
                 setShowDropdownMenu(false);
             }, 5000);

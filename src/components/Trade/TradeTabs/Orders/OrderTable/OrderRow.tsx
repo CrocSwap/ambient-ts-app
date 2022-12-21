@@ -204,15 +204,15 @@ export default function OrderRow(props: OrderRowPropsIF) {
     );
 
     const baseTokenLogoComponent = baseTokenLogo ? (
-        <img src={baseTokenLogo} alt='base token' width='15px' />
+        <img src={baseTokenLogo} alt='base token' width='20px' />
     ) : (
-        <NoTokenIcon tokenInitial={limitOrder.baseSymbol.charAt(0)} width='15px' />
+        <NoTokenIcon tokenInitial={limitOrder.baseSymbol.charAt(0)} width='20px' />
     );
 
     const quoteTokenLogoComponent = quoteTokenLogo ? (
-        <img src={quoteTokenLogo} alt='quote token' width='15px' />
+        <img src={quoteTokenLogo} alt='quote token' width='20px' />
     ) : (
-        <NoTokenIcon tokenInitial={limitOrder.quoteSymbol.charAt(0)} width='15px' />
+        <NoTokenIcon tokenInitial={limitOrder.quoteSymbol.charAt(0)} width='20px' />
     );
 
     // const tokensTogether = (
@@ -285,7 +285,9 @@ export default function OrderRow(props: OrderRowPropsIF) {
     // }).format(limitOrder.time * 1000);
 
     const elapsedTimeInSecondsNum = moment(Date.now()).diff(
-        limitOrder.time * 1000,
+        (limitOrder.latestUpdateTime !== 0
+            ? limitOrder.latestUpdateTime
+            : limitOrder.timeFirstMint) * 1000,
         // (limitOrder.timeFirstMint || limitOrder.time) * 1000,
         'seconds',
     );
@@ -332,7 +334,9 @@ export default function OrderRow(props: OrderRowPropsIF) {
                 }}
             >
                 {baseDisplay}
-                {isOnPortfolioPage && <img src={baseTokenLogo} width='15px' alt='' />}
+                {baseTokenLogoComponent}
+                {/* {<img src={baseTokenLogo} width='15px' alt='' />} */}
+                {/* {isOnPortfolioPage && <img src={baseTokenLogo} width='15px' alt='' />} */}
             </p>
         </li>
         /* </DefaultTooltip> */
@@ -358,13 +362,15 @@ export default function OrderRow(props: OrderRowPropsIF) {
                 }}
             >
                 {quoteDisplay}
-                {isOnPortfolioPage && <img src={quoteTokenLogo} width='15px' alt='' />}
+                {quoteTokenLogoComponent}
+                {/* {<img src={quoteTokenLogo} width='15px' alt='' />} */}
+                {/* {isOnPortfolioPage && <img src={quoteTokenLogo} width='15px' alt='' />} */}
             </p>
         </li>
         /* </DefaultTooltip> */
     );
 
-    const OrderTimeWithTooltip = (
+    const OrderTimeWithTooltip = limitOrder.timeFirstMint ? (
         <DefaultTooltip
             interactive
             title={
@@ -383,6 +389,12 @@ export default function OrderRow(props: OrderRowPropsIF) {
                 {/* <p className='base_color'> Nov 9 10:36:23 AM</p> */}
             </li>
         </DefaultTooltip>
+    ) : (
+        <li onClick={openDetailsModal} style={{ textTransform: 'lowercase' }}>
+            <p className='base_color' style={{ fontFamily: 'monospace' }}>
+                {elapsedTimeString}
+            </p>
+        </li>
     );
 
     return (
