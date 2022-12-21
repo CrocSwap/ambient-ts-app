@@ -1,9 +1,6 @@
-
-
-
 .sidebar {
     position: fixed;
-    background-color: transparent;
+    background-color: var(--dark1);
     transition: all var(--animation-speed) ease-in-out;
 
     overflow: scroll;
@@ -52,19 +49,14 @@
 
 .sidebar_link {
     display: flex;
-  
+
     align-items: center;
     height: 28px;
     border-bottom: 1px solid var(--border);
     /* padding: 4px 0; */
-    
+
     cursor: pointer;
 }
-
-
-
-
-
 
 .align_center {
     display: flex;
@@ -95,9 +87,8 @@
 }
 
 .sidebar_item:hover {
-    background: var(--dark2);
+    background: var(--dark1);
     color: var(--text-grey-white);
-  
 }
 
 .toggle_sidebar_icon {
@@ -108,7 +99,7 @@
 
 .search_result {
     width: 100%;
-    background: var(--dark2);
+    background: var(--dark1);
     display: flex;
     flex-direction: column;
     gap: 4px;
@@ -140,9 +131,9 @@
     width: 100%;
 }
 
-.open_all_button{
+.open_all_button {
     cursor: pointer;
-    background: var(--dark2);
+    background: var(--dark1);
     border: none;
     outline: none;
     color: var(--text-grey-white);
@@ -153,8 +144,7 @@
     gap: 4px;
 }
 
-.connect_button{
-
+.connect_button {
     width: 100%;
     display: flex;
     justify-content: center;
@@ -164,13 +154,12 @@
     gap: 8px;
 }
 
-.connect_button p{
+.connect_button p {
     font-size: var(--body-size);
     line-height: var(--body-lh);
     color: var(--text-grey-light);
-    
 }
-.connect_button button{
+.connect_button button {
     cursor: pointer;
     background: var(--title-gradient);
     border: none;
@@ -188,10 +177,8 @@
 
 .connect_button button:hover {
     box-shadow: 0px 0px 36px rgba(205, 193, 255, 0.2), 0px 0px 21px rgba(205, 193, 255, 0.2),
-    0px 0px 12px rgba(205, 193, 255, 0.2), 0px 0px 7px rgba(205, 193, 255, 0.2),
-    0px 0px 4px #cdc1ff, 0px 0px 2px rgba(205, 193, 255, 0.2);
-
-    
+        0px 0px 12px rgba(205, 193, 255, 0.2), 0px 0px 7px rgba(205, 193, 255, 0.2),
+        0px 0px 4px #cdc1ff, 0px 0px 2px rgba(205, 193, 255, 0.2);
 }
 /* .logo {
     margin-bottom: 1rem;
@@ -259,11 +246,9 @@
         bottom: 0;
         width: 100vw;
         height: 5rem;
-        background: var(--dark2);
+        background: var(--dark1);
         z-index: 2;
     }
-
- 
 
     .sidebar_nav {
         flex-direction: row;
@@ -275,8 +260,6 @@
     .sidebar_item_content {
         display: none;
     }
-
-  
 }
 
 /* Large screens */
@@ -325,9 +308,6 @@
         display: inline;
     }
 
-
-
-
     .sidebar:hover .search_container {
         background-color: var(--dark3);
     }
@@ -355,12 +335,10 @@
         height: calc(100% - 56px);
     }
     .main_search_container {
-       
         display: flex;
         flex-direction: row;
         align-items: center;
         gap: 4px;
- 
     }
 
     .sidebar_active .search_container {
@@ -370,7 +348,6 @@
         align-items: center;
         gap: 4px;
     }
-  
 
     .sidebar_item_content {
         width: 100%;
