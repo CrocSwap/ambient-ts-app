@@ -258,16 +258,16 @@ export default function RangesRow(props: RangesRowPropsIF) {
 
     const baseTokenLogoComponent =
         baseTokenLogo !== '' ? (
-            <img src={baseTokenLogo} alt='base token' width='15px' />
+            <img src={baseTokenLogo} alt='base token' width='20px' />
         ) : (
-            <NoTokenIcon tokenInitial={position.baseSymbol.charAt(0)} width='30px' />
+            <NoTokenIcon tokenInitial={position.baseSymbol.charAt(0)} width='20px' />
         );
 
     const quoteTokenLogoComponent =
         quoteTokenLogo !== '' ? (
-            <img src={quoteTokenLogo} alt='quote token' width='15px' />
+            <img src={quoteTokenLogo} alt='quote token' width='20px' />
         ) : (
-            <NoTokenIcon tokenInitial={position.quoteSymbol.charAt(0)} width='30px' />
+            <NoTokenIcon tokenInitial={position.quoteSymbol.charAt(0)} width='20px' />
         );
 
     // const tokensTogether = (
