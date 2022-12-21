@@ -271,8 +271,6 @@
 
 /* end of pool not initialized */
 
-
-
 @media only screen and (min-device-width: 320px) and (max-device-width: 568px) and (-webkit-min-device-pixel-ratio: 2) {
     .graph_container {
         /* display: none; */
@@ -351,7 +349,8 @@
     }
 
     .right_col {
-        background: transparent;
+        background: var(--dark1);
+        /* background: transparent; */
     }
 
     .middle_col,
