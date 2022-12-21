@@ -66,6 +66,7 @@ export default function MinMaxPrice(props: MinMaxPriceIF) {
             },
         ];
         dispatch(setTargetData(newTargetData));
+        dispatch(setRangeModuleTriggered(true));
     };
 
     const handleSetMaxTarget = (maxPriceInput: string) => {
