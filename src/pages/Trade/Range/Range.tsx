@@ -448,16 +448,14 @@ export default function Range(props: RangePropsIF) {
 
             const newTargetData: targetData[] = [
                 {
-                    name: !tradeData.isDenomBase ? 'Min' : 'Max',
+                    name: 'Max',
                     value: parseFloat(pinnedDisplayPrices.pinnedMaxPriceDisplay),
                 },
                 {
-                    name: !tradeData.isDenomBase ? 'Max' : 'Min',
+                    name: 'Min',
                     value: parseFloat(pinnedDisplayPrices.pinnedMinPriceDisplay),
                 },
             ];
-
-            console.log({ newTargetData });
 
             dispatch(setTargetData(newTargetData));
 
@@ -532,12 +530,14 @@ export default function Range(props: RangePropsIF) {
                 (target: any) => target.name === 'Max',
             )[0].value;
 
+            console.log({ rangeLowLineTriggered, targetMaxValue, targetMinValue });
+
             const pinnedDisplayPrices = getPinnedPriceValuesFromDisplayPrices(
                 denominationsInBase,
                 baseTokenDecimals,
                 quoteTokenDecimals,
                 targetMinValue?.toString() ?? '0',
-                pinnedMaxPriceDisplayTruncated,
+                targetMaxValue?.toString() ?? '0',
                 lookupChain(chainId).gridSize,
             );
 
@@ -586,18 +586,6 @@ export default function Range(props: RangePropsIF) {
                 console.log('low bound field not found');
             }
 
-            const newTargetData: targetData[] = [
-                {
-                    name: 'Min',
-                    value: parseFloat(pinnedDisplayPrices.pinnedMinPriceDisplayTruncated),
-                },
-                {
-                    name: 'Max',
-                    value: targetMaxValue,
-                },
-            ];
-
-            dispatch(setTargetData(newTargetData));
             setRangeLowBoundFieldBlurred(false);
             dispatch(setRangeLowLineTriggered(false));
             dispatch(setRangeModuleTriggered(true));
@@ -619,11 +607,13 @@ export default function Range(props: RangePropsIF) {
                 (target: any) => target.name === 'Min',
             )[0].value;
 
+            console.log({ rangeHighLineTriggered, targetMaxValue, targetMinValue });
+
             const pinnedDisplayPrices = getPinnedPriceValuesFromDisplayPrices(
                 denominationsInBase,
                 baseTokenDecimals,
                 quoteTokenDecimals,
-                pinnedMinPriceDisplayTruncated,
+                targetMinValue?.toString() ?? '0',
                 targetMaxValue?.toString() ?? '0',
                 lookupChain(chainId).gridSize,
             );
@@ -666,18 +656,6 @@ export default function Range(props: RangePropsIF) {
                 console.log('high bound field not found');
             }
 
-            const newTargetData: targetData[] = [
-                {
-                    name: 'Min',
-                    value: targetMinValue,
-                },
-                {
-                    name: 'Max',
-                    value: parseFloat(pinnedDisplayPrices.pinnedMaxPriceDisplayTruncated),
-                },
-            ];
-
-            dispatch(setTargetData(newTargetData));
             setRangeHighBoundFieldBlurred(false);
             dispatch(setRangeHighLineTriggered(false));
             dispatch(setRangeModuleTriggered(true));

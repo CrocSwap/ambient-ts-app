@@ -817,11 +817,11 @@ export default function Chart(props: ChartData) {
                 ])
                 .tickFormat((d: any) => {
                     if (d === crosshairData[0].x) {
-                        if (activeTimeFrame === '1d') {
-                            return moment(d).subtract(utcDiffHours, 'hours').format('MMM DD YYYY');
-                        } else {
-                            return moment(d).format('MMM DD HH:mm');
-                        }
+                        // if (activeTimeFrame === '1d') {
+                        //     return moment(d).subtract(utcDiffHours, 'hours').format('MMM DD YYYY');
+                        // } else {
+                        //     return moment(d).format('MMM DD HH:mm');
+                        // }
                         // return moment(d).format('  DD HH:mm');
                     }
                     if (activeTimeFrame === '1d') {
@@ -1517,6 +1517,12 @@ export default function Chart(props: ChartData) {
                     const low = ranges.filter((target: any) => target.name === 'Min')[0].value;
                     const high = ranges.filter((target: any) => target.name === 'Max')[0].value;
 
+                    const lowBoundary = targetData.filter((target: any) => target.name === 'Min')[0]
+                        .value;
+                    const highBoundary = targetData.filter(
+                        (target: any) => target.name === 'Max',
+                    )[0].value;
+
                     const lineToBeSet = dragedValue > displayValue ? 'Max' : 'Min';
 
                     let pinnedDisplayPrices: any;
@@ -1603,14 +1609,25 @@ export default function Chart(props: ChartData) {
 
                         if (dragedValue >= 0) {
                             if (draggingLine === 'Max') {
-                                pinnedDisplayPrices = getPinnedPriceValuesFromDisplayPrices(
-                                    denomInBase,
-                                    baseTokenDecimals,
-                                    quoteTokenDecimals,
-                                    low.toString(),
-                                    dragedValue,
-                                    lookupChain(chainId).gridSize,
-                                );
+                                if (dragedValue < low) {
+                                    pinnedDisplayPrices = getPinnedPriceValuesFromDisplayPrices(
+                                        denomInBase,
+                                        baseTokenDecimals,
+                                        quoteTokenDecimals,
+                                        high.toString(),
+                                        dragedValue,
+                                        lookupChain(chainId).gridSize,
+                                    );
+                                } else {
+                                    pinnedDisplayPrices = getPinnedPriceValuesFromDisplayPrices(
+                                        denomInBase,
+                                        baseTokenDecimals,
+                                        quoteTokenDecimals,
+                                        low.toString(),
+                                        dragedValue,
+                                        lookupChain(chainId).gridSize,
+                                    );
+                                }
                             } else {
                                 pinnedDisplayPrices = getPinnedPriceValuesFromDisplayPrices(
                                     denomInBase,
@@ -1641,6 +1658,7 @@ export default function Chart(props: ChartData) {
                                     newTargets.filter(
                                         (target: any) => target.name === 'Min',
                                     )[0].value = pinnedMaxPriceDisplayTruncated;
+
                                     dragSwitched = true;
                                     highLineMoved = false;
                                     lowLineMoved = true;
@@ -1657,6 +1675,7 @@ export default function Chart(props: ChartData) {
                                     newTargets.filter(
                                         (target: any) => target.name === 'Max',
                                     )[0].value = pinnedMinPriceDisplayTruncated;
+
                                     dragSwitched = true;
                                     highLineMoved = true;
                                     lowLineMoved = false;
@@ -1777,7 +1796,16 @@ export default function Chart(props: ChartData) {
                 return dragLimit;
             });
         }
-    }, [poolPriceDisplay, location, scaleData, isAdvancedModeActive, dragControl, targetsJoin]);
+    }, [
+        poolPriceDisplay,
+        location,
+        scaleData,
+        isAdvancedModeActive,
+        dragControl,
+        targetsJoin,
+        ranges,
+        targetData,
+    ]);
 
     useEffect(() => {
         setDragControl(false);
@@ -2372,7 +2400,6 @@ export default function Chart(props: ChartData) {
             const pinnedMinPriceDisplayTruncated = parseFloat(
                 pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
             );
-
             await setRanges((prevState) => {
                 const newTargets = [...prevState];
 
