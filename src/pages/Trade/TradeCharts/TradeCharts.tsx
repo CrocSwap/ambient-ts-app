@@ -631,11 +631,15 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
         </button>
     );
 
-    const baseTokenLogo = denomInBase ? tradeData.baseToken.logoURI : tradeData.quoteToken.logoURI;
-    const quoteTokenLogo = denomInBase ? tradeData.quoteToken.logoURI : tradeData.baseToken.logoURI;
+    const topTokenLogo = denomInBase ? tradeData.baseToken.logoURI : tradeData.quoteToken.logoURI;
+    const bottomTokenLogo = denomInBase
+        ? tradeData.quoteToken.logoURI
+        : tradeData.baseToken.logoURI;
 
-    const baseTokenSymbol = denomInBase ? tradeData.baseToken.symbol : tradeData.quoteToken.symbol;
-    const quoteTokenSymbol = denomInBase ? tradeData.quoteToken.symbol : tradeData.baseToken.symbol;
+    const topTokenSymbol = denomInBase ? tradeData.baseToken.symbol : tradeData.quoteToken.symbol;
+    const bottomTokenSymbol = denomInBase
+        ? tradeData.quoteToken.symbol
+        : tradeData.baseToken.symbol;
 
     // TIME FRAME CONTENT--------------------------------------------------------------
 
@@ -713,29 +717,51 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
         <div className={styles.token_info_container}>
             <div className={styles.tokens_info}>
                 {favButton}
-                <div
-                    className={styles.tokens_images}
-                    onClick={() => dispatch(toggleDidUserFlipDenom())}
-                >
-                    {baseTokenLogo ? (
-                        <img src={baseTokenLogo} alt={baseTokenSymbol} />
-                    ) : (
-                        <NoTokenIcon tokenInitial={baseTokenSymbol.charAt(0)} width='25px' />
-                    )}
 
-                    {quoteTokenLogo ? (
-                        <img src={quoteTokenLogo} alt={quoteTokenSymbol} />
-                    ) : (
-                        <NoTokenIcon tokenInitial={quoteTokenSymbol.charAt(0)} width='25px' />
-                    )}
-                </div>
-                <span
-                    className={styles.tokens_name}
-                    onClick={() => dispatch(toggleDidUserFlipDenom())}
+                <DefaultTooltip
+                    interactive
+                    title={`${
+                        tradeData.baseToken.symbol !== 'ETH' ? tradeData.baseToken.symbol + ':' : ''
+                    } ${tradeData.baseToken.symbol !== 'ETH' ? tradeData.baseToken.address : ''} ${
+                        tradeData.quoteToken.symbol
+                    }: ${tradeData.quoteToken.address}`}
+                    placement={'top'}
                 >
-                    {denomInBase ? tradeData.baseToken.symbol : tradeData.quoteToken.symbol} /{' '}
-                    {denomInBase ? tradeData.quoteToken.symbol : tradeData.baseToken.symbol}
-                </span>
+                    <div
+                        className={styles.tokens_images}
+                        onClick={() => dispatch(toggleDidUserFlipDenom())}
+                    >
+                        {topTokenLogo ? (
+                            <img src={topTokenLogo} alt={topTokenSymbol} />
+                        ) : (
+                            <NoTokenIcon tokenInitial={topTokenSymbol.charAt(0)} width='25px' />
+                        )}
+                        {bottomTokenLogo ? (
+                            <img src={bottomTokenLogo} alt={bottomTokenSymbol} />
+                        ) : (
+                            <NoTokenIcon tokenInitial={bottomTokenSymbol.charAt(0)} width='25px' />
+                        )}
+                    </div>
+                </DefaultTooltip>
+                <DefaultTooltip
+                    interactive
+                    title={`${
+                        tradeData.baseToken.symbol !== 'ETH' ? tradeData.baseToken.symbol + ':' : ''
+                    } ${tradeData.baseToken.symbol !== 'ETH' ? tradeData.baseToken.address : ''} ${
+                        tradeData.quoteToken.symbol
+                    }: ${tradeData.quoteToken.address}`}
+                    placement={'top'}
+                >
+                    <div
+                        className={styles.tokens_name}
+                        onClick={() => dispatch(toggleDidUserFlipDenom())}
+                    >
+                        {topTokenSymbol} / {bottomTokenSymbol}
+                        {/* {denomInBase ? tradeData.baseToken.symbol : tradeData.quoteToken.symbol} /{' '} */}
+                        {/* {denomInBase ? tradeData.quoteToken.symbol : tradeData.baseToken.symbol} */}
+                    </div>
+                </DefaultTooltip>
+
                 {isPoolPriceChangePositive ? amountWithTooltipGreen : amountWithTooltipRed}
             </div>
             <div
