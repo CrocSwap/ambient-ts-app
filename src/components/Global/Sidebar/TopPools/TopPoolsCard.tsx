@@ -74,14 +74,14 @@ export default function TopPoolsCard(props: TopPoolsCardProps) {
     const chainString = '0x5';
 
     const tokenAString =
-        pool.base.address.toLowerCase() === tradeData.tokenB.address.toLowerCase()
-            ? pool.quote.address
-            : pool.base.address;
-
-    const tokenBString =
-        pool.base.address.toLowerCase() === tradeData.tokenB.address.toLowerCase()
+        pool.base.address.toLowerCase() === tradeData.tokenA.address.toLowerCase()
             ? pool.base.address
             : pool.quote.address;
+
+    const tokenBString =
+        pool.base.address.toLowerCase() === tradeData.tokenA.address.toLowerCase()
+            ? pool.quote.address
+            : pool.base.address;
 
     return (
         <Link

@@ -49,8 +49,8 @@ export interface tradeData {
 }
 
 const initialState: tradeData = {
-    tokenA: goerliETH,
-    tokenB: goerliUSDC,
+    tokenA: goerliUSDC,
+    tokenB: goerliETH,
     baseToken: goerliETH,
     quoteToken: goerliUSDC,
     isTokenABase: true,
