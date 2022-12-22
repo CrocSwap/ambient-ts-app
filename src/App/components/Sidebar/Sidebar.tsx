@@ -32,6 +32,7 @@ import closeSidebarImage from '../../../assets/images/sidebarImages/closeSidebar
 import { memoizePoolStats } from '../../functions/getPoolStats';
 import { tradeData } from '../../../utils/state/tradeDataSlice';
 import { DefaultTooltip } from '../../../components/Global/StyledTooltip/StyledTooltip';
+import RecentPools from '../../../components/Global/Sidebar/RecentPools/RecentPools';
 
 const cachedPoolStatsFetch = memoizePoolStats();
 
@@ -112,6 +113,21 @@ export default function Sidebar(props: SidebarPropsIF) {
             icon: topTokensImage,
 
             data: <TopTokens chainId={chainId} lastBlockNumber={lastBlockNumber} />,
+        },
+    ];
+    const recentPools = [
+        {
+            name: 'Recent Pools',
+            icon: topTokensImage,
+
+            data: (
+                <RecentPools
+                    tradeData={tradeData}
+                    chainId={chainId}
+                    cachedPoolStatsFetch={cachedPoolStatsFetch}
+                    lastBlockNumber={lastBlockNumber}
+                />
+            ),
         },
     ];
     const topPoolsSection = [
@@ -350,21 +366,6 @@ export default function Sidebar(props: SidebarPropsIF) {
 
     const topElementsDisplay = (
         <div style={{ width: '100%' }}>
-            {topTokens.map((item, idx) => (
-                <SidebarAccordion
-                    showSidebar={showSidebar}
-                    shouldDisplayContentWhenUserNotLoggedIn={true}
-                    idx={idx}
-                    item={item}
-                    toggleSidebar={toggleSidebar}
-                    key={idx}
-                    setShowSidebar={setShowSidebar}
-                    openAllDefault={openAllDefault}
-                    openModalWallet={openModalWallet}
-
-                    // mostRecent={mostRecentPositions}
-                />
-            ))}
             {topPoolsSection.map((item, idx) => (
                 <SidebarAccordion
                     showSidebar={showSidebar}
@@ -377,6 +378,21 @@ export default function Sidebar(props: SidebarPropsIF) {
                     openAllDefault={openAllDefault}
                     openModalWallet={openModalWallet}
                     // mostRecent={['should open automatically']}
+                />
+            ))}
+            {recentPools.map((item, idx) => (
+                <SidebarAccordion
+                    showSidebar={showSidebar}
+                    shouldDisplayContentWhenUserNotLoggedIn={true}
+                    idx={idx}
+                    item={item}
+                    toggleSidebar={toggleSidebar}
+                    key={idx}
+                    setShowSidebar={setShowSidebar}
+                    openAllDefault={openAllDefault}
+                    openModalWallet={openModalWallet}
+
+                    // mostRecent={mostRecentPositions}
                 />
             ))}
         </div>
