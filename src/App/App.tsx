@@ -755,12 +755,12 @@ export default function App() {
 
     useEffect(() => {
         dispatch(setPrimaryQuantityRange(''));
-        dispatch(setSimpleRangeWidth(100));
+        dispatch(setSimpleRangeWidth(10));
         dispatch(setAdvancedMode(false));
         setPoolPriceDisplay(undefined);
         dispatch(setDidUserFlipDenom(false)); // reset so a new token pair is re-evaluated for price > 1
         const sliderInput = document.getElementById('input-slider-range') as HTMLInputElement;
-        if (sliderInput) sliderInput.value = '100';
+        if (sliderInput) sliderInput.value = '10';
     }, [JSON.stringify({ base: baseTokenAddress, quote: quoteTokenAddress })]);
 
     useEffect(() => {
