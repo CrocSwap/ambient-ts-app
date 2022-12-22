@@ -274,6 +274,7 @@ export default function Chart(props: ChartData) {
     const [liqHighligtedBidSeries, setLiqHighligtedBidSeries] = useState<any>();
     const [depthLiqBidSeries, setDepthLiqBidSeries] = useState<any>();
     const [depthLiqAskSeries, setDepthLiqAskSeries] = useState<any>();
+    const [lineGradient, setLineGradient] = useState<any>();
 
     // Liq Joins
     const [lineBidSeriesJoin, setLineBidSeriesJoin] = useState<any>();
@@ -308,6 +309,35 @@ export default function Chart(props: ChartData) {
             setLiqHighlightedLinesAndArea(newTargets, true);
 
             return newTargets;
+        });
+
+        const svgmain = d3.select(d3PlotArea.current).select('svg');
+
+        svgmain.selectAll('#solids').remove();
+
+        const lineGradient = svgmain
+            .append('defs')
+            .append('linearGradient')
+            .attr('id', 'solids')
+            .attr('x1', '100%')
+            .attr('x2', '100%')
+            .attr('y1', '0%')
+            .attr('y2', '100%');
+
+        lineGradient
+            .append('stop')
+            .attr('offset', '350px')
+            .style('stop-color', 'transparent')
+            .style('stop-opacity', 0.7);
+
+        lineGradient
+            .append('stop')
+            .attr('offset', '5%')
+            .style('stop-color', '#7371FC')
+            .style('stop-opacity', 0.7);
+
+        setLineGradient(() => {
+            return lineGradient;
         });
     };
 
@@ -1054,6 +1084,7 @@ export default function Chart(props: ChartData) {
                                         domainX[1],
                                     ]);
                                 } else {
+                                    console.log('asd');
                                     const gapTop =
                                         domainX[1].getTime() -
                                         scaleData.xScale
@@ -1688,6 +1719,38 @@ export default function Chart(props: ChartData) {
                             return newTargets;
                         });
                     }
+
+                    console.log(event);
+
+                    const svgmain = d3.select(d3PlotArea.current).select('svg');
+
+                    svgmain.selectAll('#gra').remove();
+
+                    const lineGradient = svgmain
+                        .append('defs')
+                        .attr('id', 'gra')
+                        .append('linearGradient')
+                        .attr('id', 'solids')
+                        .attr('x1', '100%')
+                        .attr('x2', '100%')
+                        .attr('y1', '0%')
+                        .attr('y2', '100%');
+
+                    lineGradient
+                        .append('stop')
+                        .attr('offset', '95%')
+                        .style('stop-color', 'transparent')
+                        .style('stop-opacity', 0.7);
+
+                    lineGradient
+                        .append('stop')
+                        .attr('offset', event.y + 'px')
+                        .style('stop-color', '#7371FC')
+                        .style('stop-opacity', 0.7);
+
+                    setLineGradient(() => {
+                        return lineGradient;
+                    });
                 })
                 .on('end', (event: any) => {
                     d3.select(d3Container.current).style('cursor', 'default');
@@ -2711,7 +2774,10 @@ export default function Chart(props: ChartData) {
                 .xScale(scaleData.liquidityScale)
                 .yScale(scaleData.yScale)
                 .decorate((selection: any) => {
-                    selection.enter().style('stroke', () => '#7371FC');
+                    // selection.enter().style('stroke', () => '#7371FC');
+                    selection.style('stroke', () => {
+                        return 'url(#solids)';
+                    });
                     selection.attr('stroke-width', '2');
                     selection.style(
                         'visibility',
@@ -2853,7 +2919,7 @@ export default function Chart(props: ChartData) {
                 return depthLiqAskSeriesJoin;
             });
         }
-    }, [scaleData, props.liquidityData, location]);
+    }, [scaleData, props.liquidityData, location, lineGradient]);
 
     // Call drawChart()
     useEffect(() => {
@@ -3203,7 +3269,7 @@ export default function Chart(props: ChartData) {
                             liqMode === 'Curve' ? liquidityData.liqBidData : [],
                         ]).call(liqBidSeries);
                         lineAskSeriesJoin(svg, [
-                            liqMode === 'Curve' ? liquidityData.lineBidSeries : [],
+                            liqMode === 'Curve' ? liquidityData.newLiqLine : [],
                         ]).call(lineBidSeries);
                         lineBidSeriesJoin(svg, [
                             liqMode === 'Curve' ? liquidityData.lineAskSeries : [],
