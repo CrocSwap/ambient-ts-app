@@ -80,7 +80,9 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
         usdValue,
         txUsdValueLocaleString,
         baseTokenSymbol,
+        baseTokenAddress,
         quoteTokenSymbol,
+        quoteTokenAddress,
         isOwnerActiveAccount,
         ensName,
         baseTokenCharacter,
@@ -169,10 +171,10 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
             interactive
             title={
                 <div onClick={handleOpenExplorer} style={{ cursor: 'pointer' }}>
-                    {txHash}
-                    <FiExternalLink />
+                    {txHash + 'ㅤ'}
+                    <FiExternalLink size={'12px'} />
                 </div>
-            }
+            } // invisible space character added
             placement={'right'}
             arrow
             enterDelay={750}
@@ -222,7 +224,8 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                         to={`/${isOwnerActiveAccount ? 'account' : ensName ? ensName : ownerId}`}
                     >
                         <p>{ensName ? ensName : ownerId}</p>
-                        View Account
+                        {'View Account' + 'ㅤ'}
+                        <FiExternalLink size={'12px'} />
                     </NavLink>
                 </div>
             }
@@ -248,11 +251,14 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                 interactive
                 title={
                     <div>
-                        <p>{baseTokenSymbol}</p>
+                        <p>
+                            {baseTokenSymbol}
+                            {`${baseTokenSymbol === 'ETH' ? '' : ': ' + baseTokenAddress}`}
+                        </p>
                         {/* <NavLink to={`/${ownerId}`}>View Account</NavLink> */}
                     </div>
                 }
-                placement={'top'}
+                placement={'right'}
                 arrow
                 enterDelay={750}
                 leaveDelay={200}
@@ -260,7 +266,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                 <img src={baseTokenLogo} alt='base token' width='20px' />
             </DefaultTooltip>
         ) : (
-            <IconWithTooltip title={`${baseTokenSymbol}`} placement='bottom'>
+            <IconWithTooltip title={`${baseTokenSymbol}: ${baseTokenAddress}`} placement='bottom'>
                 <NoTokenIcon tokenInitial={tx.baseSymbol.charAt(0)} width='20px' />
             </IconWithTooltip>
         );
@@ -271,11 +277,13 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                 interactive
                 title={
                     <div>
-                        <p>{quoteTokenSymbol}</p>
+                        <p>
+                            {quoteTokenSymbol}: {quoteTokenAddress}
+                        </p>
                         {/* <NavLink to={`/${ownerId}`}>View Account</NavLink> */}
                     </div>
                 }
-                placement={'top'}
+                placement={'right'}
                 arrow
                 enterDelay={750}
                 leaveDelay={200}
@@ -283,7 +291,9 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                 <img src={quoteTokenLogo} alt='quote token' width='20px' />
             </DefaultTooltip>
         ) : (
-            <NoTokenIcon tokenInitial={tx.quoteSymbol.charAt(0)} width='20px' />
+            <IconWithTooltip title={`${quoteTokenSymbol}: ${quoteTokenAddress}`} placement='right'>
+                <NoTokenIcon tokenInitial={tx.quoteSymbol.charAt(0)} width='20px' />
+            </IconWithTooltip>
         );
 
     // const tokensTogether = (
@@ -414,7 +424,9 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                 }}
             >
                 {baseDisplay}
-                {isOnPortfolioPage && <img src={baseTokenLogo} width='15px' alt='' />}
+                {baseTokenLogoComponent}
+                {/* {<img src={baseTokenLogo} width='15px' alt='' />} */}
+                {/* {isOnPortfolioPage && <img src={baseTokenLogo} width='15px' alt='' />} */}
             </p>
         </li>
         /* </DefaultTooltip> */
@@ -440,7 +452,9 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                 }}
             >
                 {quoteDisplay}
-                {isOnPortfolioPage && <img src={quoteTokenLogo} width='15px' alt='' />}
+                {/* {<img src={quoteTokenLogo} width='15px' alt='' />} */}
+                {quoteTokenLogoComponent}
+                {/* {isOnPortfolioPage && <img src={quoteTokenLogo} width='15px' alt='' />} */}
             </p>
         </li>
         /* </DefaultTooltip> */

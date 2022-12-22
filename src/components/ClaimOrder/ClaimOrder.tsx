@@ -88,8 +88,13 @@ export default function ClaimOrder(props: IClaimOrderProps) {
 
     // ---------------CLAIM FUNCTION TO BE REFACTORED
 
+    const claimablePivotTime = limitOrder.claimableLiqPivotTimes
+        ? parseInt(limitOrder.claimableLiqPivotTimes)
+        : undefined;
+
     const claimFn = async () => {
-        if (crocEnv && limitOrder.latestCrossPivotTime) {
+        if (crocEnv && claimablePivotTime) {
+            console.log({ claimablePivotTime });
             setShowConfirmation(true);
             setShowSettings(false);
             console.log({ limitOrder });
@@ -99,14 +104,14 @@ export default function ClaimOrder(props: IClaimOrderProps) {
                     tx = await crocEnv
                         .buy(limitOrder.quote, 0)
                         .atLimit(limitOrder.base, limitOrder.bidTick)
-                        .recoverPost(limitOrder.latestCrossPivotTime, { surplus: false });
+                        .recoverPost(claimablePivotTime, { surplus: false });
                     setNewClaimTransactionHash(tx.hash);
                     dispatch(addPendingTx(tx?.hash));
                 } else {
                     tx = await crocEnv
                         .buy(limitOrder.base, 0)
                         .atLimit(limitOrder.quote, limitOrder.askTick)
-                        .recoverPost(limitOrder.latestCrossPivotTime, { surplus: false });
+                        .recoverPost(claimablePivotTime, { surplus: false });
                     setNewClaimTransactionHash(tx.hash);
                     dispatch(addPendingTx(tx?.hash));
 
@@ -205,7 +210,7 @@ export default function ClaimOrder(props: IClaimOrderProps) {
             <div className={styles.completed_animation}>
                 <Animation animData={completed} loop={false} />
             </div>
-            <p>Removal Transaction Successfully Submitted</p>
+            <p>Claim Transaction Successfully Submitted</p>
             <a
                 href={etherscanLink}
                 target='_blank'

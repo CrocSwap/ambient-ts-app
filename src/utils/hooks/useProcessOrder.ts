@@ -28,9 +28,10 @@ export const useProcessOrder = (limitOrder: LimitOrderIF) => {
     const ownerId = limitOrder.ensResolution ? limitOrder.ensResolution : limitOrder.user;
     const ensName = limitOrder.ensResolution ? limitOrder.ensResolution : null;
 
-    const isOrderFilled = !!limitOrder.latestCrossPivotTime;
+    const isOrderFilled = limitOrder.claimableLiq !== '0';
+    // const isOrderFilled = !!limitOrder.latestCrossPivotTime;
 
-    const posHash = limitOrder.limitOrderIdentifier.slice(42);
+    const posHash = limitOrder.limitOrderIdentifier?.slice(42);
     const [truncatedDisplayPrice, setTruncatedDisplayPrice] = useState<string | undefined>();
 
     const [truncatedDisplayPriceDenomByMoneyness, setTruncatedDisplayPriceDenomByMoneyness] =
@@ -50,6 +51,9 @@ export const useProcessOrder = (limitOrder: LimitOrderIF) => {
             0,
         [limitOrder.base, limitOrder.base, limitOrder.chainId],
     );
+
+    const [startPriceDisplay, setStartPriceDisplay] = useState<string | undefined>();
+    const [finishPriceDisplay, setFinishPriceDisplay] = useState<string | undefined>();
 
     useEffect(() => {
         // console.log({ limitOrder });
@@ -98,6 +102,66 @@ export const useProcessOrder = (limitOrder: LimitOrderIF) => {
         } else {
             setTruncatedDisplayPrice(undefined);
         }
+        const askTickInvPrice = limitOrder.askTickInvPriceDecimalCorrected;
+        const askTickPrice = limitOrder.askTickPriceDecimalCorrected;
+        const bidTickInvPrice = limitOrder.bidTickInvPriceDecimalCorrected;
+        const bidTickPrice = limitOrder.bidTickPriceDecimalCorrected;
+        const isBid = limitOrder.isBid;
+
+        if (askTickPrice && askTickInvPrice && bidTickPrice && bidTickInvPrice) {
+            const startPriceDisplayNum = isDenomBase
+                ? isBid
+                    ? askTickInvPrice
+                    : bidTickInvPrice
+                : isBid
+                ? askTickPrice
+                : bidTickPrice;
+
+            const finishPriceDisplayNum = isDenomBase
+                ? isBid
+                    ? bidTickInvPrice
+                    : askTickInvPrice
+                : isBid
+                ? bidTickPrice
+                : askTickPrice;
+
+            const startPriceDisplay =
+                startPriceDisplayNum === 0
+                    ? '0'
+                    : startPriceDisplayNum < 0.0001
+                    ? startPriceDisplayNum.toExponential(2)
+                    : startPriceDisplayNum < 1
+                    ? startPriceDisplayNum.toPrecision(3)
+                    : startPriceDisplayNum < 2
+                    ? startPriceDisplayNum.toPrecision(5)
+                    : startPriceDisplayNum >= 100000
+                    ? formatAmountOld(startPriceDisplayNum)
+                    : // ? baseLiqDisplayNum.toExponential(2)
+                      startPriceDisplayNum.toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                      });
+
+            const finishPriceDisplay =
+                finishPriceDisplayNum === 0
+                    ? '0'
+                    : finishPriceDisplayNum < 0.0001
+                    ? finishPriceDisplayNum.toExponential(2)
+                    : finishPriceDisplayNum < 1
+                    ? finishPriceDisplayNum.toPrecision(3)
+                    : startPriceDisplayNum < 2
+                    ? startPriceDisplayNum.toPrecision(5)
+                    : finishPriceDisplayNum >= 100000
+                    ? formatAmountOld(finishPriceDisplayNum)
+                    : // ? baseLiqDisplayNum.toExponential(2)
+                      finishPriceDisplayNum.toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                      });
+
+            setStartPriceDisplay(startPriceDisplay);
+            setFinishPriceDisplay(finishPriceDisplay);
+        }
     }, [JSON.stringify(limitOrder), isDenomBase]);
 
     const priceType =
@@ -117,8 +181,14 @@ export const useProcessOrder = (limitOrder: LimitOrderIF) => {
         selectedBaseToken === baseTokenAddressLowerCase &&
         selectedQuoteToken === quoteTokenAddressLowerCase;
 
-    const liqBaseNum = limitOrder.positionLiqBaseDecimalCorrected;
-    const liqQuoteNum = limitOrder.positionLiqQuoteDecimalCorrected;
+    const liqBaseNum =
+        limitOrder.positionLiqBaseDecimalCorrected !== 0
+            ? limitOrder.positionLiqBaseDecimalCorrected
+            : limitOrder.claimableLiqBaseDecimalCorrected;
+    const liqQuoteNum =
+        limitOrder.positionLiqQuoteDecimalCorrected !== 0
+            ? limitOrder.positionLiqQuoteDecimalCorrected
+            : limitOrder.claimableLiqQuoteDecimalCorrected;
 
     const baseQty =
         liqBaseNum === 0
@@ -149,7 +219,11 @@ export const useProcessOrder = (limitOrder: LimitOrderIF) => {
                   maximumFractionDigits: 2,
               });
 
-    const usdValueNum = limitOrder.positionLiqTotalUSD;
+    const usdValueNum =
+        limitOrder.positionLiqTotalUSD !== 0
+            ? limitOrder.positionLiqTotalUSD
+            : limitOrder.claimableLiqTotalUSD;
+
     const usdValueTruncated = !usdValueNum
         ? undefined
         : usdValueNum < 0.001
@@ -175,10 +249,7 @@ export const useProcessOrder = (limitOrder: LimitOrderIF) => {
     // -----------------------------------------------------------------------------------------
     // eslint-disable-next-line
     const [positionLiqTotalUSD, setTotalValueUSD] = useState<number | undefined>();
-    // eslint-disable-next-line
-    const [lowPriceDisplay, setLowPriceDisplay] = useState<string | undefined>();
-    // eslint-disable-next-line
-    const [highPriceDisplay, setHighPriceDisplay] = useState<string | undefined>();
+
     // eslint-disable-next-line
     const [bidTick, setBidTick] = useState<number | undefined>();
     // eslint-disable-next-line
@@ -323,8 +394,8 @@ export const useProcessOrder = (limitOrder: LimitOrderIF) => {
         isOrderFilled,
 
         // price
-        lowPriceDisplay,
-        highPriceDisplay,
+        startPriceDisplay,
+        finishPriceDisplay,
 
         // tik
         bidTick,

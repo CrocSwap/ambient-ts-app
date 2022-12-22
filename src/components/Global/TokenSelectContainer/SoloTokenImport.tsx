@@ -1,6 +1,7 @@
 import styles from './SoloTokenImport.module.css';
 import { TokenIF } from '../../../utils/interfaces/exports';
 import NoTokenIcon from '../NoTokenIcon/NoTokenIcon';
+import { AiOutlineQuestionCircle } from 'react-icons/ai';
 
 interface SoloTokenImportPropsIF {
     customToken: TokenIF | null;
@@ -8,14 +9,21 @@ interface SoloTokenImportPropsIF {
 }
 export default function SoloTokenImport(props: SoloTokenImportPropsIF) {
     const { customToken, chooseToken } = props;
-    console.log({customToken});
+    console.log({ customToken });
     const tokenLogo = customToken?.logoURI ? (
         <img src={customToken.logoURI} alt='' width='30px' />
     ) : (
         <NoTokenIcon tokenInitial={customToken?.symbol?.charAt(0) || '?'} width='30px' />
     );
 
-    if (!customToken) return <p style={{ textAlign: 'center' }}>No matches found</p>;
+    const tokenNotFound = (
+        <div className={styles.token_not_found}>
+            <p>Cound not find matching token</p>
+            <AiOutlineQuestionCircle />
+        </div>
+    );
+
+    if (!customToken) return tokenNotFound;
     return (
         <div className={styles.main_container}>
             <p>

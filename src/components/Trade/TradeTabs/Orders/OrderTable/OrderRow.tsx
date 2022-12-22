@@ -15,6 +15,7 @@ import { useAppDispatch } from '../../../../../utils/hooks/reduxToolkit';
 import { setDataLoadingStatus } from '../../../../../utils/state/graphDataSlice';
 import moment from 'moment';
 import { ZERO_ADDRESS } from '../../../../../constants';
+import { FiExternalLink } from 'react-icons/fi';
 
 interface OrderRowPropsIF {
     crocEnv: CrocEnv | undefined;
@@ -183,7 +184,8 @@ export default function OrderRow(props: OrderRowPropsIF) {
                         }}
                         to={`/${isOwnerActiveAccount ? 'account' : ensName ? ensName : ownerId}`}
                     >
-                        View Account
+                        {'View Account' + 'ㅤ'}
+                        <FiExternalLink size={'12px'} />
                     </NavLink>
                 </div>
             }
@@ -204,15 +206,15 @@ export default function OrderRow(props: OrderRowPropsIF) {
     );
 
     const baseTokenLogoComponent = baseTokenLogo ? (
-        <img src={baseTokenLogo} alt='base token' width='15px' />
+        <img src={baseTokenLogo} alt='base token' width='20px' />
     ) : (
-        <NoTokenIcon tokenInitial={limitOrder.baseSymbol.charAt(0)} width='15px' />
+        <NoTokenIcon tokenInitial={limitOrder.baseSymbol.charAt(0)} width='20px' />
     );
 
     const quoteTokenLogoComponent = quoteTokenLogo ? (
-        <img src={quoteTokenLogo} alt='quote token' width='15px' />
+        <img src={quoteTokenLogo} alt='quote token' width='20px' />
     ) : (
-        <NoTokenIcon tokenInitial={limitOrder.quoteSymbol.charAt(0)} width='15px' />
+        <NoTokenIcon tokenInitial={limitOrder.quoteSymbol.charAt(0)} width='20px' />
     );
 
     // const tokensTogether = (
@@ -285,7 +287,10 @@ export default function OrderRow(props: OrderRowPropsIF) {
     // }).format(limitOrder.time * 1000);
 
     const elapsedTimeInSecondsNum = moment(Date.now()).diff(
-        (limitOrder.timeFirstMint || limitOrder.time) * 1000,
+        (limitOrder.latestUpdateTime !== 0
+            ? limitOrder.latestUpdateTime
+            : limitOrder.timeFirstMint) * 1000,
+        // (limitOrder.timeFirstMint || limitOrder.time) * 1000,
         'seconds',
     );
 
@@ -331,7 +336,9 @@ export default function OrderRow(props: OrderRowPropsIF) {
                 }}
             >
                 {baseDisplay}
-                {isOnPortfolioPage && <img src={baseTokenLogo} width='15px' alt='' />}
+                {baseTokenLogoComponent}
+                {/* {<img src={baseTokenLogo} width='15px' alt='' />} */}
+                {/* {isOnPortfolioPage && <img src={baseTokenLogo} width='15px' alt='' />} */}
             </p>
         </li>
         /* </DefaultTooltip> */
@@ -357,16 +364,21 @@ export default function OrderRow(props: OrderRowPropsIF) {
                 }}
             >
                 {quoteDisplay}
-                {isOnPortfolioPage && <img src={quoteTokenLogo} width='15px' alt='' />}
+                {quoteTokenLogoComponent}
+                {/* {<img src={quoteTokenLogo} width='15px' alt='' />} */}
+                {/* {isOnPortfolioPage && <img src={quoteTokenLogo} width='15px' alt='' />} */}
             </p>
         </li>
         /* </DefaultTooltip> */
     );
 
-    const OrderTimeWithTooltip = (
+    const OrderTimeWithTooltip = limitOrder.timeFirstMint ? (
         <DefaultTooltip
             interactive
-            title={'Last Updated: ' + moment(limitOrder.time * 1000).format('MM/DD/YYYY HH:mm')}
+            title={
+                'First Minted: ' +
+                moment(limitOrder.timeFirstMint * 1000).format('MM/DD/YYYY HH:mm')
+            }
             placement={'left'}
             arrow
             enterDelay={750}
@@ -379,6 +391,12 @@ export default function OrderRow(props: OrderRowPropsIF) {
                 {/* <p className='base_color'> Nov 9 10:36:23 AM</p> */}
             </li>
         </DefaultTooltip>
+    ) : (
+        <li onClick={openDetailsModal} style={{ textTransform: 'lowercase' }}>
+            <p className='base_color' style={{ fontFamily: 'monospace' }}>
+                {elapsedTimeString}
+            </p>
+        </li>
     );
 
     return (
