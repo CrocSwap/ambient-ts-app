@@ -266,6 +266,8 @@ export default function TradeCandleStickChart(props: ChartData) {
 
         const liqSnapData: LiqSnap[] = [];
 
+        console.log(props.liquidityData.ranges);
+
         if (
             props.liquidityData &&
             props.poolPriceDisplay !== undefined &&
@@ -319,8 +321,6 @@ export default function TradeCandleStickChart(props: ChartData) {
                     return 0;
                 }),
             );
-
-            console.log({ depthBidLeft, depthBidRight, depthAskLeft, depthAskRight });
 
             const liquidityScale = d3
                 .scaleLog()
@@ -471,8 +471,6 @@ export default function TradeCandleStickChart(props: ChartData) {
             }
         }
 
-        console.log(depthLiqAskData);
-
         return {
             liqAskData: liqAskData,
             liqBidData: liqBidData,
@@ -485,7 +483,7 @@ export default function TradeCandleStickChart(props: ChartData) {
             lineAskSeries: [],
             totalLiq: props.liquidityData?.totals?.totalLiq,
         };
-    }, [props.liquidityData, props.poolPriceDisplay]);
+    }, [props.liquidityData, props.poolPriceDisplay, props.liquidityData.range]);
 
     useEffect(() => {
         setScaleData(() => {

@@ -803,7 +803,6 @@ export default function Chart(props: ChartData) {
     }
 
     const utcDiff = moment().utcOffset();
-    const utcDiffHours = Math.floor(utcDiff / 60);
 
     // x axis text
     useEffect(() => {
@@ -1046,12 +1045,18 @@ export default function Chart(props: ChartData) {
                                     Math.abs(domainX[1].getTime() - domainX[0].getTime()) >=
                                         parsedChartData.period * 1000 * 2)
                             ) {
-                                if (!event.sourceEvent.ctrlKey || !event.sourceEvent.metaKey) {
+                                if (
+                                    (!event.sourceEvent.ctrlKey || event.sourceEvent.metaKey) &&
+                                    (event.sourceEvent.ctrlKey || !event.sourceEvent.metaKey)
+                                ) {
+                                    console.log(event.sourceEvent);
+
                                     scaleData.xScale.domain([
                                         new Date(domainX[0].getTime() - deltaX),
                                         domainX[1],
                                     ]);
                                 } else {
+                                    console.log('asd');
                                     const gapTop =
                                         domainX[1].getTime() -
                                         scaleData.xScale
@@ -1516,12 +1521,6 @@ export default function Chart(props: ChartData) {
 
                     const low = ranges.filter((target: any) => target.name === 'Min')[0].value;
                     const high = ranges.filter((target: any) => target.name === 'Max')[0].value;
-
-                    const lowBoundary = targetData.filter((target: any) => target.name === 'Min')[0]
-                        .value;
-                    const highBoundary = targetData.filter(
-                        (target: any) => target.name === 'Max',
-                    )[0].value;
 
                     const lineToBeSet = dragedValue > displayValue ? 'Max' : 'Min';
 
