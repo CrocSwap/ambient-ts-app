@@ -55,7 +55,12 @@ export default function ClaimOrder(props: IClaimOrderProps) {
         quoteDisplayFrontend,
         baseDisplay,
         quoteDisplay,
+        truncatedDisplayPrice,
     } = useProcessOrder(limitOrder);
+
+    useEffect(() => {
+        console.log({ limitOrder });
+    }, [JSON.stringify(limitOrder)]);
 
     const [showConfirmation, setShowConfirmation] = useState(false);
     const [newClaimTransactionHash, setNewClaimTransactionHash] = useState('');
@@ -290,7 +295,7 @@ export default function ClaimOrder(props: IClaimOrderProps) {
         {
             title: 'Network Fee',
             tooltipTitle: 'something here about network fee',
-            data: '-$3.69',
+            data: '$???',
             // data: isDenomBase
             //     ? `${displayLimitPriceString} ${quoteTokenSymbol} per ${baseTokenSymbol}`
             //     : `${displayLimitPriceString} ${baseTokenSymbol} per ${quoteTokenSymbol}`,
@@ -339,7 +344,7 @@ export default function ClaimOrder(props: IClaimOrderProps) {
             />
 
             <ClaimOrderInfo
-                pivotTime={limitOrder.pivotTime}
+                pivotTime={claimablePivotTime}
                 baseTokenSymbol={baseTokenSymbol}
                 quoteTokenSymbol={quoteTokenSymbol}
                 baseTokenLogoURI={baseTokenLogo}
@@ -358,6 +363,7 @@ export default function ClaimOrder(props: IClaimOrderProps) {
                 positionLiquidity={limitOrder.positionLiq.toString()}
                 baseClaimString={'2344'}
                 quoteClaimString={'4543'}
+                truncatedDisplayPrice={truncatedDisplayPrice}
             />
             {gaslesssTransactionControl}
             {tooltipExplanationDataDisplay}
