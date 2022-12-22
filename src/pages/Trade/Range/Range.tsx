@@ -298,6 +298,8 @@ export default function Range(props: RangePropsIF) {
             setIsAmbient(false);
         } else {
             setIsAmbient(false);
+            if (Math.abs(currentPoolPriceTick) === Infinity || Math.abs(currentPoolPriceTick) === 0)
+                return;
             const lowTick = currentPoolPriceTick - rangeWidthPercentage * 100;
             const highTick = currentPoolPriceTick + rangeWidthPercentage * 100;
 
@@ -333,7 +335,14 @@ export default function Range(props: RangePropsIF) {
 
             dispatch(setRangeModuleTriggered(true));
         }
-    }, [rangeWidthPercentage, tradeData.advancedMode, denominationsInBase]);
+    }, [
+        rangeWidthPercentage,
+        tradeData.advancedMode,
+        denominationsInBase,
+        baseTokenDecimals,
+        quoteTokenDecimals,
+        currentPoolPriceTick,
+    ]);
 
     const isQtyEntered = tokenAInputQty !== '' && tokenBInputQty !== '';
 

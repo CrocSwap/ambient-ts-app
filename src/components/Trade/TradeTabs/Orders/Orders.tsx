@@ -260,7 +260,16 @@ export default function Orders(props: propsIF) {
         if (lastPoolLimitOrderChangeMessage !== null) {
             const lastMessageData = JSON.parse(lastPoolLimitOrderChangeMessage.data).data;
             // console.log({ lastMessageData });
-            if (lastMessageData) dispatch(addLimitOrderChangesByPool(lastMessageData));
+            if (lastMessageData) {
+                console.log({ lastMessageData });
+                Promise.all(
+                    lastMessageData.map((limitOrder: LimitOrderIF) => {
+                        return getLimitOrderData(limitOrder, importedTokens);
+                    }),
+                ).then((updatedLimitOrderStates) => {
+                    dispatch(addLimitOrderChangesByPool(updatedLimitOrderStates));
+                });
+            }
         }
     }, [lastPoolLimitOrderChangeMessage]);
 
@@ -480,7 +489,7 @@ export default function Orders(props: propsIF) {
         />
     ));
 
-    const orderDataOrNull = limitOrderData.length ? (
+    const orderDataOrNull = rowItemContent.length ? (
         rowItemContent
     ) : (
         <NoTableData

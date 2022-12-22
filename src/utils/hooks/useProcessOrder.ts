@@ -219,32 +219,37 @@ export const useProcessOrder = (limitOrder: LimitOrderIF) => {
                   maximumFractionDigits: 2,
               });
 
+    // const usdValueNum = limitOrder.totalValueUSD;
     const usdValueNum =
-        limitOrder.positionLiqTotalUSD !== 0
-            ? limitOrder.positionLiqTotalUSD
-            : limitOrder.claimableLiqTotalUSD;
+        limitOrder.totalValueUSD !== 0 ? limitOrder.totalValueUSD : limitOrder.claimableLiqTotalUSD;
 
-    const usdValueTruncated = !usdValueNum
-        ? undefined
-        : usdValueNum < 0.001
-        ? usdValueNum.toExponential(2) + ' '
-        : usdValueNum >= 99999
-        ? formatAmountOld(usdValueNum)
-        : // ? baseLiqDisplayNum.toExponential(2)
-          usdValueNum.toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-          }) + ' ';
+    const usdValueTruncated =
+        usdValueNum === undefined
+            ? undefined
+            : usdValueNum === 0
+            ? '0.00 '
+            : usdValueNum < 0.001
+            ? usdValueNum.toExponential(2) + ' '
+            : usdValueNum >= 99999
+            ? formatAmountOld(usdValueNum)
+            : // ? baseLiqDisplayNum.toExponential(2)
+              usdValueNum.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+              }) + ' ';
 
-    const usdValueLocaleString = !usdValueNum
-        ? '…'
-        : usdValueNum < 0.01
-        ? usdValueNum.toPrecision(3)
-        : // ? baseLiqDisplayNum.toExponential(2)
-          usdValueNum.toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-          });
+    const usdValueLocaleString =
+        usdValueNum === undefined
+            ? '…'
+            : usdValueNum === 0
+            ? '0.00 '
+            : usdValueNum < 0.01
+            ? usdValueNum.toPrecision(3)
+            : // ? baseLiqDisplayNum.toExponential(2)
+              usdValueNum.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+              });
 
     // -----------------------------------------------------------------------------------------
     // eslint-disable-next-line
