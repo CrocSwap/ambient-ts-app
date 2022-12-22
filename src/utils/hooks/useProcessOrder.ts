@@ -219,9 +219,9 @@ export const useProcessOrder = (limitOrder: LimitOrderIF) => {
                   maximumFractionDigits: 2,
               });
 
-    // const usdValueNum = limitOrder.totalValueUSD;
-    const usdValueNum =
-        limitOrder.totalValueUSD !== 0 ? limitOrder.totalValueUSD : limitOrder.claimableLiqTotalUSD;
+    const usdValueNum = limitOrder.totalValueUSD;
+    // const usdValueNum =
+    //     limitOrder.totalValueUSD !== 0 ? limitOrder.totalValueUSD : limitOrder.claimableLiqTotalUSD;
 
     const usdValueTruncated =
         usdValueNum === undefined

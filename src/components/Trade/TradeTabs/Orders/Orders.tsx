@@ -152,9 +152,13 @@ export default function Orders(props: propsIF) {
         return () => clearTimeout(handler);
     }, [isShowAllEnabled]);
 
+    const nonEmptyOrders = isShowAllEnabled
+        ? limitOrdersByPool.filter((limitOrder) => limitOrder.totalValueUSD !== 0)
+        : limitOrderData.filter((limitOrder) => limitOrder.totalValueUSD !== 0);
+
     const [sortBy, setSortBy, reverseSort, setReverseSort, sortedLimits] = useSortedLimits(
         'time',
-        isShowAllEnabled ? limitOrdersByPool : limitOrderData,
+        nonEmptyOrders,
     );
     useEffect(() => {
         if (isServerEnabled && isShowAllEnabled) {

@@ -32,21 +32,11 @@ export const useSortedLimits = (
         [...unsortedData].sort((a, b) => a.limitPrice - b.limitPrice);
     // sort by value of limit order
     const sortByValue = (unsortedData: LimitOrderIF[]) =>
-        [...unsortedData]
-            .filter((limitOrder) => {
-                const usdValueNum =
-                    limitOrder.totalValueUSD !== 0
-                        ? limitOrder.totalValueUSD
-                        : limitOrder.claimableLiqTotalUSD;
-                return usdValueNum !== 0;
-            })
-            .sort((a, b) => {
-                const aValue =
-                    a.claimableLiqTotalUSD !== 0 ? a.claimableLiqTotalUSD : a.totalValueUSD;
-                const bValue =
-                    b.claimableLiqTotalUSD !== 0 ? b.claimableLiqTotalUSD : b.totalValueUSD;
-                return bValue - aValue;
-            });
+        [...unsortedData].sort((a, b) => {
+            const aValue = a.claimableLiqTotalUSD !== 0 ? a.claimableLiqTotalUSD : a.totalValueUSD;
+            const bValue = b.claimableLiqTotalUSD !== 0 ? b.claimableLiqTotalUSD : b.totalValueUSD;
+            return bValue - aValue;
+        });
 
     // column the user wants the table sorted by
     // this is set when the user clicks a sortable column header
