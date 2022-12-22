@@ -221,7 +221,7 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
 
     const setTokenAQtyValue = (value: number) => {
         setTokenAQtyLocal(parseFloat(truncateDecimals(value, tokenPair.dataTokenA.decimals)));
-        console.log({ value });
+        // console.log({ value });
         if (value === 0) {
             setTokenAInputQty('');
         } else {
