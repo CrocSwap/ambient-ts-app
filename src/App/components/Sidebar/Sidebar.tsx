@@ -6,7 +6,7 @@ import { BsChevronBarDown } from 'react-icons/bs';
 
 // START: Import JSX Elements
 import SidebarAccordion from './SidebarAccordion/SidebarAccordion';
-import TopTokens from '../../../components/Global/Sidebar/TopTokens/TopTokens';
+// import TopTokens from '../../../components/Global/Sidebar/TopTokens/TopTokens';
 import TopPools from '../../../components/Global/Sidebar/TopPools/TopPools';
 import FavoritePools from '../../../components/Global/Sidebar/FavoritePools/FavoritePools';
 import SidebarRangePositions from '../../../components/Global/Sidebar/SidebarRangePositions/SidebarRangePositions';
@@ -107,14 +107,14 @@ export default function Sidebar(props: SidebarPropsIF) {
     // TODO:  @Ben this is the map with all the coin gecko token data objects
     // console.assert(coinGeckoTokenMap, 'no map present');
 
-    const topTokens = [
-        {
-            name: 'Top Tokens',
-            icon: topTokensImage,
+    // const topTokens = [
+    //     {
+    //         name: 'Top Tokens',
+    //         icon: topTokensImage,
 
-            data: <TopTokens chainId={chainId} lastBlockNumber={lastBlockNumber} />,
-        },
-    ];
+    //         data: <TopTokens chainId={chainId} lastBlockNumber={lastBlockNumber} />,
+    //     },
+    // ];
     const recentPools = [
         {
             name: 'Recent Pools',
