@@ -1037,7 +1037,6 @@ export default function Chart(props: ChartData) {
                                 .range([0, domainX[1] - domainX[0]]);
 
                             const deltaX = linearX(dx);
-
                             if (
                                 (deltaX < 0 ||
                                     Math.abs(domainX[1].getTime() - domainX[0].getTime()) <=
@@ -1046,12 +1045,7 @@ export default function Chart(props: ChartData) {
                                     Math.abs(domainX[1].getTime() - domainX[0].getTime()) >=
                                         parsedChartData.period * 1000 * 2)
                             ) {
-                                if (!event.sourceEvent.ctrlKey || !event.sourceEvent.metaKey) {
-                                    scaleData.xScale.domain([
-                                        new Date(domainX[0].getTime() - deltaX),
-                                        domainX[1],
-                                    ]);
-                                } else {
+                                if (event.sourceEvent.ctrlKey || event.sourceEvent.metaKey) {
                                     const gapTop =
                                         domainX[1].getTime() -
                                         scaleData.xScale
@@ -1083,6 +1077,11 @@ export default function Chart(props: ChartData) {
                                             new Date(domainX[1].getTime() + baseMovement),
                                         ]);
                                     }
+                                } else {
+                                    scaleData.xScale.domain([
+                                        new Date(domainX[0].getTime() - deltaX),
+                                        domainX[1],
+                                    ]);
                                 }
                             }
                         } else {
