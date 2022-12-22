@@ -80,6 +80,8 @@ interface TradePropsIF {
     // handleTxCopiedClick: () => void;
     // handleOrderCopiedClick: () => void;
     // handleRangeCopiedClick: () => void;
+    isCandleSelected: boolean | undefined;
+    setIsCandleSelected: Dispatch<SetStateAction<boolean | undefined>>;
 }
 
 // React functional component
@@ -128,6 +130,8 @@ export default function Trade(props: TradePropsIF) {
 
         setOutsideControl,
         setSelectedOutsideTab,
+        isCandleSelected,
+        setIsCandleSelected,
     } = props;
 
     const tokenPairFromParams = useUrlParams(chainId, isInitialized);
@@ -136,7 +140,6 @@ export default function Trade(props: TradePropsIF) {
     }, [tokenPairFromParams]);
     const { params } = useParams();
 
-    const [isCandleSelected, setIsCandleSelected] = useState<boolean | undefined>();
     const [transactionFilter, setTransactionFilter] = useState<CandleData>();
 
     const navigate = useNavigate();
