@@ -337,6 +337,11 @@ export default function Range(props: RangePropsIF) {
 
     const isQtyEntered = tokenAInputQty !== '' && tokenBInputQty !== '';
 
+    const showExtraInfoDropdown = tokenAInputQty !== '' || tokenBInputQty !== '';
+    // const showExtraInfoDropdown =
+    //     (tokenAInputQty !== '' && tokenAInputQty !== '0') ||
+    //     (tokenBInputQty !== '' && tokenBInputQty !== '0');
+
     const rangeSpanAboveCurrentPrice = defaultHighTick - currentPoolPriceTick;
     const rangeSpanBelowCurrentPrice = currentPoolPriceTick - defaultLowTick;
 
@@ -1015,6 +1020,8 @@ export default function Range(props: RangePropsIF) {
         isDenomBase: tradeData.isDenomBase,
         isTokenABase: isTokenABase,
         daysInRangeEstimation: daysInRangeEstimation,
+        showExtraInfoDropdown: showExtraInfoDropdown,
+        isBalancedMode: !tradeData.advancedMode,
     };
 
     const baseModeContent = (
