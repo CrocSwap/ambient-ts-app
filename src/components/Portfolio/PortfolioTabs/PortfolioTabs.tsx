@@ -425,7 +425,7 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
         { label: 'Limit Orders', content: <Orders {...ordersProps} />, icon: openOrdersImage },
         { label: 'Ranges', content: <Ranges {...rangeProps} />, icon: rangePositionsImage },
         {
-            label: 'Contract Balances',
+            label: 'Exchange Balances',
             content: <Exchange {...exchangeProps} />,
             icon: exchangeImage,
         },
@@ -442,7 +442,7 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
         { label: 'Limit Orders', content: <Orders {...ordersProps} />, icon: openOrdersImage },
         { label: 'Ranges', content: <Ranges {...rangeProps} />, icon: rangePositionsImage },
         {
-            label: 'Contract Balances',
+            label: 'Exchange Balances',
             content: <Exchange {...exchangeProps} />,
             icon: exchangeImage,
         },

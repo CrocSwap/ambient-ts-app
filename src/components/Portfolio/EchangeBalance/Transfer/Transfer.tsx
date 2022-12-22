@@ -165,7 +165,7 @@ export default function Transfer(props: PortfolioTransferProps) {
             setButtonMessage('Enter a Transfer Amount');
         } else if (!isDexBalanceSufficient) {
             setIsButtonDisabled(true);
-            setButtonMessage(`${selectedToken.symbol} Contract Balance Insufficient`);
+            setButtonMessage(`${selectedToken.symbol} Exchange Balance Insufficient`);
         }
         // else if (isApprovalPending) {
         //     setIsButtonDisabled(true);
@@ -374,10 +374,10 @@ export default function Transfer(props: PortfolioTransferProps) {
                         : styles.info_text_non_clickable
                 }
             >
-                Your Contract Balance ({selectedToken.symbol}): {tokenDexBalanceTruncated || '0.0'}
+                Your Exchange Balance ({selectedToken.symbol}): {tokenDexBalanceTruncated || '0.0'}
             </div>
             <div className={styles.info_text_non_clickable}>
-                Destination Contract Balance ({selectedToken.symbol}):{' '}
+                Destination Exchange Balance ({selectedToken.symbol}):{' '}
                 {sendToAddressBalanceTruncated || '0.0'}
             </div>
             {resolvedAddressOrNull}

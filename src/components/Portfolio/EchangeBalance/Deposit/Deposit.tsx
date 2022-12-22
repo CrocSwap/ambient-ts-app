@@ -372,7 +372,7 @@ export default function Deposit(props: PortfolioDepositProps) {
                 Your Wallet Balance ({selectedToken.symbol}): {tokenWalletBalanceTruncated || '0.0'}
             </div>
             <div className={styles.info_text_non_clickable}>
-                Your Contract Balance ({selectedToken.symbol}):{' '}
+                Your Exchange Balance ({selectedToken.symbol}):{' '}
                 <span>{tokenDexBalanceTruncated || '0.0'}</span>
             </div>
             <DepositButton

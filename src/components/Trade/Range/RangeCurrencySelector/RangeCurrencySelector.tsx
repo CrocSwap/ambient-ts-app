@@ -146,7 +146,7 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
 
     const DexBalanceContent = (
         <span className={styles.surplus_toggle}>
-            <IconWithTooltip title='Use Contract Balance' placement='bottom'>
+            <IconWithTooltip title='Use Exchange Balance' placement='bottom'>
                 {isTokenASelector ? (
                     <Toggle2
                         isOn={isWithdrawTokenAFromDexChecked}
@@ -368,7 +368,7 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
                             </div>
                         </div>{' '}
                     </IconWithTooltip>
-                    <IconWithTooltip title='Contract Balance' placement='bottom'>
+                    <IconWithTooltip title='Exchange Balance' placement='bottom'>
                         <div
                             className={`${styles.balance_with_pointer} ${
                                 (isTokenASelector && isWithdrawTokenAFromDexChecked) ||
