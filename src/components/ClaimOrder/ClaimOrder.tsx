@@ -210,7 +210,7 @@ export default function ClaimOrder(props: IClaimOrderProps) {
             <div className={styles.completed_animation}>
                 <Animation animData={completed} loop={false} />
             </div>
-            <p>Removal Transaction Successfully Submitted</p>
+            <p>Claim Transaction Successfully Submitted</p>
             <a
                 href={etherscanLink}
                 target='_blank'

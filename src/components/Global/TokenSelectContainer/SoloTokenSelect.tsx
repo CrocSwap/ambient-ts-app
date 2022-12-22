@@ -8,6 +8,7 @@ import styles from './SoloTokenSelect.module.css';
 import { memoizeFetchContractDetails } from '../../../App/functions/fetchContractDetails';
 import { ethers } from 'ethers';
 import SoloTokenImport from './SoloTokenImport';
+// import SimpleLoader from '../LoadingAnimations/SimpleLoader/SimpleLoader';
 // import { AiOutlineQuestionCircle } from 'react-icons/ai';
 
 interface propsIF {
@@ -210,14 +211,31 @@ export const SoloTokenSelect = (props: propsIF) => {
 
     // // TODO: this is a function to clear the input field on click
     // // TODO: we just need a button in the DOM to attach it
-    // const input = document.getElementById('token_select_input_field') as HTMLInputElement;
-    // const clearInputField = () => {
-    //     if (input) input.value = '';
+    const input = document.getElementById('token_select_input_field') as HTMLInputElement;
+    const clearInputField = () => {
+        if (input) input.value = '';
 
-    //     setInput('');
-    //     document.getElementById('token_select_input_field')?.focus();
-    // };
+        setInput('');
+        document.getElementById('token_select_input_field')?.focus();
+    };
 
+    // const [ isLoading, setIsLoading] = useState(false)
+
+    // function handleInputChange(e: ChangeEvent<HTMLInputElement>) {
+    //     setInput(e.target.value)
+
+    //     if (e.target.value.length > 2) {
+    //         setIsLoading(true)
+    //     }
+
+    //     setTimeout(() => {
+    //       setIsLoading(false)
+    //       }, 1500);
+    // }
+
+    // if (isLoading) return <div className={styles.loader}> <SimpleLoader /></div>
+
+    console.log({ customToken });
     return (
         <section className={styles.container}>
             <div className={styles.input_control_container}>
@@ -228,9 +246,9 @@ export const SoloTokenSelect = (props: propsIF) => {
                     placeholder=' Search name or enter an Address'
                     onChange={(e) => setInput(e.target.value)}
                 />
+                {input?.value && <button onClick={clearInputField}>Clear</button>}
                 {/* {input.value && <button onClick={clearInputField}>Clear</button>} */}
             </div>
-
             {showSoloSelectTokenButtons ? (
                 outputTokens.map((token: TokenIF) => (
                     <TokenSelect
