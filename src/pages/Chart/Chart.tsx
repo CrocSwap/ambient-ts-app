@@ -1049,14 +1049,11 @@ export default function Chart(props: ChartData) {
                                     (!event.sourceEvent.ctrlKey || event.sourceEvent.metaKey) &&
                                     (event.sourceEvent.ctrlKey || !event.sourceEvent.metaKey)
                                 ) {
-                                    console.log(event.sourceEvent);
-
                                     scaleData.xScale.domain([
                                         new Date(domainX[0].getTime() - deltaX),
                                         domainX[1],
                                     ]);
                                 } else {
-                                    console.log('asd');
                                     const gapTop =
                                         domainX[1].getTime() -
                                         scaleData.xScale
