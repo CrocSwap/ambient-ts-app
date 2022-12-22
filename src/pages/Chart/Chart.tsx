@@ -802,8 +802,8 @@ export default function Chart(props: ChartData) {
         return tempArray;
     }
 
-    const utcDiff = moment().utcOffset();
-    const utcDiffHours = Math.floor(utcDiff / 60);
+    // const utcDiff = moment().utcOffset();
+    // const utcDiffHours = Math.floor(utcDiff / 60);
 
     // x axis text
     useEffect(() => {
@@ -1517,11 +1517,11 @@ export default function Chart(props: ChartData) {
                     const low = ranges.filter((target: any) => target.name === 'Min')[0].value;
                     const high = ranges.filter((target: any) => target.name === 'Max')[0].value;
 
-                    const lowBoundary = targetData.filter((target: any) => target.name === 'Min')[0]
-                        .value;
-                    const highBoundary = targetData.filter(
-                        (target: any) => target.name === 'Max',
-                    )[0].value;
+                    // const lowBoundary = targetData.filter((target: any) => target.name === 'Min')[0]
+                    //     .value;
+                    // const highBoundary = targetData.filter(
+                    //     (target: any) => target.name === 'Max',
+                    // )[0].value;
 
                     const lineToBeSet = dragedValue > displayValue ? 'Max' : 'Min';
 
