@@ -306,6 +306,7 @@ export default function App() {
     );
 
     const [candleData, setCandleData] = useState<CandlesByPoolAndDuration | undefined>();
+    const [isCandleSelected, setIsCandleSelected] = useState<boolean | undefined>();
 
     // custom hook to manage chain the app is using
     // `chainData` is data on the current chain retrieved from our SDK
@@ -1983,8 +1984,8 @@ export default function App() {
 
     useEffect(() => {
         toggleSidebarBasedOnRoute();
-        toggleTradeTabBasedOnRoute();
-    }, [location]);
+        if (!isCandleSelected) toggleTradeTabBasedOnRoute();
+    }, [location, isCandleSelected]);
 
     // function to sever connection between user wallet and Moralis server
     const clickLogout = async () => {
@@ -2497,7 +2498,8 @@ export default function App() {
                                     setTokenPairLocal={setTokenPairLocal}
                                     showSidebar={showSidebar}
                                     handlePulseAnimation={handlePulseAnimation}
-
+                                    isCandleSelected={isCandleSelected}
+                                    setIsCandleSelected={setIsCandleSelected}
                                     // handleTxCopiedClick={handleTxCopiedClick}
                                     // handleOrderCopiedClick={handleOrderCopiedClick}
                                     // handleRangeCopiedClick={handleRangeCopiedClick}

@@ -80,6 +80,8 @@ interface TradePropsIF {
     // handleTxCopiedClick: () => void;
     // handleOrderCopiedClick: () => void;
     // handleRangeCopiedClick: () => void;
+    isCandleSelected: boolean | undefined;
+    setIsCandleSelected: Dispatch<SetStateAction<boolean | undefined>>;
 }
 
 // React functional component
@@ -125,6 +127,11 @@ export default function Trade(props: TradePropsIF) {
         // handleTxCopiedClick,
         // handleOrderCopiedClick,
         // handleRangeCopiedClick,
+
+        setOutsideControl,
+        setSelectedOutsideTab,
+        isCandleSelected,
+        setIsCandleSelected,
     } = props;
 
     const tokenPairFromParams = useUrlParams(chainId, isInitialized);
@@ -133,7 +140,6 @@ export default function Trade(props: TradePropsIF) {
     }, [tokenPairFromParams]);
     const { params } = useParams();
 
-    const [isCandleSelected, setIsCandleSelected] = useState<boolean | undefined>();
     const [transactionFilter, setTransactionFilter] = useState<CandleData>();
 
     const navigate = useNavigate();
@@ -221,6 +227,8 @@ export default function Trade(props: TradePropsIF) {
         // }
         // setIsShowAllEnabled(!isOpen);
         setTransactionFilter(candleData);
+        setOutsideControl(true);
+        setSelectedOutsideTab(0);
     };
     const [chartBg, setChartBg] = useState('transparent');
 
@@ -238,6 +246,13 @@ export default function Trade(props: TradePropsIF) {
     const [upBorderColor, setUpBorderColor] = useState<string>('#CDC1FF');
     const [downBodyColor, setDownBodyColor] = useState<string>('#24243e');
     const [downBorderColor, setDownBorderColor] = useState<string>('#7371FC');
+    const [upVolumeColor] = useState<string>('rgba(205,193,255, 0.8)');
+    const [downVolumeColor] = useState<string>('rgba(115,113,252, 0.8)');
+
+    // const [upBodyColor, setUpBodyColor] = useState<string>('#CDC1FF');
+    // const [upBorderColor, setUpBorderColor] = useState<string>('#CDC1FF');
+    // const [downBodyColor, setDownBodyColor] = useState<string>('#24243e');
+    // const [downBorderColor, setDownBorderColor] = useState<string>('#7371FC');
 
     // console.log({ upBodyColor });
     // console.log({ upBorderColor });
@@ -406,6 +421,8 @@ export default function Trade(props: TradePropsIF) {
                             upBorderColor={upBorderColor}
                             downBodyColor={downBodyColor}
                             downBorderColor={downBorderColor}
+                            upVolumeColor={upVolumeColor}
+                            downVolumeColor={downVolumeColor}
                             baseTokenAddress={baseTokenAddress}
                             poolPriceNonDisplay={poolPriceNonDisplay}
                             selectedDate={selectedDate}
