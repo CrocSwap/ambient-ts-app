@@ -802,8 +802,8 @@ export default function Chart(props: ChartData) {
         return tempArray;
     }
 
-    // const utcDiff = moment().utcOffset();
-    // const utcDiffHours = Math.floor(utcDiff / 60);
+    const utcDiff = moment().utcOffset();
+    const utcDiffHours = Math.floor(utcDiff / 60);
 
     // x axis text
     useEffect(() => {
@@ -817,11 +817,11 @@ export default function Chart(props: ChartData) {
                 ])
                 .tickFormat((d: any) => {
                     if (d === crosshairData[0].x) {
-                        // if (activeTimeFrame === '1d') {
-                        //     return moment(d).subtract(utcDiffHours, 'hours').format('MMM DD YYYY');
-                        // } else {
-                        //     return moment(d).format('MMM DD HH:mm');
-                        // }
+                        if (activeTimeFrame === '1d') {
+                            return moment(d).subtract(utcDiffHours, 'hours').format('MMM DD YYYY');
+                        } else {
+                            return moment(d).format('MMM DD HH:mm');
+                        }
                         // return moment(d).format('  DD HH:mm');
                     }
                     if (activeTimeFrame === '1d') {
