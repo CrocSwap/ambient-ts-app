@@ -58,7 +58,7 @@ export default function OrderDetails(props: IOrderDetailsProps) {
                         chainId: chainId,
                         positionType: positionType,
                         addValue: 'true',
-                        omitAPY: 'true',
+                        omitAPY: 'false',
                     }),
             )
                 .then((response) => response?.json())
