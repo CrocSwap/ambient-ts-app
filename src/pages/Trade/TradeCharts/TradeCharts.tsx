@@ -7,7 +7,6 @@ import {
     //  useMemo,
     useRef,
 } from 'react';
-import { motion } from 'framer-motion';
 import {
     AiOutlineCamera,
     AiOutlineFullscreen,
@@ -471,20 +470,20 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
 
     // const exampleAction = () => console.log('example');
 
-    const chartOverlayButtonData1 = [
+    const volumeTvlAndFeeData = [
         { name: 'Volume', selected: showVolume, action: handleVolumeToggle },
         { name: 'TVL', selected: showTvl, action: handleTvlToggle },
         { name: 'Fee Rate', selected: showFeeRate, action: handleFeeRateToggle },
     ];
 
-    const chartOverlayButtonData2 = [
+    const curveDepthData = [
         { name: 'Off', action: () => handleLiqToggle('Off') },
         { name: 'Curve', action: () => handleLiqToggle('Curve') },
         { name: 'Depth', action: () => handleLiqToggle('Depth') },
     ];
 
-    const chartOverlayButtons1 = chartOverlayButtonData1.map((button, idx) => (
-        <div className={styles.settings_container} key={idx}>
+    const volumeTvlAndFee = volumeTvlAndFeeData.map((button, idx) => (
+        <div className={styles.volume_tvl_container} key={idx}>
             <button
                 onClick={button.action}
                 className={
@@ -498,8 +497,8 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
         </div>
     ));
 
-    const chartOverlayButtons2 = chartOverlayButtonData2.map((button, idx) => (
-        <div className={styles.settings_container} key={idx}>
+    const curveDepth = curveDepthData.map((button, idx) => (
+        <div className={styles.curve_depth_container} key={idx}>
             <button
                 onClick={button.action}
                 className={
@@ -531,34 +530,18 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
     }
 
     const activeTimeFrameDisplay = activeTimeFrameData.map((time, idx) => (
-        <motion.div
-            initial={{ y: 10, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: -10, opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className={styles.settings_container}
-            key={idx}
-        >
+        <div className={styles.main_time_frame_container} key={idx}>
             <button
                 onClick={() => handleTimeFrameButtonClick(time.label, time.activePeriod)}
                 className={
                     time.label === activeTimeFrame
-                        ? styles.active_button2
-                        : styles.non_active_button2
+                        ? styles.active_selected_button
+                        : styles.non_active_selected_button
                 }
             >
                 {time.label}
-
-                {time.label === activeTimeFrame && (
-                    <motion.div
-                        layoutId='outline2'
-                        className={styles.outline2}
-                        initial={false}
-                        transition={spring}
-                    />
-                )}
             </button>
-        </motion.div>
+        </div>
     ));
 
     // --------------------------- END OF TIME FRAME BUTTON FUNCTIONALITY-------------------------------
@@ -789,8 +772,8 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
             <div>{graphSettingsContent}</div>
 
             {/* {tvlTickDisplay} */}
-            {/* <div className={styles.chart_overlay_container}>{chartOverlayButtons1}</div>
-            <div className={styles.chart_overlay_container}>{chartOverlayButtons2}</div> */}
+            {/* <div className={styles.chart_overlay_container}>{volumeTvlAndFee}</div>
+            <div className={styles.chart_overlay_container}>{curveDepth}</div> */}
         </div>
     );
     // END OF TOKEN INFO----------------------------------------------------------------
@@ -805,9 +788,8 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
                     justifyContent: 'center',
                     alignItems: 'center',
                 }}
-                className={styles.chart_overlay_container}
             >
-                {chartOverlayButtons1}
+                {volumeTvlAndFee}
             </div>
             <div
                 style={{
@@ -815,9 +797,8 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
                     justifyContent: 'end',
                     alignItems: 'end',
                 }}
-                className={styles.chart_overlay_container}
             >
-                {chartOverlayButtons2}
+                {curveDepth}
             </div>
         </div>
     );
@@ -1055,9 +1036,3 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
         </div>
     );
 }
-
-const spring = {
-    type: 'spring',
-    stiffness: 500,
-    damping: 30,
-};
