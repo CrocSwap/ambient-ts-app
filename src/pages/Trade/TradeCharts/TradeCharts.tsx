@@ -59,6 +59,7 @@ import { formatDollarAmountAxis } from '../../../utils/numbers';
 import IconWithTooltip from '../../../components/Global/IconWithTooltip/IconWithTooltip';
 // import { formatAmountOld } from '../../../utils/numbers';
 import UseOnClickOutside from '../../../utils/hooks/useOnClickOutside';
+import VolumeTVLFee from './TradeChartsComponents/VolumeTVLFee';
 
 // interface for React functional component props
 interface TradeChartsPropsIF {
@@ -789,7 +790,16 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
                     alignItems: 'center',
                 }}
             >
-                {volumeTvlAndFee}
+                <VolumeTVLFee
+                    showVolume={showVolume}
+                    setShowVolume={setShowVolume}
+                    showTvl={showTvl}
+                    setShowTvl={setShowTvl}
+                    showFeeRate={showFeeRate}
+                    setShowFeeRate={setShowFeeRate}
+                />
+
+                {/* {volumeTvlAndFee} */}
             </div>
             <div
                 style={{
