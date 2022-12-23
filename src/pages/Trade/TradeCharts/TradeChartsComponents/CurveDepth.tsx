@@ -20,7 +20,13 @@ export default function CurveDepth(props: CurveDepthPropsIF) {
     ];
 
     return (
-        <>
+        <div
+            style={{
+                display: 'flex',
+                justifyContent: 'end',
+                alignItems: 'end',
+            }}
+        >
             {curveDepthData.map((button, idx) => (
                 <div className={styles.curve_depth_container} key={idx}>
                     <button
@@ -35,6 +41,6 @@ export default function CurveDepth(props: CurveDepthPropsIF) {
                     </button>
                 </div>
             ))}
-        </>
+        </div>
     );
 }

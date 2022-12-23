@@ -25,7 +25,13 @@ export default function VolumeTVLFee(props: VolumeTVLFeePropsIF) {
     ];
 
     return (
-        <>
+        <div
+            style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+            }}
+        >
             {volumeTvlAndFeeData.map((button, idx) => (
                 <div className={styles.volume_tvl_container} key={idx}>
                     <button
@@ -40,6 +46,6 @@ export default function VolumeTVLFee(props: VolumeTVLFeePropsIF) {
                     </button>
                 </div>
             ))}
-        </>
+        </div>
     );
 }

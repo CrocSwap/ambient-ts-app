@@ -23,7 +23,7 @@ export default function TimeFrame(props: TimeFramePropsIF) {
     }
 
     return (
-        <>
+        <div className={styles.chart_overlay_container}>
             {activeTimeFrameData.map((time, idx) => (
                 <div className={styles.main_time_frame_container} key={idx}>
                     <button
@@ -38,6 +38,6 @@ export default function TimeFrame(props: TimeFramePropsIF) {
                     </button>
                 </div>
             ))}
-        </>
+        </div>
     );
 }

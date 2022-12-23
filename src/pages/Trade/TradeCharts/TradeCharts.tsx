@@ -784,40 +784,22 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
     // console.log({ poolPriceChangePercent });
     const timeFrameContent = (
         <div className={styles.time_frame_container}>
-            <div className={styles.chart_overlay_container}>
-                <TimeFrame
-                    activeTimeFrame={activeTimeFrame}
-                    setActiveTimeFrame={setActiveTimeFrame}
-                    setActivePeriod={setActivePeriod}
-                />
-            </div>
-            <div
-                style={{
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                }}
-            >
-                <VolumeTVLFee
-                    showVolume={showVolume}
-                    setShowVolume={setShowVolume}
-                    showTvl={showTvl}
-                    setShowTvl={setShowTvl}
-                    showFeeRate={showFeeRate}
-                    setShowFeeRate={setShowFeeRate}
-                />
+            <TimeFrame
+                activeTimeFrame={activeTimeFrame}
+                setActiveTimeFrame={setActiveTimeFrame}
+                setActivePeriod={setActivePeriod}
+            />
 
-                {/* {volumeTvlAndFee} */}
-            </div>
-            <div
-                style={{
-                    display: 'flex',
-                    justifyContent: 'end',
-                    alignItems: 'end',
-                }}
-            >
-                <CurveDepth liqMode={liqMode} setLiqMode={setLiqMode} />
-            </div>
+            <VolumeTVLFee
+                showVolume={showVolume}
+                setShowVolume={setShowVolume}
+                showTvl={showTvl}
+                setShowTvl={setShowTvl}
+                showFeeRate={showFeeRate}
+                setShowFeeRate={setShowFeeRate}
+            />
+
+            <CurveDepth liqMode={liqMode} setLiqMode={setLiqMode} />
         </div>
     );
 
