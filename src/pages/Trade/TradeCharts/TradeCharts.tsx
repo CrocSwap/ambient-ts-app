@@ -61,6 +61,7 @@ import IconWithTooltip from '../../../components/Global/IconWithTooltip/IconWith
 import UseOnClickOutside from '../../../utils/hooks/useOnClickOutside';
 import VolumeTVLFee from './TradeChartsComponents/VolumeTVLFee';
 import CurveDepth from './TradeChartsComponents/CurveDepth';
+import TimeFrame from './TradeChartsComponents/TimeFrame';
 
 // interface for React functional component props
 interface TradeChartsPropsIF {
@@ -783,7 +784,13 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
     // console.log({ poolPriceChangePercent });
     const timeFrameContent = (
         <div className={styles.time_frame_container}>
-            <div className={styles.chart_overlay_container}>{activeTimeFrameDisplay}</div>
+            <div className={styles.chart_overlay_container}>
+                <TimeFrame
+                    activeTimeFrame={activeTimeFrame}
+                    setActiveTimeFrame={setActiveTimeFrame}
+                    setActivePeriod={setActivePeriod}
+                />
+            </div>
             <div
                 style={{
                     display: 'flex',
