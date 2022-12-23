@@ -24,21 +24,6 @@ export default function VolumeTVLFee(props: VolumeTVLFeePropsIF) {
         { name: 'Fee Rate', selected: showFeeRate, action: handleFeeRateToggle },
     ];
 
-    const volumeTvlAndFee = volumeTvlAndFeeData.map((button, idx) => (
-        <div className={styles.volume_tvl_container} key={idx}>
-            <button
-                onClick={button.action}
-                className={
-                    button.selected
-                        ? styles.active_selected_button
-                        : styles.non_active_selected_button
-                }
-            >
-                {button.name}
-            </button>
-        </div>
-    ));
-
     return (
         <>
             {volumeTvlAndFeeData.map((button, idx) => (

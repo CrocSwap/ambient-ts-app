@@ -60,6 +60,7 @@ import IconWithTooltip from '../../../components/Global/IconWithTooltip/IconWith
 // import { formatAmountOld } from '../../../utils/numbers';
 import UseOnClickOutside from '../../../utils/hooks/useOnClickOutside';
 import VolumeTVLFee from './TradeChartsComponents/VolumeTVLFee';
+import CurveDepth from './TradeChartsComponents/CurveDepth';
 
 // interface for React functional component props
 interface TradeChartsPropsIF {
@@ -808,7 +809,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
                     alignItems: 'end',
                 }}
             >
-                {curveDepth}
+                <CurveDepth liqMode={liqMode} setLiqMode={setLiqMode} />
             </div>
         </div>
     );
