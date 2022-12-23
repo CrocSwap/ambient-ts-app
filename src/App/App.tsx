@@ -1909,30 +1909,52 @@ export default function App() {
                         }
                         const result: TokenIF[] = [];
                         const tokenMap = new Map();
+                        const ambientTokens = getAmbientTokens();
                         for (const item of updatedTransactions as ITransaction[]) {
                             if (!tokenMap.has(item.base)) {
-                                tokenMap.set(item.base, true); // set any value to Map
-                                result.push({
-                                    name: item.baseName,
-                                    address: item.base,
-                                    symbol: item.baseSymbol,
-                                    decimals: item.baseDecimals,
-                                    chainId: parseInt(item.chainId),
-                                    logoURI: item.baseTokenLogoURI,
+                                const isFoundInAmbientList = ambientTokens.some((ambientToken) => {
+                                    if (
+                                        ambientToken.address.toLowerCase() ===
+                                        item.base.toLowerCase()
+                                    )
+                                        return true;
+                                    return false;
                                 });
+                                if (!isFoundInAmbientList) {
+                                    tokenMap.set(item.base, true); // set any value to Map
+                                    result.push({
+                                        name: item.baseName,
+                                        address: item.base,
+                                        symbol: item.baseSymbol,
+                                        decimals: item.baseDecimals,
+                                        chainId: parseInt(item.chainId),
+                                        logoURI: item.baseTokenLogoURI,
+                                    });
+                                }
                             }
                             if (!tokenMap.has(item.quote)) {
-                                tokenMap.set(item.quote, true); // set any value to Map
-                                result.push({
-                                    name: item.quoteName,
-                                    address: item.quote,
-                                    symbol: item.quoteSymbol,
-                                    decimals: item.quoteDecimals,
-                                    chainId: parseInt(item.chainId),
-                                    logoURI: item.quoteTokenLogoURI,
+                                const isFoundInAmbientList = ambientTokens.some((ambientToken) => {
+                                    if (
+                                        ambientToken.address.toLowerCase() ===
+                                        item.quote.toLowerCase()
+                                    )
+                                        return true;
+                                    return false;
                                 });
+                                if (!isFoundInAmbientList) {
+                                    tokenMap.set(item.quote, true); // set any value to Map
+                                    result.push({
+                                        name: item.quoteName,
+                                        address: item.quote,
+                                        symbol: item.quoteSymbol,
+                                        decimals: item.quoteDecimals,
+                                        chainId: parseInt(item.chainId),
+                                        logoURI: item.quoteTokenLogoURI,
+                                    });
+                                }
                             }
                         }
+                        // const transactedTokensMinusAmbientTokens = result.filter((token) => )
                         dispatch(setRecentTokens(result));
                     })
                     .catch(console.log);
