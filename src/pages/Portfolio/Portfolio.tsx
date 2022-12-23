@@ -543,6 +543,8 @@ export default function Portfolio(props: PortfolioPropsIF) {
                         searchType={searchType}
                         addRecentToken={addRecentToken}
                         getRecentTokens={getRecentTokens}
+                        isSingleToken={true}
+                        tokenAorB={null}
                     />
                 </Modal>
             )}

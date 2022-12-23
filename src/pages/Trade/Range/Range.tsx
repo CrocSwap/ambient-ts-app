@@ -56,6 +56,7 @@ import {
 import { addPendingTx, addReceipt, removePendingTx } from '../../../utils/state/receiptDataSlice';
 import getUnicodeCharacter from '../../../utils/functions/getUnicodeCharacter';
 import RangeShareControl from '../../../components/Trade/Range/RangeShareControl/RangeShareControl';
+import { getRecentTokensParamsIF } from '../../../App/hooks/useRecentTokens';
 
 interface RangePropsIF {
     crocEnv: CrocEnv | undefined;
@@ -94,6 +95,12 @@ interface RangePropsIF {
     tokenBQtyLocal: number;
     setTokenAQtyLocal: Dispatch<SetStateAction<number>>;
     setTokenBQtyLocal: Dispatch<SetStateAction<number>>;
+    verifyToken: (addr: string, chn: string) => boolean;
+    getTokensByName: (searchName: string, chn: string, exact: boolean) => TokenIF[];
+    getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
+    importedTokensPlus: TokenIF[];
+    getRecentTokens: (options?: getRecentTokensParamsIF | undefined) => TokenIF[];
+    addRecentToken: (tkn: TokenIF) => void;
 }
 
 export default function Range(props: RangePropsIF) {

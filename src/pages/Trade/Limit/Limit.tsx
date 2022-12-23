@@ -42,6 +42,7 @@ import {
 import LimitShareControl from '../../../components/Trade/Limit/LimitShareControl/LimitShareControl';
 import { FiCopy } from 'react-icons/fi';
 import { memoizeQuerySpotPrice } from '../../../App/functions/querySpotPrice';
+import { getRecentTokensParamsIF } from '../../../App/hooks/useRecentTokens';
 
 interface LimitPropsIF {
     pool: CrocPoolView | undefined;
@@ -77,6 +78,12 @@ interface LimitPropsIF {
     poolExists: boolean | undefined;
     chainData: ChainSpec;
     isOrderCopied: boolean;
+    verifyToken: (addr: string, chn: string) => boolean;
+    getTokensByName: (searchName: string, chn: string, exact: boolean) => TokenIF[];
+    getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
+    importedTokensPlus: TokenIF[];
+    getRecentTokens: (options?: getRecentTokensParamsIF | undefined) => TokenIF[];
+    addRecentToken: (tkn: TokenIF) => void;
 }
 
 const cachedQuerySpotPrice = memoizeQuerySpotPrice();
