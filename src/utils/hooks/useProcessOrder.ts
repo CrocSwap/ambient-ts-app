@@ -190,34 +190,32 @@ export const useProcessOrder = (limitOrder: LimitOrderIF) => {
             ? limitOrder.positionLiqQuoteDecimalCorrected
             : limitOrder.claimableLiqQuoteDecimalCorrected;
 
-    const baseQty =
-        liqBaseNum === 0
-            ? '0'
-            : liqBaseNum < 0.0001
-            ? liqBaseNum.toExponential(2)
-            : liqBaseNum < 2
-            ? liqBaseNum.toPrecision(3)
-            : liqBaseNum >= 100000
-            ? formatAmountOld(liqBaseNum)
-            : // ? baseLiqDisplayNum.toExponential(2)
-              liqBaseNum.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              });
-    const quoteQty =
-        liqQuoteNum === 0
-            ? '0'
-            : liqQuoteNum < 0.0001
-            ? liqQuoteNum.toExponential(2)
-            : liqQuoteNum < 2
-            ? liqQuoteNum.toPrecision(3)
-            : liqQuoteNum >= 100000
-            ? formatAmountOld(liqQuoteNum)
-            : // ? baseLiqDisplayNum.toExponential(2)
-              liqQuoteNum.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              });
+    const baseQty = !liqBaseNum
+        ? '0'
+        : liqBaseNum < 0.0001
+        ? liqBaseNum.toExponential(2)
+        : liqBaseNum < 2
+        ? liqBaseNum.toPrecision(3)
+        : liqBaseNum >= 100000
+        ? formatAmountOld(liqBaseNum)
+        : // ? baseLiqDisplayNum.toExponential(2)
+          liqBaseNum.toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+          });
+    const quoteQty = !liqQuoteNum
+        ? '0'
+        : liqQuoteNum < 0.0001
+        ? liqQuoteNum.toExponential(2)
+        : liqQuoteNum < 2
+        ? liqQuoteNum.toPrecision(3)
+        : liqQuoteNum >= 100000
+        ? formatAmountOld(liqQuoteNum)
+        : // ? baseLiqDisplayNum.toExponential(2)
+          liqQuoteNum.toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+          });
 
     const usdValueNum = limitOrder.totalValueUSD;
     // const usdValueNum =
