@@ -2006,7 +2006,8 @@ export default function App() {
 
     useEffect(() => {
         toggleSidebarBasedOnRoute();
-        if (!isCandleSelected) toggleTradeTabBasedOnRoute();
+        if (!isCandleSelected && !currentTxActiveInTransactions && !currentPositionActive)
+            toggleTradeTabBasedOnRoute();
     }, [location, isCandleSelected]);
 
     // function to sever connection between user wallet and Moralis server
