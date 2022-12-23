@@ -432,6 +432,7 @@ export default function TradeTabs2(props: ITabsProps) {
         setIsShowAllEnabled: setIsShowAllEnabled,
         setIsCandleSelected: setIsCandleSelected,
         changeState: changeState,
+        lastBlockNumber: lastBlockNumber,
     };
     // props for <PositionsOnlyToggle/> React Element
 

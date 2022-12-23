@@ -43,6 +43,7 @@ interface OrdersMenuIF {
     isOnPortfolioPage: boolean;
     handlePulseAnimation?: (type: string) => void;
     // orderDetailsProps: any;
+    lastBlockNumber: number;
 }
 
 // React functional component
@@ -61,6 +62,7 @@ export default function OrdersMenu(props: OrdersMenuIF) {
         closeGlobalModal,
         showSidebar,
         handlePulseAnimation,
+        lastBlockNumber,
         // isOnPortfolioPage,
     } = props;
     // const [value, copy] = useCopyToClipboard();
@@ -196,7 +198,11 @@ export default function OrdersMenu(props: OrdersMenuIF) {
 
     const openDetailsModal = () =>
         openGlobalModal(
-            <OrderDetails limitOrder={limitOrder} closeGlobalModal={closeGlobalModal} />,
+            <OrderDetails
+                limitOrder={limitOrder}
+                closeGlobalModal={closeGlobalModal}
+                lastBlockNumber={lastBlockNumber}
+            />,
         );
 
     const mainModal = (
