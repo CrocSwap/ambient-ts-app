@@ -1,5 +1,6 @@
 // START: Import React and Dongles
 import { ChangeEvent, Dispatch, SetStateAction, useState, useEffect } from 'react';
+import { ethers } from 'ethers';
 
 // START: Import React Functional Components
 import RangeCurrencySelector from '../RangeCurrencySelector/RangeCurrencySelector';
@@ -18,9 +19,11 @@ import {
 } from '../../../../utils/state/tradeDataSlice';
 import { ZERO_ADDRESS } from '../../../../constants';
 import { useNavigate } from 'react-router-dom';
+import { getRecentTokensParamsIF } from '../../../../App/hooks/useRecentTokens';
 
 // interface for component props
 interface RangeCurrencyConverterPropsIF {
+    provider?: ethers.providers.Provider;
     isUserLoggedIn: boolean | undefined;
     tokensBank: Array<TokenIF>;
     setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
@@ -62,6 +65,12 @@ interface RangeCurrencyConverterPropsIF {
     tokenBQtyLocal: number;
     setTokenAQtyLocal: Dispatch<SetStateAction<number>>;
     setTokenBQtyLocal: Dispatch<SetStateAction<number>>;
+    verifyToken: (addr: string, chn: string) => boolean;
+    getTokensByName: (searchName: string, chn: string, exact: boolean) => TokenIF[];
+    getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
+    importedTokensPlus: TokenIF[];
+    getRecentTokens: (options?: getRecentTokensParamsIF | undefined) => TokenIF[];
+    addRecentToken: (tkn: TokenIF) => void;
 }
 
 // central React functional component
@@ -105,6 +114,12 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
         tokenBQtyLocal,
         setTokenAQtyLocal,
         setTokenBQtyLocal,
+        verifyToken,
+        getTokensByName,
+        getTokenByAddress,
+        importedTokensPlus,
+        getRecentTokens,
+        addRecentToken
     } = props;
 
     const dispatch = useAppDispatch();
@@ -716,6 +731,12 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
         activeTokenListsChanged: activeTokenListsChanged,
         indicateActiveTokenListsChanged: indicateActiveTokenListsChanged,
         isRangeCopied: isRangeCopied,
+        verifyToken: verifyToken,
+        getTokensByName: getTokensByName,
+        getTokenByAddress: getTokenByAddress,
+        importedTokensPlus: importedTokensPlus,
+        getRecentTokens: getRecentTokens,
+        addRecentToken: addRecentToken
     };
 
     return (
@@ -727,6 +748,7 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
                 {...rangeCurrencySelectorCommonProps}
                 isAdvancedMode={isAdvancedMode}
                 handleChangeClick={handleTokenAChangeClick}
+                tokenAorB={'A'}
             />
             <div className={styles.arrow_container}>
                 {isLiq ? null : <span className={styles.arrow} />}
@@ -737,6 +759,7 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
                 {...rangeCurrencySelectorCommonProps}
                 isAdvancedMode={isAdvancedMode}
                 handleChangeClick={handleTokenBChangeClick}
+                tokenAorB={'B'}
             />
         </section>
     );

@@ -2945,7 +2945,6 @@ export default function App() {
                     isWeb3Enabled={isWeb3Enabled}
                     authenticate={authenticate}
                     enableWeb3={enableWeb3}
-                    // authError={authError}
                 />
             )}
         </>

@@ -112,7 +112,7 @@ export default function Range(props: RangePropsIF) {
         searchableTokens,
         mintSlippage,
         isPairStable,
-        // provider,
+        provider,
         baseTokenAddress,
         quoteTokenAddress,
         poolPriceDisplay,
@@ -140,6 +140,12 @@ export default function Range(props: RangePropsIF) {
         tokenBQtyLocal,
         setTokenAQtyLocal,
         setTokenBQtyLocal,
+        verifyToken,
+        getTokensByName,
+        getTokenByAddress,
+        importedTokensPlus,
+        getRecentTokens,
+        addRecentToken
     } = props;
 
     const [isModalOpen, openModal, closeModal] = useModal();
@@ -977,6 +983,7 @@ export default function Range(props: RangePropsIF) {
 
     // props for <RangeCurrencyConverter/> React element
     const rangeCurrencyConverterProps = {
+        provider: provider,
         isUserLoggedIn: isUserLoggedIn,
         poolPriceNonDisplay: poolPriceNonDisplay,
         chainId: chainId ?? '0x2a',
@@ -1015,6 +1022,12 @@ export default function Range(props: RangePropsIF) {
         tokenBQtyLocal,
         setTokenAQtyLocal,
         setTokenBQtyLocal,
+        verifyToken: verifyToken,
+        getTokensByName: getTokensByName,
+        getTokenByAddress: getTokenByAddress,
+        importedTokensPlus: importedTokensPlus,
+        getRecentTokens: getRecentTokens,
+        addRecentToken: addRecentToken
     };
 
     // props for <RangeWidth/> React element
