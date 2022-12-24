@@ -27,6 +27,9 @@ interface ConfirmLimitModalProps {
     showConfirmation: boolean;
     setShowConfirmation: Dispatch<SetStateAction<boolean>>;
     resetConfirmation: () => void;
+    startDisplayPrice: number;
+    middleDisplayPrice: number;
+    endDisplayPrice: number;
 }
 
 export default function ConfirmLimitModal(props: ConfirmLimitModalProps) {
@@ -43,6 +46,9 @@ export default function ConfirmLimitModal(props: ConfirmLimitModalProps) {
         resetConfirmation,
         showConfirmation,
         setShowConfirmation,
+        startDisplayPrice,
+        middleDisplayPrice,
+        endDisplayPrice,
     } = props;
     // const [confirmDetails, setConfirmDetails] = useState<boolean>(true);
     const [transactionApproved, setTransactionApproved] = useState<boolean>(false);
@@ -138,6 +144,42 @@ export default function ConfirmLimitModal(props: ConfirmLimitModalProps) {
         </div>
     );
 
+    const startPriceString = !startDisplayPrice
+        ? '…'
+        : startDisplayPrice < 2
+        ? startDisplayPrice.toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 6,
+          })
+        : startDisplayPrice.toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+          });
+
+    const middlePriceString = !middleDisplayPrice
+        ? '…'
+        : middleDisplayPrice < 2
+        ? middleDisplayPrice.toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 6,
+          })
+        : middleDisplayPrice.toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+          });
+
+    const endPriceString = !endDisplayPrice
+        ? '…'
+        : endDisplayPrice < 2
+        ? endDisplayPrice.toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 6,
+          })
+        : endDisplayPrice.toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+          });
+
     const extraInfoData = (
         <div className={styles.extra_info_container}>
             <div className={styles.convRate}>
@@ -157,16 +199,24 @@ export default function ConfirmLimitModal(props: ConfirmLimitModalProps) {
                 <p>Fill Start</p>
                 <p>
                     {isDenomBase
-                        ? `... ${quoteTokenSymbol} per ${baseTokenSymbol}`
-                        : `... ${baseTokenSymbol} per ${quoteTokenSymbol}`}
+                        ? `${startPriceString} ${quoteTokenSymbol} per ${baseTokenSymbol}`
+                        : `${startPriceString} ${baseTokenSymbol} per ${quoteTokenSymbol}`}
+                </p>
+            </div>
+            <div className={styles.row}>
+                <p>Fill Middle</p>
+                <p>
+                    {isDenomBase
+                        ? `${middlePriceString} ${quoteTokenSymbol} per ${baseTokenSymbol}`
+                        : `${middlePriceString} ${baseTokenSymbol} per ${quoteTokenSymbol}`}
                 </p>
             </div>
             <div className={styles.row}>
                 <p>Fill End</p>
                 <p>
                     {isDenomBase
-                        ? `... ${quoteTokenSymbol} per ${baseTokenSymbol}`
-                        : `... ${baseTokenSymbol} per ${quoteTokenSymbol}`}
+                        ? `${endPriceString} ${quoteTokenSymbol} per ${baseTokenSymbol}`
+                        : `${endPriceString} ${baseTokenSymbol} per ${quoteTokenSymbol}`}
                 </p>
             </div>
         </div>
