@@ -22,21 +22,13 @@ import { HiOutlineExternalLink } from 'react-icons/hi';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 
 // START: Import JSX Components
-import {
-    DefaultTooltip,
-    GreenTextTooltip,
-    NoColorTooltip,
-    RedTextTooltip,
-} from '../../../components/Global/StyledTooltip/StyledTooltip';
+import { DefaultTooltip } from '../../../components/Global/StyledTooltip/StyledTooltip';
 
 // START: Import Local Files
 import styles from './TradeCharts.module.css';
-import { BsHeart, BsHeartFill } from 'react-icons/bs';
 import printDomToImage from '../../../utils/functions/printDomToImage';
-import getUnicodeCharacter from '../../../utils/functions/getUnicodeCharacter';
 import {
     // tradeData as TradeDataIF,
-    toggleDidUserFlipDenom,
     setActiveChartPeriod,
 } from '../../../utils/state/tradeDataSlice';
 import {
@@ -53,9 +45,7 @@ import {
     // getPoolTVL
 } from '../../../App/functions/getPoolStats';
 import TradeChartsLoading from './TradeChartsLoading/TradeChartsLoading';
-import NoTokenIcon from '../../../components/Global/NoTokenIcon/NoTokenIcon';
 import { ChainSpec, CrocPoolView } from '@crocswap-libs/sdk';
-import { formatDollarAmountAxis } from '../../../utils/numbers';
 import IconWithTooltip from '../../../components/Global/IconWithTooltip/IconWithTooltip';
 // import { formatAmountOld } from '../../../utils/numbers';
 import UseOnClickOutside from '../../../utils/hooks/useOnClickOutside';

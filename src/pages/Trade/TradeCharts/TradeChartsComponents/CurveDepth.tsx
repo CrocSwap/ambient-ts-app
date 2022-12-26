@@ -1,5 +1,5 @@
 import styles from './CurveDepth.module.css';
-import { Dispatch, SetStateAction } from 'react';
+import { SetStateAction } from 'react';
 
 interface CurveDepthPropsIF {
     setLiqMode: (value: SetStateAction<string>) => void;

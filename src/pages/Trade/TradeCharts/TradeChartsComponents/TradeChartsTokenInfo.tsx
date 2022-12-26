@@ -15,7 +15,6 @@ import { BsHeart, BsHeartFill } from 'react-icons/bs';
 import {
     // tradeData as TradeDataIF,
     toggleDidUserFlipDenom,
-    setActiveChartPeriod,
 } from '../../../../utils/state/tradeDataSlice';
 
 interface TradeChartsTokenInfoPropsIF {
@@ -43,10 +42,8 @@ interface TradeChartsTokenInfoPropsIF {
 export default function TradeChartsTokenInfo(props: TradeChartsTokenInfoPropsIF) {
     const {
         isPoolPriceChangePositive,
-        setIsPoolPriceChangePositive,
         poolPriceDisplay,
         poolPriceChangePercent,
-        setPoolPriceChangePercent,
         favePools,
         chainId,
         addPoolToFaves,
