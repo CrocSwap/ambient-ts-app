@@ -320,8 +320,6 @@ export default function TradeCandleStickChart(props: ChartData) {
                 }),
             );
 
-            // console.log({ depthBidLeft, depthBidRight, depthAskLeft, depthAskRight });
-
             const liquidityScale = d3
                 .scaleLog()
                 .domain([domainLeft, domainRight])
@@ -471,7 +469,7 @@ export default function TradeCandleStickChart(props: ChartData) {
             }
         }
 
-        // console.log(depthLiqAskData);
+        const newLiqLine = liqBidData;
 
         return {
             liqAskData: liqAskData,
@@ -484,8 +482,9 @@ export default function TradeCandleStickChart(props: ChartData) {
             lineBidSeries: [],
             lineAskSeries: [],
             totalLiq: props.liquidityData?.totals?.totalLiq,
+            newLiqLine: newLiqLine,
         };
-    }, [props.liquidityData, props.poolPriceDisplay]);
+    }, [props.liquidityData, props.poolPriceDisplay, props.liquidityData.range]);
 
     useEffect(() => {
         setScaleData(() => {
