@@ -437,7 +437,7 @@ export const graphDataSlice = createSlice({
                 const updatedTx = action.payload[index];
                 const idToFind = updatedTx.limitOrderIdentifier?.toLowerCase();
                 const indexOfOrderInState = state.limitOrdersByPool.limitOrders.findIndex(
-                    (order) => order.limitOrderIdentifier.toLowerCase() === idToFind,
+                    (order) => order.limitOrderIdentifier?.toLowerCase() === idToFind,
                 );
                 if (indexOfOrderInState === -1) {
                     state.limitOrdersByPool.limitOrders = [action.payload[index]].concat(

@@ -1,7 +1,7 @@
 import styles from './TransactionTypeSide.module.css';
 
 interface TransactionTypeSideProps {
-    type: 'remove' | 'buy' | 'add' | 'sell' | 'recover';
+    type: 'remove' | 'buy' | 'add' | 'sell' | 'claim';
     side: 'rangeRemove' | 'rangeAdd' | 'limit' | 'market';
     baseTokenCharacter?: string;
     quoteTokenCharacter?: string;
@@ -11,7 +11,7 @@ export default function TransactionTypeSide(props: TransactionTypeSideProps) {
     const { type, side, isDenomBase, baseTokenCharacter, quoteTokenCharacter } = props;
 
     const removeType = <p className={styles.remove_style}>Remove</p>;
-    const recoverType = <p className={styles.recover_style}>Recovered</p>;
+    const claimType = <p className={styles.claim_style}>Claimed</p>;
 
     const buyType = (
         <p className={styles.buy_style}>
@@ -33,7 +33,7 @@ export default function TransactionTypeSide(props: TransactionTypeSideProps) {
 
     const typeData = {
         remove: removeType,
-        recover: recoverType,
+        claim: claimType,
         buy: buyType,
         add: addType,
         sell: sellType,

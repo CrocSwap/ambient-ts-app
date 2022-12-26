@@ -69,7 +69,7 @@ const initialState: tradeData = {
     poolPriceNonDisplay: 0,
     advancedLowTick: 0,
     advancedHighTick: 0,
-    simpleRangeWidth: 100,
+    simpleRangeWidth: 10,
     slippageTolerance: 0.05,
     activeChartPeriod: 3600,
     targetData: [

@@ -817,11 +817,11 @@ export default function Chart(props: ChartData) {
                 ])
                 .tickFormat((d: any) => {
                     if (d === crosshairData[0].x) {
-                        // if (activeTimeFrame === '1d') {
-                        //     return moment(d).subtract(utcDiffHours, 'hours').format('MMM DD YYYY');
-                        // } else {
-                        //     return moment(d).format('MMM DD HH:mm');
-                        // }
+                        if (activeTimeFrame === '1d') {
+                            return moment(d).subtract(utcDiffHours, 'hours').format('MMM DD YYYY');
+                        } else {
+                            return moment(d).format('MMM DD HH:mm');
+                        }
                         // return moment(d).format('  DD HH:mm');
                     }
                     if (activeTimeFrame === '1d') {
@@ -1037,7 +1037,6 @@ export default function Chart(props: ChartData) {
                                 .range([0, domainX[1] - domainX[0]]);
 
                             const deltaX = linearX(dx);
-
                             if (
                                 (deltaX < 0 ||
                                     Math.abs(domainX[1].getTime() - domainX[0].getTime()) <=
@@ -1046,12 +1045,7 @@ export default function Chart(props: ChartData) {
                                     Math.abs(domainX[1].getTime() - domainX[0].getTime()) >=
                                         parsedChartData.period * 1000 * 2)
                             ) {
-                                if (!event.sourceEvent.ctrlKey || !event.sourceEvent.metaKey) {
-                                    scaleData.xScale.domain([
-                                        new Date(domainX[0].getTime() - deltaX),
-                                        domainX[1],
-                                    ]);
-                                } else {
+                                if (event.sourceEvent.ctrlKey || event.sourceEvent.metaKey) {
                                     const gapTop =
                                         domainX[1].getTime() -
                                         scaleData.xScale
@@ -1083,6 +1077,11 @@ export default function Chart(props: ChartData) {
                                             new Date(domainX[1].getTime() + baseMovement),
                                         ]);
                                     }
+                                } else {
+                                    scaleData.xScale.domain([
+                                        new Date(domainX[0].getTime() - deltaX),
+                                        domainX[1],
+                                    ]);
                                 }
                             }
                         } else {
@@ -1517,11 +1516,11 @@ export default function Chart(props: ChartData) {
                     const low = ranges.filter((target: any) => target.name === 'Min')[0].value;
                     const high = ranges.filter((target: any) => target.name === 'Max')[0].value;
 
-                    const lowBoundary = targetData.filter((target: any) => target.name === 'Min')[0]
-                        .value;
-                    const highBoundary = targetData.filter(
-                        (target: any) => target.name === 'Max',
-                    )[0].value;
+                    // const lowBoundary = targetData.filter((target: any) => target.name === 'Min')[0]
+                    //     .value;
+                    // const highBoundary = targetData.filter(
+                    //     (target: any) => target.name === 'Max',
+                    // )[0].value;
 
                     const lineToBeSet = dragedValue > displayValue ? 'Max' : 'Min';
 

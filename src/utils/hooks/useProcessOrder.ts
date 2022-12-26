@@ -190,61 +190,64 @@ export const useProcessOrder = (limitOrder: LimitOrderIF) => {
             ? limitOrder.positionLiqQuoteDecimalCorrected
             : limitOrder.claimableLiqQuoteDecimalCorrected;
 
-    const baseQty =
-        liqBaseNum === 0
-            ? '0'
-            : liqBaseNum < 0.0001
-            ? liqBaseNum.toExponential(2)
-            : liqBaseNum < 2
-            ? liqBaseNum.toPrecision(3)
-            : liqBaseNum >= 100000
-            ? formatAmountOld(liqBaseNum)
-            : // ? baseLiqDisplayNum.toExponential(2)
-              liqBaseNum.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              });
-    const quoteQty =
-        liqQuoteNum === 0
-            ? '0'
-            : liqQuoteNum < 0.0001
-            ? liqQuoteNum.toExponential(2)
-            : liqQuoteNum < 2
-            ? liqQuoteNum.toPrecision(3)
-            : liqQuoteNum >= 100000
-            ? formatAmountOld(liqQuoteNum)
-            : // ? baseLiqDisplayNum.toExponential(2)
-              liqQuoteNum.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              });
-
-    const usdValueNum =
-        limitOrder.positionLiqTotalUSD !== 0
-            ? limitOrder.positionLiqTotalUSD
-            : limitOrder.claimableLiqTotalUSD;
-
-    const usdValueTruncated = !usdValueNum
-        ? undefined
-        : usdValueNum < 0.001
-        ? usdValueNum.toExponential(2) + ' '
-        : usdValueNum >= 99999
-        ? formatAmountOld(usdValueNum)
+    const baseQty = !liqBaseNum
+        ? '0'
+        : liqBaseNum < 0.0001
+        ? liqBaseNum.toExponential(2)
+        : liqBaseNum < 2
+        ? liqBaseNum.toPrecision(3)
+        : liqBaseNum >= 100000
+        ? formatAmountOld(liqBaseNum)
         : // ? baseLiqDisplayNum.toExponential(2)
-          usdValueNum.toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-          }) + ' ';
-
-    const usdValueLocaleString = !usdValueNum
-        ? '…'
-        : usdValueNum < 0.01
-        ? usdValueNum.toPrecision(3)
-        : // ? baseLiqDisplayNum.toExponential(2)
-          usdValueNum.toLocaleString(undefined, {
+          liqBaseNum.toLocaleString(undefined, {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
           });
+    const quoteQty = !liqQuoteNum
+        ? '0'
+        : liqQuoteNum < 0.0001
+        ? liqQuoteNum.toExponential(2)
+        : liqQuoteNum < 2
+        ? liqQuoteNum.toPrecision(3)
+        : liqQuoteNum >= 100000
+        ? formatAmountOld(liqQuoteNum)
+        : // ? baseLiqDisplayNum.toExponential(2)
+          liqQuoteNum.toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+          });
+
+    const usdValueNum = limitOrder.totalValueUSD;
+    // const usdValueNum =
+    //     limitOrder.totalValueUSD !== 0 ? limitOrder.totalValueUSD : limitOrder.claimableLiqTotalUSD;
+
+    const usdValueTruncated =
+        usdValueNum === undefined
+            ? undefined
+            : usdValueNum === 0
+            ? '0.00 '
+            : usdValueNum < 0.001
+            ? usdValueNum.toExponential(2) + ' '
+            : usdValueNum >= 99999
+            ? formatAmountOld(usdValueNum)
+            : // ? baseLiqDisplayNum.toExponential(2)
+              usdValueNum.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+              }) + ' ';
+
+    const usdValueLocaleString =
+        usdValueNum === undefined
+            ? '…'
+            : usdValueNum === 0
+            ? '0.00 '
+            : usdValueNum < 0.01
+            ? usdValueNum.toPrecision(3)
+            : // ? baseLiqDisplayNum.toExponential(2)
+              usdValueNum.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+              });
 
     // -----------------------------------------------------------------------------------------
     // eslint-disable-next-line

@@ -5,12 +5,13 @@
 }
 
 .show_tx_message{
-    background: var(--dark1);
+    /* background: var(--dark1); */
     display: flex;
     justify-content: center;
     align-items: center;
     gap: 4px;
 padding: 4px 0;
+margin: 0 4px;
 
     font-size: var(--body-size);
     line-height: var(--body-lh);

@@ -29,10 +29,14 @@ export const useSortedLimits = (
         });
     // sort by limit price
     const sortByPrice = (unsortedData: LimitOrderIF[]) =>
-        [...unsortedData].sort((a, b) => b.limitPrice - a.limitPrice);
+        [...unsortedData].sort((a, b) => a.limitPrice - b.limitPrice);
     // sort by value of limit order
     const sortByValue = (unsortedData: LimitOrderIF[]) =>
-        [...unsortedData].sort((a, b) => b.totalValueUSD - a.totalValueUSD);
+        [...unsortedData].sort((a, b) => {
+            const aValue = a.claimableLiqTotalUSD !== 0 ? a.claimableLiqTotalUSD : a.totalValueUSD;
+            const bValue = b.claimableLiqTotalUSD !== 0 ? b.claimableLiqTotalUSD : b.totalValueUSD;
+            return bValue - aValue;
+        });
 
     // column the user wants the table sorted by
     // this is set when the user clicks a sortable column header

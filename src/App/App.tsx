@@ -306,6 +306,7 @@ export default function App() {
     );
 
     const [candleData, setCandleData] = useState<CandlesByPoolAndDuration | undefined>();
+    const [isCandleSelected, setIsCandleSelected] = useState<boolean | undefined>();
 
     // custom hook to manage chain the app is using
     // `chainData` is data on the current chain retrieved from our SDK
@@ -754,12 +755,12 @@ export default function App() {
 
     useEffect(() => {
         dispatch(setPrimaryQuantityRange(''));
-        dispatch(setSimpleRangeWidth(100));
+        dispatch(setSimpleRangeWidth(10));
         dispatch(setAdvancedMode(false));
         setPoolPriceDisplay(undefined);
         dispatch(setDidUserFlipDenom(false)); // reset so a new token pair is re-evaluated for price > 1
         const sliderInput = document.getElementById('input-slider-range') as HTMLInputElement;
-        if (sliderInput) sliderInput.value = '100';
+        if (sliderInput) sliderInput.value = '10';
     }, [JSON.stringify({ base: baseTokenAddress, quote: quoteTokenAddress })]);
 
     useEffect(() => {
@@ -1908,30 +1909,52 @@ export default function App() {
                         }
                         const result: TokenIF[] = [];
                         const tokenMap = new Map();
+                        const ambientTokens = getAmbientTokens();
                         for (const item of updatedTransactions as ITransaction[]) {
                             if (!tokenMap.has(item.base)) {
-                                tokenMap.set(item.base, true); // set any value to Map
-                                result.push({
-                                    name: item.baseName,
-                                    address: item.base,
-                                    symbol: item.baseSymbol,
-                                    decimals: item.baseDecimals,
-                                    chainId: parseInt(item.chainId),
-                                    logoURI: item.baseTokenLogoURI,
+                                const isFoundInAmbientList = ambientTokens.some((ambientToken) => {
+                                    if (
+                                        ambientToken.address.toLowerCase() ===
+                                        item.base.toLowerCase()
+                                    )
+                                        return true;
+                                    return false;
                                 });
+                                if (!isFoundInAmbientList) {
+                                    tokenMap.set(item.base, true); // set any value to Map
+                                    result.push({
+                                        name: item.baseName,
+                                        address: item.base,
+                                        symbol: item.baseSymbol,
+                                        decimals: item.baseDecimals,
+                                        chainId: parseInt(item.chainId),
+                                        logoURI: item.baseTokenLogoURI,
+                                    });
+                                }
                             }
                             if (!tokenMap.has(item.quote)) {
-                                tokenMap.set(item.quote, true); // set any value to Map
-                                result.push({
-                                    name: item.quoteName,
-                                    address: item.quote,
-                                    symbol: item.quoteSymbol,
-                                    decimals: item.quoteDecimals,
-                                    chainId: parseInt(item.chainId),
-                                    logoURI: item.quoteTokenLogoURI,
+                                const isFoundInAmbientList = ambientTokens.some((ambientToken) => {
+                                    if (
+                                        ambientToken.address.toLowerCase() ===
+                                        item.quote.toLowerCase()
+                                    )
+                                        return true;
+                                    return false;
                                 });
+                                if (!isFoundInAmbientList) {
+                                    tokenMap.set(item.quote, true); // set any value to Map
+                                    result.push({
+                                        name: item.quoteName,
+                                        address: item.quote,
+                                        symbol: item.quoteSymbol,
+                                        decimals: item.quoteDecimals,
+                                        chainId: parseInt(item.chainId),
+                                        logoURI: item.quoteTokenLogoURI,
+                                    });
+                                }
                             }
                         }
+                        // const transactedTokensMinusAmbientTokens = result.filter((token) => )
                         dispatch(setRecentTokens(result));
                     })
                     .catch(console.log);
@@ -1983,8 +2006,9 @@ export default function App() {
 
     useEffect(() => {
         toggleSidebarBasedOnRoute();
-        toggleTradeTabBasedOnRoute();
-    }, [location]);
+        if (!isCandleSelected && !currentTxActiveInTransactions && !currentPositionActive)
+            toggleTradeTabBasedOnRoute();
+    }, [location, isCandleSelected]);
 
     // function to sever connection between user wallet and Moralis server
     const clickLogout = async () => {
@@ -2497,7 +2521,8 @@ export default function App() {
                                     setTokenPairLocal={setTokenPairLocal}
                                     showSidebar={showSidebar}
                                     handlePulseAnimation={handlePulseAnimation}
-
+                                    isCandleSelected={isCandleSelected}
+                                    setIsCandleSelected={setIsCandleSelected}
                                     // handleTxCopiedClick={handleTxCopiedClick}
                                     // handleOrderCopiedClick={handleOrderCopiedClick}
                                     // handleRangeCopiedClick={handleRangeCopiedClick}

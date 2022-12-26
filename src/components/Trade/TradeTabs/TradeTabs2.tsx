@@ -477,18 +477,18 @@ export default function TradeTabs2(props: ITabsProps) {
               //       icon: rangePositionsImage,
               //       showRightSideOption: true,
               //   },
-              {
-                  label: 'Leaderboard',
-                  content: <Leaderboard {...rangesProps} />,
-                  icon: rangePositionsImage,
-                  showRightSideOption: false,
-              },
-              {
-                  label: 'Info',
-                  content: <PoolInfo {...poolInfoProps} />,
-                  icon: rangePositionsImage,
-                  showRightSideOption: false,
-              },
+              //   {
+              //       label: 'Leaderboard',
+              //       content: <Leaderboard {...rangesProps} />,
+              //       icon: rangePositionsImage,
+              //       showRightSideOption: false,
+              //   },
+              //   {
+              //       label: 'Info',
+              //       content: <PoolInfo {...poolInfoProps} />,
+              //       icon: rangePositionsImage,
+              //       showRightSideOption: false,
+              //   },
           ]
         : [
               {

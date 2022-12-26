@@ -320,7 +320,7 @@ export default function TradeCandleStickChart(props: ChartData) {
                 }),
             );
 
-            console.log({ depthBidLeft, depthBidRight, depthAskLeft, depthAskRight });
+            // console.log({ depthBidLeft, depthBidRight, depthAskLeft, depthAskRight });
 
             const liquidityScale = d3
                 .scaleLog()
@@ -471,7 +471,7 @@ export default function TradeCandleStickChart(props: ChartData) {
             }
         }
 
-        console.log(depthLiqAskData);
+        // console.log(depthLiqAskData);
 
         return {
             liqAskData: liqAskData,

@@ -27,7 +27,7 @@
 .add_style {
     color: var(--accent-5);
 }
-.recover_style,
+.claim_style,
 .remove_style {
     color: #5fa2ff;
 }

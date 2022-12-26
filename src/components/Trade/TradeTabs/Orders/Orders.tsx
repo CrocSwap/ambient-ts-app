@@ -152,9 +152,13 @@ export default function Orders(props: propsIF) {
         return () => clearTimeout(handler);
     }, [isShowAllEnabled]);
 
+    const nonEmptyOrders = isShowAllEnabled
+        ? limitOrdersByPool.filter((limitOrder) => limitOrder.totalValueUSD !== 0)
+        : limitOrderData.filter((limitOrder) => limitOrder.totalValueUSD !== 0);
+
     const [sortBy, setSortBy, reverseSort, setReverseSort, sortedLimits] = useSortedLimits(
         'time',
-        isShowAllEnabled ? limitOrdersByPool : limitOrderData,
+        nonEmptyOrders,
     );
     useEffect(() => {
         if (isServerEnabled && isShowAllEnabled) {
@@ -260,7 +264,16 @@ export default function Orders(props: propsIF) {
         if (lastPoolLimitOrderChangeMessage !== null) {
             const lastMessageData = JSON.parse(lastPoolLimitOrderChangeMessage.data).data;
             // console.log({ lastMessageData });
-            if (lastMessageData) dispatch(addLimitOrderChangesByPool(lastMessageData));
+            if (lastMessageData) {
+                console.log({ lastMessageData });
+                Promise.all(
+                    lastMessageData.map((limitOrder: LimitOrderIF) => {
+                        return getLimitOrderData(limitOrder, importedTokens);
+                    }),
+                ).then((updatedLimitOrderStates) => {
+                    dispatch(addLimitOrderChangesByPool(updatedLimitOrderStates));
+                });
+            }
         }
     }, [lastPoolLimitOrderChangeMessage]);
 
@@ -480,7 +493,7 @@ export default function Orders(props: propsIF) {
         />
     ));
 
-    const orderDataOrNull = limitOrderData.length ? (
+    const orderDataOrNull = rowItemContent.length ? (
         rowItemContent
     ) : (
         <NoTableData

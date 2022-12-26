@@ -107,7 +107,7 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
     const WithdrawTokensContent = (
         <div className={styles.surplus_toggle}>
             {isSellTokenSelector ? (
-                <IconWithTooltip title='Use Contract Balance' placement='bottom'>
+                <IconWithTooltip title='Use Exchange Balance' placement='bottom'>
                     <Toggle2
                         isOn={isWithdrawFromDexChecked}
                         handleToggle={() => setIsWithdrawFromDexChecked(!isWithdrawFromDexChecked)}
@@ -117,7 +117,7 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                     />
                 </IconWithTooltip>
             ) : (
-                <IconWithTooltip title='Save to Contract Balance' placement='bottom'>
+                <IconWithTooltip title='Save to Exchange Balance' placement='bottom'>
                     <Toggle2
                         isOn={isSaveAsDexSurplusChecked}
                         handleToggle={() =>
@@ -346,7 +346,7 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
             </div>
             <div className={styles.right_bottom_container}>
                 <div className={styles.left_bottom_container}>
-                    <IconWithTooltip title={'Contract Balance'} placement='bottom'>
+                    <IconWithTooltip title={'Exchange Balance'} placement='bottom'>
                         <div
                             className={`${styles.balance_with_pointer} ${
                                 (isSellTokenSelector && !isWithdrawFromDexChecked) ||

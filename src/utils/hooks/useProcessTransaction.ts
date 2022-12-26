@@ -359,7 +359,7 @@ export const useProcessTransaction = (tx: ITransaction) => {
             ? tx.changeType === 'mint'
                 ? 'add'
                 : tx.changeType === 'recover'
-                ? 'recover'
+                ? 'claim'
                 : 'remove'
             : (isDenomBase && tx.isBuy) || (!isDenomBase && !tx.isBuy)
             ? 'sell'
