@@ -62,6 +62,7 @@ import UseOnClickOutside from '../../../utils/hooks/useOnClickOutside';
 import VolumeTVLFee from './TradeChartsComponents/VolumeTVLFee';
 import CurveDepth from './TradeChartsComponents/CurveDepth';
 import TimeFrame from './TradeChartsComponents/TimeFrame';
+import TradeChartsTokenInfo from './TradeChartsComponents/TradeChartsTokenInfo';
 
 // interface for React functional component props
 interface TradeChartsPropsIF {
@@ -417,227 +418,6 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
         })();
     }, [isServerEnabled, denomInBase, baseTokenAddress, quoteTokenAddress, lastBlockNumber]);
 
-    // useEffect(() => {
-    //     (async () => {
-    //         if (isServerEnabled && tokenAAddress && tokenBAddress) {
-    //             try {
-    //                 const poolTvlResult = await getPoolTVL(
-    //                     baseTokenAddress,
-    //                     quoteTokenAddress,
-    //                     poolIndex,
-    //                     chainId,
-    //                 );
-
-    //                 if (poolTvlResult) {
-    //                     const tvlString = poolTvlResult
-    //                         ? '$' + formatAmountOld(poolTvlResult)
-    //                         : undefined;
-
-    //                     setPoolTvl(tvlString);
-    //                 } else {
-    //                     setPoolTvl(undefined);
-    //                 }
-    //             } catch (error) {
-    //                 setPoolTvl(undefined);
-    //             }
-    //         }
-    //     })();
-    // }, [isServerEnabled, baseTokenAddress, quoteTokenAddress, Math.floor(lastBlockNumber / 4)]);
-
-    // useEffect(() => {
-    //     if (liquidityData) {
-    //         const currentTick = liquidityData?.currentTick;
-    //         const currentRangeData = liquidityData.ranges.filter(
-    //             (range) => range.lowerBound === currentTick,
-    //         );
-    //         const currentTickAverageUSD = currentRangeData[0]?.deltaAverageUSD;
-    //         const currentTickAverageUSDString = currentTickAverageUSD
-    //             ? '$' + formatAmountOld(currentTickAverageUSD)
-    //             : undefined;
-    //         setTvlAtTick(currentTickAverageUSDString);
-    //     }
-    // }, [liquidityData?.currentTick]);
-
-    // ---------------------------ACTIVE OVERLAY BUTTON FUNCTIONALITY-------------------------------
-
-    // this could be simplify into 1 reusable function but I figured we might have to do some other calculations for each of these so I am sepearing it for now. -Jr
-    const handleVolumeToggle = () => setShowVolume(!showVolume);
-
-    const handleTvlToggle = () => setShowTvl(!showTvl);
-    const handleFeeRateToggle = () => setShowFeeRate(!showFeeRate);
-
-    const handleLiqToggle = (mode: string) =>
-        setLiqMode(() => {
-            return mode;
-        });
-
-    // const exampleAction = () => console.log('example');
-
-    const volumeTvlAndFeeData = [
-        { name: 'Volume', selected: showVolume, action: handleVolumeToggle },
-        { name: 'TVL', selected: showTvl, action: handleTvlToggle },
-        { name: 'Fee Rate', selected: showFeeRate, action: handleFeeRateToggle },
-    ];
-
-    const curveDepthData = [
-        { name: 'Off', action: () => handleLiqToggle('Off') },
-        { name: 'Curve', action: () => handleLiqToggle('Curve') },
-        { name: 'Depth', action: () => handleLiqToggle('Depth') },
-    ];
-
-    const volumeTvlAndFee = volumeTvlAndFeeData.map((button, idx) => (
-        <div className={styles.volume_tvl_container} key={idx}>
-            <button
-                onClick={button.action}
-                className={
-                    button.selected
-                        ? styles.active_selected_button
-                        : styles.non_active_selected_button
-                }
-            >
-                {button.name}
-            </button>
-        </div>
-    ));
-
-    const curveDepth = curveDepthData.map((button, idx) => (
-        <div className={styles.curve_depth_container} key={idx}>
-            <button
-                onClick={button.action}
-                className={
-                    button.name.toLowerCase() === liqMode.toLowerCase()
-                        ? styles.active_selected_button
-                        : styles.non_active_selected_button
-                }
-            >
-                {button.name}
-            </button>
-        </div>
-    ));
-    // --------------------------- END OF ACTIVE OVERLAY BUTTON FUNCTIONALITY-------------------------------
-
-    // --------------------------- TIME FRAME BUTTON FUNCTIONALITY-------------------------------
-
-    const activeTimeFrameData = [
-        { label: '1m', activePeriod: 60 },
-        { label: '5m', activePeriod: 300 },
-        { label: '15m', activePeriod: 900 },
-        { label: '1h', activePeriod: 3600 },
-        { label: '4h', activePeriod: 14400 },
-        { label: '1d', activePeriod: 86400 },
-    ];
-
-    function handleTimeFrameButtonClick(label: string, time: number) {
-        setActiveTimeFrame(label);
-        setActivePeriod(time);
-    }
-
-    const activeTimeFrameDisplay = activeTimeFrameData.map((time, idx) => (
-        <div className={styles.main_time_frame_container} key={idx}>
-            <button
-                onClick={() => handleTimeFrameButtonClick(time.label, time.activePeriod)}
-                className={
-                    time.label === activeTimeFrame
-                        ? styles.active_selected_button
-                        : styles.non_active_selected_button
-                }
-            >
-                {time.label}
-            </button>
-        </div>
-    ));
-
-    // --------------------------- END OF TIME FRAME BUTTON FUNCTIONALITY-------------------------------
-
-    // --------------------------- LIQUIDITY TYPE BUTTON FUNCTIONALITY-------------------------------
-    // const liquidityTypeData = [{ label: 'Depth' }, { label: 'Curve' }];
-    // const [liquidityType, setLiquidityType] = useState('depth');
-
-    // function handleLiquidityTypeButtonClick(label: string) {
-    //     setLiquidityType(label.toLowerCase());
-    // }
-
-    // const liquidityTypeDisplay = liquidityTypeData.map((type, idx) => (
-    //     <motion.div
-    //         initial={{ y: 10, opacity: 0 }}
-    //         animate={{ y: 0, opacity: 1 }}
-    //         exit={{ y: -10, opacity: 0 }}
-    //         transition={{ duration: 0.2 }}
-    //         className={`${styles.settings_container} `}
-    //         key={idx}
-    //     >
-    //         <button
-    //             onClick={() => handleLiquidityTypeButtonClick(type.label)}
-    //             className={
-    //                 type.label.toLowerCase() === liquidityType
-    //                     ? styles.active_button2
-    //                     : styles.non_active_button2
-    //             }
-    //         >
-    //             {type.label}
-
-    //             {type.label.toLowerCase() === liquidityType && (
-    //                 <motion.div
-    //                     layoutId='outline'
-    //                     className={styles.outline}
-    //                     initial={false}
-    //                     transition={spring}
-    //                 />
-    //             )}
-    //         </button>
-    //     </motion.div>
-    // ));
-    // eslint-disable-next-line
-    // const liquidityTypeContent = (
-    //     <div className={styles.liquidity_type_container}>
-    //         <div />
-    //         <div className={styles.liquidity_type_content}>
-    //             <span>Liquidity Type</span>
-
-    //             {liquidityTypeDisplay}
-    //         </div>
-    //     </div>
-    // );
-    // --------------------------- END OF LIQUIDITY TYPE BUTTON FUNCTIONALITY-------------------------------
-    // TOKEN INFO----------------------------------------------------------------
-
-    // console.log({ favePools });
-    const currentPoolData = {
-        base: tradeData.baseToken,
-        quote: tradeData.quoteToken,
-        chainId: chainId,
-        poolId: 36000,
-    };
-
-    const isButtonFavorited = favePools?.some(
-        (pool: PoolIF) =>
-            pool.base.address === currentPoolData.base.address &&
-            pool.quote.address === currentPoolData.quote.address &&
-            pool.poolId === currentPoolData.poolId &&
-            pool.chainId.toString() === currentPoolData.chainId.toString(),
-    );
-
-    const handleFavButton = () =>
-        isButtonFavorited
-            ? removePoolFromFaves(tradeData.baseToken, tradeData.quoteToken, chainId, 36000)
-            : addPoolToFaves(tradeData.quoteToken, tradeData.baseToken, chainId, 36000);
-
-    const favButton = (
-        <button className={styles.favorite_button} onClick={handleFavButton}>
-            {isButtonFavorited ? <BsHeartFill color='#cdc1ff' size={22} /> : <BsHeart size={22} />}
-        </button>
-    );
-
-    const topTokenLogo = denomInBase ? tradeData.baseToken.logoURI : tradeData.quoteToken.logoURI;
-    const bottomTokenLogo = denomInBase
-        ? tradeData.quoteToken.logoURI
-        : tradeData.baseToken.logoURI;
-
-    const topTokenSymbol = denomInBase ? tradeData.baseToken.symbol : tradeData.quoteToken.symbol;
-    const bottomTokenSymbol = denomInBase
-        ? tradeData.quoteToken.symbol
-        : tradeData.baseToken.symbol;
-
     // TIME FRAME CONTENT--------------------------------------------------------------
 
     const currencyCharacter = denomInBase
@@ -712,55 +492,17 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
 
     const tokenInfo = (
         <div className={styles.token_info_container}>
-            <div className={styles.tokens_info}>
-                {favButton}
-
-                <DefaultTooltip
-                    interactive
-                    title={`${
-                        tradeData.baseToken.symbol !== 'ETH' ? tradeData.baseToken.symbol + ':' : ''
-                    } ${tradeData.baseToken.symbol !== 'ETH' ? tradeData.baseToken.address : ''} ${
-                        tradeData.quoteToken.symbol
-                    }: ${tradeData.quoteToken.address}`}
-                    placement={'top'}
-                >
-                    <div
-                        className={styles.tokens_images}
-                        onClick={() => dispatch(toggleDidUserFlipDenom())}
-                    >
-                        {topTokenLogo ? (
-                            <img src={topTokenLogo} alt={topTokenSymbol} />
-                        ) : (
-                            <NoTokenIcon tokenInitial={topTokenSymbol.charAt(0)} width='25px' />
-                        )}
-                        {bottomTokenLogo ? (
-                            <img src={bottomTokenLogo} alt={bottomTokenSymbol} />
-                        ) : (
-                            <NoTokenIcon tokenInitial={bottomTokenSymbol.charAt(0)} width='25px' />
-                        )}
-                    </div>
-                </DefaultTooltip>
-                <DefaultTooltip
-                    interactive
-                    title={`${
-                        tradeData.baseToken.symbol !== 'ETH' ? tradeData.baseToken.symbol + ':' : ''
-                    } ${tradeData.baseToken.symbol !== 'ETH' ? tradeData.baseToken.address : ''} ${
-                        tradeData.quoteToken.symbol
-                    }: ${tradeData.quoteToken.address}`}
-                    placement={'top'}
-                >
-                    <div
-                        className={styles.tokens_name}
-                        onClick={() => dispatch(toggleDidUserFlipDenom())}
-                    >
-                        {topTokenSymbol} / {bottomTokenSymbol}
-                        {/* {denomInBase ? tradeData.baseToken.symbol : tradeData.quoteToken.symbol} /{' '} */}
-                        {/* {denomInBase ? tradeData.quoteToken.symbol : tradeData.baseToken.symbol} */}
-                    </div>
-                </DefaultTooltip>
-
-                {isPoolPriceChangePositive ? amountWithTooltipGreen : amountWithTooltipRed}
-            </div>
+            <TradeChartsTokenInfo
+                setIsPoolPriceChangePositive={setIsPoolPriceChangePositive}
+                isPoolPriceChangePositive={isPoolPriceChangePositive}
+                poolPriceDisplay={poolPriceDisplay}
+                poolPriceChangePercent={poolPriceChangePercent}
+                setPoolPriceChangePercent={setPoolPriceChangePercent}
+                favePools={favePools}
+                chainId={chainId}
+                addPoolToFaves={addPoolToFaves}
+                removePoolFromFaves={removePoolFromFaves}
+            />
             <div
                 style={{
                     display: 'flex',
@@ -912,51 +654,6 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
         </div>
     );
 
-    // END OF CURRENT DATA INFO--------------------------------------------------------------
-
-    // CANDLE STICK DATA---------------------------------------------------
-    // const chartData = usePoolChartData('0x8ad599c3a0ff1de082011efddc58f1908eb6e6d8'); // ETH/USDC pool address
-
-    // const formattedTvlData = useMemo(() => {
-    //     if (chartData) {
-    //         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    //         return chartData.map((day: any) => {
-    //             return {
-    //                 time: new Date(day.date * 1000),
-    //                 value: day.totalValueLockedUSD,
-    //             };
-    //         });
-    //     } else {
-    //         return [];
-    //     }
-    // }, [chartData]);
-
-    // const formattedVolumeData = useMemo(() => {
-    //     if (chartData) {
-    //         return chartData.map((day) => {
-    //             return {
-    //                 time: new Date(day.date * 1000),
-    //                 value: day.volumeUSD,
-    //             };
-    //         });
-    //     } else {
-    //         return [];
-    //     }
-    // }, [chartData]);
-
-    // const formattedFeesUSD = useMemo(() => {
-    //     if (chartData) {
-    //         return chartData.map((day) => {
-    //             return {
-    //                 time: new Date(day.date * 1000),
-    //                 value: day.feesUSD,
-    //             };
-    //         });
-    //     } else {
-    //         return [];
-    //     }
-    // }, [chartData]);
-    // END OF CANDLE STICK DATA---------------------------------------------------
     // This is a simple loading that last for 1 sec before displaying the graph. The graph is already in the dom by then. We will just positon this in front of it and then remove it after 1 sec.
 
     const expandGraphStyle = props.expandTradeTable ? styles.hide_graph : '';
@@ -980,6 +677,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
             <div className={`${styles.graph_style} ${expandGraphStyle}  `}>
                 {/* {graphSettingsContent} */}
                 {tokenInfo}
+
                 {timeFrameContent}
                 {currentDataInfo}
                 {/* {liquidityTypeContent} */}

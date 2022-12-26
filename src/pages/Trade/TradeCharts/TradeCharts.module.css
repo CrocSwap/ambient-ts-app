@@ -23,60 +23,8 @@
     padding: 0.3rem 0.7rem 0 0;
 }
 
-.tokens_info {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
 
-    gap: 1rem;
-}
 
-.tokens_images {
-    display: flex;
-    flex-direction: row;
-    gap: 7px;
-    cursor: pointer;
-}
-
-.favorite_button {
-    margin-left: 3px;
-    margin-top: 3px;
-    background: transparent;
-    outline: none;
-    border: none;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-}
-
-.favorite_button svg {
-    transition: all var(--animation-speed) ease-in-out;
-}
-
-.tokens_images img {
-    width: 20px;
-}
-.tokens_name {
-    letter-spacing: -0.02em;
-    font-size: var(--body-size);
-    line-height: var(--body-lh);
-    font-weight: 400;
-    color: var(--text-grey-light);
-    cursor: pointer;
-}
-.tokens_images,
-.tokens_name,
-.fav_button,
-.settings_container button {
-    transition: all var(--animation-speed) ease-out;
-}
-
-.tokens_name:hover,
-.fav_button:hover,
-.settings_container button:hover {
-    color: var(--text-grey-white)
-}
 
 .curve_depth_container, .volume_tvl_container, .main_time_frame_container, .chart_overlay_container{
 
@@ -409,15 +357,7 @@ max-height: 90%;
 }
 
 @media (min-width: 680px) {
-    .tokens_name {
-        font-weight: 300;
-        font-size: var(--header1-size);
-        line-height: var(--header1-lh);
-        color: var(--text-grey-light);
-    }
-    .tokens_images img {
-        width: 25px;
-    }
+
     .middle_content_style {
         display: flex;
         flex-direction: column;
@@ -458,22 +398,7 @@ max-height: 90%;
         cursor: pointer;
     }
 
-    /* .chart_full_screen{
-        width: 100%;
-        height: 100%;
 
-        display: flex;
-        justify-content: center;
-        align-items: center;
-      background: var(--dark2);
-        position:absolute;
-        top:0px;
-        right:0px;
-        bottom:0px;
-        left:0px;
-        z-index: 2; 
-    }
-  */
 }
 
 .chart_tooltips {
