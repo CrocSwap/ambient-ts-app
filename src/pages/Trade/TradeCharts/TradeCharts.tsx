@@ -63,6 +63,7 @@ import VolumeTVLFee from './TradeChartsComponents/VolumeTVLFee';
 import CurveDepth from './TradeChartsComponents/CurveDepth';
 import TimeFrame from './TradeChartsComponents/TimeFrame';
 import TradeChartsTokenInfo from './TradeChartsComponents/TradeChartsTokenInfo';
+import CurrentDataInfo from './TradeChartsComponents/CurrentDataInfo';
 
 // interface for React functional component props
 interface TradeChartsPropsIF {
@@ -420,75 +421,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
 
     // TIME FRAME CONTENT--------------------------------------------------------------
 
-    const currencyCharacter = denomInBase
-        ? // denom in a, return token b character
-          getUnicodeCharacter(tradeData.quoteToken.symbol)
-        : // denom in b, return token a character
-          getUnicodeCharacter(tradeData.baseToken.symbol);
-
-    // ------------MIDDLE TOP HEADER OF TRADE CHARTS
-    const currentAmountDisplay = (
-        <span className={styles.amount}>
-            {poolPriceDisplay === Infinity || poolPriceDisplay === 0
-                ? '…'
-                : `${currencyCharacter}${truncatedPoolPrice}`}
-        </span>
-    );
-
-    const poolPriceChange = (
-        <NoColorTooltip
-            title={'24 hour price change'}
-            interactive
-            placement={'right'}
-            arrow
-            enterDelay={400}
-            leaveDelay={200}
-        >
-            <span
-            // className={
-            //     isPoolPriceChangePositive ? styles.change_positive : styles.change_negative
-            // }
-            >
-                {poolPriceChangePercent === undefined ? '…' : poolPriceChangePercent}
-                {/* {poolPriceChangePercent === undefined ? '…' : poolPriceChangePercent + ' | 24h'} */}
-            </span>
-        </NoColorTooltip>
-    );
-
     const tvlDisplay = <p className={styles.tvl_display}></p>;
-    // const tvlDisplay = <p className={styles.tvl_display}>Total Liquidity: {poolTvl || '...'}</p>;
-    // const tvlTickDisplay = <p className={styles.tvl_display}></p>;
-    // const tvlTickDisplay = (
-    //     <p className={styles.tvl_display}>Liquidity at Tick: {tvlAtTick || '...'}</p>
-    // );
-
-    // ------------  END OF MIDDLE TOP HEADER OF TRADE CHARTS
-
-    const amountWithTooltipGreen = (
-        <GreenTextTooltip
-            interactive
-            title={poolPriceChange}
-            placement={'right'}
-            arrow
-            enterDelay={100}
-            leaveDelay={200}
-        >
-            {currentAmountDisplay}
-        </GreenTextTooltip>
-    );
-
-    const amountWithTooltipRed = (
-        <RedTextTooltip
-            interactive
-            title={poolPriceChange}
-            placement={'right'}
-            arrow
-            enterDelay={100}
-            leaveDelay={200}
-        >
-            {currentAmountDisplay}
-        </RedTextTooltip>
-    );
 
     const tokenInfo = (
         <div className={styles.token_info_container}>
@@ -551,109 +484,6 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
     const [currentData, setCurrentData] = useState<CandleChartData | undefined>();
     const [currentVolumeData, setCurrentVolumeData] = useState<number | undefined>();
 
-    function formattedCurrentData(data: number | undefined): string {
-        if (data) {
-            if (data > 2) {
-                return data.toLocaleString(undefined, {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2,
-                });
-            } else {
-                return data.toPrecision(3);
-            }
-        }
-
-        return '-';
-    }
-
-    const currentDataInfo = (
-        <div className={styles.chart_tooltips}>
-            {showTooltip ? (
-                <div className={styles.current_data_info}>
-                    {/* {denomInBase ? tradeData.baseToken.symbol : tradeData.quoteToken.symbol} /{' '}
-            {denomInBase ? tradeData.quoteToken.symbol : tradeData.baseToken.symbol}·{' '}
-            {activeTimeFrame} ·{' '} */}
-                    {'O: ' +
-                        formattedCurrentData(currentData?.open) +
-                        ' H: ' +
-                        formattedCurrentData(currentData?.high) +
-                        ' L: ' +
-                        formattedCurrentData(currentData?.low) +
-                        ' C: ' +
-                        formattedCurrentData(currentData?.close) +
-                        ' V: ' +
-                        formatDollarAmountAxis(currentVolumeData)}
-                </div>
-            ) : (
-                <div className={styles.current_data_info}></div>
-            )}
-
-            <div
-                style={{
-                    display: 'flex',
-                    justifyContent: 'end',
-                    alignItems: 'end',
-                }}
-                className={styles.chart_overlay_container}
-            >
-                {showLatest && (
-                    <div className={styles.settings_container}>
-                        <button
-                            onClick={() => {
-                                setLatest(true);
-                            }}
-                            style={{
-                                fontSize: '12px',
-                                fontWeight: 'bold',
-                            }}
-                            className={styles.non_active_selected_button}
-                        >
-                            LATEST
-                        </button>
-                    </div>
-                )}
-
-                <div className={styles.settings_container}>
-                    <button
-                        onClick={() => {
-                            setReset(true);
-                            setRescale(true);
-                        }}
-                        style={{
-                            fontSize: '12px',
-                            fontWeight: 'bold',
-                        }}
-                        className={styles.non_active_selected_button}
-                    >
-                        RESET
-                    </button>
-                </div>
-
-                <div className={styles.settings_container}>
-                    <button
-                        onClick={() => {
-                            setRescale((prevState) => {
-                                return !prevState;
-                            });
-                        }}
-                        style={{
-                            color: rescale ? 'rgb(97, 100, 189)' : 'rgba(237, 231, 225, 0.2)',
-                            fontSize: '12px',
-                            fontWeight: 'bold',
-                        }}
-                        className={
-                            rescale
-                                ? styles.active_selected_button
-                                : styles.non_active_selected_button
-                        }
-                    >
-                        AUTO
-                    </button>
-                </div>
-            </div>
-        </div>
-    );
-
     // This is a simple loading that last for 1 sec before displaying the graph. The graph is already in the dom by then. We will just positon this in front of it and then remove it after 1 sec.
 
     const expandGraphStyle = props.expandTradeTable ? styles.hide_graph : '';
@@ -679,7 +509,16 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
                 {tokenInfo}
 
                 {timeFrameContent}
-                {currentDataInfo}
+                <CurrentDataInfo
+                    showTooltip={showTooltip}
+                    currentData={currentData}
+                    currentVolumeData={currentVolumeData}
+                    showLatest={showLatest}
+                    setLatest={setLatest}
+                    setReset={setReset}
+                    setRescale={setRescale}
+                    rescale={rescale}
+                />
                 {/* {liquidityTypeContent} */}
             </div>
             {graphIsLoading ? (
