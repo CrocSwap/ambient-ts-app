@@ -49,10 +49,10 @@ import { ChainSpec, CrocPoolView } from '@crocswap-libs/sdk';
 import IconWithTooltip from '../../../components/Global/IconWithTooltip/IconWithTooltip';
 // import { formatAmountOld } from '../../../utils/numbers';
 import UseOnClickOutside from '../../../utils/hooks/useOnClickOutside';
+import TradeChartsTokenInfo from './TradeChartsComponents/TradeChartsTokenInfo';
+import TimeFrame from './TradeChartsComponents/TimeFrame';
 import VolumeTVLFee from './TradeChartsComponents/VolumeTVLFee';
 import CurveDepth from './TradeChartsComponents/CurveDepth';
-import TimeFrame from './TradeChartsComponents/TimeFrame';
-import TradeChartsTokenInfo from './TradeChartsComponents/TradeChartsTokenInfo';
 import CurrentDataInfo from './TradeChartsComponents/CurrentDataInfo';
 
 // interface for React functional component props
@@ -409,7 +409,49 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
         })();
     }, [isServerEnabled, denomInBase, baseTokenAddress, quoteTokenAddress, lastBlockNumber]);
 
-    // TIME FRAME CONTENT--------------------------------------------------------------
+    // console.log({ poolPriceChangePercent });
+    const timeFrameContent = (
+        <div className={styles.time_frame_container}>
+            <div className={styles.chart_overlay_container}>
+                <TimeFrame
+                    activeTimeFrame={activeTimeFrame}
+                    setActiveTimeFrame={setActiveTimeFrame}
+                    setActivePeriod={setActivePeriod}
+                />
+            </div>
+            <div
+                style={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                }}
+            >
+                <VolumeTVLFee
+                    setShowVolume={setShowVolume}
+                    setShowTvl={setShowTvl}
+                    setShowFeeRate={setShowFeeRate}
+                    showVolume={showVolume}
+                    showTvl={showTvl}
+                    showFeeRate={showFeeRate}
+                />
+            </div>
+            <div
+                style={{
+                    display: 'flex',
+                    justifyContent: 'end',
+                    alignItems: 'end',
+                }}
+            >
+                <CurveDepth setLiqMode={setLiqMode} liqMode={liqMode} />
+            </div>
+        </div>
+    );
+
+    // END OF TIME FRAME CONTENT--------------------------------------------------------------
+
+    // CURRENT DATA INFO----------------------------------------------------------------
+    const [currentData, setCurrentData] = useState<CandleChartData | undefined>();
+    const [currentVolumeData, setCurrentVolumeData] = useState<number | undefined>();
 
     const tvlDisplay = <p className={styles.tvl_display}></p>;
 
@@ -426,6 +468,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
                 addPoolToFaves={addPoolToFaves}
                 removePoolFromFaves={removePoolFromFaves}
             />
+
             <div
                 style={{
                     display: 'flex',
@@ -440,41 +483,11 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
             <div>{graphSettingsContent}</div>
 
             {/* {tvlTickDisplay} */}
-            {/* <div className={styles.chart_overlay_container}>{volumeTvlAndFee}</div>
-            <div className={styles.chart_overlay_container}>{curveDepth}</div> */}
+            {/* <div className={styles.chart_overlay_container}>{chartOverlayButtons1}</div>
+            <div className={styles.chart_overlay_container}>{chartOverlayButtons2}</div> */}
         </div>
     );
     // END OF TOKEN INFO----------------------------------------------------------------
-
-    // console.log({ poolPriceChangePercent });
-    const timeFrameContent = (
-        <div className={styles.time_frame_container}>
-            <TimeFrame
-                activeTimeFrame={activeTimeFrame}
-                setActiveTimeFrame={setActiveTimeFrame}
-                setActivePeriod={setActivePeriod}
-            />
-
-            <VolumeTVLFee
-                showVolume={showVolume}
-                setShowVolume={setShowVolume}
-                showTvl={showTvl}
-                setShowTvl={setShowTvl}
-                showFeeRate={showFeeRate}
-                setShowFeeRate={setShowFeeRate}
-            />
-
-            <CurveDepth liqMode={liqMode} setLiqMode={setLiqMode} />
-        </div>
-    );
-
-    // END OF TIME FRAME CONTENT--------------------------------------------------------------
-
-    // CURRENT DATA INFO----------------------------------------------------------------
-    const [currentData, setCurrentData] = useState<CandleChartData | undefined>();
-    const [currentVolumeData, setCurrentVolumeData] = useState<number | undefined>();
-
-    // This is a simple loading that last for 1 sec before displaying the graph. The graph is already in the dom by then. We will just positon this in front of it and then remove it after 1 sec.
 
     const expandGraphStyle = props.expandTradeTable ? styles.hide_graph : '';
 
@@ -497,8 +510,8 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
             <div className={`${styles.graph_style} ${expandGraphStyle}  `}>
                 {/* {graphSettingsContent} */}
                 {tokenInfo}
-
                 {timeFrameContent}
+
                 <CurrentDataInfo
                     showTooltip={showTooltip}
                     currentData={currentData}
