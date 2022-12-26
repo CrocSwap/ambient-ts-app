@@ -221,7 +221,12 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
 
     const setTokenAQtyValue = (value: number) => {
         setTokenAQtyLocal(parseFloat(truncateDecimals(value, tokenPair.dataTokenA.decimals)));
-        setTokenAInputQty(truncateDecimals(value, tokenPair.dataTokenA.decimals));
+        // console.log({ value });
+        if (value === 0) {
+            setTokenAInputQty('');
+        } else {
+            setTokenAInputQty(truncateDecimals(value, tokenPair.dataTokenA.decimals));
+        }
         handleRangeButtonMessageTokenA(value);
 
         if (poolPriceNonDisplay === undefined) return;
@@ -269,7 +274,11 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
 
     const setTokenBQtyValue = (value: number) => {
         setTokenBQtyLocal(parseFloat(truncateDecimals(value, tokenPair.dataTokenB.decimals)));
-        setTokenBInputQty(truncateDecimals(value, tokenPair.dataTokenB.decimals));
+        if (value === 0) {
+            setTokenBInputQty('');
+        } else {
+            setTokenBInputQty(truncateDecimals(value, tokenPair.dataTokenA.decimals));
+        }
         handleRangeButtonMessageTokenB(value);
 
         if (poolPriceNonDisplay === undefined) return;

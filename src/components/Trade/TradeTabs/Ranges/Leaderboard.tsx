@@ -164,12 +164,13 @@ export default function Leaderboard(props: LeaderboardPropsIF) {
 
     // ----------------------
 
-    const sidebarOpen = false;
+    // const sidebarOpen = false;
 
     const ipadView = useMediaQuery('(max-width: 480px)');
-    const desktopView = useMediaQuery('(max-width: 768px)');
+    // const desktopView = useMediaQuery('(max-width: 768px)');
+    const showColumns = useMediaQuery('(max-width: 1440px)');
 
-    const showColumns = sidebarOpen || desktopView;
+    // const showColumns = sidebarOpen || desktopView;
 
     const quoteTokenSymbol = tradeData.quoteToken?.symbol;
     const baseTokenSymbol = tradeData.baseToken?.symbol;
@@ -204,7 +205,7 @@ export default function Leaderboard(props: LeaderboardPropsIF) {
             sortable: false,
         },
         {
-            name: 'Time',
+            name: 'Last Updated',
             className: '',
             show: !showColumns,
             slug: 'time',

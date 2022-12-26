@@ -12,8 +12,14 @@ export const useSortedLimits = (
     LimitOrderIF[],
 ] => {
     // default sort function
-    const sortByTimeFirstMint = (unsortedData: LimitOrderIF[]) =>
-        [...unsortedData].sort((a, b) => b.timeFirstMint - a.timeFirstMint);
+    const sortByTime = (unsortedData: LimitOrderIF[]) =>
+        [...unsortedData].sort(
+            (a, b) =>
+                (b.latestUpdateTime !== 0 ? b.latestUpdateTime : b.timeFirstMint) -
+                (a.latestUpdateTime !== 0 ? a.latestUpdateTime : a.timeFirstMint),
+        );
+    // const sortByTimeFirstMint = (unsortedData: LimitOrderIF[]) =>
+    //     [...unsortedData].sort((a, b) => b.timeFirstMint - a.timeFirstMint);
     // sort by wallet or ens address
     const sortByWallet = (unsortedData: LimitOrderIF[]) =>
         [...unsortedData].sort((a, b) => {
@@ -23,10 +29,14 @@ export const useSortedLimits = (
         });
     // sort by limit price
     const sortByPrice = (unsortedData: LimitOrderIF[]) =>
-        [...unsortedData].sort((a, b) => b.limitPrice - a.limitPrice);
+        [...unsortedData].sort((a, b) => a.limitPrice - b.limitPrice);
     // sort by value of limit order
     const sortByValue = (unsortedData: LimitOrderIF[]) =>
-        [...unsortedData].sort((a, b) => b.totalValueUSD - a.totalValueUSD);
+        [...unsortedData].sort((a, b) => {
+            const aValue = a.claimableLiqTotalUSD !== 0 ? a.claimableLiqTotalUSD : a.totalValueUSD;
+            const bValue = b.claimableLiqTotalUSD !== 0 ? b.claimableLiqTotalUSD : b.totalValueUSD;
+            return bValue - aValue;
+        });
 
     // column the user wants the table sorted by
     // this is set when the user clicks a sortable column header
@@ -50,10 +60,10 @@ export const useSortedLimits = (
                 sortedData = sortByValue(data);
                 break;
             case 'time':
-                sortedData = sortByTimeFirstMint(data);
+                sortedData = sortByTime(data);
                 break;
             default:
-                return sortByTimeFirstMint(data);
+                return sortByTime(data);
         }
         // return reversed data if user wants data reversed
         return reverseSort ? [...sortedData].reverse() : sortedData;

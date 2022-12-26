@@ -250,9 +250,10 @@ export default function RemoveRange(props: IRemoveRangeProps) {
             const positionLiq = position.positionLiq;
 
             const liquidityToBurn = ethers.BigNumber.from(positionLiq)
-                .mul(removalPercentage === 100 ? 99 : removalPercentage)
+                .mul(removalPercentage)
+                // .mul(removalPercentage === 100 ? 99 : removalPercentage)
                 .div(100);
-            console.log(`${removalPercentage === 100 ? 99 : removalPercentage}% to be removed.`);
+            console.log(`${removalPercentage}% to be removed.`);
 
             // console.log({ removalPercentage });
             // console.log({ liquidityToBurn });

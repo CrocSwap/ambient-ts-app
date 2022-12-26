@@ -58,6 +58,9 @@ export const useProcessTransaction = (tx: ITransaction) => {
     const baseTokenSymbol = tx.baseSymbol;
     const quoteTokenSymbol = tx.quoteSymbol;
 
+    const baseTokenAddress = tx.base;
+    const quoteTokenAddress = tx.quote;
+
     const quoteTokenLogo = tx.quoteTokenLogoURI;
     const baseTokenLogo = tx.baseTokenLogoURI;
     // console.log({ quoteTokenLogo });
@@ -355,6 +358,8 @@ export const useProcessTransaction = (tx: ITransaction) => {
             : tx.entityType === 'limitOrder'
             ? tx.changeType === 'mint'
                 ? 'add'
+                : tx.changeType === 'recover'
+                ? 'claim'
                 : 'remove'
             : (isDenomBase && tx.isBuy) || (!isDenomBase && !tx.isBuy)
             ? 'sell'
@@ -555,7 +560,9 @@ export const useProcessTransaction = (tx: ITransaction) => {
         baseFlowDisplay,
         quoteFlowDisplay,
         baseTokenSymbol,
+        baseTokenAddress,
         quoteTokenSymbol,
+        quoteTokenAddress,
         baseDisplayFrontend,
         quoteDisplayFrontend,
         quoteTokenLogo,

@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { useState, ReactNode, useRef } from 'react';
+import { useState, ReactNode, useRef, useEffect } from 'react';
 // import { Link } from 'react-router-dom';
 import { FiMoreHorizontal } from 'react-icons/fi';
 
@@ -276,7 +276,8 @@ export default function OrdersMenu(props: OrdersMenuIF) {
             {/* {view1 && removeButton} */}
             {/* {(view2 || (view1NoSidebar && !isOnPortfolioPage)) && copyButton} */}
             {(view3 || view2WithNoSidebar) && detailsButton}
-            {view1 && !isOrderFilled && copyButton}
+            {view1 && copyButton}
+            {/* {view1 && !isOrderFilled && copyButton} */}
             {claimButton}
         </div>
     );
@@ -284,7 +285,8 @@ export default function OrdersMenu(props: OrdersMenuIF) {
     const menuContent = (
         <div className={styles.menu_column}>
             {detailsButton}
-            {!(view1 && !isOrderFilled) && copyButton}
+            {!view1 && copyButton}
+            {/* {!(view1 && !isOrderFilled) && copyButton} */}
             {removeButton}
         </div>
     );
@@ -308,6 +310,15 @@ export default function OrdersMenu(props: OrdersMenuIF) {
             <div className={wrapperStyle}>{menuContent}</div>
         </div>
     );
+
+    useEffect(() => {
+        if (showDropdownMenu) {
+            const interval = setTimeout(() => {
+                setShowDropdownMenu(false);
+            }, 5000);
+            return () => clearTimeout(interval);
+        } else return;
+    }, [showDropdownMenu]);
     return (
         <div className={styles.main_container}>
             {ordersMenu}

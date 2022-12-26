@@ -252,12 +252,13 @@ export default function Ranges(props: RangesPropsIF) {
 
     // ----------------------
 
-    const sidebarOpen = false;
+    // const sidebarOpen = false;
 
     const ipadView = useMediaQuery('(max-width: 480px)');
     const desktopView = useMediaQuery('(max-width: 768px)');
+    const showColumns = useMediaQuery('(max-width: 1440px)');
 
-    const showColumns = sidebarOpen || desktopView;
+    // const showColumns = sidebarOpen || desktopView;
 
     const quoteTokenSymbol = tradeData.quoteToken?.symbol;
     const baseTokenSymbol = tradeData.baseToken?.symbol;
@@ -277,7 +278,9 @@ export default function Ranges(props: RangesPropsIF) {
             <p>Max</p>
         </>
     );
-    const tokens = (
+    const tokens = isOnPortfolioPage ? (
+        <>Tokens</>
+    ) : (
         <>
             <p>{`${baseTokenSymbol} ( ${baseTokenCharacter} )`}</p>
             <p>{`${quoteTokenSymbol} ( ${quoteTokenCharacter} )`}</p>
@@ -292,19 +295,26 @@ export default function Ranges(props: RangesPropsIF) {
         //     sortable: false,
         // },
         {
-            name: 'Time',
+            name: 'Last Updated',
             className: '',
             show: !showColumns,
             slug: 'time',
             sortable: true,
         },
         {
-            name: 'Pool',
+            name: 'Pair',
             className: '',
-            show: isOnPortfolioPage,
+            show: isOnPortfolioPage && !desktopView,
             slug: 'pool',
-            sortable: false,
+            sortable: true,
         },
+        // {
+        //     name: 'Pool',
+        //     className: '',
+        //     show: isOnPortfolioPage,
+        //     slug: 'pool',
+        //     sortable: false,
+        // },
         {
             name: 'ID',
             className: 'ID',
@@ -360,7 +370,7 @@ export default function Ranges(props: RangesPropsIF) {
             alignRight: true,
         },
         {
-            name: isOnPortfolioPage ? 'Qty A' : `${baseTokenSymbol}`,
+            name: isOnPortfolioPage ? '' : `${baseTokenSymbol}`,
 
             show: !showColumns,
             slug: baseTokenSymbol,
@@ -368,7 +378,7 @@ export default function Ranges(props: RangesPropsIF) {
             alignRight: true,
         },
         {
-            name: isOnPortfolioPage ? 'Qty B' : `${quoteTokenSymbol}`,
+            name: isOnPortfolioPage ? '' : `${quoteTokenSymbol}`,
 
             show: !showColumns,
             slug: quoteTokenSymbol,

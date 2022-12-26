@@ -56,7 +56,7 @@
   /* Track */
   .main_list_container::-webkit-scrollbar-track {
     border-radius: 100vh;
-    background: #1f2937;
+    /* background: #1f2937; */
   }
   
   /* Handle */

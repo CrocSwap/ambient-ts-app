@@ -25,8 +25,6 @@ export default function RangePriceInfo(props: IRangePriceInfoPropsIF) {
         aprPercentage,
     } = props;
 
-    // console.log({ spotPriceDisplay });
-
     const aprPercentageString = aprPercentage
         ? `Est. APR | ${aprPercentage.toLocaleString(undefined, {
               minimumFractionDigits: 2,

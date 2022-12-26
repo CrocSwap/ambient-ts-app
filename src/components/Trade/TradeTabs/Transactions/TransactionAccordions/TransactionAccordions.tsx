@@ -7,7 +7,7 @@ import { useProcessTransaction } from '../../../../../utils/hooks/useProcessTran
 import { BiWallet } from 'react-icons/bi';
 import { Dispatch, SetStateAction } from 'react';
 import Price from '../../../../Global/Tabs/Price/Price';
-import TransactionTypeSide from '../../../../Global/Tabs/TypeAndSide/TransactionTypeSide/TransactionTypeSide';
+// import TransactionTypeSide from '../../../../Global/Tabs/TypeAndSide/TransactionTypeSide/TransactionTypeSide';
 import TransactionAccordionContent from './TransactionAccordionContent';
 
 interface TransactionAccordionsPropsIF {
@@ -27,7 +27,7 @@ export default function TransactionAccordions(props: TransactionAccordionsPropsI
         txHashTruncated,
         truncatedDisplayPrice,
         transactionTypeSide,
-        sideType,
+        // sideType,
         priceType,
         usdValue,
         baseTokenSymbol,
@@ -68,12 +68,12 @@ export default function TransactionAccordions(props: TransactionAccordionsPropsI
 
     //     </div>
     // )
-    const typeSideDisplay = (
-        <div className={styles.type_display}>
-            <p>Type:</p>
-            <TransactionTypeSide type={sideType} side={transactionTypeSide} />
-        </div>
-    );
+    // const typeSideDisplay = (
+    //     <div className={styles.type_display}>
+    //         <p>Type:</p>
+    //         <TransactionTypeSide type={sideType} side={transactionTypeSide} />
+    //     </div>
+    // );
 
     // ------------------
     const valueDisplay = (
@@ -100,7 +100,7 @@ export default function TransactionAccordions(props: TransactionAccordionsPropsI
         <div className={styles.header_container}>
             {walletAndIdDisplay}
             {priceDisplay}
-            {typeSideDisplay}
+            {/* {typeSideDisplay} */}
             {valueDisplay}
             {baseTokenDisplay}
             {quoteTokenDisplay}

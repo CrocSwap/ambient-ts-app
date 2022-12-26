@@ -55,7 +55,12 @@ export default function ClaimOrder(props: IClaimOrderProps) {
         quoteDisplayFrontend,
         baseDisplay,
         quoteDisplay,
+        truncatedDisplayPrice,
     } = useProcessOrder(limitOrder);
+
+    useEffect(() => {
+        console.log({ limitOrder });
+    }, [JSON.stringify(limitOrder)]);
 
     const [showConfirmation, setShowConfirmation] = useState(false);
     const [newClaimTransactionHash, setNewClaimTransactionHash] = useState('');
@@ -88,8 +93,13 @@ export default function ClaimOrder(props: IClaimOrderProps) {
 
     // ---------------CLAIM FUNCTION TO BE REFACTORED
 
+    const claimablePivotTime = limitOrder.claimableLiqPivotTimes
+        ? parseInt(limitOrder.claimableLiqPivotTimes)
+        : undefined;
+
     const claimFn = async () => {
-        if (crocEnv && limitOrder.latestCrossPivotTime) {
+        if (crocEnv && claimablePivotTime) {
+            console.log({ claimablePivotTime });
             setShowConfirmation(true);
             setShowSettings(false);
             console.log({ limitOrder });
@@ -99,14 +109,14 @@ export default function ClaimOrder(props: IClaimOrderProps) {
                     tx = await crocEnv
                         .buy(limitOrder.quote, 0)
                         .atLimit(limitOrder.base, limitOrder.bidTick)
-                        .recoverPost(limitOrder.latestCrossPivotTime, { surplus: false });
+                        .recoverPost(claimablePivotTime, { surplus: false });
                     setNewClaimTransactionHash(tx.hash);
                     dispatch(addPendingTx(tx?.hash));
                 } else {
                     tx = await crocEnv
                         .buy(limitOrder.base, 0)
                         .atLimit(limitOrder.quote, limitOrder.askTick)
-                        .recoverPost(limitOrder.latestCrossPivotTime, { surplus: false });
+                        .recoverPost(claimablePivotTime, { surplus: false });
                     setNewClaimTransactionHash(tx.hash);
                     dispatch(addPendingTx(tx?.hash));
 
@@ -205,7 +215,7 @@ export default function ClaimOrder(props: IClaimOrderProps) {
             <div className={styles.completed_animation}>
                 <Animation animData={completed} loop={false} />
             </div>
-            <p>Removal Transaction Successfully Submitted</p>
+            <p>Claim Transaction Successfully Submitted</p>
             <a
                 href={etherscanLink}
                 target='_blank'
@@ -285,7 +295,7 @@ export default function ClaimOrder(props: IClaimOrderProps) {
         {
             title: 'Network Fee',
             tooltipTitle: 'something here about network fee',
-            data: '-$3.69',
+            data: '$???',
             // data: isDenomBase
             //     ? `${displayLimitPriceString} ${quoteTokenSymbol} per ${baseTokenSymbol}`
             //     : `${displayLimitPriceString} ${baseTokenSymbol} per ${quoteTokenSymbol}`,
@@ -334,7 +344,7 @@ export default function ClaimOrder(props: IClaimOrderProps) {
             />
 
             <ClaimOrderInfo
-                pivotTime={limitOrder.pivotTime}
+                pivotTime={claimablePivotTime}
                 baseTokenSymbol={baseTokenSymbol}
                 quoteTokenSymbol={quoteTokenSymbol}
                 baseTokenLogoURI={baseTokenLogo}
@@ -353,6 +363,7 @@ export default function ClaimOrder(props: IClaimOrderProps) {
                 positionLiquidity={limitOrder.positionLiq.toString()}
                 baseClaimString={'2344'}
                 quoteClaimString={'4543'}
+                truncatedDisplayPrice={truncatedDisplayPrice}
             />
             {gaslesssTransactionControl}
             {tooltipExplanationDataDisplay}

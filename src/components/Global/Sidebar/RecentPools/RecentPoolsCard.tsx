@@ -1,11 +1,11 @@
 import { Link, useLocation } from 'react-router-dom';
-import styles from './TopPoolsCard.module.css';
+import styles from './RecentPoolsCard.module.css';
 import { PoolIF } from '../../../../utils/interfaces/exports';
 import { PoolStatsFn } from '../../../../App/functions/getPoolStats';
 import { useEffect, useState, useMemo } from 'react';
 import { formatAmountOld } from '../../../../utils/numbers';
 import { tradeData } from '../../../../utils/state/tradeDataSlice';
-interface TopPoolsCardProps {
+interface RecentPoolsCardProps {
     tradeData: tradeData;
     pool: PoolIF;
     chainId: string;
@@ -13,7 +13,7 @@ interface TopPoolsCardProps {
     lastBlockNumber: number;
 }
 
-export default function TopPoolsCard(props: TopPoolsCardProps) {
+export default function RecentPoolsCard(props: RecentPoolsCardProps) {
     const { tradeData, pool, lastBlockNumber, cachedPoolStatsFetch } = props;
 
     const { pathname } = useLocation();
@@ -27,7 +27,7 @@ export default function TopPoolsCard(props: TopPoolsCardProps) {
             return '/trade/range';
         } else {
             console.warn(
-                'Could not identify the correct URL path for redirect. Using /trade/market as a fallback value. Refer to TopPoolsCard.tsx for troubleshooting.',
+                'Could not identify the correct URL path for redirect. Using /trade/market as a fallback value. Refer to RecentPoolsCard.tsx for troubleshooting.',
             );
             return '/trade/market';
         }
@@ -56,19 +56,6 @@ export default function TopPoolsCard(props: TopPoolsCardProps) {
 
     useEffect(() => {
         fetchPoolStats();
-
-        // // fetch every minute
-        // const timerId = setInterval(() => {
-        //     fetchPoolStats();
-        // }, 60000);
-
-        // // after 1 hour stop
-        // setTimeout(() => {
-        //     clearInterval(timerId);
-        // }, 3600000);
-
-        // // clear interval when component unmounts
-        // return () => clearInterval(timerId);
     }, [lastBlockNumber]);
 
     const chainString = '0x5';

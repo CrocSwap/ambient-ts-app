@@ -7,7 +7,6 @@ import {
     //  useMemo,
     useRef,
 } from 'react';
-import { motion } from 'framer-motion';
 import {
     AiOutlineCamera,
     AiOutlineFullscreen,
@@ -471,20 +470,20 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
 
     // const exampleAction = () => console.log('example');
 
-    const chartOverlayButtonData1 = [
+    const volumeTvlAndFeeData = [
         { name: 'Volume', selected: showVolume, action: handleVolumeToggle },
         { name: 'TVL', selected: showTvl, action: handleTvlToggle },
         { name: 'Fee Rate', selected: showFeeRate, action: handleFeeRateToggle },
     ];
 
-    const chartOverlayButtonData2 = [
+    const curveDepthData = [
         { name: 'Off', action: () => handleLiqToggle('Off') },
         { name: 'Curve', action: () => handleLiqToggle('Curve') },
         { name: 'Depth', action: () => handleLiqToggle('Depth') },
     ];
 
-    const chartOverlayButtons1 = chartOverlayButtonData1.map((button, idx) => (
-        <div className={styles.settings_container} key={idx}>
+    const volumeTvlAndFee = volumeTvlAndFeeData.map((button, idx) => (
+        <div className={styles.volume_tvl_container} key={idx}>
             <button
                 onClick={button.action}
                 className={
@@ -498,8 +497,8 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
         </div>
     ));
 
-    const chartOverlayButtons2 = chartOverlayButtonData2.map((button, idx) => (
-        <div className={styles.settings_container} key={idx}>
+    const curveDepth = curveDepthData.map((button, idx) => (
+        <div className={styles.curve_depth_container} key={idx}>
             <button
                 onClick={button.action}
                 className={
@@ -531,34 +530,18 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
     }
 
     const activeTimeFrameDisplay = activeTimeFrameData.map((time, idx) => (
-        <motion.div
-            initial={{ y: 10, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: -10, opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className={styles.settings_container}
-            key={idx}
-        >
+        <div className={styles.main_time_frame_container} key={idx}>
             <button
                 onClick={() => handleTimeFrameButtonClick(time.label, time.activePeriod)}
                 className={
                     time.label === activeTimeFrame
-                        ? styles.active_button2
-                        : styles.non_active_button2
+                        ? styles.active_selected_button
+                        : styles.non_active_selected_button
                 }
             >
                 {time.label}
-
-                {time.label === activeTimeFrame && (
-                    <motion.div
-                        layoutId='outline2'
-                        className={styles.outline2}
-                        initial={false}
-                        transition={spring}
-                    />
-                )}
             </button>
-        </motion.div>
+        </div>
     ));
 
     // --------------------------- END OF TIME FRAME BUTTON FUNCTIONALITY-------------------------------
@@ -642,11 +625,15 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
         </button>
     );
 
-    const baseTokenLogo = denomInBase ? tradeData.baseToken.logoURI : tradeData.quoteToken.logoURI;
-    const quoteTokenLogo = denomInBase ? tradeData.quoteToken.logoURI : tradeData.baseToken.logoURI;
+    const topTokenLogo = denomInBase ? tradeData.baseToken.logoURI : tradeData.quoteToken.logoURI;
+    const bottomTokenLogo = denomInBase
+        ? tradeData.quoteToken.logoURI
+        : tradeData.baseToken.logoURI;
 
-    const baseTokenSymbol = denomInBase ? tradeData.baseToken.symbol : tradeData.quoteToken.symbol;
-    const quoteTokenSymbol = denomInBase ? tradeData.quoteToken.symbol : tradeData.baseToken.symbol;
+    const topTokenSymbol = denomInBase ? tradeData.baseToken.symbol : tradeData.quoteToken.symbol;
+    const bottomTokenSymbol = denomInBase
+        ? tradeData.quoteToken.symbol
+        : tradeData.baseToken.symbol;
 
     // TIME FRAME CONTENT--------------------------------------------------------------
 
@@ -724,29 +711,51 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
         <div className={styles.token_info_container}>
             <div className={styles.tokens_info}>
                 {favButton}
-                <div
-                    className={styles.tokens_images}
-                    onClick={() => dispatch(toggleDidUserFlipDenom())}
-                >
-                    {baseTokenLogo ? (
-                        <img src={baseTokenLogo} alt={baseTokenSymbol} />
-                    ) : (
-                        <NoTokenIcon tokenInitial={baseTokenSymbol.charAt(0)} width='25px' />
-                    )}
 
-                    {quoteTokenLogo ? (
-                        <img src={quoteTokenLogo} alt={quoteTokenSymbol} />
-                    ) : (
-                        <NoTokenIcon tokenInitial={quoteTokenSymbol.charAt(0)} width='25px' />
-                    )}
-                </div>
-                <span
-                    className={styles.tokens_name}
-                    onClick={() => dispatch(toggleDidUserFlipDenom())}
+                <DefaultTooltip
+                    interactive
+                    title={`${
+                        tradeData.baseToken.symbol !== 'ETH' ? tradeData.baseToken.symbol + ':' : ''
+                    } ${tradeData.baseToken.symbol !== 'ETH' ? tradeData.baseToken.address : ''} ${
+                        tradeData.quoteToken.symbol
+                    }: ${tradeData.quoteToken.address}`}
+                    placement={'top'}
                 >
-                    {denomInBase ? tradeData.baseToken.symbol : tradeData.quoteToken.symbol} /{' '}
-                    {denomInBase ? tradeData.quoteToken.symbol : tradeData.baseToken.symbol}
-                </span>
+                    <div
+                        className={styles.tokens_images}
+                        onClick={() => dispatch(toggleDidUserFlipDenom())}
+                    >
+                        {topTokenLogo ? (
+                            <img src={topTokenLogo} alt={topTokenSymbol} />
+                        ) : (
+                            <NoTokenIcon tokenInitial={topTokenSymbol.charAt(0)} width='25px' />
+                        )}
+                        {bottomTokenLogo ? (
+                            <img src={bottomTokenLogo} alt={bottomTokenSymbol} />
+                        ) : (
+                            <NoTokenIcon tokenInitial={bottomTokenSymbol.charAt(0)} width='25px' />
+                        )}
+                    </div>
+                </DefaultTooltip>
+                <DefaultTooltip
+                    interactive
+                    title={`${
+                        tradeData.baseToken.symbol !== 'ETH' ? tradeData.baseToken.symbol + ':' : ''
+                    } ${tradeData.baseToken.symbol !== 'ETH' ? tradeData.baseToken.address : ''} ${
+                        tradeData.quoteToken.symbol
+                    }: ${tradeData.quoteToken.address}`}
+                    placement={'top'}
+                >
+                    <div
+                        className={styles.tokens_name}
+                        onClick={() => dispatch(toggleDidUserFlipDenom())}
+                    >
+                        {topTokenSymbol} / {bottomTokenSymbol}
+                        {/* {denomInBase ? tradeData.baseToken.symbol : tradeData.quoteToken.symbol} /{' '} */}
+                        {/* {denomInBase ? tradeData.quoteToken.symbol : tradeData.baseToken.symbol} */}
+                    </div>
+                </DefaultTooltip>
+
                 {isPoolPriceChangePositive ? amountWithTooltipGreen : amountWithTooltipRed}
             </div>
             <div
@@ -763,8 +772,8 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
             <div>{graphSettingsContent}</div>
 
             {/* {tvlTickDisplay} */}
-            {/* <div className={styles.chart_overlay_container}>{chartOverlayButtons1}</div>
-            <div className={styles.chart_overlay_container}>{chartOverlayButtons2}</div> */}
+            {/* <div className={styles.chart_overlay_container}>{volumeTvlAndFee}</div>
+            <div className={styles.chart_overlay_container}>{curveDepth}</div> */}
         </div>
     );
     // END OF TOKEN INFO----------------------------------------------------------------
@@ -779,9 +788,8 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
                     justifyContent: 'center',
                     alignItems: 'center',
                 }}
-                className={styles.chart_overlay_container}
             >
-                {chartOverlayButtons1}
+                {volumeTvlAndFee}
             </div>
             <div
                 style={{
@@ -789,9 +797,8 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
                     justifyContent: 'end',
                     alignItems: 'end',
                 }}
-                className={styles.chart_overlay_container}
             >
-                {chartOverlayButtons2}
+                {curveDepth}
             </div>
         </div>
     );
@@ -1029,9 +1036,3 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
         </div>
     );
 }
-
-const spring = {
-    type: 'spring',
-    stiffness: 500,
-    damping: 30,
-};

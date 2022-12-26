@@ -61,8 +61,8 @@ export default function TopPools(props: TopPoolsProps) {
                             tradeData={tradeData}
                             cachedQuerySpotPrice={cachedQuerySpotPrice}
                             name={pool.name}
-                            tokenA={pool.base}
-                            tokenB={pool.quote}
+                            baseToken={pool.base}
+                            quoteToken={pool.quote}
                             key={idx}
                             tokenMap={tokenMap}
                             lastBlockNumber={lastBlockNumber}

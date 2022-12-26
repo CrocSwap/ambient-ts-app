@@ -21,6 +21,8 @@ interface RangeExtraInfoPropsIF {
     isTokenABase: boolean;
     daysInRangeEstimation: number;
     isQtyEntered: boolean;
+    showExtraInfoDropdown: boolean;
+    isBalancedMode: boolean;
 }
 
 // central react functional component
@@ -35,7 +37,9 @@ export default function RangeExtraInfo(props: RangeExtraInfoPropsIF) {
         isDenomBase,
         isTokenABase,
         daysInRangeEstimation,
-        isQtyEntered,
+        // isQtyEntered,
+        showExtraInfoDropdown,
+        isBalancedMode,
     } = props;
 
     const [showExtraDetails, setShowExtraDetails] = useState<boolean>(false);
@@ -68,7 +72,27 @@ export default function RangeExtraInfo(props: RangeExtraInfoPropsIF) {
     //       );
     // const truncatedGasInGwei = gasPriceInGwei ? truncateDecimals(gasPriceInGwei, 2) : undefined;
 
-    const extraInfoData = [
+    const extraInfoDataAdvanced = [
+        {
+            title: 'Spot Price',
+            tooltipTitle: 'spot price explanation',
+            data: reverseDisplay
+                ? `${poolPriceDisplay} ${tokenPair.dataTokenA.symbol} per ${tokenPair.dataTokenB.symbol}`
+                : `${poolPriceDisplay} ${tokenPair.dataTokenB.symbol} per ${tokenPair.dataTokenA.symbol}`,
+        },
+        {
+            title: 'Slippage Tolerance',
+            tooltipTitle: 'slippage tolerance explanation',
+            data: `${slippageTolerance}%`,
+        },
+        {
+            title: 'Current Provider Fee',
+            tooltipTitle: 'liquidity provider fee explanation',
+            data: `${liquidityProviderFee}%`,
+        },
+    ];
+
+    const extraInfoDataBalanced = [
         {
             title: 'Spot Price',
             tooltipTitle: 'spot price explanation',
@@ -92,6 +116,8 @@ export default function RangeExtraInfo(props: RangeExtraInfoPropsIF) {
             data: `${daysInRangeEstimation} Days`,
         },
     ];
+
+    const extraInfoData = isBalancedMode ? extraInfoDataBalanced : extraInfoDataAdvanced;
 
     const RangeExtraInfoDetails = (
         <div className={styles.extra_details}>
@@ -117,11 +143,11 @@ export default function RangeExtraInfo(props: RangeExtraInfoPropsIF) {
 
     // const flippedDisplay = `1 ${tokenPair.dataTokenB.symbol} ≈ ${displayPriceStringTruncated} ${tokenPair.dataTokenA.symbol}`;
 
-    const extraInfoSectionOrNull = (
+    const extraInfoSection = (
         <div
             className={styles.extra_info_content}
             onClick={
-                isQtyEntered
+                showExtraInfoDropdown
                     ? () => setShowExtraDetails(!showExtraDetails)
                     : () => setShowExtraDetails(false)
             }
@@ -133,14 +159,14 @@ export default function RangeExtraInfo(props: RangeExtraInfoPropsIF) {
                 {reverseDisplay
                     ? `1 ${tokenPair.dataTokenB.symbol} ≈ ${poolPriceDisplay} ${tokenPair.dataTokenA.symbol}`
                     : `1 ${tokenPair.dataTokenA.symbol} ≈ ${poolPriceDisplay} ${tokenPair.dataTokenB.symbol}`}
-                {isQtyEntered && <RiArrowDownSLine size={27} />}
+                {showExtraInfoDropdown && <RiArrowDownSLine size={27} />}
             </div>
         </div>
     );
 
     return (
         <>
-            {extraInfoSectionOrNull}
+            {extraInfoSection}
             {extraDetailsOrNull}
         </>
     );

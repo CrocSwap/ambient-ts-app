@@ -24,6 +24,7 @@ export default function IconWithTooltip(props: IconWithTooltipPropsIF) {
     const { children, title, placement } = props;
     return (
         <DefaultTooltip
+            interactive
             arrow
             title={title}
             enterDelay={400}

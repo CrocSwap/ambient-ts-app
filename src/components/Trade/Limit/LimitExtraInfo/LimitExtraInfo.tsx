@@ -18,7 +18,7 @@ interface LimitExtraInfoPropsIF {
     poolPriceDisplay: number;
     slippageTolerance: number;
     liquidityProviderFee: number;
-    quoteTokenIsBuy?: boolean;
+    // quoteTokenIsBuy?: boolean;
     orderGasPriceInDollars: string | undefined;
     didUserFlipDenom: boolean;
     isTokenABase: boolean;
