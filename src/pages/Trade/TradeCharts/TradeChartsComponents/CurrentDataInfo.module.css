@@ -1,0 +1,75 @@
+.chart_tooltips {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    align-items: center;
+    padding: 0.5rem 0.5rem 0.5rem 0;
+}
+
+
+.current_data_info {
+    padding: 0.3rem 0 0 0.3rem;
+
+    /* extra small */
+
+    font-family: 'Lexend Deca';
+    font-style: normal;
+    font-weight: 300;
+    font-size: 12px;
+    line-height: 12px;
+
+    /* text/grey light */
+
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 4px;
+
+    color: rgba(235, 235, 255, 0.4);
+}
+
+.settings_container:last-of-type{
+    border-right: 1px solid transparent;
+    
+}
+
+.active_selected_button,
+.non_active_selected_button {
+    background: transparent;
+    transition: all var(--animation-speed) ease-in-out;
+    cursor: pointer;
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+    color: var(--text-grey-light);
+    text-align: center;
+
+    outline: none;
+    border: none;
+    padding: 1px 8px;
+    position: relative;
+}
+
+.active_selected_button:hover,
+.non_active_selected_button:hover {
+    /* background: var(--title-gradient); */
+    color: var(--text-grey-white);
+    
+    /* box-shadow: 0px 0px 36px rgba(205, 193, 255, 0.2), 0px 0px 21px rgba(205, 193, 255, 0.2),
+    0px 0px 12px rgba(205, 193, 255, 0.2), 0px 0px 7px rgba(205, 193, 255, 0.2),
+    0px 0px 4px #cdc1ff, 0px 0px 2px rgba(205, 193, 255, 0.2); */
+}
+
+.active_selected_button {
+    width: 100%;
+    height: 100%;
+    color: var(--text-grey-white);
+}
+
+
+
+.non_active_selected_button {
+    color: var(--text-grey-light);
+}
