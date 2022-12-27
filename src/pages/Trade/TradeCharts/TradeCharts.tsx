@@ -503,7 +503,10 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
     return (
         <div
             className={styles.main_container_chart}
-            style={{ padding: fullScreenChart ? '1rem' : '0' }}
+            style={{
+                padding: fullScreenChart ? '1rem' : '0',
+                background: fullScreenChart ? 'var(--chart-gradient)' : '',
+            }}
             ref={canvasRef}
         >
             {mainChartSettingsContent}
