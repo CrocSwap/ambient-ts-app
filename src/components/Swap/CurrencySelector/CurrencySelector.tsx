@@ -23,7 +23,6 @@ interface CurrencySelectorProps {
     tokenPair: TokenPairIF;
     tokensBank: Array<TokenIF>;
     setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
-    searchableTokens: Array<TokenIF>;
     chainId: string;
     fieldId: string;
     tokenAorB: string | null;
@@ -72,7 +71,6 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
         tokenPair,
         tokensBank,
         setImportedTokens,
-        // searchableTokens,
         chainId,
         // direction,
         fieldId,
@@ -147,35 +145,6 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
             )}
         </div>
     );
-
-    // const tokenToUpdate = isSellTokenSelector ? 'A' : 'B';
-
-    // const tokenSelectModalOrNull = isModalOpen ? (
-    //     <Modal
-    //         onClose={closeModal}
-    //         title='Select Token'
-    //         centeredTitle
-    //         handleBack={() => setShowManageTokenListContent(false)}
-    //         showBackButton={showManageTokenListContent}
-    //         // footer={footerOrNull}
-    //     >
-    //         <TokenSelectContainer
-    //             tokenPair={tokenPair}
-    //             tokensBank={tokensBank}
-    //             setImportedTokens={setImportedTokens}
-    //             searchableTokens={searchableTokens}
-    //             tokenToUpdate={tokenToUpdate}
-    //             chainId={chainId}
-    //             tokenList={tokensBank}
-    //             closeModal={closeModal}
-    //             reverseTokens={reverseTokens}
-    //             showManageTokenListContent={showManageTokenListContent}
-    //             setShowManageTokenListContent={setShowManageTokenListContent}
-    //             activeTokenListsChanged={activeTokenListsChanged}
-    //             indicateActiveTokenListsChanged={indicateActiveTokenListsChanged}
-    //         />
-    //     </Modal>
-    // ) : null;
 
     const walletBalanceNonLocaleString = props.sellToken
         ? tokenABalance && gasPriceInGwei

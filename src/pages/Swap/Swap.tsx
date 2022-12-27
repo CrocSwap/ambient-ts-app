@@ -44,7 +44,6 @@ interface SwapPropsIF {
     account: string | null;
     importedTokens: Array<TokenIF>;
     setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
-    searchableTokens: Array<TokenIF>;
     swapSlippage: SlippagePairIF;
     isPairStable: boolean;
     provider?: ethers.providers.Provider;
@@ -88,7 +87,6 @@ export default function Swap(props: SwapPropsIF) {
         account,
         importedTokens,
         setImportedTokens,
-        searchableTokens,
         swapSlippage,
         isPairStable,
         provider,
@@ -566,7 +564,6 @@ export default function Swap(props: SwapPropsIF) {
                             tokenPair={tokenPair}
                             tokensBank={importedTokens}
                             setImportedTokens={setImportedTokens}
-                            searchableTokens={searchableTokens}
                             chainId={chainId as string}
                             isLiq={false}
                             poolPriceDisplay={poolPriceDisplay}

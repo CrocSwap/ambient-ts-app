@@ -30,7 +30,6 @@ interface CurrencyConverterPropsIF {
     tokenPair: TokenPairIF;
     tokensBank: Array<TokenIF>;
     setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
-    searchableTokens: Array<TokenIF>;
     chainId: string;
     isLiq: boolean;
     poolPriceDisplay: number | undefined;
@@ -75,7 +74,6 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
         // isSellTokenBase,
         tokensBank,
         setImportedTokens,
-        searchableTokens,
         chainId,
         isLiq,
         poolPriceDisplay,
@@ -610,7 +608,6 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
                 isUserLoggedIn={isUserLoggedIn}
                 tokenPair={tokenPair}
                 tokensBank={tokensBank}
-                searchableTokens={searchableTokens}
                 setImportedTokens={setImportedTokens}
                 chainId={chainId}
                 direction={isLiq ? 'Select Pair' : 'From:'}
@@ -663,7 +660,6 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
                 tokenPair={tokenPair}
                 tokensBank={tokensBank}
                 setImportedTokens={setImportedTokens}
-                searchableTokens={searchableTokens}
                 chainId={chainId}
                 direction={isLiq ? '' : 'To:'}
                 fieldId='buy'
