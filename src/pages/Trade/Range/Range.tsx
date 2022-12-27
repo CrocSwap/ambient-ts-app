@@ -557,8 +557,6 @@ export default function Range(props: RangePropsIF) {
                 (target: any) => target.name === 'Max',
             )[0].value;
 
-            console.log({ rangeLowLineTriggered, targetMaxValue, targetMinValue });
-
             const pinnedDisplayPrices = getPinnedPriceValuesFromDisplayPrices(
                 denominationsInBase,
                 baseTokenDecimals,
@@ -633,8 +631,6 @@ export default function Range(props: RangePropsIF) {
             const targetMinValue = tradeData.targetData.filter(
                 (target: any) => target.name === 'Min',
             )[0].value;
-
-            console.log({ rangeHighLineTriggered, targetMaxValue, targetMinValue });
 
             const pinnedDisplayPrices = getPinnedPriceValuesFromDisplayPrices(
                 denominationsInBase,
