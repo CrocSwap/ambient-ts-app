@@ -305,11 +305,7 @@ export const SoloTokenSelect = (props: propsIF) => {
                     <TokenSelect
                         key={JSON.stringify(token)}
                         token={token}
-                        tokensBank={importedTokens}
-                        chainId={chainId}
-                        setImportedTokens={setImportedTokens}
                         chooseToken={chooseToken}
-                        isOnPortfolio={true}
                         fromListsText=''
                     />
                 ))

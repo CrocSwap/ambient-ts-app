@@ -1,21 +1,13 @@
-// START: Import React and Dongles
-import { Dispatch, SetStateAction } from 'react';
-// import { AiFillCloseSquare } from 'react-icons/ai';
-
 // START: Import Local Files
 import styles from './TokenSelect.module.css';
 import { TokenIF } from '../../../utils/interfaces/exports';
 import uriToHttp from '../../../utils/functions/uriToHttp';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import NoTokenIcon from '../NoTokenIcon/NoTokenIcon';
-// import {BsPin, BsPinFill} from 'react-icons/bs'
+
 interface TokenSelectPropsIF {
     token: TokenIF;
-    tokensBank: Array<TokenIF>;
-    chainId: string;
-    setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
     chooseToken: (tok: TokenIF) => void;
-    isOnPortfolio?: boolean;
     fromListsText: string;
 }
 
@@ -23,9 +15,6 @@ export default function TokenSelect(props: TokenSelectPropsIF) {
     const {
         token,
         chooseToken,
-        // tokensBank,
-        // chainId,
-        // setImportedTokens,
         fromListsText,
     } = props;
 
@@ -54,16 +43,7 @@ export default function TokenSelect(props: TokenSelectPropsIF) {
     return (
         <>
             <div className={styles.main_container} onClick={() => chooseToken(token)}>
-                {
-                    // <div className={`${styles.delete_container} ${deleteStateStyle}`}>
-                    //     Remove {token.symbol} from your list
-                    //     {toggleButtons}
-                    // </div>
-                }
                 <section className={styles.left_side_container}>
-                    {/* <div className={styles.star_icon}>{starIcon}</div> */}
-                    {/* <div onClick={() => setPinned(!pinned)}>{ pinned ? <BsPinFill/> : <BsPin  />}</div> */}
-
                     <div className={styles.modal_content}>
                         <div className={styles.modal_tokens_info}>
                             {token.logoURI ? (
@@ -83,7 +63,6 @@ export default function TokenSelect(props: TokenSelectPropsIF) {
                         </div>
                     </div>
                 </section>
-
                 <div className={styles.modal_tokens_amount}>
                     <p>
                         {isUserLoggedIn
