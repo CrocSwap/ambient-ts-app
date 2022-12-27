@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { Dispatch, SetStateAction, useState } from 'react';
+import { Dispatch, SetStateAction } from 'react';
 // import { AiFillCloseSquare } from 'react-icons/ai';
 
 // START: Import Local Files
@@ -12,7 +12,6 @@ import NoTokenIcon from '../NoTokenIcon/NoTokenIcon';
 interface TokenSelectPropsIF {
     token: TokenIF;
     tokensBank: Array<TokenIF>;
-    undeletableTokens: Array<string>;
     chainId: string;
     setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
     chooseToken: (tok: TokenIF) => void;
@@ -25,14 +24,10 @@ export default function TokenSelect(props: TokenSelectPropsIF) {
         token,
         chooseToken,
         // tokensBank,
-        // undeletableTokens,
         // chainId,
         // setImportedTokens,
         fromListsText,
     } = props;
-    // eslint-disable-next-line
-    const [showDelete, setShowDelete] = useState(false);
-    // const [toggleDeleteOn, setToggleDeleteOn] = useState(false);
 
     const userData = useAppSelector((state) => state.userData);
 
@@ -103,8 +98,6 @@ export default function TokenSelect(props: TokenSelectPropsIF) {
                     </p>
                     <p className={styles.token_list_data}>{fromListsText}</p>
                 </div>
-
-                {/* {undeletableTokens.includes(token.address) || deleteIcon} */}
             </div>
             {/* <p className={styles.token_list_data}>{fromListsText}</p> */}
         </>

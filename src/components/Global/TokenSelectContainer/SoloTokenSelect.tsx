@@ -306,10 +306,6 @@ export const SoloTokenSelect = (props: propsIF) => {
                         key={JSON.stringify(token)}
                         token={token}
                         tokensBank={importedTokens}
-                        // TODO: refactor TokenSelect.tsx to remove this value and
-                        // TODO: ... functionality, it is still here for now because we
-                        // TODO: ... call this component from multiple places in the App
-                        undeletableTokens={[]}
                         chainId={chainId}
                         setImportedTokens={setImportedTokens}
                         chooseToken={chooseToken}
