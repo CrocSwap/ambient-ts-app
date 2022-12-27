@@ -10,7 +10,6 @@ import LimitCurrencyQuantity from '../LimitCurrencyQuantity/LimitCurrencyQuantit
 import styles from './LimitCurrencySelector.module.css';
 import { TokenIF, TokenPairIF } from '../../../../utils/interfaces/exports';
 import Modal from '../../../../components/Global/Modal/Modal';
-// import TokenSelectContainer from '../../../Global/TokenSelectContainer/TokenSelectContainer';
 import { useModal } from '../../../../components/Global/Modal/useModal';
 import Toggle2 from '../../../Global/Toggle/Toggle2';
 import IconWithTooltip from '../../../Global/IconWithTooltip/IconWithTooltip';
