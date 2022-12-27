@@ -12,6 +12,8 @@
     --portfolio-banner: url('./assets/images/backgrounds/account_image.png') no-repeat center center;
 
     --title-gradient: linear-gradient(90deg, #7371fc 0%, #cdc1ff 49.48%, #7371fc 100%);
+    --chart-gradient: linear-gradient(to right, #0f1623, #152332);
+
     --swap-box-shadow: none;
     --swap-border: var(--title-gradient);
     --text-highlight: #cdc1ff;
