@@ -469,8 +469,6 @@ export default function TradeCandleStickChart(props: ChartData) {
             }
         }
 
-        const newLiqLine = liqBidData;
-
         return {
             liqAskData: liqAskData,
             liqBidData: liqBidData,
@@ -482,9 +480,8 @@ export default function TradeCandleStickChart(props: ChartData) {
             lineBidSeries: [],
             lineAskSeries: [],
             totalLiq: props.liquidityData?.totals?.totalLiq,
-            newLiqLine: newLiqLine,
         };
-    }, [props.liquidityData, props.poolPriceDisplay, props.liquidityData.range]);
+    }, [props.liquidityData, props.poolPriceDisplay]);
 
     useEffect(() => {
         setScaleData(() => {
