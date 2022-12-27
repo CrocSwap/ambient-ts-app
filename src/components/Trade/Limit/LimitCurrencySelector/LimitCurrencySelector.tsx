@@ -29,7 +29,6 @@ interface LimitCurrencySelectorProps {
     tokenPair: TokenPairIF;
     tokensBank: Array<TokenIF>;
     setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
-    searchableTokens: Array<TokenIF>;
     chainId: string;
     fieldId: string;
     direction: string;
@@ -73,7 +72,6 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
         tokenPair,
         tokensBank,
         setImportedTokens,
-        // searchableTokens,
         chainId,
         fieldId,
         // direction,
@@ -106,33 +104,8 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
     } = props;
 
     const thisToken = fieldId === 'sell' ? tokenPair.dataTokenA : tokenPair.dataTokenB;
-    // const [showManageTokenListContent, setShowManageTokenListContent] = useState(false);
 
     const isSellTokenSelector = fieldId === 'sell';
-
-    // const [isModalOpen, openModal, closeModal] = useModal();
-
-    // const tokenToUpdate = fieldId === 'sell' ? 'A' : 'B';
-
-    // const tokenSelectModalOrNull = isModalOpen ? (
-    //     <Modal onClose={closeModal} title='Select Token' centeredTitle>
-    //         <TokenSelectContainer
-    //             tokenPair={tokenPair}
-    //             tokensBank={tokensBank}
-    //             setImportedTokens={setImportedTokens}
-    //             searchableTokens={searchableTokens}
-    //             tokenToUpdate={tokenToUpdate}
-    //             chainId={chainId}
-    //             tokenList={tokensBank}
-    //             closeModal={closeModal}
-    //             reverseTokens={reverseTokens}
-    //             showManageTokenListContent={showManageTokenListContent}
-    //             setShowManageTokenListContent={setShowManageTokenListContent}
-    //             activeTokenListsChanged={activeTokenListsChanged}
-    //             indicateActiveTokenListsChanged={indicateActiveTokenListsChanged}
-    //         />
-    //     </Modal>
-    // ) : null;
 
     // IMPORTANT!  The Limit Order module is the one only transaction configurator
     // ... in the app which has an input field with no token selector.  For that

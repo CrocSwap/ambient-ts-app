@@ -2298,7 +2298,6 @@ export default function App() {
         isUserLoggedIn: isUserLoggedIn,
         importedTokens: importedTokens,
         setImportedTokens: setImportedTokens,
-        searchableTokens: searchableTokens,
         provider: provider,
         mintSlippage: mintSlippage,
         isPairStable: isPairStable,

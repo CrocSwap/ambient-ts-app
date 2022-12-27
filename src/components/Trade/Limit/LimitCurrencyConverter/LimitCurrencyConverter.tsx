@@ -35,7 +35,6 @@ interface LimitCurrencyConverterProps {
     tokenPair: TokenPairIF;
     tokensBank: Array<TokenIF>;
     setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
-    searchableTokens: Array<TokenIF>;
     chainId: string;
     poolPriceNonDisplay: number | undefined;
     limitTickDisplayPrice: number;
@@ -82,7 +81,6 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
         tokenPair,
         tokensBank,
         setImportedTokens,
-        searchableTokens,
         chainId,
         poolPriceNonDisplay,
         limitTickDisplayPrice,
@@ -481,7 +479,6 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
                 tokenPair={tokenPair}
                 tokensBank={tokensBank}
                 setImportedTokens={setImportedTokens}
-                searchableTokens={searchableTokens}
                 chainId={chainId}
                 fieldId='sell'
                 sellToken
@@ -530,7 +527,6 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
                 tokenPair={tokenPair}
                 tokensBank={tokensBank}
                 setImportedTokens={setImportedTokens}
-                searchableTokens={searchableTokens}
                 chainId={chainId}
                 fieldId='buy'
                 direction='To: '

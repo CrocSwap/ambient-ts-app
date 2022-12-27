@@ -50,7 +50,6 @@ interface LimitPropsIF {
     crocEnv: CrocEnv | undefined;
     isUserLoggedIn: boolean | undefined;
     importedTokens: Array<TokenIF>;
-    searchableTokens: Array<TokenIF>;
     mintSlippage: SlippagePairIF;
     isPairStable: boolean;
     setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
@@ -96,7 +95,6 @@ export default function Limit(props: LimitPropsIF) {
         crocEnv,
         isUserLoggedIn,
         importedTokens,
-        searchableTokens,
         mintSlippage,
         isPairStable,
         setImportedTokens,
@@ -703,7 +701,6 @@ export default function Limit(props: LimitPropsIF) {
                         gridSize={chainData.gridSize}
                         isUserLoggedIn={isUserLoggedIn}
                         tokenPair={tokenPair}
-                        searchableTokens={searchableTokens}
                         poolPriceNonDisplay={poolPriceNonDisplay}
                         isSellTokenBase={isSellTokenBase}
                         tokensBank={importedTokens}
