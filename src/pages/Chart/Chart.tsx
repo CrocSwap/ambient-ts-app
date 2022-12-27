@@ -293,6 +293,7 @@ export default function Chart(props: ChartData) {
     const [dragLimit, setDragLimit] = useState<any>();
     const [transformX, setTransformX] = useState<any>(0);
 
+    const [yAxisWidth, setYaxisWidth] = useState('4rem');
     // const valueFormatter = d3.format('.5f');
     const currentPoolPriceTick =
         poolPriceNonDisplay === undefined ? 0 : Math.log(poolPriceNonDisplay) / Math.log(1.0001);
@@ -437,6 +438,8 @@ export default function Chart(props: ChartData) {
             isSameLocation &&
             d === scaleData.yScale.invert(scaleData.yScale(market[0].value) + resultLocationData)
                 ? formatAmountChartData(limit[0].value)
+                : d.toString().includes('e')
+                ? d
                 : formatAmountChartData(d),
         );
 
@@ -762,7 +765,7 @@ export default function Chart(props: ChartData) {
                 return formatAmountChartData(high);
             }
 
-            return formatAmountChartData(d);
+            return d.toString().includes('e') ? d : formatAmountChartData(d);
         });
 
         yAxis.decorate((selection: any) => {
@@ -894,6 +897,27 @@ export default function Chart(props: ChartData) {
         latest,
     ]);
 
+    function changeyAxisWidth() {
+        let yTickValueLenght = scaleData.yScale.ticks()[0].toString().length;
+        let result = false;
+        scaleData.yScale.ticks().forEach((element: any) => {
+            if (element.toString().length > 4) {
+                result = true;
+                yTickValueLenght =
+                    yTickValueLenght > element.toString().length
+                        ? yTickValueLenght
+                        : element.toString().length;
+            }
+        });
+
+        if (result) {
+            if (yTickValueLenght > 4 && yTickValueLenght < 8) setYaxisWidth('5rem');
+            if (yTickValueLenght > 8) setYaxisWidth(yTickValueLenght / 1.5 + 'rem');
+            if (yTickValueLenght >= 15) setYaxisWidth('9rem');
+            if (yTickValueLenght >= 20) setYaxisWidth('10rem');
+        }
+        if (yTickValueLenght <= 4) setYaxisWidth('4rem');
+    }
     useEffect(() => {
         if (scaleData && yAxis) {
             if (location.pathname.includes('market')) {
@@ -903,6 +927,7 @@ export default function Chart(props: ChartData) {
             } else if (location.pathname.includes('range')) {
                 addTextRange(scaleData.yScale);
             }
+            changeyAxisWidth();
             render();
         }
     }, [
@@ -1882,7 +1907,9 @@ export default function Chart(props: ChartData) {
             const _yAxis = d3fc
                 .axisRight()
                 .scale(scaleData.yScale)
-                .tickFormat((d: any) => formatAmountChartData(d));
+                .tickFormat((d: any) =>
+                    d.toString().includes('e') ? d : formatAmountChartData(d),
+                );
 
             setYaxis(() => {
                 return _yAxis;
@@ -3874,7 +3901,7 @@ export default function Chart(props: ChartData) {
                         <d3fc-svg
                             className='y-axis'
                             ref={d3Yaxis}
-                            style={{ width: '4rem' }}
+                            style={{ width: yAxisWidth }}
                         ></d3fc-svg>
                     </div>
 
