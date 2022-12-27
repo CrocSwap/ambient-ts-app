@@ -25,7 +25,6 @@ interface RangeCurrencySelectorProps {
     tokenPair: TokenPairIF;
     tokensBank: Array<TokenIF>;
     setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
-    searchableTokens: Array<TokenIF>;
     isTokenAEth: boolean;
     isTokenBEth: boolean;
     updateOtherQuantity: (evt: ChangeEvent<HTMLInputElement>) => void;
@@ -77,7 +76,6 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
         tokenPair,
         tokensBank,
         setImportedTokens,
-        // searchableTokens,
         chainId,
         isTokenAEth,
         isTokenBEth,

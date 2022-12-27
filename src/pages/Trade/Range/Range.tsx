@@ -63,7 +63,6 @@ interface RangePropsIF {
     isUserLoggedIn: boolean | undefined;
     importedTokens: Array<TokenIF>;
     setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
-    searchableTokens: Array<TokenIF>;
     mintSlippage: SlippagePairIF;
     isPairStable: boolean;
     provider?: ethers.providers.Provider;
@@ -109,7 +108,6 @@ export default function Range(props: RangePropsIF) {
         isUserLoggedIn,
         importedTokens,
         setImportedTokens,
-        searchableTokens,
         mintSlippage,
         isPairStable,
         provider,
@@ -985,7 +983,6 @@ export default function Range(props: RangePropsIF) {
         chainId: chainId ?? '0x2a',
         tokensBank: importedTokens,
         setImportedTokens: setImportedTokens,
-        searchableTokens: searchableTokens,
         tokenPair: tokenPair,
         isAmbient: isAmbient,
         isTokenABase: isTokenABase,

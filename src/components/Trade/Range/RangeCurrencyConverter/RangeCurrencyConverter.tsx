@@ -27,7 +27,6 @@ interface RangeCurrencyConverterPropsIF {
     isUserLoggedIn: boolean | undefined;
     tokensBank: Array<TokenIF>;
     setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
-    searchableTokens: Array<TokenIF>;
     chainId: string;
     isWithdrawTokenAFromDexChecked: boolean;
     setIsWithdrawTokenAFromDexChecked: Dispatch<SetStateAction<boolean>>;
@@ -82,7 +81,6 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
         isLiq,
         tokensBank,
         setImportedTokens,
-        searchableTokens,
         poolPriceNonDisplay,
         tokenPair,
         isTokenABase,
@@ -702,7 +700,6 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
         tokenPair: tokenPair,
         tokensBank: tokensBank,
         setImportedTokens: setImportedTokens,
-        searchableTokens: searchableTokens,
         isTokenAEth,
         isTokenBEth,
         isWithdrawTokenAFromDexChecked: isWithdrawTokenAFromDexChecked,
