@@ -2332,7 +2332,7 @@ export default function App() {
         getTokenByAddress: getTokenByAddress,
         importedTokensPlus: getImportedTokensPlus(),
         getRecentTokens: getRecentTokens,
-        addRecentToken: addRecentToken
+        addRecentToken: addRecentToken,
     };
 
     // props for <Range/> React element

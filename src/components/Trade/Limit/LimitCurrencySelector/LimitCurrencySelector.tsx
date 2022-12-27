@@ -1,5 +1,6 @@
 // START: Import React and Dongles
 import { ChangeEvent, Dispatch, SetStateAction, useState } from 'react';
+import { ethers } from 'ethers';
 import { RiArrowDownSLine } from 'react-icons/ri';
 
 // START: Import React Functional Components
@@ -9,16 +10,21 @@ import LimitCurrencyQuantity from '../LimitCurrencyQuantity/LimitCurrencyQuantit
 import styles from './LimitCurrencySelector.module.css';
 import { TokenIF, TokenPairIF } from '../../../../utils/interfaces/exports';
 import Modal from '../../../../components/Global/Modal/Modal';
-import TokenSelectContainer from '../../../Global/TokenSelectContainer/TokenSelectContainer';
+// import TokenSelectContainer from '../../../Global/TokenSelectContainer/TokenSelectContainer';
 import { useModal } from '../../../../components/Global/Modal/useModal';
 import Toggle2 from '../../../Global/Toggle/Toggle2';
 import IconWithTooltip from '../../../Global/IconWithTooltip/IconWithTooltip';
 import { MdAccountBalanceWallet } from 'react-icons/md';
 import ambientLogo from '../../../../assets/images/logos/ambient_logo.svg';
 import NoTokenIcon from '../../../Global/NoTokenIcon/NoTokenIcon';
+import { SoloTokenSelect } from '../../../Global/TokenSelectContainer/SoloTokenSelect';
+import { useSoloSearch } from '../../../Global/TokenSelectContainer/useSoloSearch';
+import { getRecentTokensParamsIF } from '../../../../App/hooks/useRecentTokens';
+
 
 // interface for component props
 interface LimitCurrencySelectorProps {
+    provider?: ethers.providers.Provider;
     isUserLoggedIn: boolean | undefined;
     tokenPair: TokenPairIF;
     tokensBank: Array<TokenIF>;
@@ -50,16 +56,24 @@ interface LimitCurrencySelectorProps {
     gasPriceInGwei: number | undefined;
 
     isOrderCopied: boolean;
+    verifyToken: (addr: string, chn: string) => boolean;
+    getTokensByName: (searchName: string, chn: string, exact: boolean) => TokenIF[];
+    getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
+    importedTokensPlus: TokenIF[];
+    getRecentTokens: (options?: getRecentTokensParamsIF | undefined) => TokenIF[];
+    addRecentToken: (tkn: TokenIF) => void;
+    tokenAorB: string;
 }
 
 // central react functional component
 export default function LimitCurrencySelector(props: LimitCurrencySelectorProps) {
     const {
+        provider,
         isUserLoggedIn,
         tokenPair,
         tokensBank,
         setImportedTokens,
-        searchableTokens,
+        // searchableTokens,
         chainId,
         fieldId,
         // direction,
@@ -77,41 +91,48 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
         tokenAQtyCoveredBySurplusBalance,
         tokenAQtyCoveredByWalletBalance,
         tokenASurplusMinusTokenARemainderNum,
-        activeTokenListsChanged,
-        indicateActiveTokenListsChanged,
+        // activeTokenListsChanged,
+        // indicateActiveTokenListsChanged,
         gasPriceInGwei,
         handleChangeClick,
         isOrderCopied,
+        verifyToken,
+        getTokensByName,
+        getTokenByAddress,
+        importedTokensPlus,
+        getRecentTokens,
+        addRecentToken,
+        tokenAorB
     } = props;
 
     const thisToken = fieldId === 'sell' ? tokenPair.dataTokenA : tokenPair.dataTokenB;
-    const [showManageTokenListContent, setShowManageTokenListContent] = useState(false);
+    // const [showManageTokenListContent, setShowManageTokenListContent] = useState(false);
 
     const isSellTokenSelector = fieldId === 'sell';
 
-    const [isModalOpen, openModal, closeModal] = useModal();
+    // const [isModalOpen, openModal, closeModal] = useModal();
 
-    const tokenToUpdate = fieldId === 'sell' ? 'A' : 'B';
+    // const tokenToUpdate = fieldId === 'sell' ? 'A' : 'B';
 
-    const tokenSelectModalOrNull = isModalOpen ? (
-        <Modal onClose={closeModal} title='Select Token' centeredTitle>
-            <TokenSelectContainer
-                tokenPair={tokenPair}
-                tokensBank={tokensBank}
-                setImportedTokens={setImportedTokens}
-                searchableTokens={searchableTokens}
-                tokenToUpdate={tokenToUpdate}
-                chainId={chainId}
-                tokenList={tokensBank}
-                closeModal={closeModal}
-                reverseTokens={reverseTokens}
-                showManageTokenListContent={showManageTokenListContent}
-                setShowManageTokenListContent={setShowManageTokenListContent}
-                activeTokenListsChanged={activeTokenListsChanged}
-                indicateActiveTokenListsChanged={indicateActiveTokenListsChanged}
-            />
-        </Modal>
-    ) : null;
+    // const tokenSelectModalOrNull = isModalOpen ? (
+    //     <Modal onClose={closeModal} title='Select Token' centeredTitle>
+    //         <TokenSelectContainer
+    //             tokenPair={tokenPair}
+    //             tokensBank={tokensBank}
+    //             setImportedTokens={setImportedTokens}
+    //             searchableTokens={searchableTokens}
+    //             tokenToUpdate={tokenToUpdate}
+    //             chainId={chainId}
+    //             tokenList={tokensBank}
+    //             closeModal={closeModal}
+    //             reverseTokens={reverseTokens}
+    //             showManageTokenListContent={showManageTokenListContent}
+    //             setShowManageTokenListContent={setShowManageTokenListContent}
+    //             activeTokenListsChanged={activeTokenListsChanged}
+    //             indicateActiveTokenListsChanged={indicateActiveTokenListsChanged}
+    //         />
+    //     </Modal>
+    // ) : null;
 
     // IMPORTANT!  The Limit Order module is the one only transaction configurator
     // ... in the app which has an input field with no token selector.  For that
@@ -119,10 +140,28 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
     // ... from its counterparts in the Swap/Market/Range modules, even if we use
     // ... a common element for those modules in the future.
 
+    const [isTokenModalOpen, openTokenModal, closeTokenModal] = useModal();
+    const [showSoloSelectTokenButtons, setShowSoloSelectTokenButtons] = useState(true);
+    const [outputTokens, validatedInput, setInput, searchType] = useSoloSearch(
+        chainId,
+        tokensBank,
+        verifyToken,
+        getTokenByAddress,
+        getTokensByName,
+    );
+
+    const handleInputClear = () => {
+        setInput('');
+        const soloTokenSelectInput = document.getElementById(
+            'solo-token-select-input',
+        ) as HTMLInputElement;
+        soloTokenSelectInput.value = '';
+    };
+
     const tokenSelect = (
         <div
             className={`${styles.token_select} ${isOrderCopied && styles.pulse_animation}`}
-            onClick={openModal}
+            onClick={openTokenModal}
         >
             {thisToken.logoURI ? (
                 <img
@@ -346,7 +385,39 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
                 {fieldId === 'buy' || fieldId === 'sell' ? tokenSelect : null}
             </div>
             {balanceDisplayOrNull}
-            {tokenSelectModalOrNull}
+            {isTokenModalOpen && (
+                <Modal
+                    onClose={closeTokenModal}
+                    title='Select Token'
+                    centeredTitle
+                    handleBack={handleInputClear}
+                    showBackButton={false}
+                    footer={null}
+                >
+                    <SoloTokenSelect
+                        provider={provider}
+                        closeModal={closeTokenModal}
+                        chainId={chainId}
+                        importedTokens={importedTokensPlus}
+                        setImportedTokens={setImportedTokens}
+                        getTokensByName={getTokensByName}
+                        getTokenByAddress={getTokenByAddress}
+                        verifyToken={verifyToken}
+                        showSoloSelectTokenButtons={showSoloSelectTokenButtons}
+                        setShowSoloSelectTokenButtons={setShowSoloSelectTokenButtons}
+                        outputTokens={outputTokens}
+                        validatedInput={validatedInput}
+                        setInput={setInput}
+                        searchType={searchType}
+                        addRecentToken={addRecentToken}
+                        getRecentTokens={getRecentTokens}
+                        isSingleToken={false}
+                        tokenAorB={tokenAorB}
+                        reverseTokens={reverseTokens}
+                        tokenPair={tokenPair}
+                    />
+                </Modal>
+            )}
         </div>
     );
 }

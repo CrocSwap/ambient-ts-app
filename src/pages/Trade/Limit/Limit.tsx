@@ -91,6 +91,7 @@ const cachedQuerySpotPrice = memoizeQuerySpotPrice();
 
 export default function Limit(props: LimitPropsIF) {
     const {
+        provider,
         pool,
         crocEnv,
         isUserLoggedIn,
@@ -119,6 +120,12 @@ export default function Limit(props: LimitPropsIF) {
         poolExists,
         lastBlockNumber,
         isOrderCopied,
+        verifyToken,
+        getTokensByName,
+        getTokenByAddress,
+        importedTokensPlus,
+        getRecentTokens,
+        addRecentToken
     } = props;
 
     const { tradeData, navigationMenu } = useTradeData();
@@ -690,6 +697,7 @@ export default function Limit(props: LimitPropsIF) {
                     transition={{ duration: 0.5 }}
                 >
                     <LimitCurrencyConverter
+                        provider={provider}
                         setPriceInputFieldBlurred={setPriceInputFieldBlurred}
                         pool={pool}
                         gridSize={chainData.gridSize}
@@ -722,6 +730,12 @@ export default function Limit(props: LimitPropsIF) {
                         poolExists={poolExists}
                         gasPriceInGwei={gasPriceInGwei}
                         isOrderCopied={isOrderCopied}
+                        verifyToken={verifyToken}
+                        getTokensByName={getTokensByName}
+                        getTokenByAddress={getTokenByAddress}
+                        importedTokensPlus={importedTokensPlus}
+                        getRecentTokens={getRecentTokens}
+                        addRecentToken={addRecentToken}
                     />
                 </motion.div>
                 <div className={styles.header_container}>
