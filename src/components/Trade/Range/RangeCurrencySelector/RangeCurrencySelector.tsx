@@ -13,7 +13,7 @@ import IconWithTooltip from '../../../Global/IconWithTooltip/IconWithTooltip';
 import NoTokenIcon from '../../../Global/NoTokenIcon/NoTokenIcon';
 import { SoloTokenSelect } from '../../../../components/Global/TokenSelectContainer/SoloTokenSelect';
 import { getRecentTokensParamsIF } from  '../../../../App/hooks/useRecentTokens';
-import { useSoloSearch } from '../../../Global/TokenSelectContainer/useSoloSearch';
+import { useSoloSearch } from '../../../Global/TokenSelectContainer/hooks/useSoloSearch';
 
 interface RangeCurrencySelectorProps {
     provider?: ethers.providers.Provider;
