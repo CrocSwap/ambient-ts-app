@@ -65,7 +65,7 @@ export default function SidebarRangePositionsCard(props: SidebarRangePositionsPr
     const usdValueNum = position.totalValueUSD;
 
     const usdValueTruncated = !usdValueNum
-        ? undefined
+        ? '0.00'
         : usdValueNum < 0.0001
         ? usdValueNum.toExponential(2)
         : usdValueNum < 2
