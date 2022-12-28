@@ -48,7 +48,7 @@ interface propsIF {
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
     isOnPortfolioPage: boolean;
     changeState?: (isOpen: boolean | undefined, candleData: CandleData | undefined) => void;
-
+    lastBlockNumber: number;
     showSidebar: boolean;
     handlePulseAnimation?: (type: string) => void;
 }
@@ -72,6 +72,7 @@ export default function Orders(props: propsIF) {
         handlePulseAnimation,
         setIsShowAllEnabled,
         changeState,
+        lastBlockNumber,
     } = props;
 
     const limitOrdersByUser = graphData.limitOrdersByUser.limitOrders;
@@ -490,6 +491,7 @@ export default function Orders(props: propsIF) {
             isShowAllEnabled={isShowAllEnabled}
             isOnPortfolioPage={isOnPortfolioPage}
             handlePulseAnimation={handlePulseAnimation}
+            lastBlockNumber={lastBlockNumber}
         />
     ));
 

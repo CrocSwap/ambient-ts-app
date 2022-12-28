@@ -39,7 +39,10 @@
 .btn_flat{
     border: none;
     background: var(--text-highlight-dark);
-    color: var(--dark1)
+    color: var(--dark1);
+    transition: all var(--animation-speed) ease-in-out;
+
+
 }
 
 .btn_gradient:hover {
@@ -51,8 +54,9 @@
 }
 
 .btn_flat:hover{
-    color: var(--dark2);
-    box-shadow: 0 0 2px #fff, 0 0 5px #fff, 0 0 10px #0ba9ca
+    color: var(--text-grey-white);
+    box-shadow: 4px 4px var( --text-highlight);
+    /* box-shadow: 0 0 2px #fff, 0 0 5px #fff, 0 0 10px #0ba9ca */
 }
 
 .disabled_btn {

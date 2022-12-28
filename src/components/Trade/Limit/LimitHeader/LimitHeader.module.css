@@ -11,6 +11,6 @@
     color: var(--text-grey-white);
 }
 
-.settings_icon {
+.settings_icon, .share_button {
     cursor: pointer;
 }
