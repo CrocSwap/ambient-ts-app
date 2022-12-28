@@ -1756,8 +1756,9 @@ export default function Chart(props: ChartData) {
                     if (newLimitValue < 0) newLimitValue = 0;
 
                     newLimitValue =
-                        poolPriceDisplay !== undefined && newLimitValue > poolPriceDisplay * 10
-                            ? poolPriceDisplay * 10
+                        poolPriceDisplay !== undefined &&
+                        newLimitValue > props.liquidityData.topBoudnary
+                            ? props.liquidityData.topBoudnary
                             : newLimitValue;
 
                     setLimit(() => {
@@ -2245,8 +2246,9 @@ export default function Chart(props: ChartData) {
                     if (newLimitValue < 0) newLimitValue = 0;
 
                     newLimitValue =
-                        poolPriceDisplay !== undefined && newLimitValue > poolPriceDisplay * 10
-                            ? poolPriceDisplay * 10
+                        poolPriceDisplay !== undefined &&
+                        newLimitValue > props.liquidityData.topBoudnary
+                            ? props.liquidityData.topBoudnary
                             : newLimitValue;
 
                     onBlurlimitRate(newLimitValue);
@@ -3886,24 +3888,61 @@ export default function Chart(props: ChartData) {
         ) {
             const liqTextData = { totalValue: 0 };
 
-            if (liqTooltipSelectedLiqBar.liqPrices < poolPriceDisplay) {
-                props.liquidityData.liqAskData.map((liqData: any) => {
-                    if (
-                        liqData.liqPrices >= liqTooltipSelectedLiqBar.liqPrices &&
-                        poolPriceDisplay > liqData.liqPrices
-                    ) {
-                        liqTextData.totalValue = liqTextData.totalValue + liqData.deltaAverageUSD;
-                    }
-                });
+            const snap = (data: any, point: any) => {
+                if (point == undefined) return [];
+                const filtered =
+                    data.length > 1 ? data.filter((d: any) => d.liqPrices != null) : data;
+                const nearest = minimum(filtered, (d: any) => Math.abs(point - d.liqPrices))[1];
+                return nearest?.cumAverageUSD;
+            };
+
+            const minimum = (data: any, accessor: any) => {
+                return data
+                    .map(function (dataPoint: any, index: any) {
+                        return [accessor(dataPoint, index), dataPoint, index];
+                    })
+                    .reduce(
+                        function (accumulator: any, dataPoint: any) {
+                            return accumulator[0] > dataPoint[0] ? dataPoint : accumulator;
+                        },
+                        [Number.MAX_VALUE, null, -1],
+                    );
+            };
+
+            if (liqMode === 'Depth') {
+                if (liqTooltipSelectedLiqBar.liqPrices < poolPriceDisplay) {
+                    liqTextData.totalValue = snap(
+                        props.liquidityData.depthLiqAskData,
+                        liqTooltipSelectedLiqBar.liqPrices,
+                    );
+                } else {
+                    liqTextData.totalValue = snap(
+                        props.liquidityData.depthLiqBidData,
+                        liqTooltipSelectedLiqBar.liqPrices,
+                    );
+                }
             } else {
-                props.liquidityData.liqBidData.map((liqData: any) => {
-                    if (
-                        liqData.liqPrices <= liqTooltipSelectedLiqBar.liqPrices &&
-                        poolPriceDisplay < liqData.liqPrices
-                    ) {
-                        liqTextData.totalValue = liqTextData.totalValue + liqData.deltaAverageUSD;
-                    }
-                });
+                if (liqTooltipSelectedLiqBar.liqPrices < poolPriceDisplay) {
+                    props.liquidityData.liqAskData.map((liqData: any) => {
+                        if (
+                            liqData.liqPrices >= liqTooltipSelectedLiqBar.liqPrices &&
+                            poolPriceDisplay > liqData.liqPrices
+                        ) {
+                            liqTextData.totalValue =
+                                liqTextData.totalValue + liqData.deltaAverageUSD;
+                        }
+                    });
+                } else {
+                    props.liquidityData.liqBidData.map((liqData: any) => {
+                        if (
+                            liqData.liqPrices <= liqTooltipSelectedLiqBar.liqPrices &&
+                            poolPriceDisplay < liqData.liqPrices
+                        ) {
+                            liqTextData.totalValue =
+                                liqTextData.totalValue + liqData.deltaAverageUSD;
+                        }
+                    });
+                }
             }
 
             const difference = liqTooltipSelectedLiqBar.liqPrices - poolPriceDisplay;
@@ -4049,8 +4088,9 @@ export default function Chart(props: ChartData) {
 
                     const limitValue =
                         poolPriceDisplay !== undefined &&
-                        parseFloat(limitRateTruncated.replace(',', '')) > poolPriceDisplay * 10
-                            ? poolPriceDisplay * 10
+                        parseFloat(limitRateTruncated.replace(',', '')) >
+                            props.liquidityData.topBoudnary
+                            ? props.liquidityData.topBoudnary
                             : parseFloat(limitRateTruncated.replace(',', ''));
 
                     setLimit(() => {
