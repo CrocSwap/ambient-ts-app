@@ -341,7 +341,7 @@ export default function App() {
     }, [provider]);
 
     useEffect(() => {
-        if (isInitialized) {
+        if (provider) {
             (async () => {
                 const mainnetEthPrice = await cachedFetchTokenPrice(
                     '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
@@ -351,7 +351,7 @@ export default function App() {
                 setEthMainnetUsdPrice(usdPrice);
             })();
         }
-    }, [isInitialized]);
+    }, [provider]);
 
     function exposeProviderUrl(provider?: ethers.providers.Provider): string {
         if (provider && 'connection' in provider) {
@@ -2243,7 +2243,7 @@ export default function App() {
         getTokenByAddress: getTokenByAddress,
         importedTokensPlus: getImportedTokensPlus(),
         getRecentTokens: getRecentTokens,
-        addRecentToken: addRecentToken
+        addRecentToken: addRecentToken,
     };
 
     // props for <Swap/> React element on trade route
@@ -2283,7 +2283,7 @@ export default function App() {
         getTokenByAddress: getTokenByAddress,
         importedTokensPlus: getImportedTokensPlus(),
         getRecentTokens: getRecentTokens,
-        addRecentToken: addRecentToken
+        addRecentToken: addRecentToken,
     };
 
     // props for <Limit/> React element on trade route
@@ -2378,7 +2378,7 @@ export default function App() {
         getTokenByAddress: getTokenByAddress,
         importedTokensPlus: getImportedTokensPlus(),
         getRecentTokens: getRecentTokens,
-        addRecentToken: addRecentToken
+        addRecentToken: addRecentToken,
     };
 
     function toggleSidebar() {
