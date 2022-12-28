@@ -74,8 +74,8 @@ export default function OrderDetails(props: IOrderDetailsProps) {
                     const claimableBaseNum = positionStats.claimableLiqBaseDecimalCorrected;
                     const claimableQuoteNum = positionStats.claimableLiqQuoteDecimalCorrected;
 
-                    const isOrderFilled = positionStats.claimableLiq !== '0';
-                    setIsClaimable(isOrderFilled);
+                    const isOrderClaimable = positionStats.claimableLiq !== '0';
+                    setIsClaimable(isOrderClaimable);
 
                     const liqBaseDisplay = liqBaseNum
                         ? liqBaseNum < 2
