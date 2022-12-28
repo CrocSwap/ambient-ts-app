@@ -1,10 +1,6 @@
 import { useEffect, useState } from 'react';
 import { TokenIF, TokenListIF } from '../../utils/interfaces/exports';
 
-// TODO: refactor to accept tokens from another hook in params
-// TODO: ... this will eliminate the need for recursive calls
-// TODO: ... it will also update data automatically
-
 export const useToken = (
     chainId: string
 ) : [
