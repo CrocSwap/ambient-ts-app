@@ -50,6 +50,7 @@ declare global {
         interface IntrinsicElements {
             'd3fc-group': DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement>;
             'd3fc-svg': DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement>;
+            'd3fc-canvas': DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement>;
         }
     }
 }
@@ -162,6 +163,7 @@ export default function Chart(props: ChartData) {
 
     const d3Container = useRef(null);
     const d3PlotArea = useRef(null);
+    const d3Canvas = useRef(null);
 
     const d3Xaxis = useRef(null);
     const d3Yaxis = useRef(null);
@@ -2609,60 +2611,154 @@ export default function Chart(props: ChartData) {
         }
     }, [scaleData]);
 
+    // useEffect(() => {
+    //     if (scaleData !== undefined) {
+    //         const candlestick = d3fc
+    //             .autoBandwidth(d3fc.seriesSvgCandlestick())
+    //             .decorate((selection: any) => {
+    //                 selection
+    //                     .style('fill', (d: any) => {
+    //                         return selectedDate !== undefined &&
+    //                             selectedDate.getTime() === d.date.getTime()
+    //                             ? '#E480FF'
+    //                             : d.color;
+    //                     })
+    //                     .style('stroke', (d: any) => {
+    //                         return selectedDate !== undefined &&
+    //                             selectedDate.getTime() === d.date.getTime()
+    //                             ? '#E480FF'
+    //                             : d.stroke;
+    //                     });
+    //                 selection
+    //                     .on('mouseover', (event: any) => {
+    //                         d3.select(event.currentTarget).style('cursor', 'pointer');
+    //                     })
+    //                     .on('click', (event: any) => {
+    //                         if (
+    //                             selectedDate === undefined ||
+    //                             selectedDate.getTime() !==
+    //                                 new Date(event.target.__data__.date).getTime()
+    //                         ) {
+    //                             d3.select(event.currentTarget)
+    //                                 .style('fill', '#E480FF')
+    //                                 .style('stroke', '#E480FF');
+
+    //                             setSelectedDate(event.target.__data__.date);
+    //                         } else {
+    //                             d3.select(event.currentTarget)
+    //                                 .style('fill', (d: any) =>
+    //                                     d.close > d.open ? upBodyColor : downBodyColor,
+    //                                 )
+    //                                 .style('stroke', (d: any) =>
+    //                                     d.close > d.open ? upBorderColor : downBorderColor,
+    //                                 );
+
+    //                             setSelectedDate(undefined);
+    //                         }
+    //                     });
+    //             })
+
+    //             .xScale(scaleData.xScale)
+    //             .yScale(scaleData.yScale);
+
+    //         setCandlestick(() => {
+    //             return candlestick;
+    //         });
+    //     }
+    // }, [scaleData, selectedDate]);
+
     useEffect(() => {
         if (scaleData !== undefined) {
-            const candlestick = d3fc
-                .autoBandwidth(d3fc.seriesSvgCandlestick())
-                .decorate((selection: any) => {
-                    selection
-                        .style('fill', (d: any) => {
-                            return selectedDate !== undefined &&
-                                selectedDate.getTime() === d.date.getTime()
-                                ? '#E480FF'
-                                : d.color;
-                        })
-                        .style('stroke', (d: any) => {
-                            return selectedDate !== undefined &&
-                                selectedDate.getTime() === d.date.getTime()
-                                ? '#E480FF'
-                                : d.stroke;
-                        });
-                    selection
-                        .on('mouseover', (event: any) => {
-                            d3.select(event.currentTarget).style('cursor', 'pointer');
-                        })
-                        .on('click', (event: any) => {
-                            if (
-                                selectedDate === undefined ||
-                                selectedDate.getTime() !==
-                                    new Date(event.target.__data__.date).getTime()
-                            ) {
-                                d3.select(event.currentTarget)
-                                    .style('fill', '#E480FF')
-                                    .style('stroke', '#E480FF');
+            const canvasCandlestick = d3fc
+                .autoBandwidth(d3fc.seriesCanvasCandlestick())
+                .decorate((context: any, d: any) => {
+                    context.fillStyle =
+                        selectedDate !== undefined && selectedDate.getTime() === d.date.getTime()
+                            ? '#E480FF'
+                            : d.color;
 
-                                setSelectedDate(event.target.__data__.date);
-                            } else {
-                                d3.select(event.currentTarget)
-                                    .style('fill', (d: any) =>
-                                        d.close > d.open ? upBodyColor : downBodyColor,
-                                    )
-                                    .style('stroke', (d: any) =>
-                                        d.close > d.open ? upBorderColor : downBorderColor,
-                                    );
+                    context.strokeStyle =
+                        selectedDate !== undefined && selectedDate.getTime() === d.date.getTime()
+                            ? '#E480FF'
+                            : d.stroke;
+                    context.cursorStyle = 'pointer';
 
-                                setSelectedDate(undefined);
-                            }
-                        });
+                    // d3.select(context).on('click', function() {
+                    //     console.log('dsfdsf');
+
+                    // });
+                    // context
+                    //     .on('mouseover', (event: any) => {
+                    //         d3.select(event.currentTarget).style('cursor', 'pointer');
+                    //     })
+                    //     .on('click', (event: any) => {
+                    //         if (
+                    //             selectedDate === undefined ||
+                    //             selectedDate.getTime() !==
+                    //                 new Date(event.target.__data__.date).getTime()
+                    //         ) {
+                    //             d3.select(event.currentTarget)
+                    //                 .style('fill', '#E480FF')
+                    //                 .style('stroke', '#E480FF');
+
+                    //             setSelectedDate(event.target.__data__.date);
+                    //         } else {
+                    //             d3.select(event.currentTarget)
+                    //                 .style('fill', (d: any) =>
+                    //                     d.close > d.open ? upBodyColor : downBodyColor,
+                    //                 )
+                    //                 .style('stroke', (d: any) =>
+                    //                     d.close > d.open ? upBorderColor : downBorderColor,
+                    //                 );
+
+                    //             setSelectedDate(undefined);
+                    //         }
+                    //     });
                 })
+
                 .xScale(scaleData.xScale)
                 .yScale(scaleData.yScale);
 
-            setCandlestick(() => {
-                return candlestick;
-            });
+            setCandlestick(() => canvasCandlestick);
+            renderCanvas();
         }
-    }, [scaleData, selectedDate]);
+    }, [dragControl, selectedDate]);
+
+    useEffect(() => {
+        const ctx = (d3.select(d3Canvas.current).select('canvas').node() as any).getContext('2d');
+
+        if (candlestick) {
+            d3.select(d3Canvas.current)
+                .on('draw', () => {
+                    candlestick(parsedChartData?.chartData);
+                })
+                .on('measure', () => {
+                    candlestick.context(ctx);
+                });
+            // .on('click', (event:any) => {
+
+            //     const rect = (d3.select(d3Canvas.current).node() as any).getBoundingClientRect();
+
+            //     const x = event.clientX - rect.left
+            //     const y = event.clientY - rect.top
+            //     console.log('x: ' + x + ' y: ' + y,'rect: ' + rect)
+            //     console.log(scaleData.yScale.invert(x));
+
+            //     // console.log({ctx});
+
+            //     // const dd=ctx(event.layerX,event.layerY, 1, 1);
+            //     // // if (ctx.isPointInStroke(event.offsetX, event.offsetY)) {
+            //     //     console.log('dfdsffsd',dd);
+            //     // // }
+            // });
+        }
+    }, [scaleData, parsedChartData, candlestick]);
+
+    function renderCanvas() {
+        const container = d3.select(d3Canvas.current).node() as any;
+
+        container.requestRedraw();
+    }
 
     useEffect(() => {
         if (scaleData !== undefined && candlestick !== undefined) {
@@ -3286,7 +3382,7 @@ export default function Chart(props: ChartData) {
                         // );
                         indicatorLineJoin(svg, [indicatorLineData]).call(indicatorLine);
 
-                        candleJoin(svg, [chartData]).call(candlestick);
+                        // candleJoin(svg, [chartData]).call(candlestick);
 
                         liqHighligtedAskJoin(svg, [liquidityData.liqHighligtedAskSeries]).call(
                             liqHighligtedAskSeries,
@@ -3883,7 +3979,7 @@ export default function Chart(props: ChartData) {
     return (
         <div ref={d3Container} className='main_layout_chart' data-testid={'chart'}>
             <d3fc-group id='d3fc_group' auto-resize>
-                <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+                {/* <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
                     <div
                         id='plotAreaDiv'
                         style={{
@@ -3892,100 +3988,104 @@ export default function Chart(props: ChartData) {
                             flexDirection: 'row',
                             overflow: 'hidden',
                         }}
-                    >
-                        <d3fc-svg
-                            ref={d3PlotArea}
-                            className='plot-area'
-                            style={{ flex: 1, flexGrow: 20, overflow: 'hidden' }}
-                        ></d3fc-svg>
-                        <d3fc-svg
-                            className='y-axis'
-                            ref={d3Yaxis}
-                            style={{ width: yAxisWidth }}
-                        ></d3fc-svg>
-                    </div>
+                    > */}
 
-                    {showFeeRate && (
-                        <>
-                            <hr />
-                            <label>
-                                Fee Rate:{' '}
-                                {(
-                                    subChartValues.filter(
-                                        (value: any) => value.name === 'feeRate',
-                                    )[0].value * 100
-                                ).toString() + '%'}
-                                {/* {formatDollarAmountAxis(
+                <d3fc-canvas ref={d3Canvas} className='plot-canvas'>
+                    {/* style={{ flex: 1, display: 'flex', flexDirection: 'column' }}> */}
+                </d3fc-canvas>
+                <d3fc-svg
+                    ref={d3PlotArea}
+                    className='plot-area'
+                    // style={{ flex: 1, flexGrow: 20, overflow: 'hidden' }}
+                ></d3fc-svg>
+
+                <d3fc-svg
+                    className='y-axis-svg'
+                    ref={d3Yaxis}
+                    style={{ width: yAxisWidth, gridColumn: 4, gridRow: 3 }}
+                ></d3fc-svg>
+                {/* </div> */}
+
+                {showFeeRate && (
+                    <>
+                        <hr />
+                        <label>
+                            Fee Rate:{' '}
+                            {(
+                                subChartValues.filter((value: any) => value.name === 'feeRate')[0]
+                                    .value * 100
+                            ).toString() + '%'}
+                            {/* {formatDollarAmountAxis(
                                     subChartValues.filter(
                                         (value: any) => value.name === 'feeRate',
                                     )[0].value,
                                 )} */}
-                            </label>
-                            <FeeRateSubChart
-                                feeData={parsedChartData?.feeChartData.sort(
-                                    (a, b) => b.time - a.time,
-                                )}
-                                period={parsedChartData?.period}
-                                crosshairForSubChart={crosshairForSubChart}
-                                setsubChartValues={setsubChartValues}
-                                xScale={scaleData !== undefined ? scaleData.xScale : undefined}
-                                getNewCandleData={getNewCandleData}
-                                setZoomAndYdragControl={setZoomAndYdragControl}
-                                zoomAndYdragControl={zoomAndYdragControl}
-                                setIsMouseMoveForSubChart={setIsMouseMoveForSubChart}
-                                isMouseMoveForSubChart={isMouseMoveForSubChart}
-                                setIsZoomForSubChart={setIsZoomForSubChart}
-                                setMouseMoveEventCharts={setMouseMoveEventCharts}
-                                render={render}
-                                mouseMoveChartName={mouseMoveChartName}
-                                setMouseMoveChartName={setMouseMoveChartName}
-                            />
-                        </>
-                    )}
+                        </label>
+                        <FeeRateSubChart
+                            feeData={parsedChartData?.feeChartData.sort((a, b) => b.time - a.time)}
+                            period={parsedChartData?.period}
+                            crosshairForSubChart={crosshairForSubChart}
+                            setsubChartValues={setsubChartValues}
+                            xScale={scaleData !== undefined ? scaleData.xScale : undefined}
+                            getNewCandleData={getNewCandleData}
+                            setZoomAndYdragControl={setZoomAndYdragControl}
+                            zoomAndYdragControl={zoomAndYdragControl}
+                            setIsMouseMoveForSubChart={setIsMouseMoveForSubChart}
+                            isMouseMoveForSubChart={isMouseMoveForSubChart}
+                            setIsZoomForSubChart={setIsZoomForSubChart}
+                            setMouseMoveEventCharts={setMouseMoveEventCharts}
+                            render={render}
+                            mouseMoveChartName={mouseMoveChartName}
+                            setMouseMoveChartName={setMouseMoveChartName}
+                        />
+                    </>
+                )}
 
-                    {showTvl && (
-                        <>
-                            <hr />
-                            <label>
-                                TVL{' '}
-                                {formatDollarAmountAxis(
-                                    subChartValues.filter((value: any) => value.name === 'tvl')[0]
-                                        .value,
-                                )}
-                            </label>
-                            <TvlSubChart
-                                tvlData={parsedChartData?.tvlChartData.sort(
-                                    (a, b) => b.time - a.time,
-                                )}
-                                period={parsedChartData?.period}
-                                crosshairForSubChart={crosshairForSubChart}
-                                setsubChartValues={setsubChartValues}
-                                scaleData={scaleData}
-                                getNewCandleData={getNewCandleData}
-                                setZoomAndYdragControl={setZoomAndYdragControl}
-                                zoomAndYdragControl={zoomAndYdragControl}
-                                isMouseMoveForSubChart={isMouseMoveForSubChart}
-                                setIsMouseMoveForSubChart={setIsMouseMoveForSubChart}
-                                setIsZoomForSubChart={setIsZoomForSubChart}
-                                setMouseMoveEventCharts={setMouseMoveEventCharts}
-                                render={render}
-                                mouseMoveChartName={mouseMoveChartName}
-                                setMouseMoveChartName={setMouseMoveChartName}
-                                setTransformX={setTransformX}
-                                transformX={transformX}
-                            />
-                        </>
-                    )}
+                {showTvl && (
+                    <>
+                        <hr />
+                        <label>
+                            TVL{' '}
+                            {formatDollarAmountAxis(
+                                subChartValues.filter((value: any) => value.name === 'tvl')[0]
+                                    .value,
+                            )}
+                        </label>
+                        <TvlSubChart
+                            tvlData={parsedChartData?.tvlChartData.sort((a, b) => b.time - a.time)}
+                            period={parsedChartData?.period}
+                            crosshairForSubChart={crosshairForSubChart}
+                            setsubChartValues={setsubChartValues}
+                            scaleData={scaleData}
+                            getNewCandleData={getNewCandleData}
+                            setZoomAndYdragControl={setZoomAndYdragControl}
+                            zoomAndYdragControl={zoomAndYdragControl}
+                            isMouseMoveForSubChart={isMouseMoveForSubChart}
+                            setIsMouseMoveForSubChart={setIsMouseMoveForSubChart}
+                            setIsZoomForSubChart={setIsZoomForSubChart}
+                            setMouseMoveEventCharts={setMouseMoveEventCharts}
+                            render={render}
+                            mouseMoveChartName={mouseMoveChartName}
+                            setMouseMoveChartName={setMouseMoveChartName}
+                            setTransformX={setTransformX}
+                            transformX={transformX}
+                        />
+                    </>
+                )}
 
-                    <hr />
-                    <d3fc-svg
-                        ref={d3Xaxis}
-                        className='x-axis'
-                        style={{ height: '1.25em', width: '100%' }}
-                    ></d3fc-svg>
-                </div>
+                <hr />
+                <d3fc-svg
+                    ref={d3Xaxis}
+                    className='x-axis'
+                    style={{ height: '1.25em', width: '100%', gridColumn: 3, gridRow: 4 }}
+                ></d3fc-svg>
+                {/* </div> */}
             </d3fc-group>
 
+            {/* <CanvasExample
+                chartData={parsedChartData?.chartData}
+                xScale={scaleData !== undefined ? scaleData.xScale : undefined}      
+                yScale={scaleData !== undefined ? scaleData.yScale : undefined}      /> */}
             {/* <div
                 className='popup'
                 id='transactionPopup'

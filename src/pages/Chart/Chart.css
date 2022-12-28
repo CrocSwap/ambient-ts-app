@@ -15,6 +15,26 @@ text.market {
     fill: black;
 }
 
+d3fc-canvas, d3fc-svg {
+    overflow: hidden;
+    grid-column: 3;
+    grid-row: 3;
+}
+
+/* .plot-area {
+    overflow: hidden;
+    grid-column: 3;
+    grid-row: 3;
+} */
+
+#d3fc_group {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: minmax(1em,max-content) auto 1fr auto minmax(1em,max-content);
+    grid-template-rows: minmax(1em,max-content) auto 1fr auto minmax(1em,max-content);
+}
 text.crossHairText {
     filter: url(#crossHairBg);
     font-size: 13px;
@@ -205,12 +225,12 @@ label {
     font-size: 12px;
 }
 
-#d3fc_group {
+/* #d3fc_group {
     display: flex;
     height: 100%;
     width: 100%;
     flex-direction: column;
-}
+} */
 
 .scroll {
     box-shadow: 0 8px 32px 0 rgba(255, 255, 255, 0.47);
@@ -262,4 +282,11 @@ label {
         height: 85%;
         padding: 0px 5% 0px 0px;
     }
+}
+
+
+#d3fc_group > .y-axis-svg {
+    grid-column: 4;
+    grid-row: 3;
+
 }
