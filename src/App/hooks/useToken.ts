@@ -19,6 +19,36 @@ export const useToken = (
 ] => {
     const [tokenMap, setTokenMap] = useState(new Map<string, TokenIF>());
 
+    // abstracted logic to add a new token to the map
+    // necessary because tokenMap cannot be mutated directly
+    function addTokenToMap(
+        tkn: TokenIF,
+        map: Map<string, TokenIF>
+    ): void {
+        // mutable output variable
+        const newMap = map;
+        // generate a key for the key value pair
+        const tokenKey = tkn.address.toLowerCase() +
+            '_0x' +
+            tkn.chainId.toString().toLowerCase();
+        // boolean showing if token is already in the Map
+        const tokenFromArray = newMap.get(tokenKey);
+        // if token is already in the Map, update the array of origin URIs
+        if (tokenFromArray) {
+            // if current token has a `fromList` value, add it to the URI array
+            tkn.fromList &&
+                tokenFromArray.fromListArr?.push(tkn.fromList);
+            // update value on the Map with the new URI listed in URI array
+            newMap.set(tokenKey, tokenFromArray);
+        // if token is NOT in the Map, add it
+        } else {
+            // initialize an array to hold multiple list URI references
+            tkn.fromList && (tkn.fromListArr = [tkn.fromList]);
+            // add updated token data object to the array
+            newMap.set(tokenKey, tkn);
+        }
+    };
+
     // get allTokenLists from local storage after initial render
     useEffect(() => {
         // fn to check local storage for token lists with a recursion limiter
@@ -27,37 +57,18 @@ export const useToken = (
             if (localStorage.getItem('allTokenLists')) {
                 // create an empty map to put key-val pairs into
                 const newTokenMap = new Map<string, TokenIF>();
-
-                // abstracted logic to add a new token to the map
-                const addTokenToMap = (tkn: TokenIF): void => {
-                    // generate a key for the key value pair
-                    const tokenKey = tkn.address.toLowerCase() +
-                        '_0x' +
-                        tkn.chainId.toString().toLowerCase();
-                    // boolean showing if token is already in the Map
-                    const tokenFromArray = newTokenMap.get(tokenKey);
-                    // if token is already in the Map, update the array of origin URIs
-                    if (tokenFromArray) {
-                        // if current token has a `fromList` value, add it to the URI array
-                        tkn.fromList &&
-                            tokenFromArray.fromListArr?.push(tkn.fromList);
-                        // update value on the Map with the new URI listed in URI array
-                        newTokenMap.set(tokenKey, tokenFromArray);
-                    // if token is NOT in the Map, add it
-                    } else {
-                        // initialize an array to hold multiple list URI references
-                        tkn.fromList && (tkn.fromListArr = [tkn.fromList]);
-                        // add updated token data object to the array
-                        newTokenMap.set(tokenKey, tkn);
-                    }
-                };
                 // get 'allTokenLists' from local storage
                 JSON.parse(localStorage.getItem('allTokenLists') as string)
                     // create an array of all token data objects
                     .flatMap((tokenList: TokenListIF) => tokenList.tokens)
                     // add each token to the map
                     // this will by nature remove duplicate entries across lists
-                    .forEach((tkn: TokenIF) => addTokenToMap(tkn));
+                    .forEach((tkn: TokenIF) => addTokenToMap(tkn, newTokenMap));
+                // get 'ackTokens' from user data object in local storage
+                JSON.parse(localStorage.getItem('user') as string).ackTokens
+                    // add each token to the map
+                    // this will also remove duplicates intelligently
+                    .forEach((tkn: TokenIF) => addTokenToMap(tkn, newTokenMap));;
                 // send token map to be memoized in local state
                 setTokenMap(newTokenMap);
             } else if (limiter < 100) {
@@ -67,18 +78,10 @@ export const useToken = (
             } else {
                 // console warning if max recursion depth is reached
                 console.warn('maximum recursion depth reached');
-            }
+            };
         };
         checkForTokenLists();
     }, []);
-
-    // TODO: add logic to this hook to make it work productively
-    // TODO: first I need to populate data in `ackTokens`
-    // TODO: this will also need a limiter to make sure it runs just once
-    useEffect(() => {
-        const { ackTokens } = JSON.parse(localStorage.getItem('user') as string);
-        false && ackTokens;
-    }, [tokenMap]);
 
     // fn to determine if a token exists in a recognized token list
     // parameter for chain is optional, app uses the current chain by default
@@ -170,25 +173,9 @@ export const useToken = (
             userData.ackTokens = [...userData.ackTokens, tkn];
             localStorage.setItem('user', JSON.stringify(userData));
         }
-        const currentMap = tokenMap;
-        const tokenKey = tkn.address.toLowerCase() +
-            '_0x' +
-            tkn.chainId.toString().toLowerCase();
-        const tokenFromArray = currentMap.get(tokenKey);
-        if (tokenFromArray) {
-            // if current token has a `fromList` value, add it to the URI array
-            tkn.fromList &&
-                tokenFromArray.fromListArr?.push(tkn.fromList);
-            // update value on the Map with the new URI listed in URI array
-            currentMap.set(tokenKey, tokenFromArray);
-        // if token is NOT in the Map, add it
-        } else {
-            // initialize an array to hold multiple list URI references
-            tkn.fromList && (tkn.fromListArr = [tkn.fromList]);
-            // add updated token data object to the array
-            currentMap.set(tokenKey, tkn);
-        }
-        setTokenMap(currentMap);
+        const newTokenMap = tokenMap;
+        addTokenToMap(tkn, newTokenMap);
+        setTokenMap(newTokenMap);
     };
 
     // return function to verify a token and retrieve token metadata
