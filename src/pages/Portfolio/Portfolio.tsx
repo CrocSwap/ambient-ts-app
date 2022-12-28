@@ -308,6 +308,7 @@ export default function Portfolio(props: PortfolioPropsIF) {
         // limiter for tokens to add from connected wallet
         let tokensAdded = 0;
         // iterate over tokens in connected wallet
+        console.log({connectedUserErc20Tokens});
         connectedUserErc20Tokens?.forEach((tkn) => {
             // gatekeep to make sure token is not already in the array,
             // ... that the token can be verified against a known list,
@@ -350,6 +351,7 @@ export default function Portfolio(props: PortfolioPropsIF) {
             }
         });
         // return compiled array of tokens
+        console.log({output});
         return output;
     };
 

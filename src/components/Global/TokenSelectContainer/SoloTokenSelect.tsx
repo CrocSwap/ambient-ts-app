@@ -67,6 +67,8 @@ export const SoloTokenSelect = (props: propsIF) => {
         tokenPair
     } = props;
 
+    console.log({importedTokens});
+
     // instance of hook used to retrieve data from RTK
     const dispatch = useAppDispatch();
 
