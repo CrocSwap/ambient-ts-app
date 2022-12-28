@@ -10,6 +10,7 @@ import OrderDetailsControl from './OderDetailsControl/OrderDetailsControl';
 import OrderDetailsActions from '../RangeDetails/OrderDetailsActions/OrderDetailsActions';
 import { LimitOrderIF } from '../../utils/interfaces/exports';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
+import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 // import { formatAmountOld } from '../../utils/numbers';
 
 interface IOrderDetailsProps {
@@ -19,10 +20,11 @@ interface IOrderDetailsProps {
 }
 
 export default function OrderDetails(props: IOrderDetailsProps) {
-    const { limitOrder, lastBlockNumber } = props;
-    console.log({ limitOrder });
+    const { limitOrder } = props;
+    // console.log({ limitOrder });
     const { isOrderFilled, userNameToDisplay, baseDisplayFrontend, quoteDisplayFrontend } =
         useProcessOrder(limitOrder);
+    const lastBlock = useAppSelector((state) => state.graphData).lastBlock;
 
     const [isClaimable, setIsClaimable] = useState<boolean>(isOrderFilled);
 
@@ -38,6 +40,7 @@ export default function OrderDetails(props: IOrderDetailsProps) {
     const baseTokenAddress = limitOrder.base;
     const quoteTokenAddress = limitOrder.quote;
     const positionType = 'knockout';
+    const isBid = !limitOrder.isBid ? 'false' : 'true';
 
     const httpGraphCacheServerDomain = 'https://809821320828123.de:5000';
 
@@ -52,6 +55,7 @@ export default function OrderDetails(props: IOrderDetailsProps) {
                         user: user,
                         bidTick: bidTick.toString(),
                         askTick: askTick.toString(),
+                        isBid: isBid,
                         base: baseTokenAddress,
                         quote: quoteTokenAddress,
                         poolIdx: poolIndex.toString(),
@@ -63,11 +67,14 @@ export default function OrderDetails(props: IOrderDetailsProps) {
             )
                 .then((response) => response?.json())
                 .then((json) => {
-                    console.log({ json });
                     const positionStats = json?.data;
+                    console.log({ positionStats });
                     const liqBaseNum = positionStats.positionLiqBaseDecimalCorrected;
                     const liqQuoteNum = positionStats.positionLiqQuoteDecimalCorrected;
-                    const isOrderFilled = limitOrder.claimableLiq !== '0';
+                    const claimableBaseNum = positionStats.claimableLiqBaseDecimalCorrected;
+                    const claimableQuoteNum = positionStats.claimableLiqQuoteDecimalCorrected;
+
+                    const isOrderFilled = positionStats.claimableLiq !== '0';
                     setIsClaimable(isOrderFilled);
 
                     const liqBaseDisplay = liqBaseNum
@@ -81,7 +88,24 @@ export default function OrderDetails(props: IOrderDetailsProps) {
                                   maximumFractionDigits: 2,
                               })
                         : undefined;
-                    setBaseCollateralDisplay(liqBaseDisplay);
+                    // console.log({ liqBaseDisplay });
+
+                    const claimableBaseDisplay = claimableBaseNum
+                        ? claimableBaseNum < 2
+                            ? claimableBaseNum.toLocaleString(undefined, {
+                                  minimumFractionDigits: 2,
+                                  maximumFractionDigits: 6,
+                              })
+                            : claimableBaseNum.toLocaleString(undefined, {
+                                  minimumFractionDigits: 2,
+                                  maximumFractionDigits: 2,
+                              })
+                        : undefined;
+                    // console.log({ claimableBaseDisplay });
+
+                    isOrderFilled
+                        ? setBaseCollateralDisplay(claimableBaseDisplay ?? '0.00')
+                        : setBaseCollateralDisplay(liqBaseDisplay ?? '0.00');
 
                     const liqQuoteDisplay = liqQuoteNum
                         ? liqQuoteNum < 2
@@ -94,9 +118,27 @@ export default function OrderDetails(props: IOrderDetailsProps) {
                                   maximumFractionDigits: 2,
                               })
                         : undefined;
-                    setQuoteCollateralDisplay(liqQuoteDisplay);
+                    // console.log({ liqQuoteDisplay });
 
-                    const usdValue = limitOrder.totalValueUSD;
+                    const claimableQuoteDisplay = claimableQuoteNum
+                        ? claimableQuoteNum < 2
+                            ? claimableQuoteNum.toLocaleString(undefined, {
+                                  minimumFractionDigits: 2,
+                                  maximumFractionDigits: 6,
+                              })
+                            : claimableQuoteNum.toLocaleString(undefined, {
+                                  minimumFractionDigits: 2,
+                                  maximumFractionDigits: 2,
+                              })
+                        : undefined;
+                    // console.log({ claimableQuoteDisplay });
+
+                    isOrderFilled
+                        ? setQuoteCollateralDisplay(claimableQuoteDisplay ?? '0.00')
+                        : setQuoteCollateralDisplay(liqQuoteDisplay ?? '0.00');
+
+                    const usdValue = positionStats.totalValueUSD;
+                    // console.log({ usdValue });
 
                     if (usdValue) {
                         setUsdValue(
@@ -105,6 +147,8 @@ export default function OrderDetails(props: IOrderDetailsProps) {
                                 maximumFractionDigits: 2,
                             }),
                         );
+                    } else {
+                        setUsdValue('0.00');
                     }
 
                     // const baseFeeDisplayNum = positionStats.feesLiqBaseDecimalCorrected;
@@ -170,7 +214,7 @@ export default function OrderDetails(props: IOrderDetailsProps) {
             //     })
             //     .catch(console.log);
         }
-    }, [lastBlockNumber]);
+    }, [lastBlock]);
 
     const [showSettings, setShowSettings] = useState(false);
 
