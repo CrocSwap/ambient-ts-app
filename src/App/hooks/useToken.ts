@@ -164,12 +164,12 @@ export const useToken = (
         // retrieve and parse user data object from local storage
         const userData = JSON.parse(localStorage.getItem('user') as string);
         // determine whether token is already in the acknowledged tokens array
-        const tokenIsNew = !userData.ackTokens.some((ackToken: TokenIF) => (
+        const isTokenNew = !userData.ackTokens.some((ackToken: TokenIF) => (
             tkn.address.toLowerCase() === ackToken.address.toLowerCase() &&
             tkn.chainId === ackToken.chainId
         ));
         // if token is not yet in the array, add it and update local storage
-        if (tokenIsNew) {
+        if (isTokenNew) {
             userData.ackTokens = [...userData.ackTokens, tkn];
             localStorage.setItem('user', JSON.stringify(userData));
         }
