@@ -86,6 +86,11 @@ export default function initializeUserLocalStorage() {
         userUpdated = true;
     }
 
+    if (!user.ackTokens) {
+        user.ackTokens = [];
+        userUpdated = true;
+    }
+
     if (userUpdated) {
         localStorage.setItem('user', JSON.stringify(user));
     }
