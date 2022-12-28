@@ -71,6 +71,13 @@ export const useToken = (
         checkForTokenLists();
     }, []);
 
+    // TODO: add logic to this hook to make it work productively
+    // TODO: first I need to populate data in `ackTokens`
+    useEffect(() => {
+        const { ackTokens } = JSON.parse(localStorage.getItem('user') as string);
+        false && ackTokens;
+    }, [tokenMap]);
+
     // fn to determine if a token exists in a recognized token list
     // parameter for chain is optional, app uses the current chain by default
     // but we can verify tokens on other chains too as needed

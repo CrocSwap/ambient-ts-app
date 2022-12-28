@@ -426,6 +426,8 @@ export default function Portfolio(props: PortfolioPropsIF) {
 
     const [showProfileSettings, setShowProfileSettings] = useState(false);
 
+    const defaultTokens = getImportedTokensPlus();
+
     const [showSoloSelectTokenButtons, setShowSoloSelectTokenButtons] = useState(true);
     // hook to process search input and return an array of relevant tokens
     // also returns state setter function and values for control flow
@@ -435,6 +437,7 @@ export default function Portfolio(props: PortfolioPropsIF) {
         verifyToken,
         getTokenByAddress,
         getTokensByName,
+        defaultTokens
     );
 
     const handleInputClear = () => {
