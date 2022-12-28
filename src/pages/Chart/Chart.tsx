@@ -1737,7 +1737,7 @@ export default function Chart(props: ChartData) {
                         .selectAll('.horizontal')
                         .remove();
 
-                    if (!isAdvancedModeActive) {
+                    if (!isAdvancedModeActive && rangeWidthPercentage) {
                         dispatch(
                             setSimpleRangeWidth(
                                 Math.floor(
@@ -2398,6 +2398,7 @@ export default function Chart(props: ChartData) {
                     return newTargets;
                 });
             }
+            console.log(rangeWidthPercentage);
 
             dispatch(
                 setSimpleRangeWidth(
