@@ -686,9 +686,8 @@ export default function Chart(props: ChartData) {
                     scaleData.yScale(high) + differenceLowHighData,
                 );
 
-                if (isSameLocationLowMarket) {
+                if (isSameLocationLowMarket || differenceLowMarket < 35) {
                     isSameLocationMax = true;
-
                     sameLocationDataMax = scaleData.yScale.invert(
                         scaleData.yScale(marketValue) + differenceHighMarketData,
                     );
