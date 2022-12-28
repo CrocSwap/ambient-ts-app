@@ -27,7 +27,7 @@ interface OrderRowPropsIF {
     view2: boolean;
     limitOrder: LimitOrderIF;
     showSidebar: boolean;
-
+    lastBlockNumber: number;
     openGlobalModal: (content: React.ReactNode) => void;
     closeGlobalModal: () => void;
 
@@ -56,6 +56,7 @@ export default function OrderRow(props: OrderRowPropsIF) {
         isShowAllEnabled,
         isOnPortfolioPage,
         handlePulseAnimation,
+        lastBlockNumber,
     } = props;
 
     const {
@@ -108,7 +109,11 @@ export default function OrderRow(props: OrderRowPropsIF) {
 
     const openDetailsModal = () =>
         openGlobalModal(
-            <OrderDetails limitOrder={limitOrder} closeGlobalModal={closeGlobalModal} />,
+            <OrderDetails
+                limitOrder={limitOrder}
+                closeGlobalModal={closeGlobalModal}
+                lastBlockNumber={lastBlockNumber}
+            />,
         );
     const orderDomId =
         limitOrder.limitOrderIdentifier === currentPositionActive
@@ -499,6 +504,7 @@ export default function OrderRow(props: OrderRowPropsIF) {
                     {...orderMenuProps}
                     showSidebar={showSidebar}
                     handlePulseAnimation={handlePulseAnimation}
+                    lastBlockNumber={lastBlockNumber}
                 />
             </li>
         </ul>
