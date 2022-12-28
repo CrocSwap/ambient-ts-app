@@ -1514,7 +1514,10 @@ export default function Chart(props: ChartData) {
                     // const ghostJoin = d3fc.dataJoin('g', 'ghostLines');
 
                     setIsLineDrag(true);
-                    const dragedValue = scaleData.yScale.invert(event.y);
+                    const dragedValue =
+                        scaleData.yScale.invert(event.y) > props.liquidityData.topBoundary
+                            ? props.liquidityData.topBoundary
+                            : scaleData.yScale.invert(event.y);
                     const displayValue = poolPriceDisplay !== undefined ? poolPriceDisplay : 0;
 
                     const low = ranges.filter((target: any) => target.name === 'Min')[0].value;
@@ -2282,7 +2285,11 @@ export default function Chart(props: ChartData) {
     const onClickRange = async (event: any) => {
         let newRangeValue: any;
 
-        const clickedValue = scaleData.yScale.invert(d3.pointer(event)[1]);
+        const clickedValue =
+            scaleData.yScale.invert(d3.pointer(event)[1]) > props.liquidityData.topBoundary
+                ? props.liquidityData.topBoundary
+                : scaleData.yScale.invert(d3.pointer(event)[1]);
+
         const displayValue = poolPriceDisplay !== undefined ? poolPriceDisplay : 0;
 
         const lineToBeSet = clickedValue > displayValue ? 'Max' : 'Min';
@@ -2358,7 +2365,10 @@ export default function Chart(props: ChartData) {
 
                     newRangeValue = newTargets;
 
-                    setLiqHighlightedLinesAndArea(newTargets);
+                    setLiqHighlightedLinesAndArea(
+                        newTargets,
+                        props.liquidityData.topBoundary === clickedValue,
+                    );
                     return newTargets;
                 });
             }
@@ -2420,7 +2430,10 @@ export default function Chart(props: ChartData) {
 
                 newRangeValue = newTargets;
 
-                setLiqHighlightedLinesAndArea(newTargets);
+                setLiqHighlightedLinesAndArea(
+                    newTargets,
+                    props.liquidityData.topBoundary === clickedValue,
+                );
                 return newTargets;
             });
 
