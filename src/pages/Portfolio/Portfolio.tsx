@@ -72,6 +72,7 @@ interface PortfolioPropsIF {
     currentTxActiveInTransactions: string;
     setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
     gasPriceInGwei: number | undefined;
+    acknowledgeToken: (tkn: TokenIF) => void;
 }
 
 export default function Portfolio(props: PortfolioPropsIF) {
@@ -115,6 +116,7 @@ export default function Portfolio(props: PortfolioPropsIF) {
         handlePulseAnimation,
         gasPriceInGwei,
         openModalWallet,
+        acknowledgeToken
     } = props;
     const { isInitialized } = useMoralis();
 
@@ -550,6 +552,7 @@ export default function Portfolio(props: PortfolioPropsIF) {
                         getRecentTokens={getRecentTokens}
                         isSingleToken={true}
                         tokenAorB={null}
+                        acknowledgeToken={acknowledgeToken}
                     />
                 </Modal>
             )}

@@ -37,6 +37,8 @@ interface propsIF {
     tokenAorB: string | null;
     reverseTokens?: () => void;
     tokenPair?: TokenPairIF;
+    // TODO: make this a non-optional prop
+    acknowledgeToken?: (tkn: TokenIF) => void;
 }
 
 export const SoloTokenSelect = (props: propsIF) => {
@@ -64,10 +66,9 @@ export const SoloTokenSelect = (props: propsIF) => {
         isSingleToken,
         tokenAorB,
         reverseTokens,
-        tokenPair
+        tokenPair,
+        acknowledgeToken
     } = props;
-
-    console.log({importedTokens});
 
     // instance of hook used to retrieve data from RTK
     const dispatch = useAppDispatch();
@@ -80,7 +81,10 @@ export const SoloTokenSelect = (props: propsIF) => {
     const navigate = useNavigate();
 
     // fn to respond to a user clicking to select a token
-    const chooseToken = (tkn: TokenIF): void => {
+    const chooseToken = (tkn: TokenIF, isCustom: boolean): void => {
+        if (isCustom && acknowledgeToken) {
+            acknowledgeToken(tkn);
+        }
         // dispatch token data object to RTK
         if (isSingleToken) {
             dispatch(setToken(tkn));

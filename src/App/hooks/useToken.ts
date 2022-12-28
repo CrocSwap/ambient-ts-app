@@ -14,7 +14,8 @@ export const useToken = (
     getAmbientTokens: () => TokenIF[],
     getTokensOnChain: (chn: string) => TokenIF[],
     getToken: (addr: string, chn: string) => TokenIF | undefined,
-    getTokensByName: (searchName: string, chn: string, exact: boolean) => TokenIF[]
+    getTokensByName: (searchName: string, chn: string, exact: boolean) => TokenIF[],
+    acknowledgeToken: (tkn: TokenIF) => void
 ] => {
     const [tokenMap, setTokenMap] = useState(new Map<string, TokenIF>());
 
@@ -190,8 +191,6 @@ export const useToken = (
         setTokenMap(currentMap);
     };
 
-    false && acknowledgeToken;
-
     // return function to verify a token and retrieve token metadata
     return [
         tokenMap,
@@ -200,6 +199,7 @@ export const useToken = (
         getAmbientTokens,
         getTokensOnChain,
         getTokenByAddress,
-        getTokensByName
+        getTokensByName,
+        acknowledgeToken
     ];
 }

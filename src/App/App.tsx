@@ -2118,6 +2118,7 @@ export default function App() {
         getTokensOnChain,
         getTokenByAddress,
         getTokensByName,
+        acknowledgeToken
     ] = useToken(chainData.chainId);
     false && localTokens;
     false && getAllTokens;
@@ -2776,6 +2777,7 @@ export default function App() {
                                     handlePulseAnimation={handlePulseAnimation}
                                     gasPriceInGwei={gasPriceInGwei}
                                     openModalWallet={openModalWallet}
+                                    acknowledgeToken={acknowledgeToken}
                                 />
                             }
                         />
@@ -2828,6 +2830,7 @@ export default function App() {
                                     handlePulseAnimation={handlePulseAnimation}
                                     gasPriceInGwei={gasPriceInGwei}
                                     openModalWallet={openModalWallet}
+                                    acknowledgeToken={acknowledgeToken}
                                 />
                             }
                         />
@@ -2898,6 +2901,7 @@ export default function App() {
                                     handlePulseAnimation={handlePulseAnimation}
                                     gasPriceInGwei={gasPriceInGwei}
                                     openModalWallet={openModalWallet}
+                                    acknowledgeToken={acknowledgeToken}
                                 />
                             }
                         />
