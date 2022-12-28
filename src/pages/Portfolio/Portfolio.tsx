@@ -6,7 +6,6 @@ import { useParams } from 'react-router-dom';
 import { getNFTs } from '../../App/functions/getNFTs';
 import { useEffect, useState, Dispatch, SetStateAction } from 'react';
 import { fetchAddress } from '../../App/functions/fetchAddress';
-import { useMoralis } from 'react-moralis';
 import { BigNumber, ethers } from 'ethers';
 import { CrocEnv, ChainSpec } from '@crocswap-libs/sdk';
 import Modal from '../../components/Global/Modal/Modal';
@@ -116,7 +115,6 @@ export default function Portfolio(props: PortfolioPropsIF) {
         gasPriceInGwei,
         openModalWallet,
     } = props;
-    const { isInitialized } = useMoralis();
 
     const selectedToken: TokenIF = useAppSelector((state) => state.temp.token);
 
@@ -196,23 +194,19 @@ export default function Portfolio(props: PortfolioPropsIF) {
 
     useEffect(() => {
         (async () => {
-            if (resolvedAddress && isInitialized && !connectedAccountActive) {
+            if (resolvedAddress && !connectedAccountActive) {
                 const imageLocalURLs = await getNFTs(resolvedAddress);
                 if (imageLocalURLs) setSecondaryImageData(imageLocalURLs);
             }
-            // else if (address && isAddressHex && !isAddressEns && isInitialized) {
-            //     const imageLocalURLs = await getNFTs(address);
-            //     if (imageLocalURLs) setSecondaryImageData(imageLocalURLs);
-            // }
         })();
-    }, [resolvedAddress, isInitialized, connectedAccountActive]);
+    }, [resolvedAddress, connectedAccountActive]);
 
     const [secondaryensName, setSecondaryEnsName] = useState('');
 
     // check for ENS name account changes
     useEffect(() => {
         (async () => {
-            if (address && isInitialized && !isAddressEns) {
+            if (address && !isAddressEns) {
                 try {
                     const ensName = await fetchAddress(mainnetProvider, address, chainId);
                     if (ensName) setSecondaryEnsName(ensName);
@@ -223,7 +217,7 @@ export default function Portfolio(props: PortfolioPropsIF) {
                 }
             }
         })();
-    }, [address, isInitialized, isAddressEns]);
+    }, [address, isAddressEns]);
 
     useEffect(() => {
         console.log({ selectedToken });
@@ -308,7 +302,7 @@ export default function Portfolio(props: PortfolioPropsIF) {
         // limiter for tokens to add from connected wallet
         let tokensAdded = 0;
         // iterate over tokens in connected wallet
-        console.log({connectedUserErc20Tokens});
+        console.log({ connectedUserErc20Tokens });
         connectedUserErc20Tokens?.forEach((tkn) => {
             // gatekeep to make sure token is not already in the array,
             // ... that the token can be verified against a known list,
@@ -351,7 +345,7 @@ export default function Portfolio(props: PortfolioPropsIF) {
             }
         });
         // return compiled array of tokens
-        console.log({output});
+        console.log({ output });
         return output;
     };
 
