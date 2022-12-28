@@ -73,6 +73,7 @@ export const useToken = (
 
     // TODO: add logic to this hook to make it work productively
     // TODO: first I need to populate data in `ackTokens`
+    // TODO: this will also need a limiter to make sure it runs just once
     useEffect(() => {
         const { ackTokens } = JSON.parse(localStorage.getItem('user') as string);
         false && ackTokens;
@@ -157,6 +158,39 @@ export const useToken = (
         // will work even when only exact matches are wanted
         return [...exactMatches, ...partialMatches];
     }
+
+    const acknowledgeToken = (tkn: TokenIF): void => {
+        const userData = JSON.parse(localStorage.getItem('user') as string);
+        const tokenIsNew = !userData.ackTokens.some((ackToken: TokenIF) => (
+            tkn.address.toLowerCase() === ackToken.address.toLowerCase() &&
+            tkn.chainId === ackToken.chainId
+        ));
+        if (tokenIsNew) {
+            userData.ackTokens = [...userData.ackTokens, tkn];
+            localStorage.setItem('user', JSON.stringify(userData));
+        }
+        const currentMap = tokenMap;
+        const tokenKey = tkn.address.toLowerCase() +
+            '_0x' +
+            tkn.chainId.toString().toLowerCase();
+        const tokenFromArray = currentMap.get(tokenKey);
+        if (tokenFromArray) {
+            // if current token has a `fromList` value, add it to the URI array
+            tkn.fromList &&
+                tokenFromArray.fromListArr?.push(tkn.fromList);
+            // update value on the Map with the new URI listed in URI array
+            currentMap.set(tokenKey, tokenFromArray);
+        // if token is NOT in the Map, add it
+        } else {
+            // initialize an array to hold multiple list URI references
+            tkn.fromList && (tkn.fromListArr = [tkn.fromList]);
+            // add updated token data object to the array
+            currentMap.set(tokenKey, tkn);
+        }
+        setTokenMap(currentMap);
+    };
+
+    false && acknowledgeToken;
 
     // return function to verify a token and retrieve token metadata
     return [
