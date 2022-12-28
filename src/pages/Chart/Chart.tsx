@@ -949,6 +949,10 @@ export default function Chart(props: ChartData) {
         }
     }, [location, parsedChartData?.period]);
 
+    useEffect(() => {
+        setLiqHighlightedLinesAndArea(ranges);
+    }, [parsedChartData?.poolAdressComb]);
+
     const snapForCandle = (point: any) => {
         if (point == undefined) return [];
         const series = candlestick;

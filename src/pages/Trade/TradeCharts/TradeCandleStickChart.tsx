@@ -86,6 +86,7 @@ export interface ChartUtils {
     tvlChartData: TvlChartData[];
     feeChartData: FeeChartData[];
     volumeChartData: VolumeChartData[];
+    poolAdressComb: string;
 }
 
 type chartItemStates = {
@@ -161,6 +162,8 @@ export default function TradeCandleStickChart(props: ChartData) {
         const volumeChartData: VolumeChartData[] = [];
         const feeChartData: FeeChartData[] = [];
 
+        console.log(props.candleData);
+
         props.candleData?.candles.map((data) => {
             const close = denominationsInBase
                 ? data.invPriceCloseExclMEVDecimalCorrected
@@ -215,6 +218,9 @@ export default function TradeCandleStickChart(props: ChartData) {
             tvlChartData: tvlChartData,
             volumeChartData: volumeChartData,
             feeChartData: feeChartData,
+            poolAdressComb: props.candleData?.pool.baseAddress
+                ? props.candleData?.pool.baseAddress
+                : '' + props.candleData?.pool.quoteAddress,
         };
 
         setParsedChartData(() => {
