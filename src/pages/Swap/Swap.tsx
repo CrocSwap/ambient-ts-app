@@ -17,6 +17,7 @@ import Modal from '../../components/Global/Modal/Modal';
 import RelativeModal from '../../components/Global/RelativeModal/RelativeModal';
 import ConfirmSwapModal from '../../components/Swap/ConfirmSwapModal/ConfirmSwapModal';
 import Button from '../../components/Global/Button/Button';
+import { getRecentTokensParamsIF } from '../../App/hooks/useRecentTokens';
 
 // START: Import Local Files
 import styles from './Swap.module.css';
@@ -43,7 +44,6 @@ interface SwapPropsIF {
     account: string | null;
     importedTokens: Array<TokenIF>;
     setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
-    searchableTokens: Array<TokenIF>;
     swapSlippage: SlippagePairIF;
     isPairStable: boolean;
     provider?: ethers.providers.Provider;
@@ -72,6 +72,12 @@ interface SwapPropsIF {
     openGlobalModal: (content: React.ReactNode) => void;
 
     isSwapCopied?: boolean;
+    verifyToken: (addr: string, chn: string) => boolean;
+    getTokensByName: (searchName: string, chn: string, exact: boolean) => TokenIF[];
+    getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
+    importedTokensPlus: TokenIF[];
+    getRecentTokens: (options?: getRecentTokensParamsIF | undefined) => TokenIF[];
+    addRecentToken: (tkn: TokenIF) => void;
 }
 
 export default function Swap(props: SwapPropsIF) {
@@ -81,7 +87,6 @@ export default function Swap(props: SwapPropsIF) {
         account,
         importedTokens,
         setImportedTokens,
-        searchableTokens,
         swapSlippage,
         isPairStable,
         provider,
@@ -105,6 +110,12 @@ export default function Swap(props: SwapPropsIF) {
         poolExists,
         setTokenPairLocal,
         isSwapCopied,
+        verifyToken,
+        getTokensByName,
+        getTokenByAddress,
+        importedTokensPlus,
+        addRecentToken,
+        getRecentTokens
     } = props;
 
     const [isModalOpen, openModal, closeModal] = useModal();
@@ -553,7 +564,6 @@ export default function Swap(props: SwapPropsIF) {
                             tokenPair={tokenPair}
                             tokensBank={importedTokens}
                             setImportedTokens={setImportedTokens}
-                            searchableTokens={searchableTokens}
                             chainId={chainId as string}
                             isLiq={false}
                             poolPriceDisplay={poolPriceDisplay}
@@ -577,6 +587,12 @@ export default function Swap(props: SwapPropsIF) {
                             indicateActiveTokenListsChanged={indicateActiveTokenListsChanged}
                             gasPriceInGwei={gasPriceInGwei}
                             isSwapCopied={isSwapCopied}
+                            verifyToken={verifyToken}
+                            getTokensByName={getTokensByName}
+                            getTokenByAddress={getTokenByAddress}
+                            importedTokensPlus={importedTokensPlus}
+                            addRecentToken={addRecentToken}
+                            getRecentTokens={getRecentTokens}
                         />
                     </motion.div>
                     {/* {denominationSwitchOrNull} */}

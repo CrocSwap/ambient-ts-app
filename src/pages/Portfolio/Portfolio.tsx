@@ -19,7 +19,7 @@ import { TokenPriceFn } from '../../App/functions/fetchTokenPrice';
 import NotFound from '../NotFound/NotFound';
 import ProfileSettings from '../../components/Portfolio/ProfileSettings/ProfileSettings';
 import { SoloTokenSelect } from '../../components/Global/TokenSelectContainer/SoloTokenSelect';
-import { useSoloSearch } from '../../components/Global/TokenSelectContainer/useSoloSearch';
+import { useSoloSearch } from '../../components/Global/TokenSelectContainer/hooks/useSoloSearch';
 
 const mainnetProvider = new ethers.providers.WebSocketProvider(
     // 'wss://mainnet.infura.io/ws/v3/4a162c75bd514925890174ca13cdb6a2', // benwolski@gmail.com
@@ -308,6 +308,7 @@ export default function Portfolio(props: PortfolioPropsIF) {
         // limiter for tokens to add from connected wallet
         let tokensAdded = 0;
         // iterate over tokens in connected wallet
+        console.log({connectedUserErc20Tokens});
         connectedUserErc20Tokens?.forEach((tkn) => {
             // gatekeep to make sure token is not already in the array,
             // ... that the token can be verified against a known list,
@@ -350,6 +351,7 @@ export default function Portfolio(props: PortfolioPropsIF) {
             }
         });
         // return compiled array of tokens
+        console.log({output});
         return output;
     };
 
@@ -543,6 +545,8 @@ export default function Portfolio(props: PortfolioPropsIF) {
                         searchType={searchType}
                         addRecentToken={addRecentToken}
                         getRecentTokens={getRecentTokens}
+                        isSingleToken={true}
+                        tokenAorB={null}
                     />
                 </Modal>
             )}

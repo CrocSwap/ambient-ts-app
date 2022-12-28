@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState, Dispatch, SetStateAction } from 'react';
-import { TokenIF } from '../../../utils/interfaces/exports';
+import { TokenIF } from '../../../../utils/interfaces/exports';
 
 export const useSoloSearch = (
     chainId: string,

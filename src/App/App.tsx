@@ -2109,6 +2109,80 @@ export default function App() {
     // );
 
     // --------------END OF THEME--------------------------
+
+    const [
+        localTokens,
+        verifyToken,
+        getAllTokens,
+        getAmbientTokens,
+        getTokensOnChain,
+        getTokenByAddress,
+        getTokensByName,
+    ] = useToken(chainData.chainId);
+    false && localTokens;
+    false && getAllTokens;
+    false && getTokensOnChain;
+
+    const connectedUserErc20Tokens = useAppSelector((state) => state.userData.tokens.erc20Tokens);
+
+    // TODO: move this function up to App.tsx
+    const getImportedTokensPlus = () => {
+        // array of all tokens on Ambient list
+        const ambientTokens = getAmbientTokens();
+        // array of addresses on Ambient list
+        const ambientAddresses = ambientTokens.map((tkn) => tkn.address.toLowerCase());
+        // use Ambient token list as scaffold to build larger token array
+        const output = ambientTokens;
+        // limiter for tokens to add from connected wallet
+        let tokensAdded = 0;
+        // iterate over tokens in connected wallet
+        connectedUserErc20Tokens?.forEach((tkn) => {
+            // gatekeep to make sure token is not already in the array,
+            // ... that the token can be verified against a known list,
+            // ... that user has a positive balance of the token, and
+            // ... that the limiter has not been reached
+            if (
+                !ambientAddresses.includes(tkn.address.toLowerCase()) &&
+                tokensOnActiveLists.get(tkn.address + '_' + chainData.chainId) &&
+                parseInt(tkn.combinedBalance as string) > 0 &&
+                tokensAdded < 4
+            ) {
+                tokensAdded++;
+                output.push({ ...tkn, fromList: 'wallet' });
+                // increment the limiter by one
+                tokensAdded++;
+                // add the token to the output array
+                output.push({ ...tkn, fromList: 'wallet' });
+            }
+        });
+        // limiter for tokens to add from in-session recent tokens list
+        let recentTokensAdded = 0;
+        // iterate over tokens in recent tokens list
+        getRecentTokens().forEach((tkn) => {
+            // gatekeep to make sure the token isn't already in the list,
+            // ... is on the current chain, and that the limiter has not
+            // ... yet been reached
+            if (
+                !output.some(
+                    (tk) =>
+                        tk.address.toLowerCase() === tkn.address.toLowerCase() &&
+                        tk.chainId === tkn.chainId,
+                ) &&
+                tkn.chainId === parseInt(chainData.chainId) &&
+                recentTokensAdded < 2
+            ) {
+                // increment the limiter by one
+                recentTokensAdded++;
+                // add the token to the output array
+                output.push(tkn);
+            }
+        });
+        // return compiled array of tokens
+        return output;
+    };
+
+    const { addRecentToken, getRecentTokens } = useRecentTokens(chainData.chainId);
+
     // props for <PageHeader/> React element
     const headerProps = {
         isUserLoggedIn: isUserLoggedIn,
@@ -2141,7 +2215,6 @@ export default function App() {
         account: account,
         importedTokens: importedTokens,
         setImportedTokens: setImportedTokens,
-        searchableTokens: searchableTokens,
         provider: provider,
         swapSlippage: swapSlippage,
         isPairStable: isPairStable,
@@ -2165,6 +2238,12 @@ export default function App() {
         poolExists: poolExists,
         setTokenPairLocal: setTokenPairLocal,
         openGlobalModal: openGlobalModal,
+        verifyToken: verifyToken,
+        getTokensByName: getTokensByName,
+        getTokenByAddress: getTokenByAddress,
+        importedTokensPlus: getImportedTokensPlus(),
+        getRecentTokens: getRecentTokens,
+        addRecentToken: addRecentToken
     };
 
     // props for <Swap/> React element on trade route
@@ -2175,7 +2254,6 @@ export default function App() {
         account: account,
         importedTokens: importedTokens,
         setImportedTokens: setImportedTokens,
-        searchableTokens: searchableTokens,
         provider: provider,
         swapSlippage: swapSlippage,
         isPairStable: isPairStable,
@@ -2200,6 +2278,12 @@ export default function App() {
         poolExists: poolExists,
         openGlobalModal: openGlobalModal,
         isSwapCopied: isSwapCopied,
+        verifyToken: verifyToken,
+        getTokensByName: getTokensByName,
+        getTokenByAddress: getTokenByAddress,
+        importedTokensPlus: getImportedTokensPlus(),
+        getRecentTokens: getRecentTokens,
+        addRecentToken: addRecentToken
     };
 
     // props for <Limit/> React element on trade route
@@ -2211,7 +2295,6 @@ export default function App() {
         isUserLoggedIn: isUserLoggedIn,
         importedTokens: importedTokens,
         setImportedTokens: setImportedTokens,
-        searchableTokens: searchableTokens,
         provider: provider,
         mintSlippage: mintSlippage,
         isPairStable: isPairStable,
@@ -2240,6 +2323,12 @@ export default function App() {
         isOrderCopied: isOrderCopied,
         // limitRate: limitRate,
         // setLimitRate: setLimitRate,
+        verifyToken: verifyToken,
+        getTokensByName: getTokensByName,
+        getTokenByAddress: getTokenByAddress,
+        importedTokensPlus: getImportedTokensPlus(),
+        getRecentTokens: getRecentTokens,
+        addRecentToken: addRecentToken,
     };
 
     // props for <Range/> React element
@@ -2252,7 +2341,6 @@ export default function App() {
         isUserLoggedIn: isUserLoggedIn,
         importedTokens: importedTokens,
         setImportedTokens: setImportedTokens,
-        searchableTokens: searchableTokens,
         provider: provider,
         mintSlippage: mintSlippage,
         isPairStable: isPairStable,
@@ -2285,6 +2373,12 @@ export default function App() {
         tokenBQtyLocal: rangetokenBQtyLocal,
         setTokenAQtyLocal: setRangeTokenAQtyLocal,
         setTokenBQtyLocal: setRangeTokenBQtyLocal,
+        verifyToken: verifyToken,
+        getTokensByName: getTokensByName,
+        getTokenByAddress: getTokenByAddress,
+        importedTokensPlus: getImportedTokensPlus(),
+        getRecentTokens: getRecentTokens,
+        addRecentToken: addRecentToken
     };
 
     function toggleSidebar() {
@@ -2421,21 +2515,6 @@ export default function App() {
         limit: '/trade/limit/chain=0x5&tokenA=0xD87Ba7A50B2E7E660f678A895E4B72E7CB4CCd9C&tokenB=0x0000000000000000000000000000000000000000',
         range: '/trade/range/chain=0x5&tokenA=0xD87Ba7A50B2E7E660f678A895E4B72E7CB4CCd9C&tokenB=0x0000000000000000000000000000000000000000',
     };
-
-    const [
-        localTokens,
-        verifyToken,
-        getAllTokens,
-        getAmbientTokens,
-        getTokensOnChain,
-        getTokenByAddress,
-        getTokensByName,
-    ] = useToken(chainData.chainId);
-    false && localTokens;
-    false && getAllTokens;
-    false && getTokensOnChain;
-
-    const { addRecentToken, getRecentTokens } = useRecentTokens(chainData.chainId);
 
     return (
         <>

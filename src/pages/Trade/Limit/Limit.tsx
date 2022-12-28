@@ -43,13 +43,13 @@ import {
 import LimitShareControl from '../../../components/Trade/Limit/LimitShareControl/LimitShareControl';
 import { FiCopy } from 'react-icons/fi';
 import { memoizeQuerySpotPrice } from '../../../App/functions/querySpotPrice';
+import { getRecentTokensParamsIF } from '../../../App/hooks/useRecentTokens';
 
 interface LimitPropsIF {
     pool: CrocPoolView | undefined;
     crocEnv: CrocEnv | undefined;
     isUserLoggedIn: boolean | undefined;
     importedTokens: Array<TokenIF>;
-    searchableTokens: Array<TokenIF>;
     mintSlippage: SlippagePairIF;
     isPairStable: boolean;
     setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
@@ -78,17 +78,23 @@ interface LimitPropsIF {
     poolExists: boolean | undefined;
     chainData: ChainSpec;
     isOrderCopied: boolean;
+    verifyToken: (addr: string, chn: string) => boolean;
+    getTokensByName: (searchName: string, chn: string, exact: boolean) => TokenIF[];
+    getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
+    importedTokensPlus: TokenIF[];
+    getRecentTokens: (options?: getRecentTokensParamsIF | undefined) => TokenIF[];
+    addRecentToken: (tkn: TokenIF) => void;
 }
 
 const cachedQuerySpotPrice = memoizeQuerySpotPrice();
 
 export default function Limit(props: LimitPropsIF) {
     const {
+        provider,
         pool,
         crocEnv,
         isUserLoggedIn,
         importedTokens,
-        searchableTokens,
         mintSlippage,
         isPairStable,
         setImportedTokens,
@@ -112,6 +118,12 @@ export default function Limit(props: LimitPropsIF) {
         poolExists,
         lastBlockNumber,
         isOrderCopied,
+        verifyToken,
+        getTokensByName,
+        getTokenByAddress,
+        importedTokensPlus,
+        getRecentTokens,
+        addRecentToken
     } = props;
 
     const { tradeData, navigationMenu } = useTradeData();
@@ -683,12 +695,12 @@ export default function Limit(props: LimitPropsIF) {
                     transition={{ duration: 0.5 }}
                 >
                     <LimitCurrencyConverter
+                        provider={provider}
                         setPriceInputFieldBlurred={setPriceInputFieldBlurred}
                         pool={pool}
                         gridSize={chainData.gridSize}
                         isUserLoggedIn={isUserLoggedIn}
                         tokenPair={tokenPair}
-                        searchableTokens={searchableTokens}
                         poolPriceNonDisplay={poolPriceNonDisplay}
                         isSellTokenBase={isSellTokenBase}
                         tokensBank={importedTokens}
@@ -715,6 +727,12 @@ export default function Limit(props: LimitPropsIF) {
                         poolExists={poolExists}
                         gasPriceInGwei={gasPriceInGwei}
                         isOrderCopied={isOrderCopied}
+                        verifyToken={verifyToken}
+                        getTokensByName={getTokensByName}
+                        getTokenByAddress={getTokenByAddress}
+                        importedTokensPlus={importedTokensPlus}
+                        getRecentTokens={getRecentTokens}
+                        addRecentToken={addRecentToken}
                     />
                 </motion.div>
                 <div className={styles.header_container}>
