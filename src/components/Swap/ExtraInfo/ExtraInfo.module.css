@@ -32,7 +32,8 @@
 }
 
 .extra_details {
-    background-color: var(--dark2);
+    /* background-color: var(--dark2); */
+    border: 1px solid var(--border);
     margin-top: 10px;
     border-radius: var(--border-radius);
 
