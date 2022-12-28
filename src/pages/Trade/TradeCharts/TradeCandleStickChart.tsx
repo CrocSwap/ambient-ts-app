@@ -13,7 +13,10 @@ import {
     VolumeChartData,
 } from './TradeCharts';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
-import { getPinnedPriceValuesFromDisplayPrices } from '../Range/rangeFunctions';
+import {
+    getPinnedPriceValuesFromDisplayPrices,
+    getPinnedPriceValuesFromTicks,
+} from '../Range/rangeFunctions';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
@@ -129,6 +132,9 @@ export default function TradeCandleStickChart(props: ChartData) {
     const tokenBDecimals = tokenB.decimals;
     const baseTokenDecimals = isTokenABase ? tokenADecimals : tokenBDecimals;
     const quoteTokenDecimals = !isTokenABase ? tokenADecimals : tokenBDecimals;
+
+    const currentPoolPriceTick =
+        poolPriceNonDisplay === undefined ? 0 : Math.log(poolPriceNonDisplay) / Math.log(1.0001);
 
     useEffect(() => {
         setIsLoading(true);
@@ -265,12 +271,27 @@ export default function TradeCandleStickChart(props: ChartData) {
         const depthLiqAskData: LiquidityData[] = [];
 
         const liqSnapData: LiqSnap[] = [];
+        const topBoudnary = 0;
 
         if (
             props.liquidityData &&
             props.poolPriceDisplay !== undefined &&
             props.poolPriceDisplay > 0
         ) {
+            const lowTick = currentPoolPriceTick - 100 * 100;
+            const highTick = currentPoolPriceTick + 100 * 100;
+
+            const rangeBoundary = getPinnedPriceValuesFromTicks(
+                denominationsInBase,
+                baseTokenDecimals,
+                quoteTokenDecimals,
+                lowTick,
+                highTick,
+                lookupChain(chainId).gridSize,
+            );
+
+            const topBoudnary = rangeBoundary.pinnedMaxPriceDisplay;
+
             const barThreshold = props.poolPriceDisplay !== undefined ? props.poolPriceDisplay : 0;
 
             const domainLeft = Math.min(
@@ -311,7 +332,7 @@ export default function TradeCandleStickChart(props: ChartData) {
                     const price = denominationsInBase
                         ? o.upperBoundInvPriceDecimalCorrected
                         : o.upperBoundPriceDecimalCorrected;
-                    if (price > barThreshold / 10 && price < barThreshold * 10) {
+                    if (price > barThreshold / 10 && price < topBoudnary) {
                         return o.cumAskLiq !== undefined && o.cumAskLiq !== '0'
                             ? parseFloat(o.cumAskLiq)
                             : 0;
@@ -343,7 +364,7 @@ export default function TradeCandleStickChart(props: ChartData) {
                     : data.lowerBoundPriceDecimalCorrected;
 
                 if (liqPrices > barThreshold) {
-                    if (barThreshold * 10 > liqPrices) {
+                    if (topBoudnary > liqPrices) {
                         liqBidData.push({
                             activeLiq: liquidityScale(data.activeLiq),
                             liqPrices: liqPrices,
@@ -352,7 +373,7 @@ export default function TradeCandleStickChart(props: ChartData) {
                         });
                     }
                 } else {
-                    if (liqPrices < barThreshold * 10 && liqPrices > barThreshold / 10) {
+                    if (liqPrices < topBoudnary && liqPrices > barThreshold / 10) {
                         liqAskData.push({
                             activeLiq: liquidityScale(data.activeLiq),
                             liqPrices: liqPrices,
@@ -366,7 +387,7 @@ export default function TradeCandleStickChart(props: ChartData) {
                     data.cumBidLiq !== undefined &&
                     data.cumBidLiq !== '0' &&
                     liqPrices > barThreshold / 10 &&
-                    liqPrices < barThreshold * 10 &&
+                    liqPrices < topBoudnary &&
                     liqBidDepthPrices !== '+inf'
                 ) {
                     depthLiqBidData.push({
@@ -381,7 +402,7 @@ export default function TradeCandleStickChart(props: ChartData) {
                     data.cumAskLiq !== undefined &&
                     data.cumAskLiq !== '0' &&
                     liqPrices > barThreshold / 10 &&
-                    liqPrices < barThreshold * 10
+                    liqPrices < topBoudnary
                 ) {
                     depthLiqAskData.push({
                         activeLiq: depthLiquidityScale(data.cumAskLiq),
@@ -430,8 +451,8 @@ export default function TradeCandleStickChart(props: ChartData) {
                     cumAverageUSD: 0,
                 });
 
-                if (liqBidData[0].liqPrices < barThreshold * 10) {
-                    while (liqBidData[0].liqPrices + liqBidDeviation < barThreshold * 10) {
+                if (liqBidData[0].liqPrices < topBoudnary) {
+                    while (liqBidData[0].liqPrices + liqBidDeviation < topBoudnary) {
                         liqBidData.unshift({
                             activeLiq: 30,
                             liqPrices: liqBidData[0].liqPrices + liqBidDeviation,
@@ -443,7 +464,7 @@ export default function TradeCandleStickChart(props: ChartData) {
 
                 liqBidData.unshift({
                     activeLiq: 30,
-                    liqPrices: barThreshold * 10,
+                    liqPrices: topBoudnary,
                     deltaAverageUSD: 0,
                     cumAverageUSD: 0,
                 });
@@ -495,6 +516,9 @@ export default function TradeCandleStickChart(props: ChartData) {
             }
         }
 
+        console.log({ depthLiqAskData });
+        console.log({ depthLiqBidData });
+
         return {
             liqAskData: liqAskData,
             liqBidData: liqBidData,
@@ -506,6 +530,7 @@ export default function TradeCandleStickChart(props: ChartData) {
             lineBidSeries: [],
             lineAskSeries: [],
             totalLiq: props.liquidityData?.totals?.totalLiq,
+            topBoudnary: topBoudnary,
         };
     }, [props.liquidityData, props.poolPriceDisplay]);
 
