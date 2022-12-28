@@ -4,8 +4,8 @@ import { Moralis } from 'moralis-v1';
 
 // function to authenticate wallet with Moralis server
 export default function authenticateMetamask(
-    isAuthenticated: boolean,
-    isWeb3Enabled: boolean,
+    isUserLoggedIn: boolean | undefined,
+
     authenticate: (
         options?: AuthenticateOptions | undefined,
     ) => Promise<Moralis.User<Moralis.Attributes> | undefined>,
@@ -22,7 +22,7 @@ This request will not trigger a blockchain transaction or cost any gas fees.
 
 Your authentication status will reset on logout.`;
 
-    if (!isAuthenticated || !isWeb3Enabled) {
+    if (!isUserLoggedIn) {
         console.log('attempting to authenticate');
         authenticate({
             // provider: 'metamask',
