@@ -1761,8 +1761,8 @@ export default function Chart(props: ChartData) {
 
                     newLimitValue =
                         poolPriceDisplay !== undefined &&
-                        newLimitValue > props.liquidityData.topBoudnary
-                            ? props.liquidityData.topBoudnary
+                        newLimitValue > props.liquidityData.topBoundary
+                            ? props.liquidityData.topBoundary
                             : newLimitValue;
 
                     setLimit(() => {
@@ -2251,8 +2251,8 @@ export default function Chart(props: ChartData) {
 
                     newLimitValue =
                         poolPriceDisplay !== undefined &&
-                        newLimitValue > props.liquidityData.topBoudnary
-                            ? props.liquidityData.topBoudnary
+                        newLimitValue > props.liquidityData.topBoundary
+                            ? props.liquidityData.topBoundary
                             : newLimitValue;
 
                     onBlurlimitRate(newLimitValue);
@@ -2675,8 +2675,6 @@ export default function Chart(props: ChartData) {
                         (((high < low ? high : low) - parseFloat(minBoudnary)) * 100) /
                         (parseFloat(maxBoudnary) - parseFloat(minBoudnary));
 
-                    console.log(percHigh);
-
                     if (percHigh > 50) {
                         lineBidGradient
                             .append('stop')
@@ -2727,8 +2725,6 @@ export default function Chart(props: ChartData) {
                             .style('stop-opacity', 0.7);
                     }
                 } else {
-                    console.log(percentageBid);
-
                     if (percentageBid > 50) {
                         lineBidGradient
                             .append('stop')
@@ -2768,9 +2764,6 @@ export default function Chart(props: ChartData) {
                 if (high < poolPriceDisplay) {
                     const percHigh = ((high < low ? low : high) * 100) / parseFloat(maxBoudnaryAsk);
                     const percLow = ((high < low ? high : low) * 100) / parseFloat(maxBoudnaryAsk);
-
-                    console.log(percLow);
-
                     if (percLow < 50) {
                         lineAskGradient
                             .append('stop')
@@ -2821,8 +2814,6 @@ export default function Chart(props: ChartData) {
                             .style('stop-opacity', 0.7);
                     }
                 } else {
-                    console.log(percentageAsk);
-
                     if (percentageAsk < 50) {
                         lineAskGradient
                             .append('stop')
@@ -4093,8 +4084,8 @@ export default function Chart(props: ChartData) {
                     const limitValue =
                         poolPriceDisplay !== undefined &&
                         parseFloat(limitRateTruncated.replace(',', '')) >
-                            props.liquidityData.topBoudnary
-                            ? props.liquidityData.topBoudnary
+                            props.liquidityData.topBoundary
+                            ? props.liquidityData.topBoundary
                             : parseFloat(limitRateTruncated.replace(',', ''));
 
                     setLimit(() => {
