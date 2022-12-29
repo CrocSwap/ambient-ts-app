@@ -320,8 +320,8 @@ export default function Orders(props: propsIF) {
     );
     const sideType = (
         <>
-            <p>Side</p>
             <p>Type</p>
+            <p>Side</p>
         </>
     );
     const tokens = isOnPortfolioPage ? (
@@ -405,7 +405,9 @@ export default function Orders(props: propsIF) {
             show: showColumns && !ipadView,
             slug: 'sidetype',
             sortable: false,
+            alignCenter: true,
         },
+
         {
             name: 'Value (USD)',
             className: 'value',
