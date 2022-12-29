@@ -284,8 +284,8 @@ export default function TradeCandleStickChart(props: ChartData) {
             props.poolPriceDisplay !== undefined &&
             props.poolPriceDisplay > 0
         ) {
-            const lowTick = currentPoolPriceTick - 100 * 100;
-            const highTick = currentPoolPriceTick + 100 * 100;
+            const lowTick = currentPoolPriceTick - 100 * 101;
+            const highTick = currentPoolPriceTick + 100 * 101;
 
             const rangeBoundary = getPinnedPriceValuesFromTicks(
                 denominationsInBase,
@@ -522,6 +522,8 @@ export default function TradeCandleStickChart(props: ChartData) {
             }
             topBoundary = limitBoundary;
         }
+
+        console.log({ depthLiqBidData, depthLiqAskData });
 
         return {
             liqAskData: liqAskData,
