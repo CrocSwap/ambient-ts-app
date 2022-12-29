@@ -8,6 +8,7 @@ import { TvlChartData } from '../TradeCharts';
 interface TvlData {
     tvlData: TvlChartData[] | undefined;
     period: number | undefined;
+    subChartValues: any;
     setsubChartValues: React.Dispatch<React.SetStateAction<any>>;
     setZoomAndYdragControl: React.Dispatch<React.SetStateAction<any>>;
     crosshairForSubChart: any;
@@ -41,6 +42,7 @@ export default function TvlSubChart(props: TvlData) {
         getNewCandleData,
         setMouseMoveChartName,
         mouseMoveChartName,
+        subChartValues,
     } = props;
 
     const tvlMainDiv = useRef(null);
@@ -72,7 +74,11 @@ export default function TvlSubChart(props: TvlData) {
         (tvlData: any) => {
             if (tvlData.length > 0) {
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                const yExtent = d3fc.extentLinear().accessors([(d: any) => d.value]);
+                const yExtent = d3fc
+                    .extentLinear()
+                    .accessors([(d: any) => d.value])
+                    .pad([0, 0.5]);
+
                 const yScale = d3.scaleLinear();
                 yScale.domain(yExtent(tvlData));
 
@@ -296,13 +302,25 @@ export default function TvlSubChart(props: TvlData) {
             ref={tvlMainDiv}
             id='tvl_chart'
             data-testid={'chart'}
-            style={{ display: 'flex', flexDirection: 'row', height: '10%', width: '100%' }}
+            style={{
+                display: 'flex',
+                flexDirection: 'row',
+                height: '13%',
+                width: '100%',
+                paddingTop: '5px',
+            }}
         >
             <d3fc-svg
                 id='d3PlotTvl'
                 ref={d3PlotTvl}
                 style={{ flex: 1, flexGrow: 20, overflow: 'hidden' }}
             ></d3fc-svg>
+            <label style={{ position: 'absolute', left: '0%' }}>
+                TVL{' '}
+                {formatDollarAmountAxis(
+                    subChartValues.filter((value: any) => value.name === 'tvl')[0].value,
+                )}
+            </label>
             <d3fc-svg className='y-axis' ref={d3Yaxis} style={{ flexGrow: 1 }}></d3fc-svg>
         </div>
     );
