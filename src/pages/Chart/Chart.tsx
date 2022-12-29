@@ -7,7 +7,7 @@ import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
 import {
     formatAmountChartData,
     formatAmountWithoutDigit,
-    formatDollarAmountAxis,
+    // formatDollarAmountAxis,
 } from '../../utils/numbers';
 import { CandleData } from '../../utils/state/graphDataSlice';
 import {
