@@ -405,8 +405,6 @@ export default function Chart(props: ChartData) {
             isSameLocation &&
             d === scaleData.yScale.invert(scaleData.yScale(market[0].value) + resultLocationData)
                 ? formatAmountChartData(limit[0].value)
-                : d.toString().includes('e')
-                ? d
                 : formatAmountChartData(d),
         );
 
@@ -732,7 +730,7 @@ export default function Chart(props: ChartData) {
                 return formatAmountChartData(high);
             }
 
-            return d.toString().includes('e') ? d : formatAmountChartData(d);
+            return formatAmountChartData(d);
         });
 
         yAxis.decorate((selection: any) => {
@@ -1841,9 +1839,7 @@ export default function Chart(props: ChartData) {
             const _yAxis = d3fc
                 .axisRight()
                 .scale(scaleData.yScale)
-                .tickFormat((d: any) =>
-                    d.toString().includes('e') ? d : formatAmountChartData(d),
-                );
+                .tickFormat((d: any) => formatAmountChartData(d));
 
             setYaxis(() => {
                 return _yAxis;
