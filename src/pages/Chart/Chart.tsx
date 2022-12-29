@@ -1072,10 +1072,30 @@ export default function Chart(props: ChartData) {
                                     (!event.sourceEvent.ctrlKey || event.sourceEvent.metaKey) &&
                                     (event.sourceEvent.ctrlKey || !event.sourceEvent.metaKey)
                                 ) {
-                                    scaleData.xScale.domain([
-                                        new Date(domainX[0].getTime() - deltaX),
-                                        domainX[1],
-                                    ]);
+                                    const newBoundary = new Date(domainX[0].getTime() - deltaX);
+                                    const lastXIndex = parsedChartData.chartData.findIndex(
+                                        (d) =>
+                                            d.date ===
+                                            d3.max(parsedChartData.chartData, (d: any) => d.date),
+                                    );
+
+                                    if (
+                                        newBoundary.getTime() >
+                                        parsedChartData.chartData[lastXIndex].date.getTime() -
+                                            parsedChartData.period * 1000 * 2
+                                    ) {
+                                        scaleData.xScale.domain([
+                                            new Date(
+                                                parsedChartData.chartData[
+                                                    lastXIndex + 1
+                                                ].date.getTime() -
+                                                    parsedChartData.period * 500,
+                                            ),
+                                            new Date(domainX[1].getTime() + deltaX),
+                                        ]);
+                                    } else {
+                                        scaleData.xScale.domain([newBoundary, domainX[1]]);
+                                    }
                                 } else {
                                     const gapTop =
                                         domainX[1].getTime() -
@@ -2067,7 +2087,7 @@ export default function Chart(props: ChartData) {
             setLatest(false);
             setShowLatest(false);
         }
-    }, [scaleData, latest, parsedChartData?.chartData, denomInBase]);
+    }, [scaleData, latest, parsedChartData?.chartData, denomInBase, rescale]);
 
     // easy drag and triangle to horizontal lines for range
     async function addTriangleAndRect() {
