@@ -288,7 +288,7 @@ export const SoloTokenSelect = (props: propsIF) => {
 
     // if (isLoading) return <div className={styles.loader}> <SimpleLoader /></div>
 
-    console.log({ customToken });
+    // console.log({ customToken });
     return (
         <section className={styles.container}>
             <div className={styles.input_control_container}>
