@@ -71,6 +71,10 @@
 }
 
 
+.button_text{
+    font-family: var(--font-logo);
+}
+
 @keyframes shine {
     0%{
 

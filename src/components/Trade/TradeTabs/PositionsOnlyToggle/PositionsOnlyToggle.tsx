@@ -7,8 +7,7 @@ import { GiLaurelsTrophy } from 'react-icons/gi';
 import { NavLink } from 'react-router-dom';
 interface PositionsOnlyToggleProps {
     isShowAllEnabled: boolean;
-    isAuthenticated: boolean;
-    isWeb3Enabled: boolean;
+    isUserLoggedIn: boolean | undefined;
     setHasInitialized: Dispatch<SetStateAction<boolean>>;
     setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
     isCandleSelected: boolean | undefined;
@@ -31,8 +30,7 @@ interface PositionsOnlyToggleProps {
 export default function PositionsOnlyToggle(props: PositionsOnlyToggleProps) {
     const {
         isShowAllEnabled,
-        isAuthenticated,
-        isWeb3Enabled,
+        isUserLoggedIn,
         setIsShowAllEnabled,
         isCandleSelected,
         setIsCandleSelected,
@@ -66,10 +64,8 @@ export default function PositionsOnlyToggle(props: PositionsOnlyToggleProps) {
 
     if (leader !== '' && !showPositionsOnlyToggle) return leaderName;
 
-    const isLoggedIn = isAuthenticated && isWeb3Enabled;
-
     const toggleOrNull =
-        !isLoggedIn || isCandleSelected ? null : (
+        !isUserLoggedIn || isCandleSelected ? null : (
             <Toggle2
                 isOn={!isShowAllEnabled}
                 handleToggle={() => {
@@ -116,7 +112,7 @@ export default function PositionsOnlyToggle(props: PositionsOnlyToggleProps) {
                     }}
                     style={isCandleSelected ? { cursor: 'pointer' } : { cursor: 'default' }}
                 >
-                    {isLoggedIn && !isCandleSelected ? `My ${props.currentTab}` : null}
+                    {isUserLoggedIn && !isCandleSelected ? `My ${props.currentTab}` : null}
                 </p>
                 {/* <p>{`All ${props.currentTab}`}</p> */}
                 {/* {clearButtonOrNull} */}

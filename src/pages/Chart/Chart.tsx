@@ -862,7 +862,7 @@ export default function Chart(props: ChartData) {
     ]);
 
     function changeyAxisWidth() {
-        let yTickValueLenght = scaleData.yScale.ticks()[0].toString().length;
+        let yTickValueLenght = scaleData.yScale.ticks()[0]?.toString().length;
         let result = false;
         scaleData.yScale.ticks().forEach((element: any) => {
             if (element.toString().length > 4) {

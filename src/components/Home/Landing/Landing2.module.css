@@ -68,6 +68,7 @@
     display: none;
 }
 
+
 /* Desktop screen Sizes */
 @media only screen and (min-width: 668px) {
 .ambient{

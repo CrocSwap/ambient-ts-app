@@ -1,6 +1,6 @@
 import styles from '../Transactions.module.css';
 import { ITransaction, setDataLoadingStatus } from '../../../../../utils/state/graphDataSlice';
-import { Dispatch, SetStateAction, useEffect } from 'react';
+import { Dispatch, SetStateAction, useEffect, useRef } from 'react';
 import { useProcessTransaction } from '../../../../../utils/hooks/useProcessTransaction';
 import TransactionsMenu from '../../../../Global/Tabs/TableMenu/TableMenuComponents/TransactionsMenu';
 import { DefaultTooltip } from '../../../../Global/StyledTooltip/StyledTooltip';
@@ -15,6 +15,7 @@ import { tradeData } from '../../../../../utils/state/tradeDataSlice';
 import { useAppDispatch } from '../../../../../utils/hooks/reduxToolkit';
 import moment from 'moment';
 import { ZERO_ADDRESS } from '../../../../../constants';
+import useOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 // import { light } from '@material-ui/core/styles/createPalette';
 interface TransactionRowPropsIF {
     tx: ITransaction;
@@ -155,6 +156,13 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
         element?.scrollIntoView({ behavior: 'smooth', block: 'end', inline: 'nearest' });
     }
 
+    const activePositionRef = useRef(null);
+
+    const clickOutsideHandler = () => {
+        setCurrentTxActiveInTransactions('');
+    };
+    useOnClickOutside(activePositionRef, clickOutsideHandler);
+
     useEffect(() => {
         tx.id === currentTxActiveInTransactions ? scrollToDiv() : null;
     }, [currentTxActiveInTransactions]);
@@ -180,7 +188,12 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
             enterDelay={750}
             leaveDelay={200}
         >
-            <li onClick={openDetailsModal} data-label='id' className='base_color'>
+            <li
+                onClick={openDetailsModal}
+                data-label='id'
+                className='base_color'
+                style={{ fontFamily: 'monospace' }}
+            >
                 {txHashTruncated}
             </li>
         </DefaultTooltip>
@@ -238,7 +251,11 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                 onClick={openDetailsModal}
                 data-label='wallet'
                 className={usernameStyle}
-                style={userNameToDisplay !== 'You' ? { textTransform: 'lowercase' } : undefined}
+                style={
+                    userNameToDisplay !== 'You'
+                        ? { textTransform: 'lowercase', fontFamily: 'monospace' }
+                        : undefined
+                }
             >
                 {userNameToDisplay}
             </li>
@@ -471,6 +488,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                     : setCurrentTxActiveInTransactions('')
             }
             id={txDomId}
+            ref={currentTxActiveInTransactions ? activePositionRef : null}
         >
             {!showColumns && TxTimeWithTooltip}
             {isOnPortfolioPage && !desktopView && tokenPair}
@@ -496,8 +514,8 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                         <li
                             onClick={openDetailsModal}
                             data-label='price'
-                            className={`${sideTypeStyle} ${styles.mono_font}`}
-                            style={{ textAlign: 'right' }}
+                            className={`${sideTypeStyle} `}
+                            style={{ textAlign: 'right', fontFamily: 'monospace' }}
                         >
                             ambient
                         </li>
@@ -508,12 +526,18 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                             data-label='price'
                             className={`${sideTypeStyle} `}
                         >
-                            <p className={`${styles.align_right} ${styles.mono_font}`}>
+                            <p
+                                className={`${styles.align_right} `}
+                                style={{ fontFamily: 'monospace' }}
+                            >
                                 {isOnPortfolioPage
                                     ? truncatedLowDisplayPriceDenomByMoneyness
                                     : truncatedLowDisplayPrice}
                             </p>
-                            <p className={`${styles.align_right} ${styles.mono_font}`}>
+                            <p
+                                className={`${styles.align_right} `}
+                                style={{ fontFamily: 'monospace' }}
+                            >
                                 {isOnPortfolioPage
                                     ? truncatedHighDisplayPriceDenomByMoneyness
                                     : truncatedHighDisplayPrice}
@@ -521,12 +545,18 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                         </li>
                     ) : (
                         <li onClick={openDetailsModal} data-label='price' className={sideTypeStyle}>
-                            <p className={`${styles.align_right} ${styles.mono_font}`}>
+                            <p
+                                className={`${styles.align_right} `}
+                                style={{ fontFamily: 'monospace' }}
+                            >
                                 {isOnPortfolioPage
                                     ? truncatedHighDisplayPriceDenomByMoneyness
                                     : truncatedHighDisplayPrice}
                             </p>
-                            <p className={`${styles.align_right} ${styles.mono_font}`}>
+                            <p
+                                className={`${styles.align_right} `}
+                                style={{ fontFamily: 'monospace' }}
+                            >
                                 {isOnPortfolioPage
                                     ? truncatedLowDisplayPriceDenomByMoneyness
                                     : truncatedLowDisplayPrice}
@@ -537,7 +567,8 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                     <li
                         onClick={openDetailsModal}
                         data-label='price'
-                        className={`${styles.align_right} ${styles.mono_font} ${sideTypeStyle}`}
+                        className={`${styles.align_right}  ${sideTypeStyle}`}
+                        style={{ fontFamily: 'monospace' }}
                     >
                         {isOnPortfolioPage
                             ? truncatedDisplayPriceDenomByMoneyness || '…'

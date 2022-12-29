@@ -40,10 +40,11 @@ interface ChatProps {
     favePools: PoolIF[];
     currentPool: currentPoolInfo;
     isFullScreen?: boolean;
+    isUserLoggedIn: boolean | undefined;
 }
 
 export default function ChatPanel(props: ChatProps) {
-    const { favePools, currentPool } = props;
+    const { favePools, currentPool, isUserLoggedIn } = props;
     const messageEnd = useRef<HTMLInputElement | null>(null);
     // const _socket = socket;
     const [
@@ -143,13 +144,14 @@ export default function ChatPanel(props: ChatProps) {
                             </div>
 
                             <MessageInput
-                            // message={messages[0]}
-                            // room={
-                            //     room === 'Current Pool'
-                            //         ? currentPool.baseToken.symbol +
-                            //           currentPool.quoteToken.symbol
-                            //         : room
-                            // }
+                                isUserLoggedIn={isUserLoggedIn}
+                                // message={messages[0]}
+                                // room={
+                                //     room === 'Current Pool'
+                                //         ? currentPool.baseToken.symbol +
+                                //           currentPool.quoteToken.symbol
+                                //         : room
+                                // }
                             />
 
                             <div

@@ -25,8 +25,7 @@ import WaitingConfirmation from '../../../components/Global/WaitingConfirmation/
 interface WalletModalPropsIF {
     closeModalWallet: () => void;
     isAuthenticating: boolean;
-    isAuthenticated: boolean;
-    isWeb3Enabled: boolean;
+    isUserLoggedIn: boolean | undefined;
     authenticate: (
         options?: AuthenticateOptions | undefined,
     ) => Promise<Moralis.User<Moralis.Attributes> | undefined>;
@@ -37,19 +36,12 @@ interface WalletModalPropsIF {
 }
 
 export default function WalletModal(props: WalletModalPropsIF) {
-    const {
-        closeModalWallet,
-        isAuthenticating,
-        isAuthenticated,
-        isWeb3Enabled,
-        authenticate,
-        enableWeb3,
-    } = props;
+    const { closeModalWallet, isAuthenticating, isUserLoggedIn, authenticate, enableWeb3 } = props;
 
     // close the Connect Wallet modal only when authentication completes
     useEffect(() => {
-        isAuthenticated && isWeb3Enabled && closeModalWallet();
-    }, [isAuthenticating]);
+        isUserLoggedIn && closeModalWallet();
+    }, [isAuthenticating, isUserLoggedIn]);
     // eslint-disable-next-line
     const { tosText, acceptToS } = useTermsOfService();
 
@@ -79,7 +71,7 @@ export default function WalletModal(props: WalletModalPropsIF) {
 
     const handleMetamaskAuthentication = () => {
         setPage('metamaskPending');
-        authenticateMetamask(isAuthenticated, isWeb3Enabled, authenticate, enableWeb3, () =>
+        authenticateMetamask(isUserLoggedIn, authenticate, enableWeb3, () =>
             setPage('metamaskError'),
         );
         acceptToS();
@@ -142,12 +134,8 @@ export default function WalletModal(props: WalletModalPropsIF) {
                 flat={true}
                 action={() => {
                     setPage('metamaskPending');
-                    authenticateMetamask(
-                        isAuthenticated,
-                        isWeb3Enabled,
-                        authenticate,
-                        enableWeb3,
-                        () => setPage('metamaskError'),
+                    authenticateMetamask(isUserLoggedIn, authenticate, enableWeb3, () =>
+                        setPage('metamaskError'),
                     );
                     acceptToS();
                 }}
