@@ -410,6 +410,7 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
         showSidebar: props.showSidebar,
         isOnPortfolioPage: true,
         handlePulseAnimation: handlePulseAnimation,
+        lastBlockNumber: lastBlockNumber,
     };
 
     const tokensProps = {

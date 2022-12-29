@@ -165,7 +165,6 @@ const shouldNonCandleSubscriptionsReconnect = true;
 /** ***** React Function *******/
 export default function App() {
     const {
-        // Moralis,
         isWeb3Enabled,
         account,
         logout,
@@ -2483,8 +2482,6 @@ export default function App() {
                                     quoteTokenDexBalance={quoteTokenDexBalance}
                                     tokenPair={tokenPair}
                                     account={account ?? ''}
-                                    isAuthenticated={isAuthenticated}
-                                    isWeb3Enabled={isWeb3Enabled}
                                     lastBlockNumber={lastBlockNumber}
                                     isTokenABase={isTokenABase}
                                     poolPriceDisplay={poolPriceDisplay}
@@ -2866,6 +2863,7 @@ export default function App() {
                         }}
                         favePools={favePools}
                         currentPool={currentPoolInfo}
+                        isUserLoggedIn={isUserLoggedIn}
                     />
                 )}
             </div>
@@ -2881,10 +2879,9 @@ export default function App() {
                 <WalletModal
                     closeModalWallet={closeModalWallet}
                     isAuthenticating={isAuthenticating}
-                    isAuthenticated={isAuthenticated}
-                    isWeb3Enabled={isWeb3Enabled}
                     authenticate={authenticate}
                     enableWeb3={enableWeb3}
+                    isUserLoggedIn={isUserLoggedIn}
                     // authError={authError}
                 />
             )}

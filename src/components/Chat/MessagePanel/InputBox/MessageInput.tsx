@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useMoralis } from 'react-moralis';
 import {
     //  useEffect,
     useState,
@@ -14,8 +13,11 @@ import styles from './MessageInput.module.css';
 //     message: Message;
 //     room: string;
 // }
+interface MessageInputProps {
+    isUserLoggedIn: boolean | undefined;
+}
 
-export default function MessageInput() {
+export default function MessageInput(props: MessageInputProps) {
     // export default function MessageInput(props: MessageInputProps) {
     // const _socket = socket;
 
@@ -23,9 +25,10 @@ export default function MessageInput() {
     //     _socket.connect();
     // }, [_socket]);
 
+    const { isUserLoggedIn } = props;
+
     const [message, setMessage] = useState('');
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
-    const { isWeb3Enabled, isAuthenticated } = useMoralis();
 
     const handleEmojiClick = (event: any, emoji: any) => {
         let msg = message;
@@ -63,12 +66,8 @@ export default function MessageInput() {
                 <input
                     type='text'
                     id='box'
-                    placeholder={
-                        !isAuthenticated || !isWeb3Enabled
-                            ? 'Please log in to chat.'
-                            : 'Enter Message...'
-                    }
-                    disabled={!isAuthenticated || !isWeb3Enabled}
+                    placeholder={!isUserLoggedIn ? 'Please log in to chat.' : 'Enter Message...'}
+                    disabled={!isUserLoggedIn}
                     className={styles.input_text}
                     onKeyDown={() => {
                         null;

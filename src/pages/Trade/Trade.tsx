@@ -35,8 +35,6 @@ interface TradePropsIF {
     baseTokenDexBalance: string;
     quoteTokenDexBalance: string;
     account: string;
-    isAuthenticated: boolean;
-    isWeb3Enabled: boolean;
     lastBlockNumber: number;
     isTokenABase: boolean;
     poolPriceDisplay?: number;
@@ -116,8 +114,6 @@ export default function Trade(props: TradePropsIF) {
         isTokenABase,
         poolPriceNonDisplay,
         account,
-        isAuthenticated,
-        isWeb3Enabled,
         currentTxActiveInTransactions,
         setCurrentTxActiveInTransactions,
         poolExists,
@@ -451,8 +447,6 @@ export default function Trade(props: TradePropsIF) {
                             crocEnv={crocEnv}
                             provider={provider}
                             account={account}
-                            isAuthenticated={isAuthenticated}
-                            isWeb3Enabled={isWeb3Enabled}
                             lastBlockNumber={lastBlockNumber}
                             chainId={chainId}
                             chainData={chainData}
