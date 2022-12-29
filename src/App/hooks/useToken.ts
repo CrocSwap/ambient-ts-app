@@ -64,7 +64,7 @@ export const useToken = (
                 JSON.parse(localStorage.getItem('user') as string).ackTokens
                     // add each token to the map
                     // this will also remove duplicates intelligently
-                    .forEach((tkn: TokenIF) => addTokenToMap(tkn, newTokenMap));;
+                    .forEach((tkn: TokenIF) => addTokenToMap(tkn, newTokenMap));
                 // send token map to be memoized in local state
                 setTokenMap(newTokenMap);
             } else if (limiter < 100) {
