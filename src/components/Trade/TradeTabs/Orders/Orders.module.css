@@ -1,72 +1,62 @@
+.active_position_style,
+.active_transaction_style {
+    /* background: var(--dark3); */
 
+    background-image: linear-gradient(to right, rgba(255, 255, 255, 0) 50%, #171d27 50%);
+    background-position: -0% 0;
+    background-size: 200% auto;
+    transition: background-position 0.5s ease-out;
 
-
-.active_position_style, .active_transaction_style{
-  /* background: var(--dark3); */
-
-  background-image: linear-gradient(to right, rgba(255,255,255,0) 50%, #171d27 50%);
-  background-position: -0% 0;
-  background-size: 200% auto;
-  transition: background-position 0.5s ease-out;
-
-  background-position: -99.99% 0;
+    background-position: -99.99% 0;
 }
 
-.border_left{
-  border-left: 1px solid var(--text-grey-white);
+.border_left {
+    border-left: 1px solid var(--text-grey-white);
 }
 
-.main_list_container{
+.main_list_container {
     /* width: 100%;
     overflow: auto;
     overflow-y: scroll;
   max-height: 90%; */
-  width: 100%;
-  max-height: 90%;
-  overflow-y: scroll;
-  overflow-x: hidden;
-  /* padding: 0 8px; */
+    width: 100%;
+    max-height: 90%;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    /* padding: 0 8px; */
     position: relative;
+}
 
-    
-   
-
-  }
-
-
-
-  .header{
+.header {
     /* background: #012B39; */
     position: sticky;
     top: 0; /* Don't forget this, required for the stickiness */
     box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4);
-  }
-  
-  .footer{
-      position: sticky;
-      bottom: 0;
-      box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4);
-  }
+}
+
+.footer {
+    position: sticky;
+    bottom: 0;
+    box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4);
+}
 /* width */
 .main_list_container::-webkit-scrollbar {
     width: 4px;
     height: 4px;
-  }
-  
-  /* Track */
-  .main_list_container::-webkit-scrollbar-track {
+}
+
+/* Track */
+.main_list_container::-webkit-scrollbar-track {
     border-radius: 100vh;
     /* background: #1f2937; */
-  }
-  
-  /* Handle */
-  .main_list_container::-webkit-scrollbar-thumb {
-    background: var(--title-gradient)
-  }
+}
 
+/* Handle */
+.main_list_container::-webkit-scrollbar-thumb {
+    background: var(--title-gradient);
+}
 
-  .header{
- 
+.header {
     position: sticky;
     top: 0; /* Don't forget this, required for the stickiness */
     /* box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4); */
@@ -75,66 +65,52 @@
     border-bottom: 1px solid var(--dark3);
 }
 
-.header li{
+.header li {
     font-weight: 300;
-font-size: 10px;
-line-height: 13px;
+    font-size: 10px;
+    line-height: 13px;
 
-color: var(--text-grey-light)
+    color: var(--text-grey-light);
 }
-.row_container:hover{
-  background: var(--dark2)
+.row_container:hover {
+    background: var(--dark2);
 }
-.row_container li{
+.row_container li {
     font-weight: 300;
-font-size: var(--body-size);
-line-height: var(--body-lh);
-text-transform: capitalize;
-
-
-
-
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+    text-transform: capitalize;
 }
 
+.main_list_container ul {
+    width: 100%;
+    /* table row was living space at end so I changed it to table and added a fixed table layout*/
+    display: table-row;
+    table-layout: fixed;
+    display: table;
+}
 
-    
+.main_list_container ul > li {
+    display: table-cell;
 
-   
-    .main_list_container ul {
-      width: 100%;
-      /* table row was living space at end so I changed it to table and added a fixed table layout*/
-      display:table-row;
-      table-layout: fixed;
-      display: table;
-    
-    }
-    
+    /* I commented this out to make the header align center with arrow */
+    width: 100%;
 
-    
-    .main_list_container ul > li {
-      display:table-cell;
- 
-      /* I commented this out to make the header align center with arrow */
-      width: 100%;
- 
-      padding:.2em 0.5em;
-      
-   
-    }
-    
-  /* } */
-  
- 
-  .main_list_container > ul:nth-child(1){
+    padding: 0.2em 0.5em;
+}
+
+/* } */
+
+.main_list_container > ul:nth-child(1) {
     z-index: 2;
-  }
-
-.align_center{
-text-align: center;
 }
 
-.align_right{
-  text-align: right;
+.align_center {
+    text-align: center;
+}
+
+.align_right {
+    text-align: right;
 }
 /* .token_images_account{
   display: flex;
@@ -142,25 +118,17 @@ text-align: center;
   align-items: center;
   gap: 4px;
 } */
-.token_images_account{
-
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-
-  
+.token_images_account {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
 }
 
-
-
-.token_images_account img{
-  width: 25px;
-  height: 25px;
-  border-radius: 50%;
-  margin: 0 2px;
-
-
-  
+.token_images_account img {
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    margin: 0 2px;
 }
 
 /* .trade_header li:nth-of-type(3), .trade_header li:nth-of-type(6), .trade_header li:nth-of-type(7), .trade_header li:nth-of-type(8){
@@ -176,9 +144,6 @@ text-align: center;
 .trade_header li:nth-of-type(9){
   text-align: center;
 } */
-
-
-
 
 /* .portfolio_header li:nth-of-type(4),
  .portfolio_header li:nth-of-type(7),
@@ -196,10 +161,10 @@ text-align: center;
   text-align: center;
 } */
 
-.token_qty{
-  display: flex;
-  justify-content: flex-end;
-  flex-direction: row;
-  align-items: center;
-  gap: 4px;
+.token_qty {
+    display: flex;
+    justify-content: flex-end;
+    flex-direction: row;
+    align-items: center;
+    gap: 4px;
 }

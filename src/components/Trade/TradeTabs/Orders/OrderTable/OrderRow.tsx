@@ -480,8 +480,8 @@ export default function OrderRow(props: OrderRowPropsIF) {
                     className={sellOrderStyle}
                     style={{ textAlign: 'center' }}
                 >
-                    <p>{side}</p>
                     <p>Order</p>
+                    <p>{`${side} ${sideCharacter}`}</p>
                 </li>
             )}
 

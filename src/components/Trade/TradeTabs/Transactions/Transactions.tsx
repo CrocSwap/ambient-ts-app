@@ -381,8 +381,8 @@ export default function Transactions(props: TransactionsProps) {
     );
     const sideType = (
         <>
-            <p>Side</p>
             <p>Type</p>
+            <p>Side</p>
         </>
     );
 
