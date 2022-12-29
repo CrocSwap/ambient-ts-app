@@ -162,8 +162,6 @@ export default function TradeCandleStickChart(props: ChartData) {
         const volumeChartData: VolumeChartData[] = [];
         const feeChartData: FeeChartData[] = [];
 
-        console.log(props.candleData);
-
         props.candleData?.candles.map((data) => {
             const close = denominationsInBase
                 ? data.invPriceCloseExclMEVDecimalCorrected
@@ -524,8 +522,6 @@ export default function TradeCandleStickChart(props: ChartData) {
             topBoundary = limitBoundary;
             lowBoundary = parseFloat(rangeBoundary.pinnedMinPriceDisplay);
         }
-
-        console.log({ depthLiqBidData, depthLiqAskData });
 
         return {
             liqAskData: liqAskData,
