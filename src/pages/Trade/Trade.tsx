@@ -223,8 +223,10 @@ export default function Trade(props: TradePropsIF) {
         // }
         // setIsShowAllEnabled(!isOpen);
         setTransactionFilter(candleData);
-        setOutsideControl(true);
-        if (isOpen) setSelectedOutsideTab(0);
+        if (isOpen) {
+            setOutsideControl(true);
+            setSelectedOutsideTab(0);
+        }
     };
     const [chartBg, setChartBg] = useState('transparent');
 
