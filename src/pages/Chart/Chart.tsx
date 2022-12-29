@@ -1538,10 +1538,13 @@ export default function Chart(props: ChartData) {
                     // const ghostJoin = d3fc.dataJoin('g', 'ghostLines');
 
                     setIsLineDrag(true);
-                    const dragedValue =
-                        scaleData.yScale.invert(event.y) > props.liquidityData.topBoundary
+                    let dragedValue =
+                        scaleData.yScale.invert(event.y) >= props.liquidityData.topBoundary
                             ? props.liquidityData.topBoundary
                             : scaleData.yScale.invert(event.y);
+
+                    dragedValue = dragedValue < 0 ? 0 : dragedValue;
+
                     const displayValue = poolPriceDisplay !== undefined ? poolPriceDisplay : 0;
 
                     const low = ranges.filter((target: any) => target.name === 'Min')[0].value;
@@ -1558,75 +1561,108 @@ export default function Chart(props: ChartData) {
                     let pinnedDisplayPrices: any;
 
                     if (!isAdvancedModeActive) {
-                        if (lineToBeSet === 'Max') {
-                            const pinnedTick = getPinnedTickFromDisplayPrice(
-                                isDenomBase,
-                                baseTokenDecimals,
-                                quoteTokenDecimals,
-                                false, // isMinPrice
-                                dragedValue,
-                                lookupChain(chainId).gridSize,
-                            );
+                        if (
+                            dragedValue === 0 ||
+                            dragedValue === props.liquidityData.topBoundary ||
+                            dragedValue < props.liquidityData.lowBoundary
+                        ) {
+                            rangeWidthPercentage = 100;
 
-                            rangeWidthPercentage =
-                                Math.abs(pinnedTick - currentPoolPriceTick) / 100;
-
-                            const offset = rangeWidthPercentage * 100;
-                            // (rangeWidthPercentage < 1 ? 1 : rangeWidthPercentage) * 100;
-
-                            const lowTick = currentPoolPriceTick - offset;
-                            const highTick = currentPoolPriceTick + offset;
-
-                            pinnedDisplayPrices = getPinnedPriceValuesFromTicks(
-                                denomInBase,
-                                baseTokenDecimals,
-                                quoteTokenDecimals,
-                                lowTick,
-                                highTick,
-                                lookupChain(chainId).gridSize,
-                            );
-                        } else {
-                            const pinnedTick = getPinnedTickFromDisplayPrice(
-                                isDenomBase,
-                                baseTokenDecimals,
-                                quoteTokenDecimals,
-                                true, // isMinPrice
-                                dragedValue,
-                                lookupChain(chainId).gridSize,
-                            );
-
-                            rangeWidthPercentage =
-                                Math.abs(currentPoolPriceTick - pinnedTick) / 100;
-                            const offset = rangeWidthPercentage * 100;
-
-                            const lowTick = currentPoolPriceTick - offset;
-                            const highTick = currentPoolPriceTick + offset;
-
-                            pinnedDisplayPrices = getPinnedPriceValuesFromTicks(
-                                denomInBase,
-                                baseTokenDecimals,
-                                quoteTokenDecimals,
-                                lowTick,
-                                highTick,
-                                lookupChain(chainId).gridSize,
-                            );
-                        }
-
-                        if (pinnedDisplayPrices !== undefined) {
                             setRanges((prevState) => {
                                 const newTargets = [...prevState];
 
                                 newTargets.filter((target: any) => target.name === 'Min')[0].value =
-                                    parseFloat(pinnedDisplayPrices.pinnedMinPriceDisplay);
+                                    dragedValue === 0
+                                        ? 0
+                                        : dragedValue < props.liquidityData.lowBoundary
+                                        ? dragedValue
+                                        : 0;
 
                                 newTargets.filter((target: any) => target.name === 'Max')[0].value =
-                                    parseFloat(pinnedDisplayPrices.pinnedMaxPriceDisplay);
+                                    props.liquidityData.topBoundary;
 
                                 newRangeValue = newTargets;
 
-                                setLiqHighlightedLinesAndArea(newTargets);
+                                setLiqHighlightedLinesAndArea(newTargets, true);
                                 return newTargets;
                             });
+                        } else {
+                            if (lineToBeSet === 'Max') {
+                                const pinnedTick = getPinnedTickFromDisplayPrice(
+                                    isDenomBase,
+                                    baseTokenDecimals,
+                                    quoteTokenDecimals,
+                                    false, // isMinPrice
+                                    dragedValue,
+                                    lookupChain(chainId).gridSize,
+                                );
+
+                                rangeWidthPercentage =
+                                    Math.abs(pinnedTick - currentPoolPriceTick) / 100;
+
+                                const offset = rangeWidthPercentage * 100;
+                                // (rangeWidthPercentage < 1 ? 1 : rangeWidthPercentage) * 100;
+
+                                const lowTick = currentPoolPriceTick - offset;
+                                const highTick = currentPoolPriceTick + offset;
+
+                                pinnedDisplayPrices = getPinnedPriceValuesFromTicks(
+                                    denomInBase,
+                                    baseTokenDecimals,
+                                    quoteTokenDecimals,
+                                    lowTick,
+                                    highTick,
+                                    lookupChain(chainId).gridSize,
+                                );
+                            } else {
+                                const pinnedTick = getPinnedTickFromDisplayPrice(
+                                    isDenomBase,
+                                    baseTokenDecimals,
+                                    quoteTokenDecimals,
+                                    true, // isMinPrice
+                                    dragedValue,
+                                    lookupChain(chainId).gridSize,
+                                );
+
+                                rangeWidthPercentage =
+                                    Math.abs(currentPoolPriceTick - pinnedTick) / 100;
+                                const offset = rangeWidthPercentage * 100;
+
+                                const lowTick = currentPoolPriceTick - offset;
+                                const highTick = currentPoolPriceTick + offset;
+
+                                pinnedDisplayPrices = getPinnedPriceValuesFromTicks(
+                                    denomInBase,
+                                    baseTokenDecimals,
+                                    quoteTokenDecimals,
+                                    lowTick,
+                                    highTick,
+                                    lookupChain(chainId).gridSize,
+                                );
+                            }
+
+                            if (pinnedDisplayPrices !== undefined) {
+                                setRanges((prevState) => {
+                                    const newTargets = [...prevState];
+
+                                    newTargets.filter(
+                                        (target: any) => target.name === 'Min',
+                                    )[0].value = parseFloat(
+                                        pinnedDisplayPrices.pinnedMinPriceDisplay,
+                                    );
+
+                                    newTargets.filter(
+                                        (target: any) => target.name === 'Max',
+                                    )[0].value = parseFloat(
+                                        pinnedDisplayPrices.pinnedMaxPriceDisplay,
+                                    );
+
+                                    newRangeValue = newTargets;
+
+                                    setLiqHighlightedLinesAndArea(newTargets);
+                                    return newTargets;
+                                });
+                            }
                         }
                     } else {
                         const draggingLine = event.subject.name;
@@ -2311,10 +2347,12 @@ export default function Chart(props: ChartData) {
     const onClickRange = async (event: any) => {
         let newRangeValue: any;
 
-        const clickedValue =
+        let clickedValue =
             scaleData.yScale.invert(d3.pointer(event)[1]) > props.liquidityData.topBoundary
                 ? props.liquidityData.topBoundary
                 : scaleData.yScale.invert(d3.pointer(event)[1]);
+
+        clickedValue = clickedValue < 0 ? 0 : clickedValue;
 
         const displayValue = poolPriceDisplay !== undefined ? poolPriceDisplay : 0;
 
@@ -2325,80 +2363,99 @@ export default function Chart(props: ChartData) {
             let tickValue;
             let pinnedDisplayPrices: any;
 
-            if (lineToBeSet === 'Max') {
-                tickValue = getPinnedTickFromDisplayPrice(
-                    isDenomBase,
-                    baseTokenDecimals,
-                    quoteTokenDecimals,
-                    false, // isMinPrice
-                    clickedValue,
-                    lookupChain(chainId).gridSize,
-                );
+            if (
+                clickedValue === 0 ||
+                clickedValue === props.liquidityData.topBoundary ||
+                clickedValue < props.liquidityData.lowBoundary
+            ) {
+                rangeWidthPercentage = 100;
 
-                rangeWidthPercentage = Math.abs(tickValue - currentPoolPriceTick) / 100;
-
-                const offset = rangeWidthPercentage * 100;
-                // (rangeWidthPercentage < 1 ? 1 : rangeWidthPercentage) * 100;
-
-                const lowTick = currentPoolPriceTick - offset;
-                const highTick = currentPoolPriceTick + offset;
-
-                pinnedDisplayPrices = getPinnedPriceValuesFromTicks(
-                    denomInBase,
-                    baseTokenDecimals,
-                    quoteTokenDecimals,
-                    lowTick,
-                    highTick,
-                    lookupChain(chainId).gridSize,
-                );
-            } else {
-                tickValue = getPinnedTickFromDisplayPrice(
-                    isDenomBase,
-                    baseTokenDecimals,
-                    quoteTokenDecimals,
-                    true, // isMinPrice
-                    clickedValue,
-                    lookupChain(chainId).gridSize,
-                );
-
-                rangeWidthPercentage = Math.abs(currentPoolPriceTick - tickValue) / 100;
-                const offset = rangeWidthPercentage * 100;
-
-                const lowTick = currentPoolPriceTick - offset;
-                const highTick = currentPoolPriceTick + offset;
-
-                pinnedDisplayPrices = getPinnedPriceValuesFromTicks(
-                    denomInBase,
-                    baseTokenDecimals,
-                    quoteTokenDecimals,
-                    lowTick,
-                    highTick,
-                    lookupChain(chainId).gridSize,
-                );
-            }
-
-            if (pinnedDisplayPrices !== undefined) {
                 setRanges((prevState) => {
                     const newTargets = [...prevState];
 
-                    newTargets.filter((target: any) => target.name === 'Min')[0].value = parseFloat(
-                        pinnedDisplayPrices.pinnedMinPriceDisplay,
-                    );
+                    newTargets.filter((target: any) => target.name === 'Min')[0].value = 0;
 
-                    newTargets.filter((target: any) => target.name === 'Max')[0].value = parseFloat(
-                        pinnedDisplayPrices.pinnedMaxPriceDisplay,
-                    );
+                    newTargets.filter((target: any) => target.name === 'Max')[0].value =
+                        props.liquidityData.topBoundary;
 
                     newRangeValue = newTargets;
 
-                    setLiqHighlightedLinesAndArea(
-                        newTargets,
-                        props.liquidityData.topBoundary === clickedValue,
-                    );
+                    setLiqHighlightedLinesAndArea(newTargets, true);
                     return newTargets;
                 });
+            } else {
+                if (lineToBeSet === 'Max') {
+                    tickValue = getPinnedTickFromDisplayPrice(
+                        isDenomBase,
+                        baseTokenDecimals,
+                        quoteTokenDecimals,
+                        false, // isMinPrice
+                        clickedValue,
+                        lookupChain(chainId).gridSize,
+                    );
+
+                    rangeWidthPercentage = Math.abs(tickValue - currentPoolPriceTick) / 100;
+
+                    const offset = rangeWidthPercentage * 100;
+                    // (rangeWidthPercentage < 1 ? 1 : rangeWidthPercentage) * 100;
+
+                    const lowTick = currentPoolPriceTick - offset;
+                    const highTick = currentPoolPriceTick + offset;
+
+                    pinnedDisplayPrices = getPinnedPriceValuesFromTicks(
+                        denomInBase,
+                        baseTokenDecimals,
+                        quoteTokenDecimals,
+                        lowTick,
+                        highTick,
+                        lookupChain(chainId).gridSize,
+                    );
+                } else {
+                    tickValue = getPinnedTickFromDisplayPrice(
+                        isDenomBase,
+                        baseTokenDecimals,
+                        quoteTokenDecimals,
+                        true, // isMinPrice
+                        clickedValue,
+                        lookupChain(chainId).gridSize,
+                    );
+
+                    rangeWidthPercentage = Math.abs(currentPoolPriceTick - tickValue) / 100;
+                    const offset = rangeWidthPercentage * 100;
+
+                    const lowTick = currentPoolPriceTick - offset;
+                    const highTick = currentPoolPriceTick + offset;
+
+                    pinnedDisplayPrices = getPinnedPriceValuesFromTicks(
+                        denomInBase,
+                        baseTokenDecimals,
+                        quoteTokenDecimals,
+                        lowTick,
+                        highTick,
+                        lookupChain(chainId).gridSize,
+                    );
+                }
+
+                if (pinnedDisplayPrices !== undefined) {
+                    setRanges((prevState) => {
+                        const newTargets = [...prevState];
+
+                        newTargets.filter((target: any) => target.name === 'Min')[0].value =
+                            parseFloat(pinnedDisplayPrices.pinnedMinPriceDisplay);
+
+                        newTargets.filter((target: any) => target.name === 'Max')[0].value =
+                            parseFloat(pinnedDisplayPrices.pinnedMaxPriceDisplay);
+
+                        newRangeValue = newTargets;
+
+                        setLiqHighlightedLinesAndArea(
+                            newTargets,
+                            props.liquidityData.topBoundary === clickedValue,
+                        );
+                        return newTargets;
+                    });
+                }
             }
-            console.log(rangeWidthPercentage);
 
             dispatch(
                 setSimpleRangeWidth(
@@ -2715,6 +2772,8 @@ export default function Chart(props: ChartData) {
                         (((high < low ? high : low) - parseFloat(minBoudnary)) * 100) /
                         (parseFloat(maxBoudnary) - parseFloat(minBoudnary));
 
+                    console.log({ percHigh });
+
                     if (percHigh > 50) {
                         lineBidGradient
                             .append('stop')
@@ -2765,6 +2824,8 @@ export default function Chart(props: ChartData) {
                             .style('stop-opacity', 0.7);
                     }
                 } else {
+                    console.log({ percentageBid });
+
                     if (percentageBid > 50) {
                         lineBidGradient
                             .append('stop')
@@ -2804,6 +2865,9 @@ export default function Chart(props: ChartData) {
                 if (high < poolPriceDisplay) {
                     const percHigh = ((high < low ? low : high) * 100) / parseFloat(maxBoudnaryAsk);
                     const percLow = ((high < low ? high : low) * 100) / parseFloat(maxBoudnaryAsk);
+
+                    console.log({ percLow });
+
                     if (percLow < 50) {
                         lineAskGradient
                             .append('stop')
@@ -2854,6 +2918,8 @@ export default function Chart(props: ChartData) {
                             .style('stop-opacity', 0.7);
                     }
                 } else {
+                    console.log({ percentageAsk });
+
                     if (percentageAsk < 50) {
                         lineAskGradient
                             .append('stop')

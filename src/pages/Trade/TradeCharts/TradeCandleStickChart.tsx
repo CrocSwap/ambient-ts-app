@@ -278,14 +278,15 @@ export default function TradeCandleStickChart(props: ChartData) {
 
         const liqSnapData: LiqSnap[] = [];
         let topBoundary = 0;
+        let lowBoundary = 0;
 
         if (
             props.liquidityData &&
             props.poolPriceDisplay !== undefined &&
             props.poolPriceDisplay > 0
         ) {
-            const lowTick = currentPoolPriceTick - 100 * 100;
-            const highTick = currentPoolPriceTick + 100 * 100;
+            const lowTick = currentPoolPriceTick - 100 * 101;
+            const highTick = currentPoolPriceTick + 100 * 101;
 
             const rangeBoundary = getPinnedPriceValuesFromTicks(
                 denominationsInBase,
@@ -521,7 +522,10 @@ export default function TradeCandleStickChart(props: ChartData) {
                 });
             }
             topBoundary = limitBoundary;
+            lowBoundary = parseFloat(rangeBoundary.pinnedMinPriceDisplay);
         }
+
+        console.log({ depthLiqBidData, depthLiqAskData });
 
         return {
             liqAskData: liqAskData,
@@ -535,6 +539,7 @@ export default function TradeCandleStickChart(props: ChartData) {
             lineAskSeries: [],
             totalLiq: props.liquidityData?.totals?.totalLiq,
             topBoundary: topBoundary,
+            lowBoundary: lowBoundary,
         };
     }, [props.liquidityData, props.poolPriceDisplay]);
 
