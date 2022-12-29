@@ -39,7 +39,6 @@ interface RangesPropsIF {
     crocEnv: CrocEnv | undefined;
     chainData: ChainSpec;
     provider: ethers.providers.Provider | undefined;
-    isAuthenticated: boolean;
     account: string;
     chainId: string;
     isShowAllEnabled: boolean;

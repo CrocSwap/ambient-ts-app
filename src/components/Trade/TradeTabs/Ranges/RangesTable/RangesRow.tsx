@@ -1,4 +1,4 @@
-import { useEffect, Dispatch, SetStateAction } from 'react';
+import { useEffect, Dispatch, SetStateAction, useRef } from 'react';
 import { PositionIF } from '../../../../../utils/interfaces/PositionIF';
 import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
 import { ethers } from 'ethers';
@@ -17,6 +17,7 @@ import { setDataLoadingStatus } from '../../../../../utils/state/graphDataSlice'
 import moment from 'moment';
 import { ZERO_ADDRESS } from '../../../../../constants';
 import { FiExternalLink } from 'react-icons/fi';
+import useOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 
 interface RangesRowPropsIF {
     isUserLoggedIn: boolean | undefined;
@@ -167,6 +168,13 @@ export default function RangesRow(props: RangesRowPropsIF) {
 
     // console.log(rangeDetailsProps.lastBlockNumber);
 
+    const activePositionRef = useRef(null);
+
+    const clickOutsideHandler = () => {
+        setCurrentPositionActive('');
+    };
+    useOnClickOutside(activePositionRef, clickOutsideHandler);
+
     function scrollToDiv() {
         const element = document.getElementById(positionDomId);
         element?.scrollIntoView({ behavior: 'smooth', block: 'end', inline: 'nearest' });
@@ -193,7 +201,12 @@ export default function RangesRow(props: RangesRowPropsIF) {
             enterDelay={750}
             leaveDelay={200}
         >
-            <li onClick={openDetailsModal} data-label='id' className='base_color'>
+            <li
+                onClick={openDetailsModal}
+                data-label='id'
+                className='base_color'
+                style={{ fontFamily: 'monospace' }}
+            >
                 {posHashTruncated}
             </li>
         </DefaultTooltip>
@@ -251,7 +264,7 @@ export default function RangesRow(props: RangesRowPropsIF) {
                 onClick={openDetailsModal}
                 data-label='wallet'
                 className={usernameStyle}
-                style={{ textTransform: 'lowercase' }}
+                style={{ textTransform: 'lowercase', fontFamily: 'monospace' }}
             >
                 {userNameToDisplay}
             </li>
@@ -458,6 +471,7 @@ export default function RangesRow(props: RangesRowPropsIF) {
                     : setCurrentPositionActive('')
             }
             id={positionDomId}
+            ref={currentPositionActive ? activePositionRef : null}
         >
             {rankingOrNull}
             {!showColumns && RangeTimeWithTooltip}

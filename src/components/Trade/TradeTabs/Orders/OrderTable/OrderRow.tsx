@@ -4,7 +4,7 @@ import OpenOrderStatus from '../../../../Global/OpenOrderStatus/OpenOrderStatus'
 import OrdersMenu from '../../../../Global/Tabs/TableMenu/TableMenuComponents/OrdersMenu';
 import OrderDetails from '../../../../OrderDetails/OrderDetails';
 
-import { Dispatch, SetStateAction, useEffect } from 'react';
+import { Dispatch, SetStateAction, useEffect, useRef } from 'react';
 import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
 import { DefaultTooltip } from '../../../../Global/StyledTooltip/StyledTooltip';
 import { NavLink } from 'react-router-dom';
@@ -16,6 +16,7 @@ import { setDataLoadingStatus } from '../../../../../utils/state/graphDataSlice'
 import moment from 'moment';
 import { ZERO_ADDRESS } from '../../../../../constants';
 import { FiExternalLink } from 'react-icons/fi';
+import useOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 
 interface OrderRowPropsIF {
     crocEnv: CrocEnv | undefined;
@@ -122,6 +123,13 @@ export default function OrderRow(props: OrderRowPropsIF) {
 
     // console.log(rangeDetailsProps.lastBlockNumber);
 
+    const activePositionRef = useRef(null);
+
+    const clickOutsideHandler = () => {
+        setCurrentPositionActive('');
+    };
+    useOnClickOutside(activePositionRef, clickOutsideHandler);
+
     function scrollToDiv() {
         const element = document.getElementById(orderDomId);
         element?.scrollIntoView({ behavior: 'smooth', block: 'end', inline: 'nearest' });
@@ -145,7 +153,12 @@ export default function OrderRow(props: OrderRowPropsIF) {
             enterDelay={750}
             leaveDelay={200}
         >
-            <li onClick={openDetailsModal} data-label='id' className='base_color'>
+            <li
+                onClick={openDetailsModal}
+                data-label='id'
+                className='base_color'
+                style={{ fontFamily: 'monospace' }}
+            >
                 {posHashTruncated}
             </li>
         </DefaultTooltip>
@@ -203,7 +216,7 @@ export default function OrderRow(props: OrderRowPropsIF) {
                 onClick={openDetailsModal}
                 data-label='wallet'
                 className={usernameStyle}
-                style={{ textTransform: 'lowercase' }}
+                style={{ textTransform: 'lowercase', fontFamily: 'monospace' }}
             >
                 {userNameToDisplay}
             </li>
@@ -414,6 +427,7 @@ export default function OrderRow(props: OrderRowPropsIF) {
                     ? null
                     : setCurrentPositionActive('')
             }
+            ref={currentPositionActive ? activePositionRef : null}
         >
             {/* {isOnPortfolioPage && accountTokenImages} */}
             {!showColumns && OrderTimeWithTooltip}
