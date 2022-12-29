@@ -278,6 +278,7 @@ export default function TradeCandleStickChart(props: ChartData) {
 
         const liqSnapData: LiqSnap[] = [];
         let topBoundary = 0;
+        let lowBoundary = 0;
 
         if (
             props.liquidityData &&
@@ -521,6 +522,7 @@ export default function TradeCandleStickChart(props: ChartData) {
                 });
             }
             topBoundary = limitBoundary;
+            lowBoundary = parseFloat(rangeBoundary.pinnedMinPriceDisplay);
         }
 
         console.log({ depthLiqBidData, depthLiqAskData });
@@ -537,6 +539,7 @@ export default function TradeCandleStickChart(props: ChartData) {
             lineAskSeries: [],
             totalLiq: props.liquidityData?.totals?.totalLiq,
             topBoundary: topBoundary,
+            lowBoundary: lowBoundary,
         };
     }, [props.liquidityData, props.poolPriceDisplay]);
 

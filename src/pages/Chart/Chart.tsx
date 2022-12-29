@@ -1537,15 +1537,22 @@ export default function Chart(props: ChartData) {
                     let pinnedDisplayPrices: any;
 
                     if (!isAdvancedModeActive) {
-                        if (dragedValue === 0 || dragedValue === props.liquidityData.topBoundary) {
+                        if (
+                            dragedValue === 0 ||
+                            dragedValue === props.liquidityData.topBoundary ||
+                            dragedValue < props.liquidityData.lowBoundary
+                        ) {
                             rangeWidthPercentage = 100;
 
                             setRanges((prevState) => {
                                 const newTargets = [...prevState];
 
-                                newTargets.filter(
-                                    (target: any) => target.name === 'Min',
-                                )[0].value = 0;
+                                newTargets.filter((target: any) => target.name === 'Min')[0].value =
+                                    dragedValue === 0
+                                        ? 0
+                                        : dragedValue < props.liquidityData.lowBoundary
+                                        ? dragedValue
+                                        : 0;
 
                                 newTargets.filter((target: any) => target.name === 'Max')[0].value =
                                     props.liquidityData.topBoundary;
@@ -2330,7 +2337,11 @@ export default function Chart(props: ChartData) {
             let tickValue;
             let pinnedDisplayPrices: any;
 
-            if (clickedValue === 0 || clickedValue === props.liquidityData.topBoundary) {
+            if (
+                clickedValue === 0 ||
+                clickedValue === props.liquidityData.topBoundary ||
+                clickedValue < props.liquidityData.lowBoundary
+            ) {
                 rangeWidthPercentage = 100;
 
                 setRanges((prevState) => {
