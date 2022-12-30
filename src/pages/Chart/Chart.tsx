@@ -2755,9 +2755,11 @@ export default function Chart(props: ChartData) {
     }, [scaleData, parsedChartData, candlestick]);
 
     function renderCanvas() {
-        const container = d3.select(d3Canvas.current).node() as any;
+        if (d3Canvas) {
+            const container = d3.select(d3Canvas.current).node() as any;
 
-        container.requestRedraw();
+            container.requestRedraw();
+        }
     }
 
     useEffect(() => {
@@ -3348,6 +3350,41 @@ export default function Chart(props: ChartData) {
                         event.detail.height,
                         event.detail.height - event.detail.height / 10,
                     ]);
+                });
+
+                d3.select(d3PlotArea.current).on('click', (event: any) => {
+                    const rect = (
+                        d3.select(d3PlotArea.current).node() as any
+                    ).getBoundingClientRect();
+
+                    const x = event.clientX - rect.left;
+                    const y = event.clientY - rect.top;
+
+                    // console.log('x: ' + x + ' y: ' + y,'rect: ' + rect)
+                    // console.log(scaleData.yScale.invert(x));
+
+                    // snap to candlesticks
+                    const candlestickDelta =
+                        parsedChartData?.chartData[1].date.getTime() -
+                        parsedChartData?.chartData[0].date.getTime();
+                    const hoveredCandlestickID = Math.floor(
+                        (scaleData.xScale.invert(x).getTime() -
+                            parsedChartData?.chartData[0].date.getTime()) /
+                            candlestickDelta,
+                    );
+
+                    console.log(
+                        { hoveredCandlestickID },
+                        parsedChartData?.chartData[hoveredCandlestickID],
+                    );
+                    setSelectedDate(parsedChartData?.chartData[hoveredCandlestickID].date);
+
+                    // console.log({ctx});
+
+                    // const dd=ctx(event.layerX,event.layerY, 1, 1);
+                    // // if (ctx.isPointInStroke(event.offsetX, event.offsetY)) {
+                    //     console.log('dfdsffsd',dd);
+                    // // }
                 });
 
                 d3.select(d3PlotArea.current).on('draw', function (event: any) {
@@ -3990,9 +4027,8 @@ export default function Chart(props: ChartData) {
                         }}
                     > */}
 
-                <d3fc-canvas ref={d3Canvas} className='plot-canvas'>
-                    {/* style={{ flex: 1, display: 'flex', flexDirection: 'column' }}> */}
-                </d3fc-canvas>
+                {/* <d3fc-canvas ref={d3Canvas} className='plot-canvas'>
+                </d3fc-canvas> */}
                 <d3fc-svg
                     ref={d3PlotArea}
                     className='plot-area'
