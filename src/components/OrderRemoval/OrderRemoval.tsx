@@ -25,10 +25,10 @@ import {
     isTransactionReplacedError,
     TransactionError,
 } from '../../utils/TransactionError';
-import { useMoralis } from 'react-moralis';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 
 interface IOrderRemovalProps {
+    account: string;
     crocEnv: CrocEnv | undefined;
     chainData: ChainSpec;
     limitOrder: LimitOrderIF;
@@ -36,7 +36,7 @@ interface IOrderRemovalProps {
 }
 
 export default function OrderRemoval(props: IOrderRemovalProps) {
-    const { chainData, crocEnv, limitOrder, closeGlobalModal } = props;
+    const { account, chainData, crocEnv, limitOrder, closeGlobalModal } = props;
     const {
         posLiqBaseDecimalCorrected,
         posLiqQuoteDecimalCorrected,
@@ -87,8 +87,6 @@ export default function OrderRemoval(props: IOrderRemovalProps) {
     const quoteQty = limitOrder.positionLiqQuoteDecimalCorrected;
 
     const dispatch = useAppDispatch();
-
-    const { account } = useMoralis();
 
     useEffect(() => {
         const baseRemovalNum = baseQty * (removalPercentage / 100);

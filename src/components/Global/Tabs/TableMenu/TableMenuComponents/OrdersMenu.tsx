@@ -43,6 +43,7 @@ interface OrdersMenuIF {
     isOnPortfolioPage: boolean;
     handlePulseAnimation?: (type: string) => void;
     // orderDetailsProps: any;
+    account: string;
     lastBlockNumber: number;
 }
 
@@ -63,6 +64,7 @@ export default function OrdersMenu(props: OrdersMenuIF) {
         showSidebar,
         handlePulseAnimation,
         lastBlockNumber,
+        account,
         // isOnPortfolioPage,
     } = props;
     // const [value, copy] = useCopyToClipboard();
@@ -180,6 +182,7 @@ export default function OrdersMenu(props: OrdersMenuIF) {
     const openRemoveModal = () =>
         openGlobalModal(
             <OrderRemoval
+                account={account}
                 chainData={chainData}
                 crocEnv={crocEnv}
                 limitOrder={limitOrder}

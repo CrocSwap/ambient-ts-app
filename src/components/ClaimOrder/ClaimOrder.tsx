@@ -17,8 +17,7 @@ import ClaimOrderButton from './ClaimOrderButton/ClaimOrderButton';
 import { LimitOrderIF } from '../../utils/interfaces/exports';
 import { useAppDispatch } from '../../utils/hooks/reduxToolkit';
 import { addPendingTx, addReceipt, removePendingTx } from '../../utils/state/receiptDataSlice';
-// import { useMoralis } from 'react-moralis';
-// import { lookupChain } from '@crocswap-libs/sdk/dist/context';
+
 import {
     isTransactionFailedError,
     isTransactionReplacedError,
@@ -69,7 +68,6 @@ export default function ClaimOrder(props: IClaimOrderProps) {
     const [showSettings, setShowSettings] = useState(false);
 
     const dispatch = useAppDispatch();
-    // const { account } = useMoralis();
 
     const resetConfirmation = () => {
         setShowConfirmation(false);
