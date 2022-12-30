@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // START: Import React and Dongles
 import { useState, useEffect, useMemo, Dispatch, SetStateAction } from 'react';
-import { useMoralis } from 'react-moralis';
 import { ethers } from 'ethers';
 import { motion } from 'framer-motion';
 import { concDepositSkew, CrocEnv } from '@crocswap-libs/sdk';
@@ -59,6 +58,7 @@ import RangeShareControl from '../../../components/Trade/Range/RangeShareControl
 import { getRecentTokensParamsIF } from '../../../App/hooks/useRecentTokens';
 
 interface RangePropsIF {
+    account: string | null;
     crocEnv: CrocEnv | undefined;
     isUserLoggedIn: boolean | undefined;
     importedTokens: Array<TokenIF>;
@@ -104,6 +104,7 @@ interface RangePropsIF {
 
 export default function Range(props: RangePropsIF) {
     const {
+        account,
         crocEnv,
         isUserLoggedIn,
         importedTokens,
@@ -143,7 +144,7 @@ export default function Range(props: RangePropsIF) {
         getTokenByAddress,
         importedTokensPlus,
         getRecentTokens,
-        addRecentToken
+        addRecentToken,
     } = props;
 
     const [isModalOpen, openModal, closeModal] = useModal();
@@ -163,8 +164,6 @@ export default function Range(props: RangePropsIF) {
         setTxErrorCode(0);
         setTxErrorMessage('');
     };
-
-    const { account } = useMoralis();
 
     const { tradeData, navigationMenu } = useTradeData();
 
@@ -1020,7 +1019,7 @@ export default function Range(props: RangePropsIF) {
         getTokenByAddress: getTokenByAddress,
         importedTokensPlus: importedTokensPlus,
         getRecentTokens: getRecentTokens,
-        addRecentToken: addRecentToken
+        addRecentToken: addRecentToken,
     };
 
     // props for <RangeWidth/> React element

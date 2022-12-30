@@ -2338,6 +2338,7 @@ export default function App() {
     const [rangetokenBQtyLocal, setRangeTokenBQtyLocal] = useState<number>(0);
 
     const rangeProps = {
+        account: account,
         crocEnv: crocEnv,
         isUserLoggedIn: isUserLoggedIn,
         importedTokens: importedTokens,
