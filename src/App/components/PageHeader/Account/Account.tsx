@@ -21,7 +21,7 @@ interface AccountPropsIF {
     accountAddress: string;
     accountAddressFull: string;
     clickLogout: () => void;
-    openModal: () => void;
+    // openModal: () => void;
     ensName: string;
     chainId: string;
     isAppOverlayActive: boolean;
@@ -38,7 +38,7 @@ export default function Account(props: AccountPropsIF) {
         nativeBalance,
         clickLogout,
         ensName,
-        openModal,
+        // openModal,
         chainId,
         isAppOverlayActive,
         setIsAppOverlayActive,
@@ -160,7 +160,7 @@ export default function Account(props: AccountPropsIF) {
                 <DropdownMenu
                     isUserLoggedIn={isUserLoggedIn}
                     clickLogout={clickLogout}
-                    openModal={openModal}
+                    // openModal={openModal}
                     chainId={chainId}
                     isAppOverlayActive={isAppOverlayActive}
                     setIsAppOverlayActive={setIsAppOverlayActive}

@@ -7,17 +7,17 @@ import { motion, AnimateSharedLayout } from 'framer-motion';
 
 // START: Import JSX Elements
 import Account from './Account/Account';
-import MagicLogin from './MagicLogin';
+// import MagicLogin from './MagicLogin';
 import NetworkSelector from './NetworkSelector/NetworkSelector';
 import SwitchNetwork from '../../../components/Global/SwitchNetworkAlert/SwitchNetwork/SwitchNetwork';
-import Modal from '../../../components/Global/Modal/Modal';
+// import Modal from '../../../components/Global/Modal/Modal';
 
 // START: Import Local Files
 import styles from './PageHeader.module.css';
 import trimString from '../../../utils/functions/trimString';
 // import ambientLogo from '../../../assets/images/logos/ambient_logo.svg';
 import headerLogo from '../../../assets/images/logos/header_logo.svg';
-import { useModal } from '../../../components/Global/Modal/useModal';
+// import { useModal } from '../../../components/Global/Modal/useModal';
 import { useUrlParams } from './useUrlParams';
 import MobileSidebar from '../../../components/Global/MobileSidebar/MobileSidebar';
 import NotificationCenter from '../../../components/Global/NotificationCenter/NotificationCenter';
@@ -94,14 +94,14 @@ export default function PageHeader(props: HeaderPropsIF) {
     // console.log({ isWeb3EnableLoading });
     const { t } = useTranslation();
 
-    const [isModalOpen, openModal, closeModal] = useModal();
-    const modalTitle = 'Log in with Email';
+    // const [isModalOpen, openModal, closeModal] = useModal();
+    // const modalTitle = 'Log in with Email';
 
-    const mainModal = (
-        <Modal onClose={closeModal} title={modalTitle}>
-            <MagicLogin closeModal={closeModal} />
-        </Modal>
-    );
+    // const mainModal = (
+    //     <Modal onClose={closeModal} title={modalTitle}>
+    //         <MagicLogin closeModal={closeModal} />
+    //     </Modal>
+    // );
 
     const [connectButtonDelayElapsed, setConnectButtonDelayElapsed] = useState(false);
 
@@ -112,7 +112,7 @@ export default function PageHeader(props: HeaderPropsIF) {
         return () => clearTimeout(timer);
     }, []);
 
-    const modalOrNull = isModalOpen ? mainModal : null;
+    // const modalOrNull = isModalOpen ? mainModal : null;
 
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -157,7 +157,7 @@ export default function PageHeader(props: HeaderPropsIF) {
         ensName: ensName,
         isUserLoggedIn: isUserLoggedIn,
         clickLogout: clickLogout,
-        openModal: openModal,
+        // openModal: openModal,
         chainId: chainId,
         isAppOverlayActive: isAppOverlayActive,
         setIsAppOverlayActive: setIsAppOverlayActive,
@@ -346,7 +346,7 @@ export default function PageHeader(props: HeaderPropsIF) {
                 </div>
             </div>
             {isChainSupported || <SwitchNetwork switchNetworkInMoralis={switchNetworkInMoralis} />}
-            {modalOrNull}
+            {/* {modalOrNull} */}
         </header>
     );
 }
