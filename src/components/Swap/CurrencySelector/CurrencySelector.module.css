@@ -90,7 +90,7 @@
     width: 65%;
 }
 .token_select {
-    background: var(--dark3);
+    /* background: var(--dark3); */
     display: flex;
     justify-content: space-between;
     align-items: center;
