@@ -1,6 +1,5 @@
 // START: Import React and Dongles
 import { useState, useEffect, Dispatch, SetStateAction } from 'react';
-import { useMoralis } from 'react-moralis';
 import { ethers } from 'ethers';
 import { motion } from 'framer-motion';
 import {
@@ -46,6 +45,7 @@ import { memoizeQuerySpotPrice } from '../../../App/functions/querySpotPrice';
 import { getRecentTokensParamsIF } from '../../../App/hooks/useRecentTokens';
 
 interface LimitPropsIF {
+    account: string | null;
     pool: CrocPoolView | undefined;
     crocEnv: CrocEnv | undefined;
     isUserLoggedIn: boolean | undefined;
@@ -90,6 +90,7 @@ const cachedQuerySpotPrice = memoizeQuerySpotPrice();
 
 export default function Limit(props: LimitPropsIF) {
     const {
+        account,
         provider,
         pool,
         crocEnv,
@@ -123,12 +124,12 @@ export default function Limit(props: LimitPropsIF) {
         getTokenByAddress,
         importedTokensPlus,
         getRecentTokens,
-        addRecentToken
+        addRecentToken,
     } = props;
 
     const { tradeData, navigationMenu } = useTradeData();
     const dispatch = useAppDispatch();
-    const { account } = useMoralis();
+
     const [isModalOpen, openModal, closeModal] = useModal();
     const [limitAllowed, setLimitAllowed] = useState<boolean>(false);
 

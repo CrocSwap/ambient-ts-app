@@ -2,7 +2,6 @@
 import { useState, Dispatch, SetStateAction, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { ethers } from 'ethers';
-// import { useMoralis } from 'react-moralis';
 import { motion } from 'framer-motion';
 import { CrocEnv, CrocImpact } from '@crocswap-libs/sdk';
 
@@ -115,7 +114,7 @@ export default function Swap(props: SwapPropsIF) {
         getTokenByAddress,
         importedTokensPlus,
         addRecentToken,
-        getRecentTokens
+        getRecentTokens,
     } = props;
 
     const [isModalOpen, openModal, closeModal] = useModal();
@@ -129,7 +128,6 @@ export default function Swap(props: SwapPropsIF) {
 
     const [isRelativeModalOpen, closeRelativeModal] = useRelativeModal();
 
-    // const { account } = useMoralis();
     // get URL pathway for user relative to index
     const { pathname } = useLocation();
 

@@ -2289,6 +2289,7 @@ export default function App() {
     // props for <Limit/> React element on trade route
 
     const limitPropsTrade = {
+        account: account,
         pool: pool,
         crocEnv: crocEnv,
         chainData: chainData,
