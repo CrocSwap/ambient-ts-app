@@ -145,15 +145,17 @@ export default function TradeCandleStickChart(props: ChartData) {
     }, [activeChartPeriod, denominationsInBase]);
 
     useEffect(() => {
+        console.log('first');
         parseData();
         setIsCandleAdded(true);
     }, [props.candleData]);
 
-    useEffect(() => {
-        if (parsedChartData === undefined) {
-            parseData();
-        }
-    }, [parsedChartData]);
+    // useEffect(() => {
+    //     if (parsedChartData === undefined) {
+    //         console.log('second')
+    //         parseData();
+    //     }
+    // }, [parsedChartData]);
 
     // Parse price data
     const parseData = () => {
