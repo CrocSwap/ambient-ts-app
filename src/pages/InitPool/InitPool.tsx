@@ -3,7 +3,7 @@ import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { VscClose } from 'react-icons/vsc';
 import { CrocEnv } from '@crocswap-libs/sdk';
-import { useMoralisWeb3Api } from 'react-moralis';
+import Moralis from 'moralis-v1';
 
 // START: Import JSX Components
 import InitPoolExtraInfo from '../../components/InitPool/InitPoolExtraInfo/InitPoolExtraInfo';
@@ -64,8 +64,6 @@ export default function InitPool(props: InitPoolPropsIF) {
 
     // function to programmatically navigate the user
     const navigate = useNavigate();
-
-    const Web3Api = useMoralisWeb3Api();
 
     // DO NOT combine these hooks with useMemo()
     // the useMemo() hook does NOT respect asynchronicity
@@ -149,7 +147,7 @@ export default function InitPool(props: InitPoolPropsIF) {
                         break;
                 }
             };
-            const promise = Web3Api.token.getTokenMetadata({
+            const promise = Moralis.Web3API.token.getTokenMetadata({
                 chain: chain as '0x5',
                 addresses: [addr],
             });

@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useAppDispatch } from '../../utils/hooks/reduxToolkit';
-import { useMoralisWeb3Api } from 'react-moralis';
+import Moralis from 'moralis-v1';
+
 import { defaultTokens } from '../../utils/data/defaultTokens';
 import { ethers } from 'ethers';
 import { setTokenA, setTokenB } from '../../utils/state/tradeDataSlice';
@@ -16,9 +17,6 @@ export const useUrlParams = (
     const { params } = useParams() ?? '';
 
     const dispatch = useAppDispatch();
-
-    // needed to pull token metadata from on-chain
-    const Web3Api = useMoralisWeb3Api();
 
     // parse parameter string into [key, value] tuples
     // useMemo() with empty dependency array runs once on initial render
@@ -149,7 +147,7 @@ export const useUrlParams = (
         // TODO: find a way to correctly type this return
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         function getTokenFromChain(addr: string): any {
-            const promise = Web3Api.token.getTokenMetadata({
+            const promise = Moralis.Web3API.token.getTokenMetadata({
                 chain: chainToUse as '0x5',
                 addresses: [addr],
             });

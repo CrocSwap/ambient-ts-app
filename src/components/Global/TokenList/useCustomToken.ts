@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState, Dispatch, SetStateAction } from 'react';
-import { useMoralisWeb3Api } from 'react-moralis';
+import Moralis from 'moralis-v1';
+
 import { TokenIF, TokenListIF } from '../../../utils/interfaces/exports';
 
 export const useCustomToken = (
@@ -11,8 +12,6 @@ export const useCustomToken = (
     TokenIF[],
     string | null,
 ] => {
-    const Web3Api = useMoralisWeb3Api();
-
     // make an array of every token in every list in allTokenLists in local storage
     // empty dependency array makes this value calculated once when the component mounts
     // to have it update, pass values into the dependency array
@@ -39,7 +38,7 @@ export const useCustomToken = (
 
     // function to fetch metadata from on-chain by address and chain ID
     const fetchTokenMetadata = async (chainId: string, addresses: string) =>
-        await Web3Api.token.getTokenMetadata({
+        await Moralis.Web3API.token.getTokenMetadata({
             chain: chainId as 'eth' | '0x1' | 'goerli' | '0x5',
             addresses: [addresses],
         });
