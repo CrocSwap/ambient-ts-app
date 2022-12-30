@@ -434,6 +434,7 @@ export default function Ranges(props: RangesPropsIF) {
     );
     const rowItemContent = usePaginateDataOrNull?.map((position, idx) => (
         <RangesRow
+            account={account}
             key={idx}
             position={position}
             currentPositionActive={currentPositionActive}

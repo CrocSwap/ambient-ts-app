@@ -9,15 +9,12 @@ import styles from './WalletModal.module.css';
 import Modal from '../../../components/Global/Modal/Modal';
 import Button from '../../../components/Global/Button/Button';
 import { useTermsOfService } from '../../hooks/useTermsOfService';
-import validateEmail from './validateEmail';
+// import validateEmail from './validateEmail';
 import authenticateMetamask from '../../../utils/functions/authenticateMetamask';
-import authenticateMagic from '../../../utils/functions/authenticateMagic';
-import { HiOutlineMail } from 'react-icons/hi';
 import WalletButton from './WalletButton/WalletButton';
 import metamaskLogo from '../../../assets/images/logos/MetaMask_Fox.svg';
-import magicLoginImage from '../../../assets/images/logos/magicLogin.png';
 import {
-    CircleLoader,
+    // CircleLoader,
     CircleLoaderFailed,
 } from '../../../components/Global/LoadingAnimations/CircleLoader/CircleLoader';
 import WaitingConfirmation from '../../../components/Global/WaitingConfirmation/WaitingConfirmation';
@@ -46,7 +43,7 @@ export default function WalletModal(props: WalletModalPropsIF) {
     const { tosText, acceptToS } = useTermsOfService();
 
     const [page, setPage] = useState('wallets');
-    const [email, setEmail] = useState('');
+    // const [email, setEmail] = useState('');
 
     const learnAboutWalletsContent = (
         <div className={styles.learn_container}>
@@ -143,51 +140,40 @@ export default function WalletModal(props: WalletModalPropsIF) {
         </div>
     );
 
-    const magicLoginPage = useMemo(() => {
-        const [isValid, message] = validateEmail(email);
-        return (
-            <div className={styles.magic_login_container}>
-                <section>
-                    <h2>Create a wallet and authenticate using your email</h2>
-                    <div className={styles.magic_logic_input_container}>
-                        <input
-                            type='email'
-                            className='input'
-                            defaultValue={email}
-                            placeholder='Enter your email address'
-                            required
-                            onChange={(e) => setEmail(e.target.value.trim())}
-                        />
-                        <HiOutlineMail size={20} color='#EBEBFF' />
-                    </div>
-                    <img src={magicLoginImage} alt='magic login icon' />
+    // const magicLoginPage = useMemo(() => {
+    //     // const [isValid, message] = validateEmail(email);
+    //     return (
+    //         <div className={styles.magic_login_container}>
+    //             <section>
+    //                 <h2>Create a wallet and authenticate using your email</h2>
+    //                 <div className={styles.magic_logic_input_container}>
+    //                     <input
+    //                         type='email'
+    //                         className='input'
+    //                         defaultValue={email}
+    //                         placeholder='Enter your email address'
+    //                         required
+    //                         onChange={(e) => setEmail(e.target.value.trim())}
+    //                     />
+    //                     <HiOutlineMail size={20} color='#EBEBFF' />
+    //                 </div>
+    //                 <img src={magicLoginImage} alt='magic login icon' />
 
-                    <Button
-                        title={message}
-                        disabled={!isValid}
-                        action={() => {
-                            authenticateMagic(email, authenticate, () =>
-                                setPage('magicLoginPending'),
-                            );
-                            acceptToS();
-                        }}
-                        flat={true}
-                    />
-                </section>
-                <div onClick={() => setPage('wallets')} className={styles.different_wallet}>
-                    Use a different wallet
-                </div>
-                {/* {connectToWalletTOSContent} */}
-            </div>
-        );
-    }, [email]);
+    //             </section>
+    //             <div onClick={() => setPage('wallets')} className={styles.different_wallet}>
+    //                 Use a different wallet
+    //             </div>
+    //             {/* {connectToWalletTOSContent} */}
+    //         </div>
+    //     );
+    // }, [email]);
 
-    const magicLoginPendingPage = (
-        <div className={styles.metamask_pending_container}>
-            <CircleLoader size='5rem' borderColor='#171d27' />
-            <p>The Magic Authentication system will launch in one moment!</p>
-        </div>
-    );
+    // const magicLoginPendingPage = (
+    //     <div className={styles.metamask_pending_container}>
+    //         <CircleLoader size='5rem' borderColor='#171d27' />
+    //         <p>The Magic Authentication system will launch in one moment!</p>
+    //     </div>
+    // );
 
     const activeContent = useMemo(() => {
         switch (page) {
@@ -197,14 +183,11 @@ export default function WalletModal(props: WalletModalPropsIF) {
                 return metamaskPendingPage;
             case 'metamaskError':
                 return metamaskErrorPage;
-            case 'magicLogin':
-                return magicLoginPage;
-            case 'magicLoginPending':
-                return magicLoginPendingPage;
+
             default:
-                magicLoginPage;
+                walletsPage;
         }
-    }, [page, email]);
+    }, [page]);
 
     const activeTitle = useMemo(() => {
         switch (page) {

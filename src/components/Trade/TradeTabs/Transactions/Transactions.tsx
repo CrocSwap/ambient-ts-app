@@ -550,6 +550,7 @@ export default function Transactions(props: TransactionsProps) {
 
     const rowItemContent = usePaginateDataOrNull?.map((tx, idx) => (
         <TransactionRow
+            account={account}
             key={idx}
             tx={tx}
             tradeData={tradeData}

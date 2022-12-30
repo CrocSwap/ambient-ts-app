@@ -36,7 +36,7 @@ interface RangesRowPropsIF {
     // tokenBAddress: string;
     // isAuthenticated: boolean;
     // isDenomBase: boolean;
-    account?: string;
+    account: string;
     lastBlockNumber: number;
     showSidebar: boolean;
     ipadView: boolean;
@@ -58,6 +58,7 @@ interface RangesRowPropsIF {
 export default function RangesRow(props: RangesRowPropsIF) {
     const {
         // showSidebar,
+        account,
         ipadView,
         showColumns,
         isShowAllEnabled,
@@ -105,7 +106,7 @@ export default function RangesRow(props: RangesRowPropsIF) {
         maxRangeDenomByMoneyness,
         // isBaseTokenMoneynessGreaterOrEqual,
         // orderMatchesSelectedTokens,
-    } = useProcessRange(position);
+    } = useProcessRange(position, account);
 
     const rangeDetailsProps = {
         crocEnv: props.crocEnv,

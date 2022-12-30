@@ -192,6 +192,7 @@ export default function OrdersMenu(props: OrdersMenuIF) {
     const openClaimModal = () =>
         openGlobalModal(
             <ClaimOrder
+                account={account}
                 chainData={chainData}
                 crocEnv={crocEnv}
                 limitOrder={limitOrder}
@@ -202,6 +203,7 @@ export default function OrdersMenu(props: OrdersMenuIF) {
     const openDetailsModal = () =>
         openGlobalModal(
             <OrderDetails
+                account={account}
                 limitOrder={limitOrder}
                 closeGlobalModal={closeGlobalModal}
                 lastBlockNumber={lastBlockNumber}

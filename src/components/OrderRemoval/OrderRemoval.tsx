@@ -58,7 +58,7 @@ export default function OrderRemoval(props: IOrderRemovalProps) {
         quoteDisplayFrontend,
         baseDisplay,
         quoteDisplay,
-    } = useProcessOrder(limitOrder);
+    } = useProcessOrder(limitOrder, account);
 
     const [showConfirmation, setShowConfirmation] = useState(false);
     const [newRemovalTransactionHash, setNewRemovalTransactionHash] = useState('');

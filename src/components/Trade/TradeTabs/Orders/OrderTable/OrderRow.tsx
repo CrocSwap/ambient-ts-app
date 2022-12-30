@@ -87,7 +87,7 @@ export default function OrderRow(props: OrderRowPropsIF) {
         baseTokenCharacter,
         quoteTokenCharacter,
         isDenomBase,
-    } = useProcessOrder(limitOrder);
+    } = useProcessOrder(limitOrder, account);
 
     const orderMenuProps = {
         crocEnv: crocEnv,
@@ -112,6 +112,7 @@ export default function OrderRow(props: OrderRowPropsIF) {
     const openDetailsModal = () =>
         openGlobalModal(
             <OrderDetails
+                account={account}
                 limitOrder={limitOrder}
                 closeGlobalModal={closeGlobalModal}
                 lastBlockNumber={lastBlockNumber}

@@ -25,6 +25,7 @@ import {
 } from '../../utils/TransactionError';
 
 interface IClaimOrderProps {
+    account: string;
     crocEnv: CrocEnv | undefined;
     chainData: ChainSpec;
     limitOrder: LimitOrderIF;
@@ -32,7 +33,7 @@ interface IClaimOrderProps {
 }
 
 export default function ClaimOrder(props: IClaimOrderProps) {
-    const { chainData, crocEnv, limitOrder, closeGlobalModal } = props;
+    const { account, chainData, crocEnv, limitOrder, closeGlobalModal } = props;
     const {
         posLiqBaseDecimalCorrected,
         posLiqQuoteDecimalCorrected,
@@ -55,7 +56,7 @@ export default function ClaimOrder(props: IClaimOrderProps) {
         baseDisplay,
         quoteDisplay,
         truncatedDisplayPrice,
-    } = useProcessOrder(limitOrder);
+    } = useProcessOrder(limitOrder, account);
 
     useEffect(() => {
         console.log({ limitOrder });

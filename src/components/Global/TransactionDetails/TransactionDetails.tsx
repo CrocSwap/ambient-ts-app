@@ -6,12 +6,13 @@ import RangeDetailsControl from '../../RangeDetails/RangeDetailsControl/RangeDet
 import TransactionDetailsHeader from './TransactionDetailsHeader/TransactionDetailsHeader';
 import TransactionDetailsPriceInfo from './TransactionDetailsPriceInfo/TransactionDetailsPriceInfo';
 interface TransactionDetailsPropsIF {
+    account: string;
     tx: ITransaction;
     closeGlobalModal: () => void;
 }
 
 export default function TransactionDetails(props: TransactionDetailsPropsIF) {
-    const { tx } = props;
+    const { account, tx } = props;
 
     console.log({ tx });
 
@@ -63,7 +64,11 @@ export default function TransactionDetails(props: TransactionDetailsPropsIF) {
             <div ref={detailsRef}>
                 <div className={styles.main_content}>
                     <div className={styles.left_container}>
-                        <TransactionDetailsPriceInfo tx={tx} controlItems={controlItems} />
+                        <TransactionDetailsPriceInfo
+                            account={account}
+                            tx={tx}
+                            controlItems={controlItems}
+                        />
                     </div>
                     <div className={styles.right_container}>
                         {/* <OrderGraphDisplay isOrderFilled={isOrderFilled} user={userNameToDisplay} /> */}

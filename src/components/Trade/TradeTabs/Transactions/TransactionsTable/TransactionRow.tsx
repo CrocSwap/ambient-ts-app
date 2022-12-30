@@ -18,6 +18,7 @@ import { ZERO_ADDRESS } from '../../../../../constants';
 import useOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 // import { light } from '@material-ui/core/styles/createPalette';
 interface TransactionRowPropsIF {
+    account: string;
     tx: ITransaction;
     tradeData: tradeData;
     isTokenABase: boolean;
@@ -38,6 +39,7 @@ interface TransactionRowPropsIF {
 }
 export default function TransactionRow(props: TransactionRowPropsIF) {
     const {
+        account,
         showColumns,
         tradeData,
         ipadView,
@@ -94,7 +96,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
         truncatedHighDisplayPriceDenomByMoneyness,
         isBaseTokenMoneynessGreaterOrEqual,
         // orderMatchesSelectedTokens,
-    } = useProcessTransaction(tx);
+    } = useProcessTransaction(tx, account);
 
     const dispatch = useAppDispatch();
 
@@ -138,7 +140,9 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
     // console.log(baseDisplay);
 
     const openDetailsModal = () =>
-        openGlobalModal(<TransactionDetails tx={tx} closeGlobalModal={closeGlobalModal} />);
+        openGlobalModal(
+            <TransactionDetails account={account} tx={tx} closeGlobalModal={closeGlobalModal} />,
+        );
 
     const activeTransactionStyle =
         tx.id === currentTxActiveInTransactions ? styles.active_transaction_style : '';
@@ -650,6 +654,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
             )}
             <li data-label='menu' className={styles.menu}>
                 <TransactionsMenu
+                    account={account}
                     userPosition={userNameToDisplay === 'You'}
                     tx={tx}
                     tradeData={tradeData}
