@@ -13,10 +13,7 @@ export const useAppChain = (
     (providedChainId: string) => Promise<void>,
 ] => {
     // chain from connected wallet via Moralis
-    // const { isAuthenticated } = useMoralis();
     const { chainId, switchNetwork } = useChain();
-
-    // const { isWeb3Enabled } = useMoralis();
 
     // value tracking the current chain the app is set to use
     // initializes on the default chain parameter
@@ -37,6 +34,7 @@ export const useAppChain = (
     // gatekeeping also ensures app will not change to an unsupported network
     // TODO: plan for pathways supporting de-authentication
     useEffect(() => {
+        // console.log({ chainId });
         // if (isAuthenticated) {
         // if Moralis has a chain ID which does not match the in-app chain ID
         //      Moralis chain ID is supported => switch app to that ID
@@ -57,7 +55,7 @@ export const useAppChain = (
             setIsChainSupported(true);
         }
         // }
-    }, [chainId]);
+    }, [chainId, currentChain]);
 
     // useEffect(() => {
     //     if (chainId !== currentChain) setIsChainSupported(false);
