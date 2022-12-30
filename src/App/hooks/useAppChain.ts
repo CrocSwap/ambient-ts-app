@@ -6,6 +6,7 @@ import { validateChainId } from '../../utils/data/chains';
 
 export const useAppChain = (
     defaultChain: string,
+    isUserLoggedIn: boolean | undefined,
 ): [
     ChainSpec,
     boolean,
@@ -38,23 +39,26 @@ export const useAppChain = (
         // if Moralis has a chain ID which does not match the in-app chain ID
         //      Moralis chain ID is supported => switch app to that ID
         //      Moralis chain Id is NOT supported => switch app to default chain
-        if (chainId && chainId !== currentChain) {
-            if (validateChainId(chainId)) {
-                setCurrentChain(chainId);
-            } else if (!validateChainId(chainId)) {
-                setIsChainSupported(false);
-            } else {
-                console.warn(
-                    `Issue validating network. Received value <<${chainId}>> from Moralis. Refer to useAppChain.ts for debugging why equality check crashed. Refer to chains.ts file for acceptable values.`,
-                );
+        if (isUserLoggedIn) {
+            if (chainId && chainId !== currentChain) {
+                if (validateChainId(chainId)) {
+                    setCurrentChain(chainId);
+                } else if (!validateChainId(chainId)) {
+                    setIsChainSupported(false);
+                } else {
+                    console.warn(
+                        `Issue validating network. Received value <<${chainId}>> from Moralis. Refer to useAppChain.ts for debugging why equality check crashed. Refer to chains.ts file for acceptable values.`,
+                    );
+                }
+                // if Moralis and local state are already on the same chain,
+                // ... indicate chain is supported in local state
+            } else if (chainId === currentChain) {
+                setIsChainSupported(true);
             }
-            // if Moralis and local state are already on the same chain,
-            // ... indicate chain is supported in local state
-        } else if (chainId === currentChain) {
-            setIsChainSupported(true);
         }
+
         // }
-    }, [chainId, currentChain]);
+    }, [chainId, currentChain, isUserLoggedIn]);
 
     // useEffect(() => {
     //     if (chainId !== currentChain) setIsChainSupported(false);
