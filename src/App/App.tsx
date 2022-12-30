@@ -2766,7 +2766,6 @@ export default function App() {
                                     account={account ?? ''}
                                     showSidebar={showSidebar}
                                     isUserLoggedIn={isUserLoggedIn}
-                                    isAuthenticated={isAuthenticated}
                                     baseTokenBalance={baseTokenBalance}
                                     quoteTokenBalance={quoteTokenBalance}
                                     baseTokenDexBalance={baseTokenDexBalance}
@@ -2818,7 +2817,6 @@ export default function App() {
                                     account={account ?? ''}
                                     showSidebar={showSidebar}
                                     isUserLoggedIn={isUserLoggedIn}
-                                    isAuthenticated={isAuthenticated}
                                     baseTokenBalance={baseTokenBalance}
                                     quoteTokenBalance={quoteTokenBalance}
                                     baseTokenDexBalance={baseTokenDexBalance}
@@ -2888,7 +2886,6 @@ export default function App() {
                                     account={account ?? ''}
                                     showSidebar={showSidebar}
                                     isUserLoggedIn={isUserLoggedIn}
-                                    isAuthenticated={isAuthenticated}
                                     baseTokenBalance={baseTokenBalance}
                                     quoteTokenBalance={quoteTokenBalance}
                                     baseTokenDexBalance={baseTokenDexBalance}

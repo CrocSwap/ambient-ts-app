@@ -76,13 +76,6 @@ export default function PageHeader(props: HeaderPropsIF) {
 
     const { user, account, enableWeb3, isAuthenticated } = useMoralis();
 
-    // console.log({ user });
-    // console.log({ isUserUpdating });
-    // console.log({ isInitialized });
-    // console.log({ isAuthenticated });
-    // console.log({ isInitializing });
-    // console.log({ isUserLoggedIn });
-    // console.log({ isWeb3EnableLoading });
     const { t } = useTranslation();
 
     // const [isModalOpen, openModal, closeModal] = useModal();

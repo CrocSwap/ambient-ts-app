@@ -35,7 +35,6 @@ export const useAppChain = (
     // TODO: plan for pathways supporting de-authentication
     useEffect(() => {
         // console.log({ chainId });
-        // if (isAuthenticated) {
         // if Moralis has a chain ID which does not match the in-app chain ID
         //      Moralis chain ID is supported => switch app to that ID
         //      Moralis chain Id is NOT supported => switch app to default chain

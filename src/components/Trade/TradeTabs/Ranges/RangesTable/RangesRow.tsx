@@ -34,7 +34,6 @@ interface RangesRowPropsIF {
     // isAllPositionsEnabled: boolean;
     // tokenAAddress: string;
     // tokenBAddress: string;
-    // isAuthenticated: boolean;
     // isDenomBase: boolean;
     account: string;
     lastBlockNumber: number;

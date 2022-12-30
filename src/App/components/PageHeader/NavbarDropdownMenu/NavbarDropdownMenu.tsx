@@ -32,7 +32,6 @@ interface NavbarDropdownItemPropsIF {
 
 interface NavbarDropdownMenuPropsIF {
     isUserLoggedIn: boolean | undefined;
-    // isAuthenticated?: boolean;
     // isWeb3Enabled?: boolean;
     clickLogout: () => void;
     // openModal: () => void;
@@ -49,7 +48,6 @@ interface NavbarDropdownMenuPropsIF {
 export default function NavbarDropdownMenu(props: NavbarDropdownMenuPropsIF) {
     const {
         isUserLoggedIn,
-        // isAuthenticated,
         // isWeb3Enabled,
         clickLogout,
         // openModal,

@@ -61,7 +61,6 @@ interface PortfolioPropsIF {
     account: string;
     showSidebar: boolean;
     isUserLoggedIn: boolean | undefined;
-    isAuthenticated: boolean;
     baseTokenBalance: string;
     quoteTokenBalance: string;
     baseTokenDexBalance: string;
@@ -102,7 +101,6 @@ export default function Portfolio(props: PortfolioPropsIF) {
         setSelectedOutsideTab,
         importedTokens,
         setImportedTokens,
-        isAuthenticated,
         baseTokenBalance,
         quoteTokenBalance,
         baseTokenDexBalance,
@@ -495,7 +493,6 @@ export default function Portfolio(props: PortfolioPropsIF) {
                         currentPositionActive={props.currentPositionActive}
                         setCurrentPositionActive={props.setCurrentPositionActive}
                         isUserLoggedIn={isUserLoggedIn}
-                        isAuthenticated={isAuthenticated}
                         baseTokenBalance={baseTokenBalance}
                         quoteTokenBalance={quoteTokenBalance}
                         baseTokenDexBalance={baseTokenDexBalance}
