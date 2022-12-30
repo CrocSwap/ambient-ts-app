@@ -35,8 +35,7 @@ interface ITabsProps {
     crocEnv: CrocEnv | undefined;
     provider: ethers.providers.Provider | undefined;
     account: string;
-    isAuthenticated: boolean;
-    isWeb3Enabled: boolean;
+
     lastBlockNumber: number;
     chainId: string;
     chainData: ChainSpec;
@@ -89,8 +88,6 @@ export default function TradeTabs2(props: ITabsProps) {
         crocEnv,
         chainId,
         chainData,
-        isAuthenticated,
-        isWeb3Enabled,
         account,
         isShowAllEnabled,
         setIsShowAllEnabled,
@@ -357,7 +354,6 @@ export default function TradeTabs2(props: ITabsProps) {
         importedTokens: importedTokens,
         provider: provider,
         account: account,
-        isAuthenticated: isAuthenticated,
         chainId: chainId,
         isShowAllEnabled: isShowAllEnabled,
         notOnTradeRoute: false,
@@ -432,6 +428,7 @@ export default function TradeTabs2(props: ITabsProps) {
         setIsShowAllEnabled: setIsShowAllEnabled,
         setIsCandleSelected: setIsCandleSelected,
         changeState: changeState,
+        lastBlockNumber: lastBlockNumber,
     };
     // props for <PositionsOnlyToggle/> React Element
 
@@ -440,8 +437,7 @@ export default function TradeTabs2(props: ITabsProps) {
     const positionsOnlyToggleProps = {
         changeState: changeState,
         isShowAllEnabled: isShowAllEnabled,
-        isAuthenticated: isAuthenticated,
-        isWeb3Enabled: isWeb3Enabled,
+        isUserLoggedIn: isUserLoggedIn,
         setHasInitialized: setHasInitialized,
         setIsShowAllEnabled: setIsShowAllEnabled,
         setIsCandleSelected: setIsCandleSelected,

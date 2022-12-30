@@ -18,25 +18,32 @@ interface IPriceInfoProps {
     limitOrder: LimitOrderIF;
     // lowRangeDisplay: string;
     // highRangeDisplay: string;
-    // baseCollateralDisplay: string | undefined;
-    // quoteCollateralDisplay: string | undefined;
+    baseCollateralDisplay: string | undefined;
+    quoteCollateralDisplay: string | undefined;
     // baseFeesDisplay: string | undefined;
     // quoteFeesDisplay: string | undefined;
     // baseTokenLogoURI: string;
     // quoteTokenLogoURI: string;
     // baseTokenSymbol: string;
     // quoteTokenSymbol: string;
-
+    usdValue: string | undefined;
     // isDenomBase: boolean;
-
+    isOrderFilled: boolean;
     controlItems: ItemIF[];
 }
 
 export default function PriceInfo(props: IPriceInfoProps) {
-    const { limitOrder, controlItems } = props;
+    const {
+        limitOrder,
+        isOrderFilled,
+        controlItems,
+        usdValue,
+        baseCollateralDisplay,
+        quoteCollateralDisplay,
+    } = props;
     const dispatch = useAppDispatch();
     const {
-        usdValue,
+        // usdValue,
         baseTokenSymbol,
         quoteTokenSymbol,
         isDenomBase,
@@ -44,12 +51,13 @@ export default function PriceInfo(props: IPriceInfoProps) {
         quoteTokenLogo,
         startPriceDisplay,
         finishPriceDisplay,
+
         // bidTick,
         // askTick,
         // positionLiqTotalUSD,
 
-        baseDisplayFrontend,
-        quoteDisplayFrontend,
+        // baseDisplayFrontend,
+        // quoteDisplayFrontend,
         // positionLiquidity,
     } = useProcessOrder(limitOrder);
     // const data = useProcessOrder(limitOrder);
@@ -63,21 +71,21 @@ export default function PriceInfo(props: IPriceInfoProps) {
             exit={{ opacity: 0 }}
             className={styles.info_container}
         >
-            <p>{limitOrder.claimableLiq !== '0' ? 'Claimable Liquidity' : 'Removable Liquidity'}</p>
+            <p>{isOrderFilled ? 'Claimable Liquidity' : 'Removable Liquidity'}</p>
             <Row>
                 <div className={styles.align_center}>
                     <img src={baseTokenLogo} alt='' width='20px' />
                     {baseTokenSymbol}
                 </div>
 
-                <div className={styles.info_text}>{baseDisplayFrontend}</div>
+                <div className={styles.info_text}>{baseCollateralDisplay}</div>
             </Row>
             <Row>
                 <div className={styles.align_center}>
                     <img src={quoteTokenLogo} alt='' width='20px' />
                     {quoteTokenSymbol}
                 </div>
-                <div className={styles.info_text}>{quoteDisplayFrontend}</div>
+                <div className={styles.info_text}>{quoteCollateralDisplay}</div>
             </Row>
             {/*  */}
             {/* <Divider /> */}
@@ -192,7 +200,6 @@ export default function PriceInfo(props: IPriceInfoProps) {
     );
     // console.log(controlItems);
 
-    const isOrderClaimable = limitOrder.claimableLiq !== '0';
     const isBid = limitOrder.isBid;
 
     const descriptionContent = (
@@ -205,20 +212,20 @@ export default function PriceInfo(props: IPriceInfoProps) {
         >
             <span>
                 {`This limit order ${
-                    isOrderClaimable ? 'completed' : 'will complete'
+                    isOrderFilled ? 'completed' : 'will complete'
                 }  execution and  ${
-                    isOrderClaimable ? 'became' : 'become'
+                    isOrderFilled ? 'became' : 'become'
                 } claimable when the price of ${isDenomBase ? baseTokenSymbol : quoteTokenSymbol}
                 ${
                     isDenomBase
-                        ? isOrderClaimable
+                        ? isOrderFilled
                             ? isBid
                                 ? 'increased'
                                 : 'decreased'
                             : isBid
                             ? 'increases'
                             : 'decreases'
-                        : isOrderClaimable
+                        : isOrderFilled
                         ? isBid
                             ? 'decreased'
                             : 'increased'
