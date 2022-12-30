@@ -1,4 +1,3 @@
-// import { useMoralis } from 'react-moralis';
 import { useState, useEffect } from 'react';
 import styles from './MagicLogin.module.css';
 // import Button from '../../../components/Global/Button/Button';
@@ -8,7 +7,6 @@ interface IMagicLoginProps {
 }
 
 export default function MagicLogin(props: IMagicLoginProps) {
-    // const { authenticate, authError, isAuthenticating } = useMoralis();
     console.log({ props });
     const [email, setEmail] = useState('');
     // const [message, setMessage] = useState('Please enter a valid email address');

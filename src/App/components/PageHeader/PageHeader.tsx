@@ -74,16 +74,7 @@ export default function PageHeader(props: HeaderPropsIF) {
         poolPriceDisplay,
     } = props;
 
-    const {
-        user,
-        account,
-        enableWeb3,
-        isAuthenticated,
-        // isWeb3EnableLoading,
-        // isInitialized,
-        // isInitializing,
-        // isUserUpdating,
-    } = useMoralis();
+    const { user, account, enableWeb3, isAuthenticated } = useMoralis();
 
     // console.log({ user });
     // console.log({ isUserUpdating });
