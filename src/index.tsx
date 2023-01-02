@@ -9,7 +9,7 @@ import reportWebVitals from './reportWebVitals';
 import { MoralisProvider } from 'react-moralis';
 import './i18n/config.ts';
 
-import { WagmiConfig, createClient, configureChains, mainnet } from 'wagmi';
+import { WagmiConfig, createClient, configureChains, mainnet, goerli } from 'wagmi';
 
 import { alchemyProvider } from 'wagmi/providers/alchemy';
 import { publicProvider } from 'wagmi/providers/public';
@@ -20,7 +20,7 @@ import { MetaMaskConnector } from 'wagmi/connectors/metaMask';
 import { WalletConnectConnector } from 'wagmi/connectors/walletConnect';
 
 const { chains, provider, webSocketProvider } = configureChains(
-    [mainnet],
+    [mainnet, goerli],
     [alchemyProvider({ apiKey: '88xHXjBMB59mzC1VWXFCCg8dICKJZOqS' }), publicProvider()],
 );
 
