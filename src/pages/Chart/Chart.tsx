@@ -1250,6 +1250,10 @@ export default function Chart(props: ChartData) {
                         } else if (location.pathname.includes('range')) {
                             // onClickRange(event);
                         }
+                    } else {
+                        const { isHoverCandleOrVolumeData, _selectedDate } =
+                            candleOrVolumeDataHoverStatus(event.sourceEvent);
+                        selectedDateEvent(isHoverCandleOrVolumeData, _selectedDate);
                     }
 
                     const latestCandle = d3.max(parsedChartData.chartData, (d) => d.date);
@@ -3331,6 +3335,16 @@ export default function Chart(props: ChartData) {
             _selectedDate: nearest?.date,
         };
     };
+
+    const selectedDateEvent = (isHoverCandleOrVolumeData: any, _selectedDate: any) => {
+        if (isHoverCandleOrVolumeData) {
+            if (selectedDate === undefined || selectedDate.getTime() !== _selectedDate.getTime()) {
+                setSelectedDate(_selectedDate);
+            } else {
+                setSelectedDate(undefined);
+            }
+        }
+    };
     // Draw Chart
     const drawChart = (
         chartData: any,
@@ -3476,16 +3490,7 @@ export default function Chart(props: ChartData) {
             d3.select(d3PlotArea.current).on('click', (event: any) => {
                 const { isHoverCandleOrVolumeData, _selectedDate } =
                     candleOrVolumeDataHoverStatus(event);
-                if (isHoverCandleOrVolumeData) {
-                    if (
-                        selectedDate === undefined ||
-                        selectedDate.getTime() !== _selectedDate.getTime()
-                    ) {
-                        setSelectedDate(_selectedDate);
-                    } else {
-                        setSelectedDate(undefined);
-                    }
-                }
+                selectedDateEvent(isHoverCandleOrVolumeData, _selectedDate);
 
                 if (
                     location.pathname.includes('range') &&
