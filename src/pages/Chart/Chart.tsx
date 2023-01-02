@@ -46,6 +46,7 @@ declare global {
         interface IntrinsicElements {
             'd3fc-group': DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement>;
             'd3fc-svg': DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement>;
+            'd3fc-canvas': DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement>;
         }
     }
 }
@@ -86,7 +87,7 @@ interface ChartData {
     poolPriceNonDisplay: number | undefined;
     selectedDate: Date | undefined;
     setSelectedDate: React.Dispatch<Date | undefined>;
-    volumeData: VolumeChartData;
+    volumeData: VolumeChartData[];
     rescale: boolean | undefined;
     setRescale: React.Dispatch<React.SetStateAction<boolean>>;
     latest: boolean | undefined;
@@ -159,6 +160,7 @@ export default function Chart(props: ChartData) {
 
     const d3Container = useRef(null);
     const d3PlotArea = useRef(null);
+    const d3Canvas = useRef(null);
 
     const d3Xaxis = useRef(null);
     const d3Yaxis = useRef(null);
@@ -982,13 +984,7 @@ export default function Chart(props: ChartData) {
             Math.abs(point.offsetX - xScale(xValue(d))),
         )[1];
 
-        setCrosshairForSubChart((prevState) => {
-            const newData = [...prevState];
-
-            newData[0].x = nearest?.date;
-
-            return newData;
-        });
+        return nearest;
     };
 
     const getNewCandleData = (event: any, date: any, xScale: any) => {
@@ -1229,7 +1225,14 @@ export default function Chart(props: ChartData) {
                         clickedForLine = true;
                         render();
 
-                        snapForCandle(event.sourceEvent);
+                        const nearest = snapForCandle(event.sourceEvent);
+                        setCrosshairForSubChart((prevState) => {
+                            const newData = [...prevState];
+
+                            newData[0].x = nearest?.date;
+
+                            return newData;
+                        });
                         setZoomAndYdragControl(event);
                     }
                 })
@@ -1243,7 +1246,7 @@ export default function Chart(props: ChartData) {
                             const newLimitValue = scaleData.yScale.invert(
                                 event.sourceEvent.offsetY,
                             );
-                            onBlurlimitRate(newLimitValue);
+                            onBlurLimitRate(newLimitValue);
                         } else if (location.pathname.includes('range')) {
                             // onClickRange(event);
                         }
@@ -1935,7 +1938,7 @@ export default function Chart(props: ChartData) {
                         .selectAll('.horizontal')
                         .remove();
 
-                    onBlurlimitRate(newLimitValue);
+                    onBlurLimitRate(newLimitValue);
                 });
 
             setDragRange(() => {
@@ -2387,34 +2390,6 @@ export default function Chart(props: ChartData) {
                     .call(dragLimit);
             }
         }
-
-        if (location.pathname.includes('limit') && scaleData !== undefined) {
-            d3.select(d3Container.current).on('click', (event: any) => {
-                if ((event.target.__data__ as CandleChartData) === undefined) {
-                    let newLimitValue = scaleData.yScale.invert(d3.pointer(event)[1]);
-
-                    if (newLimitValue < 0) newLimitValue = 0;
-
-                    newLimitValue =
-                        poolPriceDisplay !== undefined && newLimitValue > liquidityData.topBoundary
-                            ? liquidityData.topBoundary
-                            : newLimitValue;
-
-                    onBlurlimitRate(newLimitValue);
-                }
-            });
-        }
-
-        if (location.pathname.includes('range') && scaleData !== undefined) {
-            d3.select(d3PlotArea.current).on('click', async (event: any) => {
-                if (
-                    (event.target.__data__ as CandleChartData) === undefined ||
-                    event.target.__data__ instanceof Array
-                ) {
-                    onClickRange(event);
-                }
-            });
-        }
     }, [
         dragLimit,
         dragRange,
@@ -2701,58 +2676,49 @@ export default function Chart(props: ChartData) {
 
     useEffect(() => {
         if (scaleData !== undefined) {
-            const candlestick = d3fc
-                .autoBandwidth(d3fc.seriesSvgCandlestick())
-                .decorate((selection: any) => {
-                    selection
-                        .style('fill', (d: any) => {
-                            return selectedDate !== undefined &&
-                                selectedDate.getTime() === d.date.getTime()
-                                ? '#E480FF'
-                                : d.color;
-                        })
-                        .style('stroke', (d: any) => {
-                            return selectedDate !== undefined &&
-                                selectedDate.getTime() === d.date.getTime()
-                                ? '#E480FF'
-                                : d.stroke;
-                        });
-                    selection
-                        .on('mouseover', (event: any) => {
-                            d3.select(event.currentTarget).style('cursor', 'pointer');
-                        })
-                        .on('click', (event: any) => {
-                            if (
-                                selectedDate === undefined ||
-                                selectedDate.getTime() !==
-                                    new Date(event.target.__data__.date).getTime()
-                            ) {
-                                d3.select(event.currentTarget)
-                                    .style('fill', '#E480FF')
-                                    .style('stroke', '#E480FF');
+            const canvasCandlestick = d3fc
+                .autoBandwidth(d3fc.seriesCanvasCandlestick())
+                .decorate((context: any, d: any) => {
+                    context.fillStyle =
+                        selectedDate !== undefined && selectedDate.getTime() === d.date.getTime()
+                            ? '#E480FF'
+                            : d.color;
 
-                                setSelectedDate(event.target.__data__.date);
-                            } else {
-                                d3.select(event.currentTarget)
-                                    .style('fill', (d: any) =>
-                                        d.close > d.open ? upBodyColor : downBodyColor,
-                                    )
-                                    .style('stroke', (d: any) =>
-                                        d.close > d.open ? upBorderColor : downBorderColor,
-                                    );
-
-                                setSelectedDate(undefined);
-                            }
-                        });
+                    context.strokeStyle =
+                        selectedDate !== undefined && selectedDate.getTime() === d.date.getTime()
+                            ? '#E480FF'
+                            : d.stroke;
+                    context.cursorStyle = 'pointer';
                 })
+
                 .xScale(scaleData.xScale)
                 .yScale(scaleData.yScale);
 
-            setCandlestick(() => {
-                return candlestick;
-            });
+            setCandlestick(() => canvasCandlestick);
+            renderCanvas();
         }
-    }, [scaleData, selectedDate]);
+    }, [dragControl, selectedDate]);
+
+    useEffect(() => {
+        const ctx = (d3.select(d3Canvas.current).select('canvas').node() as any).getContext('2d');
+
+        if (candlestick) {
+            d3.select(d3Canvas.current)
+                .on('draw', () => {
+                    candlestick(parsedChartData?.chartData);
+                })
+                .on('measure', () => {
+                    candlestick.context(ctx);
+                });
+        }
+    }, [scaleData, parsedChartData, candlestick]);
+
+    function renderCanvas() {
+        if (d3Canvas) {
+            const container = d3.select(d3Canvas.current).node() as any;
+            container.requestRedraw();
+        }
+    }
 
     useEffect(() => {
         if (scaleData !== undefined && candlestick !== undefined) {
@@ -2777,21 +2743,6 @@ export default function Chart(props: ChartData) {
                     );
                     selection.on('mouseover', (event: any) => {
                         d3.select(event.currentTarget).style('cursor', 'pointer');
-                    });
-                    selection.on('click', (event: any) => {
-                        if (
-                            selectedDate === undefined ||
-                            selectedDate.getTime() !==
-                                new Date(event.target.__data__.time).getTime()
-                        ) {
-                            d3.select(event.currentTarget)
-                                .style('fill', '#E480FF')
-                                .style('stroke', '#E480FF');
-
-                            setSelectedDate(event.target.__data__.time);
-                        } else {
-                            setSelectedDate(undefined);
-                        }
                     });
                 });
 
@@ -3359,6 +3310,27 @@ export default function Chart(props: ChartData) {
             );
     };
 
+    const candleOrVolumeDataHoverStatus = (event: any) => {
+        const nearest = snapForCandle(event);
+        const yValue = scaleData.yScale.invert(event.offsetY);
+        const yValueVolume = scaleData.volumeScale.invert(event.offsetY);
+        const selectedVolumeData = volumeData.find(
+            (item: any) => item.time.getTime() === nearest?.date.getTime(),
+        );
+        const selectedVolumeDataValue = selectedVolumeData?.value;
+
+        const isSelectedVolume = selectedVolumeDataValue
+            ? yValueVolume <= selectedVolumeDataValue
+                ? true
+                : false
+            : false;
+
+        return {
+            isHoverCandleOrVolumeData:
+                nearest && ((nearest?.high > yValue && nearest?.low < yValue) || isSelectedVolume),
+            _selectedDate: nearest?.date,
+        };
+    };
     // Draw Chart
     const drawChart = (
         chartData: any,
@@ -3461,7 +3433,7 @@ export default function Chart(props: ChartData) {
                 ];
             };
 
-            const candleJoin = d3fc.dataJoin('g', 'candle');
+            // const candleJoin = d3fc.dataJoin('g', 'candle');
 
             const horizontalBand = d3fc
                 .annotationSvgBand()
@@ -3501,6 +3473,46 @@ export default function Chart(props: ChartData) {
                 ]);
             });
 
+            d3.select(d3PlotArea.current).on('click', (event: any) => {
+                const { isHoverCandleOrVolumeData, _selectedDate } =
+                    candleOrVolumeDataHoverStatus(event);
+                if (isHoverCandleOrVolumeData) {
+                    if (
+                        selectedDate === undefined ||
+                        selectedDate.getTime() !== _selectedDate.getTime()
+                    ) {
+                        setSelectedDate(_selectedDate);
+                    } else {
+                        setSelectedDate(undefined);
+                    }
+                }
+
+                if (
+                    location.pathname.includes('range') &&
+                    scaleData !== undefined &&
+                    !isHoverCandleOrVolumeData
+                ) {
+                    onClickRange(event);
+                }
+
+                if (
+                    location.pathname.includes('limit') &&
+                    scaleData !== undefined &&
+                    !isHoverCandleOrVolumeData
+                ) {
+                    let newLimitValue = scaleData.yScale.invert(event.offsetY);
+
+                    if (newLimitValue < 0) newLimitValue = 0;
+
+                    newLimitValue =
+                        poolPriceDisplay !== undefined && newLimitValue > liquidityData.topBoundary
+                            ? liquidityData.topBoundary
+                            : newLimitValue;
+
+                    onBlurLimitRate(newLimitValue);
+                }
+            });
+
             d3.select(d3PlotArea.current).on('draw', function (event: any) {
                 async function createElements() {
                     const svg = d3.select(event.target).select('svg');
@@ -3533,7 +3545,7 @@ export default function Chart(props: ChartData) {
                     // );
                     indicatorLineJoin(svg, [indicatorLineData]).call(indicatorLine);
 
-                    candleJoin(svg, [chartData]).call(candlestick);
+                    // candleJoin(svg, [chartData]).call(candlestick);
 
                     areaAskJoin(svg, [liqMode === 'Curve' ? liquidityData.liqAskData : []]).call(
                         liqAskSeries,
@@ -3926,12 +3938,18 @@ export default function Chart(props: ChartData) {
                 setCrossHairLocation(mouseMoveEventCharts.sourceEvent);
             }
 
-            d3.select(d3PlotArea.current).on('mousemove', async function (event: any) {
+            d3.select(d3PlotArea.current).on('mousemove', function (event: any) {
                 isMouseMoveForSubChart = false;
                 isZoomForSubChart = false;
                 setCrossHairLocation(event);
                 setMouseMoveEventCharts(event);
                 showCrosshair();
+
+                const { isHoverCandleOrVolumeData } = candleOrVolumeDataHoverStatus(event);
+                d3.select(event.currentTarget).style(
+                    'cursor',
+                    isHoverCandleOrVolumeData ? 'pointer' : 'default',
+                );
             });
 
             d3.select(d3Yaxis.current).on('mouseover', (event: any) => {
@@ -4198,7 +4216,7 @@ export default function Chart(props: ChartData) {
         }
     };
 
-    const onBlurlimitRate = (newLimitValue: any) => {
+    const onBlurLimitRate = (newLimitValue: any) => {
         if (newLimitValue === undefined) {
             return;
         }
@@ -4230,8 +4248,6 @@ export default function Chart(props: ChartData) {
             } else {
                 tickDispPrice.then((tp) => {
                     const displayPriceWithDenom = denomInBase ? tp : 1 / tp;
-
-                    // const limitPriceWithDenom = isDenomBase ? 1 / tp : tp;
                     const limitRateTruncated =
                         displayPriceWithDenom < 2
                             ? displayPriceWithDenom.toLocaleString(undefined, {
@@ -4262,116 +4278,77 @@ export default function Chart(props: ChartData) {
         });
     };
 
-    // useEffect(() => {
-    //     const popupHeight = 15;
-    //     // let popupHeight = 22;
-    //     // Object.values(props.chartItemStates).map((value: any) => {
-    //     //     if (value) popupHeight -= 7.8;
-    //     // });
-    //     setPopupHeight(() => {
-    //         return popupHeight;
-    //     });
-    // }, [props.chartItemStates]);
-
     return (
         <div ref={d3Container} className='main_layout_chart' data-testid={'chart'}>
             <d3fc-group id='d3fc_group' auto-resize>
-                <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-                    <div
-                        id='plotAreaDiv'
-                        style={{
-                            flex: 1,
-                            display: 'flex',
-                            flexDirection: 'row',
-                            overflow: 'hidden',
-                        }}
-                    >
-                        <d3fc-svg
-                            ref={d3PlotArea}
-                            className='plot-area'
-                            style={{ flex: 1, flexGrow: 20, overflow: 'hidden' }}
-                        ></d3fc-svg>
-                        <d3fc-svg
-                            className='y-axis'
-                            ref={d3Yaxis}
-                            style={{ width: yAxisWidth }}
-                        ></d3fc-svg>
-                    </div>
+                <d3fc-canvas ref={d3Canvas} className='plot-canvas'></d3fc-canvas>
+                <d3fc-svg ref={d3PlotArea} className='plot-area'></d3fc-svg>
 
-                    {showFeeRate && (
-                        <>
-                            <hr />
-                            <FeeRateSubChart
-                                feeData={parsedChartData?.feeChartData.sort(
-                                    (a, b) => b.time - a.time,
-                                )}
-                                period={parsedChartData?.period}
-                                crosshairForSubChart={crosshairForSubChart}
-                                subChartValues={subChartValues}
-                                setsubChartValues={setsubChartValues}
-                                xScale={scaleData !== undefined ? scaleData.xScale : undefined}
-                                getNewCandleData={getNewCandleData}
-                                setZoomAndYdragControl={setZoomAndYdragControl}
-                                zoomAndYdragControl={zoomAndYdragControl}
-                                setIsMouseMoveForSubChart={setIsMouseMoveForSubChart}
-                                isMouseMoveForSubChart={isMouseMoveForSubChart}
-                                setIsZoomForSubChart={setIsZoomForSubChart}
-                                setMouseMoveEventCharts={setMouseMoveEventCharts}
-                                render={render}
-                                mouseMoveChartName={mouseMoveChartName}
-                                setMouseMoveChartName={setMouseMoveChartName}
-                            />
-                        </>
-                    )}
+                <d3fc-svg
+                    className='y-axis-svg'
+                    ref={d3Yaxis}
+                    style={{ width: yAxisWidth, gridColumn: 4, gridRow: 3 }}
+                ></d3fc-svg>
 
-                    {showTvl && (
-                        <>
-                            <hr />
-                            <TvlSubChart
-                                tvlData={parsedChartData?.tvlChartData.sort(
-                                    (a, b) => b.time - a.time,
-                                )}
-                                period={parsedChartData?.period}
-                                crosshairForSubChart={crosshairForSubChart}
-                                subChartValues={subChartValues}
-                                setsubChartValues={setsubChartValues}
-                                scaleData={scaleData}
-                                getNewCandleData={getNewCandleData}
-                                setZoomAndYdragControl={setZoomAndYdragControl}
-                                zoomAndYdragControl={zoomAndYdragControl}
-                                isMouseMoveForSubChart={isMouseMoveForSubChart}
-                                setIsMouseMoveForSubChart={setIsMouseMoveForSubChart}
-                                setIsZoomForSubChart={setIsZoomForSubChart}
-                                setMouseMoveEventCharts={setMouseMoveEventCharts}
-                                render={render}
-                                mouseMoveChartName={mouseMoveChartName}
-                                setMouseMoveChartName={setMouseMoveChartName}
-                                setTransformX={setTransformX}
-                                transformX={transformX}
-                            />
-                        </>
-                    )}
+                {showFeeRate && (
+                    <>
+                        <hr />
+                        <FeeRateSubChart
+                            feeData={parsedChartData?.feeChartData.sort((a, b) => b.time - a.time)}
+                            period={parsedChartData?.period}
+                            crosshairForSubChart={crosshairForSubChart}
+                            subChartValues={subChartValues}
+                            setsubChartValues={setsubChartValues}
+                            xScale={scaleData !== undefined ? scaleData.xScale : undefined}
+                            getNewCandleData={getNewCandleData}
+                            setZoomAndYdragControl={setZoomAndYdragControl}
+                            zoomAndYdragControl={zoomAndYdragControl}
+                            setIsMouseMoveForSubChart={setIsMouseMoveForSubChart}
+                            isMouseMoveForSubChart={isMouseMoveForSubChart}
+                            setIsZoomForSubChart={setIsZoomForSubChart}
+                            setMouseMoveEventCharts={setMouseMoveEventCharts}
+                            render={render}
+                            mouseMoveChartName={mouseMoveChartName}
+                            setMouseMoveChartName={setMouseMoveChartName}
+                        />
+                    </>
+                )}
 
+                {showTvl && (
+                    <>
+                        <hr />
+                        <TvlSubChart
+                            tvlData={parsedChartData?.tvlChartData.sort((a, b) => b.time - a.time)}
+                            period={parsedChartData?.period}
+                            crosshairForSubChart={crosshairForSubChart}
+                            setsubChartValues={setsubChartValues}
+                            scaleData={scaleData}
+                            getNewCandleData={getNewCandleData}
+                            setZoomAndYdragControl={setZoomAndYdragControl}
+                            zoomAndYdragControl={zoomAndYdragControl}
+                            isMouseMoveForSubChart={isMouseMoveForSubChart}
+                            subChartValues={subChartValues}
+                            setIsMouseMoveForSubChart={setIsMouseMoveForSubChart}
+                            setIsZoomForSubChart={setIsZoomForSubChart}
+                            setMouseMoveEventCharts={setMouseMoveEventCharts}
+                            render={render}
+                            mouseMoveChartName={mouseMoveChartName}
+                            setMouseMoveChartName={setMouseMoveChartName}
+                            setTransformX={setTransformX}
+                            transformX={transformX}
+                        />
+                    </>
+                )}
+
+                <div style={{ height: '1.25em', width: '100%', gridColumn: 3, gridRow: 4 }}>
                     <hr />
                     <d3fc-svg
                         ref={d3Xaxis}
                         className='x-axis'
-                        style={{ height: '1.25em', width: '100%' }}
+                        style={{ height: '1.25em', width: '100%', gridColumn: 3, gridRow: 4 }}
                     ></d3fc-svg>
                 </div>
             </d3fc-group>
-
-            {/* <div
-                className='popup'
-                id='transactionPopup'
-                style={{ visibility: 'hidden', top: popupHeight + '%' }}
-                onClick={() => {
-                    setSelectedDate(undefined);
-
-                    d3.select('#transactionPopup').style('visibility', 'hidden');
-                    props.changeState(false, undefined);
-                }}
-            ></div> */}
         </div>
     );
 }

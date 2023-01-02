@@ -145,7 +145,6 @@ export default function TradeCandleStickChart(props: ChartData) {
     }, [activeChartPeriod, denominationsInBase]);
 
     useEffect(() => {
-        console.log('first');
         parseData();
         setIsCandleAdded(true);
     }, [props.candleData]);
