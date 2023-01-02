@@ -1069,12 +1069,19 @@
   dependencies:
     regenerator-runtime "^0.13.4"
 
-"@babel/runtime@^7.10.2", "@babel/runtime@^7.12.1", "@babel/runtime@^7.12.5", "@babel/runtime@^7.14.5", "@babel/runtime@^7.16.3", "@babel/runtime@^7.17.2", "@babel/runtime@^7.17.9", "@babel/runtime@^7.18.3", "@babel/runtime@^7.18.9", "@babel/runtime@^7.19.0", "@babel/runtime@^7.20.6", "@babel/runtime@^7.20.7", "@babel/runtime@^7.3.1", "@babel/runtime@^7.4.4", "@babel/runtime@^7.5.5", "@babel/runtime@^7.8.3", "@babel/runtime@^7.8.4", "@babel/runtime@^7.8.7", "@babel/runtime@^7.9.2":
+"@babel/runtime@^7.10.2", "@babel/runtime@^7.12.1", "@babel/runtime@^7.12.5", "@babel/runtime@^7.14.5", "@babel/runtime@^7.16.3", "@babel/runtime@^7.17.2", "@babel/runtime@^7.17.9", "@babel/runtime@^7.18.3", "@babel/runtime@^7.18.9", "@babel/runtime@^7.19.0", "@babel/runtime@^7.20.6", "@babel/runtime@^7.20.7", "@babel/runtime@^7.5.5", "@babel/runtime@^7.8.3", "@babel/runtime@^7.8.4", "@babel/runtime@^7.8.7", "@babel/runtime@^7.9.2":
   version "7.20.7"
   resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.20.7.tgz#fcb41a5a70550e04a7b708037c7c32f7f356d8fd"
   integrity sha512-UF0tvkUtxwAgZ5W/KrkHf0Rn0fdnLDU9ScxBrEVNUprE/MzirjK4MJUX1/BVDv00Sv8cljtukVK1aky++X1SjQ==
   dependencies:
     regenerator-runtime "^0.13.11"
+
+"@babel/runtime@^7.3.1", "@babel/runtime@^7.4.4":
+  version "7.5.0"
+  resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.5.0.tgz#49dcbcd637099a55d3a61e590a00d6861393b1b5"
+  integrity sha512-2xsuyZ0R0RBFwjgae5NpXk8FcfH4qovj5cEM5VEeB7KXnKqzaisIu2HSV/mCEISolJJuR4wkViUGYujA8MH9tw==
+  dependencies:
+    regenerator-runtime "^0.13.2"
 
 "@babel/template@^7.10.4", "@babel/template@^7.18.10", "@babel/template@^7.20.7", "@babel/template@^7.3.3":
   version "7.20.7"
@@ -4201,10 +4208,10 @@
     abitype "^0.1.8"
     eventemitter3 "^4.0.7"
 
-"@wagmi/core@0.8.9":
-  version "0.8.9"
-  resolved "https://registry.yarnpkg.com/@wagmi/core/-/core-0.8.9.tgz#9f02abca754ae0ac5317957d066a0e2867d18038"
-  integrity sha512-aaTSaChXd5YVoBjIQGpKVNLMlt49Z7z/0VTrgBxg5ADBPRTs4EGzwLB3nOAttrNvgrp3iuDMGRpP+44dsOONfA==
+"@wagmi/core@0.8.10":
+  version "0.8.10"
+  resolved "https://registry.yarnpkg.com/@wagmi/core/-/core-0.8.10.tgz#0bbab849606ebbcd68ef883bc30509aa27840d7e"
+  integrity sha512-TbXaKfZX0GD3LkhGoIWPWaitmwucNPxm0riRYStRncoe9JqSYJ82P3vwLn7zO9f1mwqwnf0EOnmotycH/adTwQ==
   dependencies:
     "@wagmi/chains" "0.1.7"
     "@wagmi/connectors" "0.1.3"
@@ -14639,7 +14646,7 @@ regenerator-runtime@^0.11.0:
   resolved "https://registry.yarnpkg.com/regenerator-runtime/-/regenerator-runtime-0.11.1.tgz#be05ad7f9bf7d22e056f9726cee5017fbf19e2e9"
   integrity sha512-MguG95oij0fC3QV3URf4V2SDYGJhJnJGqvIIgdECeODCT98wSWDAJ94SSuVpYQUoTcGUIL6L4yNB7j1DFFHSBg==
 
-regenerator-runtime@^0.13.11, regenerator-runtime@^0.13.4, regenerator-runtime@^0.13.7:
+regenerator-runtime@^0.13.11, regenerator-runtime@^0.13.2, regenerator-runtime@^0.13.4, regenerator-runtime@^0.13.7:
   version "0.13.11"
   resolved "https://registry.yarnpkg.com/regenerator-runtime/-/regenerator-runtime-0.13.11.tgz#f6dca3e7ceec20590d07ada785636a90cdca17f9"
   integrity sha512-kY1AZVr2Ra+t+piVaJ4gxaFaReZVH40AKNo7UCX6W+dEwBo/2oZJzqfuN1qLq1oL45o56cPaTXELwrTh8Fpggg==
@@ -16860,15 +16867,15 @@ w3c-xmlserializer@^2.0.0:
     xml-name-validator "^3.0.0"
 
 wagmi@^0.10.2:
-  version "0.10.2"
-  resolved "https://registry.yarnpkg.com/wagmi/-/wagmi-0.10.2.tgz#95af88518bb2b0bc193b8970efc577938cf132e7"
-  integrity sha512-Hfj4GNXtXZQ/trmjdfjyO1B6ti17O//jEZhHwnNX5TsDDpEbPC5JCW7aF6ZGgYB9Je6qyElBLAs8pQPmfIw1SQ==
+  version "0.10.3"
+  resolved "https://registry.yarnpkg.com/wagmi/-/wagmi-0.10.3.tgz#7f782781c28430960c9e677deaa8def4973960d6"
+  integrity sha512-BYEjNjnzZFaEUKXCScdRYq0tGVeu+6hooqCBfVXrf6WFqvp3Z55TcRhCfvbT2KHEPFZpXRTlVH/f5lX0RyMvrw==
   dependencies:
     "@coinbase/wallet-sdk" "^3.6.0"
     "@tanstack/query-sync-storage-persister" "^4.14.5"
     "@tanstack/react-query" "^4.14.5"
     "@tanstack/react-query-persist-client" "^4.14.5"
-    "@wagmi/core" "0.8.9"
+    "@wagmi/core" "0.8.10"
     "@walletconnect/ethereum-provider" "^1.8.0"
     abitype "^0.2.5"
     use-sync-external-store "^1.2.0"
