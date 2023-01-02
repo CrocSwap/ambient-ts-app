@@ -146,7 +146,7 @@ export const fetchErc20TokenBalances = async (
 ): Promise<TokenIF[] | undefined> => {
     if (!crocEnv) return;
 
-    const options = { address: address, chain: chain as '0x5' | '0x2a' };
+    const options = { address: address, chain: chain as '0x5' };
 
     const erc20WalletBalancesFromMoralis = await Moralis.Web3API.account.getTokenBalances(options);
 
