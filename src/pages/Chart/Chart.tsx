@@ -87,7 +87,7 @@ interface ChartData {
     poolPriceNonDisplay: number | undefined;
     selectedDate: Date | undefined;
     setSelectedDate: React.Dispatch<Date | undefined>;
-    volumeData: VolumeChartData;
+    volumeData: VolumeChartData[];
     rescale: boolean | undefined;
     setRescale: React.Dispatch<React.SetStateAction<boolean>>;
     latest: boolean | undefined;
@@ -984,13 +984,7 @@ export default function Chart(props: ChartData) {
             Math.abs(point.offsetX - xScale(xValue(d))),
         )[1];
 
-        setCrosshairForSubChart((prevState) => {
-            const newData = [...prevState];
-
-            newData[0].x = nearest?.date;
-
-            return newData;
-        });
+        return nearest;
     };
 
     const getNewCandleData = (event: any, date: any, xScale: any) => {
@@ -1231,7 +1225,14 @@ export default function Chart(props: ChartData) {
                         clickedForLine = true;
                         render();
 
-                        snapForCandle(event.sourceEvent);
+                        const nearest = snapForCandle(event.sourceEvent);
+                        setCrosshairForSubChart((prevState) => {
+                            const newData = [...prevState];
+
+                            newData[0].x = nearest?.date;
+
+                            return newData;
+                        });
                         setZoomAndYdragControl(event);
                     }
                 })
@@ -1245,7 +1246,7 @@ export default function Chart(props: ChartData) {
                             const newLimitValue = scaleData.yScale.invert(
                                 event.sourceEvent.offsetY,
                             );
-                            onBlurlimitRate(newLimitValue);
+                            onBlurLimitRate(newLimitValue);
                         } else if (location.pathname.includes('range')) {
                             // onClickRange(event);
                         }
@@ -1937,7 +1938,7 @@ export default function Chart(props: ChartData) {
                         .selectAll('.horizontal')
                         .remove();
 
-                    onBlurlimitRate(newLimitValue);
+                    onBlurLimitRate(newLimitValue);
                 });
 
             setDragRange(() => {
@@ -2389,34 +2390,6 @@ export default function Chart(props: ChartData) {
                     .call(dragLimit);
             }
         }
-
-        if (location.pathname.includes('limit') && scaleData !== undefined) {
-            d3.select(d3Container.current).on('click', (event: any) => {
-                if ((event.target.__data__ as CandleChartData) === undefined) {
-                    let newLimitValue = scaleData.yScale.invert(d3.pointer(event)[1]);
-
-                    if (newLimitValue < 0) newLimitValue = 0;
-
-                    newLimitValue =
-                        poolPriceDisplay !== undefined && newLimitValue > liquidityData.topBoundary
-                            ? liquidityData.topBoundary
-                            : newLimitValue;
-
-                    onBlurlimitRate(newLimitValue);
-                }
-            });
-        }
-
-        if (location.pathname.includes('range') && scaleData !== undefined) {
-            d3.select(d3PlotArea.current).on('click', async (event: any) => {
-                if (
-                    (event.target.__data__ as CandleChartData) === undefined ||
-                    event.target.__data__ instanceof Array
-                ) {
-                    onClickRange(event);
-                }
-            });
-        }
     }, [
         dragLimit,
         dragRange,
@@ -2701,62 +2674,6 @@ export default function Chart(props: ChartData) {
         }
     }, [scaleData]);
 
-    // useEffect(() => {
-    //     if (scaleData !== undefined) {
-    //         const candlestick = d3fc
-    //             .autoBandwidth(d3fc.seriesSvgCandlestick())
-    //             .decorate((selection: any) => {
-    //                 selection
-    //                     .style('fill', (d: any) => {
-    //                         return selectedDate !== undefined &&
-    //                             selectedDate.getTime() === d.date.getTime()
-    //                             ? '#E480FF'
-    //                             : d.color;
-    //                     })
-    //                     .style('stroke', (d: any) => {
-    //                         return selectedDate !== undefined &&
-    //                             selectedDate.getTime() === d.date.getTime()
-    //                             ? '#E480FF'
-    //                             : d.stroke;
-    //                     });
-    //                 selection
-    //                     .on('mouseover', (event: any) => {
-    //                         d3.select(event.currentTarget).style('cursor', 'pointer');
-    //                     })
-    //                     .on('click', (event: any) => {
-    //                         if (
-    //                             selectedDate === undefined ||
-    //                             selectedDate.getTime() !==
-    //                                 new Date(event.target.__data__.date).getTime()
-    //                         ) {
-    //                             d3.select(event.currentTarget)
-    //                                 .style('fill', '#E480FF')
-    //                                 .style('stroke', '#E480FF');
-
-    //                             setSelectedDate(event.target.__data__.date);
-    //                         } else {
-    //                             d3.select(event.currentTarget)
-    //                                 .style('fill', (d: any) =>
-    //                                     d.close > d.open ? upBodyColor : downBodyColor,
-    //                                 )
-    //                                 .style('stroke', (d: any) =>
-    //                                     d.close > d.open ? upBorderColor : downBorderColor,
-    //                                 );
-
-    //                             setSelectedDate(undefined);
-    //                         }
-    //                     });
-    //             })
-
-    //             .xScale(scaleData.xScale)
-    //             .yScale(scaleData.yScale);
-
-    //         setCandlestick(() => {
-    //             return candlestick;
-    //         });
-    //     }
-    // }, [scaleData, selectedDate]);
-
     useEffect(() => {
         if (scaleData !== undefined) {
             const canvasCandlestick = d3fc
@@ -2772,38 +2689,6 @@ export default function Chart(props: ChartData) {
                             ? '#E480FF'
                             : d.stroke;
                     context.cursorStyle = 'pointer';
-
-                    // d3.select(context).on('click', function() {
-                    //     console.log('dsfdsf');
-
-                    // });
-                    // context
-                    //     .on('mouseover', (event: any) => {
-                    //         d3.select(event.currentTarget).style('cursor', 'pointer');
-                    //     })
-                    //     .on('click', (event: any) => {
-                    //         if (
-                    //             selectedDate === undefined ||
-                    //             selectedDate.getTime() !==
-                    //                 new Date(event.target.__data__.date).getTime()
-                    //         ) {
-                    //             d3.select(event.currentTarget)
-                    //                 .style('fill', '#E480FF')
-                    //                 .style('stroke', '#E480FF');
-
-                    //             setSelectedDate(event.target.__data__.date);
-                    //         } else {
-                    //             d3.select(event.currentTarget)
-                    //                 .style('fill', (d: any) =>
-                    //                     d.close > d.open ? upBodyColor : downBodyColor,
-                    //                 )
-                    //                 .style('stroke', (d: any) =>
-                    //                     d.close > d.open ? upBorderColor : downBorderColor,
-                    //                 );
-
-                    //             setSelectedDate(undefined);
-                    //         }
-                    //     });
                 })
 
                 .xScale(scaleData.xScale)
@@ -2825,29 +2710,12 @@ export default function Chart(props: ChartData) {
                 .on('measure', () => {
                     candlestick.context(ctx);
                 });
-            // .on('click', (event:any) => {
-
-            //     const rect = (d3.select(d3Canvas.current).node() as any).getBoundingClientRect();
-
-            //     const x = event.clientX - rect.left
-            //     const y = event.clientY - rect.top
-            //     console.log('x: ' + x + ' y: ' + y,'rect: ' + rect)
-            //     console.log(scaleData.yScale.invert(x));
-
-            //     // console.log({ctx});
-
-            //     // const dd=ctx(event.layerX,event.layerY, 1, 1);
-            //     // // if (ctx.isPointInStroke(event.offsetX, event.offsetY)) {
-            //     //     console.log('dfdsffsd',dd);
-            //     // // }
-            // });
         }
     }, [scaleData, parsedChartData, candlestick]);
 
     function renderCanvas() {
         if (d3Canvas) {
             const container = d3.select(d3Canvas.current).node() as any;
-
             container.requestRedraw();
         }
     }
@@ -2875,21 +2743,6 @@ export default function Chart(props: ChartData) {
                     );
                     selection.on('mouseover', (event: any) => {
                         d3.select(event.currentTarget).style('cursor', 'pointer');
-                    });
-                    selection.on('click', (event: any) => {
-                        if (
-                            selectedDate === undefined ||
-                            selectedDate.getTime() !==
-                                new Date(event.target.__data__.time).getTime()
-                        ) {
-                            d3.select(event.currentTarget)
-                                .style('fill', '#E480FF')
-                                .style('stroke', '#E480FF');
-
-                            setSelectedDate(event.target.__data__.time);
-                        } else {
-                            setSelectedDate(undefined);
-                        }
                     });
                 });
 
@@ -3457,6 +3310,27 @@ export default function Chart(props: ChartData) {
             );
     };
 
+    const candleOrVolumeDataHoverStatus = (event: any) => {
+        const nearest = snapForCandle(event);
+        const yValue = scaleData.yScale.invert(event.offsetY);
+        const yValueVolume = scaleData.volumeScale.invert(event.offsetY);
+        const selectedVolumeData = volumeData.find(
+            (item: any) => item.time.getTime() === nearest?.date.getTime(),
+        );
+        const selectedVolumeDataValue = selectedVolumeData?.value;
+
+        const isSelectedVolume = selectedVolumeDataValue
+            ? yValueVolume <= selectedVolumeDataValue
+                ? true
+                : false
+            : false;
+
+        return {
+            isHoverCandleOrVolumeData:
+                nearest && ((nearest?.high > yValue && nearest?.low < yValue) || isSelectedVolume),
+            _selectedDate: nearest?.date,
+        };
+    };
     // Draw Chart
     const drawChart = (
         chartData: any,
@@ -3600,40 +3474,43 @@ export default function Chart(props: ChartData) {
             });
 
             d3.select(d3PlotArea.current).on('click', (event: any) => {
-                const rect = (d3.select(d3PlotArea.current).node() as any).getBoundingClientRect();
-
-                const x = event.clientX - rect.left;
-                const y = event.clientY - rect.top;
-
-                // console.log('x: ' + x + ' y: ' + y,'rect: ' + rect)
-                // console.log(scaleData.yScale.invert(x));
-
-                // snap to candlesticks
-                const candlestickDelta =
-                    parsedChartData?.chartData[1].date.getTime() -
-                    parsedChartData?.chartData[0].date.getTime();
-                const hoveredCandlestickID = Math.floor(
-                    (scaleData.xScale.invert(x).getTime() -
-                        parsedChartData?.chartData[0].date.getTime()) /
-                        candlestickDelta,
-                );
-
-                console.log(
-                    { hoveredCandlestickID },
-                    parsedChartData?.chartData[hoveredCandlestickID],
-                );
-                if (selectedDate === undefined) {
-                    setSelectedDate(parsedChartData?.chartData[hoveredCandlestickID].date);
-                } else {
-                    setSelectedDate(undefined);
+                const { isHoverCandleOrVolumeData, _selectedDate } =
+                    candleOrVolumeDataHoverStatus(event);
+                if (isHoverCandleOrVolumeData) {
+                    if (
+                        selectedDate === undefined ||
+                        selectedDate.getTime() !== _selectedDate.getTime()
+                    ) {
+                        setSelectedDate(_selectedDate);
+                    } else {
+                        setSelectedDate(undefined);
+                    }
                 }
 
-                // console.log({ctx});
+                if (
+                    location.pathname.includes('range') &&
+                    scaleData !== undefined &&
+                    !isHoverCandleOrVolumeData
+                ) {
+                    onClickRange(event);
+                }
 
-                // const dd=ctx(event.layerX,event.layerY, 1, 1);
-                // // if (ctx.isPointInStroke(event.offsetX, event.offsetY)) {
-                //     console.log('dfdsffsd',dd);
-                // // }
+                if (
+                    location.pathname.includes('limit') &&
+                    scaleData !== undefined &&
+                    !isHoverCandleOrVolumeData
+                ) {
+                    let newLimitValue = scaleData.yScale.invert(event.offsetY);
+
+                    if (newLimitValue < 0) newLimitValue = 0;
+
+                    newLimitValue =
+                        poolPriceDisplay !== undefined && newLimitValue > liquidityData.topBoundary
+                            ? liquidityData.topBoundary
+                            : newLimitValue;
+
+                    onBlurLimitRate(newLimitValue);
+                }
             });
 
             d3.select(d3PlotArea.current).on('draw', function (event: any) {
@@ -4061,12 +3938,18 @@ export default function Chart(props: ChartData) {
                 setCrossHairLocation(mouseMoveEventCharts.sourceEvent);
             }
 
-            d3.select(d3PlotArea.current).on('mousemove', async function (event: any) {
+            d3.select(d3PlotArea.current).on('mousemove', function (event: any) {
                 isMouseMoveForSubChart = false;
                 isZoomForSubChart = false;
                 setCrossHairLocation(event);
                 setMouseMoveEventCharts(event);
                 showCrosshair();
+
+                const { isHoverCandleOrVolumeData } = candleOrVolumeDataHoverStatus(event);
+                d3.select(event.currentTarget).style(
+                    'cursor',
+                    isHoverCandleOrVolumeData ? 'pointer' : 'default',
+                );
             });
 
             d3.select(d3Yaxis.current).on('mouseover', (event: any) => {
@@ -4333,7 +4216,7 @@ export default function Chart(props: ChartData) {
         }
     };
 
-    const onBlurlimitRate = (newLimitValue: any) => {
+    const onBlurLimitRate = (newLimitValue: any) => {
         if (newLimitValue === undefined) {
             return;
         }
