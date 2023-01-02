@@ -151,7 +151,6 @@ export default function TradeCandleStickChart(props: ChartData) {
 
     // useEffect(() => {
     //     if (parsedChartData === undefined) {
-    //         console.log('second')
     //         parseData();
     //     }
     // }, [parsedChartData]);
@@ -370,21 +369,19 @@ export default function TradeCandleStickChart(props: ChartData) {
                     : data.lowerBoundPriceDecimalCorrected;
 
                 if (liqPrices > barThreshold) {
-                    if (limitBoundary > liqPrices) {
-                        liqBidData.push({
-                            activeLiq: liquidityScale(data.activeLiq),
-                            liqPrices: liqPrices,
-                            deltaAverageUSD: data.deltaAverageUSD,
-                            cumAverageUSD: data.cumAverageUSD,
-                        });
-                    }
+                    liqBidData.push({
+                        activeLiq: liquidityScale(data.activeLiq),
+                        liqPrices: liqPrices,
+                        deltaAverageUSD: data.deltaAverageUSD ? data.deltaAverageUSD : 0,
+                        cumAverageUSD: data.cumAverageUSD ? data.cumAverageUSD : 0,
+                    });
                 } else {
                     if (liqPrices < limitBoundary && liqPrices > barThreshold / 10) {
                         liqAskData.push({
                             activeLiq: liquidityScale(data.activeLiq),
                             liqPrices: liqPrices,
-                            deltaAverageUSD: data.deltaAverageUSD,
-                            cumAverageUSD: data.cumAverageUSD,
+                            deltaAverageUSD: data.deltaAverageUSD ? data.deltaAverageUSD : 0,
+                            cumAverageUSD: data.cumAverageUSD ? data.cumAverageUSD : 0,
                         });
                     }
                 }
@@ -445,32 +442,11 @@ export default function TradeCandleStickChart(props: ChartData) {
                 liqAskData.sort((a: any, b: any) => b.liqPrices - a.liqPrices);
 
                 const liqAllAskPrices = liqAskData.map(({ liqPrices }) => liqPrices);
-                const liqAllBidPrices = liqBidData.map(({ liqPrices }) => liqPrices);
-
                 const liqAskDeviation = standardDeviation(liqAllAskPrices);
-                const liqBidDeviation = standardDeviation(liqAllBidPrices);
 
                 liqBidData.push({
                     activeLiq: liqBidData[liqBidData.length - 1].activeLiq,
                     liqPrices: barThreshold,
-                    deltaAverageUSD: 0,
-                    cumAverageUSD: 0,
-                });
-
-                if (liqBidData[0].liqPrices < limitBoundary) {
-                    while (liqBidData[0].liqPrices + liqBidDeviation < limitBoundary) {
-                        liqBidData.unshift({
-                            activeLiq: 30,
-                            liqPrices: liqBidData[0].liqPrices + liqBidDeviation,
-                            deltaAverageUSD: 0,
-                            cumAverageUSD: 0,
-                        });
-                    }
-                }
-
-                liqBidData.unshift({
-                    activeLiq: 30,
-                    liqPrices: limitBoundary,
                     deltaAverageUSD: 0,
                     cumAverageUSD: 0,
                 });
@@ -626,6 +602,7 @@ export default function TradeCandleStickChart(props: ChartData) {
                     subChartxScale: subChartxScale,
                     volumeScale: volumeScale,
                     lastDragedY: 0,
+                    xExtent: xExtent,
                 };
             });
         }
@@ -685,6 +662,7 @@ export default function TradeCandleStickChart(props: ChartData) {
                         downBodyColor={props.downBodyColor}
                         downBorderColor={props.downBorderColor}
                         isCandleAdded={isCandleAdded}
+                        setIsCandleAdded={setIsCandleAdded}
                         scaleData={scaleData}
                         chainId={chainId}
                         poolPriceNonDisplay={poolPriceNonDisplay}

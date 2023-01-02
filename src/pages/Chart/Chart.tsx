@@ -82,6 +82,7 @@ interface ChartData {
     downBodyColor: string;
     downBorderColor: string;
     isCandleAdded: boolean | undefined;
+    setIsCandleAdded: React.Dispatch<boolean>;
     scaleData: any;
     chainId: string;
     poolPriceNonDisplay: number | undefined;
@@ -121,7 +122,7 @@ export default function Chart(props: ChartData) {
         simpleRangeWidth,
         poolPriceDisplay,
         expandTradeTable,
-        isCandleAdded,
+        setIsCandleAdded,
         scaleData,
         chainId,
         poolPriceNonDisplay,
@@ -241,6 +242,7 @@ export default function Chart(props: ChartData) {
         liqPrices: 0,
     });
     const [horizontalBandData, setHorizontalBandData] = useState([[0, 0]]);
+    const [firstCandle, setFirstCandle] = useState<number>();
 
     // d3
 
@@ -331,8 +333,28 @@ export default function Chart(props: ChartData) {
     useEffect(() => {
         if (expandTradeTable) return;
 
+        if (!showLatest && firstCandle && parsedChartData?.chartData[0].time !== firstCandle) {
+            if (parsedChartData) {
+                setIsCandleAdded(false);
+                const diff = Math.abs(firstCandle - parsedChartData?.chartData[0].time);
+                setFirstCandle(() => {
+                    return parsedChartData?.chartData[0].time;
+                });
+                const domainLeft = scaleData.xScale.domain()[0];
+                const domainRight = scaleData.xScale.domain()[1];
+                scaleData.xScale.domain([
+                    new Date(new Date(domainLeft).getTime() + diff * 1000),
+                    new Date(new Date(domainRight).getTime() + diff * 1000),
+                ]);
+            }
+        } else if (firstCandle === undefined) {
+            setFirstCandle(() => {
+                return parsedChartData?.chartData[0].time;
+            });
+        }
+
         render();
-    }, [props.chartItemStates, expandTradeTable, isCandleAdded]);
+    }, [props.chartItemStates, expandTradeTable, parsedChartData?.chartData, firstCandle]);
 
     useEffect(() => {
         if (
