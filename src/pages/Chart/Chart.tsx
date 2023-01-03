@@ -1237,29 +1237,7 @@ export default function Chart(props: ChartData) {
                                 );
                                 const liqBidDeviation = standardDeviation(liqAllBidPrices);
 
-                                const boudnary = ranges.filter(
-                                    (target: any) => target.name === 'Max',
-                                )[0].value;
-                                if (
-                                    simpleRangeWidth === 100 &&
-                                    scaleData.yScale.domain()[1] > boudnary
-                                ) {
-                                    setRanges((prevState) => {
-                                        const newTargets = [...prevState];
-                                        newTargets.filter(
-                                            (target: any) => target.name === 'Max',
-                                        )[0].value = scaleData.yScale.domain[1] + liqBidDeviation;
-                                        newTargets.filter(
-                                            (target: any) => target.name === 'Min',
-                                        )[0].value = 0;
-
-                                        setLiqHighlightedLinesAndArea(newTargets, true);
-
-                                        return newTargets;
-                                    });
-                                }
-
-                                if (
+                                while (
                                     scaleData.yScale.domain()[1] + liqBidDeviation >=
                                     liquidityData.liqBidData[0].liqPrices
                                 ) {
@@ -1271,6 +1249,7 @@ export default function Chart(props: ChartData) {
                                         cumAverageUSD: 0,
                                     });
                                 }
+                                setLiqHighlightedLinesAndArea(ranges);
                             }
                         }
 
@@ -1352,21 +1331,7 @@ export default function Chart(props: ChartData) {
                     );
                     const liqBidDeviation = standardDeviation(liqAllBidPrices);
 
-                    const boudnary = ranges.filter((target: any) => target.name === 'Max')[0].value;
-                    if (simpleRangeWidth === 100 && scaleData.yScale.domain()[1] > boudnary) {
-                        setRanges((prevState) => {
-                            const newTargets = [...prevState];
-                            newTargets.filter((target: any) => target.name === 'Max')[0].value =
-                                scaleData.yScale.domain[1] + liqBidDeviation;
-                            newTargets.filter((target: any) => target.name === 'Min')[0].value = 0;
-
-                            setLiqHighlightedLinesAndArea(newTargets, true);
-
-                            return newTargets;
-                        });
-                    }
-
-                    if (
+                    while (
                         scaleData.yScale.domain()[1] + liqBidDeviation >=
                         liquidityData.liqBidData[0].liqPrices
                     ) {
@@ -1377,6 +1342,7 @@ export default function Chart(props: ChartData) {
                             cumAverageUSD: 0,
                         });
                     }
+                    setLiqHighlightedLinesAndArea(ranges);
                 }
 
                 setZoomAndYdragControl(event);
@@ -1439,7 +1405,7 @@ export default function Chart(props: ChartData) {
                         );
                         const liqBidDeviation = standardDeviation(liqAllBidPrices);
 
-                        if (
+                        while (
                             scaleData.yScale.domain()[1] + liqBidDeviation >=
                             liquidityData.liqBidData[0].liqPrices
                         ) {
@@ -1450,6 +1416,7 @@ export default function Chart(props: ChartData) {
                                 cumAverageUSD: 0,
                             });
                         }
+                        setLiqHighlightedLinesAndArea(ranges);
                     }
                 }
             }
@@ -1648,6 +1615,29 @@ export default function Chart(props: ChartData) {
         simpleRangeWidth,
         rangeModuleTriggered,
     ]);
+
+    useEffect(() => {
+        if (isAdvancedModeActive && scaleData) {
+            const liqAllBidPrices = liquidityData.liqBidData.map(
+                (liqPrices: any) => liqPrices.liqPrices,
+            );
+            const liqBidDeviation = standardDeviation(liqAllBidPrices);
+
+            while (
+                scaleData.yScale.domain()[1] + liqBidDeviation >=
+                liquidityData.liqBidData[0].liqPrices
+            ) {
+                liquidityData.liqBidData.unshift({
+                    activeLiq: 30,
+                    liqPrices: liquidityData.liqBidData[0].liqPrices + liqBidDeviation,
+                    deltaAverageUSD: 0,
+                    cumAverageUSD: 0,
+                });
+            }
+
+            setLiqHighlightedLinesAndArea(ranges);
+        }
+    }, [isAdvancedModeActive]);
 
     // Ghost Lines
     // useEffect(() => {
