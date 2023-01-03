@@ -220,7 +220,7 @@ export default function Ranges(props: RangesPropsIF) {
 
     // ---------------------
     const [currentPage, setCurrentPage] = useState(1);
-    const [rangesPerPage] = useState(20);
+    const [rangesPerPage] = useState(10);
 
     useEffect(() => {
         setCurrentPage(1);
