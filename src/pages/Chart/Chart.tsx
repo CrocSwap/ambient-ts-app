@@ -1031,10 +1031,11 @@ export default function Chart(props: ChartData) {
         if (scaleData !== undefined && parsedChartData !== undefined) {
             let date: any | undefined = undefined;
             let clickedForLine = false;
-
+            let zoomTimeout: any | undefined = undefined;
             const zoom = d3
                 .zoom()
                 .on('start', (event: any) => {
+                    zoomTimeout = event.sourceEvent.timeStamp;
                     if (event.sourceEvent && event.sourceEvent.type !== 'dblclick') {
                         clickedForLine = false;
 
@@ -1251,9 +1252,14 @@ export default function Chart(props: ChartData) {
                             // onClickRange(event);
                         }
                     } else {
-                        const { isHoverCandleOrVolumeData, _selectedDate } =
-                            candleOrVolumeDataHoverStatus(event.sourceEvent);
-                        selectedDateEvent(isHoverCandleOrVolumeData, _selectedDate);
+                        if (
+                            event.sourceEvent.type !== 'wheel' &&
+                            event.sourceEvent.timeStamp - zoomTimeout < 500
+                        ) {
+                            const { isHoverCandleOrVolumeData, _selectedDate } =
+                                candleOrVolumeDataHoverStatus(event.sourceEvent);
+                            selectedDateEvent(isHoverCandleOrVolumeData, _selectedDate);
+                        }
                     }
 
                     const latestCandle = d3.max(parsedChartData.chartData, (d) => d.date);
@@ -1273,7 +1279,6 @@ export default function Chart(props: ChartData) {
                         setShowLatest(false);
                     }
                 }) as any;
-
             const yAxisZoom = d3.zoom().on('zoom', async (event: any) => {
                 const domainY = scaleData.yScale.domain();
                 const center = (domainY[1] + domainY[0]) / 2;
@@ -3331,7 +3336,11 @@ export default function Chart(props: ChartData) {
 
         return {
             isHoverCandleOrVolumeData:
-                nearest && ((nearest?.high > yValue && nearest?.low < yValue) || isSelectedVolume),
+                nearest &&
+                ((nearest?.close > nearest?.open
+                    ? nearest?.close > yValue && nearest?.open < yValue
+                    : nearest?.close < yValue && nearest?.open > yValue) ||
+                    isSelectedVolume),
             _selectedDate: nearest?.date,
         };
     };
