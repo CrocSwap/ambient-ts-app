@@ -145,6 +145,7 @@ import { useToken } from './hooks/useToken';
 import { useSidebar } from './hooks/useSidebar';
 import useDebounce from './hooks/useDebounce';
 import { useRecentTokens } from './hooks/useRecentTokens';
+import WalletModalWagmi from './components/WalletModal/WalletModalWagmi';
 // import { memoizeQuerySpotTick } from './functions/querySpotTick';
 // import PhishingWarning from '../components/Global/PhisingWarning/PhishingWarning';
 
@@ -2046,7 +2047,8 @@ export default function App() {
 
     const shouldDisplayAccountTab = isUserLoggedIn && account != '';
 
-    const [isModalOpenWallet, openModalWallet, closeModalWallet] = useModal();
+    const [isMoralisModalOpenWallet, openMoralisModalWallet, closeMoralisModalWallet] = useModal();
+    const [isWagmiModalOpenWallet, openWagmiModalWallet, closeWagmiModalWallet] = useModal();
 
     const [isGlobalModalOpen, openGlobalModal, closeGlobalModal, currentContent, title] =
         useGlobalModal();
@@ -2197,7 +2199,8 @@ export default function App() {
         isChainSupported: isChainSupported,
         switchChain: switchChain,
         switchNetworkInMoralis: switchNetworkInMoralis,
-        openModalWallet: openModalWallet,
+        openMoralisModalWallet: openMoralisModalWallet,
+        openWagmiModalWallet: openWagmiModalWallet,
         lastBlockNumber: lastBlockNumber,
         isMobileSidebarOpen: isMobileSidebarOpen,
         setIsMobileSidebarOpen: setIsMobileSidebarOpen,
@@ -2236,7 +2239,7 @@ export default function App() {
         chainId: chainData.chainId,
         activeTokenListsChanged: activeTokenListsChanged,
         indicateActiveTokenListsChanged: indicateActiveTokenListsChanged,
-        openModalWallet: openModalWallet,
+        openModalWallet: openMoralisModalWallet,
         isInitialized: isInitialized,
         poolExists: poolExists,
         setTokenPairLocal: setTokenPairLocal,
@@ -2276,7 +2279,7 @@ export default function App() {
         chainId: chainData.chainId,
         activeTokenListsChanged: activeTokenListsChanged,
         indicateActiveTokenListsChanged: indicateActiveTokenListsChanged,
-        openModalWallet: openModalWallet,
+        openModalWallet: openMoralisModalWallet,
         isInitialized: isInitialized,
         poolExists: poolExists,
         openGlobalModal: openGlobalModal,
@@ -2319,7 +2322,7 @@ export default function App() {
         chainId: chainData.chainId,
         activeTokenListsChanged: activeTokenListsChanged,
         indicateActiveTokenListsChanged: indicateActiveTokenListsChanged,
-        openModalWallet: openModalWallet,
+        openModalWallet: openMoralisModalWallet,
 
         openGlobalModal: openGlobalModal,
         closeGlobalModal: closeGlobalModal,
@@ -2367,7 +2370,7 @@ export default function App() {
         chainId: chainData.chainId,
         activeTokenListsChanged: activeTokenListsChanged,
         indicateActiveTokenListsChanged: indicateActiveTokenListsChanged,
-        openModalWallet: openModalWallet,
+        openModalWallet: openMoralisModalWallet,
         ambientApy: ambientApy,
 
         openGlobalModal: openGlobalModal,
@@ -2426,7 +2429,7 @@ export default function App() {
 
         analyticsSearchInput: analyticsSearchInput,
         setAnalyticsSearchInput: setAnalyticsSearchInput,
-        openModalWallet: openModalWallet,
+        openModalWallet: openMoralisModalWallet,
     };
 
     const analyticsProps = {
@@ -2724,7 +2727,7 @@ export default function App() {
                                     ethMainnetUsdPrice={ethMainnetUsdPrice}
                                     showSidebar={showSidebar}
                                     tokenPair={tokenPair}
-                                    openModalWallet={openModalWallet}
+                                    openModalWallet={openMoralisModalWallet}
                                     tokenAAllowance={tokenAAllowance}
                                     tokenBAllowance={tokenBAllowance}
                                     setRecheckTokenAApproval={setRecheckTokenAApproval}
@@ -2779,7 +2782,7 @@ export default function App() {
                                     }
                                     handlePulseAnimation={handlePulseAnimation}
                                     gasPriceInGwei={gasPriceInGwei}
-                                    openModalWallet={openModalWallet}
+                                    openModalWallet={openMoralisModalWallet}
                                 />
                             }
                         />
@@ -2830,7 +2833,7 @@ export default function App() {
                                     }
                                     handlePulseAnimation={handlePulseAnimation}
                                     gasPriceInGwei={gasPriceInGwei}
-                                    openModalWallet={openModalWallet}
+                                    openModalWallet={openMoralisModalWallet}
                                 />
                             }
                         />
@@ -2899,7 +2902,7 @@ export default function App() {
                                     }
                                     handlePulseAnimation={handlePulseAnimation}
                                     gasPriceInGwei={gasPriceInGwei}
-                                    openModalWallet={openModalWallet}
+                                    openModalWallet={openMoralisModalWallet}
                                 />
                             }
                         />
@@ -2956,9 +2959,19 @@ export default function App() {
                 currentContent={currentContent}
                 title={title}
             />
-            {isModalOpenWallet && (
+            {isMoralisModalOpenWallet && (
                 <WalletModal
-                    closeModalWallet={closeModalWallet}
+                    closeModalWallet={closeMoralisModalWallet}
+                    isAuthenticating={isAuthenticating}
+                    authenticate={authenticate}
+                    enableWeb3={enableWeb3}
+                    isUserLoggedIn={isUserLoggedIn}
+                    // authError={authError}
+                />
+            )}
+            {isWagmiModalOpenWallet && (
+                <WalletModalWagmi
+                    closeModalWallet={closeWagmiModalWallet}
                     isAuthenticating={isAuthenticating}
                     authenticate={authenticate}
                     enableWeb3={enableWeb3}

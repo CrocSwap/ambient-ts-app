@@ -34,7 +34,8 @@ interface HeaderPropsIF {
     isChainSupported: boolean;
     switchChain: Dispatch<SetStateAction<string>>;
     switchNetworkInMoralis: (providedChainId: string) => Promise<void>;
-    openModalWallet: () => void;
+    openMoralisModalWallet: () => void;
+    openWagmiModalWallet: () => void;
 
     isMobileSidebarOpen: boolean;
     setIsMobileSidebarOpen: Dispatch<SetStateAction<boolean>>;
@@ -63,7 +64,8 @@ export default function PageHeader(props: HeaderPropsIF) {
         isChainSupported,
         switchChain,
         switchNetworkInMoralis,
-        openModalWallet,
+        openMoralisModalWallet,
+        openWagmiModalWallet,
         lastBlockNumber,
         isMobileSidebarOpen,
         setIsMobileSidebarOpen,
@@ -152,12 +154,17 @@ export default function PageHeader(props: HeaderPropsIF) {
 
     // End of Page Header Functions
 
-    const metamaskButton = (
-        <button className={styles.authenticate_button} onClick={() => openModalWallet()}>
-            Connect Wallet
+    const connectMoralisButton = (
+        <button className={styles.authenticate_button} onClick={() => openMoralisModalWallet()}>
+            Connect Moralis
         </button>
     );
 
+    const connectWagmiButton = (
+        <button className={styles.authenticate_button} onClick={() => openWagmiModalWallet()}>
+            Connect Wagmi
+        </button>
+    );
     // ----------------------------NAVIGATION FUNCTIONALITY-------------------------------------
 
     const location = useLocation();
@@ -320,7 +327,8 @@ export default function PageHeader(props: HeaderPropsIF) {
                 />
                 <div className={styles.account}>
                     <NetworkSelector chainId={chainId} switchChain={switchChain} />
-                    {connectButtonDelayElapsed && !isUserLoggedIn && metamaskButton}
+                    {connectButtonDelayElapsed && !isUserLoggedIn && connectMoralisButton}
+                    {connectWagmiButton}
                     <Account {...accountProps} />
                     <NotificationCenter
                         showNotificationTable={showNotificationTable}
