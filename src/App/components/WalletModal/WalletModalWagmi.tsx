@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Moralis } from 'moralis-v1';
 import { AuthenticateOptions } from 'react-moralis/lib/hooks/core/useMoralis/_useMoralisAuth';
 import { Web3EnableOptions } from 'react-moralis/lib/hooks/core/useMoralis/_useMoralisWeb3';
+import { useConnect, useAccount, useEnsAvatar, useEnsName, useDisconnect } from 'wagmi';
 
 // START: Import Local Files
 import styles from './WalletModal.module.css';
@@ -35,6 +36,13 @@ interface WalletModalPropsIF {
 export default function WalletModalWagmi(props: WalletModalPropsIF) {
     const { closeModalWallet, isAuthenticating, isUserLoggedIn, authenticate, enableWeb3 } = props;
 
+    const { connect, connectors, error, isLoading, pendingConnector } = useConnect();
+    const { address, connector, isConnected } = useAccount();
+    const { disconnect } = useDisconnect();
+
+    const { data: ensAvatar } = useEnsAvatar({ address });
+    const { data: ensName } = useEnsName({ address });
+
     // close the Connect Wallet modal only when authentication completes
     useEffect(() => {
         isUserLoggedIn && closeModalWallet();
@@ -52,43 +60,59 @@ export default function WalletModalWagmi(props: WalletModalPropsIF) {
         </div>
     );
 
-    //     const connectToWalletTOSContent = (
-    //         <div className={styles.tos_content}>
-    //             By connecting a wallet, you agree to Ambient Finance’s
-    // <a href="#">Terms of Service</a>
-
-    //             , Magic&#39s
-    //             <a href="#">Terms of Service & Privacy Policy</a>
-
-    //             , and acknowledge that you have read and understand the Ambient
-    //             <a href="#">Protocol Disclaimer </a>
-
-    //         </div>
-    //     )
-
-    const handleMetamaskAuthentication = () => {
-        setPage('metamaskPending');
-        authenticateMetamask(isUserLoggedIn, authenticate, enableWeb3, () =>
-            setPage('metamaskError'),
-        );
-        acceptToS();
-    };
+    // const handleMetamaskAuthentication = () => {
+    //     setPage('metamaskPending');
+    //     authenticateMetamask(isUserLoggedIn, authenticate, enableWeb3, () =>
+    //         setPage('metamaskError'),
+    //     );
+    //     acceptToS();
+    // };
 
     // Right now, we only have one wallet but eventually, we will need to add multiple in here.
-    const walletsData = [
-        { name: 'Metamask', action: handleMetamaskAuthentication, logo: metamaskLogo },
-    ];
+    // const walletsData = [
+    //     { name: 'Metamask', action: handleMetamaskAuthentication, logo: metamaskLogo },
+    // ];
 
-    const walletsDisplay = (
+    // const walletsDisplay = (
+    //     <div>
+    //         {walletsData.map((wallet, idx) => (
+    //             <WalletButton
+    //                 title={wallet.name}
+    //                 action={wallet.action}
+    //                 key={idx}
+    //                 logo={wallet.logo}
+    //             />
+    //         ))}
+    //     </div>
+    // );
+
+    const connectorsDisplay = isConnected ? (
+        <div key={connector?.id}>
+            <img src={ensAvatar || undefined} alt='ENS Avatar' />
+            <div>{ensName ? `${ensName} (${address})` : address}</div>
+            <div>Connected to {connector?.name}</div>
+            <button onClick={() => disconnect()}>Disconnect</button>
+        </div>
+    ) : (
         <div>
-            {walletsData.map((wallet, idx) => (
+            {connectors.map((connector) => (
                 <WalletButton
-                    title={wallet.name}
-                    action={wallet.action}
-                    key={idx}
-                    logo={wallet.logo}
-                />
+                    title={`${connector.name} ${!connector.ready && ' (unsupported)'}  ${
+                        isLoading && connector.id === pendingConnector?.id && ' (connecting)'
+                    }`}
+                    disabled={!connector.ready}
+                    key={connector.id}
+                    action={() => {
+                        connect({ connector });
+                        // handleMetamaskAuthentication();
+                        setPage('metamaskPending');
+                        acceptToS();
+                    }}
+                    logo={metamaskLogo}
+                ></WalletButton>
             ))}
+
+            {error && <div>{error.message}</div>}
         </div>
     );
 
@@ -96,7 +120,8 @@ export default function WalletModalWagmi(props: WalletModalPropsIF) {
         () => (
             <div className={styles.main_container}>
                 <section>
-                    {walletsDisplay}
+                    {connectorsDisplay}
+                    {/* {walletsDisplay} */}
                     {/* <button className={styles.email_button} onClick={() => setPage('magicLogin')}>
                         <HiOutlineMail size={20} color='#EBEBFF' />
                         Connect with Email
