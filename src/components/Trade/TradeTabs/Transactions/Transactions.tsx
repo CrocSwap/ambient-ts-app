@@ -220,7 +220,7 @@ export default function Transactions(props: TransactionsProps) {
     const quoteTokenAddress = tradeData.quoteToken.address;
 
     const [currentPage, setCurrentPage] = useState(1);
-    const [transactionsPerPage] = useState(20);
+    const [transactionsPerPage] = useState(15);
 
     useEffect(() => {
         setCurrentPage(1);
@@ -381,8 +381,8 @@ export default function Transactions(props: TransactionsProps) {
     );
     const sideType = (
         <>
-            <p>Side</p>
             <p>Type</p>
+            <p>Side</p>
         </>
     );
 
