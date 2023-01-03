@@ -27,6 +27,7 @@ import { DefaultTooltip } from '../../../components/Global/StyledTooltip/StyledT
 // START: Import Local Files
 import styles from './TradeCharts.module.css';
 import printDomToImage from '../../../utils/functions/printDomToImage';
+
 import {
     // tradeData as TradeDataIF,
     setActiveChartPeriod,
