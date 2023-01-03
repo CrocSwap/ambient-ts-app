@@ -1,9 +1,15 @@
 // START: Import React and Dongles
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Moralis } from 'moralis-v1';
 import { AuthenticateOptions } from 'react-moralis/lib/hooks/core/useMoralis/_useMoralisAuth';
 import { Web3EnableOptions } from 'react-moralis/lib/hooks/core/useMoralis/_useMoralisWeb3';
-import { useConnect, useAccount, useEnsAvatar, useEnsName, useDisconnect } from 'wagmi';
+import {
+    useConnect,
+    useAccount,
+    // useEnsAvatar,
+    useEnsName,
+    useDisconnect,
+} from 'wagmi';
 
 // START: Import Local Files
 import styles from './WalletModal.module.css';
@@ -34,19 +40,21 @@ interface WalletModalPropsIF {
 }
 
 export default function WalletModalWagmi(props: WalletModalPropsIF) {
-    const { closeModalWallet, isAuthenticating, isUserLoggedIn, authenticate, enableWeb3 } = props;
+    const { closeModalWallet, isUserLoggedIn, authenticate, enableWeb3 } = props;
 
     const { connect, connectors, error, isLoading, pendingConnector } = useConnect();
     const { address, connector, isConnected } = useAccount();
     const { disconnect } = useDisconnect();
 
-    const { data: ensAvatar } = useEnsAvatar({ address });
+    // const { data: ensAvatar } = useEnsAvatar({ address });
+
+    // console.log({ ensAvatar });
     const { data: ensName } = useEnsName({ address });
 
     // close the Connect Wallet modal only when authentication completes
-    useEffect(() => {
-        isUserLoggedIn && closeModalWallet();
-    }, [isAuthenticating, isUserLoggedIn]);
+    // useEffect(() => {
+    //     isConnected && closeModalWallet();
+    // }, [isConnected]);
     // eslint-disable-next-line
     const { tosText, acceptToS } = useTermsOfService();
 
@@ -88,10 +96,17 @@ export default function WalletModalWagmi(props: WalletModalPropsIF) {
 
     const connectorsDisplay = isConnected ? (
         <div key={connector?.id}>
-            <img src={ensAvatar || undefined} alt='ENS Avatar' />
+            {/* <img src={ensAvatar || undefined} alt='ENS Avatar' /> */}
             <div>{ensName ? `${ensName} (${address})` : address}</div>
             <div>Connected to {connector?.name}</div>
-            <button onClick={() => disconnect()}>Disconnect</button>
+            <button
+                onClick={() => {
+                    disconnect();
+                    closeModalWallet();
+                }}
+            >
+                Disconnect
+            </button>
         </div>
     ) : (
         <div>
@@ -107,6 +122,7 @@ export default function WalletModalWagmi(props: WalletModalPropsIF) {
                         // handleMetamaskAuthentication();
                         setPage('metamaskPending');
                         acceptToS();
+                        closeModalWallet();
                     }}
                     logo={metamaskLogo}
                 ></WalletButton>
