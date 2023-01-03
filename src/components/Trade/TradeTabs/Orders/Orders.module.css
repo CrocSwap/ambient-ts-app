@@ -28,17 +28,21 @@
 }
 
 .header {
-    /* background: #012B39; */
     position: sticky;
-    top: 0; /* Don't forget this, required for the stickiness */
+    top: 0; 
     box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4);
 }
 
-.footer {
-    position: sticky;
-    bottom: 0;
-    box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4);
-}
+.footer{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+      position: absolute;
+      bottom: 0;
+      box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4);
+      margin: 0 auto;
+  }
 /* width */
 .main_list_container::-webkit-scrollbar {
     width: 4px;
