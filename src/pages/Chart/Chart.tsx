@@ -1386,6 +1386,7 @@ export default function Chart(props: ChartData) {
         JSON.stringify(showLatest),
         liquidityData?.liqBidData,
         simpleRangeWidth,
+        ranges,
     ]);
 
     useEffect(() => {
@@ -1435,6 +1436,7 @@ export default function Chart(props: ChartData) {
                                 cumAverageUSD: 0,
                             });
                         }
+
                         setLiqHighlightedLinesAndArea(ranges);
                     }
                 }
@@ -1663,7 +1665,7 @@ export default function Chart(props: ChartData) {
 
             setLiqHighlightedLinesAndArea(ranges);
         }
-    }, [isAdvancedModeActive]);
+    }, [isAdvancedModeActive, ranges, liquidityData.liqBidData]);
 
     // Ghost Lines
     // useEffect(() => {
@@ -4372,12 +4374,10 @@ export default function Chart(props: ChartData) {
                 // //         moment(candle.date).format('DD MMM  HH:mm') +
                 // //         '</span></p>',
                 // // );
-                // console.log('changing show all to false');
                 props.changeState(true, candle);
             }
         } else {
             // d3.select('#transactionPopup').style('visibility', 'hidden');
-            // console.log('changing pop up state to false');
             props.changeState(false, undefined);
         }
     }, [selectedDate]);

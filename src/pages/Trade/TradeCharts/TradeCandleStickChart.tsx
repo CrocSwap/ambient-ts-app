@@ -386,14 +386,11 @@ export default function TradeCandleStickChart(props: ChartData) {
                     }
                 }
 
-                console.log(liqBidDepthPrices);
                 if (
                     data.cumBidLiq !== undefined &&
                     data.cumBidLiq !== '0' &&
                     liqBidDepthPrices !== '+inf'
                 ) {
-                    console.log('push');
-
                     depthLiqBidData.push({
                         activeLiq: depthLiquidityScale(data.cumBidLiq),
                         liqPrices: liqBidDepthPrices,
