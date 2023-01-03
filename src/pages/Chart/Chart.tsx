@@ -1248,6 +1248,15 @@ export default function Chart(props: ChartData) {
                                         deltaAverageUSD: 0,
                                         cumAverageUSD: 0,
                                     });
+
+                                    liquidityData.depthLiqBidData.unshift({
+                                        activeLiq: liquidityData.depthLiqBidData[1].activeLiq,
+                                        liqPrices:
+                                            liquidityData.depthLiqBidData[0].liqPrices +
+                                            liqBidDeviation,
+                                        deltaAverageUSD: 0,
+                                        cumAverageUSD: 0,
+                                    });
                                 }
                                 setLiqHighlightedLinesAndArea(ranges);
                             }
@@ -1341,6 +1350,13 @@ export default function Chart(props: ChartData) {
                             deltaAverageUSD: 0,
                             cumAverageUSD: 0,
                         });
+
+                        liquidityData.depthLiqBidData.unshift({
+                            activeLiq: liquidityData.depthLiqBidData[1].activeLiq,
+                            liqPrices: liquidityData.depthLiqBidData[0].liqPrices + liqBidDeviation,
+                            deltaAverageUSD: 0,
+                            cumAverageUSD: 0,
+                        });
                     }
                     setLiqHighlightedLinesAndArea(ranges);
                 }
@@ -1412,6 +1428,14 @@ export default function Chart(props: ChartData) {
                             liquidityData.liqBidData.unshift({
                                 activeLiq: 30,
                                 liqPrices: liquidityData.liqBidData[0].liqPrices + liqBidDeviation,
+                                deltaAverageUSD: 0,
+                                cumAverageUSD: 0,
+                            });
+
+                            liquidityData.depthLiqBidData.unshift({
+                                activeLiq: liquidityData.depthLiqBidData[1].activeLiq,
+                                liqPrices:
+                                    liquidityData.depthLiqBidData[0].liqPrices + liqBidDeviation,
                                 deltaAverageUSD: 0,
                                 cumAverageUSD: 0,
                             });
@@ -1630,6 +1654,13 @@ export default function Chart(props: ChartData) {
                 liquidityData.liqBidData.unshift({
                     activeLiq: 30,
                     liqPrices: liquidityData.liqBidData[0].liqPrices + liqBidDeviation,
+                    deltaAverageUSD: 0,
+                    cumAverageUSD: 0,
+                });
+
+                liquidityData.depthLiqBidData.unshift({
+                    activeLiq: liquidityData.depthLiqBidData[1].activeLiq,
+                    liqPrices: liquidityData.depthLiqBidData[0].liqPrices + liqBidDeviation,
                     deltaAverageUSD: 0,
                     cumAverageUSD: 0,
                 });
@@ -2832,8 +2863,9 @@ export default function Chart(props: ChartData) {
             const low = ranges.filter((target: any) => target.name === 'Min')[0].value;
             const high = ranges.filter((target: any) => target.name === 'Max')[0].value;
 
-            const minBoudnary = d3.min(props.liquidityData.liqBidData, (d: any) => d.liqPrices);
-            const maxBoudnary = d3.max(props.liquidityData.liqBidData, (d: any) => d.liqPrices);
+            const minBoudnary = d3.min(liquidityData.liqBidData, (d: any) => d.liqPrices);
+
+            const maxBoudnary = d3.max(liquidityData.liqBidData, (d: any) => d.liqPrices);
 
             const maxBoudnaryAsk = d3.max(props.liquidityData.liqAskData, (d: any) => d.liqPrices);
 
@@ -3712,7 +3744,13 @@ export default function Chart(props: ChartData) {
                     ]).call(lineDepthAskSeries);
 
                     depthLiqBidSeriesJoin(svg, [
-                        liqMode === 'Depth' ? liquidityData.depthLiqBidData : [],
+                        liqMode === 'Depth'
+                            ? isAdvancedModeActive
+                                ? liquidityData.depthLiqBidData
+                                : liquidityData.depthLiqBidData.filter(
+                                      (d: any) => d.liqPrices < liquidityData.topBoundary,
+                                  )
+                            : [],
                     ]).call(depthLiqBidSeries);
                     depthLiqAskSeriesJoin(svg, [
                         liqMode === 'Depth' ? liquidityData.depthLiqAskData : [],
@@ -3950,17 +3988,23 @@ export default function Chart(props: ChartData) {
                         let maxBoudnary;
 
                         if (liqMode === 'Depth') {
-                            minBoudnary = d3.min(
-                                liquidityData.depthLiqBidData,
-                                (d: any) => d.liqPrices,
-                            );
-                            maxBoudnary = d3.max(
-                                liquidityData.depthLiqBidData,
-                                (d: any) => d.liqPrices,
-                            );
+                            const liqData = isAdvancedModeActive
+                                ? liquidityData.depthLiqBidData
+                                : liquidityData.depthLiqBidData.filter(
+                                      (d: any) => d.liqPrices < liquidityData.topBoundary,
+                                  );
+
+                            minBoudnary = d3.min(liqData, (d: any) => d.liqPrices);
+                            maxBoudnary = d3.max(liqData, (d: any) => d.liqPrices);
                         } else {
-                            minBoudnary = d3.min(liquidityData.liqBidData, (d: any) => d.liqPrices);
-                            maxBoudnary = d3.max(liquidityData.liqBidData, (d: any) => d.liqPrices);
+                            const liqData = isAdvancedModeActive
+                                ? liquidityData.liqBidData
+                                : liquidityData.liqBidData.filter(
+                                      (d: any) => d.liqPrices < liquidityData.topBoundary,
+                                  );
+
+                            minBoudnary = d3.min(liqData, (d: any) => d.liqPrices);
+                            maxBoudnary = d3.max(liqData, (d: any) => d.liqPrices);
                         }
 
                         if (minBoudnary && maxBoudnary) {
