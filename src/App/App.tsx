@@ -2972,10 +2972,7 @@ export default function App() {
             {isWagmiModalOpenWallet && (
                 <WalletModalWagmi
                     closeModalWallet={closeWagmiModalWallet}
-                    isAuthenticating={isAuthenticating}
-                    authenticate={authenticate}
-                    enableWeb3={enableWeb3}
-                    isUserLoggedIn={isUserLoggedIn}
+
                     // authError={authError}
                 />
             )}

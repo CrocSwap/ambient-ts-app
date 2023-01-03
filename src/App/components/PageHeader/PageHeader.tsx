@@ -1,7 +1,7 @@
 // START: Import React and Dongles
-import { useCallback, useEffect, useState, Dispatch, SetStateAction } from 'react';
+import { useEffect, useState, Dispatch, SetStateAction } from 'react';
 import { useLocation, Link } from 'react-router-dom';
-import { useMoralis } from 'react-moralis';
+// import { useMoralis } from 'react-moralis';
 import { useTranslation } from 'react-i18next';
 import { motion, AnimateSharedLayout } from 'framer-motion';
 
@@ -22,6 +22,7 @@ import { useUrlParams } from './useUrlParams';
 import MobileSidebar from '../../../components/Global/MobileSidebar/MobileSidebar';
 import NotificationCenter from '../../../components/Global/NotificationCenter/NotificationCenter';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
+import { useAccount, useDisconnect, useEnsName } from 'wagmi';
 
 interface HeaderPropsIF {
     isUserLoggedIn: boolean | undefined;
@@ -54,17 +55,17 @@ interface HeaderPropsIF {
 
 export default function PageHeader(props: HeaderPropsIF) {
     const {
-        isUserLoggedIn,
-        ensName,
+        // isUserLoggedIn,
+        // ensName,
         // nativeBalance,
-        clickLogout,
-        metamaskLocked,
+        // clickLogout,
+        // metamaskLocked,
         shouldDisplayAccountTab,
         chainId,
         isChainSupported,
         switchChain,
         switchNetworkInMoralis,
-        openMoralisModalWallet,
+        // openMoralisModalWallet,
         openWagmiModalWallet,
         lastBlockNumber,
         isMobileSidebarOpen,
@@ -76,7 +77,10 @@ export default function PageHeader(props: HeaderPropsIF) {
         poolPriceDisplay,
     } = props;
 
-    const { user, account, enableWeb3, isAuthenticated } = useMoralis();
+    // const { user, account, enableWeb3, isAuthenticated } = useMoralis();
+    const { address, isConnected } = useAccount();
+    const { disconnect } = useDisconnect();
+    const { data: ensName } = useEnsName({ address });
 
     const { t } = useTranslation();
 
@@ -89,34 +93,34 @@ export default function PageHeader(props: HeaderPropsIF) {
     //     </Modal>
     // );
 
-    const [connectButtonDelayElapsed, setConnectButtonDelayElapsed] = useState(false);
+    // const [connectButtonDelayElapsed, setConnectButtonDelayElapsed] = useState(false);
 
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            setConnectButtonDelayElapsed(true);
-        }, 3000);
-        return () => clearTimeout(timer);
-    }, []);
+    // useEffect(() => {
+    //     const timer = setTimeout(() => {
+    //         setConnectButtonDelayElapsed(true);
+    //     }, 3000);
+    //     return () => clearTimeout(timer);
+    // }, []);
 
     // const modalOrNull = isModalOpen ? mainModal : null;
 
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            reenableWeb3();
-        }, 100);
-        return () => clearTimeout(timer);
-    }, [user, account, metamaskLocked]);
+    // useEffect(() => {
+    //     const timer = setTimeout(() => {
+    //         reenableWeb3();
+    //     }, 100);
+    //     return () => clearTimeout(timer);
+    // }, [user, account, metamaskLocked]);
 
-    const reenableWeb3 = useCallback(async () => {
-        // console.log('enabling web3');
-        try {
-            if (user && !account && !metamaskLocked) {
-                await enableWeb3();
-            }
-        } catch (err) {
-            console.warn(`Could not automatically bridge Moralis to wallet. Error follows: ${err}`);
-        }
-    }, [user, account, metamaskLocked]);
+    // const reenableWeb3 = useCallback(async () => {
+    //     // console.log('enabling web3');
+    //     try {
+    //         if (user && !account && !metamaskLocked) {
+    //             await enableWeb3();
+    //         }
+    //     } catch (err) {
+    //         console.warn(`Could not automatically bridge Moralis to wallet. Error follows: ${err}`);
+    //     }
+    // }, [user, account, metamaskLocked]);
 
     // end of rive component
 
@@ -131,7 +135,7 @@ export default function PageHeader(props: HeaderPropsIF) {
     // }
 
     // -----------------END OF SWITCH NETWORK FUNCTIONALITY--------------------------------------
-    const accountAddress = isAuthenticated && account ? trimString(account, 6, 6) : '';
+    const accountAddress = isConnected && address ? trimString(address, 6, 6) : '';
     const userData = useAppSelector((state) => state.userData);
 
     const connectedUserNativeToken = userData.tokens.nativeToken;
@@ -139,10 +143,10 @@ export default function PageHeader(props: HeaderPropsIF) {
     const accountProps = {
         nativeBalance: connectedUserNativeToken?.combinedBalanceDisplayTruncated,
         accountAddress: accountAddress,
-        accountAddressFull: isAuthenticated && account ? account : '',
-        ensName: ensName,
-        isUserLoggedIn: isUserLoggedIn,
-        clickLogout: clickLogout,
+        accountAddressFull: isConnected && address ? address : '',
+        ensName: ensName || '',
+        isUserLoggedIn: isConnected,
+        clickLogout: disconnect,
         // openModal: openModal,
         chainId: chainId,
         isAppOverlayActive: isAppOverlayActive,
@@ -154,11 +158,11 @@ export default function PageHeader(props: HeaderPropsIF) {
 
     // End of Page Header Functions
 
-    const connectMoralisButton = (
-        <button className={styles.authenticate_button} onClick={() => openMoralisModalWallet()}>
-            Connect Moralis
-        </button>
-    );
+    // const connectMoralisButton = (
+    //     <button className={styles.authenticate_button} onClick={() => openMoralisModalWallet()}>
+    //         Connect Moralis
+    //     </button>
+    // );
 
     const connectWagmiButton = (
         <button className={styles.authenticate_button} onClick={() => openWagmiModalWallet()}>
@@ -327,8 +331,8 @@ export default function PageHeader(props: HeaderPropsIF) {
                 />
                 <div className={styles.account}>
                     <NetworkSelector chainId={chainId} switchChain={switchChain} />
-                    {connectButtonDelayElapsed && !isUserLoggedIn && connectMoralisButton}
-                    {connectWagmiButton}
+                    {/* {connectButtonDelayElapsed && !isUserLoggedIn && connectMoralisButton} */}
+                    {!isConnected && connectWagmiButton}
                     <Account {...accountProps} />
                     <NotificationCenter
                         showNotificationTable={showNotificationTable}

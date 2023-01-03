@@ -14,6 +14,7 @@ import { CgProfile } from 'react-icons/cg';
 import { NavLink } from 'react-router-dom';
 import { AiOutlineLogout } from 'react-icons/ai';
 import UseOnClickOutside from '../../../../utils/hooks/useOnClickOutside';
+import { useAccount } from 'wagmi';
 
 interface AccountPropsIF {
     isUserLoggedIn: boolean | undefined;
@@ -45,6 +46,8 @@ export default function Account(props: AccountPropsIF) {
         switchTheme,
         theme,
     } = props;
+
+    const { connector } = useAccount();
 
     const [openSnackbar, setOpenSnackbar] = useState(false);
     const [value, copy] = useCopyToClipboard();
@@ -107,7 +110,7 @@ export default function Account(props: AccountPropsIF) {
                         </div>
                     </div>
                     <div className={styles.wallet_display}>
-                        <p>Metamask</p>
+                        <p>{connector?.name}</p>
                         <p>{props.accountAddress}</p>
                     </div>
                 </div>

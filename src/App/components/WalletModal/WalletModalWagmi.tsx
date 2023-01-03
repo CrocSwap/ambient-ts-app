@@ -1,8 +1,8 @@
 // START: Import React and Dongles
-import { useMemo, useState } from 'react';
-import { Moralis } from 'moralis-v1';
-import { AuthenticateOptions } from 'react-moralis/lib/hooks/core/useMoralis/_useMoralisAuth';
-import { Web3EnableOptions } from 'react-moralis/lib/hooks/core/useMoralis/_useMoralisWeb3';
+import { useEffect, useMemo, useState } from 'react';
+// import { Moralis } from 'moralis-v1';
+// import { AuthenticateOptions } from 'react-moralis/lib/hooks/core/useMoralis/_useMoralisAuth';
+// import { Web3EnableOptions } from 'react-moralis/lib/hooks/core/useMoralis/_useMoralisWeb3';
 import {
     useConnect,
     useAccount,
@@ -17,9 +17,9 @@ import Modal from '../../../components/Global/Modal/Modal';
 import Button from '../../../components/Global/Button/Button';
 import { useTermsOfService } from '../../hooks/useTermsOfService';
 // import validateEmail from './validateEmail';
-import authenticateMetamask from '../../../utils/functions/authenticateMetamask';
+// import authenticateMetamask from '../../../utils/functions/authenticateMetamask';
 import WalletButton from './WalletButton/WalletButton';
-import metamaskLogo from '../../../assets/images/logos/MetaMask_Fox.svg';
+// import metamaskLogo from '../../../assets/images/logos/MetaMask_Fox.svg';
 import {
     // CircleLoader,
     CircleLoaderFailed,
@@ -28,19 +28,10 @@ import WaitingConfirmation from '../../../components/Global/WaitingConfirmation/
 
 interface WalletModalPropsIF {
     closeModalWallet: () => void;
-    isAuthenticating: boolean;
-    isUserLoggedIn: boolean | undefined;
-    authenticate: (
-        options?: AuthenticateOptions | undefined,
-    ) => Promise<Moralis.User<Moralis.Attributes> | undefined>;
-    enableWeb3: (
-        options?: Web3EnableOptions | undefined,
-    ) => Promise<Moralis.Web3Provider | undefined>;
-    // authError:
 }
 
 export default function WalletModalWagmi(props: WalletModalPropsIF) {
-    const { closeModalWallet, isUserLoggedIn, authenticate, enableWeb3 } = props;
+    const { closeModalWallet } = props;
 
     const { connect, connectors, error, isLoading, pendingConnector } = useConnect();
     const { address, connector, isConnected } = useAccount();
@@ -52,9 +43,9 @@ export default function WalletModalWagmi(props: WalletModalPropsIF) {
     const { data: ensName } = useEnsName({ address });
 
     // close the Connect Wallet modal only when authentication completes
-    // useEffect(() => {
-    //     isConnected && closeModalWallet();
-    // }, [isConnected]);
+    useEffect(() => {
+        isConnected && closeModalWallet();
+    }, [isConnected]);
     // eslint-disable-next-line
     const { tosText, acceptToS } = useTermsOfService();
 
@@ -67,32 +58,6 @@ export default function WalletModalWagmi(props: WalletModalPropsIF) {
             <a href='#'>Learn more about Wallets</a>
         </div>
     );
-
-    // const handleMetamaskAuthentication = () => {
-    //     setPage('metamaskPending');
-    //     authenticateMetamask(isUserLoggedIn, authenticate, enableWeb3, () =>
-    //         setPage('metamaskError'),
-    //     );
-    //     acceptToS();
-    // };
-
-    // Right now, we only have one wallet but eventually, we will need to add multiple in here.
-    // const walletsData = [
-    //     { name: 'Metamask', action: handleMetamaskAuthentication, logo: metamaskLogo },
-    // ];
-
-    // const walletsDisplay = (
-    //     <div>
-    //         {walletsData.map((wallet, idx) => (
-    //             <WalletButton
-    //                 title={wallet.name}
-    //                 action={wallet.action}
-    //                 key={idx}
-    //                 logo={wallet.logo}
-    //             />
-    //         ))}
-    //     </div>
-    // );
 
     const connectorsDisplay = isConnected ? (
         <div key={connector?.id}>
@@ -112,19 +77,23 @@ export default function WalletModalWagmi(props: WalletModalPropsIF) {
         <div>
             {connectors.map((connector) => (
                 <WalletButton
-                    title={`${connector.name} ${!connector.ready && ' (unsupported)'}  ${
-                        isLoading && connector.id === pendingConnector?.id && ' (connecting)'
+                    title={`${connector.name} ${!connector.ready ? ' (unsupported)' : ''}  ${
+                        isLoading && connector.id === pendingConnector?.id ? ' (connecting)' : ''
                     }`}
                     disabled={!connector.ready}
                     key={connector.id}
                     action={() => {
                         connect({ connector });
                         // handleMetamaskAuthentication();
-                        setPage('metamaskPending');
+                        console.log({ connector });
+                        connector.name.toLowerCase() === 'metamask'
+                            ? setPage('metamaskPending')
+                            : connector.name === 'Coinbase Wallet'
+                            ? setPage('coinbaseWalletPending')
+                            : setPage('metamaskPending');
                         acceptToS();
-                        closeModalWallet();
                     }}
-                    logo={metamaskLogo}
+                    // logo={connector.name.toLowerCase() === 'metamask' ? metamaskLogo : null}
                 ></WalletButton>
             ))}
 
@@ -160,6 +129,14 @@ export default function WalletModalWagmi(props: WalletModalPropsIF) {
         </div>
     );
 
+    const coinbaseWalletPendingPage = (
+        <div className={styles.metamask_pending_container}>
+            <WaitingConfirmation content={'Please complete authentication via WalletConnect.'} />
+            {/* <CircleLoader size='5rem' borderColor='#171d27' /> */}
+            {/* <p>Check the Metamask extension in your browser for notifications.</p> */}
+        </div>
+    );
+
     const metamaskErrorPage = (
         <div className={styles.metamask_pending_container}>
             <CircleLoaderFailed />
@@ -171,10 +148,9 @@ export default function WalletModalWagmi(props: WalletModalPropsIF) {
                 title='Try Again'
                 flat={true}
                 action={() => {
+                    connect({ connector });
+                    // handleMetamaskAuthentication();
                     setPage('metamaskPending');
-                    authenticateMetamask(isUserLoggedIn, authenticate, enableWeb3, () =>
-                        setPage('metamaskError'),
-                    );
                     acceptToS();
                 }}
             />
@@ -222,6 +198,8 @@ export default function WalletModalWagmi(props: WalletModalPropsIF) {
                 return walletsPage;
             case 'metamaskPending':
                 return metamaskPendingPage;
+            case 'coinbaseWalletPending':
+                return coinbaseWalletPendingPage;
             case 'metamaskError':
                 return metamaskErrorPage;
 
@@ -233,7 +211,7 @@ export default function WalletModalWagmi(props: WalletModalPropsIF) {
     const activeTitle = useMemo(() => {
         switch (page) {
             case 'wallets':
-                return 'Choose a Wallet: WAGMI';
+                return 'Choose a Wallet';
             case 'metamaskPending':
                 return 'Waiting for Metamask';
             case 'metamaskError':
