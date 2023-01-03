@@ -69,7 +69,7 @@ export default function FeeRateSubChart(props: FreeRateData) {
                     .extentLinear()
                     .accessors([(d: any) => d.value])
                     .include([0])
-                    .pad([0, 0.5]);
+                    .pad([0, 0.7]);
 
                 const yScale = d3.scaleLinear();
                 yScale.domain(yExtent(feeData));
@@ -251,7 +251,7 @@ export default function FeeRateSubChart(props: FreeRateData) {
             style={{
                 display: 'flex',
                 flexDirection: 'row',
-                height: '13%',
+                height: '15%',
                 width: '100%',
                 paddingTop: '5px',
             }}

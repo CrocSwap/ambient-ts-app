@@ -17,7 +17,7 @@ text.market {
 
 d3fc-canvas, d3fc-svg {
     overflow: hidden;
-    grid-column: 3;
+    grid-column: 2;
     grid-row: 3;
 }
 
@@ -27,14 +27,15 @@ d3fc-canvas, d3fc-svg {
     grid-row: 3;
 } */
 
-#d3fc_group {
+.chart_grid {
     width: 100%;
     height: 100%;
     overflow: hidden;
     display: grid;
-    grid-template-columns: minmax(1em,max-content) auto 1fr auto minmax(1em,max-content);
-    grid-template-rows: minmax(1em,max-content) auto 1fr auto minmax(1em,max-content);
+    grid-template-columns: auto 1fr auto minmax(1em,max-content);
+    grid-template-rows: minmax(1em,max-content) auto 1fr auto;
 }
+
 text.crossHairText {
     filter: url(#crossHairBg);
     font-size: 13px;

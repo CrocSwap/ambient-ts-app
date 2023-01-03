@@ -4108,7 +4108,7 @@ export default function Chart(props: ChartData) {
                 setCrossHairLocation(mouseMoveEventCharts.sourceEvent);
             }
 
-            d3.select(d3PlotArea.current).on('mousemove', function (event: any) {
+            d3.select(d3Container.current).on('mousemove', function (event: any) {
                 isMouseMoveForSubChart = false;
                 isZoomForSubChart = false;
                 setCrossHairLocation(event);
@@ -4451,72 +4451,79 @@ export default function Chart(props: ChartData) {
     return (
         <div ref={d3Container} className='main_layout_chart' data-testid={'chart'}>
             <d3fc-group id='d3fc_group' auto-resize>
-                <d3fc-canvas ref={d3Canvas} className='plot-canvas'></d3fc-canvas>
-                <d3fc-svg ref={d3PlotArea} className='plot-area'></d3fc-svg>
+                <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+                    <div className='chart_grid' style={{ flexGrow: 20 }}>
+                        <d3fc-canvas ref={d3Canvas} className='plot-canvas'></d3fc-canvas>
+                        <d3fc-svg ref={d3PlotArea} className='plot-area'></d3fc-svg>
 
-                <d3fc-svg
-                    className='y-axis-svg'
-                    ref={d3Yaxis}
-                    style={{ width: yAxisWidth, gridColumn: 4, gridRow: 3 }}
-                ></d3fc-svg>
+                        <d3fc-svg
+                            className='y-axis-svg'
+                            ref={d3Yaxis}
+                            style={{ width: yAxisWidth, gridColumn: 4, gridRow: 3 }}
+                        ></d3fc-svg>
+                    </div>
+                    {showFeeRate && (
+                        <>
+                            <hr />
+                            <FeeRateSubChart
+                                feeData={parsedChartData?.feeChartData.sort(
+                                    (a, b) => b.time - a.time,
+                                )}
+                                period={parsedChartData?.period}
+                                crosshairForSubChart={crosshairForSubChart}
+                                subChartValues={subChartValues}
+                                setsubChartValues={setsubChartValues}
+                                xScale={scaleData !== undefined ? scaleData.xScale : undefined}
+                                getNewCandleData={getNewCandleData}
+                                setZoomAndYdragControl={setZoomAndYdragControl}
+                                zoomAndYdragControl={zoomAndYdragControl}
+                                setIsMouseMoveForSubChart={setIsMouseMoveForSubChart}
+                                isMouseMoveForSubChart={isMouseMoveForSubChart}
+                                setIsZoomForSubChart={setIsZoomForSubChart}
+                                setMouseMoveEventCharts={setMouseMoveEventCharts}
+                                render={render}
+                                mouseMoveChartName={mouseMoveChartName}
+                                setMouseMoveChartName={setMouseMoveChartName}
+                            />
+                        </>
+                    )}
 
-                {showFeeRate && (
-                    <>
+                    {showTvl && (
+                        <>
+                            <hr />
+                            <TvlSubChart
+                                tvlData={parsedChartData?.tvlChartData.sort(
+                                    (a, b) => b.time - a.time,
+                                )}
+                                period={parsedChartData?.period}
+                                crosshairForSubChart={crosshairForSubChart}
+                                setsubChartValues={setsubChartValues}
+                                scaleData={scaleData}
+                                getNewCandleData={getNewCandleData}
+                                setZoomAndYdragControl={setZoomAndYdragControl}
+                                zoomAndYdragControl={zoomAndYdragControl}
+                                isMouseMoveForSubChart={isMouseMoveForSubChart}
+                                subChartValues={subChartValues}
+                                setIsMouseMoveForSubChart={setIsMouseMoveForSubChart}
+                                setIsZoomForSubChart={setIsZoomForSubChart}
+                                setMouseMoveEventCharts={setMouseMoveEventCharts}
+                                render={render}
+                                mouseMoveChartName={mouseMoveChartName}
+                                setMouseMoveChartName={setMouseMoveChartName}
+                                setTransformX={setTransformX}
+                                transformX={transformX}
+                            />
+                        </>
+                    )}
+
+                    <div style={{ height: '1.25em', width: '100%', gridColumn: 3, gridRow: 4 }}>
                         <hr />
-                        <FeeRateSubChart
-                            feeData={parsedChartData?.feeChartData.sort((a, b) => b.time - a.time)}
-                            period={parsedChartData?.period}
-                            crosshairForSubChart={crosshairForSubChart}
-                            subChartValues={subChartValues}
-                            setsubChartValues={setsubChartValues}
-                            xScale={scaleData !== undefined ? scaleData.xScale : undefined}
-                            getNewCandleData={getNewCandleData}
-                            setZoomAndYdragControl={setZoomAndYdragControl}
-                            zoomAndYdragControl={zoomAndYdragControl}
-                            setIsMouseMoveForSubChart={setIsMouseMoveForSubChart}
-                            isMouseMoveForSubChart={isMouseMoveForSubChart}
-                            setIsZoomForSubChart={setIsZoomForSubChart}
-                            setMouseMoveEventCharts={setMouseMoveEventCharts}
-                            render={render}
-                            mouseMoveChartName={mouseMoveChartName}
-                            setMouseMoveChartName={setMouseMoveChartName}
-                        />
-                    </>
-                )}
-
-                {showTvl && (
-                    <>
-                        <hr />
-                        <TvlSubChart
-                            tvlData={parsedChartData?.tvlChartData.sort((a, b) => b.time - a.time)}
-                            period={parsedChartData?.period}
-                            crosshairForSubChart={crosshairForSubChart}
-                            setsubChartValues={setsubChartValues}
-                            scaleData={scaleData}
-                            getNewCandleData={getNewCandleData}
-                            setZoomAndYdragControl={setZoomAndYdragControl}
-                            zoomAndYdragControl={zoomAndYdragControl}
-                            isMouseMoveForSubChart={isMouseMoveForSubChart}
-                            subChartValues={subChartValues}
-                            setIsMouseMoveForSubChart={setIsMouseMoveForSubChart}
-                            setIsZoomForSubChart={setIsZoomForSubChart}
-                            setMouseMoveEventCharts={setMouseMoveEventCharts}
-                            render={render}
-                            mouseMoveChartName={mouseMoveChartName}
-                            setMouseMoveChartName={setMouseMoveChartName}
-                            setTransformX={setTransformX}
-                            transformX={transformX}
-                        />
-                    </>
-                )}
-
-                <div style={{ height: '1.25em', width: '100%', gridColumn: 3, gridRow: 4 }}>
-                    <hr />
-                    <d3fc-svg
-                        ref={d3Xaxis}
-                        className='x-axis'
-                        style={{ height: '1.25em', width: '100%', gridColumn: 3, gridRow: 4 }}
-                    ></d3fc-svg>
+                        <d3fc-svg
+                            ref={d3Xaxis}
+                            className='x-axis'
+                            style={{ height: '1.25em', width: '100%', gridColumn: 3, gridRow: 4 }}
+                        ></d3fc-svg>
+                    </div>
                 </div>
             </d3fc-group>
         </div>
