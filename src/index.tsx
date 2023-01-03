@@ -9,8 +9,10 @@ import reportWebVitals from './reportWebVitals';
 import { MoralisProvider } from 'react-moralis';
 import './i18n/config.ts';
 
-import { WagmiConfig, createClient, configureChains, mainnet, goerli } from 'wagmi';
+import { WagmiConfig, createClient, configureChains } from 'wagmi';
+import { avalanche, goerli, mainnet, avalancheFuji } from 'wagmi/chains';
 
+import { infuraProvider } from 'wagmi/providers/infura';
 import { alchemyProvider } from 'wagmi/providers/alchemy';
 import { publicProvider } from 'wagmi/providers/public';
 
@@ -20,8 +22,16 @@ import { MetaMaskConnector } from 'wagmi/connectors/metaMask';
 import { WalletConnectConnector } from 'wagmi/connectors/walletConnect';
 
 const { chains, provider, webSocketProvider } = configureChains(
-    [mainnet, goerli],
-    [alchemyProvider({ apiKey: '88xHXjBMB59mzC1VWXFCCg8dICKJZOqS' }), publicProvider()],
+    [mainnet, goerli, avalanche, avalancheFuji],
+    [
+        infuraProvider({
+            apiKey: process.env.REACT_APP_INFURA_ID || '4a162c75bd514925890174ca13cdb6a2',
+        }),
+        alchemyProvider({
+            apiKey: process.env.REACT_APP_ALCHEMY_ID || '88xHXjBMB59mzC1VWXFCCg8dICKJZOqS',
+        }),
+        publicProvider(),
+    ],
 );
 
 // Set up client
@@ -32,7 +42,7 @@ const client = createClient({
         new CoinbaseWalletConnector({
             chains,
             options: {
-                appName: 'wagmi',
+                appName: 'Ambient Finance',
             },
         }),
         new WalletConnectConnector({

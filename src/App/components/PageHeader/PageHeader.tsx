@@ -60,7 +60,7 @@ export default function PageHeader(props: HeaderPropsIF) {
         // nativeBalance,
         // clickLogout,
         // metamaskLocked,
-        shouldDisplayAccountTab,
+        // shouldDisplayAccountTab,
         chainId,
         isChainSupported,
         switchChain,
@@ -256,7 +256,7 @@ export default function PageHeader(props: HeaderPropsIF) {
         {
             title: t('common:accountTitle'),
             destination: '/account',
-            shouldDisplay: shouldDisplayAccountTab,
+            shouldDisplay: isConnected,
         },
     ];
 

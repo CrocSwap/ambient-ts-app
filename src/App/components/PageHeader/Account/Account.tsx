@@ -35,7 +35,6 @@ interface AccountPropsIF {
 
 export default function Account(props: AccountPropsIF) {
     const {
-        isUserLoggedIn,
         nativeBalance,
         clickLogout,
         ensName,
@@ -47,7 +46,9 @@ export default function Account(props: AccountPropsIF) {
         theme,
     } = props;
 
-    const { connector } = useAccount();
+    const { connector, isConnected } = useAccount();
+
+    const isUserLoggedIn = isConnected;
 
     const [openSnackbar, setOpenSnackbar] = useState(false);
     const [value, copy] = useCopyToClipboard();

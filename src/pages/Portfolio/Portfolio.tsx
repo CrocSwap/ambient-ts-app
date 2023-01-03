@@ -19,6 +19,7 @@ import NotFound from '../NotFound/NotFound';
 import ProfileSettings from '../../components/Portfolio/ProfileSettings/ProfileSettings';
 import { SoloTokenSelect } from '../../components/Global/TokenSelectContainer/SoloTokenSelect';
 import { useSoloSearch } from '../../components/Global/TokenSelectContainer/hooks/useSoloSearch';
+import { useAccount, useEnsName } from 'wagmi';
 
 const mainnetProvider = new ethers.providers.WebSocketProvider(
     // 'wss://mainnet.infura.io/ws/v3/4a162c75bd514925890174ca13cdb6a2', // benwolski@gmail.com
@@ -86,11 +87,10 @@ export default function Portfolio(props: PortfolioPropsIF) {
         cachedFetchNativeTokenBalance,
         cachedFetchErc20TokenBalances,
         cachedFetchTokenPrice,
-        ensName,
         lastBlockNumber,
         userImageData,
-        connectedAccount,
-        chainId,
+        // connectedAccount,
+        // chainId,
         tokensOnActiveLists,
         openGlobalModal,
         closeGlobalModal,
@@ -108,11 +108,19 @@ export default function Portfolio(props: PortfolioPropsIF) {
         currentTxActiveInTransactions,
         setCurrentTxActiveInTransactions,
         showSidebar,
-        isUserLoggedIn,
         handlePulseAnimation,
         gasPriceInGwei,
         openModalWallet,
     } = props;
+
+    const { isConnected, address } = useAccount();
+    const { data: ensName } = useEnsName({ address });
+
+    const chainId = '0x5';
+
+    const connectedAccount = address;
+
+    const isUserLoggedIn = isConnected;
 
     const selectedToken: TokenIF = useAppSelector((state) => state.temp.token);
 
@@ -161,32 +169,31 @@ export default function Portfolio(props: PortfolioPropsIF) {
         })();
     }, [crocEnv, selectedTokenAddress, lastBlockNumber, connectedAccount, recheckTokenAllowance]);
 
-    const { address } = useParams();
+    const { address: addressFromParams } = useParams();
 
-    const isAddressEns = address?.endsWith('.eth');
-    const isAddressHex = address?.startsWith('0x') && address?.length == 42;
+    const isAddressEns = addressFromParams?.endsWith('.eth');
+    const isAddressHex = addressFromParams?.startsWith('0x') && addressFromParams?.length == 42;
 
-    if (address && !isAddressEns && !isAddressHex) return <NotFound />;
+    if (addressFromParams && !isAddressEns && !isAddressHex) return <NotFound />;
     // if (address && !isAddressEns && !isAddressHex) return <Navigate replace to='/404' />;
 
     const [resolvedAddress, setResolvedAddress] = useState<string>('');
 
     const connectedAccountActive =
-        !address || resolvedAddress.toLowerCase() === connectedAccount.toLowerCase();
+        !addressFromParams || resolvedAddress.toLowerCase() === connectedAccount?.toLowerCase();
 
     useEffect(() => {
         (async () => {
-            if (address && isAddressEns && mainnetProvider) {
-                const newResolvedAddress = await mainnetProvider.resolveName(address);
-
+            if (addressFromParams && isAddressEns && mainnetProvider) {
+                const newResolvedAddress = await mainnetProvider.resolveName(addressFromParams);
                 if (newResolvedAddress) {
                     setResolvedAddress(newResolvedAddress);
                 }
-            } else if (address && isAddressHex && !isAddressEns) {
-                setResolvedAddress(address);
+            } else if (addressFromParams && isAddressHex && !isAddressEns) {
+                setResolvedAddress(addressFromParams);
             }
         })();
-    }, [address, isAddressHex, isAddressEns, mainnetProvider]);
+    }, [addressFromParams, isAddressHex, isAddressEns, mainnetProvider]);
 
     const [secondaryImageData, setSecondaryImageData] = useState<string[]>([]);
 
@@ -199,23 +206,25 @@ export default function Portfolio(props: PortfolioPropsIF) {
         })();
     }, [resolvedAddress, connectedAccountActive]);
 
-    const [secondaryensName, setSecondaryEnsName] = useState('');
-
+    const [secondaryEnsName, setSecondaryEnsName] = useState('');
     // check for ENS name account changes
     useEffect(() => {
         (async () => {
-            if (address && !isAddressEns) {
+            if (addressFromParams && !isAddressEns) {
                 try {
-                    const ensName = await fetchAddress(mainnetProvider, address, chainId);
+                    const ensName = await fetchAddress(mainnetProvider, addressFromParams, chainId);
+
                     if (ensName) setSecondaryEnsName(ensName);
                     else setSecondaryEnsName('');
                 } catch (error) {
                     setSecondaryEnsName('');
                     console.log({ error });
                 }
+            } else if (addressFromParams && isAddressEns) {
+                setSecondaryEnsName(addressFromParams);
             }
         })();
-    }, [address, isAddressEns]);
+    }, [addressFromParams, isAddressEns]);
 
     useEffect(() => {
         console.log({ selectedToken });
@@ -229,7 +238,7 @@ export default function Portfolio(props: PortfolioPropsIF) {
             <ExchangeBalance
                 crocEnv={crocEnv}
                 mainnetProvider={mainnetProvider}
-                connectedAccount={connectedAccount}
+                connectedAccount={connectedAccount || ''}
                 setSelectedOutsideTab={setSelectedOutsideTab}
                 setOutsideControl={setOutsideControl}
                 openGlobalModal={openGlobalModal}
@@ -445,15 +454,15 @@ export default function Portfolio(props: PortfolioPropsIF) {
                 <ProfileSettings
                     showProfileSettings={showProfileSettings}
                     setShowProfileSettings={setShowProfileSettings}
-                    ensName={address ? secondaryensName : ensName}
+                    ensName={secondaryEnsName ? secondaryEnsName : ensName ?? ''}
                     imageData={connectedAccountActive ? userImageData : secondaryImageData}
                     openGlobalModal={openGlobalModal}
                 />
             )}
             <PortfolioBanner
-                ensName={address ? secondaryensName : ensName}
+                ensName={secondaryEnsName ? secondaryEnsName : ensName ?? ''}
                 resolvedAddress={resolvedAddress}
-                activeAccount={address ?? connectedAccount}
+                activeAccount={address ?? connectedAccount ?? ''}
                 imageData={connectedAccountActive ? userImageData : secondaryImageData}
                 setShowProfileSettings={setShowProfileSettings}
                 connectedAccountActive={connectedAccountActive}
@@ -476,7 +485,7 @@ export default function Portfolio(props: PortfolioPropsIF) {
                         resolvedAddressTokens={resolvedAddressTokens}
                         resolvedAddress={resolvedAddress}
                         lastBlockNumber={lastBlockNumber}
-                        activeAccount={address ?? connectedAccount}
+                        activeAccount={address ?? connectedAccount ?? ''}
                         connectedAccountActive={connectedAccountActive}
                         chainId={chainId}
                         tokenMap={tokensOnActiveLists}
