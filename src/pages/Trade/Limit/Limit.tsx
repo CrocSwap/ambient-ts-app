@@ -45,7 +45,7 @@ import { memoizeQuerySpotPrice } from '../../../App/functions/querySpotPrice';
 import { getRecentTokensParamsIF } from '../../../App/hooks/useRecentTokens';
 
 interface LimitPropsIF {
-    account: string | null;
+    account: string | undefined;
     pool: CrocPoolView | undefined;
     crocEnv: CrocEnv | undefined;
     isUserLoggedIn: boolean | undefined;

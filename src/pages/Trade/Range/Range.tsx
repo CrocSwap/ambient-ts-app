@@ -58,7 +58,7 @@ import RangeShareControl from '../../../components/Trade/Range/RangeShareControl
 import { getRecentTokensParamsIF } from '../../../App/hooks/useRecentTokens';
 
 interface RangePropsIF {
-    account: string | null;
+    account: string | undefined;
     crocEnv: CrocEnv | undefined;
     isUserLoggedIn: boolean | undefined;
     importedTokens: Array<TokenIF>;

@@ -40,7 +40,7 @@ import { FiCopy } from 'react-icons/fi';
 interface SwapPropsIF {
     crocEnv: CrocEnv | undefined;
     isUserLoggedIn: boolean | undefined;
-    account: string | null;
+    account: string | undefined;
     importedTokens: Array<TokenIF>;
     setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
     swapSlippage: SlippagePairIF;

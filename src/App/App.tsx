@@ -36,6 +36,8 @@ import {
 } from '../utils/state/graphDataSlice';
 import { ethers } from 'ethers';
 import { useMoralis } from 'react-moralis';
+import { useAccount } from 'wagmi';
+
 import useWebSocket from 'react-use-websocket';
 import { sortBaseQuoteTokens, toDisplayPrice, CrocEnv, toDisplayQty } from '@crocswap-libs/sdk';
 import { resetReceiptData } from '../utils/state/receiptDataSlice';
@@ -167,7 +169,7 @@ const shouldNonCandleSubscriptionsReconnect = true;
 export default function App() {
     const {
         isWeb3Enabled,
-        account,
+        // account,
         logout,
         isAuthenticated,
         isAuthenticating,
@@ -175,6 +177,8 @@ export default function App() {
         authenticate,
         enableWeb3,
     } = useMoralis();
+
+    const { address: account, isConnected } = useAccount();
 
     const tradeData = useAppSelector((state) => state.tradeData);
     const location = useLocation();
@@ -263,7 +267,8 @@ export default function App() {
 
     const userData = useAppSelector((state) => state.userData);
 
-    const isUserLoggedIn = userData.isLoggedIn;
+    const isUserLoggedIn = isConnected;
+    // const isUserLoggedIn = userData.isLoggedIn;
     const isUserIdle = userData.isUserIdle;
 
     // allow a local environment variable to be defined in [app_repo]/.env.local to turn off connections to the cache server
@@ -1511,7 +1516,7 @@ export default function App() {
             shouldReconnect: () => shouldNonCandleSubscriptionsReconnect,
         },
         // only connect is account is available
-        isServerEnabled && account !== null && account !== '',
+        isServerEnabled && account !== null && account !== undefined,
     );
 
     useEffect(() => {
@@ -1561,7 +1566,7 @@ export default function App() {
             shouldReconnect: () => shouldNonCandleSubscriptionsReconnect,
         },
         // only connect is account is available
-        isServerEnabled && account !== null && account !== '',
+        isServerEnabled && account !== null && account !== undefined,
     );
 
     useEffect(() => {
@@ -1606,7 +1611,7 @@ export default function App() {
             shouldReconnect: () => shouldNonCandleSubscriptionsReconnect,
         },
         // only connect is account is available
-        isServerEnabled && account !== null && account !== '',
+        isServerEnabled && account !== null && account !== undefined,
     );
 
     useEffect(() => {
@@ -2045,7 +2050,7 @@ export default function App() {
             .catch(console.log);
     }, [lastBlockNumber]);
 
-    const shouldDisplayAccountTab = isUserLoggedIn && account != '';
+    const shouldDisplayAccountTab = isUserLoggedIn && account !== undefined;
 
     const [isMoralisModalOpenWallet, openMoralisModalWallet, closeMoralisModalWallet] = useModal();
     const [isWagmiModalOpenWallet, openWagmiModalWallet, closeWagmiModalWallet] = useModal();
@@ -2256,7 +2261,7 @@ export default function App() {
     const swapPropsTrade = {
         pool: pool,
         crocEnv: crocEnv,
-        isUserLoggedIn: isUserLoggedIn,
+        isUserLoggedIn: isConnected,
         account: account,
         importedTokens: importedTokens,
         setImportedTokens: setImportedTokens,
