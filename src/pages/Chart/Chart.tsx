@@ -1293,17 +1293,7 @@ export default function Chart(props: ChartData) {
                     if (event.sourceEvent && event.sourceEvent.type != 'wheel') {
                         d3.select(d3Container.current).style('cursor', 'default');
                     }
-
-                    if (!clickedForLine) {
-                        if (location.pathname.includes('limit')) {
-                            const newLimitValue = scaleData.yScale.invert(
-                                event.sourceEvent.offsetY,
-                            );
-                            onBlurLimitRate(newLimitValue);
-                        } else if (location.pathname.includes('range')) {
-                            // onClickRange(event);
-                        }
-                    } else {
+                    if (clickedForLine) {
                         if (
                             event.sourceEvent.type !== 'wheel' &&
                             event.sourceEvent.timeStamp - zoomTimeout < 500
