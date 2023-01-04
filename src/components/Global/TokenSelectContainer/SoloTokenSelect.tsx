@@ -37,8 +37,7 @@ interface propsIF {
     tokenAorB: string | null;
     reverseTokens?: () => void;
     tokenPair?: TokenPairIF;
-    // TODO: make this a non-optional prop
-    acknowledgeToken?: (tkn: TokenIF) => void;
+    acknowledgeToken: (tkn: TokenIF) => void;
 }
 
 export const SoloTokenSelect = (props: propsIF) => {

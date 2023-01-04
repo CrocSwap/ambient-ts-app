@@ -13,7 +13,7 @@ import { MdAccountBalanceWallet } from 'react-icons/md';
 import IconWithTooltip from '../../Global/IconWithTooltip/IconWithTooltip';
 import NoTokenIcon from '../../Global/NoTokenIcon/NoTokenIcon';
 import { SoloTokenSelect } from '../../Global/TokenSelectContainer/SoloTokenSelect';
-import { useSoloSearch } from '../../Global/TokenSelectContainer/hooks/useSoloSearch';
+// import { useSoloSearch } from '../../Global/TokenSelectContainer/hooks/useSoloSearch';
 import { getRecentTokensParamsIF } from '../../../App/hooks/useRecentTokens';
 
 interface CurrencySelectorProps {
@@ -65,6 +65,7 @@ interface CurrencySelectorProps {
     validatedInput: string,
     setInput: Dispatch<SetStateAction<string>>;
     searchType: string;
+    acknowledgeToken: (tkn: TokenIF) => void;
 }
 
 export default function CurrencySelector(props: CurrencySelectorProps) {
@@ -72,7 +73,7 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
         provider,
         isUserLoggedIn,
         tokenPair,
-        tokensBank,
+        // tokensBank,
         setImportedTokens,
         chainId,
         // direction,
@@ -110,7 +111,8 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
         outputTokens,
         validatedInput,
         setInput,
-        searchType
+        searchType,
+        acknowledgeToken
     } = props;
 
     // const [showManageTokenListContent, setShowManageTokenListContent] = useState(false);
@@ -494,6 +496,7 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                         tokenAorB={tokenAorB}
                         reverseTokens={reverseTokens}
                         tokenPair={tokenPair}
+                        acknowledgeToken={acknowledgeToken}
                     />
                 </Modal>
             )}

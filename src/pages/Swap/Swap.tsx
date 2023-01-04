@@ -82,6 +82,7 @@ interface SwapPropsIF {
     validatedInput: string,
     setInput: Dispatch<SetStateAction<string>>;
     searchType: string;
+    acknowledgeToken: (tkn: TokenIF) => void;
 }
 
 export default function Swap(props: SwapPropsIF) {
@@ -123,7 +124,8 @@ export default function Swap(props: SwapPropsIF) {
         outputTokens,
         validatedInput,
         setInput,
-        searchType
+        searchType,
+        acknowledgeToken
     } = props;
 
     const [isModalOpen, openModal, closeModal] = useModal();
@@ -605,6 +607,7 @@ export default function Swap(props: SwapPropsIF) {
                             validatedInput={validatedInput}
                             setInput={setInput}
                             searchType={searchType}
+                            acknowledgeToken={acknowledgeToken}
                         />
                     </motion.div>
                     {/* {denominationSwitchOrNull} */}

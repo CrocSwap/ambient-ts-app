@@ -104,6 +104,7 @@ interface RangePropsIF {
     validatedInput: string,
     setInput: Dispatch<SetStateAction<string>>;
     searchType: string;
+    acknowledgeToken: (tkn: TokenIF) => void;
 }
 
 export default function Range(props: RangePropsIF) {
@@ -151,7 +152,8 @@ export default function Range(props: RangePropsIF) {
         outputTokens,
         validatedInput,
         setInput,
-        searchType
+        searchType,
+        acknowledgeToken
     } = props;
 
     const [isModalOpen, openModal, closeModal] = useModal();
@@ -1032,7 +1034,8 @@ export default function Range(props: RangePropsIF) {
         outputTokens: outputTokens,
         validatedInput: validatedInput,
         setInput: setInput,
-        searchType: searchType
+        searchType: searchType,
+        acknowledgeToken: acknowledgeToken
     };
 
     // props for <RangeWidth/> React element

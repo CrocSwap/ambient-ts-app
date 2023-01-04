@@ -17,7 +17,7 @@ import { MdAccountBalanceWallet } from 'react-icons/md';
 import ambientLogo from '../../../../assets/images/logos/ambient_logo.svg';
 import NoTokenIcon from '../../../Global/NoTokenIcon/NoTokenIcon';
 import { SoloTokenSelect } from '../../../Global/TokenSelectContainer/SoloTokenSelect';
-import { useSoloSearch } from '../../../Global/TokenSelectContainer/hooks/useSoloSearch';
+// import { useSoloSearch } from '../../../Global/TokenSelectContainer/hooks/useSoloSearch';
 import { getRecentTokensParamsIF } from '../../../../App/hooks/useRecentTokens';
 
 
@@ -65,6 +65,7 @@ interface LimitCurrencySelectorProps {
     validatedInput: string,
     setInput: Dispatch<SetStateAction<string>>;
     searchType: string;
+    acknowledgeToken: (tkn: TokenIF) => void;
 }
 
 // central react functional component
@@ -73,7 +74,7 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
         provider,
         isUserLoggedIn,
         tokenPair,
-        tokensBank,
+        // tokensBank,
         setImportedTokens,
         chainId,
         fieldId,
@@ -107,7 +108,8 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
         outputTokens,
         validatedInput,
         setInput,
-        searchType
+        searchType,
+        acknowledgeToken
     } = props;
 
     const thisToken = fieldId === 'sell' ? tokenPair.dataTokenA : tokenPair.dataTokenB;
@@ -390,6 +392,7 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
                         tokenAorB={tokenAorB}
                         reverseTokens={reverseTokens}
                         tokenPair={tokenPair}
+                        acknowledgeToken={acknowledgeToken}
                     />
                 </Modal>
             )}

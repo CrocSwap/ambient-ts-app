@@ -88,6 +88,7 @@ interface LimitPropsIF {
     validatedInput: string,
     setInput: Dispatch<SetStateAction<string>>;
     searchType: string;
+    acknowledgeToken: (tkn: TokenIF) => void;
 }
 
 const cachedQuerySpotPrice = memoizeQuerySpotPrice();
@@ -131,7 +132,8 @@ export default function Limit(props: LimitPropsIF) {
         outputTokens,
         validatedInput,
         setInput,
-        searchType
+        searchType,
+        acknowledgeToken
     } = props;
 
     const { tradeData, navigationMenu } = useTradeData();
@@ -745,6 +747,7 @@ export default function Limit(props: LimitPropsIF) {
                         validatedInput={validatedInput}
                         setInput={setInput}
                         searchType={searchType}
+                        acknowledgeToken={acknowledgeToken}
                     />
                 </motion.div>
                 <div className={styles.header_container}>

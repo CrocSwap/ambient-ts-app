@@ -2211,7 +2211,6 @@ export default function App() {
 
     const [outputTokens, validatedInput, setInput, searchType] = useTokenSearch(
         chainData.chainId,
-        getAllTokens(),
         verifyToken,
         getTokenByAddress,
         getTokensByName,
@@ -2257,7 +2256,8 @@ export default function App() {
         outputTokens: outputTokens,
         validatedInput: validatedInput,
         setInput: setInput,
-        searchType: searchType
+        searchType: searchType,
+        acknowledgeToken: acknowledgeToken
     };
 
     // props for <Swap/> React element on trade route
@@ -2301,7 +2301,8 @@ export default function App() {
         outputTokens: outputTokens,
         validatedInput: validatedInput,
         setInput: setInput,
-        searchType: searchType
+        searchType: searchType,
+        acknowledgeToken: acknowledgeToken
     };
 
     // props for <Limit/> React element on trade route
@@ -2350,7 +2351,8 @@ export default function App() {
         outputTokens: outputTokens,
         validatedInput: validatedInput,
         setInput: setInput,
-        searchType: searchType
+        searchType: searchType,
+        acknowledgeToken: acknowledgeToken
     };
 
     // props for <Range/> React element
@@ -2404,7 +2406,8 @@ export default function App() {
         outputTokens: outputTokens,
         validatedInput: validatedInput,
         setInput: setInput,
-        searchType: searchType
+        searchType: searchType,
+        acknowledgeToken: acknowledgeToken
     };
 
     function toggleSidebar() {

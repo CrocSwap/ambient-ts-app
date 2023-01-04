@@ -13,7 +13,7 @@ import IconWithTooltip from '../../../Global/IconWithTooltip/IconWithTooltip';
 import NoTokenIcon from '../../../Global/NoTokenIcon/NoTokenIcon';
 import { SoloTokenSelect } from '../../../../components/Global/TokenSelectContainer/SoloTokenSelect';
 import { getRecentTokensParamsIF } from  '../../../../App/hooks/useRecentTokens';
-import { useSoloSearch } from '../../../Global/TokenSelectContainer/hooks/useSoloSearch';
+// import { useSoloSearch } from '../../../Global/TokenSelectContainer/hooks/useSoloSearch';
 
 interface RangeCurrencySelectorProps {
     provider?: ethers.providers.Provider;
@@ -69,6 +69,7 @@ interface RangeCurrencySelectorProps {
     validatedInput: string,
     setInput: Dispatch<SetStateAction<string>>;
     searchType: string;
+    acknowledgeToken: (tkn: TokenIF) => void;
 }
 
 export default function RangeCurrencySelector(props: RangeCurrencySelectorProps) {
@@ -78,7 +79,7 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
         gasPriceInGwei,
         // resetTokenQuantities,
         tokenPair,
-        tokensBank,
+        // tokensBank,
         setImportedTokens,
         chainId,
         isTokenAEth,
@@ -124,7 +125,8 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
         outputTokens,
         validatedInput,
         setInput,
-        searchType
+        searchType,
+        acknowledgeToken
     } = props;
 
     const isTokenASelector = fieldId === 'A';
@@ -472,6 +474,7 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
                         tokenAorB={tokenAorB}
                         reverseTokens={reverseTokens}
                         tokenPair={tokenPair}
+                        acknowledgeToken={acknowledgeToken}
                     />
                 </Modal>
             )}

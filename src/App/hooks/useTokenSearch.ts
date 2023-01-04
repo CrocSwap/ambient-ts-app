@@ -3,19 +3,11 @@ import { TokenIF } from '../../utils/interfaces/exports';
 
 export const useTokenSearch = (
     chainId: string,
-    importedTokens: TokenIF[],
     verifyToken: (addr: string, chn: string) => boolean,
     getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined,
     getTokensByName: (searchName: string, chn: string, exact: boolean) => TokenIF[],
-    defaultTokens?: TokenIF[]
+    defaultTokens: TokenIF[]
 ): [TokenIF[], string, Dispatch<SetStateAction<string>>, string] => {
-    console.log({importedTokens});
-    console.log({defaultTokens});
-    // memoize default list of tokens to display in DOM
-    const importedTokensOnChain = useMemo(() => (
-        importedTokens.filter((tkn) => tkn.chainId === parseInt(chainId))
-    ), [chainId]);
-    
     // TODO: debounce this input later
     // TODO: figure out if we need to update EVERYTHING to the debounced value
     // raw input from the user
@@ -62,7 +54,7 @@ export const useTokenSearch = (
     }, [input]);
 
     // hook to track tokens to output and render in DOM
-    const [outputTokens, setOutputTokens] = useState<TokenIF[]>(importedTokensOnChain);
+    const [outputTokens, setOutputTokens] = useState<TokenIF[]>([]);
 
     // hook to update the value of outputTokens based on user input
     useEffect(() => {
@@ -139,7 +131,7 @@ export const useTokenSearch = (
 
         // fn to run if the app does not recognize input as an address or name or symbol
         function noSearch(): TokenIF[] {
-            return defaultTokens ?? importedTokensOnChain;
+            return defaultTokens as TokenIF[];
         };
 
         // declare an output variable
@@ -161,7 +153,7 @@ export const useTokenSearch = (
 
     // run hook every time the validated input from the user changes
     // will ignore changes that do not pass validation (eg adding whitespace)
-    }, [validatedInput]);
+    }, [defaultTokens.length, validatedInput]);
 
     // outputTokens ➜ tokens to display in DOM
     // validatedInput ➜ user input after validation mods
