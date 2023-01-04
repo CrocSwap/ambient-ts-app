@@ -44,7 +44,7 @@ export const useSidebar = (pathname: string): [
     // value whether to sidebar should be hidden on the current URL path
     const hidden = useMemo<boolean>(() => {
         // array of url paths on which to hide the sidebar
-        const hiddenPaths = ['/', 'swap'];
+        const hiddenPaths = ['/', '/swap'];
         // determine if the current URL path starts with any proscribed strings
         const isPathHidden = hiddenPaths.some(
             ((path: string) => pathname.startsWith(path))
