@@ -149,11 +149,11 @@ export default function TradeCandleStickChart(props: ChartData) {
         setIsCandleAdded(true);
     }, [props.candleData]);
 
-    // useEffect(() => {
-    //     if (parsedChartData === undefined) {
-    //         parseData();
-    //     }
-    // }, [parsedChartData]);
+    useEffect(() => {
+        if (parsedChartData === undefined) {
+            parseData();
+        }
+    }, [parsedChartData]);
 
     // Parse price data
     const parseData = () => {
@@ -257,15 +257,15 @@ export default function TradeCandleStickChart(props: ChartData) {
             volumeData.map((data: any) => {
                 volumeTempData.push({
                     time: data.time,
-                    value: volumeLogScale(data.value),
-                    volume: data.value,
+                    value: data.value ? volumeLogScale(data.value) : 0,
+                    volume: data.value ? data.value : 0,
                     color: data.color,
                 });
             });
         }
 
         return volumeTempData;
-    }, [parsedChartData?.volumeChartData]);
+    }, [parsedChartData?.volumeChartData, parsedChartData?.period]);
 
     // Parse liquidtiy data
     const liquidityData = useMemo(() => {
@@ -389,8 +389,6 @@ export default function TradeCandleStickChart(props: ChartData) {
                 if (
                     data.cumBidLiq !== undefined &&
                     data.cumBidLiq !== '0' &&
-                    liqPrices > barThreshold / 10 &&
-                    liqPrices < limitBoundary &&
                     liqBidDepthPrices !== '+inf'
                 ) {
                     depthLiqBidData.push({
@@ -569,7 +567,8 @@ export default function TradeCandleStickChart(props: ChartData) {
             const yExtentVolume = d3fc
                 .extentLinear(volumeData)
                 .include([0])
-                .accessors([(d: any) => d.value]);
+                .accessors([(d: any) => d.value])
+                .pad([0.05, 0.05]);
 
             volumeScale.domain(yExtentVolume(volumeData));
 
