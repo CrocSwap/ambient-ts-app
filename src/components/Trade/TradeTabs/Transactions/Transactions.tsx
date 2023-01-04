@@ -220,7 +220,19 @@ export default function Transactions(props: TransactionsProps) {
     const quoteTokenAddress = tradeData.quoteToken.address;
 
     const [currentPage, setCurrentPage] = useState(1);
-    const [transactionsPerPage] = useState(15);
+
+    // transactions per page media queries
+    const txView1 = useMediaQuery('(max-width: 480px)');
+    const txView2 = useMediaQuery('(max-width: 720px)');
+    const txView3 = useMediaQuery('(max-width: 1200px)');
+    const txView4 = useMediaQuery('(max-width: 1800px)');
+    // const txView4 = useMediaQuery('(min-width: 2400px)');
+
+    const transactionsPerPage = txView1 ? 3 : txView2 ? 10 : txView3 ? 12 : txView4 ? 15 : 20;
+
+    console.log({ transactionsPerPage });
+
+    // const [transactionsPerPage] = useState(15);
 
     useEffect(() => {
         setCurrentPage(1);
