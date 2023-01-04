@@ -1510,6 +1510,8 @@ export default function Chart(props: ChartData) {
 
             return newTargets;
         });
+
+        console.log(liquidityData.liqBidData);
     }, [denomInBase]);
 
     const setBalancedLines = () => {
@@ -2874,6 +2876,7 @@ export default function Chart(props: ChartData) {
         }
     }, [location]);
 
+    // line gradient
     const setLiqHighlightedLinesAndArea = (ranges: any, isAmbient = false) => {
         liquidityData.lineAskSeries = [];
         liquidityData.lineBidSeries = [];
