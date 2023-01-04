@@ -13,6 +13,8 @@ export const useSidebar = (): [
         JSON.parse(localStorage.getItem('user') as string)?.sidebar ?? 'open'
     );
 
+    const [hidden, setHidden] = useState<boolean>(false);
+
     // hook to update local storage when the user toggles the sidebar
     useEffect(() => {
         // get data object 'user' from local storage
@@ -40,6 +42,9 @@ export const useSidebar = (): [
                 openSidebar();
         }
     }
+
+    const hideSidebar = () => setHidden(true);
+    const showSidebar = () => setHidden(false);
 
     // return sidebar status and functions to update value
     return [
