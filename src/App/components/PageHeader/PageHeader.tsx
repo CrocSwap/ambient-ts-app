@@ -28,7 +28,7 @@ interface HeaderPropsIF {
     isUserLoggedIn: boolean | undefined;
     // nativeBalance: string | undefined;
     clickLogout: () => void;
-    metamaskLocked: boolean;
+    // metamaskLocked: boolean;
     ensName: string;
     shouldDisplayAccountTab: boolean | undefined;
     chainId: string;

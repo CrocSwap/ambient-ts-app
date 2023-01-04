@@ -34,9 +34,9 @@ import {
     resetConnectedUserDataLoadingStatus,
     // ChangesByUser,
 } from '../utils/state/graphDataSlice';
-import { ethers } from 'ethers';
+// import { ethers } from 'ethers';
 import { useMoralis } from 'react-moralis';
-import { useAccount } from 'wagmi';
+import { useAccount, useProvider, useSigner } from 'wagmi';
 
 import useWebSocket from 'react-use-websocket';
 import { sortBaseQuoteTokens, toDisplayPrice, CrocEnv, toDisplayQty } from '@crocswap-libs/sdk';
@@ -95,7 +95,7 @@ import {
     memoizeFetchNativeTokenBalance,
 } from './functions/fetchTokenBalances';
 import { getNFTs } from './functions/getNFTs';
-import { lookupChain } from '@crocswap-libs/sdk/dist/context';
+// import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { useSlippage } from './useSlippage';
 import { useFavePools } from './hooks/useFavePools';
 import { useAppChain } from './hooks/useAppChain';
@@ -114,7 +114,7 @@ import {
 } from '../utils/state/userDataSlice';
 import { checkIsStable } from '../utils/data/stablePairs';
 import { useTokenMap } from '../utils/hooks/useTokenMap';
-import { validateChain } from './validateChain';
+// import { validateChain } from './validateChain';
 import { testTokenMap } from '../utils/data/testTokenMap';
 import { ZERO_ADDRESS } from '../constants';
 import { useModal } from '../components/Global/Modal/useModal';
@@ -336,18 +336,24 @@ export default function App() {
     window.ononline = () => setUserIsOnline(true);
     window.onoffline = () => setUserIsOnline(false);
 
-    const [provider, setProvider] = useState<ethers.providers.Provider>();
     const [crocEnv, setCrocEnv] = useState<CrocEnv | undefined>();
+
+    const {
+        data: signer,
+        //  isError, isLoading
+    } = useSigner();
+
+    const provider = useProvider();
 
     useEffect(() => {
         (async () => {
-            if (!provider) {
+            if (!provider && !signer) {
                 return;
             } else {
-                setCrocEnv(new CrocEnv(provider));
+                setCrocEnv(new CrocEnv(signer?.provider || provider));
             }
         })();
-    }, [provider]);
+    }, [provider, signer]);
 
     useEffect(() => {
         if (provider) {
@@ -362,58 +368,58 @@ export default function App() {
         }
     }, [provider]);
 
-    function exposeProviderUrl(provider?: ethers.providers.Provider): string {
-        if (provider && 'connection' in provider) {
-            return (provider as ethers.providers.WebSocketProvider).connection?.url;
-        } else {
-            return '';
-        }
-    }
+    // function exposeProviderUrl(provider?: ethers.providers.Provider): string {
+    //     if (provider && 'connection' in provider) {
+    //         return (provider as ethers.providers.WebSocketProvider).connection?.url;
+    //     } else {
+    //         return '';
+    //     }
+    // }
 
-    function exposeProviderChain(provider?: ethers.providers.Provider): number {
-        if (provider && 'network' in provider) {
-            return (provider as ethers.providers.WebSocketProvider).network?.chainId;
-        } else {
-            return -1;
-        }
-    }
+    // function exposeProviderChain(provider?: ethers.providers.Provider): number {
+    //     if (provider && 'network' in provider) {
+    //         return (provider as ethers.providers.WebSocketProvider).network?.chainId;
+    //     } else {
+    //         return -1;
+    //     }
+    // }
 
-    const [metamaskLocked, setMetamaskLocked] = useState<boolean>(true);
-    useEffect(() => {
-        try {
-            // console.log('Init provider' + provider);
-            const url = exposeProviderUrl(provider);
-            const onChain = exposeProviderChain(provider) === parseInt(chainData.chainId);
+    // const [metamaskLocked, setMetamaskLocked] = useState<boolean>(true);
+    // useEffect(() => {
+    //     try {
+    //         // console.log('Init provider' + provider);
+    //         const url = exposeProviderUrl(provider);
+    //         const onChain = exposeProviderChain(provider) === parseInt(chainData.chainId);
 
-            // console.log('Exposed URL ' + url);
+    //         // console.log('Exposed URL ' + url);
 
-            if (isAuthenticated) {
-                if (provider && url === 'metamask' && !metamaskLocked && onChain) {
-                    return;
-                } else if (provider && url === 'metamask' && metamaskLocked) {
-                    clickLogout();
-                } else if (
-                    window.ethereum &&
-                    !metamaskLocked &&
-                    validateChain(window.ethereum.chainId)
-                ) {
-                    console.log('use metamask as provider');
-                    // console.log(window.ethereum.chainId)
-                    const metamaskProvider = new ethers.providers.Web3Provider(window.ethereum);
-                    setProvider(metamaskProvider);
-                }
-            } else if (!provider || !onChain) {
-                // console.log('use infura as provider');
-                const chainSpec = lookupChain(chainData.chainId);
-                const url = chainSpec.nodeUrl;
-                // const url = chainSpec.wsUrl ? chainSpec.wsUrl : chainSpec.nodeUrl;
-                console.log('setting up new provider: ' + url);
-                setProvider(new ethers.providers.JsonRpcProvider(url));
-            }
-        } catch (error) {
-            console.log(error);
-        }
-    }, [isUserLoggedIn, chainData.chainId, metamaskLocked]);
+    //         if (isAuthenticated) {
+    //             if (provider && url === 'metamask' && !metamaskLocked && onChain) {
+    //                 return;
+    //             } else if (provider && url === 'metamask' && metamaskLocked) {
+    //                 clickLogout();
+    //             } else if (
+    //                 window.ethereum &&
+    //                 !metamaskLocked &&
+    //                 validateChain(window.ethereum.chainId)
+    //             ) {
+    //                 console.log('use metamask as provider');
+    //                 // console.log(window.ethereum.chainId)
+    //                 const metamaskProvider = new ethers.providers.Web3Provider(window.ethereum);
+    //                 setProvider(metamaskProvider);
+    //             }
+    //         } else if (!provider || !onChain) {
+    //             // console.log('use infura as provider');
+    //             const chainSpec = lookupChain(chainData.chainId);
+    //             const url = chainSpec.nodeUrl;
+    //             // const url = chainSpec.wsUrl ? chainSpec.wsUrl : chainSpec.nodeUrl;
+    //             console.log('setting up new provider: ' + url);
+    //             setProvider(new ethers.providers.JsonRpcProvider(url));
+    //         }
+    //     } catch (error) {
+    //         console.log(error);
+    //     }
+    // }, [isUserLoggedIn, chainData.chainId, metamaskLocked]);
 
     useEffect(() => {
         dispatch(resetTokens(chainData.chainId));
@@ -592,19 +598,19 @@ export default function App() {
         }
     }, [JSON.stringify(lastReceipt)]);
 
-    useEffect(() => {
-        (async () => {
-            if (window.ethereum) {
-                // console.log('requesting eth_accounts');
-                const metamaskAccounts = await window.ethereum.request({ method: 'eth_accounts' });
-                if (metamaskAccounts?.length > 0) {
-                    setMetamaskLocked(false);
-                } else {
-                    setMetamaskLocked(true);
-                }
-            }
-        })();
-    }, [window.ethereum, account]);
+    // useEffect(() => {
+    //     (async () => {
+    //         if (window.ethereum) {
+    //             // console.log('requesting eth_accounts');
+    //             const metamaskAccounts = await window.ethereum.request({ method: 'eth_accounts' });
+    //             if (metamaskAccounts?.length > 0) {
+    //                 setMetamaskLocked(false);
+    //             } else {
+    //                 setMetamaskLocked(true);
+    //             }
+    //         }
+    //     })();
+    // }, [window.ethereum, account]);
 
     // const [ensName, setEnsName] = useState('');
     const ensName = userData.ensNameCurrent || '';
@@ -2197,7 +2203,7 @@ export default function App() {
     const headerProps = {
         isUserLoggedIn: isUserLoggedIn,
         clickLogout: clickLogout,
-        metamaskLocked: metamaskLocked,
+        // metamaskLocked: metamaskLocked,
         ensName: ensName,
         shouldDisplayAccountTab: shouldDisplayAccountTab,
         chainId: chainData.chainId,

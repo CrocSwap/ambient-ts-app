@@ -249,6 +249,7 @@ export default function Swap(props: SwapPropsIF) {
     async function initiateSwap() {
         resetConfirmation();
         if (!crocEnv) return;
+
         const sellTokenAddress = tokenA.address;
         const buyTokenAddress = tokenB.address;
         const sellTokenQty = (document.getElementById('sell-quantity') as HTMLInputElement)?.value;

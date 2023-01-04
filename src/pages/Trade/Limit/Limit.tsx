@@ -194,7 +194,6 @@ export default function Limit(props: LimitPropsIF) {
 
                 const gridSize = lookupChain(chainId).gridSize;
 
-                // const croc = crocEnv ? crocEnv : new CrocEnv(provider);
                 // console.log({ isSellTokenBase });
                 const initialLimitRateNonDisplay = spotPrice * (isSellTokenBase ? 0.985 : 1.015);
 
@@ -377,7 +376,6 @@ export default function Limit(props: LimitPropsIF) {
         // if (!provider) return;
         if (!crocEnv) return;
         if (!limitTick) return;
-        // const croc = crocEnv ? crocEnv : new CrocEnv(provider);
 
         const sellToken = tradeData.tokenA.address;
         const buyToken = tradeData.tokenB.address;
@@ -427,10 +425,7 @@ export default function Limit(props: LimitPropsIF) {
 
         const qty = isTokenAPrimary ? sellQty : buyQty;
 
-        // const croc = crocEnv ? crocEnv : new CrocEnv(provider);
-
         const order = isTokenAPrimary ? crocEnv.sell(sellToken, qty) : crocEnv.buy(buyToken, qty);
-        // const seller = new CrocEnv(provider).sell(sellToken, qty);
         // console.log({ limitTick });
         const ko = order.atLimit(isTokenAPrimary ? buyToken : sellToken, limitTick);
         // console.log({ ko });

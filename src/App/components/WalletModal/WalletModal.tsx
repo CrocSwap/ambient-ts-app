@@ -86,7 +86,7 @@ export default function WalletModal(props: WalletModalPropsIF) {
                     title={wallet.name}
                     action={wallet.action}
                     key={idx}
-                    // logo={wallet.logo}
+                    logo={wallet.logo}
                 />
             ))}
         </div>

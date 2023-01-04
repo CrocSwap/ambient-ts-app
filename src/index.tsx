@@ -10,19 +10,19 @@ import { MoralisProvider } from 'react-moralis';
 import './i18n/config.ts';
 
 import { WagmiConfig, createClient, configureChains } from 'wagmi';
-import { avalanche, goerli, mainnet, avalancheFuji } from 'wagmi/chains';
+import { avalanche, goerli, avalancheFuji } from 'wagmi/chains';
 
 import { infuraProvider } from 'wagmi/providers/infura';
 import { alchemyProvider } from 'wagmi/providers/alchemy';
 import { publicProvider } from 'wagmi/providers/public';
 
-import { CoinbaseWalletConnector } from 'wagmi/connectors/coinbaseWallet';
-import { InjectedConnector } from 'wagmi/connectors/injected';
 import { MetaMaskConnector } from 'wagmi/connectors/metaMask';
-import { WalletConnectConnector } from 'wagmi/connectors/walletConnect';
+// import { CoinbaseWalletConnector } from 'wagmi/connectors/coinbaseWallet';
+// import { InjectedConnector } from 'wagmi/connectors/injected';
+// import { WalletConnectConnector } from 'wagmi/connectors/walletConnect';
 
 const { chains, provider, webSocketProvider } = configureChains(
-    [mainnet, goerli, avalanche, avalancheFuji],
+    [goerli, avalanche, avalancheFuji],
     [
         infuraProvider({
             apiKey: process.env.REACT_APP_INFURA_ID || '4a162c75bd514925890174ca13cdb6a2',
@@ -39,25 +39,25 @@ const client = createClient({
     autoConnect: true,
     connectors: [
         new MetaMaskConnector({ chains }),
-        new CoinbaseWalletConnector({
-            chains,
-            options: {
-                appName: 'Ambient Finance',
-            },
-        }),
-        new WalletConnectConnector({
-            chains,
-            options: {
-                qrcode: true,
-            },
-        }),
-        new InjectedConnector({
-            chains,
-            options: {
-                name: 'Injected',
-                shimDisconnect: true,
-            },
-        }),
+        // new CoinbaseWalletConnector({
+        //     chains,
+        //     options: {
+        //         appName: 'Ambient Finance',
+        //     },
+        // }),
+        // new WalletConnectConnector({
+        //     chains,
+        //     options: {
+        //         qrcode: true,
+        //     },
+        // }),
+        // new InjectedConnector({
+        //     chains,
+        //     options: {
+        //         name: 'Injected',
+        //         shimDisconnect: true,
+        //     },
+        // }),
     ],
     provider,
     webSocketProvider,
