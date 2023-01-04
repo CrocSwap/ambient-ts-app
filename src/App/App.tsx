@@ -177,7 +177,6 @@ export default function App() {
 
     const tradeData = useAppSelector((state) => state.tradeData);
     const location = useLocation();
-    console.log({location});
 
     // hook to check if token addresses in URL match token addresses in RTK
     const rtkMatchesParams = useMemo(() => {
@@ -2405,7 +2404,12 @@ export default function App() {
 
     // hook to track user's sidebar preference open or closed
     // also functions to toggle sidebar status between open and closed
-    const [sidebarStatus, openSidebar, closeSidebar, togggggggleSidebar] = useSidebar();
+    const [
+        sidebarStatus,
+        openSidebar,
+        closeSidebar,
+        togggggggleSidebar
+    ] = useSidebar(location.pathname);
     // these lines are just here to make the linter happy
     // take them out before production, they serve no other purpose
     false && sidebarStatus;

@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
-export const useSidebar = (): [
+export const useSidebar = (pathname: string): [
     sidebar: string,
     openSidebar: () => void,
     closeSidebar: () => void,
@@ -12,9 +12,6 @@ export const useSidebar = (): [
     const [sidebar, setSidebar] = useState(
         JSON.parse(localStorage.getItem('user') as string)?.sidebar ?? 'open'
     );
-
-    // hook to track whether the sidebar is hidden or rendered in the DOM
-    const [hidden, setHidden] = useState<boolean>(false);
 
     // hook to update local storage when the user toggles the sidebar
     useEffect(() => {
@@ -44,10 +41,14 @@ export const useSidebar = (): [
         }
     }
 
-    // fn to hide the sidebar (not rendered in DOM)
-    const hideSidebar = () => setHidden(true);
-    // fn to show the sidebar (rendered in DOM)
-    const showSidebar = () => setHidden(false);
+    const hidden = useMemo<boolean>(() => {
+        const hiddenPaths = ['/', 'swap'];
+        const isPathHidden = hiddenPaths.some(
+            ((path: string) => pathname.startsWith(path))
+        );
+        return isPathHidden;
+    }, [pathname]);
+    false && hidden;
 
     // return sidebar status and functions to update value
     return [
