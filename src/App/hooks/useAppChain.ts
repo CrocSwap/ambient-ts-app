@@ -1,8 +1,8 @@
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
-import { useChain } from 'react-moralis';
 import { ChainSpec } from '@crocswap-libs/sdk';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { validateChainId } from '../../utils/data/chains';
+import { useNetwork, useSwitchNetwork } from 'wagmi';
 
 export const useAppChain = (
     defaultChain: string,
@@ -11,10 +11,18 @@ export const useAppChain = (
     ChainSpec,
     boolean,
     Dispatch<SetStateAction<string>>,
-    (providedChainId: string) => Promise<void>,
+    ((chainId_?: number | undefined) => void) | undefined,
 ] => {
     // chain from connected wallet via Moralis
-    const { chainId, switchNetwork } = useChain();
+
+    const {
+        // chains, error, isLoading, pendingChainId,
+        switchNetwork,
+    } = useSwitchNetwork();
+
+    const { chain } = useNetwork();
+
+    const chainId = chain ? '0x' + chain.id.toString(16) : '';
 
     // value tracking the current chain the app is set to use
     // initializes on the default chain parameter

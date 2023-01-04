@@ -1,7 +1,6 @@
 // START: Import React and Dongles
 import { useEffect, useState, Dispatch, SetStateAction } from 'react';
 import { useLocation, Link } from 'react-router-dom';
-// import { useMoralis } from 'react-moralis';
 import { useTranslation } from 'react-i18next';
 import { motion, AnimateSharedLayout } from 'framer-motion';
 
@@ -33,9 +32,6 @@ interface HeaderPropsIF {
     shouldDisplayAccountTab: boolean | undefined;
     chainId: string;
     isChainSupported: boolean;
-    switchChain: Dispatch<SetStateAction<string>>;
-    switchNetworkInMoralis: (providedChainId: string) => Promise<void>;
-    openMoralisModalWallet: () => void;
     openWagmiModalWallet: () => void;
 
     isMobileSidebarOpen: boolean;
@@ -63,8 +59,6 @@ export default function PageHeader(props: HeaderPropsIF) {
         // shouldDisplayAccountTab,
         chainId,
         isChainSupported,
-        switchChain,
-        switchNetworkInMoralis,
         // openMoralisModalWallet,
         openWagmiModalWallet,
         lastBlockNumber,
@@ -77,7 +71,6 @@ export default function PageHeader(props: HeaderPropsIF) {
         poolPriceDisplay,
     } = props;
 
-    // const { user, account, enableWeb3, isAuthenticated } = useMoralis();
     const { address, isConnected } = useAccount();
     const { disconnect } = useDisconnect();
     const { data: ensName } = useEnsName({ address });
@@ -166,7 +159,7 @@ export default function PageHeader(props: HeaderPropsIF) {
 
     const connectWagmiButton = (
         <button className={styles.authenticate_button} onClick={() => openWagmiModalWallet()}>
-            Connect Wagmi
+            Connect Wallet
         </button>
     );
     // ----------------------------NAVIGATION FUNCTIONALITY-------------------------------------
@@ -330,7 +323,7 @@ export default function PageHeader(props: HeaderPropsIF) {
                     switchTheme={switchTheme}
                 />
                 <div className={styles.account}>
-                    <NetworkSelector chainId={chainId} switchChain={switchChain} />
+                    <NetworkSelector chainId={chainId} />
                     {/* {connectButtonDelayElapsed && !isUserLoggedIn && connectMoralisButton} */}
                     {!isConnected && connectWagmiButton}
                     <Account {...accountProps} />
@@ -341,7 +334,7 @@ export default function PageHeader(props: HeaderPropsIF) {
                     />
                 </div>
             </div>
-            {isChainSupported || <SwitchNetwork switchNetworkInMoralis={switchNetworkInMoralis} />}
+            {isChainSupported || <SwitchNetwork />}
             {/* {modalOrNull} */}
         </header>
     );

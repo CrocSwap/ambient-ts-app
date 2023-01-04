@@ -1,8 +1,6 @@
 // START: Import React and Dongles
 import { useEffect, useMemo, useState } from 'react';
-// import { Moralis } from 'moralis-v1';
-// import { AuthenticateOptions } from 'react-moralis/lib/hooks/core/useMoralis/_useMoralisAuth';
-// import { Web3EnableOptions } from 'react-moralis/lib/hooks/core/useMoralis/_useMoralisWeb3';
+
 import {
     useConnect,
     useAccount,
@@ -17,7 +15,6 @@ import Modal from '../../../components/Global/Modal/Modal';
 import Button from '../../../components/Global/Button/Button';
 import { useTermsOfService } from '../../hooks/useTermsOfService';
 // import validateEmail from './validateEmail';
-// import authenticateMetamask from '../../../utils/functions/authenticateMetamask';
 import WalletButton from './WalletButton/WalletButton';
 import metamaskLogo from '../../../assets/images/logos/MetaMask_Fox.svg';
 import {

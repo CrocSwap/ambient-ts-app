@@ -34,9 +34,8 @@ import {
     resetConnectedUserDataLoadingStatus,
     // ChangesByUser,
 } from '../utils/state/graphDataSlice';
-// import { ethers } from 'ethers';
-import { useMoralis } from 'react-moralis';
-import { useAccount, useProvider, useSigner } from 'wagmi';
+
+import { useAccount, useDisconnect, useProvider, useSigner } from 'wagmi';
 
 import useWebSocket from 'react-use-websocket';
 import { sortBaseQuoteTokens, toDisplayPrice, CrocEnv, toDisplayQty } from '@crocswap-libs/sdk';
@@ -48,7 +47,6 @@ import SnackbarComponent from '../components/Global/SnackbarComponent/SnackbarCo
 import PageHeader from './components/PageHeader/PageHeader';
 import Sidebar from './components/Sidebar/Sidebar';
 import PageFooter from './components/PageFooter/PageFooter';
-import WalletModal from './components/WalletModal/WalletModal';
 import Home from '../pages/Home/Home';
 import Analytics from '../pages/Analytics/Analytics';
 import Portfolio from '../pages/Portfolio/Portfolio';
@@ -167,16 +165,7 @@ const shouldNonCandleSubscriptionsReconnect = true;
 
 /** ***** React Function *******/
 export default function App() {
-    const {
-        isWeb3Enabled,
-        // account,
-        logout,
-        isAuthenticated,
-        isAuthenticating,
-        isInitialized,
-        authenticate,
-        enableWeb3,
-    } = useMoralis();
+    const { disconnect } = useDisconnect();
 
     const { address: account, isConnected } = useAccount();
 
@@ -287,18 +276,16 @@ export default function App() {
     }, []);
 
     useEffect(() => {
-        const isLoggedIn = isAuthenticated && isWeb3Enabled;
-
-        if (isLoggedIn || (isLoggedIn === false && loginCheckDelayElapsed)) {
-            if (isLoggedIn && userData.isLoggedIn !== isLoggedIn && account) {
-                dispatch(setIsLoggedIn(isLoggedIn));
+        if (isConnected || (isConnected === false && loginCheckDelayElapsed)) {
+            if (isConnected && userData.isLoggedIn !== isConnected && account) {
+                dispatch(setIsLoggedIn(true));
                 dispatch(setAddressAtLogin(account));
-            } else if (!isLoggedIn && userData.isLoggedIn !== isLoggedIn) {
-                dispatch(setIsLoggedIn(isLoggedIn));
+            } else if (!isConnected && userData.isLoggedIn !== false) {
+                dispatch(setIsLoggedIn(false));
                 dispatch(resetUserAddresses());
             }
         }
-    }, [loginCheckDelayElapsed, isAuthenticated, isWeb3Enabled, isUserLoggedIn, account]);
+    }, [loginCheckDelayElapsed, isConnected]);
 
     // this is another case where true vs false is an arbitrary distinction
     const [activeTokenListsChanged, indicateActiveTokenListsChanged] = useState(false);
@@ -318,10 +305,7 @@ export default function App() {
     // `isChainSupported` is a boolean indicating whether the chain is supported by Ambient
     // `switchChain` is a function to switch to a different chain
     // `'0x5'` is the chain the app should be on by default
-    const [chainData, isChainSupported, switchChain, switchNetworkInMoralis] = useAppChain(
-        '0x5',
-        isUserLoggedIn,
-    );
+    const [chainData, isChainSupported] = useAppChain('0x5', isUserLoggedIn);
 
     const [tokenPairLocal, setTokenPairLocal] = useState<string[] | null>(null);
 
@@ -344,6 +328,8 @@ export default function App() {
     } = useSigner();
 
     const provider = useProvider();
+
+    const isInitialized = !!provider;
 
     useEffect(() => {
         (async () => {
@@ -2036,7 +2022,7 @@ export default function App() {
         dispatch(resetTokenData());
         dispatch(resetUserAddresses());
 
-        await logout();
+        disconnect();
     };
 
     const [gasPriceInGwei, setGasPriceinGwei] = useState<number | undefined>();
@@ -2058,7 +2044,6 @@ export default function App() {
 
     const shouldDisplayAccountTab = isUserLoggedIn && account !== undefined;
 
-    const [isMoralisModalOpenWallet, openMoralisModalWallet, closeMoralisModalWallet] = useModal();
     const [isWagmiModalOpenWallet, openWagmiModalWallet, closeWagmiModalWallet] = useModal();
 
     const [isGlobalModalOpen, openGlobalModal, closeGlobalModal, currentContent, title] =
@@ -2208,10 +2193,8 @@ export default function App() {
         shouldDisplayAccountTab: shouldDisplayAccountTab,
         chainId: chainData.chainId,
         isChainSupported: isChainSupported,
-        switchChain: switchChain,
-        switchNetworkInMoralis: switchNetworkInMoralis,
-        openMoralisModalWallet: openMoralisModalWallet,
         openWagmiModalWallet: openWagmiModalWallet,
+        openMoralisModalWallet: openWagmiModalWallet,
         lastBlockNumber: lastBlockNumber,
         isMobileSidebarOpen: isMobileSidebarOpen,
         setIsMobileSidebarOpen: setIsMobileSidebarOpen,
@@ -2250,7 +2233,7 @@ export default function App() {
         chainId: chainData.chainId,
         activeTokenListsChanged: activeTokenListsChanged,
         indicateActiveTokenListsChanged: indicateActiveTokenListsChanged,
-        openModalWallet: openMoralisModalWallet,
+        openModalWallet: openWagmiModalWallet,
         isInitialized: isInitialized,
         poolExists: poolExists,
         setTokenPairLocal: setTokenPairLocal,
@@ -2290,7 +2273,7 @@ export default function App() {
         chainId: chainData.chainId,
         activeTokenListsChanged: activeTokenListsChanged,
         indicateActiveTokenListsChanged: indicateActiveTokenListsChanged,
-        openModalWallet: openMoralisModalWallet,
+        openModalWallet: openWagmiModalWallet,
         isInitialized: isInitialized,
         poolExists: poolExists,
         openGlobalModal: openGlobalModal,
@@ -2333,7 +2316,7 @@ export default function App() {
         chainId: chainData.chainId,
         activeTokenListsChanged: activeTokenListsChanged,
         indicateActiveTokenListsChanged: indicateActiveTokenListsChanged,
-        openModalWallet: openMoralisModalWallet,
+        openModalWallet: openWagmiModalWallet,
 
         openGlobalModal: openGlobalModal,
         closeGlobalModal: closeGlobalModal,
@@ -2381,7 +2364,7 @@ export default function App() {
         chainId: chainData.chainId,
         activeTokenListsChanged: activeTokenListsChanged,
         indicateActiveTokenListsChanged: indicateActiveTokenListsChanged,
-        openModalWallet: openMoralisModalWallet,
+        openModalWallet: openWagmiModalWallet,
         ambientApy: ambientApy,
 
         openGlobalModal: openGlobalModal,
@@ -2440,7 +2423,7 @@ export default function App() {
 
         analyticsSearchInput: analyticsSearchInput,
         setAnalyticsSearchInput: setAnalyticsSearchInput,
-        openModalWallet: openMoralisModalWallet,
+        openModalWallet: openWagmiModalWallet,
     };
 
     const analyticsProps = {
@@ -2738,7 +2721,7 @@ export default function App() {
                                     ethMainnetUsdPrice={ethMainnetUsdPrice}
                                     showSidebar={showSidebar}
                                     tokenPair={tokenPair}
-                                    openModalWallet={openMoralisModalWallet}
+                                    openModalWallet={openWagmiModalWallet}
                                     tokenAAllowance={tokenAAllowance}
                                     tokenBAllowance={tokenBAllowance}
                                     setRecheckTokenAApproval={setRecheckTokenAApproval}
@@ -2793,7 +2776,7 @@ export default function App() {
                                     }
                                     handlePulseAnimation={handlePulseAnimation}
                                     gasPriceInGwei={gasPriceInGwei}
-                                    openModalWallet={openMoralisModalWallet}
+                                    openModalWallet={openWagmiModalWallet}
                                 />
                             }
                         />
@@ -2844,7 +2827,7 @@ export default function App() {
                                     }
                                     handlePulseAnimation={handlePulseAnimation}
                                     gasPriceInGwei={gasPriceInGwei}
-                                    openModalWallet={openMoralisModalWallet}
+                                    openModalWallet={openWagmiModalWallet}
                                 />
                             }
                         />
@@ -2913,7 +2896,7 @@ export default function App() {
                                     }
                                     handlePulseAnimation={handlePulseAnimation}
                                     gasPriceInGwei={gasPriceInGwei}
-                                    openModalWallet={openMoralisModalWallet}
+                                    openModalWallet={openWagmiModalWallet}
                                 />
                             }
                         />
@@ -2970,16 +2953,7 @@ export default function App() {
                 currentContent={currentContent}
                 title={title}
             />
-            {isMoralisModalOpenWallet && (
-                <WalletModal
-                    closeModalWallet={closeMoralisModalWallet}
-                    isAuthenticating={isAuthenticating}
-                    authenticate={authenticate}
-                    enableWeb3={enableWeb3}
-                    isUserLoggedIn={isUserLoggedIn}
-                    // authError={authError}
-                />
-            )}
+
             {isWagmiModalOpenWallet && (
                 <WalletModalWagmi
                     closeModalWallet={closeWagmiModalWallet}
