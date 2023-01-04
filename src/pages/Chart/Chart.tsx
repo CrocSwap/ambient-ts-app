@@ -1725,6 +1725,7 @@ export default function Chart(props: ChartData) {
                 .on('start', () => {
                     d3.select(d3Container.current).style('cursor', 'grabbing');
                     d3.select(d3Container.current).select('.targets').style('cursor', 'grabbing');
+                    setIsRangeScaleSet('scaleOver');
                 })
                 .on('drag', function (event) {
                     // d3.select(d3Container.current)
@@ -2512,6 +2513,7 @@ export default function Chart(props: ChartData) {
     ]);
 
     const onClickRange = async (event: any) => {
+        setIsRangeScaleSet('scaleOver');
         let newRangeValue: any;
 
         let clickedValue =
