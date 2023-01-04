@@ -18,7 +18,7 @@ import { TokenPriceFn } from '../../App/functions/fetchTokenPrice';
 import NotFound from '../NotFound/NotFound';
 import ProfileSettings from '../../components/Portfolio/ProfileSettings/ProfileSettings';
 import { SoloTokenSelect } from '../../components/Global/TokenSelectContainer/SoloTokenSelect';
-import { useSoloSearch } from '../../components/Global/TokenSelectContainer/hooks/useSoloSearch';
+// import { useSoloSearch } from '../../components/Global/TokenSelectContainer/hooks/useSoloSearch';
 import { useAccount, useEnsName } from 'wagmi';
 
 const mainnetProvider = new ethers.providers.WebSocketProvider(
