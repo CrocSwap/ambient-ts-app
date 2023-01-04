@@ -18,7 +18,7 @@ import { publicProvider } from 'wagmi/providers/public';
 
 import { MetaMaskConnector } from 'wagmi/connectors/metaMask';
 // import { CoinbaseWalletConnector } from 'wagmi/connectors/coinbaseWallet';
-// import { InjectedConnector } from 'wagmi/connectors/injected';
+import { InjectedConnector } from 'wagmi/connectors/injected';
 // import { WalletConnectConnector } from 'wagmi/connectors/walletConnect';
 
 const { chains, provider, webSocketProvider } = configureChains(
@@ -51,13 +51,13 @@ const client = createClient({
         //         qrcode: true,
         //     },
         // }),
-        // new InjectedConnector({
-        //     chains,
-        //     options: {
-        //         name: 'Injected',
-        //         shimDisconnect: true,
-        //     },
-        // }),
+        new InjectedConnector({
+            chains,
+            options: {
+                name: 'Brave',
+                shimDisconnect: true,
+            },
+        }),
     ],
     provider,
     webSocketProvider,

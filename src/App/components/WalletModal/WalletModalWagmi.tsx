@@ -17,6 +17,8 @@ import { useTermsOfService } from '../../hooks/useTermsOfService';
 // import validateEmail from './validateEmail';
 import WalletButton from './WalletButton/WalletButton';
 import metamaskLogo from '../../../assets/images/logos/MetaMask_Fox.svg';
+import braveLogo from '../../../assets/images/logos/brave_lion.svg';
+
 import {
     // CircleLoader,
     CircleLoaderFailed,
@@ -90,7 +92,13 @@ export default function WalletModalWagmi(props: WalletModalPropsIF) {
                             : setPage('metamaskPending');
                         acceptToS();
                     }}
-                    logo={connector.name.toLowerCase() === 'metamask' ? metamaskLogo : undefined}
+                    logo={
+                        connector.name.toLowerCase() === 'metamask'
+                            ? metamaskLogo
+                            : connector.name === 'Brave'
+                            ? braveLogo
+                            : undefined
+                    }
                 ></WalletButton>
             ))}
 
