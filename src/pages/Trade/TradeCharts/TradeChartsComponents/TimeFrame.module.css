@@ -1,27 +1,20 @@
-
-.chart_overlay_container{
-
-
+.chart_overlay_container {
     display: flex;
     flex-direction: row;
-    align-items: center;;
+    align-items: center;
     gap: 4px;
 }
 
-
- .main_time_frame_container{
-
-
+.main_time_frame_container {
     display: flex;
     flex-direction: row;
-    align-items: center;;
+    align-items: center;
     gap: 4px;
 }
 
- .main_time_frame_container:not(:last-child){
+.main_time_frame_container:not(:last-child) {
     border-right: 1px solid var(--text-grey-light);
 }
-
 
 .active_selected_button,
 .non_active_selected_button {
@@ -39,15 +32,10 @@
     position: relative;
 }
 
-
-
-
 .active_selected_button:hover,
 .non_active_selected_button:hover {
     /* background: var(--title-gradient); */
     color: var(--text-grey-white);
-    
-
 }
 
 .active_selected_button {
@@ -55,13 +43,9 @@
     height: 100%;
     color: var(--text-grey-white);
     text-decoration: underline;
+    text-underline-offset: 3px;
 }
-
-
 
 .non_active_selected_button {
     color: var(--text-grey-light);
 }
-
-
-

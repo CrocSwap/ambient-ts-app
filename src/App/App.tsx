@@ -2499,7 +2499,12 @@ export default function App() {
 
     // hook to track user's sidebar preference open or closed
     // also functions to toggle sidebar status between open and closed
-    const [sidebarStatus, openSidebar, closeSidebar, togggggggleSidebar] = useSidebar();
+    const [
+        sidebarStatus,
+        openSidebar,
+        closeSidebar,
+        togggggggleSidebar
+    ] = useSidebar(location.pathname);
     // these lines are just here to make the linter happy
     // take them out before production, they serve no other purpose
     false && sidebarStatus;
