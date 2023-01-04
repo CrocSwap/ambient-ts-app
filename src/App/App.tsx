@@ -177,6 +177,7 @@ export default function App() {
 
     const tradeData = useAppSelector((state) => state.tradeData);
     const location = useLocation();
+    console.log({location});
 
     // hook to check if token addresses in URL match token addresses in RTK
     const rtkMatchesParams = useMemo(() => {
