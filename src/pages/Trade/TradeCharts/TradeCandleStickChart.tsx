@@ -149,11 +149,11 @@ export default function TradeCandleStickChart(props: ChartData) {
         setIsCandleAdded(true);
     }, [props.candleData]);
 
-    // useEffect(() => {
-    //     if (parsedChartData === undefined) {
-    //         parseData();
-    //     }
-    // }, [parsedChartData]);
+    useEffect(() => {
+        if (parsedChartData === undefined) {
+            parseData();
+        }
+    }, [parsedChartData]);
 
     // Parse price data
     const parseData = () => {
@@ -224,6 +224,8 @@ export default function TradeCandleStickChart(props: ChartData) {
         setParsedChartData(() => {
             return chartUtils;
         });
+
+        setScaleForChart(chartUtils, liquidityData);
     };
 
     const standardDeviation = (arr: any, usePopulation = false) => {
