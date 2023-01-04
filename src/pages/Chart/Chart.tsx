@@ -2843,8 +2843,7 @@ export default function Chart(props: ChartData) {
     useEffect(() => {
         if (scaleData !== undefined) {
             const barSeries = d3fc
-                .seriesSvgBar()
-                .bandwidth(bandwidth)
+                .autoBandwidth(d3fc.seriesSvgBar())
                 .align('center')
                 .xScale(scaleData.xScale)
                 .yScale(scaleData.volumeScale)
