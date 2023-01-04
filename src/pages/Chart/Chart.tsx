@@ -296,6 +296,8 @@ export default function Chart(props: ChartData) {
     const [transformX, setTransformX] = useState<any>(0);
 
     const [yAxisWidth, setYaxisWidth] = useState('4rem');
+
+    const [bandwidth, setBandwidth] = useState(5);
     // const valueFormatter = d3.format('.5f');
     const currentPoolPriceTick =
         poolPriceNonDisplay === undefined ? 0 : Math.log(poolPriceNonDisplay) / Math.log(1.0001);
@@ -1278,6 +1280,7 @@ export default function Chart(props: ChartData) {
                         }
 
                         clickedForLine = true;
+                        setBandwidth(candlestick.bandwidth());
                         render();
                         renderCanvas();
 
@@ -2838,9 +2841,10 @@ export default function Chart(props: ChartData) {
     }
 
     useEffect(() => {
-        if (scaleData !== undefined && candlestick !== undefined) {
+        if (scaleData !== undefined) {
             const barSeries = d3fc
-                .autoBandwidth(d3fc.seriesSvgBar())
+                .seriesSvgBar()
+                .bandwidth(bandwidth)
                 .align('center')
                 .xScale(scaleData.xScale)
                 .yScale(scaleData.volumeScale)
@@ -2867,7 +2871,7 @@ export default function Chart(props: ChartData) {
                 return barSeries;
             });
         }
-    }, [scaleData, selectedDate, candlestick, candlestick && candlestick.bandwidth()]);
+    }, [scaleData, selectedDate, bandwidth]);
 
     useEffect(() => {
         if (!location.pathname.includes('range')) {
@@ -3515,40 +3519,34 @@ export default function Chart(props: ChartData) {
     };
 
     const candleOrVolumeDataHoverStatus = (event: any) => {
-        const xValue = scaleData.xScale.invert(event.offsetX);
-        const lastData = parsedChartData?.chartData.sort((a, b) => b.time - a.time)[0];
+        const lastDate = scaleData.xScale.invert(event.offsetX + bandwidth / 2);
+        const startDate = scaleData.xScale.invert(event.offsetX - bandwidth / 2);
+        const nearest = snapForCandle(event);
+        const dateControl =
+            nearest?.date.getTime() > startDate.getTime() &&
+            nearest?.date.getTime() < lastDate.getTime();
+        const yValue = scaleData.yScale.invert(event.offsetY);
 
-        // console.log({ xValue});
-        // const xValue = scaleData.xScale.invert(event.offsetX+(candlestick.bandwidth/2));
-
-        if (lastData?.date.getTime() > xValue.getTime()) {
-            const nearest = snapForCandle(event);
-            const yValue = scaleData.yScale.invert(event.offsetY);
-
-            const yValueVolume = scaleData.volumeScale.invert(event.offsetY);
-            const selectedVolumeData = volumeData.find(
-                (item: any) => item.time.getTime() === nearest?.date.getTime(),
-            );
-            const selectedVolumeDataValue = selectedVolumeData?.value;
-            const isSelectedVolume = selectedVolumeDataValue
-                ? yValueVolume <= selectedVolumeDataValue
-                    ? true
-                    : false
-                : false;
-            return {
-                isHoverCandleOrVolumeData:
-                    nearest &&
-                    ((nearest?.close > nearest?.open
-                        ? nearest?.close > yValue && nearest?.open < yValue
-                        : nearest?.close < yValue && nearest?.open > yValue) ||
-                        isSelectedVolume),
-                _selectedDate: nearest?.date,
-            };
-        }
+        const yValueVolume = scaleData.volumeScale.invert(event.offsetY);
+        const selectedVolumeData = volumeData.find(
+            (item: any) => item.time.getTime() === nearest?.date.getTime(),
+        );
+        const selectedVolumeDataValue = selectedVolumeData?.value;
+        const isSelectedVolume = selectedVolumeDataValue
+            ? yValueVolume <= selectedVolumeDataValue
+                ? true
+                : false
+            : false;
 
         return {
-            isHoverCandleOrVolumeData: false,
-            _selectedDate: false,
+            isHoverCandleOrVolumeData:
+                nearest &&
+                (((nearest?.close > nearest?.open
+                    ? nearest?.close > yValue && nearest?.open < yValue
+                    : nearest?.close < yValue && nearest?.open > yValue) &&
+                    dateControl) ||
+                    isSelectedVolume),
+            _selectedDate: nearest?.date,
         };
     };
 
@@ -4297,7 +4295,7 @@ export default function Chart(props: ChartData) {
                 });
             }
         },
-        [candlestick],
+        [candlestick, bandwidth],
     );
     function showCrosshair() {
         d3.select(d3PlotArea.current)
