@@ -9,7 +9,7 @@ export const useSidebar = (pathname: string): [
     // hook to track sidebar status in local state
     // this hook initializes from local storage for returning users
     // will default to 'open' if no value found (happens on first visit)
-    const [sidebar, setSidebar] = useState(
+    const [sidebar, setSidebar] = useState<string>(
         JSON.parse(localStorage.getItem('user') as string)?.sidebar ?? 'open'
     );
 
@@ -24,11 +24,11 @@ export const useSidebar = (pathname: string): [
     }, [sidebar]);
 
     // fn to open the sidebar
-    const openSidebar = () => setSidebar('open');
+    const openSidebar = (): void => setSidebar('open');
     // fn to close the sidebar
-    const closeSidebar = () => setSidebar('closed');
+    const closeSidebar = (): void => setSidebar('closed');
     // fn to toggle the sidebar
-    const toggleSidebar = () => {
+    const toggleSidebar = (): void => {
         // logic router as desired action is conditional on current value
         // default action is to open the sidebar
         switch (sidebar) {
