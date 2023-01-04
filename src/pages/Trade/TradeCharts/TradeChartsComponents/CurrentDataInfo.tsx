@@ -24,6 +24,7 @@ interface CurrentDataInfoPropsIF {
     setReset: Dispatch<SetStateAction<boolean>>;
     setRescale: Dispatch<SetStateAction<boolean>>;
     rescale: boolean;
+    reset: boolean;
 }
 export default function CurrentDataInfo(props: CurrentDataInfoPropsIF) {
     const {
@@ -35,6 +36,7 @@ export default function CurrentDataInfo(props: CurrentDataInfoPropsIF) {
         setReset,
         setRescale,
         rescale,
+        reset,
     } = props;
     function formattedCurrentData(data: number | undefined): string {
         if (data) {
@@ -104,13 +106,17 @@ export default function CurrentDataInfo(props: CurrentDataInfoPropsIF) {
                             setReset(true);
                             setRescale(true);
                         }}
-                        style={{
-                            fontSize: '12px',
-                            fontWeight: 'bold',
-                        }}
-                        className={styles.non_active_selected_button}
+                        // style={{
+                        //     fontSize: '12px',
+                        //     fontWeight: 'bold',
+                        // }}
+                        className={
+                            reset
+                                ? styles.active_selected_button
+                                : styles.non_active_selected_button
+                        }
                     >
-                        RESET
+                        Reset
                     </button>
                 </div>
 
@@ -121,18 +127,18 @@ export default function CurrentDataInfo(props: CurrentDataInfoPropsIF) {
                                 return !prevState;
                             });
                         }}
-                        style={{
-                            color: rescale ? 'rgb(97, 100, 189)' : 'rgba(237, 231, 225, 0.2)',
-                            fontSize: '12px',
-                            fontWeight: 'bold',
-                        }}
+                        // style={{
+                        //     color: rescale ? 'rgb(97, 100, 189)' : 'rgba(237, 231, 225, 0.2)',
+                        //     fontSize: '12px',
+                        //     fontWeight: 'bold',
+                        // }}
                         className={
                             rescale
                                 ? styles.active_selected_button
                                 : styles.non_active_selected_button
                         }
                     >
-                        AUTO
+                        Auto
                     </button>
                 </div>
             </div>
