@@ -32,10 +32,9 @@ interface NavbarDropdownItemPropsIF {
 
 interface NavbarDropdownMenuPropsIF {
     isUserLoggedIn: boolean | undefined;
-    // isAuthenticated?: boolean;
     // isWeb3Enabled?: boolean;
     clickLogout: () => void;
-    openModal: () => void;
+    // openModal: () => void;
     closeMenu?: () => void;
     chainId: string;
     isAppOverlayActive: boolean;
@@ -49,10 +48,9 @@ interface NavbarDropdownMenuPropsIF {
 export default function NavbarDropdownMenu(props: NavbarDropdownMenuPropsIF) {
     const {
         isUserLoggedIn,
-        // isAuthenticated,
         // isWeb3Enabled,
         clickLogout,
-        openModal,
+        // openModal,
         closeMenu,
         setIsAppOverlayActive,
         setIsNavbarMenuOpen,
@@ -118,21 +116,21 @@ export default function NavbarDropdownMenu(props: NavbarDropdownMenuPropsIF) {
         clickLogout();
         closeMenu ? closeMenu() : null;
     }
-    function handleLoginWithEmail() {
-        openModal();
-        closeMenu ? closeMenu() : null;
-    }
+    // function handleLoginWithEmail() {
+    // openModal();
+    // closeMenu ? closeMenu() : null;
+    // }
 
     const logoutButton = (
         <div className={styles.button_container} onClick={handleLogout}>
             <button className={styles.authenticate_button}>Logout</button>
         </div>
     );
-    const magicButton = (
-        <div className={styles.button_container} onClick={handleLoginWithEmail}>
-            <button className={styles.authenticate_button}>Log in with Email</button>
-        </div>
-    );
+    // const magicButton = (
+    //     <div className={styles.button_container} onClick={handleLoginWithEmail}>
+    //         <button className={styles.authenticate_button}>Log in with Email</button>
+    //     </div>
+    // );
 
     const settingsItems = (
         <>
@@ -163,7 +161,7 @@ export default function NavbarDropdownMenu(props: NavbarDropdownMenuPropsIF) {
                 Terms of Service
             </NavbarDropdownItem>
             {isUserLoggedIn && logoutButton}
-            {!isUserLoggedIn && magicButton}
+            {/* {!isUserLoggedIn && magicButton} */}
         </>
     );
 

@@ -5,7 +5,6 @@ import { MenuButton } from '../../components/Global/MenuButton/MenuButton';
 import PulseLoading from '../../components/Global/PulseLoading/PulseLoading';
 import styles from './TestPage.module.css';
 // import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
-// import { useProcessTransaction } from '../../utils/hooks/useProcessTransaction';
 
 interface TestPageProps {
     openGlobalModal: (content: React.ReactNode, title?: string) => void;
@@ -14,12 +13,7 @@ interface TestPageProps {
     togggggggleSidebar: () => void;
 }
 export default function TestPage(props: TestPageProps) {
-    const {
-        openGlobalModal,
-        openSidebar,
-        closeSidebar,
-        togggggggleSidebar
-    } = props;
+    const { openGlobalModal, openSidebar, closeSidebar, togggggggleSidebar } = props;
     const [isOpen, setOpen] = React.useState(false);
 
     const { tosText, agreement, agreementDate } = useTermsOfService();

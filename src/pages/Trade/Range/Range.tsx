@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // START: Import React and Dongles
 import { useState, useEffect, useMemo, Dispatch, SetStateAction } from 'react';
-import { useMoralis } from 'react-moralis';
 import { ethers } from 'ethers';
 import { motion } from 'framer-motion';
 import { concDepositSkew, CrocEnv } from '@crocswap-libs/sdk';
@@ -59,6 +58,7 @@ import RangeShareControl from '../../../components/Trade/Range/RangeShareControl
 import { getRecentTokensParamsIF } from '../../../App/hooks/useRecentTokens';
 
 interface RangePropsIF {
+    account: string | undefined;
     crocEnv: CrocEnv | undefined;
     isUserLoggedIn: boolean | undefined;
     importedTokens: Array<TokenIF>;
@@ -101,7 +101,7 @@ interface RangePropsIF {
     getRecentTokens: (options?: getRecentTokensParamsIF | undefined) => TokenIF[];
     addRecentToken: (tkn: TokenIF) => void;
     outputTokens: TokenIF[];
-    validatedInput: string,
+    validatedInput: string;
     setInput: Dispatch<SetStateAction<string>>;
     searchType: string;
     acknowledgeToken: (tkn: TokenIF) => void;
@@ -109,6 +109,7 @@ interface RangePropsIF {
 
 export default function Range(props: RangePropsIF) {
     const {
+        account,
         crocEnv,
         isUserLoggedIn,
         importedTokens,
@@ -153,7 +154,7 @@ export default function Range(props: RangePropsIF) {
         validatedInput,
         setInput,
         searchType,
-        acknowledgeToken
+        acknowledgeToken,
     } = props;
 
     const [isModalOpen, openModal, closeModal] = useModal();
@@ -173,8 +174,6 @@ export default function Range(props: RangePropsIF) {
         setTxErrorCode(0);
         setTxErrorMessage('');
     };
-
-    const { account } = useMoralis();
 
     const { tradeData, navigationMenu } = useTradeData();
 
@@ -1035,7 +1034,7 @@ export default function Range(props: RangePropsIF) {
         validatedInput: validatedInput,
         setInput: setInput,
         searchType: searchType,
-        acknowledgeToken: acknowledgeToken
+        acknowledgeToken: acknowledgeToken,
     };
 
     // props for <RangeWidth/> React element

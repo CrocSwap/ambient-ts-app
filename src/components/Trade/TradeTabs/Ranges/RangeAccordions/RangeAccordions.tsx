@@ -10,13 +10,14 @@ import { RiArrowUpSFill } from 'react-icons/ri';
 import RangeAccordionContent from './RangeAccordionContent';
 
 interface RangeAccordionsPropsIF {
+    account: string;
     i: number;
     expanded: number | boolean;
     setExpanded: Dispatch<SetStateAction<number | false>>;
     position: PositionIF;
 }
 export default function RangeAccordions(props: RangeAccordionsPropsIF) {
-    const { i, expanded, setExpanded, position } = props;
+    const { account, i, expanded, setExpanded, position } = props;
 
     const isOpen = i === expanded;
 
@@ -38,7 +39,7 @@ export default function RangeAccordions(props: RangeAccordionsPropsIF) {
         userMatchesConnectedAccount,
         baseTokenSymbol,
         quoteTokenSymbol,
-    } = useProcessRange(position);
+    } = useProcessRange(position, account);
 
     const walletAndIdDisplay = (
         <div className={styles.wallet_display}>

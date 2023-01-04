@@ -2,10 +2,11 @@
 import { useState, MouseEvent, ReactNode, Dispatch, SetStateAction, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MdPlayArrow } from 'react-icons/md';
-import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
+// import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 // START: Import Local Files
 // import notificationStyles from './SidebarAccordion.module.css'
 import styles from '../Sidebar.module.css';
+import { useAccount } from 'wagmi';
 // import { ITransaction } from '../../../../utils/state/graphDataSlice';
 // import { PositionIF } from '../../../../utils/interfaces/PositionIF';
 // import { CircleLoader } from '../../../../components/Global/LoadingAnimations/CircleLoader/CircleLoader';
@@ -40,7 +41,11 @@ export default function SidebarAccordion(props: SidebarAccordionPropsIF) {
         setShowSidebar,
         openModalWallet,
     } = props;
-    const isUserLoggedIn = useAppSelector((state) => state.userData).isLoggedIn;
+
+    const { isConnected } = useAccount();
+
+    const isUserLoggedIn = isConnected;
+    // const isUserLoggedIn = useAppSelector((state) => state.userData).isLoggedIn;
 
     const [isOpen, setIsOpen] = useState(false);
 

@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useAppDispatch } from '../../utils/hooks/reduxToolkit';
-import { useMoralisWeb3Api } from 'react-moralis';
+import Moralis from 'moralis';
+
 import { defaultTokens } from '../../utils/data/defaultTokens';
 import { ethers } from 'ethers';
 import { setTokenA, setTokenB } from '../../utils/state/tradeDataSlice';
@@ -16,9 +17,6 @@ export const useUrlParams = (
     const { params } = useParams() ?? '';
 
     const dispatch = useAppDispatch();
-
-    // needed to pull token metadata from on-chain
-    const Web3Api = useMoralisWeb3Api();
 
     // parse parameter string into [key, value] tuples
     // useMemo() with empty dependency array runs once on initial render
@@ -149,20 +147,24 @@ export const useUrlParams = (
         // TODO: find a way to correctly type this return
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         function getTokenFromChain(addr: string): any {
-            const promise = Web3Api.token.getTokenMetadata({
-                chain: chainToUse as '0x5',
+            const promise = Moralis.EvmApi.token.getTokenMetadata({
                 addresses: [addr],
+                chain: chainToUse,
             });
             return Promise.resolve(promise)
-                .then((res) => res[0])
-                .then((res) => ({
-                    name: res.name,
-                    address: res.address,
-                    symbol: res.symbol,
-                    decimals: res.decimals,
-                    logoURI: res.logo ?? '',
-                    fromList: 'urlParam',
-                }));
+                .then((res) => res?.result[0].token)
+                .then((token) => {
+                    // console.log({ token });
+                    return {
+                        name: token.name,
+                        chainId: token.chain.decimal,
+                        address: token.contractAddress.lowercase,
+                        symbol: token.symbol,
+                        decimals: token.decimals,
+                        logoURI: token.logo ?? '',
+                        fromList: 'urlParam',
+                    };
+                });
         }
         const addrTokenA = getAddress('tokenA');
         const addrTokenB = getAddress('tokenB');

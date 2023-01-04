@@ -220,7 +220,14 @@ export default function Ranges(props: RangesPropsIF) {
 
     // ---------------------
     const [currentPage, setCurrentPage] = useState(1);
-    const [rangesPerPage] = useState(10);
+    // transactions per page media queries
+    const txView1 = useMediaQuery('(max-width: 480px)');
+    const txView2 = useMediaQuery('(max-width: 720px)');
+    const txView3 = useMediaQuery('(max-width: 1200px)');
+    const txView4 = useMediaQuery('(max-width: 1800px)');
+    // const txView4 = useMediaQuery('(min-width: 2400px)');
+
+    const rangesPerPage = txView1 ? 3 : txView2 ? 10 : txView3 ? 12 : txView4 ? 15 : 20;
 
     useEffect(() => {
         setCurrentPage(1);
@@ -434,6 +441,7 @@ export default function Ranges(props: RangesPropsIF) {
     );
     const rowItemContent = usePaginateDataOrNull?.map((position, idx) => (
         <RangesRow
+            account={account}
             key={idx}
             position={position}
             currentPositionActive={currentPositionActive}

@@ -3,13 +3,20 @@
 
 // import ethereumLogo from '../../../../assets/images/networks/ethereum.png';
 
+import { useSwitchNetwork } from 'wagmi';
 import NetworkButton from './NetworkButton';
 
-interface NetworkButtonsPropsIF {
-    switchNetworkInMoralis: (providedChainId: string) => Promise<void>;
-}
-export default function NetworkButtons(props: NetworkButtonsPropsIF) {
-    const { switchNetworkInMoralis } = props;
+// interface NetworkButtonsPropsIF {
+//     switchNetwork: (providedChainId: string) => Promise<void>;
+// }
+export default function NetworkButtons() {
+    // props: NetworkButtonsPropsIF
+    // const { switchNetwork } = props;
+
+    const {
+        // chains, error, isLoading, pendingChainId,
+        switchNetwork,
+    } = useSwitchNetwork();
 
     const supportedChains = [
         {
@@ -29,7 +36,9 @@ export default function NetworkButtons(props: NetworkButtonsPropsIF) {
                     icon={chain.icon}
                     theme={chain.theme}
                     id={chain.id}
-                    clickHandler={() => switchNetworkInMoralis(chain.id)}
+                    clickHandler={() => {
+                        switchNetwork && switchNetwork(parseInt(chain.id));
+                    }}
                 />
             ))}
         </div>

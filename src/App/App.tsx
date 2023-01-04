@@ -34,8 +34,9 @@ import {
     resetConnectedUserDataLoadingStatus,
     // ChangesByUser,
 } from '../utils/state/graphDataSlice';
-import { ethers } from 'ethers';
-import { useMoralis } from 'react-moralis';
+
+import { useAccount, useDisconnect, useProvider, useSigner } from 'wagmi';
+
 import useWebSocket from 'react-use-websocket';
 import { sortBaseQuoteTokens, toDisplayPrice, CrocEnv, toDisplayQty } from '@crocswap-libs/sdk';
 import { resetReceiptData } from '../utils/state/receiptDataSlice';
@@ -46,7 +47,6 @@ import SnackbarComponent from '../components/Global/SnackbarComponent/SnackbarCo
 import PageHeader from './components/PageHeader/PageHeader';
 import Sidebar from './components/Sidebar/Sidebar';
 import PageFooter from './components/PageFooter/PageFooter';
-import WalletModal from './components/WalletModal/WalletModal';
 import Home from '../pages/Home/Home';
 import Analytics from '../pages/Analytics/Analytics';
 import Portfolio from '../pages/Portfolio/Portfolio';
@@ -93,7 +93,7 @@ import {
     memoizeFetchNativeTokenBalance,
 } from './functions/fetchTokenBalances';
 import { getNFTs } from './functions/getNFTs';
-import { lookupChain } from '@crocswap-libs/sdk/dist/context';
+// import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { useSlippage } from './useSlippage';
 import { useFavePools } from './hooks/useFavePools';
 import { useAppChain } from './hooks/useAppChain';
@@ -112,7 +112,7 @@ import {
 } from '../utils/state/userDataSlice';
 import { checkIsStable } from '../utils/data/stablePairs';
 import { useTokenMap } from '../utils/hooks/useTokenMap';
-import { validateChain } from './validateChain';
+// import { validateChain } from './validateChain';
 import { testTokenMap } from '../utils/data/testTokenMap';
 import { ZERO_ADDRESS } from '../constants';
 import { useModal } from '../components/Global/Modal/useModal';
@@ -146,6 +146,9 @@ import { useSidebar } from './hooks/useSidebar';
 import useDebounce from './hooks/useDebounce';
 import { useRecentTokens } from './hooks/useRecentTokens';
 import { useTokenSearch } from './hooks/useTokenSearch';
+import WalletModalWagmi from './components/WalletModal/WalletModalWagmi';
+import Moralis from 'moralis';
+
 // import { memoizeQuerySpotTick } from './functions/querySpotTick';
 // import PhishingWarning from '../components/Global/PhisingWarning/PhishingWarning';
 
@@ -163,18 +166,20 @@ const wssGraphCacheServerDomain = 'wss://809821320828123.de:5000';
 const shouldCandleSubscriptionsReconnect = true;
 const shouldNonCandleSubscriptionsReconnect = true;
 
+const startMoralis = async () => {
+    await Moralis.start({
+        apiKey: 'xcsYd8HnEjWqQWuHs63gk7Oehgbusa05fGdQnlVPFV9qMyKYPcRlwBDLd1C2SVx5',
+        // ...and any other configuration
+    });
+};
+
+startMoralis();
+
 /** ***** React Function *******/
 export default function App() {
-    const {
-        isWeb3Enabled,
-        account,
-        logout,
-        isAuthenticated,
-        isAuthenticating,
-        isInitialized,
-        authenticate,
-        enableWeb3,
-    } = useMoralis();
+    const { disconnect } = useDisconnect();
+
+    const { address: account, isConnected } = useAccount();
 
     const tradeData = useAppSelector((state) => state.tradeData);
     const location = useLocation();
@@ -263,7 +268,8 @@ export default function App() {
 
     const userData = useAppSelector((state) => state.userData);
 
-    const isUserLoggedIn = userData.isLoggedIn;
+    const isUserLoggedIn = isConnected;
+    // const isUserLoggedIn = userData.isLoggedIn;
     const isUserIdle = userData.isUserIdle;
 
     // allow a local environment variable to be defined in [app_repo]/.env.local to turn off connections to the cache server
@@ -282,18 +288,16 @@ export default function App() {
     }, []);
 
     useEffect(() => {
-        const isLoggedIn = isAuthenticated && isWeb3Enabled;
-
-        if (isLoggedIn || (isLoggedIn === false && loginCheckDelayElapsed)) {
-            if (isLoggedIn && userData.isLoggedIn !== isLoggedIn && account) {
-                dispatch(setIsLoggedIn(isLoggedIn));
+        if (isConnected || (isConnected === false && loginCheckDelayElapsed)) {
+            if (isConnected && userData.isLoggedIn !== isConnected && account) {
+                dispatch(setIsLoggedIn(true));
                 dispatch(setAddressAtLogin(account));
-            } else if (!isLoggedIn && userData.isLoggedIn !== isLoggedIn) {
-                dispatch(setIsLoggedIn(isLoggedIn));
+            } else if (!isConnected && userData.isLoggedIn !== false) {
+                dispatch(setIsLoggedIn(false));
                 dispatch(resetUserAddresses());
             }
         }
-    }, [loginCheckDelayElapsed, isAuthenticated, isWeb3Enabled, isUserLoggedIn, account]);
+    }, [loginCheckDelayElapsed, isConnected]);
 
     // this is another case where true vs false is an arbitrary distinction
     const [activeTokenListsChanged, indicateActiveTokenListsChanged] = useState(false);
@@ -313,7 +317,7 @@ export default function App() {
     // `isChainSupported` is a boolean indicating whether the chain is supported by Ambient
     // `switchChain` is a function to switch to a different chain
     // `'0x5'` is the chain the app should be on by default
-    const [chainData, isChainSupported, switchChain, switchNetworkInMoralis] = useAppChain('0x5');
+    const [chainData, isChainSupported] = useAppChain('0x5', isUserLoggedIn);
 
     const [tokenPairLocal, setTokenPairLocal] = useState<string[] | null>(null);
 
@@ -328,21 +332,29 @@ export default function App() {
     window.ononline = () => setUserIsOnline(true);
     window.onoffline = () => setUserIsOnline(false);
 
-    const [provider, setProvider] = useState<ethers.providers.Provider>();
     const [crocEnv, setCrocEnv] = useState<CrocEnv | undefined>();
+
+    const {
+        data: signer,
+        //  isError, isLoading
+    } = useSigner();
+
+    const provider = useProvider();
+
+    const isInitialized = !!provider;
 
     useEffect(() => {
         (async () => {
-            if (!provider) {
+            if (!provider && !signer) {
                 return;
             } else {
-                setCrocEnv(new CrocEnv(provider));
+                setCrocEnv(new CrocEnv(signer?.provider || provider));
             }
         })();
-    }, [provider]);
+    }, [provider, signer]);
 
     useEffect(() => {
-        if (isInitialized) {
+        if (provider) {
             (async () => {
                 const mainnetEthPrice = await cachedFetchTokenPrice(
                     '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
@@ -352,60 +364,60 @@ export default function App() {
                 setEthMainnetUsdPrice(usdPrice);
             })();
         }
-    }, [isInitialized]);
+    }, [provider]);
 
-    function exposeProviderUrl(provider?: ethers.providers.Provider): string {
-        if (provider && 'connection' in provider) {
-            return (provider as ethers.providers.WebSocketProvider).connection?.url;
-        } else {
-            return '';
-        }
-    }
+    // function exposeProviderUrl(provider?: ethers.providers.Provider): string {
+    //     if (provider && 'connection' in provider) {
+    //         return (provider as ethers.providers.WebSocketProvider).connection?.url;
+    //     } else {
+    //         return '';
+    //     }
+    // }
 
-    function exposeProviderChain(provider?: ethers.providers.Provider): number {
-        if (provider && 'network' in provider) {
-            return (provider as ethers.providers.WebSocketProvider).network?.chainId;
-        } else {
-            return -1;
-        }
-    }
+    // function exposeProviderChain(provider?: ethers.providers.Provider): number {
+    //     if (provider && 'network' in provider) {
+    //         return (provider as ethers.providers.WebSocketProvider).network?.chainId;
+    //     } else {
+    //         return -1;
+    //     }
+    // }
 
-    const [metamaskLocked, setMetamaskLocked] = useState<boolean>(true);
-    useEffect(() => {
-        try {
-            // console.log('Init provider' + provider);
-            const url = exposeProviderUrl(provider);
-            const onChain = exposeProviderChain(provider) === parseInt(chainData.chainId);
+    // const [metamaskLocked, setMetamaskLocked] = useState<boolean>(true);
+    // useEffect(() => {
+    //     try {
+    //         // console.log('Init provider' + provider);
+    //         const url = exposeProviderUrl(provider);
+    //         const onChain = exposeProviderChain(provider) === parseInt(chainData.chainId);
 
-            // console.log('Exposed URL ' + url);
+    //         // console.log('Exposed URL ' + url);
 
-            if (isAuthenticated) {
-                if (provider && url === 'metamask' && !metamaskLocked && onChain) {
-                    return;
-                } else if (provider && url === 'metamask' && metamaskLocked) {
-                    clickLogout();
-                } else if (
-                    window.ethereum &&
-                    !metamaskLocked &&
-                    validateChain(window.ethereum.chainId)
-                ) {
-                    console.log('use metamask as provider');
-                    // console.log(window.ethereum.chainId)
-                    const metamaskProvider = new ethers.providers.Web3Provider(window.ethereum);
-                    setProvider(metamaskProvider);
-                }
-            } else if (!provider || !onChain) {
-                // console.log('use infura as provider');
-                const chainSpec = lookupChain(chainData.chainId);
-                const url = chainSpec.nodeUrl;
-                // const url = chainSpec.wsUrl ? chainSpec.wsUrl : chainSpec.nodeUrl;
-                console.log('setting up new provider: ' + url);
-                setProvider(new ethers.providers.JsonRpcProvider(url));
-            }
-        } catch (error) {
-            console.log(error);
-        }
-    }, [isUserLoggedIn, chainData.chainId, metamaskLocked]);
+    //         if (isAuthenticated) {
+    //             if (provider && url === 'metamask' && !metamaskLocked && onChain) {
+    //                 return;
+    //             } else if (provider && url === 'metamask' && metamaskLocked) {
+    //                 clickLogout();
+    //             } else if (
+    //                 window.ethereum &&
+    //                 !metamaskLocked &&
+    //                 validateChain(window.ethereum.chainId)
+    //             ) {
+    //                 console.log('use metamask as provider');
+    //                 // console.log(window.ethereum.chainId)
+    //                 const metamaskProvider = new ethers.providers.Web3Provider(window.ethereum);
+    //                 setProvider(metamaskProvider);
+    //             }
+    //         } else if (!provider || !onChain) {
+    //             // console.log('use infura as provider');
+    //             const chainSpec = lookupChain(chainData.chainId);
+    //             const url = chainSpec.nodeUrl;
+    //             // const url = chainSpec.wsUrl ? chainSpec.wsUrl : chainSpec.nodeUrl;
+    //             console.log('setting up new provider: ' + url);
+    //             setProvider(new ethers.providers.JsonRpcProvider(url));
+    //         }
+    //     } catch (error) {
+    //         console.log(error);
+    //     }
+    // }, [isUserLoggedIn, chainData.chainId, metamaskLocked]);
 
     useEffect(() => {
         dispatch(resetTokens(chainData.chainId));
@@ -584,19 +596,19 @@ export default function App() {
         }
     }, [JSON.stringify(lastReceipt)]);
 
-    useEffect(() => {
-        (async () => {
-            if (window.ethereum) {
-                // console.log('requesting eth_accounts');
-                const metamaskAccounts = await window.ethereum.request({ method: 'eth_accounts' });
-                if (metamaskAccounts?.length > 0) {
-                    setMetamaskLocked(false);
-                } else {
-                    setMetamaskLocked(true);
-                }
-            }
-        })();
-    }, [window.ethereum, account]);
+    // useEffect(() => {
+    //     (async () => {
+    //         if (window.ethereum) {
+    //             // console.log('requesting eth_accounts');
+    //             const metamaskAccounts = await window.ethereum.request({ method: 'eth_accounts' });
+    //             if (metamaskAccounts?.length > 0) {
+    //                 setMetamaskLocked(false);
+    //             } else {
+    //                 setMetamaskLocked(true);
+    //             }
+    //         }
+    //     })();
+    // }, [window.ethereum, account]);
 
     // const [ensName, setEnsName] = useState('');
     const ensName = userData.ensNameCurrent || '';
@@ -674,9 +686,8 @@ export default function App() {
                         everyEigthBlock,
                         crocEnv,
                     );
-                    // console.log({ erc20Results });
                     const erc20TokensWithLogos = erc20Results.map((token) => addTokenInfo(token));
-                    // console.log({ erc20TokensWithLogos });
+
                     dispatch(setErc20Tokens(erc20TokensWithLogos));
                 } catch (error) {
                     console.log({ error });
@@ -1508,7 +1519,7 @@ export default function App() {
             shouldReconnect: () => shouldNonCandleSubscriptionsReconnect,
         },
         // only connect is account is available
-        isServerEnabled && account !== null && account !== '',
+        isServerEnabled && account !== null && account !== undefined,
     );
 
     useEffect(() => {
@@ -1558,7 +1569,7 @@ export default function App() {
             shouldReconnect: () => shouldNonCandleSubscriptionsReconnect,
         },
         // only connect is account is available
-        isServerEnabled && account !== null && account !== '',
+        isServerEnabled && account !== null && account !== undefined,
     );
 
     useEffect(() => {
@@ -1603,7 +1614,7 @@ export default function App() {
             shouldReconnect: () => shouldNonCandleSubscriptionsReconnect,
         },
         // only connect is account is available
-        isServerEnabled && account !== null && account !== '',
+        isServerEnabled && account !== null && account !== undefined,
     );
 
     useEffect(() => {
@@ -2022,7 +2033,7 @@ export default function App() {
         dispatch(resetTokenData());
         dispatch(resetUserAddresses());
 
-        await logout();
+        disconnect();
     };
 
     const [gasPriceInGwei, setGasPriceinGwei] = useState<number | undefined>();
@@ -2042,9 +2053,9 @@ export default function App() {
             .catch(console.log);
     }, [lastBlockNumber]);
 
-    const shouldDisplayAccountTab = isUserLoggedIn && account != '';
+    const shouldDisplayAccountTab = isUserLoggedIn && account !== undefined;
 
-    const [isModalOpenWallet, openModalWallet, closeModalWallet] = useModal();
+    const [isWagmiModalOpenWallet, openWagmiModalWallet, closeWagmiModalWallet] = useModal();
 
     const [isGlobalModalOpen, openGlobalModal, closeGlobalModal, currentContent, title] =
         useGlobalModal();
@@ -2119,7 +2130,7 @@ export default function App() {
         getTokensOnChain,
         getTokenByAddress,
         getTokensByName,
-        acknowledgeToken
+        acknowledgeToken,
     ] = useToken(chainData.chainId);
     false && localTokens;
     false && getAllTokens;
@@ -2188,14 +2199,13 @@ export default function App() {
     const headerProps = {
         isUserLoggedIn: isUserLoggedIn,
         clickLogout: clickLogout,
-        metamaskLocked: metamaskLocked,
+        // metamaskLocked: metamaskLocked,
         ensName: ensName,
         shouldDisplayAccountTab: shouldDisplayAccountTab,
         chainId: chainData.chainId,
         isChainSupported: isChainSupported,
-        switchChain: switchChain,
-        switchNetworkInMoralis: switchNetworkInMoralis,
-        openModalWallet: openModalWallet,
+        openWagmiModalWallet: openWagmiModalWallet,
+        openMoralisModalWallet: openWagmiModalWallet,
         lastBlockNumber: lastBlockNumber,
         isMobileSidebarOpen: isMobileSidebarOpen,
         setIsMobileSidebarOpen: setIsMobileSidebarOpen,
@@ -2214,7 +2224,7 @@ export default function App() {
         verifyToken,
         getTokenByAddress,
         getTokensByName,
-        getAmbientTokens()
+        getAmbientTokens(),
     );
 
     // props for <Swap/> React element
@@ -2242,7 +2252,7 @@ export default function App() {
         chainId: chainData.chainId,
         activeTokenListsChanged: activeTokenListsChanged,
         indicateActiveTokenListsChanged: indicateActiveTokenListsChanged,
-        openModalWallet: openModalWallet,
+        openModalWallet: openWagmiModalWallet,
         isInitialized: isInitialized,
         poolExists: poolExists,
         setTokenPairLocal: setTokenPairLocal,
@@ -2257,14 +2267,14 @@ export default function App() {
         validatedInput: validatedInput,
         setInput: setInput,
         searchType: searchType,
-        acknowledgeToken: acknowledgeToken
+        acknowledgeToken: acknowledgeToken,
     };
 
     // props for <Swap/> React element on trade route
     const swapPropsTrade = {
         pool: pool,
         crocEnv: crocEnv,
-        isUserLoggedIn: isUserLoggedIn,
+        isUserLoggedIn: isConnected,
         account: account,
         importedTokens: importedTokens,
         setImportedTokens: setImportedTokens,
@@ -2287,7 +2297,7 @@ export default function App() {
         chainId: chainData.chainId,
         activeTokenListsChanged: activeTokenListsChanged,
         indicateActiveTokenListsChanged: indicateActiveTokenListsChanged,
-        openModalWallet: openModalWallet,
+        openModalWallet: openWagmiModalWallet,
         isInitialized: isInitialized,
         poolExists: poolExists,
         openGlobalModal: openGlobalModal,
@@ -2302,12 +2312,13 @@ export default function App() {
         validatedInput: validatedInput,
         setInput: setInput,
         searchType: searchType,
-        acknowledgeToken: acknowledgeToken
+        acknowledgeToken: acknowledgeToken,
     };
 
     // props for <Limit/> React element on trade route
 
     const limitPropsTrade = {
+        account: account,
         pool: pool,
         crocEnv: crocEnv,
         chainData: chainData,
@@ -2334,7 +2345,7 @@ export default function App() {
         chainId: chainData.chainId,
         activeTokenListsChanged: activeTokenListsChanged,
         indicateActiveTokenListsChanged: indicateActiveTokenListsChanged,
-        openModalWallet: openModalWallet,
+        openModalWallet: openWagmiModalWallet,
 
         openGlobalModal: openGlobalModal,
         closeGlobalModal: closeGlobalModal,
@@ -2352,7 +2363,7 @@ export default function App() {
         validatedInput: validatedInput,
         setInput: setInput,
         searchType: searchType,
-        acknowledgeToken: acknowledgeToken
+        acknowledgeToken: acknowledgeToken,
     };
 
     // props for <Range/> React element
@@ -2361,6 +2372,7 @@ export default function App() {
     const [rangetokenBQtyLocal, setRangeTokenBQtyLocal] = useState<number>(0);
 
     const rangeProps = {
+        account: account,
         crocEnv: crocEnv,
         isUserLoggedIn: isUserLoggedIn,
         importedTokens: importedTokens,
@@ -2386,7 +2398,7 @@ export default function App() {
         chainId: chainData.chainId,
         activeTokenListsChanged: activeTokenListsChanged,
         indicateActiveTokenListsChanged: indicateActiveTokenListsChanged,
-        openModalWallet: openModalWallet,
+        openModalWallet: openWagmiModalWallet,
         ambientApy: ambientApy,
 
         openGlobalModal: openGlobalModal,
@@ -2407,7 +2419,7 @@ export default function App() {
         validatedInput: validatedInput,
         setInput: setInput,
         searchType: searchType,
-        acknowledgeToken: acknowledgeToken
+        acknowledgeToken: acknowledgeToken,
     };
 
     function toggleSidebar() {
@@ -2450,7 +2462,7 @@ export default function App() {
 
         analyticsSearchInput: analyticsSearchInput,
         setAnalyticsSearchInput: setAnalyticsSearchInput,
-        openModalWallet: openModalWallet,
+        openModalWallet: openWagmiModalWallet,
     };
 
     const analyticsProps = {
@@ -2527,12 +2539,9 @@ export default function App() {
 
     // hook to track user's sidebar preference open or closed
     // also functions to toggle sidebar status between open and closed
-    const [
-        sidebarStatus,
-        openSidebar,
-        closeSidebar,
-        togggggggleSidebar
-    ] = useSidebar(location.pathname);
+    const [sidebarStatus, openSidebar, closeSidebar, togggggggleSidebar] = useSidebar(
+        location.pathname,
+    );
     // these lines are just here to make the linter happy
     // take them out before production, they serve no other purpose
     false && sidebarStatus;
@@ -2549,8 +2558,6 @@ export default function App() {
         limit: '/trade/limit/chain=0x5&tokenA=0xD87Ba7A50B2E7E660f678A895E4B72E7CB4CCd9C&tokenB=0x0000000000000000000000000000000000000000',
         range: '/trade/range/chain=0x5&tokenA=0xD87Ba7A50B2E7E660f678A895E4B72E7CB4CCd9C&tokenB=0x0000000000000000000000000000000000000000',
     };
-
-
 
     return (
         <>
@@ -2755,7 +2762,7 @@ export default function App() {
                                     ethMainnetUsdPrice={ethMainnetUsdPrice}
                                     showSidebar={showSidebar}
                                     tokenPair={tokenPair}
-                                    openModalWallet={openModalWallet}
+                                    openModalWallet={openWagmiModalWallet}
                                     tokenAAllowance={tokenAAllowance}
                                     tokenBAllowance={tokenBAllowance}
                                     setRecheckTokenAApproval={setRecheckTokenAApproval}
@@ -2800,7 +2807,6 @@ export default function App() {
                                     account={account ?? ''}
                                     showSidebar={showSidebar}
                                     isUserLoggedIn={isUserLoggedIn}
-                                    isAuthenticated={isAuthenticated}
                                     baseTokenBalance={baseTokenBalance}
                                     quoteTokenBalance={quoteTokenBalance}
                                     baseTokenDexBalance={baseTokenDexBalance}
@@ -2811,12 +2817,12 @@ export default function App() {
                                     }
                                     handlePulseAnimation={handlePulseAnimation}
                                     gasPriceInGwei={gasPriceInGwei}
-                                    openModalWallet={openModalWallet}
                                     acknowledgeToken={acknowledgeToken}
                                     outputTokens={outputTokens}
                                     validatedInput={validatedInput}
                                     setInput={setInput}
                                     searchType={searchType}
+                                    openModalWallet={openWagmiModalWallet}
                                 />
                             }
                         />
@@ -2857,7 +2863,6 @@ export default function App() {
                                     account={account ?? ''}
                                     showSidebar={showSidebar}
                                     isUserLoggedIn={isUserLoggedIn}
-                                    isAuthenticated={isAuthenticated}
                                     baseTokenBalance={baseTokenBalance}
                                     quoteTokenBalance={quoteTokenBalance}
                                     baseTokenDexBalance={baseTokenDexBalance}
@@ -2868,12 +2873,12 @@ export default function App() {
                                     }
                                     handlePulseAnimation={handlePulseAnimation}
                                     gasPriceInGwei={gasPriceInGwei}
-                                    openModalWallet={openModalWallet}
                                     acknowledgeToken={acknowledgeToken}
                                     outputTokens={outputTokens}
                                     validatedInput={validatedInput}
                                     setInput={setInput}
                                     searchType={searchType}
+                                    openModalWallet={openWagmiModalWallet}
                                 />
                             }
                         />
@@ -2932,7 +2937,6 @@ export default function App() {
                                     account={account ?? ''}
                                     showSidebar={showSidebar}
                                     isUserLoggedIn={isUserLoggedIn}
-                                    isAuthenticated={isAuthenticated}
                                     baseTokenBalance={baseTokenBalance}
                                     quoteTokenBalance={quoteTokenBalance}
                                     baseTokenDexBalance={baseTokenDexBalance}
@@ -2943,12 +2947,12 @@ export default function App() {
                                     }
                                     handlePulseAnimation={handlePulseAnimation}
                                     gasPriceInGwei={gasPriceInGwei}
-                                    openModalWallet={openModalWallet}
                                     acknowledgeToken={acknowledgeToken}
                                     outputTokens={outputTokens}
                                     validatedInput={validatedInput}
                                     setInput={setInput}
                                     searchType={searchType}
+                                    openModalWallet={openWagmiModalWallet}
                                 />
                             }
                         />
@@ -3005,13 +3009,11 @@ export default function App() {
                 currentContent={currentContent}
                 title={title}
             />
-            {isModalOpenWallet && (
-                <WalletModal
-                    closeModalWallet={closeModalWallet}
-                    isAuthenticating={isAuthenticating}
-                    authenticate={authenticate}
-                    enableWeb3={enableWeb3}
-                    isUserLoggedIn={isUserLoggedIn}
+
+            {isWagmiModalOpenWallet && (
+                <WalletModalWagmi
+                    closeModalWallet={closeWagmiModalWallet}
+
                     // authError={authError}
                 />
             )}

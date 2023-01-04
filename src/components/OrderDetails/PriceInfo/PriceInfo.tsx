@@ -15,6 +15,7 @@ type ItemIF = {
 };
 interface IPriceInfoProps {
     // usdValue: number | undefined;
+    account: string;
     limitOrder: LimitOrderIF;
     // lowRangeDisplay: string;
     // highRangeDisplay: string;
@@ -34,6 +35,7 @@ interface IPriceInfoProps {
 
 export default function PriceInfo(props: IPriceInfoProps) {
     const {
+        account,
         limitOrder,
         isOrderFilled,
         controlItems,
@@ -59,9 +61,7 @@ export default function PriceInfo(props: IPriceInfoProps) {
         // baseDisplayFrontend,
         // quoteDisplayFrontend,
         // positionLiquidity,
-    } = useProcessOrder(limitOrder);
-    // const data = useProcessOrder(limitOrder);
-    // console.log(data);
+    } = useProcessOrder(limitOrder, account);
 
     const liquidityContent = (
         <motion.div

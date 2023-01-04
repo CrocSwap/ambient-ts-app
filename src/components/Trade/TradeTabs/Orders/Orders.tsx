@@ -465,15 +465,22 @@ export default function Orders(props: propsIF) {
 
     // ---------------------
     const [currentPage, setCurrentPage] = useState(1);
-    const [rangesPerPage] = useState(10);
+    // transactions per page media queries
+    const txView1 = useMediaQuery('(max-width: 480px)');
+    const txView2 = useMediaQuery('(max-width: 720px)');
+    const txView3 = useMediaQuery('(max-width: 1200px)');
+    const txView4 = useMediaQuery('(max-width: 1800px)');
+    // const txView4 = useMediaQuery('(min-width: 2400px)');
+
+    const ordersPerPage = txView1 ? 3 : txView2 ? 10 : txView3 ? 12 : txView4 ? 15 : 20;
 
     useEffect(() => {
         setCurrentPage(1);
     }, [account, isShowAllEnabled, JSON.stringify({ baseTokenAddress, quoteTokenAddress })]);
 
     // Get current tranges
-    const indexOfLastRanges = currentPage * rangesPerPage;
-    const indexOfFirstRanges = indexOfLastRanges - rangesPerPage;
+    const indexOfLastRanges = currentPage * ordersPerPage;
+    const indexOfFirstRanges = indexOfLastRanges - ordersPerPage;
     const currentRangess = sortedLimits?.slice(indexOfFirstRanges, indexOfLastRanges);
     const paginate = (pageNumber: number) => {
         setCurrentPage(pageNumber);
@@ -485,7 +492,7 @@ export default function Orders(props: propsIF) {
         <div className={styles.footer}>
             {expandTradeTable && sortedLimits.length > 30 && (
                 <Pagination
-                    itemsPerPage={rangesPerPage}
+                    itemsPerPage={ordersPerPage}
                     totalItems={sortedLimits.length}
                     paginate={paginate}
                     currentPage={currentPage}
@@ -531,6 +538,7 @@ export default function Orders(props: propsIF) {
             isOnPortfolioPage={isOnPortfolioPage}
             handlePulseAnimation={handlePulseAnimation}
             lastBlockNumber={lastBlockNumber}
+            account={account}
         />
     ));
 

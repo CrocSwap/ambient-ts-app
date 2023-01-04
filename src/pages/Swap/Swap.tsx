@@ -2,7 +2,6 @@
 import { useState, Dispatch, SetStateAction, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { ethers } from 'ethers';
-// import { useMoralis } from 'react-moralis';
 import { motion } from 'framer-motion';
 import { CrocEnv, CrocImpact } from '@crocswap-libs/sdk';
 
@@ -41,7 +40,7 @@ import { FiCopy } from 'react-icons/fi';
 interface SwapPropsIF {
     crocEnv: CrocEnv | undefined;
     isUserLoggedIn: boolean | undefined;
-    account: string | null;
+    account: string | undefined;
     importedTokens: Array<TokenIF>;
     setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
     swapSlippage: SlippagePairIF;
@@ -79,7 +78,7 @@ interface SwapPropsIF {
     getRecentTokens: (options?: getRecentTokensParamsIF | undefined) => TokenIF[];
     addRecentToken: (tkn: TokenIF) => void;
     outputTokens: TokenIF[];
-    validatedInput: string,
+    validatedInput: string;
     setInput: Dispatch<SetStateAction<string>>;
     searchType: string;
     acknowledgeToken: (tkn: TokenIF) => void;
@@ -125,7 +124,7 @@ export default function Swap(props: SwapPropsIF) {
         validatedInput,
         setInput,
         searchType,
-        acknowledgeToken
+        acknowledgeToken,
     } = props;
 
     const [isModalOpen, openModal, closeModal] = useModal();
@@ -139,7 +138,6 @@ export default function Swap(props: SwapPropsIF) {
 
     const [isRelativeModalOpen, closeRelativeModal] = useRelativeModal();
 
-    // const { account } = useMoralis();
     // get URL pathway for user relative to index
     const { pathname } = useLocation();
 
@@ -261,6 +259,7 @@ export default function Swap(props: SwapPropsIF) {
     async function initiateSwap() {
         resetConfirmation();
         if (!crocEnv) return;
+
         const sellTokenAddress = tokenA.address;
         const buyTokenAddress = tokenB.address;
         const sellTokenQty = (document.getElementById('sell-quantity') as HTMLInputElement)?.value;

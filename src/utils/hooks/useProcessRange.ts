@@ -1,6 +1,5 @@
 import { ambientPosSlot, concPosSlot } from '@crocswap-libs/sdk';
 
-import { useMoralis } from 'react-moralis';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import getUnicodeCharacter from '../../utils/functions/getUnicodeCharacter';
 import { formatAmountOld } from '../../utils/numbers';
@@ -9,8 +8,7 @@ import trimString from '../../utils/functions/trimString';
 import { useMemo } from 'react';
 import { getMoneynessRank } from '../functions/getMoneynessRank';
 
-export const useProcessRange = (position: PositionIF) => {
-    const { account } = useMoralis();
+export const useProcessRange = (position: PositionIF, account: string) => {
     const tradeData = useAppSelector((state) => state.tradeData);
     const isDenomBase = tradeData.isDenomBase;
 
