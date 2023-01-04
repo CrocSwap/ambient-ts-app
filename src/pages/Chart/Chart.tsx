@@ -370,6 +370,7 @@ export default function Chart(props: ChartData) {
         }
 
         render();
+        renderCanvas();
     }, [props.chartItemStates, expandTradeTable, parsedChartData?.chartData, firstCandle]);
 
     useEffect(() => {
@@ -1265,6 +1266,7 @@ export default function Chart(props: ChartData) {
 
                         clickedForLine = true;
                         render();
+                        renderCanvas();
 
                         const nearest = snapForCandle(event.sourceEvent);
                         setCrosshairForSubChart((prevState) => {
@@ -4171,9 +4173,6 @@ export default function Chart(props: ChartData) {
 
                 d3.select(d3PlotArea.current).on('mousemove', function (event: any) {
                     mousemoveEventForCrosshair(event);
-
-                    console.log({ candlestick });
-
                     const { isHoverCandleOrVolumeData } = candleOrVolumeDataHoverStatus(event);
                     d3.select(event.currentTarget).style(
                         'cursor',
