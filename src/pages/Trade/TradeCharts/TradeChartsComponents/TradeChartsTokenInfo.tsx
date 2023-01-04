@@ -35,6 +35,8 @@ interface TradeChartsTokenInfoPropsIF {
         chainId: string,
         poolId: number,
     ) => void;
+
+    simplifyVersion?: boolean;
 }
 export default function TradeChartsTokenInfo(props: TradeChartsTokenInfoPropsIF) {
     const {
@@ -45,6 +47,7 @@ export default function TradeChartsTokenInfo(props: TradeChartsTokenInfoPropsIF)
         chainId,
         addPoolToFaves,
         removePoolFromFaves,
+        simplifyVersion,
     } = props;
     const dispatch = useAppDispatch();
 
@@ -192,10 +195,71 @@ export default function TradeChartsTokenInfo(props: TradeChartsTokenInfoPropsIF)
 
     // end of fav button-------------------------------
 
+    const simpleHeaderDisplay = (
+        <div className={styles.tokens_info_simplify}>
+            <div className={styles.tokens_info_simplify_content}>
+                {favButton}
+                <section>
+                    <DefaultTooltip
+                        interactive
+                        title={`${
+                            tradeData.baseToken.symbol !== 'ETH'
+                                ? tradeData.baseToken.symbol + ':'
+                                : ''
+                        } ${
+                            tradeData.baseToken.symbol !== 'ETH' ? tradeData.baseToken.address : ''
+                        } ${tradeData.quoteToken.symbol}: ${tradeData.quoteToken.address}`}
+                        placement={'top'}
+                    >
+                        <div
+                            className={styles.tokens_images}
+                            onClick={() => dispatch(toggleDidUserFlipDenom())}
+                        >
+                            {topTokenLogo ? (
+                                <img src={topTokenLogo} alt={topTokenSymbol} />
+                            ) : (
+                                <NoTokenIcon tokenInitial={topTokenSymbol.charAt(0)} width='25px' />
+                            )}
+                            {bottomTokenLogo ? (
+                                <img src={bottomTokenLogo} alt={bottomTokenSymbol} />
+                            ) : (
+                                <NoTokenIcon
+                                    tokenInitial={bottomTokenSymbol.charAt(0)}
+                                    width='25px'
+                                />
+                            )}
+                        </div>
+                    </DefaultTooltip>
+                    <DefaultTooltip
+                        interactive
+                        title={`${
+                            tradeData.baseToken.symbol !== 'ETH'
+                                ? tradeData.baseToken.symbol + ':'
+                                : ''
+                        } ${
+                            tradeData.baseToken.symbol !== 'ETH' ? tradeData.baseToken.address : ''
+                        } ${tradeData.quoteToken.symbol}: ${tradeData.quoteToken.address}`}
+                        placement={'top'}
+                    >
+                        <div
+                            className={styles.tokens_name}
+                            onClick={() => dispatch(toggleDidUserFlipDenom())}
+                        >
+                            {topTokenSymbol} / {bottomTokenSymbol}
+                            {/* {denomInBase ? tradeData.baseToken.symbol : tradeData.quoteToken.symbol} /{' '} */}
+                            {/* {denomInBase ? tradeData.quoteToken.symbol : tradeData.baseToken.symbol} */}
+                        </div>
+                    </DefaultTooltip>
+                </section>
+                {isPoolPriceChangePositive ? amountWithTooltipGreen : amountWithTooltipRed}
+            </div>
+        </div>
+    );
+
+    if (simplifyVersion) return simpleHeaderDisplay;
+
     return (
         <div className={styles.tokens_info}>
-            {favButton}
-
             <DefaultTooltip
                 interactive
                 title={`${
