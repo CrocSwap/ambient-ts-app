@@ -230,8 +230,6 @@ export default function Transactions(props: TransactionsProps) {
 
     const transactionsPerPage = txView1 ? 3 : txView2 ? 10 : txView3 ? 12 : txView4 ? 15 : 20;
 
-    console.log({ transactionsPerPage });
-
     // const [transactionsPerPage] = useState(15);
 
     useEffect(() => {
