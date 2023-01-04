@@ -17,8 +17,6 @@ import {
 } from '../../../../utils/state/tradeDataSlice';
 
 interface TradeChartsTokenInfoPropsIF {
-    setIsPoolPriceChangePositive: Dispatch<SetStateAction<boolean>>;
-
     isPoolPriceChangePositive: boolean;
 
     poolPriceDisplay: number;
