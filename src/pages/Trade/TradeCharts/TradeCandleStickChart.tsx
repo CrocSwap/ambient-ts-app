@@ -389,8 +389,6 @@ export default function TradeCandleStickChart(props: ChartData) {
                 if (
                     data.cumBidLiq !== undefined &&
                     data.cumBidLiq !== '0' &&
-                    liqPrices > barThreshold / 10 &&
-                    liqPrices < limitBoundary &&
                     liqBidDepthPrices !== '+inf'
                 ) {
                     depthLiqBidData.push({

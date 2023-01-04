@@ -33,6 +33,15 @@ export default function RangeWidth(props: RangeWidthPropsIF) {
                 <button
                     className={styles.percentage_option_buttons}
                     onClick={() => {
+                        updateRangeWithButton((1 / 20) * 100, setRangeWidthPercentage);
+                        dispatch(setRescaleRangeBoundaries(true));
+                    }}
+                >
+                    5%
+                </button>
+                <button
+                    className={styles.percentage_option_buttons}
+                    onClick={() => {
                         updateRangeWithButton((1 / 10) * 100, setRangeWidthPercentage);
                         dispatch(setRescaleRangeBoundaries(true));
                     }}
