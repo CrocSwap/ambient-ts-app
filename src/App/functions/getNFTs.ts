@@ -23,7 +23,7 @@ export async function getNFTs(account: string) {
         const userEthNFTs = response?.result.filter((nft) => nft.contractType === 'ERC1155');
 
         if (userEthNFTs) {
-            console.log({ userEthNFTs });
+            // console.log({ userEthNFTs });
             const imageLocalURLs: string[] = [];
             userEthNFTs.forEach((nft) => {
                 const metadata = nft.metadata;
@@ -45,7 +45,7 @@ export async function getNFTs(account: string) {
                         });
                 }
             });
-            console.log({ imageLocalURLs });
+            // console.log({ imageLocalURLs });
             return imageLocalURLs;
         }
     } catch (e) {

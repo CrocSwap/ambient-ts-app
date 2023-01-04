@@ -4,23 +4,24 @@ import {
     //  toDisplayQty
 } from '@crocswap-libs/sdk';
 import { BigNumber } from 'ethers';
-import Moralis from 'moralis-v1';
+import Moralis from 'moralis';
+import { Erc20Value } from '@moralisweb3/common-evm-utils';
 import { ZERO_ADDRESS } from '../../constants';
 import { TokenIF } from '../../utils/interfaces/TokenIF';
 import { formatAmountOld } from '../../utils/numbers';
 import { fetchDepositBalances } from './fetchDepositBalances';
 import { memoizePromiseFn } from './memoizePromiseFn';
 
-interface IMoralisTokenBalance {
-    // eslint-disable-next-line camelcase
-    token_address: string;
-    name: string;
-    symbol: string;
-    logo?: string | undefined;
-    thumbnail?: string | undefined;
-    decimals: number;
-    balance: string;
-}
+// interface IMoralisTokenBalance {
+//     // eslint-disable-next-line camelcase
+//     token_address: string;
+//     name: string;
+//     symbol: string;
+//     logo?: string | undefined;
+//     thumbnail?: string | undefined;
+//     decimals: number;
+//     balance: string;
+// }
 
 // export interface IExchangeDepositQueryResult {
 //     chainId: string;
@@ -148,18 +149,17 @@ export const fetchErc20TokenBalances = async (
 
     const options = { address: address, chain: chain as '0x5' };
 
-    const erc20WalletBalancesFromMoralis = await Moralis.Web3API.account.getTokenBalances(options);
+    const erc20WalletBalancesFromMoralis = await Moralis.EvmApi.token.getWalletTokenBalances(
+        options,
+    );
 
     const erc20DexBalancesFromCache = await fetchDepositBalances({ chainId: chain, user: address });
 
-    // console.log({ erc20WalletBalancesFromMoralis });
-    // console.log({ erc20DexBalancesFromCache });
-
     const combinedErc20Balances: TokenIF[] = [];
 
-    const getTokenInfoFromMoralisBalance = (tokenBalance: IMoralisTokenBalance): TokenIF => {
-        const moralisErc20Balance = tokenBalance.balance;
-        const moralisErc20BalanceDisplay = toDisplayQty(moralisErc20Balance, tokenBalance.decimals);
+    const getTokenInfoFromMoralisBalance = (erc20value: Erc20Value): TokenIF => {
+        const moralisErc20Balance = BigNumber.from(erc20value.amount.toString());
+        const moralisErc20BalanceDisplay = toDisplayQty(moralisErc20Balance, erc20value.decimals);
         const moralisErc20BalanceDisplayNum = parseFloat(moralisErc20BalanceDisplay);
         const moralisErc20BalanceDisplayTruncated =
             moralisErc20BalanceDisplayNum < 0.0001
@@ -176,14 +176,14 @@ export const fetchErc20TokenBalances = async (
         return {
             chainId: parseInt(chain),
             logoURI: '',
-            name: tokenBalance.name,
-            address: tokenBalance.token_address,
-            symbol: tokenBalance.symbol,
-            decimals: tokenBalance.decimals,
-            walletBalance: moralisErc20Balance,
+            name: erc20value.token?.name || '',
+            address: erc20value.token?.contractAddress.lowercase || '',
+            symbol: erc20value.token?.symbol || '',
+            decimals: erc20value.token?.decimals || 18,
+            walletBalance: moralisErc20Balance.toString(),
             walletBalanceDisplay: moralisErc20BalanceDisplay,
             walletBalanceDisplayTruncated: moralisErc20BalanceDisplayTruncated,
-            combinedBalance: moralisErc20Balance,
+            combinedBalance: moralisErc20Balance.toString(),
             combinedBalanceDisplay: moralisErc20BalanceDisplay,
             combinedBalanceDisplayTruncated: moralisErc20BalanceDisplayTruncated,
         };
@@ -232,8 +232,10 @@ export const fetchErc20TokenBalances = async (
     //     return dexBalance;
     // };
 
-    erc20WalletBalancesFromMoralis.map((balanceFromMoralis: IMoralisTokenBalance) => {
-        const newToken: TokenIF = getTokenInfoFromMoralisBalance(balanceFromMoralis);
+    const jsonResponse = erc20WalletBalancesFromMoralis.result;
+
+    jsonResponse.map((erc20value) => {
+        const newToken: TokenIF = getTokenInfoFromMoralisBalance(erc20value);
         combinedErc20Balances.push(newToken);
     });
 

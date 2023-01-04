@@ -685,9 +685,8 @@ export default function App() {
                         everyEigthBlock,
                         crocEnv,
                     );
-                    // console.log({ erc20Results });
                     const erc20TokensWithLogos = erc20Results.map((token) => addTokenInfo(token));
-                    // console.log({ erc20TokensWithLogos });
+
                     dispatch(setErc20Tokens(erc20TokensWithLogos));
                 } catch (error) {
                     console.log({ error });
