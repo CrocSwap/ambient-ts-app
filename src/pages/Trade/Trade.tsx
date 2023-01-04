@@ -382,7 +382,7 @@ export default function Trade(props: TradePropsIF) {
 
     return (
         <section className={styles.main_layout}>
-            <div className={styles.middle_col}>
+            <div className={`${styles.middle_col} ${expandTradeTable ? styles.flex_column : ''}`}>
                 {poolNotInitializedContent}
                 {mobileDataToggle}
                 <div
