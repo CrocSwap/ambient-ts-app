@@ -538,6 +538,7 @@ export default function Orders(props: propsIF) {
             isOnPortfolioPage={isOnPortfolioPage}
             handlePulseAnimation={handlePulseAnimation}
             lastBlockNumber={lastBlockNumber}
+            account={account}
         />
     ));
 

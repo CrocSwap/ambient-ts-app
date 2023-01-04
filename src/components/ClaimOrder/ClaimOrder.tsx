@@ -17,8 +17,7 @@ import ClaimOrderButton from './ClaimOrderButton/ClaimOrderButton';
 import { LimitOrderIF } from '../../utils/interfaces/exports';
 import { useAppDispatch } from '../../utils/hooks/reduxToolkit';
 import { addPendingTx, addReceipt, removePendingTx } from '../../utils/state/receiptDataSlice';
-// import { useMoralis } from 'react-moralis';
-// import { lookupChain } from '@crocswap-libs/sdk/dist/context';
+
 import {
     isTransactionFailedError,
     isTransactionReplacedError,
@@ -26,6 +25,7 @@ import {
 } from '../../utils/TransactionError';
 
 interface IClaimOrderProps {
+    account: string;
     crocEnv: CrocEnv | undefined;
     chainData: ChainSpec;
     limitOrder: LimitOrderIF;
@@ -33,7 +33,7 @@ interface IClaimOrderProps {
 }
 
 export default function ClaimOrder(props: IClaimOrderProps) {
-    const { chainData, crocEnv, limitOrder, closeGlobalModal } = props;
+    const { account, chainData, crocEnv, limitOrder, closeGlobalModal } = props;
     const {
         posLiqBaseDecimalCorrected,
         posLiqQuoteDecimalCorrected,
@@ -56,7 +56,7 @@ export default function ClaimOrder(props: IClaimOrderProps) {
         baseDisplay,
         quoteDisplay,
         truncatedDisplayPrice,
-    } = useProcessOrder(limitOrder);
+    } = useProcessOrder(limitOrder, account);
 
     useEffect(() => {
         console.log({ limitOrder });
@@ -69,7 +69,6 @@ export default function ClaimOrder(props: IClaimOrderProps) {
     const [showSettings, setShowSettings] = useState(false);
 
     const dispatch = useAppDispatch();
-    // const { account } = useMoralis();
 
     const resetConfirmation = () => {
         setShowConfirmation(false);

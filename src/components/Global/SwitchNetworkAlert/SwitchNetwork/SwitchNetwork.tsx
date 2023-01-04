@@ -5,13 +5,11 @@ import { RiErrorWarningLine } from 'react-icons/ri';
 import styles from './SwitchNetwork.module.css';
 import NetworkButtons from '../NetworkButton/NetworkButtons';
 
-interface SwitchNetworkPropsIF {
-    switchNetworkInMoralis: (providedChainId: string) => Promise<void>;
-}
+// interface SwitchNetworkPropsIF {
+//     switchNetwork: (providedChainId: string) => Promise<void>;
+// }
 
-export default function SwitchNetwork(props: SwitchNetworkPropsIF) {
-    const { switchNetworkInMoralis } = props;
-
+export default function SwitchNetwork() {
     return (
         <div className={styles.outside_modal}>
             <div className={styles.modal_container}>
@@ -22,7 +20,7 @@ export default function SwitchNetwork(props: SwitchNetworkPropsIF) {
                     </header>
                     <section className={styles.modal_content}>
                         <span className={styles.content_title}>Please choose a network below</span>
-                        <NetworkButtons switchNetworkInMoralis={switchNetworkInMoralis} />
+                        <NetworkButtons />
                     </section>
                 </div>
             </div>

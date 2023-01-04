@@ -63,7 +63,6 @@ interface PortfolioTabsPropsIF {
     account: string;
     showSidebar: boolean;
     isUserLoggedIn: boolean | undefined;
-    isAuthenticated: boolean;
     baseTokenBalance: string;
     quoteTokenBalance: string;
     baseTokenDexBalance: string;
@@ -359,7 +358,6 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
         chainId: chainId,
         provider: props.provider,
         isUserLoggedIn: props.isUserLoggedIn,
-        isAuthenticated: props.isAuthenticated,
         importedTokens: importedTokens,
         baseTokenBalance: baseTokenBalance,
         quoteTokenBalance: quoteTokenBalance,

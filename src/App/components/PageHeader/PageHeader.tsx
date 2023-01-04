@@ -1,40 +1,38 @@
 // START: Import React and Dongles
-import { useCallback, useEffect, useState, Dispatch, SetStateAction } from 'react';
+import { useEffect, useState, Dispatch, SetStateAction } from 'react';
 import { useLocation, Link } from 'react-router-dom';
-import { useMoralis } from 'react-moralis';
 import { useTranslation } from 'react-i18next';
 import { motion, AnimateSharedLayout } from 'framer-motion';
 
 // START: Import JSX Elements
 import Account from './Account/Account';
-import MagicLogin from './MagicLogin';
+// import MagicLogin from './MagicLogin';
 import NetworkSelector from './NetworkSelector/NetworkSelector';
 import SwitchNetwork from '../../../components/Global/SwitchNetworkAlert/SwitchNetwork/SwitchNetwork';
-import Modal from '../../../components/Global/Modal/Modal';
+// import Modal from '../../../components/Global/Modal/Modal';
 
 // START: Import Local Files
 import styles from './PageHeader.module.css';
 import trimString from '../../../utils/functions/trimString';
 // import ambientLogo from '../../../assets/images/logos/ambient_logo.svg';
 import headerLogo from '../../../assets/images/logos/header_logo.svg';
-import { useModal } from '../../../components/Global/Modal/useModal';
+// import { useModal } from '../../../components/Global/Modal/useModal';
 import { useUrlParams } from './useUrlParams';
 import MobileSidebar from '../../../components/Global/MobileSidebar/MobileSidebar';
 import NotificationCenter from '../../../components/Global/NotificationCenter/NotificationCenter';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
+import { useAccount, useDisconnect, useEnsName } from 'wagmi';
 
 interface HeaderPropsIF {
     isUserLoggedIn: boolean | undefined;
     // nativeBalance: string | undefined;
     clickLogout: () => void;
-    metamaskLocked: boolean;
+    // metamaskLocked: boolean;
     ensName: string;
     shouldDisplayAccountTab: boolean | undefined;
     chainId: string;
     isChainSupported: boolean;
-    switchChain: Dispatch<SetStateAction<string>>;
-    switchNetworkInMoralis: (providedChainId: string) => Promise<void>;
-    openModalWallet: () => void;
+    openWagmiModalWallet: () => void;
 
     isMobileSidebarOpen: boolean;
     setIsMobileSidebarOpen: Dispatch<SetStateAction<boolean>>;
@@ -53,17 +51,16 @@ interface HeaderPropsIF {
 
 export default function PageHeader(props: HeaderPropsIF) {
     const {
-        isUserLoggedIn,
-        ensName,
+        // isUserLoggedIn,
+        // ensName,
         // nativeBalance,
-        clickLogout,
-        metamaskLocked,
-        shouldDisplayAccountTab,
+        // clickLogout,
+        // metamaskLocked,
+        // shouldDisplayAccountTab,
         chainId,
         isChainSupported,
-        switchChain,
-        switchNetworkInMoralis,
-        openModalWallet,
+        // openMoralisModalWallet,
+        openWagmiModalWallet,
         lastBlockNumber,
         isMobileSidebarOpen,
         setIsMobileSidebarOpen,
@@ -74,63 +71,49 @@ export default function PageHeader(props: HeaderPropsIF) {
         poolPriceDisplay,
     } = props;
 
-    const {
-        user,
-        account,
-        enableWeb3,
-        isAuthenticated,
-        // isWeb3EnableLoading,
-        // isInitialized,
-        // isInitializing,
-        // isUserUpdating,
-    } = useMoralis();
+    const { address, isConnected } = useAccount();
+    const { disconnect } = useDisconnect();
+    const { data: ensName } = useEnsName({ address });
 
-    // console.log({ user });
-    // console.log({ isUserUpdating });
-    // console.log({ isInitialized });
-    // console.log({ isAuthenticated });
-    // console.log({ isInitializing });
-    // console.log({ isUserLoggedIn });
-    // console.log({ isWeb3EnableLoading });
     const { t } = useTranslation();
 
-    const [isModalOpen, openModal, closeModal] = useModal();
-    const modalTitle = 'Log in with Email';
+    // const [isModalOpen, openModal, closeModal] = useModal();
+    // const modalTitle = 'Log in with Email';
 
-    const mainModal = (
-        <Modal onClose={closeModal} title={modalTitle}>
-            <MagicLogin closeModal={closeModal} />
-        </Modal>
-    );
+    // const mainModal = (
+    //     <Modal onClose={closeModal} title={modalTitle}>
+    //         <MagicLogin closeModal={closeModal} />
+    //     </Modal>
+    // );
 
-    const [connectButtonDelayElapsed, setConnectButtonDelayElapsed] = useState(false);
+    // const [connectButtonDelayElapsed, setConnectButtonDelayElapsed] = useState(false);
 
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            setConnectButtonDelayElapsed(true);
-        }, 3000);
-        return () => clearTimeout(timer);
-    }, []);
+    // useEffect(() => {
+    //     const timer = setTimeout(() => {
+    //         setConnectButtonDelayElapsed(true);
+    //     }, 3000);
+    //     return () => clearTimeout(timer);
+    // }, []);
 
-    const modalOrNull = isModalOpen ? mainModal : null;
+    // const modalOrNull = isModalOpen ? mainModal : null;
 
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            reenableWeb3();
-        }, 100);
-        return () => clearTimeout(timer);
-    }, [user, account, metamaskLocked]);
+    // useEffect(() => {
+    //     const timer = setTimeout(() => {
+    //         reenableWeb3();
+    //     }, 100);
+    //     return () => clearTimeout(timer);
+    // }, [user, account, metamaskLocked]);
 
-    const reenableWeb3 = useCallback(async () => {
-        // console.log('enabling web3');
-        try {
-            if (user && !account && !metamaskLocked) {
-                await enableWeb3();
-            }
-        } catch (err) {
-            console.warn(`Could not automatically bridge Moralis to wallet. Error follows: ${err}`);
-        }
-    }, [user, account, metamaskLocked]);
+    // const reenableWeb3 = useCallback(async () => {
+    //     // console.log('enabling web3');
+    //     try {
+    //         if (user && !account && !metamaskLocked) {
+    //             await enableWeb3();
+    //         }
+    //     } catch (err) {
+    //         console.warn(`Could not automatically bridge Moralis to wallet. Error follows: ${err}`);
+    //     }
+    // }, [user, account, metamaskLocked]);
 
     // end of rive component
 
@@ -145,7 +128,7 @@ export default function PageHeader(props: HeaderPropsIF) {
     // }
 
     // -----------------END OF SWITCH NETWORK FUNCTIONALITY--------------------------------------
-    const accountAddress = isAuthenticated && account ? trimString(account, 6, 6) : '';
+    const accountAddress = isConnected && address ? trimString(address, 6, 6) : '';
     const userData = useAppSelector((state) => state.userData);
 
     const connectedUserNativeToken = userData.tokens.nativeToken;
@@ -153,11 +136,11 @@ export default function PageHeader(props: HeaderPropsIF) {
     const accountProps = {
         nativeBalance: connectedUserNativeToken?.combinedBalanceDisplayTruncated,
         accountAddress: accountAddress,
-        accountAddressFull: isAuthenticated && account ? account : '',
-        ensName: ensName,
-        isUserLoggedIn: isUserLoggedIn,
-        clickLogout: clickLogout,
-        openModal: openModal,
+        accountAddressFull: isConnected && address ? address : '',
+        ensName: ensName || '',
+        isUserLoggedIn: isConnected,
+        clickLogout: disconnect,
+        // openModal: openModal,
         chainId: chainId,
         isAppOverlayActive: isAppOverlayActive,
         setIsAppOverlayActive: setIsAppOverlayActive,
@@ -168,12 +151,17 @@ export default function PageHeader(props: HeaderPropsIF) {
 
     // End of Page Header Functions
 
-    const metamaskButton = (
-        <button className={styles.authenticate_button} onClick={() => openModalWallet()}>
+    // const connectMoralisButton = (
+    //     <button className={styles.authenticate_button} onClick={() => openMoralisModalWallet()}>
+    //         Connect Moralis
+    //     </button>
+    // );
+
+    const connectWagmiButton = (
+        <button className={styles.authenticate_button} onClick={() => openWagmiModalWallet()}>
             Connect Wallet
         </button>
     );
-
     // ----------------------------NAVIGATION FUNCTIONALITY-------------------------------------
 
     const location = useLocation();
@@ -261,7 +249,7 @@ export default function PageHeader(props: HeaderPropsIF) {
         {
             title: t('common:accountTitle'),
             destination: '/account',
-            shouldDisplay: shouldDisplayAccountTab,
+            shouldDisplay: isConnected,
         },
     ];
 
@@ -335,8 +323,9 @@ export default function PageHeader(props: HeaderPropsIF) {
                     switchTheme={switchTheme}
                 />
                 <div className={styles.account}>
-                    <NetworkSelector chainId={chainId} switchChain={switchChain} />
-                    {connectButtonDelayElapsed && !isUserLoggedIn && metamaskButton}
+                    <NetworkSelector chainId={chainId} />
+                    {/* {connectButtonDelayElapsed && !isUserLoggedIn && connectMoralisButton} */}
+                    {!isConnected && connectWagmiButton}
                     <Account {...accountProps} />
                     <NotificationCenter
                         showNotificationTable={showNotificationTable}
@@ -345,8 +334,8 @@ export default function PageHeader(props: HeaderPropsIF) {
                     />
                 </div>
             </div>
-            {isChainSupported || <SwitchNetwork switchNetworkInMoralis={switchNetworkInMoralis} />}
-            {modalOrNull}
+            {isChainSupported || <SwitchNetwork />}
+            {/* {modalOrNull} */}
         </header>
     );
 }

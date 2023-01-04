@@ -1,22 +1,28 @@
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
-import { useChain, useMoralis } from 'react-moralis';
 import { ChainSpec } from '@crocswap-libs/sdk';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { validateChainId } from '../../utils/data/chains';
+import { useNetwork, useSwitchNetwork } from 'wagmi';
 
 export const useAppChain = (
     defaultChain: string,
+    isUserLoggedIn: boolean | undefined,
 ): [
     ChainSpec,
     boolean,
     Dispatch<SetStateAction<string>>,
-    (providedChainId: string) => Promise<void>,
+    ((chainId_?: number | undefined) => void) | undefined,
 ] => {
     // chain from connected wallet via Moralis
-    const { isAuthenticated } = useMoralis();
-    const { chainId, switchNetwork } = useChain();
 
-    const { isWeb3Enabled } = useMoralis();
+    const {
+        // chains, error, isLoading, pendingChainId,
+        switchNetwork,
+    } = useSwitchNetwork();
+
+    const { chain } = useNetwork();
+
+    const chainId = chain ? '0x' + chain.id.toString(16) : '';
 
     // value tracking the current chain the app is set to use
     // initializes on the default chain parameter
@@ -37,10 +43,11 @@ export const useAppChain = (
     // gatekeeping also ensures app will not change to an unsupported network
     // TODO: plan for pathways supporting de-authentication
     useEffect(() => {
-        if (isAuthenticated) {
-            // if Moralis has a chain ID which does not match the in-app chain ID
-            //      Moralis chain ID is supported => switch app to that ID
-            //      Moralis chain Id is NOT supported => switch app to default chain
+        // console.log({ chainId });
+        // if Moralis has a chain ID which does not match the in-app chain ID
+        //      Moralis chain ID is supported => switch app to that ID
+        //      Moralis chain Id is NOT supported => switch app to default chain
+        if (isUserLoggedIn) {
             if (chainId && chainId !== currentChain) {
                 if (validateChainId(chainId)) {
                     setCurrentChain(chainId);
@@ -57,12 +64,13 @@ export const useAppChain = (
                 setIsChainSupported(true);
             }
         }
-    }, [chainId]);
 
-    useEffect(() => {
-        if (isAuthenticated && isWeb3Enabled && chainId !== currentChain)
-            setIsChainSupported(false);
-    }, [isAuthenticated, isWeb3Enabled]);
+        // }
+    }, [chainId, currentChain, isUserLoggedIn]);
+
+    // useEffect(() => {
+    //     if (chainId !== currentChain) setIsChainSupported(false);
+    // }, [chainId, currentChain]);
 
     // data from the SDK about the current chain
     // refreshed every time the the value of currentChain is updated

@@ -1,4 +1,3 @@
-import { useMoralis } from 'react-moralis';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { useState, useEffect, useMemo } from 'react';
 import getUnicodeCharacter from '../../utils/functions/getUnicodeCharacter';
@@ -7,8 +6,7 @@ import trimString from '../../utils/functions/trimString';
 import { LimitOrderIF } from '../interfaces/exports';
 import { getMoneynessRank } from '../functions/getMoneynessRank';
 
-export const useProcessOrder = (limitOrder: LimitOrderIF) => {
-    const { account } = useMoralis();
+export const useProcessOrder = (limitOrder: LimitOrderIF, account: string) => {
     const tradeData = useAppSelector((state) => state.tradeData);
     // eslint-disable-next-line
     const lastBlockNumber = useAppSelector((state) => state.graphData).lastBlock;

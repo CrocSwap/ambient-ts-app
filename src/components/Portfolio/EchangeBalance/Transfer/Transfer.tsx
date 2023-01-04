@@ -193,47 +193,6 @@ export default function Transfer(props: PortfolioTransferProps) {
         isResolvedAddressValid,
     ]);
 
-    // const chooseTokenDiv = (
-    //     <div>
-    //         {defaultTokens
-    //             .filter((token: TokenIF) => token.chainId === parseInt('0x5'))
-    //             .map((token: TokenIF) => (
-    //                 <button key={'button_to_set_' + token.name} onClick={() => chooseToken(token)}>
-    //                     {token.name}
-    //                 </button>
-    //             ))
-    //         }
-    //     </div>
-    // );
-    /*
-    const tokenSelectModalOrNull = isModalOpen ? (
-        <Modal
-            onClose={closeModal}
-            title='Select Token'
-            centeredTitle
-            handleBack={() => setShowManageTokenListContent(false)}
-            showBackButton={showManageTokenListContent}
-            footer={footerOrNull}
-        >
-            <TokenSelectContainer
-                tokenPair={tokenPair}
-                tokensBank={tokensBank}
-                setImportedTokens={setImportedTokens}
-                searchableTokens={searchableTokens}
-                tokenToUpdate={tokenToUpdate}
-                chainId={chainId}
-                tokenList={tokensBank}
-                closeModal={closeModal}
-                reverseTokens={reverseTokens}
-                showManageTokenListContent={showManageTokenListContent}
-                setShowManageTokenListContent={setShowManageTokenListContent}
-                activeTokenListsChanged={activeTokenListsChanged}
-                indicateActiveTokenListsChanged={indicateActiveTokenListsChanged}
-            />
-        </Modal>
-    ) : null;
-*/
-
     const transfer = async (transferQty: string) => {
         if (crocEnv && transferQty && resolvedAddress) {
             try {
