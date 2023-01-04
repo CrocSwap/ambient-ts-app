@@ -6,7 +6,7 @@ import { Provider } from 'react-redux';
 import './index.css';
 import App from './App/App';
 import reportWebVitals from './reportWebVitals';
-import { MoralisProvider } from 'react-moralis';
+// import { MoralisProvider } from 'react-moralis';
 import './i18n/config.ts';
 
 import { WagmiConfig, createClient, configureChains } from 'wagmi';
@@ -64,9 +64,9 @@ const client = createClient({
 });
 
 // const APP_ID = process.env.REACT_APP_MORALIS_APPLICATION_ID;
-const APP_ID = 'mVXmmaPDkP1oWs7YcGSqnP3U7qmK7BwUHyrLlqJe';
+// const APP_ID = 'mVXmmaPDkP1oWs7YcGSqnP3U7qmK7BwUHyrLlqJe';
 // const SERVER_URL = process.env.REACT_APP_MORALIS_SERVER_URL;
-const SERVER_URL = 'https://kvng1p7egepw.usemoralis.com:2053/server';
+// const SERVER_URL = 'https://kvng1p7egepw.usemoralis.com:2053/server';
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
 
@@ -74,11 +74,11 @@ root.render(
     <React.StrictMode>
         <WagmiConfig client={client}>
             <Provider store={store}>
-                <MoralisProvider appId={APP_ID} serverUrl={SERVER_URL}>
-                    <BrowserRouter>
-                        <App />
-                    </BrowserRouter>
-                </MoralisProvider>
+                {/* <MoralisProvider appId={APP_ID} serverUrl={SERVER_URL}> */}
+                <BrowserRouter>
+                    <App />
+                </BrowserRouter>
+                {/* </MoralisProvider> */}
             </Provider>
         </WagmiConfig>
     </React.StrictMode>,
