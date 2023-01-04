@@ -146,6 +146,8 @@ import { useSidebar } from './hooks/useSidebar';
 import useDebounce from './hooks/useDebounce';
 import { useRecentTokens } from './hooks/useRecentTokens';
 import WalletModalWagmi from './components/WalletModal/WalletModalWagmi';
+import Moralis from 'moralis';
+
 // import { memoizeQuerySpotTick } from './functions/querySpotTick';
 // import PhishingWarning from '../components/Global/PhisingWarning/PhishingWarning';
 
@@ -162,6 +164,15 @@ const wssGraphCacheServerDomain = 'wss://809821320828123.de:5000';
 
 const shouldCandleSubscriptionsReconnect = true;
 const shouldNonCandleSubscriptionsReconnect = true;
+
+const startMoralis = async () => {
+    await Moralis.start({
+        apiKey: 'xcsYd8HnEjWqQWuHs63gk7Oehgbusa05fGdQnlVPFV9qMyKYPcRlwBDLd1C2SVx5',
+        // ...and any other configuration
+    });
+};
+
+startMoralis();
 
 /** ***** React Function *******/
 export default function App() {
