@@ -603,8 +603,8 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                     className={sideTypeStyle}
                     style={{ textAlign: 'center' }}
                 >
-                    <p>{sideType}</p>
                     <p>{type}</p>
+                    <p>{`${sideType} ${sideCharacter}`}</p>
                 </li>
             )}
             {usdValueWithTooltip}

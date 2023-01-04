@@ -368,7 +368,7 @@ export default function TradeCandleStickChart(props: ChartData) {
                     ? data.lowerBoundInvPriceDecimalCorrected
                     : data.lowerBoundPriceDecimalCorrected;
 
-                if (liqPrices > barThreshold) {
+                if (liqPrices > barThreshold && liqPrices < barThreshold * 10) {
                     liqBidData.push({
                         activeLiq: liquidityScale(data.activeLiq),
                         liqPrices: liqPrices,

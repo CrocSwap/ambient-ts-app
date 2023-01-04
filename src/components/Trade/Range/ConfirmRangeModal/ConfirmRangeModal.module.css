@@ -116,10 +116,18 @@
 
     align-items: center;
     justify-content: space-between;
+
 }
-.detail_line img {
+
+.detail_line div{
+   
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+/* .detail_line img {
     margin: 0 10px;
-}
+} */
 
 /* modal */
 
