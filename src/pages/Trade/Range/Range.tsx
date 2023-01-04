@@ -100,6 +100,10 @@ interface RangePropsIF {
     importedTokensPlus: TokenIF[];
     getRecentTokens: (options?: getRecentTokensParamsIF | undefined) => TokenIF[];
     addRecentToken: (tkn: TokenIF) => void;
+    outputTokens: TokenIF[];
+    validatedInput: string,
+    setInput: Dispatch<SetStateAction<string>>;
+    searchType: string;
 }
 
 export default function Range(props: RangePropsIF) {
@@ -143,7 +147,11 @@ export default function Range(props: RangePropsIF) {
         getTokenByAddress,
         importedTokensPlus,
         getRecentTokens,
-        addRecentToken
+        addRecentToken,
+        outputTokens,
+        validatedInput,
+        setInput,
+        searchType
     } = props;
 
     const [isModalOpen, openModal, closeModal] = useModal();
@@ -1020,7 +1028,11 @@ export default function Range(props: RangePropsIF) {
         getTokenByAddress: getTokenByAddress,
         importedTokensPlus: importedTokensPlus,
         getRecentTokens: getRecentTokens,
-        addRecentToken: addRecentToken
+        addRecentToken: addRecentToken,
+        outputTokens: outputTokens,
+        validatedInput: validatedInput,
+        setInput: setInput,
+        searchType: searchType
     };
 
     // props for <RangeWidth/> React element

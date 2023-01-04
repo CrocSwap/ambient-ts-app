@@ -65,6 +65,10 @@ interface RangeCurrencySelectorProps {
     getRecentTokens: (options?: getRecentTokensParamsIF | undefined) => TokenIF[];
     addRecentToken: (tkn: TokenIF) => void;
     tokenAorB: string;
+    outputTokens: TokenIF[];
+    validatedInput: string,
+    setInput: Dispatch<SetStateAction<string>>;
+    searchType: string;
 }
 
 export default function RangeCurrencySelector(props: RangeCurrencySelectorProps) {
@@ -116,7 +120,11 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
         importedTokensPlus,
         getRecentTokens,
         addRecentToken,
-        tokenAorB
+        tokenAorB,
+        outputTokens,
+        validatedInput,
+        setInput,
+        searchType
     } = props;
 
     const isTokenASelector = fieldId === 'A';
@@ -262,13 +270,13 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
 
     const [isTokenModalOpen, openTokenModal, closeTokenModal] = useModal();
     const [showSoloSelectTokenButtons, setShowSoloSelectTokenButtons] = useState(true);
-    const [outputTokens, validatedInput, setInput, searchType] = useSoloSearch(
-        chainId,
-        tokensBank,
-        verifyToken,
-        getTokenByAddress,
-        getTokensByName,
-    );
+    // const [outputTokens, validatedInput, setInput, searchType] = useSoloSearch(
+    //     chainId,
+    //     tokensBank,
+    //     verifyToken,
+    //     getTokenByAddress,
+    //     getTokensByName,
+    // );
 
     const handleInputClear = () => {
         setInput('');

@@ -145,6 +145,7 @@ import { useToken } from './hooks/useToken';
 import { useSidebar } from './hooks/useSidebar';
 import useDebounce from './hooks/useDebounce';
 import { useRecentTokens } from './hooks/useRecentTokens';
+import { useTokenSearch } from './hooks/useTokenSearch';
 // import { memoizeQuerySpotTick } from './functions/querySpotTick';
 // import PhishingWarning from '../components/Global/PhisingWarning/PhishingWarning';
 
@@ -2125,7 +2126,6 @@ export default function App() {
     false && getTokensOnChain;
 
     const connectedUserErc20Tokens = useAppSelector((state) => state.userData.tokens.erc20Tokens);
-
     // TODO: move this function up to App.tsx
     const getImportedTokensPlus = () => {
         // array of all tokens on Ambient list
@@ -2209,6 +2209,15 @@ export default function App() {
         theme: theme,
     };
 
+    const [outputTokens, validatedInput, setInput, searchType] = useTokenSearch(
+        chainData.chainId,
+        getAllTokens(),
+        verifyToken,
+        getTokenByAddress,
+        getTokensByName,
+        getAmbientTokens()
+    );
+
     // props for <Swap/> React element
     const swapProps = {
         crocEnv: crocEnv,
@@ -2244,7 +2253,11 @@ export default function App() {
         getTokenByAddress: getTokenByAddress,
         importedTokensPlus: getImportedTokensPlus(),
         getRecentTokens: getRecentTokens,
-        addRecentToken: addRecentToken
+        addRecentToken: addRecentToken,
+        outputTokens: outputTokens,
+        validatedInput: validatedInput,
+        setInput: setInput,
+        searchType: searchType
     };
 
     // props for <Swap/> React element on trade route
@@ -2284,7 +2297,11 @@ export default function App() {
         getTokenByAddress: getTokenByAddress,
         importedTokensPlus: getImportedTokensPlus(),
         getRecentTokens: getRecentTokens,
-        addRecentToken: addRecentToken
+        addRecentToken: addRecentToken,
+        outputTokens: outputTokens,
+        validatedInput: validatedInput,
+        setInput: setInput,
+        searchType: searchType
     };
 
     // props for <Limit/> React element on trade route
@@ -2330,6 +2347,10 @@ export default function App() {
         importedTokensPlus: getImportedTokensPlus(),
         getRecentTokens: getRecentTokens,
         addRecentToken: addRecentToken,
+        outputTokens: outputTokens,
+        validatedInput: validatedInput,
+        setInput: setInput,
+        searchType: searchType
     };
 
     // props for <Range/> React element
@@ -2379,7 +2400,11 @@ export default function App() {
         getTokenByAddress: getTokenByAddress,
         importedTokensPlus: getImportedTokensPlus(),
         getRecentTokens: getRecentTokens,
-        addRecentToken: addRecentToken
+        addRecentToken: addRecentToken,
+        outputTokens: outputTokens,
+        validatedInput: validatedInput,
+        setInput: setInput,
+        searchType: searchType
     };
 
     function toggleSidebar() {
@@ -2521,6 +2546,8 @@ export default function App() {
         limit: '/trade/limit/chain=0x5&tokenA=0xD87Ba7A50B2E7E660f678A895E4B72E7CB4CCd9C&tokenB=0x0000000000000000000000000000000000000000',
         range: '/trade/range/chain=0x5&tokenA=0xD87Ba7A50B2E7E660f678A895E4B72E7CB4CCd9C&tokenB=0x0000000000000000000000000000000000000000',
     };
+
+
 
     return (
         <>
@@ -2783,6 +2810,10 @@ export default function App() {
                                     gasPriceInGwei={gasPriceInGwei}
                                     openModalWallet={openModalWallet}
                                     acknowledgeToken={acknowledgeToken}
+                                    outputTokens={outputTokens}
+                                    validatedInput={validatedInput}
+                                    setInput={setInput}
+                                    searchType={searchType}
                                 />
                             }
                         />
@@ -2836,6 +2867,10 @@ export default function App() {
                                     gasPriceInGwei={gasPriceInGwei}
                                     openModalWallet={openModalWallet}
                                     acknowledgeToken={acknowledgeToken}
+                                    outputTokens={outputTokens}
+                                    validatedInput={validatedInput}
+                                    setInput={setInput}
+                                    searchType={searchType}
                                 />
                             }
                         />
@@ -2907,6 +2942,10 @@ export default function App() {
                                     gasPriceInGwei={gasPriceInGwei}
                                     openModalWallet={openModalWallet}
                                     acknowledgeToken={acknowledgeToken}
+                                    outputTokens={outputTokens}
+                                    validatedInput={validatedInput}
+                                    setInput={setInput}
+                                    searchType={searchType}
                                 />
                             }
                         />

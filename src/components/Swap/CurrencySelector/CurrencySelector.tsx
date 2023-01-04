@@ -61,6 +61,10 @@ interface CurrencySelectorProps {
     importedTokensPlus: TokenIF[];
     getRecentTokens: (options?: getRecentTokensParamsIF | undefined) => TokenIF[];
     addRecentToken: (tkn: TokenIF) => void;
+    outputTokens: TokenIF[];
+    validatedInput: string,
+    setInput: Dispatch<SetStateAction<string>>;
+    searchType: string;
 }
 
 export default function CurrencySelector(props: CurrencySelectorProps) {
@@ -102,7 +106,11 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
         getTokenByAddress,
         importedTokensPlus,
         addRecentToken,
-        getRecentTokens
+        getRecentTokens,
+        outputTokens,
+        validatedInput,
+        setInput,
+        searchType
     } = props;
 
     // const [showManageTokenListContent, setShowManageTokenListContent] = useState(false);
@@ -405,13 +413,13 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
 
     const [isTokenModalOpen, openTokenModal, closeTokenModal] = useModal();
     const [showSoloSelectTokenButtons, setShowSoloSelectTokenButtons] = useState(true);
-    const [outputTokens, validatedInput, setInput, searchType] = useSoloSearch(
-        chainId,
-        tokensBank,
-        verifyToken,
-        getTokenByAddress,
-        getTokensByName,
-    );
+    // const [outputTokens, validatedInput, setInput, searchType] = useSoloSearch(
+    //     chainId,
+    //     tokensBank,
+    //     verifyToken,
+    //     getTokenByAddress,
+    //     getTokensByName,
+    // );
 
     const handleInputClear = () => {
         setInput('');

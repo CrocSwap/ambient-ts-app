@@ -82,7 +82,7 @@ export const useToken = (
     // fn to determine if a token exists in a recognized token list
     // parameter for chain is optional, app uses the current chain by default
     // but we can verify tokens on other chains too as needed
-    const verifyToken = (addr: string, chn = chainId): boolean => {
+    const verifyToken = (addr: string, chn=chainId): boolean => {
         return !!tokenMap.get(addr.toLowerCase() + '_' + chn.toLowerCase());
     };
 

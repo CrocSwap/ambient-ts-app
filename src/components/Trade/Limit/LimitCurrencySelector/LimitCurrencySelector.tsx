@@ -61,6 +61,10 @@ interface LimitCurrencySelectorProps {
     getRecentTokens: (options?: getRecentTokensParamsIF | undefined) => TokenIF[];
     addRecentToken: (tkn: TokenIF) => void;
     tokenAorB: string;
+    outputTokens: TokenIF[];
+    validatedInput: string,
+    setInput: Dispatch<SetStateAction<string>>;
+    searchType: string;
 }
 
 // central react functional component
@@ -99,7 +103,11 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
         importedTokensPlus,
         getRecentTokens,
         addRecentToken,
-        tokenAorB
+        tokenAorB,
+        outputTokens,
+        validatedInput,
+        setInput,
+        searchType
     } = props;
 
     const thisToken = fieldId === 'sell' ? tokenPair.dataTokenA : tokenPair.dataTokenB;
@@ -114,13 +122,13 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
 
     const [isTokenModalOpen, openTokenModal, closeTokenModal] = useModal();
     const [showSoloSelectTokenButtons, setShowSoloSelectTokenButtons] = useState(true);
-    const [outputTokens, validatedInput, setInput, searchType] = useSoloSearch(
-        chainId,
-        tokensBank,
-        verifyToken,
-        getTokenByAddress,
-        getTokensByName,
-    );
+    // const [outputTokens, validatedInput, setInput, searchType] = useSoloSearch(
+    //     chainId,
+    //     tokensBank,
+    //     verifyToken,
+    //     getTokenByAddress,
+    //     getTokensByName,
+    // );
 
     const handleInputClear = () => {
         setInput('');
@@ -334,11 +342,6 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
                     </div>
                 </IconWithTooltip>
             </div>
-            {/* {fieldId === 'sell' ? (
-                    <span>Wallet: {walletBalance} | Surplus: 0</span>
-                ) : (
-                    <span>Wallet: {walletBalance} | Surplus: 0</span>
-                )} */}
             {isSellTokenSelector ? WithdrawTokensContent : null}
         </div>
     ) : null;

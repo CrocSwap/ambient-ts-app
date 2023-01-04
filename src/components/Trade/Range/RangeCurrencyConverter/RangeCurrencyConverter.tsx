@@ -70,6 +70,10 @@ interface RangeCurrencyConverterPropsIF {
     importedTokensPlus: TokenIF[];
     getRecentTokens: (options?: getRecentTokensParamsIF | undefined) => TokenIF[];
     addRecentToken: (tkn: TokenIF) => void;
+    outputTokens: TokenIF[];
+    validatedInput: string,
+    setInput: Dispatch<SetStateAction<string>>;
+    searchType: string;
 }
 
 // central React functional component
@@ -117,7 +121,11 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
         getTokenByAddress,
         importedTokensPlus,
         getRecentTokens,
-        addRecentToken
+        addRecentToken,
+        outputTokens,
+        validatedInput,
+        setInput,
+        searchType
     } = props;
 
     const dispatch = useAppDispatch();
@@ -733,7 +741,11 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
         getTokenByAddress: getTokenByAddress,
         importedTokensPlus: importedTokensPlus,
         getRecentTokens: getRecentTokens,
-        addRecentToken: addRecentToken
+        addRecentToken: addRecentToken,
+        outputTokens: outputTokens,
+        validatedInput: validatedInput,
+        setInput: setInput,
+        searchType: searchType
     };
 
     return (
