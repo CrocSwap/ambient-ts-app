@@ -224,8 +224,6 @@ export default function TradeCandleStickChart(props: ChartData) {
         setParsedChartData(() => {
             return chartUtils;
         });
-
-        setScaleForChart(chartUtils, liquidityData);
     };
 
     const standardDeviation = (arr: any, usePopulation = false) => {
