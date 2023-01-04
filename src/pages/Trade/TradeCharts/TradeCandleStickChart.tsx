@@ -149,11 +149,11 @@ export default function TradeCandleStickChart(props: ChartData) {
         setIsCandleAdded(true);
     }, [props.candleData]);
 
-    // useEffect(() => {
-    //     if (parsedChartData === undefined) {
-    //         parseData();
-    //     }
-    // }, [parsedChartData]);
+    useEffect(() => {
+        if (parsedChartData === undefined) {
+            parseData();
+        }
+    }, [parsedChartData]);
 
     // Parse price data
     const parseData = () => {
