@@ -232,6 +232,7 @@ export default function Chart(props: ChartData) {
     const [windowDimensions, setWindowDimensions] = useState(getWindowDimensions());
     const [checkLimitOrder, setCheckLimitOrder] = useState<boolean>(false);
     const [isRangeSet, setIsRangeSet] = useState(false);
+    const [isRangeScaleSet, setIsRangeScaleSet] = useState<string>('noChange');
 
     // Data
     const [crosshairData, setCrosshairData] = useState([{ x: 0, y: -1 }]);
@@ -968,6 +969,10 @@ export default function Chart(props: ChartData) {
                 .select('.limit')
                 .select('.horizontal')
                 .style('visibility', 'hidden');
+
+            if (isRangeScaleSet !== 'scaleOver') {
+                setIsRangeScaleSet('reScale');
+            }
         } else if (location.pathname.includes('limit')) {
             d3.select(d3PlotArea.current).select('.limit').style('visibility', 'visible');
 
@@ -990,6 +995,10 @@ export default function Chart(props: ChartData) {
                 .selectAll('.horizontal')
                 .style('visibility', 'hidden')
                 .style('filter', 'none');
+
+            if (isRangeScaleSet !== 'scaleOver') {
+                setIsRangeScaleSet('noChange');
+            }
         } else if (location.pathname.includes('market')) {
             d3.select(d3Container.current).select('.limit').style('visibility', 'hidden');
             d3.select(d3Container.current)
@@ -1004,6 +1013,10 @@ export default function Chart(props: ChartData) {
                 .selectAll('.horizontal')
                 .style('visibility', 'hidden')
                 .style('filter', 'none');
+
+            if (isRangeScaleSet !== 'scaleOver') {
+                setIsRangeScaleSet('noChange');
+            }
         }
     }, [location, parsedChartData?.period]);
 
@@ -1311,6 +1324,7 @@ export default function Chart(props: ChartData) {
                     ) {
                         setShowLatest(false);
                     }
+                    setIsRangeScaleSet('scaleOver');
                 }) as any;
 
             const yAxisZoom = d3.zoom().on('zoom', async (event: any) => {
@@ -1367,6 +1381,7 @@ export default function Chart(props: ChartData) {
 
                 setMarketLineValue();
                 render();
+                setIsRangeScaleSet('scaleOver');
             }) as any;
 
             setZoomUtils(() => {
@@ -3327,6 +3342,23 @@ export default function Chart(props: ChartData) {
         }
     }, [scaleData, liquidityData, location, lineGradient]);
 
+    useEffect(() => {
+        if (isRangeScaleSet === 'reScale' && poolPriceDisplay) {
+            if (location.pathname.includes('range')) {
+                const low = ranges.filter((target: any) => target.name === 'Min')[0].value;
+                const high = ranges.filter((target: any) => target.name === 'Max')[0].value;
+
+                const buffer = poolPriceDisplay / 50;
+
+                scaleData.yScale.domain([low - buffer, high + buffer]);
+            } else if (location.pathname.includes('limit')) {
+                scaleData.yScale.domain(scaleData.yScaleCopy.domain());
+            } else if (location.pathname.includes('market')) {
+                scaleData.yScale.domain(scaleData.yScaleCopy.domain());
+            }
+        }
+    }, [location, isRangeScaleSet, ranges]);
+
     // Call drawChart()
     useEffect(() => {
         if (
@@ -3665,7 +3697,7 @@ export default function Chart(props: ChartData) {
 
                     scaleData.liquidityScale.range([
                         event.detail.width,
-                        (event.detail.width / 10) * 8,
+                        (event.detail.width / 10) * 9,
                     ]);
 
                     scaleData.volumeScale.range([
