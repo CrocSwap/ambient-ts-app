@@ -428,6 +428,7 @@ export default function Trade(props: TradePropsIF) {
                             activeTimeFrame={activeTimeFrame}
                             setActiveTimeFrame={setActiveTimeFrame}
                             TradeSettingsColor={<TradeSettingsColor {...tradeSettingsColorProps} />}
+                            handlePulseAnimation={handlePulseAnimation}
                         />
                     </div>
                 </div>

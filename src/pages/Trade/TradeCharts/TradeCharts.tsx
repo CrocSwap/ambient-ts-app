@@ -99,6 +99,7 @@ interface TradeChartsPropsIF {
     activeTimeFrame: string;
     setActiveTimeFrame: Dispatch<SetStateAction<string>>;
     TradeSettingsColor: JSX.Element;
+    handlePulseAnimation: (type: string) => void;
 }
 
 export interface CandleChartData {
@@ -173,6 +174,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
         activeTimeFrame,
         setActiveTimeFrame,
         TradeSettingsColor,
+        handlePulseAnimation,
     } = props;
 
     const dispatch = useAppDispatch();
@@ -574,6 +576,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
                         setShowLatest={setShowLatest}
                         activeTimeFrame={activeTimeFrame}
                         setShowTooltip={setShowTooltip}
+                        handlePulseAnimation={handlePulseAnimation}
                     />
                 </div>
             )}
