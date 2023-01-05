@@ -96,7 +96,7 @@ export default function TradeChartsTokenInfo(props: TradeChartsTokenInfoPropsIF)
         <NoColorTooltip
             title={'24 hour price change'}
             interactive
-            placement={'right'}
+            placement={simplifyVersion ? 'left' : 'right'}
             arrow
             enterDelay={400}
             leaveDelay={200}
@@ -116,7 +116,7 @@ export default function TradeChartsTokenInfo(props: TradeChartsTokenInfoPropsIF)
         <GreenTextTooltip
             interactive
             title={poolPriceChange}
-            placement={'right'}
+            placement={simplifyVersion ? 'left' : 'right'}
             arrow
             enterDelay={100}
             leaveDelay={200}
