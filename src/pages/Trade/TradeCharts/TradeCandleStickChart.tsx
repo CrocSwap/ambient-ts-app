@@ -517,8 +517,6 @@ export default function TradeCandleStickChart(props: ChartData) {
     }, [props.liquidityData, props.poolPriceDisplay]);
 
     useEffect(() => {
-        console.log('dfsdfsfuseEffect');
-
         setScaleData(() => {
             return undefined;
         });
@@ -591,8 +589,6 @@ export default function TradeCandleStickChart(props: ChartData) {
                 liquidityExtent(liquidityData.liqBidData.concat(liquidityData.liqAskData)),
             );
             ghostScale.domain(ghostExtent(liquidityData.liqSnapData));
-
-            console.log('dsfssdfd');
 
             setScaleData(() => {
                 return {
