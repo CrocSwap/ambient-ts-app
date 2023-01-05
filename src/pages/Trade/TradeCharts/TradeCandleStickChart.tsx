@@ -77,6 +77,7 @@ interface ChartData {
     activeTimeFrame: string;
     setShowLatest: React.Dispatch<React.SetStateAction<boolean>>;
     setShowTooltip: React.Dispatch<React.SetStateAction<boolean>>;
+    handlePulseAnimation: (type: string) => void;
 }
 
 export interface ChartUtils {
@@ -107,6 +108,7 @@ export default function TradeCandleStickChart(props: ChartData) {
         selectedDate,
         setSelectedDate,
         activeTimeFrame,
+        handlePulseAnimation,
     } = props;
 
     const [scaleData, setScaleData] = useState<any>();
@@ -705,6 +707,7 @@ export default function TradeCandleStickChart(props: ChartData) {
                         setShowLatest={props.setShowLatest}
                         setShowTooltip={props.setShowTooltip}
                         activeTimeFrame={activeTimeFrame}
+                        handlePulseAnimation={handlePulseAnimation}
                     />
                 ) : (
                     <>{loading}</>

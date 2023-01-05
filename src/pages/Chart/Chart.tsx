@@ -2,7 +2,7 @@ import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
 import moment from 'moment';
 import { DetailedHTMLProps, HTMLAttributes, useCallback, useEffect, useRef, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { formatAmountChartData, formatAmountWithoutDigit } from '../../utils/numbers';
 import { CandleData } from '../../utils/state/graphDataSlice';
@@ -18,6 +18,7 @@ import {
     setCandleDomains,
     setRescaleRangeBoundaries,
     setIsLinesSwitched,
+    setIsTokenAPrimary,
 } from '../../utils/state/tradeDataSlice';
 import { CandleChartData, VolumeChartData } from '../Trade/TradeCharts/TradeCharts';
 import FeeRateSubChart from '../Trade/TradeCharts/TradeChartsLoading/FeeRateSubChart';
@@ -99,6 +100,7 @@ interface ChartData {
     setShowLatest: React.Dispatch<React.SetStateAction<boolean>>;
     setShowTooltip: React.Dispatch<React.SetStateAction<boolean>>;
     activeTimeFrame: string;
+    handlePulseAnimation: (type: string) => void;
 }
 
 function getWindowDimensions() {
@@ -138,6 +140,7 @@ export default function Chart(props: ChartData) {
         setLatest,
         activeTimeFrame,
         liquidityData,
+        handlePulseAnimation,
     } = props;
 
     const tradeData = useAppSelector((state) => state.tradeData);
@@ -298,6 +301,9 @@ export default function Chart(props: ChartData) {
     const [yAxisWidth, setYaxisWidth] = useState('4rem');
 
     const [bandwidth, setBandwidth] = useState(5);
+
+    const [changeLimitOrderStatus, setChangeLimitOrderStatus] = useState(false);
+
     // const valueFormatter = d3.format('.5f');
     const currentPoolPriceTick =
         poolPriceNonDisplay === undefined ? 0 : Math.log(poolPriceNonDisplay) / Math.log(1.0001);
@@ -1499,6 +1505,49 @@ export default function Chart(props: ChartData) {
         });
     };
 
+    const navigate = useNavigate();
+    const [isTokenAPrimaryLocal, setIsTokenAPrimaryLocal] = useState<boolean>(
+        tradeData.isTokenAPrimary,
+    );
+    const [tokenAQtyLocal] = useState<string>(
+        isTokenAPrimaryLocal ? tradeData?.primaryQuantity : '',
+    );
+    const [tokenBQtyLocal] = useState<string>(
+        !isTokenAPrimaryLocal ? tradeData?.primaryQuantity : '',
+    );
+
+    const reverseTokens = (): void => {
+        navigate(
+            '/trade/limit/chain=0x5&tokenA=' +
+                tradeData.tokenB.address +
+                '&tokenB=' +
+                tradeData.tokenA.address,
+        );
+        // if (!isTokenAPrimaryLocal) {
+
+        //     const buyQtyField = document.getElementById('buy-limit-quantity') as HTMLInputElement;
+        //     if (buyQtyField) {
+        //         buyQtyField.value = '';
+        //     }
+        //     const sellQtyField = document.getElementById('sell-limit-quantity') as HTMLInputElement;
+        //     if (sellQtyField) {
+        //         sellQtyField.value = tokenBQtyLocal === 'NaN' ? '' : tokenBQtyLocal;
+        //     }
+        // } else {
+
+        //     const sellQtyField = document.getElementById('sell-limit-quantity') as HTMLInputElement;
+        //     if (sellQtyField) {
+        //         sellQtyField.value = '';
+        //     }
+        //     const buyQtyField = document.getElementById('buy-limit-quantity') as HTMLInputElement;
+        //     if (buyQtyField) {
+        //         buyQtyField.value = tokenAQtyLocal === 'NaN' ? '' : tokenAQtyLocal;
+        //     }
+        // }
+        setIsTokenAPrimaryLocal(!isTokenAPrimaryLocal);
+        dispatch(setIsTokenAPrimary(!tradeData.isTokenAPrimary));
+    };
+
     useEffect(() => {
         setRanges((prevState) => {
             const newTargets = [...prevState];
@@ -1994,9 +2043,12 @@ export default function Chart(props: ChartData) {
                     dragSwitched = false;
                 });
 
+            // let setChangeLimitOrderStatus = false;
+            let limitPreviousData = 0;
             const dragLimit = d3
                 .drag()
                 .on('start', () => {
+                    limitPreviousData = limit[0].value;
                     d3.select(d3Container.current).style('cursor', 'row-resize');
                     d3.select(d3Container.current).select('.targets').style('cursor', 'row-resize');
                 })
@@ -2055,6 +2107,26 @@ export default function Chart(props: ChartData) {
                         .remove();
 
                     onBlurLimitRate(newLimitValue);
+
+                    if (isUserLoggedIn && poolPriceDisplay) {
+                        if (sellOrderStyle === 'order_sell') {
+                            if (
+                                limitPreviousData > poolPriceDisplay &&
+                                newLimitValue < poolPriceDisplay
+                            ) {
+                                handlePulseAnimation('limitOrder');
+                                reverseTokens();
+                            }
+                        } else {
+                            if (
+                                limitPreviousData < poolPriceDisplay &&
+                                newLimitValue > poolPriceDisplay
+                            ) {
+                                handlePulseAnimation('limitOrder');
+                                reverseTokens();
+                            }
+                        }
+                    }
                 });
 
             setDragRange(() => {
@@ -2815,7 +2887,7 @@ export default function Chart(props: ChartData) {
             renderCanvas();
             render();
         }
-    }, [dragControl, selectedDate]);
+    }, [scaleData, selectedDate]);
 
     useEffect(() => {
         const ctx = (d3.select(d3Canvas.current).select('canvas').node() as any).getContext('2d');
@@ -2829,7 +2901,7 @@ export default function Chart(props: ChartData) {
                     candlestick.context(ctx);
                 });
         }
-    }, [scaleData, parsedChartData, candlestick]);
+    }, [parsedChartData, candlestick]);
 
     function renderCanvas() {
         if (d3Canvas) {
