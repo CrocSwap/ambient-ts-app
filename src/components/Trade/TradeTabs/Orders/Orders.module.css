@@ -20,8 +20,8 @@
     overflow-y: scroll;
   max-height: 90%; */
     width: 100%;
-    /* max-height: 90%; */
-    overflow-y:hidden;
+    max-height: 90%;
+    overflow-y:scroll;
     overflow-x: hidden;
     /* padding: 0 8px; */
     position: relative;
@@ -75,6 +75,11 @@
     line-height: 13px;
 
     color: var(--text-grey-light);
+}
+.row_container{
+    width: 100%;
+    transition: all var(--animation-speed) ease-in-out
+   
 }
 .row_container:hover {
     background: var(--dark2);
