@@ -490,6 +490,7 @@ export default function TradeTabs2(props: ITabsProps) {
         poolPriceChangePercent: poolPriceChangePercent,
         setPoolPriceChangePercent: setPoolPriceChangePercent,
         isPoolPriceChangePositive: isPoolPriceChangePositive,
+        simplifyVersion: true,
     };
     // data for headings of each of the three tabs
     const tradeTabData = isCandleSelected
@@ -633,11 +634,7 @@ export default function TradeTabs2(props: ITabsProps) {
         <div ref={tabComponentRef} className={styles.trade_tab_container}>
             <>
                 {isCandleSelected ? selectedMessageContent : null}
-                {expandTradeTable && (
-                    <div style={{ display: 'flex', justifyContent: 'center', padding: '4px 0' }}>
-                        <TradeChartsTokenInfo {...TradeChartsTokenInfoProps} />
-                    </div>
-                )}
+                {expandTradeTable && <TradeChartsTokenInfo {...TradeChartsTokenInfoProps} />}
                 <TabComponent
                     data={tradeTabData}
                     rightTabOptions={<PositionsOnlyToggle {...positionsOnlyToggleProps} />}
