@@ -43,9 +43,9 @@ interface propsIF {
 export const SoloTokenSelect = (props: propsIF) => {
     const {
         provider,
-        importedTokens,
+        // importedTokens,
         chainId,
-        setImportedTokens,
+        // setImportedTokens,
         closeModal,
         // getTokensByName,
         // getTokenByAddress,
@@ -88,22 +88,22 @@ export const SoloTokenSelect = (props: propsIF) => {
         if (isSingleToken) {
             dispatch(setToken(tkn));
         }
-        // determine if the token is a previously imported token
-        const isTokenImported: boolean = importedTokens.some(
-            (tk: TokenIF) => tk.address.toLowerCase() === tkn.address.toLowerCase(),
-        );
-        // if token is NOT imported, update local storage accordingly
-        if (!isTokenImported) {
-            // retrieve and parse user data object from local storage
-            const userData = JSON.parse(localStorage.getItem('user') as string);
-            // update value of `tokens` on user data object
-            userData.tokens = [...importedTokens, tkn];
-            // write updated value to local storage
-            localStorage.setItem('user', JSON.stringify(userData));
-            // update local state record of imported tokens
-            // necessary as there is no event listener on local storage 😱
-            setImportedTokens([...importedTokens, tkn]);
-        }
+        // // determine if the token is a previously imported token
+        // const isTokenImported: boolean = importedTokens.some(
+        //     (tk: TokenIF) => tk.address.toLowerCase() === tkn.address.toLowerCase(),
+        // );
+        // // if token is NOT imported, update local storage accordingly
+        // if (!isTokenImported) {
+        //     // retrieve and parse user data object from local storage
+        //     const userData = JSON.parse(localStorage.getItem('user') as string);
+        //     // update value of `tokens` on user data object
+        //     userData.tokens = [...importedTokens, tkn];
+        //     // write updated value to local storage
+        //     localStorage.setItem('user', JSON.stringify(userData));
+        //     // update local state record of imported tokens
+        //     // necessary as there is no event listener on local storage 😱
+        //     setImportedTokens([...importedTokens, tkn]);
+        // }
         // array of recent tokens from App.tsx (current session only)
         const recentTokens = getRecentTokens();
         // determine if clicked token is already in the recent tokens array
