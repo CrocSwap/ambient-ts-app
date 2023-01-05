@@ -1,20 +1,16 @@
 import { ITransaction } from '../../utils/state/graphDataSlice';
-import { useMoralis } from 'react-moralis';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { useState, useEffect, useMemo } from 'react';
 import getUnicodeCharacter from '../../utils/functions/getUnicodeCharacter';
 import { formatAmountOld } from '../../utils/numbers';
-import { useAppChain } from '../../App/hooks/useAppChain';
 import trimString from '../../utils/functions/trimString';
 import { getMoneynessRank } from '../functions/getMoneynessRank';
 
-export const useProcessTransaction = (tx: ITransaction) => {
-    const [chainData] = useAppChain('0x5');
-
+export const useProcessTransaction = (tx: ITransaction, account: string) => {
     const tradeData = useAppSelector((state) => state.tradeData);
-    const blockExplorer = chainData?.blockExplorer;
+    const blockExplorer = 'https://goerli.etherscan.io/';
+    // const blockExplorer = chainData?.blockExplorer;
 
-    const { account } = useMoralis();
     const isDenomBase = tradeData.isDenomBase;
 
     const txHash = tx.tx;

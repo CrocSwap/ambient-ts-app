@@ -33,6 +33,7 @@ import { useNavigate } from 'react-router-dom';
 
 // interface for React functional component props
 interface TransactionMenuIF {
+    account: string;
     tradeData: tradeData;
     userPosition: boolean | undefined; // position belongs to active user
     isTokenABase: boolean;
@@ -50,6 +51,7 @@ interface TransactionMenuIF {
 export default function TransactionsMenu(props: TransactionMenuIF) {
     const menuItemRef = useRef<HTMLDivElement>(null);
     const {
+        account,
         tradeData,
         // isTokenABase,
         // userPosition,
@@ -247,7 +249,9 @@ export default function TransactionsMenu(props: TransactionMenuIF) {
     // }
 
     const openDetailsModal = () =>
-        openGlobalModal(<TransactionDetails tx={tx} closeGlobalModal={closeGlobalModal} />);
+        openGlobalModal(
+            <TransactionDetails account={account} tx={tx} closeGlobalModal={closeGlobalModal} />,
+        );
 
     // const mainModal = (
     //     <Modal onClose={closeModal} title={modalTitle}>

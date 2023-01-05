@@ -1441,7 +1441,7 @@ export default function Chart(props: ChartData) {
 
                         while (
                             scaleData.yScale.domain()[1] + liqBidDeviation >=
-                            liquidityData.liqBidData[0].liqPrices
+                            liquidityData?.liqBidData[0]?.liqPrices
                         ) {
                             liquidityData.liqBidData.unshift({
                                 activeLiq: 30,
@@ -1514,7 +1514,7 @@ export default function Chart(props: ChartData) {
             return newTargets;
         });
 
-        console.log(liquidityData.liqBidData);
+        // console.log(liquidityData.liqBidData);
     }, [denomInBase]);
 
     const setBalancedLines = () => {

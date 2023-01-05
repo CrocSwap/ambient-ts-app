@@ -91,7 +91,7 @@ export default function FeeRateSubChart(props: FreeRateData) {
                         });
                     });
 
-                console.log(feeDataTemp);
+                // console.log(feeDataTemp);
 
                 const yAxis = d3fc
                     .axisRight()

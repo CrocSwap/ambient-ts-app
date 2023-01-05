@@ -3,7 +3,8 @@ import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { VscClose } from 'react-icons/vsc';
 import { CrocEnv } from '@crocswap-libs/sdk';
-import { useMoralisWeb3Api } from 'react-moralis';
+import Moralis from 'moralis';
+// import { EvmChain } from '@moralisweb3/common-evm-utils';
 
 // START: Import JSX Components
 import InitPoolExtraInfo from '../../components/InitPool/InitPoolExtraInfo/InitPoolExtraInfo';
@@ -64,8 +65,6 @@ export default function InitPool(props: InitPoolPropsIF) {
 
     // function to programmatically navigate the user
     const navigate = useNavigate();
-
-    const Web3Api = useMoralisWeb3Api();
 
     // DO NOT combine these hooks with useMemo()
     // the useMemo() hook does NOT respect asynchronicity
@@ -149,21 +148,29 @@ export default function InitPool(props: InitPoolPropsIF) {
                         break;
                 }
             };
-            const promise = Web3Api.token.getTokenMetadata({
-                chain: chain as '0x5',
+            const promise = Moralis.EvmApi.token.getTokenMetadata({
                 addresses: [addr],
+                chain,
             });
+            // const promise = Moralis.Web3API.token.getTokenMetadata({
+            //     chain: chain as '0x5',
+            //     addresses: [addr],
+            // });
+
             Promise.resolve(promise)
-                .then((res) => res[0])
-                .then((res) => ({
-                    name: res.name,
-                    chainId: parseInt(chain as string),
-                    address: res.address,
-                    symbol: res.symbol,
-                    decimals: parseInt(res.decimals),
-                    logoURI: res.logo ?? '',
-                    fromList: 'urlParam',
-                }))
+                .then((res) => res?.result[0].token)
+                .then((token) => {
+                    // console.log({ token });
+                    return {
+                        name: token.name,
+                        chainId: token.chain.decimal,
+                        address: token.contractAddress.lowercase,
+                        symbol: token.symbol,
+                        decimals: token.decimals,
+                        logoURI: token.logo ?? '',
+                        fromList: 'urlParam',
+                    };
+                })
                 .then((res) => setTarget(res, target));
         }
         tokenALocal === undefined && setTokenFromChain(baseAddr, 'tokenALocal');
