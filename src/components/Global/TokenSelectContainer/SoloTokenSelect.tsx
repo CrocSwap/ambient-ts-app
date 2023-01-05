@@ -75,7 +75,7 @@ export const SoloTokenSelect = (props: propsIF) => {
     // this needs to be coordinated with data in Modal.tsx
     // later we'll abstract and import functionality to get rid of magic numbers
     useEffect(() => {
-        modalCloseCustom && window.addEventListener('closeModalOptions', modalCloseCustom);
+        modalCloseCustom && window.addEventListener('closeModalEvent', modalCloseCustom);
     }, []);
 
     // instance of hook used to retrieve data from RTK

@@ -413,7 +413,7 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
         </div>
     );
 
-    const modalCloseCustom = () => setInput('');
+    const modalCloseCustom = (): void => setInput('');
 
     const [isTokenModalOpen, openTokenModal, closeTokenModal] = useModal(modalCloseCustom);
     const [showSoloSelectTokenButtons, setShowSoloSelectTokenButtons] = useState(true);
@@ -425,7 +425,7 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
     //     getTokensByName,
     // );
 
-    const handleInputClear = () => {
+    const handleInputClear = (): void => {
         setInput('');
         const soloTokenSelectInput = document.getElementById(
             'solo-token-select-input',
