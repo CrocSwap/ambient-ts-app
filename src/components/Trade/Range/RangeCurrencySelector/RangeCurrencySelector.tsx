@@ -270,7 +270,9 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
     const isFieldDisabled =
         (isTokenASelector && isTokenADisabled) || (!isTokenASelector && isTokenBDisabled);
 
-    const [isTokenModalOpen, openTokenModal, closeTokenModal] = useModal();
+    const modalCloseCustom = (): void => setInput('');
+
+    const [isTokenModalOpen, openTokenModal, closeTokenModal] = useModal(modalCloseCustom);
     const [showSoloSelectTokenButtons, setShowSoloSelectTokenButtons] = useState(true);
     // const [outputTokens, validatedInput, setInput, searchType] = useSoloSearch(
     //     chainId,
@@ -280,7 +282,7 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
     //     getTokensByName,
     // );
 
-    const handleInputClear = () => {
+    const handleInputClear = (): void => {
         setInput('');
         const soloTokenSelectInput = document.getElementById(
             'solo-token-select-input',
@@ -454,6 +456,7 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
                     footer={null}
                 >
                     <SoloTokenSelect
+                        modalCloseCustom={modalCloseCustom}
                         provider={provider}
                         closeModal={closeTokenModal}
                         chainId={chainId}

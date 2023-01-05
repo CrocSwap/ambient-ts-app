@@ -122,7 +122,9 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
     // ... from its counterparts in the Swap/Market/Range modules, even if we use
     // ... a common element for those modules in the future.
 
-    const [isTokenModalOpen, openTokenModal, closeTokenModal] = useModal();
+    const modalCloseCustom = (): void => setInput('');
+
+    const [isTokenModalOpen, openTokenModal, closeTokenModal] = useModal(modalCloseCustom);
     const [showSoloSelectTokenButtons, setShowSoloSelectTokenButtons] = useState(true);
     // const [outputTokens, validatedInput, setInput, searchType] = useSoloSearch(
     //     chainId,
@@ -132,7 +134,7 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
     //     getTokensByName,
     // );
 
-    const handleInputClear = () => {
+    const handleInputClear = (): void => {
         setInput('');
         const soloTokenSelectInput = document.getElementById(
             'solo-token-select-input',
@@ -372,6 +374,7 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
                     footer={null}
                 >
                     <SoloTokenSelect
+                        modalCloseCustom={modalCloseCustom}
                         provider={provider}
                         closeModal={closeTokenModal}
                         chainId={chainId}
