@@ -129,7 +129,7 @@ export default function TradeChartsTokenInfo(props: TradeChartsTokenInfoPropsIF)
         <RedTextTooltip
             interactive
             title={poolPriceChange}
-            placement={'right'}
+            placement={simplifyVersion ? 'left' : 'right'}
             arrow
             enterDelay={100}
             leaveDelay={200}
