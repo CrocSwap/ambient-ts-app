@@ -1,6 +1,13 @@
 import { useState } from 'react';
 
-export const useModal = (modalCloseCustom?: () => void, initialMode = false) => {
+export const useModal = (
+    modalCloseCustom?: () => void,
+    initialMode = false
+): [
+    boolean,
+    () => void,
+    () => void
+] => {
     // create a useState hook to track if the modal should be rendered
     const [isModalOpen, setIsModalOpen] = useState<boolean>(initialMode);
 
@@ -24,5 +31,5 @@ export const useModal = (modalCloseCustom?: () => void, initialMode = false) => 
     };
 
     // return all data and functions needed for local use
-    return [isModalOpen, openModal, closeModal] as const;
+    return [isModalOpen, openModal, closeModal];
 };
