@@ -101,6 +101,7 @@ interface ChartData {
     setShowTooltip: React.Dispatch<React.SetStateAction<boolean>>;
     activeTimeFrame: string;
     handlePulseAnimation: (type: string) => void;
+    liquidityScale: any;
 }
 
 function getWindowDimensions() {
@@ -141,6 +142,7 @@ export default function Chart(props: ChartData) {
         activeTimeFrame,
         liquidityData,
         handlePulseAnimation,
+        liquidityScale,
     } = props;
 
     const tradeData = useAppSelector((state) => state.tradeData);
@@ -3192,7 +3194,7 @@ export default function Chart(props: ChartData) {
                 .curve(d3.curveBasis)
                 .mainValue((d: any) => d.activeLiq)
                 .crossValue((d: any) => d.liqPrices)
-                .xScale(scaleData.liquidityScale)
+                .xScale(liquidityScale)
                 .yScale(scaleData.yScale)
                 .decorate((selection: any) => {
                     // selection.enter().style('stroke', () => 'rgba(205, 193, 255)');
@@ -3216,7 +3218,7 @@ export default function Chart(props: ChartData) {
                 .curve(d3.curveBasis)
                 .mainValue((d: any) => d.activeLiq)
                 .crossValue((d: any) => d.liqPrices)
-                .xScale(scaleData.liquidityScale)
+                .xScale(liquidityScale)
                 .yScale(scaleData.yScale)
                 .decorate((selection: any) => {
                     // selection.enter().style('stroke', () => '#7371FC');
@@ -3240,7 +3242,7 @@ export default function Chart(props: ChartData) {
                 .curve(d3.curveBasis)
                 .mainValue((d: any) => d.activeLiq)
                 .crossValue((d: any) => d.liqPrices)
-                .xScale(scaleData.liquidityScale)
+                .xScale(liquidityScale)
                 .yScale(scaleData.yScale)
                 .decorate((selection: any) => {
                     // selection.enter().style('stroke', () => 'rgba(205, 193, 255)');
@@ -3264,7 +3266,7 @@ export default function Chart(props: ChartData) {
                 .curve(d3.curveBasis)
                 .mainValue((d: any) => d.activeLiq)
                 .crossValue((d: any) => d.liqPrices)
-                .xScale(scaleData.liquidityScale)
+                .xScale(liquidityScale)
                 .yScale(scaleData.yScale)
                 .decorate((selection: any) => {
                     // selection.enter().style('stroke', () => '#7371FC');
@@ -3308,7 +3310,7 @@ export default function Chart(props: ChartData) {
                 .curve(d3.curveBasis)
                 .mainValue((d: any) => d.activeLiq)
                 .crossValue((d: any) => d.liqPrices)
-                .xScale(scaleData.liquidityScale)
+                .xScale(liquidityScale)
                 .yScale(scaleData.yScale)
                 .decorate((selection: any) => {
                     selection.style('fill', () => {
@@ -3341,7 +3343,7 @@ export default function Chart(props: ChartData) {
                 .curve(d3.curveBasis)
                 .mainValue((d: any) => d.activeLiq)
                 .crossValue((d: any) => d.liqPrices)
-                .xScale(scaleData.liquidityScale)
+                .xScale(liquidityScale)
                 .yScale(scaleData.yScale)
                 .decorate((selection: any) => {
                     selection.style('fill', 'url(#bidAreaGradient)');
@@ -3357,7 +3359,7 @@ export default function Chart(props: ChartData) {
                 .curve(d3.curveBasis)
                 .mainValue((d: any) => d.activeLiq)
                 .crossValue((d: any) => d.liqPrices)
-                .xScale(scaleData.liquidityScale)
+                .xScale(liquidityScale)
                 .yScale(scaleData.yScale)
                 .decorate((selection: any) => {
                     selection.style('fill', 'url(#bidAreaGradient)');
@@ -3373,7 +3375,7 @@ export default function Chart(props: ChartData) {
                 .curve(d3.curveBasis)
                 .mainValue((d: any) => d.activeLiq)
                 .crossValue((d: any) => d.liqPrices)
-                .xScale(scaleData.liquidityScale)
+                .xScale(liquidityScale)
                 .yScale(scaleData.yScale)
                 .decorate((selection: any) => {
                     selection.style('fill', () => {
@@ -3769,10 +3771,7 @@ export default function Chart(props: ChartData) {
                         event.detail.width,
                     ]);
 
-                    scaleData.liquidityScale.range([
-                        event.detail.width,
-                        (event.detail.width / 10) * 9,
-                    ]);
+                    liquidityScale.range([event.detail.width, (event.detail.width / 10) * 9]);
 
                     scaleData.volumeScale.range([
                         event.detail.height,
