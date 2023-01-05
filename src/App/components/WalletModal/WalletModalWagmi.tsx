@@ -41,15 +41,35 @@ export default function WalletModalWagmi(props: WalletModalPropsIF) {
     // console.log({ ensAvatar });
     const { data: ensName } = useEnsName({ address });
 
-    // close the Connect Wallet modal only when authentication completes
-    useEffect(() => {
-        isConnected && closeModalWallet();
-    }, [isConnected]);
     // eslint-disable-next-line
     const { tosText, acceptToS } = useTermsOfService();
 
     const [page, setPage] = useState('wallets');
     // const [email, setEmail] = useState('');
+
+    const [pendingLoginDelayElapsed, setPendingLoginDelayElapsed] = useState(false);
+    const [delayForHelpTextElapsed, setDelayForHelpTextElapsed] = useState(false);
+
+    // prevent the pending page from appearing for less than a second
+    useEffect(() => {
+        if (page === 'metamaskPending') {
+            const timer1 = setTimeout(() => {
+                setPendingLoginDelayElapsed(true);
+            }, 500);
+            const timer2 = setTimeout(() => {
+                setDelayForHelpTextElapsed(true);
+            }, 12000);
+            return () => {
+                clearTimeout(timer1);
+                clearTimeout(timer2);
+            };
+        }
+    }, [page]);
+
+    // close the Connect Wallet modal only when authentication completes
+    useEffect(() => {
+        isConnected && pendingLoginDelayElapsed && closeModalWallet();
+    }, [isConnected, pendingLoginDelayElapsed]);
 
     const learnAboutWalletsContent = (
         <div className={styles.learn_container}>
@@ -86,7 +106,10 @@ export default function WalletModalWagmi(props: WalletModalPropsIF) {
                         // handleMetamaskAuthentication();
                         console.log({ connector });
                         connector.name.toLowerCase() === 'metamask'
-                            ? setPage('metamaskPending')
+                            ? (() => {
+                                  setPage('metamaskPending');
+                                  setPendingLoginDelayElapsed(false);
+                              })()
                             : connector.name === 'Coinbase Wallet'
                             ? setPage('coinbaseWalletPending')
                             : setPage('metamaskPending');
@@ -127,7 +150,11 @@ export default function WalletModalWagmi(props: WalletModalPropsIF) {
     const metamaskPendingPage = (
         <div className={styles.metamask_pending_container}>
             <WaitingConfirmation
-                content={`Please check the ${'Metamask'} extension in your browser for notifications.`}
+                content={
+                    !delayForHelpTextElapsed
+                        ? ''
+                        : `Please check the ${'Metamask'} extension in your browser for notifications.`
+                }
             />
             {/* <CircleLoader size='5rem' borderColor='#171d27' /> */}
             {/* <p>Check the Metamask extension in your browser for notifications.</p> */}
@@ -211,7 +238,7 @@ export default function WalletModalWagmi(props: WalletModalPropsIF) {
             default:
                 walletsPage;
         }
-    }, [page]);
+    }, [page, delayForHelpTextElapsed]);
 
     const activeTitle = useMemo(() => {
         switch (page) {
