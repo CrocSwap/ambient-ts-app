@@ -71,6 +71,9 @@ export const SoloTokenSelect = (props: propsIF) => {
         acknowledgeToken
     } = props;
 
+    // add an event listener for custom functionalities on modal close
+    // this needs to be coordinated with data in Modal.tsx
+    // later we'll abstract and import functionality to get rid of magic numbers
     useEffect(() => {
         modalCloseCustom && window.addEventListener('closeModalOptions', modalCloseCustom);
     }, []);
