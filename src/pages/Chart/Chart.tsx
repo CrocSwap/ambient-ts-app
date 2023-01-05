@@ -2843,8 +2843,7 @@ export default function Chart(props: ChartData) {
     useEffect(() => {
         if (scaleData !== undefined) {
             const barSeries = d3fc
-                .seriesSvgBar()
-                .bandwidth(bandwidth)
+                .autoBandwidth(d3fc.seriesSvgBar())
                 .align('center')
                 .xScale(scaleData.xScale)
                 .yScale(scaleData.volumeScale)
@@ -2852,13 +2851,18 @@ export default function Chart(props: ChartData) {
                 .mainValue((d: any) => d.value)
                 .decorate((selection: any) => {
                     selection.style('fill', (d: any) => {
-                        return selectedDate !== undefined &&
-                            selectedDate.getTime() === d.time.getTime()
+                        return d.value === 0
+                            ? 'transparent'
+                            : selectedDate !== undefined &&
+                              selectedDate.getTime() === d.time.getTime()
                             ? '#E480FF'
                             : d.color;
                     });
                     selection.style('stroke', (d: any) =>
-                        selectedDate !== undefined && selectedDate.getTime() === d.time.getTime()
+                        d.value === 0
+                            ? 'transparent'
+                            : selectedDate !== undefined &&
+                              selectedDate.getTime() === d.time.getTime()
                             ? '#E480FF'
                             : d.color,
                     );
@@ -2871,7 +2875,7 @@ export default function Chart(props: ChartData) {
                 return barSeries;
             });
         }
-    }, [scaleData, selectedDate, bandwidth]);
+    }, [scaleData, selectedDate]);
 
     useEffect(() => {
         if (!location.pathname.includes('range')) {
@@ -3822,6 +3826,7 @@ export default function Chart(props: ChartData) {
 
                         // barJoin(svg, [showVolume ? volumeData : []]).call(barSeries);
                         if (barSeries) barJoin(svg, [showVolume ? volumeData : []]).call(barSeries);
+
                         setDragControl(true);
                     }
 
