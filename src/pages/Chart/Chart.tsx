@@ -1513,8 +1513,6 @@ export default function Chart(props: ChartData) {
 
             return newTargets;
         });
-
-        console.log(liquidityData.liqBidData);
     }, [denomInBase]);
 
     const setBalancedLines = () => {
@@ -2866,9 +2864,6 @@ export default function Chart(props: ChartData) {
                             ? '#E480FF'
                             : d.color,
                     );
-                    selection.on('mouseover', (event: any) => {
-                        d3.select(event.currentTarget).style('cursor', 'pointer');
-                    });
                 });
 
             setBarSeries(() => {
@@ -3537,7 +3532,7 @@ export default function Chart(props: ChartData) {
         );
         const selectedVolumeDataValue = selectedVolumeData?.value;
         const isSelectedVolume = selectedVolumeDataValue
-            ? yValueVolume <= selectedVolumeDataValue
+            ? yValueVolume <= selectedVolumeDataValue && yValueVolume !== 0
                 ? true
                 : false
             : false;
@@ -4214,6 +4209,7 @@ export default function Chart(props: ChartData) {
                 d3.select(d3PlotArea.current).on('mousemove', function (event: any) {
                     mousemoveEventForCrosshair(event);
                     const { isHoverCandleOrVolumeData } = candleOrVolumeDataHoverStatus(event);
+
                     d3.select(event.currentTarget).style(
                         'cursor',
                         isHoverCandleOrVolumeData ? 'pointer' : 'default',
