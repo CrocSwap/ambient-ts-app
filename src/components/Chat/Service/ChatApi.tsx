@@ -1,4 +1,5 @@
-import { useMoralis } from 'react-moralis';
+import { useAccount } from 'wagmi';
+
 export const host = 'https://ambichat.link:5000';
 export const sendMessageRoute = `${host}/api/messages/addmsg`;
 export const recieveMessageRoute = `${host}/api/messages/getall`;
@@ -7,11 +8,11 @@ export const receiveUsername = `${host}/api/auth/getUserByUsername`;
 export const accountName = `${host}/api/auth/getUserByAccount`;
 
 const useChatApi = () => {
-    const { account } = useMoralis();
+    const { address } = useAccount();
 
     async function getID() {
-        if (account) {
-            const response = await fetch(host + '/api/auth/getUserByAccount/' + account, {
+        if (address) {
+            const response = await fetch(host + '/api/auth/getUserByAccount/' + address, {
                 method: 'GET',
             });
             const data = await response.json();
