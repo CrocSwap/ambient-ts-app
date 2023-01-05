@@ -3298,7 +3298,7 @@ export default function Chart(props: ChartData) {
             const depthLiqAskSeries = d3fc
                 .seriesSvgArea()
                 .orient('horizontal')
-                .curve(d3.curveMonotoneX)
+                .curve(d3.curveBasis)
                 .mainValue((d: any) => d.activeLiq)
                 .crossValue((d: any) => d.liqPrices)
                 .xScale(scaleData.liquidityScale)
@@ -4040,90 +4040,83 @@ export default function Chart(props: ChartData) {
 
                         const lineGradient = svgmain.append('defs').attr('id', 'areaGradients');
 
-                        const maxBoudnaryBid = d3.max(
-                            liquidityData.liqBidData,
-                            (d: any) => d.liqPrices,
-                        );
+                        const liqData = isAdvancedModeActive
+                            ? liqMode === 'Depth'
+                                ? liquidityData.depthLiqBidData
+                                : liquidityData.liqBidData
+                            : liqMode === 'Depth'
+                            ? liquidityData.depthLiqBidData.filter(
+                                  (d: any) => d.liqPrices < liquidityData.topBoundary,
+                              )
+                            : liquidityData.liqBidData.filter(
+                                  (d: any) => d.liqPrices < liquidityData.topBoundary,
+                              );
 
-                        if (maxBoudnaryBid) {
-                            let minBoudnary;
-                            let maxBoudnary;
+                        let minBoudnary;
+                        let maxBoudnary;
 
-                            if (liqMode === 'Depth') {
-                                minBoudnary = d3.min(
-                                    liquidityData.depthLiqBidData,
-                                    (d: any) => d.liqPrices,
-                                );
-                                maxBoudnary = d3.max(
-                                    liquidityData.depthLiqBidData,
-                                    (d: any) => d.liqPrices,
-                                );
-                            } else {
-                                minBoudnary = d3.min(
-                                    liquidityData.liqBidData,
-                                    (d: any) => d.liqPrices,
-                                );
-                                maxBoudnary = d3.max(
-                                    liquidityData.liqBidData,
-                                    (d: any) => d.liqPrices,
-                                );
-                            }
+                        if (liqMode === 'Depth') {
+                            minBoudnary = d3.min(liqData, (d: any) => d.liqPrices);
+                            maxBoudnary = d3.max(liqData, (d: any) => d.liqPrices);
+                        } else {
+                            minBoudnary = d3.min(liqData, (d: any) => d.liqPrices);
+                            maxBoudnary = d3.max(liqData, (d: any) => d.liqPrices);
+                        }
 
-                            if (minBoudnary && maxBoudnary) {
-                                const percentageBid =
-                                    ((scaleData.yScale.invert(event.offsetY) -
-                                        parseFloat(minBoudnary)) *
-                                        100) /
-                                    (parseFloat(maxBoudnary) - parseFloat(minBoudnary));
+                        if (minBoudnary && maxBoudnary) {
+                            const percentageBid =
+                                ((scaleData.yScale.invert(event.offsetY) -
+                                    parseFloat(minBoudnary)) *
+                                    100) /
+                                (parseFloat(maxBoudnary) - parseFloat(minBoudnary));
 
-                                const askAreaGradient = lineGradient
-                                    .append('linearGradient')
-                                    .attr('id', 'askAreaGradient')
-                                    .attr('x1', '100%')
-                                    .attr('x2', '100%')
-                                    .attr('y1', '0%')
-                                    .attr('y2', '100%');
+                            const askAreaGradient = lineGradient
+                                .append('linearGradient')
+                                .attr('id', 'askAreaGradient')
+                                .attr('x1', '100%')
+                                .attr('x2', '100%')
+                                .attr('y1', '0%')
+                                .attr('y2', '100%');
 
-                                askAreaGradient
+                            askAreaGradient
+                                .append('stop')
+                                .attr('offset', '100%')
+                                .style('stop-color', 'rgba(205, 193, 255, 0.3)')
+                                .style('stop-opacity', 0.7);
+
+                            // lineBidGradient
+                            const lineBidGradient = lineGradient
+                                .append('linearGradient')
+                                .attr('id', 'bidAreaGradient')
+                                .attr('x1', '100%')
+                                .attr('x2', '100%')
+                                .attr('y1', '0%')
+                                .attr('y2', '100%');
+
+                            if (percentageBid < 50) {
+                                lineBidGradient
                                     .append('stop')
-                                    .attr('offset', '100%')
-                                    .style('stop-color', 'rgba(205, 193, 255, 0.3)')
+                                    .attr('offset', 100 - percentageBid + '%')
+                                    .style('stop-color', 'rgba(115, 113, 252, 0.3)')
                                     .style('stop-opacity', 0.7);
 
-                                // lineBidGradient
-                                const lineBidGradient = lineGradient
-                                    .append('linearGradient')
-                                    .attr('id', 'bidAreaGradient')
-                                    .attr('x1', '100%')
-                                    .attr('x2', '100%')
-                                    .attr('y1', '0%')
-                                    .attr('y2', '100%');
+                                lineBidGradient
+                                    .append('stop')
+                                    .attr('offset', percentageBid + '%')
+                                    .style('stop-color', 'rgba(115, 113, 252, 0.6)')
+                                    .style('stop-opacity', 0.7);
+                            } else {
+                                lineBidGradient
+                                    .append('stop')
+                                    .attr('offset', 100 - percentageBid + '%')
+                                    .style('stop-color', 'rgba(115, 113, 252, 0.3)')
+                                    .style('stop-opacity', 0.7);
 
-                                if (percentageBid < 50) {
-                                    lineBidGradient
-                                        .append('stop')
-                                        .attr('offset', 100 - percentageBid + '%')
-                                        .style('stop-color', 'rgba(115, 113, 252, 0.3)')
-                                        .style('stop-opacity', 0.7);
-
-                                    lineBidGradient
-                                        .append('stop')
-                                        .attr('offset', percentageBid + '%')
-                                        .style('stop-color', 'rgba(115, 113, 252, 0.6)')
-                                        .style('stop-opacity', 0.7);
-                                } else {
-                                    lineBidGradient
-                                        .append('stop')
-                                        .attr('offset', 100 - percentageBid + '%')
-                                        .style('stop-color', 'rgba(115, 113, 252, 0.3)')
-                                        .style('stop-opacity', 0.7);
-
-                                    lineBidGradient
-                                        .append('stop')
-                                        .attr('offset', 100 - percentageBid + '%')
-                                        .style('stop-color', 'rgba(115, 113, 252, 0.6)')
-                                        .style('stop-opacity', 0.7);
-                                }
+                                lineBidGradient
+                                    .append('stop')
+                                    .attr('offset', 100 - percentageBid + '%')
+                                    .style('stop-color', 'rgba(115, 113, 252, 0.6)')
+                                    .style('stop-opacity', 0.7);
                             }
                         }
 
