@@ -14,6 +14,7 @@ import { useLocationSlug } from './hooks/useLocationSlug';
 // import { AiOutlineQuestionCircle } from 'react-icons/ai';
 
 interface propsIF {
+    modalCloseCustom?: () => void;
     provider: ethers.providers.Provider | undefined;
     importedTokens: TokenIF[];
     chainId: string;
@@ -42,6 +43,7 @@ interface propsIF {
 
 export const SoloTokenSelect = (props: propsIF) => {
     const {
+        modalCloseCustom,
         provider,
         // importedTokens,
         chainId,
@@ -68,6 +70,10 @@ export const SoloTokenSelect = (props: propsIF) => {
         tokenPair,
         acknowledgeToken
     } = props;
+
+    useEffect(() => {
+        modalCloseCustom && window.addEventListener('closeModalOptions', modalCloseCustom);
+    }, []);
 
     // instance of hook used to retrieve data from RTK
     const dispatch = useAppDispatch();
@@ -162,6 +168,7 @@ export const SoloTokenSelect = (props: propsIF) => {
             );
         }
 
+        setInput('');
         // close the token modal
         closeModal();
     };

@@ -413,7 +413,9 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
         </div>
     );
 
-    const [isTokenModalOpen, openTokenModal, closeTokenModal] = useModal();
+    const modalCloseCustom = () => setInput('');
+
+    const [isTokenModalOpen, openTokenModal, closeTokenModal] = useModal(modalCloseCustom);
     const [showSoloSelectTokenButtons, setShowSoloSelectTokenButtons] = useState(true);
     // const [outputTokens, validatedInput, setInput, searchType] = useSoloSearch(
     //     chainId,
@@ -476,6 +478,7 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                     footer={null}
                 >
                     <SoloTokenSelect
+                        modalCloseCustom={modalCloseCustom}
                         provider={provider}
                         closeModal={closeTokenModal}
                         chainId={chainId}

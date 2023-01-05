@@ -80,7 +80,7 @@ export default function Modal(props: ModalPropsIF) {
     const footerOrNull = !footer ? null : footerJSX;
 
     return (
-        <div className={styles.outside_modal} onMouseDown={onClose}>
+        <div id='Modal_Global' className={styles.outside_modal} onMouseDown={onClose}>
             <motion.div
                 initial={{ opacity: 0, scale: 0.5 }}
                 animate={{ opacity: 1, scale: 1 }}

@@ -15,6 +15,7 @@ export const useTokenSearch = (
 
     // search type ➜ '' or 'address' or 'nameOrAddress'
     const [searchAs, setSearchAs] = useState<string>('');
+    console.log({searchAs});
 
     // cleaned and validated version of raw user input
     const validatedInput = useMemo<string>(() => {
@@ -154,6 +155,8 @@ export const useTokenSearch = (
     // run hook every time the validated input from the user changes
     // will ignore changes that do not pass validation (eg adding whitespace)
     }, [defaultTokens.length, validatedInput]);
+
+    console.log({outputTokens});
 
     // outputTokens ➜ tokens to display in DOM
     // validatedInput ➜ user input after validation mods
