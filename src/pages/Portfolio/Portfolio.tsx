@@ -236,9 +236,11 @@ export default function Portfolio(props: PortfolioPropsIF) {
         })();
     }, [addressFromParams, isAddressEns]);
 
-    const [isTokenModalOpen, openTokenModal, closeTokenModal] = useModal();
+    const modalCloseCustom = (): void => setInput('');
 
-    const [fullLayoutActive, setFullLayoutActive] = useState(false);
+    const [isTokenModalOpen, openTokenModal, closeTokenModal] = useModal(modalCloseCustom);
+
+    const [fullLayoutActive, setFullLayoutActive] = useState<boolean>(false);
     const exchangeBalanceComponent = (
         <div className={styles.exchange_balance}>
             <ExchangeBalance
@@ -537,6 +539,7 @@ export default function Portfolio(props: PortfolioPropsIF) {
                     footer={null}
                 >
                     <SoloTokenSelect
+                        modalCloseCustom={modalCloseCustom}
                         provider={provider}
                         closeModal={closeTokenModal}
                         chainId={chainId}

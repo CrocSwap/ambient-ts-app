@@ -14,7 +14,7 @@ import { useLocationSlug } from './hooks/useLocationSlug';
 // import { AiOutlineQuestionCircle } from 'react-icons/ai';
 
 interface propsIF {
-    modalCloseCustom?: () => void;
+    modalCloseCustom: () => void;
     provider: ethers.providers.Provider | undefined;
     importedTokens: TokenIF[];
     chainId: string;
