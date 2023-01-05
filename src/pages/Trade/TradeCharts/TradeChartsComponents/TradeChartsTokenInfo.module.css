@@ -6,6 +6,26 @@
     gap: 1rem;
 }
 
+.tokens_info_simplify{
+    margin: 0 5px 1px -5px;
+    background: var(--dark1);
+    /* margin: 0 -5px ; */
+    /* align-items: center; */
+}
+.tokens_info_simplify_content{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 4px 1rem;
+    overflow: hidden;
+
+}
+.tokens_info_simplify section{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 4px;
+}
 .tokens_images {
     display: flex;
     flex-direction: row;
