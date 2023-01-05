@@ -3298,7 +3298,7 @@ export default function Chart(props: ChartData) {
             const depthLiqAskSeries = d3fc
                 .seriesSvgArea()
                 .orient('horizontal')
-                .curve(d3.curveBasis)
+                .curve(d3.curveMonotoneX)
                 .mainValue((d: any) => d.activeLiq)
                 .crossValue((d: any) => d.liqPrices)
                 .xScale(scaleData.liquidityScale)
@@ -3796,16 +3796,15 @@ export default function Chart(props: ChartData) {
                         lineDepthBidSeriesJoin(svg, [
                             liqMode === 'Depth' ? liquidityData.depthLiqBidData : [],
                         ]).call(lineDepthBidSeries);
+
                         lineDepthAskSeriesJoin(svg, [
                             liqMode === 'Depth' ? liquidityData.depthLiqAskData : [],
                         ]).call(lineDepthAskSeries);
 
-                        depthLiqBidSeriesJoin(svg, [
-                            liqMode === 'Depth' ? liquidityData.depthLiqBidData : [],
-                        ]).call(depthLiqBidSeries);
                         depthLiqAskSeriesJoin(svg, [
                             liqMode === 'Depth' ? liquidityData.depthLiqAskData : [],
                         ]).call(depthLiqAskSeries);
+
                         depthLiqBidSeriesJoin(svg, [
                             liqMode === 'Depth'
                                 ? isAdvancedModeActive
@@ -3815,9 +3814,6 @@ export default function Chart(props: ChartData) {
                                       )
                                 : [],
                         ]).call(depthLiqBidSeries);
-                        depthLiqAskSeriesJoin(svg, [
-                            liqMode === 'Depth' ? liquidityData.depthLiqAskData : [],
-                        ]).call(depthLiqAskSeries);
 
                         // barJoin(svg, [showVolume ? volumeData : []]).call(barSeries);
                         if (barSeries) barJoin(svg, [showVolume ? volumeData : []]).call(barSeries);

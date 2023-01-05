@@ -386,31 +386,63 @@ export default function TradeCandleStickChart(props: ChartData) {
                     }
                 }
 
-                if (
-                    data.cumBidLiq !== undefined &&
-                    data.cumBidLiq !== '0' &&
-                    liqBidDepthPrices !== '+inf'
-                ) {
-                    depthLiqBidData.push({
-                        activeLiq: depthLiquidityScale(data.cumBidLiq),
-                        liqPrices: liqBidDepthPrices,
-                        deltaAverageUSD: data.deltaAverageUSD,
-                        cumAverageUSD: data.cumAverageUSD,
-                    });
-                }
+                if (!denominationsInBase) {
+                    if (
+                        data.cumAskLiq !== undefined &&
+                        data.cumAskLiq !== '0' &&
+                        liqPrices !== '+inf' &&
+                        liqPrices > barThreshold &&
+                        liqPrices < barThreshold * 10
+                    ) {
+                        depthLiqBidData.push({
+                            activeLiq: depthLiquidityScale(data.cumAskLiq),
+                            liqPrices: liqPrices,
+                            deltaAverageUSD: data.deltaAverageUSD,
+                            cumAverageUSD: data.cumAverageUSD,
+                        });
+                    }
 
-                if (
-                    data.cumAskLiq !== undefined &&
-                    data.cumAskLiq !== '0' &&
-                    liqPrices > barThreshold / 10 &&
-                    liqPrices < limitBoundary
-                ) {
-                    depthLiqAskData.push({
-                        activeLiq: depthLiquidityScale(data.cumAskLiq),
-                        liqPrices: liqBidDepthPrices,
-                        deltaAverageUSD: data.deltaAverageUSD,
-                        cumAverageUSD: data.cumAverageUSD,
-                    });
+                    if (
+                        data.cumBidLiq !== undefined &&
+                        data.cumBidLiq !== '0' &&
+                        liqPrices < barThreshold
+                    ) {
+                        console.log(data.cumBidLiq, liqPrices);
+                        depthLiqAskData.push({
+                            activeLiq: depthLiquidityScale(data.cumBidLiq),
+                            liqPrices: liqPrices,
+                            deltaAverageUSD: data.deltaAverageUSD,
+                            cumAverageUSD: data.cumAverageUSD,
+                        });
+                    }
+                } else {
+                    if (
+                        data.cumBidLiq !== undefined &&
+                        data.cumBidLiq !== '0' &&
+                        liqBidDepthPrices !== '+inf' &&
+                        liqBidDepthPrices > barThreshold
+                    ) {
+                        depthLiqBidData.push({
+                            activeLiq: depthLiquidityScale(data.cumBidLiq),
+                            liqPrices: liqBidDepthPrices,
+                            deltaAverageUSD: data.deltaAverageUSD,
+                            cumAverageUSD: data.cumAverageUSD,
+                        });
+                    }
+
+                    if (
+                        data.cumAskLiq !== undefined &&
+                        data.cumAskLiq !== '0' &&
+                        liqPrices > barThreshold / 10 &&
+                        liqPrices < limitBoundary
+                    ) {
+                        depthLiqAskData.push({
+                            activeLiq: depthLiquidityScale(data.cumAskLiq),
+                            liqPrices: liqBidDepthPrices,
+                            deltaAverageUSD: data.deltaAverageUSD,
+                            cumAverageUSD: data.cumAverageUSD,
+                        });
+                    }
                 }
 
                 const pinnedDisplayPrices = getPinnedPriceValuesFromDisplayPrices(
@@ -497,6 +529,8 @@ export default function TradeCandleStickChart(props: ChartData) {
             topBoundary = limitBoundary;
             lowBoundary = parseFloat(rangeBoundary.pinnedMinPriceDisplay);
         }
+
+        console.log({ depthLiqBidData, depthLiqAskData });
 
         return {
             liqAskData: liqAskData,
