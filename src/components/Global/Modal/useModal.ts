@@ -15,8 +15,8 @@ export const useModal = (
     // TODO:  ... we should rework things such that it only needs to be defined once
 
     // click handlers to to open and close the modal
-    const openModal = () => setIsModalOpen(true);
-    const closeModal = () => {
+    const openModal = (): void => setIsModalOpen(true);
+    const closeModal = (): void => {
         // close the modal
         setIsModalOpen(false);
         // emit a custom event to trigger extra functionality on modal close
