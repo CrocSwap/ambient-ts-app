@@ -1,15 +1,16 @@
 
 
 
-.active_position_style, .active_transaction_style{
-  /* background: var(--dark3); */
+.active_position_style,
+.active_transaction_style {
+    /* background: var(--dark3); */
 
-  background-image: linear-gradient(to right, rgba(255,255,255,0) 50%, var(--dark3) 50%);
-  background-position: -0% 0;
-  background-size: 200% auto;
-  background-position: -99.99% 0;
-  transition: background-position 0.5s ease-out;
-  box-shadow: 0px 0px 36px rgba(205, 193, 255, 0.2), 0px 0px 18px rgba(205, 193, 255, 0.2), 0px 0px 9px rgba(205, 193, 255, 0.2), 0px 0px 7px rgba(205, 193, 255, 0.2), 0px 0px 4px #CDC1FF;
+    background-image: linear-gradient(to right, rgba(255, 255, 255, 0) 50%, #171d27 50%);
+    background-position: -0% 0;
+    background-size: 200% auto;
+    transition: background-position 0.5s ease-out;
+
+    background-position: -99.99% 0;
 }
 
 .border_left{
@@ -44,9 +45,14 @@
   }
   
   .footer{
-      position: sticky;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+      position: absolute;
       bottom: 0;
       box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4);
+      margin: 0 auto;
   }
 /* width */
 .main_list_container::-webkit-scrollbar {
@@ -248,3 +254,11 @@ text-transform: capitalize;
   
 } */
 
+.menu {
+  opacity: 0.2;
+  transition: all var(--animation-speed) ease-in-out;
+}
+
+.row_container:hover .menu{
+  opacity: 1;
+}

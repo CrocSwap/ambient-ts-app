@@ -27,6 +27,7 @@ import { LimitOrderIF, TokenIF } from '../../../../utils/interfaces/exports';
 import { getLimitOrderData } from '../../../../App/functions/getLimitOrderData';
 import useDebounce from '../../../../App/hooks/useDebounce';
 import NoTableData from '../NoTableData/NoTableData';
+import Pagination from '../../../Global/Pagination/Pagination';
 
 // import OrderAccordions from './OrderAccordions/OrderAccordions';
 
@@ -48,7 +49,7 @@ interface propsIF {
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
     isOnPortfolioPage: boolean;
     changeState?: (isOpen: boolean | undefined, candleData: CandleData | undefined) => void;
-
+    lastBlockNumber: number;
     showSidebar: boolean;
     handlePulseAnimation?: (type: string) => void;
 }
@@ -72,6 +73,7 @@ export default function Orders(props: propsIF) {
         handlePulseAnimation,
         setIsShowAllEnabled,
         changeState,
+        lastBlockNumber,
     } = props;
 
     const limitOrdersByUser = graphData.limitOrdersByUser.limitOrders;
@@ -87,6 +89,9 @@ export default function Orders(props: propsIF) {
     // const poolSwapsCacheEndpoint = httpGraphCacheServerDomain + '/pool_recent_changes?';
 
     const tradeData = useAppSelector((state) => state.tradeData);
+
+    const baseTokenAddress = tradeData.baseToken.address;
+    const quoteTokenAddress = tradeData.quoteToken.address;
 
     const baseTokenAddressLowerCase = tradeData.baseToken.address.toLowerCase();
     const quoteTokenAddressLowerCase = tradeData.quoteToken.address.toLowerCase();
@@ -152,9 +157,13 @@ export default function Orders(props: propsIF) {
         return () => clearTimeout(handler);
     }, [isShowAllEnabled]);
 
+    const nonEmptyOrders = isShowAllEnabled
+        ? limitOrdersByPool.filter((limitOrder) => limitOrder.totalValueUSD !== 0)
+        : limitOrderData.filter((limitOrder) => limitOrder.totalValueUSD !== 0);
+
     const [sortBy, setSortBy, reverseSort, setReverseSort, sortedLimits] = useSortedLimits(
         'time',
-        isShowAllEnabled ? limitOrdersByPool : limitOrderData,
+        nonEmptyOrders,
     );
     useEffect(() => {
         if (isServerEnabled && isShowAllEnabled) {
@@ -224,28 +233,28 @@ export default function Orders(props: propsIF) {
             onOpen: () => {
                 console.log('pool limit orders subscription opened');
 
-                // repeat fetch with the interval of 30 seconds
-                const timerId = setInterval(() => {
-                    fetchPoolLimitOrderStates({
-                        chainId: chainData.chainId,
-                        base: tradeData.baseToken.address,
-                        quote: tradeData.quoteToken.address,
-                        poolIdx: chainData.poolIndex,
-                        ensResolution: true,
-                    })
-                        .then((poolChangesJsonData) => {
-                            if (poolChangesJsonData) {
-                                // console.log({ poolChangesJsonData });
-                                dispatch(addLimitOrderChangesByPool(poolChangesJsonData));
-                            }
-                        })
-                        .catch(console.log);
-                }, 30000);
+                // // repeat fetch with the interval of 30 seconds
+                // const timerId = setInterval(() => {
+                //     fetchPoolLimitOrderStates({
+                //         chainId: chainData.chainId,
+                //         base: tradeData.baseToken.address,
+                //         quote: tradeData.quoteToken.address,
+                //         poolIdx: chainData.poolIndex,
+                //         ensResolution: true,
+                //     })
+                //         .then((poolChangesJsonData) => {
+                //             if (poolChangesJsonData) {
+                //                 // console.log({ poolChangesJsonData });
+                //                 dispatch(addLimitOrderChangesByPool(poolChangesJsonData));
+                //             }
+                //         })
+                //         .catch(console.log);
+                // }, 30000);
 
-                // after 90 seconds stop
-                setTimeout(() => {
-                    clearInterval(timerId);
-                }, 90000);
+                // // after 90 seconds stop
+                // setTimeout(() => {
+                //     clearInterval(timerId);
+                // }, 90000);
             },
             onClose: (event: CloseEvent) => console.log({ event }),
             // onClose: () => console.log('allPositions websocket connection closed'),
@@ -260,7 +269,16 @@ export default function Orders(props: propsIF) {
         if (lastPoolLimitOrderChangeMessage !== null) {
             const lastMessageData = JSON.parse(lastPoolLimitOrderChangeMessage.data).data;
             // console.log({ lastMessageData });
-            if (lastMessageData) dispatch(addLimitOrderChangesByPool(lastMessageData));
+            if (lastMessageData) {
+                console.log({ lastMessageData });
+                Promise.all(
+                    lastMessageData.map((limitOrder: LimitOrderIF) => {
+                        return getLimitOrderData(limitOrder, importedTokens);
+                    }),
+                ).then((updatedLimitOrderStates) => {
+                    dispatch(addLimitOrderChangesByPool(updatedLimitOrderStates));
+                });
+            }
         }
     }, [lastPoolLimitOrderChangeMessage]);
 
@@ -284,10 +302,11 @@ export default function Orders(props: propsIF) {
     // -----------------------------
 
     const ipadView = useMediaQuery('(max-width: 480px)');
-    const desktopView = useMediaQuery('(max-width: 768px)');
+    // const desktopView = useMediaQuery('(max-width: 768px)');
     const view2 = useMediaQuery('(max-width: 1568px)');
+    const showColumns = useMediaQuery('(max-width: 1440px)');
 
-    const showColumns = desktopView;
+    // const showColumns = desktopView;
 
     const quoteTokenSymbol = tradeData.quoteToken?.symbol;
     const baseTokenSymbol = tradeData.baseToken?.symbol;
@@ -305,11 +324,13 @@ export default function Orders(props: propsIF) {
     );
     const sideType = (
         <>
-            <p>Side</p>
             <p>Type</p>
+            <p>Side</p>
         </>
     );
-    const tokens = (
+    const tokens = isOnPortfolioPage ? (
+        <>Tokens</>
+    ) : (
         <>
             <p>{`${baseTokenSymbol} ( ${baseTokenCharacter} )`}</p>
             <p>{`${quoteTokenSymbol} ( ${quoteTokenCharacter} )`}</p>
@@ -317,7 +338,7 @@ export default function Orders(props: propsIF) {
     );
     const headerColumns = [
         {
-            name: 'Time',
+            name: 'Last Updated',
             className: '',
             show: !showColumns,
             slug: 'time',
@@ -359,7 +380,7 @@ export default function Orders(props: propsIF) {
             sortable: false,
         },
         {
-            name: 'Price',
+            name: 'Limit Price',
 
             show: !ipadView,
             slug: 'price',
@@ -388,7 +409,9 @@ export default function Orders(props: propsIF) {
             show: showColumns && !ipadView,
             slug: 'sidetype',
             sortable: false,
+            alignCenter: true,
         },
+
         {
             name: 'Value (USD)',
             className: 'value',
@@ -398,7 +421,7 @@ export default function Orders(props: propsIF) {
             alignRight: true,
         },
         {
-            name: isOnPortfolioPage ? 'Qty A' : `${baseTokenSymbol}`,
+            name: isOnPortfolioPage ? '' : `${baseTokenSymbol}`,
 
             show: !showColumns,
             slug: baseTokenSymbol,
@@ -406,7 +429,7 @@ export default function Orders(props: propsIF) {
             alignRight: true,
         },
         {
-            name: isOnPortfolioPage ? 'Qty B' : `${quoteTokenSymbol}`,
+            name: isOnPortfolioPage ? '' : `${quoteTokenSymbol}`,
 
             show: !showColumns,
             slug: quoteTokenSymbol,
@@ -422,11 +445,13 @@ export default function Orders(props: propsIF) {
             alignRight: true,
         },
         {
-            name: ' ',
+            name: 'Claimable',
+            // name: ' ',
             className: '',
             show: !ipadView,
             slug: 'status',
             sortable: false,
+            alignCenter: true,
         },
         {
             name: '',
@@ -437,6 +462,46 @@ export default function Orders(props: propsIF) {
         },
     ];
     const headerStyle = isOnPortfolioPage ? styles.portfolio_header : styles.trade_header;
+
+    // ---------------------
+    const [currentPage, setCurrentPage] = useState(1);
+    // transactions per page media queries
+    const txView1 = useMediaQuery('(max-width: 480px)');
+    const txView2 = useMediaQuery('(max-width: 720px)');
+    const txView3 = useMediaQuery('(max-width: 1200px)');
+    const txView4 = useMediaQuery('(max-width: 1800px)');
+    // const txView4 = useMediaQuery('(min-width: 2400px)');
+
+    const ordersPerPage = txView1 ? 3 : txView2 ? 10 : txView3 ? 12 : txView4 ? 15 : 20;
+
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [account, isShowAllEnabled, JSON.stringify({ baseTokenAddress, quoteTokenAddress })]);
+
+    // Get current tranges
+    const indexOfLastRanges = currentPage * ordersPerPage;
+    const indexOfFirstRanges = indexOfLastRanges - ordersPerPage;
+    const currentRangess = sortedLimits?.slice(indexOfFirstRanges, indexOfLastRanges);
+    const paginate = (pageNumber: number) => {
+        setCurrentPage(pageNumber);
+    };
+
+    const usePaginateDataOrNull = expandTradeTable ? currentRangess : sortedLimits;
+
+    const footerDisplay = (
+        <div className={styles.footer}>
+            {expandTradeTable && sortedLimits.length > 30 && (
+                <Pagination
+                    itemsPerPage={ordersPerPage}
+                    totalItems={sortedLimits.length}
+                    paginate={paginate}
+                    currentPage={currentPage}
+                />
+            )}
+        </div>
+    );
+
+    // ----------------------
 
     const headerColumnsDisplay = (
         <ul className={`${styles.header} ${headerStyle}`}>
@@ -453,7 +518,7 @@ export default function Orders(props: propsIF) {
         </ul>
     );
 
-    const rowItemContent = sortedLimits.map((order, idx) => (
+    const rowItemContent = usePaginateDataOrNull?.map((order, idx) => (
         <OrderRow
             crocEnv={crocEnv}
             chainData={chainData}
@@ -472,10 +537,12 @@ export default function Orders(props: propsIF) {
             isShowAllEnabled={isShowAllEnabled}
             isOnPortfolioPage={isOnPortfolioPage}
             handlePulseAnimation={handlePulseAnimation}
+            lastBlockNumber={lastBlockNumber}
+            account={account}
         />
     ));
 
-    const orderDataOrNull = limitOrderData.length ? (
+    const orderDataOrNull = rowItemContent.length ? (
         rowItemContent
     ) : (
         <NoTableData
@@ -483,6 +550,7 @@ export default function Orders(props: propsIF) {
             type='orders'
             setIsShowAllEnabled={setIsShowAllEnabled}
             changeState={changeState}
+            isOnPortfolioPage={isOnPortfolioPage}
             // setIsCandleSelected={setIsCandleSelected}
         />
     );
@@ -494,6 +562,8 @@ export default function Orders(props: propsIF) {
         <section className={styles.main_list_container} style={{ height: portfolioPageStyle }}>
             {headerColumnsDisplay}
             {debouncedShouldDisplayLoadingAnimation ? <TableSkeletons /> : orderDataOrNull}
+            {footerDisplay}
+
             {/* {isDataLoading ? <TableSkeletons /> : orderDataOrNull} */}
         </section>
     );

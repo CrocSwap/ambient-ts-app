@@ -6,7 +6,7 @@ import { BsChevronBarDown } from 'react-icons/bs';
 
 // START: Import JSX Elements
 import SidebarAccordion from './SidebarAccordion/SidebarAccordion';
-import TopTokens from '../../../components/Global/Sidebar/TopTokens/TopTokens';
+// import TopTokens from '../../../components/Global/Sidebar/TopTokens/TopTokens';
 import TopPools from '../../../components/Global/Sidebar/TopPools/TopPools';
 import FavoritePools from '../../../components/Global/Sidebar/FavoritePools/FavoritePools';
 import SidebarRangePositions from '../../../components/Global/Sidebar/SidebarRangePositions/SidebarRangePositions';
@@ -32,6 +32,8 @@ import closeSidebarImage from '../../../assets/images/sidebarImages/closeSidebar
 import { memoizePoolStats } from '../../functions/getPoolStats';
 import { tradeData } from '../../../utils/state/tradeDataSlice';
 import { DefaultTooltip } from '../../../components/Global/StyledTooltip/StyledTooltip';
+import RecentPools from '../../../components/Global/Sidebar/RecentPools/RecentPools';
+import { useAccount } from 'wagmi';
 
 const cachedPoolStatsFetch = memoizePoolStats();
 
@@ -91,9 +93,12 @@ export default function Sidebar(props: SidebarPropsIF) {
         openModalWallet,
     } = props;
 
+    const { isConnected } = useAccount();
+
     const location = useLocation();
     const graphData = useAppSelector((state) => state.graphData);
-    const isUserLoggedIn = useAppSelector((state) => state.userData).isLoggedIn;
+    const isUserLoggedIn = isConnected;
+    // const isUserLoggedIn = useAppSelector((state) => state.userData).isLoggedIn;
     const transactionsByUser = graphData.changesByUser.changes;
     const positionsByUser = graphData.positionsByUser.positions;
     const limitOrderByUser = graphData.limitOrdersByUser.limitOrders;
@@ -106,12 +111,27 @@ export default function Sidebar(props: SidebarPropsIF) {
     // TODO:  @Ben this is the map with all the coin gecko token data objects
     // console.assert(coinGeckoTokenMap, 'no map present');
 
-    const topTokens = [
+    // const topTokens = [
+    //     {
+    //         name: 'Top Tokens',
+    //         icon: topTokensImage,
+
+    //         data: <TopTokens chainId={chainId} lastBlockNumber={lastBlockNumber} />,
+    //     },
+    // ];
+    const recentPools = [
         {
-            name: 'Top Tokens',
+            name: 'Recent Pools',
             icon: topTokensImage,
 
-            data: <TopTokens chainId={chainId} lastBlockNumber={lastBlockNumber} />,
+            data: (
+                <RecentPools
+                    tradeData={tradeData}
+                    chainId={chainId}
+                    cachedPoolStatsFetch={cachedPoolStatsFetch}
+                    lastBlockNumber={lastBlockNumber}
+                />
+            ),
         },
     ];
     const topPoolsSection = [
@@ -350,21 +370,6 @@ export default function Sidebar(props: SidebarPropsIF) {
 
     const topElementsDisplay = (
         <div style={{ width: '100%' }}>
-            {topTokens.map((item, idx) => (
-                <SidebarAccordion
-                    showSidebar={showSidebar}
-                    shouldDisplayContentWhenUserNotLoggedIn={true}
-                    idx={idx}
-                    item={item}
-                    toggleSidebar={toggleSidebar}
-                    key={idx}
-                    setShowSidebar={setShowSidebar}
-                    openAllDefault={openAllDefault}
-                    openModalWallet={openModalWallet}
-
-                    // mostRecent={mostRecentPositions}
-                />
-            ))}
             {topPoolsSection.map((item, idx) => (
                 <SidebarAccordion
                     showSidebar={showSidebar}
@@ -377,6 +382,21 @@ export default function Sidebar(props: SidebarPropsIF) {
                     openAllDefault={openAllDefault}
                     openModalWallet={openModalWallet}
                     // mostRecent={['should open automatically']}
+                />
+            ))}
+            {recentPools.map((item, idx) => (
+                <SidebarAccordion
+                    showSidebar={showSidebar}
+                    shouldDisplayContentWhenUserNotLoggedIn={true}
+                    idx={idx}
+                    item={item}
+                    toggleSidebar={toggleSidebar}
+                    key={idx}
+                    setShowSidebar={setShowSidebar}
+                    openAllDefault={openAllDefault}
+                    openModalWallet={openModalWallet}
+
+                    // mostRecent={mostRecentPositions}
                 />
             ))}
         </div>

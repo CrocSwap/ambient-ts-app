@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { useState, ReactNode, useRef } from 'react';
+import { useState, ReactNode, useRef, useEffect } from 'react';
 // import { Link } from 'react-router-dom';
 import { FiMoreHorizontal } from 'react-icons/fi';
 
@@ -43,6 +43,8 @@ interface OrdersMenuIF {
     isOnPortfolioPage: boolean;
     handlePulseAnimation?: (type: string) => void;
     // orderDetailsProps: any;
+    account: string;
+    lastBlockNumber: number;
 }
 
 // React functional component
@@ -61,6 +63,8 @@ export default function OrdersMenu(props: OrdersMenuIF) {
         closeGlobalModal,
         showSidebar,
         handlePulseAnimation,
+        lastBlockNumber,
+        account,
         // isOnPortfolioPage,
     } = props;
     // const [value, copy] = useCopyToClipboard();
@@ -178,6 +182,7 @@ export default function OrdersMenu(props: OrdersMenuIF) {
     const openRemoveModal = () =>
         openGlobalModal(
             <OrderRemoval
+                account={account}
                 chainData={chainData}
                 crocEnv={crocEnv}
                 limitOrder={limitOrder}
@@ -187,6 +192,7 @@ export default function OrdersMenu(props: OrdersMenuIF) {
     const openClaimModal = () =>
         openGlobalModal(
             <ClaimOrder
+                account={account}
                 chainData={chainData}
                 crocEnv={crocEnv}
                 limitOrder={limitOrder}
@@ -196,7 +202,12 @@ export default function OrdersMenu(props: OrdersMenuIF) {
 
     const openDetailsModal = () =>
         openGlobalModal(
-            <OrderDetails limitOrder={limitOrder} closeGlobalModal={closeGlobalModal} />,
+            <OrderDetails
+                account={account}
+                limitOrder={limitOrder}
+                closeGlobalModal={closeGlobalModal}
+                lastBlockNumber={lastBlockNumber}
+            />,
         );
 
     const mainModal = (
@@ -276,7 +287,8 @@ export default function OrdersMenu(props: OrdersMenuIF) {
             {/* {view1 && removeButton} */}
             {/* {(view2 || (view1NoSidebar && !isOnPortfolioPage)) && copyButton} */}
             {(view3 || view2WithNoSidebar) && detailsButton}
-            {view1 && !isOrderFilled && copyButton}
+            {view1 && copyButton}
+            {/* {view1 && !isOrderFilled && copyButton} */}
             {claimButton}
         </div>
     );
@@ -284,7 +296,8 @@ export default function OrdersMenu(props: OrdersMenuIF) {
     const menuContent = (
         <div className={styles.menu_column}>
             {detailsButton}
-            {!(view1 && !isOrderFilled) && copyButton}
+            {!view1 && copyButton}
+            {/* {!(view1 && !isOrderFilled) && copyButton} */}
             {removeButton}
         </div>
     );
@@ -308,6 +321,15 @@ export default function OrdersMenu(props: OrdersMenuIF) {
             <div className={wrapperStyle}>{menuContent}</div>
         </div>
     );
+
+    useEffect(() => {
+        if (showDropdownMenu) {
+            const interval = setTimeout(() => {
+                setShowDropdownMenu(false);
+            }, 5000);
+            return () => clearTimeout(interval);
+        } else return;
+    }, [showDropdownMenu]);
     return (
         <div className={styles.main_container}>
             {ordersMenu}

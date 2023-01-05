@@ -1,3 +1,4 @@
+import { ethers } from 'ethers';
 import styles from './CurrencySelector.module.css';
 import CurrencyQuantity from '../CurrencyQuantity/CurrencyQuantity';
 import { RiArrowDownSLine } from 'react-icons/ri';
@@ -6,21 +7,24 @@ import { useState, ChangeEvent, Dispatch, SetStateAction, useEffect } from 'reac
 import { TokenIF, TokenPairIF } from '../../../utils/interfaces/exports';
 import { useModal } from '../../../components/Global/Modal/useModal';
 import Modal from '../../../components/Global/Modal/Modal';
-import TokenSelectContainer from '../../Global/TokenSelectContainer/TokenSelectContainer';
 import Toggle2 from '../../Global/Toggle/Toggle2';
 import ambientLogo from '../../../assets/images/logos/ambient_logo.svg';
 import { MdAccountBalanceWallet } from 'react-icons/md';
 import IconWithTooltip from '../../Global/IconWithTooltip/IconWithTooltip';
 import NoTokenIcon from '../../Global/NoTokenIcon/NoTokenIcon';
+import { SoloTokenSelect } from '../../Global/TokenSelectContainer/SoloTokenSelect';
+import { useSoloSearch } from '../../Global/TokenSelectContainer/hooks/useSoloSearch';
+import { getRecentTokensParamsIF } from '../../../App/hooks/useRecentTokens';
 
 interface CurrencySelectorProps {
+    provider: ethers.providers.Provider | undefined;
     isUserLoggedIn: boolean | undefined;
     tokenPair: TokenPairIF;
     tokensBank: Array<TokenIF>;
     setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
-    searchableTokens: Array<TokenIF>;
     chainId: string;
     fieldId: string;
+    tokenAorB: string | null;
     direction: string;
     sellToken?: boolean;
     tokenBQtyLocal?: string;
@@ -50,20 +54,26 @@ interface CurrencySelectorProps {
     activeTokenListsChanged: boolean;
     indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
     gasPriceInGwei: number | undefined;
-
     isSwapCopied?: boolean;
+    verifyToken: (addr: string, chn: string) => boolean;
+    getTokensByName: (searchName: string, chn: string, exact: boolean) => TokenIF[];
+    getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
+    importedTokensPlus: TokenIF[];
+    getRecentTokens: (options?: getRecentTokensParamsIF | undefined) => TokenIF[];
+    addRecentToken: (tkn: TokenIF) => void;
 }
 
 export default function CurrencySelector(props: CurrencySelectorProps) {
     const {
+        provider,
         isUserLoggedIn,
         tokenPair,
         tokensBank,
         setImportedTokens,
-        searchableTokens,
         chainId,
         // direction,
         fieldId,
+        tokenAorB,
         handleChangeEvent,
         handleChangeClick,
         isWithdrawFromDexChecked,
@@ -84,13 +94,18 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
         // tokenAWalletMinusTokenAQtyNum,
         // tokenASurplusMinusTokenAQtyNum,
         reverseTokens,
-        activeTokenListsChanged,
-        indicateActiveTokenListsChanged,
+        // activeTokenListsChanged,
+        // indicateActiveTokenListsChanged,
         gasPriceInGwei,
+        verifyToken,
+        getTokensByName,
+        getTokenByAddress,
+        importedTokensPlus,
+        addRecentToken,
+        getRecentTokens,
     } = props;
 
-    const [isModalOpen, openModal, closeModal] = useModal();
-    const [showManageTokenListContent, setShowManageTokenListContent] = useState(false);
+    // const [showManageTokenListContent, setShowManageTokenListContent] = useState(false);
 
     const isSellTokenSelector = fieldId === 'sell';
     const thisToken = isSellTokenSelector ? tokenPair.dataTokenA : tokenPair.dataTokenB;
@@ -130,46 +145,6 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
         </div>
     );
 
-    const tokenToUpdate = isSellTokenSelector ? 'A' : 'B';
-
-    // const footer = (
-    //     <div
-    //         className={styles.manage_token_list_container}
-    //         onClick={() => setShowManageTokenListContent(true)}
-    //     >
-    //         <RiListCheck size={20} color='#CDC1FF' />
-    //         Manage Token List
-    //     </div>
-    // );
-    // const footerOrNull = !showManageTokenListContent ? footer : null;
-
-    const tokenSelectModalOrNull = isModalOpen ? (
-        <Modal
-            onClose={closeModal}
-            title='Select Token'
-            centeredTitle
-            handleBack={() => setShowManageTokenListContent(false)}
-            showBackButton={showManageTokenListContent}
-            // footer={footerOrNull}
-        >
-            <TokenSelectContainer
-                tokenPair={tokenPair}
-                tokensBank={tokensBank}
-                setImportedTokens={setImportedTokens}
-                searchableTokens={searchableTokens}
-                tokenToUpdate={tokenToUpdate}
-                chainId={chainId}
-                tokenList={tokensBank}
-                closeModal={closeModal}
-                reverseTokens={reverseTokens}
-                showManageTokenListContent={showManageTokenListContent}
-                setShowManageTokenListContent={setShowManageTokenListContent}
-                activeTokenListsChanged={activeTokenListsChanged}
-                indicateActiveTokenListsChanged={indicateActiveTokenListsChanged}
-            />
-        </Modal>
-    ) : null;
-
     const walletBalanceNonLocaleString = props.sellToken
         ? tokenABalance && gasPriceInGwei
             ? isSellTokenEth
@@ -194,7 +169,9 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
           })
         : '...';
 
-    const surplusBalanceNonLocaleString = props.sellToken
+    const surplusBalanceNonLocaleString = props.sellToken ? tokenADexBalance : tokenBDexBalance;
+
+    const surplusBalanceNonLocaleStringOffset = props.sellToken
         ? tokenADexBalance && gasPriceInGwei
             ? isSellTokenEth
                 ? (parseFloat(tokenADexBalance) - gasPriceInGwei * 400000 * 1e-9).toFixed(18)
@@ -258,64 +235,33 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
               ')'
             : '';
 
-    return (
-        <div className={styles.swapbox}>
-            <div className={styles.direction}> </div>
-            <div className={styles.swapbox_top}>
-                <div className={styles.swap_input}>
-                    <CurrencyQuantity
-                        fieldId={fieldId}
-                        handleChangeEvent={(evt) => {
-                            // console.log('change triggered from selector');
-                            // console.log({ evt });
-                            if (evt === undefined) return;
-                            handleChangeEvent(evt);
-                        }}
-                    />
-                </div>
-                <div
-                    className={`${styles.token_select} ${isSwapCopied && styles.pulse_animation}`}
-                    onClick={openModal}
-                >
-                    {thisToken.logoURI ? (
-                        <img
-                            className={styles.token_list_img}
-                            src={thisToken.logoURI}
-                            alt={thisToken.name}
-                            width='30px'
-                        />
-                    ) : (
-                        <NoTokenIcon tokenInitial={thisToken.symbol.charAt(0)} width='30px' />
-                    )}
-                    <div className={styles.token_list_text}>{thisToken.symbol}</div>
-                    <RiArrowDownSLine size={27} />
-                </div>
-            </div>
-            <div className={styles.swapbox_bottom}>
-                <div
-                    className={styles.surplus_container}
-                    style={{
-                        color:
-                            (isSellTokenSelector && !isWithdrawFromDexChecked) ||
-                            (!isSellTokenSelector && !isSaveAsDexSurplusChecked) ||
-                            (isSellTokenSelector &&
-                                isSellTokenEth === false &&
-                                isWithdrawFromDexChecked &&
-                                tokenASurplusMinusTokenARemainderNum &&
-                                tokenASurplusMinusTokenARemainderNum < 0)
-                                ? 'var(--text-highlight)'
-                                : '#555555',
-                    }}
-                >
+    const swapboxBottomOrNull = !isUserLoggedIn ? (
+        // || (isUserLoggedIn && !userHasEnteredAmount) ? (
+        <div className={styles.swapbox_bottom}></div>
+    ) : (
+        <div className={styles.swapbox_bottom}>
+            <div
+                className={styles.surplus_container}
+                style={{
+                    color:
+                        (isSellTokenSelector && !isWithdrawFromDexChecked) ||
+                        (!isSellTokenSelector && !isSaveAsDexSurplusChecked) ||
+                        (isSellTokenSelector &&
+                            isSellTokenEth === false &&
+                            isWithdrawFromDexChecked &&
+                            tokenASurplusMinusTokenARemainderNum &&
+                            tokenASurplusMinusTokenARemainderNum < 0)
+                            ? 'var(--text-highlight)'
+                            : '#555555',
+                }}
+            >
+                <section className={styles.left_bottom_container}>
                     <IconWithTooltip title={'Wallet Balance'} placement='bottom'>
                         <div
                             className={styles.balance_with_pointer}
                             onClick={() => {
                                 if (props.sellToken) {
                                     setIsWithdrawFromDexChecked(false);
-                                    if (handleChangeClick && !isWithdrawFromWalletDisabled) {
-                                        handleChangeClick(walletBalanceNonLocaleString);
-                                    }
                                 } else {
                                     setIsSaveAsDexSurplusChecked(false);
                                 }
@@ -352,6 +298,29 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                             </div>
                         </div>
                     </IconWithTooltip>
+                    {isSellTokenSelector &&
+                    !isWithdrawFromDexChecked &&
+                    walletBalanceNonLocaleString !== '0.0' ? (
+                        <button
+                            className={styles.max_button}
+                            onClick={() => {
+                                if (props.sellToken) {
+                                    setIsWithdrawFromDexChecked(false);
+                                } else {
+                                    setIsSaveAsDexSurplusChecked(false);
+                                }
+                                if (handleChangeClick && !isWithdrawFromWalletDisabled) {
+                                    handleChangeClick(walletBalanceNonLocaleString);
+                                }
+                            }}
+                        >
+                            Max
+                        </button>
+                    ) : null}
+                </section>
+            </div>
+            <div className={styles.right_bottom_container}>
+                <div className={styles.left_bottom_container}>
                     <IconWithTooltip title={'Exchange Balance'} placement='bottom'>
                         <div
                             className={`${styles.balance_with_pointer} ${
@@ -370,9 +339,6 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                             onClick={() => {
                                 if (props.sellToken) {
                                     setIsWithdrawFromDexChecked(true);
-                                    if (handleChangeClick && !isWithdrawFromDexDisabled) {
-                                        handleChangeClick(surplusBalanceNonLocaleString);
-                                    }
                                 } else {
                                     setIsSaveAsDexSurplusChecked(true);
                                 }
@@ -412,11 +378,117 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                             </div>
                         </div>
                     </IconWithTooltip>
+                    {isSellTokenSelector &&
+                    isWithdrawFromDexChecked &&
+                    surplusBalanceNonLocaleString !== '0.0' ? (
+                        <button
+                            className={styles.max_button}
+                            onClick={() => {
+                                if (props.sellToken) {
+                                    setIsWithdrawFromDexChecked(true);
+                                } else {
+                                    setIsSaveAsDexSurplusChecked(true);
+                                }
+                                if (handleChangeClick && !isWithdrawFromDexDisabled) {
+                                    handleChangeClick(surplusBalanceNonLocaleStringOffset);
+                                }
+                            }}
+                        >
+                            Max
+                        </button>
+                    ) : null}
                 </div>
                 {WithdrawTokensContent}
             </div>
+        </div>
+    );
 
-            {tokenSelectModalOrNull}
+    const [isTokenModalOpen, openTokenModal, closeTokenModal] = useModal();
+    const [showSoloSelectTokenButtons, setShowSoloSelectTokenButtons] = useState(true);
+    const [outputTokens, validatedInput, setInput, searchType] = useSoloSearch(
+        chainId,
+        tokensBank,
+        verifyToken,
+        getTokenByAddress,
+        getTokensByName,
+    );
+
+    const handleInputClear = () => {
+        setInput('');
+        const soloTokenSelectInput = document.getElementById(
+            'solo-token-select-input',
+        ) as HTMLInputElement;
+        soloTokenSelectInput.value = '';
+    };
+
+    return (
+        <div className={styles.swapbox}>
+            <div className={styles.direction}> </div>
+            <div className={styles.swapbox_top}>
+                <div className={styles.swap_input}>
+                    <CurrencyQuantity
+                        fieldId={fieldId}
+                        handleChangeEvent={(evt) => {
+                            // console.log('change triggered from selector');
+                            // console.log({ evt });
+                            if (evt === undefined) return;
+                            handleChangeEvent(evt);
+                        }}
+                    />
+                </div>
+                <div
+                    className={`${styles.token_select} ${isSwapCopied && styles.pulse_animation}`}
+                    onClick={openTokenModal}
+                >
+                    {thisToken.logoURI ? (
+                        <img
+                            className={styles.token_list_img}
+                            src={thisToken.logoURI}
+                            alt={thisToken.name}
+                            width='30px'
+                        />
+                    ) : (
+                        <NoTokenIcon tokenInitial={thisToken.symbol.charAt(0)} width='30px' />
+                    )}
+                    <div className={styles.token_list_text}>{thisToken.symbol}</div>
+                    <RiArrowDownSLine size={27} />
+                </div>
+            </div>
+            {swapboxBottomOrNull}
+
+            {isTokenModalOpen && (
+                <Modal
+                    onClose={closeTokenModal}
+                    title='Select Token'
+                    centeredTitle
+                    handleBack={handleInputClear}
+                    showBackButton={false}
+                    footer={null}
+                >
+                    <SoloTokenSelect
+                        provider={provider}
+                        closeModal={closeTokenModal}
+                        chainId={chainId}
+                        importedTokens={importedTokensPlus}
+                        setImportedTokens={setImportedTokens}
+                        getTokensByName={getTokensByName}
+                        getTokenByAddress={getTokenByAddress}
+                        verifyToken={verifyToken}
+                        showSoloSelectTokenButtons={showSoloSelectTokenButtons}
+                        setShowSoloSelectTokenButtons={setShowSoloSelectTokenButtons}
+                        outputTokens={outputTokens}
+                        validatedInput={validatedInput}
+                        setInput={setInput}
+                        searchType={searchType}
+                        addRecentToken={addRecentToken}
+                        getRecentTokens={getRecentTokens}
+                        isSingleToken={false}
+                        tokenAorB={tokenAorB}
+                        reverseTokens={reverseTokens}
+                        tokenPair={tokenPair}
+                    />
+                </Modal>
+            )}
         </div>
     );
 }

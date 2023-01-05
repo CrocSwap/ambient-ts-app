@@ -1,4 +1,4 @@
-import { useEffect, Dispatch, SetStateAction } from 'react';
+import { useEffect, Dispatch, SetStateAction, useRef } from 'react';
 import { PositionIF } from '../../../../../utils/interfaces/PositionIF';
 import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
 import { ethers } from 'ethers';
@@ -16,6 +16,8 @@ import { useAppDispatch } from '../../../../../utils/hooks/reduxToolkit';
 import { setDataLoadingStatus } from '../../../../../utils/state/graphDataSlice';
 import moment from 'moment';
 import { ZERO_ADDRESS } from '../../../../../constants';
+import { FiExternalLink } from 'react-icons/fi';
+import useOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 
 interface RangesRowPropsIF {
     isUserLoggedIn: boolean | undefined;
@@ -32,9 +34,8 @@ interface RangesRowPropsIF {
     // isAllPositionsEnabled: boolean;
     // tokenAAddress: string;
     // tokenBAddress: string;
-    // isAuthenticated: boolean;
     // isDenomBase: boolean;
-    account?: string;
+    account: string;
     lastBlockNumber: number;
     showSidebar: boolean;
     ipadView: boolean;
@@ -56,6 +57,7 @@ interface RangesRowPropsIF {
 export default function RangesRow(props: RangesRowPropsIF) {
     const {
         // showSidebar,
+        account,
         ipadView,
         showColumns,
         isShowAllEnabled,
@@ -103,7 +105,7 @@ export default function RangesRow(props: RangesRowPropsIF) {
         maxRangeDenomByMoneyness,
         // isBaseTokenMoneynessGreaterOrEqual,
         // orderMatchesSelectedTokens,
-    } = useProcessRange(position);
+    } = useProcessRange(position, account);
 
     const rangeDetailsProps = {
         crocEnv: props.crocEnv,
@@ -166,6 +168,13 @@ export default function RangesRow(props: RangesRowPropsIF) {
 
     // console.log(rangeDetailsProps.lastBlockNumber);
 
+    const activePositionRef = useRef(null);
+
+    const clickOutsideHandler = () => {
+        setCurrentPositionActive('');
+    };
+    useOnClickOutside(activePositionRef, clickOutsideHandler);
+
     function scrollToDiv() {
         const element = document.getElementById(positionDomId);
         element?.scrollIntoView({ behavior: 'smooth', block: 'end', inline: 'nearest' });
@@ -192,7 +201,12 @@ export default function RangesRow(props: RangesRowPropsIF) {
             enterDelay={750}
             leaveDelay={200}
         >
-            <li onClick={openDetailsModal} data-label='id' className='base_color'>
+            <li
+                onClick={openDetailsModal}
+                data-label='id'
+                className='base_color'
+                style={{ fontFamily: 'monospace' }}
+            >
                 {posHashTruncated}
             </li>
         </DefaultTooltip>
@@ -236,7 +250,8 @@ export default function RangesRow(props: RangesRowPropsIF) {
                         }}
                         to={`/${isOwnerActiveAccount ? 'account' : ensName ? ensName : ownerId}`}
                     >
-                        View Account
+                        {'View Account' + 'ㅤ'}
+                        <FiExternalLink size={'12px'} />
                     </NavLink>
                 </div>
             }
@@ -249,25 +264,25 @@ export default function RangesRow(props: RangesRowPropsIF) {
                 onClick={openDetailsModal}
                 data-label='wallet'
                 className={usernameStyle}
-                style={{ textTransform: 'lowercase' }}
+                style={{ textTransform: 'lowercase', fontFamily: 'monospace' }}
             >
                 {userNameToDisplay}
             </li>
         </DefaultTooltip>
     );
 
-    // const baseTokenLogoComponent =
-    //     baseTokenLogo !== '' ? (
-    //         <img src={baseTokenLogo} alt='base token' width='15px' />
-    //     ) : (
-    //         <NoTokenIcon tokenInitial={position.baseSymbol.charAt(0)} width='30px' />
-    //     );
+    const baseTokenLogoComponent =
+        baseTokenLogo !== '' ? (
+            <img src={baseTokenLogo} alt='base token' width='20px' />
+        ) : (
+            <NoTokenIcon tokenInitial={position.baseSymbol.charAt(0)} width='20px' />
+        );
 
     const quoteTokenLogoComponent =
         quoteTokenLogo !== '' ? (
-            <img src={quoteTokenLogo} alt='quote token' width='15px' />
+            <img src={quoteTokenLogo} alt='quote token' width='20px' />
         ) : (
-            <NoTokenIcon tokenInitial={position.quoteSymbol.charAt(0)} width='30px' />
+            <NoTokenIcon tokenInitial={position.quoteSymbol.charAt(0)} width='20px' />
         );
 
     // const tokensTogether = (
@@ -367,7 +382,8 @@ export default function RangesRow(props: RangesRowPropsIF) {
                 }}
             >
                 {baseDisplay}
-                {isOnPortfolioPage && <img src={baseTokenLogo} width='15px' alt='' />}
+                {baseTokenLogoComponent}
+                {/* {isOnPortfolioPage && <img src={baseTokenLogo} width='15px' alt='' />} */}
             </p>
         </li>
         /* </DefaultTooltip> */
@@ -393,13 +409,15 @@ export default function RangesRow(props: RangesRowPropsIF) {
                 }}
             >
                 {quoteDisplay}
-                {isOnPortfolioPage && <img src={quoteTokenLogo} width='15px' alt='' />}
+                {quoteTokenLogoComponent}
+
+                {/* {isOnPortfolioPage && <img src={quoteTokenLogo} width='15px' alt='' />} */}
             </p>
         </li>
         /* </DefaultTooltip> */
     );
 
-    const positionTime = position.timeFirstMint || position.time;
+    const positionTime = position.latestUpdateTime || position.timeFirstMint;
 
     const elapsedTimeInSecondsNum = moment(Date.now()).diff(positionTime * 1000, 'seconds');
 
@@ -423,7 +441,13 @@ export default function RangesRow(props: RangesRowPropsIF) {
     const RangeTimeWithTooltip = (
         <DefaultTooltip
             interactive
-            title={'Last Updated: ' + moment(position.time * 1000).format('MM/DD/YYYY HH:mm')}
+            title={
+                'First Minted: ' + moment(position.timeFirstMint * 1000).format('MM/DD/YYYY HH:mm')
+            }
+            // title={
+            //     'Last Updated: ' +
+            //     moment(position.latestUpdateTime * 1000).format('MM/DD/YYYY HH:mm')
+            // }
             placement={'left'}
             arrow
             enterDelay={750}
@@ -447,12 +471,13 @@ export default function RangesRow(props: RangesRowPropsIF) {
                     : setCurrentPositionActive('')
             }
             id={positionDomId}
+            ref={currentPositionActive ? activePositionRef : null}
         >
             {rankingOrNull}
             {!showColumns && RangeTimeWithTooltip}
+            {isOnPortfolioPage && tokenPair}
             {idOrNull}
             {/* {isOnPortfolioPage && accountTokenImages} */}
-            {isOnPortfolioPage && tokenPair}
             {!showColumns && !isOnPortfolioPage && walletWithTooltip}
             {showColumns && (
                 <li data-label='id'>
@@ -499,7 +524,7 @@ export default function RangesRow(props: RangesRowPropsIF) {
                 >
                     <p className={styles.token_qty} style={{ fontFamily: 'monospace' }}>
                         {baseDisplay}
-                        <img src={baseTokenLogo} alt='' width='15px' />
+                        {baseTokenLogoComponent}
                     </p>
 
                     <p className={styles.token_qty} style={{ fontFamily: 'monospace' }}>
@@ -518,7 +543,7 @@ export default function RangesRow(props: RangesRowPropsIF) {
             <li onClick={openDetailsModal} data-label='status' className='gradient_text'>
                 <RangeStatus isInRange={isPositionInRange} isAmbient={isAmbient} justSymbol />
             </li>
-            <li data-label='menu'>
+            <li data-label='menu' className={styles.menu}>
                 <RangesMenu {...rangeMenuProps} showSidebar={props.showSidebar} />
             </li>
         </ul>

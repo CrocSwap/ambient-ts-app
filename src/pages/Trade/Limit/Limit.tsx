@@ -1,6 +1,5 @@
 // START: Import React and Dongles
 import { useState, useEffect, Dispatch, SetStateAction } from 'react';
-import { useMoralis } from 'react-moralis';
 import { ethers } from 'ethers';
 import { motion } from 'framer-motion';
 import {
@@ -12,6 +11,7 @@ import {
     priceHalfAboveTick,
     CrocPoolView,
     ChainSpec,
+    priceHalfBelowTick,
 } from '@crocswap-libs/sdk';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 
@@ -42,13 +42,14 @@ import {
 import LimitShareControl from '../../../components/Trade/Limit/LimitShareControl/LimitShareControl';
 import { FiCopy } from 'react-icons/fi';
 import { memoizeQuerySpotPrice } from '../../../App/functions/querySpotPrice';
+import { getRecentTokensParamsIF } from '../../../App/hooks/useRecentTokens';
 
 interface LimitPropsIF {
+    account: string | undefined;
     pool: CrocPoolView | undefined;
     crocEnv: CrocEnv | undefined;
     isUserLoggedIn: boolean | undefined;
     importedTokens: Array<TokenIF>;
-    searchableTokens: Array<TokenIF>;
     mintSlippage: SlippagePairIF;
     isPairStable: boolean;
     setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
@@ -76,20 +77,25 @@ interface LimitPropsIF {
     closeGlobalModal: () => void;
     poolExists: boolean | undefined;
     chainData: ChainSpec;
-
     isOrderCopied: boolean;
-    setCheckLimitOrder: Dispatch<SetStateAction<boolean>>;
+    verifyToken: (addr: string, chn: string) => boolean;
+    getTokensByName: (searchName: string, chn: string, exact: boolean) => TokenIF[];
+    getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
+    importedTokensPlus: TokenIF[];
+    getRecentTokens: (options?: getRecentTokensParamsIF | undefined) => TokenIF[];
+    addRecentToken: (tkn: TokenIF) => void;
 }
 
 const cachedQuerySpotPrice = memoizeQuerySpotPrice();
 
 export default function Limit(props: LimitPropsIF) {
     const {
+        account,
+        provider,
         pool,
         crocEnv,
         isUserLoggedIn,
         importedTokens,
-        searchableTokens,
         mintSlippage,
         isPairStable,
         setImportedTokens,
@@ -113,12 +119,17 @@ export default function Limit(props: LimitPropsIF) {
         poolExists,
         lastBlockNumber,
         isOrderCopied,
-        setCheckLimitOrder,
+        verifyToken,
+        getTokensByName,
+        getTokenByAddress,
+        importedTokensPlus,
+        getRecentTokens,
+        addRecentToken,
     } = props;
 
     const { tradeData, navigationMenu } = useTradeData();
     const dispatch = useAppDispatch();
-    const { account } = useMoralis();
+
     const [isModalOpen, openModal, closeModal] = useModal();
     const [limitAllowed, setLimitAllowed] = useState<boolean>(false);
 
@@ -183,7 +194,6 @@ export default function Limit(props: LimitPropsIF) {
 
                 const gridSize = lookupChain(chainId).gridSize;
 
-                // const croc = crocEnv ? crocEnv : new CrocEnv(provider);
                 // console.log({ isSellTokenBase });
                 const initialLimitRateNonDisplay = spotPrice * (isSellTokenBase ? 0.985 : 1.015);
 
@@ -226,24 +236,46 @@ export default function Limit(props: LimitPropsIF) {
                 const priceHalfAbove = pool.toDisplayPrice(
                     priceHalfAboveTick(pinnedTick, gridSize),
                 );
+                const priceHalfBelow = pool.toDisplayPrice(
+                    priceHalfBelowTick(pinnedTick, gridSize),
+                );
                 // const priceFullTickBelow = pool.toDisplayPrice(tickToPrice(pinnedTick - gridSize));
                 const priceFullTickAbove = pool.toDisplayPrice(tickToPrice(pinnedTick + gridSize));
+                const priceFullTickBelow = pool.toDisplayPrice(tickToPrice(pinnedTick - gridSize));
 
                 if (isDenomBase) {
                     priceHalfAbove.then((priceHalfAbove) => {
-                        // console.log({ priceHalfAbove });
-                        setMiddleDisplayPrice(priceHalfAbove);
+                        console.log({ priceHalfAbove });
+                        if (isSellTokenBase) setMiddleDisplayPrice(priceHalfAbove);
                     });
                     priceFullTickAbove.then((priceFullTickAbove) => {
-                        setStartDisplayPrice(priceFullTickAbove);
+                        console.log({ priceFullTickAbove });
+                        if (isSellTokenBase) setStartDisplayPrice(priceFullTickAbove);
+                    });
+                    priceHalfBelow.then((priceHalfBelow) => {
+                        console.log({ priceHalfBelow });
+                        if (!isSellTokenBase) setMiddleDisplayPrice(priceHalfBelow);
+                    });
+                    priceFullTickBelow.then((priceFullTickBelow) => {
+                        console.log({ priceFullTickBelow });
+                        if (!isSellTokenBase) setStartDisplayPrice(priceFullTickBelow);
                     });
                 } else {
-                    priceHalfAbove.then((priceHalfBelow) => {
-                        // console.log({ priceHalfBelow });
-                        setMiddleDisplayPrice(1 / priceHalfBelow);
+                    priceHalfAbove.then((priceHalfAbove) => {
+                        console.log({ priceHalfAbove });
+                        if (isSellTokenBase) setMiddleDisplayPrice(1 / priceHalfAbove);
                     });
-                    priceFullTickAbove.then((priceFullTickBelow) => {
-                        setStartDisplayPrice(1 / priceFullTickBelow);
+                    priceFullTickAbove.then((priceFullTickAbove) => {
+                        console.log({ priceFullTickAbove });
+                        if (isSellTokenBase) setStartDisplayPrice(1 / priceFullTickAbove);
+                    });
+                    priceHalfBelow.then((priceHalfBelow) => {
+                        console.log({ priceHalfBelow });
+                        if (!isSellTokenBase) setMiddleDisplayPrice(1 / priceHalfBelow);
+                    });
+                    priceFullTickBelow.then((priceFullTickBelow) => {
+                        console.log({ priceFullTickBelow });
+                        if (!isSellTokenBase) setStartDisplayPrice(1 / priceFullTickBelow);
                     });
                 }
             } else if (limitTick) {
@@ -279,26 +311,46 @@ export default function Limit(props: LimitPropsIF) {
                         (limitRateInputField as HTMLInputElement).value = limitRateTruncated;
                 });
 
-                // const priceHalfBelow = pool.toDisplayPrice(priceHalfBelowTick(limitTick, gridSize));
+                // const priceHalfBelow = pool.toDisplayPrice(priceHalfBelowTick(pinnedTick, gridSize));
                 const priceHalfAbove = pool.toDisplayPrice(priceHalfAboveTick(limitTick, gridSize));
-                // const priceFullTickBelow = pool.toDisplayPrice(tickToPrice(limitTick - gridSize));
+                const priceHalfBelow = pool.toDisplayPrice(priceHalfBelowTick(limitTick, gridSize));
+                // const priceFullTickBelow = pool.toDisplayPrice(tickToPrice(pinnedTick - gridSize));
                 const priceFullTickAbove = pool.toDisplayPrice(tickToPrice(limitTick + gridSize));
+                const priceFullTickBelow = pool.toDisplayPrice(tickToPrice(limitTick - gridSize));
 
                 if (isDenomBase) {
                     priceHalfAbove.then((priceHalfAbove) => {
                         // console.log({ priceHalfAbove });
-                        setMiddleDisplayPrice(priceHalfAbove);
+                        if (isSellTokenBase) setMiddleDisplayPrice(priceHalfAbove);
                     });
                     priceFullTickAbove.then((priceFullTickAbove) => {
-                        setStartDisplayPrice(priceFullTickAbove);
+                        // console.log({ priceFullTickAbove });
+                        if (isSellTokenBase) setStartDisplayPrice(priceFullTickAbove);
+                    });
+                    priceHalfBelow.then((priceHalfBelow) => {
+                        // console.log({ priceHalfBelow });
+                        if (!isSellTokenBase) setMiddleDisplayPrice(priceHalfBelow);
+                    });
+                    priceFullTickBelow.then((priceFullTickBelow) => {
+                        // console.log({ priceFullTickBelow });
+                        if (!isSellTokenBase) setStartDisplayPrice(priceFullTickBelow);
                     });
                 } else {
-                    priceHalfAbove.then((priceHalfBelow) => {
-                        // console.log({ priceHalfBelow });
-                        setMiddleDisplayPrice(1 / priceHalfBelow);
+                    priceHalfAbove.then((priceHalfAbove) => {
+                        // console.log({ priceHalfAbove });
+                        if (isSellTokenBase) setMiddleDisplayPrice(1 / priceHalfAbove);
                     });
-                    priceFullTickAbove.then((priceFullTickBelow) => {
-                        setStartDisplayPrice(1 / priceFullTickBelow);
+                    priceFullTickAbove.then((priceFullTickAbove) => {
+                        // console.log({ priceFullTickAbove });
+                        if (isSellTokenBase) setStartDisplayPrice(1 / priceFullTickAbove);
+                    });
+                    priceHalfBelow.then((priceHalfBelow) => {
+                        // console.log({ priceHalfBelow });
+                        if (!isSellTokenBase) setMiddleDisplayPrice(1 / priceHalfBelow);
+                    });
+                    priceFullTickBelow.then((priceFullTickBelow) => {
+                        // console.log({ priceFullTickBelow });
+                        if (!isSellTokenBase) setStartDisplayPrice(1 / priceFullTickBelow);
                     });
                 }
 
@@ -320,16 +372,10 @@ export default function Limit(props: LimitPropsIF) {
 
     const [isOrderValid, setIsOrderValid] = useState<boolean>(true);
 
-    // check limit order
-    useEffect(() => {
-        setCheckLimitOrder(isOrderValid && poolPriceNonDisplay !== 0 && limitAllowed);
-    }, [isOrderValid, poolPriceNonDisplay, limitAllowed]);
-
     useEffect(() => {
         // if (!provider) return;
         if (!crocEnv) return;
         if (!limitTick) return;
-        // const croc = crocEnv ? crocEnv : new CrocEnv(provider);
 
         const sellToken = tradeData.tokenA.address;
         const buyToken = tradeData.tokenB.address;
@@ -379,10 +425,7 @@ export default function Limit(props: LimitPropsIF) {
 
         const qty = isTokenAPrimary ? sellQty : buyQty;
 
-        // const croc = crocEnv ? crocEnv : new CrocEnv(provider);
-
         const order = isTokenAPrimary ? crocEnv.sell(sellToken, qty) : crocEnv.buy(buyToken, qty);
-        // const seller = new CrocEnv(provider).sell(sellToken, qty);
         // console.log({ limitTick });
         const ko = order.atLimit(isTokenAPrimary ? buyToken : sellToken, limitTick);
         // console.log({ ko });
@@ -499,6 +542,9 @@ export default function Limit(props: LimitPropsIF) {
                 showConfirmation={showConfirmation}
                 setShowConfirmation={setShowConfirmation}
                 resetConfirmation={resetConfirmation}
+                startDisplayPrice={startDisplayPrice}
+                middleDisplayPrice={middleDisplayPrice}
+                endDisplayPrice={endDisplayPrice}
             />
         </Modal>
     ) : null;
@@ -645,12 +691,12 @@ export default function Limit(props: LimitPropsIF) {
                     transition={{ duration: 0.5 }}
                 >
                     <LimitCurrencyConverter
+                        provider={provider}
                         setPriceInputFieldBlurred={setPriceInputFieldBlurred}
                         pool={pool}
                         gridSize={chainData.gridSize}
                         isUserLoggedIn={isUserLoggedIn}
                         tokenPair={tokenPair}
-                        searchableTokens={searchableTokens}
                         poolPriceNonDisplay={poolPriceNonDisplay}
                         isSellTokenBase={isSellTokenBase}
                         tokensBank={importedTokens}
@@ -677,6 +723,12 @@ export default function Limit(props: LimitPropsIF) {
                         poolExists={poolExists}
                         gasPriceInGwei={gasPriceInGwei}
                         isOrderCopied={isOrderCopied}
+                        verifyToken={verifyToken}
+                        getTokensByName={getTokensByName}
+                        getTokenByAddress={getTokenByAddress}
+                        importedTokensPlus={importedTokensPlus}
+                        getRecentTokens={getRecentTokens}
+                        addRecentToken={addRecentToken}
                     />
                 </motion.div>
                 <div className={styles.header_container}>
@@ -690,7 +742,7 @@ export default function Limit(props: LimitPropsIF) {
                     poolPriceDisplay={poolPriceDisplay || 0}
                     slippageTolerance={slippageTolerancePercentage}
                     liquidityProviderFee={tradeData.liquidityFee * 100}
-                    quoteTokenIsBuy={true}
+                    // quoteTokenIsBuy={true}
                     didUserFlipDenom={tradeData.didUserFlipDenom}
                     isTokenABase={isSellTokenBase}
                     isDenomBase={isDenomBase}

@@ -5,15 +5,17 @@ import { MenuButton } from '../../components/Global/MenuButton/MenuButton';
 import PulseLoading from '../../components/Global/PulseLoading/PulseLoading';
 import styles from './TestPage.module.css';
 // import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
-// import { useProcessTransaction } from '../../utils/hooks/useProcessTransaction';
 
 interface TestPageProps {
     openGlobalModal: (content: React.ReactNode, title?: string) => void;
+    openSidebar: () => void;
+    closeSidebar: () => void;
+    togggggggleSidebar: () => void;
 }
 export default function TestPage(props: TestPageProps) {
+    const { openGlobalModal, openSidebar, closeSidebar, togggggggleSidebar } = props;
     const [isOpen, setOpen] = React.useState(false);
 
-    const { openGlobalModal } = props;
     const { tosText, agreement, agreementDate } = useTermsOfService();
 
     const exampleTest = (
@@ -49,6 +51,9 @@ export default function TestPage(props: TestPageProps) {
             <button onClick={() => openGlobalModal(exampleTest, 'this is title')}>
                 Test Modal
             </button>
+            <button onClick={() => openSidebar()}>Open Sidebar</button>
+            <button onClick={() => closeSidebar()}>Close Sidebar</button>
+            <button onClick={() => togggggggleSidebar()}>Toggle Sidebar</button>
             I am here
             <MenuButton
                 isOpen={isOpen}

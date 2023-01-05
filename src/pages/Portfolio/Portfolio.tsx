@@ -6,37 +6,34 @@ import { useParams } from 'react-router-dom';
 import { getNFTs } from '../../App/functions/getNFTs';
 import { useEffect, useState, Dispatch, SetStateAction } from 'react';
 import { fetchAddress } from '../../App/functions/fetchAddress';
-import { useMoralis } from 'react-moralis';
 import { BigNumber, ethers } from 'ethers';
-import { CrocEnv, ChainSpec, toDisplayQty } from '@crocswap-libs/sdk';
+import { CrocEnv, ChainSpec } from '@crocswap-libs/sdk';
 import Modal from '../../components/Global/Modal/Modal';
 import { useModal } from '../../components/Global/Modal/useModal';
 import { TokenIF } from '../../utils/interfaces/exports';
 import Button from '../../components/Global/Button/Button';
 import { Erc20TokenBalanceFn, nativeTokenBalanceFn } from '../../App/functions/fetchTokenBalances';
-import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
+import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { TokenPriceFn } from '../../App/functions/fetchTokenPrice';
 import NotFound from '../NotFound/NotFound';
 import ProfileSettings from '../../components/Portfolio/ProfileSettings/ProfileSettings';
 import { SoloTokenSelect } from '../../components/Global/TokenSelectContainer/SoloTokenSelect';
-import {
-    updateErc20TokenDexBalance,
-    updateErc20TokenWalletBalance,
-    updateNativeTokenDexBalance,
-    updateNativeTokenWalletBalance,
-} from '../../utils/state/userDataSlice';
-import { ZERO_ADDRESS } from '../../constants';
-import { formatAmountOld } from '../../utils/numbers';
+import { useSoloSearch } from '../../components/Global/TokenSelectContainer/hooks/useSoloSearch';
+import { useAccount, useEnsName } from 'wagmi';
 
 const mainnetProvider = new ethers.providers.WebSocketProvider(
     // 'wss://mainnet.infura.io/ws/v3/4a162c75bd514925890174ca13cdb6a2', // benwolski@gmail.com
     // 'wss://mainnet.infura.io/ws/v3/170b7b65781c422d82a94b8b289ca605',
     'wss://mainnet.infura.io/ws/v3/e0aa879e36fc4c9e91b826ad961a36fd',
 );
-// import { ambientTokenList } from '../../utils/data/ambientTokenList';
-
 interface PortfolioPropsIF {
     crocEnv: CrocEnv | undefined;
+    addRecentToken: (tkn: TokenIF) => void;
+    getRecentTokens: (options?: { onCurrentChain?: boolean; count?: number | null }) => TokenIF[];
+    getAmbientTokens: () => TokenIF[];
+    verifyToken: (addr: string, chn: string) => boolean;
+    getTokensByName: (searchName: string, chn: string, exact: boolean) => TokenIF[];
+    getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
     isTokenABase: boolean;
     provider: ethers.providers.Provider | undefined;
     cachedFetchNativeTokenBalance: nativeTokenBalanceFn;
@@ -47,7 +44,6 @@ interface PortfolioPropsIF {
     connectedAccount: string;
     userImageData: string[];
     chainId: string;
-    ambientTokens: Map<string, TokenIF>;
     tokensOnActiveLists: Map<string, TokenIF>;
     selectedOutsideTab: number;
     setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
@@ -66,7 +62,6 @@ interface PortfolioPropsIF {
     account: string;
     showSidebar: boolean;
     isUserLoggedIn: boolean | undefined;
-    isAuthenticated: boolean;
     baseTokenBalance: string;
     quoteTokenBalance: string;
     baseTokenDexBalance: string;
@@ -78,21 +73,24 @@ interface PortfolioPropsIF {
     gasPriceInGwei: number | undefined;
 }
 
-// const cachedFetchAddress = memoizePromiseFn(fetchAddress);
-
 export default function Portfolio(props: PortfolioPropsIF) {
     const {
         crocEnv,
+        addRecentToken,
+        getRecentTokens,
+        getAmbientTokens,
+        getTokensByName,
+        getTokenByAddress,
+        verifyToken,
         isTokenABase,
         provider,
         cachedFetchNativeTokenBalance,
         cachedFetchErc20TokenBalances,
         cachedFetchTokenPrice,
-        ensName,
         lastBlockNumber,
         userImageData,
-        connectedAccount,
-        chainId,
+        // connectedAccount,
+        // chainId,
         tokensOnActiveLists,
         openGlobalModal,
         closeGlobalModal,
@@ -103,7 +101,6 @@ export default function Portfolio(props: PortfolioPropsIF) {
         setSelectedOutsideTab,
         importedTokens,
         setImportedTokens,
-        isAuthenticated,
         baseTokenBalance,
         quoteTokenBalance,
         baseTokenDexBalance,
@@ -111,18 +108,22 @@ export default function Portfolio(props: PortfolioPropsIF) {
         currentTxActiveInTransactions,
         setCurrentTxActiveInTransactions,
         showSidebar,
-        isUserLoggedIn,
         handlePulseAnimation,
         gasPriceInGwei,
         openModalWallet,
     } = props;
-    const { isInitialized } = useMoralis();
+
+    const { isConnected, address } = useAccount();
+    const { data: ensName } = useEnsName({ address });
+
+    const chainId = '0x5';
+
+    const connectedAccount = address;
+
+    const isUserLoggedIn = isConnected;
 
     const selectedToken: TokenIF = useAppSelector((state) => state.temp.token);
-    const connectedUserNativeToken = useAppSelector((state) => state.userData.tokens.nativeToken);
-    const connectedUserErc20Tokens = useAppSelector((state) => state.userData.tokens.erc20Tokens);
 
-    const connectedUserTokens = [connectedUserNativeToken].concat(connectedUserErc20Tokens);
     const [tokenAllowance, setTokenAllowance] = useState<string>('');
     const [recheckTokenAllowance, setRecheckTokenAllowance] = useState<boolean>(false);
     const [recheckTokenBalances, setRecheckTokenBalances] = useState<boolean>(false);
@@ -133,166 +134,18 @@ export default function Portfolio(props: PortfolioPropsIF) {
     const selectedTokenAddress = selectedToken.address;
     const selectedTokenDecimals = selectedToken.decimals;
 
-    const dispatch = useAppDispatch();
-
-    const indexOfExistingErc20Token = (connectedUserErc20Tokens ?? []).findIndex(
-        (existingToken) =>
-            existingToken.address.toLowerCase() === selectedToken.address.toLowerCase(),
-    );
-
-    const dispatchErc20WalletBalanceUpdate = (
-        walletBalance: string,
-        walletBalanceDisplay: string,
-        walletBalanceDisplayTruncated: string,
-    ) => {
-        // console.log({ indexOfExistingErc20Token });
-        if (indexOfExistingErc20Token !== -1) {
-            dispatch(
-                updateErc20TokenWalletBalance({
-                    indexOfExistingErc20Token: indexOfExistingErc20Token,
-                    walletBalance: walletBalance,
-                    walletBalanceDisplay: walletBalanceDisplay,
-                    walletBalanceDisplayTruncated: walletBalanceDisplayTruncated,
-                }),
-            );
-        }
-    };
-
-    const dispatchErc20DexBalanceUpdate = (
-        dexBalance: string,
-        dexBalanceDisplay: string,
-        dexBalanceDisplayTruncated: string,
-    ) => {
-        // console.log({ indexOfExistingErc20Token });
-        if (indexOfExistingErc20Token !== -1) {
-            dispatch(
-                updateErc20TokenDexBalance({
-                    indexOfExistingErc20Token: indexOfExistingErc20Token,
-                    dexBalance: dexBalance,
-                    dexBalanceDisplay: dexBalanceDisplay,
-                    dexBalanceDisplayTruncated: dexBalanceDisplayTruncated,
-                }),
-            );
-        }
-    };
-
     useEffect(() => {
         if (crocEnv && selectedToken.address && connectedAccount) {
             crocEnv
                 .token(selectedToken.address)
                 .wallet(connectedAccount)
-                .then((bal: BigNumber) => {
-                    setTokenWalletBalance(bal.toString());
-                    // console.log({ selectedToken });
-                    if (selectedToken.address === ZERO_ADDRESS) {
-                        const nativeWalletBalanceDisplay = toDisplayQty(bal, 18);
-                        const nativeWalletBalanceDisplayNum = parseFloat(
-                            nativeWalletBalanceDisplay,
-                        );
-
-                        const nativeWalletBalanceDisplayTruncated = nativeWalletBalanceDisplayNum
-                            ? nativeWalletBalanceDisplayNum < 0.0001
-                                ? nativeWalletBalanceDisplayNum.toExponential(2)
-                                : nativeWalletBalanceDisplayNum < 2
-                                ? nativeWalletBalanceDisplayNum.toPrecision(3)
-                                : nativeWalletBalanceDisplayNum >= 100000
-                                ? formatAmountOld(nativeWalletBalanceDisplayNum)
-                                : nativeWalletBalanceDisplayNum.toLocaleString(undefined, {
-                                      minimumFractionDigits: 2,
-                                      maximumFractionDigits: 2,
-                                  })
-                            : undefined;
-                        dispatch(
-                            updateNativeTokenWalletBalance({
-                                walletBalance: bal.toString(),
-                                walletBalanceDisplay: nativeWalletBalanceDisplay,
-                                walletBalanceDisplayTruncated:
-                                    nativeWalletBalanceDisplayTruncated || '',
-                            }),
-                        );
-                    } else {
-                        const erc20TokenWalletBalanceDisplay = toDisplayQty(
-                            bal,
-                            selectedToken.decimals,
-                        );
-                        const erc20TokenWalletBalanceDisplayNum = parseFloat(
-                            erc20TokenWalletBalanceDisplay,
-                        );
-
-                        const erc20WalletBalanceDisplayTruncated = erc20TokenWalletBalanceDisplayNum
-                            ? erc20TokenWalletBalanceDisplayNum < 0.0001
-                                ? erc20TokenWalletBalanceDisplayNum.toExponential(2)
-                                : erc20TokenWalletBalanceDisplayNum < 2
-                                ? erc20TokenWalletBalanceDisplayNum.toPrecision(3)
-                                : erc20TokenWalletBalanceDisplayNum >= 100000
-                                ? formatAmountOld(erc20TokenWalletBalanceDisplayNum)
-                                : erc20TokenWalletBalanceDisplayNum.toLocaleString(undefined, {
-                                      minimumFractionDigits: 2,
-                                      maximumFractionDigits: 2,
-                                  })
-                            : undefined;
-                        dispatchErc20WalletBalanceUpdate(
-                            bal.toString(),
-                            erc20TokenWalletBalanceDisplay,
-                            erc20WalletBalanceDisplayTruncated || '',
-                        );
-                    }
-                })
+                .then((bal: BigNumber) => setTokenWalletBalance(bal.toString()))
                 .catch(console.log);
             crocEnv
                 .token(selectedToken.address)
                 .balance(connectedAccount)
                 .then((bal: BigNumber) => {
                     setTokenDexBalance(bal.toString());
-                    if (selectedToken.address === ZERO_ADDRESS) {
-                        const nativeDexBalanceDisplay = toDisplayQty(bal, 18);
-                        const nativeDexBalanceDisplayNum = parseFloat(nativeDexBalanceDisplay);
-                        const nativeDexBalanceDisplayTruncated = nativeDexBalanceDisplayNum
-                            ? nativeDexBalanceDisplayNum < 0.0001
-                                ? nativeDexBalanceDisplayNum.toExponential(2)
-                                : nativeDexBalanceDisplayNum < 2
-                                ? nativeDexBalanceDisplayNum.toPrecision(3)
-                                : nativeDexBalanceDisplayNum >= 100000
-                                ? formatAmountOld(nativeDexBalanceDisplayNum)
-                                : nativeDexBalanceDisplayNum.toLocaleString(undefined, {
-                                      minimumFractionDigits: 2,
-                                      maximumFractionDigits: 2,
-                                  })
-                            : undefined;
-                        dispatch(
-                            updateNativeTokenDexBalance({
-                                dexBalance: bal.toString(),
-                                dexBalanceDisplay: nativeDexBalanceDisplay,
-                                dexBalanceDisplayTruncated: nativeDexBalanceDisplayTruncated || '',
-                            }),
-                        );
-                    } else {
-                        const erc20TokenDexBalanceDisplay = toDisplayQty(
-                            bal,
-                            selectedToken.decimals,
-                        );
-                        const erc20TokenDexBalanceDisplayNum = parseFloat(
-                            erc20TokenDexBalanceDisplay,
-                        );
-
-                        const erc20DexBalanceDisplayTruncated = erc20TokenDexBalanceDisplayNum
-                            ? erc20TokenDexBalanceDisplayNum < 0.0001
-                                ? erc20TokenDexBalanceDisplayNum.toExponential(2)
-                                : erc20TokenDexBalanceDisplayNum < 2
-                                ? erc20TokenDexBalanceDisplayNum.toPrecision(3)
-                                : erc20TokenDexBalanceDisplayNum >= 100000
-                                ? formatAmountOld(erc20TokenDexBalanceDisplayNum)
-                                : erc20TokenDexBalanceDisplayNum.toLocaleString(undefined, {
-                                      minimumFractionDigits: 2,
-                                      maximumFractionDigits: 2,
-                                  })
-                            : undefined;
-                        dispatchErc20DexBalanceUpdate(
-                            bal.toString(),
-                            erc20TokenDexBalanceDisplay,
-                            erc20DexBalanceDisplayTruncated || '',
-                        );
-                    }
                 })
                 .catch(console.log);
         }
@@ -316,65 +169,62 @@ export default function Portfolio(props: PortfolioPropsIF) {
         })();
     }, [crocEnv, selectedTokenAddress, lastBlockNumber, connectedAccount, recheckTokenAllowance]);
 
-    const { address } = useParams();
+    const { address: addressFromParams } = useParams();
 
-    const isAddressEns = address?.endsWith('.eth');
-    const isAddressHex = address?.startsWith('0x') && address?.length == 42;
+    const isAddressEns = addressFromParams?.endsWith('.eth');
+    const isAddressHex = addressFromParams?.startsWith('0x') && addressFromParams?.length == 42;
 
-    if (address && !isAddressEns && !isAddressHex) return <NotFound />;
+    if (addressFromParams && !isAddressEns && !isAddressHex) return <NotFound />;
     // if (address && !isAddressEns && !isAddressHex) return <Navigate replace to='/404' />;
 
     const [resolvedAddress, setResolvedAddress] = useState<string>('');
 
     const connectedAccountActive =
-        !address || resolvedAddress.toLowerCase() === connectedAccount.toLowerCase();
+        !addressFromParams || resolvedAddress.toLowerCase() === connectedAccount?.toLowerCase();
 
     useEffect(() => {
         (async () => {
-            if (address && isAddressEns && mainnetProvider) {
-                const newResolvedAddress = await mainnetProvider.resolveName(address);
-
+            if (addressFromParams && isAddressEns && mainnetProvider) {
+                const newResolvedAddress = await mainnetProvider.resolveName(addressFromParams);
                 if (newResolvedAddress) {
                     setResolvedAddress(newResolvedAddress);
                 }
-            } else if (address && isAddressHex && !isAddressEns) {
-                setResolvedAddress(address);
+            } else if (addressFromParams && isAddressHex && !isAddressEns) {
+                setResolvedAddress(addressFromParams);
             }
         })();
-    }, [address, isAddressHex, isAddressEns, mainnetProvider]);
+    }, [addressFromParams, isAddressHex, isAddressEns, mainnetProvider]);
 
     const [secondaryImageData, setSecondaryImageData] = useState<string[]>([]);
 
     useEffect(() => {
         (async () => {
-            if (resolvedAddress && isInitialized && !connectedAccountActive) {
+            if (resolvedAddress && !connectedAccountActive) {
                 const imageLocalURLs = await getNFTs(resolvedAddress);
                 if (imageLocalURLs) setSecondaryImageData(imageLocalURLs);
             }
-            // else if (address && isAddressHex && !isAddressEns && isInitialized) {
-            //     const imageLocalURLs = await getNFTs(address);
-            //     if (imageLocalURLs) setSecondaryImageData(imageLocalURLs);
-            // }
         })();
-    }, [resolvedAddress, isInitialized, connectedAccountActive]);
+    }, [resolvedAddress, connectedAccountActive]);
 
-    const [secondaryensName, setSecondaryEnsName] = useState('');
-
+    const [secondaryEnsName, setSecondaryEnsName] = useState('');
     // check for ENS name account changes
     useEffect(() => {
         (async () => {
-            if (address && isInitialized && !isAddressEns) {
+            if (addressFromParams && !isAddressEns) {
                 try {
-                    const ensName = await fetchAddress(mainnetProvider, address, chainId);
+                    const ensName = await fetchAddress(mainnetProvider, addressFromParams, chainId);
+
                     if (ensName) setSecondaryEnsName(ensName);
                     else setSecondaryEnsName('');
                 } catch (error) {
                     setSecondaryEnsName('');
                     console.log({ error });
                 }
+            } else if (addressFromParams && isAddressEns) {
+                setSecondaryEnsName(addressFromParams);
             }
         })();
-    }, [address, isInitialized, isAddressEns]);
+    }, [addressFromParams, isAddressEns]);
 
     useEffect(() => {
         console.log({ selectedToken });
@@ -388,7 +238,7 @@ export default function Portfolio(props: PortfolioPropsIF) {
             <ExchangeBalance
                 crocEnv={crocEnv}
                 mainnetProvider={mainnetProvider}
-                connectedAccount={connectedAccount}
+                connectedAccount={connectedAccount || ''}
                 setSelectedOutsideTab={setSelectedOutsideTab}
                 setOutsideControl={setOutsideControl}
                 openGlobalModal={openGlobalModal}
@@ -413,9 +263,6 @@ export default function Portfolio(props: PortfolioPropsIF) {
         !connectedAccountActive ? setFullLayoutActive(true) : setFullLayoutActive(false);
     }, [connectedAccountActive]);
 
-    // useEffect(() => {
-    //     .userAccount ? setFullLayoutActive(true) : null;
-    // }, [userAccount]);
     const fullLayerToggle = (
         <div
             className={styles.right_tab_option}
@@ -447,6 +294,67 @@ export default function Portfolio(props: PortfolioPropsIF) {
             </section>
         </div>
     );
+
+    const connectedUserNativeToken = useAppSelector((state) => state.userData.tokens.nativeToken);
+    const connectedUserErc20Tokens = useAppSelector((state) => state.userData.tokens.erc20Tokens);
+
+    // TODO: move this function up to App.tsx
+    const getImportedTokensPlus = () => {
+        // array of all tokens on Ambient list
+        const ambientTokens = getAmbientTokens();
+        // array of addresses on Ambient list
+        const ambientAddresses = ambientTokens.map((tkn) => tkn.address.toLowerCase());
+        // use Ambient token list as scaffold to build larger token array
+        const output = ambientTokens;
+        // limiter for tokens to add from connected wallet
+        let tokensAdded = 0;
+        // iterate over tokens in connected wallet
+        connectedUserErc20Tokens?.forEach((tkn) => {
+            // gatekeep to make sure token is not already in the array,
+            // ... that the token can be verified against a known list,
+            // ... that user has a positive balance of the token, and
+            // ... that the limiter has not been reached
+            if (
+                !ambientAddresses.includes(tkn.address.toLowerCase()) &&
+                tokensOnActiveLists.get(tkn.address + '_' + chainId) &&
+                parseInt(tkn.combinedBalance as string) > 0 &&
+                tokensAdded < 4
+            ) {
+                tokensAdded++;
+                output.push({ ...tkn, fromList: 'wallet' });
+                // increment the limiter by one
+                tokensAdded++;
+                // add the token to the output array
+                output.push({ ...tkn, fromList: 'wallet' });
+            }
+        });
+        // limiter for tokens to add from in-session recent tokens list
+        let recentTokensAdded = 0;
+        // iterate over tokens in recent tokens list
+        getRecentTokens().forEach((tkn) => {
+            // gatekeep to make sure the token isn't already in the list,
+            // ... is on the current chain, and that the limiter has not
+            // ... yet been reached
+            if (
+                !output.some(
+                    (tk) =>
+                        tk.address.toLowerCase() === tkn.address.toLowerCase() &&
+                        tk.chainId === tkn.chainId,
+                ) &&
+                tkn.chainId === parseInt(chainId) &&
+                recentTokensAdded < 2
+            ) {
+                // increment the limiter by one
+                recentTokensAdded++;
+                // add the token to the output array
+                output.push(tkn);
+            }
+        });
+        // return compiled array of tokens
+        return output;
+    };
+
+    const connectedUserTokens = [connectedUserNativeToken].concat(connectedUserErc20Tokens);
 
     const [resolvedAddressNativeToken, setResolvedAddressNativeToken] = useState<
         TokenIF | undefined
@@ -485,7 +393,6 @@ export default function Portfolio(props: PortfolioPropsIF) {
                 try {
                     const updatedTokens: TokenIF[] = resolvedAddressErc20Tokens;
 
-                    // console.log('fetching resolved user erc20 token balances');
                     const erc20Results = await cachedFetchErc20TokenBalances(
                         resolvedAddress,
                         chainId,
@@ -517,25 +424,42 @@ export default function Portfolio(props: PortfolioPropsIF) {
 
     const [showProfileSettings, setShowProfileSettings] = useState(false);
 
+    const [showSoloSelectTokenButtons, setShowSoloSelectTokenButtons] = useState(true);
+    // hook to process search input and return an array of relevant tokens
+    // also returns state setter function and values for control flow
+    const [outputTokens, validatedInput, setInput, searchType] = useSoloSearch(
+        chainId,
+        importedTokens,
+        verifyToken,
+        getTokenByAddress,
+        getTokensByName,
+    );
+
+    const handleInputClear = () => {
+        setInput('');
+        const soloTokenSelectInput = document.getElementById(
+            'solo-token-select-input',
+        ) as HTMLInputElement;
+        soloTokenSelectInput.value = '';
+    };
+
     const showLoggedInButton = userAccount && !isUserLoggedIn;
 
     return (
-        <section data-testid={'portfolio'} className={styles.portfolio_container}>
+        <main data-testid={'portfolio'} className={styles.portfolio_container}>
             {userAccount && showProfileSettings && (
                 <ProfileSettings
                     showProfileSettings={showProfileSettings}
                     setShowProfileSettings={setShowProfileSettings}
-                    ensName={address ? secondaryensName : ensName}
+                    ensName={secondaryEnsName ? secondaryEnsName : ensName ?? ''}
                     imageData={connectedAccountActive ? userImageData : secondaryImageData}
                     openGlobalModal={openGlobalModal}
                 />
             )}
-            {/* <button onClick={openTempModal}>Choose a Token</button> */}
-            {/* <h3>{tempToken.name}</h3> */}
             <PortfolioBanner
-                ensName={address ? secondaryensName : ensName}
+                ensName={secondaryEnsName ? secondaryEnsName : ensName ?? ''}
                 resolvedAddress={resolvedAddress}
-                activeAccount={address ?? connectedAccount}
+                activeAccount={address ?? connectedAccount ?? ''}
                 imageData={connectedAccountActive ? userImageData : secondaryImageData}
                 setShowProfileSettings={setShowProfileSettings}
                 connectedAccountActive={connectedAccountActive}
@@ -558,7 +482,7 @@ export default function Portfolio(props: PortfolioPropsIF) {
                         resolvedAddressTokens={resolvedAddressTokens}
                         resolvedAddress={resolvedAddress}
                         lastBlockNumber={lastBlockNumber}
-                        activeAccount={address ?? connectedAccount}
+                        activeAccount={address ?? connectedAccount ?? ''}
                         connectedAccountActive={connectedAccountActive}
                         chainId={chainId}
                         tokenMap={tokensOnActiveLists}
@@ -575,7 +499,6 @@ export default function Portfolio(props: PortfolioPropsIF) {
                         currentPositionActive={props.currentPositionActive}
                         setCurrentPositionActive={props.setCurrentPositionActive}
                         isUserLoggedIn={isUserLoggedIn}
-                        isAuthenticated={isAuthenticated}
                         baseTokenBalance={baseTokenBalance}
                         quoteTokenBalance={quoteTokenBalance}
                         baseTokenDexBalance={baseTokenDexBalance}
@@ -591,7 +514,6 @@ export default function Portfolio(props: PortfolioPropsIF) {
                         <Button flat title='Connect Wallet' action={() => openModalWallet()} />
                     </div>
                 )}
-                {/* {connectedAccountActive && !fullLayoutActive ? exchangeBalanceComponent : null} */}
                 {connectedAccountActive && exchangeBalanceComponent}
             </div>
             {isTokenModalOpen && (
@@ -599,20 +521,32 @@ export default function Portfolio(props: PortfolioPropsIF) {
                     onClose={closeTokenModal}
                     title='Select Token'
                     centeredTitle
-                    handleBack={closeTokenModal}
-                    showBackButton={true}
+                    handleBack={handleInputClear}
+                    showBackButton={!showSoloSelectTokenButtons}
                     footer={null}
                 >
                     <SoloTokenSelect
                         provider={provider}
                         closeModal={closeTokenModal}
                         chainId={chainId}
-                        importedTokens={importedTokens}
+                        importedTokens={getImportedTokensPlus()}
                         setImportedTokens={setImportedTokens}
-                        tokensOnActiveLists={tokensOnActiveLists}
+                        getTokensByName={getTokensByName}
+                        getTokenByAddress={getTokenByAddress}
+                        verifyToken={verifyToken}
+                        showSoloSelectTokenButtons={showSoloSelectTokenButtons}
+                        setShowSoloSelectTokenButtons={setShowSoloSelectTokenButtons}
+                        outputTokens={outputTokens}
+                        validatedInput={validatedInput}
+                        setInput={setInput}
+                        searchType={searchType}
+                        addRecentToken={addRecentToken}
+                        getRecentTokens={getRecentTokens}
+                        isSingleToken={true}
+                        tokenAorB={null}
                     />
                 </Modal>
             )}
-        </section>
+        </main>
     );
 }

@@ -34,11 +34,16 @@
     box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4);
 }
 
-.footer {
-    position: sticky;
-    bottom: 0;
-    box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4);
-}
+.footer{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+      position: absolute;
+      bottom: 0;
+      box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4);
+      margin: 0 auto;
+  }
 /* width */
 .main_list_container::-webkit-scrollbar {
     width: 4px;
@@ -172,4 +177,12 @@ color: var(--text-grey-light)
 /* .header li:nth-of-type(4){
     text-align: center;
     
+  } */
+  /* .menu {
+    opacity: 0.2;
+    transition: all var(--animation-speed) ease-in-out;
+  }
+  
+  .row_container:hover .menu{
+    opacity: 1;
   } */

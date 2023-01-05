@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useMoralis } from 'react-moralis';
 import useSocket from '../../Service/useSocket';
-import { BsEmojiSmileFill } from 'react-icons/bs';
 import { Message } from '../../Model/MessageModel';
+
+import { BsEmojiSmileFill } from 'react-icons/bs';
+// import { Message } from '../../Model/MessageModel';
 import Picker from 'emoji-picker-react';
 import styles from './MessageInput.module.css';
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
@@ -12,6 +13,7 @@ import { TokenIF } from '../../../../utils/interfaces/TokenIF';
 import { targetData } from '../../../../utils/state/tradeDataSlice';
 
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
+import { useAccount } from 'wagmi';
 interface MessageInputProps {
     message?: Message;
     room: string;
@@ -53,7 +55,7 @@ export interface ChatProps {
 export default function MessageInput(props: MessageInputProps, prop: ChatProps) {
     const [message, setMessage] = useState('');
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
-    const { account, isWeb3Enabled, isAuthenticated } = useMoralis();
+    const { address, isConnected } = useAccount();
     const [isPosition, setIsPosition] = useState(false);
     // const { roomId } = props.match.params;
 
@@ -87,7 +89,7 @@ export default function MessageInput(props: MessageInputProps, prop: ChatProps) 
     };
 
     function messageInputText() {
-        if (isAuthenticated && isWeb3Enabled && isUserLoggedIn && account) {
+        if (isConnected && address) {
             return 'Type to chat. Enter to submit.';
         } else {
             return 'Please log in to chat.';
@@ -96,7 +98,7 @@ export default function MessageInput(props: MessageInputProps, prop: ChatProps) 
 
     useEffect(() => {
         messageInputText();
-    }, [isAuthenticated, isWeb3Enabled, isUserLoggedIn, account]);
+    }, [isConnected, address]);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const _handleKeyDown = (e: any) => {
@@ -108,10 +110,10 @@ export default function MessageInput(props: MessageInputProps, prop: ChatProps) 
     };
 
     const handleSendMsg = async (msg: string, roomId: any) => {
-        if (msg === '') {
+        if (msg === '' || !address) {
             // do nothing
         } else {
-            sendMsg(props.currentUser, message, roomId, props.ensName, account);
+            sendMsg(props.currentUser, message, roomId, props.ensName, address);
         }
     };
 
@@ -120,11 +122,7 @@ export default function MessageInput(props: MessageInputProps, prop: ChatProps) 
     };
 
     return (
-        <div
-            className={
-                !isAuthenticated || !isWeb3Enabled ? styles.input_box_not_allowed : styles.input_box
-            }
-        >
+        <div className={!isConnected ? styles.input_box_not_allowed : styles.input_box}>
             <PositionBox
                 message={message}
                 isInput={true}
@@ -132,21 +130,13 @@ export default function MessageInput(props: MessageInputProps, prop: ChatProps) 
                 setIsPosition={setIsPosition}
             />
 
-            <div
-                className={
-                    !isAuthenticated || !isWeb3Enabled ? styles.input_not_allowed : styles.input
-                }
-            >
+            <div className={!isConnected ? styles.input_not_allowed : styles.input}>
                 <input
                     type='text'
                     id='box'
                     placeholder={messageInputText()}
-                    disabled={!isAuthenticated || !isWeb3Enabled}
-                    className={
-                        !isAuthenticated || !isWeb3Enabled
-                            ? styles.input_text_not_allowed
-                            : styles.input_text
-                    }
+                    disabled={!isConnected}
+                    className={!isConnected ? styles.input_text_not_allowed : styles.input_text}
                     onKeyDown={_handleKeyDown}
                     value={message}
                     onChange={onChangeMessage}

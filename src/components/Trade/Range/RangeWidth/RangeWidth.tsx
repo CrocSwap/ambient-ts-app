@@ -3,6 +3,8 @@ import { Dispatch, SetStateAction } from 'react';
 import { AiOutlineInfoCircle } from 'react-icons/ai';
 import { FiMinus } from 'react-icons/fi';
 import { MdAdd } from 'react-icons/md';
+import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
+import { setRescaleRangeBoundaries } from '../../../../utils/state/tradeDataSlice';
 
 // START: Import Local Files
 import styles from './RangeWidth.module.css';
@@ -19,6 +21,8 @@ interface RangeWidthPropsIF {
 export default function RangeWidth(props: RangeWidthPropsIF) {
     const { rangeWidthPercentage, setRangeWidthPercentage, isRangeCopied } = props;
 
+    const dispatch = useAppDispatch();
+
     const PercentageOptionContent = (
         <>
             <div className={styles.percentage_options}>
@@ -29,7 +33,17 @@ export default function RangeWidth(props: RangeWidthPropsIF) {
                 <button
                     className={styles.percentage_option_buttons}
                     onClick={() => {
+                        updateRangeWithButton((1 / 20) * 100, setRangeWidthPercentage);
+                        dispatch(setRescaleRangeBoundaries(true));
+                    }}
+                >
+                    5%
+                </button>
+                <button
+                    className={styles.percentage_option_buttons}
+                    onClick={() => {
                         updateRangeWithButton((1 / 10) * 100, setRangeWidthPercentage);
+                        dispatch(setRescaleRangeBoundaries(true));
                     }}
                 >
                     10%
@@ -38,6 +52,7 @@ export default function RangeWidth(props: RangeWidthPropsIF) {
                     className={styles.percentage_option_buttons}
                     onClick={() => {
                         updateRangeWithButton((1 / 4) * 100, setRangeWidthPercentage);
+                        dispatch(setRescaleRangeBoundaries(true));
                     }}
                 >
                     25%
@@ -46,6 +61,7 @@ export default function RangeWidth(props: RangeWidthPropsIF) {
                     className={styles.percentage_option_buttons}
                     onClick={() => {
                         updateRangeWithButton((1 / 2) * 100, setRangeWidthPercentage);
+                        dispatch(setRescaleRangeBoundaries(true));
                     }}
                 >
                     50%
@@ -55,6 +71,7 @@ export default function RangeWidth(props: RangeWidthPropsIF) {
                     className={styles.percentage_option_buttons}
                     onClick={() => {
                         updateRangeWithButton(100, setRangeWidthPercentage);
+                        dispatch(setRescaleRangeBoundaries(true));
                     }}
                 >
                     Ambient
@@ -88,6 +105,7 @@ export default function RangeWidth(props: RangeWidthPropsIF) {
                         type='range'
                         className={styles.percentage_input}
                         onChange={(event) => handleRangeSlider(event, setRangeWidthPercentage)}
+                        onMouseUp={() => dispatch(setRescaleRangeBoundaries(true))}
                     />
                 </div>
 

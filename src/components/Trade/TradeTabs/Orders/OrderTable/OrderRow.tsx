@@ -4,7 +4,7 @@ import OpenOrderStatus from '../../../../Global/OpenOrderStatus/OpenOrderStatus'
 import OrdersMenu from '../../../../Global/Tabs/TableMenu/TableMenuComponents/OrdersMenu';
 import OrderDetails from '../../../../OrderDetails/OrderDetails';
 
-import { Dispatch, SetStateAction, useEffect } from 'react';
+import { Dispatch, SetStateAction, useEffect, useRef } from 'react';
 import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
 import { DefaultTooltip } from '../../../../Global/StyledTooltip/StyledTooltip';
 import { NavLink } from 'react-router-dom';
@@ -15,6 +15,8 @@ import { useAppDispatch } from '../../../../../utils/hooks/reduxToolkit';
 import { setDataLoadingStatus } from '../../../../../utils/state/graphDataSlice';
 import moment from 'moment';
 import { ZERO_ADDRESS } from '../../../../../constants';
+import { FiExternalLink } from 'react-icons/fi';
+import useOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 
 interface OrderRowPropsIF {
     crocEnv: CrocEnv | undefined;
@@ -26,7 +28,7 @@ interface OrderRowPropsIF {
     view2: boolean;
     limitOrder: LimitOrderIF;
     showSidebar: boolean;
-
+    lastBlockNumber: number;
     openGlobalModal: (content: React.ReactNode) => void;
     closeGlobalModal: () => void;
 
@@ -35,11 +37,12 @@ interface OrderRowPropsIF {
 
     isShowAllEnabled: boolean;
     isOnPortfolioPage: boolean;
-
+    account: string;
     handlePulseAnimation?: (type: string) => void;
 }
 export default function OrderRow(props: OrderRowPropsIF) {
     const {
+        account,
         crocEnv,
         chainData,
         tradeData,
@@ -55,6 +58,7 @@ export default function OrderRow(props: OrderRowPropsIF) {
         isShowAllEnabled,
         isOnPortfolioPage,
         handlePulseAnimation,
+        lastBlockNumber,
     } = props;
 
     const {
@@ -83,7 +87,7 @@ export default function OrderRow(props: OrderRowPropsIF) {
         baseTokenCharacter,
         quoteTokenCharacter,
         isDenomBase,
-    } = useProcessOrder(limitOrder);
+    } = useProcessOrder(limitOrder, account);
 
     const orderMenuProps = {
         crocEnv: crocEnv,
@@ -107,7 +111,12 @@ export default function OrderRow(props: OrderRowPropsIF) {
 
     const openDetailsModal = () =>
         openGlobalModal(
-            <OrderDetails limitOrder={limitOrder} closeGlobalModal={closeGlobalModal} />,
+            <OrderDetails
+                account={account}
+                limitOrder={limitOrder}
+                closeGlobalModal={closeGlobalModal}
+                lastBlockNumber={lastBlockNumber}
+            />,
         );
     const orderDomId =
         limitOrder.limitOrderIdentifier === currentPositionActive
@@ -115,6 +124,13 @@ export default function OrderRow(props: OrderRowPropsIF) {
             : '';
 
     // console.log(rangeDetailsProps.lastBlockNumber);
+
+    const activePositionRef = useRef(null);
+
+    const clickOutsideHandler = () => {
+        setCurrentPositionActive('');
+    };
+    useOnClickOutside(activePositionRef, clickOutsideHandler);
 
     function scrollToDiv() {
         const element = document.getElementById(orderDomId);
@@ -139,7 +155,12 @@ export default function OrderRow(props: OrderRowPropsIF) {
             enterDelay={750}
             leaveDelay={200}
         >
-            <li onClick={openDetailsModal} data-label='id' className='base_color'>
+            <li
+                onClick={openDetailsModal}
+                data-label='id'
+                className='base_color'
+                style={{ fontFamily: 'monospace' }}
+            >
                 {posHashTruncated}
             </li>
         </DefaultTooltip>
@@ -183,7 +204,8 @@ export default function OrderRow(props: OrderRowPropsIF) {
                         }}
                         to={`/${isOwnerActiveAccount ? 'account' : ensName ? ensName : ownerId}`}
                     >
-                        View Account
+                        {'View Account' + 'ㅤ'}
+                        <FiExternalLink size={'12px'} />
                     </NavLink>
                 </div>
             }
@@ -196,7 +218,7 @@ export default function OrderRow(props: OrderRowPropsIF) {
                 onClick={openDetailsModal}
                 data-label='wallet'
                 className={usernameStyle}
-                style={{ textTransform: 'lowercase' }}
+                style={{ textTransform: 'lowercase', fontFamily: 'monospace' }}
             >
                 {userNameToDisplay}
             </li>
@@ -204,15 +226,15 @@ export default function OrderRow(props: OrderRowPropsIF) {
     );
 
     const baseTokenLogoComponent = baseTokenLogo ? (
-        <img src={baseTokenLogo} alt='base token' width='15px' />
+        <img src={baseTokenLogo} alt='base token' width='20px' />
     ) : (
-        <NoTokenIcon tokenInitial={limitOrder.baseSymbol.charAt(0)} width='15px' />
+        <NoTokenIcon tokenInitial={limitOrder.baseSymbol.charAt(0)} width='20px' />
     );
 
     const quoteTokenLogoComponent = quoteTokenLogo ? (
-        <img src={quoteTokenLogo} alt='quote token' width='15px' />
+        <img src={quoteTokenLogo} alt='quote token' width='20px' />
     ) : (
-        <NoTokenIcon tokenInitial={limitOrder.quoteSymbol.charAt(0)} width='15px' />
+        <NoTokenIcon tokenInitial={limitOrder.quoteSymbol.charAt(0)} width='20px' />
     );
 
     // const tokensTogether = (
@@ -285,7 +307,10 @@ export default function OrderRow(props: OrderRowPropsIF) {
     // }).format(limitOrder.time * 1000);
 
     const elapsedTimeInSecondsNum = moment(Date.now()).diff(
-        (limitOrder.timeFirstMint || limitOrder.time) * 1000,
+        (limitOrder.latestUpdateTime !== 0
+            ? limitOrder.latestUpdateTime
+            : limitOrder.timeFirstMint) * 1000,
+        // (limitOrder.timeFirstMint || limitOrder.time) * 1000,
         'seconds',
     );
 
@@ -331,7 +356,9 @@ export default function OrderRow(props: OrderRowPropsIF) {
                 }}
             >
                 {baseDisplay}
-                {isOnPortfolioPage && <img src={baseTokenLogo} width='15px' alt='' />}
+                {baseTokenLogoComponent}
+                {/* {<img src={baseTokenLogo} width='15px' alt='' />} */}
+                {/* {isOnPortfolioPage && <img src={baseTokenLogo} width='15px' alt='' />} */}
             </p>
         </li>
         /* </DefaultTooltip> */
@@ -357,16 +384,21 @@ export default function OrderRow(props: OrderRowPropsIF) {
                 }}
             >
                 {quoteDisplay}
-                {isOnPortfolioPage && <img src={quoteTokenLogo} width='15px' alt='' />}
+                {quoteTokenLogoComponent}
+                {/* {<img src={quoteTokenLogo} width='15px' alt='' />} */}
+                {/* {isOnPortfolioPage && <img src={quoteTokenLogo} width='15px' alt='' />} */}
             </p>
         </li>
         /* </DefaultTooltip> */
     );
 
-    const OrderTimeWithTooltip = (
+    const OrderTimeWithTooltip = limitOrder.timeFirstMint ? (
         <DefaultTooltip
             interactive
-            title={'Last Updated: ' + moment(limitOrder.time * 1000).format('MM/DD/YYYY HH:mm')}
+            title={
+                'First Minted: ' +
+                moment(limitOrder.timeFirstMint * 1000).format('MM/DD/YYYY HH:mm')
+            }
             placement={'left'}
             arrow
             enterDelay={750}
@@ -379,6 +411,12 @@ export default function OrderRow(props: OrderRowPropsIF) {
                 {/* <p className='base_color'> Nov 9 10:36:23 AM</p> */}
             </li>
         </DefaultTooltip>
+    ) : (
+        <li onClick={openDetailsModal} style={{ textTransform: 'lowercase' }}>
+            <p className='base_color' style={{ fontFamily: 'monospace' }}>
+                {elapsedTimeString}
+            </p>
+        </li>
     );
 
     return (
@@ -391,6 +429,7 @@ export default function OrderRow(props: OrderRowPropsIF) {
                     ? null
                     : setCurrentPositionActive('')
             }
+            ref={currentPositionActive ? activePositionRef : null}
         >
             {/* {isOnPortfolioPage && accountTokenImages} */}
             {!showColumns && OrderTimeWithTooltip}
@@ -443,8 +482,8 @@ export default function OrderRow(props: OrderRowPropsIF) {
                     className={sellOrderStyle}
                     style={{ textAlign: 'center' }}
                 >
-                    <p>{side}</p>
                     <p>Order</p>
+                    <p>{`${side} ${sideCharacter}`}</p>
                 </li>
             )}
 
@@ -474,6 +513,7 @@ export default function OrderRow(props: OrderRowPropsIF) {
             )}
             <li data-label='menu'>
                 <OrdersMenu
+                    account={account}
                     chainData={chainData}
                     isShowAllEnabled={isShowAllEnabled}
                     tradeData={tradeData}
@@ -481,6 +521,7 @@ export default function OrderRow(props: OrderRowPropsIF) {
                     {...orderMenuProps}
                     showSidebar={showSidebar}
                     handlePulseAnimation={handlePulseAnimation}
+                    lastBlockNumber={lastBlockNumber}
                 />
             </li>
         </ul>

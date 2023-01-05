@@ -25,10 +25,10 @@ import {
     isTransactionReplacedError,
     TransactionError,
 } from '../../utils/TransactionError';
-import { useMoralis } from 'react-moralis';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 
 interface IOrderRemovalProps {
+    account: string;
     crocEnv: CrocEnv | undefined;
     chainData: ChainSpec;
     limitOrder: LimitOrderIF;
@@ -36,7 +36,7 @@ interface IOrderRemovalProps {
 }
 
 export default function OrderRemoval(props: IOrderRemovalProps) {
-    const { chainData, crocEnv, limitOrder, closeGlobalModal } = props;
+    const { account, chainData, crocEnv, limitOrder, closeGlobalModal } = props;
     const {
         posLiqBaseDecimalCorrected,
         posLiqQuoteDecimalCorrected,
@@ -58,7 +58,7 @@ export default function OrderRemoval(props: IOrderRemovalProps) {
         quoteDisplayFrontend,
         baseDisplay,
         quoteDisplay,
-    } = useProcessOrder(limitOrder);
+    } = useProcessOrder(limitOrder, account);
 
     const [showConfirmation, setShowConfirmation] = useState(false);
     const [newRemovalTransactionHash, setNewRemovalTransactionHash] = useState('');
@@ -87,8 +87,6 @@ export default function OrderRemoval(props: IOrderRemovalProps) {
     const quoteQty = limitOrder.positionLiqQuoteDecimalCorrected;
 
     const dispatch = useAppDispatch();
-
-    const { account } = useMoralis();
 
     useEffect(() => {
         const baseRemovalNum = baseQty * (removalPercentage / 100);
@@ -135,7 +133,9 @@ export default function OrderRemoval(props: IOrderRemovalProps) {
             setShowConfirmation(true);
             setShowSettings(false);
             console.log({ limitOrder });
-            console.log({ positionLiquidity });
+
+            const liqToRemove = BigNumber.from(positionLiquidity).mul(removalPercentage).div(100);
+
             let tx;
             try {
                 if (limitOrder.isBid === true) {
@@ -143,7 +143,7 @@ export default function OrderRemoval(props: IOrderRemovalProps) {
                         .buy(limitOrder.quote, 0)
                         .atLimit(limitOrder.base, limitOrder.bidTick)
                         // .burnLiq(BigNumber.from('1000'));
-                        .burnLiq(BigNumber.from(positionLiquidity));
+                        .burnLiq(liqToRemove);
                     setNewRemovalTransactionHash(tx.hash);
                     dispatch(addPendingTx(tx?.hash));
                 } else {
@@ -151,7 +151,7 @@ export default function OrderRemoval(props: IOrderRemovalProps) {
                         .buy(limitOrder.base, 0)
                         .atLimit(limitOrder.quote, limitOrder.askTick)
                         // .burnLiq(BigNumber.from('1000'));
-                        .burnLiq(BigNumber.from(positionLiquidity));
+                        .burnLiq(liqToRemove);
                     setNewRemovalTransactionHash(tx.hash);
                     dispatch(addPendingTx(tx?.hash));
                 }

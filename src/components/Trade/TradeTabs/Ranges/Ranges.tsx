@@ -39,7 +39,6 @@ interface RangesPropsIF {
     crocEnv: CrocEnv | undefined;
     chainData: ChainSpec;
     provider: ethers.providers.Provider | undefined;
-    isAuthenticated: boolean;
     account: string;
     chainId: string;
     isShowAllEnabled: boolean;
@@ -221,7 +220,14 @@ export default function Ranges(props: RangesPropsIF) {
 
     // ---------------------
     const [currentPage, setCurrentPage] = useState(1);
-    const [rangesPerPage] = useState(20);
+    // transactions per page media queries
+    const txView1 = useMediaQuery('(max-width: 480px)');
+    const txView2 = useMediaQuery('(max-width: 720px)');
+    const txView3 = useMediaQuery('(max-width: 1200px)');
+    const txView4 = useMediaQuery('(max-width: 1800px)');
+    // const txView4 = useMediaQuery('(min-width: 2400px)');
+
+    const rangesPerPage = txView1 ? 3 : txView2 ? 10 : txView3 ? 12 : txView4 ? 15 : 20;
 
     useEffect(() => {
         setCurrentPage(1);
@@ -252,12 +258,13 @@ export default function Ranges(props: RangesPropsIF) {
 
     // ----------------------
 
-    const sidebarOpen = false;
+    // const sidebarOpen = false;
 
     const ipadView = useMediaQuery('(max-width: 480px)');
     const desktopView = useMediaQuery('(max-width: 768px)');
+    const showColumns = useMediaQuery('(max-width: 1440px)');
 
-    const showColumns = sidebarOpen || desktopView;
+    // const showColumns = sidebarOpen || desktopView;
 
     const quoteTokenSymbol = tradeData.quoteToken?.symbol;
     const baseTokenSymbol = tradeData.baseToken?.symbol;
@@ -277,7 +284,9 @@ export default function Ranges(props: RangesPropsIF) {
             <p>Max</p>
         </>
     );
-    const tokens = (
+    const tokens = isOnPortfolioPage ? (
+        <>Tokens</>
+    ) : (
         <>
             <p>{`${baseTokenSymbol} ( ${baseTokenCharacter} )`}</p>
             <p>{`${quoteTokenSymbol} ( ${quoteTokenCharacter} )`}</p>
@@ -292,19 +301,26 @@ export default function Ranges(props: RangesPropsIF) {
         //     sortable: false,
         // },
         {
-            name: 'Time',
+            name: 'Last Updated',
             className: '',
             show: !showColumns,
             slug: 'time',
             sortable: true,
         },
         {
-            name: 'Pool',
+            name: 'Pair',
             className: '',
-            show: isOnPortfolioPage,
+            show: isOnPortfolioPage && !desktopView,
             slug: 'pool',
-            sortable: false,
+            sortable: true,
         },
+        // {
+        //     name: 'Pool',
+        //     className: '',
+        //     show: isOnPortfolioPage,
+        //     slug: 'pool',
+        //     sortable: false,
+        // },
         {
             name: 'ID',
             className: 'ID',
@@ -360,7 +376,7 @@ export default function Ranges(props: RangesPropsIF) {
             alignRight: true,
         },
         {
-            name: isOnPortfolioPage ? 'Qty A' : `${baseTokenSymbol}`,
+            name: isOnPortfolioPage ? '' : `${baseTokenSymbol}`,
 
             show: !showColumns,
             slug: baseTokenSymbol,
@@ -368,7 +384,7 @@ export default function Ranges(props: RangesPropsIF) {
             alignRight: true,
         },
         {
-            name: isOnPortfolioPage ? 'Qty B' : `${quoteTokenSymbol}`,
+            name: isOnPortfolioPage ? '' : `${quoteTokenSymbol}`,
 
             show: !showColumns,
             slug: quoteTokenSymbol,
@@ -425,6 +441,7 @@ export default function Ranges(props: RangesPropsIF) {
     );
     const rowItemContent = usePaginateDataOrNull?.map((position, idx) => (
         <RangesRow
+            account={account}
             key={idx}
             position={position}
             currentPositionActive={currentPositionActive}
@@ -462,6 +479,7 @@ export default function Ranges(props: RangesPropsIF) {
         <NoTableData
             isShowAllEnabled={isShowAllEnabled}
             type='ranges'
+            isOnPortfolioPage={isOnPortfolioPage}
             setIsShowAllEnabled={setIsShowAllEnabled}
         />
     );

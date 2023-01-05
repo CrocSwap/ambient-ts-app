@@ -35,7 +35,6 @@ interface LeaderboardPropsIF {
     crocEnv: CrocEnv | undefined;
     chainData: ChainSpec;
     provider: ethers.providers.Provider | undefined;
-    isAuthenticated: boolean;
     account: string;
     chainId: string;
     isShowAllEnabled: boolean;
@@ -164,12 +163,13 @@ export default function Leaderboard(props: LeaderboardPropsIF) {
 
     // ----------------------
 
-    const sidebarOpen = false;
+    // const sidebarOpen = false;
 
     const ipadView = useMediaQuery('(max-width: 480px)');
-    const desktopView = useMediaQuery('(max-width: 768px)');
+    // const desktopView = useMediaQuery('(max-width: 768px)');
+    const showColumns = useMediaQuery('(max-width: 1440px)');
 
-    const showColumns = sidebarOpen || desktopView;
+    // const showColumns = sidebarOpen || desktopView;
 
     const quoteTokenSymbol = tradeData.quoteToken?.symbol;
     const baseTokenSymbol = tradeData.baseToken?.symbol;
@@ -204,7 +204,7 @@ export default function Leaderboard(props: LeaderboardPropsIF) {
             sortable: false,
         },
         {
-            name: 'Time',
+            name: 'Last Updated',
             className: '',
             show: !showColumns,
             slug: 'time',
@@ -320,6 +320,7 @@ export default function Leaderboard(props: LeaderboardPropsIF) {
     );
     const rowItemContent = usePaginateDataOrNull?.map((position, idx) => (
         <RangesRow
+            account={account}
             key={idx}
             position={position}
             rank={positionsByApy.findIndex((posId) => posId === position.positionId) + 1}

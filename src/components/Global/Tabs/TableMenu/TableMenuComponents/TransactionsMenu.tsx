@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { useState, ReactNode, useRef } from 'react';
+import { useState, ReactNode, useRef, useEffect } from 'react';
 // import { Link } from 'react-router-dom';
 import { FiExternalLink, FiMoreHorizontal } from 'react-icons/fi';
 
@@ -33,6 +33,7 @@ import { useNavigate } from 'react-router-dom';
 
 // interface for React functional component props
 interface TransactionMenuIF {
+    account: string;
     tradeData: tradeData;
     userPosition: boolean | undefined; // position belongs to active user
     isTokenABase: boolean;
@@ -50,6 +51,7 @@ interface TransactionMenuIF {
 export default function TransactionsMenu(props: TransactionMenuIF) {
     const menuItemRef = useRef<HTMLDivElement>(null);
     const {
+        account,
         tradeData,
         // isTokenABase,
         // userPosition,
@@ -247,7 +249,9 @@ export default function TransactionsMenu(props: TransactionMenuIF) {
     // }
 
     const openDetailsModal = () =>
-        openGlobalModal(<TransactionDetails tx={tx} closeGlobalModal={closeGlobalModal} />);
+        openGlobalModal(
+            <TransactionDetails account={account} tx={tx} closeGlobalModal={closeGlobalModal} />,
+        );
 
     // const mainModal = (
     //     <Modal onClose={closeModal} title={modalTitle}>
@@ -448,6 +452,15 @@ export default function TransactionsMenu(props: TransactionMenuIF) {
         setShowDropdownMenu(false);
     };
 
+    useEffect(() => {
+        if (showDropdownMenu && document.activeElement !== menuItemRef.current) {
+            const interval = setTimeout(() => {
+                setShowDropdownMenu(false);
+            }, 5000);
+            return () => clearTimeout(interval);
+        } else return;
+    }, [showDropdownMenu]);
+
     UseOnClickOutside(menuItemRef, clickOutsideHandler);
     const dropdownTransactionsMenu = (
         <div className={styles.dropdown_menu} ref={menuItemRef}>
@@ -461,7 +474,9 @@ export default function TransactionsMenu(props: TransactionMenuIF) {
     return (
         <div className={styles.main_container}>
             {!desktopView && transactionsMenu}
+
             {dropdownTransactionsMenu}
+
             {/* {modalOrNull} */}
             {/* {snackbarContent} */}
         </div>

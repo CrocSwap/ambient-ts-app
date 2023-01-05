@@ -2,6 +2,7 @@
 import { ChangeEvent, Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../../../utils/hooks/reduxToolkit';
+import { ethers } from 'ethers';
 import {
     // reverseTokensInRTK,
     setIsTokenAPrimary,
@@ -22,9 +23,11 @@ import DividerDark from '../../../Global/DividerDark/DividerDark';
 import IconWithTooltip from '../../../Global/IconWithTooltip/IconWithTooltip';
 import { ZERO_ADDRESS } from '../../../../constants';
 import { CrocPoolView } from '@crocswap-libs/sdk';
+import { getRecentTokensParamsIF } from '../../../../App/hooks/useRecentTokens';
 
 // interface for component props
 interface LimitCurrencyConverterProps {
+    provider?: ethers.providers.Provider;
     pool: CrocPoolView | undefined;
     gridSize: number;
     setPriceInputFieldBlurred: Dispatch<SetStateAction<boolean>>;
@@ -32,7 +35,6 @@ interface LimitCurrencyConverterProps {
     tokenPair: TokenPairIF;
     tokensBank: Array<TokenIF>;
     setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
-    searchableTokens: Array<TokenIF>;
     chainId: string;
     poolPriceNonDisplay: number | undefined;
     limitTickDisplayPrice: number;
@@ -60,11 +62,18 @@ interface LimitCurrencyConverterProps {
     gasPriceInGwei: number | undefined;
 
     isOrderCopied: boolean;
+    verifyToken: (addr: string, chn: string) => boolean;
+    getTokensByName: (searchName: string, chn: string, exact: boolean) => TokenIF[];
+    getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
+    importedTokensPlus: TokenIF[];
+    getRecentTokens: (options?: getRecentTokensParamsIF | undefined) => TokenIF[];
+    addRecentToken: (tkn: TokenIF) => void;
 }
 
 // central react functional component
 export default function LimitCurrencyConverter(props: LimitCurrencyConverterProps) {
     const {
+        provider,
         pool,
         gridSize,
         setPriceInputFieldBlurred,
@@ -72,7 +81,6 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
         tokenPair,
         tokensBank,
         setImportedTokens,
-        searchableTokens,
         chainId,
         poolPriceNonDisplay,
         limitTickDisplayPrice,
@@ -97,6 +105,12 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
         gasPriceInGwei,
 
         isOrderCopied,
+        verifyToken,
+        getTokensByName,
+        getTokenByAddress,
+        importedTokensPlus,
+        getRecentTokens,
+        addRecentToken,
     } = props;
 
     const dispatch = useAppDispatch();
@@ -460,11 +474,11 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
     return (
         <section className={styles.currency_converter}>
             <LimitCurrencySelector
+                provider={provider}
                 isUserLoggedIn={isUserLoggedIn}
                 tokenPair={tokenPair}
                 tokensBank={tokensBank}
                 setImportedTokens={setImportedTokens}
-                searchableTokens={searchableTokens}
                 chainId={chainId}
                 fieldId='sell'
                 sellToken
@@ -490,6 +504,13 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
                 indicateActiveTokenListsChanged={indicateActiveTokenListsChanged}
                 gasPriceInGwei={gasPriceInGwei}
                 isOrderCopied={isOrderCopied}
+                verifyToken={verifyToken}
+                getTokensByName={getTokensByName}
+                getTokenByAddress={getTokenByAddress}
+                importedTokensPlus={importedTokensPlus}
+                getRecentTokens={getRecentTokens}
+                addRecentToken={addRecentToken}
+                tokenAorB={'A'}
             />
 
             <div
@@ -506,7 +527,6 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
                 tokenPair={tokenPair}
                 tokensBank={tokensBank}
                 setImportedTokens={setImportedTokens}
-                searchableTokens={searchableTokens}
                 chainId={chainId}
                 fieldId='buy'
                 direction='To: '
@@ -529,6 +549,13 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
                 indicateActiveTokenListsChanged={indicateActiveTokenListsChanged}
                 gasPriceInGwei={gasPriceInGwei}
                 isOrderCopied={isOrderCopied}
+                verifyToken={verifyToken}
+                getTokensByName={getTokensByName}
+                getTokenByAddress={getTokenByAddress}
+                importedTokensPlus={importedTokensPlus}
+                getRecentTokens={getRecentTokens}
+                addRecentToken={addRecentToken}
+                tokenAorB={'B'}
             />
             <DividerDark addMarginTop />
             <LimitRate

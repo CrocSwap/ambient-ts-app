@@ -339,6 +339,8 @@
         /* grid-gap: 1em; */
     }
     .middle_col {
+        height: 100%;
+
         padding: 0.5rem 0rem 0rem 0.5rem;
         background: var(--dark3);
 
@@ -346,10 +348,12 @@
         grid-template-rows: auto 300px;
         /* background: red; */
         grid-gap: 8px;
+        position: relative;
     }
 
     .right_col {
-        background: transparent;
+        background: var(--dark1);
+        /* background: transparent; */
     }
 
     .middle_col,
@@ -357,13 +361,12 @@
         height: calc(100vh - 3.7rem);
     }
 
-    .middle_col {
+
+    .flex_column{
         /* align-items: stretch; */
-        /* display: flex; */
-        flex-flow: column;
         /* gap: 40px; */
-        height: 100%;
-        position: relative;
+        display: flex;
+        flex-flow: column;
     }
     @-moz-document url-prefix() {
         .middle_col {

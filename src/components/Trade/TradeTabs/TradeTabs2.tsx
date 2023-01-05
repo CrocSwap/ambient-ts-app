@@ -7,6 +7,7 @@ import Transactions from './Transactions/Transactions';
 import styles from './TradeTabs2.module.css';
 import Orders from './Orders/Orders';
 import moment from 'moment';
+import { PoolIF, TokenIF } from '../../../utils/interfaces/exports';
 
 // import DropdownMenu from '../../Global/DropdownMenu/DropdownMenu';
 // import DropdownMenuContainer from '../../Global/DropdownMenu/DropdownMenuContainer/DropdownMenuContainer';
@@ -19,7 +20,6 @@ import recentTransactionsImage from '../../../assets/images/sidebarImages/recent
 import Ranges from './Ranges/Ranges';
 import TabComponent from '../../Global/TabComponent/TabComponent';
 import PositionsOnlyToggle from './PositionsOnlyToggle/PositionsOnlyToggle';
-import { TokenIF } from '../../../utils/interfaces/TokenIF';
 import { CandleData, ITransaction, setChangesByUser } from '../../../utils/state/graphDataSlice';
 import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
 import { fetchPoolRecentChanges } from '../../../App/functions/fetchPoolRecentChanges';
@@ -27,6 +27,8 @@ import { fetchPoolRecentChanges } from '../../../App/functions/fetchPoolRecentCh
 import { fetchUserRecentChanges } from '../../../App/functions/fetchUserRecentChanges';
 import Leaderboard from './Ranges/Leaderboard';
 import PoolInfo from './PoolInfo/PoolInfo';
+import { DefaultTooltip } from '../../Global/StyledTooltip/StyledTooltip';
+import TradeChartsTokenInfo from '../../../pages/Trade/TradeCharts/TradeChartsComponents/TradeChartsTokenInfo';
 
 interface ITabsProps {
     isUserLoggedIn: boolean | undefined;
@@ -34,8 +36,7 @@ interface ITabsProps {
     crocEnv: CrocEnv | undefined;
     provider: ethers.providers.Provider | undefined;
     account: string;
-    isAuthenticated: boolean;
-    isWeb3Enabled: boolean;
+
     lastBlockNumber: number;
     chainId: string;
     chainData: ChainSpec;
@@ -75,6 +76,25 @@ interface ITabsProps {
     // handleTxCopiedClick: () => void;
     // handleOrderCopiedClick: () => void;
     // handleRangeCopiedClick: () => void;
+    activeTimeFrame: string;
+    unselectCandle: () => void;
+
+    favePools: PoolIF[];
+    addPoolToFaves: (tokenA: TokenIF, tokenB: TokenIF, chainId: string, poolId: number) => void;
+    removePoolFromFaves: (
+        tokenA: TokenIF,
+        tokenB: TokenIF,
+        chainId: string,
+        poolId: number,
+    ) => void;
+    poolPriceDisplay: number;
+
+    poolPriceChangePercent: string | undefined;
+
+    setPoolPriceChangePercent: Dispatch<SetStateAction<string | undefined>>;
+    isPoolPriceChangePositive: boolean;
+
+    setIsPoolPriceChangePositive: Dispatch<SetStateAction<boolean>>;
 }
 
 // const httpGraphCacheServerDomain = 'https://809821320828123.de:5000';
@@ -86,8 +106,6 @@ export default function TradeTabs2(props: ITabsProps) {
         crocEnv,
         chainId,
         chainData,
-        isAuthenticated,
-        isWeb3Enabled,
         account,
         isShowAllEnabled,
         setIsShowAllEnabled,
@@ -120,9 +138,21 @@ export default function TradeTabs2(props: ITabsProps) {
         setSelectedDate,
         hasInitialized,
         setHasInitialized,
+        activeTimeFrame,
+        unselectCandle,
         // handleTxCopiedClick,
         // handleOrderCopiedClick,
         // handleRangeCopiedClick,
+
+        favePools,
+        addPoolToFaves,
+        removePoolFromFaves,
+        poolPriceDisplay,
+
+        poolPriceChangePercent,
+        setPoolPriceChangePercent,
+        isPoolPriceChangePositive,
+        // setIsPoolPriceChangePositive
     } = props;
 
     const graphData = useAppSelector((state) => state?.graphData);
@@ -274,7 +304,7 @@ export default function TradeTabs2(props: ITabsProps) {
                     simpleCalc: true,
                     annotateMEV: false,
                     ensResolution: true,
-                    n: 100,
+                    n: 500, // fetch last 500 changes,
                 })
                     .then((updatedTransactions) => {
                         if (updatedTransactions) {
@@ -352,7 +382,6 @@ export default function TradeTabs2(props: ITabsProps) {
         importedTokens: importedTokens,
         provider: provider,
         account: account,
-        isAuthenticated: isAuthenticated,
         chainId: chainId,
         isShowAllEnabled: isShowAllEnabled,
         notOnTradeRoute: false,
@@ -427,6 +456,7 @@ export default function TradeTabs2(props: ITabsProps) {
         setIsShowAllEnabled: setIsShowAllEnabled,
         setIsCandleSelected: setIsCandleSelected,
         changeState: changeState,
+        lastBlockNumber: lastBlockNumber,
     };
     // props for <PositionsOnlyToggle/> React Element
 
@@ -435,8 +465,7 @@ export default function TradeTabs2(props: ITabsProps) {
     const positionsOnlyToggleProps = {
         changeState: changeState,
         isShowAllEnabled: isShowAllEnabled,
-        isAuthenticated: isAuthenticated,
-        isWeb3Enabled: isWeb3Enabled,
+        isUserLoggedIn: isUserLoggedIn,
         setHasInitialized: setHasInitialized,
         setIsShowAllEnabled: setIsShowAllEnabled,
         setIsCandleSelected: setIsCandleSelected,
@@ -450,6 +479,17 @@ export default function TradeTabs2(props: ITabsProps) {
         leaderOwnerId: leaderOwnerId,
         selectedDate: selectedDate,
         setSelectedDate: setSelectedDate,
+    };
+
+    const TradeChartsTokenInfoProps = {
+        chainId: chainId,
+        favePools: favePools,
+        addPoolToFaves: addPoolToFaves,
+        removePoolFromFaves: removePoolFromFaves,
+        poolPriceDisplay: poolPriceDisplay,
+        poolPriceChangePercent: poolPriceChangePercent,
+        setPoolPriceChangePercent: setPoolPriceChangePercent,
+        isPoolPriceChangePositive: isPoolPriceChangePositive,
     };
     // data for headings of each of the three tabs
     const tradeTabData = isCandleSelected
@@ -472,18 +512,18 @@ export default function TradeTabs2(props: ITabsProps) {
               //       icon: rangePositionsImage,
               //       showRightSideOption: true,
               //   },
-              {
-                  label: 'Leaderboard',
-                  content: <Leaderboard {...rangesProps} />,
-                  icon: rangePositionsImage,
-                  showRightSideOption: false,
-              },
-              {
-                  label: 'Info',
-                  content: <PoolInfo {...poolInfoProps} />,
-                  icon: rangePositionsImage,
-                  showRightSideOption: false,
-              },
+              //   {
+              //       label: 'Leaderboard',
+              //       content: <Leaderboard {...rangesProps} />,
+              //       icon: rangePositionsImage,
+              //       showRightSideOption: false,
+              //   },
+              //   {
+              //       label: 'Info',
+              //       content: <PoolInfo {...poolInfoProps} />,
+              //       icon: rangePositionsImage,
+              //       showRightSideOption: false,
+              //   },
           ]
         : [
               {
@@ -525,11 +565,11 @@ export default function TradeTabs2(props: ITabsProps) {
         setCurrentTxActiveInTransactions('');
         setCurrentPositionActive('');
     };
-    const unselectCandle = () => {
-        setSelectedDate(undefined);
-        changeState(false, undefined);
-        setIsCandleSelected(false);
-    };
+    // const unselectCandle = () => {
+    //     setSelectedDate(undefined);
+    //     changeState(false, undefined);
+    //     setIsCandleSelected(false);
+    // };
 
     const clearButtonOrNull = isCandleSelected ? (
         <button className={styles.option_button} onClick={() => unselectCandle()}>
@@ -537,18 +577,52 @@ export default function TradeTabs2(props: ITabsProps) {
         </button>
     ) : null;
 
+    const utcDiff = moment().utcOffset();
+    const utcDiffHours = Math.floor(utcDiff / 60);
+
+    // console.log({ utcDiffHours });
+
     const selectedMessageContent = (
         <div className={styles.show_tx_message}>
-            <p
-                onClick={() => {
-                    unselectCandle();
-                    // setIsCandleSelected(false);
-                    // setTransactionFilter(undefined);
-                }}
-                style={isCandleSelected ? { cursor: 'pointer' } : { cursor: 'default' }}
+            <DefaultTooltip
+                interactive
+                title={
+                    activeTimeFrame === '1d'
+                        ? 'Transactions for 24 hours since Midnight UTC'
+                        : `Transactions for ${activeTimeFrame} timeframe`
+                }
+                placement={'bottom'}
+                arrow
+                enterDelay={300}
+                leaveDelay={200}
             >
-                {isCandleSelected && `Showing Transactions for ${moment(selectedDate).calendar()}`}
-            </p>
+                <p
+                    onClick={() => {
+                        unselectCandle();
+                        // setIsCandleSelected(false);
+                        // setTransactionFilter(undefined);
+                    }}
+                    style={isCandleSelected ? { cursor: 'pointer' } : { cursor: 'default' }}
+                >
+                    {isCandleSelected &&
+                        activeTimeFrame === '1d' &&
+                        `Showing Transactions ${moment(selectedDate)
+                            .subtract(utcDiffHours, 'hours')
+                            .calendar(null, {
+                                sameDay: 'for [Today]',
+                                // sameDay: '[Today]',
+                                nextDay: 'for ' + '[Tomorrow]',
+                                nextWeek: 'for' + 'dddd',
+                                lastDay: 'for ' + '[Yesterday]',
+                                lastWeek: 'for ' + '[Last] dddd',
+                                sameElse: 'for ' + 'MM/DD/YYYY',
+                            })}`}
+                    {isCandleSelected &&
+                        activeTimeFrame !== '1d' &&
+                        `Showing Transactions for ${moment(selectedDate).calendar()}`}
+                </p>
+            </DefaultTooltip>
+
             {clearButtonOrNull}
         </div>
     );
@@ -558,7 +632,12 @@ export default function TradeTabs2(props: ITabsProps) {
     return (
         <div ref={tabComponentRef} className={styles.trade_tab_container}>
             <>
-                {selectedMessageContent}
+                {isCandleSelected ? selectedMessageContent : null}
+                {expandTradeTable && (
+                    <div style={{ display: 'flex', justifyContent: 'center', padding: '4px 0' }}>
+                        <TradeChartsTokenInfo {...TradeChartsTokenInfoProps} />
+                    </div>
+                )}
                 <TabComponent
                     data={tradeTabData}
                     rightTabOptions={<PositionsOnlyToggle {...positionsOnlyToggleProps} />}

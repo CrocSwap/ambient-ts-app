@@ -7,11 +7,11 @@ import { FeeChartData } from '../TradeCharts';
 interface FreeRateData {
     feeData: FeeChartData[] | undefined;
     period: number | undefined;
+    subChartValues: any;
     setsubChartValues: React.Dispatch<React.SetStateAction<any>>;
     setZoomAndYdragControl: React.Dispatch<React.SetStateAction<any>>;
     crosshairForSubChart: any;
     xScale: any;
-    lastX: any;
     render: any;
     zoomAndYdragControl: any;
     isMouseMoveForSubChart: any;
@@ -39,7 +39,7 @@ export default function FeeRateSubChart(props: FreeRateData) {
         getNewCandleData,
         setMouseMoveChartName,
         mouseMoveChartName,
-        lastX,
+        subChartValues,
     } = props;
 
     const d3PlotFeeRate = useRef(null);
@@ -52,7 +52,7 @@ export default function FeeRateSubChart(props: FreeRateData) {
 
             props.render();
         }
-    }, [xScale, crosshairForSubChart, period, feeData, zoomAndYdragControl, lastX]);
+    }, [xScale, crosshairForSubChart, period, feeData, zoomAndYdragControl]);
 
     const render = useCallback(() => {
         const nd = d3.select('#d3PlotFeeRate').node() as any;
@@ -65,25 +65,54 @@ export default function FeeRateSubChart(props: FreeRateData) {
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 
                 //  const result = feeData.filter((v: number, i: number, a: any) => a.indexOf(v) !== i);
-                const yExtent = d3fc
-                    .extentLinear()
-                    .accessors([(d: any) => d.value])
-                    .include([0]);
-
                 const yScale = d3.scaleLinear();
-                yScale.domain(yExtent(feeData));
+                yScale.domain([0.5, 4]);
+
+                const feeRateLogScale = d3.scaleLog().domain([0.0005, 0.01]).range([1, 3]);
+
+                const feeDataTemp: any[] = [];
+
+                (feeData[0].value = 0.01),
+                    (feeData[1].value = 0.01),
+                    (feeData[2].value = 0.01),
+                    (feeData[3].value = 0.01),
+                    (feeData[4].value = 0.01),
+                    (feeData[5].value = 0.01),
+                    (feeData[6].value = 0.003),
+                    (feeData[7].value = 0.003),
+                    (feeData[8].value = 0.003),
+                    (feeData[9].value = 0.003),
+                    (feeData[10].value = 0.003),
+                    (feeData[11].value = 0.003),
+                    feeData.map((data: any) => {
+                        feeDataTemp.push({
+                            time: data.time,
+                            value: feeRateLogScale(data.value),
+                        });
+                    });
+
+                // console.log(feeDataTemp);
 
                 const yAxis = d3fc
                     .axisRight()
                     .scale(yScale)
+                    .tickValues([1, 2.2, 3])
                     .tickFormat((d: any) => {
-                        return d + '%';
-                    })
-                    .tickArguments([2]);
+                        switch (d) {
+                            case 1:
+                                return 0.05 + '%';
+                            case 2.2:
+                                return 0.3 + '%';
+                            case 3:
+                                return 1 + '%';
+                            default:
+                                return d + '%';
+                        }
+                    });
 
                 const crosshairDataLocal = [
                     {
-                        x: crosshairForSubChart[0].x,
+                        x: 0,
                         y:
                             isMouseMoveForSubChart && mouseMoveChartName === 'feeRate'
                                 ? crosshairForSubChart[0].y
@@ -93,25 +122,6 @@ export default function FeeRateSubChart(props: FreeRateData) {
 
                 const lineJoin = d3fc.dataJoin('g', 'lineJoin');
                 const crosshairVerticalJoin = d3fc.dataJoin('g', 'crosshairVertical');
-
-                const crosshairHorizontal = d3fc
-                    .annotationSvgLine()
-                    .orient('vertical')
-                    .value((d: any) => d.x)
-                    .xScale(xScale)
-                    .yScale(yScale)
-                    .label('');
-
-                crosshairHorizontal.decorate((selection: any) => {
-                    selection.enter().select('line').attr('class', 'crosshair');
-                    selection.enter().style('visibility', 'hidden');
-                    selection
-                        .enter()
-                        .append('line')
-                        .attr('stroke-width', 1)
-                        .style('pointer-events', 'all');
-                    selection.enter().select('g.top-handle').remove();
-                });
 
                 const crosshairVertical = d3fc
                     .annotationSvgLine()
@@ -168,7 +178,7 @@ export default function FeeRateSubChart(props: FreeRateData) {
                                 .domain(xScale.range())
                                 .range([0, domainX[1] - domainX[0]]);
 
-                            const deltaX = linearX(lastX - event.transform.x);
+                            const deltaX = linearX(-event.sourceEvent.movementX);
                             xScale.domain([
                                 new Date(domainX[0].getTime() + deltaX),
                                 new Date(domainX[1].getTime() + deltaX),
@@ -185,7 +195,7 @@ export default function FeeRateSubChart(props: FreeRateData) {
 
                 d3.select(d3PlotFeeRate.current).on('draw', function (event: any) {
                     const svg = d3.select(event.target).select('svg');
-                    lineJoin(svg, [feeData]).lower().call(lineSeries);
+                    lineJoin(svg, [feeDataTemp]).lower().call(lineSeries);
                     crosshairVerticalJoin(svg, [crosshairDataLocal]).call(crosshairVertical);
                 });
 
@@ -257,7 +267,7 @@ export default function FeeRateSubChart(props: FreeRateData) {
                 });
             }
         },
-        [crosshairForSubChart],
+        [crosshairForSubChart, feeData],
     );
 
     return (
@@ -265,13 +275,25 @@ export default function FeeRateSubChart(props: FreeRateData) {
             className='main_layout_chart'
             id='fee_rate_chart'
             data-testid={'chart'}
-            style={{ display: 'flex', flexDirection: 'row', height: '10%', width: '100%' }}
+            style={{
+                display: 'flex',
+                flexDirection: 'row',
+                height: '15%',
+                width: '100%',
+                paddingTop: '5px',
+            }}
         >
             <d3fc-svg
                 id='d3PlotFeeRate'
                 ref={d3PlotFeeRate}
                 style={{ flex: 1, flexGrow: 20, overflow: 'hidden' }}
             ></d3fc-svg>
+            <label style={{ position: 'absolute', left: '0%' }}>
+                Fee Rate:{' '}
+                {(
+                    subChartValues.filter((value: any) => value.name === 'feeRate')[0].value * 100
+                ).toString() + '%'}
+            </label>
             <d3fc-svg className='y-axis' ref={d3Yaxis} style={{ flexGrow: 1 }}></d3fc-svg>
         </div>
     );

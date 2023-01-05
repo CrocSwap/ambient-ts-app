@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { useState, Dispatch, SetStateAction, useRef } from 'react';
+import { useState, Dispatch, SetStateAction, useRef, useEffect } from 'react';
 import { FiMoreHorizontal, FiCopy, FiExternalLink } from 'react-icons/fi';
 
 // START: Import Local Files
@@ -14,6 +14,7 @@ import { CgProfile } from 'react-icons/cg';
 import { NavLink } from 'react-router-dom';
 import { AiOutlineLogout } from 'react-icons/ai';
 import UseOnClickOutside from '../../../../utils/hooks/useOnClickOutside';
+import { useAccount } from 'wagmi';
 
 interface AccountPropsIF {
     isUserLoggedIn: boolean | undefined;
@@ -21,7 +22,7 @@ interface AccountPropsIF {
     accountAddress: string;
     accountAddressFull: string;
     clickLogout: () => void;
-    openModal: () => void;
+    // openModal: () => void;
     ensName: string;
     chainId: string;
     isAppOverlayActive: boolean;
@@ -34,17 +35,20 @@ interface AccountPropsIF {
 
 export default function Account(props: AccountPropsIF) {
     const {
-        isUserLoggedIn,
         nativeBalance,
         clickLogout,
         ensName,
-        openModal,
+        // openModal,
         chainId,
         isAppOverlayActive,
         setIsAppOverlayActive,
         switchTheme,
         theme,
     } = props;
+
+    const { connector, isConnected } = useAccount();
+
+    const isUserLoggedIn = isConnected;
 
     const [openSnackbar, setOpenSnackbar] = useState(false);
     const [value, copy] = useCopyToClipboard();
@@ -66,6 +70,10 @@ export default function Account(props: AccountPropsIF) {
 
     const [openNavbarMenu, setOpenNavbarMenu] = useState(false);
     const [showWalletDropdown, setShowWalletDropdown] = useState(false);
+
+    useEffect(() => {
+        !isUserLoggedIn ? setShowWalletDropdown(false) : null;
+    }, [isUserLoggedIn]);
 
     const walletWrapperStyle = showWalletDropdown
         ? styles.wallet_wrapper_active
@@ -103,7 +111,7 @@ export default function Account(props: AccountPropsIF) {
                         </div>
                     </div>
                     <div className={styles.wallet_display}>
-                        <p>Metamask</p>
+                        <p>{connector?.name}</p>
                         <p>{props.accountAddress}</p>
                     </div>
                 </div>
@@ -156,7 +164,7 @@ export default function Account(props: AccountPropsIF) {
                 <DropdownMenu
                     isUserLoggedIn={isUserLoggedIn}
                     clickLogout={clickLogout}
-                    openModal={openModal}
+                    // openModal={openModal}
                     chainId={chainId}
                     isAppOverlayActive={isAppOverlayActive}
                     setIsAppOverlayActive={setIsAppOverlayActive}

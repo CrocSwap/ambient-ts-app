@@ -63,12 +63,16 @@ export function getPinnedPriceValuesFromTicks(
 
     const lowPriceDisplayTruncated =
         lowPriceDisplay < 2
-            ? truncateDecimals(lowPriceDisplay, 4)
+            ? lowPriceDisplay > 0.1
+                ? truncateDecimals(lowPriceDisplay, 4)
+                : truncateDecimals(lowPriceDisplay, 6)
             : truncateDecimals(lowPriceDisplay, 2);
 
     const highPriceDisplayTruncated =
         highPriceDisplay < 2
-            ? truncateDecimals(highPriceDisplay, 4)
+            ? highPriceDisplay > 0.1
+                ? truncateDecimals(highPriceDisplay, 4)
+                : truncateDecimals(highPriceDisplay, 6)
             : truncateDecimals(highPriceDisplay, 2);
 
     // const pinnedMinPriceDisplay = isDenomInBase
@@ -105,6 +109,44 @@ export function getPinnedPriceValuesFromTicks(
         pinnedMinPriceNonDisplay: pinnedMinPriceNonDisplay,
         pinnedMaxPriceNonDisplay: pinnedMaxPriceNonDisplay,
     };
+}
+
+export function getPinnedTickFromDisplayPrice(
+    isDenomInBase: boolean,
+    baseTokenDecimals: number,
+    quoteTokenDecimals: number,
+    isMinPrice: boolean,
+    priceDisplayString: string,
+    gridSize: number,
+): number {
+    const priceDisplayNum = parseFloat(priceDisplayString);
+    let priceNonDisplayNum, pinnedTick;
+    if (isDenomInBase) {
+        priceNonDisplayNum = fromDisplayPrice(
+            1 / priceDisplayNum,
+            baseTokenDecimals,
+            quoteTokenDecimals,
+        );
+        const tickExact = Math.log(priceNonDisplayNum) / Math.log(1.0001);
+        if (isMinPrice) {
+            pinnedTick = roundDownTick(tickExact, gridSize);
+        } else {
+            pinnedTick = roundUpTick(tickExact, gridSize);
+        }
+    } else {
+        priceNonDisplayNum = fromDisplayPrice(
+            priceDisplayNum,
+            baseTokenDecimals,
+            quoteTokenDecimals,
+        );
+        const tickExact = Math.log(priceNonDisplayNum) / Math.log(1.0001);
+        if (isMinPrice) {
+            pinnedTick = roundDownTick(tickExact, gridSize);
+        } else {
+            pinnedTick = roundUpTick(tickExact, gridSize);
+        }
+    }
+    return pinnedTick;
 }
 
 export function getPinnedPriceValuesFromDisplayPrices(

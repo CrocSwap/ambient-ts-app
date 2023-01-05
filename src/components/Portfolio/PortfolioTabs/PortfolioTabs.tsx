@@ -63,7 +63,6 @@ interface PortfolioTabsPropsIF {
     account: string;
     showSidebar: boolean;
     isUserLoggedIn: boolean | undefined;
-    isAuthenticated: boolean;
     baseTokenBalance: string;
     quoteTokenBalance: string;
     baseTokenDexBalance: string;
@@ -227,7 +226,7 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
             simpleCalc: true,
             annotateMEV: false,
             ensResolution: true,
-            n: 100,
+            n: 500, // fetch last 500 changes,
         })
             .then((updatedTransactions) => {
                 if (updatedTransactions) {
@@ -359,7 +358,6 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
         chainId: chainId,
         provider: props.provider,
         isUserLoggedIn: props.isUserLoggedIn,
-        isAuthenticated: props.isAuthenticated,
         importedTokens: importedTokens,
         baseTokenBalance: baseTokenBalance,
         quoteTokenBalance: quoteTokenBalance,
@@ -410,6 +408,7 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
         showSidebar: props.showSidebar,
         isOnPortfolioPage: true,
         handlePulseAnimation: handlePulseAnimation,
+        lastBlockNumber: lastBlockNumber,
     };
 
     const tokensProps = {
@@ -425,7 +424,7 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
         { label: 'Limit Orders', content: <Orders {...ordersProps} />, icon: openOrdersImage },
         { label: 'Ranges', content: <Ranges {...rangeProps} />, icon: rangePositionsImage },
         {
-            label: 'Exchange Deposits',
+            label: 'Exchange Balances',
             content: <Exchange {...exchangeProps} />,
             icon: exchangeImage,
         },
@@ -442,7 +441,7 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
         { label: 'Limit Orders', content: <Orders {...ordersProps} />, icon: openOrdersImage },
         { label: 'Ranges', content: <Ranges {...rangeProps} />, icon: rangePositionsImage },
         {
-            label: 'Exchange Deposits',
+            label: 'Exchange Balances',
             content: <Exchange {...exchangeProps} />,
             icon: exchangeImage,
         },

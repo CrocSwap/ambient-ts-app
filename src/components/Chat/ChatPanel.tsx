@@ -12,13 +12,13 @@ import { Message } from './Model/MessageModel';
 import { PoolIF } from '../../utils/interfaces/PoolIF';
 import { TokenIF } from '../../utils/interfaces/TokenIF';
 import { targetData } from '../../utils/state/tradeDataSlice';
-import { useMoralis } from 'react-moralis';
 import ChatButton from '../../App/components/Chat/ChatButton/ChatButton';
 import { MdOpenInFull } from 'react-icons/md';
 import { Link } from 'react-router-dom';
 import useChatApi from './Service/ChatApi';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { BsChatLeftFill } from 'react-icons/bs';
+import { useAccount } from 'wagmi';
 interface currentPoolInfo {
     tokenA: TokenIF;
     tokenB: TokenIF;
@@ -55,7 +55,7 @@ export default function ChatPanel(props: ChatProps) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const messageEnd = useRef<any>(null);
     const [room, setRoom] = useState('Global');
-    const { account } = useMoralis();
+    const { address } = useAccount();
     const [currentUser, setCurrentUser] = useState<string | undefined>(undefined);
     const [name, setName] = useState('');
     const [minutes, setMinute] = useState(1);
@@ -218,7 +218,7 @@ export default function ChatPanel(props: ChatProps) {
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     function isCurrentUser() {
-        if (account === null) {
+        if (!address) {
             return setCurrentUser(undefined);
         } else {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any

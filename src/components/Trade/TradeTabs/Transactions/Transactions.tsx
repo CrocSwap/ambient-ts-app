@@ -220,7 +220,17 @@ export default function Transactions(props: TransactionsProps) {
     const quoteTokenAddress = tradeData.quoteToken.address;
 
     const [currentPage, setCurrentPage] = useState(1);
-    const [transactionsPerPage] = useState(20);
+
+    // transactions per page media queries
+    const txView1 = useMediaQuery('(max-width: 480px)');
+    const txView2 = useMediaQuery('(max-width: 720px)');
+    const txView3 = useMediaQuery('(max-width: 1200px)');
+    const txView4 = useMediaQuery('(max-width: 1800px)');
+    // const txView4 = useMediaQuery('(min-width: 2400px)');
+
+    const transactionsPerPage = txView1 ? 3 : txView2 ? 10 : txView3 ? 12 : txView4 ? 15 : 20;
+
+    // const [transactionsPerPage] = useState(15);
 
     useEffect(() => {
         setCurrentPage(1);
@@ -381,14 +391,14 @@ export default function Transactions(props: TransactionsProps) {
     );
     const sideType = (
         <>
-            <p>Side</p>
             <p>Type</p>
+            <p>Side</p>
         </>
     );
 
     const headerColumns = [
         {
-            name: 'Time',
+            name: 'Timestamp',
             className: '',
             show: !showColumns,
             // && !showSidebar
@@ -473,7 +483,7 @@ export default function Transactions(props: TransactionsProps) {
             alignRight: true,
         },
         {
-            name: isOnPortfolioPage ? <></> : `${baseTokenSymbol}`,
+            name: isOnPortfolioPage ? <></> : `${baseTokenSymbol}ㅤㅤ`,
             // name: isOnPortfolioPage ? 'Qty A' : `${baseTokenSymbol}`,
 
             show: !showColumns,
@@ -482,7 +492,7 @@ export default function Transactions(props: TransactionsProps) {
             alignRight: true,
         },
         {
-            name: isOnPortfolioPage ? <></> : `${quoteTokenSymbol}`,
+            name: isOnPortfolioPage ? <></> : `${quoteTokenSymbol}ㅤㅤ`, // invisible character added
             // name: isOnPortfolioPage ? 'Qty B' : `${quoteTokenSymbol}`,
 
             show: !showColumns,
@@ -491,7 +501,7 @@ export default function Transactions(props: TransactionsProps) {
             alignRight: true,
         },
         {
-            name: 'Tokens',
+            name: 'Tokensㅤㅤ',
 
             show: !isOnPortfolioPage && showColumns,
 
@@ -500,7 +510,7 @@ export default function Transactions(props: TransactionsProps) {
             alignRight: true,
         },
         {
-            name: <></>,
+            name: <>Tokensㅤㅤ</>,
 
             show: isOnPortfolioPage && showColumns,
 
@@ -550,6 +560,7 @@ export default function Transactions(props: TransactionsProps) {
 
     const rowItemContent = usePaginateDataOrNull?.map((tx, idx) => (
         <TransactionRow
+            account={account}
             key={idx}
             tx={tx}
             tradeData={tradeData}
@@ -578,6 +589,7 @@ export default function Transactions(props: TransactionsProps) {
             // setIsCandleSelected={setIsCandleSelected}
             changeState={changeState}
             type='transactions'
+            isOnPortfolioPage={isOnPortfolioPage}
         />
     ) : (
         rowItemContent

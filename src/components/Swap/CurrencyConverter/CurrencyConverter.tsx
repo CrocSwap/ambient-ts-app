@@ -17,6 +17,8 @@ import { ethers } from 'ethers';
 import { calcImpact } from '../../../App/functions/calcImpact';
 import IconWithTooltip from '../../Global/IconWithTooltip/IconWithTooltip';
 import { ZERO_ADDRESS } from '../../../constants';
+import { getRecentTokensParamsIF } from '../../../App/hooks/useRecentTokens';
+
 interface CurrencyConverterPropsIF {
     crocEnv: CrocEnv | undefined;
     poolExists: boolean | undefined;
@@ -28,7 +30,6 @@ interface CurrencyConverterPropsIF {
     tokenPair: TokenPairIF;
     tokensBank: Array<TokenIF>;
     setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
-    searchableTokens: Array<TokenIF>;
     chainId: string;
     isLiq: boolean;
     poolPriceDisplay: number | undefined;
@@ -53,6 +54,12 @@ interface CurrencyConverterPropsIF {
     gasPriceInGwei: number | undefined;
 
     isSwapCopied?: boolean;
+    verifyToken: (addr: string, chn: string) => boolean;
+    getTokensByName: (searchName: string, chn: string, exact: boolean) => TokenIF[];
+    getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
+    importedTokensPlus: TokenIF[];
+    getRecentTokens: (options?: getRecentTokensParamsIF | undefined) => TokenIF[];
+    addRecentToken: (tkn: TokenIF) => void;
 }
 
 export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
@@ -60,14 +67,13 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
         crocEnv,
         poolExists,
         isUserLoggedIn,
-        // provider,
+        provider,
         slippageTolerancePercentage,
         setPriceImpact,
         tokenPair,
         // isSellTokenBase,
         tokensBank,
         setImportedTokens,
-        searchableTokens,
         chainId,
         isLiq,
         poolPriceDisplay,
@@ -87,6 +93,12 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
         indicateActiveTokenListsChanged,
         gasPriceInGwei,
         isSwapCopied,
+        verifyToken,
+        getTokensByName,
+        getTokenByAddress,
+        importedTokensPlus,
+        getRecentTokens,
+        addRecentToken,
     } = props;
 
     // TODO: update name of functions with 'handle' verbiage
@@ -345,6 +357,8 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
             handleSwapButtonMessage(parseFloat(input));
             if (!poolPriceDisplay) return;
 
+            if (tokenPair.dataTokenA.address === tokenPair.dataTokenB.address) return;
+
             const impact =
                 input !== ''
                     ? await calcImpact(
@@ -373,6 +387,8 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
 
             handleSwapButtonMessage(parseFloat(tokenAQty));
             // console.log(tokenPair.dataTokenA.address);
+
+            if (tokenPair.dataTokenA.address === tokenPair.dataTokenB.address) return;
             const impact =
                 tokenAQtyLocal !== ''
                     ? await calcImpact(
@@ -416,7 +432,7 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
         }
         if (value) {
             const input = value;
-            console.log({ input });
+            // console.log({ input });
             setTokenAQtyLocal(input);
             setTokenAInputQty(input);
             setIsTokenAPrimaryLocal(true);
@@ -513,6 +529,8 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
             dispatch(setIsTokenAPrimary(false));
             dispatch(setPrimaryQuantity(input));
 
+            if (tokenPair.dataTokenA.address === tokenPair.dataTokenB.address) return;
+
             const impact =
                 input !== ''
                     ? await calcImpact(
@@ -543,6 +561,7 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
             }
             handleSwapButtonMessage(parseFloat(tokenBQty));
 
+            if (tokenPair.dataTokenA.address === tokenPair.dataTokenB.address) return;
             const impact =
                 tokenBQty !== ''
                     ? await calcImpact(
@@ -585,14 +604,15 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
             }`}
         >
             <CurrencySelector
+                provider={provider}
                 isUserLoggedIn={isUserLoggedIn}
                 tokenPair={tokenPair}
                 tokensBank={tokensBank}
-                searchableTokens={searchableTokens}
                 setImportedTokens={setImportedTokens}
                 chainId={chainId}
                 direction={isLiq ? 'Select Pair' : 'From:'}
                 fieldId='sell'
+                tokenAorB={'A'}
                 sellToken
                 userHasEnteredAmount={userHasEnteredAmount}
                 handleChangeEvent={handleTokenAChangeEvent}
@@ -619,6 +639,12 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
                 indicateActiveTokenListsChanged={indicateActiveTokenListsChanged}
                 gasPriceInGwei={gasPriceInGwei}
                 isSwapCopied={isSwapCopied}
+                importedTokensPlus={importedTokensPlus}
+                verifyToken={verifyToken}
+                getTokensByName={getTokensByName}
+                getTokenByAddress={getTokenByAddress}
+                getRecentTokens={getRecentTokens}
+                addRecentToken={addRecentToken}
             />
             <div className={styles.arrow_container} onClick={reverseTokens}>
                 {isLiq ? null : (
@@ -628,19 +654,18 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
                 )}
             </div>
             <CurrencySelector
+                provider={provider}
                 isUserLoggedIn={isUserLoggedIn}
                 tokenBQtyLocal={tokenBQtyLocal}
                 tokenPair={tokenPair}
                 tokensBank={tokensBank}
                 setImportedTokens={setImportedTokens}
-                searchableTokens={searchableTokens}
                 chainId={chainId}
                 direction={isLiq ? '' : 'To:'}
                 fieldId='buy'
+                tokenAorB={'B'}
                 userHasEnteredAmount={userHasEnteredAmount}
                 handleChangeEvent={handleTokenBChangeEvent}
-                // handleChangeClick={handleTokenBChangeClick}
-                // nativeBalance={props.nativeBalance}
                 tokenABalance={tokenABalance}
                 tokenBBalance={tokenBBalance}
                 tokenADexBalance={tokenADexBalance}
@@ -658,6 +683,12 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
                 indicateActiveTokenListsChanged={indicateActiveTokenListsChanged}
                 gasPriceInGwei={gasPriceInGwei}
                 isSwapCopied={isSwapCopied}
+                importedTokensPlus={importedTokensPlus}
+                verifyToken={verifyToken}
+                getTokensByName={getTokensByName}
+                getTokenByAddress={getTokenByAddress}
+                getRecentTokens={getRecentTokens}
+                addRecentToken={addRecentToken}
             />
         </section>
     );

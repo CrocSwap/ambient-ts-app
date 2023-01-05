@@ -1,26 +1,19 @@
 .tab_window {
     width: 100%;
-    /* width: 100%; */
     height: 100%;
     border-radius: 4px;
-    /* background: #0d1117; */
-   background: var(--dark1);
+    background: var(--dark1);
     overflow: hidden;
-    /* box-shadow: 0 1px 1px hsl(0deg 0% 0% / 0.075), 0 2px 2px hsl(0deg 0% 0% / 0.075),
-        0 4px 4px hsl(0deg 0% 0% / 0.075), 0 8px 8px hsl(0deg 0% 0% / 0.075),
-        0 16px 16px hsl(0deg 0% 0% / 0.075); */
+    margin: 0 -5px;
     display: flex;
     flex-direction: column;
 }
 
 .tab_nav {
-    /* background: #1f2834; */
     padding: 5px 5px 0;
     border-radius: 10px;
     border-bottom-left-radius: 0;
     border-bottom-right-radius: 0;
-    /* border-bottom: 1px solid #171d27; */
-    /* height: 30px; */
 }
 .main_tab_content {
     flex-grow: 1;
@@ -53,9 +46,7 @@
     width: 100%;
     padding: 10px 0;
 
-    /* background: white; */
     cursor: pointer;
-    /* height: 30px; */
     display: flex;
     justify-content: center;
     align-items: center;
@@ -73,12 +64,10 @@
 .tab_ul li.selected,
 .menu_content li.selected,
 .tab_ul_left li.selected {
-    /* background: #171d27; */
-    /* background: var(--dark2); */
     color: #7371fc;
 }
 
-.tab_ul_left li{
+.tab_ul_left li {
     width: 100%;
     display: flex;
     justify-content: center;
@@ -86,9 +75,11 @@
     text-align: center;
 }
 
-.tab_ul li:hover, .tab_ul_left li:hover, .menu_content li:hover{
+.tab_ul li:hover,
+.tab_ul_left li:hover,
+.menu_content li:hover {
     color: #7371fc;
-    transition: all var(--animation-speed) ease-in-out 
+    transition: all var(--animation-speed) ease-in-out;
 }
 
 .underline {
@@ -121,7 +112,6 @@
 .item_label {
     display: none;
 }
-
 
 @media (min-width: 500px) {
     .item_label {
