@@ -1514,7 +1514,7 @@ export default function Chart(props: ChartData) {
             return newTargets;
         });
 
-        console.log(liquidityData.liqBidData);
+        // console.log(liquidityData.liqBidData);
     }, [denomInBase]);
 
     const setBalancedLines = () => {
