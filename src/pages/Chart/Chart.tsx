@@ -38,6 +38,7 @@ import {
     getPinnedTickFromDisplayPrice,
 } from '../Trade/Range/rangeFunctions';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
+import { logicalExpression } from '@babel/types';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -387,19 +388,18 @@ export default function Chart(props: ChartData) {
     useEffect(() => {
         if (
             isRangeSet &&
-            pinnedMinPriceDisplayTruncated !== undefined &&
-            pinnedMaxPriceDisplayTruncated !== undefined &&
             poolPriceDisplay !== undefined &&
+            ranges !== undefined &&
             scaleData !== undefined &&
             rescaleRangeBoundaries &&
             simpleRangeWidth !== 100
         ) {
+            const low = ranges.filter((target: any) => target.name === 'Min')[0].value;
+            const high = ranges.filter((target: any) => target.name === 'Max')[0].value;
+
             const buffer = poolPriceDisplay / 50;
 
-            scaleData.yScale.domain([
-                pinnedMinPriceDisplayTruncated - buffer,
-                pinnedMaxPriceDisplayTruncated + buffer,
-            ]);
+            scaleData.yScale.domain([low - buffer, high + buffer]);
 
             dispatch(setRescaleRangeBoundaries(false));
             setRescale(() => {
@@ -1439,7 +1439,6 @@ export default function Chart(props: ChartData) {
 
                     if (maxYBoundary !== undefined && minYBoundary !== undefined) {
                         const buffer = Math.floor((maxYBoundary - minYBoundary) * 0.1);
-
                         scaleData.yScale.domain([minYBoundary - buffer, maxYBoundary + buffer]);
 
                         const liqAllBidPrices = liquidityData.liqBidData.map(
@@ -2593,6 +2592,9 @@ export default function Chart(props: ChartData) {
         setIsRangeScaleSet('scaleOver');
         let newRangeValue: any;
 
+        const low = ranges.filter((target: any) => target.name === 'Min')[0].value;
+        const high = ranges.filter((target: any) => target.name === 'Max')[0].value;
+
         let clickedValue =
             scaleData.yScale.invert(d3.pointer(event)[1]) > liquidityData.topBoundary
                 ? liquidityData.topBoundary
@@ -2602,7 +2604,14 @@ export default function Chart(props: ChartData) {
 
         const displayValue = poolPriceDisplay !== undefined ? poolPriceDisplay : 0;
 
-        const lineToBeSet = clickedValue > displayValue ? 'Max' : 'Min';
+        let lineToBeSet: any;
+
+        if (low < displayValue && high < displayValue) {
+            lineToBeSet =
+                Math.abs(clickedValue - high) < Math.abs(clickedValue - low) ? 'Max' : 'Min';
+        } else {
+            lineToBeSet = clickedValue > displayValue ? 'Max' : 'Min';
+        }
 
         if (!isAdvancedModeActive) {
             let rangeWidthPercentage;
@@ -2715,9 +2724,6 @@ export default function Chart(props: ChartData) {
                 ),
             );
         } else {
-            const low = ranges.filter((target: any) => target.name === 'Min')[0].value;
-            const high = ranges.filter((target: any) => target.name === 'Max')[0].value;
-
             let pinnedDisplayPrices;
             if (lineToBeSet === 'Max') {
                 pinnedDisplayPrices = getPinnedPriceValuesFromDisplayPrices(
@@ -2745,7 +2751,7 @@ export default function Chart(props: ChartData) {
             const pinnedMinPriceDisplayTruncated = parseFloat(
                 pinnedDisplayPrices.pinnedMinPriceDisplayTruncated,
             );
-            await setRanges((prevState) => {
+            setRanges((prevState) => {
                 const newTargets = [...prevState];
 
                 if (lineToBeSet === 'Max') {
@@ -3425,7 +3431,7 @@ export default function Chart(props: ChartData) {
     }, [scaleData, liquidityData, location, lineGradient]);
 
     useEffect(() => {
-        if (isRangeScaleSet === 'reScale' && poolPriceDisplay) {
+        if (isRangeScaleSet === 'reScale' && poolPriceDisplay && simpleRangeWidth !== 100) {
             if (location.pathname.includes('range')) {
                 const low = ranges.filter((target: any) => target.name === 'Min')[0].value;
                 const high = ranges.filter((target: any) => target.name === 'Max')[0].value;
@@ -3757,7 +3763,7 @@ export default function Chart(props: ChartData) {
                 //     'g',
                 //     'highlightedCurrentPriceLine',
                 // );
-                const indicatorLineJoin = d3fc.dataJoin('g', 'indicatorLine');
+                // const indicatorLineJoin = d3fc.dataJoin('g', 'indicatorLine');
 
                 const barJoin = d3fc.dataJoin('g', 'bar');
 
@@ -4356,8 +4362,9 @@ export default function Chart(props: ChartData) {
                 });
             }
         },
-        [candlestick, bandwidth],
+        [candlestick, bandwidth, ranges],
     );
+
     function showCrosshair() {
         d3.select(d3PlotArea.current)
             .select('svg')
@@ -4455,7 +4462,6 @@ export default function Chart(props: ChartData) {
                 }
             }
 
-            const difference = liqTooltipSelectedLiqBar.liqPrices - poolPriceDisplay;
             // const absoluteDifference = Math.abs(difference)
 
             const pinnedTick = getPinnedTickFromDisplayPrice(
@@ -4566,6 +4572,9 @@ export default function Chart(props: ChartData) {
 
         limitNonDisplay?.then((limit) => {
             // const limitPriceInTick = Math.log(limit) / Math.log(1.0001);
+
+            limit = limit !== 0 ? limit : 1;
+
             const pinnedTick: number = isTokenABase
                 ? pinTickLower(limit, chainData.gridSize)
                 : pinTickUpper(limit, chainData.gridSize);
