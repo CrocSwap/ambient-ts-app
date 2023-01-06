@@ -12,8 +12,8 @@ import { MdAccountBalanceWallet } from 'react-icons/md';
 import IconWithTooltip from '../../../Global/IconWithTooltip/IconWithTooltip';
 import NoTokenIcon from '../../../Global/NoTokenIcon/NoTokenIcon';
 import { SoloTokenSelect } from '../../../../components/Global/TokenSelectContainer/SoloTokenSelect';
-import { getRecentTokensParamsIF } from '../../../../App/hooks/useRecentTokens';
-import { useSoloSearch } from '../../../Global/TokenSelectContainer/hooks/useSoloSearch';
+import { getRecentTokensParamsIF } from  '../../../../App/hooks/useRecentTokens';
+// import { useSoloSearch } from '../../../Global/TokenSelectContainer/hooks/useSoloSearch';
 
 interface RangeCurrencySelectorProps {
     provider?: ethers.providers.Provider;
@@ -65,6 +65,11 @@ interface RangeCurrencySelectorProps {
     getRecentTokens: (options?: getRecentTokensParamsIF | undefined) => TokenIF[];
     addRecentToken: (tkn: TokenIF) => void;
     tokenAorB: string;
+    outputTokens: TokenIF[];
+    validatedInput: string,
+    setInput: Dispatch<SetStateAction<string>>;
+    searchType: string;
+    acknowledgeToken: (tkn: TokenIF) => void;
 }
 
 export default function RangeCurrencySelector(props: RangeCurrencySelectorProps) {
@@ -74,7 +79,7 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
         gasPriceInGwei,
         // resetTokenQuantities,
         tokenPair,
-        tokensBank,
+        // tokensBank,
         setImportedTokens,
         chainId,
         isTokenAEth,
@@ -117,6 +122,11 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
         getRecentTokens,
         addRecentToken,
         tokenAorB,
+        outputTokens,
+        validatedInput,
+        setInput,
+        searchType,
+        acknowledgeToken
     } = props;
 
     const isTokenASelector = fieldId === 'A';
@@ -260,17 +270,19 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
     const isFieldDisabled =
         (isTokenASelector && isTokenADisabled) || (!isTokenASelector && isTokenBDisabled);
 
-    const [isTokenModalOpen, openTokenModal, closeTokenModal] = useModal();
-    const [showSoloSelectTokenButtons, setShowSoloSelectTokenButtons] = useState(true);
-    const [outputTokens, validatedInput, setInput, searchType] = useSoloSearch(
-        chainId,
-        tokensBank,
-        verifyToken,
-        getTokenByAddress,
-        getTokensByName,
-    );
+    const modalCloseCustom = (): void => setInput('');
 
-    const handleInputClear = () => {
+    const [isTokenModalOpen, openTokenModal, closeTokenModal] = useModal(modalCloseCustom);
+    const [showSoloSelectTokenButtons, setShowSoloSelectTokenButtons] = useState(true);
+    // const [outputTokens, validatedInput, setInput, searchType] = useSoloSearch(
+    //     chainId,
+    //     tokensBank,
+    //     verifyToken,
+    //     getTokenByAddress,
+    //     getTokensByName,
+    // );
+
+    const handleInputClear = (): void => {
         setInput('');
         const soloTokenSelectInput = document.getElementById(
             'solo-token-select-input',
@@ -444,6 +456,7 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
                     footer={null}
                 >
                     <SoloTokenSelect
+                        modalCloseCustom={modalCloseCustom}
                         provider={provider}
                         closeModal={closeTokenModal}
                         chainId={chainId}
@@ -464,6 +477,7 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
                         tokenAorB={tokenAorB}
                         reverseTokens={reverseTokens}
                         tokenPair={tokenPair}
+                        acknowledgeToken={acknowledgeToken}
                     />
                 </Modal>
             )}

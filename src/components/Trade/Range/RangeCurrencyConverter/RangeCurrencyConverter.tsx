@@ -70,6 +70,11 @@ interface RangeCurrencyConverterPropsIF {
     importedTokensPlus: TokenIF[];
     getRecentTokens: (options?: getRecentTokensParamsIF | undefined) => TokenIF[];
     addRecentToken: (tkn: TokenIF) => void;
+    outputTokens: TokenIF[];
+    validatedInput: string,
+    setInput: Dispatch<SetStateAction<string>>;
+    searchType: string;
+    acknowledgeToken: (tkn: TokenIF) => void;
 }
 
 // central React functional component
@@ -118,6 +123,11 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
         importedTokensPlus,
         getRecentTokens,
         addRecentToken,
+        outputTokens,
+        validatedInput,
+        setInput,
+        searchType,
+        acknowledgeToken
     } = props;
 
     const dispatch = useAppDispatch();
@@ -140,21 +150,12 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
 
     const tradeData = useAppSelector((state) => state.tradeData);
 
-    // const tokens = {
-    //     baseToken: tradeData.baseToken.address,
-    //     quoteToken: tradeData.quoteToken.address,
-    // };
-
     const resetTokenQuantities = () => {
         setTokenAQtyLocal(0);
         setTokenAQtyValue(0);
         setTokenBQtyLocal(0);
         setTokenBQtyValue(0);
     };
-
-    // useEffect(() => {
-    //     resetTokenQuantities();
-    // }, [JSON.stringify(tokens)]);
 
     const isTokenAEth = tradeData.tokenA.address === ZERO_ADDRESS;
     const isTokenBEth = tradeData.tokenB.address === ZERO_ADDRESS;
@@ -734,6 +735,11 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
         importedTokensPlus: importedTokensPlus,
         getRecentTokens: getRecentTokens,
         addRecentToken: addRecentToken,
+        outputTokens: outputTokens,
+        validatedInput: validatedInput,
+        setInput: setInput,
+        searchType: searchType,
+        acknowledgeToken: acknowledgeToken
     };
 
     return (

@@ -17,7 +17,7 @@ import { MdAccountBalanceWallet } from 'react-icons/md';
 import ambientLogo from '../../../../assets/images/logos/ambient_logo.svg';
 import NoTokenIcon from '../../../Global/NoTokenIcon/NoTokenIcon';
 import { SoloTokenSelect } from '../../../Global/TokenSelectContainer/SoloTokenSelect';
-import { useSoloSearch } from '../../../Global/TokenSelectContainer/hooks/useSoloSearch';
+// import { useSoloSearch } from '../../../Global/TokenSelectContainer/hooks/useSoloSearch';
 import { getRecentTokensParamsIF } from '../../../../App/hooks/useRecentTokens';
 
 // interface for component props
@@ -60,6 +60,11 @@ interface LimitCurrencySelectorProps {
     getRecentTokens: (options?: getRecentTokensParamsIF | undefined) => TokenIF[];
     addRecentToken: (tkn: TokenIF) => void;
     tokenAorB: string;
+    outputTokens: TokenIF[];
+    validatedInput: string,
+    setInput: Dispatch<SetStateAction<string>>;
+    searchType: string;
+    acknowledgeToken: (tkn: TokenIF) => void;
 }
 
 // central react functional component
@@ -68,7 +73,7 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
         provider,
         isUserLoggedIn,
         tokenPair,
-        tokensBank,
+        // tokensBank,
         setImportedTokens,
         chainId,
         fieldId,
@@ -99,6 +104,11 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
         getRecentTokens,
         addRecentToken,
         tokenAorB,
+        outputTokens,
+        validatedInput,
+        setInput,
+        searchType,
+        acknowledgeToken
     } = props;
 
     const thisToken = fieldId === 'sell' ? tokenPair.dataTokenA : tokenPair.dataTokenB;
@@ -111,17 +121,19 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
     // ... from its counterparts in the Swap/Market/Range modules, even if we use
     // ... a common element for those modules in the future.
 
-    const [isTokenModalOpen, openTokenModal, closeTokenModal] = useModal();
-    const [showSoloSelectTokenButtons, setShowSoloSelectTokenButtons] = useState(true);
-    const [outputTokens, validatedInput, setInput, searchType] = useSoloSearch(
-        chainId,
-        tokensBank,
-        verifyToken,
-        getTokenByAddress,
-        getTokensByName,
-    );
+    const modalCloseCustom = (): void => setInput('');
 
-    const handleInputClear = () => {
+    const [isTokenModalOpen, openTokenModal, closeTokenModal] = useModal(modalCloseCustom);
+    const [showSoloSelectTokenButtons, setShowSoloSelectTokenButtons] = useState(true);
+    // const [outputTokens, validatedInput, setInput, searchType] = useSoloSearch(
+    //     chainId,
+    //     tokensBank,
+    //     verifyToken,
+    //     getTokenByAddress,
+    //     getTokensByName,
+    // );
+
+    const handleInputClear = (): void => {
         setInput('');
         const soloTokenSelectInput = document.getElementById(
             'solo-token-select-input',
@@ -333,11 +345,6 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
                     </div>
                 </IconWithTooltip>
             </div>
-            {/* {fieldId === 'sell' ? (
-                    <span>Wallet: {walletBalance} | Surplus: 0</span>
-                ) : (
-                    <span>Wallet: {walletBalance} | Surplus: 0</span>
-                )} */}
             {isSellTokenSelector ? WithdrawTokensContent : null}
         </div>
     ) : null;
@@ -366,6 +373,7 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
                     footer={null}
                 >
                     <SoloTokenSelect
+                        modalCloseCustom={modalCloseCustom}
                         provider={provider}
                         closeModal={closeTokenModal}
                         chainId={chainId}
@@ -386,6 +394,7 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
                         tokenAorB={tokenAorB}
                         reverseTokens={reverseTokens}
                         tokenPair={tokenPair}
+                        acknowledgeToken={acknowledgeToken}
                     />
                 </Modal>
             )}

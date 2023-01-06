@@ -84,6 +84,11 @@ interface LimitPropsIF {
     importedTokensPlus: TokenIF[];
     getRecentTokens: (options?: getRecentTokensParamsIF | undefined) => TokenIF[];
     addRecentToken: (tkn: TokenIF) => void;
+    outputTokens: TokenIF[];
+    validatedInput: string;
+    setInput: Dispatch<SetStateAction<string>>;
+    searchType: string;
+    acknowledgeToken: (tkn: TokenIF) => void;
 }
 
 const cachedQuerySpotPrice = memoizeQuerySpotPrice();
@@ -125,6 +130,11 @@ export default function Limit(props: LimitPropsIF) {
         importedTokensPlus,
         getRecentTokens,
         addRecentToken,
+        outputTokens,
+        validatedInput,
+        setInput,
+        searchType,
+        acknowledgeToken,
     } = props;
 
     const { tradeData, navigationMenu } = useTradeData();
@@ -729,6 +739,11 @@ export default function Limit(props: LimitPropsIF) {
                         importedTokensPlus={importedTokensPlus}
                         getRecentTokens={getRecentTokens}
                         addRecentToken={addRecentToken}
+                        outputTokens={outputTokens}
+                        validatedInput={validatedInput}
+                        setInput={setInput}
+                        searchType={searchType}
+                        acknowledgeToken={acknowledgeToken}
                     />
                 </motion.div>
                 <div className={styles.header_container}>

@@ -68,6 +68,11 @@ interface LimitCurrencyConverterProps {
     importedTokensPlus: TokenIF[];
     getRecentTokens: (options?: getRecentTokensParamsIF | undefined) => TokenIF[];
     addRecentToken: (tkn: TokenIF) => void;
+    outputTokens: TokenIF[];
+    validatedInput: string,
+    setInput: Dispatch<SetStateAction<string>>;
+    searchType: string;
+    acknowledgeToken: (tkn: TokenIF) => void;
 }
 
 // central react functional component
@@ -111,6 +116,11 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
         importedTokensPlus,
         getRecentTokens,
         addRecentToken,
+        outputTokens,
+        validatedInput,
+        setInput,
+        searchType,
+        acknowledgeToken
     } = props;
 
     const dispatch = useAppDispatch();
@@ -511,6 +521,11 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
                 getRecentTokens={getRecentTokens}
                 addRecentToken={addRecentToken}
                 tokenAorB={'A'}
+                outputTokens={outputTokens}
+                validatedInput={validatedInput}
+                setInput={setInput}
+                searchType={searchType}
+                acknowledgeToken={acknowledgeToken}
             />
 
             <div
@@ -556,6 +571,11 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
                 getRecentTokens={getRecentTokens}
                 addRecentToken={addRecentToken}
                 tokenAorB={'B'}
+                outputTokens={outputTokens}
+                validatedInput={validatedInput}
+                setInput={setInput}
+                searchType={searchType}
+                acknowledgeToken={acknowledgeToken}
             />
             <DividerDark addMarginTop />
             <LimitRate

@@ -7,6 +7,7 @@ export const useSoloSearch = (
     verifyToken: (addr: string, chn: string) => boolean,
     getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined,
     getTokensByName: (searchName: string, chn: string, exact: boolean) => TokenIF[],
+    defaultTokens?: TokenIF[]
 ): [TokenIF[], string, Dispatch<SetStateAction<string>>, string] => {
     // memoize default list of tokens to display in DOM
     const importedTokensOnChain = useMemo(
@@ -138,8 +139,8 @@ export const useSoloSearch = (
 
         // fn to run if the app does not recognize input as an address or name or symbol
         function noSearch(): TokenIF[] {
-            return importedTokensOnChain;
-        }
+            return defaultTokens ?? importedTokensOnChain;
+        };
 
         // declare an output variable
         let tokens: TokenIF[];

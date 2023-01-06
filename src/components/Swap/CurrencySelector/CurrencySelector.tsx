@@ -13,7 +13,7 @@ import { MdAccountBalanceWallet } from 'react-icons/md';
 import IconWithTooltip from '../../Global/IconWithTooltip/IconWithTooltip';
 import NoTokenIcon from '../../Global/NoTokenIcon/NoTokenIcon';
 import { SoloTokenSelect } from '../../Global/TokenSelectContainer/SoloTokenSelect';
-import { useSoloSearch } from '../../Global/TokenSelectContainer/hooks/useSoloSearch';
+// import { useSoloSearch } from '../../Global/TokenSelectContainer/hooks/useSoloSearch';
 import { getRecentTokensParamsIF } from '../../../App/hooks/useRecentTokens';
 
 interface CurrencySelectorProps {
@@ -61,6 +61,11 @@ interface CurrencySelectorProps {
     importedTokensPlus: TokenIF[];
     getRecentTokens: (options?: getRecentTokensParamsIF | undefined) => TokenIF[];
     addRecentToken: (tkn: TokenIF) => void;
+    outputTokens: TokenIF[];
+    validatedInput: string,
+    setInput: Dispatch<SetStateAction<string>>;
+    searchType: string;
+    acknowledgeToken: (tkn: TokenIF) => void;
 }
 
 export default function CurrencySelector(props: CurrencySelectorProps) {
@@ -68,7 +73,7 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
         provider,
         isUserLoggedIn,
         tokenPair,
-        tokensBank,
+        // tokensBank,
         setImportedTokens,
         chainId,
         // direction,
@@ -103,6 +108,11 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
         importedTokensPlus,
         addRecentToken,
         getRecentTokens,
+        outputTokens,
+        validatedInput,
+        setInput,
+        searchType,
+        acknowledgeToken
     } = props;
 
     // const [showManageTokenListContent, setShowManageTokenListContent] = useState(false);
@@ -403,17 +413,19 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
         </div>
     );
 
-    const [isTokenModalOpen, openTokenModal, closeTokenModal] = useModal();
-    const [showSoloSelectTokenButtons, setShowSoloSelectTokenButtons] = useState(true);
-    const [outputTokens, validatedInput, setInput, searchType] = useSoloSearch(
-        chainId,
-        tokensBank,
-        verifyToken,
-        getTokenByAddress,
-        getTokensByName,
-    );
+    const modalCloseCustom = (): void => setInput('');
 
-    const handleInputClear = () => {
+    const [isTokenModalOpen, openTokenModal, closeTokenModal] = useModal(modalCloseCustom);
+    const [showSoloSelectTokenButtons, setShowSoloSelectTokenButtons] = useState(true);
+    // const [outputTokens, validatedInput, setInput, searchType] = useSoloSearch(
+    //     chainId,
+    //     tokensBank,
+    //     verifyToken,
+    //     getTokenByAddress,
+    //     getTokensByName,
+    // );
+
+    const handleInputClear = (): void => {
         setInput('');
         const soloTokenSelectInput = document.getElementById(
             'solo-token-select-input',
@@ -466,6 +478,7 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                     footer={null}
                 >
                     <SoloTokenSelect
+                        modalCloseCustom={modalCloseCustom}
                         provider={provider}
                         closeModal={closeTokenModal}
                         chainId={chainId}
@@ -486,6 +499,7 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                         tokenAorB={tokenAorB}
                         reverseTokens={reverseTokens}
                         tokenPair={tokenPair}
+                        acknowledgeToken={acknowledgeToken}
                     />
                 </Modal>
             )}
