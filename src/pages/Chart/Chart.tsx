@@ -38,7 +38,6 @@ import {
     getPinnedTickFromDisplayPrice,
 } from '../Trade/Range/rangeFunctions';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
-import { logicalExpression } from '@babel/types';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -2036,7 +2035,6 @@ export default function Chart(props: ChartData) {
                 });
 
             // let setChangeLimitOrderStatus = false;
-            let limitPreviousData = 0;
             const dragLimit = d3
                 .drag()
                 .on('start', () => {
