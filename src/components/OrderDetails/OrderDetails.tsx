@@ -14,16 +14,17 @@ import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 // import { formatAmountOld } from '../../utils/numbers';
 
 interface IOrderDetailsProps {
+    account: string;
     limitOrder: LimitOrderIF;
     lastBlockNumber: number;
     closeGlobalModal: () => void;
 }
 
 export default function OrderDetails(props: IOrderDetailsProps) {
-    const { limitOrder } = props;
+    const { limitOrder, account } = props;
     // console.log({ limitOrder });
     const { isOrderFilled, userNameToDisplay, baseDisplayFrontend, quoteDisplayFrontend } =
-        useProcessOrder(limitOrder);
+        useProcessOrder(limitOrder, account);
     const lastBlock = useAppSelector((state) => state.graphData).lastBlock;
 
     const [isClaimable, setIsClaimable] = useState<boolean>(isOrderFilled);
@@ -262,6 +263,7 @@ export default function OrderDetails(props: IOrderDetailsProps) {
                 <div className={styles.main_content}>
                     <div className={styles.left_container}>
                         <PriceInfo
+                            account={account}
                             limitOrder={limitOrder}
                             controlItems={controlItems}
                             usdValue={usdValue}

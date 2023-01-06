@@ -18,13 +18,14 @@ type ItemIF = {
     checked: boolean;
 };
 interface ITransactionDetailsPriceInfoProps {
+    account: string;
     tx: ITransaction;
 
     controlItems: ItemIF[];
 }
 
 export default function TransactionDetailsPriceInfo(props: ITransactionDetailsPriceInfoProps) {
-    const { tx, controlItems } = props;
+    const { account, tx, controlItems } = props;
     const dispatch = useAppDispatch();
     const {
         usdValue,
@@ -51,7 +52,7 @@ export default function TransactionDetailsPriceInfo(props: ITransactionDetailsPr
         truncatedDisplayPriceDenomByMoneyness,
         isBaseTokenMoneynessGreaterOrEqual,
         // positionLiquidity,
-    } = useProcessTransaction(tx);
+    } = useProcessTransaction(tx, account);
 
     const isBuy = tx.isBuy === true || tx.isBid === true;
 

@@ -1,13 +1,16 @@
 import { useEffect, useMemo, useState, Dispatch, SetStateAction } from 'react';
-import { TokenIF } from '../../../utils/interfaces/exports';
+import { TokenIF } from '../../utils/interfaces/exports';
 
-export const useSoloSearch = (
+export const useTokenSearch = (
     chainId: string,
     importedTokens: TokenIF[],
     verifyToken: (addr: string, chn: string) => boolean,
     getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined,
-    getTokensByName: (searchName: string, chn: string, exact: boolean) => TokenIF[]
+    getTokensByName: (searchName: string, chn: string, exact: boolean) => TokenIF[],
+    defaultTokens?: TokenIF[]
 ): [TokenIF[], string, Dispatch<SetStateAction<string>>, string] => {
+    console.log({importedTokens});
+    console.log({defaultTokens});
     // memoize default list of tokens to display in DOM
     const importedTokensOnChain = useMemo(() => (
         importedTokens.filter((tkn) => tkn.chainId === parseInt(chainId))
@@ -136,7 +139,7 @@ export const useSoloSearch = (
 
         // fn to run if the app does not recognize input as an address or name or symbol
         function noSearch(): TokenIF[] {
-            return importedTokensOnChain;
+            return defaultTokens ?? importedTokensOnChain;
         };
 
         // declare an output variable

@@ -377,9 +377,12 @@ export default function Trade(props: TradePropsIF) {
             </div>
         ) : null;
 
+    const [poolPriceChangePercent, setPoolPriceChangePercent] = useState<string | undefined>();
+    const [isPoolPriceChangePositive, setIsPoolPriceChangePositive] = useState<boolean>(true);
+
     return (
         <section className={styles.main_layout}>
-            <div className={styles.middle_col}>
+            <div className={`${styles.middle_col} ${expandTradeTable ? styles.flex_column : ''}`}>
                 {poolNotInitializedContent}
                 {mobileDataToggle}
                 <div
@@ -429,6 +432,10 @@ export default function Trade(props: TradePropsIF) {
                             setActiveTimeFrame={setActiveTimeFrame}
                             TradeSettingsColor={<TradeSettingsColor {...tradeSettingsColorProps} />}
                             handlePulseAnimation={handlePulseAnimation}
+                            poolPriceChangePercent={poolPriceChangePercent}
+                            setPoolPriceChangePercent={setPoolPriceChangePercent}
+                            isPoolPriceChangePositive={isPoolPriceChangePositive}
+                            setIsPoolPriceChangePositive={setIsPoolPriceChangePositive}
                         />
                     </div>
                 </div>
@@ -486,6 +493,14 @@ export default function Trade(props: TradePropsIF) {
                             setHasInitialized={setHasInitialized}
                             activeTimeFrame={activeTimeFrame}
                             unselectCandle={unselectCandle}
+                            favePools={favePools}
+                            addPoolToFaves={addPoolToFaves}
+                            removePoolFromFaves={removePoolFromFaves}
+                            poolPriceDisplay={poolPriceDisplayWithDenom}
+                            poolPriceChangePercent={poolPriceChangePercent}
+                            setPoolPriceChangePercent={setPoolPriceChangePercent}
+                            isPoolPriceChangePositive={isPoolPriceChangePositive}
+                            setIsPoolPriceChangePositive={setIsPoolPriceChangePositive}
                             // handleTxCopiedClick={handleTxCopiedClick}
                             // handleOrderCopiedClick={handleOrderCopiedClick}
                             // handleRangeCopiedClick={handleRangeCopiedClick}

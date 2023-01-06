@@ -1449,7 +1449,7 @@ export default function Chart(props: ChartData) {
 
                         while (
                             scaleData.yScale.domain()[1] + liqBidDeviation >=
-                            liquidityData.liqBidData[0].liqPrices
+                            liquidityData?.liqBidData[0]?.liqPrices
                         ) {
                             liquidityData.liqBidData.unshift({
                                 activeLiq: 30,
