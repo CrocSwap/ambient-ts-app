@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState, Dispatch, SetStateAction } from 'react';
+import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { TokenIF } from '../../utils/interfaces/exports';
 
 export const useTokenSearch = (
@@ -17,7 +18,8 @@ export const useTokenSearch = (
 
     // search type ➜ '' or 'address' or 'nameOrAddress'
     const [searchAs, setSearchAs] = useState<string>('');
-    console.log({searchAs});
+
+    const recentTxTokens = useAppSelector((state) => state.userData.recentTokens);
 
     // cleaned and validated version of raw user input
     const validatedInput = useMemo<string>(() => {
@@ -135,24 +137,35 @@ export const useTokenSearch = (
         // fn to run if the app does not recognize input as an address or name or symbol
         function noSearch(): TokenIF[] {
             // initialize an array of tokens to output, seeded with Ambient default
-            const unifiedTokens = defaultTokens;
-            // function to add tokens to output array if not yet present
-            const addTokenToOutput = (newToken: TokenIF) => {
-                const isInArray = unifiedTokens.some(
-                    (tk: TokenIF) => (
-                        tk.address.toLowerCase() === newToken.address.toLowerCase() &&
-                        tk.chainId === newToken.chainId
-                    )
-                );
-                isInArray || unifiedTokens.push(newToken);
+            const outputTokens = defaultTokens;
+            // fn to add tokens from an array to the output array
+            const addTokensToOutput = (newTokens: TokenIF[], maxToAdd=2): void => {
+                // counter to track how many tokens from array have been added
+                let limiter = 0;
+                // logic to iterate through all tokens in array parameter
+                for (let i=0; i<newTokens.length; i++) {
+                    // check if current token at index is already in the ouput variable
+                    const isInArray = outputTokens.some(
+                        (tk: TokenIF) => (
+                            tk.address.toLowerCase() === newTokens[i].address.toLowerCase() &&
+                            tk.chainId === newTokens[i].chainId
+                        )
+                    );
+                    // add token to output if not already there and limiter is below max
+                    if (!isInArray && limiter < maxToAdd) {
+                        limiter++;
+                        outputTokens.push(newTokens[i]);
+                    }
+                }
             }
             // add wallet tokens to output array
-            walletTokens.forEach((tk: TokenIF) => addTokenToOutput(tk));
+            addTokensToOutput(walletTokens);
+            // add tokens from recent txs to output array
+            addTokensToOutput(recentTxTokens ?? []);
             // add recent tokens to output array
-            recentTokens.forEach((tk: TokenIF) => addTokenToOutput(tk));
+            addTokensToOutput(recentTokens);
             // remove off-chain tokens from output array
-            const ouputTokensOnChain = unifiedTokens.filter((tk: TokenIF) => tk.chainId === parseInt(chainId));
-            console.log({ouputTokensOnChain});
+            const ouputTokensOnChain = outputTokens.filter((tk: TokenIF) => tk.chainId === parseInt(chainId));
             return ouputTokensOnChain;
         };
 
