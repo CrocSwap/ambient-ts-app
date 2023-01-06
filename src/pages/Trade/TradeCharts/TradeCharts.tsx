@@ -106,6 +106,7 @@ interface TradeChartsPropsIF {
     isPoolPriceChangePositive: boolean;
 
     setIsPoolPriceChangePositive: Dispatch<SetStateAction<boolean>>;
+    handlePulseAnimation: (type: string) => void;
 }
 
 export interface CandleChartData {
@@ -185,6 +186,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
         setPoolPriceChangePercent,
         isPoolPriceChangePositive,
         setIsPoolPriceChangePositive,
+        handlePulseAnimation,
     } = props;
 
     const dispatch = useAppDispatch();
@@ -585,6 +587,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
                         setShowLatest={setShowLatest}
                         activeTimeFrame={activeTimeFrame}
                         setShowTooltip={setShowTooltip}
+                        handlePulseAnimation={handlePulseAnimation}
                     />
                 </div>
             )}
