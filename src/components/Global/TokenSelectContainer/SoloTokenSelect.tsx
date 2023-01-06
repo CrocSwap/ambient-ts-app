@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState, Dispatch, SetStateAction } from 'react';
-import { TokenIF } from '../../../utils/interfaces/exports';
+import { useNavigate } from 'react-router-dom';
+import { TokenIF, TokenPairIF } from '../../../utils/interfaces/exports';
 import TokenSelect from '../TokenSelect/TokenSelect';
 import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
 import { setToken } from '../../../utils/state/temp';
@@ -8,6 +9,7 @@ import styles from './SoloTokenSelect.module.css';
 import { memoizeFetchContractDetails } from '../../../App/functions/fetchContractDetails';
 import { ethers } from 'ethers';
 import SoloTokenImport from './SoloTokenImport';
+import { useLocationSlug } from './hooks/useLocationSlug';
 // import SimpleLoader from '../LoadingAnimations/SimpleLoader/SimpleLoader';
 // import { AiOutlineQuestionCircle } from 'react-icons/ai';
 
@@ -31,6 +33,10 @@ interface propsIF {
     searchType: string;
     addRecentToken: (tkn: TokenIF) => void;
     getRecentTokens: (options?: { onCurrentChain?: boolean; count?: number | null }) => TokenIF[];
+    isSingleToken: boolean;
+    tokenAorB: string | null;
+    reverseTokens?: () => void;
+    tokenPair?: TokenPairIF;
 }
 
 export const SoloTokenSelect = (props: propsIF) => {
@@ -55,32 +61,30 @@ export const SoloTokenSelect = (props: propsIF) => {
         // verifyToken,
         addRecentToken,
         getRecentTokens,
+        isSingleToken,
+        tokenAorB,
+        reverseTokens,
+        tokenPair,
     } = props;
 
-    // hook to process search input and return an array of relevant tokens
-    // also returns state setter function and values for control flow
-    // const [outputTokens, validatedInput, setInput, searchType] = useSoloSearch(
-    //     chainId,
-    //     importedTokens,
-    //     verifyToken,
-    //     getTokenByAddress,
-    //     getTokensByName,
-    // );
-    // const [outputTokens, validatedInput, setInput, searchType] = useSoloSearch(
-    //     chainId,
-    //     importedTokens,
-    //     verifyToken,
-    //     getTokenByAddress,
-    //     getTokensByName,
-    // );
+    console.log({ importedTokens });
 
     // instance of hook used to retrieve data from RTK
     const dispatch = useAppDispatch();
 
+    // hook to produce current slug in URL prior to params
+    const locationSlug = useLocationSlug();
+
+    // fn to navigate the App to a new URL via react router
+    // this will navigate the app while preserving state
+    const navigate = useNavigate();
+
     // fn to respond to a user clicking to select a token
     const chooseToken = (tkn: TokenIF): void => {
         // dispatch token data object to RTK
-        dispatch(setToken(tkn));
+        if (isSingleToken) {
+            dispatch(setToken(tkn));
+        }
         // determine if the token is a previously imported token
         const isTokenImported: boolean = importedTokens.some(
             (tk: TokenIF) => tk.address.toLowerCase() === tkn.address.toLowerCase(),
@@ -106,6 +110,49 @@ export const SoloTokenSelect = (props: propsIF) => {
                 recentToken.address.toLowerCase() === tkn.address.toLowerCase() &&
                 recentToken.chainId === tkn.chainId,
         ) || addRecentToken(tkn);
+
+        if (tokenAorB === 'A' && tokenPair) {
+            if (tokenPair.dataTokenB.address.toLowerCase() === tkn.address.toLowerCase()) {
+                reverseTokens && reverseTokens();
+                closeModal();
+                return;
+            }
+            goToNewUrlParams(
+                locationSlug,
+                '0x5',
+                tkn.address,
+                tokenPair.dataTokenB.address.toLowerCase() === tkn.address.toLowerCase()
+                    ? tokenPair.dataTokenA.address
+                    : tokenPair.dataTokenB.address,
+            );
+            // user is updating token B
+        } else if (tokenAorB === 'B' && tokenPair) {
+            if (tokenPair.dataTokenA.address.toLowerCase() === tkn.address.toLowerCase()) {
+                reverseTokens && reverseTokens();
+                closeModal();
+                return;
+            }
+            goToNewUrlParams(
+                locationSlug,
+                '0x5',
+                tokenPair.dataTokenA.address.toLowerCase() === tkn.address.toLowerCase()
+                    ? tokenPair.dataTokenB.address
+                    : tokenPair.dataTokenA.address,
+                tkn.address,
+            );
+        }
+
+        function goToNewUrlParams(
+            pathSlug: string,
+            chain: string,
+            addrTokenA: string,
+            addrTokenB: string,
+        ): void {
+            navigate(
+                pathSlug + '/chain=' + chain + '&tokenA=' + addrTokenA + '&tokenB=' + addrTokenB,
+            );
+        }
+
         // close the token modal
         closeModal();
     };
@@ -254,15 +301,7 @@ export const SoloTokenSelect = (props: propsIF) => {
                     <TokenSelect
                         key={JSON.stringify(token)}
                         token={token}
-                        tokensBank={importedTokens}
-                        // TODO: refactor TokenSelect.tsx to remove this value and
-                        // TODO: ... functionality, it is still here for now because we
-                        // TODO: ... call this component from multiple places in the App
-                        undeletableTokens={[]}
-                        chainId={chainId}
-                        setImportedTokens={setImportedTokens}
                         chooseToken={chooseToken}
-                        isOnPortfolio={true}
                         fromListsText=''
                     />
                 ))

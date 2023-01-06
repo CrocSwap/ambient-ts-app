@@ -10,13 +10,14 @@ import OrderAccordionContent from './OrderAccordionContent';
 import { LimitOrderIF } from '../../../../../utils/interfaces/exports';
 
 interface OrderAccordionsPropsIF {
+    account: string;
     i: number;
     expanded: number | boolean;
     setExpanded: Dispatch<SetStateAction<number | false>>;
     limitOrder: LimitOrderIF;
 }
 export default function OrderAccordions(props: OrderAccordionsPropsIF) {
-    const { i, expanded, setExpanded, limitOrder } = props;
+    const { account, i, expanded, setExpanded, limitOrder } = props;
 
     const isOpen = i === expanded;
 
@@ -34,7 +35,7 @@ export default function OrderAccordions(props: OrderAccordionsPropsIF) {
         baseTokenSymbol,
         quoteTokenSymbol,
         isOwnerActiveAccount,
-    } = useProcessOrder(limitOrder);
+    } = useProcessOrder(limitOrder, account);
 
     const walletAndIdDisplay = (
         <div className={styles.wallet_display}>

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { TokenIF } from '../../utils/interfaces/exports';
 
-interface getRecentTokensParamsIF {
+export interface getRecentTokensParamsIF {
     onCurrentChain?: boolean;
     count?: number | null;
 }

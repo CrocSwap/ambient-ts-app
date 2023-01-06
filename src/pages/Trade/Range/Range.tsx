@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // START: Import React and Dongles
 import { useState, useEffect, useMemo, Dispatch, SetStateAction } from 'react';
-import { useMoralis } from 'react-moralis';
 import { ethers } from 'ethers';
 import { motion } from 'framer-motion';
 import { concDepositSkew, CrocEnv } from '@crocswap-libs/sdk';
@@ -56,13 +55,14 @@ import {
 import { addPendingTx, addReceipt, removePendingTx } from '../../../utils/state/receiptDataSlice';
 import getUnicodeCharacter from '../../../utils/functions/getUnicodeCharacter';
 import RangeShareControl from '../../../components/Trade/Range/RangeShareControl/RangeShareControl';
+import { getRecentTokensParamsIF } from '../../../App/hooks/useRecentTokens';
 
 interface RangePropsIF {
+    account: string | undefined;
     crocEnv: CrocEnv | undefined;
     isUserLoggedIn: boolean | undefined;
     importedTokens: Array<TokenIF>;
     setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
-    searchableTokens: Array<TokenIF>;
     mintSlippage: SlippagePairIF;
     isPairStable: boolean;
     provider?: ethers.providers.Provider;
@@ -94,18 +94,24 @@ interface RangePropsIF {
     tokenBQtyLocal: number;
     setTokenAQtyLocal: Dispatch<SetStateAction<number>>;
     setTokenBQtyLocal: Dispatch<SetStateAction<number>>;
+    verifyToken: (addr: string, chn: string) => boolean;
+    getTokensByName: (searchName: string, chn: string, exact: boolean) => TokenIF[];
+    getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
+    importedTokensPlus: TokenIF[];
+    getRecentTokens: (options?: getRecentTokensParamsIF | undefined) => TokenIF[];
+    addRecentToken: (tkn: TokenIF) => void;
 }
 
 export default function Range(props: RangePropsIF) {
     const {
+        account,
         crocEnv,
         isUserLoggedIn,
         importedTokens,
         setImportedTokens,
-        searchableTokens,
         mintSlippage,
         isPairStable,
-        // provider,
+        provider,
         baseTokenAddress,
         quoteTokenAddress,
         poolPriceDisplay,
@@ -133,6 +139,12 @@ export default function Range(props: RangePropsIF) {
         tokenBQtyLocal,
         setTokenAQtyLocal,
         setTokenBQtyLocal,
+        verifyToken,
+        getTokensByName,
+        getTokenByAddress,
+        importedTokensPlus,
+        getRecentTokens,
+        addRecentToken,
     } = props;
 
     const [isModalOpen, openModal, closeModal] = useModal();
@@ -152,8 +164,6 @@ export default function Range(props: RangePropsIF) {
         setTxErrorCode(0);
         setTxErrorMessage('');
     };
-
-    const { account } = useMoralis();
 
     const { tradeData, navigationMenu } = useTradeData();
 
@@ -966,12 +976,12 @@ export default function Range(props: RangePropsIF) {
 
     // props for <RangeCurrencyConverter/> React element
     const rangeCurrencyConverterProps = {
+        provider: provider,
         isUserLoggedIn: isUserLoggedIn,
         poolPriceNonDisplay: poolPriceNonDisplay,
         chainId: chainId ?? '0x2a',
         tokensBank: importedTokens,
         setImportedTokens: setImportedTokens,
-        searchableTokens: searchableTokens,
         tokenPair: tokenPair,
         isAmbient: isAmbient,
         isTokenABase: isTokenABase,
@@ -1004,6 +1014,12 @@ export default function Range(props: RangePropsIF) {
         tokenBQtyLocal,
         setTokenAQtyLocal,
         setTokenBQtyLocal,
+        verifyToken: verifyToken,
+        getTokensByName: getTokensByName,
+        getTokenByAddress: getTokenByAddress,
+        importedTokensPlus: importedTokensPlus,
+        getRecentTokens: getRecentTokens,
+        addRecentToken: addRecentToken,
     };
 
     // props for <RangeWidth/> React element

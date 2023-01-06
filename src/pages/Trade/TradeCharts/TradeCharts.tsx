@@ -99,6 +99,13 @@ interface TradeChartsPropsIF {
     activeTimeFrame: string;
     setActiveTimeFrame: Dispatch<SetStateAction<string>>;
     TradeSettingsColor: JSX.Element;
+
+    poolPriceChangePercent: string | undefined;
+
+    setPoolPriceChangePercent: Dispatch<SetStateAction<string | undefined>>;
+    isPoolPriceChangePositive: boolean;
+
+    setIsPoolPriceChangePositive: Dispatch<SetStateAction<boolean>>;
     handlePulseAnimation: (type: string) => void;
 }
 
@@ -174,6 +181,11 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
         activeTimeFrame,
         setActiveTimeFrame,
         TradeSettingsColor,
+
+        poolPriceChangePercent,
+        setPoolPriceChangePercent,
+        isPoolPriceChangePositive,
+        setIsPoolPriceChangePositive,
         handlePulseAnimation,
     } = props;
 
@@ -361,8 +373,8 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
 
     // END OF GRAPH SETTINGS CONTENT------------------------------------------------------
 
-    const [poolPriceChangePercent, setPoolPriceChangePercent] = useState<string | undefined>();
-    const [isPoolPriceChangePositive, setIsPoolPriceChangePositive] = useState<boolean>(true);
+    // const [poolPriceChangePercent, setPoolPriceChangePercent] = useState<string | undefined>();
+    // const [isPoolPriceChangePositive, setIsPoolPriceChangePositive] = useState<boolean>(true);
 
     // const [poolTvl, setPoolTvl] = useState<string | undefined>();
     // const [tvlAtTick, setTvlAtTick] = useState<string | undefined>();
@@ -461,7 +473,6 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
     const tokenInfo = (
         <div className={styles.token_info_container}>
             <TradeChartsTokenInfo
-                setIsPoolPriceChangePositive={setIsPoolPriceChangePositive}
                 isPoolPriceChangePositive={isPoolPriceChangePositive}
                 poolPriceDisplay={poolPriceDisplay}
                 poolPriceChangePercent={poolPriceChangePercent}

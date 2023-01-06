@@ -1,18 +1,22 @@
 import { ChangeEvent, Dispatch, SetStateAction, useEffect, useState } from 'react';
+import { ethers } from 'ethers';
 import styles from './RangeCurrencySelector.module.css';
 import RangeCurrencyQuantity from '../RangeCurrencyQuantity/RangeCurrencyQuantity';
 import { RiArrowDownSLine } from 'react-icons/ri';
 import { TokenIF, TokenPairIF } from '../../../../utils/interfaces/exports';
 import { useModal } from '../../../../components/Global/Modal/useModal';
 import Modal from '../../../../components/Global/Modal/Modal';
-import TokenSelectContainer from '../../../Global/TokenSelectContainer/TokenSelectContainer';
 import Toggle2 from '../../../Global/Toggle/Toggle2';
 import ambientLogo from '../../../../assets/images/logos/ambient_logo.svg';
 import { MdAccountBalanceWallet } from 'react-icons/md';
 import IconWithTooltip from '../../../Global/IconWithTooltip/IconWithTooltip';
 import NoTokenIcon from '../../../Global/NoTokenIcon/NoTokenIcon';
+import { SoloTokenSelect } from '../../../../components/Global/TokenSelectContainer/SoloTokenSelect';
+import { getRecentTokensParamsIF } from '../../../../App/hooks/useRecentTokens';
+import { useSoloSearch } from '../../../Global/TokenSelectContainer/hooks/useSoloSearch';
 
 interface RangeCurrencySelectorProps {
+    provider?: ethers.providers.Provider;
     isUserLoggedIn: boolean | undefined;
     gasPriceInGwei: number | undefined;
     resetTokenQuantities: () => void;
@@ -21,7 +25,6 @@ interface RangeCurrencySelectorProps {
     tokenPair: TokenPairIF;
     tokensBank: Array<TokenIF>;
     setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
-    searchableTokens: Array<TokenIF>;
     isTokenAEth: boolean;
     isTokenBEth: boolean;
     updateOtherQuantity: (evt: ChangeEvent<HTMLInputElement>) => void;
@@ -52,21 +55,27 @@ interface RangeCurrencySelectorProps {
     isAdvancedMode: boolean;
     disable?: boolean;
     activeTokenListsChanged: boolean;
+    isRangeCopied: boolean;
     indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
     handleChangeClick: (input: string) => void;
-
-    isRangeCopied: boolean;
+    verifyToken: (addr: string, chn: string) => boolean;
+    getTokensByName: (searchName: string, chn: string, exact: boolean) => TokenIF[];
+    getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
+    importedTokensPlus: TokenIF[];
+    getRecentTokens: (options?: getRecentTokensParamsIF | undefined) => TokenIF[];
+    addRecentToken: (tkn: TokenIF) => void;
+    tokenAorB: string;
 }
 
 export default function RangeCurrencySelector(props: RangeCurrencySelectorProps) {
     const {
+        provider,
         isUserLoggedIn,
         gasPriceInGwei,
-        resetTokenQuantities,
+        // resetTokenQuantities,
         tokenPair,
         tokensBank,
         setImportedTokens,
-        searchableTokens,
         chainId,
         isTokenAEth,
         isTokenBEth,
@@ -97,19 +106,22 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
         isTokenADisabled,
         isTokenBDisabled,
         isAdvancedMode,
-        activeTokenListsChanged,
-        indicateActiveTokenListsChanged,
+        // activeTokenListsChanged,
+        // indicateActiveTokenListsChanged,
         handleChangeClick,
-
         isRangeCopied,
+        verifyToken,
+        getTokensByName,
+        getTokenByAddress,
+        importedTokensPlus,
+        getRecentTokens,
+        addRecentToken,
+        tokenAorB,
     } = props;
 
     const isTokenASelector = fieldId === 'A';
 
     const thisToken = isTokenASelector ? tokenPair.dataTokenA : tokenPair.dataTokenB;
-    const [showManageTokenListContent, setShowManageTokenListContent] = useState(false);
-
-    const [isModalOpen, openModal, closeModal] = useModal();
 
     useEffect(() => {
         if (parseFloat(tokenADexBalance) <= 0) {
@@ -122,27 +134,6 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
             setIsWithdrawTokenBFromDexChecked(false);
         }
     }, [tokenBDexBalance]);
-
-    const tokenSelectModalOrNull = isModalOpen ? (
-        <Modal onClose={closeModal} title='Select Token' centeredTitle>
-            <TokenSelectContainer
-                resetTokenQuantities={resetTokenQuantities}
-                tokenPair={tokenPair}
-                searchableTokens={searchableTokens}
-                tokensBank={tokensBank}
-                setImportedTokens={setImportedTokens}
-                tokenToUpdate={fieldId}
-                chainId={chainId}
-                tokenList={tokensBank}
-                closeModal={closeModal}
-                reverseTokens={reverseTokens}
-                showManageTokenListContent={showManageTokenListContent}
-                setShowManageTokenListContent={setShowManageTokenListContent}
-                activeTokenListsChanged={activeTokenListsChanged}
-                indicateActiveTokenListsChanged={indicateActiveTokenListsChanged}
-            />
-        </Modal>
-    ) : null;
 
     const DexBalanceContent = (
         <span className={styles.surplus_toggle}>
@@ -269,6 +260,24 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
     const isFieldDisabled =
         (isTokenASelector && isTokenADisabled) || (!isTokenASelector && isTokenBDisabled);
 
+    const [isTokenModalOpen, openTokenModal, closeTokenModal] = useModal();
+    const [showSoloSelectTokenButtons, setShowSoloSelectTokenButtons] = useState(true);
+    const [outputTokens, validatedInput, setInput, searchType] = useSoloSearch(
+        chainId,
+        tokensBank,
+        verifyToken,
+        getTokenByAddress,
+        getTokensByName,
+    );
+
+    const handleInputClear = () => {
+        setInput('');
+        const soloTokenSelectInput = document.getElementById(
+            'solo-token-select-input',
+        ) as HTMLInputElement;
+        soloTokenSelectInput.value = '';
+    };
+
     return (
         <div className={styles.swapbox}>
             {sellToken && <span className={styles.direction}>Amounts</span>}
@@ -283,7 +292,7 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
                 </div>
                 <div
                     className={`${styles.token_select} ${isRangeCopied && styles.pulse_animation}`}
-                    onClick={openModal}
+                    onClick={() => openTokenModal()}
                 >
                     {thisToken.logoURI ? (
                         <img
@@ -425,7 +434,39 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
                         )} */}
                 {DexBalanceContent}
             </div>
-            {tokenSelectModalOrNull}
+            {isTokenModalOpen && (
+                <Modal
+                    onClose={closeTokenModal}
+                    title='Select Token'
+                    centeredTitle
+                    handleBack={handleInputClear}
+                    showBackButton={false}
+                    footer={null}
+                >
+                    <SoloTokenSelect
+                        provider={provider}
+                        closeModal={closeTokenModal}
+                        chainId={chainId}
+                        importedTokens={importedTokensPlus}
+                        setImportedTokens={setImportedTokens}
+                        getTokensByName={getTokensByName}
+                        getTokenByAddress={getTokenByAddress}
+                        verifyToken={verifyToken}
+                        showSoloSelectTokenButtons={showSoloSelectTokenButtons}
+                        setShowSoloSelectTokenButtons={setShowSoloSelectTokenButtons}
+                        outputTokens={outputTokens}
+                        validatedInput={validatedInput}
+                        setInput={setInput}
+                        searchType={searchType}
+                        addRecentToken={addRecentToken}
+                        getRecentTokens={getRecentTokens}
+                        isSingleToken={false}
+                        tokenAorB={tokenAorB}
+                        reverseTokens={reverseTokens}
+                        tokenPair={tokenPair}
+                    />
+                </Modal>
+            )}
         </div>
     );
 }

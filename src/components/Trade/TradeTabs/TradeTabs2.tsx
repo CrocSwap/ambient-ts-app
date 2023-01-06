@@ -7,6 +7,7 @@ import Transactions from './Transactions/Transactions';
 import styles from './TradeTabs2.module.css';
 import Orders from './Orders/Orders';
 import moment from 'moment';
+import { PoolIF, TokenIF } from '../../../utils/interfaces/exports';
 
 // import DropdownMenu from '../../Global/DropdownMenu/DropdownMenu';
 // import DropdownMenuContainer from '../../Global/DropdownMenu/DropdownMenuContainer/DropdownMenuContainer';
@@ -19,7 +20,6 @@ import recentTransactionsImage from '../../../assets/images/sidebarImages/recent
 import Ranges from './Ranges/Ranges';
 import TabComponent from '../../Global/TabComponent/TabComponent';
 import PositionsOnlyToggle from './PositionsOnlyToggle/PositionsOnlyToggle';
-import { TokenIF } from '../../../utils/interfaces/TokenIF';
 import { CandleData, ITransaction, setChangesByUser } from '../../../utils/state/graphDataSlice';
 import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
 import { fetchPoolRecentChanges } from '../../../App/functions/fetchPoolRecentChanges';
@@ -28,6 +28,7 @@ import { fetchUserRecentChanges } from '../../../App/functions/fetchUserRecentCh
 import Leaderboard from './Ranges/Leaderboard';
 import PoolInfo from './PoolInfo/PoolInfo';
 import { DefaultTooltip } from '../../Global/StyledTooltip/StyledTooltip';
+import TradeChartsTokenInfo from '../../../pages/Trade/TradeCharts/TradeChartsComponents/TradeChartsTokenInfo';
 
 interface ITabsProps {
     isUserLoggedIn: boolean | undefined;
@@ -77,6 +78,23 @@ interface ITabsProps {
     // handleRangeCopiedClick: () => void;
     activeTimeFrame: string;
     unselectCandle: () => void;
+
+    favePools: PoolIF[];
+    addPoolToFaves: (tokenA: TokenIF, tokenB: TokenIF, chainId: string, poolId: number) => void;
+    removePoolFromFaves: (
+        tokenA: TokenIF,
+        tokenB: TokenIF,
+        chainId: string,
+        poolId: number,
+    ) => void;
+    poolPriceDisplay: number;
+
+    poolPriceChangePercent: string | undefined;
+
+    setPoolPriceChangePercent: Dispatch<SetStateAction<string | undefined>>;
+    isPoolPriceChangePositive: boolean;
+
+    setIsPoolPriceChangePositive: Dispatch<SetStateAction<boolean>>;
 }
 
 // const httpGraphCacheServerDomain = 'https://809821320828123.de:5000';
@@ -125,6 +143,16 @@ export default function TradeTabs2(props: ITabsProps) {
         // handleTxCopiedClick,
         // handleOrderCopiedClick,
         // handleRangeCopiedClick,
+
+        favePools,
+        addPoolToFaves,
+        removePoolFromFaves,
+        poolPriceDisplay,
+
+        poolPriceChangePercent,
+        setPoolPriceChangePercent,
+        isPoolPriceChangePositive,
+        // setIsPoolPriceChangePositive
     } = props;
 
     const graphData = useAppSelector((state) => state?.graphData);
@@ -452,6 +480,17 @@ export default function TradeTabs2(props: ITabsProps) {
         selectedDate: selectedDate,
         setSelectedDate: setSelectedDate,
     };
+
+    const TradeChartsTokenInfoProps = {
+        chainId: chainId,
+        favePools: favePools,
+        addPoolToFaves: addPoolToFaves,
+        removePoolFromFaves: removePoolFromFaves,
+        poolPriceDisplay: poolPriceDisplay,
+        poolPriceChangePercent: poolPriceChangePercent,
+        setPoolPriceChangePercent: setPoolPriceChangePercent,
+        isPoolPriceChangePositive: isPoolPriceChangePositive,
+    };
     // data for headings of each of the three tabs
     const tradeTabData = isCandleSelected
         ? [
@@ -594,6 +633,11 @@ export default function TradeTabs2(props: ITabsProps) {
         <div ref={tabComponentRef} className={styles.trade_tab_container}>
             <>
                 {isCandleSelected ? selectedMessageContent : null}
+                {expandTradeTable && (
+                    <div style={{ display: 'flex', justifyContent: 'center', padding: '4px 0' }}>
+                        <TradeChartsTokenInfo {...TradeChartsTokenInfoProps} />
+                    </div>
+                )}
                 <TabComponent
                     data={tradeTabData}
                     rightTabOptions={<PositionsOnlyToggle {...positionsOnlyToggleProps} />}

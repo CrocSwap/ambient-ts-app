@@ -1,39 +1,18 @@
-// START: Import React and Dongles
-import { Dispatch, SetStateAction, useState } from 'react';
-// import { AiFillCloseSquare } from 'react-icons/ai';
-
 // START: Import Local Files
 import styles from './TokenSelect.module.css';
 import { TokenIF } from '../../../utils/interfaces/exports';
 import uriToHttp from '../../../utils/functions/uriToHttp';
-// import { removeToken } from '../../Global/TokenSelectContainer/removeToken';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import NoTokenIcon from '../NoTokenIcon/NoTokenIcon';
-// import {BsPin, BsPinFill} from 'react-icons/bs'
+
 interface TokenSelectPropsIF {
     token: TokenIF;
-    tokensBank: Array<TokenIF>;
-    undeletableTokens: Array<string>;
-    chainId: string;
-    setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
     chooseToken: (tok: TokenIF) => void;
-    isOnPortfolio?: boolean;
     fromListsText: string;
 }
 
 export default function TokenSelect(props: TokenSelectPropsIF) {
-    const {
-        token,
-        chooseToken,
-        // tokensBank,
-        // undeletableTokens,
-        // chainId,
-        // setImportedTokens,
-        fromListsText,
-    } = props;
-    // eslint-disable-next-line
-    const [showDelete, setShowDelete] = useState(false);
-    // const [toggleDeleteOn, setToggleDeleteOn] = useState(false);
+    const { token, chooseToken, fromListsText } = props;
 
     const userData = useAppSelector((state) => state.userData);
 
@@ -60,16 +39,7 @@ export default function TokenSelect(props: TokenSelectPropsIF) {
     return (
         <>
             <div className={styles.main_container} onClick={() => chooseToken(token)}>
-                {
-                    // <div className={`${styles.delete_container} ${deleteStateStyle}`}>
-                    //     Remove {token.symbol} from your list
-                    //     {toggleButtons}
-                    // </div>
-                }
                 <section className={styles.left_side_container}>
-                    {/* <div className={styles.star_icon}>{starIcon}</div> */}
-                    {/* <div onClick={() => setPinned(!pinned)}>{ pinned ? <BsPinFill/> : <BsPin  />}</div> */}
-
                     <div className={styles.modal_content}>
                         <div className={styles.modal_tokens_info}>
                             {token.logoURI ? (
@@ -89,7 +59,6 @@ export default function TokenSelect(props: TokenSelectPropsIF) {
                         </div>
                     </div>
                 </section>
-
                 <div className={styles.modal_tokens_amount}>
                     <p>
                         {isUserLoggedIn
@@ -104,8 +73,6 @@ export default function TokenSelect(props: TokenSelectPropsIF) {
                     </p>
                     <p className={styles.token_list_data}>{fromListsText}</p>
                 </div>
-
-                {/* {undeletableTokens.includes(token.address) || deleteIcon} */}
             </div>
             {/* <p className={styles.token_list_data}>{fromListsText}</p> */}
         </>
