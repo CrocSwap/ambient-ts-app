@@ -20,7 +20,6 @@ import { SoloTokenSelect } from '../../../Global/TokenSelectContainer/SoloTokenS
 import { useSoloSearch } from '../../../Global/TokenSelectContainer/hooks/useSoloSearch';
 import { getRecentTokensParamsIF } from '../../../../App/hooks/useRecentTokens';
 
-
 // interface for component props
 interface LimitCurrencySelectorProps {
     provider?: ethers.providers.Provider;
@@ -99,7 +98,7 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
         importedTokensPlus,
         getRecentTokens,
         addRecentToken,
-        tokenAorB
+        tokenAorB,
     } = props;
 
     const thisToken = fieldId === 'sell' ? tokenPair.dataTokenA : tokenPair.dataTokenB;

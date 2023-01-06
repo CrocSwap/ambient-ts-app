@@ -65,22 +65,49 @@ export default function FeeRateSubChart(props: FreeRateData) {
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 
                 //  const result = feeData.filter((v: number, i: number, a: any) => a.indexOf(v) !== i);
-                const yExtent = d3fc
-                    .extentLinear()
-                    .accessors([(d: any) => d.value])
-                    .include([0])
-                    .pad([0, 0.5]);
-
                 const yScale = d3.scaleLinear();
-                yScale.domain(yExtent(feeData));
+                yScale.domain([0.5, 4]);
 
-                const highest = d3.max(feeData, (d: any) => d.value) as any;
+                const feeRateLogScale = d3.scaleLog().domain([0.0005, 0.01]).range([1, 3]);
+
+                const feeDataTemp: any[] = [];
+
+                (feeData[0].value = 0.01),
+                    (feeData[1].value = 0.01),
+                    (feeData[2].value = 0.01),
+                    (feeData[3].value = 0.01),
+                    (feeData[4].value = 0.01),
+                    (feeData[5].value = 0.01),
+                    (feeData[6].value = 0.003),
+                    (feeData[7].value = 0.003),
+                    (feeData[8].value = 0.003),
+                    (feeData[9].value = 0.003),
+                    (feeData[10].value = 0.003),
+                    (feeData[11].value = 0.003),
+                    feeData.map((data: any) => {
+                        feeDataTemp.push({
+                            time: data.time,
+                            value: feeRateLogScale(data.value),
+                        });
+                    });
+
+                // console.log(feeDataTemp);
+
                 const yAxis = d3fc
                     .axisRight()
                     .scale(yScale)
-                    .tickValues([highest / 2, highest])
+                    .tickValues([1, 2.2, 3])
                     .tickFormat((d: any) => {
-                        return d * 100 + '%';
+                        switch (d) {
+                            case 1:
+                                return 0.05 + '%';
+                            case 2.2:
+                                return 0.3 + '%';
+                            case 3:
+                                return 1 + '%';
+                            default:
+                                return d + '%';
+                        }
                     });
 
                 const crosshairDataLocal = [
@@ -168,7 +195,7 @@ export default function FeeRateSubChart(props: FreeRateData) {
 
                 d3.select(d3PlotFeeRate.current).on('draw', function (event: any) {
                     const svg = d3.select(event.target).select('svg');
-                    lineJoin(svg, [feeData]).lower().call(lineSeries);
+                    lineJoin(svg, [feeDataTemp]).lower().call(lineSeries);
                     crosshairVerticalJoin(svg, [crosshairDataLocal]).call(crosshairVertical);
                 });
 
@@ -251,7 +278,7 @@ export default function FeeRateSubChart(props: FreeRateData) {
             style={{
                 display: 'flex',
                 flexDirection: 'row',
-                height: '13%',
+                height: '15%',
                 width: '100%',
                 paddingTop: '5px',
             }}

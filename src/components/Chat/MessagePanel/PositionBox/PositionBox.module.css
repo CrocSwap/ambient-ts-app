@@ -1,0 +1,163 @@
+.position_main_box {
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 1px;
+    grid-gap: 10px;
+    gap: 1px;
+    height: auto;
+    background-image: linear-gradient(to right top, #7371fc, #887ffd, #9a8efe, #ab9dfe, #baacff, #baacff, #baacff, #baacff, #ab9dfe, #9a8efe, #887ffd, #7371fc);
+    border-radius: 4px;
+    flex: none;
+    order: 0;
+    flex-grow: 0;
+}
+
+.position_box {
+    background: #242F3F;
+    width: 99%;
+    height: 95%;
+    border-radius: 4px;
+    display: flex;
+    flex-direction: column;
+    
+
+}
+.copied_value {
+    word-wrap: break-word;
+    
+
+}
+
+.position_message {
+
+    width: 80%;
+    height: 80%;
+
+    bottom: -100%;
+    
+    font-family: 'Lexend Deca';
+    font-style: normal;
+    font-weight: 300;
+    font-size: calc(1vw - 5px);
+    line-height: 15px;
+    flex-grow: 5px !important;
+    width: 85%;
+    font-family: 'Lexend Deca';
+    font-style: normal;
+    font-weight: 300;
+    font-size: 15px;
+    line-height: 15px;
+    color: #EBEBFF;
+    white-space: pre-line;
+    align-self: stretch;
+    word-break: break-word;
+    white-space: normal;
+}
+
+.tokens_name {
+    font-style: normal;
+    font-weight: 200;
+    font-size: 15px;
+    line-height: 22px;
+    /* identical to box height */
+    font-family: 'Lexend Deca';
+
+    display: flex;
+    align-items: center;
+    letter-spacing: -0.02em;
+    /* text/grey light */
+    flex-grow: 4;
+    color: rgba(235, 235, 255, 0.4);
+}
+
+.tokens_apy {
+    flex-grow: 4;
+    font-weight: lighter;
+    color: rgba(141, 248, 168, 0.836);
+    text-align: -webkit-right;
+}
+
+.tokens_min_price {
+    flex-grow: 4;
+    font-weight: lighter;
+    color: rgba(252, 252, 252, 0.822);
+
+}
+
+.tokens_max_price {
+    flex-grow: 4;
+    font-weight: lighter;
+    color: rgba(77, 113, 212, 0.863);
+}
+
+.address {
+
+    color: rgba(235, 235, 255, 0.4);
+    font-size: 14px;
+    line-height: 22px;
+    font-family: 'Lexend Deca';
+    flex-grow: 2;
+}
+
+.address_box {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: row;
+    text-align: -webkit-right;
+
+    
+}
+
+.position_info {
+    display: flex;
+    flex-direction: row;
+    padding: 1%;
+}
+
+.price {
+    flex-grow: 4;
+    font-weight: lighter;
+    text-align: -webkit-right;
+}
+.range_price {
+    flex-grow: 2;
+    font-weight: lighter;
+}
+
+.range {
+    font-family: 'Lexend Deca';
+    font-style: normal;
+    font-weight: 200;
+    font-size: 18px;
+    line-height: 22px;
+    /* identical to box height */
+    flex-grow: 2;
+    display: flex;
+    align-items: center;
+    text-align: center;
+    letter-spacing: -0.02em;
+
+    /* accent/primary */
+    color: #7371FC;
+}
+
+.change_positive {
+    flex-grow: 4;
+    font-size: 18px;
+    color: var(--positive);
+}
+
+.change_negative {
+    flex-grow: 4;
+    font-size: 18px;
+    color: var(--negative);
+}
+
+.animate_position_box {
+    width: 100%;
+    margin: 5px;
+    padding: 5px;
+}

@@ -110,7 +110,7 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
         getTokenByAddress,
         importedTokensPlus,
         getRecentTokens,
-        addRecentToken
+        addRecentToken,
     } = props;
 
     const dispatch = useAppDispatch();

@@ -64,10 +64,10 @@ export const SoloTokenSelect = (props: propsIF) => {
         isSingleToken,
         tokenAorB,
         reverseTokens,
-        tokenPair
+        tokenPair,
     } = props;
 
-    console.log({importedTokens});
+    console.log({ importedTokens });
 
     // instance of hook used to retrieve data from RTK
     const dispatch = useAppDispatch();
@@ -142,20 +142,14 @@ export const SoloTokenSelect = (props: propsIF) => {
             );
         }
 
-        function goToNewUrlParams (
+        function goToNewUrlParams(
             pathSlug: string,
             chain: string,
             addrTokenA: string,
             addrTokenB: string,
         ): void {
             navigate(
-                pathSlug +
-                '/chain=' +
-                chain +
-                '&tokenA=' +
-                addrTokenA +
-                '&tokenB=' +
-                addrTokenB
+                pathSlug + '/chain=' + chain + '&tokenA=' + addrTokenA + '&tokenB=' + addrTokenB,
             );
         }
 

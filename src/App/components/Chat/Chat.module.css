@@ -45,7 +45,6 @@
     box-shadow: 0px 35px 20px rgba(0, 0, 0, 0.3);
     transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
     right: 10px;
-    display: none;
 
     grid-template-rows: 24px auto 24px;
     opacity: 1;

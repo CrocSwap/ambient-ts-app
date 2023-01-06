@@ -102,7 +102,7 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
         getTokenByAddress,
         importedTokensPlus,
         addRecentToken,
-        getRecentTokens
+        getRecentTokens,
     } = props;
 
     // const [showManageTokenListContent, setShowManageTokenListContent] = useState(false);
