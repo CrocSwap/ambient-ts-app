@@ -140,7 +140,11 @@ export const useTokenSearch = (
             // initialize an array of tokens to output, seeded with Ambient default
             const outputTokens = defaultTokens;
             // fn to add tokens from an array to the output array
-            const addTokensToOutput = (newTokens: TokenIF[], maxToAdd=2): void => {
+            const addTokensToOutput = (
+                newTokens: TokenIF[],
+                verificationNeeded: boolean,
+                maxToAdd: number
+            ): void => {
                 // counter to track how many tokens from array have been added
                 let limiter = 0;
                 // logic to iterate through all tokens in array parameter
@@ -152,19 +156,24 @@ export const useTokenSearch = (
                             tk.chainId === newTokens[i].chainId
                         )
                     );
+                    // check if token is recognized from a list (if necessary)
+                    const isTokenKnown = verificationNeeded
+                        ? verifyToken(
+                            newTokens[i].address, '0x' + newTokens[i].chainId.toString(16)
+                        ) : true;
                     // add token to output if not already there and limiter is below max
-                    if (!isInArray && limiter < maxToAdd) {
+                    if (!isInArray && isTokenKnown && limiter < maxToAdd) {
                         limiter++;
                         outputTokens.push(newTokens[i]);
-                    }
+                    };
                 }
             }
             // add wallet tokens to output array
-            addTokensToOutput(walletTokens);
+            addTokensToOutput(walletTokens, true, 2);
             // add tokens from recent txs to output array
-            addTokensToOutput(recentTxTokens ?? []);
+            addTokensToOutput(recentTxTokens ?? [], false, 2);
             // add recent tokens to output array
-            addTokensToOutput(recentTokens);
+            addTokensToOutput(recentTokens, false, 2);
             // remove off-chain tokens from output array
             const ouputTokensOnChain = outputTokens.filter((tk: TokenIF) => tk.chainId === parseInt(chainId));
             return ouputTokensOnChain;
