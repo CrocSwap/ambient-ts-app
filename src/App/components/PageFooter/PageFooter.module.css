@@ -11,6 +11,9 @@
     color: var(--text-grey-white);
     gap: var(--gap, 1rem);
     z-index: 999;
+    position: absolute;
+    bottom: 0;
+    right: 0;
 
  
 }

@@ -12,11 +12,7 @@ interface TokenSelectPropsIF {
 }
 
 export default function TokenSelect(props: TokenSelectPropsIF) {
-    const {
-        token,
-        chooseToken,
-        fromListsText,
-    } = props;
+    const { token, chooseToken, fromListsText } = props;
 
     const userData = useAppSelector((state) => state.userData);
 

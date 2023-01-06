@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction } from 'react';
+import React, { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import styles from './ProfileSettings.module.css';
 import { BiArrowBack } from 'react-icons/bi';
 import ProfileSettingsTheme from './ProfileSettingsTheme/ProfileSettingsTheme';
@@ -6,6 +6,8 @@ import ProfileSettingsSkin from './ProfileSettingsSkin/ProfileSettingsSkin';
 import noAvatarImage from '../../../assets/images/icons/avatar.svg';
 
 import { motion } from 'framer-motion';
+import useChatApi from '../../Chat/Service/ChatApi';
+import SnackbarComponent from '../../Global/SnackbarComponent/SnackbarComponent';
 
 const pageVariant3D = {
     initial: {
@@ -39,11 +41,20 @@ interface ProfileSettingsPropsIF {
 }
 
 export default function ProfileSettings(props: ProfileSettingsPropsIF) {
-    const { setShowProfileSettings, ensName, imageData, openGlobalModal } = props;
+    const [name, setName] = useState('');
+    const [id, setId] = useState('');
+    const { setShowProfileSettings, imageData, openGlobalModal } = props;
+    const [openSnackbar, setOpenSnackbar] = useState(false);
+    const host = 'http://crocswap-chat.herokuapp.com/';
     const nameDisplay = (
         <div className={styles.row}>
             <h4>Name</h4>
-            <input type='text' placeholder={ensName} />
+            <input
+                type='text'
+                onChange={(e) => setName(e.target.value)}
+                value={name}
+                placeholder={name ? name : 'Name'}
+            />
         </div>
     );
 
@@ -114,6 +125,43 @@ export default function ProfileSettings(props: ProfileSettingsPropsIF) {
         </div>
     );
 
+    const snackbarContent = (
+        <SnackbarComponent
+            severity='info'
+            setOpenSnackbar={setOpenSnackbar}
+            openSnackbar={openSnackbar}
+        >
+            {name} has been set as a name.
+        </SnackbarComponent>
+    );
+
+    const { getID } = useChatApi();
+
+    useEffect(() => {
+        getID().then((result) => {
+            setId(result._id);
+            setName(result.ensName);
+        });
+    }, []);
+
+    async function updateUser() {
+        const response = await fetch(host + '/api/auth/updateUser', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ ensName: name, _id: id }),
+        });
+
+        const data = await response.json();
+        if (data.status === 'OK') {
+            console.log('aaaa', data);
+            setOpenSnackbar(true);
+        } else {
+            console.log('bbb', data.status);
+        }
+    }
+
     return (
         <motion.div
             initial='initial'
@@ -136,7 +184,10 @@ export default function ProfileSettings(props: ProfileSettingsPropsIF) {
                         {themeDisplay}
                         {skinDisplay}
                     </section>
-                    <button className={styles.save_button}>Save</button>
+                    <button className={styles.save_button} onClick={() => updateUser()}>
+                        Save
+                    </button>
+                    {snackbarContent}
                 </div>
             </div>
         </motion.div>

@@ -16,8 +16,31 @@
     order: 3;
     align-self: stretch;
     flex-grow: 0;
-    position: absolute;
+    position: relative;
     bottom: 0;
+}
+
+.input_box_not_allowed{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0px 8px;
+    gap: 4px;
+    width: 100%;
+    /* dark/tertiary */
+
+    background: #171d27;
+    border-radius: 4px;
+
+    /* Inside auto layout */
+
+    flex: none;
+    order: 3;
+    align-self: stretch;
+    flex-grow: 0;
+    position: relative;
+    bottom: 0;
+    cursor: not-allowed;
 }
 
 
@@ -67,12 +90,37 @@
 
 }
 
+.input_not_allowed{
+
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 0px 8px;
+    grid-gap: 4px;
+    gap: 4px;
+    width: 97%;
+    height: 40px;
+    background: #242F3F;
+    border-radius: 4px;
+    flex: none;
+
+    flex-grow: 0;
+    position: relative;
+    margin-bottom: 2%;
+    cursor: not-allowed;
+
+}
+
+
+
 .emojiPicker {
     width:97%;
     padding:0px 8px;
     height: 250px;
     
 }
+
+
 
 .input_text:focus {
     outline: none;
@@ -97,6 +145,63 @@
     /* text/grey dark */
     border-color: transparent;
     color: rgba(235, 235, 255, 0.25);
+    background-color: transparent;
+
+    /* Inside auto layout */
+
+    flex: none;
+    order: 0;
+    flex-grow: 1;
+}
+
+.input_text_not_allowed {
+
+    width: 212px;
+    height: 22px;
+
+    /* small */
+
+    font-family: 'Lexend Deca';
+    font-style: normal;
+    font-weight: 300;
+    font-size: calc(1vw - 1px);
+    line-height: 15px;
+    display: flex;
+    align-items: center;
+    outline: none;
+
+    /* text/grey dark */
+    border-color: transparent;
+    color: rgba(235, 235, 255, 0.25);
+    background-color: transparent;
+
+    /* Inside auto layout */
+
+    flex: none;
+    order: 0;
+    flex-grow: 1;
+    cursor: not-allowed;
+}
+
+.input_text_position {
+
+    width: 212px;
+    height: 22px;
+
+    /* small */
+
+    font-family: 'Lexend Deca';
+    font-style: normal;
+    font-weight: 300;
+    font-size: calc(1vw - 1px);
+    line-height: 15px;
+    display: flex;
+    align-items: center;
+    outline: none;
+
+    /* text/grey dark */
+    border-color: transparent;
+    color: #7371FC;
     background-color: transparent;
 
     /* Inside auto layout */

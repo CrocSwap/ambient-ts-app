@@ -120,7 +120,6 @@ import { useGlobalModal } from './components/GlobalModal/useGlobalModal';
 
 import { getVolumeSeries } from './functions/getVolumeSeries';
 import { getTvlSeries } from './functions/getTvlSeries';
-import Chat from './components/Chat/Chat';
 import GlobalModal from './components/GlobalModal/GlobalModal';
 import { memoizeTokenPrice } from './functions/fetchTokenPrice';
 import ChatPanel from '../components/Chat/ChatPanel';
@@ -460,6 +459,7 @@ export default function App() {
     }, [tokenListsReceived]);
 
     useEffect(() => {
+        console.log(chainData.nodeUrl);
         fetch(chainData.nodeUrl2, {
             method: 'POST',
             headers: {
@@ -474,6 +474,7 @@ export default function App() {
             }),
         })
             .then((response) => response?.json())
+
             .then((json) => {
                 if (lastBlockNumber !== parseInt(json?.result)) {
                     setLastBlockNumber(parseInt(json?.result));
@@ -2745,10 +2746,15 @@ export default function App() {
                         <Route
                             path='app/chat'
                             element={
-                                <Chat
-                                    ensName={ensName}
-                                    connectedAccount={account ? account : ''}
-                                    fullScreen={true}
+                                <ChatPanel
+                                    chatStatus={true}
+                                    onClose={() => {
+                                        console.error('Function not implemented.');
+                                    }}
+                                    favePools={favePools}
+                                    currentPool={currentPoolInfo}
+                                    setChatStatus={setChatStatus}
+                                    isFullScreen={true}
                                 />
                             }
                         />
@@ -2976,7 +2982,7 @@ export default function App() {
                         chatStatus={chatStatus}
                     />
                 )}
-                {currentLocation !== '/app/chat' && (
+                {/* {currentLocation !== '/app/chat' && (
                     <Chat
                         ensName={ensName}
                         connectedAccount={account ? account : ''}
@@ -2989,9 +2995,9 @@ export default function App() {
                         connectedAccount={account ? account : ''}
                         fullScreen={false}
                     />
-                )}
+                )} */}
 
-                {currentLocation !== '/app/chat' && (
+                {currentLocation !== '/' && currentLocation !== '/app/chat' && (
                     <ChatPanel
                         chatStatus={chatStatus}
                         onClose={() => {
@@ -2999,7 +3005,8 @@ export default function App() {
                         }}
                         favePools={favePools}
                         currentPool={currentPoolInfo}
-                        isUserLoggedIn={isUserLoggedIn}
+                        setChatStatus={setChatStatus}
+                        isFullScreen={false}
                     />
                 )}
             </div>

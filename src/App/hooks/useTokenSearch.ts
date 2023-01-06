@@ -31,11 +31,11 @@ export const useTokenSearch = (
             (cleanInput.length === 40 && !cleanInput.startsWith('0x'))
         ) {
             setSearchAs('address');
-        // if not an apparent token address, search name and symbol
+            // if not an apparent token address, search name and symbol
         } else if (cleanInput.length >= 2) {
             setSearchAs('nameOrSymbol');
             return cleanInput;
-        // otherwise treat as if there is no input entered
+            // otherwise treat as if there is no input entered
         } else {
             setSearchAs('');
             return '';
@@ -76,20 +76,19 @@ export const useTokenSearch = (
                 // get the token for the given address and chain
                 // value can be technically be undefined but gatekeeping prevents that
                 foundToken = getTokenByAddress(validatedInput, chainId) as TokenIF;
-            // if token is not on an imported list, check tokens in user data
+                // if token is not on an imported list, check tokens in user data
             } else if (!tokenExistsOnList) {
                 // retrieve and parse user data object from local storage
                 // isolate tokens listed in user data
                 // return one that has an address matching user input on current chain
-                foundToken = JSON.parse(
-                    localStorage.getItem('user') as string
-                ).tokens.find((tkn: TokenIF) => (
-                    tkn.address.toLowerCase() === validatedInput.toLowerCase() &&
-                    tkn.chainId === parseInt(chainId)
-                ));
+                foundToken = JSON.parse(localStorage.getItem('user') as string).tokens.find(
+                    (tkn: TokenIF) =>
+                        tkn.address.toLowerCase() === validatedInput.toLowerCase() &&
+                        tkn.chainId === parseInt(chainId),
+                );
             }
             // return token in an array if found, or an empty array if not
-            return foundToken ? [foundToken] : []
+            return foundToken ? [foundToken] : [];
         }
 
         // fn to run a token search by name or symbol
@@ -101,31 +100,33 @@ export const useTokenSearch = (
             const foundTokens = getTokensByName(validatedInput, chainId, exactOnly);
             // get array of tokens in local storage on user data object
             // these are needed for tokens user previously imported but not on lists
-            JSON.parse(localStorage.getItem('user') as string).tokens
-                // iterate over array of tokens on user data object
+            JSON.parse(localStorage.getItem('user') as string)
+                .tokens // iterate over array of tokens on user data object
                 .forEach((tkn: TokenIF) => {
                     // this logic runs when matches need NOT be exact
                     // if the token name or symbol INCLUDES validated input and was not
                     // ... already found on an imported list, add it to the search results
                     if (
-                        !exactOnly && (
-                            tkn.name.toLowerCase().includes(validatedInput.toLowerCase()) ||
-                            tkn.symbol.toLowerCase().includes(validatedInput.toLowerCase())
-                        ) &&
+                        !exactOnly &&
+                        (tkn.name.toLowerCase().includes(validatedInput.toLowerCase()) ||
+                            tkn.symbol.toLowerCase().includes(validatedInput.toLowerCase())) &&
                         tkn.chainId === parseInt(chainId) &&
-                        !foundTokens.map((tok: TokenIF) => tok.address.toLowerCase()).includes(tkn.address.toLowerCase())
+                        !foundTokens
+                            .map((tok: TokenIF) => tok.address.toLowerCase())
+                            .includes(tkn.address.toLowerCase())
                     ) {
                         foundTokens.push(tkn);
-                    // this logic runs when matches MUST be exact
-                    // if the token name or symbol EQUALS validated input and was not
-                    // ... already found on an imported list, add it to the search results
+                        // this logic runs when matches MUST be exact
+                        // if the token name or symbol EQUALS validated input and was not
+                        // ... already found on an imported list, add it to the search results
                     } else if (
-                        exactOnly && (
-                            tkn.name.toLowerCase() === validatedInput.toLowerCase() ||
-                            tkn.symbol.toLowerCase() === validatedInput.toLowerCase()
-                        ) &&
+                        exactOnly &&
+                        (tkn.name.toLowerCase() === validatedInput.toLowerCase() ||
+                            tkn.symbol.toLowerCase() === validatedInput.toLowerCase()) &&
                         tkn.chainId === parseInt(chainId) &&
-                        !foundTokens.map((tok: TokenIF) => tok.address.toLowerCase()).includes(tkn.address.toLowerCase())
+                        !foundTokens
+                            .map((tok: TokenIF) => tok.address.toLowerCase())
+                            .includes(tkn.address.toLowerCase())
                     ) {
                         foundTokens.push(tkn);
                     }

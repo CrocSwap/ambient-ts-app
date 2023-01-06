@@ -20,7 +20,6 @@ import { SoloTokenSelect } from '../../../Global/TokenSelectContainer/SoloTokenS
 // import { useSoloSearch } from '../../../Global/TokenSelectContainer/hooks/useSoloSearch';
 import { getRecentTokensParamsIF } from '../../../../App/hooks/useRecentTokens';
 
-
 // interface for component props
 interface LimitCurrencySelectorProps {
     provider?: ethers.providers.Provider;

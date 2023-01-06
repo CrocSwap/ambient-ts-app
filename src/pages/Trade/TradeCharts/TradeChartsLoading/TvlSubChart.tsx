@@ -77,7 +77,7 @@ export default function TvlSubChart(props: TvlData) {
                 const yExtent = d3fc
                     .extentLinear()
                     .accessors([(d: any) => d.value])
-                    .pad([0, 0.5]);
+                    .pad([0, 0.7]);
 
                 const yScale = d3.scaleLinear();
                 yScale.domain(yExtent(tvlData));
@@ -305,7 +305,7 @@ export default function TvlSubChart(props: TvlData) {
             style={{
                 display: 'flex',
                 flexDirection: 'row',
-                height: '13%',
+                height: '15%',
                 width: '100%',
                 paddingTop: '5px',
             }}

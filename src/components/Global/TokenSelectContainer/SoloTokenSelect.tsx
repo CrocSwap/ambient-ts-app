@@ -152,20 +152,14 @@ export const SoloTokenSelect = (props: propsIF) => {
             );
         }
 
-        function goToNewUrlParams (
+        function goToNewUrlParams(
             pathSlug: string,
             chain: string,
             addrTokenA: string,
             addrTokenB: string,
         ): void {
             navigate(
-                pathSlug +
-                '/chain=' +
-                chain +
-                '&tokenA=' +
-                addrTokenA +
-                '&tokenB=' +
-                addrTokenB
+                pathSlug + '/chain=' + chain + '&tokenA=' + addrTokenA + '&tokenB=' + addrTokenB,
             );
         }
 
