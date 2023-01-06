@@ -2034,11 +2034,9 @@ export default function Chart(props: ChartData) {
                     dragSwitched = false;
                 });
 
-            // let setChangeLimitOrderStatus = false;
             const dragLimit = d3
                 .drag()
                 .on('start', () => {
-                    limitPreviousData = limit[0].value;
                     d3.select(d3Container.current).style('cursor', 'row-resize');
                     d3.select(d3Container.current).select('.targets').style('cursor', 'row-resize');
                 })
@@ -2097,8 +2095,6 @@ export default function Chart(props: ChartData) {
                         .remove();
 
                     onBlurLimitRate(newLimitValue);
-
-                    // reverseTokenForChart(limitPreviousData,newLimitValue);
                 });
 
             setDragRange(() => {
