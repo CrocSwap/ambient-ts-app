@@ -12,7 +12,7 @@ import { MdAccountBalanceWallet } from 'react-icons/md';
 import IconWithTooltip from '../../../Global/IconWithTooltip/IconWithTooltip';
 import NoTokenIcon from '../../../Global/NoTokenIcon/NoTokenIcon';
 import { SoloTokenSelect } from '../../../../components/Global/TokenSelectContainer/SoloTokenSelect';
-import { getRecentTokensParamsIF } from  '../../../../App/hooks/useRecentTokens';
+import { getRecentTokensParamsIF } from '../../../../App/hooks/useRecentTokens';
 import { useSoloSearch } from '../../../Global/TokenSelectContainer/hooks/useSoloSearch';
 
 interface RangeCurrencySelectorProps {
@@ -116,7 +116,7 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
         importedTokensPlus,
         getRecentTokens,
         addRecentToken,
-        tokenAorB
+        tokenAorB,
     } = props;
 
     const isTokenASelector = fieldId === 'A';

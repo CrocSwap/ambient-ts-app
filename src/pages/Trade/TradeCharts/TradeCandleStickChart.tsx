@@ -675,7 +675,13 @@ export default function TradeCandleStickChart(props: ChartData) {
             );
         }, 500);
         return () => clearTimeout(timer);
-    }, [parsedChartData?.chartData, props.poolPriceDisplay, poolPriceNonDisplay, scaleData]);
+    }, [
+        parsedChartData?.chartData,
+        props.poolPriceDisplay,
+        poolPriceNonDisplay,
+        scaleData,
+        liquidityScale,
+    ]);
 
     return (
         <>

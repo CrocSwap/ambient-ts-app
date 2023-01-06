@@ -1,16 +1,18 @@
 import { useEffect, useMemo, useState } from 'react';
 
-export const useSidebar = (pathname: string): [
+export const useSidebar = (
+    pathname: string,
+): [
     sidebar: string,
     openSidebar: () => void,
     closeSidebar: () => void,
-    toggleSidebar: () => void
+    toggleSidebar: () => void,
 ] => {
     // hook to track sidebar status in local state
     // this hook initializes from local storage for returning users
     // will default to 'open' if no value found (happens on first visit)
     const [sidebar, setSidebar] = useState<string>(
-        JSON.parse(localStorage.getItem('user') as string)?.sidebar ?? 'open'
+        JSON.parse(localStorage.getItem('user') as string)?.sidebar ?? 'open',
     );
 
     // hook to update local storage when the user toggles the sidebar
@@ -39,16 +41,14 @@ export const useSidebar = (pathname: string): [
             default:
                 openSidebar();
         }
-    }
+    };
 
     // value whether to sidebar should be hidden on the current URL path
     const hidden = useMemo<boolean>(() => {
         // array of url paths on which to hide the sidebar
         const hiddenPaths = ['/', '/swap'];
         // determine if the current URL path starts with any proscribed strings
-        const isPathHidden = hiddenPaths.some(
-            ((path: string) => pathname.startsWith(path))
-        );
+        const isPathHidden = hiddenPaths.some((path: string) => pathname.startsWith(path));
         // return boolean value showing if sidebar is hidden on current route
         return isPathHidden;
     }, [pathname]);
@@ -57,10 +57,5 @@ export const useSidebar = (pathname: string): [
     false && hidden;
 
     // return sidebar status and functions to update value
-    return [
-        sidebar,
-        openSidebar,
-        closeSidebar,
-        toggleSidebar
-    ];
-}
+    return [sidebar, openSidebar, closeSidebar, toggleSidebar];
+};
