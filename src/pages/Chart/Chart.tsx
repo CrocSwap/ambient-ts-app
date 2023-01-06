@@ -1600,40 +1600,18 @@ export default function Chart(props: ChartData) {
             ]);
         } else if (results.length < 2) {
             setRanges(() => {
-                let high = targetData?.filter((target: any) => target.name === 'Max')[0].value;
+                const high = targetData?.filter((target: any) => target.name === 'Max')[0].value;
                 const low = targetData?.filter((target: any) => target.name === 'Min')[0].value;
 
                 if (high !== undefined && low !== undefined) {
-                    if (high !== 0 && high < low) {
-                        high = low + low / 100;
-                    }
-
                     const chartTargets = [
                         {
                             name: 'Min',
-                            value:
-                                low !== undefined && low !== 0
-                                    ? low
-                                    : props.candleData !== undefined
-                                    ? Math.min(
-                                          ...props.candleData.chartData.map((o) => {
-                                              return o.close !== undefined ? o.close : Infinity;
-                                          }),
-                                      )
-                                    : 0,
+                            value: low < high ? low : high,
                         },
                         {
                             name: 'Max',
-                            value:
-                                high !== undefined && high !== 0
-                                    ? high
-                                    : props.candleData !== undefined
-                                    ? Math.max(
-                                          ...props.candleData.chartData.map((o) => {
-                                              return o.open !== undefined ? o.open : 0;
-                                          }),
-                                      )
-                                    : 0,
+                            value: high < low ? low : high,
                         },
                     ];
 
