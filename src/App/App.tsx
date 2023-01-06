@@ -2225,6 +2225,7 @@ export default function App() {
         getTokenByAddress,
         getTokensByName,
         getAmbientTokens(),
+        connectedUserErc20Tokens ?? [],
         getRecentTokens(),
     );
 

@@ -7,6 +7,7 @@ export const useTokenSearch = (
     getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined,
     getTokensByName: (searchName: string, chn: string, exact: boolean) => TokenIF[],
     defaultTokens: TokenIF[],
+    walletTokens: TokenIF[],
     recentTokens: TokenIF[]
 ): [TokenIF[], string, Dispatch<SetStateAction<string>>, string] => {
     // TODO: debounce this input later
@@ -139,16 +140,19 @@ export const useTokenSearch = (
             const addTokenToOutput = (newToken: TokenIF) => {
                 const isInArray = unifiedTokens.some(
                     (tk: TokenIF) => (
-                        tk.address === newToken.address &&
+                        tk.address.toLowerCase() === newToken.address.toLowerCase() &&
                         tk.chainId === newToken.chainId
                     )
                 );
                 isInArray || unifiedTokens.push(newToken);
             }
+            // add wallet tokens to output array
+            walletTokens.forEach((tk: TokenIF) => addTokenToOutput(tk));
             // add recent tokens to output array
             recentTokens.forEach((tk: TokenIF) => addTokenToOutput(tk));
             // remove off-chain tokens from output array
             const ouputTokensOnChain = unifiedTokens.filter((tk: TokenIF) => tk.chainId === parseInt(chainId));
+            console.log({ouputTokensOnChain});
             return ouputTokensOnChain;
         };
 
@@ -171,9 +175,12 @@ export const useTokenSearch = (
 
     // run hook every time the validated input from the user changes
     // will ignore changes that do not pass validation (eg adding whitespace)
-    }, [chainId, defaultTokens.length, validatedInput]);
-
-    console.log({outputTokens});
+    }, [
+        chainId,
+        defaultTokens.length,
+        walletTokens.length,
+        validatedInput
+    ]);
 
     // outputTokens ➜ tokens to display in DOM
     // validatedInput ➜ user input after validation mods
