@@ -332,31 +332,65 @@ export default function Sidebar(props: SidebarPropsIF) {
 
     // console.log(searchInput);
     const [openAllDefault, setOpenAllDefault] = useState(false);
+
     const openAllButton = (
         <button
-            onClick={() => setOpenAllDefault(!openAllDefault)}
+            onClick={() => {
+                if (!showSidebar) {
+                    setShowSidebar(true);
+                }
+                setOpenAllDefault(true);
+            }}
             className={styles.open_all_button}
         >
             <BsChevronBarDown size={18} color='var(--text-grey-light)' />{' '}
-            {!openAllDefault ? 'Open All' : 'Close All'}
+            {!showSidebar || !openAllDefault ? 'Expand All' : 'Collapse All'}
+        </button>
+    );
+
+    const collapseButton = (
+        <button
+            onClick={() => {
+                setOpenAllDefault(false);
+            }}
+            className={styles.open_all_button}
+        >
+            <BsChevronBarDown size={18} color='var(--text-grey-light)' /> {'Collapse All'}
         </button>
     );
 
     const searchContainerDisplay = (
         <div className={` ${styles.sidebar_link_search} ${styles.main_search_container}`}>
             {location.pathname.includes('analytics') ? AnalyticsSearchContainer : searchContainer}
-            <DefaultTooltip
-                interactive
-                title={openAllButton}
-                placement={'bottom'}
-                arrow
-                enterDelay={100}
-                leaveDelay={200}
-            >
-                <div style={{ cursor: 'pointer' }}>
-                    <img src={closeSidebarImage} alt='close sidebar' onClick={toggleSidebar} />
-                </div>
-            </DefaultTooltip>
+            {showSidebar ? (
+                <DefaultTooltip
+                    interactive
+                    title={!openAllDefault ? openAllButton : collapseButton}
+                    // placement={'bottom'}
+                    placement={showSidebar ? 'bottom' : 'right'}
+                    arrow
+                    enterDelay={100}
+                    leaveDelay={200}
+                >
+                    <div style={!showSidebar ? { cursor: 'pointer' } : { cursor: 'pointer' }}>
+                        <img src={closeSidebarImage} alt='close sidebar' onClick={toggleSidebar} />
+                    </div>
+                </DefaultTooltip>
+            ) : (
+                <DefaultTooltip
+                    interactive
+                    title={openAllButton}
+                    // placement={'bottom'}
+                    placement={showSidebar ? 'bottom' : 'right'}
+                    arrow
+                    enterDelay={100}
+                    leaveDelay={200}
+                >
+                    <div style={{ cursor: 'pointer', rotate: '180deg' }}>
+                        <img src={closeSidebarImage} alt='open sidebar' onClick={toggleSidebar} />
+                    </div>
+                </DefaultTooltip>
+            )}
         </div>
     );
 

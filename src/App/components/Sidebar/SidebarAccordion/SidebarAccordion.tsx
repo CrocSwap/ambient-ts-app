@@ -44,9 +44,6 @@ export default function SidebarAccordion(props: SidebarAccordionPropsIF) {
 
     const { isConnected } = useAccount();
 
-    const isUserLoggedIn = isConnected;
-    // const isUserLoggedIn = useAppSelector((state) => state.userData).isLoggedIn;
-
     const [isOpen, setIsOpen] = useState(false);
 
     const openStateContent = (
@@ -89,16 +86,15 @@ export default function SidebarAccordion(props: SidebarAccordionPropsIF) {
             setIsOpen(true);
         }
     }, [props.openAllDefault]);
-    // if (props.openAllDefault){setIsOpen(true)}
 
     const accordionContentToShow =
-        isUserLoggedIn || shouldDisplayContentWhenUserNotLoggedIn ? (
-            showOpenContentOrNull
-        ) : (
+        !isConnected && !shouldDisplayContentWhenUserNotLoggedIn && showSidebar ? (
             <div className={styles.connect_button}>
                 <p>Your recent {item.name.toLowerCase()} will display here.</p>
                 <button onClick={openModalWallet}>Connect Wallet</button>
             </div>
+        ) : (
+            showOpenContentOrNull
         );
 
     return (
