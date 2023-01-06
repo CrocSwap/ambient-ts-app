@@ -192,6 +192,7 @@ export const useTokenSearch = (
         chainId,
         defaultTokens.length,
         walletTokens.length,
+        recentTokens.length,
         validatedInput
     ]);
 
