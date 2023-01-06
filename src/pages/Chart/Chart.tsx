@@ -3841,7 +3841,7 @@ export default function Chart(props: ChartData) {
                         // highlightedCurrentPriceLineJoin(svg, [currentPriceData]).call(
                         //     highlightedCurrentPriceLine,
                         // );
-                        indicatorLineJoin(svg, [indicatorLineData]).call(indicatorLine);
+                        // indicatorLineJoin(svg, [indicatorLineData]).call(indicatorLine);
 
                         // candleJoin(svg, [chartData]).call(candlestick);
 
@@ -4457,12 +4457,19 @@ export default function Chart(props: ChartData) {
 
             const difference = liqTooltipSelectedLiqBar.liqPrices - poolPriceDisplay;
             // const absoluteDifference = Math.abs(difference)
-            const percentage =
-                difference === 0
-                    ? ''
-                    : difference < 0
-                    ? ((difference * 100) / poolPriceDisplay).toFixed(1)
-                    : '+' + ((difference * 100) / poolPriceDisplay).toFixed(1);
+
+            const pinnedTick = getPinnedTickFromDisplayPrice(
+                isDenomBase,
+                baseTokenDecimals,
+                quoteTokenDecimals,
+                false, // isMinPrice
+                liqTooltipSelectedLiqBar.liqPrices.toString(),
+                lookupChain(chainId).gridSize,
+            );
+
+            const percentage = parseFloat(
+                (Math.abs(pinnedTick - currentPoolPriceTick) / 100).toString(),
+            ).toFixed(1);
 
             liqTooltip.html(
                 '<p>' +
