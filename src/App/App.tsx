@@ -2225,6 +2225,7 @@ export default function App() {
         getTokenByAddress,
         getTokensByName,
         getAmbientTokens(),
+        getRecentTokens(),
     );
 
     // props for <Swap/> React element

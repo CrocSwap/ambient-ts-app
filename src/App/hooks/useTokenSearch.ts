@@ -6,7 +6,8 @@ export const useTokenSearch = (
     verifyToken: (addr: string, chn: string) => boolean,
     getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined,
     getTokensByName: (searchName: string, chn: string, exact: boolean) => TokenIF[],
-    defaultTokens: TokenIF[]
+    defaultTokens: TokenIF[],
+    recentTokens: TokenIF[]
 ): [TokenIF[], string, Dispatch<SetStateAction<string>>, string] => {
     // TODO: debounce this input later
     // TODO: figure out if we need to update EVERYTHING to the debounced value
@@ -132,7 +133,23 @@ export const useTokenSearch = (
 
         // fn to run if the app does not recognize input as an address or name or symbol
         function noSearch(): TokenIF[] {
-            return defaultTokens as TokenIF[];
+            // initialize an array of tokens to output, seeded with Ambient default
+            const unifiedTokens = defaultTokens;
+            // function to add tokens to output array if not yet present
+            const addTokenToOutput = (newToken: TokenIF) => {
+                const isInArray = unifiedTokens.some(
+                    (tk: TokenIF) => (
+                        tk.address === newToken.address &&
+                        tk.chainId === newToken.chainId
+                    )
+                );
+                isInArray || unifiedTokens.push(newToken);
+            }
+            // add recent tokens to output array
+            recentTokens.forEach((tk: TokenIF) => addTokenToOutput(tk));
+            // remove off-chain tokens from output array
+            const ouputTokensOnChain = unifiedTokens.filter((tk: TokenIF) => tk.chainId === parseInt(chainId));
+            return ouputTokensOnChain;
         };
 
         // declare an output variable
@@ -154,7 +171,7 @@ export const useTokenSearch = (
 
     // run hook every time the validated input from the user changes
     // will ignore changes that do not pass validation (eg adding whitespace)
-    }, [defaultTokens.length, validatedInput]);
+    }, [chainId, defaultTokens.length, validatedInput]);
 
     console.log({outputTokens});
 
