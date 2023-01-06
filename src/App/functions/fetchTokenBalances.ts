@@ -4,23 +4,24 @@ import {
     //  toDisplayQty
 } from '@crocswap-libs/sdk';
 import { BigNumber } from 'ethers';
-import Moralis from 'moralis-v1';
+import Moralis from 'moralis';
+import { Erc20Value } from '@moralisweb3/common-evm-utils';
 import { ZERO_ADDRESS } from '../../constants';
 import { TokenIF } from '../../utils/interfaces/TokenIF';
 import { formatAmountOld } from '../../utils/numbers';
 import { fetchDepositBalances } from './fetchDepositBalances';
 import { memoizePromiseFn } from './memoizePromiseFn';
 
-interface IMoralisTokenBalance {
-    // eslint-disable-next-line camelcase
-    token_address: string;
-    name: string;
-    symbol: string;
-    logo?: string | undefined;
-    thumbnail?: string | undefined;
-    decimals: number;
-    balance: string;
-}
+// interface IMoralisTokenBalance {
+//     // eslint-disable-next-line camelcase
+//     token_address: string;
+//     name: string;
+//     symbol: string;
+//     logo?: string | undefined;
+//     thumbnail?: string | undefined;
+//     decimals: number;
+//     balance: string;
+// }
 
 // export interface IExchangeDepositQueryResult {
 //     chainId: string;
@@ -135,68 +136,6 @@ export const fetchNativeTokenBalance = async (
     };
 
     return updatedNativeToken;
-
-    // const updatedNativeBalance = Promise.resolve(getDexBalance(ZERO_ADDRESS, address))
-    //     .then((nativeDexBalance) => {
-    //         const moralisNativeBalance = getWalletBalance(ZERO_ADDRESS, address);
-    //         const moralisNativeBalanceDisplay = toDisplayQty(moralisNativeBalance, 18);
-    //         const moralisNativeBalanceDisplayNum = parseFloat(moralisNativeBalanceDisplay);
-    //         const moralisNativeBalanceDisplayTruncated =
-    //             moralisNativeBalanceDisplayNum < 0.0001
-    //                 ? moralisNativeBalanceDisplayNum.toExponential(2)
-    //                 : moralisNativeBalanceDisplayNum < 2
-    //                 ? moralisNativeBalanceDisplayNum.toPrecision(3)
-    //                 : moralisNativeBalanceDisplayNum >= 100000
-    //                 ? formatAmountOld(moralisNativeBalanceDisplayNum)
-    //                 : moralisNativeBalanceDisplayNum.toLocaleString(undefined, {
-    //                       minimumFractionDigits: 2,
-    //                       maximumFractionDigits: 2,
-    //                   });
-
-    //         const nativeDexBalanceDisplay = nativeDexBalance
-    //             ? toDisplayQty(nativeDexBalance, 18)
-    //             : undefined;
-    //         const nativeDexBalanceDisplayNum = nativeDexBalanceDisplay
-    //             ? parseFloat(nativeDexBalanceDisplay)
-    //             : undefined;
-    // const nativeDexBalanceDisplayTruncated = nativeDexBalanceDisplayNum
-    //     ? nativeDexBalanceDisplayNum < 0.0001
-    //         ? nativeDexBalanceDisplayNum.toExponential(2)
-    //         : nativeDexBalanceDisplayNum < 2
-    //         ? nativeDexBalanceDisplayNum.toPrecision(3)
-    //         : nativeDexBalanceDisplayNum >= 100000
-    //         ? formatAmountOld(nativeDexBalanceDisplayNum)
-    //         : nativeDexBalanceDisplayNum.toLocaleString(undefined, {
-    //               minimumFractionDigits: 2,
-    //               maximumFractionDigits: 2,
-    //           })
-    //     : undefined;
-
-    // const combinedBalanceNonDisplay = BigNumber.from(moralisNativeBalance)
-    //     .add(BigNumber.from(nativeDexBalance))
-    //     .toString();
-    //         const combinedBalanceDisplay = toDisplayQty(combinedBalanceNonDisplay, 18);
-
-    //         const combinedBalanceDisplayNum = parseFloat(combinedBalanceDisplay);
-
-    //         const combinedBalanceDisplayTruncated =
-    //             combinedBalanceDisplayNum < 0.0001
-    //                 ? combinedBalanceDisplayNum.toExponential(2)
-    //                 : combinedBalanceDisplayNum < 2
-    //                 ? combinedBalanceDisplayNum.toPrecision(3)
-    //                 : combinedBalanceDisplayNum >= 100000
-    //                 ? formatAmountOld(combinedBalanceDisplayNum)
-    //                 : combinedBalanceDisplayNum.toLocaleString(undefined, {
-    //                       minimumFractionDigits: 2,
-    //                       maximumFractionDigits: 2,
-    //                   });
-
-    // return updatedNativeToken;
-    // updatedTokens.push(updatedNativeToken);
-    // })
-    // .catch(console.log);
-
-    // console.log({ updatedTokens });
 };
 
 export const fetchErc20TokenBalances = async (
@@ -208,20 +147,19 @@ export const fetchErc20TokenBalances = async (
 ): Promise<TokenIF[] | undefined> => {
     if (!crocEnv) return;
 
-    const options = { address: address, chain: chain as '0x5' | '0x2a' };
+    const options = { address: address, chain: chain as '0x5' };
 
-    const erc20WalletBalancesFromMoralis = await Moralis.Web3API.account.getTokenBalances(options);
+    const erc20WalletBalancesFromMoralis = await Moralis.EvmApi.token.getWalletTokenBalances(
+        options,
+    );
 
     const erc20DexBalancesFromCache = await fetchDepositBalances({ chainId: chain, user: address });
 
-    // console.log({ erc20WalletBalancesFromMoralis });
-    // console.log({ erc20DexBalancesFromCache });
-
     const combinedErc20Balances: TokenIF[] = [];
 
-    const getTokenInfoFromMoralisBalance = (tokenBalance: IMoralisTokenBalance): TokenIF => {
-        const moralisErc20Balance = tokenBalance.balance;
-        const moralisErc20BalanceDisplay = toDisplayQty(moralisErc20Balance, tokenBalance.decimals);
+    const getTokenInfoFromMoralisBalance = (erc20value: Erc20Value): TokenIF => {
+        const moralisErc20Balance = BigNumber.from(erc20value.amount.toString());
+        const moralisErc20BalanceDisplay = toDisplayQty(moralisErc20Balance, erc20value.decimals);
         const moralisErc20BalanceDisplayNum = parseFloat(moralisErc20BalanceDisplay);
         const moralisErc20BalanceDisplayTruncated =
             moralisErc20BalanceDisplayNum < 0.0001
@@ -238,14 +176,14 @@ export const fetchErc20TokenBalances = async (
         return {
             chainId: parseInt(chain),
             logoURI: '',
-            name: tokenBalance.name,
-            address: tokenBalance.token_address,
-            symbol: tokenBalance.symbol,
-            decimals: tokenBalance.decimals,
-            walletBalance: moralisErc20Balance,
+            name: erc20value.token?.name || '',
+            address: erc20value.token?.contractAddress.lowercase || '',
+            symbol: erc20value.token?.symbol || '',
+            decimals: erc20value.token?.decimals || 18,
+            walletBalance: moralisErc20Balance.toString(),
             walletBalanceDisplay: moralisErc20BalanceDisplay,
             walletBalanceDisplayTruncated: moralisErc20BalanceDisplayTruncated,
-            combinedBalance: moralisErc20Balance,
+            combinedBalance: moralisErc20Balance.toString(),
             combinedBalanceDisplay: moralisErc20BalanceDisplay,
             combinedBalanceDisplayTruncated: moralisErc20BalanceDisplayTruncated,
         };
@@ -294,8 +232,10 @@ export const fetchErc20TokenBalances = async (
     //     return dexBalance;
     // };
 
-    erc20WalletBalancesFromMoralis.map((balanceFromMoralis: IMoralisTokenBalance) => {
-        const newToken: TokenIF = getTokenInfoFromMoralisBalance(balanceFromMoralis);
+    const jsonResponse = erc20WalletBalancesFromMoralis.result;
+
+    jsonResponse.map((erc20value) => {
+        const newToken: TokenIF = getTokenInfoFromMoralisBalance(erc20value);
         combinedErc20Balances.push(newToken);
     });
 
@@ -352,103 +292,6 @@ export const fetchErc20TokenBalances = async (
     }
 
     return combinedErc20Balances;
-
-    // const updateMoralisBalance = async (tokenBalance: IMoralisTokenBalance): Promise<TokenIF> => {
-    //     // const erc20DexBalance = await getDexBalance(tokenBalance.token_address, address);
-    //     // const erc20DexBalanceDisplay = erc20DexBalance
-    //     //     ? toDisplayQty(erc20DexBalance, tokenBalance.decimals)
-    //     //     : undefined;
-    //     // const erc20DexBalanceDisplayNum = erc20DexBalanceDisplay
-    //     //     ? parseFloat(erc20DexBalanceDisplay)
-    //     //     : undefined;
-    //     // const erc20DexBalanceDisplayTruncated = erc20DexBalanceDisplayNum
-    //     //     ? erc20DexBalanceDisplayNum < 0.0001
-    //     //         ? erc20DexBalanceDisplayNum.toExponential(2)
-    //     //         : erc20DexBalanceDisplayNum < 2
-    //     //         ? erc20DexBalanceDisplayNum.toPrecision(3)
-    //     //         : erc20DexBalanceDisplayNum >= 100000
-    //     //         ? formatAmountOld(erc20DexBalanceDisplayNum)
-    //     //         : erc20DexBalanceDisplayNum.toLocaleString(undefined, {
-    //     //               minimumFractionDigits: 2,
-    //     //               maximumFractionDigits: 2,
-    //     //           })
-    //     //     : undefined;
-
-    //     const moralisErc20Balance = tokenBalance.balance;
-    //     const moralisErc20BalanceDisplay = toDisplayQty(moralisErc20Balance, tokenBalance.decimals);
-    //     const moralisErc20BalanceDisplayNum = parseFloat(moralisErc20BalanceDisplay);
-    //     const moralisErc20BalanceDisplayTruncated =
-    //         moralisErc20BalanceDisplayNum < 0.0001
-    //             ? moralisErc20BalanceDisplayNum.toExponential(2)
-    //             : moralisErc20BalanceDisplayNum < 2
-    //             ? moralisErc20BalanceDisplayNum.toPrecision(3)
-    //             : moralisErc20BalanceDisplayNum >= 100000
-    //             ? formatAmountOld(moralisErc20BalanceDisplayNum)
-    //             : moralisErc20BalanceDisplayNum.toLocaleString(undefined, {
-    //                   minimumFractionDigits: 2,
-    //                   maximumFractionDigits: 2,
-    //               });
-    //     // console.log({ moralisErc20Balance });
-    //     // console.log({ erc20DexBalance });
-
-    //     // const combinedBalanceNonDisplay = BigNumber.from(moralisErc20Balance)
-    //     //     .add(BigNumber.from(erc20DexBalance))
-    //     //     .toString();
-    //     // const combinedBalanceDisplay = toDisplayQty(
-    //     //     combinedBalanceNonDisplay,
-    //     //     tokenBalance.decimals,
-    //     // );
-    //     // const combinedBalanceDisplayNum = parseFloat(combinedBalanceDisplay);
-    //     // const combinedBalanceDisplayTruncated =
-    //     //     combinedBalanceDisplayNum < 0.0001
-    //     //         ? combinedBalanceDisplayNum.toExponential(2)
-    //     //         : combinedBalanceDisplayNum < 2
-    //     //         ? combinedBalanceDisplayNum.toPrecision(3)
-    //     //         : combinedBalanceDisplayNum >= 100000
-    //     //         ? formatAmountOld(combinedBalanceDisplayNum)
-    //     //         : combinedBalanceDisplayNum.toLocaleString(undefined, {
-    //     //               minimumFractionDigits: 2,
-    //     //               maximumFractionDigits: 2,
-    //     //           });
-
-    //     return {
-    //         chainId: parseInt(chain),
-    //         logoURI: '',
-    //         name: tokenBalance.name,
-    //         address: tokenBalance.token_address,
-    //         symbol: tokenBalance.symbol,
-    //         decimals: tokenBalance.decimals,
-    //         walletBalance: moralisErc20Balance,
-    //         walletBalanceDisplay: moralisErc20BalanceDisplay,
-    //         walletBalanceDisplayTruncated: moralisErc20BalanceDisplayTruncated,
-    //         // dexBalance: erc20DexBalance,
-    //         // dexBalanceDisplay: erc20DexBalanceDisplay,
-    //         // dexBalanceDisplayTruncated: erc20DexBalanceDisplayTruncated,
-    //         // combinedBalance: combinedBalanceNonDisplay,
-    //         // combinedBalanceDisplay: combinedBalanceDisplay,
-    //         // combinedBalanceDisplayTruncated: combinedBalanceDisplayTruncated,
-    //     };
-    // };
-
-    // const results = Promise.all(erc20WalletBalancesFromMoralis.map(updateMoralisBalance)).then(
-    //     (result) => {
-    //         return result;
-    //     },
-    // );
-    // return results;
-    // console.log({ updatedErc20Tokens });
-    // console.log({ map });
-    // return updatedErc20Tokens;
-    // Promise.all(erc20Balances.map(updateMoralisBalance))
-    //     .then((updatedErc20Tokens) => {
-    //         console.log({ updatedErc20Tokens });
-    //         // updatedTokens.push(...updatedErc20Tokens);
-    //         return updatedErc20Tokens;
-    //     })
-    //     .catch(console.log);
-
-    // console.log({ updatedTokens });
-    // if (updatedTokens.length > 0) return updatedTokens;
 };
 
 export type Erc20TokenBalanceFn = (

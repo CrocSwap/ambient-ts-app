@@ -320,6 +320,7 @@ export default function Leaderboard(props: LeaderboardPropsIF) {
     );
     const rowItemContent = usePaginateDataOrNull?.map((position, idx) => (
         <RangesRow
+            account={account}
             key={idx}
             position={position}
             rank={positionsByApy.findIndex((posId) => posId === position.positionId) + 1}

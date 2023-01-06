@@ -1,32 +1,54 @@
-import Moralis from 'moralis-v1';
+import Moralis from 'moralis';
+import { EvmChain } from '@moralisweb3/common-evm-utils';
+
+interface metadata {
+    name: string;
+    description: string;
+    image: string;
+}
 
 export async function getNFTs(account: string) {
-    const userEthNFTs = (
-        await Moralis.Web3API.account.getNFTs({ address: account })
-    ).result?.filter((nft) => nft.contract_type === 'ERC1155');
+    try {
+        const address = account;
 
-    if (userEthNFTs) {
-        // console.log({ userEthNFTs });
-        const imageLocalURLs: string[] = [];
-        userEthNFTs.forEach((nft) => {
-            const metadata = nft.metadata;
-            // console.log({ metadata });
-            if (metadata) {
-                const parsedMetadata = JSON.parse(metadata);
-                const imageURL = parsedMetadata.image;
-                const imageUrlNoProtocol = imageURL.substring(12);
-                const imageGatewayURL = 'https://cloudflare-ipfs.com/ipfs/' + imageUrlNoProtocol;
-                // const imageGatewayURL = 'https://ipfs.io/ipfs/' + imageUrlNoProtocol;
-                // console.log({ imageGatewayURL });
-                fetch(imageGatewayURL)
-                    .then((response) => response.blob())
-                    .then((image) => {
-                        // Create a local URL of that image
-                        const localUrl = URL.createObjectURL(image);
-                        imageLocalURLs.push(localUrl);
-                    });
-            }
+        const chain = EvmChain.ETHEREUM;
+
+        const response = await Moralis.EvmApi.nft.getWalletNFTs({
+            address,
+            chain,
         });
-        return imageLocalURLs;
+
+        // console.log(response?.result);
+
+        const userEthNFTs = response?.result.filter((nft) => nft.contractType === 'ERC1155');
+
+        if (userEthNFTs) {
+            // console.log({ userEthNFTs });
+            const imageLocalURLs: string[] = [];
+            userEthNFTs.forEach((nft) => {
+                const metadata = nft.metadata;
+
+                if (metadata) {
+                    // const parsedMetadata = JSON.parse(metadata);
+                    const imageIpfsUrl = (metadata as unknown as metadata).image;
+                    const imageUrlNoProtocol = imageIpfsUrl.substring(12);
+                    const imageGatewayURL =
+                        'https://cloudflare-ipfs.com/ipfs/' + imageUrlNoProtocol;
+                    // const imageGatewayURL = 'https://ipfs.io/ipfs/' + imageUrlNoProtocol;
+                    // console.log({ imageGatewayURL });
+                    fetch(imageGatewayURL)
+                        .then((response) => response.blob())
+                        .then((image) => {
+                            // Create a local URL of that image
+                            const localUrl = URL.createObjectURL(image);
+                            imageLocalURLs.push(localUrl);
+                        });
+                }
+            });
+            // console.log({ imageLocalURLs });
+            return imageLocalURLs;
+        }
+    } catch (e) {
+        console.error(e);
     }
 }

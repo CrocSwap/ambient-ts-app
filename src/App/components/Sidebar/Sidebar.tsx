@@ -33,6 +33,7 @@ import { memoizePoolStats } from '../../functions/getPoolStats';
 import { tradeData } from '../../../utils/state/tradeDataSlice';
 import { DefaultTooltip } from '../../../components/Global/StyledTooltip/StyledTooltip';
 import RecentPools from '../../../components/Global/Sidebar/RecentPools/RecentPools';
+import { useAccount } from 'wagmi';
 
 const cachedPoolStatsFetch = memoizePoolStats();
 
@@ -92,9 +93,12 @@ export default function Sidebar(props: SidebarPropsIF) {
         openModalWallet,
     } = props;
 
+    const { isConnected } = useAccount();
+
     const location = useLocation();
     const graphData = useAppSelector((state) => state.graphData);
-    const isUserLoggedIn = useAppSelector((state) => state.userData).isLoggedIn;
+    const isUserLoggedIn = isConnected;
+    // const isUserLoggedIn = useAppSelector((state) => state.userData).isLoggedIn;
     const transactionsByUser = graphData.changesByUser.changes;
     const positionsByUser = graphData.positionsByUser.positions;
     const limitOrderByUser = graphData.limitOrdersByUser.limitOrders;

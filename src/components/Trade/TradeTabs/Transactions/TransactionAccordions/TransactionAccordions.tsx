@@ -11,13 +11,14 @@ import Price from '../../../../Global/Tabs/Price/Price';
 import TransactionAccordionContent from './TransactionAccordionContent';
 
 interface TransactionAccordionsPropsIF {
+    account: string;
     i: number;
     expanded: number | boolean;
     setExpanded: Dispatch<SetStateAction<number | false>>;
     tx: ITransaction;
 }
 export default function TransactionAccordions(props: TransactionAccordionsPropsIF) {
-    const { i, expanded, setExpanded, tx } = props;
+    const { account, i, expanded, setExpanded, tx } = props;
 
     const isOpen = i === expanded;
     // ----------------------------------------------------------------------
@@ -37,11 +38,7 @@ export default function TransactionAccordions(props: TransactionAccordionsPropsI
         blockExplorer,
         quoteTokenLogo,
         baseTokenLogo,
-    } = useProcessTransaction(tx);
-
-    // console.log(priceType);
-
-    // console.log(useProcessTransaction(tx));
+    } = useProcessTransaction(tx, account);
 
     const walletAndIdDisplay = (
         <div className={styles.wallet_display}>

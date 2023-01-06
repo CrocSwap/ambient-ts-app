@@ -7,6 +7,7 @@ interface WalletButtonPropsIF {
     logo: HTMLElement & SVGElement;
     action: () => void;
 }
+
 export default function WalletButton(props: WalletButtonPropsIF) {
     return (
         <button onClick={() => props.action()} className={styles.container}>

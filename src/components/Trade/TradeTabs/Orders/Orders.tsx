@@ -27,6 +27,7 @@ import { LimitOrderIF, TokenIF } from '../../../../utils/interfaces/exports';
 import { getLimitOrderData } from '../../../../App/functions/getLimitOrderData';
 import useDebounce from '../../../../App/hooks/useDebounce';
 import NoTableData from '../NoTableData/NoTableData';
+import Pagination from '../../../Global/Pagination/Pagination';
 
 // import OrderAccordions from './OrderAccordions/OrderAccordions';
 
@@ -88,6 +89,9 @@ export default function Orders(props: propsIF) {
     // const poolSwapsCacheEndpoint = httpGraphCacheServerDomain + '/pool_recent_changes?';
 
     const tradeData = useAppSelector((state) => state.tradeData);
+
+    const baseTokenAddress = tradeData.baseToken.address;
+    const quoteTokenAddress = tradeData.quoteToken.address;
 
     const baseTokenAddressLowerCase = tradeData.baseToken.address.toLowerCase();
     const quoteTokenAddressLowerCase = tradeData.quoteToken.address.toLowerCase();
@@ -459,6 +463,46 @@ export default function Orders(props: propsIF) {
     ];
     const headerStyle = isOnPortfolioPage ? styles.portfolio_header : styles.trade_header;
 
+    // ---------------------
+    const [currentPage, setCurrentPage] = useState(1);
+    // transactions per page media queries
+    const txView1 = useMediaQuery('(max-width: 480px)');
+    const txView2 = useMediaQuery('(max-width: 720px)');
+    const txView3 = useMediaQuery('(max-width: 1200px)');
+    const txView4 = useMediaQuery('(max-width: 1800px)');
+    // const txView4 = useMediaQuery('(min-width: 2400px)');
+
+    const ordersPerPage = txView1 ? 3 : txView2 ? 10 : txView3 ? 12 : txView4 ? 15 : 20;
+
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [account, isShowAllEnabled, JSON.stringify({ baseTokenAddress, quoteTokenAddress })]);
+
+    // Get current tranges
+    const indexOfLastRanges = currentPage * ordersPerPage;
+    const indexOfFirstRanges = indexOfLastRanges - ordersPerPage;
+    const currentRangess = sortedLimits?.slice(indexOfFirstRanges, indexOfLastRanges);
+    const paginate = (pageNumber: number) => {
+        setCurrentPage(pageNumber);
+    };
+
+    const usePaginateDataOrNull = expandTradeTable ? currentRangess : sortedLimits;
+
+    const footerDisplay = (
+        <div className={styles.footer}>
+            {expandTradeTable && sortedLimits.length > 30 && (
+                <Pagination
+                    itemsPerPage={ordersPerPage}
+                    totalItems={sortedLimits.length}
+                    paginate={paginate}
+                    currentPage={currentPage}
+                />
+            )}
+        </div>
+    );
+
+    // ----------------------
+
     const headerColumnsDisplay = (
         <ul className={`${styles.header} ${headerStyle}`}>
             {headerColumns.map((header, idx) => (
@@ -474,7 +518,7 @@ export default function Orders(props: propsIF) {
         </ul>
     );
 
-    const rowItemContent = sortedLimits.map((order, idx) => (
+    const rowItemContent = usePaginateDataOrNull?.map((order, idx) => (
         <OrderRow
             crocEnv={crocEnv}
             chainData={chainData}
@@ -494,6 +538,7 @@ export default function Orders(props: propsIF) {
             isOnPortfolioPage={isOnPortfolioPage}
             handlePulseAnimation={handlePulseAnimation}
             lastBlockNumber={lastBlockNumber}
+            account={account}
         />
     ));
 
@@ -517,6 +562,8 @@ export default function Orders(props: propsIF) {
         <section className={styles.main_list_container} style={{ height: portfolioPageStyle }}>
             {headerColumnsDisplay}
             {debouncedShouldDisplayLoadingAnimation ? <TableSkeletons /> : orderDataOrNull}
+            {footerDisplay}
+
             {/* {isDataLoading ? <TableSkeletons /> : orderDataOrNull} */}
         </section>
     );
