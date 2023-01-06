@@ -304,8 +304,6 @@ export default function Chart(props: ChartData) {
 
     const [bandwidth, setBandwidth] = useState(5);
 
-    const [changeLimitOrderStatus, setChangeLimitOrderStatus] = useState(false);
-
     // const valueFormatter = d3.format('.5f');
     const currentPoolPriceTick =
         poolPriceNonDisplay === undefined ? 0 : Math.log(poolPriceNonDisplay) / Math.log(1.0001);
@@ -1511,13 +1509,6 @@ export default function Chart(props: ChartData) {
     const [isTokenAPrimaryLocal, setIsTokenAPrimaryLocal] = useState<boolean>(
         tradeData.isTokenAPrimary,
     );
-    const [tokenAQtyLocal] = useState<string>(
-        isTokenAPrimaryLocal ? tradeData?.primaryQuantity : '',
-    );
-    const [tokenBQtyLocal] = useState<string>(
-        !isTokenAPrimaryLocal ? tradeData?.primaryQuantity : '',
-    );
-
     const reverseTokens = (): void => {
         navigate(
             '/trade/limit/chain=0x5&tokenA=' +
@@ -1525,27 +1516,11 @@ export default function Chart(props: ChartData) {
                 '&tokenB=' +
                 tradeData.tokenA.address,
         );
-        // if (!isTokenAPrimaryLocal) {
+        const buyQtyField = document.getElementById('buy-limit-quantity') as HTMLInputElement;
+        const sellQtyField = document.getElementById('sell-limit-quantity') as HTMLInputElement;
+        buyQtyField.value = sellQtyField.value;
+        sellQtyField.value = buyQtyField.value;
 
-        //     const buyQtyField = document.getElementById('buy-limit-quantity') as HTMLInputElement;
-        //     if (buyQtyField) {
-        //         buyQtyField.value = '';
-        //     }
-        //     const sellQtyField = document.getElementById('sell-limit-quantity') as HTMLInputElement;
-        //     if (sellQtyField) {
-        //         sellQtyField.value = tokenBQtyLocal === 'NaN' ? '' : tokenBQtyLocal;
-        //     }
-        // } else {
-
-        //     const sellQtyField = document.getElementById('sell-limit-quantity') as HTMLInputElement;
-        //     if (sellQtyField) {
-        //         sellQtyField.value = '';
-        //     }
-        //     const buyQtyField = document.getElementById('buy-limit-quantity') as HTMLInputElement;
-        //     if (buyQtyField) {
-        //         buyQtyField.value = tokenAQtyLocal === 'NaN' ? '' : tokenAQtyLocal;
-        //     }
-        // }
         setIsTokenAPrimaryLocal(!isTokenAPrimaryLocal);
         dispatch(setIsTokenAPrimary(!tradeData.isTokenAPrimary));
     };
@@ -1760,6 +1735,22 @@ export default function Chart(props: ChartData) {
     //         // });
     //     }
     // }, [scaleData]);
+
+    function reverseTokenForChart(limitPreviousData: any, newLimitValue: any) {
+        if (isUserLoggedIn && poolPriceDisplay) {
+            if (sellOrderStyle === 'order_sell') {
+                if (limitPreviousData > poolPriceDisplay && newLimitValue < poolPriceDisplay) {
+                    handlePulseAnimation('limitOrder');
+                    reverseTokens();
+                }
+            } else {
+                if (limitPreviousData < poolPriceDisplay && newLimitValue > poolPriceDisplay) {
+                    handlePulseAnimation('limitOrder');
+                    reverseTokens();
+                }
+            }
+        }
+    }
 
     // Drag Type
     useEffect(() => {
@@ -2110,25 +2101,7 @@ export default function Chart(props: ChartData) {
 
                     onBlurLimitRate(newLimitValue);
 
-                    if (isUserLoggedIn && poolPriceDisplay) {
-                        if (sellOrderStyle === 'order_sell') {
-                            if (
-                                limitPreviousData > poolPriceDisplay &&
-                                newLimitValue < poolPriceDisplay
-                            ) {
-                                handlePulseAnimation('limitOrder');
-                                reverseTokens();
-                            }
-                        } else {
-                            if (
-                                limitPreviousData < poolPriceDisplay &&
-                                newLimitValue > poolPriceDisplay
-                            ) {
-                                handlePulseAnimation('limitOrder');
-                                reverseTokens();
-                            }
-                        }
-                    }
+                    // reverseTokenForChart(limitPreviousData,newLimitValue);
                 });
 
             setDragRange(() => {
@@ -4356,7 +4329,7 @@ export default function Chart(props: ChartData) {
                 });
             }
         },
-        [candlestick, bandwidth],
+        [candlestick, bandwidth, limit],
     );
     function showCrosshair() {
         d3.select(d3PlotArea.current)
@@ -4550,6 +4523,7 @@ export default function Chart(props: ChartData) {
     };
 
     const onBlurLimitRate = (newLimitValue: any) => {
+        const limitPreviousData = limit[0].value;
         if (newLimitValue === undefined) {
             return;
         }
@@ -4570,6 +4544,7 @@ export default function Chart(props: ChartData) {
             const tickDispPrice = pool?.toDisplayPrice(tickPrice);
 
             if (!tickDispPrice) {
+                reverseTokenForChart(limitPreviousData, newLimitValue);
                 setLimit(() => {
                     return [
                         {
@@ -4598,6 +4573,7 @@ export default function Chart(props: ChartData) {
                             ? liquidityData.topBoundary
                             : parseFloat(limitRateTruncated.replace(',', ''));
 
+                    reverseTokenForChart(limitPreviousData, limitValue);
                     setLimit(() => {
                         return [
                             {
