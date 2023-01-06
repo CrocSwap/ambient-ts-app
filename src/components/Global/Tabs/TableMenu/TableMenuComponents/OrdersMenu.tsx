@@ -45,6 +45,7 @@ interface OrdersMenuIF {
     // orderDetailsProps: any;
     account: string;
     lastBlockNumber: number;
+    showHighlightedButton: boolean;
 }
 
 // React functional component
@@ -65,6 +66,7 @@ export default function OrdersMenu(props: OrdersMenuIF) {
         handlePulseAnimation,
         lastBlockNumber,
         account,
+        showHighlightedButton,
         // isOnPortfolioPage,
     } = props;
     // const [value, copy] = useCopyToClipboard();
@@ -256,6 +258,7 @@ export default function OrdersMenu(props: OrdersMenuIF) {
     const copyButton =
         limitOrder && isShowAllEnabled ? (
             <button
+                style={{ opacity: showHighlightedButton ? '1' : '0.2' }}
                 className={styles.option_button}
                 onClick={() => {
                     dispatch(setLimitTickCopied(true));
