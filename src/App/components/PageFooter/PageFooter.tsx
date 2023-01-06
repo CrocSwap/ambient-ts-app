@@ -49,7 +49,6 @@ export default function PageFooter(props: IFooterProps) {
             {userIsOnline ? '' : 'Offline'}
             {isUserIdle ? 'Idle' : ''}
 
-            <a onClick={() => props.setChatStatus(!props.chatStatus)}>Chat</a>
             <a href='#'>
                 <AiFillTwitterCircle size={15} />
                 {/* <span>Twitter</span> */}

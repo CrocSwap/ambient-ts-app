@@ -98,7 +98,7 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
         getTokenByAddress,
         importedTokensPlus,
         getRecentTokens,
-        addRecentToken
+        addRecentToken,
     } = props;
 
     // TODO: update name of functions with 'handle' verbiage

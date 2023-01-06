@@ -2,22 +2,22 @@ import styles from './ChatButton.module.css';
 import { Dispatch, SetStateAction } from 'react';
 
 interface ChatButtonPropsIF {
-    showChatBot: boolean;
-    setShowChatBot: Dispatch<SetStateAction<boolean>>;
+    chatStatus: boolean;
+    setChatStatus: Dispatch<SetStateAction<boolean>>;
     //     setShowWelcomeBack: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function ChatButton(props: ChatButtonPropsIF) {
-    const { showChatBot, setShowChatBot } = props;
+    const { chatStatus, setChatStatus } = props;
 
     const handleButtonClick = () => {
-        setShowChatBot(!showChatBot);
+        setChatStatus(!chatStatus);
         // setShowWelcomeBack(false);
     };
 
     return (
         <div
-            className={`${styles.chat_button} ${showChatBot && styles.active}`}
+            className={`${styles.chat_button} ${chatStatus && styles.active}`}
             onClick={() => handleButtonClick()}
         >
             <svg className={styles.chat_bubble} width='30' height='30' viewBox='0 0 100 100'>

@@ -21,5 +21,4 @@ export const useLocationSlug = (): string => {
     }, [pathname]);
 
     return locationSlug;
-}
-
+};

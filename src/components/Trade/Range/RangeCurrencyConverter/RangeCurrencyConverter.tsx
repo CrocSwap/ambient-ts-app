@@ -117,7 +117,7 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
         getTokenByAddress,
         importedTokensPlus,
         getRecentTokens,
-        addRecentToken
+        addRecentToken,
     } = props;
 
     const dispatch = useAppDispatch();
@@ -733,7 +733,7 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
         getTokenByAddress: getTokenByAddress,
         importedTokensPlus: importedTokensPlus,
         getRecentTokens: getRecentTokens,
-        addRecentToken: addRecentToken
+        addRecentToken: addRecentToken,
     };
 
     return (
