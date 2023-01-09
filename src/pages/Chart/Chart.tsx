@@ -4249,14 +4249,6 @@ export default function Chart(props: ChartData) {
                     );
                 });
 
-                d3.select('#d3PlotTvl').on('mousemove', function (event: any) {
-                    mousemoveEventForCrosshair(event);
-                });
-
-                d3.select('#d3PlotFeeRate').on('mousemove', function (event: any) {
-                    mousemoveEventForCrosshair(event);
-                });
-
                 d3.select(d3Yaxis.current).on('mouseover', (event: any) => {
                     d3.select(event.currentTarget).style('cursor', 'row-resize');
                     crosshairData[0].x = -1;
