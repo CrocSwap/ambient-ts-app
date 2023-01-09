@@ -68,6 +68,7 @@ interface LimitCurrencyConverterProps {
     importedTokensPlus: TokenIF[];
     getRecentTokens: (options?: getRecentTokensParamsIF | undefined) => TokenIF[];
     addRecentToken: (tkn: TokenIF) => void;
+    setResetLimitTick: Dispatch<SetStateAction<boolean>>;
 }
 
 // central react functional component
@@ -111,6 +112,7 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
         importedTokensPlus,
         getRecentTokens,
         addRecentToken,
+        setResetLimitTick,
     } = props;
 
     const dispatch = useAppDispatch();
@@ -212,6 +214,7 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
         }
         setIsTokenAPrimaryLocal(!isTokenAPrimaryLocal);
         dispatch(setIsTokenAPrimary(!isTokenAPrimary));
+        setResetLimitTick((value) => !value);
     };
 
     useEffect(() => {
