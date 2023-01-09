@@ -4,7 +4,13 @@ export const useSidebarSearch = (): [
     Dispatch<SetStateAction<string>>
 ] => {
     const [rawInput, setRawInput] = useState<string>('');
-    useEffect(() => console.log({rawInput}), [rawInput]);
+    const [cleanInput, setCleanInput] = useState<string>('');
+    false && cleanInput;
+
+    useEffect(() => {
+        const fixedInput = rawInput.trim().toLowerCase();
+        setCleanInput(fixedInput);
+    }, [rawInput]);
 
     return [
         setRawInput
