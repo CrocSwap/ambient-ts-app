@@ -426,20 +426,7 @@ export default function App() {
         dispatch(resetTokenData());
     }, [chainData.chainId]);
 
-    const [poolList, setPoolList] = useState([]);
-
-    useEffect(() => {
-        (async () => {
-            const poolList = await cachedFetchPoolList(chainData.chainId);
-            setPoolList(poolList);
-        })();
-    }, [chainData.chainId]);
-
-    useEffect(() => {
-        if (poolList.length) console.log({ poolList });
-    }, [poolList]);
-
-    usePoolList();
+    usePoolList(chainData.chainId);
 
     useEffect(() => {
         dispatch(resetTokenData());
