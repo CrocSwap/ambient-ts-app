@@ -25,7 +25,7 @@ import topTokensImage from '../../../assets/images/sidebarImages/topTokens.svg';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { PoolIF, TokenIF, TempPoolIF } from '../../../utils/interfaces/exports';
 import SidebarSearchResults from './SidebarSearchResults/SidebarSearchResults';
-import formatSearchText from './formatSeachText';
+// import formatSearchText from './formatSeachText';
 import { MdClose } from 'react-icons/md';
 
 import closeSidebarImage from '../../../assets/images/sidebarImages/closeSidebar.svg';
@@ -256,14 +256,14 @@ export default function Sidebar(props: SidebarPropsIF) {
     const [searchMode, setSearchMode] = useState(false);
     const [exampleLoading, setExampleLoading] = useState(true);
 
-    const searchInputChangeHandler = (event: string) => {
-        setSearchMode(true);
-        const formatText = formatSearchText(event);
+    // const searchInputChangeHandler = (event: string) => {
+    //     setSearchMode(true);
+    //     const formatText = formatSearchText(event);
 
-        setSearchInput(formatText);
+    //     setSearchInput(formatText);
 
-        setExampleLoading(true);
-    };
+    //     setExampleLoading(true);
+    // };
     const searchInputRef = useRef(null);
 
     const handleInputClear = () => {
