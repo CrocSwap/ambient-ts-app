@@ -111,13 +111,13 @@ export default function ChatPanel(props: ChatProps) {
         }
     }, [messages]);
 
-    useEffect(() => {
-        getMsg();
-    }, [room]);
+    // useEffect(() => {
+    //     getMsg();
+    // }, [room]);
 
-    useEffect(() => {
-        getMsg();
-    }, []);
+    // useEffect(() => {
+    //     getMsg();
+    // }, []);
 
     useEffect(() => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -133,6 +133,8 @@ export default function ChatPanel(props: ChatProps) {
             setCurrentUser(result.userData._id);
             setName(result.userData.ensName);
         });
+
+        getMsg();
     }, []);
 
     useEffect(() => {
@@ -142,11 +144,13 @@ export default function ChatPanel(props: ChatProps) {
     useEffect(() => {
         scrollToBottom();
         setNotification(0);
+
+        getMsg();
     }, [room]);
 
-    function handleCloseChatPanel() {
-        props.setChatStatus(false);
-    }
+    // function handleCloseChatPanel() {
+    //     props.setChatStatus(false);
+    // }
 
     const scrollToBottomButton = async () => {
         messageEnd.current?.scrollTo(
@@ -201,7 +205,7 @@ export default function ChatPanel(props: ChatProps) {
                 <RiCloseFill
                     size={27}
                     className={styles.close_button}
-                    onClick={() => handleCloseChatPanel()}
+                    onClick={() => props.setChatStatus(false)}
                 />
             )}
         </div>
