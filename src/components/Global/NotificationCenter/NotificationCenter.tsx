@@ -1,6 +1,6 @@
 import styles from './NotificationCenter.module.css';
 import { AnimateSharedLayout } from 'framer-motion';
-import { Dispatch, SetStateAction, useRef } from 'react';
+import { Dispatch, SetStateAction, useEffect, useRef } from 'react';
 import NotificationTable from './NotificationTable/NotificationTable';
 import ActivityIndicator from './ActivityIndicator/ActivityIndicator';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
@@ -20,6 +20,12 @@ const NotificationCenter = (props: NotificationCenterPropsIF) => {
     const pendingTransactions = receiptData.pendingTransactions;
 
     const sessionReceipts = receiptData.sessionReceipts;
+
+    const txCount = pendingTransactions.length + sessionReceipts.length;
+
+    useEffect(() => {
+        if (txCount === 0) setShowNotificationTable(false);
+    }, [txCount]);
 
     const receiveReceiptHashes: Array<string> = [];
     // eslint-disable-next-line
