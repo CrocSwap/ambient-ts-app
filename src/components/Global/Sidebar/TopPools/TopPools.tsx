@@ -18,17 +18,15 @@ export default function TopPools(props: TopPoolsProps) {
     const { tradeData, chainId, lastBlockNumber, cachedPoolStatsFetch, poolList } = props;
     false && poolList;
 
-    const header = (
-        <div className={styles.header}>
-            <div>Pool</div>
-            <div>Volume</div>
-            <div>TVL</div>
-        </div>
-    );
+    // TODO: @Junior refactor the header to be a `<header>` element
 
     return (
         <div className={styles.container}>
-            {header}
+            <div className={styles.header}>
+                <div>Pool</div>
+                <div>Volume</div>
+                <div>TVL</div>
+            </div>
             <div className={styles.content}>
                 {topPools.map((item, idx) => (
                     <TopPoolsCard
