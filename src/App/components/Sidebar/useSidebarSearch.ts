@@ -55,6 +55,6 @@ export const useSidebarSearch = (
     return [
         setRawInput,
         !!searchAs,
-        poolList
+        poolList.slice(0, 4)
     ];
 }
