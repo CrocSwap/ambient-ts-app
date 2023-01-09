@@ -34,6 +34,7 @@ import { tradeData } from '../../../utils/state/tradeDataSlice';
 import { DefaultTooltip } from '../../../components/Global/StyledTooltip/StyledTooltip';
 import RecentPools from '../../../components/Global/Sidebar/RecentPools/RecentPools';
 import { useAccount } from 'wagmi';
+import { useSidebarSearch } from './useSidebarSearch';
 
 const cachedPoolStatsFetch = memoizePoolStats();
 
@@ -248,6 +249,8 @@ export default function Sidebar(props: SidebarPropsIF) {
             ),
         },
     ];
+
+    useSidebarSearch();
 
     const [searchInput, setSearchInput] = useState<string[][]>();
     const [searchMode, setSearchMode] = useState(false);
