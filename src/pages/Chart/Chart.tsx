@@ -4211,7 +4211,6 @@ export default function Chart(props: ChartData) {
                     if (snap(candlestick, chartData, event)[0] !== undefined) {
                         crosshairData[0] = snap(candlestick, chartData, event)[0];
                         setIsMouseMoveCrosshair(true);
-
                         setCrosshairData([
                             {
                                 x: crosshairData[0].x,
@@ -4228,6 +4227,7 @@ export default function Chart(props: ChartData) {
 
                 if (isMouseMoveForSubChart) {
                     setCrossHairLocation(mouseMoveEventCharts);
+                    showCrosshairHorizontal();
                 } else if (isZoomForSubChart) {
                     setCrossHairLocation(mouseMoveEventCharts.sourceEvent);
                 }
@@ -4236,7 +4236,8 @@ export default function Chart(props: ChartData) {
                     isZoomForSubChart = false;
                     setCrossHairLocation(event);
                     setMouseMoveEventCharts(event);
-                    showCrosshair();
+                    showCrosshairHorizontal();
+                    showCrosshairVertical();
                 };
 
                 d3.select(d3PlotArea.current).on('mousemove', function (event: any) {
@@ -4324,7 +4325,20 @@ export default function Chart(props: ChartData) {
         [candlestick, bandwidth, limit, ranges],
     );
 
-    function showCrosshair() {
+    function showCrosshairVertical() {
+        d3.select('#tvl_chart')
+            .select('svg')
+            .select('.crosshairVertical')
+            .selectChild()
+            .style('visibility', 'visible');
+
+        d3.select('#fee_rate_chart')
+            .select('svg')
+            .select('.crosshairVertical')
+            .selectChild()
+            .style('visibility', 'visible');
+    }
+    function showCrosshairHorizontal() {
         d3.select(d3PlotArea.current)
             .select('svg')
             .select('.crosshairHorizontal')
@@ -4337,21 +4351,9 @@ export default function Chart(props: ChartData) {
             .selectChild()
             .style('visibility', 'visible');
 
-        d3.select('#tvl_chart')
-            .select('svg')
-            .select('.crosshairVertical')
-            .selectChild()
-            .style('visibility', 'visible');
-
         d3.select('#fee_rate_chart')
             .select('svg')
             .select('.crosshairHorizontal')
-            .selectChild()
-            .style('visibility', 'visible');
-
-        d3.select('#fee_rate_chart')
-            .select('svg')
-            .select('.crosshairVertical')
             .selectChild()
             .style('visibility', 'visible');
     }
