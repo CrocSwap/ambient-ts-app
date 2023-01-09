@@ -755,13 +755,14 @@ export default function App() {
 
     const tokenPairStringified = useMemo(() => JSON.stringify(tokenPair), [tokenPair]);
 
+    const [resetLimitTick, setResetLimitTick] = useState(false);
     useEffect(() => {
         console.log('resetting limit tick');
         dispatch(setPoolPriceNonDisplay(0));
 
         dispatch(setLimitTick(0));
         // }, [JSON.stringify({ base: baseTokenAddress, quote: quoteTokenAddress })]);
-    }, [tokenPairStringified]);
+    }, [resetLimitTick]);
 
     useEffect(() => {
         dispatch(setPrimaryQuantityRange(''));
@@ -2340,6 +2341,7 @@ export default function App() {
         importedTokensPlus: getImportedTokensPlus(),
         getRecentTokens: getRecentTokens,
         addRecentToken: addRecentToken,
+        setResetLimitTick: setResetLimitTick,
     };
 
     // props for <Range/> React element
