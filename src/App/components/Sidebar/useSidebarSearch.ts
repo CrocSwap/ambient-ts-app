@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, useMemo, useState } from 'react';
+import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
 import { TempPoolIF } from '../../../utils/interfaces/TempPoolIF';
 
 export const useSidebarSearch = (
@@ -52,9 +52,15 @@ export const useSidebarSearch = (
     }, [rawInput]);
     false && validatedInput;
 
+    const [outputPools, setOutputPools] = useState<TempPoolIF[]>([]);
+
+    useEffect(() => {
+        setOutputPools(poolList);
+    }, [poolList.length]);
+
     return [
         setRawInput,
         !!searchAs,
-        poolList.slice(0, 4)
+        outputPools.slice(0, 4)
     ];
 }
