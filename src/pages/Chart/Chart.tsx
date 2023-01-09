@@ -1667,7 +1667,6 @@ export default function Chart(props: ChartData) {
             const liqAllBidPrices = liquidityData.liqBidData.map(
                 (liqPrices: any) => liqPrices.liqPrices,
             );
-            console.log(scaleData.yScale.domain()[1]);
             const liqBidDeviation = standardDeviation(liqAllBidPrices);
 
             while (
@@ -2554,7 +2553,7 @@ export default function Chart(props: ChartData) {
                 ? liquidityData.topBoundary
                 : scaleData.yScale.invert(d3.pointer(event)[1]);
 
-        clickedValue = clickedValue < 0 ? 0 : clickedValue;
+        clickedValue = clickedValue < 0 ? 0.01 : clickedValue;
 
         const displayValue = poolPriceDisplay !== undefined ? poolPriceDisplay : 0;
 
@@ -2678,6 +2677,10 @@ export default function Chart(props: ChartData) {
                 ),
             );
         } else {
+            const value =
+                scaleData.yScale.invert(event.offsetY) < 0
+                    ? 0.1
+                    : scaleData.yScale.invert(event.offsetY);
             let pinnedDisplayPrices;
             if (lineToBeSet === 'Max') {
                 pinnedDisplayPrices = getPinnedPriceValuesFromDisplayPrices(
@@ -2685,7 +2688,7 @@ export default function Chart(props: ChartData) {
                     baseTokenDecimals,
                     quoteTokenDecimals,
                     low.toString(),
-                    scaleData.yScale.invert(event.offsetY).toString(),
+                    value.toString(),
                     lookupChain(chainId).gridSize,
                 );
             } else {
@@ -2693,7 +2696,7 @@ export default function Chart(props: ChartData) {
                     denomInBase,
                     baseTokenDecimals,
                     quoteTokenDecimals,
-                    scaleData.yScale.invert(event.offsetY).toString(),
+                    value.toString(),
                     high.toString(),
                     lookupChain(chainId).gridSize,
                 );
