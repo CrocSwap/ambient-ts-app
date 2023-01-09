@@ -81,6 +81,8 @@
     transition: all var(--animation-speed) ease-in-out
    
 }
+
+
 .row_container:hover {
     background: var(--dark2);
 }
@@ -177,3 +179,4 @@
     align-items: center;
     gap: 4px;
 }
+
