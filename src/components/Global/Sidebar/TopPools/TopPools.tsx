@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { PoolStatsFn } from '../../../../App/functions/getPoolStats';
 import { topPools } from '../../../../App/mockData';
 import { tradeData } from '../../../../utils/state/tradeDataSlice';
