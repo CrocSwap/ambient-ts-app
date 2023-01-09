@@ -147,6 +147,7 @@ import { useRecentTokens } from './hooks/useRecentTokens';
 import { useTokenSearch } from './hooks/useTokenSearch';
 import WalletModalWagmi from './components/WalletModal/WalletModalWagmi';
 import Moralis from 'moralis';
+import { usePoolList } from './hooks/usePoolList';
 import { memoizeFetchPoolList } from './functions/fetchPoolList';
 
 // import { memoizeQuerySpotTick } from './functions/querySpotTick';
@@ -437,6 +438,8 @@ export default function App() {
     useEffect(() => {
         if (poolList.length) console.log({ poolList });
     }, [poolList]);
+
+    usePoolList();
 
     useEffect(() => {
         dispatch(resetTokenData());
