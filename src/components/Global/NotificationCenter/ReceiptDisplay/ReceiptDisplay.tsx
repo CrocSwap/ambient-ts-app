@@ -85,7 +85,11 @@ export default function ReceiptDisplay(props: ReceiptDisplayPropsIF) {
                 <div className={styles.info}>
                     <div className={styles.row}>
                         Transaction {txHashTruncated} {handleTxTextDisplay(status)}
-                        <div>
+                        <div
+                            style={{
+                                cursor: 'pointer',
+                            }}
+                        >
                             <VscClose
                                 onClick={() => {
                                     dispatch(removeReceipt(hash));
