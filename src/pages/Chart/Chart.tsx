@@ -3552,6 +3552,15 @@ export default function Chart(props: ChartData) {
     const candleOrVolumeDataHoverStatus = (event: any) => {
         const lastDate = scaleData.xScale.invert(event.offsetX + bandwidth / 2);
         const startDate = scaleData.xScale.invert(event.offsetX - bandwidth / 2);
+
+        const arr = parsedChartData?.chartData.map((chartData: any) =>
+            Math.abs(chartData.close - chartData.open),
+        );
+
+        let minHeight = 0;
+
+        if (arr) minHeight = arr.reduce((a, b) => a + b, 0) / arr.length;
+
         const nearest = snapForCandle(event);
         const dateControl =
             nearest?.date.getTime() > startDate.getTime() &&
@@ -3569,12 +3578,33 @@ export default function Chart(props: ChartData) {
                 : false
             : false;
 
+        const diff = Math.abs(nearest.close - nearest.open);
+        const topBoundary =
+            nearest.close > nearest.open
+                ? nearest.close + (minHeight - diff) / 2
+                : nearest.open + (minHeight - diff) / 2;
+        const botBoundary =
+            nearest.open < nearest.close
+                ? nearest.open - (minHeight - diff) / 2
+                : nearest.close - (minHeight - diff) / 2;
+
+        let limitTop = nearest.close > nearest.open ? nearest.close : nearest.open;
+        let limitBot = nearest.close < nearest.open ? nearest.close : nearest.open;
+
+        if (nearest.close > nearest.open) {
+            limitTop = nearest.close > topBoundary ? nearest.close : topBoundary;
+            limitBot = nearest.open < botBoundary ? nearest.open : botBoundary;
+        } else {
+            limitTop = nearest.open > topBoundary ? nearest.open : topBoundary;
+            limitBot = nearest.close < botBoundary ? nearest.close : botBoundary;
+        }
+
         return {
             isHoverCandleOrVolumeData:
                 nearest &&
-                (((nearest?.close > nearest?.open
-                    ? nearest?.close > yValue && nearest?.open < yValue
-                    : nearest?.close < yValue && nearest?.open > yValue) &&
+                (((limitTop > limitBot
+                    ? limitTop > yValue && limitBot < yValue
+                    : limitTop < yValue && limitBot > yValue) &&
                     dateControl) ||
                     isSelectedVolume),
             _selectedDate: nearest?.date,
