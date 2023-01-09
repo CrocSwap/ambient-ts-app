@@ -1,8 +1,12 @@
 import { Dispatch, SetStateAction, useMemo, useState } from 'react';
+import { TempPoolIF } from '../../../utils/interfaces/TempPoolIF';
 
-export const useSidebarSearch = (): [
+export const useSidebarSearch = (
+    poolList: TempPoolIF[]
+): [
     Dispatch<SetStateAction<string>>,
-    boolean
+    boolean,
+    TempPoolIF[]
 ] => {
     // raw user input from the DOM
     const [rawInput, setRawInput] = useState<string>('');
@@ -50,6 +54,7 @@ export const useSidebarSearch = (): [
 
     return [
         setRawInput,
-        !!searchAs
+        !!searchAs,
+        poolList
     ];
 }

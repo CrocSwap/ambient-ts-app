@@ -250,7 +250,8 @@ export default function Sidebar(props: SidebarPropsIF) {
         },
     ];
 
-    const [ setRawInput, isInputValid ] = useSidebarSearch();
+    const [ setRawInput, isInputValid, searchedPools ] = useSidebarSearch(poolList);
+    false && searchedPools;
 
     const [searchInput, setSearchInput] = useState<string[][]>();
     const [searchMode, setSearchMode] = useState(false);
