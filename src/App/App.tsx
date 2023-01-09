@@ -148,7 +148,6 @@ import { useTokenSearch } from './hooks/useTokenSearch';
 import WalletModalWagmi from './components/WalletModal/WalletModalWagmi';
 import Moralis from 'moralis';
 import { usePoolList } from './hooks/usePoolList';
-import { memoizeFetchPoolList } from './functions/fetchPoolList';
 
 // import { memoizeQuerySpotTick } from './functions/querySpotTick';
 // import PhishingWarning from '../components/Global/PhisingWarning/PhishingWarning';
@@ -159,7 +158,6 @@ const cachedFetchErc20TokenBalances = memoizeFetchErc20TokenBalances();
 const cachedFetchTokenPrice = memoizeTokenPrice();
 const cachedQuerySpotPrice = memoizeQuerySpotPrice();
 const cachedFetchContractDetails = memoizeFetchContractDetails();
-const cachedFetchPoolList = memoizeFetchPoolList();
 // const cachedQuerySpotTick = memoizeQuerySpotTick();
 
 const httpGraphCacheServerDomain = 'https://809821320828123.de:5000';
