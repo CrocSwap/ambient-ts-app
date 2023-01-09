@@ -23,7 +23,7 @@ import recentTransactionsImage from '../../../assets/images/sidebarImages/recent
 import topPoolsImage from '../../../assets/images/sidebarImages/topPools.svg';
 import topTokensImage from '../../../assets/images/sidebarImages/topTokens.svg';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
-import { PoolIF, TokenIF } from '../../../utils/interfaces/exports';
+import { PoolIF, TokenIF, TempPoolIF } from '../../../utils/interfaces/exports';
 import SidebarSearchResults from './SidebarSearchResults/SidebarSearchResults';
 import formatSearchText from './formatSeachText';
 import { MdClose } from 'react-icons/md';
@@ -65,6 +65,7 @@ interface SidebarPropsIF {
     setOutsideControl: Dispatch<SetStateAction<boolean>>;
 
     openModalWallet: () => void;
+    poolList: TempPoolIF[];
 }
 
 export default function Sidebar(props: SidebarPropsIF) {
@@ -91,6 +92,7 @@ export default function Sidebar(props: SidebarPropsIF) {
         // analyticsSearchInput,
         setAnalyticsSearchInput,
         openModalWallet,
+        poolList
     } = props;
 
     const { isConnected } = useAccount();
@@ -145,6 +147,7 @@ export default function Sidebar(props: SidebarPropsIF) {
                     chainId={chainId}
                     cachedPoolStatsFetch={cachedPoolStatsFetch}
                     lastBlockNumber={lastBlockNumber}
+                    poolList={poolList}
                 />
             ),
         },

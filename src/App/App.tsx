@@ -2469,6 +2469,7 @@ export default function App() {
         analyticsSearchInput: analyticsSearchInput,
         setAnalyticsSearchInput: setAnalyticsSearchInput,
         openModalWallet: openWagmiModalWallet,
+        poolList: poolList
     };
 
     const analyticsProps = {
