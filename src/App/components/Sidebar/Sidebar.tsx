@@ -250,7 +250,7 @@ export default function Sidebar(props: SidebarPropsIF) {
         },
     ];
 
-    useSidebarSearch();
+    const [ setRawInput ] = useSidebarSearch();
 
     const [searchInput, setSearchInput] = useState<string[][]>();
     const [searchMode, setSearchMode] = useState(false);
@@ -326,7 +326,7 @@ export default function Sidebar(props: SidebarPropsIF) {
                 className={styles.search__box}
                 onFocus={() => setSearchMode(true)}
                 onBlur={() => setSearchMode(false)}
-                onChange={(e) => searchInputChangeHandler(e.target.value)}
+                onChange={(e) => setRawInput(e.target.value)}
             />
             {searchInput && searchInput.length > 0 && (
                 <div onClick={handleInputClear} className={styles.close_icon}>
