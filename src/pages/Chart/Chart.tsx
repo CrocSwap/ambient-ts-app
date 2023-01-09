@@ -1116,73 +1116,84 @@ export default function Chart(props: ChartData) {
                                 .range([0, domainX[1] - domainX[0]]);
 
                             const deltaX = linearX(dx);
-                            if (
-                                (deltaX < 0 ||
-                                    Math.abs(domainX[1].getTime() - domainX[0].getTime()) <=
-                                        parsedChartData.period * 1000 * 300) &&
-                                (deltaX > 0 ||
-                                    Math.abs(domainX[1].getTime() - domainX[0].getTime()) >=
-                                        parsedChartData.period * 1000 * 2)
-                            ) {
+
+                            if (event.sourceEvent.shiftKey) {
+                                scaleData.xScale.domain([
+                                    new Date(domainX[0].getTime() + deltaX),
+                                    new Date(domainX[1].getTime() + deltaX),
+                                ]);
+                            } else {
                                 if (
-                                    (!event.sourceEvent.ctrlKey || event.sourceEvent.metaKey) &&
-                                    (event.sourceEvent.ctrlKey || !event.sourceEvent.metaKey)
+                                    (deltaX < 0 ||
+                                        Math.abs(domainX[1].getTime() - domainX[0].getTime()) <=
+                                            parsedChartData.period * 1000 * 300) &&
+                                    (deltaX > 0 ||
+                                        Math.abs(domainX[1].getTime() - domainX[0].getTime()) >=
+                                            parsedChartData.period * 1000 * 2)
                                 ) {
-                                    const newBoundary = new Date(domainX[0].getTime() - deltaX);
-                                    const lastXIndex = parsedChartData.chartData.findIndex(
-                                        (d) =>
-                                            d.date ===
-                                            d3.max(parsedChartData.chartData, (d: any) => d.date),
-                                    );
-
                                     if (
-                                        newBoundary.getTime() >
-                                        parsedChartData.chartData[lastXIndex].date.getTime() -
-                                            parsedChartData.period * 1000 * 2
+                                        (!event.sourceEvent.ctrlKey || event.sourceEvent.metaKey) &&
+                                        (event.sourceEvent.ctrlKey || !event.sourceEvent.metaKey)
                                     ) {
-                                        scaleData.xScale.domain([
-                                            new Date(
-                                                parsedChartData.chartData[
-                                                    lastXIndex + 1
-                                                ].date.getTime() -
-                                                    parsedChartData.period * 500,
-                                            ),
-                                            new Date(domainX[1].getTime() + deltaX),
-                                        ]);
-                                    } else {
-                                        scaleData.xScale.domain([newBoundary, domainX[1]]);
-                                    }
-                                } else {
-                                    const gapTop =
-                                        domainX[1].getTime() -
-                                        scaleData.xScale
-                                            .invert(event.sourceEvent.offsetX)
-                                            .getTime();
-                                    const gapBot =
-                                        scaleData.xScale
-                                            .invert(event.sourceEvent.offsetX)
-                                            .getTime() - domainX[0].getTime();
+                                        const newBoundary = new Date(domainX[0].getTime() - deltaX);
+                                        const lastXIndex = parsedChartData.chartData.findIndex(
+                                            (d) =>
+                                                d.date ===
+                                                d3.max(
+                                                    parsedChartData.chartData,
+                                                    (d: any) => d.date,
+                                                ),
+                                        );
 
-                                    const minGap = Math.min(gapTop, gapBot);
-                                    const maxGap = Math.max(gapTop, gapBot);
-                                    const baseMovement = deltaX / (maxGap / minGap + 1);
-
-                                    if (gapBot < gapTop) {
-                                        scaleData.xScale.domain([
-                                            new Date(domainX[0].getTime() - baseMovement),
-                                            new Date(
-                                                domainX[1].getTime() +
-                                                    baseMovement * (maxGap / minGap),
-                                            ),
-                                        ]);
+                                        if (
+                                            newBoundary.getTime() >
+                                            parsedChartData.chartData[lastXIndex].date.getTime() -
+                                                parsedChartData.period * 1000 * 2
+                                        ) {
+                                            scaleData.xScale.domain([
+                                                new Date(
+                                                    parsedChartData.chartData[
+                                                        lastXIndex + 1
+                                                    ].date.getTime() -
+                                                        parsedChartData.period * 500,
+                                                ),
+                                                new Date(domainX[1].getTime() + deltaX),
+                                            ]);
+                                        } else {
+                                            scaleData.xScale.domain([newBoundary, domainX[1]]);
+                                        }
                                     } else {
-                                        scaleData.xScale.domain([
-                                            new Date(
-                                                domainX[0].getTime() -
-                                                    baseMovement * (maxGap / minGap),
-                                            ),
-                                            new Date(domainX[1].getTime() + baseMovement),
-                                        ]);
+                                        const gapTop =
+                                            domainX[1].getTime() -
+                                            scaleData.xScale
+                                                .invert(event.sourceEvent.offsetX)
+                                                .getTime();
+                                        const gapBot =
+                                            scaleData.xScale
+                                                .invert(event.sourceEvent.offsetX)
+                                                .getTime() - domainX[0].getTime();
+
+                                        const minGap = Math.min(gapTop, gapBot);
+                                        const maxGap = Math.max(gapTop, gapBot);
+                                        const baseMovement = deltaX / (maxGap / minGap + 1);
+
+                                        if (gapBot < gapTop) {
+                                            scaleData.xScale.domain([
+                                                new Date(domainX[0].getTime() - baseMovement),
+                                                new Date(
+                                                    domainX[1].getTime() +
+                                                        baseMovement * (maxGap / minGap),
+                                                ),
+                                            ]);
+                                        } else {
+                                            scaleData.xScale.domain([
+                                                new Date(
+                                                    domainX[0].getTime() -
+                                                        baseMovement * (maxGap / minGap),
+                                                ),
+                                                new Date(domainX[1].getTime() + baseMovement),
+                                            ]);
+                                        }
                                     }
                                 }
                             }
