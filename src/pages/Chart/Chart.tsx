@@ -38,7 +38,6 @@ import {
     getPinnedTickFromDisplayPrice,
 } from '../Trade/Range/rangeFunctions';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
-import { logicalExpression } from '@babel/types';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -223,6 +222,7 @@ export default function Chart(props: ChartData) {
     // Axes
     const [yAxis, setYaxis] = useState<any>();
     const [xAxis, setXaxis] = useState<any>();
+    const [boundaries, setBoundaries] = useState<any>();
 
     // Rules
     const [dragControl, setDragControl] = useState(false);
@@ -1254,7 +1254,7 @@ export default function Chart(props: ChartData) {
                                 )
                                 .style('left', event.sourceEvent.offsetX - 80 + 'px');
 
-                            if (isAdvancedModeActive) {
+                            if (isAdvancedModeActive && liquidityData) {
                                 const liqAllBidPrices = liquidityData.liqBidData.map(
                                     (liqPrices: any) => liqPrices.liqPrices,
                                 );
@@ -1356,7 +1356,7 @@ export default function Chart(props: ChartData) {
 
                 await scaleData.yScale.domain([center - size, center + size]);
 
-                if (isAdvancedModeActive) {
+                if (isAdvancedModeActive && liquidityData) {
                     const liqAllBidPrices = liquidityData.liqBidData.map(
                         (liqPrices: any) => liqPrices.liqPrices,
                     );
@@ -1435,7 +1435,7 @@ export default function Chart(props: ChartData) {
                     const minYBoundary = d3.min(filtered, (d) => d.low);
                     const maxYBoundary = d3.max(filtered, (d) => d.high);
 
-                    if (maxYBoundary !== undefined && minYBoundary !== undefined) {
+                    if (maxYBoundary !== undefined && minYBoundary !== undefined && liquidityData) {
                         const buffer = Math.floor((maxYBoundary - minYBoundary) * 0.1);
                         scaleData.yScale.domain([minYBoundary - buffer, maxYBoundary + buffer]);
 
@@ -1663,10 +1663,11 @@ export default function Chart(props: ChartData) {
     ]);
 
     useEffect(() => {
-        if (isAdvancedModeActive && scaleData) {
+        if (isAdvancedModeActive && scaleData && liquidityData && denomInBase === boundaries) {
             const liqAllBidPrices = liquidityData.liqBidData.map(
                 (liqPrices: any) => liqPrices.liqPrices,
             );
+            console.log(scaleData.yScale.domain()[1]);
             const liqBidDeviation = standardDeviation(liqAllBidPrices);
 
             while (
@@ -1689,8 +1690,10 @@ export default function Chart(props: ChartData) {
             }
 
             setLiqHighlightedLinesAndArea(ranges);
+        } else {
+            setBoundaries(denomInBase);
         }
-    }, [isAdvancedModeActive, ranges, liquidityData.liqBidData]);
+    }, [isAdvancedModeActive, ranges, liquidityData.liqBidData, scaleData]);
 
     // Ghost Lines
     // useEffect(() => {
