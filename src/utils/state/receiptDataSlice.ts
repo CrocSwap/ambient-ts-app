@@ -33,6 +33,23 @@ export const receiptDataSlice = createSlice({
                 state.pendingTransactions.splice(index, 1);
             }
         },
+        removeReceipt: (state, action: PayloadAction<string>) => {
+            const sessionReceipts = state.sessionReceipts;
+            const pendingTransactions = state.pendingTransactions;
+            const txHash = action.payload;
+
+            const indexOfPendingTransaction = pendingTransactions.indexOf(action.payload);
+            const indexOfSessionReceipt = sessionReceipts.findIndex(
+                (receipt) =>
+                    JSON.parse(receipt).transactionHash.toLowerCase() === txHash.toLowerCase(),
+            );
+            if (indexOfPendingTransaction > -1) {
+                state.pendingTransactions.splice(indexOfPendingTransaction, 1);
+            }
+            if (indexOfSessionReceipt > -1) {
+                state.sessionReceipts.splice(indexOfSessionReceipt, 1);
+            }
+        },
         removePositionPendingUpdate: (state, action: PayloadAction<string>) => {
             const index = state.positionsPendingUpdate.indexOf(action.payload);
             if (index > -1) {
@@ -49,6 +66,7 @@ export const {
     addPendingTx,
     addPositionPendingUpdate,
     removePendingTx,
+    removeReceipt,
     removePositionPendingUpdate,
     resetReceiptData,
 } = receiptDataSlice.actions;
