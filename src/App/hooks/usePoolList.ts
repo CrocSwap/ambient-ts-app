@@ -3,7 +3,6 @@ import { TempPoolIF } from '../../utils/interfaces/exports';
 import { fetchPoolList } from '../functions/fetchPoolList';
 
 export const usePoolList = (chainId: string) => {
-    console.log('fired custom hook usePoolList() in App.tsx');
     const [poolList, setPoolList] = useState<TempPoolIF[]>([]);
 
     useEffect(() => {
@@ -14,6 +13,6 @@ export const usePoolList = (chainId: string) => {
     }, [chainId]);
 
     useEffect(() => {
-        if (poolList.length) console.log({ poolList });
-    }, [poolList]);
+        console.log({ poolList });
+    }, [JSON.stringify(poolList)]);
 }
