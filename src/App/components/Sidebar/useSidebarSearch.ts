@@ -1,14 +1,14 @@
 import { Dispatch, SetStateAction, useMemo, useState } from 'react';
 
 export const useSidebarSearch = (): [
-    Dispatch<SetStateAction<string>>
+    Dispatch<SetStateAction<string>>,
+    boolean
 ] => {
     // raw user input from the DOM
     const [rawInput, setRawInput] = useState<string>('');
 
     // search type ➜ '' or 'address' or 'nameOrAddress'
     const [searchAs, setSearchAs] = useState<string|null>(null);
-    false && searchAs;
 
     // cleaned and validated version of raw user input
     const validatedInput = useMemo<string>(() => {
@@ -49,6 +49,7 @@ export const useSidebarSearch = (): [
     false && validatedInput;
 
     return [
-        setRawInput
+        setRawInput,
+        !!searchAs
     ];
 }

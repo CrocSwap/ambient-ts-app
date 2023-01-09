@@ -250,10 +250,11 @@ export default function Sidebar(props: SidebarPropsIF) {
         },
     ];
 
-    const [ setRawInput ] = useSidebarSearch();
+    const [ setRawInput, isInputValid ] = useSidebarSearch();
 
     const [searchInput, setSearchInput] = useState<string[][]>();
     const [searchMode, setSearchMode] = useState(false);
+    false && searchMode;
     const [exampleLoading, setExampleLoading] = useState(true);
 
     // const searchInputChangeHandler = (event: string) => {
@@ -519,7 +520,7 @@ export default function Sidebar(props: SidebarPropsIF) {
                         setSearchMode={setSearchMode}
                     /> */}
                     {searchContainerDisplay}
-                    {searchMode ? (
+                    {isInputValid ? (
                         <SidebarSearchResults
                             searchInput={searchInput}
                             exampleLoading={exampleLoading}
