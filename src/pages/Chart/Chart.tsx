@@ -237,7 +237,6 @@ export default function Chart(props: ChartData) {
     const [mouseMoveChartName, setMouseMoveChartName] = useState<string | undefined>(undefined);
     const [windowDimensions, setWindowDimensions] = useState(getWindowDimensions());
     const [checkLimitOrder, setCheckLimitOrder] = useState<boolean>(false);
-    const [isRangeSet, setIsRangeSet] = useState(false);
     const [isRangeScaleSet, setIsRangeScaleSet] = useState<string>('noChange');
 
     // Data
@@ -382,32 +381,6 @@ export default function Chart(props: ChartData) {
         render();
         renderCanvas();
     }, [props.chartItemStates, expandTradeTable, parsedChartData?.chartData, firstCandle]);
-
-    useEffect(() => {
-        if (
-            isRangeSet &&
-            poolPriceDisplay !== undefined &&
-            ranges !== undefined &&
-            scaleData !== undefined &&
-            rescaleRangeBoundaries &&
-            simpleRangeWidth !== 100
-        ) {
-            const low = ranges.filter((target: any) => target.name === 'Min')[0].value;
-            const high = ranges.filter((target: any) => target.name === 'Max')[0].value;
-
-            const buffer = poolPriceDisplay / 50;
-
-            scaleData.yScale.domain([low - buffer, high + buffer]);
-
-            dispatch(setRescaleRangeBoundaries(false));
-            setRescale(() => {
-                return false;
-            });
-            setIsRangeSet(() => {
-                return false;
-            });
-        }
-    }, [rescaleRangeBoundaries, simpleRangeWidth, isRangeSet]);
 
     function addTextMarket(scale: any) {
         yAxis.tickValues([
@@ -1553,6 +1526,7 @@ export default function Chart(props: ChartData) {
 
     const setBalancedLines = () => {
         if (simpleRangeWidth === 100 || rangeModuleTriggered) {
+            console.log(simpleRangeWidth);
             if (simpleRangeWidth === 100) {
                 setDefaultRangeData();
             } else {
@@ -1571,12 +1545,34 @@ export default function Chart(props: ChartData) {
 
                     setLiqHighlightedLinesAndArea(newTargets);
 
+                    console.log(
+                        rescaleRangeBoundaries,
+                        pinnedMinPriceDisplayTruncated,
+                        pinnedMaxPriceDisplayTruncated,
+                    );
+                    if (poolPriceDisplay !== undefined && rescaleRangeBoundaries) {
+                        const low =
+                            pinnedMinPriceDisplayTruncated !== undefined
+                                ? pinnedMinPriceDisplayTruncated
+                                : 0;
+                        const high =
+                            pinnedMaxPriceDisplayTruncated !== undefined
+                                ? pinnedMaxPriceDisplayTruncated
+                                : 0;
+
+                        const buffer = poolPriceDisplay / 50;
+
+                        scaleData.yScale.domain([low - buffer, high + buffer]);
+
+                        dispatch(setRescaleRangeBoundaries(false));
+                        setRescale(() => {
+                            return false;
+                        });
+                    }
+
                     return newTargets;
                 });
             }
-            setIsRangeSet(() => {
-                return true;
-            });
             dispatch(setRangeModuleTriggered(false));
         }
     };

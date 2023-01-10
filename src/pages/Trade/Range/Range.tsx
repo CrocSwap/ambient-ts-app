@@ -50,6 +50,7 @@ import {
     setRangeLowLineTriggered,
     setRangeHighLineTriggered,
     setIsLinesSwitched,
+    setRescaleRangeBoundaries,
     targetData,
 } from '../../../utils/state/tradeDataSlice';
 import { addPendingTx, addReceipt, removePendingTx } from '../../../utils/state/receiptDataSlice';
@@ -246,6 +247,7 @@ export default function Range(props: RangePropsIF) {
         if (tradeData.simpleRangeWidth !== rangeWidthPercentage) {
             dispatch(setRangeModuleTriggered(true));
             dispatch(setSimpleRangeWidth(rangeWidthPercentage));
+            dispatch(setRescaleRangeBoundaries(true));
         }
     }, [rangeWidthPercentage]);
 
