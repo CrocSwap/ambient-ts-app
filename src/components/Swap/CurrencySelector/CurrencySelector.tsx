@@ -245,18 +245,20 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
               ')'
             : '';
 
+    function handleWalletBalanceClick() {
+        if (props.sellToken) {
+            setIsWithdrawFromDexChecked(false);
+        } else {
+            setIsSaveAsDexSurplusChecked(false);
+        }
+    }
+
     const walletContent = (
         <section className={styles.left_bottom_container} style={{ background: 'red' }}>
             <IconWithTooltip title={'Wallet Balance'} placement='bottom'>
                 <div
                     className={styles.balance_with_pointer}
-                    onClick={() => {
-                        if (props.sellToken) {
-                            setIsWithdrawFromDexChecked(false);
-                        } else {
-                            setIsSaveAsDexSurplusChecked(false);
-                        }
-                    }}
+                    onClick={() => handleWalletBalanceClick()}
                 >
                     <div className={styles.wallet_logo}>
                         <MdAccountBalanceWallet
