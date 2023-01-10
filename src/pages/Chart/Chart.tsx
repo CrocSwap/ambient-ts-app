@@ -1418,8 +1418,8 @@ export default function Chart(props: ChartData) {
                     const maxYBoundary = d3.max(filtered, (d) => d.high);
 
                     if (maxYBoundary !== undefined && minYBoundary !== undefined && liquidityData) {
-                        const buffer = Math.floor((maxYBoundary - minYBoundary) * 0.1);
-                        scaleData.yScale.domain([minYBoundary - buffer, maxYBoundary + buffer]);
+                        const buffer = Math.abs((maxYBoundary - minYBoundary) / 6);
+                        scaleData.yScale.domain([minYBoundary - buffer, maxYBoundary + buffer / 2]);
 
                         const liqAllBidPrices = liquidityData.liqBidData.map(
                             (liqPrices: any) => liqPrices.liqPrices,
@@ -1524,7 +1524,6 @@ export default function Chart(props: ChartData) {
 
     const setBalancedLines = () => {
         if (simpleRangeWidth === 100 || rangeModuleTriggered) {
-            console.log(simpleRangeWidth);
             if (simpleRangeWidth === 100) {
                 setDefaultRangeData();
             } else {
@@ -1543,11 +1542,6 @@ export default function Chart(props: ChartData) {
 
                     setLiqHighlightedLinesAndArea(newTargets);
 
-                    console.log(
-                        rescaleRangeBoundaries,
-                        pinnedMinPriceDisplayTruncated,
-                        pinnedMaxPriceDisplayTruncated,
-                    );
                     if (poolPriceDisplay !== undefined && rescaleRangeBoundaries) {
                         const low =
                             pinnedMinPriceDisplayTruncated !== undefined
@@ -1559,7 +1553,6 @@ export default function Chart(props: ChartData) {
                                 : 0;
 
                         const buffer = poolPriceDisplay / 50;
-
                         scaleData.yScale.domain([low - buffer, high + buffer]);
 
                         dispatch(setRescaleRangeBoundaries(false));
@@ -2844,7 +2837,6 @@ export default function Chart(props: ChartData) {
                             : d.stroke;
                     context.cursorStyle = 'pointer';
                 })
-
                 .xScale(scaleData.xScale)
                 .yScale(scaleData.yScale);
 
