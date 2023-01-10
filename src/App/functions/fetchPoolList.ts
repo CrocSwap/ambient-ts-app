@@ -34,6 +34,7 @@ export const fetchPoolList = async (chainId: string, poolIdx?: number) => {
 
 export type PoolListFn = (
     chain: string,
+    poolIdx: number,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ) => Promise<any>;
 
