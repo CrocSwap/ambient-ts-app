@@ -9,19 +9,28 @@ export const useSidebarSearch = (
     boolean,
     TempPoolIF[]
 ] => {
+    // memoized list of pools where both tokens can be verified
+    // can be a useMemo because poolList will initialize as empty array
     const verifiedPools = useMemo<TempPoolIF[]>(() => {
+        // get array of acknowledged tokens from local storage
         const {ackTokens} = JSON.parse(localStorage.getItem('user') as string);
+        // function to verify token either in token map or in acknowledged tokens
         const checkToken = (addr: string, chn: string): boolean => {
+            // check if token can be verified in token map
             const isKnown = verifyToken(addr.toLowerCase(), chn);
+            // check if token was previously acknowledged by user
             const isAcknowledged = ackTokens.some((ackTkn: TokenIF) => (
                 ackTkn.chainId === parseInt(chn) &&
                 ackTkn.address.toLowerCase() === addr.toLowerCase()
             ));
+            // return true if either verification passed
             return isKnown || isAcknowledged;
         }
+        // filter array of tokens where both tokens can be verified
         const checkedPools = poolList.filter((pool: TempPoolIF) => (
             checkToken(pool.base, pool.chainId) && checkToken(pool.quote, pool.chainId)
         ));
+        // return array of pools with both verified tokens
         return checkedPools;
     }, [poolList.length]);
 
