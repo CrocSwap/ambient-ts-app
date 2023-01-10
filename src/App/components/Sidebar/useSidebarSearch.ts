@@ -9,31 +9,6 @@ export const useSidebarSearch = (
     boolean,
     TempPoolIF[]
 ] => {
-    // memoized list of pools where both tokens can be verified
-    // can be a useMemo because poolList will initialize as empty array
-    const verifiedPools = useMemo<TempPoolIF[]>(() => {
-        // get array of acknowledged tokens from local storage
-        const {ackTokens} = JSON.parse(localStorage.getItem('user') as string);
-        // function to verify token either in token map or in acknowledged tokens
-        const checkToken = (addr: string, chn: string): boolean => {
-            // check if token can be verified in token map
-            const isKnown = verifyToken(addr.toLowerCase(), chn);
-            // check if token was previously acknowledged by user
-            const isAcknowledged = ackTokens.some((ackTkn: TokenIF) => (
-                ackTkn.chainId === parseInt(chn) &&
-                ackTkn.address.toLowerCase() === addr.toLowerCase()
-            ));
-            // return true if either verification passed
-            return isKnown || isAcknowledged;
-        }
-        // filter array of tokens where both tokens can be verified
-        const checkedPools = poolList.filter((pool: TempPoolIF) => (
-            checkToken(pool.base, pool.chainId) && checkToken(pool.quote, pool.chainId)
-        ));
-        // return array of pools with both verified tokens
-        return checkedPools;
-    }, [poolList.length]);
-
     // raw user input from the DOM
     const [rawInput, setRawInput] = useState<string>('');
 
@@ -77,6 +52,33 @@ export const useSidebarSearch = (
         return output;
     }, [rawInput]);
 
+    const [verifiedPools, setVerifiedPools] = useState<TempPoolIF[]>([]);
+
+    // memoized list of pools where both tokens can be verified
+    // can be a useMemo because poolList will initialize as empty array
+    useEffect(() => {
+        // get array of acknowledged tokens from local storage
+        const {ackTokens} = JSON.parse(localStorage.getItem('user') as string);
+        // function to verify token either in token map or in acknowledged tokens
+        const checkToken = (addr: string, chn: string): boolean => {
+            // check if token can be verified in token map
+            const isKnown = verifyToken(addr.toLowerCase(), chn);
+            // check if token was previously acknowledged by user
+            const isAcknowledged = ackTokens?.some((ackTkn: TokenIF) => (
+                ackTkn.chainId === parseInt(chn) &&
+                ackTkn.address.toLowerCase() === addr.toLowerCase()
+            ));
+            // return true if either verification passed
+            return isKnown || isAcknowledged;
+        }
+        // filter array of tokens where both tokens can be verified
+        const checkedPools = poolList.filter((pool: TempPoolIF) => (
+            checkToken(pool.base, pool.chainId) && checkToken(pool.quote, pool.chainId)
+        ));
+        // return array of pools with both verified tokens
+        setVerifiedPools(checkedPools);
+    }, [poolList.length, validatedInput]);
+
     const [outputPools, setOutputPools] = useState<TempPoolIF[]>([]);
 
     useEffect(() => {
@@ -86,11 +88,18 @@ export const useSidebarSearch = (
                 pool.quote.toLowerCase() === addr.toLowerCase()
             )
         );
-        const searchBySymbol = (symb: string): TempPoolIF[] => verifiedPools.filter(
-            (pool: TempPoolIF) => (
-                pool.baseSymbol.toLowerCase() === symb.toLowerCase() ||
-                pool.quoteSymbol.toLowerCase() === symb.toLowerCase()
-            )
+        const searchBySymbol = (
+            symb: string, exact: boolean
+        ): TempPoolIF[] => verifiedPools.filter(
+            (pool: TempPoolIF) => exact
+                ? (
+                    pool.baseSymbol.toLowerCase() === symb.toLowerCase() ||
+                    pool.quoteSymbol.toLowerCase() === symb.toLowerCase()
+                )
+                : (
+                    pool.baseSymbol.toLowerCase().includes(symb.toLowerCase()) ||
+                    pool.quoteSymbol.toLowerCase().includes(symb.toLowerCase())
+                )
         );
         const noSearch = () => verifiedPools;
         let filteredPools: TempPoolIF[];
@@ -99,14 +108,14 @@ export const useSidebarSearch = (
                 filteredPools = searchByAddress(validatedInput);
                 break;
             case 'nameOrSymbol':
-                filteredPools = searchBySymbol(validatedInput);
+                filteredPools = searchBySymbol(validatedInput, validatedInput.length === 2);
                 break;
             case '':
             default:
                 filteredPools = noSearch();
         }
         setOutputPools(filteredPools.slice(0, 4));
-    }, [poolList.length, validatedInput]);
+    }, [verifiedPools.length, validatedInput]);
 
     return [
         setRawInput,
