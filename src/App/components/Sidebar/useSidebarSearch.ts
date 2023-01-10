@@ -1,5 +1,5 @@
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
-import { TempPoolIF } from '../../../utils/interfaces/TempPoolIF';
+import { TokenIF, TempPoolIF } from '../../../utils/interfaces/exports';
 
 export const useSidebarSearch = (
     poolList: TempPoolIF[],
@@ -9,13 +9,19 @@ export const useSidebarSearch = (
     boolean,
     TempPoolIF[]
 ] => {
-    // TODO: add logic to make a secondary pass at the ackTokens list in local storage
     const verifiedPools = useMemo<TempPoolIF[]>(() => {
-        const verifyPool = (pl: TempPoolIF) => (
-            verifyToken(pl.base.toLowerCase(), pl.chainId) &&
-            verifyToken(pl.quote.toLowerCase(), pl.chainId)
-        );
-        const checkedPools = poolList.filter((pool: TempPoolIF) => verifyPool(pool));
+        const {ackTokens} = JSON.parse(localStorage.getItem('user') as string);
+        const checkToken = (addr: string, chn: string): boolean => {
+            const isKnown = verifyToken(addr.toLowerCase(), chn);
+            const isAcknowledged = ackTokens.some((ackTkn: TokenIF) => (
+                ackTkn.chainId === parseInt(chn) &&
+                ackTkn.address.toLowerCase() === addr.toLowerCase()
+            ));
+            return isKnown || isAcknowledged;
+        }
+        const checkedPools = poolList.filter((pool: TempPoolIF) => (
+            checkToken(pool.base, pool.chainId) && checkToken(pool.quote, pool.chainId)
+        ));
         return checkedPools;
     }, [poolList.length]);
 
