@@ -1,6 +1,7 @@
 import PoolLI from './PoolLI';
 import ResultSkeleton from '../ResultSkeleton/ResultSkeleton';
 import styles from '../SidebarSearchResults.module.css';
+import { useClick } from './useClick';
 import { TokenIF, TempPoolIF } from '../../../../../utils/interfaces/exports';
 
 interface PoolsSearchResultPropsIF {
@@ -28,6 +29,8 @@ export default function PoolsSearchResults(props: PoolsSearchResultPropsIF) {
             }
         </div>
     );
+
+    useClick();
 
     // TODO:  @Junior make the header <div> into a <header> element
 
