@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react';
 import PoolLI from './PoolLI';
 import ResultSkeleton from '../ResultSkeleton/ResultSkeleton';
 import styles from '../SidebarSearchResults.module.css';
@@ -13,11 +12,6 @@ interface PoolsSearchResultPropsIF {
 
 export default function PoolsSearchResults(props: PoolsSearchResultPropsIF) {
     const { searchedPools, getTokenByAddress } = props;
-
-    console.log(searchedPools.length);
-
-    const [baseToken, setBaseToken] = useState<TokenIF|null>(null);
-    const [quoteToken, setQuoteToken] = useState<TokenIF|null>(null);
 
     // TODO:  @Junior make this top-level <div> into an <ol> element and its
     // TODO:  ... children into <li> elements
