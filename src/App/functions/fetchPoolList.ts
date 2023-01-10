@@ -2,7 +2,7 @@ import { memoizeCacheQueryFn } from './memoizePromiseFn';
 
 const poolListEndpoint = 'https://809821320828123.de:5000/pool_list?';
 
-const fetchPoolList = async (chainId: string, poolIdx: number) => {
+export const fetchPoolList = async (chainId: string, poolIdx?: number) => {
     console.log('fetching pool list ');
     if (poolIdx !== undefined) {
         return fetch(

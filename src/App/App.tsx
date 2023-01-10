@@ -147,7 +147,7 @@ import { useRecentTokens } from './hooks/useRecentTokens';
 import { useTokenSearch } from './hooks/useTokenSearch';
 import WalletModalWagmi from './components/WalletModal/WalletModalWagmi';
 import Moralis from 'moralis';
-import { memoizeFetchPoolList } from './functions/fetchPoolList';
+import { usePoolList } from './hooks/usePoolList';
 
 // import { memoizeQuerySpotTick } from './functions/querySpotTick';
 // import PhishingWarning from '../components/Global/PhisingWarning/PhishingWarning';
@@ -158,7 +158,6 @@ const cachedFetchErc20TokenBalances = memoizeFetchErc20TokenBalances();
 const cachedFetchTokenPrice = memoizeTokenPrice();
 const cachedQuerySpotPrice = memoizeQuerySpotPrice();
 const cachedFetchContractDetails = memoizeFetchContractDetails();
-const cachedFetchPoolList = memoizeFetchPoolList();
 // const cachedQuerySpotTick = memoizeQuerySpotTick();
 
 const httpGraphCacheServerDomain = 'https://809821320828123.de:5000';
@@ -425,18 +424,7 @@ export default function App() {
         dispatch(resetTokenData());
     }, [chainData.chainId]);
 
-    const [poolList, setPoolList] = useState([]);
-
-    useEffect(() => {
-        (async () => {
-            const poolList = await cachedFetchPoolList(chainData.chainId, chainData.poolIndex);
-            setPoolList(poolList);
-        })();
-    }, [chainData.chainId]);
-
-    useEffect(() => {
-        if (poolList.length) console.log({ poolList });
-    }, [poolList]);
+    const poolList = usePoolList(chainData.chainId, chainData.poolIndex);
 
     useEffect(() => {
         dispatch(resetTokenData());
@@ -2481,6 +2469,10 @@ export default function App() {
         analyticsSearchInput: analyticsSearchInput,
         setAnalyticsSearchInput: setAnalyticsSearchInput,
         openModalWallet: openWagmiModalWallet,
+        poolList: poolList,
+        verifyToken: verifyToken,
+        getTokenByAddress: getTokenByAddress,
+        tokenPair: tokenPair
     };
 
     const analyticsProps = {

@@ -23,9 +23,9 @@ import recentTransactionsImage from '../../../assets/images/sidebarImages/recent
 import topPoolsImage from '../../../assets/images/sidebarImages/topPools.svg';
 import topTokensImage from '../../../assets/images/sidebarImages/topTokens.svg';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
-import { PoolIF, TokenIF } from '../../../utils/interfaces/exports';
+import { PoolIF, TokenIF, TokenPairIF, TempPoolIF } from '../../../utils/interfaces/exports';
 import SidebarSearchResults from './SidebarSearchResults/SidebarSearchResults';
-import formatSearchText from './formatSeachText';
+// import formatSearchText from './formatSeachText';
 import { MdClose } from 'react-icons/md';
 
 import closeSidebarImage from '../../../assets/images/sidebarImages/closeSidebar.svg';
@@ -34,6 +34,7 @@ import { tradeData } from '../../../utils/state/tradeDataSlice';
 import { DefaultTooltip } from '../../../components/Global/StyledTooltip/StyledTooltip';
 import RecentPools from '../../../components/Global/Sidebar/RecentPools/RecentPools';
 import { useAccount } from 'wagmi';
+import { useSidebarSearch } from './useSidebarSearch';
 
 const cachedPoolStatsFetch = memoizePoolStats();
 
@@ -65,6 +66,10 @@ interface SidebarPropsIF {
     setOutsideControl: Dispatch<SetStateAction<boolean>>;
 
     openModalWallet: () => void;
+    poolList: TempPoolIF[];
+    verifyToken: (addr: string, chn: string) => boolean;
+    getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
+    tokenPair: TokenPairIF;
 }
 
 export default function Sidebar(props: SidebarPropsIF) {
@@ -91,6 +96,10 @@ export default function Sidebar(props: SidebarPropsIF) {
         // analyticsSearchInput,
         setAnalyticsSearchInput,
         openModalWallet,
+        poolList,
+        verifyToken,
+        getTokenByAddress,
+        tokenPair
     } = props;
 
     const { isConnected } = useAccount();
@@ -145,6 +154,7 @@ export default function Sidebar(props: SidebarPropsIF) {
                     chainId={chainId}
                     cachedPoolStatsFetch={cachedPoolStatsFetch}
                     lastBlockNumber={lastBlockNumber}
+                    poolList={poolList}
                 />
             ),
         },
@@ -246,18 +256,27 @@ export default function Sidebar(props: SidebarPropsIF) {
         },
     ];
 
+    const [
+        setRawInput,
+        isInputValid,
+        searchedPools
+    ] = useSidebarSearch(poolList, verifyToken);
+    // useEffect(() => {console.log({searchedPools})}, [JSON.stringify(searchedPools)]);
+    false && searchedPools;
+
     const [searchInput, setSearchInput] = useState<string[][]>();
     const [searchMode, setSearchMode] = useState(false);
+    false && searchMode;
     const [exampleLoading, setExampleLoading] = useState(true);
 
-    const searchInputChangeHandler = (event: string) => {
-        setSearchMode(true);
-        const formatText = formatSearchText(event);
+    // const searchInputChangeHandler = (event: string) => {
+    //     setSearchMode(true);
+    //     const formatText = formatSearchText(event);
 
-        setSearchInput(formatText);
+    //     setSearchInput(formatText);
 
-        setExampleLoading(true);
-    };
+    //     setExampleLoading(true);
+    // };
     const searchInputRef = useRef(null);
 
     const handleInputClear = () => {
@@ -320,7 +339,7 @@ export default function Sidebar(props: SidebarPropsIF) {
                 className={styles.search__box}
                 onFocus={() => setSearchMode(true)}
                 onBlur={() => setSearchMode(false)}
-                onChange={(e) => searchInputChangeHandler(e.target.value)}
+                onChange={(e) => setRawInput(e.target.value)}
             />
             {searchInput && searchInput.length > 0 && (
                 <div onClick={handleInputClear} className={styles.close_icon}>
@@ -513,10 +532,14 @@ export default function Sidebar(props: SidebarPropsIF) {
                         setSearchMode={setSearchMode}
                     /> */}
                     {searchContainerDisplay}
-                    {searchMode ? (
+                    {isInputValid ? (
                         <SidebarSearchResults
+                            searchedPools={searchedPools}
                             searchInput={searchInput}
                             exampleLoading={exampleLoading}
+                            getTokenByAddress={getTokenByAddress}
+                            tokenPair={tokenPair}
+                            chainId={chainId}
                         />
                     ) : (
                         regularSidebarDisplay
