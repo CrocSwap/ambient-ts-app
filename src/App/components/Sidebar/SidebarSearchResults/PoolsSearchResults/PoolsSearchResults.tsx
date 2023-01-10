@@ -1,3 +1,5 @@
+import { useEffect, useState } from 'react';
+import PoolLI from './PoolLI';
 import ResultSkeleton from '../ResultSkeleton/ResultSkeleton';
 import styles from '../SidebarSearchResults.module.css';
 import { TokenIF, TempPoolIF } from '../../../../../utils/interfaces/exports';
@@ -6,12 +8,16 @@ interface PoolsSearchResultPropsIF {
     searchedPools: TempPoolIF[];
     loading: boolean;
     searchInput: React.ReactNode;
+    getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
 }
 
 export default function PoolsSearchResults(props: PoolsSearchResultPropsIF) {
-    const { searchedPools } = props;
+    const { searchedPools, getTokenByAddress } = props;
 
     console.log(searchedPools.length);
+
+    const [baseToken, setBaseToken] = useState<TokenIF|null>(null);
+    const [quoteToken, setQuoteToken] = useState<TokenIF|null>(null);
 
     // TODO:  @Junior make this top-level <div> into an <ol> element and its
     // TODO:  ... children into <li> elements
@@ -19,14 +25,11 @@ export default function PoolsSearchResults(props: PoolsSearchResultPropsIF) {
         <div className={styles.main_result_container}>
             {
                 searchedPools.map((pool: TempPoolIF) => (
-                    <div
+                    <PoolLI
                         key={`sidebar_searched_pool_${JSON.stringify(pool)}`}
-                        className={styles.card_container}
-                    >
-                        <div>{pool.quoteSymbol}</div>
-                        <div>Price</div>
-                        <div>Gain</div>
-                    </div>
+                        pool={pool}
+                        getTokenByAddress={getTokenByAddress}
+                    />
                 ))
             }
         </div>

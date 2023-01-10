@@ -2470,7 +2470,8 @@ export default function App() {
         setAnalyticsSearchInput: setAnalyticsSearchInput,
         openModalWallet: openWagmiModalWallet,
         poolList: poolList,
-        verifyToken: verifyToken
+        verifyToken: verifyToken,
+        getTokenByAddress: getTokenByAddress
     };
 
     const analyticsProps = {

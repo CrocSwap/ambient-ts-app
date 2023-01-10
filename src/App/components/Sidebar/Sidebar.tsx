@@ -68,6 +68,7 @@ interface SidebarPropsIF {
     openModalWallet: () => void;
     poolList: TempPoolIF[];
     verifyToken: (addr: string, chn: string) => boolean;
+    getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
 }
 
 export default function Sidebar(props: SidebarPropsIF) {
@@ -95,7 +96,8 @@ export default function Sidebar(props: SidebarPropsIF) {
         setAnalyticsSearchInput,
         openModalWallet,
         poolList,
-        verifyToken
+        verifyToken,
+        getTokenByAddress
     } = props;
 
     const { isConnected } = useAccount();
@@ -257,6 +259,7 @@ export default function Sidebar(props: SidebarPropsIF) {
         isInputValid,
         searchedPools
     ] = useSidebarSearch(poolList, verifyToken);
+    // useEffect(() => {console.log({searchedPools})}, [JSON.stringify(searchedPools)]);
     false && searchedPools;
 
     const [searchInput, setSearchInput] = useState<string[][]>();
@@ -532,6 +535,7 @@ export default function Sidebar(props: SidebarPropsIF) {
                             searchedPools={searchedPools}
                             searchInput={searchInput}
                             exampleLoading={exampleLoading}
+                            getTokenByAddress={getTokenByAddress}
                         />
                     ) : (
                         regularSidebarDisplay
