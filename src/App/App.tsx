@@ -429,7 +429,7 @@ export default function App() {
 
     useEffect(() => {
         (async () => {
-            const poolList = await cachedFetchPoolList(chainData.chainId);
+            const poolList = await cachedFetchPoolList(chainData.chainId, chainData.poolIndex);
             setPoolList(poolList);
         })();
     }, [chainData.chainId]);
