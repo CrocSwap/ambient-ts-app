@@ -418,10 +418,8 @@ export default function Chart(props: ChartData) {
         const sameLocationData = scaleData.yScale.invert(
             scaleData.yScale(market[0].value) + resultLocationData,
         );
-
         yAxis.tickFormat((d: any) =>
-            isSameLocation &&
-            d === scaleData.yScale.invert(scaleData.yScale(market[0].value) + resultLocationData)
+            isSameLocation && d === sameLocationData
                 ? formatAmountChartData(limit[0].value)
                 : formatAmountChartData(d),
         );
