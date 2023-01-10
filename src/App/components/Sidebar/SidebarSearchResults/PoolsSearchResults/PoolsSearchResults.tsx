@@ -10,10 +10,13 @@ interface PoolsSearchResultPropsIF {
     searchInput: React.ReactNode;
     getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
     tokenPair: TokenPairIF;
+    chainId: string;
 }
 
 export default function PoolsSearchResults(props: PoolsSearchResultPropsIF) {
-    const { searchedPools, getTokenByAddress, tokenPair } = props;
+    const { searchedPools, getTokenByAddress, tokenPair, chainId } = props;
+
+    const handleClick = useClick(chainId, tokenPair);
 
     // TODO:  @Junior make this top-level <div> into an <ol> element and its
     // TODO:  ... children into <li> elements
@@ -23,6 +26,7 @@ export default function PoolsSearchResults(props: PoolsSearchResultPropsIF) {
                 searchedPools.map((pool: TempPoolIF) => (
                     <PoolLI
                         key={`sidebar_searched_pool_${JSON.stringify(pool)}`}
+                        handleClick={handleClick}
                         pool={pool}
                         getTokenByAddress={getTokenByAddress}
                     />
@@ -31,7 +35,6 @@ export default function PoolsSearchResults(props: PoolsSearchResultPropsIF) {
         </div>
     );
 
-    useClick(tokenPair);
 
     // TODO:  @Junior make the header <div> into a <header> element
 

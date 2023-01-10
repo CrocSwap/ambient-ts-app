@@ -539,6 +539,7 @@ export default function Sidebar(props: SidebarPropsIF) {
                             exampleLoading={exampleLoading}
                             getTokenByAddress={getTokenByAddress}
                             tokenPair={tokenPair}
+                            chainId={chainId}
                         />
                     ) : (
                         regularSidebarDisplay

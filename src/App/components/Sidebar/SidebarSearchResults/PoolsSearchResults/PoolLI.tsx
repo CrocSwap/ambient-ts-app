@@ -5,10 +5,11 @@ import styles from '../SidebarSearchResults.module.css';
 interface propsIF {
     pool: TempPoolIF;
     getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
+    handleClick: (baseAddr: string, quoteAddr: string) => void;
 }
 
 export default function PoolLI(props: propsIF) {
-    const { pool, getTokenByAddress } = props;
+    const { pool, getTokenByAddress, handleClick } = props;
 
     // hold base and quote token data objects in local state
     const [baseToken, setBaseToken] = useState<TokenIF|null>();
@@ -43,8 +44,12 @@ export default function PoolLI(props: propsIF) {
     }, []);
 
     return (
-        <div className={styles.card_container}>
+        <div
+            className={styles.card_container}
+            onClick={() => handleClick(pool.base, pool.quote)}
+        >
             <div>{baseToken?.symbol ?? '--'} + {quoteToken?.symbol ?? '--'}</div>
+            {/* <div>{pool.id}</div> */}
             <div>Price</div>
             <div>Gain</div>
         </div>
