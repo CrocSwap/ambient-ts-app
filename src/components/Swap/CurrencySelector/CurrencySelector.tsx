@@ -339,16 +339,17 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
         ? styles.enabled_logo
         : null;
 
+    const sellTokenLogoClassname =
+        (isSellTokenSelector && !isWithdrawFromDexChecked) ||
+        (!isSellTokenSelector && !isSaveAsDexSurplusChecked)
+            ? styles.grey_logo
+            : null;
+
     const surplusContent = (
         <div className={styles.left_bottom_container}>
             <IconWithTooltip title={'Exchange Balance'} placement='bottom'>
                 <div
-                    className={`${styles.balance_with_pointer} ${
-                        (isSellTokenSelector && !isWithdrawFromDexChecked) ||
-                        (!isSellTokenSelector && !isSaveAsDexSurplusChecked)
-                            ? styles.grey_logo
-                            : null
-                    }`}
+                    className={`${styles.balance_with_pointer} ${sellTokenLogoClassname}`}
                     style={{
                         color: surplusColorStyle,
                     }}
