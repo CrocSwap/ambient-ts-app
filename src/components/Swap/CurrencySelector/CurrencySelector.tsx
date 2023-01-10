@@ -245,6 +245,8 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
               ')'
             : '';
 
+    // Wallet balance function and styles-----------------------------
+
     function handleWalletBalanceClick() {
         if (props.sellToken) {
             setIsWithdrawFromDexChecked(false);
@@ -252,6 +254,40 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
             setIsSaveAsDexSurplusChecked(false);
         }
     }
+
+    const walletLogoColorStyle =
+        (isSellTokenSelector && !isWithdrawFromDexChecked) ||
+        (!isSellTokenSelector && !isSaveAsDexSurplusChecked) ||
+        (isSellTokenSelector &&
+            isSellTokenEth === false &&
+            isWithdrawFromDexChecked &&
+            tokenASurplusMinusTokenARemainderNum &&
+            tokenASurplusMinusTokenARemainderNum < 0)
+            ? 'var(--text-highlight)'
+            : '#555555';
+
+    const walletBalanceMaxButton =
+        isSellTokenSelector &&
+        !isWithdrawFromDexChecked &&
+        walletBalanceNonLocaleString !== '0.0' ? (
+            <button
+                className={styles.max_button}
+                onClick={() => {
+                    if (props.sellToken) {
+                        setIsWithdrawFromDexChecked(false);
+                    } else {
+                        setIsSaveAsDexSurplusChecked(false);
+                    }
+                    if (handleChangeClick && !isWithdrawFromWalletDisabled) {
+                        handleChangeClick(walletBalanceNonLocaleString);
+                    }
+                }}
+            >
+                Max
+            </button>
+        ) : null;
+
+    // End of  Wallet balance function and styles-----------------------------
 
     const walletContent = (
         <section className={styles.left_bottom_container} style={{ background: 'red' }}>
@@ -261,20 +297,7 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                     onClick={() => handleWalletBalanceClick()}
                 >
                     <div className={styles.wallet_logo}>
-                        <MdAccountBalanceWallet
-                            size={20}
-                            color={
-                                (isSellTokenSelector && !isWithdrawFromDexChecked) ||
-                                (!isSellTokenSelector && !isSaveAsDexSurplusChecked) ||
-                                (isSellTokenSelector &&
-                                    isSellTokenEth === false &&
-                                    isWithdrawFromDexChecked &&
-                                    tokenASurplusMinusTokenARemainderNum &&
-                                    tokenASurplusMinusTokenARemainderNum < 0)
-                                    ? 'var(--text-highlight)'
-                                    : '#555555'
-                            }
-                        />
+                        <MdAccountBalanceWallet size={20} color={walletLogoColorStyle} />
                     </div>
                     <div className={styles.balance_column}>
                         <div>{isUserLoggedIn ? walletBalanceLocaleString : ''}</div>
@@ -291,25 +314,7 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                     </div>
                 </div>
             </IconWithTooltip>
-            {isSellTokenSelector &&
-            !isWithdrawFromDexChecked &&
-            walletBalanceNonLocaleString !== '0.0' ? (
-                <button
-                    className={styles.max_button}
-                    onClick={() => {
-                        if (props.sellToken) {
-                            setIsWithdrawFromDexChecked(false);
-                        } else {
-                            setIsSaveAsDexSurplusChecked(false);
-                        }
-                        if (handleChangeClick && !isWithdrawFromWalletDisabled) {
-                            handleChangeClick(walletBalanceNonLocaleString);
-                        }
-                    }}
-                >
-                    Max
-                </button>
-            ) : null}
+            {walletBalanceMaxButton}
         </section>
     );
 
