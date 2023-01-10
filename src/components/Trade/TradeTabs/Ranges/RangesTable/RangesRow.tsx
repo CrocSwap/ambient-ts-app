@@ -1,4 +1,4 @@
-import { useEffect, Dispatch, SetStateAction, useRef } from 'react';
+import { useEffect, Dispatch, SetStateAction, useRef, useState } from 'react';
 import { PositionIF } from '../../../../../utils/interfaces/PositionIF';
 import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
 import { ethers } from 'ethers';
@@ -461,9 +461,12 @@ export default function RangesRow(props: RangesRowPropsIF) {
             </li>
         </DefaultTooltip>
     );
+    const [showHighlightedButton, setShowHighlightedButton] = useState(false);
 
     return (
         <ul
+            onMouseEnter={() => setShowHighlightedButton(true)}
+            onMouseLeave={() => setShowHighlightedButton(false)}
             className={`${styles.row_container} ${activePositionStyle} ${userPositionStyle}`}
             onClick={() =>
                 position.positionStorageSlot === currentPositionActive
@@ -544,7 +547,11 @@ export default function RangesRow(props: RangesRowPropsIF) {
                 <RangeStatus isInRange={isPositionInRange} isAmbient={isAmbient} justSymbol />
             </li>
             <li data-label='menu' className={styles.menu}>
-                <RangesMenu {...rangeMenuProps} showSidebar={props.showSidebar} />
+                <RangesMenu
+                    {...rangeMenuProps}
+                    showSidebar={props.showSidebar}
+                    showHighlightedButton={showHighlightedButton}
+                />
             </li>
         </ul>
     );

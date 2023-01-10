@@ -3,7 +3,6 @@ import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
 import { formatDollarAmountAxis } from '../../../../utils/numbers';
 import { VolumeChartData } from '../TradeCharts';
-import { isNull } from 'lodash';
 import { useCallback, useEffect, useRef } from 'react';
 
 interface VolumeData {
@@ -239,7 +238,7 @@ export default function VolumeSubChart(props: VolumeData) {
                         Math.abs(point.x - xScale(xValue(d))),
                     )[1];
 
-                    return nearest !== undefined && !isNull(nearest) ? nearest.value : 0;
+                    return nearest !== undefined && !!nearest ? nearest.value : 0;
                 };
 
                 d3.select('#volume_chart').on('mousemove', function (event: any) {

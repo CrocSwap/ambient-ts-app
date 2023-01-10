@@ -1,7 +1,8 @@
 import styles from './NotificationTable.module.css';
 import { Dispatch, RefObject, SetStateAction } from 'react';
 import ReceiptDisplay from '../ReceiptDisplay/ReceiptDisplay';
-import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
+import { useAppDispatch, useAppSelector } from '../../../../utils/hooks/reduxToolkit';
+import { resetReceiptData } from '../../../../utils/state/receiptDataSlice';
 
 interface NotificationTableProps {
     showNotificationTable: boolean;
@@ -13,6 +14,8 @@ interface NotificationTableProps {
 const NotificationTable = (props: NotificationTableProps) => {
     const { showNotificationTable, pendingTransactions, lastBlockNumber, notificationItemRef } =
         props;
+
+    const dispatch = useAppDispatch();
 
     const receiptData = useAppSelector((state) => state.receiptData);
 
@@ -57,7 +60,13 @@ const NotificationTable = (props: NotificationTableProps) => {
                 </section>
 
                 <section className={styles.footer}>
-                    <button>Clear all</button>
+                    <button
+                        onClick={() => {
+                            dispatch(resetReceiptData());
+                        }}
+                    >
+                        Clear all
+                    </button>
                 </section>
             </div>
         </div>

@@ -5,6 +5,7 @@ import { Message } from '../../Model/MessageModel';
 import { BsEmojiSmileFill } from 'react-icons/bs';
 // import { Message } from '../../Model/MessageModel';
 import Picker from 'emoji-picker-react';
+
 import styles from './MessageInput.module.css';
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import PositionBox from '../PositionBox/PositionBox';

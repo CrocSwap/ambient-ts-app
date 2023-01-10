@@ -4,7 +4,7 @@ import OpenOrderStatus from '../../../../Global/OpenOrderStatus/OpenOrderStatus'
 import OrdersMenu from '../../../../Global/Tabs/TableMenu/TableMenuComponents/OrdersMenu';
 import OrderDetails from '../../../../OrderDetails/OrderDetails';
 
-import { Dispatch, SetStateAction, useEffect, useRef } from 'react';
+import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
 import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
 import { DefaultTooltip } from '../../../../Global/StyledTooltip/StyledTooltip';
 import { NavLink } from 'react-router-dom';
@@ -419,8 +419,12 @@ export default function OrderRow(props: OrderRowPropsIF) {
         </li>
     );
 
+    const [showHighlightedButton, setShowHighlightedButton] = useState(false);
+
     return (
         <ul
+            onMouseEnter={() => setShowHighlightedButton(true)}
+            onMouseLeave={() => setShowHighlightedButton(false)}
             className={`${styles.row_container} ${activePositionStyle} ${userPositionStyle}`}
             id={orderDomId}
             style={{ cursor: 'pointer' }}
@@ -522,6 +526,7 @@ export default function OrderRow(props: OrderRowPropsIF) {
                     showSidebar={showSidebar}
                     handlePulseAnimation={handlePulseAnimation}
                     lastBlockNumber={lastBlockNumber}
+                    showHighlightedButton={showHighlightedButton}
                 />
             </li>
         </ul>

@@ -147,6 +147,7 @@ import { useRecentTokens } from './hooks/useRecentTokens';
 import { useTokenSearch } from './hooks/useTokenSearch';
 import WalletModalWagmi from './components/WalletModal/WalletModalWagmi';
 import Moralis from 'moralis';
+import { usePoolList } from './hooks/usePoolList';
 
 // import { memoizeQuerySpotTick } from './functions/querySpotTick';
 // import PhishingWarning from '../components/Global/PhisingWarning/PhishingWarning';
@@ -422,6 +423,8 @@ export default function App() {
         dispatch(resetTokens(chainData.chainId));
         dispatch(resetTokenData());
     }, [chainData.chainId]);
+
+    const poolList = usePoolList(chainData.chainId, chainData.poolIndex);
 
     useEffect(() => {
         dispatch(resetTokenData());
@@ -2466,6 +2469,10 @@ export default function App() {
         analyticsSearchInput: analyticsSearchInput,
         setAnalyticsSearchInput: setAnalyticsSearchInput,
         openModalWallet: openWagmiModalWallet,
+        poolList: poolList,
+        verifyToken: verifyToken,
+        getTokenByAddress: getTokenByAddress,
+        tokenPair: tokenPair
     };
 
     const analyticsProps = {
