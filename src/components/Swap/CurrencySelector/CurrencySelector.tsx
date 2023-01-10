@@ -324,6 +324,14 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
             ? '#555555'
             : 'var(--text-highlight)';
 
+    function handleSurplusClick() {
+        if (props.sellToken) {
+            setIsWithdrawFromDexChecked(true);
+        } else {
+            setIsSaveAsDexSurplusChecked(true);
+        }
+    }
+
     const surplusContent = (
         <div className={styles.left_bottom_container}>
             <IconWithTooltip title={'Exchange Balance'} placement='bottom'>
@@ -337,13 +345,7 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                     style={{
                         color: surplusColorStyle,
                     }}
-                    onClick={() => {
-                        if (props.sellToken) {
-                            setIsWithdrawFromDexChecked(true);
-                        } else {
-                            setIsSaveAsDexSurplusChecked(true);
-                        }
-                    }}
+                    onClick={() => handleSurplusClick()}
                 >
                     <div
                         className={`${styles.wallet_logo} ${
