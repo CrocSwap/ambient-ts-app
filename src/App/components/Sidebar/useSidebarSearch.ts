@@ -2,12 +2,23 @@ import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
 import { TempPoolIF } from '../../../utils/interfaces/TempPoolIF';
 
 export const useSidebarSearch = (
-    poolList: TempPoolIF[]
+    poolList: TempPoolIF[],
+    verifyToken: (addr: string, chn: string) => boolean
 ): [
     Dispatch<SetStateAction<string>>,
     boolean,
     TempPoolIF[]
 ] => {
+    // TODO: add logic to make a secondary pass at the ackTokens list in local storage
+    const verifiedPools = useMemo<TempPoolIF[]>(() => {
+        const verifyPool = (pl: TempPoolIF) => (
+            verifyToken(pl.base.toLowerCase(), pl.chainId) &&
+            verifyToken(pl.quote.toLowerCase(), pl.chainId)
+        );
+        const checkedPools = poolList.filter((pool: TempPoolIF) => verifyPool(pool));
+        return checkedPools;
+    }, [poolList.length]);
+
     // raw user input from the DOM
     const [rawInput, setRawInput] = useState<string>('');
 
@@ -55,7 +66,7 @@ export const useSidebarSearch = (
     const [outputPools, setOutputPools] = useState<TempPoolIF[]>([]);
 
     useEffect(() => {
-        setOutputPools(poolList);
+        setOutputPools(verifiedPools);
     }, [poolList.length]);
 
     return [

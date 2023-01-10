@@ -67,6 +67,7 @@ interface SidebarPropsIF {
 
     openModalWallet: () => void;
     poolList: TempPoolIF[];
+    verifyToken: (addr: string, chn: string) => boolean;
 }
 
 export default function Sidebar(props: SidebarPropsIF) {
@@ -93,7 +94,8 @@ export default function Sidebar(props: SidebarPropsIF) {
         // analyticsSearchInput,
         setAnalyticsSearchInput,
         openModalWallet,
-        poolList
+        poolList,
+        verifyToken
     } = props;
 
     const { isConnected } = useAccount();
@@ -250,7 +252,11 @@ export default function Sidebar(props: SidebarPropsIF) {
         },
     ];
 
-    const [ setRawInput, isInputValid, searchedPools ] = useSidebarSearch(poolList);
+    const [
+        setRawInput,
+        isInputValid,
+        searchedPools
+    ] = useSidebarSearch(poolList, verifyToken);
     false && searchedPools;
 
     const [searchInput, setSearchInput] = useState<string[][]>();
