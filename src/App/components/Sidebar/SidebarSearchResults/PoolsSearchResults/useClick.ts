@@ -6,10 +6,18 @@ export const useClick = (
     chainId: string,
     tokenPair: TokenPairIF
 ): (baseAddr: string, quoteAddr: string) => void => {
+    // get the current URL path string
     const { pathname } = useLocation();
+    // get the navigate function from react-router-dom
     const navigate = useNavigate();
+
+    // slug to start the new URL string before params
+    // recalculate every time the URL path changes
     const locationSlug = useMemo<string>(() => {
+        // output variable
         let slug: string;
+        // logic to get current starting path
+        // error handling if on an unrecognized path goes to `/trade/market`
         try {
             if (
                 pathname.startsWith('/trade/market') ||
@@ -27,9 +35,11 @@ export const useClick = (
             console.warn(err);
             slug = '/trade/market';
         }
+        // return URL slug
         return slug;
     }, [pathname]);
 
+    // fn generate a new URL slug and navigate to it
     const handleClick = (baseAddr: string, quoteAddr: string): void => {
         const { dataTokenA } = tokenPair;
 
