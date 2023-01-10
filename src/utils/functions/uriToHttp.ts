@@ -15,7 +15,7 @@ export default function uriToHttp(uri: string): string {
     const excludedURIs = [
         '/ambient-token-list.json',
         '/broken-list.json',
-        '/testnet-token-list.json'
+        '/testnet-token-list.json',
     ];
 
     // if URI is in the excluded array, return it and terminate the function

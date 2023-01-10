@@ -5,7 +5,7 @@ import { AiOutlineQuestionCircle } from 'react-icons/ai';
 
 interface SoloTokenImportPropsIF {
     customToken: TokenIF | null;
-    chooseToken: (tkn: TokenIF) => void;
+    chooseToken: (tkn: TokenIF, isCustom: boolean) => void;
 }
 export default function SoloTokenImport(props: SoloTokenImportPropsIF) {
     const { customToken, chooseToken } = props;
@@ -43,7 +43,7 @@ export default function SoloTokenImport(props: SoloTokenImportPropsIF) {
                 blanditiis repellat magnam officiis, omnis impedit nostrum?
             </p>
             <div className={styles.import_button}>
-                <button onClick={() => chooseToken(customToken)}>Import</button>
+                <button onClick={() => chooseToken(customToken, true)}>Acknowledge</button>
             </div>
         </div>
     );

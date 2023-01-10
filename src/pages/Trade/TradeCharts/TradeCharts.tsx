@@ -538,6 +538,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
                     setReset={setReset}
                     setRescale={setRescale}
                     rescale={rescale}
+                    reset={reset}
                 />
                 {/* {liquidityTypeContent} */}
             </div>

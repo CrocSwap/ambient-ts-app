@@ -1,22 +1,16 @@
 import { useEffect, useMemo, useState, Dispatch, SetStateAction } from 'react';
+import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { TokenIF } from '../../utils/interfaces/exports';
 
 export const useTokenSearch = (
     chainId: string,
-    importedTokens: TokenIF[],
     verifyToken: (addr: string, chn: string) => boolean,
     getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined,
     getTokensByName: (searchName: string, chn: string, exact: boolean) => TokenIF[],
-    defaultTokens?: TokenIF[],
+    defaultTokens: TokenIF[],
+    walletTokens: TokenIF[],
+    recentTokens: TokenIF[],
 ): [TokenIF[], string, Dispatch<SetStateAction<string>>, string] => {
-    console.log({ importedTokens });
-    console.log({ defaultTokens });
-    // memoize default list of tokens to display in DOM
-    const importedTokensOnChain = useMemo(
-        () => importedTokens.filter((tkn) => tkn.chainId === parseInt(chainId)),
-        [chainId],
-    );
-
     // TODO: debounce this input later
     // TODO: figure out if we need to update EVERYTHING to the debounced value
     // raw input from the user
@@ -24,6 +18,8 @@ export const useTokenSearch = (
 
     // search type ➜ '' or 'address' or 'nameOrAddress'
     const [searchAs, setSearchAs] = useState<string>('');
+
+    const recentTxTokens = useAppSelector((state) => state.userData.recentTokens);
 
     // cleaned and validated version of raw user input
     const validatedInput = useMemo<string>(() => {
@@ -63,7 +59,7 @@ export const useTokenSearch = (
     }, [input]);
 
     // hook to track tokens to output and render in DOM
-    const [outputTokens, setOutputTokens] = useState<TokenIF[]>(importedTokensOnChain);
+    const [outputTokens, setOutputTokens] = useState<TokenIF[]>([]);
 
     // hook to update the value of outputTokens based on user input
     useEffect(() => {
@@ -105,7 +101,7 @@ export const useTokenSearch = (
             // get array of tokens in local storage on user data object
             // these are needed for tokens user previously imported but not on lists
             JSON.parse(localStorage.getItem('user') as string)
-                .tokens// iterate over array of tokens on user data object
+                .tokens // iterate over array of tokens on user data object
                 .forEach((tkn: TokenIF) => {
                     // this logic runs when matches need NOT be exact
                     // if the token name or symbol INCLUDES validated input and was not
@@ -141,7 +137,49 @@ export const useTokenSearch = (
 
         // fn to run if the app does not recognize input as an address or name or symbol
         function noSearch(): TokenIF[] {
-            return defaultTokens ?? importedTokensOnChain;
+            // initialize an array of tokens to output, seeded with Ambient default
+            const outputTokens = defaultTokens;
+            // fn to add tokens from an array to the output array
+            const addTokensToOutput = (
+                newTokens: TokenIF[],
+                verificationNeeded: boolean,
+                maxToAdd: number,
+            ): void => {
+                // counter to track how many tokens from array have been added
+                let limiter = 0;
+                // logic to iterate through all tokens in array parameter
+                for (let i = 0; i < newTokens.length; i++) {
+                    // check if current token at index is already in the ouput variable
+                    const isInArray = outputTokens.some(
+                        (tk: TokenIF) =>
+                            tk.address.toLowerCase() === newTokens[i].address.toLowerCase() &&
+                            tk.chainId === newTokens[i].chainId,
+                    );
+                    // check if token is recognized from a list (if necessary)
+                    const isTokenKnown = verificationNeeded
+                        ? verifyToken(
+                              newTokens[i].address,
+                              '0x' + newTokens[i].chainId.toString(16),
+                          )
+                        : true;
+                    // add token to output if not already there and limiter is below max
+                    if (!isInArray && isTokenKnown && limiter < maxToAdd) {
+                        limiter++;
+                        outputTokens.push(newTokens[i]);
+                    }
+                }
+            };
+            // add wallet tokens to output array
+            addTokensToOutput(walletTokens, true, 2);
+            // add tokens from recent txs to output array
+            addTokensToOutput(recentTxTokens ?? [], false, 2);
+            // add recent tokens to output array
+            addTokensToOutput(recentTokens, false, 2);
+            // remove off-chain tokens from output array
+            const ouputTokensOnChain = outputTokens.filter(
+                (tk: TokenIF) => tk.chainId === parseInt(chainId),
+            );
+            return ouputTokensOnChain;
         }
 
         // declare an output variable
@@ -163,7 +201,7 @@ export const useTokenSearch = (
 
         // run hook every time the validated input from the user changes
         // will ignore changes that do not pass validation (eg adding whitespace)
-    }, [validatedInput]);
+    }, [chainId, defaultTokens.length, walletTokens.length, recentTokens.length, validatedInput]);
 
     // outputTokens ➜ tokens to display in DOM
     // validatedInput ➜ user input after validation mods

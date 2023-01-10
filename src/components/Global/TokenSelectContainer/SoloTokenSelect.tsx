@@ -14,6 +14,7 @@ import { useLocationSlug } from './hooks/useLocationSlug';
 // import { AiOutlineQuestionCircle } from 'react-icons/ai';
 
 interface propsIF {
+    modalCloseCustom: () => void;
     provider: ethers.providers.Provider | undefined;
     importedTokens: TokenIF[];
     chainId: string;
@@ -37,14 +38,16 @@ interface propsIF {
     tokenAorB: string | null;
     reverseTokens?: () => void;
     tokenPair?: TokenPairIF;
+    acknowledgeToken: (tkn: TokenIF) => void;
 }
 
 export const SoloTokenSelect = (props: propsIF) => {
     const {
+        modalCloseCustom,
         provider,
-        importedTokens,
+        // importedTokens,
         chainId,
-        setImportedTokens,
+        // setImportedTokens,
         closeModal,
         // getTokensByName,
         // getTokenByAddress,
@@ -65,9 +68,13 @@ export const SoloTokenSelect = (props: propsIF) => {
         tokenAorB,
         reverseTokens,
         tokenPair,
+        acknowledgeToken,
     } = props;
 
-    console.log({ importedTokens });
+    // add an event listener for custom functionalities on modal close
+    // this needs to be coordinated with data in Modal.tsx
+    // later we'll abstract and import functionality to get rid of magic numbers
+    useEffect(() => window.addEventListener('closeModalEvent', modalCloseCustom), []);
 
     // instance of hook used to retrieve data from RTK
     const dispatch = useAppDispatch();
@@ -80,27 +87,30 @@ export const SoloTokenSelect = (props: propsIF) => {
     const navigate = useNavigate();
 
     // fn to respond to a user clicking to select a token
-    const chooseToken = (tkn: TokenIF): void => {
+    const chooseToken = (tkn: TokenIF, isCustom: boolean): void => {
+        if (isCustom && acknowledgeToken) {
+            acknowledgeToken(tkn);
+        }
         // dispatch token data object to RTK
         if (isSingleToken) {
             dispatch(setToken(tkn));
         }
-        // determine if the token is a previously imported token
-        const isTokenImported: boolean = importedTokens.some(
-            (tk: TokenIF) => tk.address.toLowerCase() === tkn.address.toLowerCase(),
-        );
-        // if token is NOT imported, update local storage accordingly
-        if (!isTokenImported) {
-            // retrieve and parse user data object from local storage
-            const userData = JSON.parse(localStorage.getItem('user') as string);
-            // update value of `tokens` on user data object
-            userData.tokens = [...importedTokens, tkn];
-            // write updated value to local storage
-            localStorage.setItem('user', JSON.stringify(userData));
-            // update local state record of imported tokens
-            // necessary as there is no event listener on local storage 😱
-            setImportedTokens([...importedTokens, tkn]);
-        }
+        // // determine if the token is a previously imported token
+        // const isTokenImported: boolean = importedTokens.some(
+        //     (tk: TokenIF) => tk.address.toLowerCase() === tkn.address.toLowerCase(),
+        // );
+        // // if token is NOT imported, update local storage accordingly
+        // if (!isTokenImported) {
+        //     // retrieve and parse user data object from local storage
+        //     const userData = JSON.parse(localStorage.getItem('user') as string);
+        //     // update value of `tokens` on user data object
+        //     userData.tokens = [...importedTokens, tkn];
+        //     // write updated value to local storage
+        //     localStorage.setItem('user', JSON.stringify(userData));
+        //     // update local state record of imported tokens
+        //     // necessary as there is no event listener on local storage 😱
+        //     setImportedTokens([...importedTokens, tkn]);
+        // }
         // array of recent tokens from App.tsx (current session only)
         const recentTokens = getRecentTokens();
         // determine if clicked token is already in the recent tokens array
@@ -153,6 +163,7 @@ export const SoloTokenSelect = (props: propsIF) => {
             );
         }
 
+        setInput('');
         // close the token modal
         closeModal();
     };

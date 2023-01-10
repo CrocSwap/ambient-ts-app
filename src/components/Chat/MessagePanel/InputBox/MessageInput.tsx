@@ -1,35 +1,75 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import {
-    //  useEffect,
-    useState,
-} from 'react';
-import { BsSlashSquare, BsEmojiSmileFill } from 'react-icons/bs';
+import useSocket from '../../Service/useSocket';
+import { Message } from '../../Model/MessageModel';
+
+import { BsEmojiSmileFill } from 'react-icons/bs';
 // import { Message } from '../../Model/MessageModel';
 import Picker from 'emoji-picker-react';
-// import { socket } from '../../Service/chatApi';
 import styles from './MessageInput.module.css';
+import { Dispatch, SetStateAction, useEffect, useState } from 'react';
+import PositionBox from '../PositionBox/PositionBox';
+import { PoolIF } from '../../../../utils/interfaces/PoolIF';
+import { TokenIF } from '../../../../utils/interfaces/TokenIF';
+import { targetData } from '../../../../utils/state/tradeDataSlice';
 
-// interface MessageInputProps {
-//     message: Message;
-//     room: string;
-// }
+import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
+import { useAccount } from 'wagmi';
 interface MessageInputProps {
-    isUserLoggedIn: boolean | undefined;
+    message?: Message;
+    room: string;
+    currentUser: string;
+    ensName: string;
+}
+interface currentPoolInfo {
+    tokenA: TokenIF;
+    tokenB: TokenIF;
+    baseToken: TokenIF;
+    quoteToken: TokenIF;
+    didUserFlipDenom: boolean;
+    isDenomBase: boolean;
+    advancedMode: boolean;
+    isTokenAPrimary: boolean;
+    primaryQuantity: string;
+    isTokenAPrimaryRange: boolean;
+    primaryQuantityRange: string;
+    limitPrice: string;
+    advancedLowTick: number;
+    advancedHighTick: number;
+    simpleRangeWidth: number;
+    slippageTolerance: number;
+    activeChartPeriod: number;
+    targetData: targetData[];
+    pinnedMaxPriceDisplayTruncated: number;
+    pinnedMinPriceDisplayTruncated: number;
 }
 
-export default function MessageInput(props: MessageInputProps) {
-    // export default function MessageInput(props: MessageInputProps) {
-    // const _socket = socket;
+export interface ChatProps {
+    chatStatus: boolean;
+    onClose: () => void;
+    favePools: PoolIF[];
+    currentPool: currentPoolInfo;
+    isFullScreen?: boolean;
+    setChatStatus: Dispatch<SetStateAction<boolean>>;
+}
 
-    // useEffect(() => {
-    //     _socket.connect();
-    // }, [_socket]);
-
-    const { isUserLoggedIn } = props;
-
+export default function MessageInput(props: MessageInputProps, prop: ChatProps) {
     const [message, setMessage] = useState('');
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+    const { address, isConnected } = useAccount();
+    const [isPosition, setIsPosition] = useState(false);
+    // const { roomId } = props.match.params;
 
+    const { sendMsg } = useSocket(props.room);
+
+    const userData = useAppSelector((state) => state.userData);
+    const isUserLoggedIn = userData.isLoggedIn;
+
+    const roomId =
+        props.room === 'Current Pool'
+            ? prop.currentPool.baseToken.symbol + prop.currentPool.quoteToken.symbol
+            : props.room;
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleEmojiClick = (event: any, emoji: any) => {
         let msg = message;
         msg += emoji.emoji;
@@ -37,47 +77,75 @@ export default function MessageInput(props: MessageInputProps) {
     };
 
     const handleEmojiPickerHideShow = () => {
-        setShowEmojiPicker(!showEmojiPicker);
+        if (!isUserLoggedIn) {
+            setShowEmojiPicker(false);
+        } else {
+            setShowEmojiPicker(!showEmojiPicker);
+        }
     };
-    // const _handleKeyDown = (e: any) => {
-    //     if (e.key === 'Enter') {
-    //         handleSendMsg(e.target.value);
-    //         setMessage('');
-    //         setShowEmojiPicker(false);
-    //     }
-    // };
 
-    // const handleSendMsg = async (msg: string) => {
-    //     _socket.emit('send-msg', {
-    //         from: '62f24f3ff40188d467c532e8',
-    //         to: '62fa389c897f9778e2eb863f',
-    //         message: msg,
-    //         roomInfo: props.room,
-    //     });
-    // };
+    const dontShowEmojiPanel = () => {
+        setShowEmojiPicker(false);
+    };
 
-    const onChangeMessage = (e: any) => {
+    function messageInputText() {
+        if (isConnected && address) {
+            return 'Type to chat. Enter to submit.';
+        } else {
+            return 'Please log in to chat.';
+        }
+    }
+
+    useEffect(() => {
+        messageInputText();
+    }, [isConnected, address]);
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const _handleKeyDown = (e: any) => {
+        if (e.key === 'Enter') {
+            handleSendMsg(e.target.value, roomId);
+            setMessage('');
+            dontShowEmojiPanel();
+        }
+    };
+
+    const handleSendMsg = async (msg: string, roomId: any) => {
+        if (msg === '' || !address) {
+            // do nothing
+        } else {
+            sendMsg(props.currentUser, message, roomId, props.ensName, address);
+        }
+    };
+
+    const onChangeMessage = async (e: any) => {
         setMessage(e.target.value);
     };
 
     return (
-        <div className={styles.input_box}>
-            <div className={styles.input}>
+        <div className={!isConnected ? styles.input_box_not_allowed : styles.input_box}>
+            <PositionBox
+                message={message}
+                isInput={true}
+                isPosition={isPosition}
+                setIsPosition={setIsPosition}
+            />
+
+            <div className={!isConnected ? styles.input_not_allowed : styles.input}>
                 <input
                     type='text'
                     id='box'
-                    placeholder={!isUserLoggedIn ? 'Please log in to chat.' : 'Enter Message...'}
-                    disabled={!isUserLoggedIn}
-                    className={styles.input_text}
-                    onKeyDown={() => {
-                        null;
-                    }}
-                    // onKeyDown={_handleKeyDown}
+                    placeholder={messageInputText()}
+                    disabled={!isConnected}
+                    className={!isConnected ? styles.input_text_not_allowed : styles.input_text}
+                    onKeyDown={_handleKeyDown}
                     value={message}
                     onChange={onChangeMessage}
                 />
-                <BsSlashSquare />
-                <BsEmojiSmileFill onClick={handleEmojiPickerHideShow} />
+
+                <BsEmojiSmileFill
+                    style={{ pointerEvents: !isUserLoggedIn ? 'none' : 'auto' }}
+                    onClick={handleEmojiPickerHideShow}
+                />
             </div>
             {showEmojiPicker && (
                 <div className={styles.emojiPicker}>
