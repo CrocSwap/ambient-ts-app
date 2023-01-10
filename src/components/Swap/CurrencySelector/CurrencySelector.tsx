@@ -307,10 +307,9 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                                 fontSize: '9px',
                             }}
                         >
-                            {/* {isSellTokenSelector
-                                    ? sellTokenWalletBalanceChange
-                                    : buyTokenWalletBalanceChange} */}
-                            {isSellTokenSelector ? '123445' : '23453'}
+                            {isSellTokenSelector
+                                ? sellTokenWalletBalanceChange
+                                : buyTokenWalletBalanceChange}
                         </div>
                     </div>
                 </div>
@@ -397,8 +396,7 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                                 fontSize: '9px',
                             }}
                         >
-                            {/* {isSellTokenSelector ? sellTokenSurplusChange : buyTokenSurplusChange} */}
-                            {isSellTokenSelector ? '12233' : '45332'}
+                            {isSellTokenSelector ? sellTokenSurplusChange : buyTokenSurplusChange}
                         </div>
                     </div>
                 </div>
