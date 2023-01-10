@@ -119,8 +119,7 @@ export const useSidebarSearch = (
             default:
                 filteredPools = noSearch();
         }
-        // reduce search results to 5 values max and send to local state
-        setOutputPools(filteredPools.slice(0, 4));
+        setOutputPools(filteredPools);
     }, [verifiedPools.length, validatedInput]);
 
     return [

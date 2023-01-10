@@ -23,7 +23,7 @@ export default function PoolsSearchResults(props: PoolsSearchResultPropsIF) {
     const exampleContent = (
         <div className={styles.main_result_container}>
             {
-                searchedPools.map((pool: TempPoolIF) => (
+                searchedPools.slice(0,4).map((pool: TempPoolIF) => (
                     <PoolLI
                         key={`sidebar_searched_pool_${JSON.stringify(pool)}`}
                         handleClick={handleClick}
