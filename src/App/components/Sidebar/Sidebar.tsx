@@ -529,6 +529,7 @@ export default function Sidebar(props: SidebarPropsIF) {
                     {searchContainerDisplay}
                     {isInputValid ? (
                         <SidebarSearchResults
+                            searchedPools={searchedPools}
                             searchInput={searchInput}
                             exampleLoading={exampleLoading}
                         />
