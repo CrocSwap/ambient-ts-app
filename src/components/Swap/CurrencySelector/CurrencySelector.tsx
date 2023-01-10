@@ -331,6 +331,13 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
             setIsSaveAsDexSurplusChecked(true);
         }
     }
+    const sellTokenWalletClassname = isSellTokenSelector
+        ? isWithdrawFromDexChecked
+            ? styles.enabled_logo
+            : null
+        : isSaveAsDexSurplusChecked
+        ? styles.enabled_logo
+        : null;
 
     const surplusContent = (
         <div className={styles.left_bottom_container}>
@@ -347,17 +354,7 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                     }}
                     onClick={() => handleSurplusClick()}
                 >
-                    <div
-                        className={`${styles.wallet_logo} ${
-                            isSellTokenSelector
-                                ? isWithdrawFromDexChecked
-                                    ? styles.enabled_logo
-                                    : null
-                                : isSaveAsDexSurplusChecked
-                                ? styles.enabled_logo
-                                : null
-                        }`}
-                    >
+                    <div className={`${styles.wallet_logo} ${sellTokenWalletClassname}`}>
                         <img
                             src={ambientLogo}
                             width='20'
@@ -502,6 +499,7 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                         </button>
                     ) : null}
                 </div> */}
+                {surplusContent}
                 {WithdrawTokensContent}
             </div>
         </div>
