@@ -2922,6 +2922,10 @@ export default function Chart(props: ChartData) {
         }
     }, [location]);
 
+    useEffect(() => {
+        setLiqHighlightedLinesAndArea(ranges);
+    }, [liqMode]);
+
     // line gradient
     const setLiqHighlightedLinesAndArea = (ranges: any, isAmbient = false) => {
         liquidityData.lineAskSeries = [];
@@ -2935,7 +2939,10 @@ export default function Chart(props: ChartData) {
 
             const maxBoudnary = d3.max(liquidityData.liqBidData, (d: any) => d.liqPrices);
 
-            const maxBoudnaryAsk = d3.max(props.liquidityData.liqAskData, (d: any) => d.liqPrices);
+            const liqData =
+                liqMode === 'Depth' ? liquidityData.depthLiqAskData : liquidityData.liqAskData;
+
+            const maxBoudnaryAsk = d3.max(liqData, (d: any) => d.liqPrices);
 
             if (minBoudnary && maxBoudnary && maxBoudnaryAsk && poolPriceDisplay) {
                 const percentageBid =
@@ -3991,10 +3998,12 @@ export default function Chart(props: ChartData) {
 
                         const lineGradient = svgmain.append('defs').attr('id', 'areaGradients');
 
-                        const maxBoudnaryAsk = d3.max(
-                            liquidityData.liqAskData,
-                            (d: any) => d.liqPrices,
-                        );
+                        const liqData =
+                            liqMode === 'Depth'
+                                ? liquidityData.depthLiqAskData
+                                : liquidityData.liqAskData;
+
+                        const maxBoudnaryAsk = d3.max(liqData, (d: any) => d.liqPrices);
 
                         if (maxBoudnaryAsk) {
                             const percentageAsk =
