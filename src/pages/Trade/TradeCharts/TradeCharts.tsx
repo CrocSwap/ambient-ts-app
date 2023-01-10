@@ -187,6 +187,8 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
         setIsPoolPriceChangePositive,
     } = props;
 
+    // console.log('rendering TradeCharts.tsx');
+
     const dispatch = useAppDispatch();
 
     // allow a local environment variable to be defined in [app_repo]/.env.local to turn off connections to the cache server
