@@ -118,6 +118,6 @@ export const useSidebarSearch = (
     return [
         setRawInput,
         !!searchAs,
-        outputPools.slice(0, 4)
+        outputPools
     ];
 }
