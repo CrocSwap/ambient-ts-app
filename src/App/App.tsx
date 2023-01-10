@@ -424,7 +424,7 @@ export default function App() {
         dispatch(resetTokenData());
     }, [chainData.chainId]);
 
-    const poolList = usePoolList(chainData.chainId);
+    const poolList = usePoolList(chainData.chainId, chainData.poolIndex);
 
     useEffect(() => {
         dispatch(resetTokenData());
