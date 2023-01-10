@@ -345,14 +345,33 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
             ? styles.grey_logo
             : null;
 
+    const sellTokenMaxButton =
+        isSellTokenSelector &&
+        isWithdrawFromDexChecked &&
+        surplusBalanceNonLocaleString !== '0.0' ? (
+            <button
+                className={styles.max_button}
+                onClick={() => {
+                    if (props.sellToken) {
+                        setIsWithdrawFromDexChecked(true);
+                    } else {
+                        setIsSaveAsDexSurplusChecked(true);
+                    }
+                    if (handleChangeClick && !isWithdrawFromDexDisabled) {
+                        handleChangeClick(surplusBalanceNonLocaleStringOffset);
+                    }
+                }}
+            >
+                Max
+            </button>
+        ) : null;
+
     const surplusContent = (
         <div className={styles.left_bottom_container}>
             <IconWithTooltip title={'Exchange Balance'} placement='bottom'>
                 <div
                     className={`${styles.balance_with_pointer} ${sellTokenLogoClassname}`}
-                    style={{
-                        color: surplusColorStyle,
-                    }}
+                    style={{ color: surplusColorStyle }}
                     onClick={() => handleSurplusClick()}
                 >
                     <div className={`${styles.wallet_logo} ${sellTokenWalletClassname}`}>
@@ -377,25 +396,7 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                     </div>
                 </div>
             </IconWithTooltip>
-            {isSellTokenSelector &&
-            isWithdrawFromDexChecked &&
-            surplusBalanceNonLocaleString !== '0.0' ? (
-                <button
-                    className={styles.max_button}
-                    onClick={() => {
-                        if (props.sellToken) {
-                            setIsWithdrawFromDexChecked(true);
-                        } else {
-                            setIsSaveAsDexSurplusChecked(true);
-                        }
-                        if (handleChangeClick && !isWithdrawFromDexDisabled) {
-                            handleChangeClick(surplusBalanceNonLocaleStringOffset);
-                        }
-                    }}
-                >
-                    Max
-                </button>
-            ) : null}
+            {sellTokenMaxButton}
         </div>
     );
 
