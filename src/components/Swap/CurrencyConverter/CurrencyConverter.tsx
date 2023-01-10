@@ -60,6 +60,11 @@ interface CurrencyConverterPropsIF {
     importedTokensPlus: TokenIF[];
     getRecentTokens: (options?: getRecentTokensParamsIF | undefined) => TokenIF[];
     addRecentToken: (tkn: TokenIF) => void;
+    outputTokens: TokenIF[];
+    validatedInput: string;
+    setInput: Dispatch<SetStateAction<string>>;
+    searchType: string;
+    acknowledgeToken: (tkn: TokenIF) => void;
 }
 
 export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
@@ -99,6 +104,11 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
         importedTokensPlus,
         getRecentTokens,
         addRecentToken,
+        outputTokens,
+        validatedInput,
+        setInput,
+        searchType,
+        acknowledgeToken,
     } = props;
 
     // TODO: update name of functions with 'handle' verbiage
@@ -645,6 +655,11 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
                 getTokenByAddress={getTokenByAddress}
                 getRecentTokens={getRecentTokens}
                 addRecentToken={addRecentToken}
+                outputTokens={outputTokens}
+                validatedInput={validatedInput}
+                setInput={setInput}
+                searchType={searchType}
+                acknowledgeToken={acknowledgeToken}
             />
             <div className={styles.arrow_container} onClick={reverseTokens}>
                 {isLiq ? null : (
@@ -689,6 +704,11 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
                 getTokenByAddress={getTokenByAddress}
                 getRecentTokens={getRecentTokens}
                 addRecentToken={addRecentToken}
+                outputTokens={outputTokens}
+                validatedInput={validatedInput}
+                setInput={setInput}
+                searchType={searchType}
+                acknowledgeToken={acknowledgeToken}
             />
         </section>
     );

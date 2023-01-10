@@ -61,7 +61,8 @@ export const ambientTokenList = {
             symbol: 'USDC',
             decimals: 6,
             chainId: 5,
-            logoURI: 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png'
+            logoURI:
+                'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png',
         },
         {
             name: 'Dai Stablecoin',
@@ -129,7 +130,8 @@ export const ambientTokenList = {
             symbol: 'WBTC',
             decimals: 8,
             chainId: 5,
-            logoURI: 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599/logo.png'
+            logoURI:
+                'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599/logo.png',
         },
         {
             name: 'Wrapped BTC',

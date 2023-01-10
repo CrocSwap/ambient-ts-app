@@ -84,6 +84,11 @@ interface LimitPropsIF {
     importedTokensPlus: TokenIF[];
     getRecentTokens: (options?: getRecentTokensParamsIF | undefined) => TokenIF[];
     addRecentToken: (tkn: TokenIF) => void;
+    outputTokens: TokenIF[];
+    validatedInput: string;
+    setInput: Dispatch<SetStateAction<string>>;
+    searchType: string;
+    acknowledgeToken: (tkn: TokenIF) => void;
     setResetLimitTick: Dispatch<SetStateAction<boolean>>;
 }
 
@@ -126,6 +131,11 @@ export default function Limit(props: LimitPropsIF) {
         importedTokensPlus,
         getRecentTokens,
         addRecentToken,
+        outputTokens,
+        validatedInput,
+        setInput,
+        searchType,
+        acknowledgeToken,
         setResetLimitTick,
     } = props;
 
@@ -731,6 +741,11 @@ export default function Limit(props: LimitPropsIF) {
                         importedTokensPlus={importedTokensPlus}
                         getRecentTokens={getRecentTokens}
                         addRecentToken={addRecentToken}
+                        outputTokens={outputTokens}
+                        validatedInput={validatedInput}
+                        setInput={setInput}
+                        searchType={searchType}
+                        acknowledgeToken={acknowledgeToken}
                         setResetLimitTick={setResetLimitTick}
                     />
                 </motion.div>

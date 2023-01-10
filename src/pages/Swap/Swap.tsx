@@ -77,6 +77,11 @@ interface SwapPropsIF {
     importedTokensPlus: TokenIF[];
     getRecentTokens: (options?: getRecentTokensParamsIF | undefined) => TokenIF[];
     addRecentToken: (tkn: TokenIF) => void;
+    outputTokens: TokenIF[];
+    validatedInput: string;
+    setInput: Dispatch<SetStateAction<string>>;
+    searchType: string;
+    acknowledgeToken: (tkn: TokenIF) => void;
 }
 
 export default function Swap(props: SwapPropsIF) {
@@ -115,6 +120,11 @@ export default function Swap(props: SwapPropsIF) {
         importedTokensPlus,
         addRecentToken,
         getRecentTokens,
+        outputTokens,
+        validatedInput,
+        setInput,
+        searchType,
+        acknowledgeToken,
     } = props;
 
     const [isModalOpen, openModal, closeModal] = useModal();
@@ -592,6 +602,11 @@ export default function Swap(props: SwapPropsIF) {
                             importedTokensPlus={importedTokensPlus}
                             addRecentToken={addRecentToken}
                             getRecentTokens={getRecentTokens}
+                            outputTokens={outputTokens}
+                            validatedInput={validatedInput}
+                            setInput={setInput}
+                            searchType={searchType}
+                            acknowledgeToken={acknowledgeToken}
                         />
                     </motion.div>
                     {/* {denominationSwitchOrNull} */}

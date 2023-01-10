@@ -11,6 +11,19 @@
 
 }
 
+.avatar_image_position {
+    max-width: 13px;
+    max-height: 13px;
+    border-radius: 50%;
+    background: var(--title-gradient);
+    padding: 2px;
+    flex-grow: 1;
+    align-self: end;
+    vertical-align: end;
+    margin: 0;
+
+}
+
 .message_date {
     width: 50px;
     height: 14px;
@@ -35,8 +48,8 @@
 
 .message {
 
-    min-width: 158px;
-    min-height: 45px;
+    width: 80%;
+    height: 80%;
 
     bottom: -100%;
 
@@ -48,31 +61,61 @@
     line-height: 15px;
     flex-grow: 5px !important;
     margin: 10px;
-    height: 100%;
-    width: 100%;
-
+    width: 85%;
     font-family: 'Lexend Deca';
     font-style: normal;
     font-weight: 300;
-    font-size: calc(1vw - 2px);
+    font-size: 15px;
     line-height: 15px;
     color: #EBEBFF;
     white-space: pre-line;
     align-self: stretch;
+    word-break: break-word;
+    white-space: normal;
 }
 
 .right_image_box {
     display: flex;
     right: 0%;
-    float: right;
+    float: left;
     vertical-align: middle;
+    margin-left: 301px;
+    
+
+    
 }
 
 .sent_message_body {
+flex-grow: 5 !important;
+display: flex;
+flex-direction: row;
+align-items: flex-end;
+gap: 0px;
+
+height: 100%;
+width:  100%;
+height: auto;
+ min-height: 53%;
+padding: 0px 4px 8px;
+
+box-sizing: border-box;
+flex: none;
+order: 4;
+align-self: stretch;
+}
+
+.message_item {
+    cursor: default;
     display: flex;
     flex-direction: row;
-    width: 100%;
-    padding: 5px;
-    grid-template-columns: 1fr 1fr;
-    width: 100%;
+    flex-grow: 3;
 }
+
+p {
+    word-break: break-all;
+}
+
+ img,
+picture {
+    max-width: 100%;
+} 

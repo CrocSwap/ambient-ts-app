@@ -120,7 +120,6 @@ import { useGlobalModal } from './components/GlobalModal/useGlobalModal';
 
 import { getVolumeSeries } from './functions/getVolumeSeries';
 import { getTvlSeries } from './functions/getTvlSeries';
-import Chat from './components/Chat/Chat';
 import GlobalModal from './components/GlobalModal/GlobalModal';
 import { memoizeTokenPrice } from './functions/fetchTokenPrice';
 import ChatPanel from '../components/Chat/ChatPanel';
@@ -145,6 +144,7 @@ import { useToken } from './hooks/useToken';
 import { useSidebar } from './hooks/useSidebar';
 import useDebounce from './hooks/useDebounce';
 import { useRecentTokens } from './hooks/useRecentTokens';
+import { useTokenSearch } from './hooks/useTokenSearch';
 import WalletModalWagmi from './components/WalletModal/WalletModalWagmi';
 import Moralis from 'moralis';
 
@@ -459,6 +459,7 @@ export default function App() {
     }, [tokenListsReceived]);
 
     useEffect(() => {
+        console.log(chainData.nodeUrl);
         fetch(chainData.nodeUrl2, {
             method: 'POST',
             headers: {
@@ -473,6 +474,7 @@ export default function App() {
             }),
         })
             .then((response) => response?.json())
+
             .then((json) => {
                 if (lastBlockNumber !== parseInt(json?.result)) {
                     setLastBlockNumber(parseInt(json?.result));
@@ -2130,13 +2132,13 @@ export default function App() {
         getTokensOnChain,
         getTokenByAddress,
         getTokensByName,
+        acknowledgeToken,
     ] = useToken(chainData.chainId);
     false && localTokens;
     false && getAllTokens;
     false && getTokensOnChain;
 
     const connectedUserErc20Tokens = useAppSelector((state) => state.userData.tokens.erc20Tokens);
-
     // TODO: move this function up to App.tsx
     const getImportedTokensPlus = () => {
         // array of all tokens on Ambient list
@@ -2219,6 +2221,16 @@ export default function App() {
         theme: theme,
     };
 
+    const [outputTokens, validatedInput, setInput, searchType] = useTokenSearch(
+        chainData.chainId,
+        verifyToken,
+        getTokenByAddress,
+        getTokensByName,
+        getAmbientTokens(),
+        connectedUserErc20Tokens ?? [],
+        getRecentTokens(),
+    );
+
     // props for <Swap/> React element
     const swapProps = {
         crocEnv: crocEnv,
@@ -2255,6 +2267,11 @@ export default function App() {
         importedTokensPlus: getImportedTokensPlus(),
         getRecentTokens: getRecentTokens,
         addRecentToken: addRecentToken,
+        outputTokens: outputTokens,
+        validatedInput: validatedInput,
+        setInput: setInput,
+        searchType: searchType,
+        acknowledgeToken: acknowledgeToken,
     };
 
     // props for <Swap/> React element on trade route
@@ -2295,6 +2312,11 @@ export default function App() {
         importedTokensPlus: getImportedTokensPlus(),
         getRecentTokens: getRecentTokens,
         addRecentToken: addRecentToken,
+        outputTokens: outputTokens,
+        validatedInput: validatedInput,
+        setInput: setInput,
+        searchType: searchType,
+        acknowledgeToken: acknowledgeToken,
     };
 
     // props for <Limit/> React element on trade route
@@ -2342,6 +2364,11 @@ export default function App() {
         getRecentTokens: getRecentTokens,
         addRecentToken: addRecentToken,
         setResetLimitTick: setResetLimitTick,
+        outputTokens: outputTokens,
+        validatedInput: validatedInput,
+        setInput: setInput,
+        searchType: searchType,
+        acknowledgeToken: acknowledgeToken,
     };
 
     // props for <Range/> React element
@@ -2393,6 +2420,11 @@ export default function App() {
         importedTokensPlus: getImportedTokensPlus(),
         getRecentTokens: getRecentTokens,
         addRecentToken: addRecentToken,
+        outputTokens: outputTokens,
+        validatedInput: validatedInput,
+        setInput: setInput,
+        searchType: searchType,
+        acknowledgeToken: acknowledgeToken,
     };
 
     function toggleSidebar() {
@@ -2716,10 +2748,15 @@ export default function App() {
                         <Route
                             path='app/chat'
                             element={
-                                <Chat
-                                    ensName={ensName}
-                                    connectedAccount={account ? account : ''}
-                                    fullScreen={true}
+                                <ChatPanel
+                                    chatStatus={true}
+                                    onClose={() => {
+                                        console.error('Function not implemented.');
+                                    }}
+                                    favePools={favePools}
+                                    currentPool={currentPoolInfo}
+                                    setChatStatus={setChatStatus}
+                                    isFullScreen={true}
                                 />
                             }
                         />
@@ -2790,6 +2827,11 @@ export default function App() {
                                     }
                                     handlePulseAnimation={handlePulseAnimation}
                                     gasPriceInGwei={gasPriceInGwei}
+                                    acknowledgeToken={acknowledgeToken}
+                                    outputTokens={outputTokens}
+                                    validatedInput={validatedInput}
+                                    setInput={setInput}
+                                    searchType={searchType}
                                     openModalWallet={openWagmiModalWallet}
                                 />
                             }
@@ -2841,6 +2883,11 @@ export default function App() {
                                     }
                                     handlePulseAnimation={handlePulseAnimation}
                                     gasPriceInGwei={gasPriceInGwei}
+                                    acknowledgeToken={acknowledgeToken}
+                                    outputTokens={outputTokens}
+                                    validatedInput={validatedInput}
+                                    setInput={setInput}
+                                    searchType={searchType}
                                     openModalWallet={openWagmiModalWallet}
                                 />
                             }
@@ -2910,6 +2957,11 @@ export default function App() {
                                     }
                                     handlePulseAnimation={handlePulseAnimation}
                                     gasPriceInGwei={gasPriceInGwei}
+                                    acknowledgeToken={acknowledgeToken}
+                                    outputTokens={outputTokens}
+                                    validatedInput={validatedInput}
+                                    setInput={setInput}
+                                    searchType={searchType}
                                     openModalWallet={openWagmiModalWallet}
                                 />
                             }
@@ -2932,7 +2984,7 @@ export default function App() {
                         chatStatus={chatStatus}
                     />
                 )}
-                {currentLocation !== '/app/chat' && (
+                {/* {currentLocation !== '/app/chat' && (
                     <Chat
                         ensName={ensName}
                         connectedAccount={account ? account : ''}
@@ -2945,9 +2997,9 @@ export default function App() {
                         connectedAccount={account ? account : ''}
                         fullScreen={false}
                     />
-                )}
+                )} */}
 
-                {currentLocation !== '/app/chat' && (
+                {currentLocation !== '/' && currentLocation !== '/app/chat' && (
                     <ChatPanel
                         chatStatus={chatStatus}
                         onClose={() => {
@@ -2955,7 +3007,8 @@ export default function App() {
                         }}
                         favePools={favePools}
                         currentPool={currentPoolInfo}
-                        isUserLoggedIn={isUserLoggedIn}
+                        setChatStatus={setChatStatus}
+                        isFullScreen={false}
                     />
                 )}
             </div>

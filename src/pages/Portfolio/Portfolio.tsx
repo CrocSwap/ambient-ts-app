@@ -18,7 +18,7 @@ import { TokenPriceFn } from '../../App/functions/fetchTokenPrice';
 import NotFound from '../NotFound/NotFound';
 import ProfileSettings from '../../components/Portfolio/ProfileSettings/ProfileSettings';
 import { SoloTokenSelect } from '../../components/Global/TokenSelectContainer/SoloTokenSelect';
-import { useSoloSearch } from '../../components/Global/TokenSelectContainer/hooks/useSoloSearch';
+// import { useSoloSearch } from '../../components/Global/TokenSelectContainer/hooks/useSoloSearch';
 import { useAccount, useEnsName } from 'wagmi';
 
 const mainnetProvider = new ethers.providers.WebSocketProvider(
@@ -71,6 +71,11 @@ interface PortfolioPropsIF {
     currentTxActiveInTransactions: string;
     setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
     gasPriceInGwei: number | undefined;
+    acknowledgeToken: (tkn: TokenIF) => void;
+    outputTokens: TokenIF[];
+    validatedInput: string;
+    setInput: Dispatch<SetStateAction<string>>;
+    searchType: string;
 }
 
 export default function Portfolio(props: PortfolioPropsIF) {
@@ -78,7 +83,7 @@ export default function Portfolio(props: PortfolioPropsIF) {
         crocEnv,
         addRecentToken,
         getRecentTokens,
-        getAmbientTokens,
+        // getAmbientTokens,
         getTokensByName,
         getTokenByAddress,
         verifyToken,
@@ -111,6 +116,11 @@ export default function Portfolio(props: PortfolioPropsIF) {
         handlePulseAnimation,
         gasPriceInGwei,
         openModalWallet,
+        acknowledgeToken,
+        outputTokens,
+        validatedInput,
+        setInput,
+        searchType,
     } = props;
 
     const { isConnected, address } = useAccount();
@@ -226,13 +236,11 @@ export default function Portfolio(props: PortfolioPropsIF) {
         })();
     }, [addressFromParams, isAddressEns]);
 
-    useEffect(() => {
-        console.log({ selectedToken });
-    }, [selectedToken]);
+    const modalCloseCustom = (): void => setInput('');
 
-    const [isTokenModalOpen, openTokenModal, closeTokenModal] = useModal();
+    const [isTokenModalOpen, openTokenModal, closeTokenModal] = useModal(modalCloseCustom);
 
-    const [fullLayoutActive, setFullLayoutActive] = useState(false);
+    const [fullLayoutActive, setFullLayoutActive] = useState<boolean>(false);
     const exchangeBalanceComponent = (
         <div className={styles.exchange_balance}>
             <ExchangeBalance
@@ -298,61 +306,63 @@ export default function Portfolio(props: PortfolioPropsIF) {
     const connectedUserNativeToken = useAppSelector((state) => state.userData.tokens.nativeToken);
     const connectedUserErc20Tokens = useAppSelector((state) => state.userData.tokens.erc20Tokens);
 
-    // TODO: move this function up to App.tsx
-    const getImportedTokensPlus = () => {
-        // array of all tokens on Ambient list
-        const ambientTokens = getAmbientTokens();
-        // array of addresses on Ambient list
-        const ambientAddresses = ambientTokens.map((tkn) => tkn.address.toLowerCase());
-        // use Ambient token list as scaffold to build larger token array
-        const output = ambientTokens;
-        // limiter for tokens to add from connected wallet
-        let tokensAdded = 0;
-        // iterate over tokens in connected wallet
-        connectedUserErc20Tokens?.forEach((tkn) => {
-            // gatekeep to make sure token is not already in the array,
-            // ... that the token can be verified against a known list,
-            // ... that user has a positive balance of the token, and
-            // ... that the limiter has not been reached
-            if (
-                !ambientAddresses.includes(tkn.address.toLowerCase()) &&
-                tokensOnActiveLists.get(tkn.address + '_' + chainId) &&
-                parseInt(tkn.combinedBalance as string) > 0 &&
-                tokensAdded < 4
-            ) {
-                tokensAdded++;
-                output.push({ ...tkn, fromList: 'wallet' });
-                // increment the limiter by one
-                tokensAdded++;
-                // add the token to the output array
-                output.push({ ...tkn, fromList: 'wallet' });
-            }
-        });
-        // limiter for tokens to add from in-session recent tokens list
-        let recentTokensAdded = 0;
-        // iterate over tokens in recent tokens list
-        getRecentTokens().forEach((tkn) => {
-            // gatekeep to make sure the token isn't already in the list,
-            // ... is on the current chain, and that the limiter has not
-            // ... yet been reached
-            if (
-                !output.some(
-                    (tk) =>
-                        tk.address.toLowerCase() === tkn.address.toLowerCase() &&
-                        tk.chainId === tkn.chainId,
-                ) &&
-                tkn.chainId === parseInt(chainId) &&
-                recentTokensAdded < 2
-            ) {
-                // increment the limiter by one
-                recentTokensAdded++;
-                // add the token to the output array
-                output.push(tkn);
-            }
-        });
-        // return compiled array of tokens
-        return output;
-    };
+    // // TODO: move this function up to App.tsx
+    // const getImportedTokensPlus = () => {
+    //     // array of all tokens on Ambient list from useToken() hook
+    //     const ambientTokens = getAmbientTokens();
+    //     // array of addresses on Ambient list
+    //     const ambientAddresses = ambientTokens.map((tkn) => tkn.address.toLowerCase());
+    //     // use Ambient token list as scaffold to build larger token array
+    //     const output = ambientTokens;
+    //     // limiter for tokens to add from connected wallet
+    //     let tokensAdded = 0;
+    //     // iterate over tokens in connected wallet
+    //     console.log({connectedUserErc20Tokens});
+    //     connectedUserErc20Tokens?.forEach((tkn) => {
+    //         // gatekeep to make sure token is not already in the array,
+    //         // ... that the token can be verified against a known list,
+    //         // ... that user has a positive balance of the token, and
+    //         // ... that the limiter has not been reached
+    //         if (
+    //             !ambientAddresses.includes(tkn.address.toLowerCase()) &&
+    //             verifyToken(tkn.address, chainId) &&
+    //             parseInt(tkn.combinedBalance as string) > 0 &&
+    //             tokensAdded < 4
+    //         ) {
+    //             tokensAdded++;
+    //             output.push({ ...tkn, fromList: 'wallet' });
+    //             // increment the limiter by one
+    //             tokensAdded++;
+    //             // add the token to the output array
+    //             output.push({ ...tkn, fromList: 'wallet' });
+    //         }
+    //     });
+    //     // limiter for tokens to add from in-session recent tokens list
+    //     let recentTokensAdded = 0;
+    //     // iterate over tokens in recent tokens list
+    //     getRecentTokens().forEach((tkn) => {
+    //         // gatekeep to make sure the token isn't already in the list,
+    //         // ... is on the current chain, and that the limiter has not
+    //         // ... yet been reached
+    //         if (
+    //             !output.some(
+    //                 (tk) =>
+    //                     tk.address.toLowerCase() === tkn.address.toLowerCase() &&
+    //                     tk.chainId === tkn.chainId,
+    //             ) &&
+    //             tkn.chainId === parseInt(chainId) &&
+    //             recentTokensAdded < 2
+    //         ) {
+    //             // increment the limiter by one
+    //             recentTokensAdded++;
+    //             // add the token to the output array
+    //             output.push(tkn);
+    //         }
+    //     });
+    //     // return compiled array of tokens
+    //     console.log({output});
+    //     return output;
+    // };
 
     const connectedUserTokens = [connectedUserNativeToken].concat(connectedUserErc20Tokens);
 
@@ -424,16 +434,19 @@ export default function Portfolio(props: PortfolioPropsIF) {
 
     const [showProfileSettings, setShowProfileSettings] = useState(false);
 
+    // const defaultTokens = getImportedTokensPlus();
+
     const [showSoloSelectTokenButtons, setShowSoloSelectTokenButtons] = useState(true);
     // hook to process search input and return an array of relevant tokens
     // also returns state setter function and values for control flow
-    const [outputTokens, validatedInput, setInput, searchType] = useSoloSearch(
-        chainId,
-        importedTokens,
-        verifyToken,
-        getTokenByAddress,
-        getTokensByName,
-    );
+    // const [outputTokens, validatedInput, setInput, searchType] = useSoloSearch(
+    //     chainId,
+    //     importedTokens,
+    //     verifyToken,
+    //     getTokenByAddress,
+    //     getTokensByName,
+    //     defaultTokens
+    // );
 
     const handleInputClear = () => {
         setInput('');
@@ -526,10 +539,11 @@ export default function Portfolio(props: PortfolioPropsIF) {
                     footer={null}
                 >
                     <SoloTokenSelect
+                        modalCloseCustom={modalCloseCustom}
                         provider={provider}
                         closeModal={closeTokenModal}
                         chainId={chainId}
-                        importedTokens={getImportedTokensPlus()}
+                        importedTokens={outputTokens}
                         setImportedTokens={setImportedTokens}
                         getTokensByName={getTokensByName}
                         getTokenByAddress={getTokenByAddress}
@@ -544,6 +558,7 @@ export default function Portfolio(props: PortfolioPropsIF) {
                         getRecentTokens={getRecentTokens}
                         isSingleToken={true}
                         tokenAorB={null}
+                        acknowledgeToken={acknowledgeToken}
                     />
                 </Modal>
             )}
