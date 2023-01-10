@@ -271,7 +271,7 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
         !isWithdrawFromDexChecked &&
         walletBalanceNonLocaleString !== '0.0' ? (
             <button
-                className={styles.max_button}
+                className={`${styles.max_button} ${styles.max_button_enable}`}
                 onClick={() => {
                     if (props.sellToken) {
                         setIsWithdrawFromDexChecked(false);
@@ -285,7 +285,9 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
             >
                 Max
             </button>
-        ) : null;
+        ) : (
+            <p className={styles.max_button} />
+        );
 
     const walletContent = (
         <section className={styles.left_bottom_container}>
@@ -297,7 +299,7 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                     <div className={styles.wallet_logo}>
                         <MdAccountBalanceWallet size={20} color={walletLogoColorStyle} />
                     </div>
-                    <div className={styles.balance_column} style={{ background: 'blue' }}>
+                    <div className={styles.balance_column}>
                         <div>{isUserLoggedIn ? walletBalanceLocaleString : ''}</div>
                         <div
                             style={{
@@ -352,7 +354,7 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
         isWithdrawFromDexChecked &&
         surplusBalanceNonLocaleString !== '0.0' ? (
             <button
-                className={styles.max_button}
+                className={`${styles.max_button} ${styles.max_button_enable}`}
                 onClick={() => {
                     if (props.sellToken) {
                         setIsWithdrawFromDexChecked(true);
@@ -366,7 +368,9 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
             >
                 Max
             </button>
-        ) : null;
+        ) : (
+            <p className={styles.max_button} />
+        );
 
     const surplusContent = (
         <div className={styles.left_bottom_container}>
@@ -421,18 +425,11 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
         <div className={styles.swapbox_bottom} />
     ) : (
         <div className={styles.swapbox_bottom}>
-            <div
-                className={styles.surplus_container}
-                style={{
-                    color: surplusContainerColorStyle,
-                }}
-            >
+            <div className={styles.surplus_container} style={{ color: surplusContainerColorStyle }}>
                 {walletContent}
             </div>
-            <div className={styles.right_bottom_container} style={{ background: 'yellow' }}>
-                {surplusContent}
-                {WithdrawTokensContent}
-            </div>
+            <div className={styles.right_bottom_container}>{surplusContent}</div>
+            {WithdrawTokensContent}
         </div>
     );
 
