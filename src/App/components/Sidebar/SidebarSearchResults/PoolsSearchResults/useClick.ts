@@ -1,7 +1,8 @@
 import { useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
+import { TokenPairIF } from '../../../../../utils/interfaces/exports';
 
-export const useClick = () => {
+export const useClick = (tokenPair: TokenPairIF) => {
     const {pathname} = useLocation();
     const locationSlug = useMemo<string>(() => {
         let slug: string;
@@ -22,4 +23,5 @@ export const useClick = () => {
         return slug;
     }, [pathname]);
     console.log({locationSlug});
+    console.log({tokenPair});
 }

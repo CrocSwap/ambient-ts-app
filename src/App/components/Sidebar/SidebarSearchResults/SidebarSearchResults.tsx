@@ -1,5 +1,5 @@
 import { ReactNode } from 'react';
-import { TokenIF, TempPoolIF } from '../../../../utils/interfaces/exports';
+import { TokenIF, TokenPairIF, TempPoolIF } from '../../../../utils/interfaces/exports';
 import styles from './SidebarSearchResults.module.css';
 import PoolsSearchResults from './PoolsSearchResults/PoolsSearchResults';
 import PositionsSearchResults from './PositionsSearchResults/PositionsSearchResults';
@@ -11,10 +11,11 @@ interface SidebarSearchResultsPropsIF {
     searchInput: ReactNode;
     exampleLoading: boolean;
     getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
+    tokenPair: TokenPairIF;
 }
 
 export default function SidebarSearchResults(props: SidebarSearchResultsPropsIF) {
-    const { searchedPools, exampleLoading, searchInput, getTokenByAddress } = props;
+    const { searchedPools, exampleLoading, searchInput, getTokenByAddress, tokenPair } = props;
 
     // we are not going to use this following loading functionality. It is just for demonstration purposes
 
@@ -27,6 +28,7 @@ export default function SidebarSearchResults(props: SidebarSearchResultsPropsIF)
                 loading={exampleLoading}
                 searchInput={searchInput}
                 getTokenByAddress={getTokenByAddress}
+                tokenPair={tokenPair}
             />
             <PositionsSearchResults loading={exampleLoading} searchInput={searchInput} />
             <OrdersSearchResults loading={exampleLoading} searchInput={searchInput} />

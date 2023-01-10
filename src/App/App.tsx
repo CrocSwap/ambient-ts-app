@@ -2471,7 +2471,8 @@ export default function App() {
         openModalWallet: openWagmiModalWallet,
         poolList: poolList,
         verifyToken: verifyToken,
-        getTokenByAddress: getTokenByAddress
+        getTokenByAddress: getTokenByAddress,
+        tokenPair: tokenPair
     };
 
     const analyticsProps = {

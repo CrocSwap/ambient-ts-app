@@ -2,17 +2,18 @@ import PoolLI from './PoolLI';
 import ResultSkeleton from '../ResultSkeleton/ResultSkeleton';
 import styles from '../SidebarSearchResults.module.css';
 import { useClick } from './useClick';
-import { TokenIF, TempPoolIF } from '../../../../../utils/interfaces/exports';
+import { TokenIF, TokenPairIF, TempPoolIF } from '../../../../../utils/interfaces/exports';
 
 interface PoolsSearchResultPropsIF {
     searchedPools: TempPoolIF[];
     loading: boolean;
     searchInput: React.ReactNode;
     getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
+    tokenPair: TokenPairIF;
 }
 
 export default function PoolsSearchResults(props: PoolsSearchResultPropsIF) {
-    const { searchedPools, getTokenByAddress } = props;
+    const { searchedPools, getTokenByAddress, tokenPair } = props;
 
     // TODO:  @Junior make this top-level <div> into an <ol> element and its
     // TODO:  ... children into <li> elements
@@ -30,7 +31,7 @@ export default function PoolsSearchResults(props: PoolsSearchResultPropsIF) {
         </div>
     );
 
-    useClick();
+    useClick(tokenPair);
 
     // TODO:  @Junior make the header <div> into a <header> element
 

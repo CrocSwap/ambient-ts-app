@@ -23,7 +23,7 @@ import recentTransactionsImage from '../../../assets/images/sidebarImages/recent
 import topPoolsImage from '../../../assets/images/sidebarImages/topPools.svg';
 import topTokensImage from '../../../assets/images/sidebarImages/topTokens.svg';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
-import { PoolIF, TokenIF, TempPoolIF } from '../../../utils/interfaces/exports';
+import { PoolIF, TokenIF, TokenPairIF, TempPoolIF } from '../../../utils/interfaces/exports';
 import SidebarSearchResults from './SidebarSearchResults/SidebarSearchResults';
 // import formatSearchText from './formatSeachText';
 import { MdClose } from 'react-icons/md';
@@ -69,6 +69,7 @@ interface SidebarPropsIF {
     poolList: TempPoolIF[];
     verifyToken: (addr: string, chn: string) => boolean;
     getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
+    tokenPair: TokenPairIF;
 }
 
 export default function Sidebar(props: SidebarPropsIF) {
@@ -97,7 +98,8 @@ export default function Sidebar(props: SidebarPropsIF) {
         openModalWallet,
         poolList,
         verifyToken,
-        getTokenByAddress
+        getTokenByAddress,
+        tokenPair
     } = props;
 
     const { isConnected } = useAccount();
@@ -536,6 +538,7 @@ export default function Sidebar(props: SidebarPropsIF) {
                             searchInput={searchInput}
                             exampleLoading={exampleLoading}
                             getTokenByAddress={getTokenByAddress}
+                            tokenPair={tokenPair}
                         />
                     ) : (
                         regularSidebarDisplay
