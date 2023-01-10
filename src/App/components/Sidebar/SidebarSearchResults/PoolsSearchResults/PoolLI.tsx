@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { TokenIF, TempPoolIF } from '../../../../../utils/interfaces/exports';
+import styles from '../SidebarSearchResults.module.css';
 
 interface propsIF {
     pool: TempPoolIF;
@@ -42,9 +43,7 @@ export default function PoolLI(props: propsIF) {
     }, []);
 
     return (
-        <div
-            // className={styles.card_container}
-        >
+        <div className={styles.card_container}>
             <div>{baseToken?.symbol ?? '--'} + {quoteToken?.symbol ?? '--'}</div>
             <div>Price</div>
             <div>Gain</div>
