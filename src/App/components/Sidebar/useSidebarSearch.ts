@@ -88,10 +88,8 @@ export const useSidebarSearch = (
                 pool.quote.toLowerCase() === addr.toLowerCase()
             )
         );
-        const searchBySymbol = (
-            symb: string, exact: boolean
-        ): TempPoolIF[] => verifiedPools.filter(
-            (pool: TempPoolIF) => exact
+        const searchBySymbol = (symb: string): TempPoolIF[] => verifiedPools.filter(
+            (pool: TempPoolIF) => symb.length === 2
                 ? (
                     pool.baseSymbol.toLowerCase() === symb.toLowerCase() ||
                     pool.quoteSymbol.toLowerCase() === symb.toLowerCase()
@@ -108,7 +106,7 @@ export const useSidebarSearch = (
                 filteredPools = searchByAddress(validatedInput);
                 break;
             case 'nameOrSymbol':
-                filteredPools = searchBySymbol(validatedInput, validatedInput.length === 2);
+                filteredPools = searchBySymbol(validatedInput);
                 break;
             case '':
             default:
