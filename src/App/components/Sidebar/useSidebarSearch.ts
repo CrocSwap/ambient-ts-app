@@ -76,13 +76,37 @@ export const useSidebarSearch = (
         // return output variable
         return output;
     }, [rawInput]);
-    false && validatedInput;
 
     const [outputPools, setOutputPools] = useState<TempPoolIF[]>([]);
 
     useEffect(() => {
-        setOutputPools(verifiedPools);
-    }, [poolList.length]);
+        const searchByAddress = (addr: string): TempPoolIF[] => verifiedPools.filter(
+            (pool: TempPoolIF) => (
+                pool.base.toLowerCase() === addr.toLowerCase() ||
+                pool.quote.toLowerCase() === addr.toLowerCase()
+            )
+        );
+        const searchBySymbol = (symb: string): TempPoolIF[] => verifiedPools.filter(
+            (pool: TempPoolIF) => (
+                pool.baseSymbol.toLowerCase() === symb.toLowerCase() ||
+                pool.quoteSymbol.toLowerCase() === symb.toLowerCase()
+            )
+        );
+        const noSearch = () => verifiedPools;
+        let filteredPools: TempPoolIF[];
+        switch (searchAs) {
+            case 'address':
+                filteredPools = searchByAddress(validatedInput);
+                break;
+            case 'nameOrSymbol':
+                filteredPools = searchBySymbol(validatedInput);
+                break;
+            case '':
+            default:
+                filteredPools = noSearch();
+        }
+        setOutputPools(filteredPools.slice(0, 4));
+    }, [poolList.length, validatedInput]);
 
     return [
         setRawInput,
