@@ -318,6 +318,8 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
     );
     // End of  Wallet balance function and styles-----------------------------
 
+    // Surplus Content function and styles-----------------------------
+
     const surplusColorStyle =
         (isSellTokenSelector && !isWithdrawFromDexChecked) ||
         (!isSellTokenSelector && !isSaveAsDexSurplusChecked)
@@ -384,14 +386,15 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                     </div>
 
                     <div className={styles.balance_column}>
-                        <div> {isUserLoggedIn ? surplusBalanceLocaleString : ''}</div>
+                        {isUserLoggedIn && surplusBalanceLocaleString}
                         <div
                             style={{
                                 color: isSellTokenSelector ? '#f6385b' : '#15be67',
                                 fontSize: '9px',
                             }}
                         >
-                            {isSellTokenSelector ? sellTokenSurplusChange : buyTokenSurplusChange}
+                            {/* {isSellTokenSelector ? sellTokenSurplusChange : buyTokenSurplusChange} */}
+                            {isSellTokenSelector ? '12233' : '45332'}
                         </div>
                     </div>
                 </div>
@@ -399,6 +402,8 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
             {sellTokenMaxButton}
         </div>
     );
+
+    // End of  Surplus content function and styles-----------------------------
 
     const swapboxBottomOrNull = !isUserLoggedIn ? (
         // || (isUserLoggedIn && !userHasEnteredAmount) ? (
@@ -423,84 +428,6 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                 {walletContent}
             </div>
             <div className={styles.right_bottom_container} style={{ background: 'yellow' }}>
-                {/* <div className={styles.left_bottom_container}>
-                    <IconWithTooltip title={'Exchange Balance'} placement='bottom'>
-                        <div
-                            className={`${styles.balance_with_pointer} ${
-                                (isSellTokenSelector && !isWithdrawFromDexChecked) ||
-                                (!isSellTokenSelector && !isSaveAsDexSurplusChecked)
-                                    ? styles.grey_logo
-                                    : null
-                            }`}
-                            style={{
-                                color:
-                                    (isSellTokenSelector && !isWithdrawFromDexChecked) ||
-                                    (!isSellTokenSelector && !isSaveAsDexSurplusChecked)
-                                        ? '#555555'
-                                        : 'var(--text-highlight)',
-                            }}
-                            onClick={() => {
-                                if (props.sellToken) {
-                                    setIsWithdrawFromDexChecked(true);
-                                } else {
-                                    setIsSaveAsDexSurplusChecked(true);
-                                }
-                            }}
-                        >
-                            <div
-                                className={`${styles.wallet_logo} ${
-                                    isSellTokenSelector
-                                        ? isWithdrawFromDexChecked
-                                            ? styles.enabled_logo
-                                            : null
-                                        : isSaveAsDexSurplusChecked
-                                        ? styles.enabled_logo
-                                        : null
-                                }`}
-                            >
-                                <img
-                                    src={ambientLogo}
-                                    width='20'
-                                    alt='surplus'
-                                    color='var(--text-highlight)'
-                                />
-                            </div>
-
-                            <div className={styles.balance_column}>
-                                <div> {isUserLoggedIn ? surplusBalanceLocaleString : ''}</div>
-                                <div
-                                    style={{
-                                        color: isSellTokenSelector ? '#f6385b' : '#15be67',
-                                        fontSize: '9px',
-                                    }}
-                                >
-                                    {isSellTokenSelector
-                                        ? sellTokenSurplusChange
-                                        : buyTokenSurplusChange}
-                                </div>
-                            </div>
-                        </div>
-                    </IconWithTooltip>
-                    {isSellTokenSelector &&
-                    isWithdrawFromDexChecked &&
-                    surplusBalanceNonLocaleString !== '0.0' ? (
-                        <button
-                            className={styles.max_button}
-                            onClick={() => {
-                                if (props.sellToken) {
-                                    setIsWithdrawFromDexChecked(true);
-                                } else {
-                                    setIsSaveAsDexSurplusChecked(true);
-                                }
-                                if (handleChangeClick && !isWithdrawFromDexDisabled) {
-                                    handleChangeClick(surplusBalanceNonLocaleStringOffset);
-                                }
-                            }}
-                        >
-                            Max
-                        </button>
-                    ) : null}
-                </div> */}
                 {surplusContent}
                 {WithdrawTokensContent}
             </div>
