@@ -405,24 +405,26 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
 
     // End of  Surplus content function and styles-----------------------------
 
+    const surplusContainerColorStyle =
+        (isSellTokenSelector && !isWithdrawFromDexChecked) ||
+        (!isSellTokenSelector && !isSaveAsDexSurplusChecked) ||
+        (isSellTokenSelector &&
+            isSellTokenEth === false &&
+            isWithdrawFromDexChecked &&
+            tokenASurplusMinusTokenARemainderNum &&
+            tokenASurplusMinusTokenARemainderNum < 0)
+            ? 'var(--text-highlight)'
+            : '#555555';
+
     const swapboxBottomOrNull = !isUserLoggedIn ? (
         // || (isUserLoggedIn && !userHasEnteredAmount) ? (
-        <div className={styles.swapbox_bottom}></div>
+        <div className={styles.swapbox_bottom} />
     ) : (
         <div className={styles.swapbox_bottom}>
             <div
                 className={styles.surplus_container}
                 style={{
-                    color:
-                        (isSellTokenSelector && !isWithdrawFromDexChecked) ||
-                        (!isSellTokenSelector && !isSaveAsDexSurplusChecked) ||
-                        (isSellTokenSelector &&
-                            isSellTokenEth === false &&
-                            isWithdrawFromDexChecked &&
-                            tokenASurplusMinusTokenARemainderNum &&
-                            tokenASurplusMinusTokenARemainderNum < 0)
-                            ? 'var(--text-highlight)'
-                            : '#555555',
+                    color: surplusContainerColorStyle,
                 }}
             >
                 {walletContent}
