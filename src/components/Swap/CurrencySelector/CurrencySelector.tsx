@@ -62,7 +62,7 @@ interface CurrencySelectorProps {
     getRecentTokens: (options?: getRecentTokensParamsIF | undefined) => TokenIF[];
     addRecentToken: (tkn: TokenIF) => void;
     outputTokens: TokenIF[];
-    validatedInput: string,
+    validatedInput: string;
     setInput: Dispatch<SetStateAction<string>>;
     searchType: string;
     acknowledgeToken: (tkn: TokenIF) => void;
@@ -112,7 +112,7 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
         validatedInput,
         setInput,
         searchType,
-        acknowledgeToken
+        acknowledgeToken,
     } = props;
 
     // const [showManageTokenListContent, setShowManageTokenListContent] = useState(false);
@@ -245,6 +245,72 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
               ')'
             : '';
 
+    const walletContent = (
+        <section className={styles.left_bottom_container} style={{ background: 'red' }}>
+            <IconWithTooltip title={'Wallet Balance'} placement='bottom'>
+                <div
+                    className={styles.balance_with_pointer}
+                    onClick={() => {
+                        if (props.sellToken) {
+                            setIsWithdrawFromDexChecked(false);
+                        } else {
+                            setIsSaveAsDexSurplusChecked(false);
+                        }
+                    }}
+                >
+                    <div className={styles.wallet_logo}>
+                        <MdAccountBalanceWallet
+                            size={20}
+                            color={
+                                (isSellTokenSelector && !isWithdrawFromDexChecked) ||
+                                (!isSellTokenSelector && !isSaveAsDexSurplusChecked) ||
+                                (isSellTokenSelector &&
+                                    isSellTokenEth === false &&
+                                    isWithdrawFromDexChecked &&
+                                    tokenASurplusMinusTokenARemainderNum &&
+                                    tokenASurplusMinusTokenARemainderNum < 0)
+                                    ? 'var(--text-highlight)'
+                                    : '#555555'
+                            }
+                        />
+                    </div>
+                    <div className={styles.balance_column}>
+                        <div>{isUserLoggedIn ? walletBalanceLocaleString : ''}</div>
+                        <div
+                            style={{
+                                color: isSellTokenSelector ? '#f6385b' : '#15be67',
+                                fontSize: '9px',
+                            }}
+                        >
+                            {isSellTokenSelector
+                                ? sellTokenWalletBalanceChange
+                                : buyTokenWalletBalanceChange}
+                        </div>
+                    </div>
+                </div>
+            </IconWithTooltip>
+            {isSellTokenSelector &&
+            !isWithdrawFromDexChecked &&
+            walletBalanceNonLocaleString !== '0.0' ? (
+                <button
+                    className={styles.max_button}
+                    onClick={() => {
+                        if (props.sellToken) {
+                            setIsWithdrawFromDexChecked(false);
+                        } else {
+                            setIsSaveAsDexSurplusChecked(false);
+                        }
+                        if (handleChangeClick && !isWithdrawFromWalletDisabled) {
+                            handleChangeClick(walletBalanceNonLocaleString);
+                        }
+                    }}
+                >
+                    Max
+                </button>
+            ) : null}
+        </section>
+    );
+
     const swapboxBottomOrNull = !isUserLoggedIn ? (
         // || (isUserLoggedIn && !userHasEnteredAmount) ? (
         <div className={styles.swapbox_bottom}></div>
@@ -265,7 +331,8 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                             : '#555555',
                 }}
             >
-                <section className={styles.left_bottom_container}>
+                {walletContent}
+                {/* <section className={styles.left_bottom_container} style={{background: 'red'}}>
                     <IconWithTooltip title={'Wallet Balance'} placement='bottom'>
                         <div
                             className={styles.balance_with_pointer}
@@ -327,7 +394,7 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                             Max
                         </button>
                     ) : null}
-                </section>
+                </section> */}
             </div>
             <div className={styles.right_bottom_container}>
                 <div className={styles.left_bottom_container}>
