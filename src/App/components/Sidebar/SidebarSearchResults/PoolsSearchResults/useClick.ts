@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
 import { TokenPairIF } from '../../../../../utils/interfaces/exports';
 
-export const useClick = (tokenPair: TokenPairIF) => {
+export const useClick = (tokenPair: TokenPairIF): void => {
     const {pathname} = useLocation();
     const locationSlug = useMemo<string>(() => {
         let slug: string;
