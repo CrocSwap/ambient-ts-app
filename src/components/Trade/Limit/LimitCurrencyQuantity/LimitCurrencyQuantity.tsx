@@ -1,15 +1,39 @@
 // import { ChangeEvent } from 'react';
 import styles from './LimitCurrencyQuantity.module.css';
-import { ChangeEvent } from 'react';
+import { ChangeEvent, useEffect, useState } from 'react';
 
 interface LimitCurrencyQuantityProps {
     disable?: boolean;
     fieldId: string;
+    value: string;
     handleChangeEvent: (evt: ChangeEvent<HTMLInputElement>) => void;
 }
 
 export default function LimitCurrencyQuantity(props: LimitCurrencyQuantityProps) {
-    const { disable, fieldId, handleChangeEvent } = props;
+    const { value, disable, fieldId, handleChangeEvent } = props;
+
+    const [displayValue, setDisplayValue] = useState<string>('');
+
+    useEffect(() => {
+        setDisplayValue(value);
+    }, [value]);
+
+    // console.log({ fieldId });
+    const handleEventLocal = (event: ChangeEvent<HTMLInputElement>) => {
+        // if (event && fieldId === 'sell') {
+        //     setTokenBInputQty('');
+        // } else if (event && fieldId === 'buy') {
+        //     setTokenAInputQty('');
+        // }
+
+        handleChangeEvent(event);
+
+        const input = event.target.value.startsWith('.')
+            ? '0' + event.target.value
+            : event.target.value;
+
+        setDisplayValue(input);
+    };
 
     return (
         <div className={styles.token_amount}>
@@ -17,7 +41,11 @@ export default function LimitCurrencyQuantity(props: LimitCurrencyQuantityProps)
                 id={`${fieldId}-limit-quantity`}
                 className={styles.currency_quantity}
                 placeholder='0.0'
-                onChange={(event) => handleChangeEvent(event)}
+                onChange={(event) => {
+                    const isValid = event.target.value === '' || event.target.validity.valid;
+                    isValid ? handleEventLocal(event) : null;
+                }}
+                value={displayValue}
                 type='string'
                 inputMode='decimal'
                 autoComplete='off'

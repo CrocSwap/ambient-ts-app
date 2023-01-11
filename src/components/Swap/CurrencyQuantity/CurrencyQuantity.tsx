@@ -56,12 +56,7 @@ export default function CurrencyQuantity(props: CurrencyQuantityProps) {
                 placeholder='0.0'
                 onChange={(event) => {
                     const isValid = event.target.value === '' || event.target.validity.valid;
-                    isValid
-                        ? handleEventLocal(event)
-                        : // ? (() => {
-                          //       handleEventLocal(event);
-                          //   })()
-                          null;
+                    isValid ? handleEventLocal(event) : null;
                 }}
                 value={displayValue}
                 type='text'
@@ -69,8 +64,8 @@ export default function CurrencyQuantity(props: CurrencyQuantityProps) {
                 autoComplete='off'
                 autoCorrect='off'
                 min='0'
-                minLength={0}
-                pattern='^$|^[0-9]*[.]?[0-9]*$'
+                minLength={1}
+                pattern='^[0-9]*[.]?[0-9]*$'
                 disabled={disable}
                 required
             />
