@@ -49,7 +49,7 @@ export default function Wallet(props: WalletPropsIF) {
               />
           ));
     return (
-        <div className={styles.container}>
+        <div className={styles.container} style={{ height: 'calc(100vh - 19.5rem' }}>
             <WalletHeader />
             <div className={styles.item_container}>{ItemContent}</div>
         </div>
