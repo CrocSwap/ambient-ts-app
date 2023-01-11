@@ -1849,8 +1849,7 @@ export default function App() {
         httpGraphCacheServerDomain + '/user_limit_order_states?';
 
     useEffect(() => {
-        if (isServerEnabled && isUserLoggedIn && account) {
-            console.log('firing');
+        if (isServerEnabled && isUserLoggedIn && account && crocEnv) {
             dispatch(resetConnectedUserDataLoadingStatus());
 
             console.log('fetching user positions');
@@ -2031,7 +2030,7 @@ export default function App() {
                 console.log;
             }
         }
-    }, [isServerEnabled, isUserLoggedIn, account, chainData.chainId]);
+    }, [isServerEnabled, isUserLoggedIn, account, chainData.chainId, crocEnv]);
 
     // run function to initialize local storage
     // internal controls will only initialize values that don't exist
