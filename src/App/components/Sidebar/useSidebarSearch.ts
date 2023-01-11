@@ -71,7 +71,7 @@ export const useSidebarSearch = (
     // memoized list of pools where both tokens can be verified
     // can be a useMemo because poolList will initialize as empty array
     useEffect(() => {
-        const verifyPools = () => {
+        const verifyPools = (): void => {
             if (ackTokensLocal) {
                 // function to verify token either in token map or in acknowledged tokens
                 const checkToken = (addr: string, chn: string): boolean => {
