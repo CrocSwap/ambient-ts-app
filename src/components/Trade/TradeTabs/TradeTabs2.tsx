@@ -551,12 +551,12 @@ export default function TradeTabs2(props: ITabsProps) {
                   icon: rangePositionsImage,
                   showRightSideOption: false,
               },
-              {
-                  label: 'Info',
-                  content: <PoolInfo {...poolInfoProps} />,
-                  icon: rangePositionsImage,
-                  showRightSideOption: false,
-              },
+              //   {
+              //       label: 'Info',
+              //       content: <PoolInfo {...poolInfoProps} />,
+              //       icon: rangePositionsImage,
+              //       showRightSideOption: false,
+              //   },
           ];
 
     // -------------------------------END OF DATA-----------------------------------------
