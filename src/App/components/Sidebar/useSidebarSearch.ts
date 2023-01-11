@@ -1,5 +1,6 @@
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
 import { TokenIF, TempPoolIF } from '../../../utils/interfaces/exports';
+import { recursiveMax } from '../../../utils/errors/recursiveMax';
 
 export const useSidebarSearch = (
     poolList: TempPoolIF[],
@@ -65,6 +66,8 @@ export const useSidebarSearch = (
                 setAckTokens(userData.ackTokens);
             } else if (limiter < 20) {
                 setTimeout(() => getAckTokens(limiter+1), 100);
+            } else {
+                recursiveMax();
             }
         };
         getAckTokens();
@@ -95,6 +98,8 @@ export const useSidebarSearch = (
                 setVerifiedPools(checkedPools);
             } else if (limiter < 20) {
                 setTimeout(() => verifyPools(limiter+1), 150);
+            } else {
+                recursiveMax();
             }
         }
         verifyPools();
