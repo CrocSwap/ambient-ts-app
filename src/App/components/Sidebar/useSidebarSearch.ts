@@ -59,12 +59,12 @@ export const useSidebarSearch = (
     const [ackTokens, setAckTokens] = useState<TokenIF[]|null>(null);
 
     useEffect(() => {
-        const getAckTokens = (): void => {
+        const getAckTokens = (limiter=1): void => {
             const userData = JSON.parse(localStorage.getItem('user') as string);
             if (userData.ackTokens) {
                 setAckTokens(userData.ackTokens);
-            } else {
-                setTimeout(() => getAckTokens(), 150);
+            } else if (limiter < 20) {
+                setTimeout(() => getAckTokens(limiter+1), 100);
             }
         };
         getAckTokens();
@@ -73,7 +73,7 @@ export const useSidebarSearch = (
     // memoized list of pools where both tokens can be verified
     // can be a useMemo because poolList will initialize as empty array
     useEffect(() => {
-        const verifyPools = (): void => {
+        const verifyPools = (limiter=1): void => {
             if (ackTokens) {
                 // function to verify token either in token map or in acknowledged tokens
                 const checkToken = (addr: string, chn: string): boolean => {
@@ -93,12 +93,12 @@ export const useSidebarSearch = (
                 ));
                 // return array of pools with both verified tokens
                 setVerifiedPools(checkedPools);
-            } else {
-                setTimeout(() => verifyPools(), 150);
+            } else if (limiter < 20) {
+                setTimeout(() => verifyPools(limiter+1), 150);
             }
         }
         verifyPools();
-    }, [ackTokensLocal, poolList.length, validatedInput]);
+    }, [ackTokens, poolList.length, validatedInput]);
 
     // array of pools to output from the hook
     const [outputPools, setOutputPools] = useState<TempPoolIF[]>([]);
