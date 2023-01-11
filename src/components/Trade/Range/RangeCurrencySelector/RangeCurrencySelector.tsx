@@ -443,7 +443,7 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
                     <RiArrowDownSLine size={27} />
                 </div>
             </div>
-            <div className={styles.swapbox_bottom}>
+            <div className={styles.swapbox_bottom} style={{ color: surplusContainerColorStyle }}>
                 {/* <div className={styles.surplus_container} style={{color: surplusContainerColorStyle}} > */}
                 {walletContent}
                 {surplusContent}
