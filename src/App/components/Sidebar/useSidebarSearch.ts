@@ -54,30 +54,49 @@ export const useSidebarSearch = (
 
     const [verifiedPools, setVerifiedPools] = useState<TempPoolIF[]>([]);
 
+    const [ackTokensLocal, setAckTokensLocal] = useState<TokenIF[]|null>(null);
+
+    useEffect(() => {
+        const getAckTokens = (): void => {
+            const userData = JSON.parse(localStorage.getItem('user') as string);
+            if (userData.ackTokens) {
+                setAckTokensLocal(userData.ackTokens);
+            } else {
+                setTimeout(() => getAckTokens(), 150);
+            }
+        };
+        getAckTokens();
+    }, []);
+
     // memoized list of pools where both tokens can be verified
     // can be a useMemo because poolList will initialize as empty array
     useEffect(() => {
-        // get array of acknowledged tokens from local storage
-        const {ackTokens} = JSON.parse(localStorage.getItem('user') as string);
-        // function to verify token either in token map or in acknowledged tokens
-        const checkToken = (addr: string, chn: string): boolean => {
-            // check if token can be verified in token map
-            const isKnown: boolean = verifyToken(addr.toLowerCase(), chn);
-            // check if token was previously acknowledged by user
-            const isAcknowledged: boolean = ackTokens?.some((ackTkn: TokenIF) => (
-                ackTkn.chainId === parseInt(chn) &&
-                ackTkn.address.toLowerCase() === addr.toLowerCase()
-            ));
-            // return true if either verification passed
-            return isKnown || isAcknowledged;
+        const verifyPools = () => {
+            if (ackTokensLocal) {
+                // function to verify token either in token map or in acknowledged tokens
+                const checkToken = (addr: string, chn: string): boolean => {
+                    // check if token can be verified in token map
+                    const isKnown: boolean = verifyToken(addr.toLowerCase(), chn);
+                    // check if token was previously acknowledged by user
+                    const isAcknowledged: boolean = ackTokensLocal.some((ackTkn: TokenIF) => (
+                        ackTkn.chainId === parseInt(chn) &&
+                        ackTkn.address.toLowerCase() === addr.toLowerCase()
+                    ));
+                    // return true if either verification passed
+                    return isKnown || isAcknowledged;
+                }
+                // filter array of tokens where both tokens can be verified
+                const checkedPools = poolList.filter((pool: TempPoolIF) => (
+                    checkToken(pool.base, pool.chainId) && checkToken(pool.quote, pool.chainId)
+                ));
+                // return array of pools with both verified tokens
+                setVerifiedPools(checkedPools);
+            } else {
+                setTimeout(() => verifyPools(), 150);
+            }
         }
-        // filter array of tokens where both tokens can be verified
-        const checkedPools = poolList.filter((pool: TempPoolIF) => (
-            checkToken(pool.base, pool.chainId) && checkToken(pool.quote, pool.chainId)
-        ));
-        // return array of pools with both verified tokens
-        setVerifiedPools(checkedPools);
-    }, [poolList.length, validatedInput]);
+        verifyPools();
+    }, [ackTokensLocal, poolList.length, validatedInput]);
 
     // array of pools to output from the hook
     const [outputPools, setOutputPools] = useState<TempPoolIF[]>([]);
