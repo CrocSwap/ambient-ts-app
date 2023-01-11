@@ -57,17 +57,21 @@ export const useSidebarSearch = (
     const [verifiedPools, setVerifiedPools] = useState<TempPoolIF[]>([]);
 
     // array of custom tokens acknowledged by the user from local storage
+    // this must be initialized as `null` for fn verifyPools() to run properly
     const [ackTokens, setAckTokens] = useState<TokenIF[]|null>(null);
 
+    // hook to get acknowledged tokens list from local storage
     useEffect(() => {
         const getAckTokens = (limiter=1): void => {
+            // retrieve and parse user data from local storage
             const userData = JSON.parse(localStorage.getItem('user') as string);
-            if (userData.ackTokens) {
+            // set ackTokens if user data was pulled, otherwise check recursively
+            if (userData) {
                 setAckTokens(userData.ackTokens);
-            } else if (limiter < 20) {
-                setTimeout(() => getAckTokens(limiter+1), 100);
+            } else if (limiter < 30) {
+                setTimeout(() => getAckTokens(limiter+1), 150);
             } else {
-                recursiveMax('warn');
+                recursiveMax('warn', 'useSidebarSearch.ts', 'getAckTokens()');
             }
         };
         getAckTokens();
@@ -77,7 +81,7 @@ export const useSidebarSearch = (
     // can be a useMemo because poolList will initialize as empty array
     useEffect(() => {
         const verifyPools = (limiter=1): void => {
-            if (ackTokens) {
+            if (Array.isArray(ackTokens)) {
                 // function to verify token either in token map or in acknowledged tokens
                 const checkToken = (addr: string, chn: string): boolean => {
                     // check if token can be verified in token map
@@ -96,10 +100,10 @@ export const useSidebarSearch = (
                 ));
                 // return array of pools with both verified tokens
                 setVerifiedPools(checkedPools);
-            } else if (limiter < 20) {
-                setTimeout(() => verifyPools(limiter+1), 150);
+            } else if (limiter < 30) {
+                setTimeout(() => verifyPools(limiter+1), 200);
             } else {
-                recursiveMax('warn');
+                recursiveMax('warn', 'useSidebarSearch.ts', 'verifyPools()');
             }
         }
         verifyPools();
