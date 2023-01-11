@@ -120,22 +120,26 @@ export default function ChatPanel(props: ChatProps) {
     // }, []);
 
     useEffect(() => {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        getID().then((result: any) => {
-            setCurrentUser(result.userData._id);
-            setName(result.userData.ensName);
-        });
-    }, [props.chatStatus, props.isFullScreen]);
+        if (address) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            getID().then((result: any) => {
+                setCurrentUser(result.userData._id);
+                setName(result.userData.ensName);
+            });
+        }
+    }, [address, props.chatStatus, props.isFullScreen]);
 
     useEffect(() => {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        getID().then((result: any) => {
-            setCurrentUser(result.userData._id);
-            setName(result.userData.ensName);
-        });
+        if (address) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            getID().then((result: any) => {
+                setCurrentUser(result.userData._id);
+                setName(result.userData.ensName);
+            });
 
-        getMsg();
-    }, []);
+            getMsg();
+        }
+    }, [address]);
 
     useEffect(() => {
         isCurrentUser();

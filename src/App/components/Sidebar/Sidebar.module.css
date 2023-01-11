@@ -239,7 +239,7 @@
 /* END OF SEARCH CONTAINER */
 
 /* Small screens */
-@media only screen and (max-width: 1280px) {
+@media only screen and (max-width: 111px) {
     .sidebar {
         display: none;
 
