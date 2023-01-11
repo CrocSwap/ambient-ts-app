@@ -23,15 +23,20 @@
     color: var(--text-grey-light);
 }
 
-.surplus_container {
-    /* width: 200px; */
+.main_surplus_container, .main_wallet_container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* .surplus_container {
     margin-right: 15px;
     display: flex;
     flex-direction: row;
     justify-content: flex-start;
     align-items: center;
     gap: 2rem;
-}
+} */
 
 .balance_with_pointer {
     display: flex;
@@ -101,7 +106,7 @@
 }
 
 /* bottom info */
-.swapbox_bottom {
+/* .swapbox_bottom {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
@@ -112,7 +117,21 @@
 
     display: grid;
     grid-template-columns: repeat(3, 1fr);
+} */
+
+.swapbox_bottom {
+    /* display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center; */
+    min-height: 33px;
+    display: grid;
+    grid-template-columns:  repeat(3, 1fr);
+   margin: 6px 10px 0px 10px;
+
+    /* margin: 6px 10px 0px 10px; */
 }
+
 
 .token_select_button {
     cursor: pointer;
@@ -141,10 +160,7 @@
     display: flex;
     flex-direction: row;
     align-items: center;
-    gap: 8px;
-    padding-top: 3px;
-    /* padding-left: 10px;
-    padding-right: 10px; */
+    justify-content: flex-end;
 }
 
 /* modal */
