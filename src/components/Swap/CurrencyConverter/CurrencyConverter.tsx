@@ -234,26 +234,18 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
             console.log('setting token a');
             setTokenAQtyLocal(tokenBQtyLocal);
             setSellQtyString(tokenBQtyLocal);
-            const buyQtyField = document.getElementById('buy-quantity') as HTMLInputElement;
-            if (buyQtyField) {
-                buyQtyField.value = '';
-            }
-            const sellQtyField = document.getElementById('sell-quantity') as HTMLInputElement;
-            if (sellQtyField) {
-                sellQtyField.value = tokenBQtyLocal === 'NaN' ? '' : tokenBQtyLocal;
-            }
+
+            setBuyQtyString('');
+
+            setSellQtyString(tokenBQtyLocal === 'NaN' ? '' : tokenBQtyLocal);
         } else {
             console.log('setting token a');
             setTokenBQtyLocal(tokenAQtyLocal);
             setBuyQtyString(tokenAQtyLocal);
-            const sellQtyField = document.getElementById('sell-quantity') as HTMLInputElement;
-            if (sellQtyField) {
-                sellQtyField.value = '';
-            }
-            const buyQtyField = document.getElementById('buy-quantity') as HTMLInputElement;
-            if (buyQtyField) {
-                buyQtyField.value = tokenAQtyLocal === 'NaN' ? '' : tokenAQtyLocal;
-            }
+
+            setSellQtyString('');
+
+            setBuyQtyString(tokenAQtyLocal === 'NaN' ? '' : tokenAQtyLocal);
         }
         setIsTokenAPrimaryLocal(!isTokenAPrimaryLocal);
         dispatch(setIsTokenAPrimary(!isTokenAPrimary));
@@ -382,6 +374,7 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
                       )
                     : undefined;
 
+            // console.log({ impact });
             setPriceImpact(impact);
             // impact ? setPriceImpact(impact) : null;
 
@@ -587,7 +580,6 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
 
             setPriceImpact(impact);
 
-            console.log({ impact });
             // impact ? setPriceImpact(impact) : null;
 
             rawTokenAQty = impact ? parseFloat(impact.sellQty) : undefined;
