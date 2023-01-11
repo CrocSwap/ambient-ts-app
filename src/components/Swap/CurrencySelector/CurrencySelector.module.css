@@ -126,6 +126,7 @@
     min-height: 33px;
     display: grid;
     grid-template-columns:  repeat(3, 1fr);
+   margin: 6px 10px 0px 10px;
 
     /* margin: 6px 10px 0px 10px; */
 }
@@ -218,13 +219,13 @@
     background: transparent;
 
     /* background: red; */
-    width: 30px;
+    /* width: 30px; */
+    margin-right: 8px;
     max-height: 20px;
     /* padding: 0 8px; */
     transition: all var(--animation-speed) ease-in-out;
 }
 .max_button_enable{
-    background: green;
     border-radius: 4px;
     background: var(--dark3);
 

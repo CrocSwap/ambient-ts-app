@@ -109,6 +109,9 @@
     min-height: 33px;
 
     margin: 6px 10px 0px 10px;
+
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
 }
 
 .token_select_button {
