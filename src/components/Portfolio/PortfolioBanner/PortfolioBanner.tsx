@@ -67,9 +67,9 @@ export default function PortfolioBanner(props: PortfolioBannerPropsIF) {
                     {buttonIcon}
                     Follow
                 </motion.button> */}
-                    <div style={{ cursor: 'pointer' }} onClick={() => setShowProfileSettings(true)}>
+                    {/* <div style={{ cursor: 'pointer' }} onClick={() => setShowProfileSettings(true)}>
                         <AiOutlineSetting size={20} color='#bdbdbd' />{' '}
-                    </div>
+                    </div> */}
                 </div>
             )}
             <PortfolioBannerAccount
