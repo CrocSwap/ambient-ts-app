@@ -1,6 +1,6 @@
 import styles from './PortfolioBanner.module.css';
 import trimString from '../../../utils/functions/trimString';
-import { AiOutlineSetting } from 'react-icons/ai';
+// import { AiOutlineSetting } from 'react-icons/ai';
 // import { FiPlus } from 'react-icons/fi';
 // import { IoMdCheckmark } from 'react-icons/io';
 import { Dispatch, SetStateAction } from 'react';
@@ -22,7 +22,7 @@ export default function PortfolioBanner(props: PortfolioBannerPropsIF) {
         activeAccount,
         imageData,
         resolvedAddress,
-        setShowProfileSettings,
+        // setShowProfileSettings,
         connectedAccountActive,
     } = props;
     const ensNameAvailable = ensName !== '';
