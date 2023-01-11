@@ -138,6 +138,7 @@ export default function TradeCandleStickChart(props: ChartData) {
         poolPriceNonDisplay === undefined ? 0 : Math.log(poolPriceNonDisplay) / Math.log(1.0001);
 
     useEffect(() => {
+        console.log('firing');
         setIsLoading(true);
         setParsedChartData(() => {
             return undefined;
@@ -146,17 +147,21 @@ export default function TradeCandleStickChart(props: ChartData) {
 
     useEffect(() => {
         parseData();
+        console.log('setting candle added to true');
         setIsCandleAdded(true);
     }, [props.candleData]);
 
     useEffect(() => {
         if (parsedChartData === undefined) {
+            console.log('parsing chart data because parsedChartData === undefined');
             parseData();
         }
     }, [parsedChartData]);
 
     // Parse price data
     const parseData = () => {
+        console.log('parsing candle data');
+
         const chartData: CandleChartData[] = [];
         const tvlChartData: TvlChartData[] = [];
         const volumeChartData: VolumeChartData[] = [];
@@ -269,6 +274,7 @@ export default function TradeCandleStickChart(props: ChartData) {
 
     // Parse liquidtiy data
     const liquidityData = useMemo(() => {
+        console.log('firing');
         const liqAskData: LiquidityData[] = [];
         const liqBidData: LiquidityData[] = [];
         const depthLiqBidData: LiquidityData[] = [];
@@ -512,14 +518,15 @@ export default function TradeCandleStickChart(props: ChartData) {
             topBoundary: topBoundary,
             lowBoundary: lowBoundary,
         };
-    }, [props.liquidityData, props.poolPriceDisplay]);
+    }, [JSON.stringify(props.liquidityData), props.poolPriceDisplay]);
 
     useEffect(() => {
+        console.log('firing');
         setScaleData(() => {
             return undefined;
         });
         setScaleForChart(parsedChartData, liquidityData);
-    }, [parsedChartData?.period, liquidityData]);
+    }, [parsedChartData?.period, JSON.stringify(liquidityData)]);
 
     // Scale
     const setScaleForChart = (parsedChartData: any, liquidityData: any) => {
@@ -617,18 +624,26 @@ export default function TradeCandleStickChart(props: ChartData) {
 
     useEffect(() => {
         const timer = setTimeout(() => {
-            setIsLoading(
+            const shouldReload =
                 scaleData === undefined ||
-                    parsedChartData === undefined ||
-                    parsedChartData.chartData.length === 0 ||
-                    props.poolPriceDisplay === 0 ||
-                    liquidityData.liqAskData.length === 0 ||
-                    liquidityData.liqBidData.length === 0 ||
-                    poolPriceNonDisplay === 0,
-            );
+                // parsedChartData === undefined ||
+                parsedChartData?.chartData.length === 0 ||
+                props.poolPriceDisplay === 0 ||
+                liquidityData.liqAskData.length === 0 ||
+                liquidityData.liqBidData.length === 0 ||
+                poolPriceNonDisplay === 0;
+            if (isLoading !== shouldReload) {
+                console.log('setting isLoading to ' + shouldReload);
+                setIsLoading(shouldReload);
+            }
         }, 500);
         return () => clearTimeout(timer);
-    }, [parsedChartData?.chartData, props.poolPriceDisplay, poolPriceNonDisplay, scaleData]);
+    }, [
+        parsedChartData?.chartData.length,
+        props.poolPriceDisplay,
+        poolPriceNonDisplay,
+        scaleData === undefined,
+    ]);
 
     return (
         <>
