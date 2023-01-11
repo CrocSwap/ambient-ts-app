@@ -67,7 +67,7 @@ export const useSidebarSearch = (
             } else if (limiter < 20) {
                 setTimeout(() => getAckTokens(limiter+1), 100);
             } else {
-                recursiveMax();
+                recursiveMax('warn');
             }
         };
         getAckTokens();
@@ -99,7 +99,7 @@ export const useSidebarSearch = (
             } else if (limiter < 20) {
                 setTimeout(() => verifyPools(limiter+1), 150);
             } else {
-                recursiveMax();
+                recursiveMax('warn');
             }
         }
         verifyPools();
