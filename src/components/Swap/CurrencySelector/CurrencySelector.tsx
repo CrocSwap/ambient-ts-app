@@ -466,6 +466,7 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                 <div className={styles.swap_input}>
                     <CurrencyQuantity
                         value={tokenAorB === 'A' ? sellQtyString : buyQtyString}
+                        thisToken={thisToken}
                         setSellQtyString={setSellQtyString}
                         setBuyQtyString={setBuyQtyString}
                         fieldId={fieldId}
