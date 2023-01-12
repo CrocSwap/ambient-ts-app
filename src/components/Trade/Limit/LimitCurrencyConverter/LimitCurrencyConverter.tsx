@@ -47,6 +47,7 @@ interface LimitCurrencyConverterProps {
     quoteTokenDexBalance: string;
     tokenAInputQty: string;
     tokenBInputQty: string;
+
     setTokenAInputQty: Dispatch<SetStateAction<string>>;
     setTokenBInputQty: Dispatch<SetStateAction<string>>;
     setLimitButtonErrorMessage: Dispatch<SetStateAction<string>>;
@@ -96,6 +97,8 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
         quoteTokenBalance,
         baseTokenDexBalance,
         quoteTokenDexBalance,
+        tokenAInputQty,
+        tokenBInputQty,
         setTokenAInputQty,
         setTokenBInputQty,
         setLimitButtonErrorMessage,
@@ -202,25 +205,28 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
         if (!isTokenAPrimaryLocal) {
             setTokenAQtyLocal(tokenBQtyLocal);
             setTokenAInputQty(tokenBQtyLocal);
-            const buyQtyField = document.getElementById('buy-limit-quantity') as HTMLInputElement;
-            if (buyQtyField) {
-                buyQtyField.value = '';
-            }
-            const sellQtyField = document.getElementById('sell-limit-quantity') as HTMLInputElement;
-            if (sellQtyField) {
-                sellQtyField.value = tokenBQtyLocal === 'NaN' ? '' : tokenBQtyLocal;
-            }
+            // const buyQtyField = document.getElementById('buy-limit-quantity') as HTMLInputElement;
+            // if (buyQtyField) {
+            //     buyQtyField.value = '';
+            // }
+            // setTokenBInputQty(tokenAQtyLocal);
+            // const sellQtyField = document.getElementById('sell-limit-quantity') as HTMLInputElement;
+            // if (sellQtyField) {
+            //     sellQtyField.value = tokenBQtyLocal === 'NaN' ? '' : tokenBQtyLocal;
+            // }
         } else {
             setTokenBQtyLocal(tokenAQtyLocal);
             setTokenBInputQty(tokenAQtyLocal);
-            const sellQtyField = document.getElementById('sell-limit-quantity') as HTMLInputElement;
-            if (sellQtyField) {
-                sellQtyField.value = '';
-            }
-            const buyQtyField = document.getElementById('buy-limit-quantity') as HTMLInputElement;
-            if (buyQtyField) {
-                buyQtyField.value = tokenAQtyLocal === 'NaN' ? '' : tokenAQtyLocal;
-            }
+            // const sellQtyField = document.getElementById('sell-limit-quantity') as HTMLInputElement;
+            // if (sellQtyField) {
+            //     sellQtyField.value = '';
+            // }
+            // setTokenAInputQty(tokenAQtyLocal);
+
+            // const buyQtyField = document.getElementById('buy-limit-quantity') as HTMLInputElement;
+            // if (buyQtyField) {
+            //     buyQtyField.value = tokenAQtyLocal === 'NaN' ? '' : tokenAQtyLocal;
+            // }
         }
         setIsTokenAPrimaryLocal(!isTokenAPrimaryLocal);
         dispatch(setIsTokenAPrimary(!isTokenAPrimary));
@@ -301,21 +307,23 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
         // console.log({ isSellTokenBase });
 
         if (evt) {
-            const tokenAInputField = document.getElementById('sell-limit-quantity');
+            // const tokenAInputField = document.getElementById('sell-limit-quantity');
 
             const input = evt.target.value.startsWith('.')
                 ? '0' + evt.target.value
                 : evt.target.value;
 
-            if (tokenAInputField) {
-                (tokenAInputField as HTMLInputElement).value = input;
-            }
+            // if (tokenAInputField) {
+            //     (tokenAInputField as HTMLInputElement).value = input;
+            // }
             const parsedInput = parseFloat(input);
             if (input === '' || isNaN(parsedInput) || parsedInput === 0) {
                 setLimitAllowed(false);
                 setLimitButtonErrorMessage('Enter an Amount');
                 if (input !== '') return;
             }
+
+            console.log({ input });
 
             setTokenAQtyLocal(input);
             setTokenAInputQty(input);
@@ -356,12 +364,12 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
             : '';
 
         setTokenBQtyLocal(truncatedTokenBQty);
-        // setTokenBInputQty(truncatedTokenBQty);
-        const buyQtyField = document.getElementById('buy-limit-quantity') as HTMLInputElement;
+        setTokenBInputQty(truncatedTokenBQty);
+        // const buyQtyField = document.getElementById('buy-limit-quantity') as HTMLInputElement;
 
-        if (buyQtyField) {
-            buyQtyField.value = truncatedTokenBQty === 'NaN' ? '' : truncatedTokenBQty;
-        }
+        // if (buyQtyField) {
+        //     buyQtyField.value = truncatedTokenBQty === 'NaN' ? '' : truncatedTokenBQty;
+        // }
     };
 
     const handleTokenAChangeClick = (value: string) => {
@@ -410,15 +418,15 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
         let rawTokenAQty;
         // console.log({ evt });
         if (evt) {
-            const tokenBInputField = document.getElementById('buy-limit-quantity');
+            // const tokenBInputField = document.getElementById('buy-limit-quantity');
 
             const input = evt.target.value.startsWith('.')
                 ? '0' + evt.target.value
                 : evt.target.value;
 
-            if (tokenBInputField) {
-                (tokenBInputField as HTMLInputElement).value = input;
-            }
+            // if (tokenBInputField) {
+            //     (tokenBInputField as HTMLInputElement).value = input;
+            // }
             const parsedInput = parseFloat(input);
             if (input === '' || isNaN(parsedInput) || parsedInput === 0) {
                 setLimitAllowed(false);
@@ -465,11 +473,11 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
             : '';
 
         setTokenAQtyLocal(truncatedTokenAQty);
-        // setTokenAInputQty(truncatedTokenAQty);
-        const sellQtyField = document.getElementById('sell-limit-quantity') as HTMLInputElement;
-        if (sellQtyField) {
-            sellQtyField.value = truncatedTokenAQty === 'NaN' ? '' : truncatedTokenAQty;
-        }
+        setTokenAInputQty(truncatedTokenAQty);
+        // const sellQtyField = document.getElementById('sell-limit-quantity') as HTMLInputElement;
+        // if (sellQtyField) {
+        //     sellQtyField.value = truncatedTokenAQty === 'NaN' ? '' : truncatedTokenAQty;
+        // }
     };
 
     const tokenAQtyCoveredBySurplusBalance = isWithdrawFromDexChecked
@@ -493,6 +501,10 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
                 tokensBank={tokensBank}
                 setImportedTokens={setImportedTokens}
                 chainId={chainId}
+                tokenAInputQty={tokenAInputQty}
+                tokenBInputQty={tokenBInputQty}
+                setTokenAInputQty={setTokenAInputQty}
+                setTokenBInputQty={setTokenBInputQty}
                 fieldId='sell'
                 sellToken
                 isSellTokenEth={isSellTokenEth}
@@ -546,6 +558,10 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
                 tokensBank={tokensBank}
                 setImportedTokens={setImportedTokens}
                 chainId={chainId}
+                tokenAInputQty={tokenAInputQty}
+                tokenBInputQty={tokenBInputQty}
+                setTokenAInputQty={setTokenAInputQty}
+                setTokenBInputQty={setTokenBInputQty}
                 fieldId='buy'
                 direction='To: '
                 handleChangeEvent={handleTokenBChangeEvent}

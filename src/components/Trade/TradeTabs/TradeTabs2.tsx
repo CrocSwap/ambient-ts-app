@@ -26,7 +26,7 @@ import { fetchPoolRecentChanges } from '../../../App/functions/fetchPoolRecentCh
 
 import { fetchUserRecentChanges } from '../../../App/functions/fetchUserRecentChanges';
 import Leaderboard from './Ranges/Leaderboard';
-import PoolInfo from './PoolInfo/PoolInfo';
+// import PoolInfo from './PoolInfo/PoolInfo';
 import { DefaultTooltip } from '../../Global/StyledTooltip/StyledTooltip';
 import TradeChartsTokenInfo from '../../../pages/Trade/TradeCharts/TradeChartsComponents/TradeChartsTokenInfo';
 
@@ -403,11 +403,11 @@ export default function TradeTabs2(props: ITabsProps) {
         setIsShowAllEnabled: setIsShowAllEnabled,
     };
     // Props for <Ranges/> React Element
-    const poolInfoProps = {
-        chainData: chainData,
-        lastBlockNumber: lastBlockNumber,
-        showSidebar: showSidebar,
-    };
+    // const poolInfoProps = {
+    //     chainData: chainData,
+    //     lastBlockNumber: lastBlockNumber,
+    //     showSidebar: showSidebar,
+    // };
     // Props for <Transactions/> React Element
     const transactionsProps = {
         isShowAllEnabled: isShowAllEnabled,
@@ -502,7 +502,7 @@ export default function TradeTabs2(props: ITabsProps) {
                   showRightSideOption: true,
               },
               //   {
-              //       label: 'Limit Orders',
+              //       label: 'Limits',
               //       content: <Orders {...ordersProps} />,
               //       icon: openOrdersImage,
               //       showRightSideOption: true,
@@ -534,7 +534,7 @@ export default function TradeTabs2(props: ITabsProps) {
                   showRightSideOption: true,
               },
               {
-                  label: 'Limit Orders',
+                  label: 'Limits',
                   content: <Orders {...ordersProps} />,
                   icon: openOrdersImage,
                   showRightSideOption: true,
@@ -551,12 +551,12 @@ export default function TradeTabs2(props: ITabsProps) {
                   icon: rangePositionsImage,
                   showRightSideOption: false,
               },
-              {
-                  label: 'Info',
-                  content: <PoolInfo {...poolInfoProps} />,
-                  icon: rangePositionsImage,
-                  showRightSideOption: false,
-              },
+              //   {
+              //       label: 'Info',
+              //       content: <PoolInfo {...poolInfoProps} />,
+              //       icon: rangePositionsImage,
+              //       showRightSideOption: false,
+              //   },
           ];
 
     // -------------------------------END OF DATA-----------------------------------------

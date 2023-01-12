@@ -147,6 +147,7 @@ import { useRecentTokens } from './hooks/useRecentTokens';
 import { useTokenSearch } from './hooks/useTokenSearch';
 import WalletModalWagmi from './components/WalletModal/WalletModalWagmi';
 import Moralis from 'moralis';
+import { usePoolList } from './hooks/usePoolList';
 
 // import { memoizeQuerySpotTick } from './functions/querySpotTick';
 // import PhishingWarning from '../components/Global/PhisingWarning/PhishingWarning';
@@ -176,6 +177,7 @@ startMoralis();
 
 /** ***** React Function *******/
 export default function App() {
+    // console.log('rendering app');
     const { disconnect } = useDisconnect();
 
     const { address: account, isConnected } = useAccount();
@@ -280,6 +282,7 @@ export default function App() {
     const [loginCheckDelayElapsed, setLoginCheckDelayElapsed] = useState(false);
 
     useEffect(() => {
+        console.log('firing');
         const timer = setTimeout(() => {
             setLoginCheckDelayElapsed(true);
         }, 3000);
@@ -289,9 +292,12 @@ export default function App() {
     useEffect(() => {
         if (isConnected || (isConnected === false && loginCheckDelayElapsed)) {
             if (isConnected && userData.isLoggedIn !== isConnected && account) {
+                console.log('settting to logged in');
                 dispatch(setIsLoggedIn(true));
                 dispatch(setAddressAtLogin(account));
             } else if (!isConnected && userData.isLoggedIn !== false) {
+                console.log('settting to logged out');
+
                 dispatch(setIsLoggedIn(false));
                 dispatch(resetUserAddresses());
             }
@@ -347,6 +353,7 @@ export default function App() {
             if (!provider && !signer) {
                 return;
             } else {
+                console.log('setting new crocEnv');
                 setCrocEnv(new CrocEnv(signer?.provider || provider));
             }
         })();
@@ -355,6 +362,7 @@ export default function App() {
     useEffect(() => {
         if (provider) {
             (async () => {
+                console.log('fetching WETH price from mainnet');
                 const mainnetEthPrice = await cachedFetchTokenPrice(
                     '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
                     '0x1',
@@ -419,11 +427,15 @@ export default function App() {
     // }, [isUserLoggedIn, chainData.chainId, metamaskLocked]);
 
     useEffect(() => {
+        console.log('firing');
         dispatch(resetTokens(chainData.chainId));
         dispatch(resetTokenData());
     }, [chainData.chainId]);
 
+    const poolList = usePoolList(chainData.chainId, chainData.poolIndex);
+
     useEffect(() => {
+        console.log('firing');
         dispatch(resetTokenData());
         if (account) {
             dispatch(setAddressCurrent(account));
@@ -449,11 +461,13 @@ export default function App() {
     const [tokenListsReceived, indicateTokenListsReceived] = useState(false);
 
     if (needTokenLists) {
+        console.log('firing');
         setNeedTokenLists(false);
         fetchTokenLists(tokenListsReceived, indicateTokenListsReceived);
     }
 
     useEffect(() => {
+        console.log('initializing local storage');
         initializeUserLocalStorage();
         getImportedTokens();
     }, [tokenListsReceived]);
@@ -505,9 +519,13 @@ export default function App() {
                 const lastMessageData = JSON.parse(lastNewHeadMessage?.data);
                 if (lastMessageData) {
                     const lastBlockNumberHex = lastMessageData.params?.result?.number;
-                    if (lastBlockNumberHex && lastBlockNumber !== parseInt(lastBlockNumberHex)) {
-                        setLastBlockNumber(parseInt(lastBlockNumberHex));
-                        dispatch(setLastBlock(parseInt(lastBlockNumberHex)));
+                    if (lastBlockNumberHex) {
+                        const newBlockNum = parseInt(lastBlockNumberHex);
+                        if (lastBlockNumber !== newBlockNum) {
+                            console.log('setting new block number');
+                            setLastBlockNumber(parseInt(lastBlockNumberHex));
+                            dispatch(setLastBlock(parseInt(lastBlockNumberHex)));
+                        }
                     }
                 }
             }
@@ -527,6 +545,7 @@ export default function App() {
 
     // update local state with searchable tokens once after initial load of app
     useEffect(() => {
+        console.log('setting searchable tokens');
         // pull activeTokenLists from local storage and parse
         // do we need to add gatekeeping in case there is not a valid value?
         const { activeTokenLists } = JSON.parse(localStorage.getItem('user') as string);
@@ -592,6 +611,7 @@ export default function App() {
     );
 
     useEffect(() => {
+        console.log('firing');
         if (lastReceipt) {
             setOpenSnackbar(true);
         }
@@ -617,6 +637,7 @@ export default function App() {
     // check for ENS name account changes
     useEffect(() => {
         (async () => {
+            console.log('firing');
             if (isUserLoggedIn && account && provider) {
                 try {
                     const ensName = await cachedFetchAddress(provider, account, chainData.chainId);
@@ -645,7 +666,7 @@ export default function App() {
         })();
     }, [isUserLoggedIn, account, chainData.chainId]);
 
-    const everyEigthBlock = Math.floor(lastBlockNumber / 8);
+    const everyEigthBlock = useMemo(() => Math.floor(lastBlockNumber / 8), [lastBlockNumber]);
     // check for token balances every eight blocks
 
     const addTokenInfo = (token: TokenIF): TokenIF => {
@@ -666,6 +687,7 @@ export default function App() {
 
     useEffect(() => {
         (async () => {
+            console.log('fetching native token and erc20 token balances');
             if (crocEnv && isUserLoggedIn && account && chainData.chainId) {
                 try {
                     // console.log('fetching native token balance');
@@ -737,6 +759,7 @@ export default function App() {
 
     // hook to update `poolExists` when crocEnv changes
     useEffect(() => {
+        console.log('firing');
         setPoolExists(undefined);
         if (crocEnv && tokenPairLocal) {
             if (tokenPairLocal[0].toLowerCase() === tokenPairLocal[1].toLowerCase()) return;
@@ -806,6 +829,7 @@ export default function App() {
 
     // useEffect that runs when token pair changes
     useEffect(() => {
+        console.log('firing');
         if (rtkMatchesParams) {
             if (provider) {
                 (async () => {
@@ -1198,6 +1222,7 @@ export default function App() {
     const activePeriod = tradeData.activeChartPeriod;
 
     useEffect(() => {
+        console.log('firing');
         setCandleData(undefined);
         fetchCandles();
     }, [mainnetBaseTokenAddress, mainnetQuoteTokenAddress, activePeriod]);
@@ -1305,6 +1330,7 @@ export default function App() {
     );
 
     useEffect(() => {
+        console.log('firing');
         if (lastPoolLiqChangeMessage !== null) {
             const lastMessageData = JSON.parse(lastPoolLiqChangeMessage.data).data;
             // console.log({ lastMessageData });
@@ -1366,21 +1392,23 @@ export default function App() {
 
     const domainBoundaryInSecondsDebounced = useDebounce(domainBoundaryInSeconds, 500);
 
+    function getTime() {
+        if (candleData) {
+            return candleData.candles.map((d) => d.time);
+        } else {
+            return [0];
+        }
+    }
+    function getMinTime() {
+        return Math.min(...getTime());
+    }
+
     useEffect(() => {
         // console.log({ debouncedBoundary });
         // console.log({ activePeriod });
         // console.log({ candleData });
 
-        function getTime() {
-            if (candleData) {
-                return candleData.candles.map((d) => d.time);
-            } else {
-                return [0];
-            }
-        }
-        function getMinTime() {
-            return Math.min(...getTime());
-        }
+        console.log('domain boundary changes');
 
         const minTime = getMinTime();
         // console.log({ minTime });
@@ -1390,12 +1418,13 @@ export default function App() {
         );
 
         if (
+            numDurationsNeeded > 0 &&
             isServerEnabled &&
             httpGraphCacheServerDomain &&
             domainBoundaryInSecondsDebounced &&
             minTime
         ) {
-            // console.log('fetching candles');
+            console.log('fetching new candles');
             const candleSeriesCacheEndpoint = httpGraphCacheServerDomain + '/candle_series?';
 
             fetch(
@@ -1422,7 +1451,7 @@ export default function App() {
                 .then((response) => response?.json())
                 .then((json) => {
                     const fetchedCandles = json?.data;
-
+                    console.log({ candleData });
                     if (fetchedCandles && candleData) {
                         const newCandles: CandleData[] = [];
                         const updatedCandles: CandleData[] = candleData.candles;
@@ -1470,6 +1499,7 @@ export default function App() {
                     );
 
                     if (indexOfExistingCandle === -1) {
+                        console.log('pushing new candle from message');
                         newCandles.push(messageCandle);
                     } else if (
                         JSON.stringify(candleData.candles[indexOfExistingCandle]) !==
@@ -1527,7 +1557,7 @@ export default function App() {
     useEffect(() => {
         if (lastUserPositionsMessage !== null) {
             const lastMessageData = JSON.parse(lastUserPositionsMessage.data).data;
-
+            console.log('firing');
             if (lastMessageData && crocEnv) {
                 Promise.all(
                     lastMessageData.map((position: PositionIF) => {
@@ -1576,6 +1606,7 @@ export default function App() {
 
     useEffect(() => {
         if (lastUserRecentChangesMessage !== null) {
+            console.log('received new user recent change');
             const lastMessageData = JSON.parse(lastUserRecentChangesMessage.data).data;
 
             if (lastMessageData) {
@@ -1624,7 +1655,7 @@ export default function App() {
             const lastMessageData = JSON.parse(lastUserLimitOrderChangesMessage.data).data;
 
             if (lastMessageData) {
-                console.log({ lastMessageData });
+                console.log('received new user limit order change');
                 Promise.all(
                     lastMessageData.map((limitOrder: LimitOrderIF) => {
                         return getLimitOrderData(limitOrder, searchableTokens);
@@ -1648,6 +1679,7 @@ export default function App() {
     const poolPriceNonDisplay = tradeData.poolPriceNonDisplay;
 
     useEffect(() => {
+        console.log('firing');
         setPoolPriceDisplay(0);
         // setPoolPriceTick(undefined);
     }, [JSON.stringify({ base: baseTokenAddress, quote: quoteTokenAddress })]);
@@ -1664,16 +1696,6 @@ export default function App() {
             lastBlockNumber !== 0
         ) {
             (async () => {
-                // const spotTick = await cachedQuerySpotTick(
-                //     crocEnv,
-                //     baseTokenAddress,
-                //     quoteTokenAddress,
-                //     chainData.chainId,
-                //     lastBlockNumber,
-                // );
-
-                // setPoolPriceTick(spotTick);
-
                 const spotPrice = await cachedQuerySpotPrice(
                     crocEnv,
                     baseTokenAddress,
@@ -1682,14 +1704,20 @@ export default function App() {
                     lastBlockNumber,
                 );
 
-                dispatch(setPoolPriceNonDisplay(spotPrice));
                 if (spotPrice) {
-                    const displayPrice = toDisplayPrice(
+                    const newDisplayPrice = toDisplayPrice(
                         spotPrice,
                         baseTokenDecimals,
                         quoteTokenDecimals,
                     );
-                    setPoolPriceDisplay(displayPrice);
+                    if (newDisplayPrice !== poolPriceDisplay) {
+                        console.log('setting display pool price');
+                        setPoolPriceDisplay(newDisplayPrice);
+                    }
+                }
+                if (spotPrice !== poolPriceNonDisplay) {
+                    console.log('dispatching new non-display spot price');
+                    dispatch(setPoolPriceNonDisplay(spotPrice));
                 }
             })();
         }
@@ -1718,24 +1746,44 @@ export default function App() {
                 crocEnv
                     .token(tradeData.baseToken.address)
                     .walletDisplay(account)
-                    .then((bal: string) => setBaseTokenBalance(bal))
+                    .then((bal: string) => {
+                        if (bal !== baseTokenBalance) {
+                            console.log('setting base token wallet balance');
+                            setBaseTokenBalance(bal);
+                        }
+                    })
                     .catch(console.log);
                 crocEnv
                     .token(tradeData.baseToken.address)
                     .balanceDisplay(account)
                     .then((bal: string) => {
-                        setBaseTokenDexBalance(bal);
+                        if (bal !== baseTokenDexBalance) {
+                            console.log('setting base token dex balance');
+                            setBaseTokenDexBalance(bal);
+                        }
                     })
                     .catch(console.log);
                 crocEnv
                     .token(tradeData.quoteToken.address)
                     .walletDisplay(account)
-                    .then((bal: string) => setQuoteTokenBalance(bal))
+                    .then((bal: string) => {
+                        if (bal !== quoteTokenBalance) {
+                            console.log('setting quote token balance');
+
+                            setQuoteTokenBalance(bal);
+                        }
+                    })
                     .catch(console.log);
                 crocEnv
                     .token(tradeData.quoteToken.address)
                     .balanceDisplay(account)
-                    .then((bal: string) => setQuoteTokenDexBalance(bal))
+                    .then((bal: string) => {
+                        if (bal !== quoteTokenDexBalance) {
+                            console.log('setting quote token dex balance');
+
+                            setQuoteTokenDexBalance(bal);
+                        }
+                    })
                     .catch(console.log);
             }
         })();
@@ -1764,11 +1812,15 @@ export default function App() {
             if (crocEnv && account && tokenAAddress) {
                 try {
                     const allowance = await crocEnv.token(tokenAAddress).allowance(account);
-                    setTokenAAllowance(toDisplayQty(allowance, tokenADecimals));
+                    const newTokenAllowance = toDisplayQty(allowance, tokenADecimals);
+                    if (tokenAAllowance !== newTokenAllowance) {
+                        console.log('firing');
+                        setTokenAAllowance(newTokenAllowance);
+                    }
                 } catch (err) {
                     console.log(err);
                 }
-                setRecheckTokenAApproval(false);
+                if (recheckTokenAApproval) setRecheckTokenAApproval(false);
             }
         })();
     }, [crocEnv, tokenAAddress, lastBlockNumber, account, recheckTokenAApproval]);
@@ -1779,11 +1831,15 @@ export default function App() {
             if (crocEnv && tokenBAddress && tokenBDecimals && account) {
                 try {
                     const allowance = await crocEnv.token(tokenBAddress).allowance(account);
-                    setTokenBAllowance(toDisplayQty(allowance, tokenBDecimals));
+                    const newTokenAllowance = toDisplayQty(allowance, tokenBDecimals);
+                    if (tokenBAllowance !== newTokenAllowance) {
+                        console.log('firing');
+                        setTokenBAllowance(newTokenAllowance);
+                    }
                 } catch (err) {
                     console.log(err);
                 }
-                setRecheckTokenBApproval(false);
+                if (recheckTokenBApproval) setRecheckTokenBApproval(false);
             }
         })();
     }, [crocEnv, tokenBAddress, lastBlockNumber, account, recheckTokenBApproval]);
@@ -1794,7 +1850,7 @@ export default function App() {
         httpGraphCacheServerDomain + '/user_limit_order_states?';
 
     useEffect(() => {
-        if (isServerEnabled && isUserLoggedIn && account) {
+        if (isServerEnabled && isUserLoggedIn && account && crocEnv) {
             dispatch(resetConnectedUserDataLoadingStatus());
 
             console.log('fetching user positions');
@@ -1975,7 +2031,7 @@ export default function App() {
                 console.log;
             }
         }
-    }, [isServerEnabled, isUserLoggedIn, account, chainData.chainId]);
+    }, [isServerEnabled, isUserLoggedIn, account, chainData.chainId, crocEnv]);
 
     // run function to initialize local storage
     // internal controls will only initialize values that don't exist
@@ -2048,8 +2104,11 @@ export default function App() {
             .then((response) => response.json())
             .then((response) => {
                 if (response.result.ProposeGasPrice) {
-                    const gasPriceInGwei = parseInt(response.result.ProposeGasPrice);
-                    setGasPriceinGwei(gasPriceInGwei);
+                    const newGasPrice = parseInt(response.result.ProposeGasPrice);
+                    if (gasPriceInGwei !== newGasPrice) {
+                        console.log('setting new gas price');
+                        setGasPriceinGwei(newGasPrice);
+                    }
                 }
             })
             .catch(console.log);
@@ -2468,6 +2527,10 @@ export default function App() {
         analyticsSearchInput: analyticsSearchInput,
         setAnalyticsSearchInput: setAnalyticsSearchInput,
         openModalWallet: openWagmiModalWallet,
+        poolList: poolList,
+        verifyToken: verifyToken,
+        getTokenByAddress: getTokenByAddress,
+        tokenPair: tokenPair,
     };
 
     const analyticsProps = {
@@ -2501,18 +2564,20 @@ export default function App() {
     }
 
     useEffect(() => {
+        console.log('denomination changed');
         const isDenomBase = updateDenomIsInBase();
         if (isDenomBase !== undefined) {
             if (tradeData.isDenomBase !== isDenomBase) {
                 dispatch(setDenomInBase(isDenomBase));
             }
         }
-    }, [tradeData.didUserFlipDenom, tokenPair]);
+    }, [tradeData.didUserFlipDenom, JSON.stringify(tokenPair)]);
 
     const [imageData, setImageData] = useState<string[]>([]);
 
     useEffect(() => {
         (async () => {
+            console.log('firing');
             if (account) {
                 const imageLocalURLs = await getNFTs(account);
                 if (imageLocalURLs) setImageData(imageLocalURLs);

@@ -145,6 +145,8 @@ export default function Chart(props: ChartData) {
         liquidityScale,
     } = props;
 
+    // console.log('rendering Chart.tsx');
+
     const tradeData = useAppSelector((state) => state.tradeData);
 
     const isDenomBase = tradeData.isDenomBase;
@@ -356,6 +358,7 @@ export default function Chart(props: ChartData) {
     }, []);
 
     useEffect(() => {
+        console.log('re-rending chart');
         if (expandTradeTable) return;
 
         if (parsedChartData && parsedChartData?.chartData.length > 0) {
@@ -380,7 +383,13 @@ export default function Chart(props: ChartData) {
 
         render();
         renderCanvas();
-    }, [props.chartItemStates, expandTradeTable, parsedChartData?.chartData, firstCandle]);
+    }, [
+        JSON.stringify(props.chartItemStates),
+        expandTradeTable,
+        parsedChartData?.chartData.length,
+        parsedChartData?.chartData[0]?.time,
+        firstCandle,
+    ]);
 
     function addTextMarket(scale: any) {
         yAxis.tickValues([
@@ -1049,6 +1058,7 @@ export default function Chart(props: ChartData) {
 
     // Zoom
     useEffect(() => {
+        // console.log('firing zoom useEffect');
         if (scaleData !== undefined && parsedChartData !== undefined) {
             let date: any | undefined = undefined;
             let clickedForLine = false;
@@ -1400,8 +1410,9 @@ export default function Chart(props: ChartData) {
     ]);
 
     useEffect(() => {
+        console.log('timeframe changed');
         setShowLatest(false);
-    }, [JSON.stringify(parsedChartData?.period)]);
+    }, [parsedChartData?.period]);
 
     useEffect(() => {
         if (scaleData !== undefined && liquidityData !== undefined) {
@@ -1451,11 +1462,12 @@ export default function Chart(props: ChartData) {
                 }
             }
         }
-    }, [parsedChartData?.chartData, rescale]);
+    }, [parsedChartData?.chartData?.length, rescale]);
 
     useEffect(() => {
+        // const chartData = parsedChartData?.chartData;
         setMarketLineValue();
-    }, [parsedChartData?.chartData]);
+    }, [parsedChartData?.chartData[0]?.close]);
 
     const setMarketLineValue = () => {
         const lastCandlePrice = parsedChartData?.chartData[0]?.close;
@@ -1638,6 +1650,7 @@ export default function Chart(props: ChartData) {
     }, [location, props.limitTick, denomInBase]);
 
     useEffect(() => {
+        console.log('setting range lines');
         if (location.pathname.includes('range')) {
             if (!isAdvancedModeActive) {
                 setBalancedLines();
@@ -4262,6 +4275,7 @@ export default function Chart(props: ChartData) {
                 };
 
                 d3.select(d3PlotArea.current).on('mousemove', function (event: any) {
+                    // console.log('mouse move event');
                     mousemoveEventForCrosshair(event);
                     const { isHoverCandleOrVolumeData } = candleOrVolumeDataHoverStatus(event);
 

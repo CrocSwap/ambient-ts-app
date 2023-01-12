@@ -111,29 +111,35 @@ export default function ChatPanel(props: ChatProps) {
         }
     }, [messages]);
 
-    useEffect(() => {
-        getMsg();
-    }, [room]);
+    // useEffect(() => {
+    //     _socket.connect();
+    // }, [_socket]);
+
+    // useEffect(() => {
+    //     getMsg();
+    // }, []);
 
     useEffect(() => {
-        getMsg();
-    }, []);
+        if (address) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            getID().then((result: any) => {
+                setCurrentUser(result.userData._id);
+                setName(result.userData.ensName);
+            });
+        }
+    }, [address, props.chatStatus, props.isFullScreen]);
 
     useEffect(() => {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        getID().then((result: any) => {
-            setCurrentUser(result.userData._id);
-            setName(result.userData.ensName);
-        });
-    }, [props.chatStatus, props.isFullScreen]);
+        if (address) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            getID().then((result: any) => {
+                setCurrentUser(result.userData._id);
+                setName(result.userData.ensName);
+            });
 
-    useEffect(() => {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        getID().then((result: any) => {
-            setCurrentUser(result.userData._id);
-            setName(result.userData.ensName);
-        });
-    }, []);
+            getMsg();
+        }
+    }, [address]);
 
     useEffect(() => {
         isCurrentUser();
@@ -142,11 +148,13 @@ export default function ChatPanel(props: ChatProps) {
     useEffect(() => {
         scrollToBottom();
         setNotification(0);
+
+        getMsg();
     }, [room]);
 
-    function handleCloseChatPanel() {
-        props.setChatStatus(false);
-    }
+    // function handleCloseChatPanel() {
+    //     props.setChatStatus(false);
+    // }
 
     const scrollToBottomButton = async () => {
         messageEnd.current?.scrollTo(
@@ -201,7 +209,7 @@ export default function ChatPanel(props: ChatProps) {
                 <RiCloseFill
                     size={27}
                     className={styles.close_button}
-                    onClick={() => handleCloseChatPanel()}
+                    onClick={() => props.setChatStatus(false)}
                 />
             )}
         </div>

@@ -43,6 +43,7 @@ interface RangesMenuIF {
     isOnPortfolioPage: boolean;
 
     handlePulseAnimation?: (type: string) => void;
+    showHighlightedButton: boolean;
 }
 
 // React functional component
@@ -58,6 +59,7 @@ export default function RangesMenu(props: RangesMenuIF) {
         positionData,
         isOnPortfolioPage,
         handlePulseAnimation,
+        showHighlightedButton,
         // showSidebar,
         // eslint-disable-next-line
     } = props;
@@ -159,6 +161,7 @@ export default function RangesMenu(props: RangesMenuIF) {
 
     const copyButton = (
         <Link
+            style={{ opacity: showHighlightedButton ? '1' : '0.2' }}
             className={styles.option_button}
             to={
                 '/trade/range/' +
@@ -191,6 +194,7 @@ export default function RangesMenu(props: RangesMenuIF) {
 
     const editButton = positionMatchesLoggedInUser ? (
         <Link
+            style={{ opacity: showHighlightedButton ? '1' : '0.2' }}
             className={styles.option_button}
             to={`/trade/edit/${posHash}`}
             state={{ position: positionData }}

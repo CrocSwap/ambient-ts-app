@@ -68,7 +68,7 @@ export const SoloTokenSelect = (props: propsIF) => {
         tokenAorB,
         reverseTokens,
         tokenPair,
-        acknowledgeToken,
+        acknowledgeToken
     } = props;
 
     // add an event listener for custom functionalities on modal close

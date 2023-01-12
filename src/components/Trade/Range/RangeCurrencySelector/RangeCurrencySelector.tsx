@@ -44,8 +44,9 @@ interface RangeCurrencySelectorProps {
     tokenBSurplusMinusTokenBQtyNum: number;
     sellToken?: boolean;
     reverseTokens: () => void;
-    tokenAQtyLocal: number;
-    tokenBQtyLocal: number;
+    tokenAInputQty: string;
+    tokenBInputQty: string;
+
     tokenABalance: string;
     tokenBBalance: string;
     tokenADexBalance: string;
@@ -97,6 +98,8 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
         tokenABalance,
         tokenBBalance,
         tokenADexBalance,
+        tokenAInputQty,
+        tokenBInputQty,
         // tokenAQtyLocal,
         // tokenBQtyLocal,
         tokenBDexBalance,
@@ -290,12 +293,136 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
         soloTokenSelectInput.value = '';
     };
 
+    const surplusContent = (
+        <div className={styles.main_surplus_container}>
+            <IconWithTooltip title='Exchange Balance' placement='bottom'>
+                <div
+                    className={`${styles.balance_with_pointer} ${
+                        (isTokenASelector && isWithdrawTokenAFromDexChecked) ||
+                        (!isTokenASelector && isWithdrawTokenBFromDexChecked)
+                            ? null
+                            : styles.grey_logo
+                    }`}
+                    onClick={() => {
+                        if (isTokenASelector) {
+                            setIsWithdrawTokenAFromDexChecked(true);
+                        } else {
+                            setIsWithdrawTokenBFromDexChecked(true);
+                        }
+                        handleChangeClick(surplusBalanceNonLocaleString);
+                    }}
+                    style={{
+                        color:
+                            (isTokenASelector && isWithdrawTokenAFromDexChecked) ||
+                            (!isTokenASelector && isWithdrawTokenBFromDexChecked)
+                                ? 'var(--text-highlight)'
+                                : '#555555',
+                    }}
+                >
+                    <div
+                        className={`${styles.wallet_logo} ${
+                            isTokenASelector
+                                ? isWithdrawTokenAFromDexChecked
+                                    ? styles.enabled_logo
+                                    : null
+                                : isWithdrawTokenBFromDexChecked
+                                ? styles.enabled_logo
+                                : null
+                        }`}
+                    >
+                        <img src={ambientLogo} width='20' alt='surplus' />
+                    </div>
+                    <div className={styles.balance_column}>
+                        <div> {isUserLoggedIn ? surplusBalanceLocaleString : ''}</div>
+                        <div
+                            style={{
+                                color: '#f6385b',
+                            }}
+                        >
+                            {isTokenASelector ? tokenASurplusChange : tokenBSurplusChange}
+                        </div>
+                    </div>
+                </div>
+            </IconWithTooltip>
+        </div>
+    );
+
+    const walletContent = (
+        <div className={styles.main_wallet_container}>
+            <IconWithTooltip title='Wallet Balance' placement='bottom'>
+                <div
+                    className={styles.balance_with_pointer}
+                    onClick={() => {
+                        if (isTokenASelector) {
+                            setIsWithdrawTokenAFromDexChecked(false);
+                        } else {
+                            setIsWithdrawTokenBFromDexChecked(false);
+                        }
+                        handleChangeClick(walletBalanceNonLocaleString);
+                    }}
+                >
+                    <div className={styles.wallet_logo}>
+                        <MdAccountBalanceWallet
+                            size={20}
+                            color={
+                                (isTokenASelector && !isWithdrawTokenAFromDexChecked) ||
+                                (!isTokenASelector && !isWithdrawTokenBFromDexChecked) ||
+                                (isTokenASelector &&
+                                    isTokenAEth === false &&
+                                    isWithdrawTokenAFromDexChecked &&
+                                    tokenASurplusMinusTokenARemainderNum &&
+                                    tokenASurplusMinusTokenARemainderNum < 0) ||
+                                (!isTokenASelector &&
+                                    isTokenBEth === false &&
+                                    isWithdrawTokenBFromDexChecked &&
+                                    tokenBSurplusMinusTokenBRemainderNum &&
+                                    tokenBSurplusMinusTokenBRemainderNum < 0)
+                                    ? 'var(--text-highlight)'
+                                    : '#555555'
+                            }
+                        />
+                    </div>
+                    <div className={styles.balance_column}>
+                        <div>{isUserLoggedIn ? walletBalanceLocaleString : ''}</div>
+                        <div
+                            style={{
+                                color: '#f6385b',
+                                fontSize: '9px',
+                            }}
+                        >
+                            {isTokenASelector
+                                ? tokenAWalletBalanceChange
+                                : tokenBWalletBalanceChange}
+                        </div>
+                    </div>
+                </div>{' '}
+            </IconWithTooltip>
+        </div>
+    );
+
+    const surplusContainerColorStyle =
+        (isTokenASelector && !isWithdrawTokenAFromDexChecked) ||
+        (!isTokenASelector && !isWithdrawTokenBFromDexChecked) ||
+        (isTokenASelector &&
+            isTokenAEth === false &&
+            isWithdrawTokenAFromDexChecked &&
+            tokenASurplusMinusTokenARemainderNum &&
+            tokenASurplusMinusTokenARemainderNum < 0) ||
+        (!isTokenASelector &&
+            isTokenBEth === false &&
+            isWithdrawTokenBFromDexChecked &&
+            tokenBSurplusMinusTokenBRemainderNum &&
+            tokenBSurplusMinusTokenBRemainderNum < 0)
+            ? 'var(--text-highlight)'
+            : '#555555';
+
     return (
         <div className={styles.swapbox}>
             {sellToken && <span className={styles.direction}>Amounts</span>}
             <div className={styles.swapbox_top}>
                 <div className={styles.swap_input}>
                     <RangeCurrencyQuantity
+                        value={tokenAorB === 'A' ? tokenAInputQty : tokenBInputQty}
                         fieldId={fieldId}
                         updateOtherQuantity={updateOtherQuantity}
                         disable={isFieldDisabled}
@@ -320,130 +447,12 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
                     <RiArrowDownSLine size={27} />
                 </div>
             </div>
-            <div className={styles.swapbox_bottom}>
-                <div
-                    className={styles.surplus_container}
-                    style={{
-                        color:
-                            (isTokenASelector && !isWithdrawTokenAFromDexChecked) ||
-                            (!isTokenASelector && !isWithdrawTokenBFromDexChecked) ||
-                            (isTokenASelector &&
-                                isTokenAEth === false &&
-                                isWithdrawTokenAFromDexChecked &&
-                                tokenASurplusMinusTokenARemainderNum &&
-                                tokenASurplusMinusTokenARemainderNum < 0) ||
-                            (!isTokenASelector &&
-                                isTokenBEth === false &&
-                                isWithdrawTokenBFromDexChecked &&
-                                tokenBSurplusMinusTokenBRemainderNum &&
-                                tokenBSurplusMinusTokenBRemainderNum < 0)
-                                ? 'var(--text-highlight)'
-                                : '#555555',
-                    }}
-                >
-                    <IconWithTooltip title='Wallet Balance' placement='bottom'>
-                        <div
-                            className={styles.balance_with_pointer}
-                            onClick={() => {
-                                if (isTokenASelector) {
-                                    setIsWithdrawTokenAFromDexChecked(false);
-                                } else {
-                                    setIsWithdrawTokenBFromDexChecked(false);
-                                }
-                                handleChangeClick(walletBalanceNonLocaleString);
-                            }}
-                        >
-                            <div className={styles.wallet_logo}>
-                                <MdAccountBalanceWallet
-                                    size={20}
-                                    color={
-                                        (isTokenASelector && !isWithdrawTokenAFromDexChecked) ||
-                                        (!isTokenASelector && !isWithdrawTokenBFromDexChecked) ||
-                                        (isTokenASelector &&
-                                            isTokenAEth === false &&
-                                            isWithdrawTokenAFromDexChecked &&
-                                            tokenASurplusMinusTokenARemainderNum &&
-                                            tokenASurplusMinusTokenARemainderNum < 0) ||
-                                        (!isTokenASelector &&
-                                            isTokenBEth === false &&
-                                            isWithdrawTokenBFromDexChecked &&
-                                            tokenBSurplusMinusTokenBRemainderNum &&
-                                            tokenBSurplusMinusTokenBRemainderNum < 0)
-                                            ? 'var(--text-highlight)'
-                                            : '#555555'
-                                    }
-                                />
-                            </div>
-                            <div className={styles.balance_column}>
-                                <div>{isUserLoggedIn ? walletBalanceLocaleString : ''}</div>
-                                <div
-                                    style={{
-                                        color: '#f6385b',
-                                        fontSize: '9px',
-                                    }}
-                                >
-                                    {isTokenASelector
-                                        ? tokenAWalletBalanceChange
-                                        : tokenBWalletBalanceChange}
-                                </div>
-                            </div>
-                        </div>{' '}
-                    </IconWithTooltip>
-                    <IconWithTooltip title='Exchange Balance' placement='bottom'>
-                        <div
-                            className={`${styles.balance_with_pointer} ${
-                                (isTokenASelector && isWithdrawTokenAFromDexChecked) ||
-                                (!isTokenASelector && isWithdrawTokenBFromDexChecked)
-                                    ? null
-                                    : styles.grey_logo
-                            }`}
-                            onClick={() => {
-                                if (isTokenASelector) {
-                                    setIsWithdrawTokenAFromDexChecked(true);
-                                } else {
-                                    setIsWithdrawTokenBFromDexChecked(true);
-                                }
-                                handleChangeClick(surplusBalanceNonLocaleString);
-                            }}
-                            style={{
-                                color:
-                                    (isTokenASelector && isWithdrawTokenAFromDexChecked) ||
-                                    (!isTokenASelector && isWithdrawTokenBFromDexChecked)
-                                        ? 'var(--text-highlight)'
-                                        : '#555555',
-                            }}
-                        >
-                            <div
-                                className={`${styles.wallet_logo} ${
-                                    isTokenASelector
-                                        ? isWithdrawTokenAFromDexChecked
-                                            ? styles.enabled_logo
-                                            : null
-                                        : isWithdrawTokenBFromDexChecked
-                                        ? styles.enabled_logo
-                                        : null
-                                }`}
-                            >
-                                <img src={ambientLogo} width='20' alt='surplus' />
-                            </div>
-                            <div className={styles.balance_column}>
-                                <div> {isUserLoggedIn ? surplusBalanceLocaleString : ''}</div>
-                                <div
-                                    style={{
-                                        color: '#f6385b',
-                                    }}
-                                >
-                                    {isTokenASelector ? tokenASurplusChange : tokenBSurplusChange}
-                                </div>
-                            </div>
-                        </div>
-                    </IconWithTooltip>
-                </div>
-                {/* {fieldId === 'A' ? (
-                            <span>Wallet: {walletBalance} | Surplus: 0.00</span>
-                        ) : (
-                            <span>Wallet: {walletBalance} | Surplus: 0.00</span>
-                        )} */}
+            <div className={styles.swapbox_bottom} style={{ color: surplusContainerColorStyle }}>
+                {/* <div className={styles.surplus_container} style={{color: surplusContainerColorStyle}} > */}
+                {walletContent}
+                {surplusContent}
+                {/* </div> */}
+
                 {DexBalanceContent}
             </div>
             {isTokenModalOpen && (

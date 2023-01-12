@@ -4,13 +4,16 @@
   display: block;
   flex-direction: column-reverse;
   border: solid 1px transparent;
-  background-image: linear-gradient(rgba(255, 255, 255, 0), rgba(255, 255, 255, 0)), linear-gradient(101deg, #7371FC, #CDC1FF, #7371FC);
+  /* background-image: linear-gradient(rgba(255, 255, 255, 0), rgba(255, 255, 255, 0)), linear-gradient(101deg, #7371FC, #CDC1FF, #7371FC);
   background-origin: border-box;
-  background-clip: content-box, border-box;
-  box-shadow: 2px 1000px 1px #171D27 inset;
+  background-clip: content-box, border-box; */
+  /* box-shadow: 2px 1000px 1px #171D27 inset; */
+  background: var(--dark3);
+  
   cursor: pointer;
   height: 479px;
-  width: 424px;
+  /* width: 424px; */
+  width: 378px;
   border-radius: var(--border-radius);
   color: white;
   position: sticky;
@@ -18,7 +21,6 @@
   aspect-ratio: 5/6;
   
   overflow: auto;
-  transform: rotate(-180deg);
 
 
 
@@ -37,12 +39,12 @@
 }
 
 .chat_body {
-  
-  transform: rotate(180deg);
+
   display: flex;
   flex-direction: column;
-  align-items: center;
-  padding: 5px;
+  gap: 8px;
+  /* align-items: center; */
+  /* padding: 5px; */
   height: 100%;
   width: 100%;
   position: sticky;
@@ -65,14 +67,17 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-top: 1rem;
-    padding: 0;
-    width: 90%;
+    /* margin-top: 1rem;
+   padding-bottom: 2px; */
+    /* width: 90%; */
+    padding: 4px;
     letter-spacing: 1px;
     text-transform: capitalize;
     color: white;
-    border-top-left-radius: 24px;
-    border-top-right-radius: 24px;
+    /* border-top-left-radius: 24px;
+    border-top-right-radius: 24px; */
+    /* border-bottom: 1px solid var(--text-grey-dark); */
+    background: var(--dark2);
 }
 
 .modal_header h2 {
@@ -128,7 +133,7 @@
     margin-bottom: 2% !important;
     margin-top: 0;
     overflow: scroll;
-    transform: rotate(-180deg);
+
     /* min-height: 80vh;
 }
 
@@ -145,7 +150,7 @@
 }
 
 .modal_content {
-    padding: 20px;
+    /* padding: 20px; */
 }
 
 .scrollable_div {
@@ -165,7 +170,7 @@
 
 /* width */
 ::-webkit-scrollbar {
-    width: 8px;
+    width: 4px;
 }
 
 /* Track */
@@ -182,7 +187,7 @@
     padding: 0px;
     gap: 10px;
 
-    width: 20px;
+    width: 10px;
     height: 5px;
 
     /* dark/primary */

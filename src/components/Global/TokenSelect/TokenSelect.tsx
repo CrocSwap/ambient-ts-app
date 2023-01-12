@@ -38,7 +38,10 @@ export default function TokenSelect(props: TokenSelectPropsIF) {
 
     return (
         <>
-            <div className={styles.main_container} onClick={() => chooseToken(token, false)}>
+            <div
+                className={styles.main_container}
+                onClick={() => chooseToken(token, false)}
+            >
                 <section className={styles.left_side_container}>
                     <div className={styles.modal_content}>
                         <div className={styles.modal_tokens_info}>

@@ -21,7 +21,7 @@ export const fetchDepositBalances = (
 
     const depositBalancesCacheEndpoint = 'https://809821320828123.de:5000' + '/user_balances?';
 
-    console.log('fetching pool recent changes');
+    console.log('fetching deposit balances');
 
     const depositBalances = fetch(
         depositBalancesCacheEndpoint +

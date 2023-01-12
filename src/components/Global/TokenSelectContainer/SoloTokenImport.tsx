@@ -43,7 +43,9 @@ export default function SoloTokenImport(props: SoloTokenImportPropsIF) {
                 blanditiis repellat magnam officiis, omnis impedit nostrum?
             </p>
             <div className={styles.import_button}>
-                <button onClick={() => chooseToken(customToken, true)}>Acknowledge</button>
+                <button onClick={() => chooseToken(customToken, true)}>
+                    Acknowledge
+                </button>
             </div>
         </div>
     );

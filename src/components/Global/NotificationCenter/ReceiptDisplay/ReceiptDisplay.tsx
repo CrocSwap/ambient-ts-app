@@ -6,6 +6,8 @@ import trimString from '../../../../utils/functions/trimString';
 import { RiExternalLinkLine } from 'react-icons/ri';
 import { motion } from 'framer-motion';
 import { VscClose } from 'react-icons/vsc';
+import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
+import { removeReceipt } from '../../../../utils/state/receiptDataSlice';
 interface ReceiptDisplayPropsIF {
     status: 'successful' | 'failed' | 'pending';
     hash: string;
@@ -42,6 +44,8 @@ export default function ReceiptDisplay(props: ReceiptDisplayPropsIF) {
     }
 
     const EtherscanTx = `https://goerli.etherscan.io/tx/${hash}`;
+
+    const dispatch = useAppDispatch();
 
     const elapsedTimeInSecondsNum = txBlockNumber
         ? (lastBlockNumber - txBlockNumber) * 13.75 // 13.75 seconds average between blocks
@@ -81,8 +85,17 @@ export default function ReceiptDisplay(props: ReceiptDisplayPropsIF) {
                 <div className={styles.info}>
                     <div className={styles.row}>
                         Transaction {txHashTruncated} {handleTxTextDisplay(status)}
-                        <div>
-                            <VscClose size={20} />
+                        <div
+                            style={{
+                                cursor: 'pointer',
+                            }}
+                        >
+                            <VscClose
+                                onClick={() => {
+                                    dispatch(removeReceipt(hash));
+                                }}
+                                size={20}
+                            />
                         </div>
                     </div>
                 </div>
