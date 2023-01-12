@@ -1,4 +1,5 @@
 import { ChangeEvent, useEffect, useState } from 'react';
+import { TokenIF } from '../../../../utils/interfaces/exports';
 import styles from './RangeCurrencyQuantity.module.css';
 // import { GoCircleSlash } from 'react-icons/go';
 
@@ -8,9 +9,10 @@ interface RangeCurrencyQuantityProps {
     fieldId: string;
     updateOtherQuantity: (evt: ChangeEvent<HTMLInputElement>) => void;
     isAdvancedMode: boolean;
+    thisToken: TokenIF;
 }
 export default function RangeCurrencyQuantity(props: RangeCurrencyQuantityProps) {
-    const { value, disable, updateOtherQuantity, fieldId, isAdvancedMode } = props;
+    const { value, thisToken, disable, updateOtherQuantity, fieldId, isAdvancedMode } = props;
     // console.log({ disable });
 
     const [displayValue, setDisplayValue] = useState<string>('');
@@ -39,6 +41,14 @@ export default function RangeCurrencyQuantity(props: RangeCurrencyQuantityProps)
         </div>
     );
 
+    const precisionOfInput = (inputString: string) => {
+        if (inputString.includes('.')) {
+            return inputString.split('.')[1].length;
+        }
+        // String Does Not Contain Decimal
+        return 0;
+    };
+
     return (
         <div className={styles.token_amount}>
             {isAdvancedMode && disable && disabledContent}
@@ -48,7 +58,11 @@ export default function RangeCurrencyQuantity(props: RangeCurrencyQuantityProps)
                 className={styles.currency_quantity}
                 placeholder='0.0'
                 onChange={(event) => {
-                    const isValid = event.target.value === '' || event.target.validity.valid;
+                    const isPrecisionGreaterThanDecimals =
+                        precisionOfInput(event.target.value) > thisToken.decimals;
+                    const isValid =
+                        !isPrecisionGreaterThanDecimals &&
+                        (event.target.value === '' || event.target.validity.valid);
                     isValid ? handleEventLocal(event) : null;
                 }}
                 value={displayValue}
