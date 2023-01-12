@@ -89,6 +89,7 @@ interface LimitPropsIF {
     setInput: Dispatch<SetStateAction<string>>;
     searchType: string;
     acknowledgeToken: (tkn: TokenIF) => void;
+    setResetLimitTick: Dispatch<SetStateAction<boolean>>;
 }
 
 const cachedQuerySpotPrice = memoizeQuerySpotPrice();
@@ -135,6 +136,7 @@ export default function Limit(props: LimitPropsIF) {
         setInput,
         searchType,
         acknowledgeToken,
+        setResetLimitTick,
     } = props;
 
     const { tradeData, navigationMenu } = useTradeData();
@@ -744,6 +746,7 @@ export default function Limit(props: LimitPropsIF) {
                         setInput={setInput}
                         searchType={searchType}
                         acknowledgeToken={acknowledgeToken}
+                        setResetLimitTick={setResetLimitTick}
                     />
                 </motion.div>
                 <div className={styles.header_container}>

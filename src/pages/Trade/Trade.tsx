@@ -343,7 +343,7 @@ export default function Trade(props: TradePropsIF) {
 
     useEffect(() => {
         unselectCandle();
-    }, [activeTimeFrame]);
+    }, [activeTimeFrame, tradeData.baseToken.name, tradeData.quoteToken.name]);
 
     const initLinkPath =
         '/initpool/chain=0x5&tokenA=' + baseTokenAddress + '&tokenB=' + quoteTokenAddress;
@@ -431,6 +431,7 @@ export default function Trade(props: TradePropsIF) {
                             activeTimeFrame={activeTimeFrame}
                             setActiveTimeFrame={setActiveTimeFrame}
                             TradeSettingsColor={<TradeSettingsColor {...tradeSettingsColorProps} />}
+                            handlePulseAnimation={handlePulseAnimation}
                             poolPriceChangePercent={poolPriceChangePercent}
                             setPoolPriceChangePercent={setPoolPriceChangePercent}
                             isPoolPriceChangePositive={isPoolPriceChangePositive}

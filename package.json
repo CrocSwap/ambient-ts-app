@@ -29,6 +29,7 @@
         "react": "^18.1.0",
         "react-color": "^2.19.3",
         "react-dom": "^18.1.0",
+        "react-fontawesome": "^1.7.1",
         "react-i18next": "^11.18.3",
         "react-icons": "^4.3.1",
         "react-idle-timer": "^5.4.2",
@@ -43,6 +44,7 @@
         "web-vitals": "^2.1.0"
     },
     "scripts": {
+        "start": "yarn && react-scripts start --openssl-legacy-provider",
         "start": "yarn && react-scripts start --openssl-legacy-provider",
         "start-only": "react-scripts start",
         "build": "react-scripts --max_old_space_size=4096 build",

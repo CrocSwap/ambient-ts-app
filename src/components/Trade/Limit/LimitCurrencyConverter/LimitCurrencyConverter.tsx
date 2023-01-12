@@ -59,6 +59,7 @@ interface LimitCurrencyConverterProps {
     isDenominationInBase: boolean;
     activeTokenListsChanged: boolean;
     indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
+    setResetLimitTick: Dispatch<SetStateAction<boolean>>;
     poolExists: boolean | undefined;
     gasPriceInGwei: number | undefined;
 
@@ -124,6 +125,7 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
         setInput,
         searchType,
         acknowledgeToken,
+        setResetLimitTick,
     } = props;
 
     const dispatch = useAppDispatch();
@@ -228,6 +230,7 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
         }
         setIsTokenAPrimaryLocal(!isTokenAPrimaryLocal);
         dispatch(setIsTokenAPrimary(!isTokenAPrimary));
+        setResetLimitTick((value) => !value);
     };
 
     useEffect(() => {
