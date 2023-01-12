@@ -167,6 +167,9 @@ export default function Swap(props: SwapPropsIF) {
 
     const [isApprovalPending, setIsApprovalPending] = useState(false);
 
+    const [sellQtyString, setSellQtyString] = useState<string>('');
+    const [buyQtyString, setBuyQtyString] = useState<string>('');
+
     const approve = async (tokenAddress: string) => {
         if (!crocEnv) return;
         try {
@@ -221,8 +224,8 @@ export default function Swap(props: SwapPropsIF) {
         />
     );
 
-    const [tokenAInputQty, setTokenAInputQty] = useState<string>('');
-    const [tokenBInputQty, setTokenBInputQty] = useState<string>('');
+    // const [tokenAInputQty, setTokenAInputQty] = useState<string>('');
+    // const [tokenBInputQty, setTokenBInputQty] = useState<string>('');
     const [swapAllowed, setSwapAllowed] = useState<boolean>(false);
     const [swapButtonErrorMessage, setSwapButtonErrorMessage] = useState<string>('');
     const isTokenAPrimary = tradeData.isTokenAPrimary;
@@ -447,7 +450,7 @@ export default function Swap(props: SwapPropsIF) {
         }
     }, [gasPriceInGwei, ethMainnetUsdPrice]);
 
-    const isTokenAAllowanceSufficient = parseFloat(tokenAAllowance) >= parseFloat(tokenAInputQty);
+    const isTokenAAllowanceSufficient = parseFloat(tokenAAllowance) >= parseFloat(sellQtyString);
 
     const swapContainerStyle = pathname.startsWith('/swap') ? styles.swap_page_container : null;
 
@@ -582,10 +585,10 @@ export default function Swap(props: SwapPropsIF) {
                             quoteTokenBalance={quoteTokenBalance}
                             baseTokenDexBalance={baseTokenDexBalance}
                             quoteTokenDexBalance={quoteTokenDexBalance}
-                            tokenAInputQty={tokenAInputQty}
-                            tokenBInputQty={tokenBInputQty}
-                            setTokenAInputQty={setTokenAInputQty}
-                            setTokenBInputQty={setTokenBInputQty}
+                            sellQtyString={sellQtyString}
+                            buyQtyString={buyQtyString}
+                            setSellQtyString={setSellQtyString}
+                            setBuyQtyString={setBuyQtyString}
                             isWithdrawFromDexChecked={isWithdrawFromDexChecked}
                             setIsWithdrawFromDexChecked={setIsWithdrawFromDexChecked}
                             isSaveAsDexSurplusChecked={isSaveAsDexSurplusChecked}
@@ -627,8 +630,8 @@ export default function Swap(props: SwapPropsIF) {
                     {isUserLoggedIn === undefined ? null : isUserLoggedIn === true ? (
                         poolExists &&
                         !isTokenAAllowanceSufficient &&
-                        parseFloat(tokenAInputQty) > 0 &&
-                        tokenAInputQty !== 'Infinity' ? (
+                        parseFloat(sellQtyString) > 0 &&
+                        sellQtyString !== 'Infinity' ? (
                             approvalButton
                         ) : (
                             <SwapButton
