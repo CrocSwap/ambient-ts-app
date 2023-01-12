@@ -9,7 +9,7 @@ export const useTokenSearch = (
     getTokensByName: (searchName: string, chn: string, exact: boolean) => TokenIF[],
     defaultTokens: TokenIF[],
     walletTokens: TokenIF[],
-    recentTokens: TokenIF[]
+    recentTokens: TokenIF[],
 ): [TokenIF[], string, Dispatch<SetStateAction<string>>, string] => {
     // TODO: debounce this input later
     // TODO: figure out if we need to update EVERYTHING to the debounced value
@@ -143,31 +143,32 @@ export const useTokenSearch = (
             const addTokensToOutput = (
                 newTokens: TokenIF[],
                 verificationNeeded: boolean,
-                maxToAdd: number
+                maxToAdd: number,
             ): void => {
                 // counter to track how many tokens from array have been added
                 let limiter = 0;
                 // logic to iterate through all tokens in array parameter
-                for (let i=0; i<newTokens.length; i++) {
+                for (let i = 0; i < newTokens.length; i++) {
                     // check if current token at index is already in the ouput variable
                     const isInArray = outputTokens.some(
-                        (tk: TokenIF) => (
+                        (tk: TokenIF) =>
                             tk.address.toLowerCase() === newTokens[i].address.toLowerCase() &&
-                            tk.chainId === newTokens[i].chainId
-                        )
+                            tk.chainId === newTokens[i].chainId,
                     );
                     // check if token is recognized from a list (if necessary)
                     const isTokenKnown = verificationNeeded
                         ? verifyToken(
-                            newTokens[i].address, '0x' + newTokens[i].chainId.toString(16)
-                        ) : true;
+                              newTokens[i].address,
+                              '0x' + newTokens[i].chainId.toString(16),
+                          )
+                        : true;
                     // add token to output if not already there and limiter is below max
                     if (!isInArray && isTokenKnown && limiter < maxToAdd) {
                         limiter++;
                         outputTokens.push(newTokens[i]);
-                    };
+                    }
                 }
-            }
+            };
             // add wallet tokens to output array
             addTokensToOutput(walletTokens, true, 2);
             // add tokens from recent txs to output array
@@ -175,9 +176,11 @@ export const useTokenSearch = (
             // add recent tokens to output array
             addTokensToOutput(recentTokens, false, 2);
             // remove off-chain tokens from output array
-            const ouputTokensOnChain = outputTokens.filter((tk: TokenIF) => tk.chainId === parseInt(chainId));
+            const ouputTokensOnChain = outputTokens.filter(
+                (tk: TokenIF) => tk.chainId === parseInt(chainId),
+            );
             return ouputTokensOnChain;
-        };
+        }
 
         // declare an output variable
         let tokens: TokenIF[];
@@ -196,15 +199,9 @@ export const useTokenSearch = (
         // this will be the array of tokens returned by the hook
         setOutputTokens(tokens);
 
-    // run hook every time the validated input from the user changes
-    // will ignore changes that do not pass validation (eg adding whitespace)
-    }, [
-        chainId,
-        defaultTokens.length,
-        walletTokens.length,
-        recentTokens.length,
-        validatedInput
-    ]);
+        // run hook every time the validated input from the user changes
+        // will ignore changes that do not pass validation (eg adding whitespace)
+    }, [chainId, defaultTokens.length, walletTokens.length, recentTokens.length, validatedInput]);
 
     // outputTokens ➜ tokens to display in DOM
     // validatedInput ➜ user input after validation mods
