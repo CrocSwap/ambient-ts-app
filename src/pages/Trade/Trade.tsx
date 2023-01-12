@@ -147,7 +147,7 @@ export default function Trade(props: TradePropsIF) {
         },
         {
             path: '/limit',
-            name: 'Limit Order',
+            name: 'Limit',
         },
         {
             path: '/range',

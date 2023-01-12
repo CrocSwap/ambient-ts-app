@@ -27,6 +27,10 @@ interface CurrencySelectorProps {
     tokenAorB: string | null;
     direction: string;
     sellToken?: boolean;
+    sellQtyString: string;
+    setSellQtyString: Dispatch<SetStateAction<string>>;
+    buyQtyString: string;
+    setBuyQtyString: Dispatch<SetStateAction<string>>;
     tokenBQtyLocal?: string;
     // nativeBalance: string;
     tokenABalance: string;
@@ -71,6 +75,10 @@ interface CurrencySelectorProps {
 export default function CurrencySelector(props: CurrencySelectorProps) {
     const {
         provider,
+        sellQtyString,
+        setSellQtyString,
+        buyQtyString,
+        setBuyQtyString,
         isUserLoggedIn,
         tokenPair,
         // tokensBank,
@@ -457,13 +465,18 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
             <div className={styles.swapbox_top}>
                 <div className={styles.swap_input}>
                     <CurrencyQuantity
+                        value={tokenAorB === 'A' ? sellQtyString : buyQtyString}
+                        setSellQtyString={setSellQtyString}
+                        setBuyQtyString={setBuyQtyString}
                         fieldId={fieldId}
-                        handleChangeEvent={(evt) => {
-                            // console.log('change triggered from selector');
-                            // console.log({ evt });
-                            if (evt === undefined) return;
-                            handleChangeEvent(evt);
-                        }}
+                        handleChangeEvent={handleChangeEvent}
+
+                        // handleChangeEvent={(evt) => {
+                        //     // console.log('change triggered from selector');
+                        //     // console.log({ evt });
+                        //     if (evt === undefined) return;
+                        //     handleChangeEvent(evt);
+                        // }}
                     />
                 </div>
                 <div

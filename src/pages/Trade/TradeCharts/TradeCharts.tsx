@@ -11,14 +11,14 @@ import {
     AiOutlineCamera,
     AiOutlineFullscreen,
     AiOutlineDownload,
-    AiOutlineCopy,
-    AiOutlineLink,
-    AiOutlineTwitter,
+    // AiOutlineCopy,
+    // AiOutlineLink,
+    // AiOutlineTwitter,
     AiOutlineSetting,
 } from 'react-icons/ai';
 import { VscClose } from 'react-icons/vsc';
 
-import { HiOutlineExternalLink } from 'react-icons/hi';
+// import { HiOutlineExternalLink } from 'react-icons/hi';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 
 // START: Import JSX Components
@@ -246,7 +246,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
                 <AiOutlineDownload />
                 Save Chart Image
             </div>
-            <div className={styles.save_image_content}>
+            {/* <div className={styles.save_image_content}>
                 <AiOutlineCopy />
                 Copy Chart Image
             </div>
@@ -261,7 +261,7 @@ export default function TradeCharts(props: TradeChartsPropsIF) {
             <div className={styles.save_image_content}>
                 <AiOutlineTwitter />
                 Tweet chart image
-            </div>
+            </div> */}
         </div>
     );
     // CHART SETTINGS------------------------------------------------------------
