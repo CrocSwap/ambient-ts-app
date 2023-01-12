@@ -64,8 +64,8 @@ export default function ClaimOrder(props: IClaimOrderProps) {
 
     const [showConfirmation, setShowConfirmation] = useState(false);
     const [newClaimTransactionHash, setNewClaimTransactionHash] = useState('');
-    const [txErrorCode, setTxErrorCode] = useState(0);
-    const [txErrorMessage, setTxErrorMessage] = useState('');
+    const [txErrorCode, setTxErrorCode] = useState('');
+    // const [txErrorMessage, setTxErrorMessage] = useState('');
     const [showSettings, setShowSettings] = useState(false);
 
     const dispatch = useAppDispatch();
@@ -73,8 +73,8 @@ export default function ClaimOrder(props: IClaimOrderProps) {
     const resetConfirmation = () => {
         setShowConfirmation(false);
         setNewClaimTransactionHash('');
-        setTxErrorCode(0);
-        setTxErrorMessage('');
+        setTxErrorCode('');
+        // setTxErrorMessage('');
     };
 
     useEffect(() => {
@@ -124,7 +124,7 @@ export default function ClaimOrder(props: IClaimOrderProps) {
             } catch (error) {
                 console.log({ error });
                 setTxErrorCode(error?.code);
-                setTxErrorMessage(error?.message);
+                // setTxErrorMessage(error?.message);
             }
             //  const newLimitOrderChangeCacheEndpoint =
             //      'https://809821320828123.de:5000/new_limit_order_change?';
@@ -239,9 +239,10 @@ export default function ClaimOrder(props: IClaimOrderProps) {
 
     const transactionApproved = newClaimTransactionHash !== '';
 
-    const isRemovalDenied =
-        txErrorCode === 4001 &&
-        txErrorMessage === 'MetaMask Tx Signature: User denied transaction signature.';
+    const isRemovalDenied = txErrorCode === 'ACTION_REJECTED';
+    // const isRemovalDenied =
+    //     txErrorCode === 4001 &&
+    //     txErrorMessage === 'MetaMask Tx Signature: User denied transaction signature.';
 
     function handleConfirmationChange() {
         setCurrentConfirmationData(claimPending);

@@ -169,14 +169,15 @@ export default function RemoveRange(props: IRemoveRangeProps) {
 
     const [showConfirmation, setShowConfirmation] = useState(false);
     const [newRemovalTransactionHash, setNewRemovalTransactionHash] = useState('');
-    const [txErrorCode, setTxErrorCode] = useState(0);
-    const [txErrorMessage, setTxErrorMessage] = useState('');
+    const [txErrorCode, setTxErrorCode] = useState('');
+    // const [txErrorMessage, setTxErrorMessage] = useState('');
 
     const resetConfirmation = () => {
         setShowConfirmation(false);
         setNewRemovalTransactionHash('');
-        setTxErrorCode(0);
-        setTxErrorMessage('');
+        setTxErrorCode('');
+
+        // setTxErrorMessage('');
     };
 
     useEffect(() => {
@@ -227,7 +228,7 @@ export default function RemoveRange(props: IRemoveRangeProps) {
                 } catch (error) {
                     dispatch(removePositionPendingUpdate(posHash as string));
                     setTxErrorCode(error?.code);
-                    setTxErrorMessage(error?.message);
+                    // setTxErrorMessage(error?.message);
                 }
             } else {
                 const positionLiq = position.positionLiq;
@@ -243,7 +244,7 @@ export default function RemoveRange(props: IRemoveRangeProps) {
                 } catch (error) {
                     dispatch(removePositionPendingUpdate(posHash as string));
                     setTxErrorCode(error?.code);
-                    setTxErrorMessage(error?.message);
+                    // setTxErrorMessage(error?.message);
                 }
             }
         } else if (position.positionType === 'concentrated') {
@@ -276,7 +277,7 @@ export default function RemoveRange(props: IRemoveRangeProps) {
             } catch (error) {
                 dispatch(removePositionPendingUpdate(posHash as string));
                 setTxErrorCode(error?.code);
-                setTxErrorMessage(error?.message);
+                // setTxErrorMessage(error?.message);
                 dispatch(removePositionPendingUpdate(posHash as string));
             }
         } else {
@@ -456,9 +457,10 @@ export default function RemoveRange(props: IRemoveRangeProps) {
 
     const transactionApproved = newRemovalTransactionHash !== '';
 
-    const isRemovalDenied =
-        txErrorCode === 4001 &&
-        txErrorMessage === 'MetaMask Tx Signature: User denied transaction signature.';
+    const isRemovalDenied = txErrorCode === 'ACTION_REJECTED';
+    // const isRemovalDenied =
+    //     txErrorCode === 4001 &&
+    //     txErrorMessage === 'MetaMask Tx Signature: User denied transaction signature.';
 
     function handleConfirmationChange() {
         setCurrentConfirmationData(removalPending);
