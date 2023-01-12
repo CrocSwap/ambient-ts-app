@@ -25,7 +25,7 @@ export default function TransactionDenied(props: TransactionSubmittedProps) {
             <CircleLoaderFailed />
             <p>
                 Check the Metamask extension in your browser for notifications, or click &quot;Try
-                Again&quot;. You can also click the left arrow above to try again.
+                Again&quot;.
             </p>
             <Button title='Try Again' action={resetConfirmation} />
         </div>

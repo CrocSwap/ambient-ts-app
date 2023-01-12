@@ -155,14 +155,15 @@ export default function Limit(props: LimitPropsIF) {
     const [priceInputFieldBlurred, setPriceInputFieldBlurred] = useState(false);
 
     const [newLimitOrderTransactionHash, setNewLimitOrderTransactionHash] = useState('');
-    const [txErrorCode, setTxErrorCode] = useState(0);
+    const [txErrorCode, setTxErrorCode] = useState('');
     const [txErrorMessage, setTxErrorMessage] = useState('');
 
     const [showConfirmation, setShowConfirmation] = useState<boolean>(true);
 
     const resetConfirmation = () => {
         setShowConfirmation(true);
-        setTxErrorCode(0);
+        setTxErrorCode('');
+
         setTxErrorMessage('');
     };
 

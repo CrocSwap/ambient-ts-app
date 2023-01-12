@@ -102,9 +102,9 @@ export default function HarvestPosition(props: IHarvestPositionProps) {
     // eslint-disable-next-line
     const [newHarvestTransactionHash, setNewHarvestTransactionHash] = useState('');
     // eslint-disable-next-line
-    const [txErrorCode, setTxErrorCode] = useState(0);
+    const [txErrorCode, setTxErrorCode] = useState('');
     // eslint-disable-next-line
-    const [txErrorMessage, setTxErrorMessage] = useState('');
+    // const [txErrorMessage, setTxErrorMessage] = useState('');
 
     const [feeLiqBaseDecimalCorrected, setFeeLiqBaseDecimalCorrected] = useState<
         number | undefined
@@ -116,8 +116,9 @@ export default function HarvestPosition(props: IHarvestPositionProps) {
     const resetConfirmation = () => {
         setShowConfirmation(false);
         setNewHarvestTransactionHash('');
-        setTxErrorCode(0);
-        setTxErrorMessage('');
+        setTxErrorCode('');
+
+        // setTxErrorMessage('');
     };
 
     const positionStatsCacheEndpoint = 'https://809821320828123.de:5000/position_stats?';
@@ -203,7 +204,7 @@ export default function HarvestPosition(props: IHarvestPositionProps) {
                 console.log('caught error');
                 dispatch(removePositionPendingUpdate(posHash as string));
                 setTxErrorCode(error?.code);
-                setTxErrorMessage(error?.message);
+                // setTxErrorMessage(error?.message);
                 dispatch(removePositionPendingUpdate(posHash as string));
             }
         } else {
@@ -345,9 +346,11 @@ export default function HarvestPosition(props: IHarvestPositionProps) {
 
     const transactionApproved = newHarvestTransactionHash !== '';
 
-    const isRemovalDenied =
-        txErrorCode === 4001 &&
-        txErrorMessage === 'MetaMask Tx Signature: User denied transaction signature.';
+    const isRemovalDenied = txErrorCode === 'ACTION_REJECTED';
+
+    // const isRemovalDenied =
+    //     txErrorCode === 4001 &&
+    //     txErrorMessage === 'MetaMask Tx Signature: User denied transaction signature.';
 
     function handleConfirmationChange() {
         setCurrentConfirmationData(removalPending);
