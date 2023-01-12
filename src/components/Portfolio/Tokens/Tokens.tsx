@@ -161,10 +161,10 @@ export default function Tokens(props: propsIF) {
         </motion.nav>
     );
 
-    // end of dropdown
+    // end of dropdown ---
 
     return (
-        <div className={styles.container}>
+        <div className={styles.container} style={{ height: 'calc(100vh - 19.5rem' }}>
             <TokensHeader />
             <div className={styles.search_input_container}>
                 <input
