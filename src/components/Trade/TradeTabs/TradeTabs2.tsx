@@ -502,7 +502,7 @@ export default function TradeTabs2(props: ITabsProps) {
                   showRightSideOption: true,
               },
               //   {
-              //       label: 'Limit Orders',
+              //       label: 'Limits',
               //       content: <Orders {...ordersProps} />,
               //       icon: openOrdersImage,
               //       showRightSideOption: true,
@@ -534,7 +534,7 @@ export default function TradeTabs2(props: ITabsProps) {
                   showRightSideOption: true,
               },
               {
-                  label: 'Limit Orders',
+                  label: 'Limits',
                   content: <Orders {...ordersProps} />,
                   icon: openOrdersImage,
                   showRightSideOption: true,
