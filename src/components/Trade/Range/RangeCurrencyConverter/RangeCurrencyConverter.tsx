@@ -322,7 +322,7 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
             }
             dispatch(setIsTokenAPrimaryRange(false));
             setTokenAQtyLocal(parseFloat(truncatedTokenAQty));
-            console.log('setting a to truncatedTokenAQty');
+            // console.log('setting a to truncatedTokenAQty');
             setTokenAInputQty(truncatedTokenAQty);
         } else {
             tokenAQtyField.value = '';

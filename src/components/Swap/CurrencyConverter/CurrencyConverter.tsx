@@ -353,7 +353,7 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
             }
 
             setTokenAQtyLocal(input);
-            setSellQtyString(input);
+            // setSellQtyString(input);
             setIsTokenAPrimaryLocal(true);
             dispatch(setIsTokenAPrimary(true));
             dispatch(setPrimaryQuantity(input));
@@ -528,7 +528,7 @@ export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
             // console.log({ parsedInput });
 
             setTokenBQtyLocal(input);
-            setBuyQtyString(input);
+            // setBuyQtyString(input);
             setIsTokenAPrimaryLocal(false);
             dispatch(setIsTokenAPrimary(false));
             dispatch(setPrimaryQuantity(input));

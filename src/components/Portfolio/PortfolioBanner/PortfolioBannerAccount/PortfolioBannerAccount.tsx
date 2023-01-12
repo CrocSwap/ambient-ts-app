@@ -45,17 +45,20 @@ export default function PortfolioBannerAccount(props: IPortfolioBannerAccountPro
         // connectedAccountActive,
     } = props;
 
-    const ensNameToDisplay = ensNameAvailable
-        ? ensName
-        : resolvedAddress
-        ? activeAccount
-        : truncatedAccountAddress;
+    // console.log({ ensNameAvailable });
+    // console.log({ ensName });
+    // console.log({ resolvedAddress });
+    // console.log({ activeAccount });
+    // console.log({ truncatedAccountAddress });
+
+    const ensNameToDisplay = ensNameAvailable ? ensName : truncatedAccountAddress;
 
     const addressToDisplay = resolvedAddress
         ? resolvedAddress
         : ensNameAvailable
         ? truncatedAccountAddress
         : activeAccount;
+
     const [openSnackbar, setOpenSnackbar] = useState(false);
     // eslint-disable-next-line
     const [value, copy] = useCopyToClipboard();
