@@ -74,6 +74,7 @@ interface LimitCurrencyConverterProps {
     setInput: Dispatch<SetStateAction<string>>;
     searchType: string;
     acknowledgeToken: (tkn: TokenIF) => void;
+    setResetLimitTick: Dispatch<SetStateAction<boolean>>;
 }
 
 // central react functional component
@@ -124,6 +125,7 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
         setInput,
         searchType,
         acknowledgeToken,
+        setResetLimitTick,
     } = props;
 
     const dispatch = useAppDispatch();
@@ -228,6 +230,7 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
         }
         setIsTokenAPrimaryLocal(!isTokenAPrimaryLocal);
         dispatch(setIsTokenAPrimary(!isTokenAPrimary));
+        setResetLimitTick((value) => !value);
     };
 
     useEffect(() => {

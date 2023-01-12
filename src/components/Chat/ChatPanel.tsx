@@ -112,8 +112,8 @@ export default function ChatPanel(props: ChatProps) {
     }, [messages]);
 
     // useEffect(() => {
-    //     getMsg();
-    // }, [room]);
+    //     _socket.connect();
+    // }, [_socket]);
 
     // useEffect(() => {
     //     getMsg();
