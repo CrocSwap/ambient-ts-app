@@ -1018,7 +1018,8 @@ export default function Range(props: RangePropsIF) {
         rangeSpanBelowCurrentPrice: rangeSpanBelowCurrentPrice,
         activeTokenListsChanged: activeTokenListsChanged,
         indicateActiveTokenListsChanged: indicateActiveTokenListsChanged,
-
+        tokenAInputQty: tokenAInputQty,
+        tokenBInputQty: tokenBInputQty,
         isRangeCopied: isRangeCopied,
         tokenAQtyLocal,
         tokenBQtyLocal,

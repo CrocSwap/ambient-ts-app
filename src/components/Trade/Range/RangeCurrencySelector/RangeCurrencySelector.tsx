@@ -44,8 +44,9 @@ interface RangeCurrencySelectorProps {
     tokenBSurplusMinusTokenBQtyNum: number;
     sellToken?: boolean;
     reverseTokens: () => void;
-    tokenAQtyLocal: number;
-    tokenBQtyLocal: number;
+    tokenAInputQty: string;
+    tokenBInputQty: string;
+
     tokenABalance: string;
     tokenBBalance: string;
     tokenADexBalance: string;
@@ -97,6 +98,8 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
         tokenABalance,
         tokenBBalance,
         tokenADexBalance,
+        tokenAInputQty,
+        tokenBInputQty,
         // tokenAQtyLocal,
         // tokenBQtyLocal,
         tokenBDexBalance,
@@ -419,6 +422,7 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
             <div className={styles.swapbox_top}>
                 <div className={styles.swap_input}>
                     <RangeCurrencyQuantity
+                        value={tokenAorB === 'A' ? tokenAInputQty : tokenBInputQty}
                         fieldId={fieldId}
                         updateOtherQuantity={updateOtherQuantity}
                         disable={isFieldDisabled}
