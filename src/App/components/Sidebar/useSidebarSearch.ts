@@ -1,5 +1,6 @@
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
 import { TokenIF, TempPoolIF } from '../../../utils/interfaces/exports';
+import { recursiveMax } from '../../../utils/errors/recursiveMax';
 
 export const useSidebarSearch = (
     poolList: TempPoolIF[],
@@ -52,32 +53,61 @@ export const useSidebarSearch = (
         return output;
     }, [rawInput]);
 
+    // sub-array of pools in which both tokens have been verified
     const [verifiedPools, setVerifiedPools] = useState<TempPoolIF[]>([]);
+
+    // array of custom tokens acknowledged by the user from local storage
+    // this must be initialized as `null` for fn verifyPools() to run properly
+    const [ackTokens, setAckTokens] = useState<TokenIF[]|null>(null);
+
+    // hook to get acknowledged tokens list from local storage
+    useEffect(() => {
+        const getAckTokens = (limiter=1): void => {
+            // retrieve and parse user data from local storage
+            const userData = JSON.parse(localStorage.getItem('user') as string);
+            // set ackTokens if user data was pulled, otherwise check recursively
+            if (userData) {
+                setAckTokens(userData.ackTokens);
+            } else if (limiter < 30) {
+                setTimeout(() => getAckTokens(limiter+1), 150);
+            } else {
+                recursiveMax('warn', 'useSidebarSearch.ts', 'getAckTokens()');
+            }
+        };
+        getAckTokens();
+    }, []);
 
     // memoized list of pools where both tokens can be verified
     // can be a useMemo because poolList will initialize as empty array
     useEffect(() => {
-        // get array of acknowledged tokens from local storage
-        const {ackTokens} = JSON.parse(localStorage.getItem('user') as string);
-        // function to verify token either in token map or in acknowledged tokens
-        const checkToken = (addr: string, chn: string): boolean => {
-            // check if token can be verified in token map
-            const isKnown: boolean = verifyToken(addr.toLowerCase(), chn);
-            // check if token was previously acknowledged by user
-            const isAcknowledged: boolean = ackTokens?.some((ackTkn: TokenIF) => (
-                ackTkn.chainId === parseInt(chn) &&
-                ackTkn.address.toLowerCase() === addr.toLowerCase()
-            ));
-            // return true if either verification passed
-            return isKnown || isAcknowledged;
+        const verifyPools = (limiter=1): void => {
+            if (Array.isArray(ackTokens)) {
+                // function to verify token either in token map or in acknowledged tokens
+                const checkToken = (addr: string, chn: string): boolean => {
+                    // check if token can be verified in token map
+                    const isKnown: boolean = verifyToken(addr.toLowerCase(), chn);
+                    // check if token was previously acknowledged by user
+                    const isAcknowledged: boolean = ackTokens.some((ackTkn: TokenIF) => (
+                        ackTkn.chainId === parseInt(chn) &&
+                        ackTkn.address.toLowerCase() === addr.toLowerCase()
+                    ));
+                    // return true if either verification passed
+                    return isKnown || isAcknowledged;
+                }
+                // filter array of tokens where both tokens can be verified
+                const checkedPools = poolList.filter((pool: TempPoolIF) => (
+                    checkToken(pool.base, pool.chainId) && checkToken(pool.quote, pool.chainId)
+                ));
+                // return array of pools with both verified tokens
+                setVerifiedPools(checkedPools);
+            } else if (limiter < 30) {
+                setTimeout(() => verifyPools(limiter+1), 200);
+            } else {
+                recursiveMax('warn', 'useSidebarSearch.ts', 'verifyPools()');
+            }
         }
-        // filter array of tokens where both tokens can be verified
-        const checkedPools = poolList.filter((pool: TempPoolIF) => (
-            checkToken(pool.base, pool.chainId) && checkToken(pool.quote, pool.chainId)
-        ));
-        // return array of pools with both verified tokens
-        setVerifiedPools(checkedPools);
-    }, [poolList.length, validatedInput]);
+        verifyPools();
+    }, [ackTokens, poolList.length, validatedInput]);
 
     // array of pools to output from the hook
     const [outputPools, setOutputPools] = useState<TempPoolIF[]>([]);

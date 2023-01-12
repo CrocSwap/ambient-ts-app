@@ -46,6 +46,8 @@ interface RangeCurrencyConverterPropsIF {
     quoteTokenBalance: string;
     baseTokenDexBalance: string;
     quoteTokenDexBalance: string;
+    tokenAInputQty: string;
+    tokenBInputQty: string;
     setTokenAInputQty: Dispatch<SetStateAction<string>>;
     setTokenBInputQty: Dispatch<SetStateAction<string>>;
     setRangeButtonErrorMessage: Dispatch<SetStateAction<string>>;
@@ -71,7 +73,7 @@ interface RangeCurrencyConverterPropsIF {
     getRecentTokens: (options?: getRecentTokensParamsIF | undefined) => TokenIF[];
     addRecentToken: (tkn: TokenIF) => void;
     outputTokens: TokenIF[];
-    validatedInput: string,
+    validatedInput: string;
     setInput: Dispatch<SetStateAction<string>>;
     searchType: string;
     acknowledgeToken: (tkn: TokenIF) => void;
@@ -101,6 +103,8 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
         quoteTokenBalance,
         baseTokenDexBalance,
         quoteTokenDexBalance,
+        tokenAInputQty,
+        tokenBInputQty,
         setTokenAInputQty,
         setTokenBInputQty,
         setRangeButtonErrorMessage,
@@ -127,7 +131,7 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
         validatedInput,
         setInput,
         searchType,
-        acknowledgeToken
+        acknowledgeToken,
     } = props;
 
     const dispatch = useAppDispatch();
@@ -235,12 +239,7 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
 
     const setTokenAQtyValue = (value: number) => {
         setTokenAQtyLocal(parseFloat(truncateDecimals(value, tokenPair.dataTokenA.decimals)));
-        // console.log({ value });
-        if (value === 0) {
-            setTokenAInputQty('');
-        } else {
-            setTokenAInputQty(truncateDecimals(value, tokenPair.dataTokenA.decimals));
-        }
+
         handleRangeButtonMessageTokenA(value);
 
         if (poolPriceNonDisplay === undefined) return;
@@ -288,11 +287,7 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
 
     const setTokenBQtyValue = (value: number) => {
         setTokenBQtyLocal(parseFloat(truncateDecimals(value, tokenPair.dataTokenB.decimals)));
-        if (value === 0) {
-            setTokenBInputQty('');
-        } else {
-            setTokenBInputQty(truncateDecimals(value, tokenPair.dataTokenA.decimals));
-        }
+
         handleRangeButtonMessageTokenB(value);
 
         if (poolPriceNonDisplay === undefined) return;
@@ -327,11 +322,13 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
             }
             dispatch(setIsTokenAPrimaryRange(false));
             setTokenAQtyLocal(parseFloat(truncatedTokenAQty));
+            console.log('setting a to truncatedTokenAQty');
             setTokenAInputQty(truncatedTokenAQty);
         } else {
             tokenAQtyField.value = '';
             dispatch(setIsTokenAPrimaryRange(false));
             setTokenAQtyLocal(0);
+            console.log('setting a to blank');
             setTokenAInputQty('');
         }
     };
@@ -479,15 +476,15 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
 
     const handleTokenAQtyFieldUpdate = (evt?: ChangeEvent<HTMLInputElement>) => {
         if (evt) {
-            const tokenAInputField = document.getElementById('A-range-quantity');
+            // const tokenAInputField = document.getElementById('A-range-quantity');
+            // if (tokenAInputField) {
+            //     (tokenAInputField as HTMLInputElement).value = input;
+            // }
 
             const input = evt.target.value.startsWith('.')
                 ? '0' + evt.target.value
                 : evt.target.value;
 
-            if (tokenAInputField) {
-                (tokenAInputField as HTMLInputElement).value = input;
-            }
             if (input === '' || isNaN(parseFloat(input)) || parseFloat(input) <= 0) {
                 setTokenAAllowed(false);
                 setRangeButtonErrorMessage('Enter an Amount');
@@ -703,6 +700,8 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
         setImportedTokens: setImportedTokens,
         isTokenAEth,
         isTokenBEth,
+        tokenAInputQty: tokenAInputQty,
+        tokenBInputQty: tokenBInputQty,
         isWithdrawTokenAFromDexChecked: isWithdrawTokenAFromDexChecked,
         setIsWithdrawTokenAFromDexChecked: setIsWithdrawTokenAFromDexChecked,
         isWithdrawTokenBFromDexChecked: isWithdrawTokenBFromDexChecked,
@@ -739,7 +738,7 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
         validatedInput: validatedInput,
         setInput: setInput,
         searchType: searchType,
-        acknowledgeToken: acknowledgeToken
+        acknowledgeToken: acknowledgeToken,
     };
 
     return (
