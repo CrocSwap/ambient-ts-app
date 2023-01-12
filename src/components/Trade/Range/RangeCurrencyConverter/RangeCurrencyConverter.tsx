@@ -214,25 +214,28 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
     useEffect(() => {
         if (tradeData) {
             if (tradeData.isTokenAPrimaryRange) {
-                const sellQtyField = document.getElementById(
-                    'A-range-quantity',
-                ) as HTMLInputElement;
-                if (sellQtyField) {
-                    sellQtyField.value =
-                        tradeData.primaryQuantityRange === 'NaN' ||
-                        tradeData.primaryQuantityRange === '0'
-                            ? ''
-                            : tradeData.primaryQuantityRange;
-                }
+                setTokenAInputQty(tradeData.primaryQuantityRange);
+                // const sellQtyField = document.getElementById(
+                //     'A-range-quantity',
+                // ) as HTMLInputElement;
+                // if (sellQtyField) {
+                //     sellQtyField.value =
+                //         tradeData.primaryQuantityRange === 'NaN' ||
+                //         tradeData.primaryQuantityRange === '0'
+                //             ? ''
+                //             : tradeData.primaryQuantityRange;
+                // }
             } else {
-                const buyQtyField = document.getElementById('B-range-quantity') as HTMLInputElement;
-                if (buyQtyField) {
-                    buyQtyField.value =
-                        tradeData.primaryQuantityRange === 'NaN' ||
-                        tradeData.primaryQuantityRange === '0'
-                            ? ''
-                            : tradeData.primaryQuantityRange;
-                }
+                setTokenBInputQty(tradeData.primaryQuantityRange);
+
+                // const buyQtyField = document.getElementById('B-range-quantity') as HTMLInputElement;
+                // if (buyQtyField) {
+                //     buyQtyField.value =
+                //         tradeData.primaryQuantityRange === 'NaN' ||
+                //         tradeData.primaryQuantityRange === '0'
+                //             ? ''
+                //             : tradeData.primaryQuantityRange;
+                // }
             }
         }
     }, []);
