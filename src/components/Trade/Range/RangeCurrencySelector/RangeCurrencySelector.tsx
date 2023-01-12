@@ -423,6 +423,7 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
                 <div className={styles.swap_input}>
                     <RangeCurrencyQuantity
                         value={tokenAorB === 'A' ? tokenAInputQty : tokenBInputQty}
+                        thisToken={thisToken}
                         fieldId={fieldId}
                         updateOtherQuantity={updateOtherQuantity}
                         disable={isFieldDisabled}

@@ -51,8 +51,9 @@ export default function Exchange(props: ExchangePropsIF) {
                   cachedFetchTokenPrice={cachedFetchTokenPrice}
               />
           ));
+
     return (
-        <div className={styles.container}>
+        <div className={styles.container} style={{ height: 'calc(100vh - 19.5rem' }}>
             <ExchangeHeader />
             <div className={styles.item_container}>{ItemContent}</div>
         </div>
