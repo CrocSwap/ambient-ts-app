@@ -29,9 +29,13 @@ export default function PortfolioBanner(props: PortfolioBannerPropsIF) {
     } = props;
     const ensNameAvailable = ensName !== '';
 
-    const myBlockies = <Blockies seed={resolvedAddress} scale={7.4} bgColor={'#171D27'} />;
+    const myBlockies = (
+        <Blockies seed={resolvedAddress || activeAccount} scale={7.4} bgColor={'#171D27'} />
+    );
 
-    const truncatedAccountAddress = trimString(activeAccount, 6, 6, '…');
+    const truncatedAccountAddress = connectedAccountActive
+        ? trimString(activeAccount, 6, 6, '…')
+        : trimString(resolvedAddress, 6, 6, '…');
 
     // const [isFollowing, setIsFollowing] = useState(false);
     // const [openSnackbar, setOpenSnackbar] = useState(false);
@@ -89,7 +93,7 @@ export default function PortfolioBanner(props: PortfolioBannerPropsIF) {
                 {imageData[1] ? <img src={imageData[1]} alt='nft' /> : null}
                 {imageData[2] ? <img src={imageData[2]} alt='nft' /> : null}
                 {imageData[3] ? <img src={imageData[3]} alt='nft' /> : null}
-                {myBlockies ? myBlockies : null}
+                {(resolvedAddress || connectedAccountActive) && myBlockies ? myBlockies : null}
             </div>
             {/* {snackbarContent} */}
         </div>
