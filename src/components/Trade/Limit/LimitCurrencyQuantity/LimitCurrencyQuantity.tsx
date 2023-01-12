@@ -52,7 +52,7 @@ export default function LimitCurrencyQuantity(props: LimitCurrencyQuantityProps)
                 autoCorrect='off'
                 min='0'
                 minLength={1}
-                pattern='^[0-9]*[.,]?[0-9]*$'
+                pattern='^[0-9]*[.]?[0-9]*$'
                 disabled={disable}
                 required
             />
