@@ -34,7 +34,7 @@ export default function CurrencyQuantity(props: CurrencyQuantityProps) {
         setDisplayValue(value);
     }, [value]);
 
-    const debouncedEvent = useDebounce(newChangeEvent, 1000); // debounce 1 second
+    const debouncedEvent = useDebounce(newChangeEvent, 500); // debounce 1/2 second
 
     useEffect(() => {
         if (debouncedEvent) {
