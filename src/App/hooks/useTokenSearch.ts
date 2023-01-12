@@ -21,8 +21,6 @@ export const useTokenSearch = (
 
     const recentTxTokens = useAppSelector((state) => state.userData.recentTokens);
 
-    const recentTxTokens = useAppSelector((state) => state.userData.recentTokens);
-
     // cleaned and validated version of raw user input
     const validatedInput = useMemo<string>(() => {
         // trim string and make it lower case

@@ -2428,11 +2428,6 @@ export default function App() {
         setInput: setInput,
         searchType: searchType,
         acknowledgeToken: acknowledgeToken,
-        outputTokens: outputTokens,
-        validatedInput: validatedInput,
-        setInput: setInput,
-        searchType: searchType,
-        acknowledgeToken: acknowledgeToken,
     };
 
     // props for <Range/> React element
