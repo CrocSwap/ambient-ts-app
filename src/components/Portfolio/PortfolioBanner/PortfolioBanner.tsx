@@ -1,5 +1,7 @@
 import styles from './PortfolioBanner.module.css';
 import trimString from '../../../utils/functions/trimString';
+import Blockies from 'react-blockies';
+
 // import { AiOutlineSetting } from 'react-icons/ai';
 // import { FiPlus } from 'react-icons/fi';
 // import { IoMdCheckmark } from 'react-icons/io';
@@ -26,6 +28,8 @@ export default function PortfolioBanner(props: PortfolioBannerPropsIF) {
         connectedAccountActive,
     } = props;
     const ensNameAvailable = ensName !== '';
+
+    const myBlockies = <Blockies seed={resolvedAddress} scale={7.4} bgColor={'#171D27'} />;
 
     const truncatedAccountAddress = trimString(activeAccount, 6, 6, '…');
 
@@ -85,6 +89,7 @@ export default function PortfolioBanner(props: PortfolioBannerPropsIF) {
                 {imageData[1] ? <img src={imageData[1]} alt='nft' /> : null}
                 {imageData[2] ? <img src={imageData[2]} alt='nft' /> : null}
                 {imageData[3] ? <img src={imageData[3]} alt='nft' /> : null}
+                {myBlockies ? myBlockies : null}
             </div>
             {/* {snackbarContent} */}
         </div>
