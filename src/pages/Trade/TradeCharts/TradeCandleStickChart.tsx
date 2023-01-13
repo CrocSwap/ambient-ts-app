@@ -559,6 +559,31 @@ export default function TradeCandleStickChart(props: ChartData) {
         setScaleForChart(parsedChartData);
     }, [parsedChartData?.period, JSON.stringify(liquidityData)]);
 
+    // Liq Scale
+    useEffect(() => {
+        setLiquidityScale(() => {
+            return undefined;
+        });
+        setScaleForChartLiquidity(liquidityData);
+    }, [liquidityData]);
+
+    const setScaleForChartLiquidity = (liquidityData: any) => {
+        if (liquidityData !== undefined) {
+            const liquidityScale = d3.scaleLinear();
+
+            const liquidityExtent = d3fc
+                .extentLinear(liquidityData.liqBidData.concat(liquidityData.liqAskData))
+                .include([0])
+                .accessors([(d: any) => parseFloat(d.activeLiq)]);
+
+            liquidityScale.domain(
+                liquidityExtent(liquidityData.liqBidData.concat(liquidityData.liqAskData)),
+            );
+
+            setLiquidityScale(() => liquidityScale);
+        }
+    };
+
     // Scale
     const setScaleForChart = (parsedChartData: any) => {
         if (parsedChartData !== undefined) {
