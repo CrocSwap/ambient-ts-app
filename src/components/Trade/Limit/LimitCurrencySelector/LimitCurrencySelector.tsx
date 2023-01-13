@@ -372,6 +372,7 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
                 <div className={styles.swap_input}>
                     <LimitCurrencyQuantity
                         value={tokenAorB === 'A' ? tokenAInputQty : tokenBInputQty}
+                        thisToken={thisToken}
                         fieldId={fieldId}
                         handleChangeEvent={handleChangeEvent}
                     />

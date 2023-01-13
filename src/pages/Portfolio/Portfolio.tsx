@@ -458,6 +458,9 @@ export default function Portfolio(props: PortfolioPropsIF) {
 
     const showLoggedInButton = userAccount && !isUserLoggedIn;
 
+    // console.log({ secondaryEnsName });
+    // console.log({ ensName });
+
     return (
         <main data-testid={'portfolio'} className={styles.portfolio_container}>
             {userAccount && showProfileSettings && (
@@ -470,7 +473,13 @@ export default function Portfolio(props: PortfolioPropsIF) {
                 />
             )}
             <PortfolioBanner
-                ensName={secondaryEnsName ? secondaryEnsName : ensName ?? ''}
+                ensName={
+                    connectedAccountActive
+                        ? ensName ?? ''
+                        : secondaryEnsName
+                        ? secondaryEnsName
+                        : ''
+                }
                 resolvedAddress={resolvedAddress}
                 activeAccount={address ?? connectedAccount ?? ''}
                 imageData={connectedAccountActive ? userImageData : secondaryImageData}
