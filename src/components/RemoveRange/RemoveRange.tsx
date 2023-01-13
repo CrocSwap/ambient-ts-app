@@ -41,6 +41,7 @@ import WithdrawTo from './WithdrawTo/WithdrawTo';
 import WaitingConfirmation from '../Global/WaitingConfirmation/WaitingConfirmation';
 import TransactionDenied from '../Global/TransactionDenied/TransactionDenied';
 interface IRemoveRangeProps {
+    crocEnv: CrocEnv | undefined;
     provider: ethers.providers.Provider;
     chainData: ChainSpec;
     chainId: string;
@@ -72,6 +73,7 @@ interface IRemoveRangeProps {
 export default function RemoveRange(props: IRemoveRangeProps) {
     // console.log(props);
     const {
+        crocEnv,
         // chainId,
         // poolIdx,
         // user,
@@ -85,7 +87,7 @@ export default function RemoveRange(props: IRemoveRangeProps) {
         quoteTokenDexBalance,
         closeGlobalModal,
         chainData,
-        provider,
+        // provider,
         // lastBlockNumber,
         position,
     } = props;
@@ -203,10 +205,11 @@ export default function RemoveRange(props: IRemoveRangeProps) {
     const isPositionPendingUpdate = positionsPendingUpdate.indexOf(posHash as string) > -1;
 
     const removeFn = async () => {
+        if (!crocEnv) return;
+        console.log('removing');
         setShowConfirmation(true);
 
-        const env = new CrocEnv(provider);
-        const pool = env.pool(position.base, position.quote);
+        const pool = crocEnv.pool(position.base, position.quote);
         const spotPrice = await pool.displayPrice();
 
         const lowLimit = spotPrice * (1 - liquiditySlippageTolerance / 100);
@@ -226,6 +229,7 @@ export default function RemoveRange(props: IRemoveRangeProps) {
                     console.log(tx?.hash);
                     setNewRemovalTransactionHash(tx?.hash);
                 } catch (error) {
+                    console.log({ error });
                     dispatch(removePositionPendingUpdate(posHash as string));
                     setTxErrorCode(error?.code);
                     // setTxErrorMessage(error?.message);
@@ -242,6 +246,7 @@ export default function RemoveRange(props: IRemoveRangeProps) {
                     console.log(tx?.hash);
                     setNewRemovalTransactionHash(tx?.hash);
                 } catch (error) {
+                    console.log({ error });
                     dispatch(removePositionPendingUpdate(posHash as string));
                     setTxErrorCode(error?.code);
                     // setTxErrorMessage(error?.message);
@@ -275,6 +280,7 @@ export default function RemoveRange(props: IRemoveRangeProps) {
                 dispatch(addPendingTx(tx?.hash));
                 setNewRemovalTransactionHash(tx?.hash);
             } catch (error) {
+                console.log({ error });
                 dispatch(removePositionPendingUpdate(posHash as string));
                 setTxErrorCode(error?.code);
                 // setTxErrorMessage(error?.message);
