@@ -17,6 +17,7 @@ export default function LimitCurrencyQuantity(props: LimitCurrencyQuantityProps)
     const [displayValue, setDisplayValue] = useState<string>('');
 
     useEffect(() => {
+        // console.log(`setting display value for ${fieldId} to: ${value}`);
         setDisplayValue(value);
     }, [value]);
 

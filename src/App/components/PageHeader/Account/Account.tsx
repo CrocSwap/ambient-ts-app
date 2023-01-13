@@ -15,6 +15,7 @@ import { NavLink } from 'react-router-dom';
 import { AiOutlineLogout } from 'react-icons/ai';
 import UseOnClickOutside from '../../../../utils/hooks/useOnClickOutside';
 import { useAccount } from 'wagmi';
+// import { formatAmountOld } from '../../../../utils/numbers';
 
 interface AccountPropsIF {
     isUserLoggedIn: boolean | undefined;
@@ -26,6 +27,7 @@ interface AccountPropsIF {
     ensName: string;
     chainId: string;
     isAppOverlayActive: boolean;
+    ethMainnetUsdPrice?: number;
 
     setIsAppOverlayActive: Dispatch<SetStateAction<boolean>>;
 
@@ -36,6 +38,7 @@ interface AccountPropsIF {
 export default function Account(props: AccountPropsIF) {
     const {
         nativeBalance,
+        ethMainnetUsdPrice,
         clickLogout,
         ensName,
         // openModal,
@@ -84,6 +87,33 @@ export default function Account(props: AccountPropsIF) {
     };
     UseOnClickOutside(walletDropdownItemRef, clickOutsideHandler);
 
+    const ethMainnetUsdValue =
+        ethMainnetUsdPrice !== undefined && nativeBalance !== undefined
+            ? ethMainnetUsdPrice * parseFloat(nativeBalance)
+            : undefined;
+
+    const ethMainnetUsdValueTruncated =
+        ethMainnetUsdValue === undefined
+            ? '…'
+            : ethMainnetUsdValue === 0
+            ? '$0.00'
+            : ethMainnetUsdValue < 0.0001
+            ? '$' + ethMainnetUsdValue.toExponential(2)
+            : ethMainnetUsdValue < 2
+            ? '$' + ethMainnetUsdValue.toPrecision(3)
+            : '$' +
+              ethMainnetUsdValue.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+              });
+
+    const ethQuantityInWalletAndDeposits =
+        nativeBalance === undefined
+            ? undefined
+            : parseFloat(nativeBalance) === 0
+            ? '0.00'
+            : parseFloat(nativeBalance).toPrecision(4);
+
     const walletDisplay = (
         <section className={styles.wallet_display} ref={walletDropdownItemRef}>
             <div
@@ -131,11 +161,12 @@ export default function Account(props: AccountPropsIF) {
                                 <h2>
                                     {isUserLoggedIn
                                         ? nativeBalance
-                                            ? 'Ξ ' + parseFloat(nativeBalance).toPrecision(4)
+                                            ? 'Ξ ' + ethQuantityInWalletAndDeposits
                                             : '...'
                                         : ''}
                                 </h2>
-                                <p>$63,853.924</p>
+                                <p>{`${ethMainnetUsdValueTruncated}`}</p>
+                                {/* <p>$63,853.924</p> */}
                             </div>
                         </div>
                     </div>

@@ -36,6 +36,8 @@ export const useUrlParams = () => {
 
     return {
         chain: findParamValue('chain'),
+        tokenA: findParamValue('tokenA') as string,
+        tokenB: findParamValue('tokenB') as string,
         baseAddr: baseAddr.toLowerCase(),
         quoteAddr: quoteAddr.toLowerCase(),
     };
