@@ -23,6 +23,7 @@ export interface tradeData {
     didUserFlipDenom: boolean;
     shouldSwapConverterUpdate: boolean;
     shouldLimitConverterUpdate: boolean;
+    shouldLimitDirectionReverse: boolean;
     isDenomBase: boolean;
     advancedMode: boolean;
     isTokenAPrimary: boolean;
@@ -58,6 +59,7 @@ const initialState: tradeData = {
     didUserFlipDenom: false,
     shouldSwapConverterUpdate: false,
     shouldLimitConverterUpdate: false,
+    shouldLimitDirectionReverse: false,
     isDenomBase: true,
     advancedMode: false,
     isTokenAPrimary: true,
@@ -133,6 +135,9 @@ export const tradeDataSlice = createSlice({
         },
         setShouldLimitConverterUpdate: (state, action: PayloadAction<boolean>) => {
             state.shouldLimitConverterUpdate = action.payload;
+        },
+        setShouldLimitDirectionReverse: (state, action: PayloadAction<boolean>) => {
+            state.shouldLimitDirectionReverse = action.payload;
         },
         toggleDidUserFlipDenom: (state) => {
             state.didUserFlipDenom = !state.didUserFlipDenom;
@@ -239,6 +244,7 @@ export const {
     toggleDidUserFlipDenom,
     setShouldSwapConverterUpdate,
     setShouldLimitConverterUpdate,
+    setShouldLimitDirectionReverse,
     setDenomInBase,
     toggleDenomInBase,
     setAdvancedMode,
