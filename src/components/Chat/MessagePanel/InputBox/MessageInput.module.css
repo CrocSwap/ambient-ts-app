@@ -144,7 +144,48 @@
 
     /* text/grey dark */
     border-color: transparent;
-    color: rgba(235, 235, 255, 0.25);
+    color: rgba(255, 235, 251, 0.25);
+    background-color: transparent;
+
+    /* Inside auto layout */
+
+    flex: none;
+    order: 0;
+    flex-grow: 1;
+}
+.send_message_button{
+       margin-bottom: -3px;
+
+
+}
+
+svg {
+   
+    transition: fill 0.2s ease-in-out;
+  }
+  svg:hover {
+    fill: #7371FC;
+  }
+
+.input_text_mention {
+
+    width: 212px;
+    height: 22px;
+
+    /* small */
+
+    font-family: 'Lexend Deca';
+    font-style: normal;
+    font-weight: 300;
+    font-size: calc(1vw - 1px);
+    line-height: 15px;
+    display: flex;
+    align-items: center;
+    outline: none;
+
+    /* text/grey dark */
+    border-color: transparent;
+    color: #7371FC;
     background-color: transparent;
 
     /* Inside auto layout */

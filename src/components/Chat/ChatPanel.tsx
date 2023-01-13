@@ -58,8 +58,7 @@ export default function ChatPanel(props: ChatProps) {
     const { address } = useAccount();
     const [currentUser, setCurrentUser] = useState<string | undefined>(undefined);
     const [name, setName] = useState('');
-    const [minutes, setMinute] = useState(1);
-    const [isSequential, setIsSequential] = useState(false);
+    const [isSequential] = useState(false);
     const [scrollDirection, setScrollDirection] = useState(String);
     const wrapperStyleFull = styles.chat_wrapper_full;
     const [messagesArray] = useState<Message[]>([]);
@@ -82,7 +81,12 @@ export default function ChatPanel(props: ChatProps) {
     useEffect(() => {
         if (scrollDirection === 'Scroll Up') {
             if (messageUser !== currentUser) {
-                setNotification((notification) => notification + 1);
+                if (
+                    lastMessage?.mentionedName.slice(1) === name ||
+                    lastMessage?.mentionedName.slice(1) === address
+                ) {
+                    setNotification((notification) => notification + 1);
+                }
             } else if (messageUser === currentUser) {
                 const timer = setTimeout(() => {
                     messageEnd.current?.scrollTo(
@@ -103,43 +107,28 @@ export default function ChatPanel(props: ChatProps) {
     }, [lastMessage]);
 
     useEffect(() => {
-        setMinute(interval(messages[0]?.createdAt, messages[1]?.createdAt));
-        if (minutes <= 10) {
-            setIsSequential(true);
-        } else {
-            setIsSequential(false);
-        }
-    }, [messages]);
-
-    // useEffect(() => {
-    //     _socket.connect();
-    // }, [_socket]);
-
-    // useEffect(() => {
-    //     getMsg();
-    // }, []);
+        getMsg();
+    }, [room]);
 
     useEffect(() => {
-        if (address) {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            getID().then((result: any) => {
-                setCurrentUser(result.userData._id);
-                setName(result.userData.ensName);
-            });
-        }
-    }, [address, props.chatStatus, props.isFullScreen]);
+        getMsg();
+    }, []);
 
     useEffect(() => {
-        if (address) {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            getID().then((result: any) => {
-                setCurrentUser(result.userData._id);
-                setName(result.userData.ensName);
-            });
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        getID().then((result: any) => {
+            setCurrentUser(result.userData._id);
+            setName(result.userData.ensName);
+        });
+    }, [props.chatStatus, props.isFullScreen]);
 
-            getMsg();
-        }
-    }, [address]);
+    useEffect(() => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        getID().then((result: any) => {
+            setCurrentUser(result.userData._id);
+            setName(result.userData.ensName);
+        });
+    }, []);
 
     useEffect(() => {
         isCurrentUser();
@@ -148,15 +137,13 @@ export default function ChatPanel(props: ChatProps) {
     useEffect(() => {
         scrollToBottom();
         setNotification(0);
-
-        getMsg();
     }, [room]);
 
-    // function handleCloseChatPanel() {
-    //     props.setChatStatus(false);
-    // }
+    function handleCloseChatPanel() {
+        props.setChatStatus(false);
+    }
 
-    const scrollToBottomButton = async () => {
+    const scrollToBottomButton = () => {
         messageEnd.current?.scrollTo(
             messageEnd.current?.scrollHeight,
             messageEnd.current?.scrollHeight,
@@ -169,9 +156,10 @@ export default function ChatPanel(props: ChatProps) {
                 messageEnd.current?.scrollHeight,
                 messageEnd.current?.scrollHeight,
             );
-        }, 750);
+        }, 1000);
         return () => clearTimeout(timer);
     };
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleScroll = (e: any) => {
         if (e.target.scrollTop === 0 || e.target.scrollTop === 1) {
@@ -184,7 +172,10 @@ export default function ChatPanel(props: ChatProps) {
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleWheel = (e: any) => {
-        if (e.nativeEvent.wheelDelta > 0) {
+        if (
+            e.nativeEvent.wheelDelta > 0 &&
+            messageEnd.current?.scrollHeight !== messageEnd.current?.scrollHeight
+        ) {
             setScrollDirection('Scroll Up');
         }
     };
@@ -253,7 +244,6 @@ export default function ChatPanel(props: ChatProps) {
                                 message={item}
                                 name={getName(item)}
                                 isSequential={i === 0 ? isSequential : false}
-                                messagesArray={messagesArray}
                             />
                         )}
                     </div>
@@ -315,7 +305,7 @@ export default function ChatPanel(props: ChatProps) {
                             <div className={styles.chat_notification}>
                                 {notification > 0 && scrollDirection === 'Scroll Up' ? (
                                     <div className={styles.chat_notification}>
-                                        <span>
+                                        <span onClick={() => scrollToBottomButton()}>
                                             <BsChatLeftFill size={25} color='#7371fc' />
                                             <span className={styles.text}>{notification}</span>
                                         </span>
@@ -323,7 +313,7 @@ export default function ChatPanel(props: ChatProps) {
                                             role='button'
                                             size={27}
                                             color='#7371fc'
-                                            onClick={() => scrollToBottom()}
+                                            onClick={() => scrollToBottomButton()}
                                         />
                                     </div>
                                 ) : scrollDirection === 'Scroll Up' && notification <= 0 ? (

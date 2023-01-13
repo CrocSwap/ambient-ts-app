@@ -1,11 +1,8 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+import { useAccount } from 'wagmi';
 import useSocket from '../../Service/useSocket';
-import { Message } from '../../Model/MessageModel';
-
 import { BsEmojiSmileFill } from 'react-icons/bs';
-// import { Message } from '../../Model/MessageModel';
+import { Message } from '../../Model/MessageModel';
 import Picker from 'emoji-picker-react';
-
 import styles from './MessageInput.module.css';
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import PositionBox from '../PositionBox/PositionBox';
@@ -14,7 +11,7 @@ import { TokenIF } from '../../../../utils/interfaces/TokenIF';
 import { targetData } from '../../../../utils/state/tradeDataSlice';
 
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
-import { useAccount } from 'wagmi';
+import useChatApi from '../../../../components/Chat/Service/ChatApi';
 interface MessageInputProps {
     message?: Message;
     room: string;
@@ -58,6 +55,10 @@ export default function MessageInput(props: MessageInputProps, prop: ChatProps) 
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
     const { address, isConnected } = useAccount();
     const [isPosition, setIsPosition] = useState(false);
+    const { receiveUsername, getNameOrWallet } = useChatApi();
+    const [isMentionMessage, setIsMentionMessage] = useState(false);
+    const [mentionedName, setMentionedName] = useState('');
+    const [fill, setFill] = useState('red');
     // const { roomId } = props.match.params;
 
     const { sendMsg } = useSocket(props.room);
@@ -102,8 +103,15 @@ export default function MessageInput(props: MessageInputProps, prop: ChatProps) 
     }, [isConnected, address]);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
+    const handleSendMessageButton = () => {
+        handleSendMsg(message, roomId);
+        setMessage('');
+        dontShowEmojiPanel();
+    };
     const _handleKeyDown = (e: any) => {
         if (e.key === 'Enter') {
+            setIsMentionMessage(false);
             handleSendMsg(e.target.value, roomId);
             setMessage('');
             dontShowEmojiPanel();
@@ -147,6 +155,27 @@ export default function MessageInput(props: MessageInputProps, prop: ChatProps) 
                     style={{ pointerEvents: !isUserLoggedIn ? 'none' : 'auto' }}
                     onClick={handleEmojiPickerHideShow}
                 />
+                <div
+                    className={styles.send_message_button}
+                    onClick={() => handleSendMessageButton()}
+                >
+                    <svg
+                        width='16'
+                        height='16'
+                        viewBox='0 0 16 16'
+                        fill='none'
+                        xmlns='http://www.w3.org/2000/svg'
+                    >
+                        <path
+                            d='M14.6663 1.3335L7.33301 8.66683M14.6663 1.3335L9.99967 14.6668L7.33301 8.66683M14.6663 1.3335L1.33301 6.00016L7.33301 8.66683'
+                            stroke='#EBEBFF'
+                            strokeOpacity='0.25'
+                            strokeLinecap='round'
+                            strokeLinejoin='round'
+                        />
+                        <title>Send Message</title>
+                    </svg>
+                </div>
             </div>
             {showEmojiPicker && (
                 <div className={styles.emojiPicker}>

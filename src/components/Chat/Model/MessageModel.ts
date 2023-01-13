@@ -5,4 +5,6 @@ export interface Message {
     createdAt: string;
     ensName: string;
     walletID: string;
+    isMentionMessage: boolean;
+    mentionedName: string;
 }
