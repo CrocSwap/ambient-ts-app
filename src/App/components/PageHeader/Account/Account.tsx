@@ -107,6 +107,13 @@ export default function Account(props: AccountPropsIF) {
                   maximumFractionDigits: 2,
               });
 
+    const ethQuantityInWalletAndDeposits =
+        nativeBalance === undefined
+            ? undefined
+            : parseFloat(nativeBalance) === 0
+            ? '0.00'
+            : parseFloat(nativeBalance).toPrecision(4);
+
     const walletDisplay = (
         <section className={styles.wallet_display} ref={walletDropdownItemRef}>
             <div
@@ -154,7 +161,7 @@ export default function Account(props: AccountPropsIF) {
                                 <h2>
                                     {isUserLoggedIn
                                         ? nativeBalance
-                                            ? 'Ξ ' + parseFloat(nativeBalance).toPrecision(4)
+                                            ? 'Ξ ' + ethQuantityInWalletAndDeposits
                                             : '...'
                                         : ''}
                                 </h2>
