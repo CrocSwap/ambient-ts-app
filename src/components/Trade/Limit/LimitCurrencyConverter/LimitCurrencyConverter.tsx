@@ -180,23 +180,8 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
             if (isTokenAPrimaryLocal) {
                 setTokenAQtyLocal(tradeData.primaryQuantity);
                 setTokenAInputQty(tradeData.primaryQuantity);
-                // const sellQtyField = document.getElementById(
-                //     'sell-limit-quantity',
-                // ) as HTMLInputElement;
-                // if (sellQtyField) {
-                //     sellQtyField.value =
-                //         tradeData.primaryQuantity === 'NaN' ? '' : tradeData.primaryQuantity;
-                // }
             } else {
-                // setTokenBQtyLocal(tradeData.primaryQuantity);
                 setTokenBInputQty(tradeData.primaryQuantity);
-                // const buyQtyField = document.getElementById(
-                //     'buy-limit-quantity',
-                // ) as HTMLInputElement;
-                // if (buyQtyField) {
-                //     buyQtyField.value =
-                //         tradeData.primaryQuantity === 'NaN' ? '' : tradeData.primaryQuantity;
-                // }
             }
         }
     }, []);
@@ -213,7 +198,6 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
                 '&tokenB=' +
                 tokenPair.dataTokenA.address,
         );
-        console.log({ isTokenAPrimaryLocal });
         if (!isTokenAPrimaryLocal) {
             // console.log('setting a to' + tradeData.primaryQuantity);
             setTokenAQtyLocal(tradeData.primaryQuantity);
@@ -230,13 +214,13 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
     };
 
     useEffect(() => {
-        (async () => {
-            if (tradeData.shouldLimitDirectionReverse) {
-                setIsTokenAPrimaryLocal(!isTokenAPrimaryLocal);
-            }
-        })();
-        reverseTokens();
-        dispatch(setShouldLimitDirectionReverse(false));
+        if (tradeData.shouldLimitDirectionReverse) {
+            setIsTokenAPrimaryLocal((state) => {
+                reverseTokens();
+                return !state;
+            });
+            dispatch(setShouldLimitDirectionReverse(false));
+        }
     }, [tradeData.shouldLimitDirectionReverse]);
 
     useEffect(() => {
@@ -560,7 +544,6 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
                 onClick={() => {
                     setResetLimitTick((value) => !value);
                     setIsTokenAPrimaryLocal(!isTokenAPrimaryLocal);
-
                     reverseTokens();
                 }}
                 style={{ cursor: 'pointer' }}
