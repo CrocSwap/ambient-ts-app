@@ -62,6 +62,7 @@ interface LimitCurrencyConverterProps {
     isDenominationInBase: boolean;
     activeTokenListsChanged: boolean;
     indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
+    setResetLimitTick: Dispatch<SetStateAction<boolean>>;
     poolExists: boolean | undefined;
     gasPriceInGwei: number | undefined;
 
@@ -77,7 +78,6 @@ interface LimitCurrencyConverterProps {
     setInput: Dispatch<SetStateAction<string>>;
     searchType: string;
     acknowledgeToken: (tkn: TokenIF) => void;
-    setResetLimitTick: Dispatch<SetStateAction<boolean>>;
 }
 
 // central react functional component
