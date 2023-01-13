@@ -41,7 +41,7 @@ interface ConfirmRangeModalPropsIF {
     pinnedMaxPriceDisplayTruncatedInQuote: string;
     showConfirmation: boolean;
     setShowConfirmation: Dispatch<SetStateAction<boolean>>;
-    txErrorCode: number;
+    txErrorCode: string;
     txErrorMessage: string;
     resetConfirmation: () => void;
 }
@@ -64,7 +64,7 @@ export default function ConfirmRangeModal(props: ConfirmRangeModalPropsIF) {
         pinnedMaxPriceDisplayTruncatedInBase,
         pinnedMaxPriceDisplayTruncatedInQuote,
         txErrorCode,
-        txErrorMessage,
+        // txErrorMessage,
         showConfirmation,
         setShowConfirmation,
         resetConfirmation,
@@ -74,9 +74,11 @@ export default function ConfirmRangeModal(props: ConfirmRangeModalPropsIF) {
     const tokenB = tokenPair.dataTokenB;
 
     const transactionApproved = newRangeTransactionHash !== '';
-    const isTransactionDenied =
-        txErrorCode === 4001 &&
-        txErrorMessage === 'MetaMask Tx Signature: User denied transaction signature.';
+    const isTransactionDenied = txErrorCode === 'ACTION_REJECTED';
+
+    // const isTransactionDenied =
+    //     txErrorCode === 4001 &&
+    //     txErrorMessage === 'MetaMask Tx Signature: User denied transaction signature.';
 
     const tokenAQty = (document.getElementById('A-range-quantity') as HTMLInputElement)?.value;
     const tokenBQty = (document.getElementById('B-range-quantity') as HTMLInputElement)?.value;

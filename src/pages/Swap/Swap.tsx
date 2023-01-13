@@ -232,7 +232,7 @@ export default function Swap(props: SwapPropsIF) {
     const [isWithdrawFromDexChecked, setIsWithdrawFromDexChecked] = useState(false);
     const [isSaveAsDexSurplusChecked, setIsSaveAsDexSurplusChecked] = useState(false);
     const [newSwapTransactionHash, setNewSwapTransactionHash] = useState('');
-    const [txErrorCode, setTxErrorCode] = useState(0);
+    const [txErrorCode, setTxErrorCode] = useState('');
     const [txErrorMessage, setTxErrorMessage] = useState('');
     const [priceImpact, setPriceImpact] = useState<CrocImpact | undefined>();
     const [showConfirmation, setShowConfirmation] = useState<boolean>(true);
@@ -240,7 +240,7 @@ export default function Swap(props: SwapPropsIF) {
 
     const resetConfirmation = () => {
         setShowConfirmation(true);
-        setTxErrorCode(0);
+        setTxErrorCode('');
         setTxErrorMessage('');
     };
 
