@@ -557,7 +557,7 @@ export default function TradeCandleStickChart(props: ChartData) {
             return undefined;
         });
         setScaleForChart(parsedChartData);
-    }, [parsedChartData?.period, JSON.stringify(liquidityData)]);
+    }, [parsedChartData?.period]);
 
     // Liq Scale
     useEffect(() => {
@@ -565,7 +565,7 @@ export default function TradeCandleStickChart(props: ChartData) {
             return undefined;
         });
         setScaleForChartLiquidity(liquidityData);
-    }, [liquidityData]);
+    }, [JSON.stringify(liquidityData)]);
 
     const setScaleForChartLiquidity = (liquidityData: any) => {
         if (liquidityData !== undefined) {
