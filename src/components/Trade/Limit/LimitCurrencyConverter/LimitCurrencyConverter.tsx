@@ -6,7 +6,10 @@ import { ethers } from 'ethers';
 import {
     // reverseTokensInRTK,
     setIsTokenAPrimary,
+    // setLimitTick,
+    setPoolPriceNonDisplay,
     setPrimaryQuantity,
+    setShouldLimitDirectionReverse,
 } from '../../../../utils/state/tradeDataSlice';
 
 import truncateDecimals from '../../../../utils/data/truncateDecimals';
@@ -128,6 +131,13 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
         setResetLimitTick,
     } = props;
 
+    // useEffect(() => {
+    //     console.log({ tokenAInputQty });
+    // }, [tokenAInputQty]);
+    // useEffect(() => {
+    //     console.log({ tokenBInputQty });
+    // }, [tokenBInputQty]);
+
     const dispatch = useAppDispatch();
 
     const tradeData = useAppSelector((state) => state.tradeData);
@@ -138,9 +148,9 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
     const [tokenAQtyLocal, setTokenAQtyLocal] = useState<string>(
         isTokenAPrimaryLocal ? tradeData?.primaryQuantity : '',
     );
-    const [tokenBQtyLocal, setTokenBQtyLocal] = useState<string>(
-        !isTokenAPrimaryLocal ? tradeData?.primaryQuantity : '',
-    );
+    // const [tokenBQtyLocal, setTokenBQtyLocal] = useState<string>(
+    //     !isTokenAPrimaryLocal ? tradeData?.primaryQuantity : '',
+    // );
 
     const isSellTokenEth = tradeData.tokenA.address === ZERO_ADDRESS;
 
@@ -170,23 +180,23 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
             if (isTokenAPrimaryLocal) {
                 setTokenAQtyLocal(tradeData.primaryQuantity);
                 setTokenAInputQty(tradeData.primaryQuantity);
-                const sellQtyField = document.getElementById(
-                    'sell-limit-quantity',
-                ) as HTMLInputElement;
-                if (sellQtyField) {
-                    sellQtyField.value =
-                        tradeData.primaryQuantity === 'NaN' ? '' : tradeData.primaryQuantity;
-                }
+                // const sellQtyField = document.getElementById(
+                //     'sell-limit-quantity',
+                // ) as HTMLInputElement;
+                // if (sellQtyField) {
+                //     sellQtyField.value =
+                //         tradeData.primaryQuantity === 'NaN' ? '' : tradeData.primaryQuantity;
+                // }
             } else {
-                setTokenBQtyLocal(tradeData.primaryQuantity);
+                // setTokenBQtyLocal(tradeData.primaryQuantity);
                 setTokenBInputQty(tradeData.primaryQuantity);
-                const buyQtyField = document.getElementById(
-                    'buy-limit-quantity',
-                ) as HTMLInputElement;
-                if (buyQtyField) {
-                    buyQtyField.value =
-                        tradeData.primaryQuantity === 'NaN' ? '' : tradeData.primaryQuantity;
-                }
+                // const buyQtyField = document.getElementById(
+                //     'buy-limit-quantity',
+                // ) as HTMLInputElement;
+                // if (buyQtyField) {
+                //     buyQtyField.value =
+                //         tradeData.primaryQuantity === 'NaN' ? '' : tradeData.primaryQuantity;
+                // }
             }
         }
     }, []);
@@ -195,51 +205,47 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
 
     const reverseTokens = (): void => {
         // dispatch(reverseTokensInRTK());
-
+        // console.log('reversing');
+        console.log({ isTokenAPrimaryLocal });
         navigate(
             '/trade/limit/chain=0x5&tokenA=' +
                 tokenPair.dataTokenB.address +
                 '&tokenB=' +
                 tokenPair.dataTokenA.address,
         );
+        console.log({ isTokenAPrimaryLocal });
         if (!isTokenAPrimaryLocal) {
-            setTokenAQtyLocal(tokenBQtyLocal);
-            setTokenAInputQty(tokenBQtyLocal);
-            // const buyQtyField = document.getElementById('buy-limit-quantity') as HTMLInputElement;
-            // if (buyQtyField) {
-            //     buyQtyField.value = '';
-            // }
-            // setTokenBInputQty(tokenAQtyLocal);
-            // const sellQtyField = document.getElementById('sell-limit-quantity') as HTMLInputElement;
-            // if (sellQtyField) {
-            //     sellQtyField.value = tokenBQtyLocal === 'NaN' ? '' : tokenBQtyLocal;
-            // }
+            // console.log('setting a to' + tradeData.primaryQuantity);
+            setTokenAQtyLocal(tradeData.primaryQuantity);
+            setTokenAInputQty(tradeData.primaryQuantity);
         } else {
-            setTokenBQtyLocal(tokenAQtyLocal);
-            setTokenBInputQty(tokenAQtyLocal);
-            // const sellQtyField = document.getElementById('sell-limit-quantity') as HTMLInputElement;
-            // if (sellQtyField) {
-            //     sellQtyField.value = '';
-            // }
-            // setTokenAInputQty(tokenAQtyLocal);
-
-            // const buyQtyField = document.getElementById('buy-limit-quantity') as HTMLInputElement;
-            // if (buyQtyField) {
-            //     buyQtyField.value = tokenAQtyLocal === 'NaN' ? '' : tokenAQtyLocal;
-            // }
+            // console.log('setting b to' + tradeData.primaryQuantity);
+            // setTokenBQtyLocal(tradeData.primaryQuantity);
+            setTokenBInputQty(tradeData.primaryQuantity);
         }
-        setIsTokenAPrimaryLocal(!isTokenAPrimaryLocal);
         dispatch(setIsTokenAPrimary(!isTokenAPrimary));
-        setResetLimitTick((value) => !value);
+        dispatch(setPoolPriceNonDisplay(0));
+
+        // setResetLimitTick((value) => !value);
     };
 
     useEffect(() => {
-        isTokenAPrimary ? handleTokenAChangeEvent() : handleTokenBChangeEvent();
+        (async () => {
+            if (tradeData.shouldLimitDirectionReverse) {
+                setIsTokenAPrimaryLocal(!isTokenAPrimaryLocal);
+            }
+        })();
+        reverseTokens();
+        dispatch(setShouldLimitDirectionReverse(false));
+    }, [tradeData.shouldLimitDirectionReverse]);
+
+    useEffect(() => {
+        isTokenAPrimaryLocal ? handleTokenAChangeEvent() : handleTokenBChangeEvent();
     }, [
         poolExists,
         limitTickDisplayPrice,
         isSellTokenBase,
-        isTokenAPrimary,
+        isTokenAPrimaryLocal,
         tokenABalance,
         isWithdrawFromDexChecked,
         tradeData.shouldLimitConverterUpdate,
@@ -323,7 +329,7 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
                 if (input !== '') return;
             }
 
-            console.log({ input });
+            // console.log({ input });
 
             setTokenAQtyLocal(input);
             setTokenAInputQty(input);
@@ -363,7 +369,9 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
                 : truncateDecimals(rawTokenBQty, 2)
             : '';
 
-        setTokenBQtyLocal(truncatedTokenBQty);
+        // console.log({ isSellTokenBase });
+        // console.log({ truncatedTokenBQty });
+        // setTokenBQtyLocal(truncatedTokenBQty);
         setTokenBInputQty(truncatedTokenBQty);
         // const buyQtyField = document.getElementById('buy-limit-quantity') as HTMLInputElement;
 
@@ -404,14 +412,17 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
 
         // const truncatedTokenBQty = truncateDecimals(rawTokenBQty, tokenBDecimals).toString();
         handleLimitButtonMessage(parseFloat(input));
+        // console.log({ truncatedTokenBQty });
 
-        setTokenBQtyLocal(truncatedTokenBQty);
+        // setTokenBQtyLocal(truncatedTokenBQty);
+        setTokenBInputQty(truncatedTokenBQty);
+
         // setTokenBInputQty(truncatedTokenBQty);
-        const buyQtyField = document.getElementById('buy-limit-quantity') as HTMLInputElement;
+        // const buyQtyField = document.getElementById('buy-limit-quantity') as HTMLInputElement;
 
-        if (buyQtyField) {
-            buyQtyField.value = truncatedTokenBQty === 'NaN' ? '' : truncatedTokenBQty;
-        }
+        // if (buyQtyField) {
+        //     buyQtyField.value = truncatedTokenBQty === 'NaN' ? '' : truncatedTokenBQty;
+        // }
     };
 
     const handleTokenBChangeEvent = (evt?: ChangeEvent<HTMLInputElement>) => {
@@ -433,7 +444,8 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
                 setLimitButtonErrorMessage('Enter an Amount');
                 if (input !== '') return;
             }
-            setTokenBQtyLocal(input);
+            // console.log({ input });
+            // setTokenBQtyLocal(input);
             setTokenBInputQty(input);
             setIsTokenAPrimaryLocal(false);
             dispatch(setIsTokenAPrimary(false));
@@ -545,7 +557,12 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
 
             <div
                 className={styles.arrow_container}
-                onClick={reverseTokens}
+                onClick={() => {
+                    setResetLimitTick((value) => !value);
+                    setIsTokenAPrimaryLocal(!isTokenAPrimaryLocal);
+
+                    reverseTokens();
+                }}
                 style={{ cursor: 'pointer' }}
             >
                 <IconWithTooltip title='Reverse tokens' placement='left'>
