@@ -1,5 +1,5 @@
 /** ***** Import React and Dongles *******/
-import { useEffect, useState, useMemo, SetStateAction } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { Routes, Route, useLocation, Navigate } from 'react-router-dom';
 
 import { useIdleTimer } from 'react-idle-timer';
