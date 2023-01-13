@@ -636,7 +636,6 @@ export default function TradeCandleStickChart(props: ChartData) {
             volumeScale.domain(yExtentVolume(volumeData));
 
             // bar chart
-
             const ghostExtent = d3fc
                 .extentLinear(liquidityData.liqSnapData)
                 .include([0])
@@ -692,6 +691,7 @@ export default function TradeCandleStickChart(props: ChartData) {
         props.poolPriceDisplay,
         poolPriceNonDisplay,
         scaleData === undefined,
+        liquidityScale,
     ]);
 
     return (
