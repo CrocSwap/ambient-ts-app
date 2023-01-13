@@ -2275,6 +2275,7 @@ export default function App() {
         closeGlobalModal: closeGlobalModal,
         isAppOverlayActive: isAppOverlayActive,
         setIsAppOverlayActive: setIsAppOverlayActive,
+        ethMainnetUsdPrice: ethMainnetUsdPrice,
 
         switchTheme: switchTheme,
         theme: theme,
