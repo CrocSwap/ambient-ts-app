@@ -366,7 +366,7 @@ export default function TradeCandleStickChart(props: ChartData) {
                     depthAskLeft < depthBidLeft ? depthAskLeft : depthBidLeft,
                     depthBidRight > depthAskRight ? depthBidRight : depthAskRight,
                 ])
-                .range([1, 300]);
+                .range([1, 550]);
 
             props.liquidityData.ranges.map((data: any) => {
                 const liqPrices = denominationsInBase
@@ -396,7 +396,7 @@ export default function TradeCandleStickChart(props: ChartData) {
                         data.cumAskLiq !== undefined &&
                         data.cumAskLiq !== '0' &&
                         liqPrices !== '+inf' &&
-                        liqPrices > barThreshold &&
+                        !Number.isNaN(depthLiquidityScale(data.cumAskLiq)) &&
                         liqPrices < barThreshold * 10
                     ) {
                         depthLiqBidData.push({
@@ -407,7 +407,10 @@ export default function TradeCandleStickChart(props: ChartData) {
                         });
                     }
 
-                    if (data.cumBidLiq !== undefined && liqPrices < barThreshold) {
+                    if (
+                        data.cumBidLiq !== undefined &&
+                        !Number.isNaN(depthLiquidityScale(data.cumBidLiq))
+                    ) {
                         depthLiqAskData.push({
                             activeLiq: depthLiquidityScale(data.cumBidLiq),
                             liqPrices: liqPrices,
@@ -416,11 +419,12 @@ export default function TradeCandleStickChart(props: ChartData) {
                         });
                     }
                 } else {
+                    console.log(depthLiquidityScale(data.cumBidLiq), liqPrices);
                     if (
                         data.cumBidLiq !== undefined &&
                         data.cumBidLiq !== '0' &&
                         liqPrices !== '+inf' &&
-                        liqPrices > barThreshold
+                        !Number.isNaN(depthLiquidityScale(data.cumBidLiq))
                     ) {
                         depthLiqBidData.push({
                             activeLiq: depthLiquidityScale(data.cumBidLiq),
@@ -433,7 +437,7 @@ export default function TradeCandleStickChart(props: ChartData) {
                     if (
                         data.cumAskLiq !== undefined &&
                         data.cumAskLiq !== '0' &&
-                        liqPrices < barThreshold &&
+                        !Number.isNaN(depthLiquidityScale(data.cumAskLiq)) &&
                         liqPrices < limitBoundary
                     ) {
                         depthLiqAskData.push({
@@ -534,6 +538,8 @@ export default function TradeCandleStickChart(props: ChartData) {
         liqBidData.sort((a: any, b: any) => b.liqPrices - a.liqPrices);
         depthLiqBidData.sort((a: any, b: any) => b.liqPrices - a.liqPrices);
         depthLiqAskData.sort((a: any, b: any) => b.liqPrices - a.liqPrices);
+
+        console.log(depthLiqBidData);
 
         return {
             liqAskData: liqAskData,
