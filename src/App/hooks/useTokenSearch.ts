@@ -32,9 +32,11 @@ export const useTokenSearch = (
         ) {
             setSearchAs('address');
             // if not an apparent token address, search name and symbol
+            // if not an apparent token address, search name and symbol
         } else if (cleanInput.length >= 2) {
             setSearchAs('nameOrSymbol');
             return cleanInput;
+            // otherwise treat as if there is no input entered
             // otherwise treat as if there is no input entered
         } else {
             setSearchAs('');
@@ -77,10 +79,16 @@ export const useTokenSearch = (
                 // value can be technically be undefined but gatekeeping prevents that
                 foundToken = getTokenByAddress(validatedInput, chainId) as TokenIF;
                 // if token is not on an imported list, check tokens in user data
+                // if token is not on an imported list, check tokens in user data
             } else if (!tokenExistsOnList) {
                 // retrieve and parse user data object from local storage
                 // isolate tokens listed in user data
                 // return one that has an address matching user input on current chain
+                foundToken = JSON.parse(localStorage.getItem('user') as string).tokens.find(
+                    (tkn: TokenIF) =>
+                        tkn.address.toLowerCase() === validatedInput.toLowerCase() &&
+                        tkn.chainId === parseInt(chainId),
+                );
                 foundToken = JSON.parse(localStorage.getItem('user') as string).tokens.find(
                     (tkn: TokenIF) =>
                         tkn.address.toLowerCase() === validatedInput.toLowerCase() &&

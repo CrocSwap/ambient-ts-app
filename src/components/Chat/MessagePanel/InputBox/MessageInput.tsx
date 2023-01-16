@@ -3,6 +3,7 @@ import useSocket from '../../Service/useSocket';
 import { Message } from '../../Model/MessageModel';
 
 import { BsEmojiSmileFill } from 'react-icons/bs';
+
 // import { Message } from '../../Model/MessageModel';
 import Picker from 'emoji-picker-react';
 
@@ -42,8 +43,42 @@ interface currentPoolInfo {
     targetData: targetData[];
     pinnedMaxPriceDisplayTruncated: number;
     pinnedMinPriceDisplayTruncated: number;
+    message?: Message;
+    room: string;
+    currentUser: string;
+    ensName: string;
+}
+interface currentPoolInfo {
+    tokenA: TokenIF;
+    tokenB: TokenIF;
+    baseToken: TokenIF;
+    quoteToken: TokenIF;
+    didUserFlipDenom: boolean;
+    isDenomBase: boolean;
+    advancedMode: boolean;
+    isTokenAPrimary: boolean;
+    primaryQuantity: string;
+    isTokenAPrimaryRange: boolean;
+    primaryQuantityRange: string;
+    limitPrice: string;
+    advancedLowTick: number;
+    advancedHighTick: number;
+    simpleRangeWidth: number;
+    slippageTolerance: number;
+    activeChartPeriod: number;
+    targetData: targetData[];
+    pinnedMaxPriceDisplayTruncated: number;
+    pinnedMinPriceDisplayTruncated: number;
 }
 
+export interface ChatProps {
+    chatStatus: boolean;
+    onClose: () => void;
+    favePools: PoolIF[];
+    currentPool: currentPoolInfo;
+    isFullScreen?: boolean;
+    setChatStatus: Dispatch<SetStateAction<boolean>>;
+}
 export interface ChatProps {
     chatStatus: boolean;
     onClose: () => void;
@@ -70,6 +105,7 @@ export default function MessageInput(props: MessageInputProps, prop: ChatProps) 
             ? prop.currentPool.baseToken.symbol + prop.currentPool.quoteToken.symbol
             : props.room;
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleEmojiClick = (event: any, emoji: any) => {
         let msg = message;
@@ -108,7 +144,14 @@ export default function MessageInput(props: MessageInputProps, prop: ChatProps) 
             setMessage('');
             dontShowEmojiPanel();
         }
+        if (!isUserLoggedIn) {
+            setShowEmojiPicker(false);
+        } else {
+            setShowEmojiPicker(!showEmojiPicker);
+        }
     };
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
 
     const handleSendMsg = async (msg: string, roomId: any) => {
         if (msg === '' || !address) {
@@ -141,6 +184,11 @@ export default function MessageInput(props: MessageInputProps, prop: ChatProps) 
                     onKeyDown={_handleKeyDown}
                     value={message}
                     onChange={onChangeMessage}
+                />
+
+                <BsEmojiSmileFill
+                    style={{ pointerEvents: !isUserLoggedIn ? 'none' : 'auto' }}
+                    onClick={handleEmojiPickerHideShow}
                 />
 
                 <BsEmojiSmileFill
