@@ -2592,7 +2592,8 @@ export default function App() {
                 dispatch(setDenomInBase(isDenomBase));
             }
         }
-    }, [tradeData.didUserFlipDenom, JSON.stringify(tokenPair)]);
+    }, [tradeData.didUserFlipDenom, tokenPair]);
+    // }, [tradeData.didUserFlipDenom, JSON.stringify(tokenPair)]);
 
     const [imageData, setImageData] = useState<string[]>([]);
 
