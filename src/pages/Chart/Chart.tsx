@@ -328,10 +328,15 @@ export default function Chart(props: ChartData) {
                     liquidityData !== undefined ? liquidityData.topBoundary : Infinity;
                 newTargets.filter((target: any) => target.name === 'Min')[0].value = 0;
 
-                setLiqHighlightedLinesAndArea(newTargets, true);
+                setLiqHighlightedLinesAndArea(newTargets);
 
                 return newTargets;
             });
+            d3.select(d3PlotArea.current)
+                .select('svg')
+                .select('.targets')
+                .selectAll('.horizontal')
+                .style('visibility', 'hidden');
         }
     };
 
@@ -1816,7 +1821,7 @@ export default function Chart(props: ChartData) {
 
                                 newRangeValue = newTargets;
 
-                                setLiqHighlightedLinesAndArea(newTargets, true);
+                                setLiqHighlightedLinesAndArea(newTargets);
                                 return newTargets;
                             });
                         } else {
@@ -2594,7 +2599,7 @@ export default function Chart(props: ChartData) {
 
                     newRangeValue = newTargets;
 
-                    setLiqHighlightedLinesAndArea(newTargets, true);
+                    setLiqHighlightedLinesAndArea(newTargets);
                     return newTargets;
                 });
             } else {
@@ -2662,10 +2667,7 @@ export default function Chart(props: ChartData) {
 
                         newRangeValue = newTargets;
 
-                        setLiqHighlightedLinesAndArea(
-                            newTargets,
-                            liquidityData.topBoundary === clickedValue,
-                        );
+                        setLiqHighlightedLinesAndArea(newTargets);
                         return newTargets;
                     });
                 }
@@ -2729,10 +2731,7 @@ export default function Chart(props: ChartData) {
 
                 newRangeValue = newTargets;
 
-                setLiqHighlightedLinesAndArea(
-                    newTargets,
-                    liquidityData.topBoundary === clickedValue,
-                );
+                setLiqHighlightedLinesAndArea(newTargets);
                 return newTargets;
             });
 
@@ -2926,7 +2925,7 @@ export default function Chart(props: ChartData) {
     }, [liqMode]);
 
     // line gradient
-    const setLiqHighlightedLinesAndArea = (ranges: any, isAmbient = false) => {
+    const setLiqHighlightedLinesAndArea = (ranges: any) => {
         liquidityData.lineAskSeries = [];
         liquidityData.lineBidSeries = [];
 
@@ -3148,15 +3147,29 @@ export default function Chart(props: ChartData) {
 
             setHorizontalBandData([
                 [
-                    isAmbient ? 0 : ranges.filter((item: any) => item.name === 'Min')[0].value,
-                    isAmbient ? 0 : ranges.filter((item: any) => item.name === 'Max')[0].value,
+                    simpleRangeWidth === 100
+                        ? 0
+                        : ranges.filter((item: any) => item.name === 'Min')[0].value,
+                    simpleRangeWidth === 100
+                        ? 0
+                        : ranges.filter((item: any) => item.name === 'Max')[0].value,
                 ],
             ]);
 
             horizontalBandData[0] = [
-                isAmbient ? 0 : ranges.filter((item: any) => item.name === 'Min')[0].value,
-                isAmbient ? 0 : ranges.filter((item: any) => item.name === 'Max')[0].value,
+                simpleRangeWidth === 100
+                    ? 0
+                    : ranges.filter((item: any) => item.name === 'Min')[0].value,
+                simpleRangeWidth === 100
+                    ? 0
+                    : ranges.filter((item: any) => item.name === 'Max')[0].value,
             ];
+
+            d3.select(d3PlotArea.current)
+                .select('svg')
+                .select('.targets')
+                .selectAll('.horizontal')
+                .style('visibility', simpleRangeWidth === 100 ? 'hidden' : 'visible');
         }
     };
 
