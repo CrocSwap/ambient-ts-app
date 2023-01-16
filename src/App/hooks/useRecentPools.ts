@@ -21,7 +21,13 @@ export const useRecentPools = (
 
     // fn to add a token to the recentTokens array
     function addRecentPool(pool: SmallerPoolIF): void {
-        setRecentPools([pool, ...recentPools]);
+        const recentPoolsWithNewRemoved = recentPools.filter(
+            (recentPool: SmallerPoolIF) => (
+                recentPool.base !== pool.base &&
+                recentPool.quote !== pool.quote
+            )
+        );
+        setRecentPools([pool, ...recentPoolsWithNewRemoved]);
     }
 
     // fn to return recent pools from local state
