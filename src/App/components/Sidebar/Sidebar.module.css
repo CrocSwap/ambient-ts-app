@@ -239,15 +239,15 @@
 /* END OF SEARCH CONTAINER */
 
 /* Small screens */
-@media only screen and (max-width: 111px) {
+@media only screen and (max-width: 500px) {
     .sidebar {
         display: none;
 
-        bottom: 0;
+        /* bottom: 0;
         width: 100vw;
         height: 5rem;
         background: var(--dark1);
-        z-index: 2;
+        z-index: 2; */
     }
 
     .sidebar_nav {
