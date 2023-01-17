@@ -148,6 +148,7 @@ import { useTokenSearch } from './hooks/useTokenSearch';
 import WalletModalWagmi from './components/WalletModal/WalletModalWagmi';
 import Moralis from 'moralis';
 import { usePoolList } from './hooks/usePoolList';
+import { useRecentPools } from './hooks/useRecentPools';
 
 // import { memoizeQuerySpotTick } from './functions/querySpotTick';
 // import PhishingWarning from '../components/Global/PhisingWarning/PhishingWarning';
@@ -324,7 +325,25 @@ export default function App() {
     // `'0x5'` is the chain the app should be on by default
     const [chainData, isChainSupported] = useAppChain('0x5', isUserLoggedIn);
 
+    const { addRecentPool, getRecentPools } = useRecentPools(chainData.chainId);
+
     const [tokenPairLocal, setTokenPairLocal] = useState<string[] | null>(null);
+
+    // hook to add pools to the recent pools list (in-session)
+    // runs every time to the current token pair changes
+    // later this will need more logic for a Pool ID value
+    useEffect(() => {
+        // make sure data exists for a token pair
+        if (tokenPairLocal) {
+            // sort current token pair as base and quote
+            const [baseAddr, quoteAddr] = sortBaseQuoteTokens(
+                tokenPairLocal[0], tokenPairLocal[1]
+            );
+            // add the pool to the list of recent pools
+            // fn has internal logic to handle duplicate values
+            addRecentPool({base: baseAddr, quote: quoteAddr});
+        }
+    }, [JSON.stringify(tokenPairLocal)]);
 
     const [isShowAllEnabled, setIsShowAllEnabled] = useState(true);
     const [currentTxActiveInTransactions, setCurrentTxActiveInTransactions] = useState('');
@@ -2532,6 +2551,7 @@ export default function App() {
         verifyToken: verifyToken,
         getTokenByAddress: getTokenByAddress,
         tokenPair: tokenPair,
+        getRecentPools: getRecentPools
     };
 
     const analyticsProps = {

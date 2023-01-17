@@ -35,6 +35,7 @@ import { DefaultTooltip } from '../../../components/Global/StyledTooltip/StyledT
 import RecentPools from '../../../components/Global/Sidebar/RecentPools/RecentPools';
 import { useAccount } from 'wagmi';
 import { useSidebarSearch } from './useSidebarSearch';
+import { SmallerPoolIF } from '../../hooks/useRecentPools';
 
 const cachedPoolStatsFetch = memoizePoolStats();
 
@@ -70,6 +71,7 @@ interface SidebarPropsIF {
     verifyToken: (addr: string, chn: string) => boolean;
     getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
     tokenPair: TokenPairIF;
+    getRecentPools: (count: number) => SmallerPoolIF[];
 }
 
 export default function Sidebar(props: SidebarPropsIF) {
@@ -99,7 +101,8 @@ export default function Sidebar(props: SidebarPropsIF) {
         poolList,
         verifyToken,
         getTokenByAddress,
-        tokenPair
+        tokenPair,
+        getRecentPools
     } = props;
 
     const { isConnected } = useAccount();
@@ -139,6 +142,8 @@ export default function Sidebar(props: SidebarPropsIF) {
                     chainId={chainId}
                     cachedPoolStatsFetch={cachedPoolStatsFetch}
                     lastBlockNumber={lastBlockNumber}
+                    getRecentPools={getRecentPools}
+                    getTokenByAddress={getTokenByAddress}
                 />
             ),
         },

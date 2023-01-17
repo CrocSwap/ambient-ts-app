@@ -1,20 +1,23 @@
 import { Link, useLocation } from 'react-router-dom';
 import styles from './RecentPoolsCard.module.css';
-import { PoolIF } from '../../../../utils/interfaces/exports';
+import { TokenIF } from '../../../../utils/interfaces/exports';
 import { PoolStatsFn } from '../../../../App/functions/getPoolStats';
 import { useEffect, useState, useMemo } from 'react';
 import { formatAmountOld } from '../../../../utils/numbers';
 import { tradeData } from '../../../../utils/state/tradeDataSlice';
+import { SmallerPoolIF } from '../../../../App/hooks/useRecentPools';
+
 interface RecentPoolsCardProps {
     tradeData: tradeData;
-    pool: PoolIF;
     chainId: string;
+    pool: SmallerPoolIF;
     cachedPoolStatsFetch: PoolStatsFn;
     lastBlockNumber: number;
+    getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
 }
 
 export default function RecentPoolsCard(props: RecentPoolsCardProps) {
-    const { tradeData, pool, lastBlockNumber, cachedPoolStatsFetch } = props;
+    const { tradeData, chainId, pool, lastBlockNumber, cachedPoolStatsFetch, getTokenByAddress } = props;
 
     const { pathname } = useLocation();
 
@@ -39,10 +42,10 @@ export default function RecentPoolsCard(props: RecentPoolsCardProps) {
     const fetchPoolStats = () => {
         (async () => {
             const poolStatsFresh = await cachedPoolStatsFetch(
-                pool.chainId,
-                pool.base.address,
-                pool.quote.address,
-                pool.poolId,
+                chainId,
+                pool.base,
+                pool.quote,
+                pool.poolId ?? 36000,
                 Math.floor(lastBlockNumber / 4),
             );
             const volume = poolStatsFresh?.volume;
@@ -54,29 +57,30 @@ export default function RecentPoolsCard(props: RecentPoolsCardProps) {
         })();
     };
 
+    const baseTokenData = getTokenByAddress(pool.base, chainId);
+    const quoteTokenData = getTokenByAddress(pool.quote, chainId);
+
     useEffect(() => {
         fetchPoolStats();
     }, [lastBlockNumber]);
 
-    const chainString = '0x5';
-
     const tokenAString =
-        pool.base.address.toLowerCase() === tradeData.tokenA.address.toLowerCase()
-            ? pool.base.address
-            : pool.quote.address;
+        pool.base.toLowerCase() === tradeData.tokenA.address.toLowerCase()
+            ? pool.base
+            : pool.quote;
 
     const tokenBString =
-        pool.base.address.toLowerCase() === tradeData.tokenA.address.toLowerCase()
-            ? pool.quote.address
-            : pool.base.address;
+        pool.base.toLowerCase() === tradeData.tokenA.address.toLowerCase()
+            ? pool.quote
+            : pool.base;
 
     return (
         <Link
             className={styles.container}
-            to={`${locationSlug}/chain=${chainString}&tokenA=${tokenAString}&tokenB=${tokenBString}`}
+            to={`${locationSlug}/chain=${chainId}&tokenA=${tokenAString}&tokenB=${tokenBString}`}
         >
             <div>
-                {pool.base.symbol} / {pool.quote.symbol}
+                {baseTokenData?.symbol} / {quoteTokenData?.symbol}
             </div>
             <div>{poolVolume ?? '…'}</div>
             <div>{poolTvl ?? '…'}</div>
