@@ -380,7 +380,7 @@ export default function Trade(props: TradePropsIF) {
     const [poolPriceChangePercent, setPoolPriceChangePercent] = useState<string | undefined>();
     const [isPoolPriceChangePositive, setIsPoolPriceChangePositive] = useState<boolean>(true);
 
-    const expandTableHeightStyle = expandTradeTable ? styles.full_height : styles.min_height;
+    // const expandTableHeightStyle = expandTradeTable ? styles.full_height : styles.min_height;
 
     return (
         <section className={styles.main_layout}>
