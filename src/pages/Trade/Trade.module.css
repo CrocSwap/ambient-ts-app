@@ -406,4 +406,12 @@
         /* background:radial-gradient(circle at 3% 25%, rgb(1, 28, 56) 0%, rgba(4, 12, 24, 1) 25%); */
         /* padding: 1rem; */
     }
+
+    .full_table_height{
+        height: 100%
+    }
+
+    .min_table_height{
+        height: 30%
+    }
 }
