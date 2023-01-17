@@ -2,7 +2,7 @@ import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
 import moment from 'moment';
 import { DetailedHTMLProps, HTMLAttributes, useCallback, useEffect, useRef, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { formatAmountChartData, formatAmountWithoutDigit } from '../../utils/numbers';
 import { CandleData } from '../../utils/state/graphDataSlice';
@@ -18,7 +18,8 @@ import {
     setCandleDomains,
     setRescaleRangeBoundaries,
     setIsLinesSwitched,
-    setIsTokenAPrimary,
+    // setIsTokenAPrimary,
+    setShouldLimitDirectionReverse,
 } from '../../utils/state/tradeDataSlice';
 import { CandleChartData, VolumeChartData } from '../Trade/TradeCharts/TradeCharts';
 import FeeRateSubChart from '../Trade/TradeCharts/TradeChartsLoading/FeeRateSubChart';
@@ -1503,25 +1504,30 @@ export default function Chart(props: ChartData) {
         });
     };
 
-    const navigate = useNavigate();
-    const [isTokenAPrimaryLocal, setIsTokenAPrimaryLocal] = useState<boolean>(
-        tradeData.isTokenAPrimary,
-    );
-    const reverseTokens = (): void => {
-        navigate(
-            '/trade/limit/chain=0x5&tokenA=' +
-                tradeData.tokenB.address +
-                '&tokenB=' +
-                tradeData.tokenA.address,
-        );
-        const buyQtyField = document.getElementById('buy-limit-quantity') as HTMLInputElement;
-        const sellQtyField = document.getElementById('sell-limit-quantity') as HTMLInputElement;
-        buyQtyField.value = sellQtyField.value;
-        sellQtyField.value = buyQtyField.value;
+    // const navigate = useNavigate();
+    // const [isTokenAPrimaryLocal, setIsTokenAPrimaryLocal] = useState<boolean>(
+    //     tradeData.isTokenAPrimary,
+    // );
+    // const reverseTokens = (): void => {
+    //     navigate(
+    //         '/trade/limit/chain=0x5&tokenA=' +
+    //             tradeData.tokenB.address +
+    //             '&tokenB=' +
+    //             tradeData.tokenA.address,
+    //     );
+    //     console.log('reversing');
+    //     // if (isTokenAPrimaryLocal) {
+    //     //     const buyQtyField = document.getElementById('buy-limit-quantity') as HTMLInputElement;
+    //     //     buyQtyField.value = tradeData.primaryQuantity;
+    //     // }
+    //     // const buyQtyField = document.getElementById('buy-limit-quantity') as HTMLInputElement;
+    //     // const sellQtyField = document.getElementById('sell-limit-quantity') as HTMLInputElement;
+    //     // buyQtyField.value = sellQtyField.value;
+    //     // sellQtyField.value = buyQtyField.value;
 
-        setIsTokenAPrimaryLocal(!isTokenAPrimaryLocal);
-        dispatch(setIsTokenAPrimary(!tradeData.isTokenAPrimary));
-    };
+    //     setIsTokenAPrimaryLocal(!isTokenAPrimaryLocal);
+    //     dispatch(setIsTokenAPrimary(!tradeData.isTokenAPrimary));
+    // };
 
     useEffect(() => {
         setRanges((prevState) => {
@@ -1732,16 +1738,19 @@ export default function Chart(props: ChartData) {
     // }, [scaleData]);
 
     function reverseTokenForChart(limitPreviousData: any, newLimitValue: any) {
-        if (isUserLoggedIn && poolPriceDisplay) {
+        if (poolPriceDisplay) {
+            // if (isUserLoggedIn && poolPriceDisplay) {
             if (sellOrderStyle === 'order_sell') {
                 if (limitPreviousData > poolPriceDisplay && newLimitValue < poolPriceDisplay) {
                     handlePulseAnimation('limitOrder');
-                    reverseTokens();
+                    // reverseTokens();
+                    dispatch(setShouldLimitDirectionReverse(true));
                 }
             } else {
                 if (limitPreviousData < poolPriceDisplay && newLimitValue > poolPriceDisplay) {
                     handlePulseAnimation('limitOrder');
-                    reverseTokens();
+                    // reverseTokens();
+                    dispatch(setShouldLimitDirectionReverse(true));
                 }
             }
         }

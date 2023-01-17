@@ -33,6 +33,7 @@ interface HeaderPropsIF {
     chainId: string;
     isChainSupported: boolean;
     openWagmiModalWallet: () => void;
+    ethMainnetUsdPrice?: number;
 
     isMobileSidebarOpen: boolean;
     setIsMobileSidebarOpen: Dispatch<SetStateAction<boolean>>;
@@ -57,6 +58,7 @@ export default function PageHeader(props: HeaderPropsIF) {
         // clickLogout,
         // metamaskLocked,
         // shouldDisplayAccountTab,
+        ethMainnetUsdPrice,
         chainId,
         isChainSupported,
         // openMoralisModalWallet,
@@ -144,7 +146,7 @@ export default function PageHeader(props: HeaderPropsIF) {
         chainId: chainId,
         isAppOverlayActive: isAppOverlayActive,
         setIsAppOverlayActive: setIsAppOverlayActive,
-
+        ethMainnetUsdPrice: ethMainnetUsdPrice,
         switchTheme: switchTheme,
         theme: theme,
     };
