@@ -242,6 +242,7 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
 
     const setTokenAQtyValue = (value: number) => {
         setTokenAQtyLocal(parseFloat(truncateDecimals(value, tokenPair.dataTokenA.decimals)));
+        setTokenAInputQty(truncateDecimals(value, tokenPair.dataTokenA.decimals));
 
         handleRangeButtonMessageTokenA(value);
 
@@ -290,6 +291,7 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
 
     const setTokenBQtyValue = (value: number) => {
         setTokenBQtyLocal(parseFloat(truncateDecimals(value, tokenPair.dataTokenB.decimals)));
+        setTokenBInputQty(truncateDecimals(value, tokenPair.dataTokenB.decimals));
 
         handleRangeButtonMessageTokenB(value);
 
