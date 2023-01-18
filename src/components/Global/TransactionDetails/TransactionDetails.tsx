@@ -5,6 +5,7 @@ import printDomToImage from '../../../utils/functions/printDomToImage';
 import RangeDetailsControl from '../../RangeDetails/RangeDetailsControl/RangeDetailsControl';
 import TransactionDetailsHeader from './TransactionDetailsHeader/TransactionDetailsHeader';
 import TransactionDetailsPriceInfo from './TransactionDetailsPriceInfo/TransactionDetailsPriceInfo';
+import TransactionDetailsGraph from './TransactionDetailsGraph/TransactionDetailsGraph';
 interface TransactionDetailsPropsIF {
     account: string;
     tx: ITransaction;
@@ -71,6 +72,8 @@ export default function TransactionDetails(props: TransactionDetailsPropsIF) {
                         />
                     </div>
                     <div className={styles.right_container}>
+                        <TransactionDetailsGraph tx={tx} />
+
                         {/* <OrderGraphDisplay isOrderFilled={isOrderFilled} user={userNameToDisplay} /> */}
                     </div>
                     {/* <OrderDetailsActions /> */}
