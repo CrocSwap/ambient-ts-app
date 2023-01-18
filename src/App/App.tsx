@@ -333,16 +333,13 @@ export default function App() {
     // runs every time to the current token pair changes
     // later this will need more logic for a Pool ID value
     useEffect(() => {
-        // make sure data exists for a token pair
-        if (tokenPairLocal) {
-            // sort current token pair as base and quote
-            const [baseAddr, quoteAddr] = sortBaseQuoteTokens(
-                tradeData.tokenA.address, tradeData.tokenB.address
-            );
-            // add the pool to the list of recent pools
-            // fn has internal logic to handle duplicate values
-            addRecentPool({base: baseAddr, quote: quoteAddr});
-        }
+        // sort current token pair as base and quote
+        const [baseAddr, quoteAddr] = sortBaseQuoteTokens(
+            tradeData.tokenA.address, tradeData.tokenB.address
+        );
+        // add the pool to the list of recent pools
+        // fn has internal logic to handle duplicate values
+        addRecentPool({base: baseAddr, quote: quoteAddr});
     }, [tradeData.tokenA.address, tradeData.tokenB.address]);
 
     const [isShowAllEnabled, setIsShowAllEnabled] = useState(true);
