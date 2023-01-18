@@ -852,13 +852,35 @@ export default function Chart(props: ChartData) {
                         // return moment(d).format('  DD HH:mm');
                     }
                     if (activeTimeFrame === '1d') {
-                        return d3.timeFormat('%m/%d/%y')(d);
+                        return moment(d)
+                            .format('DD')
+                            .match(/^(01)$/)
+                            ? moment(d).format('MMM') === 'Jan'
+                                ? moment(d).format('YYYY')
+                                : moment(d).format('MMM')
+                            : moment(d).format('DD');
                     } else if (activeTimeFrame.match(/^(1m|5m|15m)$/)) {
-                        return d3.timeFormat('%a %H:%M')(d);
+                        return moment(d).format('HH:mm') !== '00:00'
+                            ? moment(d).format('HH:mm')
+                            : moment(d).format('DD');
                     } else if (activeTimeFrame.match(/^(1h|4h)$/)) {
-                        return d3.timeFormat('%m/%d/%y')(d);
+                        return moment(d).format('HH:mm') !== '00:00'
+                            ? moment(d).format('HH:mm')
+                            : moment(d)
+                                  .format('DD')
+                                  .match(/^(01)$/)
+                            ? moment(d).format('MMM') === 'Jan'
+                                ? moment(d).format('YYYY')
+                                : moment(d).format('MMM')
+                            : moment(d).format('DD');
                     } else {
-                        return d3.timeFormat('%m/%d/%y')(d);
+                        return moment(d)
+                            .format('DD')
+                            .match(/^(01)$/)
+                            ? moment(d).format('MMM') === 'Jan'
+                                ? moment(d).format('YYYY')
+                                : moment(d).format('MMM')
+                            : moment(d).format('DD');
                     }
                 });
 
@@ -2123,7 +2145,10 @@ export default function Chart(props: ChartData) {
             const _yAxis = d3fc
                 .axisRight()
                 .scale(scaleData.yScale)
-                .tickFormat((d: any) => formatAmountChartData(d));
+                .tickFormat((d: any) => {
+                    const digit = d.toString().split('.')[1]?.length;
+                    return formatAmountChartData(d, digit ? digit : 2);
+                });
 
             setYaxis(() => {
                 return _yAxis;
