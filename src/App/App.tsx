@@ -337,13 +337,13 @@ export default function App() {
         if (tokenPairLocal) {
             // sort current token pair as base and quote
             const [baseAddr, quoteAddr] = sortBaseQuoteTokens(
-                tokenPairLocal[0], tokenPairLocal[1]
+                tradeData.tokenA.address, tradeData.tokenB.address
             );
             // add the pool to the list of recent pools
             // fn has internal logic to handle duplicate values
             addRecentPool({base: baseAddr, quote: quoteAddr});
         }
-    }, [JSON.stringify(tokenPairLocal)]);
+    }, [tradeData.tokenA.address, tradeData.tokenB.address]);
 
     const [isShowAllEnabled, setIsShowAllEnabled] = useState(true);
     const [currentTxActiveInTransactions, setCurrentTxActiveInTransactions] = useState('');

@@ -23,11 +23,13 @@ export const useRecentPools = (
     function addRecentPool(pool: SmallerPoolIF): void {
         const recentPoolsWithNewRemoved = recentPools.filter(
             (recentPool: SmallerPoolIF) => (
-                recentPool.base !== pool.base &&
-                recentPool.quote !== pool.quote
+                recentPool.base.toLowerCase() !== pool.base.toLowerCase() ||
+                recentPool.quote.toLowerCase() !== pool.quote.toLowerCase()
             )
         );
         setRecentPools([pool, ...recentPoolsWithNewRemoved]);
+        // setRecentPools([pool, ...recentPools]);
+        console.log({listAfter: recentPools});
     }
 
     // fn to return recent pools from local state
