@@ -3227,7 +3227,7 @@ export default function Chart(props: ChartData) {
             const lineDepthAskSeries = d3fc
                 .seriesSvgLine()
                 .orient('horizontal')
-                .curve(d3.curveBasis)
+                .curve(d3.curveStep)
                 .mainValue((d: any) => d.activeLiq)
                 .crossValue((d: any) => d.liqPrices)
                 .xScale(liquidityScale)
@@ -3251,7 +3251,7 @@ export default function Chart(props: ChartData) {
             const lineDepthBidSeries = d3fc
                 .seriesSvgLine()
                 .orient('horizontal')
-                .curve(d3.curveBasis)
+                .curve(d3.curveStep)
                 .mainValue((d: any) => d.activeLiq)
                 .crossValue((d: any) => d.liqPrices)
                 .xScale(liquidityScale)
@@ -3344,7 +3344,7 @@ export default function Chart(props: ChartData) {
             const depthLiqBidSeries = d3fc
                 .seriesSvgArea()
                 .orient('horizontal')
-                .curve(d3.curveBasis)
+                .curve(d3.curveStep)
                 .mainValue((d: any) => d.activeLiq)
                 .crossValue((d: any) => d.liqPrices)
                 .xScale(liquidityScale)
@@ -3360,7 +3360,7 @@ export default function Chart(props: ChartData) {
             const depthLiqAskSeries = d3fc
                 .seriesSvgArea()
                 .orient('horizontal')
-                .curve(d3.curveBasis)
+                .curve(d3.curveStep)
                 .mainValue((d: any) => d.activeLiq)
                 .crossValue((d: any) => d.liqPrices)
                 .xScale(liquidityScale)

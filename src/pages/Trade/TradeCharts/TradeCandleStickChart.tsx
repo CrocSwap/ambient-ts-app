@@ -419,7 +419,6 @@ export default function TradeCandleStickChart(props: ChartData) {
                         });
                     }
                 } else {
-                    console.log(depthLiquidityScale(data.cumBidLiq), liqPrices);
                     if (
                         data.cumBidLiq !== undefined &&
                         data.cumBidLiq !== '0' &&
@@ -538,8 +537,6 @@ export default function TradeCandleStickChart(props: ChartData) {
         liqBidData.sort((a: any, b: any) => b.liqPrices - a.liqPrices);
         depthLiqBidData.sort((a: any, b: any) => b.liqPrices - a.liqPrices);
         depthLiqAskData.sort((a: any, b: any) => b.liqPrices - a.liqPrices);
-
-        console.log(depthLiqBidData);
 
         return {
             liqAskData: liqAskData,
