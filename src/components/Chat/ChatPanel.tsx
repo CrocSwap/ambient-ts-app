@@ -58,7 +58,8 @@ export default function ChatPanel(props: ChatProps) {
     const { address } = useAccount();
     const [currentUser, setCurrentUser] = useState<string | undefined>(undefined);
     const [name, setName] = useState('');
-    const [isSequential] = useState(false);
+    const [minutes, setMinute] = useState(1);
+    const [isSequential, setIsSequential] = useState(false);
     const [scrollDirection, setScrollDirection] = useState(String);
     const wrapperStyleFull = styles.chat_wrapper_full;
     const [messagesArray] = useState<Message[]>([]);
@@ -107,28 +108,43 @@ export default function ChatPanel(props: ChatProps) {
     }, [lastMessage]);
 
     useEffect(() => {
-        getMsg();
-    }, [room]);
+        setMinute(interval(messages[0]?.createdAt, messages[1]?.createdAt));
+        if (minutes <= 10) {
+            setIsSequential(true);
+        } else {
+            setIsSequential(false);
+        }
+    }, [messages]);
+
+    // useEffect(() => {
+    //     _socket.connect();
+    // }, [_socket]);
+
+    // useEffect(() => {
+    //     getMsg();
+    // }, []);
 
     useEffect(() => {
-        getMsg();
-    }, []);
+        if (address) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            getID().then((result: any) => {
+                setCurrentUser(result.userData._id);
+                setName(result.userData.ensName);
+            });
+        }
+    }, [address, props.chatStatus, props.isFullScreen]);
 
     useEffect(() => {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        getID().then((result: any) => {
-            setCurrentUser(result.userData._id);
-            setName(result.userData.ensName);
-        });
-    }, [props.chatStatus, props.isFullScreen]);
+        if (address) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            getID().then((result: any) => {
+                setCurrentUser(result.userData._id);
+                setName(result.userData.ensName);
+            });
 
-    useEffect(() => {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        getID().then((result: any) => {
-            setCurrentUser(result.userData._id);
-            setName(result.userData.ensName);
-        });
-    }, []);
+            getMsg();
+        }
+    }, [address]);
 
     useEffect(() => {
         isCurrentUser();
@@ -137,13 +153,15 @@ export default function ChatPanel(props: ChatProps) {
     useEffect(() => {
         scrollToBottom();
         setNotification(0);
+
+        getMsg();
     }, [room]);
 
-    function handleCloseChatPanel() {
-        props.setChatStatus(false);
-    }
+    // function handleCloseChatPanel() {
+    //     props.setChatStatus(false);
+    // }
 
-    const scrollToBottomButton = () => {
+    const scrollToBottomButton = async () => {
         messageEnd.current?.scrollTo(
             messageEnd.current?.scrollHeight,
             messageEnd.current?.scrollHeight,
@@ -159,7 +177,6 @@ export default function ChatPanel(props: ChatProps) {
         }, 1000);
         return () => clearTimeout(timer);
     };
-
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleScroll = (e: any) => {
         if (e.target.scrollTop === 0 || e.target.scrollTop === 1) {
@@ -234,18 +251,12 @@ export default function ChatPanel(props: ChatProps) {
             {messages &&
                 messages.map((item, i) => (
                     <div key={item._id} style={{ width: '90%', marginBottom: 4 }}>
-                        {item.sender === currentUser && currentUser !== undefined ? (
-                            <>
-                                <DividerDark changeColor addMarginTop addMarginBottom />
-                                <SentMessagePanel message={item} />
-                            </>
-                        ) : (
-                            <IncomingMessage
-                                message={item}
-                                name={getName(item)}
-                                isSequential={i === 0 ? isSequential : false}
-                            />
-                        )}
+                        <SentMessagePanel
+                            message={item}
+                            name={getName(item)}
+                            isCurrentUser={item.sender === currentUser}
+                        />
+                        <hr></hr>
                     </div>
                 ))}
         </>

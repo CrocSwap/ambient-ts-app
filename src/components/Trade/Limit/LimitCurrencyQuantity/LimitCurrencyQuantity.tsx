@@ -1,16 +1,18 @@
 // import { ChangeEvent } from 'react';
 import styles from './LimitCurrencyQuantity.module.css';
 import { ChangeEvent, useEffect, useState } from 'react';
+import { TokenIF } from '../../../../utils/interfaces/exports';
 
 interface LimitCurrencyQuantityProps {
     disable?: boolean;
     fieldId: string;
     value: string;
     handleChangeEvent: (evt: ChangeEvent<HTMLInputElement>) => void;
+    thisToken: TokenIF;
 }
 
 export default function LimitCurrencyQuantity(props: LimitCurrencyQuantityProps) {
-    const { value, disable, fieldId, handleChangeEvent } = props;
+    const { value, thisToken, disable, fieldId, handleChangeEvent } = props;
 
     const [displayValue, setDisplayValue] = useState<string>('');
 
@@ -35,6 +37,14 @@ export default function LimitCurrencyQuantity(props: LimitCurrencyQuantityProps)
         setDisplayValue(input);
     };
 
+    const precisionOfInput = (inputString: string) => {
+        if (inputString.includes('.')) {
+            return inputString.split('.')[1].length;
+        }
+        // String Does Not Contain Decimal
+        return 0;
+    };
+
     return (
         <div className={styles.token_amount}>
             <input
@@ -42,7 +52,11 @@ export default function LimitCurrencyQuantity(props: LimitCurrencyQuantityProps)
                 className={styles.currency_quantity}
                 placeholder='0.0'
                 onChange={(event) => {
-                    const isValid = event.target.value === '' || event.target.validity.valid;
+                    const isPrecisionGreaterThanDecimals =
+                        precisionOfInput(event.target.value) > thisToken.decimals;
+                    const isValid =
+                        !isPrecisionGreaterThanDecimals &&
+                        (event.target.value === '' || event.target.validity.valid);
                     isValid ? handleEventLocal(event) : null;
                 }}
                 value={displayValue}

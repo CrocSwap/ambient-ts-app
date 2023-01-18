@@ -5,9 +5,12 @@ import PositionBox from '../PositionBox/PositionBox';
 import { useEffect, useState } from 'react';
 import useChatApi from '../../../../components/Chat/Service/ChatApi';
 import { color } from 'd3';
+import PortfolioBannerAccount from '../../../../components/Portfolio/PortfolioBanner/PortfolioBanner';
 
 interface SentMessageProps {
     message: Message;
+    name: string;
+    isCurrentUser: boolean;
 }
 
 export default function SentMessagePanel(props: SentMessageProps) {
@@ -16,6 +19,17 @@ export default function SentMessagePanel(props: SentMessageProps) {
     const [mentionedName, setMentionedName] = useState('');
     const [isMentionMessage, setIsMentionMessage] = useState(false);
     const message = '';
+
+    function namerOrWalletID(content: string) {
+        if (content.includes('0x')) {
+            return content.slice(0, 6) + '...';
+        } else {
+            return content;
+        }
+    }
+    useEffect(() => {
+        console.log(props.name);
+    }, [props.message.mentionedName]);
 
     const formatAMPM = (str: string) => {
         const date = new Date(str);
@@ -59,11 +73,22 @@ export default function SentMessagePanel(props: SentMessageProps) {
     }
 
     return (
-        <div className={styles.sent_message_body}>
+        <div
+            className={
+                props.message.mentionedName === 'noName'
+                    ? styles.sent_message_body
+                    : props.message.mentionedName === props.name
+                    ? styles.sent_message_body_with_mention
+                    : styles.sent_message_body_with_mention
+            }
+        >
             <div className={styles.avatar_image}>
                 <img src={noAvatarImage} alt='no avatar' />
             </div>
             <div className={styles.message_item}>
+                <div className={props.isCurrentUser ? styles.current_user_name : styles.name}>
+                    {namerOrWalletID(props.name)}
+                </div>
                 <PositionBox
                     message={props.message.message}
                     isInput={false}

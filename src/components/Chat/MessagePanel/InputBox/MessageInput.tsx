@@ -2,6 +2,8 @@ import { useAccount } from 'wagmi';
 import useSocket from '../../Service/useSocket';
 import { BsEmojiSmileFill } from 'react-icons/bs';
 import { Message } from '../../Model/MessageModel';
+
+// import { Message } from '../../Model/MessageModel';
 import Picker from 'emoji-picker-react';
 import styles from './MessageInput.module.css';
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
@@ -180,7 +182,7 @@ export default function MessageInput(props: MessageInputProps, prop: ChatProps) 
             {showEmojiPicker && (
                 <div className={styles.emojiPicker}>
                     <Picker
-                        pickerStyle={{ width: '100%', height: '95%' }}
+                        pickerStyle={{ width: '100%', height: '100%' }}
                         onEmojiClick={handleEmojiClick}
                     />
                 </div>

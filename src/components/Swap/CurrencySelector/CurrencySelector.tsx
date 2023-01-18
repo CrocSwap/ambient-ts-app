@@ -14,6 +14,7 @@ import IconWithTooltip from '../../Global/IconWithTooltip/IconWithTooltip';
 import NoTokenIcon from '../../Global/NoTokenIcon/NoTokenIcon';
 import { SoloTokenSelect } from '../../Global/TokenSelectContainer/SoloTokenSelect';
 // import { useSoloSearch } from '../../Global/TokenSelectContainer/hooks/useSoloSearch';
+// import { useSoloSearch } from '../../Global/TokenSelectContainer/hooks/useSoloSearch';
 import { getRecentTokensParamsIF } from '../../../App/hooks/useRecentTokens';
 
 interface CurrencySelectorProps {
@@ -466,6 +467,7 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                 <div className={styles.swap_input}>
                     <CurrencyQuantity
                         value={tokenAorB === 'A' ? sellQtyString : buyQtyString}
+                        thisToken={thisToken}
                         setSellQtyString={setSellQtyString}
                         setBuyQtyString={setBuyQtyString}
                         fieldId={fieldId}

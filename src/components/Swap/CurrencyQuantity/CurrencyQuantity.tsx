@@ -1,5 +1,6 @@
 import { ChangeEvent, Dispatch, SetStateAction, useEffect, useState } from 'react';
 import useDebounce from '../../../App/hooks/useDebounce';
+import { TokenIF } from '../../../utils/interfaces/exports';
 import styles from './CurrencyQuantity.module.css';
 
 interface CurrencyQuantityProps {
@@ -9,10 +10,19 @@ interface CurrencyQuantityProps {
     handleChangeEvent: (evt: ChangeEvent<HTMLInputElement>) => void;
     setSellQtyString: Dispatch<SetStateAction<string>>;
     setBuyQtyString: Dispatch<SetStateAction<string>>;
+    thisToken: TokenIF;
 }
 
 export default function CurrencyQuantity(props: CurrencyQuantityProps) {
-    const { value, disable, fieldId, handleChangeEvent, setSellQtyString, setBuyQtyString } = props;
+    const {
+        value,
+        thisToken,
+        disable,
+        fieldId,
+        handleChangeEvent,
+        setSellQtyString,
+        setBuyQtyString,
+    } = props;
 
     const [newChangeEvent, setNewChangeEvent] = useState<
         ChangeEvent<HTMLInputElement> | undefined
@@ -24,7 +34,7 @@ export default function CurrencyQuantity(props: CurrencyQuantityProps) {
         setDisplayValue(value);
     }, [value]);
 
-    const debouncedEvent = useDebounce(newChangeEvent, 500); // debounce 1/4 second
+    const debouncedEvent = useDebounce(newChangeEvent, 500); // debounce 1/2 second
 
     useEffect(() => {
         if (debouncedEvent) {
@@ -48,6 +58,14 @@ export default function CurrencyQuantity(props: CurrencyQuantityProps) {
         setDisplayValue(input);
     };
 
+    const precisionOfInput = (inputString: string) => {
+        if (inputString.includes('.')) {
+            return inputString.split('.')[1].length;
+        }
+        // String Does Not Contain Decimal
+        return 0;
+    };
+
     return (
         <div className={styles.token_amount}>
             <input
@@ -55,7 +73,11 @@ export default function CurrencyQuantity(props: CurrencyQuantityProps) {
                 className={styles.currency_quantity}
                 placeholder='0.0'
                 onChange={(event) => {
-                    const isValid = event.target.value === '' || event.target.validity.valid;
+                    const isPrecisionGreaterThanDecimals =
+                        precisionOfInput(event.target.value) > thisToken.decimals;
+                    const isValid =
+                        !isPrecisionGreaterThanDecimals &&
+                        (event.target.value === '' || event.target.validity.valid);
                     isValid ? handleEventLocal(event) : null;
                 }}
                 value={displayValue}

@@ -559,12 +559,13 @@ export default function TradeCandleStickChart(props: ChartData) {
         setScaleForChart(parsedChartData);
     }, [parsedChartData?.period]);
 
+    // Liq Scale
     useEffect(() => {
         setLiquidityScale(() => {
             return undefined;
         });
         setScaleForChartLiquidity(liquidityData);
-    }, [liquidityData]);
+    }, [JSON.stringify(liquidityData)]);
 
     const setScaleForChartLiquidity = (liquidityData: any) => {
         if (liquidityData !== undefined) {

@@ -6,7 +6,7 @@ import Wallet from '../../Global/Account/AccountTabs/Wallet/Wallet';
 import Exchange from '../../Global/Account/AccountTabs/Exchange/Exchange';
 // import TransactionsTable from '../../Global/Account/AccountTabs/Transaction/TransactionsTable';
 import TabComponent from '../../Global/TabComponent/TabComponent';
-import Tokens from '../Tokens/Tokens';
+// import Tokens from '../Tokens/Tokens';
 
 // START: Import Local Files
 import styles from './PortfolioTabs.module.css';
@@ -411,9 +411,9 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
         lastBlockNumber: lastBlockNumber,
     };
 
-    const tokensProps = {
-        chainId: chainId,
-    };
+    // const tokensProps = {
+    //     chainId: chainId,
+    // };
 
     const accountTabDataWithTokens = [
         {
@@ -429,7 +429,7 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
             icon: exchangeImage,
         },
         { label: 'Wallet Balances', content: <Wallet {...walletProps} />, icon: walletImage },
-        { label: 'Tokens', content: <Tokens {...tokensProps} />, icon: walletImage },
+        // { label: 'Tokens', content: <Tokens {...tokensProps} />, icon: walletImage },
     ];
 
     const accountTabDataWithoutTokens = [
