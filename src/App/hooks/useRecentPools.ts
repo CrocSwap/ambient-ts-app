@@ -28,8 +28,6 @@ export const useRecentPools = (
             )
         );
         setRecentPools([pool, ...recentPoolsWithNewRemoved]);
-        // setRecentPools([pool, ...recentPools]);
-        console.log({listAfter: recentPools});
     }
 
     // fn to return recent pools from local state

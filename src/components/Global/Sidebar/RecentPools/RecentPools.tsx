@@ -31,7 +31,7 @@ export default function RecentPools(props: RecentPoolsProps) {
                         tradeData={tradeData}
                         chainId={chainId}
                         pool={pool}
-                        key={idx}
+                        key={'recent_pool_' + JSON.stringify(pool)}
                         cachedPoolStatsFetch={cachedPoolStatsFetch}
                         lastBlockNumber={lastBlockNumber}
                         getTokenByAddress={getTokenByAddress}
