@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { sortBaseQuoteTokens } from '@crocswap-libs/sdk';
 
 export interface SmallerPoolIF {
     base: string;
@@ -8,6 +9,8 @@ export interface SmallerPoolIF {
 
 export const useRecentPools = (
     chainId: string,
+    addressTokenA: string,
+    addressTokenB: string,
 ): {
     addRecentPool: (pool: SmallerPoolIF) => void;
     getRecentPools: (count: number) => SmallerPoolIF[];
@@ -16,17 +19,33 @@ export const useRecentPools = (
     // array of pools the user has interacted with in the current session
     const [recentPools, setRecentPools] = useState<SmallerPoolIF[]>([]);
 
+    // add pools to the recent pools list (in-session)
+    // runs every time to the current token pair changes
+    // later this will need more logic for a Pool ID value
+    useEffect(() => {
+        // sort current token pair as base and quote
+        const [baseAddr, quoteAddr] = sortBaseQuoteTokens(
+            addressTokenA, addressTokenB
+        );
+        // add the pool to the list of recent pools
+        // fn has internal logic to handle duplicate values
+        addRecentPool({base: baseAddr, quote: quoteAddr});
+    }, [addressTokenA, addressTokenB]);
+
     // hook to reset recent tokens when the user switches chains
     useEffect(() => resetRecentPools(), [chainId]);
 
     // fn to add a token to the recentTokens array
     function addRecentPool(pool: SmallerPoolIF): void {
+        // remove the current pool from the list, if present
+        // this prevents duplicate entries
         const recentPoolsWithNewRemoved = recentPools.filter(
             (recentPool: SmallerPoolIF) => (
                 recentPool.base.toLowerCase() !== pool.base.toLowerCase() ||
                 recentPool.quote.toLowerCase() !== pool.quote.toLowerCase()
             )
         );
+        // add the current pool to the front of the list
         setRecentPools([pool, ...recentPoolsWithNewRemoved]);
     }
 

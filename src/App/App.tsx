@@ -325,22 +325,13 @@ export default function App() {
     // `'0x5'` is the chain the app should be on by default
     const [chainData, isChainSupported] = useAppChain('0x5', isUserLoggedIn);
 
-    const { addRecentPool, getRecentPools } = useRecentPools(chainData.chainId);
+    const { getRecentPools } = useRecentPools(
+        chainData.chainId,
+        tradeData.tokenA.address,
+        tradeData.tokenB.address
+    );
 
     const [tokenPairLocal, setTokenPairLocal] = useState<string[] | null>(null);
-
-    // hook to add pools to the recent pools list (in-session)
-    // runs every time to the current token pair changes
-    // later this will need more logic for a Pool ID value
-    useEffect(() => {
-        // sort current token pair as base and quote
-        const [baseAddr, quoteAddr] = sortBaseQuoteTokens(
-            tradeData.tokenA.address, tradeData.tokenB.address
-        );
-        // add the pool to the list of recent pools
-        // fn has internal logic to handle duplicate values
-        addRecentPool({base: baseAddr, quote: quoteAddr});
-    }, [tradeData.tokenA.address, tradeData.tokenB.address]);
 
     const [isShowAllEnabled, setIsShowAllEnabled] = useState(true);
     const [currentTxActiveInTransactions, setCurrentTxActiveInTransactions] = useState('');
