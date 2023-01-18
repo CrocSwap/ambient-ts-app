@@ -7,6 +7,8 @@ import { Dispatch, SetStateAction } from 'react';
 // import { tickToPrice, toDisplayPrice } from '@crocswap-libs/sdk';
 
 interface LimitRatePropsIF {
+    previousDisplayPrice: string;
+    setPreviousDisplayPrice: Dispatch<SetStateAction<string>>;
     displayPrice: string;
     setDisplayPrice: Dispatch<SetStateAction<string>>;
     setPriceInputFieldBlurred: Dispatch<SetStateAction<boolean>>;
@@ -30,6 +32,8 @@ export default function LimitRate(props: LimitRatePropsIF) {
     const {
         displayPrice,
         setDisplayPrice,
+        previousDisplayPrice,
+        setPreviousDisplayPrice,
         pool,
         gridSize,
         isSellTokenBase,
@@ -83,7 +87,13 @@ export default function LimitRate(props: LimitRatePropsIF) {
                 // onChange={(event) => handleLimitChange(event.target.value)}
                 onBlur={(event) => {
                     const isValid = event.target.value === '' || event.target.validity.valid;
-                    isValid ? handleLimitChange(event.target.value.replaceAll(',', '')) : null;
+                    const targetValue = event.target.value;
+                    // console.log({ targetValue });
+                    // console.log({ previousDisplayPrice });
+                    if (isValid && targetValue !== previousDisplayPrice) {
+                        handleLimitChange(targetValue.replaceAll(',', ''));
+                        setPreviousDisplayPrice(targetValue);
+                    }
                 }}
                 value={displayPrice}
                 type='string'

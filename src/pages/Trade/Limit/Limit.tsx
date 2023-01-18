@@ -183,6 +183,7 @@ export default function Limit(props: LimitPropsIF) {
     const [orderGasPriceInDollars, setOrderGasPriceInDollars] = useState<string | undefined>();
 
     const [displayPrice, setDisplayPrice] = useState('');
+    const [previousDisplayPrice, setPreviousDisplayPrice] = useState('');
 
     // const [initialLoad, setInitialLoad] = useState<boolean>(false);
 
@@ -255,6 +256,7 @@ export default function Limit(props: LimitPropsIF) {
                               });
                     // console.log({ limitRateTruncated });
                     setDisplayPrice(limitRateTruncated);
+                    setPreviousDisplayPrice(limitRateTruncated);
                     // const limitRateInputField = document.getElementById('limit-rate-quantity');
                     // if (limitRateInputField)
                     //     (limitRateInputField as HTMLInputElement).value = limitRateTruncated;
@@ -336,6 +338,7 @@ export default function Limit(props: LimitPropsIF) {
                               });
                     // console.log({ limitRateTruncated });
                     setDisplayPrice(limitRateTruncated);
+                    setPreviousDisplayPrice(limitRateTruncated);
 
                     // const limitRateInputField = document.getElementById('limit-rate-quantity');
                     // if (limitRateInputField)
@@ -723,7 +726,9 @@ export default function Limit(props: LimitPropsIF) {
                 >
                     <LimitCurrencyConverter
                         displayPrice={displayPrice}
+                        previousDisplayPrice={previousDisplayPrice}
                         setDisplayPrice={setDisplayPrice}
+                        setPreviousDisplayPrice={setPreviousDisplayPrice}
                         provider={provider}
                         setPriceInputFieldBlurred={setPriceInputFieldBlurred}
                         pool={pool}
