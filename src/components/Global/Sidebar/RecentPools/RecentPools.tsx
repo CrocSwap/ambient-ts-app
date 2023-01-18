@@ -26,7 +26,7 @@ export default function RecentPools(props: RecentPoolsProps) {
                 <div>TVL</div>
             </div>
             <div className={styles.content}>
-                {getRecentPools(5).map((pool, idx) => (
+                {getRecentPools(5).map((pool) => (
                     <RecentPoolsCard
                         tradeData={tradeData}
                         chainId={chainId}
