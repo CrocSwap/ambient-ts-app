@@ -17,7 +17,11 @@ export const useRecentPools = (
     resetRecentPools: () => void;
 } => {
     // array of pools the user has interacted with in the current session
-    const [recentPools, setRecentPools] = useState<SmallerPoolIF[]>([]);
+    const [recentPools, setRecentPools] = useState<SmallerPoolIF[]>([
+        {
+            base: addressTokenA, quote: addressTokenB
+        }
+    ]);
 
     // add pools to the recent pools list (in-session)
     // runs every time to the current token pair changes
