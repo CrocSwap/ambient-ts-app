@@ -7,6 +7,8 @@ import { Dispatch, SetStateAction } from 'react';
 // import { tickToPrice, toDisplayPrice } from '@crocswap-libs/sdk';
 
 interface LimitRatePropsIF {
+    displayPrice: string;
+    setDisplayPrice: Dispatch<SetStateAction<string>>;
     setPriceInputFieldBlurred: Dispatch<SetStateAction<boolean>>;
     gridSize: number;
     pool: CrocPoolView | undefined;
@@ -26,13 +28,15 @@ interface LimitRatePropsIF {
 
 export default function LimitRate(props: LimitRatePropsIF) {
     const {
+        displayPrice,
+        setDisplayPrice,
         pool,
         gridSize,
         isSellTokenBase,
         setPriceInputFieldBlurred,
         fieldId,
         disable,
-        limitTickDisplayPrice,
+        // limitTickDisplayPrice,
         isOrderCopied,
     } = props;
 
@@ -67,25 +71,28 @@ export default function LimitRate(props: LimitRatePropsIF) {
                 id={`${fieldId}-quantity`}
                 onFocus={() => {
                     const limitRateInputField = document.getElementById('limit-rate-quantity');
-                    if (limitRateInputField)
-                        (limitRateInputField as HTMLInputElement).value =
-                            limitTickDisplayPrice.toString();
+
                     (limitRateInputField as HTMLInputElement).select();
+                }}
+                onChange={(event) => {
+                    const isValid = event.target.value === '' || event.target.validity.valid;
+                    isValid ? setDisplayPrice(event.target.value) : null;
                 }}
                 className={styles.currency_quantity}
                 placeholder='0.0'
                 // onChange={(event) => handleLimitChange(event.target.value)}
                 onBlur={(event) => {
-                    // console.log('blurred');
-                    handleLimitChange(event.target.value);
+                    const isValid = event.target.value === '' || event.target.validity.valid;
+                    isValid ? handleLimitChange(event.target.value.replaceAll(',', '')) : null;
                 }}
+                value={displayPrice}
                 type='string'
                 inputMode='decimal'
                 autoComplete='off'
                 autoCorrect='off'
                 min='0'
                 minLength={1}
-                pattern='^[0-9]*[.,]?[0-9]*$'
+                pattern='^[0-9,]*[.]?[0-9]*$'
                 disabled={disable}
                 required
                 // value={limitPrice}
