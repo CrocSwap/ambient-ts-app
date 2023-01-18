@@ -19,7 +19,8 @@ export const useRecentPools = (
     // array of pools the user has interacted with in the current session
     const [recentPools, setRecentPools] = useState<SmallerPoolIF[]>([
         {
-            base: addressTokenA, quote: addressTokenB
+            base: sortBaseQuoteTokens(addressTokenA, addressTokenB)[0],
+            quote: sortBaseQuoteTokens(addressTokenA, addressTokenB)[1]
         }
     ]);
 
