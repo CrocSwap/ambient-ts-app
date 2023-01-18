@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { sortBaseQuoteTokens } from '@crocswap-libs/sdk';
+import { TokenIF } from '../../utils/interfaces/exports';
 
 export interface SmallerPoolIF {
     base: string;
@@ -11,6 +12,7 @@ export const useRecentPools = (
     chainId: string,
     addressTokenA: string,
     addressTokenB: string,
+    verifyToken: (addr: string, chn: string) => boolean
 ): {
     addRecentPool: (pool: SmallerPoolIF) => void;
     getRecentPools: (count: number) => SmallerPoolIF[];
@@ -32,9 +34,22 @@ export const useRecentPools = (
         const [baseAddr, quoteAddr] = sortBaseQuoteTokens(
             addressTokenA, addressTokenB
         );
+        const { ackTokens } = JSON.parse(localStorage.getItem('user') as string) ?? [];
+        const checkToken = (addr: string) => {
+            const isListed = verifyToken(addr.toLowerCase(), chainId);
+            const isAcknowledged = ackTokens.some(
+                (ackTkn: TokenIF) => (
+                    ackTkn.address.toLowerCase() === addr.toLowerCase() &&
+                    ackTkn.chainId === parseInt(chainId)
+                )
+            );
+            return isListed || isAcknowledged;
+        }
         // add the pool to the list of recent pools
         // fn has internal logic to handle duplicate values
-        addRecentPool({base: baseAddr, quote: quoteAddr});
+        if (checkToken(baseAddr) && checkToken(quoteAddr)) {
+            addRecentPool({base: baseAddr, quote: quoteAddr});
+        }
     }, [addressTokenA, addressTokenB]);
 
     // hook to reset recent tokens when the user switches chains

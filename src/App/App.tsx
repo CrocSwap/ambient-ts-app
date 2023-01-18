@@ -325,10 +325,25 @@ export default function App() {
     // `'0x5'` is the chain the app should be on by default
     const [chainData, isChainSupported] = useAppChain('0x5', isUserLoggedIn);
 
+    const [
+        localTokens,
+        verifyToken,
+        getAllTokens,
+        getAmbientTokens,
+        getTokensOnChain,
+        getTokenByAddress,
+        getTokensByName,
+        acknowledgeToken,
+    ] = useToken(chainData.chainId);
+    false && localTokens;
+    false && getAllTokens;
+    false && getTokensOnChain;
+
     const { getRecentPools } = useRecentPools(
         chainData.chainId,
         tradeData.tokenA.address,
-        tradeData.tokenB.address
+        tradeData.tokenB.address,
+        verifyToken
     );
 
     const [tokenPairLocal, setTokenPairLocal] = useState<string[] | null>(null);
@@ -2190,20 +2205,6 @@ export default function App() {
 
     // --------------END OF THEME--------------------------
 
-    const [
-        localTokens,
-        verifyToken,
-        getAllTokens,
-        getAmbientTokens,
-        getTokensOnChain,
-        getTokenByAddress,
-        getTokensByName,
-        acknowledgeToken,
-    ] = useToken(chainData.chainId);
-    false && localTokens;
-    false && getAllTokens;
-    false && getTokensOnChain;
-
     const connectedUserErc20Tokens = useAppSelector((state) => state.userData.tokens.erc20Tokens);
     // TODO: move this function up to App.tsx
     const getImportedTokensPlus = () => {
@@ -2262,6 +2263,8 @@ export default function App() {
     };
 
     const { addRecentToken, getRecentTokens } = useRecentTokens(chainData.chainId);
+
+
 
     // props for <PageHeader/> React element
     const headerProps = {
