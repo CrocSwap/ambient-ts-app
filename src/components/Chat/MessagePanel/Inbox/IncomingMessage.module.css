@@ -9,7 +9,7 @@ box-sizing: border-box;
 display: flex;
 flex-direction: row;
 align-items: flex-end;
-padding: 8px 4px 8px;
+padding: 8px 14px 8px;
 gap: 7px;
 
 width: 100%;
@@ -53,6 +53,25 @@ flex-grow: 0;
     font-size: 15px;
     line-height: 15px;
     color: #EBEBFF;
+    white-space: pre-line;
+    align-self: stretch;
+    padding: 9px 4px 0px;
+    margin-left: 5px;
+    word-break: break-word;
+    white-space: normal;
+
+
+}
+
+
+.mention_message {
+
+    font-family: 'Lexend Deca';
+    font-style: normal;
+    font-weight: 300;
+    font-size: 15px;
+    line-height: 15px;
+    color: #7371FC;
     white-space: pre-line;
     align-self: stretch;
     padding: 9px 4px 0px;

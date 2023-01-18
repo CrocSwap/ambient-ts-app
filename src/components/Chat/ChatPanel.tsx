@@ -82,7 +82,12 @@ export default function ChatPanel(props: ChatProps) {
     useEffect(() => {
         if (scrollDirection === 'Scroll Up') {
             if (messageUser !== currentUser) {
-                setNotification((notification) => notification + 1);
+                if (
+                    lastMessage?.mentionedName.slice(1) === name ||
+                    lastMessage?.mentionedName.slice(1) === address
+                ) {
+                    setNotification((notification) => notification + 1);
+                }
             } else if (messageUser === currentUser) {
                 const timer = setTimeout(() => {
                     messageEnd.current?.scrollTo(
@@ -169,7 +174,7 @@ export default function ChatPanel(props: ChatProps) {
                 messageEnd.current?.scrollHeight,
                 messageEnd.current?.scrollHeight,
             );
-        }, 750);
+        }, 1000);
         return () => clearTimeout(timer);
     };
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -184,7 +189,10 @@ export default function ChatPanel(props: ChatProps) {
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleWheel = (e: any) => {
-        if (e.nativeEvent.wheelDelta > 0) {
+        if (
+            e.nativeEvent.wheelDelta > 0 &&
+            messageEnd.current?.scrollHeight !== messageEnd.current?.scrollHeight
+        ) {
             setScrollDirection('Scroll Up');
         }
     };
@@ -243,19 +251,12 @@ export default function ChatPanel(props: ChatProps) {
             {messages &&
                 messages.map((item, i) => (
                     <div key={item._id} style={{ width: '90%', marginBottom: 4 }}>
-                        {item.sender === currentUser && currentUser !== undefined ? (
-                            <>
-                                <DividerDark changeColor addMarginTop addMarginBottom />
-                                <SentMessagePanel message={item} />
-                            </>
-                        ) : (
-                            <IncomingMessage
-                                message={item}
-                                name={getName(item)}
-                                isSequential={i === 0 ? isSequential : false}
-                                messagesArray={messagesArray}
-                            />
-                        )}
+                        <SentMessagePanel
+                            message={item}
+                            name={getName(item)}
+                            isCurrentUser={item.sender === currentUser}
+                        />
+                        <hr></hr>
                     </div>
                 ))}
         </>
@@ -315,7 +316,7 @@ export default function ChatPanel(props: ChatProps) {
                             <div className={styles.chat_notification}>
                                 {notification > 0 && scrollDirection === 'Scroll Up' ? (
                                     <div className={styles.chat_notification}>
-                                        <span>
+                                        <span onClick={() => scrollToBottomButton()}>
                                             <BsChatLeftFill size={25} color='#7371fc' />
                                             <span className={styles.text}>{notification}</span>
                                         </span>
@@ -323,7 +324,7 @@ export default function ChatPanel(props: ChatProps) {
                                             role='button'
                                             size={27}
                                             color='#7371fc'
-                                            onClick={() => scrollToBottom()}
+                                            onClick={() => scrollToBottomButton()}
                                         />
                                     </div>
                                 ) : scrollDirection === 'Scroll Up' && notification <= 0 ? (

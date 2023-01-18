@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from 'react';
 import io from 'socket.io-client';
 import { Message } from '../Model/MessageModel';
-export const host = 'https://ambichat.link:5000/';
+export const host = 'http://localhost:5000';
 export const sendMessageRoute = `${host}/api/messages/addmsg`;
 export const recieveMessageRoute = `${host}/api/messages/getall`;
 export const recieveMessageByRoomRoute = `${host}/api/messages/getmsgbyroom`;
@@ -14,6 +14,7 @@ const useSocket = (room: any) => {
     const socketRef: any = useRef();
     const [messages, setMessages] = useState<Message[]>([]);
     const [lastMessage, setLastMessage] = useState<Message>();
+    const [lastMessageText, setLastMessageText] = useState('');
     const [messageUser, setMessageUser] = useState<string>();
 
     useEffect(() => {
@@ -29,6 +30,7 @@ const useSocket = (room: any) => {
             socketRef.current.on('msg-recieve', (data: any) => {
                 setMessages(data);
                 setLastMessage(data[0]);
+                setLastMessageText(data[0].text);
                 setMessageUser(data[0].sender);
             });
         });
@@ -65,7 +67,7 @@ const useSocket = (room: any) => {
         });
     }
 
-    return { messages, getMsg, sendMsg, lastMessage, messageUser };
+    return { messages, getMsg, sendMsg, lastMessage, messageUser, lastMessageText };
 };
 
 export default useSocket;
