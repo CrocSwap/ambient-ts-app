@@ -109,7 +109,9 @@ export default function OrderRow(props: OrderRowPropsIF) {
     const userPositionStyle =
         userNameToDisplay === 'You' && isShowAllEnabled ? styles.border_left : null;
 
-    const openDetailsModal = () =>
+    const openDetailsModal = () => {
+        console.log({ limitOrder });
+
         openGlobalModal(
             <OrderDetails
                 account={account}
@@ -118,6 +120,7 @@ export default function OrderRow(props: OrderRowPropsIF) {
                 lastBlockNumber={lastBlockNumber}
             />,
         );
+    };
     const orderDomId =
         limitOrder.limitOrderIdentifier === currentPositionActive
             ? `order-${limitOrder.limitOrderIdentifier}`
@@ -306,13 +309,19 @@ export default function OrderRow(props: OrderRowPropsIF) {
     //     // second: '2-digit',
     // }).format(limitOrder.time * 1000);
 
-    const elapsedTimeInSecondsNum = moment(Date.now()).diff(
-        (limitOrder.latestUpdateTime !== 0
-            ? limitOrder.latestUpdateTime
-            : limitOrder.timeFirstMint) * 1000,
-        // (limitOrder.timeFirstMint || limitOrder.time) * 1000,
-        'seconds',
-    );
+    const positionTime = limitOrder.latestUpdateTime || limitOrder.timeFirstMint;
+
+    const elapsedTimeInSecondsNum = positionTime
+        ? moment(Date.now()).diff(positionTime * 1000, 'seconds')
+        : 0;
+
+    // const elapsedTimeInSecondsNum = moment(Date.now()).diff(
+    //     (limitOrder.latestUpdateTime !== 0
+    //         ? limitOrder.latestUpdateTime
+    //         : limitOrder.timeFirstMint) * 1000,
+    //     // (limitOrder.timeFirstMint || limitOrder.time) * 1000,
+    //     'seconds',
+    // );
 
     const elapsedTimeString =
         elapsedTimeInSecondsNum !== undefined
