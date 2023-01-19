@@ -80,8 +80,6 @@ interface TradePropsIF {
     // handleRangeCopiedClick: () => void;
     isCandleSelected: boolean | undefined;
     setIsCandleSelected: Dispatch<SetStateAction<boolean | undefined>>;
-    transactionDetailsGraphData?: CandlesByPoolAndDuration | undefined;
-    setTransactionDetailRow?: Dispatch<SetStateAction<string>>;
 }
 
 // React functional component
@@ -503,8 +501,6 @@ export default function Trade(props: TradePropsIF) {
                             setPoolPriceChangePercent={setPoolPriceChangePercent}
                             isPoolPriceChangePositive={isPoolPriceChangePositive}
                             setIsPoolPriceChangePositive={setIsPoolPriceChangePositive}
-                            transactionDetailsGraphData={props.transactionDetailsGraphData}
-                            setTransactionDetailRow={props.setTransactionDetailRow}
                             // handleTxCopiedClick={handleTxCopiedClick}
                             // handleOrderCopiedClick={handleOrderCopiedClick}
                             // handleRangeCopiedClick={handleRangeCopiedClick}

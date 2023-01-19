@@ -82,6 +82,8 @@ import {
     setPoolPriceNonDisplay,
     setPrimaryQuantityRange,
     setSimpleRangeWidth,
+    setMainnetBaseTokenReduxAddress,
+    setMainnetQuoteTokenReduxAddress,
 } from '../utils/state/tradeDataSlice';
 import {
     memoizeQuerySpotPrice,
@@ -315,11 +317,6 @@ export default function App() {
     );
 
     const [candleData, setCandleData] = useState<CandlesByPoolAndDuration | undefined>();
-    const [transactionDetailsGraphData, setTransactionDetailsGraphData] = useState<
-        CandlesByPoolAndDuration | undefined
-    >();
-
-    const [transactionDetailRow, setTransactionDetailRow] = useState<string>('');
 
     const [isCandleSelected, setIsCandleSelected] = useState<boolean | undefined>();
 
@@ -882,6 +879,9 @@ export default function App() {
 
                     setMainnetBaseTokenAddress(sortedMainnetTokens[0]);
                     setMainnetQuoteTokenAddress(sortedMainnetTokens[1]);
+
+                    dispatch(setMainnetBaseTokenReduxAddress(sortedMainnetTokens[0]));
+                    dispatch(setMainnetQuoteTokenReduxAddress(sortedMainnetTokens[1]));
                 } else {
                     setMainnetBaseTokenAddress('');
                     setMainnetQuoteTokenAddress('');
@@ -1284,67 +1284,6 @@ export default function App() {
                                         },
                                         duration: activePeriod,
                                         candles: candles,
-                                    });
-                                }
-                            }
-                        })
-                        .catch(console.log);
-                }
-            } catch (error) {
-                console.log({ error });
-            }
-        }
-    };
-
-    useEffect(() => {
-        console.log(transactionDetailRow);
-        fetchCandlesForTransactionDetails(activePeriod.toString());
-    }, [transactionDetailRow]);
-
-    const fetchCandlesForTransactionDetails = (period: string, candleNumber = '200') => {
-        if (
-            isServerEnabled &&
-            baseTokenAddress &&
-            quoteTokenAddress &&
-            mainnetBaseTokenAddress &&
-            mainnetQuoteTokenAddress &&
-            activePeriod
-        ) {
-            try {
-                if (httpGraphCacheServerDomain) {
-                    // console.log('fetching candles');
-                    const candleSeriesCacheEndpoint =
-                        httpGraphCacheServerDomain + '/candle_series?';
-
-                    fetch(
-                        candleSeriesCacheEndpoint +
-                            new URLSearchParams({
-                                base: mainnetBaseTokenAddress.toLowerCase(),
-                                quote: mainnetQuoteTokenAddress.toLowerCase(),
-                                poolIdx: chainData.poolIndex.toString(),
-                                period: period,
-                                // time: '1657833300', // optional
-                                n: candleNumber, // positive integer
-                                // page: '0', // nonnegative integer
-                                chainId: '0x1',
-                                dex: 'all',
-                                poolStats: 'true',
-                                concise: 'true',
-                                poolStatsChainIdOverride: '0x5',
-                                poolStatsBaseOverride: baseTokenAddress.toLowerCase(),
-                                poolStatsQuoteOverride: quoteTokenAddress.toLowerCase(),
-                                poolStatsPoolIdxOverride: chainData.poolIndex.toString(),
-                            }),
-                    )
-                        .then((response) => response?.json())
-                        .then((json) => {
-                            const candles = json?.data;
-
-                            if (candles) {
-                                // Promise.all(candles.map(getCandleData)).then((updatedCandles) => {
-                                if (JSON.stringify(candleData) !== JSON.stringify(candles)) {
-                                    setTransactionDetailsGraphData(() => {
-                                        return candles;
                                     });
                                 }
                             }
@@ -2780,8 +2719,6 @@ export default function App() {
                                     handlePulseAnimation={handlePulseAnimation}
                                     isCandleSelected={isCandleSelected}
                                     setIsCandleSelected={setIsCandleSelected}
-                                    transactionDetailsGraphData={transactionDetailsGraphData}
-                                    setTransactionDetailRow={setTransactionDetailRow}
                                     // handleTxCopiedClick={handleTxCopiedClick}
                                     // handleOrderCopiedClick={handleOrderCopiedClick}
                                     // handleRangeCopiedClick={handleRangeCopiedClick}

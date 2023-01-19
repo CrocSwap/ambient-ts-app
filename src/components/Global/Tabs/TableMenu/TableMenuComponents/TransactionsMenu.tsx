@@ -45,8 +45,6 @@ interface TransactionMenuIF {
     handlePulseAnimation?: (type: string) => void;
 
     isOnPortfolioPage: boolean;
-    transactionDetailsGraphData?: CandlesByPoolAndDuration | undefined;
-    setTransactionDetailRow?: Dispatch<SetStateAction<string>>;
 }
 
 // React functional component
@@ -63,7 +61,6 @@ export default function TransactionsMenu(props: TransactionMenuIF) {
         openGlobalModal,
         closeGlobalModal,
         handlePulseAnimation,
-        transactionDetailsGraphData,
         // isOnPortfolioPage,
     } = props;
 
@@ -251,16 +248,9 @@ export default function TransactionsMenu(props: TransactionMenuIF) {
     //         break;
     // }
 
-    const openDetailsModal = (graphData: CandlesByPoolAndDuration | undefined) => {
-        if (props.setTransactionDetailRow) props.setTransactionDetailRow(tx.tx);
-
+    const openDetailsModal = () => {
         openGlobalModal(
-            <TransactionDetails
-                account={account}
-                tx={tx}
-                closeGlobalModal={closeGlobalModal}
-                transactionDetailsGraphData={graphData}
-            />,
+            <TransactionDetails account={account} tx={tx} closeGlobalModal={closeGlobalModal} />,
         );
     };
 
@@ -401,10 +391,7 @@ export default function TransactionsMenu(props: TransactionMenuIF) {
         </button>
     );
     const detailsButton = (
-        <button
-            className={styles.option_button}
-            onClick={() => openDetailsModal(transactionDetailsGraphData)}
-        >
+        <button className={styles.option_button} onClick={() => openDetailsModal()}>
             Details
         </button>
     );
