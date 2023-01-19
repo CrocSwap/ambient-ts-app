@@ -182,6 +182,9 @@ export default function Limit(props: LimitPropsIF) {
     const [middleDisplayPrice, setMiddleDisplayPrice] = useState<number>(0);
     const [orderGasPriceInDollars, setOrderGasPriceInDollars] = useState<string | undefined>();
 
+    const [displayPrice, setDisplayPrice] = useState('');
+    const [previousDisplayPrice, setPreviousDisplayPrice] = useState('');
+
     // const [initialLoad, setInitialLoad] = useState<boolean>(false);
 
     const isDenomBase = tradeData.isDenomBase;
@@ -252,9 +255,11 @@ export default function Limit(props: LimitPropsIF) {
                                   maximumFractionDigits: 2,
                               });
                     // console.log({ limitRateTruncated });
-                    const limitRateInputField = document.getElementById('limit-rate-quantity');
-                    if (limitRateInputField)
-                        (limitRateInputField as HTMLInputElement).value = limitRateTruncated;
+                    setDisplayPrice(limitRateTruncated);
+                    setPreviousDisplayPrice(limitRateTruncated);
+                    // const limitRateInputField = document.getElementById('limit-rate-quantity');
+                    // if (limitRateInputField)
+                    //     (limitRateInputField as HTMLInputElement).value = limitRateTruncated;
                 });
 
                 // const priceHalfBelow = pool.toDisplayPrice(priceHalfBelowTick(pinnedTick, gridSize));
@@ -308,6 +313,7 @@ export default function Limit(props: LimitPropsIF) {
                 // if (!provider) return;
                 if (poolPriceNonDisplay === 0) return;
                 // if (!priceInputFieldBlurred) return;
+                // console.log({ priceInputFieldBlurred });
 
                 const gridSize = lookupChain(chainId).gridSize;
 
@@ -331,9 +337,12 @@ export default function Limit(props: LimitPropsIF) {
                                   maximumFractionDigits: 2,
                               });
                     // console.log({ limitRateTruncated });
-                    const limitRateInputField = document.getElementById('limit-rate-quantity');
-                    if (limitRateInputField)
-                        (limitRateInputField as HTMLInputElement).value = limitRateTruncated;
+                    setDisplayPrice(limitRateTruncated);
+                    setPreviousDisplayPrice(limitRateTruncated);
+
+                    // const limitRateInputField = document.getElementById('limit-rate-quantity');
+                    // if (limitRateInputField)
+                    //     (limitRateInputField as HTMLInputElement).value = limitRateTruncated;
                 });
 
                 // const priceHalfBelow = pool.toDisplayPrice(priceHalfBelowTick(pinnedTick, gridSize));
@@ -716,6 +725,10 @@ export default function Limit(props: LimitPropsIF) {
                     transition={{ duration: 0.5 }}
                 >
                     <LimitCurrencyConverter
+                        displayPrice={displayPrice}
+                        previousDisplayPrice={previousDisplayPrice}
+                        setDisplayPrice={setDisplayPrice}
+                        setPreviousDisplayPrice={setPreviousDisplayPrice}
                         provider={provider}
                         setPriceInputFieldBlurred={setPriceInputFieldBlurred}
                         pool={pool}

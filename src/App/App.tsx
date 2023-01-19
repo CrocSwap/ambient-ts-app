@@ -812,6 +812,7 @@ export default function App() {
     }, [resetLimitTick]);
 
     useEffect(() => {
+        dispatch(setLimitTick(0));
         dispatch(setPrimaryQuantityRange(''));
         dispatch(setSimpleRangeWidth(10));
         dispatch(setAdvancedMode(false));

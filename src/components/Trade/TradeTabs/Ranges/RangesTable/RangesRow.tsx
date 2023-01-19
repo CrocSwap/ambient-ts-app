@@ -156,6 +156,7 @@ export default function RangesRow(props: RangesRowPropsIF) {
     };
 
     const openDetailsModal = () => {
+        console.log({ position });
         openGlobalModal(<RangeDetails position={position} {...rangeDetailsProps} />);
     };
 
@@ -419,7 +420,9 @@ export default function RangesRow(props: RangesRowPropsIF) {
 
     const positionTime = position.latestUpdateTime || position.timeFirstMint;
 
-    const elapsedTimeInSecondsNum = moment(Date.now()).diff(positionTime * 1000, 'seconds');
+    const elapsedTimeInSecondsNum = positionTime
+        ? moment(Date.now()).diff(positionTime * 1000, 'seconds')
+        : 0;
 
     const elapsedTimeString =
         elapsedTimeInSecondsNum !== undefined

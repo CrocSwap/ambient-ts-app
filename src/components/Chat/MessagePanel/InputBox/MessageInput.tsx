@@ -191,10 +191,10 @@ export default function MessageInput(props: MessageInputProps, prop: ChatProps) 
                     onClick={handleEmojiPickerHideShow}
                 />
 
-                <BsEmojiSmileFill
+                {/* <BsEmojiSmileFill
                     style={{ pointerEvents: !isUserLoggedIn ? 'none' : 'auto' }}
                     onClick={handleEmojiPickerHideShow}
-                />
+                /> */}
             </div>
             {showEmojiPicker && (
                 <div className={styles.emojiPicker}>

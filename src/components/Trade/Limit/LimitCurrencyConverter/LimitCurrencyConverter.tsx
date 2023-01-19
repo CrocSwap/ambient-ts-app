@@ -30,6 +30,10 @@ import { getRecentTokensParamsIF } from '../../../../App/hooks/useRecentTokens';
 
 // interface for component props
 interface LimitCurrencyConverterProps {
+    displayPrice: string;
+    previousDisplayPrice: string;
+    setPreviousDisplayPrice: Dispatch<SetStateAction<string>>;
+    setDisplayPrice: Dispatch<SetStateAction<string>>;
     provider?: ethers.providers.Provider;
     pool: CrocPoolView | undefined;
     gridSize: number;
@@ -83,6 +87,10 @@ interface LimitCurrencyConverterProps {
 // central react functional component
 export default function LimitCurrencyConverter(props: LimitCurrencyConverterProps) {
     const {
+        displayPrice,
+        previousDisplayPrice,
+        setDisplayPrice,
+        setPreviousDisplayPrice,
         provider,
         pool,
         gridSize,
@@ -598,6 +606,10 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
             />
             <DividerDark addMarginTop />
             <LimitRate
+                previousDisplayPrice={previousDisplayPrice}
+                displayPrice={displayPrice}
+                setDisplayPrice={setDisplayPrice}
+                setPreviousDisplayPrice={setPreviousDisplayPrice}
                 pool={pool}
                 gridSize={gridSize}
                 isSellTokenBase={isSellTokenBase}

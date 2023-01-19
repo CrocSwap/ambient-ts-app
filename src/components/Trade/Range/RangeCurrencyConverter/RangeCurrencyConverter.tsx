@@ -20,6 +20,7 @@ import {
 import { ZERO_ADDRESS } from '../../../../constants';
 import { useNavigate } from 'react-router-dom';
 import { getRecentTokensParamsIF } from '../../../../App/hooks/useRecentTokens';
+import { precisionOfInput } from '../../../../App/functions/getPrecisionOfInput';
 
 // interface for component props
 interface RangeCurrencyConverterPropsIF {
@@ -226,6 +227,7 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
                 //             : tradeData.primaryQuantityRange;
                 // }
             } else {
+                console.log(`setting tokenbinputqty to ${tradeData.primaryQuantityRange}`);
                 setTokenBInputQty(tradeData.primaryQuantityRange);
 
                 // const buyQtyField = document.getElementById('B-range-quantity') as HTMLInputElement;
@@ -241,7 +243,16 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
     }, []);
 
     const setTokenAQtyValue = (value: number) => {
+        const precision = precisionOfInput(value.toString());
+
         setTokenAQtyLocal(parseFloat(truncateDecimals(value, tokenPair.dataTokenA.decimals)));
+        setTokenAInputQty(
+            value === 0
+                ? ''
+                : precision <= tokenPair.dataTokenA.decimals
+                ? value.toString()
+                : truncateDecimals(value, tokenPair.dataTokenA.decimals),
+        );
 
         handleRangeButtonMessageTokenA(value);
 
@@ -269,27 +280,47 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
                 : truncateDecimals(qtyTokenB, 2)
             : '';
 
-        const tokenBQtyField = document.getElementById('B-range-quantity') as HTMLInputElement;
+        // const tokenBQtyField = document.getElementById('B-range-quantity') as HTMLInputElement;
 
         if (truncatedTokenBQty !== '0' && truncatedTokenBQty !== '') {
-            tokenBQtyField.value = truncatedTokenBQty;
+            // tokenBQtyField.value = truncatedTokenBQty;
             if (primaryQuantityRange !== value.toString()) {
                 dispatch(setPrimaryQuantityRange(value.toString()));
             }
             dispatch(setIsTokenAPrimaryRange(true));
             setTokenBQtyLocal(parseFloat(truncatedTokenBQty));
+            console.log(`setting tokenBqty to ${truncatedTokenBQty}`);
             setTokenBInputQty(truncatedTokenBQty);
         } else {
-            tokenBQtyField.value = '';
+            // tokenBQtyField.value = '';
             dispatch(setIsTokenAPrimaryRange(true));
 
             setTokenBQtyLocal(0);
+            console.log('setting tokenBinputqty to blank');
             setTokenBInputQty('');
         }
     };
 
     const setTokenBQtyValue = (value: number) => {
+        // console.log({ value });
+        const precision = precisionOfInput(value.toString());
         setTokenBQtyLocal(parseFloat(truncateDecimals(value, tokenPair.dataTokenB.decimals)));
+        // console.log(
+        //     `setting tokenBqty to ${
+        //         value === 0
+        //             ? ''
+        //             : precision <= tokenPair.dataTokenB.decimals
+        //             ? value
+        //             : truncateDecimals(value, tokenPair.dataTokenB.decimals)
+        //     }`,
+        // );
+        setTokenBInputQty(
+            value === 0
+                ? ''
+                : precision <= tokenPair.dataTokenB.decimals
+                ? value.toString()
+                : truncateDecimals(value, tokenPair.dataTokenB.decimals),
+        );
 
         handleRangeButtonMessageTokenB(value);
 
@@ -317,9 +348,9 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
                 : truncateDecimals(qtyTokenA, 2)
             : '';
 
-        const tokenAQtyField = document.getElementById('A-range-quantity') as HTMLInputElement;
+        // const tokenAQtyField = document.getElementById('A-range-quantity') as HTMLInputElement;
         if (truncatedTokenAQty !== '0' && truncatedTokenAQty !== '') {
-            tokenAQtyField.value = truncatedTokenAQty;
+            // tokenAQtyField.value = truncatedTokenAQty;
             if (primaryQuantityRange !== value.toString()) {
                 dispatch(setPrimaryQuantityRange(value.toString()));
             }
@@ -328,7 +359,7 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
             // console.log('setting a to truncatedTokenAQty');
             setTokenAInputQty(truncatedTokenAQty);
         } else {
-            tokenAQtyField.value = '';
+            // tokenAQtyField.value = '';
             dispatch(setIsTokenAPrimaryRange(false));
             setTokenAQtyLocal(0);
             console.log('setting a to blank');
