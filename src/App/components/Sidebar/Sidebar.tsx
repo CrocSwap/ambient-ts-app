@@ -36,6 +36,7 @@ import RecentPools from '../../../components/Global/Sidebar/RecentPools/RecentPo
 import { useAccount } from 'wagmi';
 import { useSidebarSearch } from './useSidebarSearch';
 import { SmallerPoolIF } from '../../hooks/useRecentPools';
+import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 
 const cachedPoolStatsFetch = memoizePoolStats();
 
@@ -261,11 +262,7 @@ export default function Sidebar(props: SidebarPropsIF) {
         },
     ];
 
-    const [
-        setRawInput,
-        isInputValid,
-        searchedPools
-    ] = useSidebarSearch(poolList, verifyToken);
+    const [setRawInput, isInputValid, searchedPools] = useSidebarSearch(poolList, verifyToken);
     // useEffect(() => {console.log({searchedPools})}, [JSON.stringify(searchedPools)]);
     false && searchedPools;
 
@@ -417,6 +414,13 @@ export default function Sidebar(props: SidebarPropsIF) {
             )}
         </div>
     );
+
+    const collapseSidebarMediaQuery = useMediaQuery('(max-width: 1099px)');
+
+    useEffect(() => {
+        if (collapseSidebarMediaQuery) setShowSidebar(false);
+        console.log('collapsing');
+    }, [collapseSidebarMediaQuery]);
 
     const sidebarStyle = showSidebar ? styles.sidebar_active : styles.sidebar;
 

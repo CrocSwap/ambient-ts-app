@@ -18,7 +18,7 @@ import trimString from '../../../utils/functions/trimString';
 import headerLogo from '../../../assets/images/logos/header_logo.svg';
 // import { useModal } from '../../../components/Global/Modal/useModal';
 import { useUrlParams } from './useUrlParams';
-import MobileSidebar from '../../../components/Global/MobileSidebar/MobileSidebar';
+// import MobileSidebar from '../../../components/Global/MobileSidebar/MobileSidebar';
 import NotificationCenter from '../../../components/Global/NotificationCenter/NotificationCenter';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { useAccount, useDisconnect, useEnsName } from 'wagmi';
@@ -64,8 +64,8 @@ export default function PageHeader(props: HeaderPropsIF) {
         // openMoralisModalWallet,
         openWagmiModalWallet,
         lastBlockNumber,
-        isMobileSidebarOpen,
-        setIsMobileSidebarOpen,
+        // isMobileSidebarOpen,
+        // setIsMobileSidebarOpen,
         isAppOverlayActive,
         setIsAppOverlayActive,
         switchTheme,
@@ -316,14 +316,14 @@ export default function PageHeader(props: HeaderPropsIF) {
 
             {routeDisplay}
             <div>
-                <MobileSidebar
+                {/* <MobileSidebar
                     lastBlockNumber={lastBlockNumber}
                     chainId={chainId}
                     isMobileSidebarOpen={isMobileSidebarOpen}
                     setIsMobileSidebarOpen={setIsMobileSidebarOpen}
                     theme={theme}
                     switchTheme={switchTheme}
-                />
+                /> */}
                 <div className={styles.account}>
                     <NetworkSelector chainId={chainId} />
                     {/* {connectButtonDelayElapsed && !isUserLoggedIn && connectMoralisButton} */}

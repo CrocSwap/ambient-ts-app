@@ -262,8 +262,12 @@
     }
 }
 
+/* @media only screen and (min-width: 800px) {
+
+} */
+
 /* Large screens */
-@media only screen and (min-width: 1280px) {
+@media only screen and (min-width: 500px) {
     .sidebar {
         top: 0;
         width: 1.938rem;
