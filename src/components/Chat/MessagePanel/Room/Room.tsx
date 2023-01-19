@@ -152,7 +152,7 @@ export default function RoomDropdown(props: RoomProps) {
         handleDropdownMenu();
     }
 
-    function handleRoomClickCurrentPool(event: any) {
+    function handleRoomClickCurrentPool() {
         props.setRoom(currentPool.baseToken.symbol + currentPool.quoteToken.symbol);
         setShowCurrentPoolButton(false);
         setIsActive(false);
@@ -240,7 +240,7 @@ export default function RoomDropdown(props: RoomProps) {
                 {showCurrentPoolButton ? (
                     <div
                         className={styles.current_pool}
-                        onClick={(event: any) => handleRoomClickCurrentPool(event)}
+                        onClick={() => handleRoomClickCurrentPool()}
                         onMouseOver={handleMouseOver}
                         onMouseOut={handleMouseOut}
                     >
