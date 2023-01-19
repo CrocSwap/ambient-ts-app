@@ -93,7 +93,7 @@ export default function WalletModalWagmi(props: WalletModalPropsIF) {
             </button>
         </div>
     ) : (
-        <div>
+        <div className={styles.wall_buttons_container}>
             {connectors.map((connector) => (
                 <WalletButton
                     title={`${connector.name} ${!connector.ready ? ' (unsupported)' : ''}  ${
