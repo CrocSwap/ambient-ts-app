@@ -12,7 +12,7 @@ export const useRecentPools = (
     chainId: string,
     addressTokenA: string,
     addressTokenB: string,
-    verifyToken: (addr: string, chn: string) => boolean
+    verifyToken: (addr: string, chn: string) => boolean,
 ): {
     addRecentPool: (pool: SmallerPoolIF) => void;
     getRecentPools: (count: number) => SmallerPoolIF[];
@@ -21,34 +21,36 @@ export const useRecentPools = (
     // array of pools the user has interacted with in the current session
     const [recentPools, setRecentPools] = useState<SmallerPoolIF[]>([]);
 
-    recentPools.length || setRecentPools([{
-        base: sortBaseQuoteTokens(addressTokenA, addressTokenB)[0],
-        quote: sortBaseQuoteTokens(addressTokenA, addressTokenB)[1]
-    }]);
+    recentPools.length ||
+        setRecentPools([
+            {
+                base: sortBaseQuoteTokens(addressTokenA, addressTokenB)[0],
+                quote: sortBaseQuoteTokens(addressTokenA, addressTokenB)[1],
+            },
+        ]);
 
     // add pools to the recent pools list (in-session)
     // runs every time to the current token pair changes
     // later this will need more logic for a Pool ID value
     useEffect(() => {
         // sort current token pair as base and quote
-        const [baseAddr, quoteAddr] = sortBaseQuoteTokens(
-            addressTokenA, addressTokenB
-        );
+        const [baseAddr, quoteAddr] = sortBaseQuoteTokens(addressTokenA, addressTokenB);
         const { ackTokens } = JSON.parse(localStorage.getItem('user') as string) ?? [];
         const checkToken = (addr: string) => {
             const isListed = verifyToken(addr.toLowerCase(), chainId);
-            const isAcknowledged = ackTokens.some(
-                (ackTkn: TokenIF) => (
-                    ackTkn.address.toLowerCase() === addr.toLowerCase() &&
-                    ackTkn.chainId === parseInt(chainId)
-                )
-            );
+            const isAcknowledged = ackTokens
+                ? ackTokens.some(
+                      (ackTkn: TokenIF) =>
+                          ackTkn.address.toLowerCase() === addr.toLowerCase() &&
+                          ackTkn.chainId === parseInt(chainId),
+                  )
+                : false;
             return isListed || isAcknowledged;
-        }
+        };
         // add the pool to the list of recent pools
         // fn has internal logic to handle duplicate values
         if (checkToken(baseAddr) && checkToken(quoteAddr)) {
-            addRecentPool({base: baseAddr, quote: quoteAddr});
+            addRecentPool({ base: baseAddr, quote: quoteAddr });
         }
     }, [addressTokenA, addressTokenB]);
 
@@ -60,10 +62,9 @@ export const useRecentPools = (
         // remove the current pool from the list, if present
         // this prevents duplicate entries
         const recentPoolsWithNewRemoved = recentPools.filter(
-            (recentPool: SmallerPoolIF) => (
+            (recentPool: SmallerPoolIF) =>
                 recentPool.base.toLowerCase() !== pool.base.toLowerCase() ||
-                recentPool.quote.toLowerCase() !== pool.quote.toLowerCase()
-            )
+                recentPool.quote.toLowerCase() !== pool.quote.toLowerCase(),
         );
         // add the current pool to the front of the list
         setRecentPools([pool, ...recentPoolsWithNewRemoved]);
