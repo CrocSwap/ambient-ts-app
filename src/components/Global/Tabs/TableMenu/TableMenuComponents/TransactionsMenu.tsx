@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { useState, ReactNode, useRef, useEffect } from 'react';
+import { useState, ReactNode, useRef, useEffect, SetStateAction, Dispatch } from 'react';
 // import { Link } from 'react-router-dom';
 import { FiExternalLink, FiMoreHorizontal } from 'react-icons/fi';
 
@@ -11,7 +11,7 @@ import { FiExternalLink, FiMoreHorizontal } from 'react-icons/fi';
 import styles from './TableMenus.module.css';
 // import { useModal } from '../../../../Global/Modal/useModal';
 // import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
-import { ITransaction } from '../../../../../utils/state/graphDataSlice';
+import { CandlesByPoolAndDuration, ITransaction } from '../../../../../utils/state/graphDataSlice';
 import UseOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
 import TransactionDetails from '../../../TransactionDetails/TransactionDetails';
@@ -45,6 +45,8 @@ interface TransactionMenuIF {
     handlePulseAnimation?: (type: string) => void;
 
     isOnPortfolioPage: boolean;
+    transactionDetailsGraphData?: CandlesByPoolAndDuration | undefined;
+    setTransactionDetailRow?: Dispatch<SetStateAction<string>>;
 }
 
 // React functional component
@@ -61,6 +63,7 @@ export default function TransactionsMenu(props: TransactionMenuIF) {
         openGlobalModal,
         closeGlobalModal,
         handlePulseAnimation,
+        transactionDetailsGraphData,
         // isOnPortfolioPage,
     } = props;
 
@@ -248,10 +251,18 @@ export default function TransactionsMenu(props: TransactionMenuIF) {
     //         break;
     // }
 
-    const openDetailsModal = () =>
+    const openDetailsModal = (graphData: CandlesByPoolAndDuration | undefined) => {
+        if (props.setTransactionDetailRow) props.setTransactionDetailRow(tx.tx);
+
         openGlobalModal(
-            <TransactionDetails account={account} tx={tx} closeGlobalModal={closeGlobalModal} />,
+            <TransactionDetails
+                account={account}
+                tx={tx}
+                closeGlobalModal={closeGlobalModal}
+                transactionDetailsGraphData={graphData}
+            />,
         );
+    };
 
     // const mainModal = (
     //     <Modal onClose={closeModal} title={modalTitle}>
@@ -390,7 +401,10 @@ export default function TransactionsMenu(props: TransactionMenuIF) {
         </button>
     );
     const detailsButton = (
-        <button className={styles.option_button} onClick={openDetailsModal}>
+        <button
+            className={styles.option_button}
+            onClick={() => openDetailsModal(transactionDetailsGraphData)}
+        >
             Details
         </button>
     );

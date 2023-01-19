@@ -20,7 +20,12 @@ import recentTransactionsImage from '../../../assets/images/sidebarImages/recent
 import Ranges from './Ranges/Ranges';
 import TabComponent from '../../Global/TabComponent/TabComponent';
 import PositionsOnlyToggle from './PositionsOnlyToggle/PositionsOnlyToggle';
-import { CandleData, ITransaction, setChangesByUser } from '../../../utils/state/graphDataSlice';
+import {
+    CandleData,
+    CandlesByPoolAndDuration,
+    ITransaction,
+    setChangesByUser,
+} from '../../../utils/state/graphDataSlice';
 import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
 import { fetchPoolRecentChanges } from '../../../App/functions/fetchPoolRecentChanges';
 
@@ -95,6 +100,8 @@ interface ITabsProps {
     isPoolPriceChangePositive: boolean;
 
     setIsPoolPriceChangePositive: Dispatch<SetStateAction<boolean>>;
+    transactionDetailsGraphData?: CandlesByPoolAndDuration | undefined;
+    setTransactionDetailRow?: Dispatch<SetStateAction<string>>;
 }
 
 // const httpGraphCacheServerDomain = 'https://809821320828123.de:5000';
@@ -434,6 +441,8 @@ export default function TradeTabs2(props: ITabsProps) {
         isOnPortfolioPage: false,
 
         handlePulseAnimation: handlePulseAnimation,
+        transactionDetailsGraphData: props.transactionDetailsGraphData,
+        setTransactionDetailRow: props.setTransactionDetailRow,
         // handleTxCopiedClick: handleTxCopiedClick,
     };
     // Props for <Orders/> React Element

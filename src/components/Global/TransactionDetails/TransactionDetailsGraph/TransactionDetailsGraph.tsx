@@ -1,18 +1,19 @@
 import * as d3 from 'd3';
 import * as d3fc from 'd3fc';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { ITransaction } from '../../../../utils/state/graphDataSlice';
+import { CandlesByPoolAndDuration, ITransaction } from '../../../../utils/state/graphDataSlice';
 
 import './TransactionDetailsGraph.css';
 
 interface TransactionDetailsGraphIF {
     tx: ITransaction;
+    transactionDetailsGraphData?: CandlesByPoolAndDuration | undefined;
 }
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 export default function TransactionDetailsGraph(props: TransactionDetailsGraphIF) {
-    const { tx } = props;
+    const { tx, transactionDetailsGraphData } = props;
 
     const d3PlotGraph = useRef(null);
     const d3Yaxis = useRef(null);

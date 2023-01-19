@@ -6,6 +6,7 @@ import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import {
     addChangesByPool,
     CandleData,
+    CandlesByPoolAndDuration,
     graphData,
     ITransaction,
     setChangesByPool,
@@ -54,6 +55,8 @@ interface TransactionsProps {
     showSidebar: boolean;
     isOnPortfolioPage: boolean;
     setSelectedDate?: Dispatch<Date | undefined>;
+    transactionDetailsGraphData?: CandlesByPoolAndDuration | undefined;
+    setTransactionDetailRow?: Dispatch<SetStateAction<string>>;
     // setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
 }
 export default function Transactions(props: TransactionsProps) {
@@ -578,6 +581,8 @@ export default function Transactions(props: TransactionsProps) {
             closeGlobalModal={closeGlobalModal}
             isOnPortfolioPage={isOnPortfolioPage}
             handlePulseAnimation={handlePulseAnimation}
+            transactionDetailsGraphData={props.transactionDetailsGraphData}
+            setTransactionDetailRow={props.setTransactionDetailRow}
         />
     ));
 

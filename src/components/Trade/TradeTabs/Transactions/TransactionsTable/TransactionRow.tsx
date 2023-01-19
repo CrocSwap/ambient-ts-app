@@ -1,5 +1,9 @@
 import styles from '../Transactions.module.css';
-import { ITransaction, setDataLoadingStatus } from '../../../../../utils/state/graphDataSlice';
+import {
+    CandlesByPoolAndDuration,
+    ITransaction,
+    setDataLoadingStatus,
+} from '../../../../../utils/state/graphDataSlice';
 import { Dispatch, SetStateAction, useEffect, useRef } from 'react';
 import { useProcessTransaction } from '../../../../../utils/hooks/useProcessTransaction';
 import TransactionsMenu from '../../../../Global/Tabs/TableMenu/TableMenuComponents/TransactionsMenu';
@@ -36,6 +40,8 @@ interface TransactionRowPropsIF {
 
     openGlobalModal: (content: React.ReactNode) => void;
     isOnPortfolioPage: boolean;
+    transactionDetailsGraphData?: CandlesByPoolAndDuration | undefined;
+    setTransactionDetailRow?: Dispatch<SetStateAction<string>>;
 }
 export default function TransactionRow(props: TransactionRowPropsIF) {
     const {
@@ -58,6 +64,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
         closeGlobalModal,
         openGlobalModal,
         desktopView,
+        transactionDetailsGraphData,
     } = props;
 
     const {
@@ -139,10 +146,18 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
 
     // console.log(baseDisplay);
 
-    const openDetailsModal = () =>
+    const openDetailsModal = (graphData: CandlesByPoolAndDuration | undefined) => {
+        if (props.setTransactionDetailRow) props.setTransactionDetailRow(tx.tx);
+
         openGlobalModal(
-            <TransactionDetails account={account} tx={tx} closeGlobalModal={closeGlobalModal} />,
+            <TransactionDetails
+                account={account}
+                tx={tx}
+                closeGlobalModal={closeGlobalModal}
+                transactionDetailsGraphData={graphData}
+            />,
         );
+    };
 
     const activeTransactionStyle =
         tx.id === currentTxActiveInTransactions ? styles.active_transaction_style : '';
@@ -193,7 +208,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
             leaveDelay={200}
         >
             <li
-                onClick={openDetailsModal}
+                onClick={() => openDetailsModal(transactionDetailsGraphData)}
                 data-label='id'
                 className='base_color'
                 style={{ fontFamily: 'monospace' }}
@@ -213,7 +228,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
             leaveDelay={200}
         >
             <li
-                onClick={openDetailsModal}
+                onClick={() => openDetailsModal(transactionDetailsGraphData)}
                 data-label='value'
                 className='gradient_text'
                 style={{ textAlign: 'right', fontFamily: 'monospace' }}
@@ -252,7 +267,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
             leaveDelay={200}
         >
             <li
-                onClick={openDetailsModal}
+                onClick={() => openDetailsModal(transactionDetailsGraphData)}
                 data-label='wallet'
                 className={usernameStyle}
                 style={
@@ -411,7 +426,10 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
             enterDelay={750}
             leaveDelay={200}
         >
-            <li onClick={openDetailsModal} style={{ textTransform: 'lowercase' }}>
+            <li
+                onClick={() => openDetailsModal(transactionDetailsGraphData)}
+                style={{ textTransform: 'lowercase' }}
+            >
                 <p className='base_color' style={{ fontFamily: 'monospace' }}>
                     {elapsedTimeString}
                 </p>
@@ -433,7 +451,11 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
         //     enterDelay={150}
         //     leaveDelay={200}
         // >
-        <li onClick={openDetailsModal} data-label={baseTokenSymbol} className='color_white'>
+        <li
+            onClick={() => openDetailsModal(transactionDetailsGraphData)}
+            data-label={baseTokenSymbol}
+            className='color_white'
+        >
             <p
                 style={{
                     display: 'flex',
@@ -461,7 +483,11 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
         //     enterDelay={150}
         //     leaveDelay={200}
         // >
-        <li onClick={openDetailsModal} data-label={quoteTokenSymbol} className='color_white'>
+        <li
+            onClick={() => openDetailsModal(transactionDetailsGraphData)}
+            data-label={quoteTokenSymbol}
+            className='color_white'
+        >
             <p
                 style={{
                     display: 'flex',
@@ -516,7 +542,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                 (tx.entityType === 'liqchange' ? (
                     tx.positionType === 'ambient' ? (
                         <li
-                            onClick={openDetailsModal}
+                            onClick={() => openDetailsModal(transactionDetailsGraphData)}
                             data-label='price'
                             className={`${sideTypeStyle} `}
                             style={{ textAlign: 'right', fontFamily: 'monospace' }}
@@ -526,7 +552,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                     ) : (isDenomBase && !isOnPortfolioPage) ||
                       (!isBaseTokenMoneynessGreaterOrEqual && isOnPortfolioPage) ? (
                         <li
-                            onClick={openDetailsModal}
+                            onClick={() => openDetailsModal(transactionDetailsGraphData)}
                             data-label='price'
                             className={`${sideTypeStyle} `}
                         >
@@ -548,7 +574,11 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                             </p>
                         </li>
                     ) : (
-                        <li onClick={openDetailsModal} data-label='price' className={sideTypeStyle}>
+                        <li
+                            onClick={() => openDetailsModal(transactionDetailsGraphData)}
+                            data-label='price'
+                            className={sideTypeStyle}
+                        >
                             <p
                                 className={`${styles.align_right} `}
                                 style={{ fontFamily: 'monospace' }}
@@ -569,7 +599,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                     )
                 ) : (
                     <li
-                        onClick={openDetailsModal}
+                        onClick={() => openDetailsModal(transactionDetailsGraphData)}
                         data-label='price'
                         className={`${styles.align_right}  ${sideTypeStyle}`}
                         style={{ fontFamily: 'monospace' }}
@@ -581,7 +611,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                 ))}
             {!showColumns && (
                 <li
-                    onClick={openDetailsModal}
+                    onClick={() => openDetailsModal(transactionDetailsGraphData)}
                     data-label='side'
                     className={sideTypeStyle}
                     style={{ textAlign: 'center' }}
@@ -593,7 +623,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
             )}
             {!showColumns && (
                 <li
-                    onClick={openDetailsModal}
+                    onClick={() => openDetailsModal(transactionDetailsGraphData)}
                     data-label='type'
                     className={sideTypeStyle}
                     style={{ textAlign: 'center' }}
@@ -619,7 +649,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                     data-label={baseTokenSymbol + quoteTokenSymbol}
                     className='color_white'
                     style={{ textAlign: 'right' }}
-                    onClick={openDetailsModal}
+                    onClick={() => openDetailsModal(transactionDetailsGraphData)}
                 >
                     <p
                         // onClick={() => {
@@ -665,6 +695,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                     closeGlobalModal={props.closeGlobalModal}
                     isOnPortfolioPage={props.isOnPortfolioPage}
                     handlePulseAnimation={handlePulseAnimation}
+                    transactionDetailsGraphData={props.transactionDetailsGraphData}
                 />
             </li>
         </ul>

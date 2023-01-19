@@ -1,6 +1,6 @@
 import styles from './TransactionDetails.module.css';
-import { useState, useRef } from 'react';
-import { ITransaction } from '../../../utils/state/graphDataSlice';
+import { useState, useRef, useEffect } from 'react';
+import { CandlesByPoolAndDuration, ITransaction } from '../../../utils/state/graphDataSlice';
 import printDomToImage from '../../../utils/functions/printDomToImage';
 import RangeDetailsControl from '../../RangeDetails/RangeDetailsControl/RangeDetailsControl';
 import TransactionDetailsHeader from './TransactionDetailsHeader/TransactionDetailsHeader';
@@ -10,10 +10,15 @@ interface TransactionDetailsPropsIF {
     account: string;
     tx: ITransaction;
     closeGlobalModal: () => void;
+    transactionDetailsGraphData?: CandlesByPoolAndDuration | undefined;
 }
 
 export default function TransactionDetails(props: TransactionDetailsPropsIF) {
-    const { account, tx } = props;
+    const { transactionDetailsGraphData, account, tx } = props;
+
+    useEffect(() => {
+        console.log(transactionDetailsGraphData);
+    }, [transactionDetailsGraphData]);
 
     console.log({ tx });
 
@@ -72,7 +77,10 @@ export default function TransactionDetails(props: TransactionDetailsPropsIF) {
                         />
                     </div>
                     <div className={styles.right_container}>
-                        <TransactionDetailsGraph tx={tx} />
+                        <TransactionDetailsGraph
+                            tx={tx}
+                            transactionDetailsGraphData={props.transactionDetailsGraphData}
+                        />
 
                         {/* <OrderGraphDisplay isOrderFilled={isOrderFilled} user={userNameToDisplay} /> */}
                     </div>
