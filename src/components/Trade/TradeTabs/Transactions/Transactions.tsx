@@ -372,7 +372,7 @@ export default function Transactions(props: TransactionsProps) {
 
     const ipadView = useMediaQuery('(max-width: 480px)');
     const desktopView = useMediaQuery('(max-width: 768px)');
-    const showColumns = useMediaQuery('(max-width: 1440px)');
+    const showColumns = useMediaQuery('(max-width: 1500px)');
     const view2 = useMediaQuery('(max-width: 1568px)');
 
     const quoteTokenSymbol = tradeData.quoteToken?.symbol;
