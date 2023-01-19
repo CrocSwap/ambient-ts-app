@@ -37,7 +37,7 @@ export const useRecentPools = (
         const { ackTokens } = JSON.parse(localStorage.getItem('user') as string) ?? [];
         const checkToken = (addr: string) => {
             const isListed = verifyToken(addr.toLowerCase(), chainId);
-            const isAcknowledged = ackTokens.some(
+            const isAcknowledged = ackTokens?.some(
                 (ackTkn: TokenIF) => (
                     ackTkn.address.toLowerCase() === addr.toLowerCase() &&
                     ackTkn.chainId === parseInt(chainId)

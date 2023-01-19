@@ -21,6 +21,7 @@ import { useUrlParams } from './useUrlParams';
 // import MobileSidebar from '../../../components/Global/MobileSidebar/MobileSidebar';
 import NotificationCenter from '../../../components/Global/NotificationCenter/NotificationCenter';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
+import { SmallerPoolIF } from '../../hooks/useRecentPools';
 import { useAccount, useDisconnect, useEnsName } from 'wagmi';
 
 interface HeaderPropsIF {
@@ -46,6 +47,7 @@ interface HeaderPropsIF {
     isAppOverlayActive: boolean;
     poolPriceDisplay: number | undefined;
     setIsAppOverlayActive: Dispatch<SetStateAction<boolean>>;
+    addRecentPool: (pool: SmallerPoolIF) => void;
     switchTheme: () => void;
     theme: string;
 }
@@ -69,6 +71,7 @@ export default function PageHeader(props: HeaderPropsIF) {
         isAppOverlayActive,
         setIsAppOverlayActive,
         switchTheme,
+        addRecentPool,
         theme,
         poolPriceDisplay,
     } = props;
@@ -168,7 +171,12 @@ export default function PageHeader(props: HeaderPropsIF) {
 
     const location = useLocation();
 
-    const urlParams = useUrlParams();
+    const { paramsSlug, baseAddr, quoteAddr} = useUrlParams();
+
+    const [didLoad, setDidLoad] = useState<boolean>(false);
+    useEffect(() => {
+        addRecentPool({base: baseAddr, quote: quoteAddr});
+    }, [baseAddr, quoteAddr]);
 
     const tradeData = useAppSelector((state) => state.tradeData);
 
@@ -241,10 +249,10 @@ export default function PageHeader(props: HeaderPropsIF) {
 
     const linkData = [
         { title: t('common:homeTitle'), destination: '/', shouldDisplay: true },
-        { title: t('common:swapTitle'), destination: '/swap' + urlParams, shouldDisplay: true },
+        { title: t('common:swapTitle'), destination: '/swap' + paramsSlug, shouldDisplay: true },
         {
             title: t('common:tradeTitle'),
-            destination: tradeDestination + urlParams,
+            destination: tradeDestination + paramsSlug,
             shouldDisplay: true,
         },
         { title: t('common:analyticsTitle'), destination: '/analytics', shouldDisplay: false },

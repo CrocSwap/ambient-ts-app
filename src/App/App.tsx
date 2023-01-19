@@ -339,7 +339,7 @@ export default function App() {
     false && getAllTokens;
     false && getTokensOnChain;
 
-    const { getRecentPools } = useRecentPools(
+    const { addRecentPool, getRecentPools } = useRecentPools(
         chainData.chainId,
         tradeData.tokenA.address,
         tradeData.tokenB.address,
@@ -2287,7 +2287,7 @@ export default function App() {
         isAppOverlayActive: isAppOverlayActive,
         setIsAppOverlayActive: setIsAppOverlayActive,
         ethMainnetUsdPrice: ethMainnetUsdPrice,
-
+        addRecentPool: addRecentPool,
         switchTheme: switchTheme,
         theme: theme,
     };
