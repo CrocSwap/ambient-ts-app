@@ -22,7 +22,7 @@ interface ConfirmLimitModalProps {
     // limitRate: string;
     insideTickDisplayPrice: number;
     newLimitOrderTransactionHash: string;
-    txErrorCode: number;
+    txErrorCode: string;
     txErrorMessage: string;
     showConfirmation: boolean;
     setShowConfirmation: Dispatch<SetStateAction<boolean>>;
@@ -42,7 +42,7 @@ export default function ConfirmLimitModal(props: ConfirmLimitModalProps) {
         insideTickDisplayPrice,
         newLimitOrderTransactionHash,
         txErrorCode,
-        txErrorMessage,
+        // txErrorMessage,
         resetConfirmation,
         showConfirmation,
         setShowConfirmation,
@@ -91,9 +91,11 @@ export default function ConfirmLimitModal(props: ConfirmLimitModalProps) {
                   maximumFractionDigits: 2,
               });
 
-    const isTransactionDenied =
-        txErrorCode === 4001 &&
-        txErrorMessage === 'MetaMask Tx Signature: User denied transaction signature.';
+    const isTransactionDenied = txErrorCode === 'ACTION_REJECTED';
+
+    // const isTransactionDenied =
+    //     txErrorCode === 4001 &&
+    //     txErrorMessage === 'MetaMask Tx Signature: User denied transaction signature.';
     const sellTokenQty = (document.getElementById('sell-limit-quantity') as HTMLInputElement)
         ?.value;
     const buyTokenQty = (document.getElementById('buy-limit-quantity') as HTMLInputElement)?.value;

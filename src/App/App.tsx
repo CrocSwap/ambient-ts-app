@@ -741,7 +741,7 @@ export default function App() {
     const [baseTokenDecimals, setBaseTokenDecimals] = useState<number>(0);
     const [quoteTokenDecimals, setQuoteTokenDecimals] = useState<number>(0);
 
-    const [isTokenABase, setIsTokenABase] = useState<boolean>(true);
+    const [isTokenABase, setIsTokenABase] = useState<boolean>(false);
 
     const [ambientApy, setAmbientApy] = useState<number | undefined>();
 
@@ -2342,6 +2342,7 @@ export default function App() {
         closeGlobalModal: closeGlobalModal,
         isAppOverlayActive: isAppOverlayActive,
         setIsAppOverlayActive: setIsAppOverlayActive,
+        ethMainnetUsdPrice: ethMainnetUsdPrice,
 
         switchTheme: switchTheme,
         theme: theme,

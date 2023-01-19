@@ -62,15 +62,16 @@ export default function OrderRemoval(props: IOrderRemovalProps) {
 
     const [showConfirmation, setShowConfirmation] = useState(false);
     const [newRemovalTransactionHash, setNewRemovalTransactionHash] = useState('');
-    const [txErrorCode, setTxErrorCode] = useState(0);
-    const [txErrorMessage, setTxErrorMessage] = useState('');
+    const [txErrorCode, setTxErrorCode] = useState('');
+    // const [txErrorMessage, setTxErrorMessage] = useState('');
     const [showSettings, setShowSettings] = useState(false);
 
     const resetConfirmation = () => {
         setShowConfirmation(false);
         setNewRemovalTransactionHash('');
-        setTxErrorCode(0);
-        setTxErrorMessage('');
+        setTxErrorCode('');
+
+        // setTxErrorMessage('');
     };
 
     useEffect(() => {
@@ -158,7 +159,7 @@ export default function OrderRemoval(props: IOrderRemovalProps) {
             } catch (error) {
                 console.log({ error });
                 setTxErrorCode(error?.code);
-                setTxErrorMessage(error?.message);
+                // setTxErrorMessage(error?.message);
             }
 
             const newLimitOrderChangeCacheEndpoint =
@@ -276,9 +277,10 @@ export default function OrderRemoval(props: IOrderRemovalProps) {
 
     const transactionApproved = newRemovalTransactionHash !== '';
 
-    const isRemovalDenied =
-        txErrorCode === 4001 &&
-        txErrorMessage === 'MetaMask Tx Signature: User denied transaction signature.';
+    const isRemovalDenied = txErrorCode === 'ACTION_REJECTED';
+    // const isRemovalDenied =
+    //     txErrorCode === 4001 &&
+    //     txErrorMessage === 'MetaMask Tx Signature: User denied transaction signature.';
 
     function handleConfirmationChange() {
         setCurrentConfirmationData(removalPending);

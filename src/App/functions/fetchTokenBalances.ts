@@ -78,18 +78,21 @@ export const fetchNativeTokenBalance = async (
     const combinedBalanceDisplay = toDisplayQty(combinedBalanceNonDisplay, 18);
     const combinedBalanceDisplayNum = parseFloat(combinedBalanceDisplay);
 
-    const combinedBalanceDisplayTruncated = combinedBalanceDisplayNum
-        ? combinedBalanceDisplayNum < 0.0001
-            ? combinedBalanceDisplayNum.toExponential(2)
-            : combinedBalanceDisplayNum < 2
-            ? combinedBalanceDisplayNum.toPrecision(3)
-            : combinedBalanceDisplayNum >= 100000
-            ? formatAmountOld(nativeWalletBalanceDisplayNum)
-            : combinedBalanceDisplayNum.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-              })
-        : undefined;
+    const combinedBalanceDisplayTruncated =
+        combinedBalanceDisplayNum !== undefined
+            ? !combinedBalanceDisplayNum
+                ? '0.00'
+                : combinedBalanceDisplayNum < 0.0001
+                ? combinedBalanceDisplayNum.toExponential(2)
+                : combinedBalanceDisplayNum < 2
+                ? combinedBalanceDisplayNum.toPrecision(3)
+                : combinedBalanceDisplayNum >= 100000
+                ? formatAmountOld(nativeWalletBalanceDisplayNum)
+                : combinedBalanceDisplayNum.toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                  })
+            : undefined;
 
     const nativeDexBalanceDisplayTruncated = nativeDexBalanceDisplayNum
         ? nativeDexBalanceDisplayNum < 0.0001

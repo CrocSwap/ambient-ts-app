@@ -23,7 +23,7 @@ interface ConfirmSwapModalProps {
     onClose: () => void;
     newSwapTransactionHash: string;
     tokenPair: TokenPairIF;
-    txErrorCode: number;
+    txErrorCode: string;
     txErrorMessage: string;
     showConfirmation: boolean;
     setShowConfirmation: Dispatch<SetStateAction<boolean>>;
@@ -45,7 +45,7 @@ export default function ConfirmSwapModal(props: ConfirmSwapModalProps) {
         newSwapTransactionHash,
         tokenPair,
         txErrorCode,
-        txErrorMessage,
+        // txErrorMessage,
         resetConfirmation,
         showConfirmation,
         setShowConfirmation,
@@ -55,9 +55,12 @@ export default function ConfirmSwapModal(props: ConfirmSwapModalProps) {
     } = props;
 
     const transactionApproved = newSwapTransactionHash !== '';
-    const isTransactionDenied =
-        txErrorCode === 4001 &&
-        txErrorMessage === 'MetaMask Tx Signature: User denied transaction signature.';
+    // console.log({ txErrorCode });
+    // console.log({ txErrorMessage });
+    const isTransactionDenied = txErrorCode === 'ACTION_REJECTED';
+    // const isTransactionDenied =
+    //     txErrorCode === 4001 &&
+    //     txErrorMessage === 'MetaMask Tx Signature: User denied transaction signature.';
 
     const sellTokenQty = (document.getElementById('sell-quantity') as HTMLInputElement)?.value;
     const buyTokenQty = (document.getElementById('buy-quantity') as HTMLInputElement)?.value;

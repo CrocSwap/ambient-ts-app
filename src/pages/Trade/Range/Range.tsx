@@ -166,13 +166,14 @@ export default function Range(props: RangePropsIF) {
     const [isWithdrawTokenBFromDexChecked, setIsWithdrawTokenBFromDexChecked] = useState(false);
     const [newRangeTransactionHash, setNewRangeTransactionHash] = useState('');
     const [showConfirmation, setShowConfirmation] = useState(true);
-    const [txErrorCode, setTxErrorCode] = useState(0);
+    const [txErrorCode, setTxErrorCode] = useState('');
     const [txErrorMessage, setTxErrorMessage] = useState('');
     const [rangeGasPriceinDollars, setRangeGasPriceinDollars] = useState<string | undefined>();
 
     const resetConfirmation = () => {
         setShowConfirmation(true);
-        setTxErrorCode(0);
+        setTxErrorCode('');
+
         setTxErrorMessage('');
     };
 

@@ -59,38 +59,44 @@
 
 .tokens_name {
     font-style: normal;
-    font-weight: 200;
+    font-weight: 100;
     font-size: 15px;
-    line-height: 22px;
-    /* identical to box height */
+    line-height: 8px;
     font-family: 'Lexend Deca';
 
     display: flex;
     align-items: center;
     letter-spacing: -0.02em;
-    /* text/grey light */
     flex-grow: 4;
-    color: rgba(235, 235, 255, 0.4);
+    color: #EBEBFF;
+    
 }
 
 .tokens_apy {
     flex-grow: 4;
     font-weight: lighter;
-    color: rgba(141, 248, 168, 0.836);
-    text-align: -webkit-right;
+    text-align: -webkit-left;
+    background: linear-gradient(90deg, #15BE6F 32.38%, #8FE9BF 51.39%, #15BE6F 68.17%);
+-webkit-background-clip: text;
+-webkit-text-fill-color: transparent;
+background-clip: text;
+
+/* glow/positive */
+
+text-shadow: 0px 0px 10px rgba(21, 190, 111, 0.75);
 }
 
 .tokens_min_price {
     flex-grow: 4;
     font-weight: lighter;
-    color: rgba(252, 252, 252, 0.822);
+    color: #CDC1FF;
 
 }
 
 .tokens_max_price {
     flex-grow: 4;
     font-weight: lighter;
-    color: rgba(77, 113, 212, 0.863);
+    color: #7371FC;
 }
 
 .address {
@@ -98,7 +104,7 @@
     color: rgba(235, 235, 255, 0.4);
     font-size: 14px;
     line-height: 22px;
-    font-family: 'Lexend Deca';
+    font-family: 'Roboto Mono';
     flex-grow: 2;
 }
 
@@ -158,6 +164,4 @@
 
 .animate_position_box {
     width: 100%;
-    margin: 5px;
-    padding: 5px;
 }
