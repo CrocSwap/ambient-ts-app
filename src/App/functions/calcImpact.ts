@@ -9,18 +9,12 @@ export const calcImpact = async (
     qty: string,
 ): Promise<CrocImpact> => {
     const impact = await (isQtySell
-        ? env
-              .sell(sellTokenAddress, qty)
-              .for(buyTokenAddress, {
-                  slippage: slippageTolerancePercentage,
-              })
-              .calcImpact()
-        : env
-              .buy(buyTokenAddress, qty)
-              .with(sellTokenAddress, {
-                  slippage: slippageTolerancePercentage,
-              })
-              .calcImpact());
+        ? env.sell(sellTokenAddress, qty).for(buyTokenAddress, {
+              slippage: slippageTolerancePercentage,
+          }).impact
+        : env.buy(buyTokenAddress, qty).with(sellTokenAddress, {
+              slippage: slippageTolerancePercentage,
+          }).impact);
 
     // console.log({ impact });
     return impact;

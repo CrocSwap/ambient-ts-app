@@ -244,21 +244,6 @@ export default function Swap(props: SwapPropsIF) {
         setTxErrorMessage('');
     };
 
-    const [priceImpactExceedsTolerance, setPriceImpactExceedsTolerance] = useState(false);
-
-    useEffect(() => {
-        const priceImpactPercentChange = priceImpact?.percentChange;
-        if (priceImpactPercentChange) {
-            if (Math.abs(priceImpactPercentChange) > slippageTolerancePercentage / 100) {
-                console.log('price impace exceeds slippage tolerance');
-                setPriceImpactExceedsTolerance(true);
-                setSwapButtonErrorMessage('Please Increase Slippage Tolerance');
-            } else {
-                setPriceImpactExceedsTolerance(false);
-            }
-        }
-    }, [priceImpact, slippageTolerancePercentage]);
-
     async function initiateSwap() {
         resetConfirmation();
         if (!crocEnv) return;
@@ -271,22 +256,20 @@ export default function Swap(props: SwapPropsIF) {
         const isQtySell = isTokenAPrimary;
         let tx;
         try {
-            (tx = await (isQtySell
-                ? crocEnv
-                      .sell(sellTokenAddress, qty)
-                      .for(buyTokenAddress, {
-                          slippage: slippageTolerancePercentage / 100,
-                      })
-                      .swap({ surplus: [isWithdrawFromDexChecked, isSaveAsDexSurplusChecked] })
-                : crocEnv
-                      .buy(buyTokenAddress, qty)
-                      .with(sellTokenAddress, {
-                          slippage: slippageTolerancePercentage / 100,
-                      })
-                      .swap({ surplus: [isWithdrawFromDexChecked, isSaveAsDexSurplusChecked] }))),
-                setNewSwapTransactionHash(tx?.hash);
+            const plan = isQtySell
+                ? crocEnv.sell(sellTokenAddress, qty).for(buyTokenAddress, {
+                      slippage: slippageTolerancePercentage / 100,
+                  })
+                : crocEnv.buy(buyTokenAddress, qty).with(sellTokenAddress, {
+                      slippage: slippageTolerancePercentage / 100,
+                  });
+            tx = await plan.swap({
+                surplus: [isWithdrawFromDexChecked, isSaveAsDexSurplusChecked],
+            });
+            setNewSwapTransactionHash(tx?.hash);
             dispatch(addPendingTx(tx?.hash));
         } catch (error) {
+            console.log({ error });
             setTxErrorCode(error?.code);
             setTxErrorMessage(error?.message);
         }
@@ -636,7 +619,7 @@ export default function Swap(props: SwapPropsIF) {
                         ) : (
                             <SwapButton
                                 onClickFn={openModal}
-                                swapAllowed={swapAllowed && !priceImpactExceedsTolerance}
+                                swapAllowed={swapAllowed}
                                 swapButtonErrorMessage={swapButtonErrorMessage}
                             />
                         )
