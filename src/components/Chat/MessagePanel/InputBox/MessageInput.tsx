@@ -13,7 +13,6 @@ import { TokenIF } from '../../../../utils/interfaces/TokenIF';
 import { targetData } from '../../../../utils/state/tradeDataSlice';
 
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
-import useChatApi from '../../../../components/Chat/Service/ChatApi';
 interface MessageInputProps {
     message?: Message;
     room: string;
@@ -57,10 +56,6 @@ export default function MessageInput(props: MessageInputProps, prop: ChatProps) 
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
     const { address, isConnected } = useAccount();
     const [isPosition, setIsPosition] = useState(false);
-    const { receiveUsername, getNameOrWallet } = useChatApi();
-    const [isMentionMessage, setIsMentionMessage] = useState(false);
-    const [mentionedName, setMentionedName] = useState('');
-    const [fill, setFill] = useState('red');
     // const { roomId } = props.match.params;
 
     const { sendMsg } = useSocket(props.room);
@@ -111,15 +106,16 @@ export default function MessageInput(props: MessageInputProps, prop: ChatProps) 
         setMessage('');
         dontShowEmojiPanel();
     };
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const _handleKeyDown = (e: any) => {
         if (e.key === 'Enter') {
-            setIsMentionMessage(false);
             handleSendMsg(e.target.value, roomId);
             setMessage('');
             dontShowEmojiPanel();
         }
     };
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleSendMsg = async (msg: string, roomId: any) => {
         if (msg === '' || !address) {
             // do nothing
@@ -128,6 +124,7 @@ export default function MessageInput(props: MessageInputProps, prop: ChatProps) 
         }
     };
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const onChangeMessage = async (e: any) => {
         setMessage(e.target.value);
     };

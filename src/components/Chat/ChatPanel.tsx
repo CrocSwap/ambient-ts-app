@@ -3,12 +3,10 @@ import { motion } from 'framer-motion';
 import SentMessagePanel from './MessagePanel/SentMessagePanel/SentMessagePanel';
 import DividerDark from '../Global/DividerDark/DividerDark';
 import MessageInput from './MessagePanel/InputBox/MessageInput';
-import IncomingMessage from './MessagePanel/Inbox/IncomingMessage';
 import Room from './MessagePanel/Room/Room';
 import { RiCloseFill, RiArrowDownSLine } from 'react-icons/ri';
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
 import useSocket from './Service/useSocket';
-import { Message } from './Model/MessageModel';
 import { PoolIF } from '../../utils/interfaces/PoolIF';
 import { TokenIF } from '../../utils/interfaces/TokenIF';
 import { targetData } from '../../utils/state/tradeDataSlice';
@@ -58,11 +56,8 @@ export default function ChatPanel(props: ChatProps) {
     const { address } = useAccount();
     const [currentUser, setCurrentUser] = useState<string | undefined>(undefined);
     const [name, setName] = useState('');
-    const [minutes, setMinute] = useState(1);
-    const [isSequential, setIsSequential] = useState(false);
     const [scrollDirection, setScrollDirection] = useState(String);
     const wrapperStyleFull = styles.chat_wrapper_full;
-    const [messagesArray] = useState<Message[]>([]);
     const [notification, setNotification] = useState(0);
 
     const { messages, getMsg, lastMessage, messageUser } = useSocket(room);
@@ -70,14 +65,6 @@ export default function ChatPanel(props: ChatProps) {
     const { getID } = useChatApi();
     const userData = useAppSelector((state) => state.userData);
     const isUserLoggedIn = userData.isLoggedIn;
-
-    function interval(str: string, string: string) {
-        const endDate = new Date(str);
-        const purchaseDate = new Date(string);
-        const diffMs = +endDate - +purchaseDate;
-        const diffMins = Math.round(((diffMs % 86400000) % 3600000) / 60000); // minutes
-        return diffMins;
-    }
 
     useEffect(() => {
         if (scrollDirection === 'Scroll Up') {
@@ -106,23 +93,6 @@ export default function ChatPanel(props: ChatProps) {
             );
         }
     }, [lastMessage]);
-
-    useEffect(() => {
-        setMinute(interval(messages[0]?.createdAt, messages[1]?.createdAt));
-        if (minutes <= 10) {
-            setIsSequential(true);
-        } else {
-            setIsSequential(false);
-        }
-    }, [messages]);
-
-    // useEffect(() => {
-    //     _socket.connect();
-    // }, [_socket]);
-
-    // useEffect(() => {
-    //     getMsg();
-    // }, []);
 
     useEffect(() => {
         if (address) {
@@ -249,7 +219,7 @@ export default function ChatPanel(props: ChatProps) {
     const messageList = (
         <>
             {messages &&
-                messages.map((item, i) => (
+                messages.map((item) => (
                     <div key={item._id} style={{ width: '90%', marginBottom: 4 }}>
                         <SentMessagePanel
                             message={item}

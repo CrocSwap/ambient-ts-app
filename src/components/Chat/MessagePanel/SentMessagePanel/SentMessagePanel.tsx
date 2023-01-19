@@ -3,9 +3,6 @@ import noAvatarImage from '../../../../assets/images/icons/avatar.svg';
 import { Message } from '../../Model/MessageModel';
 import PositionBox from '../PositionBox/PositionBox';
 import { useEffect, useState } from 'react';
-import useChatApi from '../../../../components/Chat/Service/ChatApi';
-import { color } from 'd3';
-import PortfolioBannerAccount from '../../../../components/Portfolio/PortfolioBanner/PortfolioBanner';
 
 interface SentMessageProps {
     message: Message;
@@ -15,10 +12,6 @@ interface SentMessageProps {
 
 export default function SentMessagePanel(props: SentMessageProps) {
     const [isPosition, setIsPosition] = useState(false);
-    const { receiveUsername, getNameOrWallet } = useChatApi();
-    const [mentionedName, setMentionedName] = useState('');
-    const [isMentionMessage, setIsMentionMessage] = useState(false);
-    const message = '';
 
     function namerOrWalletID(content: string) {
         if (content.includes('0x')) {
