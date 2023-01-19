@@ -316,14 +316,14 @@ export default function PageHeader(props: HeaderPropsIF) {
 
             {routeDisplay}
             <div>
-                <MobileSidebar
+                {/* <MobileSidebar
                     lastBlockNumber={lastBlockNumber}
                     chainId={chainId}
                     isMobileSidebarOpen={isMobileSidebarOpen}
                     setIsMobileSidebarOpen={setIsMobileSidebarOpen}
                     theme={theme}
                     switchTheme={switchTheme}
-                />
+                /> */}
                 <div className={styles.account}>
                     <NetworkSelector chainId={chainId} />
                     {/* {connectButtonDelayElapsed && !isUserLoggedIn && connectMoralisButton} */}

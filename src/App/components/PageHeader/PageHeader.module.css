@@ -164,13 +164,13 @@
     }
 }
 
-@media (min-width: 580px) and (max-width: 1000px) {
+/* @media (min-width: 580px) and (max-width: 800px) {
     .primary_navigation {
         display: none;
     }
-}
+} */
 
-@media (max-width: 35em) {
+@media (max-width: 25em) {
     .account,
     .header_gradient {
         display: none;
