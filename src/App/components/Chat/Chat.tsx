@@ -188,16 +188,6 @@ export default function Chat(props: ChatPropsIF) {
                 {/* {showWelcomeBack && !showChatBot && welcomeBack} */}
 
                 <div className={props.fullScreen ? wrapperStyleFull : wrapperStyle}>
-                    <ChatPanel
-                        chatStatus={true}
-                        onClose={() => {
-                            console.error('Function not implemented.');
-                        }}
-                        favePools={props.favePools}
-                        currentPool={currentPoolInfo}
-                        setChatStatus={setChatStatus}
-                        isFullScreen={true}
-                    />
                     {/* {chatHeader}
                     {messagesDisplay}
                     {chatInput} */}

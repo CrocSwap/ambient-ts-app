@@ -2829,6 +2829,7 @@ export default function App() {
                                     currentPool={currentPoolInfo}
                                     setChatStatus={setChatStatus}
                                     isFullScreen={true}
+                                    userImageData={imageData}
                                 />
                             }
                         />
@@ -3073,7 +3074,7 @@ export default function App() {
 
                 {currentLocation !== '/' && currentLocation !== '/app/chat' && (
                     <ChatPanel
-                        chatStatus={chatStatus}
+                        chatStatus={true}
                         onClose={() => {
                             console.error('Function not implemented.');
                         }}
@@ -3081,6 +3082,7 @@ export default function App() {
                         currentPool={currentPoolInfo}
                         setChatStatus={setChatStatus}
                         isFullScreen={false}
+                        userImageData={imageData}
                     />
                 )}
             </div>

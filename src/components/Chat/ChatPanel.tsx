@@ -12,7 +12,7 @@ import { TokenIF } from '../../utils/interfaces/TokenIF';
 import { targetData } from '../../utils/state/tradeDataSlice';
 import ChatButton from '../../App/components/Chat/ChatButton/ChatButton';
 import { MdOpenInFull } from 'react-icons/md';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import useChatApi from './Service/ChatApi';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { BsChatLeftFill } from 'react-icons/bs';
@@ -46,6 +46,7 @@ interface ChatProps {
     isFullScreen: boolean;
     setChatStatus: Dispatch<SetStateAction<boolean>>;
     fullScreen?: boolean;
+    userImageData: string[];
 }
 
 export default function ChatPanel(props: ChatProps) {
@@ -62,9 +63,17 @@ export default function ChatPanel(props: ChatProps) {
 
     const { messages, getMsg, lastMessage, messageUser } = useSocket(room);
 
-    const { getID } = useChatApi();
+    const { getID, getName } = useChatApi();
     const userData = useAppSelector((state) => state.userData);
     const isUserLoggedIn = userData.isLoggedIn;
+    const resolvedAddress = userData.resolvedAddress;
+
+    const secondaryImageData = userData.secondaryImageData || '';
+
+    const { address: addressFromParams } = useParams();
+
+    const connectedAccountActive =
+        !addressFromParams || resolvedAddress?.toLowerCase() === address?.toLowerCase();
 
     useEffect(() => {
         if (scrollDirection === 'Scroll Up') {
@@ -99,7 +108,11 @@ export default function ChatPanel(props: ChatProps) {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             getID().then((result: any) => {
                 setCurrentUser(result.userData._id);
-                setName(result.userData.ensName);
+                setName(
+                    result.userData.ensName == 'defaultValue'
+                        ? result.userData.walletID
+                        : result.userData.ensName,
+                );
             });
         }
     }, [address, props.chatStatus, props.isFullScreen]);
@@ -109,7 +122,11 @@ export default function ChatPanel(props: ChatProps) {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             getID().then((result: any) => {
                 setCurrentUser(result.userData._id);
-                setName(result.userData.ensName);
+                setName(
+                    result.userData.ensName == 'defaultValue'
+                        ? result.userData.walletID
+                        : result.userData.ensName,
+                );
             });
 
             getMsg();
@@ -194,15 +211,6 @@ export default function ChatPanel(props: ChatProps) {
     );
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    function getName(item: any) {
-        if (item.ensName === 'defaultValue') {
-            return item.walletID;
-        } else {
-            return item.ensName;
-        }
-    }
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     function isCurrentUser() {
         if (!address) {
             return setCurrentUser(undefined);
@@ -210,7 +218,11 @@ export default function ChatPanel(props: ChatProps) {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             getID().then((result: any) => {
                 setCurrentUser(result.userData._id);
-                setName(result.userData.ensName);
+                setName(
+                    result.userData.ensName == 'defaultValue'
+                        ? result.userData.walletID
+                        : result.userData.ensName,
+                );
             });
             return currentUser;
         }
@@ -223,8 +235,14 @@ export default function ChatPanel(props: ChatProps) {
                     <div key={item._id} style={{ width: '90%', marginBottom: 4 }}>
                         <SentMessagePanel
                             message={item}
-                            name={getName(item)}
+                            name={name}
                             isCurrentUser={item.sender === currentUser}
+                            currentUser={currentUser}
+                            userImageData={
+                                connectedAccountActive ? props.userImageData : secondaryImageData
+                            }
+                            resolvedAddress={resolvedAddress}
+                            connectedAccountActive={address}
                         />
                         <hr></hr>
                     </div>
