@@ -1,5 +1,9 @@
 import styles from '../Transactions.module.css';
-import { ITransaction, setDataLoadingStatus } from '../../../../../utils/state/graphDataSlice';
+import {
+    CandlesByPoolAndDuration,
+    ITransaction,
+    setDataLoadingStatus,
+} from '../../../../../utils/state/graphDataSlice';
 import { Dispatch, SetStateAction, useEffect, useRef } from 'react';
 import { useProcessTransaction } from '../../../../../utils/hooks/useProcessTransaction';
 import TransactionsMenu from '../../../../Global/Tabs/TableMenu/TableMenuComponents/TransactionsMenu';
@@ -139,10 +143,11 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
 
     // console.log(baseDisplay);
 
-    const openDetailsModal = () =>
+    const openDetailsModal = () => {
         openGlobalModal(
             <TransactionDetails account={account} tx={tx} closeGlobalModal={closeGlobalModal} />,
         );
+    };
 
     const activeTransactionStyle =
         tx.id === currentTxActiveInTransactions ? styles.active_transaction_style : '';

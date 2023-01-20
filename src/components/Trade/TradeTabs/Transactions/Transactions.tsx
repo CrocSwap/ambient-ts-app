@@ -6,6 +6,7 @@ import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import {
     addChangesByPool,
     CandleData,
+    CandlesByPoolAndDuration,
     graphData,
     ITransaction,
     setChangesByPool,
