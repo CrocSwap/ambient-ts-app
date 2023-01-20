@@ -171,18 +171,28 @@ export default function PageHeader(props: HeaderPropsIF) {
 
     const location = useLocation();
 
-    const { paramsSlug, baseAddr, quoteAddr} = useUrlParams();
-
-    const [didLoad, setDidLoad] = useState<boolean>(false);
-    useEffect(() => {
-        addRecentPool({base: baseAddr, quote: quoteAddr});
-    }, [baseAddr, quoteAddr]);
-
+    const { paramsSlug, baseAddr, quoteAddr } = useUrlParams();
     const tradeData = useAppSelector((state) => state.tradeData);
 
     const baseSymbol = tradeData.baseToken.symbol;
     const quoteSymbol = tradeData.quoteToken.symbol;
     const isDenomBase = tradeData.isDenomBase;
+    const baseAddressInRtk = tradeData.baseToken.address;
+    const quoteAddressInRtk = tradeData.quoteToken.address;
+
+    // const [didLoad, setDidLoad] = useState<boolean>(false);
+    useEffect(() => {
+        if (
+            baseAddr &&
+            baseAddressInRtk &&
+            quoteAddr &&
+            quoteAddressInRtk &&
+            baseAddr.toLowerCase() === baseAddressInRtk.toLowerCase() &&
+            quoteAddr.toLowerCase() === quoteAddressInRtk.toLowerCase()
+        ) {
+            addRecentPool({ base: baseAddr, quote: quoteAddr });
+        }
+    }, [baseAddr, baseAddressInRtk, quoteAddr, quoteAddressInRtk]);
 
     const poolPriceDisplayWithDenom = poolPriceDisplay
         ? isDenomBase
