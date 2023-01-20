@@ -1,11 +1,9 @@
 import styles from './SentMessagePanel.module.css';
-import noAvatarImage from '../../../../assets/images/icons/avatar.svg';
 import { Message } from '../../Model/MessageModel';
 import PositionBox from '../PositionBox/PositionBox';
 import { useEffect, useState } from 'react';
 import useCopyToClipboard from '../../../../utils/hooks/useCopyToClipboard';
 import SnackbarComponent from '../../../Global/SnackbarComponent/SnackbarComponent';
-import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import Blockies from 'react-blockies';
 
 interface SentMessageProps {
@@ -15,6 +13,7 @@ interface SentMessageProps {
     currentUser: string | undefined;
     userImageData: string[];
     resolvedAddress: string | undefined;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     connectedAccountActive: any;
 }
 
@@ -24,13 +23,6 @@ export default function SentMessagePanel(props: SentMessageProps) {
 
     const { userImageData, resolvedAddress, connectedAccountActive } = props;
 
-    function namerOrWalletID(content: string) {
-        if (content.includes('0x')) {
-            return content.slice(0, 6) + '...';
-        } else {
-            return content;
-        }
-    }
     useEffect(() => {
         setSliceWalletID(props.message.walletID.slice(0, 6) + '...');
     }, [props.message.mentionedName]);
@@ -55,7 +47,7 @@ export default function SentMessagePanel(props: SentMessageProps) {
             setOpenSnackbar={setOpenSnackbar}
             openSnackbar={openSnackbar}
         >
-            {props.message.ensName} copied
+            {value} copied
         </SnackbarComponent>
     );
     function handleCopyAddress(item: string) {

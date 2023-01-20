@@ -257,11 +257,11 @@ export default function TransactionDetailsGraph(props: TransactionDetailsGraphIF
                 //     svg.call(zoom);
                 // });
 
-                const prng = d3.randomNormal();
-                const data = d3.range(1e3).map((d) => ({
-                    x: prng(),
-                    y: prng(),
-                }));
+                // const prng = d3.randomNormal();
+                // const data = d3.range(1e3).map((d) => ({
+                //     x: prng(),
+                //     y: prng(),
+                // }));
 
                 d3.select(d3PlotGraph.current).on('draw', function (event: any) {
                     const svg = d3.select(event.target).select('svg');
