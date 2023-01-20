@@ -21,7 +21,7 @@ export default function SentMessagePanel(props: SentMessageProps) {
     const [isPosition, setIsPosition] = useState(false);
     const [sliceWalletID, setSliceWalletID] = useState('');
 
-    const { userImageData, resolvedAddress, connectedAccountActive } = props;
+    const { userImageData } = props;
 
     useEffect(() => {
         setSliceWalletID(props.message.walletID.slice(0, 6) + '...');
@@ -95,7 +95,7 @@ export default function SentMessagePanel(props: SentMessageProps) {
                 {userImageData[1] ? <img src={userImageData[1]} alt='nft' /> : null}
                 {userImageData[2] ? <img src={userImageData[2]} alt='nft' /> : null}
                 {userImageData[3] ? <img src={userImageData[3]} alt='nft' /> : null}
-                {(resolvedAddress || connectedAccountActive) && myBlockies ? myBlockies : null}
+                {myBlockies}
             </div>
             <div className={styles.message_item}>
                 <div
