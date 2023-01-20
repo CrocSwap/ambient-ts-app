@@ -141,7 +141,8 @@
 
     letter-spacing: -0.02em;
     color: var(--text-grey-white);
-    font-family: var(--mono);
+    font-family: sans-serif;
+    /* font-family: var(--mono); */
 }
 
 .full_width {

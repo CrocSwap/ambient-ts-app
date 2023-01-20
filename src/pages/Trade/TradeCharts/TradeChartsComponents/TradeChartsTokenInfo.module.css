@@ -2,25 +2,23 @@
     display: flex;
     flex-direction: row;
     align-items: center;
-
     gap: 1rem;
 }
 
-.tokens_info_simplify{
+.tokens_info_simplify {
     margin: 0 5px 1px -5px;
     background: var(--dark1);
     /* margin: 0 -5px ; */
     /* align-items: center; */
 }
-.tokens_info_simplify_content{
+.tokens_info_simplify_content {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     padding: 4px 1rem;
     overflow: hidden;
-
 }
-.tokens_info_simplify section{
+.tokens_info_simplify section {
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -70,10 +68,8 @@
 .tokens_name:hover,
 .fav_button:hover,
 .settings_container button:hover {
-    color: var(--text-grey-white)
+    color: var(--text-grey-white);
 }
-
-
 
 @media only screen and (min-device-width: 200px) and (max-device-width: 568px) and (-webkit-min-device-pixel-ratio: 2) {
     .graph_container {
@@ -99,14 +95,10 @@
         width: 25px;
     }
 
-
     .graph_style {
         width: 100%;
     }
-
 }
-
-
 
 .chart_tooltips {
     display: flex;

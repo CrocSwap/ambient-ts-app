@@ -17,13 +17,15 @@ height: 100%;
 
 /* dark/tertiary */
 
-background: #242F3F;
+/* background: #242F3F; */
 /* accent/primary */
 
-border-left: 1px solid #7371FC;
+/* border-left: 1px solid #7371FC; */
 border-radius: 0px 0px 4px 4px;
 
 /* Inside auto layout */
+
+
 
 flex: none;
 order: 3;

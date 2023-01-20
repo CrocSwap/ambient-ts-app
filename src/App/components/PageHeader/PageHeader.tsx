@@ -18,9 +18,10 @@ import trimString from '../../../utils/functions/trimString';
 import headerLogo from '../../../assets/images/logos/header_logo.svg';
 // import { useModal } from '../../../components/Global/Modal/useModal';
 import { useUrlParams } from './useUrlParams';
-import MobileSidebar from '../../../components/Global/MobileSidebar/MobileSidebar';
+// import MobileSidebar from '../../../components/Global/MobileSidebar/MobileSidebar';
 import NotificationCenter from '../../../components/Global/NotificationCenter/NotificationCenter';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
+import { SmallerPoolIF } from '../../hooks/useRecentPools';
 import { useAccount, useDisconnect, useEnsName } from 'wagmi';
 
 interface HeaderPropsIF {
@@ -46,6 +47,7 @@ interface HeaderPropsIF {
     isAppOverlayActive: boolean;
     poolPriceDisplay: number | undefined;
     setIsAppOverlayActive: Dispatch<SetStateAction<boolean>>;
+    addRecentPool: (pool: SmallerPoolIF) => void;
     switchTheme: () => void;
     theme: string;
 }
@@ -64,11 +66,12 @@ export default function PageHeader(props: HeaderPropsIF) {
         // openMoralisModalWallet,
         openWagmiModalWallet,
         lastBlockNumber,
-        isMobileSidebarOpen,
-        setIsMobileSidebarOpen,
+        // isMobileSidebarOpen,
+        // setIsMobileSidebarOpen,
         isAppOverlayActive,
         setIsAppOverlayActive,
         switchTheme,
+        addRecentPool,
         theme,
         poolPriceDisplay,
     } = props;
@@ -168,13 +171,28 @@ export default function PageHeader(props: HeaderPropsIF) {
 
     const location = useLocation();
 
-    const urlParams = useUrlParams();
-
+    const { paramsSlug, baseAddr, quoteAddr } = useUrlParams();
     const tradeData = useAppSelector((state) => state.tradeData);
 
     const baseSymbol = tradeData.baseToken.symbol;
     const quoteSymbol = tradeData.quoteToken.symbol;
     const isDenomBase = tradeData.isDenomBase;
+    const baseAddressInRtk = tradeData.baseToken.address;
+    const quoteAddressInRtk = tradeData.quoteToken.address;
+
+    // const [didLoad, setDidLoad] = useState<boolean>(false);
+    useEffect(() => {
+        if (
+            baseAddr &&
+            baseAddressInRtk &&
+            quoteAddr &&
+            quoteAddressInRtk &&
+            baseAddr.toLowerCase() === baseAddressInRtk.toLowerCase() &&
+            quoteAddr.toLowerCase() === quoteAddressInRtk.toLowerCase()
+        ) {
+            addRecentPool({ base: baseAddr, quote: quoteAddr });
+        }
+    }, [baseAddr, baseAddressInRtk, quoteAddr, quoteAddressInRtk]);
 
     const poolPriceDisplayWithDenom = poolPriceDisplay
         ? isDenomBase
@@ -241,10 +259,10 @@ export default function PageHeader(props: HeaderPropsIF) {
 
     const linkData = [
         { title: t('common:homeTitle'), destination: '/', shouldDisplay: true },
-        { title: t('common:swapTitle'), destination: '/swap' + urlParams, shouldDisplay: true },
+        { title: t('common:swapTitle'), destination: '/swap' + paramsSlug, shouldDisplay: true },
         {
             title: t('common:tradeTitle'),
-            destination: tradeDestination + urlParams,
+            destination: tradeDestination + paramsSlug,
             shouldDisplay: true,
         },
         { title: t('common:analyticsTitle'), destination: '/analytics', shouldDisplay: false },
@@ -316,14 +334,14 @@ export default function PageHeader(props: HeaderPropsIF) {
 
             {routeDisplay}
             <div>
-                <MobileSidebar
+                {/* <MobileSidebar
                     lastBlockNumber={lastBlockNumber}
                     chainId={chainId}
                     isMobileSidebarOpen={isMobileSidebarOpen}
                     setIsMobileSidebarOpen={setIsMobileSidebarOpen}
                     theme={theme}
                     switchTheme={switchTheme}
-                />
+                /> */}
                 <div className={styles.account}>
                     <NetworkSelector chainId={chainId} />
                     {/* {connectButtonDelayElapsed && !isUserLoggedIn && connectMoralisButton} */}

@@ -1715,18 +1715,18 @@ export default function Chart(props: ChartData) {
 
             while (
                 scaleData.yScale.domain()[1] + liqBidDeviation >=
-                liquidityData.liqBidData[0].liqPrices
+                liquidityData.liqBidData[0]?.liqPrices
             ) {
                 liquidityData.liqBidData.unshift({
                     activeLiq: 30,
-                    liqPrices: liquidityData.liqBidData[0].liqPrices + liqBidDeviation,
+                    liqPrices: liquidityData.liqBidData[0]?.liqPrices + liqBidDeviation,
                     deltaAverageUSD: 0,
                     cumAverageUSD: 0,
                 });
 
                 liquidityData.depthLiqBidData.unshift({
-                    activeLiq: liquidityData.depthLiqBidData[1].activeLiq,
-                    liqPrices: liquidityData.depthLiqBidData[0].liqPrices + liqBidDeviation,
+                    activeLiq: liquidityData.depthLiqBidData[1]?.activeLiq,
+                    liqPrices: liquidityData.depthLiqBidData[0]?.liqPrices + liqBidDeviation,
                     deltaAverageUSD: 0,
                     cumAverageUSD: 0,
                 });

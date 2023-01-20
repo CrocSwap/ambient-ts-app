@@ -11,39 +11,33 @@ export const useToken = (
     getTokensOnChain: (chn: string) => TokenIF[],
     getToken: (addr: string, chn: string) => TokenIF | undefined,
     getTokensByName: (searchName: string, chn: string, exact: boolean) => TokenIF[],
-    acknowledgeToken: (tkn: TokenIF) => void
+    acknowledgeToken: (tkn: TokenIF) => void,
 ] => {
     const [tokenMap, setTokenMap] = useState(new Map<string, TokenIF>());
 
     // abstracted logic to add a new token to the map
     // necessary because tokenMap cannot be mutated directly
-    function addTokenToMap(
-        tkn: TokenIF,
-        map: Map<string, TokenIF>
-    ): void {
+    function addTokenToMap(tkn: TokenIF, map: Map<string, TokenIF>): void {
         // mutable output variable
         const newMap = map;
         // generate a key for the key value pair
-        const tokenKey = tkn.address.toLowerCase() +
-            '_0x' +
-            tkn.chainId.toString().toLowerCase();
+        const tokenKey = tkn.address.toLowerCase() + '_0x' + tkn.chainId.toString().toLowerCase();
         // boolean showing if token is already in the Map
         const tokenFromArray = newMap.get(tokenKey);
         // if token is already in the Map, update the array of origin URIs
         if (tokenFromArray) {
             // if current token has a `fromList` value, add it to the URI array
-            tkn.fromList &&
-                tokenFromArray.fromListArr?.push(tkn.fromList);
+            tkn.fromList && tokenFromArray.fromListArr?.push(tkn.fromList);
             // update value on the Map with the new URI listed in URI array
             newMap.set(tokenKey, tokenFromArray);
-        // if token is NOT in the Map, add it
+            // if token is NOT in the Map, add it
         } else {
             // initialize an array to hold multiple list URI references
             tkn.fromList && (tkn.fromListArr = [tkn.fromList]);
             // add updated token data object to the array
             newMap.set(tokenKey, tkn);
         }
-    };
+    }
 
     // get allTokenLists from local storage after initial render
     useEffect(() => {
@@ -61,8 +55,8 @@ export const useToken = (
                     // this will by nature remove duplicate entries across lists
                     .forEach((tkn: TokenIF) => addTokenToMap(tkn, newTokenMap));
                 // get 'ackTokens' from user data object in local storage
-                JSON.parse(localStorage.getItem('user') as string).ackTokens
-                    // add each token to the map
+                JSON.parse(localStorage.getItem('user') as string)
+                    ?.ackTokens // add each token to the map
                     // this will also remove duplicates intelligently
                     .forEach((tkn: TokenIF) => addTokenToMap(tkn, newTokenMap));
                 // send token map to be memoized in local state
@@ -74,7 +68,7 @@ export const useToken = (
             } else {
                 // console warning if max recursion depth is reached
                 console.warn('maximum recursion depth reached');
-            };
+            }
         };
         checkForTokenLists();
     }, []);
@@ -82,7 +76,7 @@ export const useToken = (
     // fn to determine if a token exists in a recognized token list
     // parameter for chain is optional, app uses the current chain by default
     // but we can verify tokens on other chains too as needed
-    const verifyToken = (addr: string, chn=chainId): boolean => {
+    const verifyToken = (addr: string, chn = chainId): boolean => {
         return !!tokenMap.get(addr.toLowerCase() + '_' + chn.toLowerCase());
     };
 
@@ -164,10 +158,11 @@ export const useToken = (
         // retrieve and parse user data object from local storage
         const userData = JSON.parse(localStorage.getItem('user') as string);
         // determine whether token is already in the acknowledged tokens array
-        const isTokenNew = !userData.ackTokens.some((ackToken: TokenIF) => (
-            tkn.address.toLowerCase() === ackToken.address.toLowerCase() &&
-            tkn.chainId === ackToken.chainId
-        ));
+        const isTokenNew = !userData.ackTokens.some(
+            (ackToken: TokenIF) =>
+                tkn.address.toLowerCase() === ackToken.address.toLowerCase() &&
+                tkn.chainId === ackToken.chainId,
+        );
         // if token is not yet in the array, add it and update local storage
         if (isTokenNew) {
             userData.ackTokens = [...userData.ackTokens, tkn];
@@ -190,6 +185,6 @@ export const useToken = (
         getTokensOnChain,
         getTokenByAddress,
         getTokensByName,
-        acknowledgeToken
+        acknowledgeToken,
     ];
 };

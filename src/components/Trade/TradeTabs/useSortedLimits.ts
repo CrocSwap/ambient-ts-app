@@ -12,12 +12,20 @@ export const useSortedLimits = (
     LimitOrderIF[],
 ] => {
     // default sort function
+
     const sortByTime = (unsortedData: LimitOrderIF[]) =>
-        [...unsortedData].sort(
-            (a, b) =>
-                (b.latestUpdateTime !== 0 ? b.latestUpdateTime : b.timeFirstMint) -
-                (a.latestUpdateTime !== 0 ? a.latestUpdateTime : a.timeFirstMint),
-        );
+        [...unsortedData].sort((a, b) => {
+            const aTime = a.latestUpdateTime || a.timeFirstMint || Date.now();
+            const bTime = b.latestUpdateTime || b.timeFirstMint || Date.now();
+
+            return bTime - aTime;
+        });
+    // const sortByTime = (unsortedData: LimitOrderIF[]) =>
+    //     [...unsortedData].sort(
+    //         (a, b) =>
+    //             (b.latestUpdateTime !== 0 ? b.latestUpdateTime : b.timeFirstMint) -
+    //             (a.latestUpdateTime !== 0 ? a.latestUpdateTime : a.timeFirstMint),
+    //     );
     // const sortByTimeFirstMint = (unsortedData: LimitOrderIF[]) =>
     //     [...unsortedData].sort((a, b) => b.timeFirstMint - a.timeFirstMint);
     // sort by wallet or ens address
