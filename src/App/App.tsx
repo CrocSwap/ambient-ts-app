@@ -82,6 +82,8 @@ import {
     setPoolPriceNonDisplay,
     setPrimaryQuantityRange,
     setSimpleRangeWidth,
+    setMainnetBaseTokenReduxAddress,
+    setMainnetQuoteTokenReduxAddress,
 } from '../utils/state/tradeDataSlice';
 import {
     memoizeQuerySpotPrice,
@@ -315,6 +317,7 @@ export default function App() {
     );
 
     const [candleData, setCandleData] = useState<CandlesByPoolAndDuration | undefined>();
+
     const [isCandleSelected, setIsCandleSelected] = useState<boolean | undefined>();
 
     // custom hook to manage chain the app is using
@@ -876,6 +879,9 @@ export default function App() {
 
                     setMainnetBaseTokenAddress(sortedMainnetTokens[0]);
                     setMainnetQuoteTokenAddress(sortedMainnetTokens[1]);
+
+                    dispatch(setMainnetBaseTokenReduxAddress(sortedMainnetTokens[0]));
+                    dispatch(setMainnetQuoteTokenReduxAddress(sortedMainnetTokens[1]));
                 } else {
                     setMainnetBaseTokenAddress('');
                     setMainnetQuoteTokenAddress('');

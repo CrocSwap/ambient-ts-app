@@ -20,7 +20,12 @@ import recentTransactionsImage from '../../../assets/images/sidebarImages/recent
 import Ranges from './Ranges/Ranges';
 import TabComponent from '../../Global/TabComponent/TabComponent';
 import PositionsOnlyToggle from './PositionsOnlyToggle/PositionsOnlyToggle';
-import { CandleData, ITransaction, setChangesByUser } from '../../../utils/state/graphDataSlice';
+import {
+    CandleData,
+    CandlesByPoolAndDuration,
+    ITransaction,
+    setChangesByUser,
+} from '../../../utils/state/graphDataSlice';
 import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
 import { fetchPoolRecentChanges } from '../../../App/functions/fetchPoolRecentChanges';
 
