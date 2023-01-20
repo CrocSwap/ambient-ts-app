@@ -11,6 +11,8 @@ export interface userData {
     isUserIdle: boolean;
     tokens: tokenData;
     recentTokens: TokenIF[] | undefined;
+    secondaryImageData: string[];
+    resolvedAddress: string | undefined;
 }
 
 export interface tokenData {
@@ -31,6 +33,8 @@ const initialState: userData = {
         erc20Tokens: undefined,
     },
     recentTokens: undefined,
+    secondaryImageData: [],
+    resolvedAddress: undefined,
 };
 
 export const userDataSlice = createSlice({
@@ -139,6 +143,12 @@ export const userDataSlice = createSlice({
             state.ensNameAtLogin = initialState.ensNameAtLogin;
             state.ensOrAddressTruncated = initialState.ensOrAddressTruncated;
         },
+        setSecondaryImageDataRedux: (state, action: PayloadAction<string[]>) => {
+            state.secondaryImageData = action.payload;
+        },
+        setResolvedAddressRedux: (state, action: PayloadAction<string>) => {
+            state.resolvedAddress = action.payload;
+        },
     },
 });
 
@@ -161,6 +171,8 @@ export const {
     updateErc20TokenDexBalance,
     resetTokenData,
     resetUserAddresses,
+    setSecondaryImageDataRedux,
+    setResolvedAddressRedux,
 } = userDataSlice.actions;
 
 export default userDataSlice.reducer;

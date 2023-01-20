@@ -24,6 +24,19 @@ const useChatApi = () => {
         }
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    async function getName(id: any) {
+        const response = await fetch(host + '/api/auth/getNamebyID/' + id, {
+            method: 'GET',
+        });
+        const data = await response.json();
+        if (data.status === 'OK') {
+            return data;
+        } else {
+            return data;
+        }
+    }
+
     async function getNameOrWallet(_account: string) {
         const response = await fetch(host + '/api/auth/getUserByAccountMention/' + _account, {
             method: 'GET',
@@ -41,6 +54,6 @@ const useChatApi = () => {
         return data;
     }
 
-    return { getID, getNameOrWallet, receiveUsername };
+    return { getID, getNameOrWallet, receiveUsername, getName };
 };
 export default useChatApi;

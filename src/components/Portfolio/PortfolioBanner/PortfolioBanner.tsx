@@ -30,7 +30,7 @@ export default function PortfolioBanner(props: PortfolioBannerPropsIF) {
     const ensNameAvailable = ensName !== '';
 
     const myBlockies = (
-        <Blockies seed={resolvedAddress || activeAccount} scale={7.3} bgColor={'#171D27'} />
+        <Blockies seed={resolvedAddress || activeAccount} scale={7.4} bgColor={'#171D27'} />
     );
 
     const truncatedAccountAddress = connectedAccountActive

@@ -13,12 +13,16 @@ import { useModal } from '../../components/Global/Modal/useModal';
 import { TokenIF } from '../../utils/interfaces/exports';
 import Button from '../../components/Global/Button/Button';
 import { Erc20TokenBalanceFn, nativeTokenBalanceFn } from '../../App/functions/fetchTokenBalances';
-import { useAppSelector } from '../../utils/hooks/reduxToolkit';
+import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { TokenPriceFn } from '../../App/functions/fetchTokenPrice';
 import NotFound from '../NotFound/NotFound';
 import ProfileSettings from '../../components/Portfolio/ProfileSettings/ProfileSettings';
 import { SoloTokenSelect } from '../../components/Global/TokenSelectContainer/SoloTokenSelect';
 // import { useSoloSearch } from '../../components/Global/TokenSelectContainer/hooks/useSoloSearch';
+import {
+    setResolvedAddressRedux,
+    setSecondaryImageDataRedux,
+} from '../../utils/state/userDataSlice';
 import { useAccount, useEnsName } from 'wagmi';
 
 const mainnetProvider = new ethers.providers.WebSocketProvider(
@@ -123,6 +127,8 @@ export default function Portfolio(props: PortfolioPropsIF) {
         searchType,
     } = props;
 
+    const dispatch = useAppDispatch();
+
     const { isConnected, address } = useAccount();
     const { data: ensName } = useEnsName({ address });
 
@@ -198,9 +204,11 @@ export default function Portfolio(props: PortfolioPropsIF) {
                 const newResolvedAddress = await mainnetProvider.resolveName(addressFromParams);
                 if (newResolvedAddress) {
                     setResolvedAddress(newResolvedAddress);
+                    dispatch(setResolvedAddressRedux(newResolvedAddress));
                 }
             } else if (addressFromParams && isAddressHex && !isAddressEns) {
                 setResolvedAddress(addressFromParams);
+                dispatch(setResolvedAddressRedux(addressFromParams));
             }
         })();
     }, [addressFromParams, isAddressHex, isAddressEns, mainnetProvider]);
@@ -211,7 +219,10 @@ export default function Portfolio(props: PortfolioPropsIF) {
         (async () => {
             if (resolvedAddress && !connectedAccountActive) {
                 const imageLocalURLs = await getNFTs(resolvedAddress);
-                if (imageLocalURLs) setSecondaryImageData(imageLocalURLs);
+                if (imageLocalURLs) {
+                    setSecondaryImageData(imageLocalURLs);
+                    dispatch(setSecondaryImageDataRedux(imageLocalURLs));
+                }
             }
         })();
     }, [resolvedAddress, connectedAccountActive]);
