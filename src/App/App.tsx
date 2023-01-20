@@ -2543,7 +2543,8 @@ export default function App() {
         verifyToken: verifyToken,
         getTokenByAddress: getTokenByAddress,
         tokenPair: tokenPair,
-        getRecentPools: getRecentPools
+        getRecentPools: getRecentPools,
+        isConnected: isConnected
     };
 
     const analyticsProps = {

@@ -13,6 +13,7 @@ interface SidebarSearchResultsPropsIF {
     getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
     tokenPair: TokenPairIF;
     chainId: string;
+    isConnected: boolean;
 }
 
 export default function SidebarSearchResults(props: SidebarSearchResultsPropsIF) {
@@ -22,7 +23,8 @@ export default function SidebarSearchResults(props: SidebarSearchResultsPropsIF)
         searchInput,
         getTokenByAddress,
         tokenPair,
-        chainId
+        chainId,
+        isConnected
     } = props;
 
     // we are not going to use this following loading functionality. It is just for demonstration purposes
@@ -39,9 +41,11 @@ export default function SidebarSearchResults(props: SidebarSearchResultsPropsIF)
                 tokenPair={tokenPair}
                 chainId={chainId}
             />
-            <PositionsSearchResults loading={exampleLoading} searchInput={searchInput} />
+            {
+            isConnected && (<><PositionsSearchResults loading={exampleLoading} searchInput={searchInput} />
             <OrdersSearchResults loading={exampleLoading} searchInput={searchInput} />
-            <TransactionsSearchResults loading={exampleLoading} searchInput={searchInput} />
+            <TransactionsSearchResults loading={exampleLoading} searchInput={searchInput} /></>
+            )}
         </div>
     );
 }
