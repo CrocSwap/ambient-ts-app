@@ -26,6 +26,7 @@ export default function PoolsSearchResults(props: PoolsSearchResultPropsIF) {
                 searchedPools.slice(0,4).map((pool: TempPoolIF) => (
                     <PoolLI
                         key={`sidebar_searched_pool_${JSON.stringify(pool)}`}
+                        chainId={chainId}
                         handleClick={handleClick}
                         pool={pool}
                         getTokenByAddress={getTokenByAddress}

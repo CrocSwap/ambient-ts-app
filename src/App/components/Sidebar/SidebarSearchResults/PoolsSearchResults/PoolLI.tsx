@@ -1,15 +1,18 @@
 import { useEffect, useState } from 'react';
 import { TokenIF, TempPoolIF } from '../../../../../utils/interfaces/exports';
 import styles from '../SidebarSearchResults.module.css';
+import { formatAmountOld } from '../../../../../utils/numbers';
+import { memoizePoolStats } from '../../../../functions/getPoolStats';
 
 interface propsIF {
     pool: TempPoolIF;
+    chainId: string;
     getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
     handleClick: (baseAddr: string, quoteAddr: string) => void;
 }
 
 export default function PoolLI(props: propsIF) {
-    const { pool, getTokenByAddress, handleClick } = props;
+    const { pool, chainId, getTokenByAddress, handleClick } = props;
 
     // hold base and quote token data objects in local state
     const [baseToken, setBaseToken] = useState<TokenIF|null>();
@@ -43,15 +46,41 @@ export default function PoolLI(props: propsIF) {
         quoteTokenDataObj && setQuoteToken(quoteTokenDataObj);
     }, []);
 
+    const [poolVolume, setPoolVolume] = useState<string | undefined>();
+    const [poolTvl, setPoolTvl] = useState<string | undefined>();
+
+    useEffect(() => {
+        const fetchPoolStats = () => {
+            const cachedPoolStatsFetch = memoizePoolStats();
+            async () => {
+                const poolStatsFresh = await cachedPoolStatsFetch(
+                    chainId,
+                    pool.base,
+                    pool.quote,
+                    pool.poolIdx ?? 36000,
+                    1,
+                );
+                const volume = poolStatsFresh?.volume;
+                const volumeString = volume ? '$' + formatAmountOld(volume) : undefined;
+                setPoolVolume(volumeString);
+                const tvl = poolStatsFresh?.tvl;
+                const tvlString = tvl ? '$' + formatAmountOld(tvl) : undefined;
+                setPoolTvl(tvlString);
+            };
+        };
+        fetchPoolStats();
+    }, []);
+
+    console.log({poolVolume, poolTvl})
+
     return (
         <div
             className={styles.card_container}
             onClick={() => handleClick(pool.base, pool.quote)}
         >
             <div>{baseToken?.symbol ?? '--'} + {quoteToken?.symbol ?? '--'}</div>
-            {/* <div>{pool.id}</div> */}
-            <div>Price</div>
-            <div>Gain</div>
+            <div>{poolVolume}</div>
+            <div>{poolTvl}</div>
         </div>
     );
 }
