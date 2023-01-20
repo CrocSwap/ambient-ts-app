@@ -166,6 +166,15 @@
     }
 }
 
+@media only screen and (max-width: 500px) {
+
+    .main_content {
+        background-color: var(--dark3);
+
+    }
+}
+
+
 /* @keyframes gradient {
     0% {
       background-position: 0% 50%;

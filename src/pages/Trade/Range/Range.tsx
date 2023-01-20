@@ -28,6 +28,8 @@ import styles from './Range.module.css';
 import {
     getPinnedPriceValuesFromDisplayPrices,
     getPinnedPriceValuesFromTicks,
+    roundDownTick,
+    roundUpTick,
 } from './rangeFunctions';
 import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
 import {
@@ -265,15 +267,18 @@ export default function Range(props: RangePropsIF) {
     const [minPriceInputString, setMinPriceInputString] = useState<string>('');
     const [maxPriceInputString, setMaxPriceInputString] = useState<string>('');
 
-    const defaultMinPriceDifferencePercentage = -15;
-    const defaultMaxPriceDifferencePercentage = 15;
+    const defaultMinPriceDifferencePercentage = -10;
+    const defaultMaxPriceDifferencePercentage = 10;
 
     const defaultLowTick = useMemo(
         () =>
             tradeData.advancedLowTick === 0 ||
             tradeData.advancedHighTick > currentPoolPriceTick + 100000 ||
             tradeData.advancedLowTick < currentPoolPriceTick - 100000
-                ? currentPoolPriceTick + defaultMinPriceDifferencePercentage * 100
+                ? roundDownTick(
+                      currentPoolPriceTick + defaultMinPriceDifferencePercentage * 100,
+                      lookupChain(chainId).gridSize,
+                  )
                 : tradeData.advancedLowTick,
         [tradeData.advancedLowTick, currentPoolPriceTick],
     );
@@ -283,7 +288,10 @@ export default function Range(props: RangePropsIF) {
             tradeData.advancedHighTick === 0 ||
             tradeData.advancedHighTick > currentPoolPriceTick + 100000 ||
             tradeData.advancedLowTick < currentPoolPriceTick - 100000
-                ? currentPoolPriceTick + defaultMaxPriceDifferencePercentage * 100
+                ? roundUpTick(
+                      currentPoolPriceTick + defaultMaxPriceDifferencePercentage * 100,
+                      lookupChain(chainId).gridSize,
+                  )
                 : tradeData.advancedHighTick,
         [tradeData.advancedHighTick, currentPoolPriceTick],
     );
@@ -724,9 +732,6 @@ export default function Range(props: RangePropsIF) {
     const minPriceDisplay = isAmbient ? '0' : pinnedMinPriceDisplayTruncated;
 
     const sendTransaction = async () => {
-        // if (!provider || !(provider as ethers.providers.WebSocketProvider).getSigner()) {
-        //     return;
-        // }
         if (!crocEnv) return;
 
         resetConfirmation();
@@ -734,6 +739,7 @@ export default function Range(props: RangePropsIF) {
         const pool = crocEnv.pool(tokenA.address, tokenB.address);
 
         const spot = await pool.displayPrice();
+
         const minPrice = spot * (1 - parseFloat(slippageTolerancePercentage) / 100);
         const maxPrice = spot * (1 + parseFloat(slippageTolerancePercentage) / 100);
 
@@ -767,6 +773,7 @@ export default function Range(props: RangePropsIF) {
             setNewRangeTransactionHash(tx?.hash);
             dispatch(addPendingTx(tx?.hash));
         } catch (error) {
+            console.log({ error });
             setTxErrorCode(error?.code);
             setTxErrorMessage(error?.message);
         }
