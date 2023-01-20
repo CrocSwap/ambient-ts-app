@@ -2821,7 +2821,7 @@ export default function App() {
                             path='app/chat'
                             element={
                                 <ChatPanel
-                                    chatStatus={chatStatus}
+                                    chatStatus={true}
                                     onClose={() => {
                                         console.error('Function not implemented.');
                                     }}
