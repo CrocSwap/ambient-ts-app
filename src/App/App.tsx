@@ -2821,7 +2821,7 @@ export default function App() {
                             path='app/chat'
                             element={
                                 <ChatPanel
-                                    chatStatus={true}
+                                    chatStatus={chatStatus}
                                     onClose={() => {
                                         console.error('Function not implemented.');
                                     }}
@@ -3074,7 +3074,7 @@ export default function App() {
 
                 {currentLocation !== '/' && currentLocation !== '/app/chat' && (
                     <ChatPanel
-                        chatStatus={true}
+                        chatStatus={chatStatus}
                         onClose={() => {
                             console.error('Function not implemented.');
                         }}

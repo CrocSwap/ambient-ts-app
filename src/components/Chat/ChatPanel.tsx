@@ -144,9 +144,9 @@ export default function ChatPanel(props: ChatProps) {
         getMsg();
     }, [room]);
 
-    // function handleCloseChatPanel() {
-    //     props.setChatStatus(false);
-    // }
+    function handleCloseChatPanel() {
+        props.setChatStatus(false);
+    }
 
     const scrollToBottomButton = async () => {
         messageEnd.current?.scrollTo(
@@ -204,7 +204,7 @@ export default function ChatPanel(props: ChatProps) {
                 <RiCloseFill
                     size={27}
                     className={styles.close_button}
-                    onClick={() => props.setChatStatus(false)}
+                    onClick={() => handleCloseChatPanel()}
                 />
             )}
         </div>
