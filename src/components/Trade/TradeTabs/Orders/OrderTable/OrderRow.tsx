@@ -450,7 +450,7 @@ export default function OrderRow(props: OrderRowPropsIF) {
             {!showColumns && IDWithTooltip}
             {!showColumns && walletWithTooltip}
             {showColumns && (
-                <li data-label='id'>
+                <li data-label='id' onClick={openDetailsModal}>
                     <p className='base_color'>{posHashTruncated}</p>{' '}
                     <p className={usernameStyle} style={{ textTransform: 'lowercase' }}>
                         {userNameToDisplay}
@@ -494,6 +494,7 @@ export default function OrderRow(props: OrderRowPropsIF) {
                     data-label='side-type'
                     className={sellOrderStyle}
                     style={{ textAlign: 'center' }}
+                    onClick={openDetailsModal}
                 >
                     <p>Order</p>
                     <p>{`${side} ${sideCharacter}`}</p>
@@ -504,7 +505,11 @@ export default function OrderRow(props: OrderRowPropsIF) {
             {!showColumns && baseQtyDisplayWithTooltip}
             {!showColumns && quoteQtyDisplayWithTooltip}
             {showColumns && (
-                <li data-label={baseTokenSymbol + quoteTokenSymbol} className='color_white'>
+                <li
+                    data-label={baseTokenSymbol + quoteTokenSymbol}
+                    className='color_white'
+                    onClick={openDetailsModal}
+                >
                     <p className={styles.token_qty} style={{ fontFamily: 'monospace' }}>
                         {' '}
                         {baseDisplay} {baseTokenLogoComponent}
