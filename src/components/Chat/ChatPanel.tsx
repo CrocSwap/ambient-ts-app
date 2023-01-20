@@ -63,7 +63,7 @@ export default function ChatPanel(props: ChatProps) {
 
     const { messages, getMsg, lastMessage, messageUser } = useSocket(room);
 
-    const { getID, getName } = useChatApi();
+    const { getID } = useChatApi();
     const userData = useAppSelector((state) => state.userData);
     const isUserLoggedIn = userData.isLoggedIn;
     const resolvedAddress = userData.resolvedAddress;

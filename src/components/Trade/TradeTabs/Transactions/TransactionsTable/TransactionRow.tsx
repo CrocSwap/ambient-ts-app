@@ -1,9 +1,5 @@
 import styles from '../Transactions.module.css';
-import {
-    CandlesByPoolAndDuration,
-    ITransaction,
-    setDataLoadingStatus,
-} from '../../../../../utils/state/graphDataSlice';
+import { ITransaction, setDataLoadingStatus } from '../../../../../utils/state/graphDataSlice';
 import { Dispatch, SetStateAction, useEffect, useRef } from 'react';
 import { useProcessTransaction } from '../../../../../utils/hooks/useProcessTransaction';
 import TransactionsMenu from '../../../../Global/Tabs/TableMenu/TableMenuComponents/TransactionsMenu';

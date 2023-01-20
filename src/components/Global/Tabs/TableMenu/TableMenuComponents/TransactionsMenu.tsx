@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { useState, ReactNode, useRef, useEffect, SetStateAction, Dispatch } from 'react';
+import { useState, useRef, useEffect } from 'react';
 // import { Link } from 'react-router-dom';
 import { FiExternalLink, FiMoreHorizontal } from 'react-icons/fi';
 
@@ -11,7 +11,7 @@ import { FiExternalLink, FiMoreHorizontal } from 'react-icons/fi';
 import styles from './TableMenus.module.css';
 // import { useModal } from '../../../../Global/Modal/useModal';
 // import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
-import { CandlesByPoolAndDuration, ITransaction } from '../../../../../utils/state/graphDataSlice';
+import { ITransaction } from '../../../../../utils/state/graphDataSlice';
 import UseOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
 import TransactionDetails from '../../../TransactionDetails/TransactionDetails';
