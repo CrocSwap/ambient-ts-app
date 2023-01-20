@@ -148,6 +148,7 @@ import { useTokenSearch } from './hooks/useTokenSearch';
 import WalletModalWagmi from './components/WalletModal/WalletModalWagmi';
 import Moralis from 'moralis';
 import { usePoolList } from './hooks/usePoolList';
+import { useRecentPools } from './hooks/useRecentPools';
 
 // import { memoizeQuerySpotTick } from './functions/querySpotTick';
 // import PhishingWarning from '../components/Global/PhisingWarning/PhishingWarning';
@@ -323,6 +324,27 @@ export default function App() {
     // `switchChain` is a function to switch to a different chain
     // `'0x5'` is the chain the app should be on by default
     const [chainData, isChainSupported] = useAppChain('0x5', isUserLoggedIn);
+
+    const [
+        localTokens,
+        verifyToken,
+        getAllTokens,
+        getAmbientTokens,
+        getTokensOnChain,
+        getTokenByAddress,
+        getTokensByName,
+        acknowledgeToken,
+    ] = useToken(chainData.chainId);
+    false && localTokens;
+    false && getAllTokens;
+    false && getTokensOnChain;
+
+    const { addRecentPool, getRecentPools } = useRecentPools(
+        chainData.chainId,
+        tradeData.tokenA.address,
+        tradeData.tokenB.address,
+        verifyToken
+    );
 
     const [tokenPairLocal, setTokenPairLocal] = useState<string[] | null>(null);
 
@@ -2184,20 +2206,6 @@ export default function App() {
 
     // --------------END OF THEME--------------------------
 
-    const [
-        localTokens,
-        verifyToken,
-        getAllTokens,
-        getAmbientTokens,
-        getTokensOnChain,
-        getTokenByAddress,
-        getTokensByName,
-        acknowledgeToken,
-    ] = useToken(chainData.chainId);
-    false && localTokens;
-    false && getAllTokens;
-    false && getTokensOnChain;
-
     const connectedUserErc20Tokens = useAppSelector((state) => state.userData.tokens.erc20Tokens);
     // TODO: move this function up to App.tsx
     const getImportedTokensPlus = () => {
@@ -2257,6 +2265,8 @@ export default function App() {
 
     const { addRecentToken, getRecentTokens } = useRecentTokens(chainData.chainId);
 
+
+
     // props for <PageHeader/> React element
     const headerProps = {
         isUserLoggedIn: isUserLoggedIn,
@@ -2277,7 +2287,7 @@ export default function App() {
         isAppOverlayActive: isAppOverlayActive,
         setIsAppOverlayActive: setIsAppOverlayActive,
         ethMainnetUsdPrice: ethMainnetUsdPrice,
-
+        addRecentPool: addRecentPool,
         switchTheme: switchTheme,
         theme: theme,
     };
@@ -2533,6 +2543,7 @@ export default function App() {
         verifyToken: verifyToken,
         getTokenByAddress: getTokenByAddress,
         tokenPair: tokenPair,
+        getRecentPools: getRecentPools
     };
 
     const analyticsProps = {
