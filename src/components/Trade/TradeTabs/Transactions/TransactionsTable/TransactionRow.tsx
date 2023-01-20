@@ -501,7 +501,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
             {!showColumns && IDWithTooltip}
             {!showColumns && !isOnPortfolioPage && walletWithTooltip}
             {showColumns && (
-                <li data-label='id'>
+                <li data-label='id' onClick={openDetailsModal}>
                     <p className='base_color' style={{ textAlign: 'center' }}>
                         {txHashTruncated}
                     </p>{' '}
@@ -607,6 +607,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                     data-label='side-type'
                     className={sideTypeStyle}
                     style={{ textAlign: 'center' }}
+                    onClick={openDetailsModal}
                 >
                     <p>{type}</p>
                     <p>{`${sideType} ${sideCharacter}`}</p>
