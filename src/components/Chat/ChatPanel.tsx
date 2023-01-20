@@ -114,7 +114,6 @@ export default function ChatPanel(props: ChatProps) {
                         : result.userData.ensName,
                 );
             });
-            console.log('Current User is :', currentUser, ' name is: ', name);
         }
     }, [address, props.chatStatus, props.isFullScreen]);
 
@@ -132,12 +131,10 @@ export default function ChatPanel(props: ChatProps) {
 
             getMsg();
         }
-        console.log('Current User is :', currentUser, ' name is: ', name);
     }, [address]);
 
     useEffect(() => {
         isCurrentUser();
-        console.log('Current User is :', currentUser, ' name is: ', name);
     }, [isUserLoggedIn]);
 
     useEffect(() => {
@@ -227,7 +224,6 @@ export default function ChatPanel(props: ChatProps) {
                         : result.userData.ensName,
                 );
             });
-            console.log('Current User is :', currentUser, ' name is: ', name);
             return currentUser;
         }
     }

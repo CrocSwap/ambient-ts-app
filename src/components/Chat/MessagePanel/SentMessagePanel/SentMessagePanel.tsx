@@ -35,11 +35,6 @@ export default function SentMessagePanel(props: SentMessageProps) {
         setSliceWalletID(props.message.walletID.slice(0, 6) + '...');
     }, [props.message.mentionedName]);
 
-    useEffect(() => {
-        console.log('props name: ', props.name, 'current user', props.currentUser);
-        console.log(props.message.mentionedName, props.name);
-    }, []);
-
     const formatAMPM = (str: string) => {
         const date = new Date(str);
         let hours = date.getHours();
