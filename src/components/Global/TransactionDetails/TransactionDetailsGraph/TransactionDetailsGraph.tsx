@@ -47,11 +47,25 @@ export default function TransactionDetailsGraph(props: TransactionDetailsGraphIF
 
     const [scaleData, setScaleData] = useState<any>();
     const [lineSeries, setLineSeries] = useState<any>();
+    const [crossPoint, setCrossPoint] = useState<any>();
     const [priceLine, setPriceLine] = useState();
+
+    const decidePeriod = (diff: number) => {
+        return diff <= 60
+            ? 60
+            : diff <= 300
+            ? 300
+            : diff <= 900
+            ? 900
+            : diff <= 3600
+            ? 3600
+            : diff <= 14400
+            ? 14400
+            : 86400;
+    };
 
     useEffect(() => {
         (async () => {
-            console.log({ tx });
             if (graphData === undefined) {
                 const fetchEnabled = !!(
                     isServerEnabled &&
@@ -61,28 +75,44 @@ export default function TransactionDetailsGraph(props: TransactionDetailsGraphIF
                     mainnetQuoteTokenAddress
                 );
 
-                try {
-                    const graphData = await fetchGraphData(
-                        fetchEnabled,
-                        mainnetBaseTokenAddress,
-                        mainnetQuoteTokenAddress,
-                        chainData,
-                        3600,
-                        baseTokenAddress,
-                        quoteTokenAddress,
-                    );
+                const diff =
+                    new Date().getTime() - tx.time * 1000 < 43200000
+                        ? 43200000
+                        : new Date().getTime() - tx.time * 1000;
 
-                    if (graphData) {
-                        setGraphData(() => {
-                            return graphData.candles;
-                        });
-                    } else {
-                        setGraphData(() => {
-                            return undefined;
-                        });
+                console.log(new Date().getTime() - tx.time * 1000, diff);
+
+                const period = decidePeriod(Math.floor(diff / 1000 / 200));
+                if (period !== undefined) {
+                    const numberofCandleNeeded = Math.floor((diff * 2) / (period * 1000));
+
+                    const startBoundary = Math.floor(new Date().getTime() / 1000);
+
+                    try {
+                        const graphData = await fetchGraphData(
+                            fetchEnabled,
+                            mainnetBaseTokenAddress,
+                            mainnetQuoteTokenAddress,
+                            chainData,
+                            period,
+                            baseTokenAddress,
+                            quoteTokenAddress,
+                            startBoundary.toString(),
+                            numberofCandleNeeded.toString(),
+                        );
+
+                        if (graphData) {
+                            setGraphData(() => {
+                                return graphData.candles;
+                            });
+                        } else {
+                            setGraphData(() => {
+                                return undefined;
+                            });
+                        }
+                    } catch (error) {
+                        console.log(error);
                     }
-                } catch (error) {
-                    console.log(error);
                 }
             }
         })();
@@ -119,17 +149,23 @@ export default function TransactionDetailsGraph(props: TransactionDetailsGraphIF
             setPriceLine(() => {
                 return priceLine;
             });
+
+            const crossPoint = d3fc
+                .seriesSvgPoint()
+                .xScale(scaleData.xScale)
+                .yScale(scaleData.yScale)
+                .crossValue((d: any) => d.x)
+                .mainValue((d: any) => d.y)
+                .size(14);
+
+            setCrossPoint(() => {
+                return crossPoint;
+            });
         }
     }, [scaleData]);
 
     useEffect(() => {
         if (graphData !== undefined) {
-            const diff = new Date().getTime() - tx.time * 1000;
-            const endBoundary = new Date(tx.time * 1000 + diff);
-            const startBoundary = new Date(tx.time * 1000 - diff);
-
-            console.log(endBoundary, new Date(tx.time * 1000), startBoundary);
-
             const yExtent = d3fc
                 .extentLinear()
                 .accessors([(d: any) => d.invPriceCloseExclMEVDecimalCorrected])
@@ -170,19 +206,21 @@ export default function TransactionDetailsGraph(props: TransactionDetailsGraphIF
             graphData !== undefined &&
             scaleData !== undefined &&
             lineSeries !== undefined &&
+            crossPoint !== undefined &&
             priceLine !== undefined
         ) {
-            drawChart(graphData, scaleData, lineSeries, priceLine);
+            drawChart(graphData, scaleData, lineSeries, priceLine, crossPoint);
         }
-    }, [scaleData, lineSeries, priceLine, graphData]);
+    }, [scaleData, lineSeries, priceLine, graphData, crossPoint]);
 
     const drawChart = useCallback(
-        (graphData: any, scaleData: any, lineSeries: any, priceLine: any) => {
+        (graphData: any, scaleData: any, lineSeries: any, priceLine: any, crossPoint: any) => {
             if (graphData.length > 0) {
-                const xAxis = d3fc.axisBottom().scale(scaleData.xScale).ticks(3);
+                const xAxis = d3fc.axisBottom().scale(scaleData.xScale).ticks(5);
 
                 const priceJoin = d3fc.dataJoin('g', 'priceJoin');
                 const lineJoin = d3fc.dataJoin('g', 'lineJoin');
+                const crossPointJoin = d3fc.dataJoin('g', 'crossPoint');
 
                 d3.select(d3PlotGraph.current).on('measure', function (event: any) {
                     scaleData.xScale.range([0, event.detail.width]);
@@ -190,38 +228,48 @@ export default function TransactionDetailsGraph(props: TransactionDetailsGraphIF
                     scaleData.yScale.range([event.detail.height, 0]);
                 });
 
-                d3.select(d3PlotGraph.current).on('measure.range', function (event: any) {
-                    const svg = d3.select(event.target).select('svg');
+                // Zoom
+                // d3.select(d3PlotGraph.current).on('measure.range', function (event: any) {
+                //     const svg = d3.select(event.target).select('svg');
 
-                    const zoom = d3.zoom().on('zoom', (event: any) => {
-                        if (event.sourceEvent.type === 'wheel') {
-                            scaleData.xScale.domain(
-                                event.transform.rescaleX(scaleData.xScaleOriginal).domain(),
-                            );
-                        } else {
-                            const domainX = scaleData.xScale.domain();
-                            const linearX = d3
-                                .scaleTime()
-                                .domain(scaleData.xScale.range())
-                                .range([0, domainX[1] - domainX[0]]);
+                //     const zoom = d3.zoom().on('zoom', (event: any) => {
+                //         if (event.sourceEvent.type === 'wheel') {
+                //             scaleData.xScale.domain(
+                //                 event.transform.rescaleX(scaleData.xScaleOriginal).domain(),
+                //             );
+                //         } else {
+                //             const domainX = scaleData.xScale.domain();
+                //             const linearX = d3
+                //                 .scaleTime()
+                //                 .domain(scaleData.xScale.range())
+                //                 .range([0, domainX[1] - domainX[0]]);
 
-                            const deltaX = linearX(-event.sourceEvent.movementX);
-                            scaleData.xScale.domain([
-                                new Date(domainX[0].getTime() + deltaX),
-                                new Date(domainX[1].getTime() + deltaX),
-                            ]);
-                        }
+                //             const deltaX = linearX(-event.sourceEvent.movementX);
+                //             scaleData.xScale.domain([
+                //                 new Date(domainX[0].getTime() + deltaX),
+                //                 new Date(domainX[1].getTime() + deltaX),
+                //             ]);
+                //         }
 
-                        render();
-                    }) as any;
+                //         render();
+                //     }) as any;
 
-                    svg.call(zoom);
-                });
+                //     svg.call(zoom);
+                // });
+
+                const prng = d3.randomNormal();
+                const data = d3.range(1e3).map((d) => ({
+                    x: prng(),
+                    y: prng(),
+                }));
 
                 d3.select(d3PlotGraph.current).on('draw', function (event: any) {
                     const svg = d3.select(event.target).select('svg');
                     priceJoin(svg, [[tx.invPriceDecimalCorrected]]).call(priceLine);
                     lineJoin(svg, [graphData]).call(lineSeries);
+                    crossPointJoin(svg, [
+                        [{ x: tx.time * 1000, y: tx.invPriceDecimalCorrected }],
+                    ]).call(crossPoint);
 
                     d3.select(d3Yaxis.current).select('svg').call(scaleData.yAxis);
                     d3.select(d3Xaxis.current).select('svg').call(xAxis);

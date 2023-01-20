@@ -11,6 +11,8 @@ export const fetchTransactionGraphData = async (
     period: number,
     baseTokenAddress: string,
     quoteTokenAddress: string,
+    time: string,
+    candleNeeded: string,
 ) => {
     console.log('fetching transaction details graph data ');
     if (isFetchEnabled) {
@@ -26,8 +28,8 @@ export const fetchTransactionGraphData = async (
                             quote: mainnetQuoteTokenAddress.toLowerCase(),
                             poolIdx: chainData.poolIndex.toString(),
                             period: period.toString(),
-                            // time: '1657833300', // optional
-                            n: '200', // positive integer
+                            time: time, // optional
+                            n: candleNeeded, // positive integer
                             // page: '0', // nonnegative integer
                             chainId: '0x1',
                             dex: 'all',
@@ -66,6 +68,8 @@ export type TransactionGraphDataFn = (
     period: number,
     baseTokenAddress: string,
     quoteTokenAddress: string,
+    time: string,
+    candleNeeded: string,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ) => Promise<any>;
 
