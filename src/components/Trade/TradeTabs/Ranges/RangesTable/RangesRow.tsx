@@ -97,7 +97,8 @@ export default function RangesRow(props: RangesRowPropsIF) {
 
         isPositionInRange,
         isAmbient,
-
+        baseTokenCharacter,
+        quoteTokenCharacter,
         ambientMinOrNull,
         ambientMaxOrNull,
         isDenomBase,
@@ -498,9 +499,14 @@ export default function RangesRow(props: RangesRowPropsIF) {
                     onClick={openDetailsModal}
                     data-label='min price'
                     className='color_white'
-                    style={{ textAlign: 'right', fontFamily: 'monospace' }}
+                    style={{ textAlign: 'right' }}
                 >
-                    {isOnPortfolioPage ? minRangeDenomByMoneyness || '…' : ambientMinOrNull || '…'}
+                    <span>{isDenomBase ? quoteTokenCharacter : baseTokenCharacter}</span>
+                    <span style={{ fontFamily: 'monospace' }}>
+                        {isOnPortfolioPage
+                            ? minRangeDenomByMoneyness || '…'
+                            : ambientMinOrNull || '…'}
+                    </span>
                 </li>
             )}
             {!showColumns && (
@@ -508,9 +514,15 @@ export default function RangesRow(props: RangesRowPropsIF) {
                     onClick={openDetailsModal}
                     data-label='max price'
                     className='color_white'
-                    style={{ textAlign: 'right', fontFamily: 'monospace' }}
+                    // style={{ textAlign: 'right' }}
+                    style={{ textAlign: 'right' }}
                 >
-                    {isOnPortfolioPage ? maxRangeDenomByMoneyness || '…' : ambientMaxOrNull || '…'}
+                    <span>{isDenomBase ? quoteTokenCharacter : baseTokenCharacter}</span>
+                    <span style={{ fontFamily: 'monospace' }}>
+                        {isOnPortfolioPage
+                            ? maxRangeDenomByMoneyness || '…'
+                            : ambientMaxOrNull || '…'}
+                    </span>
                 </li>
             )}
             {showColumns && !ipadView && (
@@ -520,8 +532,14 @@ export default function RangesRow(props: RangesRowPropsIF) {
                     style={{ textAlign: 'right' }}
                     onClick={openDetailsModal}
                 >
-                    <p>{ambientMinOrNull}</p>
-                    <p>{ambientMaxOrNull}</p>
+                    <p>
+                        <span>{isDenomBase ? quoteTokenCharacter : baseTokenCharacter}</span>
+                        <span style={{ fontFamily: 'monospace' }}>{ambientMinOrNull}</span>
+                    </p>
+                    <p>
+                        <span>{isDenomBase ? quoteTokenCharacter : baseTokenCharacter}</span>
+                        <span style={{ fontFamily: 'monospace' }}>{ambientMaxOrNull}</span>
+                    </p>
                 </li>
             )}
             {ValueWithTooltip}
