@@ -349,6 +349,8 @@
         /* background: red; */
         grid-gap: 8px;
         position: relative;
+
+
     }
 
     .right_col {
@@ -415,3 +417,12 @@
         height: 30%
     }
 }
+
+
+/* @media only screen and (max-width: 1180px) {
+    .main_layout{
+        margin-left: 31px;
+    }
+
+
+} */

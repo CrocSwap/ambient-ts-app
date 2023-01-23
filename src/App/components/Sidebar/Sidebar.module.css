@@ -6,10 +6,9 @@
     overflow: scroll;
     padding: 0 4px;
 
-    /* background: red; */
     z-index: 9999;
 
-    /* margin-top: 4rem; */
+ 
 }
 
 
@@ -185,31 +184,7 @@
         0px 0px 12px rgba(205, 193, 255, 0.2), 0px 0px 7px rgba(205, 193, 255, 0.2),
         0px 0px 4px #cdc1ff, 0px 0px 2px rgba(205, 193, 255, 0.2);
 }
-/* .logo {
-    margin-bottom: 1rem;
-    text-align: center;
-    color: var(--text-secondary);
-    background: var(--bg-secondary);
-    font-size: 1.5rem;
-    width: 100%;
 
-    display: flex;
-    justify-content: center;
-} */
-
-/* .logo svg {
-    transform: rotate(0deg);
-    transition: all var(--animation-speed) ease-in-out;
-}
-
-.sidebar_active .logo svg {
-    transform: rotate(-180deg);
-}
-
-.sidebar_active .logo {
-    display: flex;
-    justify-content: flex-end;
-} */
 
 /* SEARCH CONTAINER */
 
@@ -243,36 +218,12 @@
 
 /* END OF SEARCH CONTAINER */
 
-/* Small screens */
-@media only screen and (max-width: 500px) {
-    .sidebar {
-        display: none;
-       
-        /* bottom: 0;
-        width: 100vw;
-        height: 5rem;
-        background: var(--dark1);
-        z-index: 2; */
-    }
 
-    .sidebar_nav {
-        flex-direction: row;
-    }
 
-    .sidebar_link {
-        justify-content: center;
-    }
-    .sidebar_item_content {
-        display: none;
-    }
-}
-
-/* @media only screen and (min-width: 800px) {
-
-} */
 
 /* Large screens */
-@media only screen and (min-width: 500px) {
+/* THIS CODE WAS ORIGINALLY FOR DESKTOP DEVICES ONLY */
+/* @media only screen and (min-width: 500px) { */
     .sidebar {
         top: 0;
         width: 1.938rem;
@@ -326,19 +277,6 @@
         transition: all var(--animation-speed) ease-in-out;
     }
 
-    /* .sidebar:hover .link_text {
-        display: inline;
-    } */
-
-    /* .sidebar:hover .logo svg
-    {
-      margin-left: 11rem;
-    }
-   */
-    /* .sidebar:hover .logo_text
-    {
-      left: 0px;
-    }  */
 
     .sidebar_nav {
         height: calc(100% - 56px);
@@ -361,7 +299,6 @@
     .sidebar_item_content {
         width: 100%;
     }
-}
 
 
 @media only screen and (max-width: 1180px) {

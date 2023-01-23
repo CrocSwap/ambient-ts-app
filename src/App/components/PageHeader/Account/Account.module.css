@@ -273,8 +273,9 @@ background: linear-gradient(to bottom, var(--text-highlight-dark), var(--dark1))
     color: var(--negative);
 }
 
-@media screen and (max-width: 550px) {
-    .account_container {
-        display: none;
-    }
+
+@media (max-width: 600px) {
+.wallet_name{
+    display: none;
+}
 }
