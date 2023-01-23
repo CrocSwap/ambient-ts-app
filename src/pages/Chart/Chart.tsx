@@ -3653,6 +3653,8 @@ export default function Chart(props: ChartData) {
             : false;
 
         const diff = Math.abs(nearest.close - nearest.open);
+        const scale = Math.abs(scaleData.yScale.domain()[1] - scaleData.yScale.domain()[0]);
+
         const topBoundary =
             nearest.close > nearest.open
                 ? nearest.close + (minHeight - diff) / 2
@@ -3665,12 +3667,22 @@ export default function Chart(props: ChartData) {
         let limitTop = nearest.close > nearest.open ? nearest.close : nearest.open;
         let limitBot = nearest.close < nearest.open ? nearest.close : nearest.open;
 
-        if (nearest.close > nearest.open) {
-            limitTop = nearest.close > topBoundary ? nearest.close : topBoundary;
-            limitBot = nearest.open < botBoundary ? nearest.open : botBoundary;
+        if (scale / 20 > diff) {
+            if (nearest.close > nearest.open) {
+                limitTop = nearest.close + scale / 20;
+                limitBot = nearest.open - scale / 20;
+            } else {
+                limitTop = nearest.open + scale / 20;
+                limitBot = nearest.close - scale / 20;
+            }
         } else {
-            limitTop = nearest.open > topBoundary ? nearest.open : topBoundary;
-            limitBot = nearest.close < botBoundary ? nearest.close : botBoundary;
+            if (nearest.close > nearest.open) {
+                limitTop = nearest.close > topBoundary ? nearest.close : topBoundary;
+                limitBot = nearest.open < botBoundary ? nearest.open : botBoundary;
+            } else {
+                limitTop = nearest.open > topBoundary ? nearest.open : topBoundary;
+                limitBot = nearest.close < botBoundary ? nearest.close : botBoundary;
+            }
         }
 
         return {
