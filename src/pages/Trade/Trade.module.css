@@ -349,6 +349,8 @@
         /* background: red; */
         grid-gap: 8px;
         position: relative;
+
+
     }
 
     .right_col {
@@ -415,3 +417,15 @@
         height: 30%
     }
 }
+
+
+ @media only screen and (max-width: 1180px) {
+   .middle_col {
+
+        padding-left: 30px;
+
+
+    }
+
+
+} 

@@ -104,6 +104,8 @@ export default function OrderRow(props: OrderRowPropsIF) {
 
     const sellOrderStyle = side === 'sell' ? 'order_sell' : 'order_buy';
 
+    const logoSizes = showColumns ? '15px' : '20px';
+
     const usernameStyle = ensName || isOwnerActiveAccount ? 'gradient_text' : 'base_color';
 
     const userPositionStyle =
@@ -229,15 +231,15 @@ export default function OrderRow(props: OrderRowPropsIF) {
     );
 
     const baseTokenLogoComponent = baseTokenLogo ? (
-        <img src={baseTokenLogo} alt='base token' width='20px' />
+        <img src={baseTokenLogo} alt='base token' width={logoSizes} />
     ) : (
-        <NoTokenIcon tokenInitial={limitOrder.baseSymbol.charAt(0)} width='20px' />
+        <NoTokenIcon tokenInitial={limitOrder.baseSymbol.charAt(0)} width={logoSizes} />
     );
 
     const quoteTokenLogoComponent = quoteTokenLogo ? (
-        <img src={quoteTokenLogo} alt='quote token' width='20px' />
+        <img src={quoteTokenLogo} alt='quote token' width={logoSizes} />
     ) : (
-        <NoTokenIcon tokenInitial={limitOrder.quoteSymbol.charAt(0)} width='20px' />
+        <NoTokenIcon tokenInitial={limitOrder.quoteSymbol.charAt(0)} width={logoSizes} />
     );
 
     // const tokensTogether = (
