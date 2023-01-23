@@ -151,6 +151,7 @@ export default function MessageInput(props: MessageInputProps, prop: ChatProps) 
                 />
 
                 <BsEmojiSmileFill
+                    className={styles.svgButton}
                     style={{ pointerEvents: !isUserLoggedIn ? 'none' : 'auto' }}
                     onClick={handleEmojiPickerHideShow}
                 />
@@ -171,6 +172,7 @@ export default function MessageInput(props: MessageInputProps, prop: ChatProps) 
                             strokeOpacity='0.25'
                             strokeLinecap='round'
                             strokeLinejoin='round'
+                            className={styles.svgButton}
                         />
                         <title>Send Message</title>
                     </svg>
