@@ -1720,8 +1720,9 @@ export default function Chart(props: ChartData) {
             const liqBidDeviation = standardDeviation(liqAllBidPrices);
 
             while (
+                liquidityData.liqBidData.length > 0 &&
                 scaleData.yScale.domain()[1] + liqBidDeviation >=
-                liquidityData.liqBidData[0].liqPrices
+                    liquidityData.liqBidData[0].liqPrices
             ) {
                 liquidityData.liqBidData.unshift({
                     activeLiq: 30,
@@ -3911,7 +3912,7 @@ export default function Chart(props: ChartData) {
                                 ? isAdvancedModeActive
                                     ? liquidityData.liqBidData
                                     : liquidityData.liqBidData.filter(
-                                          (d: any) => d.liqPrices < liquidityData.topBoundary,
+                                          (d: any) => d.liqPrices <= liquidityData.topBoundary,
                                       )
                                 : [],
                         ]).call(liqBidSeries);
