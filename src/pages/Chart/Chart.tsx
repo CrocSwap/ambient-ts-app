@@ -743,21 +743,25 @@ export default function Chart(props: ChartData) {
 
         yAxis.tickValues([
             ...scale.ticks(),
-            ...[
-                isSameLocationMin ? sameLocationDataMin : low,
-                isSameLocationMax ? sameLocationDataMax : high,
-                market[0].value,
-            ],
+            ...(simpleRangeWidth === 100
+                ? [market[0].value]
+                : [
+                      isSameLocationMin ? sameLocationDataMin : low,
+                      isSameLocationMax ? sameLocationDataMax : high,
+                      market[0].value,
+                  ]),
             ...(isMouseMoveCrosshair && !isLineDrag ? [crosshairData[0].y] : []),
         ]);
 
         yAxis.tickFormat((d: any) => {
-            if (isSameLocationMin && d === sameLocationDataMin) {
-                return formatAmountChartData(low);
-            }
+            if (simpleRangeWidth !== 100) {
+                if (isSameLocationMin && d === sameLocationDataMin) {
+                    return formatAmountChartData(low);
+                }
 
-            if (isSameLocationMax && d === sameLocationDataMax) {
-                return formatAmountChartData(high);
+                if (isSameLocationMax && d === sameLocationDataMax) {
+                    return formatAmountChartData(high);
+                }
             }
 
             return formatAmountChartData(d);
@@ -771,8 +775,9 @@ export default function Chart(props: ChartData) {
                     }
 
                     if (
-                        (isSameLocationMin ? d === sameLocationDataMin : d === low) ||
-                        (isSameLocationMax ? d === sameLocationDataMax : d === high)
+                        simpleRangeWidth !== 100 &&
+                        ((isSameLocationMin ? d === sameLocationDataMin : d === low) ||
+                            (isSameLocationMax ? d === sameLocationDataMax : d === high))
                     ) {
                         return 'url(#textBg)';
                     }
@@ -789,8 +794,9 @@ export default function Chart(props: ChartData) {
                         return 'crossHairText';
                     }
                     if (
-                        (isSameLocationMin ? d === sameLocationDataMin : d === low) ||
-                        (isSameLocationMax ? d === sameLocationDataMax : d === high)
+                        simpleRangeWidth !== 100 &&
+                        ((isSameLocationMin ? d === sameLocationDataMin : d === low) ||
+                            (isSameLocationMax ? d === sameLocationDataMax : d === high))
                     ) {
                         return 'y_axis';
                     }
