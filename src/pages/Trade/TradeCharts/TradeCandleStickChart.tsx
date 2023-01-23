@@ -487,8 +487,6 @@ export default function TradeCandleStickChart(props: ChartData) {
                     cumAverageUSD: 0,
                 });
 
-                console.log(liqBidData[0].liqPrices, limitBoundary, liqBidDeviation);
-
                 while (liqBidData[0].liqPrices < limitBoundary) {
                     liqBidData.unshift({
                         activeLiq: liqBidData[0].activeLiq,
@@ -500,6 +498,21 @@ export default function TradeCandleStickChart(props: ChartData) {
 
                 liqBidData.push({
                     activeLiq: liqBidData.find((liqData) => liqData.liqPrices < limitBoundary)
+                        ?.activeLiq,
+                    liqPrices: limitBoundary,
+                    deltaAverageUSD: 0,
+                    cumAverageUSD: 0,
+                });
+
+                depthLiqBidData.push({
+                    activeLiq: 1,
+                    liqPrices: barThreshold,
+                    deltaAverageUSD: 0,
+                    cumAverageUSD: 0,
+                });
+
+                depthLiqBidData.push({
+                    activeLiq: depthLiqBidData.find((liqData) => liqData.liqPrices < limitBoundary)
                         ?.activeLiq,
                     liqPrices: limitBoundary,
                     deltaAverageUSD: 0,
@@ -526,6 +539,13 @@ export default function TradeCandleStickChart(props: ChartData) {
                 liqAskData.push({
                     activeLiq: liqAskData[liqAskData.length - 1].activeLiq,
                     liqPrices: 0,
+                    deltaAverageUSD: 0,
+                    cumAverageUSD: 0,
+                });
+
+                depthLiqAskData.unshift({
+                    activeLiq: depthLiqAskData[0].activeLiq,
+                    liqPrices: barThreshold,
                     deltaAverageUSD: 0,
                     cumAverageUSD: 0,
                 });

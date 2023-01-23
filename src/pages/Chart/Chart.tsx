@@ -3940,7 +3940,7 @@ export default function Chart(props: ChartData) {
                                 ? isAdvancedModeActive
                                     ? liquidityData.depthLiqBidData
                                     : liquidityData.depthLiqBidData.filter(
-                                          (d: any) => d.liqPrices < liquidityData.topBoundary,
+                                          (d: any) => d.liqPrices <= liquidityData.topBoundary,
                                       )
                                 : [],
                         ]).call(depthLiqBidSeries);
