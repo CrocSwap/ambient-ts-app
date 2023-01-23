@@ -37,6 +37,7 @@ import { useAccount } from 'wagmi';
 import { useSidebarSearch } from './useSidebarSearch';
 import { SmallerPoolIF } from '../../hooks/useRecentPools';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
 
 const cachedPoolStatsFetch = memoizePoolStats();
 
@@ -414,8 +415,17 @@ export default function Sidebar(props: SidebarPropsIF) {
             )}
         </div>
     );
+    const sidebarRef = useRef<HTMLDivElement>(null);
 
-    // const collapseSidebarMediaQuery = useMediaQuery('(max-width: 1099px)');
+    const overflowSidebarMQ = useMediaQuery('(max-width: 1180px)');
+
+    function handleSidebarClickOutside() {
+        if (!overflowSidebarMQ) return;
+
+        setShowSidebar(false);
+    }
+
+    useOnClickOutside(sidebarRef, handleSidebarClickOutside);
 
     // useEffect(() => {
     //     if (collapseSidebarMediaQuery) setShowSidebar(false);
@@ -531,7 +541,7 @@ export default function Sidebar(props: SidebarPropsIF) {
         </>
     );
     return (
-        <div>
+        <div ref={sidebarRef}>
             <nav className={`${styles.sidebar} ${sidebarStyle}`}>
                 <ul className={styles.sidebar_nav}>
                     {/* <SearchAccordion
