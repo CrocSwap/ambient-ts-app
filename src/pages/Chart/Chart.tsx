@@ -3188,20 +3188,20 @@ export default function Chart(props: ChartData) {
 
             setHorizontalBandData([
                 [
-                    simpleRangeWidth === 100
+                    simpleRangeWidth === 100 && !isAdvancedModeActive
                         ? 0
                         : ranges.filter((item: any) => item.name === 'Min')[0].value,
-                    simpleRangeWidth === 100
+                    simpleRangeWidth === 100 && !isAdvancedModeActive
                         ? 0
                         : ranges.filter((item: any) => item.name === 'Max')[0].value,
                 ],
             ]);
 
             horizontalBandData[0] = [
-                simpleRangeWidth === 100
+                simpleRangeWidth === 100 && !isAdvancedModeActive
                     ? 0
                     : ranges.filter((item: any) => item.name === 'Min')[0].value,
-                simpleRangeWidth === 100
+                simpleRangeWidth === 100 && !isAdvancedModeActive
                     ? 0
                     : ranges.filter((item: any) => item.name === 'Max')[0].value,
             ];
@@ -3210,7 +3210,10 @@ export default function Chart(props: ChartData) {
                 .select('svg')
                 .select('.targets')
                 .selectAll('.horizontal')
-                .style('visibility', simpleRangeWidth === 100 ? 'hidden' : 'visible');
+                .style(
+                    'visibility',
+                    simpleRangeWidth === 100 && !isAdvancedModeActive ? 'hidden' : 'visible',
+                );
         }
     };
 
@@ -3940,7 +3943,7 @@ export default function Chart(props: ChartData) {
                                 ? isAdvancedModeActive
                                     ? liquidityData.depthLiqBidData
                                     : liquidityData.depthLiqBidData.filter(
-                                          (d: any) => d.liqPrices < liquidityData.topBoundary,
+                                          (d: any) => d.liqPrices <= liquidityData.topBoundary,
                                       )
                                 : [],
                         ]).call(depthLiqBidSeries);
