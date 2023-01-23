@@ -103,7 +103,7 @@ export default function Sidebar(props: SidebarPropsIF) {
         verifyToken,
         getTokenByAddress,
         tokenPair,
-        getRecentPools
+        getRecentPools,
     } = props;
 
     const { isConnected } = useAccount();
@@ -415,20 +415,21 @@ export default function Sidebar(props: SidebarPropsIF) {
         </div>
     );
 
-    const collapseSidebarMediaQuery = useMediaQuery('(max-width: 1099px)');
+    // const collapseSidebarMediaQuery = useMediaQuery('(max-width: 1099px)');
 
-    useEffect(() => {
-        if (collapseSidebarMediaQuery) setShowSidebar(false);
-        console.log('collapsing');
-    }, [collapseSidebarMediaQuery]);
+    // useEffect(() => {
+    //     if (collapseSidebarMediaQuery) setShowSidebar(false);
+    //     console.log('collapsing');
+    // }, [collapseSidebarMediaQuery]);
 
     const sidebarStyle = showSidebar ? styles.sidebar_active : styles.sidebar;
+    // const sidebarStyle = showSidebar ? styles.sidebar_active : styles.sidebar_active;
 
-    useEffect(() => {
-        if (showSidebar === false) {
-            setSearchMode(false);
-        }
-    }, [showSidebar]);
+    // useEffect(() => {
+    //     if (showSidebar === false) {
+    //         setSearchMode(false);
+    //     }
+    // }, [showSidebar]);
 
     const topElementsDisplay = (
         <div style={{ width: '100%' }}>

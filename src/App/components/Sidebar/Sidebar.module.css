@@ -6,8 +6,13 @@
     overflow: scroll;
     padding: 0 4px;
 
+    /* background: red; */
+    z-index: 9999;
+
     /* margin-top: 4rem; */
 }
+
+
 .sidebar::-webkit-scrollbar {
     width: 0.25rem;
 }
@@ -242,7 +247,7 @@
 @media only screen and (max-width: 500px) {
     .sidebar {
         display: none;
-
+       
         /* bottom: 0;
         width: 100vw;
         height: 5rem;
@@ -356,4 +361,14 @@
     .sidebar_item_content {
         width: 100%;
     }
+}
+
+
+@media only screen and (max-width: 1180px) {
+
+.sidebar_active{
+    box-shadow:  20px 20px 65px #0b0e13,
+    -20px -20px 65px #0f141b;
+}
+
 }
