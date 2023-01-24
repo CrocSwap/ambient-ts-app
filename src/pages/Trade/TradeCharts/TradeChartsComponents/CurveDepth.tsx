@@ -1,6 +1,7 @@
 import styles from './CurveDepth.module.css';
-import { SetStateAction, useState } from 'react';
+import { SetStateAction, useState, useRef } from 'react';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
+import useOnClickOutside from '../../../../utils/hooks/useOnClickOutside';
 
 interface CurveDepthPropsIF {
     setLiqMode: (value: SetStateAction<string>) => void;
@@ -28,8 +29,19 @@ export default function CurveDepth(props: CurveDepthPropsIF) {
         ? styles.dropdown_wrapper_active
         : styles.dropdown_wrapper;
 
+    const dropdownItemRef = useRef<HTMLDivElement>(null);
+    const clickOutsideHandler = () => {
+        setShowCurveDepthDropdown(false);
+    };
+    useOnClickOutside(dropdownItemRef, clickOutsideHandler);
+
+    function handleCurveDepthClickMobile(action: () => void) {
+        action();
+        setShowCurveDepthDropdown(false);
+    }
+
     const curveDepthMobile = (
-        <div className={styles.dropdown_menu}>
+        <div className={styles.dropdown_menu} ref={dropdownItemRef}>
             <button
                 className={styles.curve_depth_mobile_button}
                 onClick={() => setShowCurveDepthDropdown(!showCurveDepthDropdown)}
@@ -41,7 +53,7 @@ export default function CurveDepth(props: CurveDepthPropsIF) {
                 {curveDepthData.map((button, idx) => (
                     <div className={styles.curve_depth_container} key={idx}>
                         <button
-                            onClick={button.action}
+                            onClick={() => handleCurveDepthClickMobile(button.action)}
                             className={
                                 button.name.toLowerCase() === liqMode.toLowerCase()
                                     ? styles.active_selected_button

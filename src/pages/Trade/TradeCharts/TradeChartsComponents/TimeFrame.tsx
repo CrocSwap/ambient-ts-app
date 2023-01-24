@@ -37,12 +37,12 @@ export default function TimeFrame(props: TimeFramePropsIF) {
     const clickOutsideHandler = () => {
         setShowTimeFrameDropdown(false);
     };
+    useOnClickOutside(dropdownItemRef, clickOutsideHandler);
 
     function handleTimeFrameClickMobile(label: string, activePeriod: number) {
         handleTimeFrameButtonClick(label, activePeriod);
         setShowTimeFrameDropdown(false);
     }
-    useOnClickOutside(dropdownItemRef, clickOutsideHandler);
     const timeFrameMobile = (
         <div className={styles.dropdown_menu} ref={dropdownItemRef}>
             <button
