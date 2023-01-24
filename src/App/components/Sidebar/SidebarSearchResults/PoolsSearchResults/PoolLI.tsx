@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { TokenIF, TempPoolIF } from '../../../../../utils/interfaces/exports';
 import styles from '../SidebarSearchResults.module.css';
 import { formatAmountOld } from '../../../../../utils/numbers';
-// import { memoizePoolStats } from '../../../../functions/getPoolStats';
 import { PoolStatsFn } from '../../../../functions/getPoolStats';
 
 interface propsIF {
