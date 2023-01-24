@@ -104,6 +104,8 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
 
     const sideTypeStyle = `${sideType}_style`;
 
+    const logoSizes = showColumns ? '15px' : '20px';
+
     const valueArrows = tx.entityType !== 'liqchange';
     // const valueArrows = sideType !== 'add' && sideType !== 'remove';
 
@@ -284,11 +286,11 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                 enterDelay={750}
                 leaveDelay={200}
             >
-                <img src={baseTokenLogo} alt='base token' width='20px' />
+                <img src={baseTokenLogo} alt='base token' width={logoSizes} />
             </DefaultTooltip>
         ) : (
             <IconWithTooltip title={`${baseTokenSymbol}: ${baseTokenAddress}`} placement='bottom'>
-                <NoTokenIcon tokenInitial={tx.baseSymbol.charAt(0)} width='20px' />
+                <NoTokenIcon tokenInitial={tx.baseSymbol.charAt(0)} width={logoSizes} />
             </IconWithTooltip>
         );
 
@@ -309,11 +311,11 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                 enterDelay={750}
                 leaveDelay={200}
             >
-                <img src={quoteTokenLogo} alt='quote token' width='20px' />
+                <img src={quoteTokenLogo} alt='quote token' width={logoSizes} />
             </DefaultTooltip>
         ) : (
             <IconWithTooltip title={`${quoteTokenSymbol}: ${quoteTokenAddress}`} placement='right'>
-                <NoTokenIcon tokenInitial={tx.quoteSymbol.charAt(0)} width='20px' />
+                <NoTokenIcon tokenInitial={tx.quoteSymbol.charAt(0)} width={logoSizes} />
             </IconWithTooltip>
         );
 
@@ -500,7 +502,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
             {!showColumns && IDWithTooltip}
             {!showColumns && !isOnPortfolioPage && walletWithTooltip}
             {showColumns && (
-                <li data-label='id'>
+                <li data-label='id' onClick={openDetailsModal}>
                     <p className='base_color' style={{ textAlign: 'center' }}>
                         {txHashTruncated}
                     </p>{' '}
@@ -606,6 +608,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                     data-label='side-type'
                     className={sideTypeStyle}
                     style={{ textAlign: 'center' }}
+                    onClick={openDetailsModal}
                 >
                     <p>{type}</p>
                     <p>{`${sideType} ${sideCharacter}`}</p>

@@ -36,6 +36,7 @@ import RecentPools from '../../../components/Global/Sidebar/RecentPools/RecentPo
 import { useSidebarSearch } from './useSidebarSearch';
 import { SmallerPoolIF } from '../../hooks/useRecentPools';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
 
 const cachedPoolStatsFetch = memoizePoolStats();
 
@@ -413,21 +414,31 @@ export default function Sidebar(props: SidebarPropsIF) {
             )}
         </div>
     );
+    const sidebarRef = useRef<HTMLDivElement>(null);
 
-    const collapseSidebarMediaQuery = useMediaQuery('(max-width: 1099px)');
+    const overflowSidebarMQ = useMediaQuery('(max-width: 1180px)');
 
-    useEffect(() => {
-        if (collapseSidebarMediaQuery) setShowSidebar(false);
-        console.log('collapsing');
-    }, [collapseSidebarMediaQuery]);
+    function handleSidebarClickOutside() {
+        if (!overflowSidebarMQ) return;
+
+        setShowSidebar(false);
+    }
+
+    useOnClickOutside(sidebarRef, handleSidebarClickOutside);
+
+    // useEffect(() => {
+    //     if (collapseSidebarMediaQuery) setShowSidebar(false);
+    //     console.log('collapsing');
+    // }, [collapseSidebarMediaQuery]);
 
     const sidebarStyle = showSidebar ? styles.sidebar_active : styles.sidebar;
+    // const sidebarStyle = showSidebar ? styles.sidebar_active : styles.sidebar_active;
 
-    useEffect(() => {
-        if (showSidebar === false) {
-            setSearchMode(false);
-        }
-    }, [showSidebar]);
+    // useEffect(() => {
+    //     if (showSidebar === false) {
+    //         setSearchMode(false);
+    //     }
+    // }, [showSidebar]);
 
     const topElementsDisplay = (
         <div style={{ width: '100%' }}>
@@ -529,7 +540,7 @@ export default function Sidebar(props: SidebarPropsIF) {
         </>
     );
     return (
-        <div>
+        <div ref={sidebarRef}>
             <nav className={`${styles.sidebar} ${sidebarStyle}`}>
                 <ul className={styles.sidebar_nav}>
                     {/* <SearchAccordion

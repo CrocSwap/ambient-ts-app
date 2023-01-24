@@ -7,6 +7,7 @@ import { MdPlayArrow } from 'react-icons/md';
 // import notificationStyles from './SidebarAccordion.module.css'
 import styles from '../Sidebar.module.css';
 import { useAccount } from 'wagmi';
+import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 // import { ITransaction } from '../../../../utils/state/graphDataSlice';
 // import { PositionIF } from '../../../../utils/interfaces/PositionIF';
 // import { CircleLoader } from '../../../../components/Global/LoadingAnimations/CircleLoader/CircleLoader';
@@ -46,6 +47,8 @@ export default function SidebarAccordion(props: SidebarAccordionPropsIF) {
 
     const [isOpen, setIsOpen] = useState(false);
 
+    const overflowSidebarMQ = useMediaQuery('(max-width: 1180px)');
+
     const openStateContent = (
         <motion.div
             className={styles.accordion_container}
@@ -59,7 +62,12 @@ export default function SidebarAccordion(props: SidebarAccordionPropsIF) {
             }}
             transition={{ duration: 0.8, ease: [0.04, 0.62, 0.23, 0.98] }}
         >
-            <div className={styles.sidebar_item_content}>{item.data}</div>
+            <div
+                className={styles.sidebar_item_content}
+                onClick={overflowSidebarMQ ? () => setShowSidebar(false) : undefined}
+            >
+                {item.data}
+            </div>
         </motion.div>
     );
 

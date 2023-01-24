@@ -98,20 +98,6 @@
     /* margin-left: 2rem; */
 }
 
-/* .logo_container h1 {
-    background: var(--title-gradient);
-    font-family: var(--font-logo);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-
-    font-size: 2.25rem;
-    font-weight: 100;
-    line-height: 2.81rem;
-    background-size: 200% auto;
-    animation: shine 3s linear infinite;
-
-} */
 
 .mobile_nav_toggle {
     display: none;
@@ -152,26 +138,17 @@
     gap: 1rem;
 }
 
-/* @media only screen and (min-width: 768px) {
-    .primary_navigation{
-        display: flex;
-    }
 
-} */
 @keyframes shine {
     to {
         background-position: 200% center;
     }
 }
 
-/* @media (min-width: 580px) and (max-width: 800px) {
-    .primary_navigation {
-        display: none;
-    }
-} */
 
-@media (max-width: 25em) {
-    .account,
+
+@media (max-width: 600px) {
+  
     .header_gradient {
         display: none;
     }
