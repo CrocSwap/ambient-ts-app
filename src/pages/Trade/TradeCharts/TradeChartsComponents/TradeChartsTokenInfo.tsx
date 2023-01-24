@@ -223,14 +223,17 @@ export default function TradeChartsTokenInfo(props: TradeChartsTokenInfoPropsIF)
                             {topTokenLogo ? (
                                 <img src={topTokenLogo} alt={topTokenSymbol} />
                             ) : (
-                                <NoTokenIcon tokenInitial={topTokenSymbol.charAt(0)} width='25px' />
+                                <NoTokenIcon
+                                    tokenInitial={topTokenSymbol.charAt(0)}
+                                    width={logoSizes}
+                                />
                             )}
                             {bottomTokenLogo ? (
                                 <img src={bottomTokenLogo} alt={bottomTokenSymbol} />
                             ) : (
                                 <NoTokenIcon
                                     tokenInitial={bottomTokenSymbol.charAt(0)}
-                                    width='25px'
+                                    width={logoSizes}
                                 />
                             )}
                         </div>
@@ -282,12 +285,12 @@ export default function TradeChartsTokenInfo(props: TradeChartsTokenInfoPropsIF)
                     {topTokenLogo ? (
                         <img src={topTokenLogo} alt={topTokenSymbol} />
                     ) : (
-                        <NoTokenIcon tokenInitial={topTokenSymbol.charAt(0)} width='25px' />
+                        <NoTokenIcon tokenInitial={topTokenSymbol.charAt(0)} width={logoSizes} />
                     )}
                     {bottomTokenLogo ? (
                         <img src={bottomTokenLogo} alt={bottomTokenSymbol} />
                     ) : (
-                        <NoTokenIcon tokenInitial={bottomTokenSymbol.charAt(0)} width='25px' />
+                        <NoTokenIcon tokenInitial={bottomTokenSymbol.charAt(0)} width={logoSizes} />
                     )}
                 </div>
             </DefaultTooltip>

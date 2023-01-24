@@ -1,7 +1,7 @@
 
 .scrollable_container{
 
-    height: 100vh;
+    height: auto;
     overflow-y: scroll;
 
 }
@@ -91,4 +91,15 @@
     0px 0px 4px #cdc1ff, 0px 0px 2px rgba(205, 193, 255, 0.2);
 
     
+}
+
+@media only screen and (min-width: 1280px) {
+    .scrollable_container{
+
+        height: 100vh;
+        overflow-y: scroll;
+    
+    }
+    
+
 }
