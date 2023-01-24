@@ -262,7 +262,7 @@ export default function Ranges(props: RangesPropsIF) {
 
     const ipadView = useMediaQuery('(max-width: 480px)');
     const desktopView = useMediaQuery('(max-width: 768px)');
-    const showColumns = useMediaQuery('(max-width: 1440px)');
+    const showColumns = useMediaQuery('(max-width: 1776px)');
 
     // const showColumns = sidebarOpen || desktopView;
 

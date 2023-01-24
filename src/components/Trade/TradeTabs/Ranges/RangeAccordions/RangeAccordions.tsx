@@ -30,8 +30,8 @@ export default function RangeAccordions(props: RangeAccordionsPropsIF) {
         quoteDisplayFrontend,
         isPositionInRange,
         isAmbient,
-        ambientMinOrNull,
-        ambientMaxOrNull,
+        ambientOrMin,
+        ambientOrMax,
         usdValue,
         // baseTokenCharacter, quoteTokenCharacter,
         apy,
@@ -71,12 +71,12 @@ export default function RangeAccordions(props: RangeAccordionsPropsIF) {
 
     const minDisplay = (
         <div className={styles.min_display}>
-            <p>{ambientMinOrNull}</p>
+            <p>{ambientOrMin}</p>
         </div>
     );
     const maxDisplay = (
         <div className={styles.min_display}>
-            <p>{ambientMaxOrNull}</p>
+            <p>{ambientOrMax}</p>
         </div>
     );
 
@@ -140,8 +140,8 @@ export default function RangeAccordions(props: RangeAccordionsPropsIF) {
                         <RangeAccordionContent
                             posHash={posHashTruncated}
                             userNameToDisplay={userNameToDisplay}
-                            min={ambientMinOrNull}
-                            max={ambientMaxOrNull}
+                            min={ambientOrMin}
+                            max={ambientOrMax}
                             value={usdValue}
                             baseTokenSymbol={baseTokenSymbol}
                             quoteTokenSymbol={quoteTokenSymbol}
