@@ -343,7 +343,7 @@ export default function App() {
         chainData.chainId,
         tradeData.tokenA.address,
         tradeData.tokenB.address,
-        verifyToken
+        verifyToken,
     );
 
     const [tokenPairLocal, setTokenPairLocal] = useState<string[] | null>(null);
@@ -2265,8 +2265,6 @@ export default function App() {
 
     const { addRecentToken, getRecentTokens } = useRecentTokens(chainData.chainId);
 
-
-
     // props for <PageHeader/> React element
     const headerProps = {
         isUserLoggedIn: isUserLoggedIn,
@@ -2507,6 +2505,8 @@ export default function App() {
     const [outsideControl, setOutsideControl] = useState(false);
     const [chatStatus, setChatStatus] = useState(false);
 
+    const [fullScreenChart, setFullScreenChart] = useState(false);
+
     const [analyticsSearchInput, setAnalyticsSearchInput] = useState('');
 
     // props for <Sidebar/> React element
@@ -2543,7 +2543,7 @@ export default function App() {
         verifyToken: verifyToken,
         getTokenByAddress: getTokenByAddress,
         tokenPair: tokenPair,
-        getRecentPools: getRecentPools
+        getRecentPools: getRecentPools,
     };
 
     const analyticsProps = {
@@ -2607,7 +2607,14 @@ export default function App() {
     // Show sidebar on all pages except for home and swap
     const sidebarRender = currentLocation !== '/' &&
         currentLocation !== '/swap' &&
-        currentLocation !== '/404' && <Sidebar {...sidebarProps} />;
+        currentLocation !== '/404' &&
+        !fullScreenChart && <Sidebar {...sidebarProps} />;
+
+    useEffect(() => {
+        if (!currentLocation.startsWith('/trade')) {
+            setFullScreenChart(false);
+        }
+    }, [currentLocation]);
 
     const sidebarDislayStyle = showSidebar
         ? 'sidebar_content_layout'
@@ -2729,6 +2736,9 @@ export default function App() {
                                     // handleTxCopiedClick={handleTxCopiedClick}
                                     // handleOrderCopiedClick={handleOrderCopiedClick}
                                     // handleRangeCopiedClick={handleRangeCopiedClick}
+
+                                    fullScreenChart={fullScreenChart}
+                                    setFullScreenChart={setFullScreenChart}
                                 />
                             }
                         >
