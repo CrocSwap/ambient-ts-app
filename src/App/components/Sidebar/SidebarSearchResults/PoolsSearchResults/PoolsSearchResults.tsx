@@ -18,6 +18,7 @@ interface PoolsSearchResultPropsIF {
 export default function PoolsSearchResults(props: PoolsSearchResultPropsIF) {
     const {
         searchedPools,
+        loading,
         getTokenByAddress,
         tokenPair,
         chainId,
@@ -57,7 +58,7 @@ export default function PoolsSearchResults(props: PoolsSearchResultPropsIF) {
                 <div>Price</div>
                 <div>Change</div>
             </div>
-            {props.loading ? <ResultSkeleton /> : exampleContent}
+            {loading ? <ResultSkeleton /> : exampleContent}
         </div>
     );
 }
