@@ -280,7 +280,7 @@
         display: flex;
     }
 
-    .hide, .hide_graph {
+    .hide{
         display: none;
     }
     /* .chart_image,
@@ -323,7 +323,9 @@
         height: 30%;
     } */
 
- 
+ .hide_graph{
+    display: none;
+ }
 
     .expand_table {
         height: 100%;
