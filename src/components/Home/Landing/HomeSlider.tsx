@@ -21,10 +21,11 @@ export default function HomeSlider() {
                 noSwipingSelector={'button'}
                 navigation
                 speed={800}
-                autoplay={{
-                    delay: 30000,
-                    disableOnInteraction: true,
-                }}
+                // autoplay={{
+                //     delay: 30000,
+                //     disableOnInteraction: true,
+                // }}
+                autoplay={false}
                 slidesPerView={1}
                 loop
                 pagination={{ clickable: true }}
