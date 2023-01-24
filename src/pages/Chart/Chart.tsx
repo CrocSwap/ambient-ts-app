@@ -307,6 +307,33 @@ export default function Chart(props: ChartData) {
 
     const [bandwidth, setBandwidth] = useState(5);
 
+    useEffect(() => {
+        if (scaleData !== undefined) {
+            d3.select(d3PlotArea.current).on('measure', function (event: any) {
+                scaleData.xScale.range([0, event.detail.width]);
+                scaleData.yScale.range([event.detail.height, 0]);
+
+                scaleData.xScaleIndicator.range([
+                    (event.detail.width / 10) * 8,
+                    event.detail.width,
+                ]);
+
+                liquidityScale.range([event.detail.width, (event.detail.width / 10) * 9]);
+
+                scaleData.volumeScale.range([
+                    event.detail.height,
+                    event.detail.height - event.detail.height / 10,
+                ]);
+            });
+
+            d3.select(d3PlotArea.current).on('measure.range', function (event: any) {
+                const svg = d3.select(event.target).select('svg');
+                scaleData.xScaleCopy.range([0, event.detail.width]);
+                scaleData.yScaleCopy.range([event.detail.height, 0]);
+            });
+        }
+    }, [scaleData]);
+
     // const valueFormatter = d3.format('.5f');
     const currentPoolPriceTick =
         poolPriceNonDisplay === undefined ? 0 : Math.log(poolPriceNonDisplay) / Math.log(1.0001);
@@ -2180,6 +2207,15 @@ export default function Chart(props: ChartData) {
             setXaxis(() => {
                 return _xAxis;
             });
+
+            d3.select(d3Yaxis.current).on('draw', function (event: any) {
+                d3.select(event.target).select('svg').call(_yAxis);
+            });
+
+            d3.select(d3Xaxis.current).on('draw', function (event: any) {
+                d3.select(event.target).select('svg').call(_xAxis);
+                d3.select(d3Xaxis.current).select('svg').select('.domain').remove();
+            });
         }
     }, [scaleData]);
 
@@ -3480,10 +3516,7 @@ export default function Chart(props: ChartData) {
             scaleData !== undefined &&
             zoomUtils !== undefined &&
             limitJoin !== undefined &&
-            indicatorLine !== undefined &&
             liqTooltip !== undefined &&
-            crosshairVertical !== undefined &&
-            crosshairHorizontal !== undefined &&
             limitLine !== undefined &&
             marketLine !== undefined &&
             marketJoin !== undefined &&
@@ -3530,10 +3563,7 @@ export default function Chart(props: ChartData) {
                 horizontalBandJoin,
                 limitJoin,
                 marketJoin,
-                indicatorLine,
                 liqTooltip,
-                crosshairVertical,
-                crosshairHorizontal,
                 marketLine,
                 candlestick,
                 liqAskSeries,
@@ -3552,8 +3582,6 @@ export default function Chart(props: ChartData) {
                 lineDepthAskSeriesJoin,
                 depthLiqBidSeriesJoin,
                 depthLiqAskSeriesJoin,
-                yAxis,
-                xAxis,
                 mouseMoveEventCharts,
                 isMouseMoveForSubChart,
                 isZoomForSubChart,
@@ -3577,10 +3605,7 @@ export default function Chart(props: ChartData) {
         limitJoin,
         marketJoin,
         denomInBase,
-        indicatorLine,
         liqTooltip,
-        crosshairVertical,
-        crosshairHorizontal,
         marketLine,
         candlestick,
         barSeries,
@@ -3600,8 +3625,6 @@ export default function Chart(props: ChartData) {
         lineDepthAskSeriesJoin,
         depthLiqBidSeriesJoin,
         depthLiqAskSeriesJoin,
-        yAxis,
-        xAxis,
         mouseMoveEventCharts,
         isZoomForSubChart,
         horizontalBandData,
@@ -3706,6 +3729,34 @@ export default function Chart(props: ChartData) {
             }
         }
     };
+
+    useEffect(() => {
+        if (crosshairVertical !== undefined && crosshairHorizontal !== undefined) {
+            const crosshairHorizontalJoin = d3fc.dataJoin('g', 'crosshairHorizontal');
+            const crosshairVerticalJoin = d3fc.dataJoin('g', 'crosshairVertical');
+
+            d3.select(d3PlotArea.current).on('draw', function (event: any) {
+                console.log('only crosshair');
+
+                const svg = d3.select(event.target).select('svg');
+
+                const svgFeeRateSub = d3.select('#fee_rate_chart').select('svg');
+                const svgTvlSub = d3.select('#d3PlotTvl').select('svg');
+
+                crosshairHorizontalJoin(svg, [crosshairData]).call(crosshairHorizontal);
+                crosshairVerticalJoin(svg, [crosshairData]).call(crosshairVertical);
+
+                if (svgFeeRateSub.node() !== null)
+                    crosshairHorizontalJoin(svgFeeRateSub, [crosshairData]).call(
+                        crosshairHorizontal,
+                    );
+
+                if (svgTvlSub.node() !== null)
+                    crosshairHorizontalJoin(svgTvlSub, [crosshairData]).call(crosshairHorizontal);
+            });
+        }
+    }, [crosshairData]);
+
     // Draw Chart
     const drawChart = useCallback(
         (
@@ -3722,10 +3773,7 @@ export default function Chart(props: ChartData) {
             horizontalBandJoin: any,
             limitJoin: any,
             marketJoin: any,
-            indicatorLine: any,
             liqTooltip: any,
-            crosshairVertical: any,
-            crosshairHorizontal: any,
             marketLine: any,
             candlestick: any,
             liqAskSeries: any,
@@ -3744,8 +3792,6 @@ export default function Chart(props: ChartData) {
             lineDepthAskSeriesJoin: any,
             depthLiqBidSeriesJoin: any,
             depthLiqAskSeriesJoin: any,
-            yAxis: any,
-            xAxis: any,
             mouseMoveEventCharts: any,
             isMouseMoveForSubChart: boolean,
             isZoomForSubChart: boolean,
@@ -3825,8 +3871,6 @@ export default function Chart(props: ChartData) {
                         selection.select('path').attr('fill', '#7371FC1A');
                     });
 
-                const crosshairHorizontalJoin = d3fc.dataJoin('g', 'crosshairHorizontal');
-                const crosshairVerticalJoin = d3fc.dataJoin('g', 'crosshairVertical');
                 // const highlightedCurrentPriceLineJoin = d3fc.dataJoin(
                 //     'g',
                 //     'highlightedCurrentPriceLine',
@@ -3836,22 +3880,6 @@ export default function Chart(props: ChartData) {
                 const barJoin = d3fc.dataJoin('g', 'bar');
 
                 // handle the plot area measure event in order to compute the scale ranges
-                d3.select(d3PlotArea.current).on('measure', function (event: any) {
-                    scaleData.xScale.range([0, event.detail.width]);
-                    scaleData.yScale.range([event.detail.height, 0]);
-
-                    scaleData.xScaleIndicator.range([
-                        (event.detail.width / 10) * 8,
-                        event.detail.width,
-                    ]);
-
-                    liquidityScale.range([event.detail.width, (event.detail.width / 10) * 9]);
-
-                    scaleData.volumeScale.range([
-                        event.detail.height,
-                        event.detail.height - event.detail.height / 10,
-                    ]);
-                });
 
                 d3.select(d3PlotArea.current).on('click', (event: any) => {
                     const { isHoverCandleOrVolumeData, _selectedDate } =
@@ -3888,23 +3916,10 @@ export default function Chart(props: ChartData) {
                 d3.select(d3PlotArea.current).on('draw', function (event: any) {
                     async function createElements() {
                         const svg = d3.select(event.target).select('svg');
-                        const svgFeeRateSub = d3.select('#fee_rate_chart').select('svg');
-                        const svgTvlSub = d3.select('#d3PlotTvl').select('svg');
 
                         horizontalBandJoin(svg, [horizontalBandData]).call(horizontalBand);
 
-                        crosshairHorizontalJoin(svg, [crosshairData]).call(crosshairHorizontal);
-                        crosshairVerticalJoin(svg, [crosshairData]).call(crosshairVertical);
-
-                        if (svgFeeRateSub.node() !== null)
-                            crosshairHorizontalJoin(svgFeeRateSub, [crosshairData]).call(
-                                crosshairHorizontal,
-                            );
-
-                        if (svgTvlSub.node() !== null)
-                            crosshairHorizontalJoin(svgTvlSub, [crosshairData]).call(
-                                crosshairHorizontal,
-                            );
+                        console.log('Draw chart');
 
                         // d3.select('#fee_rate_chart')
                         // .select('svg')
@@ -4293,19 +4308,8 @@ export default function Chart(props: ChartData) {
                     });
                 });
 
-                d3.select(d3Xaxis.current).on('draw', function (event: any) {
-                    d3.select(event.target).select('svg').call(xAxis);
-                    d3.select(d3Xaxis.current).select('svg').select('.domain').remove();
-                });
-
-                d3.select(d3Yaxis.current).on('draw', function (event: any) {
-                    d3.select(event.target).select('svg').call(yAxis);
-                });
-
                 d3.select(d3PlotArea.current).on('measure.range', function (event: any) {
                     const svg = d3.select(event.target).select('svg');
-                    scaleData.xScaleCopy.range([0, event.detail.width]);
-                    scaleData.yScaleCopy.range([event.detail.height, 0]);
 
                     svg.call(zoomUtils.zoom).on('dblclick.zoom', null);
                 });
