@@ -37,7 +37,6 @@
         "react-router-dom": "^6.3.0",
         "react-transition-group": "^4.4.2",
         "react-use-websocket": "^4.2.0",
-        "seedrandom": "^3.0.5",
         "socket.io-client": "^4.5.1",
         "swiper": "^8.4.2",
         "wagmi": "^0.10.2",
