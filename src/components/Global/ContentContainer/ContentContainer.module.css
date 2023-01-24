@@ -171,9 +171,14 @@
     .main_content {
         background-color: var(--dark1);
 
+        /* width: 90%;
+        margin: 0 auto; */
+
+    }
+
+    .swap_route, .no_background{
         width: 90%;
         margin: 0 auto;
-
     }
 }
 
