@@ -122,7 +122,9 @@ export default function Account(props: AccountPropsIF) {
                 onClick={() => setShowWalletDropdown(!showWalletDropdown)}
             >
                 <MdAccountBalanceWallet color='var(--text-grey-white)' />
-                <p>{ensName !== '' ? ensName : props.accountAddress}</p>
+                <p className={styles.wallet_name}>
+                    {ensName !== '' ? ensName : props.accountAddress}
+                </p>
             </div>
 
             <div className={walletWrapperStyle}>
