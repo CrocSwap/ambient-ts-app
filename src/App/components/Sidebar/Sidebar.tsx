@@ -177,6 +177,8 @@ export default function Sidebar(props: SidebarPropsIF) {
         expandTradeTable: expandTradeTable,
         setExpandTradeTable: setExpandTradeTable,
         isUserLoggedIn: isUserLoggedIn,
+
+        setShowSidebar: setShowSidebar,
     };
     const sidebarRangePositionProps = {
         selectedOutsideTab: props.selectedOutsideTab,
@@ -191,6 +193,7 @@ export default function Sidebar(props: SidebarPropsIF) {
         expandTradeTable: expandTradeTable,
         setExpandTradeTable: setExpandTradeTable,
         isUserLoggedIn: isUserLoggedIn,
+        setShowSidebar: setShowSidebar,
     };
 
     const rangePositions = [
@@ -258,6 +261,7 @@ export default function Sidebar(props: SidebarPropsIF) {
                     setOutsideControl={props.setOutsideControl}
                     outsideControl={props.outsideControl}
                     isUserLoggedIn={isUserLoggedIn}
+                    setShowSidebar={setShowSidebar}
                 />
             ),
         },
