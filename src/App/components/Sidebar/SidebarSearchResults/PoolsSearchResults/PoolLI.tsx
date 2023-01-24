@@ -24,18 +24,18 @@ export default function PoolLI(props: propsIF) {
         // array of acknowledged tokens from user data obj in local storage
         const { ackTokens } = JSON.parse(localStorage.getItem('user') as string);
         // fn to check local storage and token map for token data
-        const findTokenData = (addr:string, chn:string): TokenIF => {
+        const findTokenData = (addr:string, chn:string): TokenIF|undefined => {
             // look for token data obj in token map
             const tokenFromMap: TokenIF|undefined = getTokenByAddress(addr.toLowerCase(), chn);
             // look for token data obj in acknowledged token list
-            const tokenFromAckList: TokenIF = ackTokens.find(
+            const tokenFromAckList: TokenIF|undefined = ackTokens.find(
                 (ackToken: TokenIF) => (
                     ackToken.chainId === parseInt(chn) &&
                     ackToken.address.toLowerCase() === addr.toLowerCase()
                 )
             );
             // single variable to hold either retrieved token
-            const outputToken = tokenFromMap ?? tokenFromAckList;
+            const outputToken: TokenIF|undefined = tokenFromMap ?? tokenFromAckList;
             // return retrieved token data object
             return outputToken;
         }
