@@ -53,7 +53,6 @@ export default function PoolLI(props: propsIF) {
 
     const fetchPoolStats = () => {
         (async () => {
-            console.log('firing fn fetchPoolStats!!!!!!');
             const poolStatsFresh = await cachedPoolStatsFetch(
                 chainId,
                 pool.base,
@@ -73,8 +72,6 @@ export default function PoolLI(props: propsIF) {
     useEffect(() => {
         fetchPoolStats();
     }, []);
-
-    console.log({poolVolume, poolTvl});
 
     return (
         <div
