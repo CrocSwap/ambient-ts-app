@@ -105,7 +105,7 @@ export default function Sidebar(props: SidebarPropsIF) {
         getTokenByAddress,
         tokenPair,
         getRecentPools,
-        isConnected
+        isConnected,
     } = props;
 
     const location = useLocation();
@@ -545,6 +545,7 @@ export default function Sidebar(props: SidebarPropsIF) {
             {bottomElementsDisplay}
         </>
     );
+    // console.log({ isInputValid });
     return (
         <div ref={sidebarRef}>
             <nav className={`${styles.sidebar} ${sidebarStyle}`}>
