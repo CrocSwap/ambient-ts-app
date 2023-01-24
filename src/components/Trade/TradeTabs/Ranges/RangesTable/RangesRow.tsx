@@ -168,6 +168,8 @@ export default function RangesRow(props: RangesRowPropsIF) {
             ? `position-${position.positionStorageSlot}`
             : '';
 
+    const logoSizes = showColumns ? '15px' : '20px';
+
     // console.log(rangeDetailsProps.lastBlockNumber);
 
     const activePositionRef = useRef(null);
@@ -275,16 +277,16 @@ export default function RangesRow(props: RangesRowPropsIF) {
 
     const baseTokenLogoComponent =
         baseTokenLogo !== '' ? (
-            <img src={baseTokenLogo} alt='base token' width='20px' />
+            <img src={baseTokenLogo} alt='base token' width={logoSizes} />
         ) : (
-            <NoTokenIcon tokenInitial={position.baseSymbol.charAt(0)} width='20px' />
+            <NoTokenIcon tokenInitial={position.baseSymbol.charAt(0)} width={logoSizes} />
         );
 
     const quoteTokenLogoComponent =
         quoteTokenLogo !== '' ? (
-            <img src={quoteTokenLogo} alt='quote token' width='20px' />
+            <img src={quoteTokenLogo} alt='quote token' width={logoSizes} />
         ) : (
-            <NoTokenIcon tokenInitial={position.quoteSymbol.charAt(0)} width='20px' />
+            <NoTokenIcon tokenInitial={position.quoteSymbol.charAt(0)} width={logoSizes} />
         );
 
     // const tokensTogether = (
