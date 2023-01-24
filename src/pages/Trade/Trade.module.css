@@ -271,18 +271,18 @@
 
 /* end of pool not initialized */
 
-@media only screen and (min-device-width: 320px) and (max-device-width: 568px) and (-webkit-min-device-pixel-ratio: 2) {
+@media only screen and (min-device-width: 320px) and (max-device-width: 600px) and (-webkit-min-device-pixel-ratio: 2) {
     .graph_container {
         /* display: none; */
         margin-bottom: 35px;
     }
-    /* .mobile_toggle_container {
+    .mobile_toggle_container {
         display: flex;
-    } */
+    }
 
-    /* .hide {
+    .hide, .hide_graph {
         display: none;
-    } */
+    }
     /* .chart_image,
     .time_frame_container,
     .token_info_container {
@@ -323,9 +323,7 @@
         height: 30%;
     } */
 
-    .hide_graph {
-        display: none;
-    }
+ 
 
     .expand_table {
         height: 100%;
@@ -417,6 +415,15 @@
     .min_table_height{
         height: 30%
     }
+}
+
+@media only screen and (max-width: 600px) {
+    .middle_col{
+        width: 90%;
+        margin: 0 auto;
+    }
+
+
 }
 
 
