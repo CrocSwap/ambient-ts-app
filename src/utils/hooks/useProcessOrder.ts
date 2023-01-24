@@ -348,7 +348,7 @@ export const useProcessOrder = (limitOrder: LimitOrderIF, account: string) => {
             ? trimString(ensName, 5, 3, '…')
             : ensName
         : trimString(ownerId, 6, 0, '…');
-    const posHashTruncated = trimString(posHash, 6, 0, '…');
+    const posHashTruncated = trimString(posHash ?? '', 6, 0, '…');
 
     const userNameToDisplay = isOwnerActiveAccount ? 'You' : ensNameOrOwnerTruncated;
 
