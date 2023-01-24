@@ -446,14 +446,6 @@ export default function Trade(props: TradePropsIF) {
                     className={
                         expandTradeTable ? styles.full_table_height : styles.min_table_height
                     }
-                    // animate={{
-                    //     height: expandTradeTable ? '100%' : '30%',
-                    //     transition: {
-                    //         duration: 0.5,
-                    //         type: 'spring',
-                    //         damping: 10,
-                    //     },
-                    // }}
                 >
                     <div className={!showChartAndNotTab ? styles.hide : ''}>
                         <TradeTabs2

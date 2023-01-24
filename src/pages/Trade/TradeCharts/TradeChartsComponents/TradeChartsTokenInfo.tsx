@@ -15,6 +15,7 @@ import {
     // tradeData as TradeDataIF,
     toggleDidUserFlipDenom,
 } from '../../../../utils/state/tradeDataSlice';
+import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 
 interface TradeChartsTokenInfoPropsIF {
     isPoolPriceChangePositive: boolean;
@@ -83,6 +84,10 @@ export default function TradeChartsTokenInfo(props: TradeChartsTokenInfoPropsIF)
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
               });
+
+    const smallScrenView = useMediaQuery('(max-width: 680px)');
+
+    const logoSizes = smallScrenView ? '18px' : '25px';
 
     const currentAmountDisplay = (
         <span className={styles.amount}>
@@ -163,8 +168,8 @@ export default function TradeChartsTokenInfo(props: TradeChartsTokenInfoPropsIF)
         <button className={styles.favorite_button} onClick={handleFavButton}>
             {
                 <svg
-                    width='30'
-                    height='30'
+                    width={smallScrenView ? '20px' : '30px'}
+                    height={smallScrenView ? '20px' : '30px'}
                     viewBox='0 0 15 15'
                     fill='none'
                     xmlns='http://www.w3.org/2000/svg'

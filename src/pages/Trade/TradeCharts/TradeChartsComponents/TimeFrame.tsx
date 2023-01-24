@@ -1,6 +1,7 @@
 import styles from './TimeFrame.module.css';
-import { Dispatch, SetStateAction, useState } from 'react';
+import { Dispatch, SetStateAction, useState, useRef } from 'react';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
+import useOnClickOutside from '../../../../utils/hooks/useOnClickOutside';
 
 interface TimeFramePropsIF {
     activeTimeFrame: string;
@@ -32,8 +33,13 @@ export default function TimeFrame(props: TimeFramePropsIF) {
         ? styles.dropdown_wrapper_active
         : styles.dropdown_wrapper;
 
+    const dropdownItemRef = useRef<HTMLDivElement>(null);
+    const clickOutsideHandler = () => {
+        setShowTimeFrameDropdown(false);
+    };
+    useOnClickOutside(dropdownItemRef, clickOutsideHandler);
     const timeFrameMobile = (
-        <div className={styles.dropdown_menu}>
+        <div className={styles.dropdown_menu} ref={dropdownItemRef}>
             <button
                 className={styles.time_frame_mobile_button}
                 onClick={() => setShowTimeFrameDropdown(!showTimeFrameDropdown)}

@@ -124,7 +124,7 @@
     flex-direction: row;
     justify-content: flex-end;
     align-items: center;
-    /*     gap: 1rem;; */
+gap: 4px;    /*     gap: 1rem;; */
 }
 
 .save_image_container,
@@ -329,11 +329,11 @@ max-height: 90%;
         margin-bottom: 15px;
     }
 
-    .chart_image,
+    /* .chart_image,
     .time_frame_container,
     .token_info_container {
         display: none;
-    }
+    } */
 }
 
 @media (min-width: 680px) {
