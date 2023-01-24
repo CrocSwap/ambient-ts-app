@@ -149,6 +149,7 @@ import WalletModalWagmi from './components/WalletModal/WalletModalWagmi';
 import Moralis from 'moralis';
 import { usePoolList } from './hooks/usePoolList';
 import { useRecentPools } from './hooks/useRecentPools';
+import useMediaQuery from '../utils/hooks/useMediaQuery';
 
 // import { memoizeQuerySpotTick } from './functions/querySpotTick';
 // import PhishingWarning from '../components/Global/PhisingWarning/PhishingWarning';
@@ -2069,8 +2070,10 @@ export default function App() {
 
     const currentLocation = location.pathname;
 
+    const showSidebarByDefault = useMediaQuery('(min-width: 1776px)');
+
     function toggleSidebarBasedOnRoute() {
-        if (sidebarManuallySet) {
+        if (sidebarManuallySet || !showSidebarByDefault) {
             return;
         } else {
             setShowSidebar(true);
