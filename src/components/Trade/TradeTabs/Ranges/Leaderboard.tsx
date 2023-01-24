@@ -179,7 +179,7 @@ export default function Leaderboard(props: LeaderboardPropsIF) {
 
     const walID = (
         <>
-            <p></p>
+            <p>ID</p>
             <p>Wallet</p>
         </>
     );
