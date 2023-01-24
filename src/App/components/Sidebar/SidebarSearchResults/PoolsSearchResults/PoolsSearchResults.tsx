@@ -8,7 +8,6 @@ import { PoolStatsFn } from '../../../../functions/getPoolStats';
 interface PoolsSearchResultPropsIF {
     searchedPools: TempPoolIF[];
     loading: boolean;
-    searchInput: React.ReactNode;
     getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
     tokenPair: TokenPairIF;
     chainId: string;
