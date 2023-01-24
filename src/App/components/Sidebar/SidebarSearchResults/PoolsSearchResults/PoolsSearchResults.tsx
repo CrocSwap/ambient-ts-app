@@ -1,5 +1,4 @@
 import PoolLI from './PoolLI';
-import ResultSkeleton from '../ResultSkeleton/ResultSkeleton';
 import styles from '../SidebarSearchResults.module.css';
 import { useClick } from './useClick';
 import { TokenIF, TokenPairIF, TempPoolIF } from '../../../../../utils/interfaces/exports';
@@ -7,7 +6,6 @@ import { PoolStatsFn } from '../../../../functions/getPoolStats';
 
 interface PoolsSearchResultPropsIF {
     searchedPools: TempPoolIF[];
-    loading: boolean;
     getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
     tokenPair: TokenPairIF;
     chainId: string;
@@ -17,7 +15,6 @@ interface PoolsSearchResultPropsIF {
 export default function PoolsSearchResults(props: PoolsSearchResultPropsIF) {
     const {
         searchedPools,
-        loading,
         getTokenByAddress,
         tokenPair,
         chainId,

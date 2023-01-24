@@ -37,7 +37,6 @@ export default function SidebarSearchResults(props: SidebarSearchResultsPropsIF)
             <div className={styles.search_result_title}>Search Results</div>
             <PoolsSearchResults
                 searchedPools={searchedPools}
-                loading={exampleLoading}
                 getTokenByAddress={getTokenByAddress}
                 tokenPair={tokenPair}
                 chainId={chainId}
