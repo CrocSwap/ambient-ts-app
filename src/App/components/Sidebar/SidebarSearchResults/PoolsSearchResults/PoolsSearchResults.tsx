@@ -14,13 +14,7 @@ interface propsIF {
 }
 
 export default function PoolsSearchResults(props: propsIF) {
-    const {
-        searchedPools,
-        getTokenByAddress,
-        tokenPair,
-        chainId,
-        cachedPoolStatsFetch
-    } = props;
+    const { searchedPools, getTokenByAddress, tokenPair, chainId, cachedPoolStatsFetch } = props;
 
     // fn to handle programmatic navigation when user clicks a pool in the DOM
     // this is a hook because it needs the useLocation() and useNavigate() hooks
@@ -39,20 +33,22 @@ export default function PoolsSearchResults(props: propsIF) {
                 <div>Volume</div>
                 <div>TVL</div>
             </div>
-            <div className={styles.main_result_container}>
-            {
-                searchedPools.slice(0,4).map((pool: TempPoolIF) => (
-                    <PoolLI
-                        key={`sidebar_searched_pool_${JSON.stringify(pool)}`}
-                        chainId={chainId}
-                        handleClick={handleClick}
-                        pool={pool}
-                        getTokenByAddress={getTokenByAddress}
-                        cachedPoolStatsFetch={cachedPoolStatsFetch}
-                    />
-                ))
-            }
-        </div>
+            {searchedPools.length ? (
+                <div className={styles.main_result_container}>
+                    {searchedPools.slice(0, 4).map((pool: TempPoolIF) => (
+                        <PoolLI
+                            key={`sidebar_searched_pool_${JSON.stringify(pool)}`}
+                            chainId={chainId}
+                            handleClick={handleClick}
+                            pool={pool}
+                            getTokenByAddress={getTokenByAddress}
+                            cachedPoolStatsFetch={cachedPoolStatsFetch}
+                        />
+                    ))}
+                </div>
+            ) : (
+                <h5>No Pools Found</h5>
+            )}
         </div>
     );
 }
