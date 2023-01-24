@@ -30,8 +30,18 @@ export default function PoolsSearchResults(props: PoolsSearchResultPropsIF) {
 
     // TODO:  @Junior make this top-level <div> into an <ol> element and its
     // TODO:  ... children into <li> elements
-    const exampleContent = (
-        <div className={styles.main_result_container}>
+
+    // TODO:  @Junior make the header <div> into a <header> element
+
+    return (
+        <div>
+            <div className={styles.card_title}>Pools</div>
+            <div className={styles.header}>
+                <div>Pool</div>
+                <div>Volume</div>
+                <div>TVL</div>
+            </div>
+            <div className={styles.main_result_container}>
             {
                 searchedPools.slice(0,4).map((pool: TempPoolIF) => (
                     <PoolLI
@@ -45,19 +55,6 @@ export default function PoolsSearchResults(props: PoolsSearchResultPropsIF) {
                 ))
             }
         </div>
-    );
-
-    // TODO:  @Junior make the header <div> into a <header> element
-
-    return (
-        <div>
-            <div className={styles.card_title}>Pools</div>
-            <div className={styles.header}>
-                <div>Pool</div>
-                <div>Volume</div>
-                <div>TVL</div>
-            </div>
-            {exampleContent}
         </div>
     );
 }
