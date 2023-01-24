@@ -1,10 +1,11 @@
+// START: Import Local Files
 import PoolLI from './PoolLI';
 import styles from '../SidebarSearchResults.module.css';
 import { useClick } from './useClick';
 import { TokenIF, TokenPairIF, TempPoolIF } from '../../../../../utils/interfaces/exports';
 import { PoolStatsFn } from '../../../../functions/getPoolStats';
 
-interface PoolsSearchResultPropsIF {
+interface propsIF {
     searchedPools: TempPoolIF[];
     getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
     tokenPair: TokenPairIF;
@@ -12,7 +13,7 @@ interface PoolsSearchResultPropsIF {
     cachedPoolStatsFetch: PoolStatsFn;
 }
 
-export default function PoolsSearchResults(props: PoolsSearchResultPropsIF) {
+export default function PoolsSearchResults(props: propsIF) {
     const {
         searchedPools,
         getTokenByAddress,
