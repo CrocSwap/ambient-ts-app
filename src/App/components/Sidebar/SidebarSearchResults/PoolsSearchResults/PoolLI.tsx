@@ -76,6 +76,9 @@ export default function PoolLI(props: propsIF) {
     // this is in case a scam token makes it past verification and into the DOM
     // if the app can't find a symbol locally it will not display a value
 
+    // TODO:  @Junior please refactor the top-level element in the JSX return as an <li>
+    // TODO:  ... this needs to be part and parcel with nesting instances in an <ol> element
+
     return (
         <div
             className={styles.card_container}
