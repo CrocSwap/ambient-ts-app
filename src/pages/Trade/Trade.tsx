@@ -80,6 +80,9 @@ interface TradePropsIF {
     // handleRangeCopiedClick: () => void;
     isCandleSelected: boolean | undefined;
     setIsCandleSelected: Dispatch<SetStateAction<boolean | undefined>>;
+
+    fullScreenChart: boolean;
+    setFullScreenChart: Dispatch<SetStateAction<boolean>>;
 }
 
 // React functional component
@@ -128,6 +131,9 @@ export default function Trade(props: TradePropsIF) {
         setSelectedOutsideTab,
         isCandleSelected,
         setIsCandleSelected,
+
+        fullScreenChart,
+        setFullScreenChart,
     } = props;
 
     const tokenPairFromParams = useUrlParams(chainId, isInitialized);
@@ -154,7 +160,6 @@ export default function Trade(props: TradePropsIF) {
             name: 'Range',
         },
     ];
-    const [fullScreenChart, setFullScreenChart] = useState(false);
 
     const [selectedDate, setSelectedDate] = useState<Date | undefined>();
 
