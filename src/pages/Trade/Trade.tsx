@@ -137,6 +137,8 @@ export default function Trade(props: TradePropsIF) {
     const { params } = useParams();
 
     const [transactionFilter, setTransactionFilter] = useState<CandleData>();
+    const [isCandleDataNull, setIsCandleDataNull] = useState(false);
+    const [isCandleArrived, setIsCandleDataArrived] = useState(false);
 
     const navigate = useNavigate();
 
@@ -154,6 +156,39 @@ export default function Trade(props: TradePropsIF) {
             name: 'Range',
         },
     ];
+
+    useEffect(() => {
+        if (props.candleData?.candles !== undefined) {
+            const candleDataNullArr: boolean[] = [];
+
+            props.candleData?.candles.map((obj) => {
+                const isNullish = Object.values(obj).every((value, index) => {
+                    if (index === 0 || value === null) {
+                        return true;
+                    }
+
+                    return false;
+                });
+
+                candleDataNullArr.push(isNullish);
+            });
+
+            const candleDataCheck = Object.values(candleDataNullArr).every((value) => {
+                if (value) {
+                    return true;
+                }
+                return false;
+            });
+
+            if (candleDataCheck) {
+                setExpandTradeTable(candleDataCheck);
+                setIsCandleDataNull(candleDataCheck);
+            } else if (isCandleDataNull) {
+                setIsCandleDataArrived(!candleDataCheck);
+            }
+        }
+    }, [props.candleData]);
+
     const [fullScreenChart, setFullScreenChart] = useState(false);
 
     const [selectedDate, setSelectedDate] = useState<Date | undefined>();
@@ -394,49 +429,53 @@ export default function Trade(props: TradePropsIF) {
                             showChartAndNotTab && styles.hide
                         }`}
                     >
-                        <TradeCharts
-                            // poolPriceTick={poolPriceTick}
-                            isUserLoggedIn={isUserLoggedIn}
-                            pool={pool}
-                            chainData={chainData}
-                            poolPriceDisplay={poolPriceDisplayWithDenom}
-                            expandTradeTable={expandTradeTable}
-                            setExpandTradeTable={setExpandTradeTable}
-                            isTokenABase={isTokenABase}
-                            fullScreenChart={fullScreenChart}
-                            setFullScreenChart={setFullScreenChart}
-                            changeState={changeState}
-                            candleData={candleData}
-                            liquidityData={liquidityData}
-                            lastBlockNumber={lastBlockNumber}
-                            chainId={chainId}
-                            limitTick={limitTick}
-                            favePools={favePools}
-                            addPoolToFaves={addPoolToFaves}
-                            removePoolFromFaves={removePoolFromFaves}
-                            isAdvancedModeActive={advancedMode}
-                            simpleRangeWidth={simpleRangeWidth}
-                            pinnedMinPriceDisplayTruncated={pinnedMinPriceDisplayTruncated}
-                            pinnedMaxPriceDisplayTruncated={pinnedMaxPriceDisplayTruncated}
-                            upBodyColor={upBodyColor}
-                            upBorderColor={upBorderColor}
-                            downBodyColor={downBodyColor}
-                            downBorderColor={downBorderColor}
-                            upVolumeColor={upVolumeColor}
-                            downVolumeColor={downVolumeColor}
-                            baseTokenAddress={baseTokenAddress}
-                            poolPriceNonDisplay={poolPriceNonDisplay}
-                            selectedDate={selectedDate}
-                            setSelectedDate={setSelectedDate}
-                            activeTimeFrame={activeTimeFrame}
-                            setActiveTimeFrame={setActiveTimeFrame}
-                            TradeSettingsColor={<TradeSettingsColor {...tradeSettingsColorProps} />}
-                            handlePulseAnimation={handlePulseAnimation}
-                            poolPriceChangePercent={poolPriceChangePercent}
-                            setPoolPriceChangePercent={setPoolPriceChangePercent}
-                            isPoolPriceChangePositive={isPoolPriceChangePositive}
-                            setIsPoolPriceChangePositive={setIsPoolPriceChangePositive}
-                        />
+                        {!isCandleDataNull && (
+                            <TradeCharts
+                                // poolPriceTick={poolPriceTick}
+                                isUserLoggedIn={isUserLoggedIn}
+                                pool={pool}
+                                chainData={chainData}
+                                poolPriceDisplay={poolPriceDisplayWithDenom}
+                                expandTradeTable={expandTradeTable}
+                                setExpandTradeTable={setExpandTradeTable}
+                                isTokenABase={isTokenABase}
+                                fullScreenChart={fullScreenChart}
+                                setFullScreenChart={setFullScreenChart}
+                                changeState={changeState}
+                                candleData={candleData}
+                                liquidityData={liquidityData}
+                                lastBlockNumber={lastBlockNumber}
+                                chainId={chainId}
+                                limitTick={limitTick}
+                                favePools={favePools}
+                                addPoolToFaves={addPoolToFaves}
+                                removePoolFromFaves={removePoolFromFaves}
+                                isAdvancedModeActive={advancedMode}
+                                simpleRangeWidth={simpleRangeWidth}
+                                pinnedMinPriceDisplayTruncated={pinnedMinPriceDisplayTruncated}
+                                pinnedMaxPriceDisplayTruncated={pinnedMaxPriceDisplayTruncated}
+                                upBodyColor={upBodyColor}
+                                upBorderColor={upBorderColor}
+                                downBodyColor={downBodyColor}
+                                downBorderColor={downBorderColor}
+                                upVolumeColor={upVolumeColor}
+                                downVolumeColor={downVolumeColor}
+                                baseTokenAddress={baseTokenAddress}
+                                poolPriceNonDisplay={poolPriceNonDisplay}
+                                selectedDate={selectedDate}
+                                setSelectedDate={setSelectedDate}
+                                activeTimeFrame={activeTimeFrame}
+                                setActiveTimeFrame={setActiveTimeFrame}
+                                TradeSettingsColor={
+                                    <TradeSettingsColor {...tradeSettingsColorProps} />
+                                }
+                                handlePulseAnimation={handlePulseAnimation}
+                                poolPriceChangePercent={poolPriceChangePercent}
+                                setPoolPriceChangePercent={setPoolPriceChangePercent}
+                                isPoolPriceChangePositive={isPoolPriceChangePositive}
+                                setIsPoolPriceChangePositive={setIsPoolPriceChangePositive}
+                            />
+                        )}
                     </div>
                 </div>
 
@@ -504,6 +543,9 @@ export default function Trade(props: TradePropsIF) {
                             // handleTxCopiedClick={handleTxCopiedClick}
                             // handleOrderCopiedClick={handleOrderCopiedClick}
                             // handleRangeCopiedClick={handleRangeCopiedClick}
+                            isCandleDataNull={isCandleDataNull}
+                            isCandleArrived={isCandleArrived}
+                            setIsCandleDataArrived={setIsCandleDataArrived}
                         />
                     </div>
                 </motion.div>
