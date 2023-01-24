@@ -159,11 +159,11 @@
 
 }
 
-svg {
+.svgButton {
    
     transition: fill 0.2s ease-in-out;
   }
-  svg:hover {
+  .svgButton:hover {
     fill: #7371FC;
   }
 

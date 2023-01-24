@@ -743,21 +743,25 @@ export default function Chart(props: ChartData) {
 
         yAxis.tickValues([
             ...scale.ticks(),
-            ...[
-                isSameLocationMin ? sameLocationDataMin : low,
-                isSameLocationMax ? sameLocationDataMax : high,
-                market[0].value,
-            ],
+            ...(simpleRangeWidth === 100
+                ? [market[0].value]
+                : [
+                      isSameLocationMin ? sameLocationDataMin : low,
+                      isSameLocationMax ? sameLocationDataMax : high,
+                      market[0].value,
+                  ]),
             ...(isMouseMoveCrosshair && !isLineDrag ? [crosshairData[0].y] : []),
         ]);
 
         yAxis.tickFormat((d: any) => {
-            if (isSameLocationMin && d === sameLocationDataMin) {
-                return formatAmountChartData(low);
-            }
+            if (simpleRangeWidth !== 100) {
+                if (isSameLocationMin && d === sameLocationDataMin) {
+                    return formatAmountChartData(low);
+                }
 
-            if (isSameLocationMax && d === sameLocationDataMax) {
-                return formatAmountChartData(high);
+                if (isSameLocationMax && d === sameLocationDataMax) {
+                    return formatAmountChartData(high);
+                }
             }
 
             return formatAmountChartData(d);
@@ -771,8 +775,9 @@ export default function Chart(props: ChartData) {
                     }
 
                     if (
-                        (isSameLocationMin ? d === sameLocationDataMin : d === low) ||
-                        (isSameLocationMax ? d === sameLocationDataMax : d === high)
+                        simpleRangeWidth !== 100 &&
+                        ((isSameLocationMin ? d === sameLocationDataMin : d === low) ||
+                            (isSameLocationMax ? d === sameLocationDataMax : d === high))
                     ) {
                         return 'url(#textBg)';
                     }
@@ -789,8 +794,9 @@ export default function Chart(props: ChartData) {
                         return 'crossHairText';
                     }
                     if (
-                        (isSameLocationMin ? d === sameLocationDataMin : d === low) ||
-                        (isSameLocationMax ? d === sameLocationDataMax : d === high)
+                        simpleRangeWidth !== 100 &&
+                        ((isSameLocationMin ? d === sameLocationDataMin : d === low) ||
+                            (isSameLocationMax ? d === sameLocationDataMax : d === high))
                     ) {
                         return 'y_axis';
                     }
@@ -1714,8 +1720,9 @@ export default function Chart(props: ChartData) {
             const liqBidDeviation = standardDeviation(liqAllBidPrices);
 
             while (
+                liquidityData.liqBidData.length > 0 &&
                 scaleData.yScale.domain()[1] + liqBidDeviation >=
-                liquidityData.liqBidData[0]?.liqPrices
+                    liquidityData.liqBidData[0]?.liqPrices
             ) {
                 liquidityData.liqBidData.unshift({
                     activeLiq: 30,
@@ -3181,20 +3188,20 @@ export default function Chart(props: ChartData) {
 
             setHorizontalBandData([
                 [
-                    simpleRangeWidth === 100
+                    simpleRangeWidth === 100 && !isAdvancedModeActive
                         ? 0
                         : ranges.filter((item: any) => item.name === 'Min')[0].value,
-                    simpleRangeWidth === 100
+                    simpleRangeWidth === 100 && !isAdvancedModeActive
                         ? 0
                         : ranges.filter((item: any) => item.name === 'Max')[0].value,
                 ],
             ]);
 
             horizontalBandData[0] = [
-                simpleRangeWidth === 100
+                simpleRangeWidth === 100 && !isAdvancedModeActive
                     ? 0
                     : ranges.filter((item: any) => item.name === 'Min')[0].value,
-                simpleRangeWidth === 100
+                simpleRangeWidth === 100 && !isAdvancedModeActive
                     ? 0
                     : ranges.filter((item: any) => item.name === 'Max')[0].value,
             ];
@@ -3203,7 +3210,10 @@ export default function Chart(props: ChartData) {
                 .select('svg')
                 .select('.targets')
                 .selectAll('.horizontal')
-                .style('visibility', simpleRangeWidth === 100 ? 'hidden' : 'visible');
+                .style(
+                    'visibility',
+                    simpleRangeWidth === 100 && !isAdvancedModeActive ? 'hidden' : 'visible',
+                );
         }
     };
 
@@ -3643,6 +3653,8 @@ export default function Chart(props: ChartData) {
             : false;
 
         const diff = Math.abs(nearest.close - nearest.open);
+        const scale = Math.abs(scaleData.yScale.domain()[1] - scaleData.yScale.domain()[0]);
+
         const topBoundary =
             nearest.close > nearest.open
                 ? nearest.close + (minHeight - diff) / 2
@@ -3655,12 +3667,22 @@ export default function Chart(props: ChartData) {
         let limitTop = nearest.close > nearest.open ? nearest.close : nearest.open;
         let limitBot = nearest.close < nearest.open ? nearest.close : nearest.open;
 
-        if (nearest.close > nearest.open) {
-            limitTop = nearest.close > topBoundary ? nearest.close : topBoundary;
-            limitBot = nearest.open < botBoundary ? nearest.open : botBoundary;
+        if (scale / 20 > diff) {
+            if (nearest.close > nearest.open) {
+                limitTop = nearest.close + scale / 20;
+                limitBot = nearest.open - scale / 20;
+            } else {
+                limitTop = nearest.open + scale / 20;
+                limitBot = nearest.close - scale / 20;
+            }
         } else {
-            limitTop = nearest.open > topBoundary ? nearest.open : topBoundary;
-            limitBot = nearest.close < botBoundary ? nearest.close : botBoundary;
+            if (nearest.close > nearest.open) {
+                limitTop = nearest.close > topBoundary ? nearest.close : topBoundary;
+                limitBot = nearest.open < botBoundary ? nearest.open : botBoundary;
+            } else {
+                limitTop = nearest.open > topBoundary ? nearest.open : topBoundary;
+                limitBot = nearest.close < botBoundary ? nearest.close : botBoundary;
+            }
         }
 
         return {
@@ -3905,7 +3927,7 @@ export default function Chart(props: ChartData) {
                                 ? isAdvancedModeActive
                                     ? liquidityData.liqBidData
                                     : liquidityData.liqBidData.filter(
-                                          (d: any) => d.liqPrices < liquidityData.topBoundary,
+                                          (d: any) => d.liqPrices <= liquidityData.topBoundary,
                                       )
                                 : [],
                         ]).call(liqBidSeries);
@@ -3933,7 +3955,7 @@ export default function Chart(props: ChartData) {
                                 ? isAdvancedModeActive
                                     ? liquidityData.depthLiqBidData
                                     : liquidityData.depthLiqBidData.filter(
-                                          (d: any) => d.liqPrices < liquidityData.topBoundary,
+                                          (d: any) => d.liqPrices <= liquidityData.topBoundary,
                                       )
                                 : [],
                         ]).call(depthLiqBidSeries);

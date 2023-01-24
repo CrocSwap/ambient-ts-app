@@ -469,7 +469,7 @@ export default function TradeCandleStickChart(props: ChartData) {
                     });
                 }
             });
-            if (liqBidData.length > 2 && liqAskData.length > 2) {
+            if (liqBidData.length > 1 && liqAskData.length > 1) {
                 liqBidData.sort((a: any, b: any) => b.liqPrices - a.liqPrices);
 
                 liqAskData.sort((a: any, b: any) => b.liqPrices - a.liqPrices);
@@ -477,9 +477,44 @@ export default function TradeCandleStickChart(props: ChartData) {
                 const liqAllAskPrices = liqAskData.map(({ liqPrices }) => liqPrices);
                 const liqAskDeviation = standardDeviation(liqAllAskPrices);
 
+                const liqAllBidPrices = liqBidData.map(({ liqPrices }) => liqPrices);
+                const liqBidDeviation = standardDeviation(liqAllBidPrices);
+
                 liqBidData.push({
                     activeLiq: liqBidData[liqBidData.length - 1].activeLiq,
                     liqPrices: barThreshold,
+                    deltaAverageUSD: 0,
+                    cumAverageUSD: 0,
+                });
+
+                while (liqBidData[0].liqPrices < limitBoundary) {
+                    liqBidData.unshift({
+                        activeLiq: liqBidData[0].activeLiq,
+                        liqPrices: liqBidData[0].liqPrices + liqBidDeviation,
+                        deltaAverageUSD: 0,
+                        cumAverageUSD: 0,
+                    });
+                }
+
+                liqBidData.push({
+                    activeLiq: liqBidData.find((liqData) => liqData.liqPrices < limitBoundary)
+                        ?.activeLiq,
+                    liqPrices: limitBoundary,
+                    deltaAverageUSD: 0,
+                    cumAverageUSD: 0,
+                });
+
+                depthLiqBidData.push({
+                    activeLiq: 1,
+                    liqPrices: barThreshold,
+                    deltaAverageUSD: 0,
+                    cumAverageUSD: 0,
+                });
+
+                depthLiqBidData.push({
+                    activeLiq: depthLiqBidData.find((liqData) => liqData.liqPrices < limitBoundary)
+                        ?.activeLiq,
+                    liqPrices: limitBoundary,
                     deltaAverageUSD: 0,
                     cumAverageUSD: 0,
                 });
@@ -504,6 +539,13 @@ export default function TradeCandleStickChart(props: ChartData) {
                 liqAskData.push({
                     activeLiq: liqAskData[liqAskData.length - 1].activeLiq,
                     liqPrices: 0,
+                    deltaAverageUSD: 0,
+                    cumAverageUSD: 0,
+                });
+
+                depthLiqAskData.unshift({
+                    activeLiq: depthLiqAskData[0].activeLiq,
+                    liqPrices: barThreshold,
                     deltaAverageUSD: 0,
                     cumAverageUSD: 0,
                 });
