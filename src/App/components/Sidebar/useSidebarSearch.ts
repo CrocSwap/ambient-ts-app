@@ -13,13 +13,20 @@ export const useSidebarSearch = (
     // raw user input from the DOM
     const [rawInput, setRawInput] = useState<string>('');
 
+    const [dbInput, setDbInput] = useState<string>(rawInput);
+
+    useEffect(() => {
+        // setDbInput('');
+        setTimeout(() => setDbInput(rawInput), 200);
+    }, [rawInput]);
+
     // search type ➜ '' or 'address' or 'nameOrAddress'
     const [searchAs, setSearchAs] = useState<string|null>(null);
 
     // cleaned and validated version of raw user input
     const validatedInput = useMemo<string>(() => {
         // trim string and make it lower case
-        const cleanInput: string = rawInput.trim().toLowerCase();
+        const cleanInput: string = dbInput.trim().toLowerCase();
         // action if input appears to be a contract address
         if (
             cleanInput.length === 42 ||
@@ -51,7 +58,7 @@ export const useSidebarSearch = (
         }
         // return output variable
         return output;
-    }, [rawInput]);
+    }, [dbInput]);
 
     // sub-array of pools in which both tokens have been verified
     const [verifiedPools, setVerifiedPools] = useState<TempPoolIF[]>([]);
