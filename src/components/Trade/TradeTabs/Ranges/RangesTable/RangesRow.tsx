@@ -99,8 +99,8 @@ export default function RangesRow(props: RangesRowPropsIF) {
         isAmbient,
         baseTokenCharacter,
         quoteTokenCharacter,
-        ambientMinOrNull,
-        ambientMaxOrNull,
+        ambientOrMin,
+        ambientOrMax,
         isDenomBase,
         minRangeDenomByMoneyness,
         maxRangeDenomByMoneyness,
@@ -127,8 +127,8 @@ export default function RangesRow(props: RangesRowPropsIF) {
         quoteTokenBalance: props.quoteTokenBalance,
         baseTokenDexBalance: props.baseTokenDexBalance,
         quoteTokenDexBalance: props.quoteTokenDexBalance,
-        lowRangeDisplay: ambientMinOrNull,
-        highRangeDisplay: ambientMaxOrNull,
+        lowRangeDisplay: ambientOrMin,
+        highRangeDisplay: ambientOrMax,
         baseTokenLogoURI: position.baseTokenLogoURI,
         quoteTokenLogoURI: position.quoteTokenLogoURI,
         isDenomBase: isDenomBase,
@@ -508,9 +508,7 @@ export default function RangesRow(props: RangesRowPropsIF) {
                 >
                     <span>{isDenomBase ? quoteTokenCharacter : baseTokenCharacter}</span>
                     <span style={{ fontFamily: 'monospace' }}>
-                        {isOnPortfolioPage
-                            ? minRangeDenomByMoneyness || '…'
-                            : ambientMinOrNull || '…'}
+                        {isOnPortfolioPage ? minRangeDenomByMoneyness || '…' : ambientOrMin || '…'}
                     </span>
                 </li>
             )}
@@ -524,9 +522,7 @@ export default function RangesRow(props: RangesRowPropsIF) {
                 >
                     <span>{isDenomBase ? quoteTokenCharacter : baseTokenCharacter}</span>
                     <span style={{ fontFamily: 'monospace' }}>
-                        {isOnPortfolioPage
-                            ? maxRangeDenomByMoneyness || '…'
-                            : ambientMaxOrNull || '…'}
+                        {isOnPortfolioPage ? maxRangeDenomByMoneyness || '…' : ambientOrMax || '…'}
                     </span>
                 </li>
             )}
@@ -539,11 +535,11 @@ export default function RangesRow(props: RangesRowPropsIF) {
                 >
                     <p>
                         <span>{isDenomBase ? quoteTokenCharacter : baseTokenCharacter}</span>
-                        <span style={{ fontFamily: 'monospace' }}>{ambientMinOrNull}</span>
+                        <span style={{ fontFamily: 'monospace' }}>{ambientOrMin}</span>
                     </p>
                     <p>
                         <span>{isDenomBase ? quoteTokenCharacter : baseTokenCharacter}</span>
-                        <span style={{ fontFamily: 'monospace' }}>{ambientMaxOrNull}</span>
+                        <span style={{ fontFamily: 'monospace' }}>{ambientOrMax}</span>
                     </p>
                 </li>
             )}

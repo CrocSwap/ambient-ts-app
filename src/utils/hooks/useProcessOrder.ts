@@ -92,8 +92,8 @@ export const useProcessOrder = (limitOrder: LimitOrderIF, account: string) => {
                 : invertedPriceTruncated;
 
             const truncatedDisplayPrice = isDenomBase
-                ? `${quoteTokenCharacter}${invertedPriceTruncated}`
-                : `${baseTokenCharacter}${nonInvertedPriceTruncated}`;
+                ? `${invertedPriceTruncated}`
+                : `${nonInvertedPriceTruncated}`;
 
             setTruncatedDisplayPrice(truncatedDisplayPrice);
             setTruncatedDisplayPriceDenomByMoneyness(truncatedDisplayPriceDenomByMoneyness);
@@ -330,13 +330,9 @@ export const useProcessOrder = (limitOrder: LimitOrderIF, account: string) => {
 
     const quantitiesAvailable = baseQty !== undefined || quoteQty !== undefined;
 
-    const baseDisplayFrontend = quantitiesAvailable
-        ? `${baseTokenCharacter}${baseQty || '0.00'}`
-        : '…';
+    const baseDisplayFrontend = quantitiesAvailable ? `${baseQty || '0.00'}` : '…';
 
-    const quoteDisplayFrontend = quantitiesAvailable
-        ? `${quoteTokenCharacter}${quoteQty || '0.00'}`
-        : '…';
+    const quoteDisplayFrontend = quantitiesAvailable ? `${quoteQty || '0.00'}` : '…';
     const baseDisplay = quantitiesAvailable ? baseQty || '0.00' : '…';
 
     const quoteDisplay = quantitiesAvailable ? quoteQty || '0.00' : '…';

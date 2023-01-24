@@ -100,7 +100,7 @@ export default function OrderRow(props: OrderRowPropsIF) {
 
     const dispatch = useAppDispatch();
 
-    const sideCharacter = isDenomBase ? baseTokenCharacter : quoteTokenCharacter;
+    const sideCharacter = !isDenomBase ? baseTokenCharacter : quoteTokenCharacter;
 
     const priceStyle = 'base_color';
 
@@ -466,11 +466,25 @@ export default function OrderRow(props: OrderRowPropsIF) {
                     onClick={openDetailsModal}
                     data-label='price'
                     className={priceStyle}
-                    style={{ textAlign: 'right', fontFamily: 'monospace' }}
+                    style={{ textAlign: 'right' }}
                 >
                     {isOnPortfolioPage
-                        ? truncatedDisplayPriceDenomByMoneyness || '…'
-                        : truncatedDisplayPrice || '…'}
+                        ? (
+                              <p className={`${styles.align_right} `}>
+                                  <span>{sideCharacter}</span>
+                                  <span style={{ fontFamily: 'monospace' }}>
+                                      {truncatedDisplayPriceDenomByMoneyness}
+                                  </span>
+                              </p>
+                          ) || '…'
+                        : (
+                              <p className={`${styles.align_right} `}>
+                                  <span>{sideCharacter}</span>
+                                  <span style={{ fontFamily: 'monospace' }}>
+                                      {truncatedDisplayPrice}
+                                  </span>
+                              </p>
+                          ) || '…'}
                 </li>
             )}
             {!showColumns && (
