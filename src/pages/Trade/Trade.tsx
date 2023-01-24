@@ -380,6 +380,8 @@ export default function Trade(props: TradePropsIF) {
     const [poolPriceChangePercent, setPoolPriceChangePercent] = useState<string | undefined>();
     const [isPoolPriceChangePositive, setIsPoolPriceChangePositive] = useState<boolean>(true);
 
+    // const expandTableHeightStyle = expandTradeTable ? styles.full_height : styles.min_height;
+
     return (
         <section className={styles.main_layout}>
             <div className={`${styles.middle_col} ${expandTradeTable ? styles.flex_column : ''}`}>
@@ -441,14 +443,17 @@ export default function Trade(props: TradePropsIF) {
                 </div>
 
                 <motion.div
-                    animate={{
-                        height: expandTradeTable ? '100%' : '30%',
-                        transition: {
-                            duration: 0.5,
-                            type: 'spring',
-                            damping: 10,
-                        },
-                    }}
+                    className={
+                        expandTradeTable ? styles.full_table_height : styles.min_table_height
+                    }
+                    // animate={{
+                    //     height: expandTradeTable ? '100%' : '30%',
+                    //     transition: {
+                    //         duration: 0.5,
+                    //         type: 'spring',
+                    //         damping: 10,
+                    //     },
+                    // }}
                 >
                     <div className={!showChartAndNotTab ? styles.hide : ''}>
                         <TradeTabs2

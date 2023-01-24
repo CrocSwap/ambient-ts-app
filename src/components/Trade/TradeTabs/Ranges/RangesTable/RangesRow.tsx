@@ -156,6 +156,7 @@ export default function RangesRow(props: RangesRowPropsIF) {
     };
 
     const openDetailsModal = () => {
+        console.log({ position });
         openGlobalModal(<RangeDetails position={position} {...rangeDetailsProps} />);
     };
 
@@ -165,6 +166,8 @@ export default function RangesRow(props: RangesRowPropsIF) {
         position.positionStorageSlot === currentPositionActive
             ? `position-${position.positionStorageSlot}`
             : '';
+
+    const logoSizes = showColumns ? '15px' : '20px';
 
     // console.log(rangeDetailsProps.lastBlockNumber);
 
@@ -273,16 +276,16 @@ export default function RangesRow(props: RangesRowPropsIF) {
 
     const baseTokenLogoComponent =
         baseTokenLogo !== '' ? (
-            <img src={baseTokenLogo} alt='base token' width='20px' />
+            <img src={baseTokenLogo} alt='base token' width={logoSizes} />
         ) : (
-            <NoTokenIcon tokenInitial={position.baseSymbol.charAt(0)} width='20px' />
+            <NoTokenIcon tokenInitial={position.baseSymbol.charAt(0)} width={logoSizes} />
         );
 
     const quoteTokenLogoComponent =
         quoteTokenLogo !== '' ? (
-            <img src={quoteTokenLogo} alt='quote token' width='20px' />
+            <img src={quoteTokenLogo} alt='quote token' width={logoSizes} />
         ) : (
-            <NoTokenIcon tokenInitial={position.quoteSymbol.charAt(0)} width='20px' />
+            <NoTokenIcon tokenInitial={position.quoteSymbol.charAt(0)} width={logoSizes} />
         );
 
     // const tokensTogether = (
@@ -419,7 +422,9 @@ export default function RangesRow(props: RangesRowPropsIF) {
 
     const positionTime = position.latestUpdateTime || position.timeFirstMint;
 
-    const elapsedTimeInSecondsNum = moment(Date.now()).diff(positionTime * 1000, 'seconds');
+    const elapsedTimeInSecondsNum = positionTime
+        ? moment(Date.now()).diff(positionTime * 1000, 'seconds')
+        : 0;
 
     const elapsedTimeString =
         elapsedTimeInSecondsNum !== undefined
@@ -483,7 +488,7 @@ export default function RangesRow(props: RangesRowPropsIF) {
             {/* {isOnPortfolioPage && accountTokenImages} */}
             {!showColumns && !isOnPortfolioPage && walletWithTooltip}
             {showColumns && (
-                <li data-label='id'>
+                <li data-label='id' onClick={openDetailsModal}>
                     <p className='base_color'>{posHashTruncated}</p>{' '}
                     <p className={usernameStyle} style={{ textTransform: 'lowercase' }}>
                         {userNameToDisplay}
@@ -511,7 +516,12 @@ export default function RangesRow(props: RangesRowPropsIF) {
                 </li>
             )}
             {showColumns && !ipadView && (
-                <li data-label='side-type' className='color_white' style={{ textAlign: 'right' }}>
+                <li
+                    data-label='side-type'
+                    className='color_white'
+                    style={{ textAlign: 'right' }}
+                    onClick={openDetailsModal}
+                >
                     <p>{ambientMinOrNull}</p>
                     <p>{ambientMaxOrNull}</p>
                 </li>
@@ -524,6 +534,7 @@ export default function RangesRow(props: RangesRowPropsIF) {
                     data-label={baseTokenSymbol + quoteTokenSymbol}
                     className='base_color'
                     style={{ textAlign: 'right' }}
+                    onClick={openDetailsModal}
                 >
                     <p className={styles.token_qty} style={{ fontFamily: 'monospace' }}>
                         {baseDisplay}

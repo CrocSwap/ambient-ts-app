@@ -35,6 +35,9 @@ import { DefaultTooltip } from '../../../components/Global/StyledTooltip/StyledT
 import RecentPools from '../../../components/Global/Sidebar/RecentPools/RecentPools';
 import { useAccount } from 'wagmi';
 import { useSidebarSearch } from './useSidebarSearch';
+import { SmallerPoolIF } from '../../hooks/useRecentPools';
+import useMediaQuery from '../../../utils/hooks/useMediaQuery';
+import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
 
 const cachedPoolStatsFetch = memoizePoolStats();
 
@@ -70,6 +73,7 @@ interface SidebarPropsIF {
     verifyToken: (addr: string, chn: string) => boolean;
     getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
     tokenPair: TokenPairIF;
+    getRecentPools: (count: number) => SmallerPoolIF[];
 }
 
 export default function Sidebar(props: SidebarPropsIF) {
@@ -99,7 +103,8 @@ export default function Sidebar(props: SidebarPropsIF) {
         poolList,
         verifyToken,
         getTokenByAddress,
-        tokenPair
+        tokenPair,
+        getRecentPools,
     } = props;
 
     const { isConnected } = useAccount();
@@ -139,6 +144,8 @@ export default function Sidebar(props: SidebarPropsIF) {
                     chainId={chainId}
                     cachedPoolStatsFetch={cachedPoolStatsFetch}
                     lastBlockNumber={lastBlockNumber}
+                    getRecentPools={getRecentPools}
+                    getTokenByAddress={getTokenByAddress}
                 />
             ),
         },
@@ -256,11 +263,7 @@ export default function Sidebar(props: SidebarPropsIF) {
         },
     ];
 
-    const [
-        setRawInput,
-        isInputValid,
-        searchedPools
-    ] = useSidebarSearch(poolList, verifyToken);
+    const [setRawInput, isInputValid, searchedPools] = useSidebarSearch(poolList, verifyToken);
     // useEffect(() => {console.log({searchedPools})}, [JSON.stringify(searchedPools)]);
     false && searchedPools;
 
@@ -412,14 +415,31 @@ export default function Sidebar(props: SidebarPropsIF) {
             )}
         </div>
     );
+    const sidebarRef = useRef<HTMLDivElement>(null);
+
+    const overflowSidebarMQ = useMediaQuery('(max-width: 1180px)');
+
+    function handleSidebarClickOutside() {
+        if (!overflowSidebarMQ) return;
+
+        setShowSidebar(false);
+    }
+
+    useOnClickOutside(sidebarRef, handleSidebarClickOutside);
+
+    // useEffect(() => {
+    //     if (collapseSidebarMediaQuery) setShowSidebar(false);
+    //     console.log('collapsing');
+    // }, [collapseSidebarMediaQuery]);
 
     const sidebarStyle = showSidebar ? styles.sidebar_active : styles.sidebar;
+    // const sidebarStyle = showSidebar ? styles.sidebar_active : styles.sidebar_active;
 
-    useEffect(() => {
-        if (showSidebar === false) {
-            setSearchMode(false);
-        }
-    }, [showSidebar]);
+    // useEffect(() => {
+    //     if (showSidebar === false) {
+    //         setSearchMode(false);
+    //     }
+    // }, [showSidebar]);
 
     const topElementsDisplay = (
         <div style={{ width: '100%' }}>
@@ -521,7 +541,7 @@ export default function Sidebar(props: SidebarPropsIF) {
         </>
     );
     return (
-        <div>
+        <div ref={sidebarRef}>
             <nav className={`${styles.sidebar} ${sidebarStyle}`}>
                 <ul className={styles.sidebar_nav}>
                     {/* <SearchAccordion
