@@ -16,8 +16,16 @@ interface PoolsSearchResultPropsIF {
 }
 
 export default function PoolsSearchResults(props: PoolsSearchResultPropsIF) {
-    const { searchedPools, getTokenByAddress, tokenPair, chainId, cachedPoolStatsFetch } = props;
+    const {
+        searchedPools,
+        getTokenByAddress,
+        tokenPair,
+        chainId,
+        cachedPoolStatsFetch
+    } = props;
 
+    // fn to handle programmatic navigation when user clicks a pool in the DOM
+    // this is a hook because it needs the useLocation() and useNavigate() hooks
     const handleClick = useClick(chainId, tokenPair);
 
     // TODO:  @Junior make this top-level <div> into an <ol> element and its
@@ -38,7 +46,6 @@ export default function PoolsSearchResults(props: PoolsSearchResultPropsIF) {
             }
         </div>
     );
-
 
     // TODO:  @Junior make the header <div> into a <header> element
 
