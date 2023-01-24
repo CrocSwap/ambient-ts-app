@@ -48,9 +48,13 @@ export default function PoolLI(props: propsIF) {
         quoteTokenDataObj && setQuoteToken(quoteTokenDataObj);
     }, []);
 
+    // volume of pool to be displayed in the DOM
     const [poolVolume, setPoolVolume] = useState<string | undefined>();
+    // TVL of pool to be displayed in the DOM
     const [poolTvl, setPoolTvl] = useState<string | undefined>();
 
+    // logic to pull current values of volume and TVL for pool
+    // this runs once and does not update after initial load
     useEffect(() => {
         (async () => {
             const poolStatsFresh = await cachedPoolStatsFetch(
@@ -69,12 +73,16 @@ export default function PoolLI(props: propsIF) {
         })();
     }, []);
 
+    // note that token symbols displayed in the DOM are from token data, not pool data
+    // this is in case a scam token makes it past verification and into the DOM
+    // if the app can't find a symbol locally it will not display a value
+
     return (
         <div
             className={styles.card_container}
             onClick={() => handleClick(pool.base, pool.quote)}
         >
-            <div>{baseToken?.symbol ?? '--'} + {quoteToken?.symbol ?? '--'}</div>
+            <div>{baseToken?.symbol ?? '--'} / {quoteToken?.symbol ?? '--'}</div>
             <div>{poolVolume}</div>
             <div>{poolTvl}</div>
         </div>
