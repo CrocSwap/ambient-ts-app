@@ -16,8 +16,8 @@ export const useSidebarSearch = (
     const [dbInput, setDbInput] = useState<string>(rawInput);
 
     useEffect(() => {
-        // setDbInput('');
-        setTimeout(() => setDbInput(rawInput), 200);
+        rawInput.length || setDbInput('');
+        setTimeout(() => setDbInput(rawInput), 400);
     }, [rawInput]);
 
     // search type ➜ '' or 'address' or 'nameOrAddress'
