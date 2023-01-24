@@ -102,6 +102,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
 
     const sideCharacter = isDenomBase ? baseTokenCharacter : quoteTokenCharacter;
 
+    const priceStyle = 'base_color';
     const sideTypeStyle = `${sideType}_style`;
 
     const logoSizes = showColumns ? '15px' : '20px';
@@ -217,10 +218,10 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
             <li
                 onClick={openDetailsModal}
                 data-label='value'
-                className='gradient_text'
+                className='base_color'
+                // className='gradient_text'
                 style={{ textAlign: 'right', fontFamily: 'monospace' }}
             >
-                {' '}
                 {usdValue}
             </li>
         </DefaultTooltip>
@@ -435,7 +436,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
         //     enterDelay={150}
         //     leaveDelay={200}
         // >
-        <li onClick={openDetailsModal} data-label={baseTokenSymbol} className='color_white'>
+        <li onClick={openDetailsModal} data-label={baseTokenSymbol} className='base_color'>
             <p
                 style={{
                     display: 'flex',
@@ -463,7 +464,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
         //     enterDelay={150}
         //     leaveDelay={200}
         // >
-        <li onClick={openDetailsModal} data-label={quoteTokenSymbol} className='color_white'>
+        <li onClick={openDetailsModal} data-label={quoteTokenSymbol} className='base_color'>
             <p
                 style={{
                     display: 'flex',
@@ -520,7 +521,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                         <li
                             onClick={openDetailsModal}
                             data-label='price'
-                            className={`${sideTypeStyle} `}
+                            className={`${priceStyle}`}
                             style={{ textAlign: 'right', fontFamily: 'monospace' }}
                         >
                             ambient
@@ -530,7 +531,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                         <li
                             onClick={openDetailsModal}
                             data-label='price'
-                            className={`${sideTypeStyle} `}
+                            className={`${priceStyle}`}
                         >
                             <p
                                 className={`${styles.align_right} `}
@@ -550,7 +551,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                             </p>
                         </li>
                     ) : (
-                        <li onClick={openDetailsModal} data-label='price' className={sideTypeStyle}>
+                        <li onClick={openDetailsModal} data-label='price' className={'base_color'}>
                             <p
                                 className={`${styles.align_right} `}
                                 style={{ fontFamily: 'monospace' }}
@@ -573,7 +574,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                     <li
                         onClick={openDetailsModal}
                         data-label='price'
-                        className={`${styles.align_right}  ${sideTypeStyle}`}
+                        className={`${styles.align_right}  ${priceStyle}`}
                         style={{ fontFamily: 'monospace' }}
                     >
                         {isOnPortfolioPage
