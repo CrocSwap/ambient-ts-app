@@ -1,5 +1,6 @@
 import styles from './TimeFrame.module.css';
 import { Dispatch, SetStateAction, useState } from 'react';
+import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 
 interface TimeFramePropsIF {
     activeTimeFrame: string;
@@ -10,6 +11,8 @@ export default function TimeFrame(props: TimeFramePropsIF) {
     const { setActiveTimeFrame, setActivePeriod, activeTimeFrame } = props;
 
     const [showTimeFrameDropdown, setShowTimeFrameDropdown] = useState(false);
+
+    const desktopView = useMediaQuery('(max-width: 768px)');
 
     const activeTimeFrameData = [
         { label: '1m', activePeriod: 60 },
@@ -59,23 +62,24 @@ export default function TimeFrame(props: TimeFramePropsIF) {
         </div>
     );
 
+    if (desktopView) return timeFrameMobile;
+
     return (
-        // <div className={styles.chart_overlay_container}>
-        //     {activeTimeFrameData.map((time, idx) => (
-        //         <div className={styles.main_time_frame_container} key={idx}>
-        //             <button
-        //                 onClick={() => handleTimeFrameButtonClick(time.label, time.activePeriod)}
-        //                 className={
-        //                     time.label === activeTimeFrame
-        //                         ? styles.active_selected_button
-        //                         : styles.non_active_selected_button
-        //                 }
-        //             >
-        //                 {time.label}
-        //             </button>
-        //         </div>
-        //     ))}
-        // </div>
-        <>{timeFrameMobile}</>
+        <div className={styles.chart_overlay_container}>
+            {activeTimeFrameData.map((time, idx) => (
+                <div className={styles.main_time_frame_container} key={idx}>
+                    <button
+                        onClick={() => handleTimeFrameButtonClick(time.label, time.activePeriod)}
+                        className={
+                            time.label === activeTimeFrame
+                                ? styles.active_selected_button
+                                : styles.non_active_selected_button
+                        }
+                    >
+                        {time.label}
+                    </button>
+                </div>
+            ))}
+        </div>
     );
 }
