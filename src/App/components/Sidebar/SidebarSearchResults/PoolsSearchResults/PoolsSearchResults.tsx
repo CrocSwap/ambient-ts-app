@@ -54,8 +54,8 @@ export default function PoolsSearchResults(props: PoolsSearchResultPropsIF) {
             <div className={styles.card_title}>Pools</div>
             <div className={styles.header}>
                 <div>Pool</div>
-                <div>Price</div>
-                <div>Change</div>
+                <div>Volume</div>
+                <div>TVL</div>
             </div>
             {loading ? <ResultSkeleton /> : exampleContent}
         </div>
