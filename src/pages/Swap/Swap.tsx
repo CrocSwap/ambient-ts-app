@@ -534,7 +534,7 @@ export default function Swap(props: SwapPropsIF) {
     return (
         <section data-testid={'swap'} className={swapPageStyle}>
             <div className={`${swapContainerStyle}`}>
-                <ContentContainer isOnTradeRoute={isOnTradeRoute} padding='1rem'>
+                <ContentContainer isOnTradeRoute={isOnTradeRoute} padding='0 1rem'>
                     <SwapHeader
                         swapSlippage={swapSlippage}
                         isPairStable={isPairStable}

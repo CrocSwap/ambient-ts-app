@@ -393,14 +393,12 @@ export default function Trade(props: TradePropsIF) {
                 {poolNotInitializedContent}
                 {mobileDataToggle}
                 <div
-                    className={` ${expandGraphStyle} ${fullScreenStyle}`}
+                    className={` ${expandGraphStyle} ${
+                        showChartAndNotTab ? styles.hide_graph : fullScreenStyle
+                    }`}
                     style={{ background: chartBg }}
                 >
-                    <div
-                        className={`${styles.main__chart_container} ${
-                            showChartAndNotTab && styles.hide
-                        }`}
-                    >
+                    <div className={styles.main__chart_container}>
                         <TradeCharts
                             // poolPriceTick={poolPriceTick}
                             isUserLoggedIn={isUserLoggedIn}
