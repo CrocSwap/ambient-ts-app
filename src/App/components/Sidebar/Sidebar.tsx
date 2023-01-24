@@ -560,6 +560,7 @@ export default function Sidebar(props: SidebarPropsIF) {
                             tokenPair={tokenPair}
                             chainId={chainId}
                             isConnected={isConnected}
+                            cachedPoolStatsFetch={cachedPoolStatsFetch}
                         />
                     ) : (
                         regularSidebarDisplay

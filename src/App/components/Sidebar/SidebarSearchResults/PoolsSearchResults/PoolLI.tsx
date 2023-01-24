@@ -2,17 +2,19 @@ import { useEffect, useState } from 'react';
 import { TokenIF, TempPoolIF } from '../../../../../utils/interfaces/exports';
 import styles from '../SidebarSearchResults.module.css';
 import { formatAmountOld } from '../../../../../utils/numbers';
-import { memoizePoolStats } from '../../../../functions/getPoolStats';
+// import { memoizePoolStats } from '../../../../functions/getPoolStats';
+import { PoolStatsFn } from '../../../../functions/getPoolStats';
 
 interface propsIF {
     pool: TempPoolIF;
     chainId: string;
     getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
     handleClick: (baseAddr: string, quoteAddr: string) => void;
+    cachedPoolStatsFetch: PoolStatsFn;
 }
 
 export default function PoolLI(props: propsIF) {
-    const { pool, chainId, getTokenByAddress, handleClick } = props;
+    const { pool, chainId, getTokenByAddress, handleClick, cachedPoolStatsFetch } = props;
 
     // hold base and quote token data objects in local state
     const [baseToken, setBaseToken] = useState<TokenIF|null>();
@@ -49,29 +51,30 @@ export default function PoolLI(props: propsIF) {
     const [poolVolume, setPoolVolume] = useState<string | undefined>();
     const [poolTvl, setPoolTvl] = useState<string | undefined>();
 
+    const fetchPoolStats = () => {
+        (async () => {
+            console.log('firing fn fetchPoolStats!!!!!!');
+            const poolStatsFresh = await cachedPoolStatsFetch(
+                chainId,
+                pool.base,
+                pool.quote,
+                pool.poolIdx ?? 36000,
+                1,
+            );
+            const volume = poolStatsFresh?.volume;
+            const volumeString = volume ? '$' + formatAmountOld(volume) : undefined;
+            setPoolVolume(volumeString);
+            const tvl = poolStatsFresh?.tvl;
+            const tvlString = tvl ? '$' + formatAmountOld(tvl) : undefined;
+            setPoolTvl(tvlString);
+        })();
+    };
+
     useEffect(() => {
-        const fetchPoolStats = () => {
-            const cachedPoolStatsFetch = memoizePoolStats();
-            async () => {
-                const poolStatsFresh = await cachedPoolStatsFetch(
-                    chainId,
-                    pool.base,
-                    pool.quote,
-                    pool.poolIdx ?? 36000,
-                    1,
-                );
-                const volume = poolStatsFresh?.volume;
-                const volumeString = volume ? '$' + formatAmountOld(volume) : undefined;
-                setPoolVolume(volumeString);
-                const tvl = poolStatsFresh?.tvl;
-                const tvlString = tvl ? '$' + formatAmountOld(tvl) : undefined;
-                setPoolTvl(tvlString);
-            };
-        };
         fetchPoolStats();
     }, []);
 
-    console.log({poolVolume, poolTvl})
+    console.log({poolVolume, poolTvl});
 
     return (
         <div

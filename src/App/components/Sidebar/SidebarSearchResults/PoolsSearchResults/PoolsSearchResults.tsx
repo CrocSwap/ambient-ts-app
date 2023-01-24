@@ -3,6 +3,7 @@ import ResultSkeleton from '../ResultSkeleton/ResultSkeleton';
 import styles from '../SidebarSearchResults.module.css';
 import { useClick } from './useClick';
 import { TokenIF, TokenPairIF, TempPoolIF } from '../../../../../utils/interfaces/exports';
+import { PoolStatsFn } from '../../../../functions/getPoolStats';
 
 interface PoolsSearchResultPropsIF {
     searchedPools: TempPoolIF[];
@@ -11,10 +12,11 @@ interface PoolsSearchResultPropsIF {
     getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
     tokenPair: TokenPairIF;
     chainId: string;
+    cachedPoolStatsFetch: PoolStatsFn;
 }
 
 export default function PoolsSearchResults(props: PoolsSearchResultPropsIF) {
-    const { searchedPools, getTokenByAddress, tokenPair, chainId } = props;
+    const { searchedPools, getTokenByAddress, tokenPair, chainId, cachedPoolStatsFetch } = props;
 
     const handleClick = useClick(chainId, tokenPair);
 
@@ -30,6 +32,7 @@ export default function PoolsSearchResults(props: PoolsSearchResultPropsIF) {
                         handleClick={handleClick}
                         pool={pool}
                         getTokenByAddress={getTokenByAddress}
+                        cachedPoolStatsFetch={cachedPoolStatsFetch}
                     />
                 ))
             }

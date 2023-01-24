@@ -5,6 +5,7 @@ import PoolsSearchResults from './PoolsSearchResults/PoolsSearchResults';
 import PositionsSearchResults from './PositionsSearchResults/PositionsSearchResults';
 import OrdersSearchResults from './OrdersSearchResults/OrdersSearchResults';
 import TransactionsSearchResults from './TransactionsResults/TransactionsResults';
+import { PoolStatsFn } from '../../../functions/getPoolStats';
 
 interface SidebarSearchResultsPropsIF {
     searchedPools: TempPoolIF[];
@@ -14,6 +15,7 @@ interface SidebarSearchResultsPropsIF {
     tokenPair: TokenPairIF;
     chainId: string;
     isConnected: boolean;
+    cachedPoolStatsFetch: PoolStatsFn;
 }
 
 export default function SidebarSearchResults(props: SidebarSearchResultsPropsIF) {
@@ -24,7 +26,8 @@ export default function SidebarSearchResults(props: SidebarSearchResultsPropsIF)
         getTokenByAddress,
         tokenPair,
         chainId,
-        isConnected
+        isConnected,
+        cachedPoolStatsFetch
     } = props;
 
     // we are not going to use this following loading functionality. It is just for demonstration purposes
@@ -40,6 +43,7 @@ export default function SidebarSearchResults(props: SidebarSearchResultsPropsIF)
                 getTokenByAddress={getTokenByAddress}
                 tokenPair={tokenPair}
                 chainId={chainId}
+                cachedPoolStatsFetch={cachedPoolStatsFetch}
             />
             {
             isConnected && (<><PositionsSearchResults loading={exampleLoading} searchInput={searchInput} />
