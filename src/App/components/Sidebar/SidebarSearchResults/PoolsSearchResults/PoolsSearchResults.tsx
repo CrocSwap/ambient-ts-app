@@ -57,7 +57,7 @@ export default function PoolsSearchResults(props: PoolsSearchResultPropsIF) {
                 <div>Volume</div>
                 <div>TVL</div>
             </div>
-            {loading ? <ResultSkeleton /> : exampleContent}
+            {exampleContent}
         </div>
     );
 }
