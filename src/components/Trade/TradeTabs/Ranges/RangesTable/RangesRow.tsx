@@ -379,11 +379,12 @@ export default function RangesRow(props: RangesRowPropsIF) {
             <p
                 style={{
                     display: 'flex',
-                    alignItems: 'center',
+                    alignItems: 'end',
                     justifyContent: 'flex-end',
                     gap: '4px',
                     textAlign: 'right',
                     fontFamily: 'monospace',
+                    whiteSpace: 'nowrap',
                 }}
             >
                 {baseDisplay}
@@ -406,11 +407,12 @@ export default function RangesRow(props: RangesRowPropsIF) {
             <p
                 style={{
                     display: 'flex',
-                    alignItems: 'center',
+                    alignItems: 'end',
                     justifyContent: 'flex-end',
                     gap: '4px',
                     textAlign: 'right',
                     fontFamily: 'monospace',
+                    whiteSpace: 'nowrap',
                 }}
             >
                 {quoteDisplay}
