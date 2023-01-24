@@ -43,11 +43,11 @@ export const useClick = (
     const handleClick = (baseAddr: string, quoteAddr: string): void => {
         const { dataTokenA } = tokenPair;
 
-        const tokenAString =
+        const tokenAString: string =
             baseAddr.toLowerCase() === dataTokenA.address.toLowerCase()
                 ? baseAddr
                 : quoteAddr;
-        const tokenBString =
+        const tokenBString: string =
             baseAddr.toLowerCase() === dataTokenA.address.toLowerCase()
                 ? quoteAddr
                 : baseAddr;
