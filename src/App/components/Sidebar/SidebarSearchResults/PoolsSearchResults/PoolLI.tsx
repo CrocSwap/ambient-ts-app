@@ -26,9 +26,9 @@ export default function PoolLI(props: propsIF) {
         // fn to check local storage and token map for token data
         const findTokenData = (addr:string, chn:string): TokenIF => {
             // look for token data obj in token map
-            const tokenFromMap = getTokenByAddress(addr.toLowerCase(), chn);
+            const tokenFromMap: TokenIF|undefined = getTokenByAddress(addr.toLowerCase(), chn);
             // look for token data obj in acknowledged token list
-            const tokenFromAckList = ackTokens.find(
+            const tokenFromAckList: TokenIF = ackTokens.find(
                 (ackToken: TokenIF) => (
                     ackToken.chainId === parseInt(chn) &&
                     ackToken.address.toLowerCase() === addr.toLowerCase()
