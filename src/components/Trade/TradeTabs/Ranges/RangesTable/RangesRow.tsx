@@ -228,7 +228,8 @@ export default function RangesRow(props: RangesRowPropsIF) {
             <li
                 onClick={openDetailsModal}
                 data-label='value'
-                className='gradient_text'
+                className='base_color'
+                // className='gradient_text'
                 style={{ textAlign: 'right', fontFamily: 'monospace' }}
             >
                 {' '}
@@ -374,7 +375,7 @@ export default function RangesRow(props: RangesRowPropsIF) {
         //     enterDelay={150}
         //     leaveDelay={200}
         // >
-        <li onClick={openDetailsModal} data-label={baseTokenSymbol} className='color_white'>
+        <li onClick={openDetailsModal} data-label={baseTokenSymbol} className='base_color'>
             <p
                 style={{
                     display: 'flex',
@@ -401,7 +402,7 @@ export default function RangesRow(props: RangesRowPropsIF) {
         //     enterDelay={150}
         //     leaveDelay={200}
         // >
-        <li onClick={openDetailsModal} data-label={quoteTokenSymbol} className='color_white'>
+        <li onClick={openDetailsModal} data-label={quoteTokenSymbol} className='base_color'>
             <p
                 style={{
                     display: 'flex',
@@ -500,7 +501,7 @@ export default function RangesRow(props: RangesRowPropsIF) {
                 <li
                     onClick={openDetailsModal}
                     data-label='min price'
-                    className='color_white'
+                    className='base_color'
                     style={{ textAlign: 'right' }}
                 >
                     <span>{isDenomBase ? quoteTokenCharacter : baseTokenCharacter}</span>
@@ -515,7 +516,7 @@ export default function RangesRow(props: RangesRowPropsIF) {
                 <li
                     onClick={openDetailsModal}
                     data-label='max price'
-                    className='color_white'
+                    className='base_color'
                     // style={{ textAlign: 'right' }}
                     style={{ textAlign: 'right' }}
                 >
@@ -530,7 +531,7 @@ export default function RangesRow(props: RangesRowPropsIF) {
             {showColumns && !ipadView && (
                 <li
                     data-label='side-type'
-                    className='color_white'
+                    className='base_color'
                     style={{ textAlign: 'right' }}
                     onClick={openDetailsModal}
                 >
