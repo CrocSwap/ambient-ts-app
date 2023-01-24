@@ -51,7 +51,7 @@ export default function PoolLI(props: propsIF) {
     const [poolVolume, setPoolVolume] = useState<string | undefined>();
     const [poolTvl, setPoolTvl] = useState<string | undefined>();
 
-    const fetchPoolStats = () => {
+    useEffect(() => {
         (async () => {
             const poolStatsFresh = await cachedPoolStatsFetch(
                 chainId,
@@ -67,10 +67,6 @@ export default function PoolLI(props: propsIF) {
             const tvlString = tvl ? '$' + formatAmountOld(tvl) : undefined;
             setPoolTvl(tvlString);
         })();
-    };
-
-    useEffect(() => {
-        fetchPoolStats();
     }, []);
 
     return (
