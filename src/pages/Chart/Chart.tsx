@@ -258,7 +258,7 @@ export default function Chart(props: ChartData) {
     // Crosshairs
     const [liqTooltip, setLiqTooltip] = useState<any>();
     // const [highlightedCurrentPriceLine, setHighlightedCurrentPriceLine] = useState<any>();
-    const [indicatorLine, setIndicatorLine] = useState<any>();
+    // const [indicatorLine, setIndicatorLine] = useState<any>();
     const [crosshairHorizontal, setCrosshairHorizontal] = useState<any>();
     const [crosshairVertical, setCrosshairVertical] = useState<any>();
     const [candlestick, setCandlestick] = useState<any>();
@@ -327,7 +327,6 @@ export default function Chart(props: ChartData) {
             });
 
             d3.select(d3PlotArea.current).on('measure.range', function (event: any) {
-                const svg = d3.select(event.target).select('svg');
                 scaleData.xScaleCopy.range([0, event.detail.width]);
                 scaleData.yScaleCopy.range([event.detail.height, 0]);
             });
@@ -2856,9 +2855,9 @@ export default function Chart(props: ChartData) {
                 selection.enter().select('g.top-handle').remove();
             });
 
-            setIndicatorLine(() => {
-                return indicatorLine;
-            });
+            // setIndicatorLine(() => {
+            //     return indicatorLine;
+            // });
         }
     }, [scaleData]);
 
@@ -3736,8 +3735,6 @@ export default function Chart(props: ChartData) {
             const crosshairVerticalJoin = d3fc.dataJoin('g', 'crosshairVertical');
 
             d3.select(d3PlotArea.current).on('draw', function (event: any) {
-                console.log('only crosshair');
-
                 const svg = d3.select(event.target).select('svg');
 
                 const svgFeeRateSub = d3.select('#fee_rate_chart').select('svg');
@@ -3918,8 +3915,6 @@ export default function Chart(props: ChartData) {
                         const svg = d3.select(event.target).select('svg');
 
                         horizontalBandJoin(svg, [horizontalBandData]).call(horizontalBand);
-
-                        console.log('Draw chart');
 
                         // d3.select('#fee_rate_chart')
                         // .select('svg')
