@@ -26,11 +26,11 @@
    
 height: 100%;
 padding: 12px 5px  ;
-display: flex;
 flex-direction: column;
 align-items: center;
 gap: 4px;
 cursor: pointer;
+display: none;
 
 /* min-height: 300px; */
 }
@@ -145,6 +145,10 @@ ul.tab_navs {
         background: var(--dark1);
         /* height: calc(100vh - 17rem); */
         /* width: 100%; */
+    }
+
+    .control_container{
+        display: flex;
     }
 	
 
