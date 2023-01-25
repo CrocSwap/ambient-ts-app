@@ -287,15 +287,16 @@ export default function Transfer(props: PortfolioTransferProps) {
         </div>
     ) : null;
 
-    const transferInput = document.getElementById(
-        'exchange-balance-transfer-exchange-balance-transfer-quantity',
-    ) as HTMLInputElement;
+    // const transferInput = document.getElementById(
+    //     'exchange-balance-transfer-exchange-balance-transfer-quantity',
+    // ) as HTMLInputElement;
 
     const resetTransferQty = () => {
-        if (transferInput) {
-            setTransferQtyNonDisplay(undefined);
-            transferInput.value = '';
-        }
+        // if (transferInput) {
+        //     transferInput.value = '';
+        // }
+        setTransferQtyNonDisplay(undefined);
+        setInputValue('');
     };
 
     useEffect(() => {
@@ -304,12 +305,15 @@ export default function Transfer(props: PortfolioTransferProps) {
 
     const isTokenDexBalanceGreaterThanZero = parseFloat(tokenDexBalance) > 0;
 
+    const [inputValue, setInputValue] = useState('');
+
     const handleBalanceClick = () => {
         if (isTokenDexBalanceGreaterThanZero) {
             setTransferQtyNonDisplay(tokenDexBalance);
 
-            if (transferInput && tokenExchangeDepositsDisplay)
-                transferInput.value = tokenExchangeDepositsDisplay;
+            // if (transferInput && tokenExchangeDepositsDisplay)
+            //     transferInput.value = tokenExchangeDepositsDisplay;
+            if (tokenExchangeDepositsDisplay) setInputValue(tokenExchangeDepositsDisplay);
         }
     };
 
@@ -328,6 +332,8 @@ export default function Transfer(props: PortfolioTransferProps) {
                 onClick={() => openTokenModal()}
                 selectedToken={selectedToken}
                 setTransferQty={setTransferQtyNonDisplay}
+                inputValue={inputValue}
+                setInputValue={setInputValue}
             />
             <div
                 onClick={handleBalanceClick}
