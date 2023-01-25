@@ -44,7 +44,7 @@ export default function SidebarSearchResults(props: SidebarSearchResultsPropsIF)
             />
             {isConnected && (
                 <>
-                    <PositionsSearchResults loading={exampleLoading} searchInput={searchInput} />
+                    <PositionsSearchResults searchInput={searchInput} />
                     {false && <OrdersSearchResults loading={exampleLoading} searchInput={searchInput} />}
                     {false && <TransactionsSearchResults loading={exampleLoading} searchInput={searchInput} />}
                 </>

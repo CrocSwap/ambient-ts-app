@@ -1,12 +1,13 @@
 import styles from '../SidebarSearchResults.module.css';
 
-import ResultSkeleton from '../ResultSkeleton/ResultSkeleton';
-
 interface PositionsSearchResultPropsIF {
-    loading: boolean;
     searchInput: React.ReactNode;
 }
+
 export default function PositionsSearchResults(props: PositionsSearchResultPropsIF) {
+    const { searchInput } = props;
+    false && searchInput;
+
     function PositionSearchResult() {
         return (
             <div className={styles.card_container}>
@@ -25,20 +26,16 @@ export default function PositionsSearchResults(props: PositionsSearchResultProps
         </div>
     );
 
-    const exampleContent = (
-        <div className={styles.main_result_container}>
-            {new Array(0).fill(null).map((item, idx) => (
-                <PositionSearchResult key={idx} />
-            ))}
-        </div>
-    );
-
     return (
         <div>
             <div className={styles.card_title}>Range Positions</div>
             {header}
 
-            {props.loading ? <ResultSkeleton /> : exampleContent}
+            <div className={styles.main_result_container}>
+                {new Array(0).fill(null).map((item, idx) => (
+                    <PositionSearchResult key={idx} />
+                ))}
+            </div>
         </div>
     );
 }
