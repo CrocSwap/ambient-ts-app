@@ -346,6 +346,7 @@ export default function Sidebar(props: SidebarPropsIF) {
                 onFocus={() => setSearchMode(true)}
                 onBlur={() => setSearchMode(false)}
                 onChange={(e) => setRawInput(e.target.value)}
+                spellCheck='false'
             />
             {searchInput && searchInput.length > 0 && (
                 <div onClick={handleInputClear} className={styles.close_icon}>
