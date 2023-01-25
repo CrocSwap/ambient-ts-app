@@ -61,6 +61,8 @@
     /* box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23); */
 
     box-shadow: var(--swap-box-shadow);
+
+    
 }
 
 /* media queries */
@@ -149,7 +151,7 @@
     opacity: 0.2;
   } */
 }
-@media (min-width: 576px) {
+@media (min-width: 850px) {
     .container {
         max-width: 420px;
     }
@@ -166,7 +168,7 @@
     }
 }
 
-@media only screen and (max-width: 600px) {
+@media only screen and (max-width: 850px) {
 
     .main_content {
         background-color: var(--dark1);

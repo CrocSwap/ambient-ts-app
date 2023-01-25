@@ -17,6 +17,9 @@
 
     padding: 1rem;
     position: relative;
+display: none;
+
+    
 }
 
 .settings_container{
@@ -196,17 +199,17 @@ transition: all var(--animation-speed) ease-in-out
 
 /* Desktop screen Sizes */
 @media only screen and (min-width: 500px) {
-    .rectangle_container {
-        display: flex;
-     
-    }
     .nft_container img {
         width: 50px;
         aspect-ratio: 1;
         border-radius: 4px;
     }
 }
-@media only screen and (min-width: 720px) {
+@media only screen and (min-width: 850px) {
+    .rectangle_container {
+        display: flex;
+     
+    }
 
     .nft_container{
         display: flex;
