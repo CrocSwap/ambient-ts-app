@@ -535,7 +535,13 @@ export default function RangesRow(props: RangesRowPropsIF) {
                         // style={{ textAlign: 'right' }}
                         style={{ textAlign: 'right' }}
                     >
-                        <span style={{ fontFamily: 'monospace' }}>{'∞'}</span>
+                        <span
+                            style={{
+                                fontSize: '20px',
+                            }}
+                        >
+                            {'∞'}
+                        </span>
                     </li>
                 ) : (
                     <li
