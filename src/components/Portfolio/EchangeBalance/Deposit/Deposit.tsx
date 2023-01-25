@@ -185,6 +185,10 @@ export default function Deposit(props: PortfolioDepositProps) {
     //     </div>
     // );
 
+    useEffect(() => {
+        setIsDepositPending(false);
+    }, [JSON.stringify(selectedToken)]);
+
     const deposit = async (depositQtyNonDisplay: string) => {
         if (crocEnv && depositQtyNonDisplay) {
             try {

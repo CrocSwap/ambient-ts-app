@@ -148,6 +148,10 @@ export default function Transfer(props: PortfolioTransferProps) {
     // const [isApprovalPending, setIsApprovalPending] = useState(false);
     const [isTransferPending, setIsTransferPending] = useState(false);
 
+    useEffect(() => {
+        setIsTransferPending(false);
+    }, [JSON.stringify(selectedToken)]);
+
     // const chooseToken = (tok: TokenIF) => {
     //     console.log(tok);
     //     dispatch(setToken(tok));

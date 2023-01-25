@@ -185,6 +185,10 @@ export default function Withdraw(props: PortfolioWithdrawProps) {
     // const [isApprovalPending, setIsApprovalPending] = useState(false);
     const [isWithdrawPending, setIsWithdrawPending] = useState(false);
 
+    useEffect(() => {
+        setIsWithdrawPending(false);
+    }, [JSON.stringify(selectedToken)]);
+
     // const chooseToken = (tok: TokenIF) => {
     //     console.log(tok);
     //     dispatch(setToken(tok));
