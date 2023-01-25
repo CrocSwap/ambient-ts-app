@@ -100,8 +100,9 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
 
     const dispatch = useAppDispatch();
 
-    const sideCharacter = isDenomBase ? baseTokenCharacter : quoteTokenCharacter;
+    const sideCharacter = !isDenomBase ? baseTokenCharacter : quoteTokenCharacter;
 
+    const priceStyle = 'base_color';
     const sideTypeStyle = `${sideType}_style`;
 
     const logoSizes = showColumns ? '15px' : '20px';
@@ -218,10 +219,10 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
             <li
                 onClick={openDetailsModal}
                 data-label='value'
-                className='gradient_text'
+                className='base_color'
+                // className='gradient_text'
                 style={{ textAlign: 'right', fontFamily: 'monospace' }}
             >
-                {' '}
                 {usdValue}
             </li>
         </DefaultTooltip>
@@ -436,7 +437,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
         //     enterDelay={150}
         //     leaveDelay={200}
         // >
-        <li onClick={openDetailsModal} data-label={baseTokenSymbol} className='color_white'>
+        <li onClick={openDetailsModal} data-label={baseTokenSymbol} className='base_color'>
             <p
                 style={{
                     display: 'flex',
@@ -464,7 +465,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
         //     enterDelay={150}
         //     leaveDelay={200}
         // >
-        <li onClick={openDetailsModal} data-label={quoteTokenSymbol} className='color_white'>
+        <li onClick={openDetailsModal} data-label={quoteTokenSymbol} className='base_color'>
             <p
                 style={{
                     display: 'flex',
@@ -521,7 +522,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                         <li
                             onClick={openDetailsModal}
                             data-label='price'
-                            className={`${sideTypeStyle} `}
+                            className={'gradient_text'}
                             style={{ textAlign: 'right', fontFamily: 'monospace' }}
                         >
                             ambient
@@ -531,42 +532,53 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                         <li
                             onClick={openDetailsModal}
                             data-label='price'
-                            className={`${sideTypeStyle} `}
+                            className={`${priceStyle}`}
                         >
-                            <p
-                                className={`${styles.align_right} `}
-                                style={{ fontFamily: 'monospace' }}
-                            >
-                                {isOnPortfolioPage
-                                    ? truncatedLowDisplayPriceDenomByMoneyness
-                                    : truncatedLowDisplayPrice}
+                            <p className={`${styles.align_right} `}>
+                                <span>{sideCharacter}</span>
+                                <span style={{ fontFamily: 'monospace' }}>
+                                    {isOnPortfolioPage
+                                        ? truncatedLowDisplayPriceDenomByMoneyness
+                                        : truncatedLowDisplayPrice}
+                                </span>
                             </p>
-                            <p
-                                className={`${styles.align_right} `}
-                                style={{ fontFamily: 'monospace' }}
-                            >
-                                {isOnPortfolioPage
-                                    ? truncatedHighDisplayPriceDenomByMoneyness
-                                    : truncatedHighDisplayPrice}
+                            <p className={`${styles.align_right} `}>
+                                <span>{sideCharacter}</span>
+                                <span style={{ fontFamily: 'monospace' }}>
+                                    {isOnPortfolioPage
+                                        ? truncatedHighDisplayPriceDenomByMoneyness
+                                        : truncatedHighDisplayPrice}
+                                </span>
                             </p>
                         </li>
                     ) : (
-                        <li onClick={openDetailsModal} data-label='price' className={sideTypeStyle}>
-                            <p
-                                className={`${styles.align_right} `}
-                                style={{ fontFamily: 'monospace' }}
-                            >
-                                {isOnPortfolioPage
-                                    ? truncatedHighDisplayPriceDenomByMoneyness
-                                    : truncatedHighDisplayPrice}
+                        <li onClick={openDetailsModal} data-label='price' className={'base_color'}>
+                            <p className={`${styles.align_right} `}>
+                                <span>{sideCharacter}</span>
+                                <span style={{ fontFamily: 'monospace' }}>
+                                    {isOnPortfolioPage
+                                        ? truncatedHighDisplayPriceDenomByMoneyness
+                                        : truncatedHighDisplayPrice}
+                                </span>
                             </p>
-                            <p
-                                className={`${styles.align_right} `}
-                                style={{ fontFamily: 'monospace' }}
-                            >
-                                {isOnPortfolioPage
-                                    ? truncatedLowDisplayPriceDenomByMoneyness
-                                    : truncatedLowDisplayPrice}
+                            <p className={`${styles.align_right} `}>
+                                <span style={{ fontFamily: 'monospace' }}>
+                                    {isOnPortfolioPage ? (
+                                        <p className={`${styles.align_right} `}>
+                                            <span>{sideCharacter}</span>
+                                            <span style={{ fontFamily: 'monospace' }}>
+                                                {truncatedLowDisplayPriceDenomByMoneyness}
+                                            </span>
+                                        </p>
+                                    ) : (
+                                        <p className={`${styles.align_right} `}>
+                                            <span>{sideCharacter}</span>
+                                            <span style={{ fontFamily: 'monospace' }}>
+                                                {truncatedLowDisplayPrice}
+                                            </span>
+                                        </p>
+                                    )}
+                                </span>
                             </p>
                         </li>
                     )
@@ -574,12 +586,26 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                     <li
                         onClick={openDetailsModal}
                         data-label='price'
-                        className={`${styles.align_right}  ${sideTypeStyle}`}
+                        className={`${styles.align_right}  ${priceStyle}`}
                         style={{ fontFamily: 'monospace' }}
                     >
                         {isOnPortfolioPage
-                            ? truncatedDisplayPriceDenomByMoneyness || '…'
-                            : truncatedDisplayPrice || '…'}
+                            ? (
+                                  <p className={`${styles.align_right} `}>
+                                      <span>{sideCharacter}</span>
+                                      <span style={{ fontFamily: 'monospace' }}>
+                                          {truncatedDisplayPriceDenomByMoneyness}
+                                      </span>
+                                  </p>
+                              ) || '…'
+                            : (
+                                  <p className={`${styles.align_right} `}>
+                                      <span>{sideCharacter}</span>
+                                      <span style={{ fontFamily: 'monospace' }}>
+                                          {truncatedDisplayPrice}
+                                      </span>
+                                  </p>
+                              ) || '…'}
                     </li>
                 ))}
             {!showColumns && (

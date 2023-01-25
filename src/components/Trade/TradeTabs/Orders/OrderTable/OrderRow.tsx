@@ -100,7 +100,9 @@ export default function OrderRow(props: OrderRowPropsIF) {
 
     const dispatch = useAppDispatch();
 
-    const sideCharacter = isDenomBase ? baseTokenCharacter : quoteTokenCharacter;
+    const sideCharacter = !isDenomBase ? baseTokenCharacter : quoteTokenCharacter;
+
+    const priceStyle = 'base_color';
 
     const sellOrderStyle = side === 'sell' ? 'order_sell' : 'order_buy';
 
@@ -183,7 +185,7 @@ export default function OrderRow(props: OrderRowPropsIF) {
             <li
                 onClick={openDetailsModal}
                 data-label='value'
-                className='gradient_text'
+                className='base_color'
                 style={{ textAlign: 'right', fontFamily: 'monospace' }}
             >
                 {' '}
@@ -355,7 +357,7 @@ export default function OrderRow(props: OrderRowPropsIF) {
         //     enterDelay={150}
         //     leaveDelay={200}
         // >
-        <li onClick={openDetailsModal} data-label={baseTokenSymbol} className='color_white'>
+        <li onClick={openDetailsModal} data-label={baseTokenSymbol} className='base_color'>
             <p
                 style={{
                     display: 'flex',
@@ -383,7 +385,7 @@ export default function OrderRow(props: OrderRowPropsIF) {
         //     enterDelay={150}
         //     leaveDelay={200}
         // >
-        <li onClick={openDetailsModal} data-label={quoteTokenSymbol} className='color_white'>
+        <li onClick={openDetailsModal} data-label={quoteTokenSymbol} className='base_color'>
             <p
                 style={{
                     display: 'flex',
@@ -463,12 +465,26 @@ export default function OrderRow(props: OrderRowPropsIF) {
                 <li
                     onClick={openDetailsModal}
                     data-label='price'
-                    className={sellOrderStyle}
-                    style={{ textAlign: 'right', fontFamily: 'monospace' }}
+                    className={priceStyle}
+                    style={{ textAlign: 'right' }}
                 >
                     {isOnPortfolioPage
-                        ? truncatedDisplayPriceDenomByMoneyness || '…'
-                        : truncatedDisplayPrice || '…'}
+                        ? (
+                              <p className={`${styles.align_right} `}>
+                                  <span>{sideCharacter}</span>
+                                  <span style={{ fontFamily: 'monospace' }}>
+                                      {truncatedDisplayPriceDenomByMoneyness}
+                                  </span>
+                              </p>
+                          ) || '…'
+                        : (
+                              <p className={`${styles.align_right} `}>
+                                  <span>{sideCharacter}</span>
+                                  <span style={{ fontFamily: 'monospace' }}>
+                                      {truncatedDisplayPrice}
+                                  </span>
+                              </p>
+                          ) || '…'}
                 </li>
             )}
             {!showColumns && (
@@ -509,7 +525,7 @@ export default function OrderRow(props: OrderRowPropsIF) {
             {showColumns && (
                 <li
                     data-label={baseTokenSymbol + quoteTokenSymbol}
-                    className='color_white'
+                    className='base_color'
                     onClick={openDetailsModal}
                 >
                     <p className={styles.token_qty} style={{ fontFamily: 'monospace' }}>

@@ -151,6 +151,7 @@ import WalletModalWagmi from './components/WalletModal/WalletModalWagmi';
 import Moralis from 'moralis';
 import { usePoolList } from './hooks/usePoolList';
 import { useRecentPools } from './hooks/useRecentPools';
+import useMediaQuery from '../utils/hooks/useMediaQuery';
 
 // import { memoizeQuerySpotTick } from './functions/querySpotTick';
 // import PhishingWarning from '../components/Global/PhisingWarning/PhishingWarning';
@@ -2075,8 +2076,10 @@ export default function App() {
 
     const currentLocation = location.pathname;
 
+    const showSidebarByDefault = useMediaQuery('(min-width: 1776px)');
+
     function toggleSidebarBasedOnRoute() {
-        if (sidebarManuallySet) {
+        if (sidebarManuallySet || !showSidebarByDefault) {
             return;
         } else {
             setShowSidebar(true);
@@ -2511,6 +2514,8 @@ export default function App() {
     const [outsideControl, setOutsideControl] = useState(false);
     const [chatStatus, setChatStatus] = useState(false);
 
+    const [fullScreenChart, setFullScreenChart] = useState(false);
+
     const [analyticsSearchInput, setAnalyticsSearchInput] = useState('');
 
     // props for <Sidebar/> React element
@@ -2548,6 +2553,7 @@ export default function App() {
         getTokenByAddress: getTokenByAddress,
         tokenPair: tokenPair,
         getRecentPools: getRecentPools,
+        isConnected: isConnected,
     };
 
     const analyticsProps = {
@@ -2611,7 +2617,14 @@ export default function App() {
     // Show sidebar on all pages except for home and swap
     const sidebarRender = currentLocation !== '/' &&
         currentLocation !== '/swap' &&
-        currentLocation !== '/404' && <Sidebar {...sidebarProps} />;
+        currentLocation !== '/404' &&
+        !fullScreenChart && <Sidebar {...sidebarProps} />;
+
+    useEffect(() => {
+        if (!currentLocation.startsWith('/trade')) {
+            setFullScreenChart(false);
+        }
+    }, [currentLocation]);
 
     const sidebarDislayStyle = showSidebar
         ? 'sidebar_content_layout'
@@ -2733,6 +2746,9 @@ export default function App() {
                                     // handleTxCopiedClick={handleTxCopiedClick}
                                     // handleOrderCopiedClick={handleOrderCopiedClick}
                                     // handleRangeCopiedClick={handleRangeCopiedClick}
+
+                                    fullScreenChart={fullScreenChart}
+                                    setFullScreenChart={setFullScreenChart}
                                 />
                             }
                         >

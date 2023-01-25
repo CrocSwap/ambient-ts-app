@@ -22,6 +22,7 @@ interface SidebarRecentTransactionsPropsIF {
     setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
     outsideControl: boolean;
     setOutsideControl: Dispatch<SetStateAction<boolean>>;
+    setShowSidebar: Dispatch<SetStateAction<boolean>>;
     isUserLoggedIn: boolean | undefined;
 }
 
@@ -37,7 +38,8 @@ export default function SidebarRecentTransactions(props: SidebarRecentTransactio
         isShowAllEnabled,
         setIsShowAllEnabled,
         isUserLoggedIn,
-        expandTradeTable,
+        // expandTradeTable,
+        setShowSidebar,
     } = props;
 
     const header = (
@@ -51,11 +53,14 @@ export default function SidebarRecentTransactions(props: SidebarRecentTransactio
     const onTradeRoute = location.pathname.includes('trade');
     const onAccountRoute = location.pathname.includes('account');
 
-    const tabToSwitchToBasedOnRoute = onTradeRoute ? 0 : onAccountRoute ? 4 : 0;
+    const tabToSwitchToBasedOnRoute = onTradeRoute ? 0 : onAccountRoute ? 0 : 0;
 
     function redirectBasedOnRoute() {
-        if (onTradeRoute || onAccountRoute) return;
-        navigate('/trade');
+        // if (onTradeRoute || onAccountRoute) return;
+        // navigate('/trade');
+
+        if (onAccountRoute) return;
+        navigate('/account');
     }
 
     const handleViewMoreClick = () => {
@@ -63,8 +68,10 @@ export default function SidebarRecentTransactions(props: SidebarRecentTransactio
         props.setOutsideControl(true);
         props.setSelectedOutsideTab(tabToSwitchToBasedOnRoute);
 
-        props.setIsShowAllEnabled(false);
-        props.setExpandTradeTable(true);
+        setShowSidebar(false);
+
+        // props.setIsShowAllEnabled(false);
+        // props.setExpandTradeTable(true);
     };
 
     // // const mapItems = [1, 2, 3, 4, 5, 6, 7];
@@ -90,7 +97,7 @@ export default function SidebarRecentTransactions(props: SidebarRecentTransactio
                     />
                 ))}
             </div>
-            {!expandTradeTable && isUserLoggedIn && (
+            {isUserLoggedIn && (
                 <div className={styles.view_more} onClick={handleViewMoreClick}>
                     View More
                 </div>

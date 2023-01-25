@@ -80,6 +80,9 @@ interface TradePropsIF {
     // handleRangeCopiedClick: () => void;
     isCandleSelected: boolean | undefined;
     setIsCandleSelected: Dispatch<SetStateAction<boolean | undefined>>;
+
+    fullScreenChart: boolean;
+    setFullScreenChart: Dispatch<SetStateAction<boolean>>;
 }
 
 // React functional component
@@ -128,6 +131,9 @@ export default function Trade(props: TradePropsIF) {
         setSelectedOutsideTab,
         isCandleSelected,
         setIsCandleSelected,
+
+        fullScreenChart,
+        setFullScreenChart,
     } = props;
 
     const tokenPairFromParams = useUrlParams(chainId, isInitialized);
@@ -154,7 +160,6 @@ export default function Trade(props: TradePropsIF) {
             name: 'Range',
         },
     ];
-    const [fullScreenChart, setFullScreenChart] = useState(false);
 
     const [selectedDate, setSelectedDate] = useState<Date | undefined>();
 
@@ -388,14 +393,12 @@ export default function Trade(props: TradePropsIF) {
                 {poolNotInitializedContent}
                 {mobileDataToggle}
                 <div
-                    className={` ${expandGraphStyle} ${fullScreenStyle}`}
+                    className={` ${expandGraphStyle} ${
+                        showChartAndNotTab ? styles.hide_graph : fullScreenStyle
+                    }`}
                     style={{ background: chartBg }}
                 >
-                    <div
-                        className={`${styles.main__chart_container} ${
-                            showChartAndNotTab && styles.hide
-                        }`}
-                    >
+                    <div className={styles.main__chart_container}>
                         <TradeCharts
                             // poolPriceTick={poolPriceTick}
                             isUserLoggedIn={isUserLoggedIn}
@@ -446,14 +449,6 @@ export default function Trade(props: TradePropsIF) {
                     className={
                         expandTradeTable ? styles.full_table_height : styles.min_table_height
                     }
-                    // animate={{
-                    //     height: expandTradeTable ? '100%' : '30%',
-                    //     transition: {
-                    //         duration: 0.5,
-                    //         type: 'spring',
-                    //         damping: 10,
-                    //     },
-                    // }}
                 >
                     <div className={!showChartAndNotTab ? styles.hide : ''}>
                         <TradeTabs2

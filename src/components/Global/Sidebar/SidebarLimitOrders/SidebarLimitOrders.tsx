@@ -18,6 +18,7 @@ interface SidebarLimitOrdersProps {
     isUserLoggedIn: boolean | undefined;
     expandTradeTable: boolean;
     setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
+    setShowSidebar: Dispatch<SetStateAction<boolean>>;
 }
 export default function SidebarLimitOrders(props: SidebarLimitOrdersProps) {
     const {
@@ -27,6 +28,7 @@ export default function SidebarLimitOrders(props: SidebarLimitOrdersProps) {
         setCurrentPositionActive,
         setIsShowAllEnabled,
         isUserLoggedIn,
+        setShowSidebar,
     } = props;
     const location = useLocation();
     const navigate = useNavigate();
@@ -51,11 +53,14 @@ export default function SidebarLimitOrders(props: SidebarLimitOrdersProps) {
     const onTradeRoute = location.pathname.includes('trade');
     const onAccountRoute = location.pathname.includes('account');
 
-    const tabToSwitchToBasedOnRoute = onTradeRoute ? 1 : onAccountRoute ? 3 : 1;
+    const tabToSwitchToBasedOnRoute = onTradeRoute ? 1 : onAccountRoute ? 1 : 1;
     function redirectBasedOnRoute() {
         // if (onTradeRoute || onAccountRoute) return;
-        if (onTradeRoute) return;
-        navigate('/trade');
+        // if (onTradeRoute) return;
+        // navigate('/trade');
+
+        if (onAccountRoute) return;
+        navigate('/account');
     }
 
     const handleViewMoreClick = () => {
@@ -63,8 +68,10 @@ export default function SidebarLimitOrders(props: SidebarLimitOrdersProps) {
         props.setOutsideControl(true);
         props.setSelectedOutsideTab(tabToSwitchToBasedOnRoute);
 
-        props.setIsShowAllEnabled(false);
-        props.setExpandTradeTable(true);
+        setShowSidebar(false);
+
+        // props.setIsShowAllEnabled(false);
+        // props.setExpandTradeTable(true);
     };
     return (
         <div className={styles.container}>
@@ -80,7 +87,7 @@ export default function SidebarLimitOrders(props: SidebarLimitOrdersProps) {
                         />
                     ))}
             </div>
-            {!props.expandTradeTable && isUserLoggedIn && (
+            {isUserLoggedIn && (
                 <div className={styles.view_more} onClick={handleViewMoreClick}>
                     View More
                 </div>
