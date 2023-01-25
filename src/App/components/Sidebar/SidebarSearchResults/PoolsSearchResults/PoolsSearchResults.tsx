@@ -1,52 +1,56 @@
+// START: Import Local Files
 import PoolLI from './PoolLI';
-import ResultSkeleton from '../ResultSkeleton/ResultSkeleton';
 import styles from '../SidebarSearchResults.module.css';
 import { useClick } from './useClick';
 import { TokenIF, TokenPairIF, TempPoolIF } from '../../../../../utils/interfaces/exports';
+import { PoolStatsFn } from '../../../../functions/getPoolStats';
 
-interface PoolsSearchResultPropsIF {
+interface propsIF {
     searchedPools: TempPoolIF[];
-    loading: boolean;
-    searchInput: React.ReactNode;
     getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
     tokenPair: TokenPairIF;
     chainId: string;
+    cachedPoolStatsFetch: PoolStatsFn;
 }
 
-export default function PoolsSearchResults(props: PoolsSearchResultPropsIF) {
-    const { searchedPools, getTokenByAddress, tokenPair, chainId } = props;
+export default function PoolsSearchResults(props: propsIF) {
+    const { searchedPools, getTokenByAddress, tokenPair, chainId, cachedPoolStatsFetch } = props;
 
+    // fn to handle programmatic navigation when user clicks a pool in the DOM
+    // this is a hook because it needs the useLocation() and useNavigate() hooks
     const handleClick = useClick(chainId, tokenPair);
 
     // TODO:  @Junior make this top-level <div> into an <ol> element and its
     // TODO:  ... children into <li> elements
-    const exampleContent = (
-        <div className={styles.main_result_container}>
-            {
-                searchedPools.slice(0,4).map((pool: TempPoolIF) => (
-                    <PoolLI
-                        key={`sidebar_searched_pool_${JSON.stringify(pool)}`}
-                        handleClick={handleClick}
-                        pool={pool}
-                        getTokenByAddress={getTokenByAddress}
-                    />
-                ))
-            }
-        </div>
-    );
-
 
     // TODO:  @Junior make the header <div> into a <header> element
 
+    // TODO: @Junior also change `Initialized Pools` to an `<h1-6>` elem
+
     return (
         <div>
-            <div className={styles.card_title}>Pools</div>
+            <div className={styles.card_title}>Initialized Pools</div>
             <div className={styles.header}>
                 <div>Pool</div>
-                <div>Price</div>
-                <div>Change</div>
+                <div>Volume</div>
+                <div>TVL</div>
             </div>
-            {props.loading ? <ResultSkeleton /> : exampleContent}
+            {searchedPools.length ? (
+                <div className={styles.main_result_container}>
+                    {searchedPools.slice(0, 4).map((pool: TempPoolIF) => (
+                        <PoolLI
+                            key={`sidebar_searched_pool_${JSON.stringify(pool)}`}
+                            chainId={chainId}
+                            handleClick={handleClick}
+                            pool={pool}
+                            getTokenByAddress={getTokenByAddress}
+                            cachedPoolStatsFetch={cachedPoolStatsFetch}
+                        />
+                    ))}
+                </div>
+            ) : (
+                <h5>No Pools Found</h5>
+            )}
         </div>
     );
 }

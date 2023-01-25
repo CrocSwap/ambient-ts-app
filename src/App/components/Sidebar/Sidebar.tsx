@@ -33,7 +33,6 @@ import { memoizePoolStats } from '../../functions/getPoolStats';
 import { tradeData } from '../../../utils/state/tradeDataSlice';
 import { DefaultTooltip } from '../../../components/Global/StyledTooltip/StyledTooltip';
 import RecentPools from '../../../components/Global/Sidebar/RecentPools/RecentPools';
-import { useAccount } from 'wagmi';
 import { useSidebarSearch } from './useSidebarSearch';
 import { SmallerPoolIF } from '../../hooks/useRecentPools';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
@@ -74,6 +73,7 @@ interface SidebarPropsIF {
     getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
     tokenPair: TokenPairIF;
     getRecentPools: (count: number) => SmallerPoolIF[];
+    isConnected: boolean;
 }
 
 export default function Sidebar(props: SidebarPropsIF) {
@@ -105,9 +105,8 @@ export default function Sidebar(props: SidebarPropsIF) {
         getTokenByAddress,
         tokenPair,
         getRecentPools,
+        isConnected,
     } = props;
-
-    const { isConnected } = useAccount();
 
     const location = useLocation();
     const graphData = useAppSelector((state) => state.graphData);
@@ -550,6 +549,7 @@ export default function Sidebar(props: SidebarPropsIF) {
             {bottomElementsDisplay}
         </>
     );
+    // console.log({ isInputValid });
     return (
         <div ref={sidebarRef}>
             <nav className={`${styles.sidebar} ${sidebarStyle}`}>
@@ -570,6 +570,8 @@ export default function Sidebar(props: SidebarPropsIF) {
                             getTokenByAddress={getTokenByAddress}
                             tokenPair={tokenPair}
                             chainId={chainId}
+                            isConnected={isConnected}
+                            cachedPoolStatsFetch={cachedPoolStatsFetch}
                         />
                     ) : (
                         regularSidebarDisplay

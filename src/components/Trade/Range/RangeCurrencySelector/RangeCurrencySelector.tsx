@@ -416,6 +416,20 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
             ? 'var(--text-highlight)'
             : '#555555';
 
+    const swapboxBottomOrNull = !isUserLoggedIn ? (
+        // || (isUserLoggedIn && !userHasEnteredAmount) ? (
+        <div className={styles.swapbox_bottom} />
+    ) : (
+        <div className={styles.swapbox_bottom} style={{ color: surplusContainerColorStyle }}>
+            {/* <div className={styles.surplus_container} style={{color: surplusContainerColorStyle}} > */}
+            {walletContent}
+            {surplusContent}
+            {/* </div> */}
+
+            {DexBalanceContent}
+        </div>
+    );
+
     return (
         <div className={styles.swapbox}>
             {sellToken && <span className={styles.direction}>Amounts</span>}
@@ -448,14 +462,7 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
                     <RiArrowDownSLine size={27} />
                 </div>
             </div>
-            <div className={styles.swapbox_bottom} style={{ color: surplusContainerColorStyle }}>
-                {/* <div className={styles.surplus_container} style={{color: surplusContainerColorStyle}} > */}
-                {walletContent}
-                {surplusContent}
-                {/* </div> */}
-
-                {DexBalanceContent}
-            </div>
+            {swapboxBottomOrNull}
             {isTokenModalOpen && (
                 <Modal
                     onClose={closeTokenModal}

@@ -22,7 +22,7 @@ import LimitRate from '../LimitRate/LimitRate';
 import styles from './LimitCurrencyConverter.module.css';
 import { TokenIF, TokenPairIF } from '../../../../utils/interfaces/exports';
 import TokensArrow from '../../../Global/TokensArrow/TokensArrow';
-import DividerDark from '../../../Global/DividerDark/DividerDark';
+// import DividerDark from '../../../Global/DividerDark/DividerDark';
 import IconWithTooltip from '../../../Global/IconWithTooltip/IconWithTooltip';
 import { ZERO_ADDRESS } from '../../../../constants';
 import { CrocPoolView } from '@crocswap-libs/sdk';
@@ -604,7 +604,7 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
                 searchType={searchType}
                 acknowledgeToken={acknowledgeToken}
             />
-            <DividerDark addMarginTop />
+            {/* <DividerDark addMarginTop /> */}
             <LimitRate
                 previousDisplayPrice={previousDisplayPrice}
                 displayPrice={displayPrice}

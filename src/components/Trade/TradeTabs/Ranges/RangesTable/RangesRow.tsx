@@ -97,9 +97,10 @@ export default function RangesRow(props: RangesRowPropsIF) {
 
         isPositionInRange,
         isAmbient,
-
-        ambientMinOrNull,
-        ambientMaxOrNull,
+        baseTokenCharacter,
+        quoteTokenCharacter,
+        ambientOrMin,
+        ambientOrMax,
         isDenomBase,
         minRangeDenomByMoneyness,
         maxRangeDenomByMoneyness,
@@ -126,8 +127,8 @@ export default function RangesRow(props: RangesRowPropsIF) {
         quoteTokenBalance: props.quoteTokenBalance,
         baseTokenDexBalance: props.baseTokenDexBalance,
         quoteTokenDexBalance: props.quoteTokenDexBalance,
-        lowRangeDisplay: ambientMinOrNull,
-        highRangeDisplay: ambientMaxOrNull,
+        lowRangeDisplay: ambientOrMin,
+        highRangeDisplay: ambientOrMax,
         baseTokenLogoURI: position.baseTokenLogoURI,
         quoteTokenLogoURI: position.quoteTokenLogoURI,
         isDenomBase: isDenomBase,
@@ -227,7 +228,8 @@ export default function RangesRow(props: RangesRowPropsIF) {
             <li
                 onClick={openDetailsModal}
                 data-label='value'
-                className='gradient_text'
+                className='base_color'
+                // className='gradient_text'
                 style={{ textAlign: 'right', fontFamily: 'monospace' }}
             >
                 {' '}
@@ -373,15 +375,16 @@ export default function RangesRow(props: RangesRowPropsIF) {
         //     enterDelay={150}
         //     leaveDelay={200}
         // >
-        <li onClick={openDetailsModal} data-label={baseTokenSymbol} className='color_white'>
+        <li onClick={openDetailsModal} data-label={baseTokenSymbol} className='base_color'>
             <p
                 style={{
                     display: 'flex',
-                    alignItems: 'center',
+                    alignItems: 'end',
                     justifyContent: 'flex-end',
                     gap: '4px',
                     textAlign: 'right',
                     fontFamily: 'monospace',
+                    whiteSpace: 'nowrap',
                 }}
             >
                 {baseDisplay}
@@ -400,15 +403,16 @@ export default function RangesRow(props: RangesRowPropsIF) {
         //     enterDelay={150}
         //     leaveDelay={200}
         // >
-        <li onClick={openDetailsModal} data-label={quoteTokenSymbol} className='color_white'>
+        <li onClick={openDetailsModal} data-label={quoteTokenSymbol} className='base_color'>
             <p
                 style={{
                     display: 'flex',
-                    alignItems: 'center',
+                    alignItems: 'end',
                     justifyContent: 'flex-end',
                     gap: '4px',
                     textAlign: 'right',
                     fontFamily: 'monospace',
+                    whiteSpace: 'nowrap',
                 }}
             >
                 {quoteDisplay}
@@ -499,31 +503,44 @@ export default function RangesRow(props: RangesRowPropsIF) {
                 <li
                     onClick={openDetailsModal}
                     data-label='min price'
-                    className='color_white'
-                    style={{ textAlign: 'right', fontFamily: 'monospace' }}
+                    className='base_color'
+                    style={{ textAlign: 'right' }}
                 >
-                    {isOnPortfolioPage ? minRangeDenomByMoneyness || '…' : ambientMinOrNull || '…'}
+                    <span>{isDenomBase ? quoteTokenCharacter : baseTokenCharacter}</span>
+                    <span style={{ fontFamily: 'monospace' }}>
+                        {isOnPortfolioPage ? minRangeDenomByMoneyness || '…' : ambientOrMin || '…'}
+                    </span>
                 </li>
             )}
             {!showColumns && (
                 <li
                     onClick={openDetailsModal}
                     data-label='max price'
-                    className='color_white'
-                    style={{ textAlign: 'right', fontFamily: 'monospace' }}
+                    className='base_color'
+                    // style={{ textAlign: 'right' }}
+                    style={{ textAlign: 'right' }}
                 >
-                    {isOnPortfolioPage ? maxRangeDenomByMoneyness || '…' : ambientMaxOrNull || '…'}
+                    <span>{isDenomBase ? quoteTokenCharacter : baseTokenCharacter}</span>
+                    <span style={{ fontFamily: 'monospace' }}>
+                        {isOnPortfolioPage ? maxRangeDenomByMoneyness || '…' : ambientOrMax || '…'}
+                    </span>
                 </li>
             )}
             {showColumns && !ipadView && (
                 <li
                     data-label='side-type'
-                    className='color_white'
+                    className='base_color'
                     style={{ textAlign: 'right' }}
                     onClick={openDetailsModal}
                 >
-                    <p>{ambientMinOrNull}</p>
-                    <p>{ambientMaxOrNull}</p>
+                    <p>
+                        <span>{isDenomBase ? quoteTokenCharacter : baseTokenCharacter}</span>
+                        <span style={{ fontFamily: 'monospace' }}>{ambientOrMin}</span>
+                    </p>
+                    <p>
+                        <span>{isDenomBase ? quoteTokenCharacter : baseTokenCharacter}</span>
+                        <span style={{ fontFamily: 'monospace' }}>{ambientOrMax}</span>
+                    </p>
                 </li>
             )}
             {ValueWithTooltip}
