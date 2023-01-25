@@ -1,22 +1,15 @@
 import styles from '../SidebarSearchResults.module.css';
+import { PositionIF } from '../../../../../utils/interfaces/PositionIF';
+import PositionLI from './PositionLI';
 
 interface PositionsSearchResultPropsIF {
     searchInput: React.ReactNode;
+    positionsByUser: PositionIF[];
 }
 
 export default function PositionsSearchResults(props: PositionsSearchResultPropsIF) {
-    const { searchInput } = props;
+    const { searchInput, positionsByUser } = props;
     false && searchInput;
-
-    function PositionSearchResult() {
-        return (
-            <div className={styles.card_container}>
-                <div>Pool</div>
-                <div>Price</div>
-                <div>Qty</div>
-            </div>
-        );
-    }
 
     const header = (
         <div className={styles.header}>
@@ -32,8 +25,10 @@ export default function PositionsSearchResults(props: PositionsSearchResultProps
             {header}
 
             <div className={styles.main_result_container}>
-                {new Array(0).fill(null).map((item, idx) => (
-                    <PositionSearchResult key={idx} />
+                {positionsByUser.slice(0,4).map((position) => (
+                    <PositionLI
+                        key={`PositionSearchResult_${JSON.stringify(position)}`}
+                    />
                 ))}
             </div>
         </div>

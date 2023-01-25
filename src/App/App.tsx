@@ -2550,6 +2550,7 @@ export default function App() {
         isConnected: isConnected,
         addPoolToFaves: addPoolToFaves,
         removePoolFromFaves: removePoolFromFaves,
+        positionsByUser: graphData.positionsByUser.positions
     };
 
     const analyticsProps = {

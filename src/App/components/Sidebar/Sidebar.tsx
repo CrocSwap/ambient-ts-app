@@ -24,7 +24,7 @@ import topPoolsImage from '../../../assets/images/sidebarImages/topPools.svg';
 import recentPoolsImage from '../../../assets/images/sidebarImages/recentTransactions.svg';
 // import topTokensImage from '../../../assets/images/sidebarImages/topTokens.svg';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
-import { PoolIF, TokenIF, TokenPairIF, TempPoolIF } from '../../../utils/interfaces/exports';
+import { PoolIF, PositionIF, TokenIF, TokenPairIF, TempPoolIF } from '../../../utils/interfaces/exports';
 import SidebarSearchResults from './SidebarSearchResults/SidebarSearchResults';
 // import formatSearchText from './formatSeachText';
 import { MdClose } from 'react-icons/md';
@@ -82,6 +82,7 @@ interface SidebarPropsIF {
         chainId: string,
         poolId: number,
     ) => void;
+    positionsByUser: PositionIF[];
 }
 
 export default function Sidebar(props: SidebarPropsIF) {
@@ -116,6 +117,7 @@ export default function Sidebar(props: SidebarPropsIF) {
         isConnected,
         addPoolToFaves,
         removePoolFromFaves,
+        positionsByUser
     } = props;
 
     const location = useLocation();
@@ -123,7 +125,7 @@ export default function Sidebar(props: SidebarPropsIF) {
     const isUserLoggedIn = isConnected;
     // const isUserLoggedIn = useAppSelector((state) => state.userData).isLoggedIn;
     const transactionsByUser = graphData.changesByUser.changes;
-    const positionsByUser = graphData.positionsByUser.positions;
+    // const positionsByUser = graphData.positionsByUser.positions;
     const limitOrderByUser = graphData.limitOrdersByUser.limitOrders;
 
     const mostRecentTransactions = transactionsByUser.slice(0, 4);
@@ -586,6 +588,7 @@ export default function Sidebar(props: SidebarPropsIF) {
                             chainId={chainId}
                             isConnected={isConnected}
                             cachedPoolStatsFetch={cachedPoolStatsFetch}
+                            positionsByUser={positionsByUser}
                         />
                     ) : (
                         regularSidebarDisplay
