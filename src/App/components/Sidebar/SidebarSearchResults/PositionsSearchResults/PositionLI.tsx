@@ -10,6 +10,10 @@ interface propsIF {
 export default function PositionLI(props: propsIF) {
     const { position, isDenomBase } = props;
 
+    // TODO:   @Junior  please reference SidebarRangePositionsCard.tsx and port
+    // TODO:   ... the code for `rangeStatusDisplay` including styling to this
+    // TODO:   ... this component and a corresponding CSS module
+
     const baseTokenCharacter = position?.baseSymbol
         ? getUnicodeCharacter(position?.baseSymbol)
         : '';
