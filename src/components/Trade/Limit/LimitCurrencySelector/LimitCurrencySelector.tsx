@@ -356,12 +356,16 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
     );
 
     const balanceDisplayOrNull = isSellTokenSelector ? (
-        <div className={styles.swapbox_bottom}>
-            {surplusContent}
-            {exchangeContent}
+        !isUserLoggedIn ? (
+            <div className={styles.swapbox_bottom} />
+        ) : (
+            <div className={styles.swapbox_bottom}>
+                {surplusContent}
+                {exchangeContent}
 
-            {isSellTokenSelector ? WithdrawTokensContent : null}
-        </div>
+                {isSellTokenSelector ? WithdrawTokensContent : null}
+            </div>
+        )
     ) : null;
 
     return (

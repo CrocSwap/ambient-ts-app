@@ -22,6 +22,7 @@ interface SidebarRangeProps {
     isUserLoggedIn: boolean | undefined;
     expandTradeTable: boolean;
     setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
+    setShowSidebar: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function SidebarRangePositions(props: SidebarRangeProps) {
@@ -34,8 +35,10 @@ export default function SidebarRangePositions(props: SidebarRangeProps) {
         userPositions,
         currentPositionActive,
         setCurrentPositionActive,
-        expandTradeTable,
+        // expandTradeTable,
         isUserLoggedIn,
+
+        setShowSidebar,
     } = props;
 
     const header = (
@@ -54,17 +57,22 @@ export default function SidebarRangePositions(props: SidebarRangeProps) {
     const tabToSwitchToBasedOnRoute = onTradeRoute ? 2 : onAccountRoute ? 2 : 2;
 
     function redirectBasedOnRoute() {
-        if (onTradeRoute || onAccountRoute) return;
-        navigate('/trade');
+        // if (onTradeRoute || onAccountRoute) return;
+        // navigate('/trade');
+
+        if (onAccountRoute) return;
+        navigate('/account');
     }
 
     const handleViewMoreClick = () => {
-        props.setOutsideControl(true);
-        props.setSelectedOutsideTab(2);
         redirectBasedOnRoute();
+        props.setOutsideControl(true);
+        props.setSelectedOutsideTab(tabToSwitchToBasedOnRoute);
 
-        props.setIsShowAllEnabled(false);
-        props.setExpandTradeTable(true);
+        setShowSidebar(false);
+
+        // props.setIsShowAllEnabled(false);
+        // props.setExpandTradeTable(true);
     };
 
     const sidebarRangePositionCardProps = {
@@ -95,7 +103,7 @@ export default function SidebarRangePositions(props: SidebarRangeProps) {
                         />
                     ))}
             </div>
-            {!expandTradeTable && isUserLoggedIn && (
+            {isUserLoggedIn && (
                 <div className={styles.view_more} onClick={handleViewMoreClick}>
                     View More
                 </div>

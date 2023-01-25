@@ -11,7 +11,7 @@ import ExtraInfo from '../../components/Swap/ExtraInfo/ExtraInfo';
 import ContentContainer from '../../components/Global/ContentContainer/ContentContainer';
 import SwapHeader from '../../components/Swap/SwapHeader/SwapHeader';
 import SwapButton from '../../components/Swap/SwapButton/SwapButton';
-import DividerDark from '../../components/Global/DividerDark/DividerDark';
+// import DividerDark from '../../components/Global/DividerDark/DividerDark';
 import Modal from '../../components/Global/Modal/Modal';
 import RelativeModal from '../../components/Global/RelativeModal/RelativeModal';
 import ConfirmSwapModal from '../../components/Swap/ConfirmSwapModal/ConfirmSwapModal';
@@ -534,7 +534,7 @@ export default function Swap(props: SwapPropsIF) {
     return (
         <section data-testid={'swap'} className={swapPageStyle}>
             <div className={`${swapContainerStyle}`}>
-                <ContentContainer isOnTradeRoute={isOnTradeRoute} padding='1rem'>
+                <ContentContainer isOnTradeRoute={isOnTradeRoute} padding='0 1rem'>
                     <SwapHeader
                         swapSlippage={swapSlippage}
                         isPairStable={isPairStable}
@@ -542,7 +542,7 @@ export default function Swap(props: SwapPropsIF) {
                         openGlobalModal={props.openGlobalModal}
                         shareOptionsDisplay={shareOptionsDisplay}
                     />
-                    <DividerDark addMarginTop />
+                    {/* <DividerDark addMarginTop /> */}
                     {navigationMenu}
                     <motion.div
                         initial={{ opacity: 0 }}
