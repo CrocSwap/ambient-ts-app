@@ -193,16 +193,13 @@ export default function Ranges(props: RangesPropsIF) {
                 .then((updatedPositions) => {
                     if (!isOnPortfolioPage) {
                         if (isShowAllEnabled) {
-                            dispatch(addPositionsByPool(updatedPositions));
+                            if (updatedPositions) dispatch(addPositionsByPool(updatedPositions));
                         } else {
-                            dispatch(
-                                addPositionsByUser(
-                                    updatedPositions.filter(
-                                        (position) =>
-                                            position.user.toLowerCase() === account.toLowerCase(),
-                                    ),
-                                ),
+                            const updatedPositionsMatchingUser = updatedPositions.filter(
+                                (position) => position.user.toLowerCase() === account.toLowerCase(),
                             );
+                            if (updatedPositionsMatchingUser.length)
+                                dispatch(addPositionsByUser(updatedPositionsMatchingUser));
                         }
                     } else {
                         setRangeData(
