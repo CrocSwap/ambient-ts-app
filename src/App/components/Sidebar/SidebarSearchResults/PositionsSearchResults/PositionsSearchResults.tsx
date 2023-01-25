@@ -2,12 +2,12 @@ import styles from '../SidebarSearchResults.module.css';
 import { PositionIF } from '../../../../../utils/interfaces/PositionIF';
 import PositionLI from './PositionLI';
 
-interface PositionsSearchResultPropsIF {
+interface propsIF {
     searchInput: React.ReactNode;
     positionsByUser: PositionIF[];
 }
 
-export default function PositionsSearchResults(props: PositionsSearchResultPropsIF) {
+export default function PositionsSearchResults(props: propsIF) {
     const { searchInput, positionsByUser } = props;
     false && searchInput;
 
