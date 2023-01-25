@@ -18,7 +18,7 @@ interface IconWithTooltipPropsIF {
         | 'top-start'
         | 'top'
         | undefined;
-
+    // eslint-disable-next-line
     style?: any;
 }
 
