@@ -1142,6 +1142,42 @@ export default function Chart(props: ChartData) {
                             parsedChartData?.chartData[0].time * 1000,
                         );
                     }
+
+                    d3.select(d3PlotArea.current)
+                        .select('svg')
+                        .select('.crosshairHorizontal')
+                        .selectChild()
+                        .style('visibility', 'hidden');
+
+                    d3.select(d3PlotArea.current)
+                        .select('svg')
+                        .select('.crosshairVertical')
+                        .selectChild()
+                        .style('visibility', 'hidden');
+
+                    d3.select('#tvl_chart')
+                        .select('svg')
+                        .select('.crosshairHorizontal')
+                        .selectChild()
+                        .style('visibility', 'hidden');
+
+                    d3.select('#tvl_chart')
+                        .select('svg')
+                        .select('.crosshairVertical')
+                        .selectChild()
+                        .style('visibility', 'hidden');
+
+                    d3.select('#fee_rate_chart')
+                        .select('svg')
+                        .select('.crosshairHorizontal')
+                        .selectChild()
+                        .style('visibility', 'hidden');
+
+                    d3.select('#fee_rate_chart')
+                        .select('svg')
+                        .select('.crosshairVertical')
+                        .selectChild()
+                        .style('visibility', 'hidden');
                 })
                 .on('zoom', (event: any) => {
                     if (event.sourceEvent && event.sourceEvent.type !== 'dblclick') {
@@ -1386,6 +1422,44 @@ export default function Chart(props: ChartData) {
                         setShowLatest(false);
                     }
                     setIsRangeScaleSet('scaleOver');
+
+                    d3.select(d3PlotArea.current)
+                        .select('svg')
+                        .select('.crosshairHorizontal')
+                        .selectChild()
+                        .style('visibility', 'visible');
+
+                    d3.select(d3PlotArea.current)
+                        .select('svg')
+                        .select('.crosshairVertical')
+                        .selectChild()
+                        .style('visibility', 'visible');
+
+                    d3.select('#tvl_chart')
+                        .select('svg')
+                        .select('.crosshairHorizontal')
+                        .selectChild()
+                        .style('visibility', 'visible');
+
+                    d3.select('#tvl_chart')
+                        .select('svg')
+                        .select('.crosshairVertical')
+                        .selectChild()
+                        .style('visibility', 'visible');
+
+                    d3.select('#fee_rate_chart')
+                        .select('svg')
+                        .select('.crosshairHorizontal')
+                        .selectChild()
+                        .style('visibility', 'visible');
+
+                    d3.select('#fee_rate_chart')
+                        .select('svg')
+                        .select('.crosshairVertical')
+                        .selectChild()
+                        .style('visibility', 'visible');
+
+                    setIsMouseMoveCrosshair(false);
                 }) as any;
 
             const yAxisZoom = d3.zoom().on('zoom', async (event: any) => {
@@ -3914,64 +3988,91 @@ export default function Chart(props: ChartData) {
                     async function createElements() {
                         const svg = d3.select(event.target).select('svg');
 
-                        horizontalBandJoin(svg, [horizontalBandData]).call(horizontalBand);
+                        if (
+                            !(
+                                scaleData.xScale.domain()[0].toString() === 'Invalid Date' ||
+                                scaleData.xScale.domain()[1].toString() === 'Invalid Date' ||
+                                isNaN(scaleData.yScale.domain()[0]) ||
+                                isNaN(scaleData.yScale.domain()[1])
+                            )
+                        ) {
+                            horizontalBandJoin(svg, [horizontalBandData]).call(horizontalBand);
 
-                        // d3.select('#fee_rate_chart')
-                        // .select('svg')
-                        // .select('.crosshairHorizontal').call(crosshairHorizontal);
-                        targetsJoin(svg, [targets.ranges]).call(horizontalLine);
-                        marketJoin(svg, [targets.market]).call(marketLine);
-                        limitJoin(svg, [targets.limit]).call(limitLine);
-                        // highlightedCurrentPriceLineJoin(svg, [currentPriceData]).call(
-                        //     highlightedCurrentPriceLine,
-                        // );
-                        // indicatorLineJoin(svg, [indicatorLineData]).call(indicatorLine);
+                            // d3.select('#fee_rate_chart')
+                            // .select('svg')
+                            // .select('.crosshairHorizontal').call(crosshairHorizontal);
+                            targetsJoin(svg, [targets.ranges]).call(horizontalLine);
+                            marketJoin(svg, [targets.market]).call(marketLine);
+                            limitJoin(svg, [targets.limit]).call(limitLine);
+                            // highlightedCurrentPriceLineJoin(svg, [currentPriceData]).call(
+                            //     highlightedCurrentPriceLine,
+                            // );
+                            // indicatorLineJoin(svg, [indicatorLineData]).call(indicatorLine);
 
-                        // candleJoin(svg, [chartData]).call(candlestick);
+                            // candleJoin(svg, [chartData]).call(candlestick);
 
-                        areaAskJoin(svg, [
-                            liqMode === 'Curve' ? liquidityData.liqAskData : [],
-                        ]).call(liqAskSeries);
-                        areaBidJoin(svg, [
-                            liqMode === 'Curve'
-                                ? isAdvancedModeActive
-                                    ? liquidityData.liqBidData
-                                    : liquidityData.liqBidData.filter(
-                                          (d: any) => d.liqPrices <= liquidityData.topBoundary,
-                                      )
-                                : [],
-                        ]).call(liqBidSeries);
-                        lineAskSeriesJoin(svg, [
-                            liqMode === 'Curve' ? liquidityData.liqBidData : [],
-                        ]).call(lineBidSeries);
-                        lineBidSeriesJoin(svg, [
-                            liqMode === 'Curve' ? liquidityData.liqAskData : [],
-                        ]).call(lineAskSeries);
+                            console.log(
+                                liquidityScale.domain(),
+                                scaleData.yScale.domain()[0],
+                                scaleData.yScale.domain()[1],
+                            );
 
-                        lineDepthBidSeriesJoin(svg, [
-                            liqMode === 'Depth' ? liquidityData.depthLiqBidData : [],
-                        ]).call(lineDepthBidSeries);
+                            if (JSON.stringify(liquidityScale.domain()) !== '[0,0]') {
+                                areaAskJoin(svg, [
+                                    liqMode === 'Curve' ? liquidityData.liqAskData : [],
+                                ]).call(liqAskSeries);
+                                areaBidJoin(svg, [
+                                    liqMode === 'Curve'
+                                        ? isAdvancedModeActive
+                                            ? liquidityData.liqBidData
+                                            : liquidityData.liqBidData.filter(
+                                                  (d: any) =>
+                                                      d.liqPrices <= liquidityData.topBoundary,
+                                              )
+                                        : [],
+                                ]).call(liqBidSeries);
+                                lineAskSeriesJoin(svg, [
+                                    liqMode === 'Curve' ? liquidityData.liqBidData : [],
+                                ]).call(lineBidSeries);
+                                lineBidSeriesJoin(svg, [
+                                    liqMode === 'Curve' ? liquidityData.liqAskData : [],
+                                ]).call(lineAskSeries);
 
-                        lineDepthAskSeriesJoin(svg, [
-                            liqMode === 'Depth' ? liquidityData.depthLiqAskData : [],
-                        ]).call(lineDepthAskSeries);
+                                lineDepthBidSeriesJoin(svg, [
+                                    liqMode === 'Depth' ? liquidityData.depthLiqBidData : [],
+                                ]).call(lineDepthBidSeries);
 
-                        depthLiqAskSeriesJoin(svg, [
-                            liqMode === 'Depth' ? liquidityData.depthLiqAskData : [],
-                        ]).call(depthLiqAskSeries);
+                                lineDepthAskSeriesJoin(svg, [
+                                    liqMode === 'Depth' ? liquidityData.depthLiqAskData : [],
+                                ]).call(lineDepthAskSeries);
 
-                        depthLiqBidSeriesJoin(svg, [
-                            liqMode === 'Depth'
-                                ? isAdvancedModeActive
-                                    ? liquidityData.depthLiqBidData
-                                    : liquidityData.depthLiqBidData.filter(
-                                          (d: any) => d.liqPrices <= liquidityData.topBoundary,
-                                      )
-                                : [],
-                        ]).call(depthLiqBidSeries);
+                                depthLiqAskSeriesJoin(svg, [
+                                    liqMode === 'Depth' ? liquidityData.depthLiqAskData : [],
+                                ]).call(depthLiqAskSeries);
 
-                        // barJoin(svg, [showVolume ? volumeData : []]).call(barSeries);
-                        if (barSeries) barJoin(svg, [showVolume ? volumeData : []]).call(barSeries);
+                                depthLiqBidSeriesJoin(svg, [
+                                    liqMode === 'Depth'
+                                        ? isAdvancedModeActive
+                                            ? liquidityData.depthLiqBidData
+                                            : liquidityData.depthLiqBidData.filter(
+                                                  (d: any) =>
+                                                      d.liqPrices <= liquidityData.topBoundary,
+                                              )
+                                        : [],
+                                ]).call(depthLiqBidSeries);
+                            }
+
+                            // barJoin(svg, [showVolume ? volumeData : []]).call(barSeries);
+                            console.log(
+                                scaleData.volumeScale.domain(),
+                                JSON.stringify(scaleData.volumeScale.domain()) !== '[0,0]',
+                                { volumeData },
+                            );
+                            if (JSON.stringify(scaleData.volumeScale.domain()) !== '[0,0]') {
+                                if (barSeries)
+                                    barJoin(svg, [showVolume ? volumeData : []]).call(barSeries);
+                            }
+                        }
 
                         setDragControl(true);
                     }
@@ -4381,6 +4482,12 @@ export default function Chart(props: ChartData) {
                         .selectChild()
                         .style('visibility', 'hidden');
 
+                    d3.select(d3PlotArea.current)
+                        .select('svg')
+                        .select('.crosshairVertical')
+                        .selectChild()
+                        .style('visibility', 'hidden');
+
                     d3.select('#tvl_chart')
                         .select('svg')
                         .select('.crosshairVertical')
@@ -4445,6 +4552,12 @@ export default function Chart(props: ChartData) {
         d3.select(d3PlotArea.current)
             .select('svg')
             .select('.crosshairHorizontal')
+            .selectChild()
+            .style('visibility', 'visible');
+
+        d3.select(d3PlotArea.current)
+            .select('svg')
+            .select('.crosshairVertical')
             .selectChild()
             .style('visibility', 'visible');
 
