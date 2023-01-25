@@ -74,6 +74,13 @@ interface SidebarPropsIF {
     tokenPair: TokenPairIF;
     getRecentPools: (count: number) => SmallerPoolIF[];
     isConnected: boolean;
+    addPoolToFaves: (tokenA: TokenIF, tokenB: TokenIF, chainId: string, poolId: number) => void;
+    removePoolFromFaves: (
+        tokenA: TokenIF,
+        tokenB: TokenIF,
+        chainId: string,
+        poolId: number,
+    ) => void;
 }
 
 export default function Sidebar(props: SidebarPropsIF) {
@@ -106,6 +113,8 @@ export default function Sidebar(props: SidebarPropsIF) {
         tokenPair,
         getRecentPools,
         isConnected,
+        addPoolToFaves,
+        removePoolFromFaves,
     } = props;
 
     const location = useLocation();
@@ -234,6 +243,9 @@ export default function Sidebar(props: SidebarPropsIF) {
                     favePools={favePools}
                     cachedPoolStatsFetch={cachedPoolStatsFetch}
                     lastBlockNumber={lastBlockNumber}
+                    addPoolToFaves={addPoolToFaves}
+                    removePoolFromFaves={removePoolFromFaves}
+                    chainId={chainId}
                 />
             ),
         },
@@ -481,6 +493,19 @@ export default function Sidebar(props: SidebarPropsIF) {
                     // mostRecent={mostRecentPositions}
                 />
             ))}
+            {favoritePools.map((item, idx) => (
+                <SidebarAccordion
+                    toggleSidebar={toggleSidebar}
+                    shouldDisplayContentWhenUserNotLoggedIn={true}
+                    showSidebar={showSidebar}
+                    idx={idx}
+                    item={item}
+                    key={idx}
+                    setShowSidebar={setShowSidebar}
+                    openAllDefault={openAllDefault}
+                    openModalWallet={openModalWallet}
+                />
+            ))}
         </div>
     );
 
@@ -525,19 +550,6 @@ export default function Sidebar(props: SidebarPropsIF) {
                     openAllDefault={openAllDefault}
                     openModalWallet={openModalWallet}
                     // mostRecent={positionsByUser}
-                />
-            ))}
-            {favoritePools.map((item, idx) => (
-                <SidebarAccordion
-                    toggleSidebar={toggleSidebar}
-                    shouldDisplayContentWhenUserNotLoggedIn={true}
-                    showSidebar={showSidebar}
-                    idx={idx}
-                    item={item}
-                    key={idx}
-                    setShowSidebar={setShowSidebar}
-                    openAllDefault={openAllDefault}
-                    openModalWallet={openModalWallet}
                 />
             ))}
         </div>
