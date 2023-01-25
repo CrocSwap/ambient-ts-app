@@ -20,6 +20,7 @@ import ProfileSettings from '../../components/Portfolio/ProfileSettings/ProfileS
 import { SoloTokenSelect } from '../../components/Global/TokenSelectContainer/SoloTokenSelect';
 // import { useSoloSearch } from '../../components/Global/TokenSelectContainer/hooks/useSoloSearch';
 import { useAccount, useEnsName } from 'wagmi';
+import useMediaQuery from '../../utils/hooks/useMediaQuery';
 
 const mainnetProvider = new ethers.providers.WebSocketProvider(
     // 'wss://mainnet.infura.io/ws/v3/4a162c75bd514925890174ca13cdb6a2', // benwolski@gmail.com
@@ -460,6 +461,34 @@ export default function Portfolio(props: PortfolioPropsIF) {
 
     // console.log({ secondaryEnsName });
     // console.log({ ensName });
+    const [showTabsAndNotExchange, setShowTabsAndNotExchange] = useState(false);
+    const hideTabs = useMediaQuery('(max-width: 850px)') && showTabsAndNotExchange;
+    const hideExchange = useMediaQuery('(max-width: 850px)') && !showTabsAndNotExchange;
+
+    const mobileDataToggle = (
+        <div className={styles.mobile_toggle_container}>
+            <button
+                onClick={() => setShowTabsAndNotExchange(!showTabsAndNotExchange)}
+                className={
+                    showTabsAndNotExchange
+                        ? styles.non_active_button_mobile_toggle
+                        : styles.active_button_mobile_toggle
+                }
+            >
+                Transactions
+            </button>
+            <button
+                onClick={() => setShowTabsAndNotExchange(!showTabsAndNotExchange)}
+                className={
+                    showTabsAndNotExchange
+                        ? styles.active_button_mobile_toggle
+                        : styles.non_active_button_mobile_toggle
+                }
+            >
+                Exchange
+            </button>
+        </div>
+    );
 
     return (
         <main data-testid={'portfolio'} className={styles.portfolio_container}>
@@ -486,6 +515,8 @@ export default function Portfolio(props: PortfolioPropsIF) {
                 setShowProfileSettings={setShowProfileSettings}
                 connectedAccountActive={connectedAccountActive}
             />
+
+            {mobileDataToggle}
             <div
                 className={
                     fullLayoutActive
@@ -493,7 +524,7 @@ export default function Portfolio(props: PortfolioPropsIF) {
                         : styles.tabs_exchange_balance_container
                 }
             >
-                {!showLoggedInButton ? (
+                {!showLoggedInButton && !hideTabs ? (
                     <PortfolioTabs
                         crocEnv={crocEnv}
                         isTokenABase={isTokenABase}
@@ -531,12 +562,14 @@ export default function Portfolio(props: PortfolioPropsIF) {
                         handlePulseAnimation={handlePulseAnimation}
                     />
                 ) : (
-                    <div className={styles.non_connected_content}>
-                        <p>Please connect wallet to view your transactions.</p>
-                        <Button flat title='Connect Wallet' action={() => openModalWallet()} />
-                    </div>
+                    !hideTabs && (
+                        <div className={styles.non_connected_content}>
+                            <p>Please connect wallet to view your transactions.</p>
+                            <Button flat title='Connect Wallet' action={() => openModalWallet()} />
+                        </div>
+                    )
                 )}
-                {connectedAccountActive && exchangeBalanceComponent}
+                {connectedAccountActive && !hideExchange && exchangeBalanceComponent}
             </div>
             {isTokenModalOpen && (
                 <Modal
