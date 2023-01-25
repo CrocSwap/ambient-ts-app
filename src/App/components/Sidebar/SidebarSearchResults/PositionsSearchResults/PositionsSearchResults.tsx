@@ -20,7 +20,7 @@ export default function PositionsSearchResults(props: PositionsSearchResultProps
                 <div>Change</div>
             </div>
             <div className={styles.main_result_container}>
-                {positionsByUser.slice(0,4).map((position) => (
+                {positionsByUser.slice(0,4).map((position: PositionIF) => (
                     <PositionLI
                         key={`PositionSearchResult_${JSON.stringify(position)}`}
                     />
