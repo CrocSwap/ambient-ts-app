@@ -58,6 +58,7 @@ export default function FavoritePools(props: FavoritePoolsIF) {
     return (
         <div className={styles.container}>
             {header}
+            {addCurrentPoolLinkOrNull}
             <div className={styles.content}>
                 {favePools.map((pool, idx) => (
                     <FavoritePoolsCard
@@ -68,7 +69,6 @@ export default function FavoritePools(props: FavoritePoolsIF) {
                     />
                 ))}
             </div>
-            {addCurrentPoolLinkOrNull}
         </div>
     );
 }
