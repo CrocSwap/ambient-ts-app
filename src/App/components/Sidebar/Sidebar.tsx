@@ -585,6 +585,7 @@ export default function Sidebar(props: SidebarPropsIF) {
                             exampleLoading={exampleLoading}
                             getTokenByAddress={getTokenByAddress}
                             tokenPair={tokenPair}
+                            isDenomBase={isDenomBase}
                             chainId={chainId}
                             isConnected={isConnected}
                             cachedPoolStatsFetch={cachedPoolStatsFetch}

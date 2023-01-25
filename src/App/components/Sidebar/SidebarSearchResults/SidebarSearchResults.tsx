@@ -16,7 +16,8 @@ interface SidebarSearchResultsPropsIF {
     chainId: string;
     isConnected: boolean;
     cachedPoolStatsFetch: PoolStatsFn;
-    positionsByUser: PositionIF[]
+    positionsByUser: PositionIF[];
+    isDenomBase: boolean;
 }
 
 export default function SidebarSearchResults(props: SidebarSearchResultsPropsIF) {
@@ -29,7 +30,8 @@ export default function SidebarSearchResults(props: SidebarSearchResultsPropsIF)
         chainId,
         isConnected,
         cachedPoolStatsFetch,
-        positionsByUser
+        positionsByUser,
+        isDenomBase
     } = props;
 
     // we are not going to use this following loading functionality. It is just for demonstration purposes
@@ -49,6 +51,7 @@ export default function SidebarSearchResults(props: SidebarSearchResultsPropsIF)
                     <PositionsSearchResults
                         searchInput={searchInput}
                         positionsByUser={positionsByUser}
+                        isDenomBase={isDenomBase}
                     />
                     {false && <OrdersSearchResults loading={exampleLoading} searchInput={searchInput} />}
                     {false && <TransactionsSearchResults loading={exampleLoading} searchInput={searchInput} />}
