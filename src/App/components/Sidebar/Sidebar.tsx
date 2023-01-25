@@ -392,7 +392,7 @@ export default function Sidebar(props: SidebarPropsIF) {
                     interactive
                     title={!openAllDefault ? openAllButton : collapseButton}
                     // placement={'bottom'}
-                    placement={showSidebar ? 'bottom' : 'right'}
+                    placement={showSidebar ? 'right' : 'right'}
                     arrow
                     enterDelay={100}
                     leaveDelay={200}
