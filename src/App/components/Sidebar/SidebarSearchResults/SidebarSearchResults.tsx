@@ -27,7 +27,7 @@ export default function SidebarSearchResults(props: SidebarSearchResultsPropsIF)
         tokenPair,
         chainId,
         isConnected,
-        cachedPoolStatsFetch
+        cachedPoolStatsFetch,
     } = props;
 
     // we are not going to use this following loading functionality. It is just for demonstration purposes
@@ -42,10 +42,12 @@ export default function SidebarSearchResults(props: SidebarSearchResultsPropsIF)
                 chainId={chainId}
                 cachedPoolStatsFetch={cachedPoolStatsFetch}
             />
-            {
-            isConnected && (<><PositionsSearchResults loading={exampleLoading} searchInput={searchInput} />
-            <OrdersSearchResults loading={exampleLoading} searchInput={searchInput} />
-            <TransactionsSearchResults loading={exampleLoading} searchInput={searchInput} /></>
+            {isConnected && (
+                <>
+                    <PositionsSearchResults loading={exampleLoading} searchInput={searchInput} />
+                    <OrdersSearchResults loading={exampleLoading} searchInput={searchInput} />
+                    <TransactionsSearchResults loading={exampleLoading} searchInput={searchInput} />
+                </>
             )}
         </div>
     );

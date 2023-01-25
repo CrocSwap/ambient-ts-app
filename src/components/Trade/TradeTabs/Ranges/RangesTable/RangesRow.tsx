@@ -56,7 +56,7 @@ interface RangesRowPropsIF {
 
 export default function RangesRow(props: RangesRowPropsIF) {
     const {
-        // showSidebar,
+        showSidebar,
         account,
         ipadView,
         showColumns,
@@ -487,7 +487,7 @@ export default function RangesRow(props: RangesRowPropsIF) {
         >
             {rankingOrNull}
             {!showColumns && RangeTimeWithTooltip}
-            {isOnPortfolioPage && tokenPair}
+            {isOnPortfolioPage && !showColumns && !showSidebar && tokenPair}
             {idOrNull}
             {/* {isOnPortfolioPage && accountTokenImages} */}
             {!showColumns && !isOnPortfolioPage && walletWithTooltip}
@@ -553,12 +553,18 @@ export default function RangesRow(props: RangesRowPropsIF) {
                     style={{ textAlign: 'right' }}
                     onClick={openDetailsModal}
                 >
-                    <p className={styles.token_qty} style={{ fontFamily: 'monospace' }}>
+                    <p
+                        className={styles.token_qty}
+                        style={{ fontFamily: 'monospace', whiteSpace: 'nowrap' }}
+                    >
                         {baseDisplay}
                         {baseTokenLogoComponent}
                     </p>
 
-                    <p className={styles.token_qty} style={{ fontFamily: 'monospace' }}>
+                    <p
+                        className={styles.token_qty}
+                        style={{ fontFamily: 'monospace', whiteSpace: 'nowrap' }}
+                    >
                         {' '}
                         {quoteDisplay}
                         {quoteTokenLogoComponent}

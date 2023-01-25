@@ -2547,7 +2547,7 @@ export default function App() {
         getTokenByAddress: getTokenByAddress,
         tokenPair: tokenPair,
         getRecentPools: getRecentPools,
-        isConnected: isConnected
+        isConnected: isConnected,
     };
 
     const analyticsProps = {
