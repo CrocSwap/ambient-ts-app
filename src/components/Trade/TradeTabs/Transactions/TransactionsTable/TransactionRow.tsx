@@ -522,7 +522,11 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                             onClick={openDetailsModal}
                             data-label='price'
                             className={'gradient_text'}
-                            style={{ textAlign: 'right', fontFamily: 'monospace' }}
+                            style={{
+                                textAlign: 'right',
+                                fontFamily: 'monospace',
+                                textTransform: 'lowercase',
+                            }}
                         >
                             ambient
                         </li>
