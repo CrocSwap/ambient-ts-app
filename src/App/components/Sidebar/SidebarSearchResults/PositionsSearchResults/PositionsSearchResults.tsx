@@ -11,19 +11,14 @@ export default function PositionsSearchResults(props: PositionsSearchResultProps
     const { searchInput, positionsByUser } = props;
     false && searchInput;
 
-    const header = (
-        <div className={styles.header}>
-            <div>Pool</div>
-            <div>Price</div>
-            <div>Change</div>
-        </div>
-    );
-
     return (
         <div>
             <div className={styles.card_title}>My Range Positions</div>
-            {header}
-
+            <div className={styles.header}>
+                <div>Pool</div>
+                <div>Price</div>
+                <div>Change</div>
+            </div>
             <div className={styles.main_result_container}>
                 {positionsByUser.slice(0,4).map((position) => (
                     <PositionLI
