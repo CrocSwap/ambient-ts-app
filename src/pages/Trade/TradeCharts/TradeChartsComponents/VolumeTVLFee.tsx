@@ -17,7 +17,7 @@ export default function VolumeTVLFee(props: VolumeTVLFeePropsIF) {
 
     const [showVolumeTVLFeeDropdown, setShowVolumeTVLFeeDropdown] = useState(false);
 
-    const desktopView = useMediaQuery('(max-width: 768px)');
+    const desktopView = useMediaQuery('(max-width: 968px)');
 
     const handleVolumeToggle = () => setShowVolume(!showVolume);
 

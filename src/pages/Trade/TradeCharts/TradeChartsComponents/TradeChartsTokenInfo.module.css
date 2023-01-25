@@ -84,7 +84,7 @@
     }
 }
 
-@media (min-width: 680px) {
+@media (min-width: 968px) {
     .tokens_name {
         font-weight: 300;
         font-size: var(--header1-size);

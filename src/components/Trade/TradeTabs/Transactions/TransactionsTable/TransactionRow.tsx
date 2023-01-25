@@ -625,14 +625,6 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                     onClick={openDetailsModal}
                 >
                     <p
-                        // onClick={() => {
-                        //     const isBuyQuote = tx.isBuy === true || tx.isBid === true;
-                        //     console.log({ isBuyQuote });
-                        //     console.log({ isBuy });
-                        //     console.log({ tx });
-                        //     console.log(tx.isBuy);
-                        //     console.log(tx.isBid);
-                        // }}
                         className={`${styles.token_qty} ${positiveDisplayStyle}`}
                         style={{ fontFamily: 'monospace', whiteSpace: 'nowrap' }}
                     >
