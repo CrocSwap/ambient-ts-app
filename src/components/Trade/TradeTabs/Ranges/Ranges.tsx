@@ -193,16 +193,18 @@ export default function Ranges(props: RangesPropsIF) {
                 .then((updatedPositions) => {
                     if (!isOnPortfolioPage) {
                         if (isShowAllEnabled) {
-                            dispatch(addPositionsByPool(updatedPositions));
+                            if (updatedPositions) dispatch(addPositionsByPool(updatedPositions));
                         } else {
-                            dispatch(
-                                addPositionsByUser(
-                                    updatedPositions.filter(
-                                        (position) => position.user === account,
-                                    ),
-                                ),
+                            const updatedPositionsMatchingUser = updatedPositions.filter(
+                                (position) => position.user.toLowerCase() === account.toLowerCase(),
                             );
+                            if (updatedPositionsMatchingUser.length)
+                                dispatch(addPositionsByUser(updatedPositionsMatchingUser));
                         }
+                    } else {
+                        setRangeData(
+                            updatedPositions.concat(positionsByUserMatchingSelectedTokens.slice(3)),
+                        );
                     }
                 })
                 .catch(console.log);
@@ -310,7 +312,7 @@ export default function Ranges(props: RangesPropsIF) {
         {
             name: 'Pair',
             className: '',
-            show: isOnPortfolioPage && !desktopView,
+            show: isOnPortfolioPage && !desktopView && !showSidebar,
             slug: 'pool',
             sortable: true,
         },

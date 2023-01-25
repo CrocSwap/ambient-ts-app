@@ -15,9 +15,9 @@ export const useSidebarSearch = (
         // setDbInput('');
         // console.log({ rawInput });
         // if (rawInput !== dbInput && rawInput.length !== 1) {
-            const timer = setTimeout(() => setDbInput(rawInput), 400);
-            // console.log('timeout cleared');
-            return () => clearTimeout(timer);
+        const timer = setTimeout(() => setDbInput(rawInput), 400);
+        // console.log('timeout cleared');
+        return () => clearTimeout(timer);
         // }
     }, [rawInput]);
 

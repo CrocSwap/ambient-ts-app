@@ -13,7 +13,7 @@ export default function TimeFrame(props: TimeFramePropsIF) {
 
     const [showTimeFrameDropdown, setShowTimeFrameDropdown] = useState(false);
 
-    const desktopView = useMediaQuery('(max-width: 768px)');
+    const desktopView = useMediaQuery('(max-width: 968px)');
 
     const activeTimeFrameData = [
         { label: '1m', activePeriod: 60 },

@@ -4,8 +4,8 @@ import { TokenPairIF } from '../../../../../utils/interfaces/exports';
 
 export const useClick = (
     chainId: string,
-    tokenPair: TokenPairIF
-): (baseAddr: string, quoteAddr: string) => void => {
+    tokenPair: TokenPairIF,
+): ((baseAddr: string, quoteAddr: string) => void) => {
     // get the current URL path string
     const { pathname } = useLocation();
     // get the navigate function from react-router-dom
@@ -19,17 +19,16 @@ export const useClick = (
         // logic to get current starting path
         // error handling if on an unrecognized path goes to `/trade/market`
         try {
-            if (
-                pathname.startsWith('/trade/market') ||
-                pathname.startsWith('/account')
-            ) {
+            if (pathname.startsWith('/trade/market') || pathname.startsWith('/account')) {
                 slug = '/trade/market';
             } else if (pathname.startsWith('/trade/limit')) {
                 slug = '/trade/limit';
             } else if (pathname.startsWith('/trade/range')) {
                 slug = '/trade/range';
             } else {
-                throw new Error('Could not identify the correct URL path for redirect. Using /trade/market as a fallback value. Refer to useClick.tsx for troubleshooting.');
+                throw new Error(
+                    'Could not identify the correct URL path for redirect. Using /trade/market as a fallback value. Refer to useClick.tsx for troubleshooting.',
+                );
             }
         } catch (err) {
             console.warn(err);
@@ -44,24 +43,20 @@ export const useClick = (
         const { dataTokenA } = tokenPair;
 
         const tokenAString: string =
-            baseAddr.toLowerCase() === dataTokenA.address.toLowerCase()
-                ? baseAddr
-                : quoteAddr;
+            baseAddr.toLowerCase() === dataTokenA.address.toLowerCase() ? baseAddr : quoteAddr;
         const tokenBString: string =
-            baseAddr.toLowerCase() === dataTokenA.address.toLowerCase()
-                ? quoteAddr
-                : baseAddr;
+            baseAddr.toLowerCase() === dataTokenA.address.toLowerCase() ? quoteAddr : baseAddr;
 
         navigate(
             locationSlug +
-            '/chain=' +
-            chainId +
-            '&tokenA=' +
-            tokenAString +
-            '&tokenB=' +
-            tokenBString
+                '/chain=' +
+                chainId +
+                '&tokenA=' +
+                tokenAString +
+                '&tokenB=' +
+                tokenBString,
         );
-    }
+    };
 
     return handleClick;
-}
+};
