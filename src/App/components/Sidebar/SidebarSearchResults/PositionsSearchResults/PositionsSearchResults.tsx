@@ -28,7 +28,7 @@ export default function PositionsSearchResults(props: PositionsSearchResultProps
 
     return (
         <div>
-            <div className={styles.card_title}>Range Positions</div>
+            <div className={styles.card_title}>My Range Positions</div>
             {header}
 
             <div className={styles.main_result_container}>
