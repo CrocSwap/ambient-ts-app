@@ -39,6 +39,7 @@ import {
     getPinnedTickFromDisplayPrice,
 } from '../Trade/Range/rangeFunctions';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
+import { get4HoursAxisTicks, getOneDayAxisTicks, getOneHourAxisTicks } from './calcuteDateAxis';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -804,36 +805,22 @@ export default function Chart(props: ChartData) {
         });
     }
 
-    function getXAxisTick() {
+    async function getXAxisTick() {
         const oldTickValues = scaleData.xScale.ticks();
-        const tempArray = [];
-
-        if (
-            (windowDimensions.width > 1800 && oldTickValues.length < 15) ||
-            oldTickValues.length < 6
-        ) {
-            return oldTickValues;
+        let result = oldTickValues;
+        if (activeTimeFrame === '1h') {
+            result = await getOneHourAxisTicks(oldTickValues, bandwidth);
         }
 
-        if (oldTickValues.length < 15) {
-            for (let index = 0; index < oldTickValues.length; index++) {
-                tempArray.push(oldTickValues[index]);
-                tempArray.push(
-                    index + 2 > oldTickValues.length - 1
-                        ? oldTickValues[oldTickValues.length - 1]
-                        : oldTickValues[index + 2],
-                );
-                index = index + 3;
-            }
-        } else {
-            for (let index = oldTickValues.length - 1; index >= 0; index = index - 1) {
-                tempArray.push(oldTickValues[index]);
-                if (index - 3 > 0) tempArray.push(oldTickValues[index - 3]);
-                index = index - 5;
-            }
+        if (activeTimeFrame === '1d') {
+            result = await getOneDayAxisTicks(oldTickValues, bandwidth);
         }
 
-        return tempArray;
+        if (activeTimeFrame === '4h') {
+            result = await get4HoursAxisTicks(oldTickValues, bandwidth);
+        }
+
+        return result;
     }
 
     const utcDiff = moment().utcOffset();
@@ -842,54 +829,40 @@ export default function Chart(props: ChartData) {
     // x axis text
     useEffect(() => {
         if (scaleData && xAxis) {
-            const oldTickValues = getXAxisTick();
-
-            xAxis
-                .tickValues([
-                    ...oldTickValues,
-                    ...(isMouseMoveCrosshair ? [crosshairData[0].x] : []),
-                ])
-                .tickFormat((d: any) => {
-                    if (d === crosshairData[0].x) {
-                        if (activeTimeFrame === '1d') {
-                            return moment(d).subtract(utcDiffHours, 'hours').format('MMM DD YYYY');
-                        } else {
-                            return moment(d).format('MMM DD HH:mm');
+            getXAxisTick().then((res) => {
+                xAxis
+                    .tickValues([...res, ...(isMouseMoveCrosshair ? [crosshairData[0].x] : [])])
+                    .tickFormat((d: any) => {
+                        if (d === crosshairData[0].x) {
+                            if (activeTimeFrame === '1d') {
+                                return moment(d)
+                                    .subtract(utcDiffHours, 'hours')
+                                    .format('MMM DD YYYY');
+                            } else {
+                                return moment(d).format('MMM DD HH:mm');
+                            }
                         }
-                        // return moment(d).format('  DD HH:mm');
-                    }
-                    if (activeTimeFrame === '1d') {
-                        return moment(d)
-                            .format('DD')
-                            .match(/^(01)$/)
-                            ? moment(d).format('MMM') === 'Jan'
+
+                        if (
+                            moment(d)
+                                .format('DD')
+                                .match(/^(01)$/)
+                        ) {
+                            return moment(d).format('MMM') === 'Jan'
                                 ? moment(d).format('YYYY')
-                                : moment(d).format('MMM')
-                            : moment(d).format('DD');
-                    } else if (activeTimeFrame.match(/^(1m|5m|15m)$/)) {
-                        return moment(d).format('HH:mm') !== '00:00'
-                            ? moment(d).format('HH:mm')
-                            : moment(d).format('DD');
-                    } else if (activeTimeFrame.match(/^(1h|4h)$/)) {
-                        return moment(d).format('HH:mm') !== '00:00'
-                            ? moment(d).format('HH:mm')
-                            : moment(d)
-                                  .format('DD')
-                                  .match(/^(01)$/)
-                            ? moment(d).format('MMM') === 'Jan'
-                                ? moment(d).format('YYYY')
-                                : moment(d).format('MMM')
-                            : moment(d).format('DD');
-                    } else {
-                        return moment(d)
-                            .format('DD')
-                            .match(/^(01)$/)
-                            ? moment(d).format('MMM') === 'Jan'
-                                ? moment(d).format('YYYY')
-                                : moment(d).format('MMM')
-                            : moment(d).format('DD');
-                    }
-                });
+                                : moment(d).format('MMM');
+                        }
+
+                        if (
+                            moment(d).format('HH:mm') === '00:00' ||
+                            activeTimeFrame.match(/^(1d)$/)
+                        ) {
+                            return moment(d).format('DD');
+                        } else {
+                            return moment(d).format('HH:mm');
+                        }
+                    });
+            });
 
             xAxis.decorate((selection: any) => {
                 selection
