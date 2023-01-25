@@ -2548,6 +2548,8 @@ export default function App() {
         tokenPair: tokenPair,
         getRecentPools: getRecentPools,
         isConnected: isConnected,
+        addPoolToFaves: addPoolToFaves,
+        removePoolFromFaves: removePoolFromFaves,
     };
 
     const analyticsProps = {
