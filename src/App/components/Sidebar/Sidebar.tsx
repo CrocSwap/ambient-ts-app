@@ -562,7 +562,7 @@ export default function Sidebar(props: SidebarPropsIF) {
                         setSearchMode={setSearchMode}
                     /> */}
                     {searchContainerDisplay}
-                    {isInputValid ? (
+                    {isInputValid && showSidebar ? (
                         <SidebarSearchResults
                             searchedPools={searchedPools}
                             searchInput={searchInput}
