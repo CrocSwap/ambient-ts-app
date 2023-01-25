@@ -478,6 +478,19 @@ export default function Sidebar(props: SidebarPropsIF) {
                     // mostRecent={['should open automatically']}
                 />
             ))}
+            {favoritePools.map((item, idx) => (
+                <SidebarAccordion
+                    toggleSidebar={toggleSidebar}
+                    shouldDisplayContentWhenUserNotLoggedIn={true}
+                    showSidebar={showSidebar}
+                    idx={idx}
+                    item={item}
+                    key={idx}
+                    setShowSidebar={setShowSidebar}
+                    openAllDefault={openAllDefault}
+                    openModalWallet={openModalWallet}
+                />
+            ))}
             {recentPools.map((item, idx) => (
                 <SidebarAccordion
                     showSidebar={showSidebar}
@@ -491,19 +504,6 @@ export default function Sidebar(props: SidebarPropsIF) {
                     openModalWallet={openModalWallet}
 
                     // mostRecent={mostRecentPositions}
-                />
-            ))}
-            {favoritePools.map((item, idx) => (
-                <SidebarAccordion
-                    toggleSidebar={toggleSidebar}
-                    shouldDisplayContentWhenUserNotLoggedIn={true}
-                    showSidebar={showSidebar}
-                    idx={idx}
-                    item={item}
-                    key={idx}
-                    setShowSidebar={setShowSidebar}
-                    openAllDefault={openAllDefault}
-                    openModalWallet={openModalWallet}
                 />
             ))}
         </div>
