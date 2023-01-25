@@ -260,6 +260,7 @@ export default function TradeChartsTokenInfo(props: TradeChartsTokenInfoPropsIF)
 
     return (
         <div className={styles.tokens_info}>
+            {favButton}
             <DefaultTooltip
                 interactive
                 title={`${

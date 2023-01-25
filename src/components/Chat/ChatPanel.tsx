@@ -50,7 +50,7 @@ interface ChatProps {
 }
 
 export default function ChatPanel(props: ChatProps) {
-    const { favePools, currentPool } = props;
+    const { favePools, currentPool, setChatStatus } = props;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const messageEnd = useRef<any>(null);
     const [room, setRoom] = useState('Global');
@@ -74,6 +74,18 @@ export default function ChatPanel(props: ChatProps) {
 
     const connectedAccountActive =
         !addressFromParams || resolvedAddress?.toLowerCase() === address?.toLowerCase();
+
+    // eslint-disable-next-line
+    function closeOnEscapeKeyDown(e: any) {
+        if ((e.charCode || e.keyCode) === 27) setChatStatus(false);
+    }
+
+    useEffect(() => {
+        document.body.addEventListener('keydown', closeOnEscapeKeyDown);
+        return function cleanUp() {
+            document.body.removeEventListener('keydown', closeOnEscapeKeyDown);
+        };
+    });
 
     useEffect(() => {
         if (scrollDirection === 'Scroll Up') {
