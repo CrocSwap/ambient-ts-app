@@ -198,11 +198,16 @@ export default function Ranges(props: RangesPropsIF) {
                             dispatch(
                                 addPositionsByUser(
                                     updatedPositions.filter(
-                                        (position) => position.user === account,
+                                        (position) =>
+                                            position.user.toLowerCase() === account.toLowerCase(),
                                     ),
                                 ),
                             );
                         }
+                    } else {
+                        setRangeData(
+                            updatedPositions.concat(positionsByUserMatchingSelectedTokens.slice(3)),
+                        );
                     }
                 })
                 .catch(console.log);
