@@ -368,25 +368,27 @@ export default function TradeCandleStickChart(props: ChartData) {
                 ])
                 .range([1, 550]);
 
-            const liqBoundaryData = props.liquidityData.ranges.find(
-                (liq: any) =>
-                    (denominationsInBase
-                        ? liq.lowerBoundInvPriceDecimalCorrected
-                        : liq.lowerBoundPriceDecimalCorrected) < barThreshold,
+            const liqBoundaryData = props.liquidityData.ranges.find((liq: any) =>
+                denominationsInBase
+                    ? liq.upperBoundInvPriceDecimalCorrected < barThreshold
+                    : liq.lowerBoundPriceDecimalCorrected > barThreshold,
             );
 
-            const liqBoundary = denominationsInBase
-                ? liqBoundaryData.lowerBoundInvPriceDecimalCorrected
-                : liqBoundaryData.lowerBoundPriceDecimalCorrected;
+            const liqBoundary =
+                liqBoundaryData !== undefined
+                    ? denominationsInBase
+                        ? liqBoundaryData.lowerBoundInvPriceDecimalCorrected
+                        : liqBoundaryData.upperBoundPriceDecimalCorrected
+                    : barThreshold;
 
             props.liquidityData.ranges.map((data: any) => {
                 const liqUpperPrices = denominationsInBase
                     ? data.upperBoundInvPriceDecimalCorrected
-                    : data.upperBoundPriceDecimalCorrected;
+                    : data.lowerBoundPriceDecimalCorrected;
 
                 const liqLowerPrices = denominationsInBase
                     ? data.lowerBoundInvPriceDecimalCorrected
-                    : data.lowerBoundPriceDecimalCorrected;
+                    : data.upperBoundPriceDecimalCorrected;
 
                 if (liqUpperPrices >= liqBoundary && liqUpperPrices < liqBoundary * 10) {
                     liqBidData.push({
@@ -597,7 +599,7 @@ export default function TradeCandleStickChart(props: ChartData) {
             return undefined;
         });
         setScaleForChartLiquidity(liquidityData);
-    }, [JSON.stringify(liquidityData)]);
+    }, [liquidityData]);
 
     const setScaleForChartLiquidity = (liquidityData: any) => {
         if (liquidityData !== undefined) {
@@ -706,6 +708,7 @@ export default function TradeCandleStickChart(props: ChartData) {
         const timer = setTimeout(() => {
             const shouldReload =
                 scaleData === undefined ||
+                liquidityScale === undefined ||
                 // parsedChartData === undefined ||
                 parsedChartData?.chartData.length === 0 ||
                 props.poolPriceDisplay === 0 ||
@@ -724,6 +727,7 @@ export default function TradeCandleStickChart(props: ChartData) {
         poolPriceNonDisplay,
         scaleData === undefined,
         liquidityScale,
+        liquidityData,
     ]);
 
     return (
