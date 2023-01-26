@@ -23,14 +23,6 @@
     color: var(--text-grey-light);
 }
 
-.surplus_container {
-    /* width: 200px; */
-    /* margin-right: 15px; */
-    display: flex;
-    flex-direction: row;
-    /* justify-content: right; */
-    gap: 2rem;
-}
 
 .balance_with_pointer {
     display: flex;
@@ -43,23 +35,54 @@
     line-height: var(--body-lh);
  
    
-}
-.left_bottom_container {
-    display: flex;
-    flex-direction: row;
-    justify-content: right;
-    align-items: center;
-    gap: 4px;
-    /* width: 100px; */
-}
-.right_bottom_container {
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-end;
-    /* align-items: baseline; */
 
-    gap: 0.5em;
+    
 }
+
+.swapbox_bottom {
+  
+margin: 6px 10px;
+   height: 33px;
+
+   
+   display: grid;
+   grid-template-columns: repeat(2, 1fr);
+   gap: 4px;
+
+   
+}
+.wallet_container, .surplus_container, .surplus_toggle{
+    width: 100%;
+    /* background: red; */
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    
+    /* align-items: center; */
+    /* flex: 1;; */
+    gap: 4px;
+
+
+
+    /* background: rgb(8, 21, 94); */
+    /* width: calc(100%/3) */
+}
+
+.wallet_container {
+    justify-content: flex-start; 
+}
+.surplus_container {
+    /* background: rgb(2, 2, 34); */
+    justify-content: flex-end;
+
+    display: flex;
+    text-align: end;
+  
+}
+
+/* .surplus_toggle { 
+    justify-content: flex-end;
+} */
 
 .balance_column {
     display: flex;
@@ -85,18 +108,22 @@
     /* align-items: center; */
     /* padding: 0.5rem 0; */
     min-height: 40px;
+
+    display: grid;
+    grid-template-columns: auto 120px;
     /* height: 40px; */
 }
 
-.swap_input {
+/* .swap_input {
     width: 65%;
-}
+} */
 .token_select {
     /* background: var(--dark3); */
     display: flex;
     justify-content: space-between;
     align-items: center;
-    width: 35%;
+    /* gap: 4px; */
+    /* width: 35%; */
     cursor: pointer;
     transition: all var(--animation-speed) ease-in-out;
 }
@@ -118,18 +145,6 @@
 }
 
 /* bottom info */
-.swapbox_bottom {
-    /* display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center; */
-    min-height: 33px;
-    display: grid;
-    grid-template-columns:  repeat(3, 1fr);
-   margin: 6px 10px 0px 10px;
-
-    /* margin: 6px 10px 0px 10px; */
-}
 
 .token_select_button {
     cursor: pointer;
@@ -154,14 +169,7 @@
     filter: grayscale(100%);
 }
 
-.surplus_toggle {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: flex-end;
-   
-  
-}
+
 
 /* modal */
 
@@ -218,9 +226,8 @@
     /* background: var(--dark3); */
     background: transparent;
 
-    /* background: red; */
-    /* width: 30px; */
-    margin-right: 8px;
+    width: 25px;
+    /* margin-right: 8px; */
     max-height: 20px;
     /* padding: 0 8px; */
     transition: all var(--animation-speed) ease-in-out;

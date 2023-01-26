@@ -1,17 +1,18 @@
 .currency_quantity {
+
+    
     font-weight: 200;
     font-size: 18px;
     line-height: 22px;
     color: var(--text-grey-white);
     text-align: start;
-    width: 100%;
+    width: 80%;
     height: calc(1.5em + 0.75rem + 2px);
     padding: 0;
     max-height: 23px;
     margin: 8.5px 0;
     margin-left: 32px;
     border: none;
-    border-radius: 0.25rem;
     outline: 0;
     background-color: transparent;
     background-clip: padding-box;
