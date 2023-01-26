@@ -143,6 +143,8 @@ export default function Trade(props: TradePropsIF) {
     const { params } = useParams();
 
     const [transactionFilter, setTransactionFilter] = useState<CandleData>();
+    const [isCandleDataNull] = useState(false);
+    const [isCandleArrived, setIsCandleDataArrived] = useState(false);
 
     const navigate = useNavigate();
 
@@ -160,6 +162,38 @@ export default function Trade(props: TradePropsIF) {
             name: 'Range',
         },
     ];
+
+    // useEffect(() => {
+    //     if (props.candleData?.candles !== undefined) {
+    //         const candleDataNullArr: boolean[] = [];
+
+    //         props.candleData?.candles.map((obj) => {
+    //             const isNullish = Object.values(obj).every((value, index) => {
+    //                 if (index === 0 || value === null) {
+    //                     return true;
+    //                 }
+
+    //                 return false;
+    //             });
+
+    //             candleDataNullArr.push(isNullish);
+    //         });
+
+    //         const candleDataCheck = Object.values(candleDataNullArr).every((value) => {
+    //             if (value) {
+    //                 return true;
+    //             }
+    //             return false;
+    //         });
+
+    //         if (candleDataCheck) {
+    //             setExpandTradeTable(candleDataCheck);
+    //             setIsCandleDataNull(candleDataCheck);
+    //         } else if (isCandleDataNull) {
+    //             setIsCandleDataArrived(!candleDataCheck);
+    //         }
+    //     }
+    // }, [props.candleData]);
 
     const [selectedDate, setSelectedDate] = useState<Date | undefined>();
 
@@ -399,6 +433,7 @@ export default function Trade(props: TradePropsIF) {
                     style={{ background: chartBg }}
                 >
                     <div className={styles.main__chart_container}>
+                        {/* {!isCandleDataNull && ( */}
                         <TradeCharts
                             // poolPriceTick={poolPriceTick}
                             isUserLoggedIn={isUserLoggedIn}
@@ -442,6 +477,7 @@ export default function Trade(props: TradePropsIF) {
                             isPoolPriceChangePositive={isPoolPriceChangePositive}
                             setIsPoolPriceChangePositive={setIsPoolPriceChangePositive}
                         />
+                        {/* )} */}
                     </div>
                 </div>
 
@@ -504,6 +540,9 @@ export default function Trade(props: TradePropsIF) {
                             // handleTxCopiedClick={handleTxCopiedClick}
                             // handleOrderCopiedClick={handleOrderCopiedClick}
                             // handleRangeCopiedClick={handleRangeCopiedClick}
+                            isCandleDataNull={isCandleDataNull}
+                            isCandleArrived={isCandleArrived}
+                            setIsCandleDataArrived={setIsCandleDataArrived}
                         />
                     </div>
                 </motion.div>

@@ -95,6 +95,9 @@ interface ITabsProps {
     isPoolPriceChangePositive: boolean;
 
     setIsPoolPriceChangePositive: Dispatch<SetStateAction<boolean>>;
+    isCandleDataNull: boolean;
+    isCandleArrived: boolean;
+    setIsCandleDataArrived: Dispatch<SetStateAction<boolean>>;
 }
 
 // const httpGraphCacheServerDomain = 'https://809821320828123.de:5000';
@@ -153,6 +156,9 @@ export default function TradeTabs2(props: ITabsProps) {
         setPoolPriceChangePercent,
         isPoolPriceChangePositive,
         // setIsPoolPriceChangePositive
+        isCandleDataNull,
+        isCandleArrived,
+        setIsCandleDataArrived,
     } = props;
 
     const graphData = useAppSelector((state) => state?.graphData);
@@ -479,6 +485,9 @@ export default function TradeTabs2(props: ITabsProps) {
         leaderOwnerId: leaderOwnerId,
         selectedDate: selectedDate,
         setSelectedDate: setSelectedDate,
+        isCandleDataNull: isCandleDataNull,
+        isCandleArrived: isCandleArrived,
+        setIsCandleDataArrived: setIsCandleDataArrived,
     };
 
     const TradeChartsTokenInfoProps = {
