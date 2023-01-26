@@ -60,6 +60,8 @@ export default function ConfirmSwapModal(props: ConfirmSwapModalProps) {
     // console.log({ txErrorMessage });
     const isTransactionDenied = txErrorCode === 'ACTION_REJECTED';
     const isTransactionException = txErrorCode === 'CALL_EXCEPTION';
+    const isGasLimitException = txErrorCode === 'UNPREDICTABLE_GAS_LIMIT';
+
     // const isTransactionDenied =
     //     txErrorCode === 4001 &&
     //     txErrorMessage === 'MetaMask Tx Signature: User denied transaction signature.';
@@ -307,13 +309,14 @@ export default function ConfirmSwapModal(props: ConfirmSwapModalProps) {
         />
     );
 
-    const confirmationDisplay = isTransactionException
-        ? transactionException
-        : isTransactionDenied
-        ? transactionDenied
-        : transactionApproved
-        ? transactionSubmitted
-        : confirmSendMessage;
+    const confirmationDisplay =
+        isTransactionException || isGasLimitException
+            ? transactionException
+            : isTransactionDenied
+            ? transactionDenied
+            : transactionApproved
+            ? transactionSubmitted
+            : confirmSendMessage;
 
     const modal = (
         <div className={styles.modal_container}>
