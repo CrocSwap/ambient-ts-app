@@ -1,10 +1,13 @@
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
+import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
 import { TokenIF, TempPoolIF } from '../../../utils/interfaces/exports';
+import { setShoulRecheckLocalStorage } from '../../../utils/state/userDataSlice';
 // import { recursiveMax } from '../../../utils/errors/recursiveMax';
 
 export const useSidebarSearch = (
     poolList: TempPoolIF[],
     verifyToken: (addr: string, chn: string) => boolean,
+    shoulRecheckLocalStorage: boolean,
 ): [Dispatch<SetStateAction<string>>, boolean, TempPoolIF[]] => {
     // raw user input from the DOM
     const [rawInput, setRawInput] = useState<string>('');
@@ -68,24 +71,29 @@ export const useSidebarSearch = (
     // this must be initialized as `null` for fn verifyPools() to run properly
     const [ackTokens, setAckTokens] = useState<TokenIF[]>([]);
 
+    const dispatch = useAppDispatch();
+
     // hook to get acknowledged tokens list from local storage
     useEffect(() => {
-        const getAckTokens = (): void => {
-            // retrieve and parse user data from local storage
-            const userData = JSON.parse(localStorage.getItem('user') as string);
-            const ackTokens: [] = (userData && userData.ackTokens) || [];
-            // set ackTokens if user data was pulled, otherwise check recursively
-            // if (ackTokens !== null) {
-            // console.log({ ackTokens });
-            setAckTokens(ackTokens);
-            // } else if (limiter < 30) {
-            // setTimeout(() => getAckTokens(limiter + 1), 150);
-            // } else {
-            // recursiveMax('warn', 'useSidebarSearch.ts', 'getAckTokens()');
-            // }
-        };
-        getAckTokens();
-    }, []);
+        if (shoulRecheckLocalStorage) {
+            const getAckTokens = (): void => {
+                // retrieve and parse user data from local storage
+                const userData = JSON.parse(localStorage.getItem('user') as string);
+                const ackTokens: [] = (userData && userData.ackTokens) || [];
+                // set ackTokens if user data was pulled, otherwise check recursively
+                // if (ackTokens !== null) {
+                // console.log({ ackTokens });
+                setAckTokens(ackTokens);
+                // } else if (limiter < 30) {
+                // setTimeout(() => getAckTokens(limiter + 1), 150);
+                // } else {
+                // recursiveMax('warn', 'useSidebarSearch.ts', 'getAckTokens()');
+                // }
+            };
+            getAckTokens();
+            dispatch(setShoulRecheckLocalStorage(false));
+        }
+    }, [shoulRecheckLocalStorage]);
 
     // memoized list of pools where both tokens can be verified
     // can be a useMemo because poolList will initialize as empty array
