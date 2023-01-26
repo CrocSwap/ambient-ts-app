@@ -1335,7 +1335,7 @@ export default function Chart(props: ChartData) {
                     if (clickedForLine) {
                         if (
                             event.sourceEvent.type !== 'wheel' &&
-                            event.sourceEvent.timeStamp - zoomTimeout < 500
+                            event.sourceEvent.timeStamp - zoomTimeout < 1
                         ) {
                             const { isHoverCandleOrVolumeData, _selectedDate } =
                                 candleOrVolumeDataHoverStatus(event.sourceEvent);
