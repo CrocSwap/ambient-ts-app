@@ -358,6 +358,8 @@ export default function App() {
     const [expandTradeTable, setExpandTradeTable] = useState(false);
     const [userIsOnline, setUserIsOnline] = useState(navigator.onLine);
 
+    const [fetchingCandle, setFetchingCandle] = useState(false);
+
     const [ethMainnetUsdPrice, setEthMainnetUsdPrice] = useState<number | undefined>();
 
     window.ononline = () => setUserIsOnline(true);
@@ -1273,7 +1275,7 @@ export default function App() {
                     // console.log('fetching candles');
                     const candleSeriesCacheEndpoint =
                         httpGraphCacheServerDomain + '/candle_series?';
-
+                    setFetchingCandle(true);
                     fetch(
                         candleSeriesCacheEndpoint +
                             new URLSearchParams({
@@ -2755,6 +2757,8 @@ export default function App() {
 
                                     fullScreenChart={fullScreenChart}
                                     setFullScreenChart={setFullScreenChart}
+                                    fetchingCandle={fetchingCandle}
+                                    setFetchingCandle={setFetchingCandle}
                                 />
                             }
                         >

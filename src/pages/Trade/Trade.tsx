@@ -83,6 +83,8 @@ interface TradePropsIF {
 
     fullScreenChart: boolean;
     setFullScreenChart: Dispatch<SetStateAction<boolean>>;
+    fetchingCandle: boolean;
+    setFetchingCandle: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 // React functional component
@@ -134,6 +136,8 @@ export default function Trade(props: TradePropsIF) {
 
         fullScreenChart,
         setFullScreenChart,
+        fetchingCandle,
+        setFetchingCandle,
     } = props;
 
     const tokenPairFromParams = useUrlParams(chainId, isInitialized);
@@ -476,6 +480,8 @@ export default function Trade(props: TradePropsIF) {
                             setPoolPriceChangePercent={setPoolPriceChangePercent}
                             isPoolPriceChangePositive={isPoolPriceChangePositive}
                             setIsPoolPriceChangePositive={setIsPoolPriceChangePositive}
+                            fetchingCandle={fetchingCandle}
+                            setFetchingCandle={setFetchingCandle}
                         />
                         {/* )} */}
                     </div>

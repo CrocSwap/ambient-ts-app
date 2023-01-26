@@ -12,7 +12,7 @@ import {
     TvlChartData,
     VolumeChartData,
 } from './TradeCharts';
-import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
+import { useAppDispatch, useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import {
     getPinnedPriceValuesFromDisplayPrices,
     getPinnedPriceValuesFromTicks,
@@ -78,6 +78,8 @@ interface ChartData {
     setShowLatest: React.Dispatch<React.SetStateAction<boolean>>;
     setShowTooltip: React.Dispatch<React.SetStateAction<boolean>>;
     handlePulseAnimation: (type: string) => void;
+    fetchingCandle: boolean;
+    setFetchingCandle: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export interface ChartUtils {
@@ -109,6 +111,8 @@ export default function TradeCandleStickChart(props: ChartData) {
         setSelectedDate,
         activeTimeFrame,
         handlePulseAnimation,
+        fetchingCandle,
+        setFetchingCandle,
     } = props;
 
     const [scaleData, setScaleData] = useState<any>();
@@ -698,9 +702,11 @@ export default function TradeCandleStickChart(props: ChartData) {
                 liquidityData.liqAskData.length === 0 ||
                 liquidityData.liqBidData.length === 0 ||
                 poolPriceNonDisplay === 0;
+
             if (isLoading !== shouldReload) {
                 console.log('setting isLoading to ' + shouldReload);
                 setIsLoading(shouldReload);
+                setFetchingCandle(shouldReload);
             }
         }, 500);
         return () => clearTimeout(timer);
@@ -716,7 +722,7 @@ export default function TradeCandleStickChart(props: ChartData) {
     return (
         <>
             <div style={{ height: '100%', width: '100%' }}>
-                {!isLoading && parsedChartData !== undefined ? (
+                {!fetchingCandle && !isLoading && parsedChartData !== undefined ? (
                     <Chart
                         isUserLoggedIn={isUserLoggedIn}
                         pool={pool}
