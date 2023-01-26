@@ -3587,7 +3587,8 @@ export default function Chart(props: ChartData) {
             horizontalBandData !== undefined &&
             horizontalBandJoin !== undefined &&
             barSeries !== undefined &&
-            volumeData !== undefined
+            volumeData !== undefined &&
+            liquidityScale !== undefined
         ) {
             const targetData = {
                 limit: limit,
@@ -3637,6 +3638,7 @@ export default function Chart(props: ChartData) {
                 showVolume,
                 selectedDate,
                 liqMode,
+                liquidityScale,
             );
         }
     }, [
@@ -3677,6 +3679,7 @@ export default function Chart(props: ChartData) {
         showVolume,
         selectedDate,
         liqMode,
+        liquidityScale,
     ]);
 
     const minimum = (data: any, accessor: any) => {
@@ -3845,6 +3848,7 @@ export default function Chart(props: ChartData) {
             showVolume: boolean,
             selectedDate: any,
             liqMode: any,
+            liquidityScale: any,
         ) => {
             if (chartData.length > 0) {
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
