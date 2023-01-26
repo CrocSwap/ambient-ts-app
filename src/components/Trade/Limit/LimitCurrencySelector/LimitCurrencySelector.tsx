@@ -11,7 +11,7 @@ import styles from './LimitCurrencySelector.module.css';
 import { TokenIF, TokenPairIF } from '../../../../utils/interfaces/exports';
 import Modal from '../../../../components/Global/Modal/Modal';
 import { useModal } from '../../../../components/Global/Modal/useModal';
-import Toggle2 from '../../../Global/Toggle/Toggle2';
+// import Toggle2 from '../../../Global/Toggle/Toggle2';
 import IconWithTooltip from '../../../Global/IconWithTooltip/IconWithTooltip';
 import { MdAccountBalanceWallet } from 'react-icons/md';
 import ambientLogo from '../../../../assets/images/logos/ambient_logo.svg';
@@ -167,19 +167,19 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
         </div>
     );
 
-    const WithdrawTokensContent = (
-        <span className={styles.surplus_toggle}>
-            <IconWithTooltip title='Use Exchange Balance' placement='bottom'>
-                <Toggle2
-                    isOn={isWithdrawFromDexChecked}
-                    handleToggle={() => setIsWithdrawFromDexChecked(!isWithdrawFromDexChecked)}
-                    id='sell_token_withdrawal'
-                    disabled={false}
-                    // disabled={parseFloat(tokenADexBalance) <= 0}
-                />
-            </IconWithTooltip>
-        </span>
-    );
+    // const WithdrawTokensContent = (
+    //     <span className={styles.surplus_toggle}>
+    //         <IconWithTooltip title='Use Exchange Balance' placement='bottom'>
+    //             <Toggle2
+    //                 isOn={isWithdrawFromDexChecked}
+    //                 handleToggle={() => setIsWithdrawFromDexChecked(!isWithdrawFromDexChecked)}
+    //                 id='sell_token_withdrawal'
+    //                 disabled={false}
+    //                 // disabled={parseFloat(tokenADexBalance) <= 0}
+    //             />
+    //         </IconWithTooltip>
+    //     </span>
+    // );
 
     const isWithdrawFromDexDisabled = parseFloat(tokenADexBalance || '0') <= 0;
     const isWithdrawFromWalletDisabled = parseFloat(tokenABalance || '0') <= 0;
@@ -377,13 +377,7 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
                         }
                     }}
                 >
-                    <div
-                        className={`${styles.wallet_logo} ${
-                            isSellTokenSelector ? styles.enabled_logo : null
-                        }`}
-                    >
-                        <img src={ambientLogo} width='20' alt='surplus' />
-                    </div>
+                    {surplusMaxButton}
                     <div className={styles.balance_column}>
                         <div> {isUserLoggedIn ? surplusBalanceLocaleString : ''}</div>
                         <div
@@ -394,8 +388,14 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
                             <p style={{ fontSize: '9px' }}> {sellTokenSurplusChange}</p>
                         </div>
                     </div>
+                    <div
+                        className={`${styles.wallet_logo} ${
+                            isSellTokenSelector ? styles.enabled_logo : null
+                        }`}
+                    >
+                        <img src={ambientLogo} width='20' alt='surplus' />
+                    </div>
                 </div>
-                {surplusMaxButton}
             </IconWithTooltip>
         </div>
     );
@@ -408,7 +408,7 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
                 {walletContent}
                 {surplusContent}
 
-                {isSellTokenSelector ? WithdrawTokensContent : null}
+                {/* {isSellTokenSelector ? WithdrawTokensContent : null} */}
             </div>
         )
     ) : null;
