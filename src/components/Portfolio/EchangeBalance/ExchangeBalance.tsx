@@ -17,6 +17,7 @@ import { CrocEnv } from '@crocswap-libs/sdk';
 import { ethers } from 'ethers';
 import { fetchAddress } from '../../../App/functions/fetchAddress';
 import IconWithTooltip from '../../Global/IconWithTooltip/IconWithTooltip';
+import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 interface ExchangeBalanceProps {
     crocEnv: CrocEnv | undefined;
     mainnetProvider: ethers.providers.WebSocketProvider;
@@ -197,9 +198,11 @@ export default function ExchangeBalance(props: ExchangeBalanceProps) {
     );
 
     // const titleOpacity = fullLayoutActive ? '0' : '1';
+
+    const columnView = useMediaQuery('(max-width: 850px)');
     return (
         <motion.main
-            animate={fullLayoutActive ? 'closed' : 'open'}
+            animate={columnView ? 'open' : fullLayoutActive ? 'closed' : 'open'}
             style={{ width: '100%' }}
             className={styles.container}
         >
@@ -208,7 +211,7 @@ export default function ExchangeBalance(props: ExchangeBalanceProps) {
                     Exchange Balance
                 </div> */}
                 <div className={styles.tabs_container}>
-                    {!fullLayoutActive && (
+                    {(!fullLayoutActive || columnView) && (
                         <TabComponent
                             data={accountData}
                             rightTabOptions={false}
@@ -220,7 +223,7 @@ export default function ExchangeBalance(props: ExchangeBalanceProps) {
                     )}
                     {exchangeControl}
                 </div>
-                {!fullLayoutActive && (
+                {(!fullLayoutActive || columnView) && (
                     <>
                         <div className={styles.info_text}>
                             Collateral deposited into the Ambient Finance exchange contract can be

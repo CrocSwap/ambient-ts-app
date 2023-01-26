@@ -79,7 +79,45 @@ gap: 8px;
 }
 
 
-@media (min-width: 900px) {
+/* Switch buttons */
+.mobile_toggle_container {
+    /* width: 100%; */
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+    background: var(--dark2);
+    border-radius: 4px;
+    outline: 1px solid var(--text-grey-dark);
+    /* max-width: 200px; */
+    margin: 10px auto;
+}
+.mobile_toggle_container button {
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+    padding: 4px 1.5rem;
+
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+    border: none;
+    outline: none;
+}
+.mobile_toggle_container button:hover {
+    color: var(--text-grey-white);
+}
+.active_button_mobile_toggle {
+    color: rgb(0, 0, 0);
+    background: var(--text-highlight-dark);
+}
+
+.non_active_button_mobile_toggle {
+    color: var(--text-grey-white);
+    background-color: transparent;
+}
+
+
+@media (min-width: 850px) {
     .tabs_exchange_balance_container,
     .full_layout_container {
         /* I wish I had a logical answer to this calculation but it was through trial and error. The higher level containers of the app needs to be refactored to prevent this workflow */
@@ -120,5 +158,8 @@ gap: 8px;
         grid-template-columns: auto 380px;
     }
 
+    .mobile_toggle_container {
+        display: none;
+    }
    
 }

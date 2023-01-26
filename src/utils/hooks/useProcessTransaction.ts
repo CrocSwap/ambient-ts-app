@@ -135,8 +135,8 @@ export const useProcessTransaction = (tx: ITransaction, account: string) => {
                     : invertedPriceTruncated;
 
                 const truncatedDisplayPrice = isDenomBase
-                    ? quoteTokenCharacter + invertedPriceTruncated
-                    : baseTokenCharacter + nonInvertedPriceTruncated;
+                    ? invertedPriceTruncated
+                    : nonInvertedPriceTruncated;
 
                 setTruncatedDisplayPrice(truncatedDisplayPrice);
                 setTruncatedDisplayPriceDenomByMoneyness(truncatedDisplayPriceDenomByMoneyness);
@@ -215,11 +215,11 @@ export const useProcessTransaction = (tx: ITransaction, account: string) => {
                               maximumFractionDigits: 2,
                           });
                 const truncatedLowDisplayPrice = isDenomBase
-                    ? `${quoteTokenCharacter}${invertedAskPriceTruncated}`
-                    : `${baseTokenCharacter}${nonInvertedAskPriceTruncated}`;
+                    ? `${invertedAskPriceTruncated}`
+                    : `${nonInvertedAskPriceTruncated}`;
                 const truncatedHighDisplayPrice = isDenomBase
-                    ? `${quoteTokenCharacter}${invertedBidPriceTruncated}`
-                    : `${baseTokenCharacter}${nonInvertedBidPriceTruncated}`;
+                    ? `${invertedBidPriceTruncated}`
+                    : `${nonInvertedBidPriceTruncated}`;
 
                 const truncatedLowDisplayPriceDenomByMoneyness = isBaseTokenMoneynessGreaterOrEqual
                     ? `${nonInvertedAskPriceTruncated}`
@@ -278,8 +278,8 @@ export const useProcessTransaction = (tx: ITransaction, account: string) => {
                     : invertedPriceTruncated;
 
                 const truncatedDisplayPrice = isDenomBase
-                    ? quoteTokenCharacter + invertedPriceTruncated
-                    : baseTokenCharacter + nonInvertedPriceTruncated;
+                    ? invertedPriceTruncated
+                    : nonInvertedPriceTruncated;
 
                 setTruncatedDisplayPrice(truncatedDisplayPrice);
                 setTruncatedDisplayPriceDenomByMoneyness(truncatedDisplayPriceDenomByMoneyness);
@@ -345,7 +345,6 @@ export const useProcessTransaction = (tx: ITransaction, account: string) => {
     const priceType =
         (isDenomBase && !tx.isBuy) || (!isDenomBase && tx.isBuy) ? 'priceBuy' : 'priceSell';
 
-    // const sideCharacter = isDenomBase ? baseTokenCharacter : quoteTokenCharacter
     const sideType =
         tx.entityType === 'liqchange'
             ? tx.changeType === 'burn'
@@ -484,13 +483,9 @@ export const useProcessTransaction = (tx: ITransaction, account: string) => {
 
     const quoteDisplay = quantitiesAvailable ? quoteFlowDisplay || '0.00' : '…';
 
-    const baseDisplayFrontend = quantitiesAvailable
-        ? `${baseTokenCharacter}${baseFlowDisplay || '0.00'}`
-        : '…';
+    const baseDisplayFrontend = quantitiesAvailable ? `${baseFlowDisplay || '0.00'}` : '…';
 
-    const quoteDisplayFrontend = quantitiesAvailable
-        ? `${quoteTokenCharacter}${quoteFlowDisplay || '0.00'}`
-        : '…';
+    const quoteDisplayFrontend = quantitiesAvailable ? `${quoteFlowDisplay || '0.00'}` : '…';
 
     // --------------------------------------------------------
 

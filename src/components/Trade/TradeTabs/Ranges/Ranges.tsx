@@ -152,8 +152,12 @@ export default function Ranges(props: RangesPropsIF) {
     }, [top3Positions]);
 
     useEffect(() => {
-        if (isOnPortfolioPage) {
-            setRangeData(activeAccountPositionData || []);
+        if (
+            isOnPortfolioPage &&
+            activeAccountPositionData &&
+            JSON.stringify(activeAccountPositionData) !== JSON.stringify(rangeData)
+        ) {
+            setRangeData(activeAccountPositionData);
         } else if (!isShowAllEnabled) {
             setRangeData(positionsByUserMatchingSelectedTokens);
         } else if (positionsByPool) {
@@ -193,16 +197,18 @@ export default function Ranges(props: RangesPropsIF) {
                 .then((updatedPositions) => {
                     if (!isOnPortfolioPage) {
                         if (isShowAllEnabled) {
-                            dispatch(addPositionsByPool(updatedPositions));
+                            if (updatedPositions) dispatch(addPositionsByPool(updatedPositions));
                         } else {
-                            dispatch(
-                                addPositionsByUser(
-                                    updatedPositions.filter(
-                                        (position) => position.user === account,
-                                    ),
-                                ),
+                            const updatedPositionsMatchingUser = updatedPositions.filter(
+                                (position) => position.user.toLowerCase() === account.toLowerCase(),
                             );
+                            if (updatedPositionsMatchingUser.length)
+                                dispatch(addPositionsByUser(updatedPositionsMatchingUser));
                         }
+                    } else {
+                        setRangeData(
+                            updatedPositions.concat(positionsByUserMatchingSelectedTokens.slice(3)),
+                        );
                     }
                 })
                 .catch(console.log);
@@ -236,12 +242,13 @@ export default function Ranges(props: RangesPropsIF) {
     // Get current tranges
     const indexOfLastRanges = currentPage * rangesPerPage;
     const indexOfFirstRanges = indexOfLastRanges - rangesPerPage;
-    const currentRangess = sortedPositions?.slice(indexOfFirstRanges, indexOfLastRanges);
+    const currentRanges = sortedPositions?.slice(indexOfFirstRanges, indexOfLastRanges);
     const paginate = (pageNumber: number) => {
         setCurrentPage(pageNumber);
     };
 
-    const usePaginateDataOrNull = expandTradeTable ? currentRangess : sortedPositions;
+    const usePaginateDataOrNull =
+        expandTradeTable && !isOnPortfolioPage ? currentRanges : sortedPositions;
 
     const footerDisplay = (
         <div className={styles.footer}>
@@ -262,7 +269,7 @@ export default function Ranges(props: RangesPropsIF) {
 
     const ipadView = useMediaQuery('(max-width: 480px)');
     const desktopView = useMediaQuery('(max-width: 768px)');
-    const showColumns = useMediaQuery('(max-width: 1440px)');
+    const showColumns = useMediaQuery('(max-width: 1776px)');
 
     // const showColumns = sidebarOpen || desktopView;
 
@@ -310,7 +317,7 @@ export default function Ranges(props: RangesPropsIF) {
         {
             name: 'Pair',
             className: '',
-            show: isOnPortfolioPage && !desktopView,
+            show: isOnPortfolioPage && !desktopView && !showSidebar,
             slug: 'pool',
             sortable: true,
         },

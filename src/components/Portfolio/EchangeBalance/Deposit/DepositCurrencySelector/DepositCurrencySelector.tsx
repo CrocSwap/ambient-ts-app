@@ -13,22 +13,26 @@ interface DepositCurrencySelectorProps {
     disable?: boolean;
     selectedToken: TokenIF;
     setDepositQty: Dispatch<SetStateAction<string | undefined>>;
+    inputValue: string;
+    setInputValue: Dispatch<SetStateAction<string>>;
 }
 
 export default function DepositCurrencySelector(props: DepositCurrencySelectorProps) {
-    const { fieldId, disable, onClick, selectedToken, setDepositQty } = props;
+    const { fieldId, disable, onClick, selectedToken, setDepositQty, inputValue, setInputValue } =
+        props;
 
-    const rateInput = (
+    const qtyInput = (
         <div className={styles.token_amount}>
             <input
-                id={`${fieldId}-exchange-balance-deposit-quantity`}
+                id={`${fieldId}-quantity`}
                 className={styles.currency_quantity}
-                placeholder='0'
+                placeholder='0.00'
                 onChange={(event) => {
-                    // console.log(event.target.value);
+                    const isValid = event.target.value === '' || event.target.validity.valid;
+                    isValid ? setInputValue(event.target.value) : null;
                     if (parseFloat(event.target.value) > 0) {
                         const nonDisplayQty = fromDisplayQty(
-                            event.target.value,
+                            event.target.value.replaceAll(',', ''),
                             selectedToken.decimals,
                         );
                         setDepositQty(nonDisplayQty.toString());
@@ -36,13 +40,14 @@ export default function DepositCurrencySelector(props: DepositCurrencySelectorPr
                         setDepositQty(undefined);
                     }
                 }}
+                value={inputValue}
                 type='string'
                 inputMode='decimal'
                 autoComplete='off'
                 autoCorrect='off'
                 min='0'
                 minLength={1}
-                pattern='^[0-9]*[.,]?[0-9]*$'
+                pattern='^[0-9,]*[.]?[0-9]*$'
                 disabled={disable}
                 required
             />
@@ -53,7 +58,7 @@ export default function DepositCurrencySelector(props: DepositCurrencySelectorPr
         <div className={styles.swapbox}>
             <span className={styles.direction}>Select Token</span>
             <div className={styles.swapbox_top}>
-                <div className={styles.swap_input}>{rateInput}</div>
+                <div className={styles.swap_input}>{qtyInput}</div>
                 <div className={styles.token_select} onClick={onClick}>
                     {selectedToken.logoURI ? (
                         <img

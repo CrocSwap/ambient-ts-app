@@ -21,7 +21,7 @@ import LimitButton from '../../../components/Trade/Limit/LimitButton/LimitButton
 import LimitCurrencyConverter from '../../../components/Trade/Limit/LimitCurrencyConverter/LimitCurrencyConverter';
 import LimitExtraInfo from '../../../components/Trade/Limit/LimitExtraInfo/LimitExtraInfo';
 import LimitHeader from '../../../components/Trade/Limit/LimitHeader/LimitHeader';
-import DividerDark from '../../../components/Global/DividerDark/DividerDark';
+// import DividerDark from '../../../components/Global/DividerDark/DividerDark';
 import Modal from '../../../components/Global/Modal/Modal';
 import Button from '../../../components/Global/Button/Button';
 import ConfirmLimitModal from '../../../components/Trade/Limit/ConfirmLimitModal/ConfirmLimitModal';
@@ -717,7 +717,7 @@ export default function Limit(props: LimitPropsIF) {
                     openGlobalModal={props.openGlobalModal}
                     shareOptionsDisplay={shareOptionsDisplay}
                 />
-                <DividerDark addMarginTop />
+                {/* <DividerDark addMarginTop /> */}
                 {navigationMenu}
                 <motion.div
                     initial={{ opacity: 0 }}
@@ -776,7 +776,7 @@ export default function Limit(props: LimitPropsIF) {
                     />
                 </motion.div>
                 <div className={styles.header_container}>
-                    <DividerDark addMarginTop />
+                    {/* <DividerDark addMarginTop /> */}
                     {/* <DenominationSwitch /> */}
                 </div>
                 <LimitExtraInfo

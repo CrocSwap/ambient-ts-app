@@ -48,7 +48,7 @@
 }
 
 .tokens_images img {
-    width: 20px;
+    width: 18px;
 }
 .tokens_name {
     letter-spacing: -0.02em;
@@ -84,7 +84,7 @@
     }
 }
 
-@media (min-width: 680px) {
+@media (min-width: 968px) {
     .tokens_name {
         font-weight: 300;
         font-size: var(--header1-size);

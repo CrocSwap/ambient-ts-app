@@ -1,5 +1,7 @@
 import styles from './VolumeTVLFee.module.css';
-import { Dispatch, SetStateAction } from 'react';
+import { Dispatch, SetStateAction, useState, useRef } from 'react';
+import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
+import useOnClickOutside from '../../../../utils/hooks/useOnClickOutside';
 
 interface VolumeTVLFeePropsIF {
     setShowVolume: Dispatch<SetStateAction<boolean>>;
@@ -13,6 +15,10 @@ interface VolumeTVLFeePropsIF {
 export default function VolumeTVLFee(props: VolumeTVLFeePropsIF) {
     const { setShowVolume, setShowTvl, setShowFeeRate, showVolume, showTvl, showFeeRate } = props;
 
+    const [showVolumeTVLFeeDropdown, setShowVolumeTVLFeeDropdown] = useState(false);
+
+    const desktopView = useMediaQuery('(max-width: 968px)');
+
     const handleVolumeToggle = () => setShowVolume(!showVolume);
 
     const handleTvlToggle = () => setShowTvl(!showTvl);
@@ -23,6 +29,51 @@ export default function VolumeTVLFee(props: VolumeTVLFeePropsIF) {
         { name: 'TVL', selected: showTvl, action: handleTvlToggle },
         { name: 'Fee Rate', selected: showFeeRate, action: handleFeeRateToggle },
     ];
+
+    const wrapperStyle = showVolumeTVLFeeDropdown
+        ? styles.dropdown_wrapper_active
+        : styles.dropdown_wrapper;
+
+    const dropdownItemRef = useRef<HTMLDivElement>(null);
+    const clickOutsideHandler = () => {
+        setShowVolumeTVLFeeDropdown(false);
+    };
+    useOnClickOutside(dropdownItemRef, clickOutsideHandler);
+
+    function handleCurveDepthClickMobile(action: () => void) {
+        action();
+        setShowVolumeTVLFeeDropdown(false);
+    }
+
+    const volumeTVLFeeMobile = (
+        <div className={styles.dropdown_menu} ref={dropdownItemRef}>
+            <button
+                className={styles.volume_tvl_fee_mobile_button}
+                onClick={() => setShowVolumeTVLFeeDropdown(!showVolumeTVLFeeDropdown)}
+            >
+                {showVolume ? 'Volume' : showTvl ? 'TVL' : showFeeRate ? 'Fee Rate' : ''}
+            </button>
+
+            <div className={wrapperStyle}>
+                {volumeTvlAndFeeData.map((button, idx) => (
+                    <div className={styles.volume_tvl_container} key={idx}>
+                        <button
+                            onClick={() => handleCurveDepthClickMobile(button.action)}
+                            className={
+                                button.selected
+                                    ? styles.active_selected_button
+                                    : styles.non_active_selected_button
+                            }
+                        >
+                            {button.name}
+                        </button>
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
+
+    if (desktopView) return volumeTVLFeeMobile;
 
     return (
         <div

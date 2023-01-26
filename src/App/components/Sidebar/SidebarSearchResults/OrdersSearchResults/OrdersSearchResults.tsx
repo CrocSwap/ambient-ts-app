@@ -26,7 +26,7 @@ export default function OrdersSearchResults(props: OrdersSearchResultPropsIF) {
 
     const exampleContent = (
         <div className={styles.main_result_container}>
-            {new Array(5).fill(null).map((item, idx) => (
+            {new Array(0).fill(null).map((item, idx) => (
                 <OrderSearchResult key={idx} />
             ))}
         </div>
