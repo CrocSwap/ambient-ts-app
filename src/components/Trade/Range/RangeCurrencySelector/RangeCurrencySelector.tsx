@@ -377,17 +377,6 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
                                 : '#555555',
                     }}
                 >
-                    {surplusMaxButton}
-                    <div className={styles.balance_column}>
-                        <div> {isUserLoggedIn ? surplusBalanceLocaleString : ''}</div>
-                        <div
-                            style={{
-                                color: '#f6385b',
-                            }}
-                        >
-                            {isTokenASelector ? tokenASurplusChange : tokenBSurplusChange}
-                        </div>
-                    </div>
                     <div
                         className={`${styles.wallet_logo} ${
                             isTokenASelector
@@ -401,6 +390,17 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
                     >
                         <img src={ambientLogo} width='20' alt='surplus' />
                     </div>
+                    <div className={styles.balance_column}>
+                        <div> {isUserLoggedIn ? surplusBalanceLocaleString : ''}</div>
+                        <div
+                            style={{
+                                color: '#f6385b',
+                            }}
+                        >
+                            {isTokenASelector ? tokenASurplusChange : tokenBSurplusChange}
+                        </div>
+                    </div>
+                    {surplusMaxButton}
                 </div>
             </IconWithTooltip>
         </div>

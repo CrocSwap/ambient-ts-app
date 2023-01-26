@@ -135,13 +135,14 @@
 
 .main_exchange_container, .main_wallet_container{
     display: flex;
+    justify-content: center;
  flex-direction: row;
  gap: 2rem;
 }
 
 .main_exchange_container{
     display: flex;
-    justify-content: flex-end;
+    justify-content: center;
 }
 .surplus_toggle {
     display: flex;
