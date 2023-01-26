@@ -39,7 +39,14 @@ import {
     getPinnedTickFromDisplayPrice,
 } from '../Trade/Range/rangeFunctions';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
-import { get4HoursAxisTicks, getOneDayAxisTicks, getOneHourAxisTicks } from './calcuteDateAxis';
+import {
+    get15MinutesAxisTicks,
+    get1MinuteAxisTicks,
+    get4HoursAxisTicks,
+    get5MinutesAxisTicks,
+    getOneDayAxisTicks,
+    getOneHourAxisTicks,
+} from './calcuteDateAxis';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -846,6 +853,20 @@ export default function Chart(props: ChartData) {
             result = await get4HoursAxisTicks(oldTickValues, bandwidth);
         }
 
+        if (activeTimeFrame === '15m') {
+            result = get15MinutesAxisTicks(oldTickValues, bandwidth);
+        }
+
+        if (activeTimeFrame === '5m') {
+            result = get5MinutesAxisTicks(oldTickValues, bandwidth);
+        }
+
+        if (activeTimeFrame === '1m') {
+            result = get1MinuteAxisTicks(oldTickValues, bandwidth);
+        }
+
+        console.log({ result });
+
         return result;
     }
 
@@ -872,7 +893,8 @@ export default function Chart(props: ChartData) {
                         if (
                             moment(d)
                                 .format('DD')
-                                .match(/^(01)$/)
+                                .match(/^(01)$/) &&
+                            moment(d).format('HH:mm') === '00:00'
                         ) {
                             return moment(d).format('MMM') === 'Jan'
                                 ? moment(d).format('YYYY')
