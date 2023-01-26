@@ -3988,12 +3988,6 @@ export default function Chart(props: ChartData) {
 
                             // candleJoin(svg, [chartData]).call(candlestick);
 
-                            console.log(
-                                liquidityScale.domain(),
-                                scaleData.yScale.domain()[0],
-                                scaleData.yScale.domain()[1],
-                            );
-
                             if (JSON.stringify(liquidityScale.domain()) !== '[0,0]') {
                                 areaAskJoin(svg, [
                                     liqMode === 'Curve' ? liquidityData.liqAskData : [],
@@ -4039,12 +4033,6 @@ export default function Chart(props: ChartData) {
                                 ]).call(depthLiqBidSeries);
                             }
 
-                            // barJoin(svg, [showVolume ? volumeData : []]).call(barSeries);
-                            console.log(
-                                scaleData.volumeScale.domain(),
-                                JSON.stringify(scaleData.volumeScale.domain()) !== '[0,0]',
-                                { volumeData },
-                            );
                             if (JSON.stringify(scaleData.volumeScale.domain()) !== '[0,0]') {
                                 if (barSeries)
                                     barJoin(svg, [showVolume ? volumeData : []]).call(barSeries);

@@ -660,11 +660,7 @@ export default function TradeCandleStickChart(props: ChartData) {
 
             const volumeScale = d3.scaleLinear();
 
-            const yExtentVolume = d3fc
-                .extentLinear(volumeData)
-                .include([0])
-                .accessors([(d: any) => d.value])
-                .pad([0.05, 0.05]);
+            const yExtentVolume = d3fc.extentLinear(volumeData).accessors([(d: any) => d.value]);
 
             volumeScale.domain(yExtentVolume(volumeData));
 
