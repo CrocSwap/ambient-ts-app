@@ -438,7 +438,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
         //     leaveDelay={200}
         // >
         <li onClick={openDetailsModal} data-label={baseTokenSymbol} className='base_color'>
-            <p
+            <div
                 style={{
                     display: 'flex',
                     alignItems: 'center',
@@ -452,7 +452,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                 {baseTokenLogoComponent}
                 {/* {<img src={baseTokenLogo} width='15px' alt='' />} */}
                 {/* {isOnPortfolioPage && <img src={baseTokenLogo} width='15px' alt='' />} */}
-            </p>
+            </div>
         </li>
         /* </DefaultTooltip> */
     );
@@ -466,7 +466,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
         //     leaveDelay={200}
         // >
         <li onClick={openDetailsModal} data-label={quoteTokenSymbol} className='base_color'>
-            <p
+            <div
                 style={{
                     display: 'flex',
                     alignItems: 'center',
@@ -480,7 +480,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                 {/* {<img src={quoteTokenLogo} width='15px' alt='' />} */}
                 {quoteTokenLogoComponent}
                 {/* {isOnPortfolioPage && <img src={quoteTokenLogo} width='15px' alt='' />} */}
-            </p>
+            </div>
         </li>
         /* </DefaultTooltip> */
     );
@@ -557,15 +557,15 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                         </li>
                     ) : (
                         <li onClick={openDetailsModal} data-label='price' className={'base_color'}>
-                            <p className={`${styles.align_right} `}>
+                            <div className={`${styles.align_right} `}>
                                 <span>{sideCharacter}</span>
                                 <span style={{ fontFamily: 'monospace' }}>
                                     {isOnPortfolioPage
                                         ? truncatedHighDisplayPriceDenomByMoneyness
                                         : truncatedHighDisplayPrice}
                                 </span>
-                            </p>
-                            <p className={`${styles.align_right} `}>
+                            </div>
+                            <div className={`${styles.align_right} `}>
                                 <span style={{ fontFamily: 'monospace' }}>
                                     {isOnPortfolioPage ? (
                                         <p className={`${styles.align_right} `}>
@@ -583,7 +583,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                                         </p>
                                     )}
                                 </span>
-                            </p>
+                            </div>
                         </li>
                     )
                 ) : (
@@ -655,7 +655,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                     style={{ textAlign: 'right' }}
                     onClick={openDetailsModal}
                 >
-                    <p
+                    <div
                         className={`${styles.token_qty} ${positiveDisplayStyle}`}
                         style={{ fontFamily: 'monospace', whiteSpace: 'nowrap' }}
                     >
@@ -663,9 +663,9 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                         {valueArrows ? positiveArrow : ' '}
                         {/* {isBuy ? quoteFlowArrow : baseFlowArrow} */}
                         {isBuy ? quoteTokenLogoComponent : baseTokenLogoComponent}
-                    </p>
+                    </div>
 
-                    <p
+                    <div
                         className={`${styles.token_qty} ${negativeDisplayStyle}`}
                         style={{ fontFamily: 'monospace', whiteSpace: 'nowrap' }}
                     >
@@ -675,7 +675,7 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                             : `${quoteDisplay}${valueArrows ? negativeArrow : ' '}`}
                         {/* {isBuy ? baseFlowArrow : quoteFlowArrow} */}
                         {isBuy ? baseTokenLogoComponent : quoteTokenLogoComponent}
-                    </p>
+                    </div>
                 </li>
             )}
             <li data-label='menu' className={styles.menu}>

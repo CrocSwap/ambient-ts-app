@@ -55,7 +55,6 @@ export const useRecentPools = (
     function addRecentPool(pool: SmallerPoolIF): void {
         // remove the current pool from the list, if present
         // this prevents duplicate entries
-        console.log({ pool });
         const recentPoolsWithNewRemoved = recentPools.filter(
             (recentPool: SmallerPoolIF) =>
                 recentPool.base.toLowerCase() !== pool.base.toLowerCase() ||

@@ -141,7 +141,7 @@ import TopRanges from '../components/Analytics/TopRanges/TopRanges';
 import TopTokens from '../components/Analytics/TopTokens/TopTokens';
 import AnalyticsTransactions from '../components/Analytics/AnalyticsTransactions/AnalyticsTransactions';
 import trimString from '../utils/functions/trimString';
-import { memoizeFetchContractDetails } from './functions/fetchContractDetails';
+// import { memoizeFetchContractDetails } from './functions/fetchContractDetails';
 import { useToken } from './hooks/useToken';
 import { useSidebar } from './hooks/useSidebar';
 import useDebounce from './hooks/useDebounce';
@@ -161,7 +161,7 @@ const cachedFetchNativeTokenBalance = memoizeFetchNativeTokenBalance();
 const cachedFetchErc20TokenBalances = memoizeFetchErc20TokenBalances();
 const cachedFetchTokenPrice = memoizeTokenPrice();
 const cachedQuerySpotPrice = memoizeQuerySpotPrice();
-const cachedFetchContractDetails = memoizeFetchContractDetails();
+// const cachedFetchContractDetails = memoizeFetchContractDetails();
 // const cachedQuerySpotTick = memoizeQuerySpotTick();
 
 const httpGraphCacheServerDomain = 'https://809821320828123.de:5000';
@@ -286,7 +286,7 @@ export default function App() {
     const [loginCheckDelayElapsed, setLoginCheckDelayElapsed] = useState(false);
 
     useEffect(() => {
-        console.log('firing');
+        console.log('setting login check delay');
         const timer = setTimeout(() => {
             setLoginCheckDelayElapsed(true);
         }, 3000);
@@ -453,7 +453,7 @@ export default function App() {
     // }, [isUserLoggedIn, chainData.chainId, metamaskLocked]);
 
     useEffect(() => {
-        console.log('firing');
+        console.log('resetting token data because chainId changed');
         dispatch(resetTokens(chainData.chainId));
         dispatch(resetTokenData());
     }, [chainData.chainId]);
@@ -461,7 +461,7 @@ export default function App() {
     const poolList = usePoolList(chainData.chainId, chainData.poolIndex);
 
     useEffect(() => {
-        console.log('firing');
+        console.log('resetting user token data and address because connected account changed');
         dispatch(resetTokenData());
         if (account) {
             dispatch(setAddressCurrent(account));
@@ -487,7 +487,7 @@ export default function App() {
     const [tokenListsReceived, indicateTokenListsReceived] = useState(false);
 
     if (needTokenLists) {
-        console.log('firing');
+        console.log('fetching token lists');
         setNeedTokenLists(false);
         fetchTokenLists(tokenListsReceived, indicateTokenListsReceived);
     }
@@ -637,8 +637,8 @@ export default function App() {
     );
 
     useEffect(() => {
-        console.log('firing');
         if (lastReceipt) {
+            console.log('new receipt to display');
             setOpenSnackbar(true);
         }
     }, [JSON.stringify(lastReceipt)]);
@@ -663,8 +663,8 @@ export default function App() {
     // check for ENS name account changes
     useEffect(() => {
         (async () => {
-            console.log('firing');
             if (isUserLoggedIn && account && provider) {
+                console.log('checking for ens name');
                 try {
                     const ensName = await cachedFetchAddress(provider, account, chainData.chainId);
                     if (ensName) {
@@ -785,9 +785,9 @@ export default function App() {
 
     // hook to update `poolExists` when crocEnv changes
     useEffect(() => {
-        console.log('firing');
         setPoolExists(undefined);
         if (crocEnv && tokenPairLocal) {
+            console.log('checking if pool exists');
             if (tokenPairLocal[0].toLowerCase() === tokenPairLocal[1].toLowerCase()) return;
             // token pair has an initialized pool on-chain
             // returns a promise object
@@ -856,18 +856,17 @@ export default function App() {
 
     // useEffect that runs when token pair changes
     useEffect(() => {
-        console.log('firing');
-        if (rtkMatchesParams) {
-            if (provider) {
-                (async () => {
-                    const contractDetails = await cachedFetchContractDetails(
-                        provider,
-                        tradeData.tokenB.address,
-                        chainData.chainId,
-                    );
-                    console.log({ contractDetails });
-                })();
-            }
+        if (rtkMatchesParams && crocEnv) {
+            // if (provider) {
+            //     (async () => {
+            //         const contractDetails = await cachedFetchContractDetails(
+            //             provider,
+            //             tradeData.tokenB.address,
+            //             chainData.chainId,
+            //         );
+            //         console.log({ contractDetails });
+            //     })();
+            // }
 
             // console.log(tradeData.tokenA.address);
             // console.log(tradeData.tokenB.address);
@@ -1046,213 +1045,215 @@ export default function App() {
                         })
                         .catch(console.log);
 
-                    if (crocEnv) {
-                        // retrieve pool_positions
+                    // retrieve pool_positions
 
-                        // console.log('fetching pool positions');
-                        const allPositionsCacheEndpoint =
-                            httpGraphCacheServerDomain + '/pool_positions?';
-                        fetch(
-                            allPositionsCacheEndpoint +
-                                new URLSearchParams({
-                                    base: sortedTokens[0].toLowerCase(),
-                                    quote: sortedTokens[1].toLowerCase(),
-                                    poolIdx: chainData.poolIndex.toString(),
-                                    chainId: chainData.chainId,
-                                    annotate: 'true', // token quantities
-                                    ensResolution: 'true',
-                                    omitEmpty: 'true',
-                                    omitKnockout: 'true',
-                                    addValue: 'true',
+                    // console.log('fetching pool positions');
+                    const allPositionsCacheEndpoint =
+                        httpGraphCacheServerDomain + '/pool_positions?';
+                    fetch(
+                        allPositionsCacheEndpoint +
+                            new URLSearchParams({
+                                base: sortedTokens[0].toLowerCase(),
+                                quote: sortedTokens[1].toLowerCase(),
+                                poolIdx: chainData.poolIndex.toString(),
+                                chainId: chainData.chainId,
+                                annotate: 'true', // token quantities
+                                ensResolution: 'true',
+                                omitEmpty: 'true',
+                                omitKnockout: 'true',
+                                addValue: 'true',
+                            }),
+                    )
+                        .then((response) => response.json())
+                        .then((json) => {
+                            const poolPositions = json.data;
+                            dispatch(
+                                setDataLoadingStatus({
+                                    datasetName: 'poolRangeData',
+                                    loadingStatus: false,
                                 }),
-                        )
-                            .then((response) => response.json())
-                            .then((json) => {
-                                const poolPositions = json.data;
+                            );
+
+                            if (poolPositions && crocEnv) {
+                                // console.log({ poolPositions });
+                                Promise.all(
+                                    poolPositions.map((position: PositionIF) => {
+                                        return getPositionData(
+                                            position,
+                                            searchableTokens,
+                                            crocEnv,
+                                            chainData.chainId,
+                                            lastBlockNumber,
+                                        );
+                                    }),
+                                )
+                                    .then((updatedPositions) => {
+                                        // console.log({ updatedPositions });
+                                        if (
+                                            JSON.stringify(graphData.positionsByUser.positions) !==
+                                            JSON.stringify(updatedPositions)
+                                        ) {
+                                            dispatch(
+                                                setPositionsByPool({
+                                                    dataReceived: true,
+                                                    positions: updatedPositions,
+                                                }),
+                                            );
+                                        }
+                                    })
+                                    .catch(console.log);
+                            }
+                        })
+                        .catch(console.log);
+
+                    // retrieve positions for leaderboard
+                    // console.log('fetching leaderboard positions');
+                    const poolPositionsCacheEndpoint =
+                        httpGraphCacheServerDomain + '/annotated_pool_positions?';
+                    fetch(
+                        poolPositionsCacheEndpoint +
+                            new URLSearchParams({
+                                base: sortedTokens[0].toLowerCase(),
+                                quote: sortedTokens[1].toLowerCase(),
+                                poolIdx: chainData.poolIndex.toString(),
+                                chainId: chainData.chainId,
+                                ensResolution: 'true',
+                                omitEmpty: 'true',
+                                // omitKnockout: 'true',
+                                addValue: 'true',
+                                sortByAPY: 'true',
+                                n: '50',
+                            }),
+                    )
+                        .then((response) => response.json())
+                        .then((json) => {
+                            const leaderboardPositions = json.data;
+
+                            if (leaderboardPositions && crocEnv) {
+                                Promise.all(
+                                    leaderboardPositions.map((position: PositionIF) => {
+                                        return getPositionData(
+                                            position,
+                                            searchableTokens,
+                                            crocEnv,
+                                            chainData.chainId,
+                                            lastBlockNumber,
+                                        );
+                                    }),
+                                )
+                                    .then((updatedPositions) => {
+                                        const top10Positions = updatedPositions
+                                            .filter((updatedPosition: PositionIF) => {
+                                                return updatedPosition.isPositionInRange;
+                                            })
+                                            .slice(0, 10);
+
+                                        // console.log({ top10Positions });
+
+                                        if (
+                                            JSON.stringify(
+                                                graphData.leaderboardByPool.positions,
+                                            ) !== JSON.stringify(top10Positions)
+                                        ) {
+                                            dispatch(
+                                                setLeaderboardByPool({
+                                                    dataReceived: true,
+                                                    positions: top10Positions,
+                                                }),
+                                            );
+                                        }
+                                    })
+                                    .catch(console.log);
+                            }
+                        })
+                        .catch(console.log);
+
+                    // retrieve pool recent changes
+                    fetchPoolRecentChanges({
+                        tokensOnActiveLists: tokensOnActiveLists,
+                        base: sortedTokens[0],
+                        quote: sortedTokens[1],
+                        poolIdx: chainData.poolIndex,
+                        chainId: chainData.chainId,
+                        annotate: true,
+                        addValue: true,
+                        simpleCalc: true,
+                        annotateMEV: false,
+                        ensResolution: true,
+                        n: 100,
+                    })
+                        .then((poolChangesJsonData) => {
+                            if (poolChangesJsonData) {
                                 dispatch(
-                                    setDataLoadingStatus({
-                                        datasetName: 'poolRangeData',
-                                        loadingStatus: false,
+                                    setChangesByPool({
+                                        dataReceived: true,
+                                        changes: poolChangesJsonData,
                                     }),
                                 );
-
-                                if (poolPositions && crocEnv) {
-                                    // console.log({ poolPositions });
-                                    Promise.all(
-                                        poolPositions.map((position: PositionIF) => {
-                                            return getPositionData(
-                                                position,
-                                                searchableTokens,
-                                                crocEnv,
-                                                chainData.chainId,
-                                                lastBlockNumber,
-                                            );
-                                        }),
-                                    )
-                                        .then((updatedPositions) => {
-                                            // console.log({ updatedPositions });
-                                            if (
-                                                JSON.stringify(
-                                                    graphData.positionsByUser.positions,
-                                                ) !== JSON.stringify(updatedPositions)
-                                            ) {
-                                                dispatch(
-                                                    setPositionsByPool({
-                                                        dataReceived: true,
-                                                        positions: updatedPositions,
-                                                    }),
-                                                );
-                                            }
-                                        })
-                                        .catch(console.log);
-                                }
-                            })
-                            .catch(console.log);
-
-                        // retrieve positions for leaderboard
-                        // console.log('fetching leaderboard positions');
-                        const poolPositionsCacheEndpoint =
-                            httpGraphCacheServerDomain + '/annotated_pool_positions?';
-                        fetch(
-                            poolPositionsCacheEndpoint +
-                                new URLSearchParams({
-                                    base: sortedTokens[0].toLowerCase(),
-                                    quote: sortedTokens[1].toLowerCase(),
-                                    poolIdx: chainData.poolIndex.toString(),
-                                    chainId: chainData.chainId,
-                                    ensResolution: 'true',
-                                    omitEmpty: 'true',
-                                    // omitKnockout: 'true',
-                                    addValue: 'true',
-                                    sortByAPY: 'true',
-                                    n: '50',
-                                }),
-                        )
-                            .then((response) => response.json())
-                            .then((json) => {
-                                const leaderboardPositions = json.data;
-
-                                if (leaderboardPositions && crocEnv) {
-                                    Promise.all(
-                                        leaderboardPositions.map((position: PositionIF) => {
-                                            return getPositionData(
-                                                position,
-                                                searchableTokens,
-                                                crocEnv,
-                                                chainData.chainId,
-                                                lastBlockNumber,
-                                            );
-                                        }),
-                                    )
-                                        .then((updatedPositions) => {
-                                            const top10Positions = updatedPositions
-                                                .filter((updatedPosition: PositionIF) => {
-                                                    return updatedPosition.isPositionInRange;
-                                                })
-                                                .slice(0, 10);
-
-                                            // console.log({ top10Positions });
-
-                                            if (
-                                                JSON.stringify(
-                                                    graphData.leaderboardByPool.positions,
-                                                ) !== JSON.stringify(top10Positions)
-                                            ) {
-                                                dispatch(
-                                                    setLeaderboardByPool({
-                                                        dataReceived: true,
-                                                        positions: top10Positions,
-                                                    }),
-                                                );
-                                            }
-                                        })
-                                        .catch(console.log);
-                                }
-                            })
-                            .catch(console.log);
-
-                        // retrieve pool recent changes
-                        fetchPoolRecentChanges({
-                            tokensOnActiveLists: tokensOnActiveLists,
-                            base: sortedTokens[0],
-                            quote: sortedTokens[1],
-                            poolIdx: chainData.poolIndex,
-                            chainId: chainData.chainId,
-                            annotate: true,
-                            addValue: true,
-                            simpleCalc: true,
-                            annotateMEV: false,
-                            ensResolution: true,
-                            n: 100,
+                            }
                         })
-                            .then((poolChangesJsonData) => {
-                                if (poolChangesJsonData) {
+                        .catch(console.log);
+
+                    // retrieve pool limit order states
+
+                    const poolLimitOrderStatesCacheEndpoint =
+                        httpGraphCacheServerDomain + '/pool_limit_order_states?';
+
+                    fetch(
+                        poolLimitOrderStatesCacheEndpoint +
+                            new URLSearchParams({
+                                base: sortedTokens[0].toLowerCase(),
+                                quote: sortedTokens[1].toLowerCase(),
+                                poolIdx: chainData.poolIndex.toString(),
+                                chainId: chainData.chainId,
+                                ensResolution: 'true',
+                                omitEmpty: 'true',
+                                // n: 10 // positive integer	(Optional.) If n and page are provided, query returns a page of results with at most n entries.
+                                // page: 0 // nonnegative integer	(Optional.) If n and page are provided, query returns the page-th page of results. Page numbers are 0-indexed.
+                            }),
+                    )
+                        .then((response) => response?.json())
+                        .then((json) => {
+                            const poolLimitOrderStates = json?.data;
+
+                            dispatch(
+                                setDataLoadingStatus({
+                                    datasetName: 'poolOrderData',
+                                    loadingStatus: false,
+                                }),
+                            );
+
+                            if (poolLimitOrderStates) {
+                                Promise.all(
+                                    poolLimitOrderStates.map((limitOrder: LimitOrderIF) => {
+                                        return getLimitOrderData(limitOrder, searchableTokens);
+                                    }),
+                                ).then((updatedLimitOrderStates) => {
+                                    console.log({ updatedLimitOrderStates });
                                     dispatch(
-                                        setChangesByPool({
+                                        setLimitOrdersByPool({
                                             dataReceived: true,
-                                            changes: poolChangesJsonData,
+                                            limitOrders: updatedLimitOrderStates,
                                         }),
                                     );
-                                }
-                            })
-                            .catch(console.log);
-
-                        // retrieve pool limit order states
-
-                        const poolLimitOrderStatesCacheEndpoint =
-                            httpGraphCacheServerDomain + '/pool_limit_order_states?';
-
-                        fetch(
-                            poolLimitOrderStatesCacheEndpoint +
-                                new URLSearchParams({
-                                    base: sortedTokens[0].toLowerCase(),
-                                    quote: sortedTokens[1].toLowerCase(),
-                                    poolIdx: chainData.poolIndex.toString(),
-                                    chainId: chainData.chainId,
-                                    ensResolution: 'true',
-                                    omitEmpty: 'true',
-                                    // n: 10 // positive integer	(Optional.) If n and page are provided, query returns a page of results with at most n entries.
-                                    // page: 0 // nonnegative integer	(Optional.) If n and page are provided, query returns the page-th page of results. Page numbers are 0-indexed.
-                                }),
-                        )
-                            .then((response) => response?.json())
-                            .then((json) => {
-                                const poolLimitOrderStates = json?.data;
-
-                                dispatch(
-                                    setDataLoadingStatus({
-                                        datasetName: 'poolOrderData',
-                                        loadingStatus: false,
-                                    }),
-                                );
-
-                                if (poolLimitOrderStates) {
-                                    Promise.all(
-                                        poolLimitOrderStates.map((limitOrder: LimitOrderIF) => {
-                                            return getLimitOrderData(limitOrder, searchableTokens);
-                                        }),
-                                    ).then((updatedLimitOrderStates) => {
-                                        console.log({ updatedLimitOrderStates });
-                                        dispatch(
-                                            setLimitOrdersByPool({
-                                                dataReceived: true,
-                                                limitOrders: updatedLimitOrderStates,
-                                            }),
-                                        );
-                                    });
-                                }
-                            })
-                            .catch(console.log);
-                    }
+                                });
+                            }
+                        })
+                        .catch(console.log);
                 }
             }
         }
-    }, [rtkMatchesParams, isServerEnabled, tokenPairStringified, chainData.chainId, crocEnv]);
+    }, [
+        rtkMatchesParams,
+        // isServerEnabled,
+        tokenPairStringified,
+        chainData.chainId,
+        crocEnv,
+    ]);
 
     const activePeriod = tradeData.activeChartPeriod;
 
     useEffect(() => {
-        console.log('firing');
         setCandleData(undefined);
         fetchCandles();
     }, [mainnetBaseTokenAddress, mainnetQuoteTokenAddress, activePeriod]);
@@ -1266,6 +1267,7 @@ export default function App() {
             mainnetQuoteTokenAddress &&
             activePeriod
         ) {
+            console.log('fetching new candles');
             try {
                 if (httpGraphCacheServerDomain) {
                     // console.log('fetching candles');
@@ -1360,8 +1362,8 @@ export default function App() {
     );
 
     useEffect(() => {
-        console.log('firing');
         if (lastPoolLiqChangeMessage !== null) {
+            console.log('new pool liq change message received');
             const lastMessageData = JSON.parse(lastPoolLiqChangeMessage.data).data;
             // console.log({ lastMessageData });
             if (lastMessageData && crocEnv) {
@@ -1587,8 +1589,8 @@ export default function App() {
     useEffect(() => {
         if (lastUserPositionsMessage !== null) {
             const lastMessageData = JSON.parse(lastUserPositionsMessage.data).data;
-            console.log('firing');
             if (lastMessageData && crocEnv) {
+                console.log('new user position message received');
                 Promise.all(
                     lastMessageData.map((position: PositionIF) => {
                         return getPositionData(
@@ -1709,7 +1711,7 @@ export default function App() {
     const poolPriceNonDisplay = tradeData.poolPriceNonDisplay;
 
     useEffect(() => {
-        console.log('firing');
+        console.log('resetting pool price because base/quote changed');
         setPoolPriceDisplay(0);
         // setPoolPriceTick(undefined);
     }, [JSON.stringify({ base: baseTokenAddress, quote: quoteTokenAddress })]);
@@ -1841,10 +1843,11 @@ export default function App() {
         (async () => {
             if (crocEnv && account && tokenAAddress) {
                 try {
+                    console.log('checking token a allowance');
                     const allowance = await crocEnv.token(tokenAAddress).allowance(account);
                     const newTokenAllowance = toDisplayQty(allowance, tokenADecimals);
                     if (tokenAAllowance !== newTokenAllowance) {
-                        console.log('firing');
+                        console.log('setting new token a allowance');
                         setTokenAAllowance(newTokenAllowance);
                     }
                 } catch (err) {
@@ -1860,10 +1863,11 @@ export default function App() {
         (async () => {
             if (crocEnv && tokenBAddress && tokenBDecimals && account) {
                 try {
+                    console.log('checking token b allowance');
                     const allowance = await crocEnv.token(tokenBAddress).allowance(account);
                     const newTokenAllowance = toDisplayQty(allowance, tokenBDecimals);
                     if (tokenBAllowance !== newTokenAllowance) {
-                        console.log('firing');
+                        console.log('new token b allowance set');
                         setTokenBAllowance(newTokenAllowance);
                     }
                 } catch (err) {
@@ -2138,7 +2142,7 @@ export default function App() {
                 if (response.result.ProposeGasPrice) {
                     const newGasPrice = parseInt(response.result.ProposeGasPrice);
                     if (gasPriceInGwei !== newGasPrice) {
-                        console.log('setting new gas price');
+                        // console.log('setting new gas price');
                         setGasPriceinGwei(newGasPrice);
                     }
                 }
@@ -2575,8 +2579,8 @@ export default function App() {
         // if pool price is < 0.1 then denom token will be quote (cheaper one)
         // if pool price is > 0.1 then denom token will be base (also cheaper one)
         // then reverse if didUserToggleDenom === true
-
         if (!poolPriceDisplay) return;
+
         const isDenomInBase =
             poolPriceDisplay && poolPriceDisplay < 1
                 ? tradeData.didUserFlipDenom
@@ -2589,10 +2593,10 @@ export default function App() {
     }
 
     useEffect(() => {
-        console.log('denomination changed');
         const isDenomBase = updateDenomIsInBase();
         if (isDenomBase !== undefined) {
             if (tradeData.isDenomBase !== isDenomBase) {
+                console.log('denomination changed');
                 dispatch(setDenomInBase(isDenomBase));
             }
         }
@@ -2603,8 +2607,8 @@ export default function App() {
 
     useEffect(() => {
         (async () => {
-            console.log('firing');
             if (account) {
+                console.log('fetching NFTs beloning to connected user');
                 const imageLocalURLs = await getNFTs(account);
                 if (imageLocalURLs) setImageData(imageLocalURLs);
             }
