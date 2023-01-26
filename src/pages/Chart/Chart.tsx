@@ -3104,8 +3104,6 @@ export default function Chart(props: ChartData) {
     // line gradient
     const setLiqHighlightedLinesAndArea = (ranges: any) => {
         if (ranges !== undefined && location.pathname.includes('range') && poolPriceDisplay) {
-            console.log(simpleRangeWidth, isAdvancedModeActive);
-
             setHorizontalBandData([
                 [
                     simpleRangeWidth === 100 && !isAdvancedModeActive
