@@ -25,12 +25,12 @@
 
 .main_surplus_container, .main_wallet_container{
     display: flex;
-    /* justify-content: center; */
+    justify-content: center;
     align-items: center;
 }
 
 .main_surplus_container{
-    justify-content: flex-end;
+    justify-content: center;
 }
 
 
