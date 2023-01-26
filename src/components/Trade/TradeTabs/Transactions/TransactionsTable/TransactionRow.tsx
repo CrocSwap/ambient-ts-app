@@ -523,7 +523,11 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                             onClick={openDetailsModal}
                             data-label='price'
                             className={'gradient_text'}
-                            style={{ textAlign: 'right', fontFamily: 'monospace' }}
+                            style={{
+                                textAlign: 'right',
+                                fontFamily: 'monospace',
+                                textTransform: 'lowercase',
+                            }}
                         >
                             ambient
                         </li>
@@ -652,14 +656,6 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
                     onClick={openDetailsModal}
                 >
                     <p
-                        // onClick={() => {
-                        //     const isBuyQuote = tx.isBuy === true || tx.isBid === true;
-                        //     console.log({ isBuyQuote });
-                        //     console.log({ isBuy });
-                        //     console.log({ tx });
-                        //     console.log(tx.isBuy);
-                        //     console.log(tx.isBid);
-                        // }}
                         className={`${styles.token_qty} ${positiveDisplayStyle}`}
                         style={{ fontFamily: 'monospace', whiteSpace: 'nowrap' }}
                     >

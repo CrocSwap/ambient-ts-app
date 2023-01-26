@@ -106,7 +106,7 @@ export default function OrderRow(props: OrderRowPropsIF) {
 
     const sellOrderStyle = side === 'sell' ? 'order_sell' : 'order_buy';
 
-    const logoSizes = showColumns ? '15px' : '20px';
+    const logoSizes = showColumns ? '15px' : '18px';
 
     const usernameStyle = ensName || isOwnerActiveAccount ? 'gradient_text' : 'base_color';
 
@@ -450,7 +450,7 @@ export default function OrderRow(props: OrderRowPropsIF) {
         >
             {/* {isOnPortfolioPage && accountTokenImages} */}
             {!showColumns && OrderTimeWithTooltip}
-            {isOnPortfolioPage && !showSidebar && tokenPair}
+            {isOnPortfolioPage && !showSidebar && !showColumns && tokenPair}
             {!showColumns && IDWithTooltip}
             {!showColumns && walletWithTooltip}
             {showColumns && (
@@ -525,15 +525,24 @@ export default function OrderRow(props: OrderRowPropsIF) {
             {showColumns && (
                 <li
                     data-label={baseTokenSymbol + quoteTokenSymbol}
+                    // className='color_white'
+                    // style={{ textAlign: 'right' }}
+
                     className='base_color'
                     onClick={openDetailsModal}
                 >
-                    <p className={styles.token_qty} style={{ fontFamily: 'monospace' }}>
+                    <p
+                        className={styles.token_qty}
+                        style={{ fontFamily: 'monospace', whiteSpace: 'nowrap' }}
+                    >
                         {' '}
                         {baseDisplay} {baseTokenLogoComponent}
                     </p>
 
-                    <p className={styles.token_qty} style={{ fontFamily: 'monospace' }}>
+                    <p
+                        className={styles.token_qty}
+                        style={{ fontFamily: 'monospace', whiteSpace: 'nowrap' }}
+                    >
                         {' '}
                         {quoteDisplay}
                         {quoteTokenLogoComponent}

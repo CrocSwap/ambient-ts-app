@@ -14,21 +14,26 @@ interface TransferCurrencySelectorProps {
     disable?: boolean;
     selectedToken: TokenIF;
     setTransferQty: Dispatch<SetStateAction<string | undefined>>;
+    inputValue: string;
+    setInputValue: Dispatch<SetStateAction<string>>;
 }
 
 export default function TransferCurrencySelector(props: TransferCurrencySelectorProps) {
-    const { fieldId, disable, onClick, selectedToken, setTransferQty } = props;
+    const { fieldId, disable, onClick, selectedToken, setTransferQty, inputValue, setInputValue } =
+        props;
 
     const rateInput = (
         <div className={styles.token_amount}>
             <input
-                id={`${fieldId}-exchange-balance-transfer-quantity`}
+                id={`${fieldId}-quantity`}
                 className={styles.currency_quantity}
-                placeholder='0'
+                placeholder='0.00'
                 onChange={(event) => {
+                    const isValid = event.target.value === '' || event.target.validity.valid;
+                    isValid ? setInputValue(event.target.value) : null;
                     if (parseFloat(event.target.value) > 0) {
                         const nonDisplayQty = fromDisplayQty(
-                            event.target.value,
+                            event.target.value.replaceAll(',', ''),
                             selectedToken.decimals,
                         );
                         setTransferQty(nonDisplayQty.toString());
@@ -36,13 +41,14 @@ export default function TransferCurrencySelector(props: TransferCurrencySelector
                         setTransferQty(undefined);
                     }
                 }}
+                value={inputValue}
                 type='string'
                 inputMode='decimal'
                 autoComplete='off'
                 autoCorrect='off'
                 min='0'
                 minLength={1}
-                pattern='^[0-9]*[.,]?[0-9]*$'
+                pattern='^[0-9,]*[.]?[0-9]*$'
                 disabled={disable}
                 required
             />

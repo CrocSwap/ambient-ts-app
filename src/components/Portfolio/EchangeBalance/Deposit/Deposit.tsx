@@ -185,6 +185,10 @@ export default function Deposit(props: PortfolioDepositProps) {
     //     </div>
     // );
 
+    useEffect(() => {
+        setIsDepositPending(false);
+    }, [JSON.stringify(selectedToken)]);
+
     const deposit = async (depositQtyNonDisplay: string) => {
         if (crocEnv && depositQtyNonDisplay) {
             try {
@@ -309,15 +313,16 @@ export default function Deposit(props: PortfolioDepositProps) {
         await approve(selectedToken.address);
     };
 
-    const depositInput = document.getElementById(
-        'exchange-balance-deposit-exchange-balance-deposit-quantity',
-    ) as HTMLInputElement;
+    // const depositInput = document.getElementById(
+    //     'exchange-balance-deposit-exchange-balance-deposit-quantity',
+    // ) as HTMLInputElement;
 
     const resetDepositQty = () => {
-        if (depositInput) {
-            setDepositQtyNonDisplay(undefined);
-            depositInput.value = '';
-        }
+        // if (depositInput) {
+        //     depositInput.value = '';
+        // }
+        setDepositQtyNonDisplay(undefined);
+        setInputValue('');
     };
 
     useEffect(() => {
@@ -341,12 +346,15 @@ export default function Deposit(props: PortfolioDepositProps) {
 
     const isTokenWalletBalanceGreaterThanZero = parseFloat(tokenWalletBalance) > 0;
 
+    const [inputValue, setInputValue] = useState('');
+
     const handleBalanceClick = () => {
         if (isTokenWalletBalanceGreaterThanZero) {
             setDepositQtyNonDisplay(tokenWalletBalanceAdjustedNonDisplayString);
 
-            if (depositInput && tokenWalletBalanceDisplay)
-                depositInput.value = tokenWalletBalanceDisplay;
+            if (tokenWalletBalanceDisplay) setInputValue(tokenWalletBalanceDisplay);
+            // if (depositInput && tokenWalletBalanceDisplay)
+            //     depositInput.value = tokenWalletBalanceDisplay;
         }
     };
 
@@ -360,6 +368,8 @@ export default function Deposit(props: PortfolioDepositProps) {
                 onClick={() => openTokenModal()}
                 selectedToken={selectedToken}
                 setDepositQty={setDepositQtyNonDisplay}
+                inputValue={inputValue}
+                setInputValue={setInputValue}
             />
             <div
                 onClick={handleBalanceClick}

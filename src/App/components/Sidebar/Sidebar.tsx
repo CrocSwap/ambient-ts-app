@@ -19,9 +19,10 @@ import styles from './Sidebar.module.css';
 import favouritePoolsImage from '../../../assets/images/sidebarImages/favouritePools.svg';
 import openOrdersImage from '../../../assets/images/sidebarImages/openOrders.svg';
 import rangePositionsImage from '../../../assets/images/sidebarImages/rangePositions.svg';
-import recentTransactionsImage from '../../../assets/images/sidebarImages/recentTransactions.svg';
+import recentTransactionsImage from '../../../assets/images/sidebarImages/topTokens.svg';
 import topPoolsImage from '../../../assets/images/sidebarImages/topPools.svg';
-import topTokensImage from '../../../assets/images/sidebarImages/topTokens.svg';
+import recentPoolsImage from '../../../assets/images/sidebarImages/recentTransactions.svg';
+// import topTokensImage from '../../../assets/images/sidebarImages/topTokens.svg';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { PoolIF, TokenIF, TokenPairIF, TempPoolIF } from '../../../utils/interfaces/exports';
 import SidebarSearchResults from './SidebarSearchResults/SidebarSearchResults';
@@ -74,6 +75,13 @@ interface SidebarPropsIF {
     tokenPair: TokenPairIF;
     getRecentPools: (count: number) => SmallerPoolIF[];
     isConnected: boolean;
+    addPoolToFaves: (tokenA: TokenIF, tokenB: TokenIF, chainId: string, poolId: number) => void;
+    removePoolFromFaves: (
+        tokenA: TokenIF,
+        tokenB: TokenIF,
+        chainId: string,
+        poolId: number,
+    ) => void;
 }
 
 export default function Sidebar(props: SidebarPropsIF) {
@@ -106,6 +114,8 @@ export default function Sidebar(props: SidebarPropsIF) {
         tokenPair,
         getRecentPools,
         isConnected,
+        addPoolToFaves,
+        removePoolFromFaves,
     } = props;
 
     const location = useLocation();
@@ -135,7 +145,7 @@ export default function Sidebar(props: SidebarPropsIF) {
     const recentPools = [
         {
             name: 'Recent Pools',
-            icon: topTokensImage,
+            icon: recentPoolsImage,
 
             data: (
                 <RecentPools
@@ -234,6 +244,9 @@ export default function Sidebar(props: SidebarPropsIF) {
                     favePools={favePools}
                     cachedPoolStatsFetch={cachedPoolStatsFetch}
                     lastBlockNumber={lastBlockNumber}
+                    addPoolToFaves={addPoolToFaves}
+                    removePoolFromFaves={removePoolFromFaves}
+                    chainId={chainId}
                 />
             ),
         },
@@ -346,6 +359,7 @@ export default function Sidebar(props: SidebarPropsIF) {
                 onFocus={() => setSearchMode(true)}
                 onBlur={() => setSearchMode(false)}
                 onChange={(e) => setRawInput(e.target.value)}
+                spellCheck='false'
             />
             {searchInput && searchInput.length > 0 && (
                 <div onClick={handleInputClear} className={styles.close_icon}>
@@ -392,7 +406,7 @@ export default function Sidebar(props: SidebarPropsIF) {
                     interactive
                     title={!openAllDefault ? openAllButton : collapseButton}
                     // placement={'bottom'}
-                    placement={showSidebar ? 'bottom' : 'right'}
+                    placement={showSidebar ? 'right' : 'right'}
                     arrow
                     enterDelay={100}
                     leaveDelay={200}
@@ -466,6 +480,19 @@ export default function Sidebar(props: SidebarPropsIF) {
                     // mostRecent={['should open automatically']}
                 />
             ))}
+            {favoritePools.map((item, idx) => (
+                <SidebarAccordion
+                    toggleSidebar={toggleSidebar}
+                    shouldDisplayContentWhenUserNotLoggedIn={true}
+                    showSidebar={showSidebar}
+                    idx={idx}
+                    item={item}
+                    key={idx}
+                    setShowSidebar={setShowSidebar}
+                    openAllDefault={openAllDefault}
+                    openModalWallet={openModalWallet}
+                />
+            ))}
             {recentPools.map((item, idx) => (
                 <SidebarAccordion
                     showSidebar={showSidebar}
@@ -527,19 +554,6 @@ export default function Sidebar(props: SidebarPropsIF) {
                     // mostRecent={positionsByUser}
                 />
             ))}
-            {favoritePools.map((item, idx) => (
-                <SidebarAccordion
-                    toggleSidebar={toggleSidebar}
-                    shouldDisplayContentWhenUserNotLoggedIn={true}
-                    showSidebar={showSidebar}
-                    idx={idx}
-                    item={item}
-                    key={idx}
-                    setShowSidebar={setShowSidebar}
-                    openAllDefault={openAllDefault}
-                    openModalWallet={openModalWallet}
-                />
-            ))}
         </div>
     );
 
@@ -562,7 +576,7 @@ export default function Sidebar(props: SidebarPropsIF) {
                         setSearchMode={setSearchMode}
                     /> */}
                     {searchContainerDisplay}
-                    {isInputValid ? (
+                    {isInputValid && showSidebar ? (
                         <SidebarSearchResults
                             searchedPools={searchedPools}
                             searchInput={searchInput}

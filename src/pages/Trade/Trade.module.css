@@ -133,7 +133,7 @@
 }
 .active_button_mobile_toggle {
     color: rgb(0, 0, 0);
-    background: var(--title-gradient);
+    background: var(--text-highlight-dark);
 }
 
 .non_active_button_mobile_toggle {
@@ -271,7 +271,7 @@
 
 /* end of pool not initialized */
 
-@media only screen and (min-device-width: 320px) and (max-device-width: 600px) and (-webkit-min-device-pixel-ratio: 2) {
+@media only screen and (min-device-width: 320px) and (max-device-width: 850px) and (-webkit-min-device-pixel-ratio: 2) {
     .graph_container {
         /* display: none; */
         margin-bottom: 35px;
@@ -280,7 +280,7 @@
         display: flex;
     }
 
-    .hide{
+    .hide {
         display: none;
     }
     /* .chart_image,
@@ -323,16 +323,16 @@
         height: 30%;
     } */
 
- .hide_graph{
-    display: none;
- }
+    .hide_graph {
+        display: none;
+    }
 
     .expand_table {
         height: 100%;
     }
 }
 
-@media (min-width: 600px) {
+@media (min-width: 850px) {
     .main_layout {
         display: grid;
         grid-template-columns: auto 380px;
@@ -349,8 +349,6 @@
         /* background: red; */
         grid-gap: 8px;
         position: relative;
-
-
     }
 
     .right_col {
@@ -363,8 +361,7 @@
         height: calc(100vh - 3.7rem);
     }
 
-
-    .flex_column{
+    .flex_column {
         /* align-items: stretch; */
         /* gap: 40px; */
         display: flex;
@@ -410,32 +407,31 @@
         /* padding: 1rem; */
     }
 
-    .full_table_height{
-        height: 100%
+    .full_table_height {
+        height: 100%;
     }
 
-    .min_table_height{
-        height: 30%
+    .min_table_height {
+        height: 30%;
     }
 }
 
-@media only screen and (max-width: 600px) {
-    .middle_col{
+@media only screen and (max-width: 850px) {
+    .middle_col {
         width: 90%;
         margin: 0 auto;
     }
 
-
+    .main_layout {
+        gap: 1rem;
+        /* height: 90%; */
+        display: grid;
+        grid-template-rows: 1fr 1fr;
+    }
 }
 
-
- @media only screen and (max-width: 1180px) {
-   .middle_col {
-
+@media only screen and (max-width: 1180px) {
+    .middle_col {
         padding-left: 30px;
-
-
     }
-
-
-} 
+}

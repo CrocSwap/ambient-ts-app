@@ -56,7 +56,7 @@ interface RangesRowPropsIF {
 
 export default function RangesRow(props: RangesRowPropsIF) {
     const {
-        // showSidebar,
+        showSidebar,
         account,
         ipadView,
         showColumns,
@@ -487,7 +487,7 @@ export default function RangesRow(props: RangesRowPropsIF) {
         >
             {rankingOrNull}
             {!showColumns && RangeTimeWithTooltip}
-            {isOnPortfolioPage && tokenPair}
+            {isOnPortfolioPage && !showColumns && !showSidebar && tokenPair}
             {idOrNull}
             {/* {isOnPortfolioPage && accountTokenImages} */}
             {!showColumns && !isOnPortfolioPage && walletWithTooltip}
@@ -499,34 +499,68 @@ export default function RangesRow(props: RangesRowPropsIF) {
                     </p>
                 </li>
             )}
-            {!showColumns && (
-                <li
-                    onClick={openDetailsModal}
-                    data-label='min price'
-                    className='base_color'
-                    style={{ textAlign: 'right' }}
-                >
-                    <span>{isDenomBase ? quoteTokenCharacter : baseTokenCharacter}</span>
-                    <span style={{ fontFamily: 'monospace' }}>
-                        {isOnPortfolioPage ? minRangeDenomByMoneyness || '…' : ambientOrMin || '…'}
-                    </span>
-                </li>
-            )}
-            {!showColumns && (
-                <li
-                    onClick={openDetailsModal}
-                    data-label='max price'
-                    className='base_color'
-                    // style={{ textAlign: 'right' }}
-                    style={{ textAlign: 'right' }}
-                >
-                    <span>{isDenomBase ? quoteTokenCharacter : baseTokenCharacter}</span>
-                    <span style={{ fontFamily: 'monospace' }}>
-                        {isOnPortfolioPage ? maxRangeDenomByMoneyness || '…' : ambientOrMax || '…'}
-                    </span>
-                </li>
-            )}
-            {showColumns && !ipadView && (
+            {!showColumns ? (
+                isAmbient ? (
+                    <li
+                        onClick={openDetailsModal}
+                        data-label='max price'
+                        className='base_color'
+                        // style={{ textAlign: 'right' }}
+                        style={{ textAlign: 'right' }}
+                    >
+                        <span style={{ fontFamily: 'monospace' }}>{'0.00'}</span>
+                    </li>
+                ) : (
+                    <li
+                        onClick={openDetailsModal}
+                        data-label='min price'
+                        className='base_color'
+                        style={{ textAlign: 'right' }}
+                    >
+                        <span>{isDenomBase ? quoteTokenCharacter : baseTokenCharacter}</span>
+                        <span style={{ fontFamily: 'monospace' }}>
+                            {isOnPortfolioPage
+                                ? minRangeDenomByMoneyness || '…'
+                                : ambientOrMin || '…'}
+                        </span>
+                    </li>
+                )
+            ) : null}
+            {!showColumns ? (
+                isAmbient ? (
+                    <li
+                        onClick={openDetailsModal}
+                        data-label='max price'
+                        className='base_color'
+                        // style={{ textAlign: 'right' }}
+                        style={{ textAlign: 'right' }}
+                    >
+                        <span
+                            style={{
+                                fontSize: '20px',
+                            }}
+                        >
+                            {'∞'}
+                        </span>
+                    </li>
+                ) : (
+                    <li
+                        onClick={openDetailsModal}
+                        data-label='max price'
+                        className='base_color'
+                        // style={{ textAlign: 'right' }}
+                        style={{ textAlign: 'right' }}
+                    >
+                        <span>{isDenomBase ? quoteTokenCharacter : baseTokenCharacter}</span>
+                        <span style={{ fontFamily: 'monospace' }}>
+                            {isOnPortfolioPage
+                                ? maxRangeDenomByMoneyness || '…'
+                                : ambientOrMax || '…'}
+                        </span>
+                    </li>
+                )
+            ) : null}
+            {showColumns && !ipadView && !isAmbient && (
                 <li
                     data-label='side-type'
                     className='base_color'
@@ -543,6 +577,20 @@ export default function RangesRow(props: RangesRowPropsIF) {
                     </p>
                 </li>
             )}
+            {showColumns && !ipadView && isAmbient && (
+                <li
+                    data-label='side-type'
+                    className='base_color'
+                    style={{ textAlign: 'right', whiteSpace: 'nowrap' }}
+                    onClick={openDetailsModal}
+                >
+                    <p>
+                        <span className='gradient_text' style={{ textTransform: 'lowercase' }}>
+                            {'ambient'}
+                        </span>
+                    </p>
+                </li>
+            )}
             {ValueWithTooltip}
             {!showColumns && baseQtyDisplayWithTooltip}
             {!showColumns && quoteQtyDisplayWithTooltip}
@@ -553,12 +601,18 @@ export default function RangesRow(props: RangesRowPropsIF) {
                     style={{ textAlign: 'right' }}
                     onClick={openDetailsModal}
                 >
-                    <p className={styles.token_qty} style={{ fontFamily: 'monospace' }}>
+                    <p
+                        className={styles.token_qty}
+                        style={{ fontFamily: 'monospace', whiteSpace: 'nowrap' }}
+                    >
                         {baseDisplay}
                         {baseTokenLogoComponent}
                     </p>
 
-                    <p className={styles.token_qty} style={{ fontFamily: 'monospace' }}>
+                    <p
+                        className={styles.token_qty}
+                        style={{ fontFamily: 'monospace', whiteSpace: 'nowrap' }}
+                    >
                         {' '}
                         {quoteDisplay}
                         {quoteTokenLogoComponent}

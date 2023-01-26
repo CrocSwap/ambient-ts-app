@@ -12,7 +12,7 @@ export default function CurveDepth(props: CurveDepthPropsIF) {
 
     const [showCurveDepthDropdown, setShowCurveDepthDropdown] = useState(false);
 
-    const desktopView = useMediaQuery('(max-width: 768px)');
+    const desktopView = useMediaQuery('(max-width: 968px)');
 
     const handleLiqToggle = (mode: string) =>
         setLiqMode(() => {

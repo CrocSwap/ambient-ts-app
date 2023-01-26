@@ -152,8 +152,12 @@ export default function Ranges(props: RangesPropsIF) {
     }, [top3Positions]);
 
     useEffect(() => {
-        if (isOnPortfolioPage) {
-            setRangeData(activeAccountPositionData || []);
+        if (
+            isOnPortfolioPage &&
+            activeAccountPositionData &&
+            JSON.stringify(activeAccountPositionData) !== JSON.stringify(rangeData)
+        ) {
+            setRangeData(activeAccountPositionData);
         } else if (!isShowAllEnabled) {
             setRangeData(positionsByUserMatchingSelectedTokens);
         } else if (positionsByPool) {
@@ -238,12 +242,13 @@ export default function Ranges(props: RangesPropsIF) {
     // Get current tranges
     const indexOfLastRanges = currentPage * rangesPerPage;
     const indexOfFirstRanges = indexOfLastRanges - rangesPerPage;
-    const currentRangess = sortedPositions?.slice(indexOfFirstRanges, indexOfLastRanges);
+    const currentRanges = sortedPositions?.slice(indexOfFirstRanges, indexOfLastRanges);
     const paginate = (pageNumber: number) => {
         setCurrentPage(pageNumber);
     };
 
-    const usePaginateDataOrNull = expandTradeTable ? currentRangess : sortedPositions;
+    const usePaginateDataOrNull =
+        expandTradeTable && !isOnPortfolioPage ? currentRanges : sortedPositions;
 
     const footerDisplay = (
         <div className={styles.footer}>
@@ -312,7 +317,7 @@ export default function Ranges(props: RangesPropsIF) {
         {
             name: 'Pair',
             className: '',
-            show: isOnPortfolioPage && !desktopView,
+            show: isOnPortfolioPage && !desktopView && !showSidebar,
             slug: 'pool',
             sortable: true,
         },
