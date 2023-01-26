@@ -968,13 +968,18 @@ export default function Chart(props: ChartData) {
 
     useEffect(() => {
         if (location.pathname.includes('range')) {
-            d3.select(d3PlotArea.current).select('.targets').style('visibility', 'visible');
-            d3.select(d3PlotArea.current)
-                .select('.targets')
-                .selectAll('.horizontal')
-                .style('visibility', 'visible');
+            if (simpleRangeWidth !== 100 || isAdvancedModeActive) {
+                console.log('useEffect 1');
+                d3.select(d3PlotArea.current).select('.targets').style('visibility', 'visible');
+                d3.select(d3PlotArea.current)
+                    .select('.targets')
+                    .selectAll('.horizontal')
+                    .style('visibility', 'visible');
 
-            d3.select(d3PlotArea.current).select('.horizontalBand').style('visibility', 'visible');
+                d3.select(d3PlotArea.current)
+                    .select('.horizontalBand')
+                    .style('visibility', 'visible');
+            }
 
             d3.select(d3PlotArea.current)
                 .select('.targets')
@@ -2654,6 +2659,15 @@ export default function Chart(props: ChartData) {
                         d3.select(event.currentTarget).select('line').style('cursor', 'row-resize');
                     })
                     .call(dragRange);
+
+                d3.select(d3PlotArea.current)
+                    .select('svg')
+                    .select('.targets')
+                    .selectAll('.horizontal')
+                    .style(
+                        'visibility',
+                        simpleRangeWidth === 100 && !isAdvancedModeActive ? 'hidden' : 'visible',
+                    );
             }
 
             if (location.pathname.includes('limit')) {
@@ -3049,10 +3063,38 @@ export default function Chart(props: ChartData) {
 
     // line gradient
     const setLiqHighlightedLinesAndArea = (ranges: any) => {
-        liquidityData.lineAskSeries = [];
-        liquidityData.lineBidSeries = [];
-
         if (ranges !== undefined && location.pathname.includes('range') && poolPriceDisplay) {
+            console.log(simpleRangeWidth, isAdvancedModeActive);
+
+            setHorizontalBandData([
+                [
+                    simpleRangeWidth === 100 && !isAdvancedModeActive
+                        ? 0
+                        : ranges.filter((item: any) => item.name === 'Min')[0].value,
+                    simpleRangeWidth === 100 && !isAdvancedModeActive
+                        ? 0
+                        : ranges.filter((item: any) => item.name === 'Max')[0].value,
+                ],
+            ]);
+
+            horizontalBandData[0] = [
+                simpleRangeWidth === 100 && !isAdvancedModeActive
+                    ? 0
+                    : ranges.filter((item: any) => item.name === 'Min')[0].value,
+                simpleRangeWidth === 100 && !isAdvancedModeActive
+                    ? 0
+                    : ranges.filter((item: any) => item.name === 'Max')[0].value,
+            ];
+
+            d3.select(d3PlotArea.current)
+                .select('svg')
+                .select('.targets')
+                .selectAll('.horizontal')
+                .style(
+                    'visibility',
+                    simpleRangeWidth === 100 && !isAdvancedModeActive ? 'hidden' : 'visible',
+                );
+
             const low = ranges.filter((target: any) => target.name === 'Min')[0].value;
             const high = ranges.filter((target: any) => target.name === 'Max')[0].value;
 
@@ -3267,35 +3309,6 @@ export default function Chart(props: ChartData) {
                     return lineGradient;
                 });
             }
-
-            setHorizontalBandData([
-                [
-                    simpleRangeWidth === 100 && !isAdvancedModeActive
-                        ? 0
-                        : ranges.filter((item: any) => item.name === 'Min')[0].value,
-                    simpleRangeWidth === 100 && !isAdvancedModeActive
-                        ? 0
-                        : ranges.filter((item: any) => item.name === 'Max')[0].value,
-                ],
-            ]);
-
-            horizontalBandData[0] = [
-                simpleRangeWidth === 100 && !isAdvancedModeActive
-                    ? 0
-                    : ranges.filter((item: any) => item.name === 'Min')[0].value,
-                simpleRangeWidth === 100 && !isAdvancedModeActive
-                    ? 0
-                    : ranges.filter((item: any) => item.name === 'Max')[0].value,
-            ];
-
-            d3.select(d3PlotArea.current)
-                .select('svg')
-                .select('.targets')
-                .selectAll('.horizontal')
-                .style(
-                    'visibility',
-                    simpleRangeWidth === 100 && !isAdvancedModeActive ? 'hidden' : 'visible',
-                );
         }
     };
 
