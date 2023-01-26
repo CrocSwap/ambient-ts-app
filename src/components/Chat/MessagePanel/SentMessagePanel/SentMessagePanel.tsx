@@ -1,7 +1,7 @@
 import styles from './SentMessagePanel.module.css';
 import { Message } from '../../Model/MessageModel';
 import PositionBox from '../PositionBox/PositionBox';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import useCopyToClipboard from '../../../../utils/hooks/useCopyToClipboard';
 import SnackbarComponent from '../../../Global/SnackbarComponent/SnackbarComponent';
 import Blockies from 'react-blockies';
@@ -19,13 +19,8 @@ interface SentMessageProps {
 
 export default function SentMessagePanel(props: SentMessageProps) {
     const [isPosition, setIsPosition] = useState(false);
-    const [sliceWalletID, setSliceWalletID] = useState('');
 
     const { userImageData } = props;
-
-    useEffect(() => {
-        setSliceWalletID(props.message.walletID.slice(0, 6) + '...');
-    }, [props.message.mentionedName]);
 
     const formatAMPM = (str: string) => {
         const date = new Date(str);
@@ -38,6 +33,14 @@ export default function SentMessagePanel(props: SentMessageProps) {
         const strTime = hours + ':' + _min + ' ' + ampm;
         return strTime;
     };
+
+    function getName() {
+        if (props.message.ensName.startsWith('0x')) {
+            return props.message.walletID.slice(0, 6) + '...';
+        } else {
+            return props.message.ensName;
+        }
+    }
 
     const [value, copy] = useCopyToClipboard();
     const [openSnackbar, setOpenSnackbar] = useState(false);
@@ -102,7 +105,7 @@ export default function SentMessagePanel(props: SentMessageProps) {
                     className={props.isCurrentUser ? styles.current_user_name : styles.name}
                     onClick={() => handleCopyAddress(props.message.ensName)}
                 >
-                    {props.name !== 'defaultValue' ? sliceWalletID : props.message.ensName}
+                    {getName()}
                 </div>
                 <PositionBox
                     message={props.message.message}

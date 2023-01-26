@@ -1,5 +1,5 @@
 import { useAccount } from 'wagmi';
-export const host = 'https://ambichat.link:5000';
+export const host = 'http://localhost:5000';
 export const sendMessageRoute = `${host}/api/messages/addmsg`;
 export const recieveMessageRoute = `${host}/api/messages/getall`;
 export const recieveMessageByRoomRoute = `${host}/api/messages/getmsgbyroom`;
@@ -54,6 +54,33 @@ const useChatApi = () => {
         return data;
     }
 
-    return { getID, getNameOrWallet, receiveUsername, getName };
+    async function updateUser(_id: string, ensName: string) {
+        const response = await fetch(host + '/api/auth/updateUser', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                _id: _id,
+                ensName: ensName,
+            }),
+        });
+        const data = await response.json();
+
+        return data;
+    }
+
+    async function updateMessageUser(sender: string, ensName: string) {
+        const response = await fetch(host + '/api/messages/updateMessageUser', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                sender: sender,
+                ensName: ensName,
+            }),
+        });
+        const data = await response.json();
+
+        return data;
+    }
+    return { getID, getNameOrWallet, receiveUsername, getName, updateUser, updateMessageUser };
 };
 export default useChatApi;

@@ -47,6 +47,7 @@ interface ChatProps {
     setChatStatus: Dispatch<SetStateAction<boolean>>;
     fullScreen?: boolean;
     userImageData: string[];
+    ensName: string;
 }
 
 export default function ChatPanel(props: ChatProps) {
@@ -63,7 +64,7 @@ export default function ChatPanel(props: ChatProps) {
 
     const { messages, getMsg, lastMessage, messageUser } = useSocket(room);
 
-    const { getID } = useChatApi();
+    const { getID, updateUser, updateMessageUser } = useChatApi();
     const userData = useAppSelector((state) => state.userData);
     const isUserLoggedIn = userData.isLoggedIn;
     const resolvedAddress = userData.resolvedAddress;
@@ -108,11 +109,20 @@ export default function ChatPanel(props: ChatProps) {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             getID().then((result: any) => {
                 setCurrentUser(result.userData._id);
-                setName(
-                    result.userData.ensName == 'defaultValue'
-                        ? result.userData.walletID
-                        : result.userData.ensName,
-                );
+                if (props.ensName !== '') {
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    updateUser(currentUser as string, props.ensName).then((result: any) => {
+                        if (result.status === 'OK') {
+                            setName(props.ensName);
+                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                            updateMessageUser(currentUser as string, name).then((result: any) => {
+                                console.log(result);
+                            });
+                        }
+                    });
+                } else {
+                    setName(props.ensName !== '' ? props.ensName : result.userData.walletID);
+                }
             });
         }
     }, [address, props.chatStatus, props.isFullScreen]);
@@ -122,13 +132,21 @@ export default function ChatPanel(props: ChatProps) {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             getID().then((result: any) => {
                 setCurrentUser(result.userData._id);
-                setName(
-                    result.userData.ensName == 'defaultValue'
-                        ? result.userData.walletID
-                        : result.userData.ensName,
-                );
+                if (props.ensName !== '') {
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    updateUser(currentUser as string, props.ensName).then((result: any) => {
+                        if (result.status === 'OK') {
+                            setName(props.ensName);
+                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                            updateMessageUser(currentUser as string, name).then((result: any) => {
+                                console.log('result is: ', result);
+                            });
+                        }
+                    });
+                } else {
+                    setName(props.ensName === '' ? result.userData.walletID : props.ensName);
+                }
             });
-
             getMsg();
         }
     }, [address]);
@@ -218,11 +236,20 @@ export default function ChatPanel(props: ChatProps) {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             getID().then((result: any) => {
                 setCurrentUser(result.userData._id);
-                setName(
-                    result.userData.ensName == 'defaultValue'
-                        ? result.userData.walletID
-                        : result.userData.ensName,
-                );
+                if (props.ensName !== '') {
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    updateUser(currentUser as string, props.ensName).then((result: any) => {
+                        if (result.status === 'OK') {
+                            setName(props.ensName);
+                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                            updateMessageUser(currentUser as string, name).then((result: any) => {
+                                console.log(result);
+                            });
+                        }
+                    });
+                } else {
+                    setName(props.ensName === '' ? result.userData.walletID : props.ensName);
+                }
             });
             return currentUser;
         }

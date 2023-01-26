@@ -13,6 +13,7 @@ import { TokenIF } from '../../../../utils/interfaces/TokenIF';
 import { targetData } from '../../../../utils/state/tradeDataSlice';
 
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
+import { RiCloseFill } from 'react-icons/ri';
 interface MessageInputProps {
     message?: Message;
     room: string;
@@ -180,8 +181,25 @@ export default function MessageInput(props: MessageInputProps, prop: ChatProps) 
             </div>
             {showEmojiPicker && (
                 <div className={styles.emojiPicker}>
+                    <span className={styles.emoji_close_button}>
+                        <RiCloseFill
+                            size={20}
+                            title='Close Emoji Picker'
+                            onClick={() => setShowEmojiPicker(false)}
+                        />
+                    </span>
                     <Picker
-                        pickerStyle={{ width: '100%', height: '100%' }}
+                        pickerStyle={{
+                            width: '100%',
+                            height: '100%',
+                            backgroundColor: '#2e4960',
+                            indicatorColor: '#b04c2d',
+                            fontColor: 'lightgrey',
+                            searchBackgroundColor: '#263d51',
+                            tabsFontColor: '#8cdce4',
+                            searchFontColor: 'lightgrey',
+                            skinTonePickerBackgroundColor: '#284155',
+                        }}
                         onEmojiClick={handleEmojiClick}
                     />
                 </div>

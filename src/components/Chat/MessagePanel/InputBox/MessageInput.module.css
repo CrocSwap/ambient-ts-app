@@ -120,7 +120,11 @@
     
 }
 
-
+.emoji_close_button{
+    position:relative;
+  float: right;
+  left:-10px;
+}
 
 .input_text:focus {
     outline: none;
