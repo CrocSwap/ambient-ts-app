@@ -279,7 +279,15 @@ export default function Sidebar(props: SidebarPropsIF) {
         },
     ];
 
-    const [setRawInput, isInputValid, searchedPools] = useSidebarSearch(poolList, verifyToken);
+    const userData = useAppSelector((state) => state.userData);
+
+    const shoulRecheckLocalStorage = userData.shoulRecheckLocalStorage;
+
+    const [setRawInput, isInputValid, searchedPools] = useSidebarSearch(
+        poolList,
+        verifyToken,
+        shoulRecheckLocalStorage,
+    );
     // useEffect(() => {console.log({searchedPools})}, [JSON.stringify(searchedPools)]);
     false && searchedPools;
 
