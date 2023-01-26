@@ -376,7 +376,7 @@ export default function RangesRow(props: RangesRowPropsIF) {
         //     leaveDelay={200}
         // >
         <li onClick={openDetailsModal} data-label={baseTokenSymbol} className='base_color'>
-            <p
+            <div
                 style={{
                     display: 'flex',
                     alignItems: 'end',
@@ -390,7 +390,7 @@ export default function RangesRow(props: RangesRowPropsIF) {
                 {baseDisplay}
                 {baseTokenLogoComponent}
                 {/* {isOnPortfolioPage && <img src={baseTokenLogo} width='15px' alt='' />} */}
-            </p>
+            </div>
         </li>
         /* </DefaultTooltip> */
     );
@@ -404,7 +404,7 @@ export default function RangesRow(props: RangesRowPropsIF) {
         //     leaveDelay={200}
         // >
         <li onClick={openDetailsModal} data-label={quoteTokenSymbol} className='base_color'>
-            <p
+            <div
                 style={{
                     display: 'flex',
                     alignItems: 'end',
@@ -419,7 +419,7 @@ export default function RangesRow(props: RangesRowPropsIF) {
                 {quoteTokenLogoComponent}
 
                 {/* {isOnPortfolioPage && <img src={quoteTokenLogo} width='15px' alt='' />} */}
-            </p>
+            </div>
         </li>
         /* </DefaultTooltip> */
     );
@@ -601,22 +601,22 @@ export default function RangesRow(props: RangesRowPropsIF) {
                     style={{ textAlign: 'right' }}
                     onClick={openDetailsModal}
                 >
-                    <p
+                    <div
                         className={styles.token_qty}
                         style={{ fontFamily: 'monospace', whiteSpace: 'nowrap' }}
                     >
                         {baseDisplay}
                         {baseTokenLogoComponent}
-                    </p>
+                    </div>
 
-                    <p
+                    <div
                         className={styles.token_qty}
                         style={{ fontFamily: 'monospace', whiteSpace: 'nowrap' }}
                     >
                         {' '}
                         {quoteDisplay}
                         {quoteTokenLogoComponent}
-                    </p>
+                    </div>
                 </li>
             )}
             <li onClick={openDetailsModal} data-label='value' style={{ textAlign: 'right' }}>

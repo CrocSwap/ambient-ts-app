@@ -551,9 +551,11 @@ export default function OrderRow(props: OrderRowPropsIF) {
             )}
             {!ipadView && (
                 <li onClick={openDetailsModal} data-label='status'>
-                    <p style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                    <div
+                        style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
+                    >
                         <OpenOrderStatus isFilled={isOrderFilled} />
-                    </p>
+                    </div>
                 </li>
             )}
             <li data-label='menu'>

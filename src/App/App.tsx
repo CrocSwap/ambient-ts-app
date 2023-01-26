@@ -2569,8 +2569,8 @@ export default function App() {
         // if pool price is < 0.1 then denom token will be quote (cheaper one)
         // if pool price is > 0.1 then denom token will be base (also cheaper one)
         // then reverse if didUserToggleDenom === true
-
         if (!poolPriceDisplay) return;
+
         const isDenomInBase =
             poolPriceDisplay && poolPriceDisplay < 1
                 ? tradeData.didUserFlipDenom
@@ -2583,10 +2583,10 @@ export default function App() {
     }
 
     useEffect(() => {
-        console.log('denomination changed');
         const isDenomBase = updateDenomIsInBase();
         if (isDenomBase !== undefined) {
             if (tradeData.isDenomBase !== isDenomBase) {
+                console.log('denomination changed');
                 dispatch(setDenomInBase(isDenomBase));
             }
         }
