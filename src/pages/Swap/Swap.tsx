@@ -69,6 +69,11 @@ interface SwapPropsIF {
     setTokenPairLocal?: Dispatch<SetStateAction<string[] | null>>;
 
     openGlobalModal: (content: React.ReactNode) => void;
+    openGlobalPopup: (
+        content: React.ReactNode,
+        popupTitle?: string,
+        popupPlacement?: string,
+    ) => void;
 
     isSwapCopied?: boolean;
     verifyToken: (addr: string, chn: string) => boolean;
@@ -125,6 +130,7 @@ export default function Swap(props: SwapPropsIF) {
         setInput,
         searchType,
         acknowledgeToken,
+        openGlobalPopup,
     } = props;
 
     const [isModalOpen, openModal, closeModal] = useModal();
@@ -596,6 +602,7 @@ export default function Swap(props: SwapPropsIF) {
                             setInput={setInput}
                             searchType={searchType}
                             acknowledgeToken={acknowledgeToken}
+                            openGlobalPopup={openGlobalPopup}
                         />
                     </motion.div>
                     {/* {denominationSwitchOrNull} */}

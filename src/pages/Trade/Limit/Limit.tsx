@@ -92,6 +92,12 @@ interface LimitPropsIF {
     searchType: string;
     acknowledgeToken: (tkn: TokenIF) => void;
     setResetLimitTick: Dispatch<SetStateAction<boolean>>;
+
+    openGlobalPopup: (
+        content: React.ReactNode,
+        popupTitle?: string,
+        popupPlacement?: string,
+    ) => void;
 }
 
 const cachedQuerySpotPrice = memoizeQuerySpotPrice();
@@ -139,6 +145,7 @@ export default function Limit(props: LimitPropsIF) {
         searchType,
         acknowledgeToken,
         setResetLimitTick,
+        openGlobalPopup,
     } = props;
 
     const { tradeData, navigationMenu } = useTradeData();
@@ -773,6 +780,7 @@ export default function Limit(props: LimitPropsIF) {
                         searchType={searchType}
                         acknowledgeToken={acknowledgeToken}
                         setResetLimitTick={setResetLimitTick}
+                        openGlobalPopup={openGlobalPopup}
                     />
                 </motion.div>
                 <div className={styles.header_container}>
