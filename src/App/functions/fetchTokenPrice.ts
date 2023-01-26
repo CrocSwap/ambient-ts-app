@@ -17,7 +17,7 @@ export const fetchTokenPrice = async (address: string, chainId: string) => {
             });
 
             const result = response?.result;
-            console.log({ result });
+            // console.log({ result });
 
             return result;
         }
