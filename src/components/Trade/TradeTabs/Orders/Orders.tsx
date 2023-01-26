@@ -354,7 +354,7 @@ export default function Orders(props: propsIF) {
         {
             name: 'Pair',
             className: '',
-            show: isOnPortfolioPage && !showSidebar,
+            show: isOnPortfolioPage && !showSidebar && !showColumns,
             slug: 'pool',
             sortable: false,
         },

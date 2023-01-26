@@ -18,10 +18,12 @@ interface IconWithTooltipPropsIF {
         | 'top-start'
         | 'top'
         | undefined;
+    // eslint-disable-next-line
+    style?: any;
 }
 
 export default function IconWithTooltip(props: IconWithTooltipPropsIF) {
-    const { children, title, placement } = props;
+    const { children, title, placement, style } = props;
     return (
         <DefaultTooltip
             interactive
@@ -31,7 +33,7 @@ export default function IconWithTooltip(props: IconWithTooltipPropsIF) {
             leaveDelay={200}
             placement={placement ? placement : 'bottom'}
         >
-            <div>{children}</div>
+            <div style={style}>{children}</div>
         </DefaultTooltip>
     );
 }

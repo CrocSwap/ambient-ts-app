@@ -12,7 +12,7 @@ export const querySpotPrice = async (
     _lastBlockNumber: number,
 ) => {
     if (!crocEnv) return;
-    console.log('querying spot price');
+    // console.log('querying spot price');
 
     // console.log('Query spot price ' + baseTokenAddress + ' ' + quoteTokenAddress);
     // console.log({ provider });

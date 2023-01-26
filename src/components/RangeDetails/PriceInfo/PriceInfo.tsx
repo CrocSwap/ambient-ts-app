@@ -24,7 +24,7 @@ interface IPriceInfoProps {
     quoteTokenLogoURI: string;
     baseTokenSymbol: string;
     quoteTokenSymbol: string;
-
+    isAmbient: boolean;
     isDenomBase: boolean;
 
     controlItems: ItemIF[];
@@ -44,7 +44,7 @@ export default function PriceInfo(props: IPriceInfoProps) {
         quoteTokenLogoURI,
         baseTokenSymbol,
         quoteTokenSymbol,
-
+        isAmbient,
         isDenomBase,
 
         controlItems,
@@ -82,31 +82,34 @@ export default function PriceInfo(props: IPriceInfoProps) {
                 </div>
             </Row>
             {/*  */}
-            <Divider />
+            {isAmbient ? null : <Divider />}
             {/* <div className={styles.divider}></div> */}
-            <Row>
-                <span> Earned {baseTokenSymbol}</span>
-                <div className={styles.info_text}>
-                    {baseFeesDisplay || '…'}
-                    {baseTokenLogoURI ? (
-                        <img src={baseTokenLogoURI} alt={baseTokenSymbol} />
-                    ) : (
-                        <NoTokenIcon tokenInitial={baseTokenSymbol.charAt(0)} width='15px' />
-                    )}
-                </div>
-            </Row>
-            {/*  */}
-            <Row>
-                <span>Earned {quoteTokenSymbol} </span>
-                <div className={styles.info_text}>
-                    {quoteFeesDisplay || '…'}
-                    {quoteTokenLogoURI ? (
-                        <img src={quoteTokenLogoURI} alt={quoteTokenSymbol} />
-                    ) : (
-                        <NoTokenIcon tokenInitial={quoteTokenSymbol.charAt(0)} width='15px' />
-                    )}
-                </div>
-            </Row>
+            {isAmbient ? null : (
+                <Row>
+                    <span> Earned {baseTokenSymbol}</span>
+                    <div className={styles.info_text}>
+                        {baseFeesDisplay || '…'}
+                        {baseTokenLogoURI ? (
+                            <img src={baseTokenLogoURI} alt={baseTokenSymbol} />
+                        ) : (
+                            <NoTokenIcon tokenInitial={baseTokenSymbol.charAt(0)} width='15px' />
+                        )}
+                    </div>
+                </Row>
+            )}
+            {isAmbient ? null : (
+                <Row>
+                    <span>Earned {quoteTokenSymbol} </span>
+                    <div className={styles.info_text}>
+                        {quoteFeesDisplay || '…'}
+                        {quoteTokenLogoURI ? (
+                            <img src={quoteTokenLogoURI} alt={quoteTokenSymbol} />
+                        ) : (
+                            <NoTokenIcon tokenInitial={quoteTokenSymbol.charAt(0)} width='15px' />
+                        )}
+                    </div>
+                </Row>
+            )}
         </motion.div>
     );
 
@@ -173,7 +176,7 @@ export default function PriceInfo(props: IPriceInfoProps) {
         </div>
     );
 
-    const minMaxPriceDipslay = (
+    const minMaxPriceDisplay = (
         <div className={styles.min_max_price}>
             <div className={styles.min_max_content}>
                 Min Price
@@ -198,7 +201,7 @@ export default function PriceInfo(props: IPriceInfoProps) {
             {controlItems[1].checked && totalValueContent}
             {/* {controlItems[0].checked && timesContent} */}
             {controlItems[0].checked && collateralContent}
-            {minMaxPriceDipslay}
+            {minMaxPriceDisplay}
 
             {/* <div className={styles.graph_image_container}>
                     <img src={graphImage} alt='chart' />

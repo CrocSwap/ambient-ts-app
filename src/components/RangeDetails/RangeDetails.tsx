@@ -263,6 +263,7 @@ export default function RangeDetails(props: IRangeDetailsProps) {
                             quoteTokenSymbol={props.quoteTokenSymbol}
                             isDenomBase={props.isDenomBase}
                             controlItems={controlItems}
+                            isAmbient={isAmbient}
                         />
                     </div>
                     <div className={styles.right_container}>

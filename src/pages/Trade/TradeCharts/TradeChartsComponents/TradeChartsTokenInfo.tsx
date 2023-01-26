@@ -85,7 +85,7 @@ export default function TradeChartsTokenInfo(props: TradeChartsTokenInfoPropsIF)
                   maximumFractionDigits: 2,
               });
 
-    const smallScrenView = useMediaQuery('(max-width: 680px)');
+    const smallScrenView = useMediaQuery('(max-width: 968px)');
 
     const logoSizes = smallScrenView ? '18px' : '25px';
 
