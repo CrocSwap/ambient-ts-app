@@ -61,6 +61,7 @@ export default function ConfirmSwapModal(props: ConfirmSwapModalProps) {
     const isTransactionDenied = txErrorCode === 'ACTION_REJECTED';
     const isTransactionException = txErrorCode === 'CALL_EXCEPTION';
     const isGasLimitException = txErrorCode === 'UNPREDICTABLE_GAS_LIMIT';
+    const isInsufficientFundsException = txErrorCode === 'INSUFFICIENT_FUNDS';
 
     // const isTransactionDenied =
     //     txErrorCode === 4001 &&
@@ -310,7 +311,7 @@ export default function ConfirmSwapModal(props: ConfirmSwapModalProps) {
     );
 
     const confirmationDisplay =
-        isTransactionException || isGasLimitException
+        isTransactionException || isGasLimitException || isInsufficientFundsException
             ? transactionException
             : isTransactionDenied
             ? transactionDenied
