@@ -117,7 +117,9 @@ export default function Sidebar(props: SidebarPropsIF) {
         isConnected,
         addPoolToFaves,
         removePoolFromFaves,
-        positionsByUser
+        positionsByUser,
+        setOutsideControl,
+        setSelectedOutsideTab  
     } = props;
 
     const location = useLocation();
@@ -179,9 +181,9 @@ export default function Sidebar(props: SidebarPropsIF) {
     ];
     const sidebarLimitOrderProps = {
         selectedOutsideTab: props.selectedOutsideTab,
-        setSelectedOutsideTab: props.setSelectedOutsideTab,
+        setSelectedOutsideTab: setSelectedOutsideTab,
         outsideControl: props.outsideControl,
-        setOutsideControl: props.setOutsideControl,
+        setOutsideControl: setOutsideControl,
         isShowAllEnabled: props.isShowAllEnabled,
         setCurrentPositionActive: setCurrentPositionActive,
         setIsShowAllEnabled: props.setIsShowAllEnabled,
@@ -193,9 +195,9 @@ export default function Sidebar(props: SidebarPropsIF) {
     };
     const sidebarRangePositionProps = {
         selectedOutsideTab: props.selectedOutsideTab,
-        setSelectedOutsideTab: props.setSelectedOutsideTab,
+        setSelectedOutsideTab: setSelectedOutsideTab,
         outsideControl: props.outsideControl,
-        setOutsideControl: props.setOutsideControl,
+        setOutsideControl: setOutsideControl,
         currentPositionActive: currentPositionActive,
         setCurrentPositionActive: setCurrentPositionActive,
         tokenMap: tokenMap,
@@ -271,8 +273,8 @@ export default function Sidebar(props: SidebarPropsIF) {
                     expandTradeTable={expandTradeTable}
                     setExpandTradeTable={setExpandTradeTable}
                     selectedOutsideTab={props.selectedOutsideTab}
-                    setSelectedOutsideTab={props.setSelectedOutsideTab}
-                    setOutsideControl={props.setOutsideControl}
+                    setSelectedOutsideTab={setSelectedOutsideTab}
+                    setOutsideControl={setOutsideControl}
                     outsideControl={props.outsideControl}
                     isUserLoggedIn={isUserLoggedIn}
                     setShowSidebar={setShowSidebar}
@@ -590,6 +592,10 @@ export default function Sidebar(props: SidebarPropsIF) {
                             isConnected={isConnected}
                             cachedPoolStatsFetch={cachedPoolStatsFetch}
                             positionsByUser={positionsByUser}
+                            setOutsideControl={setOutsideControl}
+                            setSelectedOutsideTab={setSelectedOutsideTab}
+                            setCurrentPositionActive={setCurrentPositionActive}
+                            setIsShowAllEnabled={setIsShowAllEnabled}
                         />
                     ) : (
                         regularSidebarDisplay

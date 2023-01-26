@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import { Dispatch, SetStateAction, ReactNode } from 'react';
 import { PositionIF, TokenIF, TokenPairIF, TempPoolIF } from '../../../../utils/interfaces/exports';
 import styles from './SidebarSearchResults.module.css';
 import PoolsSearchResults from './PoolsSearchResults/PoolsSearchResults';
@@ -18,6 +18,10 @@ interface SidebarSearchResultsPropsIF {
     cachedPoolStatsFetch: PoolStatsFn;
     positionsByUser: PositionIF[];
     isDenomBase: boolean;
+    setOutsideControl: Dispatch<SetStateAction<boolean>>;
+    setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
+    setCurrentPositionActive: Dispatch<SetStateAction<string>>;
+    setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function SidebarSearchResults(props: SidebarSearchResultsPropsIF) {
@@ -31,7 +35,11 @@ export default function SidebarSearchResults(props: SidebarSearchResultsPropsIF)
         isConnected,
         cachedPoolStatsFetch,
         positionsByUser,
-        isDenomBase
+        isDenomBase,
+        setOutsideControl,
+        setSelectedOutsideTab,
+        setCurrentPositionActive,
+        setIsShowAllEnabled,
     } = props;
 
     // we are not going to use this following loading functionality. It is just for demonstration purposes
@@ -52,6 +60,10 @@ export default function SidebarSearchResults(props: SidebarSearchResultsPropsIF)
                         searchInput={searchInput}
                         positionsByUser={positionsByUser}
                         isDenomBase={isDenomBase}
+                        setOutsideControl={setOutsideControl}
+                        setSelectedOutsideTab={setSelectedOutsideTab}
+                        setCurrentPositionActive={setCurrentPositionActive}
+                        setIsShowAllEnabled={setIsShowAllEnabled}
                     />
                     {false && <OrdersSearchResults loading={exampleLoading} searchInput={searchInput} />}
                     {false && <TransactionsSearchResults loading={exampleLoading} searchInput={searchInput} />}

@@ -1,3 +1,4 @@
+import { Dispatch, SetStateAction } from 'react';
 import styles from '../SidebarSearchResults.module.css';
 import { PositionIF } from '../../../../../utils/interfaces/PositionIF';
 import PositionLI from './PositionLI';
@@ -6,10 +7,22 @@ interface propsIF {
     searchInput: React.ReactNode;
     positionsByUser: PositionIF[];
     isDenomBase: boolean;
+    setOutsideControl: Dispatch<SetStateAction<boolean>>;
+    setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
+    setCurrentPositionActive: Dispatch<SetStateAction<string>>;
+    setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function PositionsSearchResults(props: propsIF) {
-    const { searchInput, positionsByUser, isDenomBase } = props;
+    const {
+        searchInput,
+        positionsByUser,
+        isDenomBase,
+        setOutsideControl,
+        setSelectedOutsideTab,
+        setCurrentPositionActive,
+        setIsShowAllEnabled,
+    } = props;
     false && searchInput;
 
     return (
@@ -26,6 +39,10 @@ export default function PositionsSearchResults(props: propsIF) {
                         key={`PositionSearchResult_${JSON.stringify(position)}`}
                         position={position}
                         isDenomBase={isDenomBase}
+                        setOutsideControl={setOutsideControl}
+                        setSelectedOutsideTab={setSelectedOutsideTab}
+                        setCurrentPositionActive={setCurrentPositionActive}
+                        setIsShowAllEnabled={setIsShowAllEnabled}
                     />
                 ))}
             </div>
