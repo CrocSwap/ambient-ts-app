@@ -538,22 +538,10 @@ export default function TradeCandleStickChart(props: ChartData) {
                     cumAverageUSD: 0,
                 });
 
-                while (
-                    depthLiqAskData[depthLiqAskData.length - 1].liqPrices - liqAskDeviation >
-                    0
-                ) {
-                    depthLiqAskData.push({
-                        activeLiq: depthLiqAskData[depthLiqAskData.length - 1].activeLiq,
-                        liqPrices:
-                            depthLiqAskData[depthLiqAskData.length - 1].liqPrices -
-                            liqAskDeviation / 2,
-                        deltaAverageUSD: 0,
-                        cumAverageUSD: 0,
-                    });
-                }
-
                 depthLiqAskData.push({
-                    activeLiq: depthLiqAskData[depthLiqAskData.length - 1].activeLiq,
+                    activeLiq:
+                        depthLiqAskData[!denominationsInBase ? 0 : depthLiqAskData.length - 1]
+                            .activeLiq,
                     liqPrices: 0,
                     deltaAverageUSD: 0,
                     cumAverageUSD: 0,

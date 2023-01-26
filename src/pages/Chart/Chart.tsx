@@ -1440,62 +1440,102 @@ export default function Chart(props: ChartData) {
                     setIsMouseMoveCrosshair(false);
                 }) as any;
 
-            const yAxisZoom = d3.zoom().on('zoom', async (event: any) => {
-                const domainY = scaleData.yScale.domain();
-                const center = (domainY[1] + domainY[0]) / 2;
+            const yAxisZoom = d3
+                .zoom()
+                .on('start', () => {
+                    d3.select(d3PlotArea.current)
+                        .select('svg')
+                        .select('.crosshairHorizontal')
+                        .selectChild()
+                        .style('visibility', 'hidden');
 
-                const deltaY = event.sourceEvent.movementY / 1.5;
-                const dy = event.sourceEvent.deltaY / 3;
+                    d3.select('#tvl_chart')
+                        .select('svg')
+                        .select('.crosshairHorizontal')
+                        .selectChild()
+                        .style('visibility', 'hidden');
 
-                const factor = Math.pow(
-                    2,
-                    event.sourceEvent.type === 'wheel'
-                        ? -dy * 0.003
-                        : event.sourceEvent.type === 'mousemove'
-                        ? -deltaY * 0.003
-                        : 1,
-                );
+                    d3.select(d3PlotArea.current)
+                        .select('svg')
+                        .select('.crosshairVertical')
+                        .selectChild()
+                        .style('visibility', 'hidden');
 
-                const size = (domainY[1] - domainY[0]) / 2 / factor;
+                    d3.select('#tvl_chart')
+                        .select('svg')
+                        .select('.crosshairVertical')
+                        .selectChild()
+                        .style('visibility', 'hidden');
 
-                await scaleData.yScale.domain([center - size, center + size]);
+                    d3.select('#fee_rate_chart')
+                        .select('svg')
+                        .select('.crosshairHorizontal')
+                        .selectChild()
+                        .style('visibility', 'hidden');
 
-                if (isAdvancedModeActive && liquidityData) {
-                    const liqAllBidPrices = liquidityData.liqBidData.map(
-                        (liqPrices: any) => liqPrices.liqPrices,
+                    d3.select('#fee_rate_chart')
+                        .select('svg')
+                        .select('.crosshairVertical')
+                        .selectChild()
+                        .style('visibility', 'hidden');
+                })
+                .on('zoom', async (event: any) => {
+                    const domainY = scaleData.yScale.domain();
+                    const center = (domainY[1] + domainY[0]) / 2;
+
+                    const deltaY = event.sourceEvent.movementY / 1.5;
+                    const dy = event.sourceEvent.deltaY / 3;
+
+                    const factor = Math.pow(
+                        2,
+                        event.sourceEvent.type === 'wheel'
+                            ? -dy * 0.003
+                            : event.sourceEvent.type === 'mousemove'
+                            ? -deltaY * 0.003
+                            : 1,
                     );
-                    const liqBidDeviation = standardDeviation(liqAllBidPrices);
 
-                    while (
-                        scaleData.yScale.domain()[1] + liqBidDeviation >=
-                        liquidityData.liqBidData[0].liqPrices
-                    ) {
-                        liquidityData.liqBidData.unshift({
-                            activeLiq: 30,
-                            liqPrices: liquidityData.liqBidData[0].liqPrices + liqBidDeviation,
-                            deltaAverageUSD: 0,
-                            cumAverageUSD: 0,
-                        });
+                    const size = (domainY[1] - domainY[0]) / 2 / factor;
 
-                        liquidityData.depthLiqBidData.unshift({
-                            activeLiq: liquidityData.depthLiqBidData[1].activeLiq,
-                            liqPrices: liquidityData.depthLiqBidData[0].liqPrices + liqBidDeviation,
-                            deltaAverageUSD: 0,
-                            cumAverageUSD: 0,
-                        });
+                    await scaleData.yScale.domain([center - size, center + size]);
+
+                    if (isAdvancedModeActive && liquidityData) {
+                        const liqAllBidPrices = liquidityData.liqBidData.map(
+                            (liqPrices: any) => liqPrices.liqPrices,
+                        );
+                        const liqBidDeviation = standardDeviation(liqAllBidPrices);
+
+                        while (
+                            scaleData.yScale.domain()[1] + liqBidDeviation >=
+                            liquidityData.liqBidData[0].liqPrices
+                        ) {
+                            liquidityData.liqBidData.unshift({
+                                activeLiq: 30,
+                                liqPrices: liquidityData.liqBidData[0].liqPrices + liqBidDeviation,
+                                deltaAverageUSD: 0,
+                                cumAverageUSD: 0,
+                            });
+
+                            liquidityData.depthLiqBidData.unshift({
+                                activeLiq: liquidityData.depthLiqBidData[1].activeLiq,
+                                liqPrices:
+                                    liquidityData.depthLiqBidData[0].liqPrices + liqBidDeviation,
+                                deltaAverageUSD: 0,
+                                cumAverageUSD: 0,
+                            });
+                        }
+                        setLiqHighlightedLinesAndArea(ranges);
                     }
-                    setLiqHighlightedLinesAndArea(ranges);
-                }
 
-                setZoomAndYdragControl(event);
-                setRescale(() => {
-                    return false;
-                });
+                    setZoomAndYdragControl(event);
+                    setRescale(() => {
+                        return false;
+                    });
 
-                setMarketLineValue();
-                render();
-                setIsRangeScaleSet('scaleOver');
-            }) as any;
+                    setMarketLineValue();
+                    render();
+                    setIsRangeScaleSet('scaleOver');
+                }) as any;
 
             setZoomUtils(() => {
                 return {
@@ -2179,7 +2219,7 @@ export default function Chart(props: ChartData) {
                     if (newLimitValue < 0) newLimitValue = 0;
 
                     newLimitValue =
-                        poolPriceDisplay !== undefined && newLimitValue > liquidityData.topBoundary
+                        poolPriceDisplay !== undefined && newLimitValue >= liquidityData.topBoundary
                             ? liquidityData.topBoundary
                             : newLimitValue;
 
@@ -2697,7 +2737,7 @@ export default function Chart(props: ChartData) {
         const high = ranges.filter((target: any) => target.name === 'Max')[0].value;
 
         let clickedValue =
-            scaleData.yScale.invert(d3.pointer(event)[1]) > liquidityData.topBoundary
+            scaleData.yScale.invert(d3.pointer(event)[1]) >= liquidityData.topBoundary
                 ? liquidityData.topBoundary
                 : scaleData.yScale.invert(d3.pointer(event)[1]);
 
@@ -4282,10 +4322,10 @@ export default function Chart(props: ChartData) {
                                 : liquidityData.liqBidData
                             : liqMode === 'Depth'
                             ? liquidityData.depthLiqBidData.filter(
-                                  (d: any) => d.liqPrices < liquidityData.topBoundary,
+                                  (d: any) => d.liqPrices <= liquidityData.topBoundary,
                               )
                             : liquidityData.liqBidData.filter(
-                                  (d: any) => d.liqPrices < liquidityData.topBoundary,
+                                  (d: any) => d.liqPrices <= liquidityData.topBoundary,
                               );
 
                         let minBoudnary;
@@ -4767,7 +4807,7 @@ export default function Chart(props: ChartData) {
 
                     const limitValue =
                         poolPriceDisplay !== undefined &&
-                        parseFloat(limitRateTruncated.replace(',', '')) > liquidityData.topBoundary
+                        parseFloat(limitRateTruncated.replace(',', '')) >= liquidityData.topBoundary
                             ? liquidityData.topBoundary
                             : parseFloat(limitRateTruncated.replace(',', ''));
 

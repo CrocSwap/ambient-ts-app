@@ -143,7 +143,7 @@ export default function Trade(props: TradePropsIF) {
     const { params } = useParams();
 
     const [transactionFilter, setTransactionFilter] = useState<CandleData>();
-    const [isCandleDataNull, setIsCandleDataNull] = useState(false);
+    const [isCandleDataNull] = useState(false);
     const [isCandleArrived, setIsCandleDataArrived] = useState(false);
 
     const navigate = useNavigate();
