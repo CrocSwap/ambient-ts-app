@@ -20,6 +20,7 @@ import { TokenPairIF } from '../../../../utils/interfaces/exports';
 import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
 import ConfirmationModalControl from '../../../Global/ConfirmationModalControl/ConfirmationModalControl';
 import NoTokenIcon from '../../../Global/NoTokenIcon/NoTokenIcon';
+import TransactionException from '../../../Global/TransactionException/TransactionException';
 
 interface ConfirmRangeModalPropsIF {
     sendTransaction: () => void;
@@ -75,6 +76,21 @@ export default function ConfirmRangeModal(props: ConfirmRangeModalPropsIF) {
 
     const transactionApproved = newRangeTransactionHash !== '';
     const isTransactionDenied = txErrorCode === 'ACTION_REJECTED';
+    const isTransactionException = txErrorCode === 'CALL_EXCEPTION';
+    const isGasLimitException = txErrorCode === 'UNPREDICTABLE_GAS_LIMIT';
+    const isInsufficientFundsException = txErrorCode === 'INSUFFICIENT_FUNDS';
+
+    const transactionDenied = <TransactionDenied resetConfirmation={resetConfirmation} />;
+    const transactionException = <TransactionException resetConfirmation={resetConfirmation} />;
+    const transactionSubmitted = (
+        <TransactionSubmitted
+            hash={newRangeTransactionHash}
+            tokenBSymbol={tokenB.symbol}
+            tokenBAddress={tokenB.address}
+            tokenBDecimals={tokenB.decimals}
+            tokenBImage={tokenB.logoURI}
+        />
+    );
 
     // const isTransactionDenied =
     //     txErrorCode === 4001 &&
@@ -177,16 +193,6 @@ export default function ConfirmRangeModal(props: ConfirmRangeModalPropsIF) {
             }. Please check the ${'Metamask'} extension in your browser for notifications.`}
         />
     );
-    const transactionDenied = <TransactionDenied resetConfirmation={resetConfirmation} />;
-    const transactionSubmitted = (
-        <TransactionSubmitted
-            hash={newRangeTransactionHash}
-            tokenBSymbol={tokenB.symbol}
-            tokenBAddress={tokenB.address}
-            tokenBDecimals={tokenB.decimals}
-            tokenBImage={tokenB.logoURI}
-        />
-    );
 
     const confirmTradeButton = (
         <Button
@@ -205,11 +211,14 @@ export default function ConfirmRangeModal(props: ConfirmRangeModalPropsIF) {
         />
     );
 
-    const confirmationDisplay = isTransactionDenied
-        ? transactionDenied
-        : transactionApproved
-        ? transactionSubmitted
-        : confirmSendMessage;
+    const confirmationDisplay =
+        isTransactionException || isGasLimitException || isInsufficientFundsException
+            ? transactionException
+            : isTransactionDenied
+            ? transactionDenied
+            : transactionApproved
+            ? transactionSubmitted
+            : confirmSendMessage;
 
     return (
         <div className={styles.confirm_range_modal_container}>
