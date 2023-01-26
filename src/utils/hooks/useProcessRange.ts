@@ -90,9 +90,10 @@ export const useProcessRange = (position: PositionIF, account: string) => {
         ? getUnicodeCharacter(position.quoteSymbol)
         : '';
 
-    const minRange = isDenomBase
-        ? quoteTokenCharacter + position.lowRangeDisplayInBase
-        : baseTokenCharacter + position.lowRangeDisplayInQuote;
+    const minRange = isDenomBase ? position.lowRangeDisplayInBase : position.lowRangeDisplayInQuote;
+    // const minRange = isDenomBase
+    //     ? quoteTokenCharacter + position.lowRangeDisplayInBase
+    //     : baseTokenCharacter + position.lowRangeDisplayInQuote;
 
     const minRangeDenomByMoneyness = isBaseTokenMoneynessGreaterOrEqual
         ? position.lowRangeDisplayInQuote
@@ -103,11 +104,14 @@ export const useProcessRange = (position: PositionIF, account: string) => {
         : position.highRangeDisplayInBase;
 
     const maxRange = isDenomBase
-        ? quoteTokenCharacter + position.highRangeDisplayInBase
-        : baseTokenCharacter + position.highRangeDisplayInQuote;
+        ? position.highRangeDisplayInBase
+        : position.highRangeDisplayInQuote;
+    // const maxRange = isDenomBase
+    //     ? quoteTokenCharacter + position.highRangeDisplayInBase
+    //     : baseTokenCharacter + position.highRangeDisplayInQuote;
 
-    const ambientMinOrNull = position.positionType === 'ambient' ? '0.00' : minRange;
-    const ambientMaxOrNull = position.positionType === 'ambient' ? '∞' : maxRange;
+    const ambientOrMin = position.positionType === 'ambient' ? '0.00' : minRange;
+    const ambientOrMax = position.positionType === 'ambient' ? '∞' : maxRange;
 
     const usdValueNum = position.positionLiqTotalUSD;
 
@@ -168,8 +172,8 @@ export const useProcessRange = (position: PositionIF, account: string) => {
         userNameToDisplay,
 
         // Range min and max
-        ambientMinOrNull,
-        ambientMaxOrNull,
+        ambientOrMin,
+        ambientOrMax,
 
         // value
         usdValue,

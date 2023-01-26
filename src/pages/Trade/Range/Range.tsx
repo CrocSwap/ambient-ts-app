@@ -1074,7 +1074,7 @@ export default function Range(props: RangePropsIF) {
     const baseModeContent = (
         <div>
             <RangeCurrencyConverter {...rangeCurrencyConverterProps} isAdvancedMode={false} />
-            <DividerDark addMarginTop />
+            {/* <DividerDark addMarginTop /> */}
             {denominationSwitch}
             <motion.div
                 initial={{ opacity: 0 }}
@@ -1090,7 +1090,7 @@ export default function Range(props: RangePropsIF) {
     const advancedModeContent = (
         <>
             <RangeCurrencyConverter {...rangeCurrencyConverterProps} isAdvancedMode />
-            <DividerDark addMarginTop />
+            {/* <DividerDark addMarginTop /> */}
 
             {denominationSwitch}
             <motion.div
@@ -1281,14 +1281,14 @@ export default function Range(props: RangePropsIF) {
                     openGlobalModal={openGlobalModal}
                     shareOptionsDisplay={shareOptionsDisplay}
                 />
-                <DividerDark addMarginTop />
+                {/* <DividerDark addMarginTop /> */}
                 {navigationMenu}
                 <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ duration: 0.5 }}
                 >
-                    <DividerDark />
+                    {/* <DividerDark /> */}
                     {tradeData.advancedMode ? advancedModeContent : baseModeContent}
                 </motion.div>
                 {isUserLoggedIn === undefined ? null : isUserLoggedIn === true ? (

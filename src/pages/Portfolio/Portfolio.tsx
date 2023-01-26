@@ -20,10 +20,13 @@ import ProfileSettings from '../../components/Portfolio/ProfileSettings/ProfileS
 import { SoloTokenSelect } from '../../components/Global/TokenSelectContainer/SoloTokenSelect';
 // import { useSoloSearch } from '../../components/Global/TokenSelectContainer/hooks/useSoloSearch';
 import {
+    setErc20Tokens,
+    setNativeToken,
     setResolvedAddressRedux,
     setSecondaryImageDataRedux,
 } from '../../utils/state/userDataSlice';
 import { useAccount, useEnsName } from 'wagmi';
+import useMediaQuery from '../../utils/hooks/useMediaQuery';
 
 const mainnetProvider = new ethers.providers.WebSocketProvider(
     // 'wss://mainnet.infura.io/ws/v3/4a162c75bd514925890174ca13cdb6a2', // benwolski@gmail.com
@@ -127,12 +130,12 @@ export default function Portfolio(props: PortfolioPropsIF) {
         searchType,
     } = props;
 
-    const dispatch = useAppDispatch();
-
     const { isConnected, address } = useAccount();
     const { data: ensName } = useEnsName({ address });
 
     const chainId = '0x5';
+
+    const dispatch = useAppDispatch();
 
     const connectedAccount = address;
 
@@ -150,6 +153,22 @@ export default function Portfolio(props: PortfolioPropsIF) {
     const selectedTokenAddress = selectedToken.address;
     const selectedTokenDecimals = selectedToken.decimals;
 
+    const addTokenInfo = (token: TokenIF): TokenIF => {
+        const newToken = { ...token };
+        const tokenAddress = token.address;
+        const key = tokenAddress.toLowerCase() + '_0x' + token.chainId.toString(16);
+
+        const tokenName = tokensOnActiveLists.get(key)?.name;
+
+        const tokenLogoURI = tokensOnActiveLists.get(key)?.logoURI;
+
+        newToken.name = tokenName ?? '';
+
+        newToken.logoURI = tokenLogoURI ?? '';
+
+        return newToken;
+    };
+
     useEffect(() => {
         if (crocEnv && selectedToken.address && connectedAccount) {
             crocEnv
@@ -165,6 +184,32 @@ export default function Portfolio(props: PortfolioPropsIF) {
                 })
                 .catch(console.log);
         }
+
+        if (recheckTokenBalances) {
+            (async () => {
+                if (connectedAccount) {
+                    const newNativeToken: TokenIF = await cachedFetchNativeTokenBalance(
+                        connectedAccount,
+                        chainId,
+                        lastBlockNumber,
+                        crocEnv,
+                    );
+
+                    dispatch(setNativeToken(newNativeToken));
+
+                    const erc20Results: TokenIF[] = await cachedFetchErc20TokenBalances(
+                        connectedAccount,
+                        chainId,
+                        lastBlockNumber,
+                        crocEnv,
+                    );
+                    const erc20TokensWithLogos = erc20Results.map((token) => addTokenInfo(token));
+
+                    dispatch(setErc20Tokens(erc20TokensWithLogos));
+                }
+            })();
+        }
+
         setRecheckTokenBalances(false);
     }, [crocEnv, selectedToken.address, connectedAccount, lastBlockNumber, recheckTokenBalances]);
 
@@ -471,6 +516,34 @@ export default function Portfolio(props: PortfolioPropsIF) {
 
     // console.log({ secondaryEnsName });
     // console.log({ ensName });
+    const [showTabsAndNotExchange, setShowTabsAndNotExchange] = useState(false);
+    const hideTabs = useMediaQuery('(max-width: 850px)') && showTabsAndNotExchange;
+    const hideExchange = useMediaQuery('(max-width: 850px)') && !showTabsAndNotExchange;
+
+    const mobileDataToggle = (
+        <div className={styles.mobile_toggle_container}>
+            <button
+                onClick={() => setShowTabsAndNotExchange(!showTabsAndNotExchange)}
+                className={
+                    showTabsAndNotExchange
+                        ? styles.non_active_button_mobile_toggle
+                        : styles.active_button_mobile_toggle
+                }
+            >
+                Transactions
+            </button>
+            <button
+                onClick={() => setShowTabsAndNotExchange(!showTabsAndNotExchange)}
+                className={
+                    showTabsAndNotExchange
+                        ? styles.active_button_mobile_toggle
+                        : styles.non_active_button_mobile_toggle
+                }
+            >
+                Exchange
+            </button>
+        </div>
+    );
 
     return (
         <main data-testid={'portfolio'} className={styles.portfolio_container}>
@@ -497,6 +570,8 @@ export default function Portfolio(props: PortfolioPropsIF) {
                 setShowProfileSettings={setShowProfileSettings}
                 connectedAccountActive={connectedAccountActive}
             />
+
+            {mobileDataToggle}
             <div
                 className={
                     fullLayoutActive
@@ -504,7 +579,7 @@ export default function Portfolio(props: PortfolioPropsIF) {
                         : styles.tabs_exchange_balance_container
                 }
             >
-                {!showLoggedInButton ? (
+                {!showLoggedInButton && !hideTabs ? (
                     <PortfolioTabs
                         crocEnv={crocEnv}
                         isTokenABase={isTokenABase}
@@ -542,12 +617,14 @@ export default function Portfolio(props: PortfolioPropsIF) {
                         handlePulseAnimation={handlePulseAnimation}
                     />
                 ) : (
-                    <div className={styles.non_connected_content}>
-                        <p>Please connect wallet to view your transactions.</p>
-                        <Button flat title='Connect Wallet' action={() => openModalWallet()} />
-                    </div>
+                    !hideTabs && (
+                        <div className={styles.non_connected_content}>
+                            <p>Please connect wallet to view your transactions.</p>
+                            <Button flat title='Connect Wallet' action={() => openModalWallet()} />
+                        </div>
+                    )
                 )}
-                {connectedAccountActive && exchangeBalanceComponent}
+                {connectedAccountActive && !hideExchange && exchangeBalanceComponent}
             </div>
             {isTokenModalOpen && (
                 <Modal

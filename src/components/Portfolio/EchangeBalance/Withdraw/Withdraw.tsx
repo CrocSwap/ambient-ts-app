@@ -185,6 +185,10 @@ export default function Withdraw(props: PortfolioWithdrawProps) {
     // const [isApprovalPending, setIsApprovalPending] = useState(false);
     const [isWithdrawPending, setIsWithdrawPending] = useState(false);
 
+    useEffect(() => {
+        setIsWithdrawPending(false);
+    }, [JSON.stringify(selectedToken)]);
+
     // const chooseToken = (tok: TokenIF) => {
     //     console.log(tok);
     //     dispatch(setToken(tok));
@@ -323,15 +327,16 @@ export default function Withdraw(props: PortfolioWithdrawProps) {
         }
     };
 
-    const withdrawInput = document.getElementById(
-        'exchange-balance-withdraw-exchange-balance-withdraw-quantity',
-    ) as HTMLInputElement;
+    // const withdrawInput = document.getElementById(
+    //     'exchange-balance-withdraw-exchange-balance-withdraw-quantity',
+    // ) as HTMLInputElement;
 
     const resetWithdrawQty = () => {
-        if (withdrawInput) {
-            setWithdrawQtyNonDisplay(undefined);
-            withdrawInput.value = '';
-        }
+        // if (withdrawInput) {
+        //     withdrawInput.value = '';
+        // }
+        setWithdrawQtyNonDisplay(undefined);
+        setInputValue('');
     };
 
     useEffect(() => {
@@ -401,12 +406,14 @@ export default function Withdraw(props: PortfolioWithdrawProps) {
         </span>
     );
 
+    const [inputValue, setInputValue] = useState('');
+
     const handleBalanceClick = () => {
         if (isTokenDexBalanceGreaterThanZero) {
             setWithdrawQtyNonDisplay(tokenDexBalance);
-
-            if (withdrawInput && tokenExchangeDepositsDisplay)
-                withdrawInput.value = tokenExchangeDepositsDisplay;
+            if (tokenExchangeDepositsDisplay) setInputValue(tokenExchangeDepositsDisplay);
+            // if (withdrawInput && tokenExchangeDepositsDisplay)
+            //     withdrawInput.value = tokenExchangeDepositsDisplay;
         }
     };
 
@@ -424,6 +431,8 @@ export default function Withdraw(props: PortfolioWithdrawProps) {
                 setWithdrawQty={setWithdrawQtyNonDisplay}
                 isSendToAddressChecked={isSendToAddressChecked}
                 setIsSendToAddressChecked={setIsSendToAddressChecked}
+                inputValue={inputValue}
+                setInputValue={setInputValue}
             />
             <div
                 onClick={handleBalanceClick}

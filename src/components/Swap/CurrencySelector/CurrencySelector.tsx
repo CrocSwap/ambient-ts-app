@@ -357,7 +357,7 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
             ? styles.grey_logo
             : null;
 
-    const sellTokenMaxButton =
+    const surplusMaxButton =
         isSellTokenSelector &&
         isWithdrawFromDexChecked &&
         surplusBalanceNonLocaleString !== '0.0' ? (
@@ -410,7 +410,7 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                     </div>
                 </div>
             </IconWithTooltip>
-            {sellTokenMaxButton}
+            {surplusMaxButton}
         </div>
     );
 

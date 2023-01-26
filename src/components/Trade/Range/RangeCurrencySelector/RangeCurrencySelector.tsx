@@ -293,9 +293,67 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
         soloTokenSelectInput.value = '';
     };
 
+    // Not sure if this is the same logic as Market and Limit so I am using a static boolean for now.
+    const displayWalletMaxButton = true;
+    const walletBalanceMaxButton =
+        // isSellTokenSelector &&
+        // !isWithdrawFromDexChecked &&
+        //     walletBalanceNonLocaleString !== '0.0'
+        displayWalletMaxButton ? (
+            <button
+                className={`${styles.max_button} ${styles.max_button_enable}`}
+                onClick={() => {
+                    // if (props.sellToken) {
+                    //     setIsWithdrawFromDexChecked(false);
+                    // } else {
+                    //     setIsSaveAsDexSurplusChecked(false);
+                    // }
+                    // if (handleChangeClick && !isWithdrawFromWalletDisabled) {
+                    //     handleChangeClick(walletBalanceNonLocaleString);
+                    // }
+                    console.log('max button clicked');
+                }}
+            >
+                Max
+            </button>
+        ) : (
+            <p className={styles.max_button} />
+        );
+
+    const displaySurplusMaxButton = true;
+
+    const surplusMaxButton =
+        // isSellTokenSelector &&
+        // isWithdrawFromDexChecked &&
+        //         surplusBalanceNonLocaleString !== '0.0'
+        displaySurplusMaxButton ? (
+            <button
+                className={`${styles.max_button} ${styles.max_button_enable}`}
+                onClick={() => {
+                    // if (props.sellToken) {
+                    //     setIsWithdrawFromDexChecked(true);
+                    // } else {
+                    //     setIsSaveAsDexSurplusChecked(true);
+                    // }
+                    // if (handleChangeClick && !isWithdrawFromDexDisabled) {
+                    //     handleChangeClick(surplusBalanceNonLocaleStringOffset);
+                    // }
+                    console.log('clicked');
+                }}
+            >
+                Max
+            </button>
+        ) : (
+            <p className={styles.max_button} />
+        );
+
     const surplusContent = (
         <div className={styles.main_surplus_container}>
-            <IconWithTooltip title='Exchange Balance' placement='bottom'>
+            <IconWithTooltip
+                title='Exchange Balance'
+                placement='bottom'
+                style={{ display: 'flex', alignItems: 'center' }}
+            >
                 <div
                     className={`${styles.balance_with_pointer} ${
                         (isTokenASelector && isWithdrawTokenAFromDexChecked) ||
@@ -343,13 +401,18 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
                         </div>
                     </div>
                 </div>
+                {surplusMaxButton}
             </IconWithTooltip>
         </div>
     );
 
     const walletContent = (
         <div className={styles.main_wallet_container}>
-            <IconWithTooltip title='Wallet Balance' placement='bottom'>
+            <IconWithTooltip
+                title='Wallet Balance'
+                placement='bottom'
+                style={{ display: 'flex', alignItems: 'center' }}
+            >
                 <div
                     className={styles.balance_with_pointer}
                     onClick={() => {
@@ -396,6 +459,7 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
                         </div>
                     </div>
                 </div>{' '}
+                {walletBalanceMaxButton}
             </IconWithTooltip>
         </div>
     );
@@ -415,6 +479,20 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
             tokenBSurplusMinusTokenBRemainderNum < 0)
             ? 'var(--text-highlight)'
             : '#555555';
+
+    const swapboxBottomOrNull = !isUserLoggedIn ? (
+        // || (isUserLoggedIn && !userHasEnteredAmount) ? (
+        <div className={styles.swapbox_bottom} />
+    ) : (
+        <div className={styles.swapbox_bottom} style={{ color: surplusContainerColorStyle }}>
+            {/* <div className={styles.surplus_container} style={{color: surplusContainerColorStyle}} > */}
+            {walletContent}
+            {surplusContent}
+            {/* </div> */}
+
+            {DexBalanceContent}
+        </div>
+    );
 
     return (
         <div className={styles.swapbox}>
@@ -448,14 +526,7 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
                     <RiArrowDownSLine size={27} />
                 </div>
             </div>
-            <div className={styles.swapbox_bottom} style={{ color: surplusContainerColorStyle }}>
-                {/* <div className={styles.surplus_container} style={{color: surplusContainerColorStyle}} > */}
-                {walletContent}
-                {surplusContent}
-                {/* </div> */}
-
-                {DexBalanceContent}
-            </div>
+            {swapboxBottomOrNull}
             {isTokenModalOpen && (
                 <Modal
                     onClose={closeTokenModal}

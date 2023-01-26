@@ -124,7 +124,9 @@
     flex-direction: row;
     justify-content: flex-end;
     align-items: center;
-    /*     gap: 1rem;; */
+gap: 4px;    /*     gap: 1rem;; */
+
+display: none;
 }
 
 .save_image_container,
@@ -329,11 +331,11 @@ max-height: 90%;
         margin-bottom: 15px;
     }
 
-    .chart_image,
+    /* .chart_image,
     .time_frame_container,
     .token_info_container {
         display: none;
-    }
+    } */
 }
 
 @media (min-width: 680px) {
@@ -362,9 +364,7 @@ max-height: 90%;
     .expand_table {
         height: 100%;
     }
-}
 
-@media (min-width: 680px) {
     .graph_settings_container {
         width: 100%;
         display: flex;
@@ -378,5 +378,7 @@ max-height: 90%;
         cursor: pointer;
     }
 
-
 }
+
+
+
