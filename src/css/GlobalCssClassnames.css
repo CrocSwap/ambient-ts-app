@@ -78,13 +78,13 @@
 
 
 .emoji-picker-react .emoji-group:before, .emoji-picker-react input.emoji-search{
-    color: var(--text-grey-dark) !important;
-    background: var(--dark2) !important
+    color: var(--text-grey-light) !important;
+    background: var(--dark3) !important
 }
 
 
 aside.emoji-picker-react{
-    background: var(--text-grey-dark) !important;
+    background: var(--dark2) !important;
     box-shadow: 0 5px 10px var(--dark1) !important;
     border: 1px solid var(--border) !important
 }
