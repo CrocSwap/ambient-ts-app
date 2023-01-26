@@ -75,6 +75,7 @@ export default function ConfirmRangeModal(props: ConfirmRangeModalPropsIF) {
     const tokenB = tokenPair.dataTokenB;
 
     const transactionApproved = newRangeTransactionHash !== '';
+
     const isTransactionDenied = txErrorCode === 'ACTION_REJECTED';
     const isTransactionException = txErrorCode === 'CALL_EXCEPTION';
     const isGasLimitException = txErrorCode === 'UNPREDICTABLE_GAS_LIMIT';
@@ -82,6 +83,7 @@ export default function ConfirmRangeModal(props: ConfirmRangeModalPropsIF) {
 
     const transactionDenied = <TransactionDenied resetConfirmation={resetConfirmation} />;
     const transactionException = <TransactionException resetConfirmation={resetConfirmation} />;
+
     const transactionSubmitted = (
         <TransactionSubmitted
             hash={newRangeTransactionHash}
