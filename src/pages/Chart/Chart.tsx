@@ -865,8 +865,6 @@ export default function Chart(props: ChartData) {
             result = get1MinuteAxisTicks(oldTickValues, bandwidth);
         }
 
-        console.log({ result });
-
         return result;
     }
 

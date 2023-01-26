@@ -12,7 +12,7 @@ import {
     TvlChartData,
     VolumeChartData,
 } from './TradeCharts';
-import { useAppDispatch, useAppSelector } from '../../../utils/hooks/reduxToolkit';
+import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import {
     getPinnedPriceValuesFromDisplayPrices,
     getPinnedPriceValuesFromTicks,
