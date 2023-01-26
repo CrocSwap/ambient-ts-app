@@ -3,6 +3,7 @@ import styles from './ConfirmSwapModal.module.css';
 import WaitingConfirmation from '../../Global/WaitingConfirmation/WaitingConfirmation';
 import TransactionSubmitted from '../../Global/TransactionSubmitted/TransactionSubmitted';
 import TransactionDenied from '../../Global/TransactionDenied/TransactionDenied';
+import TransactionException from '../../Global/TransactionException/TransactionException';
 import Button from '../../Global/Button/Button';
 import { TokenPairIF } from '../../../utils/interfaces/exports';
 import { CrocImpact } from '@crocswap-libs/sdk';
@@ -58,6 +59,7 @@ export default function ConfirmSwapModal(props: ConfirmSwapModalProps) {
     // console.log({ txErrorCode });
     // console.log({ txErrorMessage });
     const isTransactionDenied = txErrorCode === 'ACTION_REJECTED';
+    const isTransactionException = txErrorCode === 'CALL_EXCEPTION';
     // const isTransactionDenied =
     //     txErrorCode === 4001 &&
     //     txErrorMessage === 'MetaMask Tx Signature: User denied transaction signature.';
@@ -274,6 +276,7 @@ export default function ConfirmSwapModal(props: ConfirmSwapModalProps) {
     );
 
     const transactionDenied = <TransactionDenied resetConfirmation={resetConfirmation} />;
+    const transactionException = <TransactionException resetConfirmation={resetConfirmation} />;
 
     const transactionSubmitted = (
         <TransactionSubmitted
@@ -304,7 +307,9 @@ export default function ConfirmSwapModal(props: ConfirmSwapModalProps) {
         />
     );
 
-    const confirmationDisplay = isTransactionDenied
+    const confirmationDisplay = isTransactionException
+        ? transactionException
+        : isTransactionDenied
         ? transactionDenied
         : transactionApproved
         ? transactionSubmitted
