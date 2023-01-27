@@ -40,6 +40,7 @@ import WithdrawAs from './WithdrawAs/WithdrawAs';
 import WithdrawTo from './WithdrawTo/WithdrawTo';
 import WaitingConfirmation from '../Global/WaitingConfirmation/WaitingConfirmation';
 import TransactionDenied from '../Global/TransactionDenied/TransactionDenied';
+import TransactionException from '../Global/TransactionException/TransactionException';
 interface IRemoveRangeProps {
     crocEnv: CrocEnv | undefined;
     provider: ethers.providers.Provider;
@@ -464,9 +465,14 @@ export default function RemoveRange(props: IRemoveRangeProps) {
     const transactionApproved = newRemovalTransactionHash !== '';
 
     const isRemovalDenied = txErrorCode === 'ACTION_REJECTED';
+    const isTransactionException = txErrorCode === 'CALL_EXCEPTION';
+    const isGasLimitException = txErrorCode === 'UNPREDICTABLE_GAS_LIMIT';
+    const isInsufficientFundsException = txErrorCode === 'INSUFFICIENT_FUNDS';
     // const isRemovalDenied =
     //     txErrorCode === 4001 &&
     //     txErrorMessage === 'MetaMask Tx Signature: User denied transaction signature.';
+
+    const transactionException = <TransactionException resetConfirmation={resetConfirmation} />;
 
     function handleConfirmationChange() {
         setCurrentConfirmationData(removalPending);
@@ -475,6 +481,8 @@ export default function RemoveRange(props: IRemoveRangeProps) {
             setCurrentConfirmationData(removalSuccess);
         } else if (isRemovalDenied) {
             setCurrentConfirmationData(removalDenied);
+        } else if (isTransactionException || isGasLimitException || isInsufficientFundsException) {
+            setCurrentConfirmationData(transactionException);
         }
     }
 
