@@ -10,6 +10,8 @@ interface propsIF {
 export default function TxLI(props: propsIF) {
     const { tx } = props;
 
+    const txType = getTxType(tx.entityType)
+
     const txValue = getTxValue(
         tx.valueUSD,
         tx.totalValueUSD,
@@ -19,10 +21,8 @@ export default function TxLI(props: propsIF) {
     return (
         <div className={styles.card_container}>
             <div>{tx.baseSymbol} / {tx.quoteSymbol}</div>
-            <div>{getTxType(tx.entityType)}</div>
-            <div className={styles.status_display}>
-                {txValue}
-            </div>
+            <div>{txType}</div>
+            <div className={styles.status_display}>{txValue}</div>
         </div>
     );
 }
