@@ -1,4 +1,4 @@
-import styles from './TransactionDenied.module.css';
+import styles from './TransactionException.module.css';
 // import Animation from '../Animation/Animation';
 // import NotFound from '../../../assets/animations/NotFound.json';
 import { CircleLoaderFailed } from '../LoadingAnimations/CircleLoader/CircleLoader';
@@ -17,17 +17,17 @@ interface TransactionSubmittedProps {
     resetConfirmation: () => void;
 }
 
-export default function TransactionDenied(props: TransactionSubmittedProps) {
+export default function TransactionException(props: TransactionSubmittedProps) {
     const { resetConfirmation } = props;
 
     return (
         <div className={styles.removal_pending}>
-            <h2>Transaction Denied in Wallet</h2>
+            <h2>Transaction Exception</h2>
             <CircleLoaderFailed />
-            {/* <p>
+            <p>
                 Check the Metamask extension in your browser for notifications, or click &quot;Try
                 Again&quot;.
-            </p> */}
+            </p>
             <Button title='Try Again' action={resetConfirmation} />
         </div>
     );

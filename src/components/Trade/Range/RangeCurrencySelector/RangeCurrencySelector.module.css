@@ -25,12 +25,12 @@
 
 .main_surplus_container, .main_wallet_container{
     display: flex;
-    /* justify-content: center; */
+    justify-content: center;
     align-items: center;
 }
 
 .main_surplus_container{
-    justify-content: flex-end;
+    justify-content: center;
 }
 
 
@@ -77,20 +77,25 @@
     display: flex;
     justify-content: space-between;
     flex-direction: row;
-    align-items: center;
+    /* align-items: center; */
     /* padding: 0.5rem 0; */
     min-height: 40px;
+
+    display: grid;
+    grid-template-columns: auto 120px;
     /* height: 40px; */
 }
 
-.swap_input {
+/* .swap_input {
     width: 65%;
-}
+} */
 .token_select {
+    /* background: var(--dark3); */
     display: flex;
     justify-content: space-between;
     align-items: center;
-    width: 35%;
+    /* gap: 4px; */
+    /* width: 35%; */
     cursor: pointer;
     transition: all var(--animation-speed) ease-in-out;
 }
@@ -126,17 +131,17 @@
 } */
 
 .swapbox_bottom {
-    /* display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center; */
-    min-height: 33px;
-    display: grid;
-    grid-template-columns:  repeat(3, 1fr);
-   margin: 6px 10px 0px 10px;
-
-    /* margin: 6px 10px 0px 10px; */
-}
+  
+    margin: 6px 10px;
+       height: 33px;
+    
+       
+       display: grid;
+       grid-template-columns: repeat(2, 1fr);
+       gap: 4px;
+    
+       
+    }
 
 
 .token_select_button {
@@ -179,9 +184,8 @@
     /* background: var(--dark3); */
     background: transparent;
 
-    /* background: red; */
-    /* width: 30px; */
-    margin-right: 8px;
+    width: 25px;
+    /* margin-right: 8px; */
     max-height: 20px;
     /* padding: 0 8px; */
     transition: all var(--animation-speed) ease-in-out;

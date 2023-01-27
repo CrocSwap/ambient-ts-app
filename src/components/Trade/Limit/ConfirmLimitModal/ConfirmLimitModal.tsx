@@ -5,6 +5,7 @@ import TransactionSubmitted from '../../../Global/TransactionSubmitted/Transacti
 import Button from '../../../Global/Button/Button';
 import { TokenPairIF } from '../../../../utils/interfaces/exports';
 import TransactionDenied from '../../../Global/TransactionDenied/TransactionDenied';
+import TransactionException from '../../../Global/TransactionException/TransactionException';
 // import DenominationSwitch from '../../../Swap/DenominationSwitch/DenominationSwitch';
 import TokensArrow from '../../../Global/TokensArrow/TokensArrow';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
@@ -92,6 +93,9 @@ export default function ConfirmLimitModal(props: ConfirmLimitModalProps) {
               });
 
     const isTransactionDenied = txErrorCode === 'ACTION_REJECTED';
+    const isTransactionException = txErrorCode === 'CALL_EXCEPTION';
+    const isGasLimitException = txErrorCode === 'UNPREDICTABLE_GAS_LIMIT';
+    const isInsufficientFundsException = txErrorCode === 'INSUFFICIENT_FUNDS';
 
     // const isTransactionDenied =
     //     txErrorCode === 4001 &&
@@ -254,6 +258,7 @@ export default function ConfirmLimitModal(props: ConfirmLimitModalProps) {
     );
 
     const transactionDenied = <TransactionDenied resetConfirmation={resetConfirmation} />;
+    const transactionException = <TransactionException resetConfirmation={resetConfirmation} />;
 
     const transactionSubmitted = (
         <TransactionSubmitted
@@ -265,11 +270,14 @@ export default function ConfirmLimitModal(props: ConfirmLimitModalProps) {
         />
     );
 
-    const confirmationDisplay = isTransactionDenied
-        ? transactionDenied
-        : transactionApproved
-        ? transactionSubmitted
-        : confirmSendMessage;
+    const confirmationDisplay =
+        isTransactionException || isGasLimitException || isInsufficientFundsException
+            ? transactionException
+            : isTransactionDenied
+            ? transactionDenied
+            : transactionApproved
+            ? transactionSubmitted
+            : confirmSendMessage;
 
     const confirmLimitButton = (
         <Button

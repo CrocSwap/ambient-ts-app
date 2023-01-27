@@ -6,7 +6,7 @@ import { RiArrowDownSLine } from 'react-icons/ri';
 import { TokenIF, TokenPairIF } from '../../../../utils/interfaces/exports';
 import { useModal } from '../../../../components/Global/Modal/useModal';
 import Modal from '../../../../components/Global/Modal/Modal';
-import Toggle2 from '../../../Global/Toggle/Toggle2';
+// import Toggle2 from '../../../Global/Toggle/Toggle2';
 import ambientLogo from '../../../../assets/images/logos/ambient_logo.svg';
 import { MdAccountBalanceWallet } from 'react-icons/md';
 import IconWithTooltip from '../../../Global/IconWithTooltip/IconWithTooltip';
@@ -148,33 +148,33 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
         }
     }, [tokenBDexBalance]);
 
-    const DexBalanceContent = (
-        <span className={styles.surplus_toggle}>
-            <IconWithTooltip title='Use Exchange Balance' placement='bottom'>
-                {isTokenASelector ? (
-                    <Toggle2
-                        isOn={isWithdrawTokenAFromDexChecked}
-                        handleToggle={() =>
-                            setIsWithdrawTokenAFromDexChecked(!isWithdrawTokenAFromDexChecked)
-                        }
-                        id='withdraw_from_dex'
-                        disabled={false}
-                        // disabled={parseFloat(tokenADexBalance) <= 0}
-                    />
-                ) : (
-                    <Toggle2
-                        isOn={isWithdrawTokenBFromDexChecked}
-                        handleToggle={() =>
-                            setIsWithdrawTokenBFromDexChecked(!isWithdrawTokenBFromDexChecked)
-                        }
-                        id='withdraw_to_wallet'
-                        disabled={false}
-                        // disabled={parseFloat(tokenBDexBalance) <= 0}
-                    />
-                )}
-            </IconWithTooltip>
-        </span>
-    );
+    // const DexBalanceContent = (
+    //     <span className={styles.surplus_toggle}>
+    //         <IconWithTooltip title='Use Exchange Balance' placement='bottom'>
+    //             {isTokenASelector ? (
+    //                 <Toggle2
+    //                     isOn={isWithdrawTokenAFromDexChecked}
+    //                     handleToggle={() =>
+    //                         setIsWithdrawTokenAFromDexChecked(!isWithdrawTokenAFromDexChecked)
+    //                     }
+    //                     id='withdraw_from_dex'
+    //                     disabled={false}
+    //                     // disabled={parseFloat(tokenADexBalance) <= 0}
+    //                 />
+    //             ) : (
+    //                 <Toggle2
+    //                     isOn={isWithdrawTokenBFromDexChecked}
+    //                     handleToggle={() =>
+    //                         setIsWithdrawTokenBFromDexChecked(!isWithdrawTokenBFromDexChecked)
+    //                     }
+    //                     id='withdraw_to_wallet'
+    //                     disabled={false}
+    //                     // disabled={parseFloat(tokenBDexBalance) <= 0}
+    //                 />
+    //             )}
+    //         </IconWithTooltip>
+    //     </span>
+    // );
 
     const walletBalanceNonLocaleString = isTokenASelector
         ? tokenABalance && gasPriceInGwei
@@ -400,8 +400,8 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
                             {isTokenASelector ? tokenASurplusChange : tokenBSurplusChange}
                         </div>
                     </div>
+                    {surplusMaxButton}
                 </div>
-                {surplusMaxButton}
             </IconWithTooltip>
         </div>
     );
@@ -490,7 +490,7 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
             {surplusContent}
             {/* </div> */}
 
-            {DexBalanceContent}
+            {/* {DexBalanceContent} */}
         </div>
     );
 

@@ -149,6 +149,7 @@ export default function MessageInput(props: MessageInputProps, prop: ChatProps) 
                     onKeyDown={_handleKeyDown}
                     value={message}
                     onChange={onChangeMessage}
+                    autoComplete={'off'}
                 />
 
                 <BsEmojiSmileFill
@@ -191,16 +192,18 @@ export default function MessageInput(props: MessageInputProps, prop: ChatProps) 
                     <Picker
                         pickerStyle={{
                             width: '100%',
-                            height: '100%',
-                            backgroundColor: '#2e4960',
-                            indicatorColor: '#b04c2d',
-                            fontColor: 'lightgrey',
-                            searchBackgroundColor: '#263d51',
-                            tabsFontColor: '#8cdce4',
-                            searchFontColor: 'lightgrey',
-                            skinTonePickerBackgroundColor: '#284155',
+                            // filter: 'invert(100%)',
+                            // height: '100%',
+                            // backgroundColor: '#2e4960',
+                            // indicatorColor: '#b04c2d',
+                            // fontColor: 'lightgrey',
+                            // searchBackgroundColor: '#263d51',
+                            // tabsFontColor: '#8cdce4',
+                            // searchFontColor: 'lightgrey',
+                            // skinTonePickerBackgroundColor: '#284155',
                         }}
                         onEmojiClick={handleEmojiClick}
+                        disableSkinTonePicker={true}
                     />
                 </div>
             )}
