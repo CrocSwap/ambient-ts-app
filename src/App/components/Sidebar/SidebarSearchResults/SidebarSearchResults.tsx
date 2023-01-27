@@ -63,7 +63,7 @@ export default function SidebarSearchResults(props: SidebarSearchResultsPropsIF)
                         setIsShowAllEnabled={setIsShowAllEnabled}
                     />
                     {false && <OrdersSearchResults loading={exampleLoading} searchInput={searchInput} />}
-                    {false && <TransactionsSearchResults loading={exampleLoading} searchInput={searchInput} />}
+                    <TransactionsSearchResults loading={exampleLoading} searchInput={searchInput} />
                 </>
             )}
         </div>
