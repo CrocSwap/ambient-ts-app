@@ -5,7 +5,7 @@ import TxLI from './TxLI'
 import { useClick } from './hooks/useClick';
 
 interface propsIF {
-    txsByUser: TransactionIF[];
+    searchedTxs: TransactionIF[];
     setOutsideControl: Dispatch<SetStateAction<boolean>>;
     setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
     setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
@@ -14,7 +14,7 @@ interface propsIF {
 
 export default function TxSearchResults(props: propsIF) {
     const {
-        txsByUser,
+        searchedTxs,
         setOutsideControl,
         setSelectedOutsideTab,
         setCurrentTxActiveInTransactions,
@@ -40,7 +40,7 @@ export default function TxSearchResults(props: propsIF) {
                 <div>Value</div>
             </div>
             {
-                txsByUser.map((tx: TransactionIF) => (
+                searchedTxs.slice(0,4).map((tx: TransactionIF) => (
                     <TxLI
                         key={`tx-sidebar-search-result-${JSON.stringify(tx)}`}
                         tx={tx}

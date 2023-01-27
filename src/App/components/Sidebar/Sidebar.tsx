@@ -288,12 +288,20 @@ export default function Sidebar(props: propsIF) {
     const userData = useAppSelector((state) => state.userData);
     const shouldRecheckLocalStorage = userData.shouldRecheckLocalStorage;
 
-    const [setRawInput, isInputValid, searchedPools, searchedPositions] = useSidebarSearch(
+    const [
+        setRawInput,
+        isInputValid,
+        searchedPools,
+        searchedPositions,
+        searchedTxs
+    ] = useSidebarSearch(
         poolList,
         positionsByUser,
+        txsByUser,
         verifyToken,
         shouldRecheckLocalStorage
     );
+    false && searchedTxs;
 
     // useEffect(() => {console.log({searchedPools})}, [JSON.stringify(searchedPools)]);
     false && searchedPools;
@@ -614,7 +622,7 @@ export default function Sidebar(props: propsIF) {
                             setCurrentPositionActive={setCurrentPositionActive}
                             setCurrentTxActiveInTransactions={setCurrentTxActiveInTransactions}
                             setIsShowAllEnabled={setIsShowAllEnabled}
-                            txsByUser={txsByUser}
+                            searchedTxs={searchedTxs}
                         />
                     ) : (
                         regularSidebarDisplay

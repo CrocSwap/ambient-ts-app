@@ -23,7 +23,7 @@ interface propsIF {
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
     setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
     setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
-    txsByUser: TransactionIF[];
+    searchedTxs: TransactionIF[];
 }
 
 export default function SidebarSearchResults(props: propsIF) {
@@ -43,7 +43,7 @@ export default function SidebarSearchResults(props: propsIF) {
         setCurrentPositionActive,
         setCurrentTxActiveInTransactions,
         setIsShowAllEnabled,
-        txsByUser
+        searchedTxs
     } = props;
 
     return (
@@ -68,7 +68,7 @@ export default function SidebarSearchResults(props: propsIF) {
                     />
                     {false && <OrdersSearchResults loading={exampleLoading} searchInput={searchInput} />}
                     <TxSearchResults
-                        txsByUser={txsByUser}
+                        searchedTxs={searchedTxs}
                         setOutsideControl={setOutsideControl}
                         setSelectedOutsideTab={setSelectedOutsideTab}
                         setCurrentTxActiveInTransactions={setCurrentTxActiveInTransactions}
