@@ -9,7 +9,8 @@ interface propsIF {
 export default function TxSearchResults(props: propsIF) {
     const { txsByUser } = props;
 
-    // TODO:   @Junior please refactor the header <div> as a <header> element
+    // TODO:   @Junior  please refactor the header <div> as a <header> element
+    // TODO:   @Junior  also make the <div> elems inside it into <hX> elements
 
     return (
         <div>
