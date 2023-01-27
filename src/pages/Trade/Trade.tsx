@@ -226,7 +226,9 @@ export default function Trade(props: TradePropsIF) {
     );
 
     const activePoolLiquidityData = graphData?.liquidityForAllPools?.pools[indexOfPoolInLiqData];
-    const liquidityData = activePoolLiquidityData?.liquidityData;
+
+    const [liquidityData, setLiquidityData] = useState<any>(activePoolLiquidityData?.liquidityData);
+    //    const liquidityData = activePoolLiquidityData?.liquidityData;
 
     const poolPriceDisplayWithDenom = poolPriceDisplay
         ? isDenomBase
@@ -243,6 +245,14 @@ export default function Trade(props: TradePropsIF) {
             ))}
         </div>
     );
+
+    useEffect(() => {
+        setLiquidityData(activePoolLiquidityData?.liquidityData);
+    }, [activePoolLiquidityData]);
+
+    useEffect(() => {
+        setLiquidityData(undefined);
+    }, [pool]);
 
     const mainContent = (
         <div className={styles.right_col}>
