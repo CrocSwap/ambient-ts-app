@@ -12,14 +12,6 @@ interface propsIF {
 export default function TxSearchResults(props: propsIF) {
     const { txsByUser } = props;
 
-    const header = (
-        <div className={styles.header}>
-            <div>Pool</div>
-            <div>Price</div>
-            <div>Change</div>
-        </div>
-    );
-
     const exampleContent = (
         <div className={styles.main_result_container}>
             {
@@ -35,7 +27,11 @@ export default function TxSearchResults(props: propsIF) {
     return (
         <div>
             <div className={styles.card_title}>My Recent Transactions</div>
-            {header}
+            <div className={styles.header}>
+                <div>Pool</div>
+                <div>Price</div>
+                <div>Change</div>
+            </div>
             {props.loading ? <ResultSkeleton /> : exampleContent}
         </div>
     );
