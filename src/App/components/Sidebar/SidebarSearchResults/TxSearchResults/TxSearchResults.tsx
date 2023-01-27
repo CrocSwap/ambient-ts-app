@@ -16,8 +16,8 @@ export default function TxSearchResults(props: propsIF) {
             <div className={styles.card_title}>My Recent Transactions</div>
             <div className={styles.header}>
                 <div>Pool</div>
-                <div>Price</div>
-                <div>Change</div>
+                <div>Type</div>
+                <div>Value</div>
             </div>
             {
                 txsByUser.map((tx: TransactionIF) => (
