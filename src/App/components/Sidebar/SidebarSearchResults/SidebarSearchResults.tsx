@@ -4,7 +4,7 @@ import styles from './SidebarSearchResults.module.css';
 import PoolsSearchResults from './PoolsSearchResults/PoolsSearchResults';
 import PositionsSearchResults from './PositionsSearchResults/PositionsSearchResults';
 import OrdersSearchResults from './OrdersSearchResults/OrdersSearchResults';
-import TransactionsSearchResults from './TransactionsResults/TransactionsResults';
+import TxSearchResults from './TxSearchResults/TxSearchResults';
 import { PoolStatsFn } from '../../../functions/getPoolStats';
 
 interface SidebarSearchResultsPropsIF {
@@ -63,7 +63,7 @@ export default function SidebarSearchResults(props: SidebarSearchResultsPropsIF)
                         setIsShowAllEnabled={setIsShowAllEnabled}
                     />
                     {false && <OrdersSearchResults loading={exampleLoading} searchInput={searchInput} />}
-                    <TransactionsSearchResults loading={exampleLoading} searchInput={searchInput} />
+                    <TxSearchResults loading={exampleLoading} searchInput={searchInput} />
                 </>
             )}
         </div>

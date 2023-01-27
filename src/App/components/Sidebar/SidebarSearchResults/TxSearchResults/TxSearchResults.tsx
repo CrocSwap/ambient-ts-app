@@ -1,11 +1,11 @@
 import ResultSkeleton from '../ResultSkeleton/ResultSkeleton';
 import styles from '../SidebarSearchResults.module.css';
 
-interface TransactionsSearchResultPropsIF {
+interface propsIF {
     loading: boolean;
     searchInput: React.ReactNode;
 }
-export default function TransactionsSearchResults(props: TransactionsSearchResultPropsIF) {
+export default function TxSearchResults(props: propsIF) {
     function TransactionSearchResult() {
         return (
             <div className={styles.card_container}>
