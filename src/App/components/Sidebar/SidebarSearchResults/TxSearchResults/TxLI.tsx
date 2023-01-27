@@ -20,6 +20,10 @@ export default function TxLI(props: propsIF) {
         tx.totalFlowUSD
     );
 
+    // TODO:   @Junior  please refactor the top-level element of this JSX return
+    // TODO:   @Junior  ... to return an <li> element, and refactor parent to
+    // TODO:   @Junior  ... render them inside an <ol> element
+
     return (
         <div className={styles.card_container} onClick={() => handleClick(tx)}>
             <div>{tx.baseSymbol} / {tx.quoteSymbol}</div>
