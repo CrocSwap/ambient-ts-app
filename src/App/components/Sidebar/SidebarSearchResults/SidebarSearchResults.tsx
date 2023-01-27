@@ -42,8 +42,6 @@ export default function SidebarSearchResults(props: SidebarSearchResultsPropsIF)
         setIsShowAllEnabled,
     } = props;
 
-    // we are not going to use this following loading functionality. It is just for demonstration purposes
-
     return (
         <div className={styles.container}>
             <div className={styles.search_result_title}>Search Results</div>
@@ -57,7 +55,6 @@ export default function SidebarSearchResults(props: SidebarSearchResultsPropsIF)
             {isConnected && (
                 <>
                     <PositionsSearchResults
-                        searchInput={searchInput}
                         searchedPositions={searchedPositions}
                         isDenomBase={isDenomBase}
                         setOutsideControl={setOutsideControl}

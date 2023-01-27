@@ -4,7 +4,6 @@ import { PositionIF } from '../../../../../utils/interfaces/PositionIF';
 import PositionLI from './PositionLI';
 
 interface propsIF {
-    searchInput: React.ReactNode;
     searchedPositions: PositionIF[];
     isDenomBase: boolean;
     setOutsideControl: Dispatch<SetStateAction<boolean>>;
@@ -15,7 +14,6 @@ interface propsIF {
 
 export default function PositionsSearchResults(props: propsIF) {
     const {
-        searchInput,
         searchedPositions,
         isDenomBase,
         setOutsideControl,
@@ -23,7 +21,6 @@ export default function PositionsSearchResults(props: propsIF) {
         setCurrentPositionActive,
         setIsShowAllEnabled,
     } = props;
-    false && searchInput;
 
     return (
         <div>
