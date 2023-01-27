@@ -9,12 +9,12 @@ export const getTxValue = (
     valueUSD: number,
     totalValueUSD: number,
     totalFlowUSD: number
-) => {
-    const totalFlowAbsNum = totalFlowUSD !== undefined
+): string => {
+    const totalFlowAbsNum: number|undefined = totalFlowUSD !== undefined
         ? Math.abs(totalFlowUSD)
         : undefined;
 
-    const usdValueTruncated = !valueUSD
+    const usdValueTruncated: string|undefined = !valueUSD
         ? undefined
         : valueUSD < 0.001
         ? valueUSD.toExponential(2)
@@ -27,7 +27,7 @@ export const getTxValue = (
             maximumFractionDigits: 2,
         });
 
-    const totalValueUSDTruncated = !totalValueUSD
+    const totalValueUSDTruncated: string|undefined = !totalValueUSD
         ? undefined
         : totalValueUSD < 0.001
         ? totalValueUSD.toExponential(2)
@@ -40,7 +40,7 @@ export const getTxValue = (
             maximumFractionDigits: 2,
         });
 
-    const totalFlowUSDTruncated =
+    const totalFlowUSDTruncated: string|undefined =
         totalFlowAbsNum === undefined
             ? undefined
             : totalFlowAbsNum === 0
