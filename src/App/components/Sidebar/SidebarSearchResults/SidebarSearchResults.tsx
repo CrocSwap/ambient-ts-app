@@ -7,7 +7,7 @@ import OrdersSearchResults from './OrdersSearchResults/OrdersSearchResults';
 import TxSearchResults from './TxSearchResults/TxSearchResults';
 import { PoolStatsFn } from '../../../functions/getPoolStats';
 
-interface SidebarSearchResultsPropsIF {
+interface propsIF {
     searchedPools: TempPoolIF[];
     searchInput: ReactNode;
     exampleLoading: boolean;
@@ -24,7 +24,7 @@ interface SidebarSearchResultsPropsIF {
     setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
 }
 
-export default function SidebarSearchResults(props: SidebarSearchResultsPropsIF) {
+export default function SidebarSearchResults(props: propsIF) {
     const {
         searchedPools,
         exampleLoading,

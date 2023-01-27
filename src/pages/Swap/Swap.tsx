@@ -37,7 +37,7 @@ import SwapShareControl from '../../components/Swap/SwapShareControl/SwapShareCo
 // import { calcImpact } from '../../App/functions/calcImpact';
 import { FiCopy } from 'react-icons/fi';
 
-interface SwapPropsIF {
+interface propsIF {
     crocEnv: CrocEnv | undefined;
     isUserLoggedIn: boolean | undefined;
     account: string | undefined;
@@ -84,7 +84,7 @@ interface SwapPropsIF {
     acknowledgeToken: (tkn: TokenIF) => void;
 }
 
-export default function Swap(props: SwapPropsIF) {
+export default function Swap(props: propsIF) {
     const {
         crocEnv,
         isUserLoggedIn,

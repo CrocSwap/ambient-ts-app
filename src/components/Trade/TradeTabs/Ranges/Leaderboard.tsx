@@ -20,17 +20,15 @@ import Pagination from '../../../Global/Pagination/Pagination';
 import { useAppDispatch, useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { useSortedPositions } from '../useSortedPositions';
 import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
-import { PositionIF } from '../../../../utils/interfaces/PositionIF';
+import { PositionIF, TokenIF } from '../../../../utils/interfaces/exports';
 import { updateApy } from '../../../../App/functions/getPositionData';
-import { TokenIF } from '../../../../utils/interfaces/TokenIF';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
 import RangeHeader from './RangesTable/RangeHeader';
 import RangesRow from './RangesTable/RangesRow';
-// import RangeAccordions from './RangeAccordions/RangeAccordions';
 
 // interface for props
-interface LeaderboardPropsIF {
+interface propsIF {
     isUserLoggedIn: boolean | undefined;
     crocEnv: CrocEnv | undefined;
     chainData: ChainSpec;
@@ -60,7 +58,7 @@ interface LeaderboardPropsIF {
 }
 
 // react functional component
-export default function Leaderboard(props: LeaderboardPropsIF) {
+export default function Leaderboard(props: propsIF) {
     const {
         isUserLoggedIn,
         crocEnv,

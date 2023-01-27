@@ -13,7 +13,7 @@ import { TokenListIF } from '../../../utils/interfaces/exports';
 import fetchList from './fetchList';
 
 // interface for React functional component props
-interface TokenListPropsIF {
+interface propsIF {
     chainId: string;
     activeTokenListsChanged: boolean;
     indicateActiveTokenListsChanged: Dispatch<SetStateAction<boolean>>;
@@ -22,7 +22,7 @@ interface TokenListPropsIF {
     closeModal: () => void;
 }
 
-export default function TokenList(props: TokenListPropsIF) {
+export default function TokenList(props: propsIF) {
     const {
         chainId,
         activeTokenListsChanged,

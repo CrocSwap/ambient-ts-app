@@ -15,7 +15,7 @@ import { SoloTokenSelect } from '../../../../components/Global/TokenSelectContai
 import { getRecentTokensParamsIF } from '../../../../App/hooks/useRecentTokens';
 // import { useSoloSearch } from '../../../Global/TokenSelectContainer/hooks/useSoloSearch';
 
-interface RangeCurrencySelectorProps {
+interface propsIF {
     provider?: ethers.providers.Provider;
     isUserLoggedIn: boolean | undefined;
     gasPriceInGwei: number | undefined;
@@ -73,7 +73,7 @@ interface RangeCurrencySelectorProps {
     acknowledgeToken: (tkn: TokenIF) => void;
 }
 
-export default function RangeCurrencySelector(props: RangeCurrencySelectorProps) {
+export default function RangeCurrencySelector(props: propsIF) {
     const {
         provider,
         isUserLoggedIn,

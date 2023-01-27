@@ -7,11 +7,10 @@ import {
     addChangesByPool,
     CandleData,
     graphData,
-    TransactionIF,
     setChangesByPool,
     setDataLoadingStatus,
 } from '../../../../utils/state/graphDataSlice';
-import { TokenIF } from '../../../../utils/interfaces/TokenIF';
+import { TokenIF, TransactionIF } from '../../../../utils/interfaces/exports';
 import { useAppDispatch, useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { Dispatch, SetStateAction, useState, useEffect, useMemo } from 'react';
 import TransactionsSkeletons from '../TableSkeletons/TableSkeletons';
@@ -27,7 +26,8 @@ import { useSortedTransactions } from '../useSortedTxs';
 import useDebounce from '../../../../App/hooks/useDebounce';
 import NoTableData from '../NoTableData/NoTableData';
 // import TransactionAccordions from './TransactionAccordions/TransactionAccordions';
-interface TransactionsProps {
+
+interface propsIF {
     importedTokens: TokenIF[];
     isTokenABase: boolean;
     activeAccountTransactionData?: TransactionIF[];
@@ -56,7 +56,7 @@ interface TransactionsProps {
     setSelectedDate?: Dispatch<Date | undefined>;
     // setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
 }
-export default function Transactions(props: TransactionsProps) {
+export default function Transactions(props: propsIF) {
     const {
         // importedTokens,
         isTokenABase,

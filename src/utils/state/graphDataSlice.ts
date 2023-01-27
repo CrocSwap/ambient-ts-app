@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { LimitOrderIF, PositionIF } from '../interfaces/exports';
+import { LimitOrderIF, PositionIF, TransactionIF } from '../interfaces/exports';
 
 export interface graphData {
     lastBlock: number;
@@ -225,60 +225,6 @@ export interface pool {
     id: string;
     poolIdx: string;
     quote: string;
-}
-
-export interface TransactionIF {
-    base: string;
-    baseDecimals: number;
-    baseFlow: string;
-    baseSymbol: string;
-    baseName: string;
-    baseTokenLogoURI: string;
-    block: number;
-    chainId: string;
-    network: string;
-    dex: string;
-    id: string;
-    inBaseQty: boolean;
-    isBid: boolean;
-    isBuy: boolean;
-    minOut: string;
-    poolHash: string;
-    poolIdx: number;
-    qty: string;
-    quote: string;
-    quoteDecimals: number;
-    quoteFlow: string;
-    quoteSymbol: string;
-    quoteName: string;
-    quoteTokenLogoURI: string;
-    source: string;
-    entityType: string;
-    changeType: string;
-    positionType: string;
-    time: number;
-    tx: string;
-    user: string;
-    userEnsName: string;
-    limitPrice: number;
-    bidTick: number;
-    askTick: number;
-    price: number;
-    invPrice: number;
-    limitPriceDecimalCorrected: number;
-    invLimitPriceDecimalCorrected: number;
-    priceDecimalCorrected: number;
-    invPriceDecimalCorrected: number;
-    baseFlowDecimalCorrected: number;
-    quoteFlowDecimalCorrected: number;
-    valueUSD: number;
-    totalValueUSD: number;
-    totalFlowUSD: number;
-    ensResolution: string;
-    bidTickPriceDecimalCorrected: number;
-    bidTickInvPriceDecimalCorrected: number;
-    askTickPriceDecimalCorrected: number;
-    askTickInvPriceDecimalCorrected: number;
 }
 
 export interface ChangesByUser {

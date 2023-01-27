@@ -1,7 +1,7 @@
 import { sortBaseQuoteTokens } from '@crocswap-libs/sdk';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { goerliETH, goerliUSDC } from '../data/defaultTokens';
-import { TokenIF } from '../interfaces/TokenIF';
+import { TokenIF } from '../interfaces/exports';
 
 export interface targetData {
     name: string;

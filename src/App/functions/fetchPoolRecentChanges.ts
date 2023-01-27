@@ -1,8 +1,7 @@
-import { TokenIF } from '../../utils/interfaces/TokenIF';
-import { TransactionIF } from '../../utils/state/graphDataSlice';
+import { TokenIF, TransactionIF } from '../../utils/interfaces/exports';
 import { getTransactionData } from './getTransactionData';
 
-interface IFetchPoolRecentChangesProps {
+interface argsIF {
     tokensOnActiveLists: Map<string, TokenIF>;
 
     base: string;
@@ -20,7 +19,7 @@ interface IFetchPoolRecentChangesProps {
     time?: number;
 }
 
-export const fetchPoolRecentChanges = (props: IFetchPoolRecentChangesProps) => {
+export const fetchPoolRecentChanges = (args: argsIF) => {
     const {
         tokensOnActiveLists,
         base,
@@ -36,7 +35,7 @@ export const fetchPoolRecentChanges = (props: IFetchPoolRecentChangesProps) => {
         period,
         time,
         // page,
-    } = props;
+    } = args;
 
     const poolRecentChangesCacheEndpoint =
         'https://809821320828123.de:5000' + '/pool_recent_changes?';

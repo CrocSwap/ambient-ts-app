@@ -11,14 +11,14 @@ import { TokenListIF } from '../../../utils/interfaces/exports';
 import uriToHttp from '../../../utils/functions/uriToHttp';
 import refreshTokenList from './refreshTokenList';
 
-interface TokenListPropsIF {
+interface propsIF {
     list: TokenListIF;
     activeLists: [];
     listIsActive: boolean;
     toggleActiveState: () => void;
 }
 
-export default function TokenListCard(props: TokenListPropsIF) {
+export default function TokenListCard(props: propsIF) {
     const { list, listIsActive, toggleActiveState } = props;
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const classes = useStyles();

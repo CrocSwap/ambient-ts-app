@@ -46,7 +46,7 @@ import { getRecentTokensParamsIF } from '../../../App/hooks/useRecentTokens';
 
 import { useUrlParams } from '../../InitPool/useUrlParams';
 
-interface LimitPropsIF {
+interface propsIF {
     account: string | undefined;
     pool: CrocPoolView | undefined;
     crocEnv: CrocEnv | undefined;
@@ -96,7 +96,7 @@ interface LimitPropsIF {
 
 const cachedQuerySpotPrice = memoizeQuerySpotPrice();
 
-export default function Limit(props: LimitPropsIF) {
+export default function Limit(props: propsIF) {
     const {
         account,
         provider,

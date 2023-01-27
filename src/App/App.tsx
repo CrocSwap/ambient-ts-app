@@ -27,7 +27,6 @@ import {
     addChangesByUser,
     setLastBlock,
     addLimitOrderChangesByUser,
-    TransactionIF,
     setLeaderboardByPool,
     setDataLoadingStatus,
     resetConnectedUserDataLoadingStatus,
@@ -66,7 +65,7 @@ import './App.css';
 import { useAppDispatch, useAppSelector } from '../utils/hooks/reduxToolkit';
 import { defaultTokens } from '../utils/data/defaultTokens';
 import initializeUserLocalStorage from './functions/initializeUserLocalStorage';
-import { LimitOrderIF, TokenIF, TokenListIF, PositionIF } from '../utils/interfaces/exports';
+import { LimitOrderIF, TokenIF, TokenListIF, TransactionIF, PositionIF } from '../utils/interfaces/exports';
 import { fetchTokenLists } from './functions/fetchTokenLists';
 import {
     resetTokens,

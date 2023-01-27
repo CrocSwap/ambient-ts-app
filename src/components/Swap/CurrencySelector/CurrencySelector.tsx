@@ -17,7 +17,7 @@ import { SoloTokenSelect } from '../../Global/TokenSelectContainer/SoloTokenSele
 // import { useSoloSearch } from '../../Global/TokenSelectContainer/hooks/useSoloSearch';
 import { getRecentTokensParamsIF } from '../../../App/hooks/useRecentTokens';
 
-interface CurrencySelectorProps {
+interface propsIF {
     provider: ethers.providers.Provider | undefined;
     isUserLoggedIn: boolean | undefined;
     tokenPair: TokenPairIF;
@@ -73,7 +73,7 @@ interface CurrencySelectorProps {
     acknowledgeToken: (tkn: TokenIF) => void;
 }
 
-export default function CurrencySelector(props: CurrencySelectorProps) {
+export default function CurrencySelector(props: propsIF) {
     const {
         provider,
         sellQtyString,

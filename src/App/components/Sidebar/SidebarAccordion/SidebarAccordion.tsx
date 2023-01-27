@@ -8,12 +8,12 @@ import { MdPlayArrow } from 'react-icons/md';
 import styles from '../Sidebar.module.css';
 import { useAccount } from 'wagmi';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
-// import { PositionIF } from '../../../../utils/interfaces/PositionIF';
+// import { PositionIF } from '../../../../utils/interfaces/exports';
 // import { CircleLoader } from '../../../../components/Global/LoadingAnimations/CircleLoader/CircleLoader';
 // import { AiFillBell } from 'react-icons/ai'
 
 // interface for React functional component props
-interface SidebarAccordionPropsIF {
+interface propsIF {
     children?: ReactNode;
     showSidebar: boolean;
     setShowSidebar: Dispatch<SetStateAction<boolean>>;
@@ -31,7 +31,7 @@ interface SidebarAccordionPropsIF {
     openAllDefault?: boolean;
 }
 
-export default function SidebarAccordion(props: SidebarAccordionPropsIF) {
+export default function SidebarAccordion(props: propsIF) {
     const {
         showSidebar,
         shouldDisplayContentWhenUserNotLoggedIn,

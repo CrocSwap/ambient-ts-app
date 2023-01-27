@@ -24,7 +24,7 @@ import topPoolsImage from '../../../assets/images/sidebarImages/topPools.svg';
 import recentPoolsImage from '../../../assets/images/sidebarImages/recentTransactions.svg';
 // import topTokensImage from '../../../assets/images/sidebarImages/topTokens.svg';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
-import { PoolIF, PositionIF, TokenIF, TokenPairIF, TempPoolIF } from '../../../utils/interfaces/exports';
+import { PoolIF, PositionIF, TokenIF, TokenPairIF, TempPoolIF, TransactionIF } from '../../../utils/interfaces/exports';
 import SidebarSearchResults from './SidebarSearchResults/SidebarSearchResults';
 // import formatSearchText from './formatSeachText';
 import { MdClose } from 'react-icons/md';
@@ -38,12 +38,11 @@ import { useSidebarSearch } from './useSidebarSearch';
 import { SmallerPoolIF } from '../../hooks/useRecentPools';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
-import { TransactionIF } from '../../../utils/state/graphDataSlice';
 
 const cachedPoolStatsFetch = memoizePoolStats();
 
 // interface for component props
-interface SidebarPropsIF {
+interface propsIF {
     tradeData: tradeData;
     isDenomBase: boolean;
     showSidebar: boolean;
@@ -87,7 +86,7 @@ interface SidebarPropsIF {
     txsByUser: TransactionIF[]
 }
 
-export default function Sidebar(props: SidebarPropsIF) {
+export default function Sidebar(props: propsIF) {
     const {
         tradeData,
         isDenomBase,

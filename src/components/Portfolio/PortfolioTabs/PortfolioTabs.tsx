@@ -12,8 +12,7 @@ import TabComponent from '../../Global/TabComponent/TabComponent';
 import styles from './PortfolioTabs.module.css';
 import { useAppDispatch, useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { getPositionData } from '../../../App/functions/getPositionData';
-import { PositionIF } from '../../../utils/interfaces/PositionIF';
-import { LimitOrderIF, TokenIF } from '../../../utils/interfaces/exports';
+import { LimitOrderIF, PositionIF, TokenIF, TransactionIF } from '../../../utils/interfaces/exports';
 import openOrdersImage from '../../../assets/images/sidebarImages/openOrders.svg';
 import rangePositionsImage from '../../../assets/images/sidebarImages/rangePositions.svg';
 import recentTransactionsImage from '../../../assets/images/sidebarImages/recentTransactions.svg';
@@ -22,7 +21,6 @@ import exchangeImage from '../../../assets/images/sidebarImages/exchange.svg';
 import { CrocEnv, ChainSpec } from '@crocswap-libs/sdk';
 import { ethers } from 'ethers';
 import {
-    TransactionIF,
     resetLookupUserDataLoadingStatus,
     setDataLoadingStatus,
 } from '../../../utils/state/graphDataSlice';
@@ -35,7 +33,7 @@ import Ranges from '../../Trade/TradeTabs/Ranges/Ranges';
 import Transactions from '../../Trade/TradeTabs/Transactions/Transactions';
 
 // interface for React functional component props
-interface PortfolioTabsPropsIF {
+interface propsIF {
     crocEnv: CrocEnv | undefined;
     isTokenABase: boolean;
     provider: ethers.providers.Provider | undefined;
@@ -76,7 +74,7 @@ interface PortfolioTabsPropsIF {
 }
 
 // React functional component
-export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
+export default function PortfolioTabs(props: propsIF) {
     const {
         crocEnv,
         isTokenABase,

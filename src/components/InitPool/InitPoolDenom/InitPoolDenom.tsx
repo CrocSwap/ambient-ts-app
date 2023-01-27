@@ -1,12 +1,10 @@
 // START: Import Local Files
 import styles from './InitPoolDenom.module.css';
-// import { TokenPairIF } from '../../../utils/interfaces/exports';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
-// import { toggleDidUserFlipDenom } from '../../../utils/state/tradeDataSlice';
 import { Dispatch, SetStateAction } from 'react';
 
 // interface for props
-interface InitPoolDenomPropsIF {
+interface propsIF {
     setIsDenomBase: Dispatch<SetStateAction<boolean>>;
     isDenomBase: boolean;
     invertInitialPrice?: () => void;
@@ -22,7 +20,7 @@ interface InitPoolDenomPropsIF {
 // TODO:  ... which token to initialize the display too, if it's not necessary in the
 // TODO   ... end, please remove the value from props
 
-export default function InitPoolDenom(props: InitPoolDenomPropsIF) {
+export default function InitPoolDenom(props: propsIF) {
     // const { tokenPair, isTokenABase, poolPriceDisplay, didUserFlipDenom } = props;
     const { isDenomBase, setIsDenomBase, invertInitialPrice } = props;
     // const dispatch = useAppDispatch();

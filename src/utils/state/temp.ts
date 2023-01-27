@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { goerliETH } from '../data/defaultTokens';
-import { TokenIF } from '../interfaces/TokenIF';
+import { TokenIF } from '../interfaces/exports';
 
 export interface stuff {
     token: TokenIF

@@ -1,6 +1,5 @@
 import styles from './TransactionDetailsPriceInfo.module.css';
 import Row from '../../../Global/Row/Row';
-import { TransactionIF } from '../../../../utils/state/graphDataSlice';
 import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
 import { toggleDidUserFlipDenom } from '../../../../utils/state/tradeDataSlice';
 import { motion } from 'framer-motion';
@@ -10,7 +9,7 @@ import NoTokenIcon from '../../NoTokenIcon/NoTokenIcon';
 import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
 import { useMemo } from 'react';
 import { DefaultTooltip } from '../../StyledTooltip/StyledTooltip';
-// import TooltipComponent from '../../TooltipComponent/TooltipComponent';
+import { TransactionIF } from '../../../../utils/interfaces/exports';
 
 type ItemIF = {
     slug: string;

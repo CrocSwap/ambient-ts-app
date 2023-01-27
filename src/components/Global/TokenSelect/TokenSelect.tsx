@@ -5,13 +5,13 @@ import uriToHttp from '../../../utils/functions/uriToHttp';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import NoTokenIcon from '../NoTokenIcon/NoTokenIcon';
 
-interface TokenSelectPropsIF {
+interface propsIF {
     token: TokenIF;
     chooseToken: (tok: TokenIF, isCustom: boolean) => void;
     fromListsText: string;
 }
 
-export default function TokenSelect(props: TokenSelectPropsIF) {
+export default function TokenSelect(props: propsIF) {
     const { token, chooseToken, fromListsText } = props;
 
     const userData = useAppSelector((state) => state.userData);

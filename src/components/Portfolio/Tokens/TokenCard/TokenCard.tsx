@@ -9,7 +9,6 @@ interface propsIF {
 
 export default function TokenCard(props: propsIF) {
     const { token, chainId } = props;
-
     false && chainId;
 
     return (

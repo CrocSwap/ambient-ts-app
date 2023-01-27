@@ -1,7 +1,7 @@
 import { Dispatch, SetStateAction, useMemo } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import styles from '../SidebarSearchResults.module.css';
-import { PositionIF } from '../../../../../utils/interfaces/PositionIF';
+import { PositionIF } from '../../../../../utils/interfaces/exports';
 import getUnicodeCharacter from '../../../../../utils/functions/getUnicodeCharacter';
 import { formatAmountOld } from '../../../../../utils/numbers';
 

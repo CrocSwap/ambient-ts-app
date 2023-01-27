@@ -1,10 +1,10 @@
-import { TransactionIF } from '../../utils/state/graphDataSlice';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { useState, useEffect, useMemo } from 'react';
 import getUnicodeCharacter from '../../utils/functions/getUnicodeCharacter';
 import { formatAmountOld } from '../../utils/numbers';
 import trimString from '../../utils/functions/trimString';
 import { getMoneynessRank } from '../functions/getMoneynessRank';
+import { TransactionIF } from '../../utils/interfaces/exports';
 
 export const useProcessTransaction = (tx: TransactionIF, account: string) => {
     const tradeData = useAppSelector((state) => state.tradeData);

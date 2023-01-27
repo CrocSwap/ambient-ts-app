@@ -6,14 +6,14 @@ import printDomToImage from '../../utils/functions/printDomToImage';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 // import { toDisplayQty } from '@crocswap-libs/sdk';
 import { formatAmountOld } from '../../utils/numbers';
-import { PositionIF } from '../../utils/interfaces/PositionIF';
+import { PositionIF } from '../../utils/interfaces/exports';
 import APYGraphDisplay from './APYGraphDisplay/APYGraphDisplay';
 import RangeDetailsControl from './RangeDetailsControl/RangeDetailsControl';
 import RangeDetailsHeader from './RangeDetailsHeader/RangeDetailsHeader';
 import RangeDetailsActions from './RangeDetailsActions/RangeDetailsActions';
 import RangeStatus from '../Global/RangeStatus/RangeStatus';
 
-interface IRangeDetailsProps {
+interface propsIF {
     provider: ethers.providers.Provider | undefined;
     position: PositionIF;
     chainId: string;
@@ -39,7 +39,7 @@ interface IRangeDetailsProps {
     closeGlobalModal: () => void;
 }
 
-export default function RangeDetails(props: IRangeDetailsProps) {
+export default function RangeDetails(props: propsIF) {
     const {
         baseTokenAddress,
         quoteTokenAddress,

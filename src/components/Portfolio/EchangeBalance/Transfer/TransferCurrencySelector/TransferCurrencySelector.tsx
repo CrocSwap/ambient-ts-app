@@ -1,12 +1,12 @@
 import styles from './TransferCurrencySelector.module.css';
 import { RiArrowDownSLine } from 'react-icons/ri';
-import { TokenIF } from '../../../../../utils/interfaces/TokenIF';
+import { TokenIF } from '../../../../../utils/interfaces/exports';
 import { Dispatch, SetStateAction } from 'react';
 import { fromDisplayQty } from '@crocswap-libs/sdk';
 import uriToHttp from '../../../../../utils/functions/uriToHttp';
 import NoTokenIcon from '../../../../Global/NoTokenIcon/NoTokenIcon';
 
-interface TransferCurrencySelectorProps {
+interface propsIF {
     fieldId: string;
     onClick: () => void;
 
@@ -18,9 +18,8 @@ interface TransferCurrencySelectorProps {
     setInputValue: Dispatch<SetStateAction<string>>;
 }
 
-export default function TransferCurrencySelector(props: TransferCurrencySelectorProps) {
-    const { fieldId, disable, onClick, selectedToken, setTransferQty, inputValue, setInputValue } =
-        props;
+export default function TransferCurrencySelector(props: propsIF) {
+    const { fieldId, disable, onClick, selectedToken, setTransferQty, inputValue, setInputValue } = props;
 
     const rateInput = (
         <div className={styles.token_amount}>

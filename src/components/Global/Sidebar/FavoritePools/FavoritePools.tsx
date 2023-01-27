@@ -4,7 +4,7 @@ import { PoolIF, TokenIF } from '../../../../utils/interfaces/exports';
 import { PoolStatsFn } from '../../../../App/functions/getPoolStats';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 
-interface FavoritePoolsIF {
+interface propsIF {
     favePools: PoolIF[];
     lastBlockNumber: number;
     cachedPoolStatsFetch: PoolStatsFn;
@@ -18,7 +18,7 @@ interface FavoritePoolsIF {
     chainId: string;
 }
 
-export default function FavoritePools(props: FavoritePoolsIF) {
+export default function FavoritePools(props: propsIF) {
     const {
         favePools,
         lastBlockNumber,
@@ -27,14 +27,6 @@ export default function FavoritePools(props: FavoritePoolsIF) {
         // removePoolFromFaves,
         chainId,
     } = props;
-
-    const header = (
-        <div className={styles.header}>
-            <div>Pool</div>
-            <div>Volume</div>
-            <div>TVL</div>
-        </div>
-    );
 
     const { tradeData } = useAppSelector((state) => state);
 
@@ -55,9 +47,15 @@ export default function FavoritePools(props: FavoritePoolsIF) {
         </div>
     );
 
+    // TODO:   @Junior  please refactor the header <div> as a <header> element
+
     return (
         <div className={styles.container}>
-            {header}
+            <div className={styles.header}>
+                <div>Pool</div>
+                <div>Volume</div>
+                <div>TVL</div>
+            </div>
             {addCurrentPoolLinkOrNull}
             <div className={styles.content}>
                 {favePools.map((pool, idx) => (

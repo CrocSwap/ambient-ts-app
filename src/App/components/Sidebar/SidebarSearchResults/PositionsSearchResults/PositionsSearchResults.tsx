@@ -1,6 +1,6 @@
 import { Dispatch, SetStateAction } from 'react';
 import styles from '../SidebarSearchResults.module.css';
-import { PositionIF } from '../../../../../utils/interfaces/PositionIF';
+import { PositionIF } from '../../../../../utils/interfaces/exports';
 import PositionLI from './PositionLI';
 
 interface propsIF {

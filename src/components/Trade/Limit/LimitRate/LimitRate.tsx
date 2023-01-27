@@ -6,7 +6,7 @@ import { CrocPoolView, pinTickLower, pinTickUpper } from '@crocswap-libs/sdk';
 import { Dispatch, SetStateAction } from 'react';
 // import { tickToPrice, toDisplayPrice } from '@crocswap-libs/sdk';
 
-interface LimitRatePropsIF {
+interface propsIF {
     previousDisplayPrice: string;
     setPreviousDisplayPrice: Dispatch<SetStateAction<string>>;
     displayPrice: string;
@@ -28,7 +28,7 @@ interface LimitRatePropsIF {
     isOrderCopied: boolean;
 }
 
-export default function LimitRate(props: LimitRatePropsIF) {
+export default function LimitRate(props: propsIF) {
     const {
         displayPrice,
         setDisplayPrice,

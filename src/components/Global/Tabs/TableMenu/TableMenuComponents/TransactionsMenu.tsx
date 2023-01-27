@@ -11,7 +11,6 @@ import { FiExternalLink, FiMoreHorizontal } from 'react-icons/fi';
 import styles from './TableMenus.module.css';
 // import { useModal } from '../../../../Global/Modal/useModal';
 // import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
-import { TransactionIF } from '../../../../../utils/state/graphDataSlice';
 import UseOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
 import TransactionDetails from '../../../TransactionDetails/TransactionDetails';
@@ -30,9 +29,10 @@ import {
     tradeData,
 } from '../../../../../utils/state/tradeDataSlice';
 import { useNavigate } from 'react-router-dom';
+import { TransactionIF } from '../../../../../utils/interfaces/exports';
 
 // interface for React functional component props
-interface TransactionMenuIF {
+interface propsIF {
     account: string;
     tradeData: tradeData;
     userPosition: boolean | undefined; // position belongs to active user
@@ -48,7 +48,7 @@ interface TransactionMenuIF {
 }
 
 // React functional component
-export default function TransactionsMenu(props: TransactionMenuIF) {
+export default function TransactionsMenu(props: propsIF) {
     const menuItemRef = useRef<HTMLDivElement>(null);
     const {
         account,

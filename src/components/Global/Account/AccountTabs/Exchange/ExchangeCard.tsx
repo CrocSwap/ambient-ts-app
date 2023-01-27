@@ -1,20 +1,21 @@
 import styles from './ExchangeCard.module.css';
 import { testTokenMap } from '../../../../../utils/data/testTokenMap';
 // import { fetchTokenPrice } from '../../../../../App/functions/fetchTokenPrice';
-import { TokenIF } from '../../../../../utils/interfaces/TokenIF';
+import { TokenIF } from '../../../../../utils/interfaces/exports';
 import { useEffect, useState } from 'react';
 import { ZERO_ADDRESS } from '../../../../../constants';
 import { TokenPriceFn } from '../../../../../App/functions/fetchTokenPrice';
 import { DefaultTooltip } from '../../../StyledTooltip/StyledTooltip';
 // import { formatAmountOld } from '../../../../../utils/numbers';
-interface ExchangeCardPropsIF {
+
+interface propsIF {
     cachedFetchTokenPrice: TokenPriceFn;
     token?: TokenIF;
     chainId: string;
     tokenMap: Map<string, TokenIF>;
 }
 
-export default function ExchangeCard(props: ExchangeCardPropsIF) {
+export default function ExchangeCard(props: propsIF) {
     const { token, chainId, tokenMap, cachedFetchTokenPrice } = props;
 
     // const tokenMap = useTokenMap();

@@ -21,7 +21,7 @@ import { SoloTokenSelect } from '../../../Global/TokenSelectContainer/SoloTokenS
 import { getRecentTokensParamsIF } from '../../../../App/hooks/useRecentTokens';
 
 // interface for component props
-interface LimitCurrencySelectorProps {
+interface propsIF {
     provider?: ethers.providers.Provider;
     isUserLoggedIn: boolean | undefined;
     tokenPair: TokenPairIF;
@@ -72,7 +72,7 @@ interface LimitCurrencySelectorProps {
 }
 
 // central react functional component
-export default function LimitCurrencySelector(props: LimitCurrencySelectorProps) {
+export default function LimitCurrencySelector(props: propsIF) {
     const {
         provider,
         isUserLoggedIn,

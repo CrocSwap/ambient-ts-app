@@ -21,7 +21,7 @@ import NoTokenIcon from '../../components/Global/NoTokenIcon/NoTokenIcon';
 import TradeSettingsColor from './TradeCharts/TradeSettings/TradeSettingsColor/TradeSettingsColor';
 
 // interface for React functional component props
-interface TradePropsIF {
+interface propsIF {
     pool: CrocPoolView | undefined;
     // poolPriceTick: number | undefined;
     isUserLoggedIn: boolean | undefined;
@@ -86,7 +86,7 @@ interface TradePropsIF {
 }
 
 // React functional component
-export default function Trade(props: TradePropsIF) {
+export default function Trade(props: propsIF) {
     const {
         pool,
         // poolPriceTick,

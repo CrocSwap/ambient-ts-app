@@ -1,8 +1,7 @@
-import { TokenIF } from '../../utils/interfaces/TokenIF';
-import { TransactionIF } from '../../utils/state/graphDataSlice';
+import { TokenIF, TransactionIF } from '../../utils/interfaces/exports';
 import { getTransactionData } from './getTransactionData';
 
-interface IFetchUserRecentChangesProps {
+interface argsIF {
     tokensOnActiveLists: Map<string, TokenIF>;
     user: string;
     chainId: string;
@@ -15,7 +14,7 @@ interface IFetchUserRecentChangesProps {
     page?: number;
 }
 
-export const fetchUserRecentChanges = (props: IFetchUserRecentChangesProps) => {
+export const fetchUserRecentChanges = (args: argsIF) => {
     const {
         tokensOnActiveLists,
         user,
@@ -27,7 +26,7 @@ export const fetchUserRecentChanges = (props: IFetchUserRecentChangesProps) => {
         ensResolution,
         n,
         // page,
-    } = props;
+    } = args;
 
     const userRecentChangesCacheEndpoint =
         'https://809821320828123.de:5000' + '/user_recent_changes?';

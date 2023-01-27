@@ -2,9 +2,10 @@ import styles from './Exchange.module.css';
 import ExchangeCard from './ExchangeCard';
 import ExchangeHeader from './ExchangeHeader';
 import { CrocEnv } from '@crocswap-libs/sdk';
-import { TokenIF } from '../../../../../utils/interfaces/TokenIF';
+import { TokenIF } from '../../../../../utils/interfaces/exports';
 import { TokenPriceFn } from '../../../../../App/functions/fetchTokenPrice';
-interface ExchangePropsIF {
+
+interface propsIF {
     crocEnv: CrocEnv | undefined;
     cachedFetchTokenPrice: TokenPriceFn;
     connectedUserTokens: (TokenIF | undefined)[];
@@ -17,7 +18,7 @@ interface ExchangePropsIF {
     tokenMap: Map<string, TokenIF>;
 }
 
-export default function Exchange(props: ExchangePropsIF) {
+export default function Exchange(props: propsIF) {
     const {
         cachedFetchTokenPrice,
         connectedAccountActive,

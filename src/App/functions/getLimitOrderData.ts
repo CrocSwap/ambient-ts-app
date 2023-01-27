@@ -1,7 +1,5 @@
 import { LimitOrderIF, TokenIF } from '../../utils/interfaces/exports';
 
-// import { fetchAddress } from './fetchAddress';
-
 export const getLimitOrderData = async (
     order: LimitOrderIF,
     importedTokens: TokenIF[],

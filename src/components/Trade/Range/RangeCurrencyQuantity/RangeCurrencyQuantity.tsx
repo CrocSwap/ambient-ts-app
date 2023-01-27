@@ -3,7 +3,7 @@ import { TokenIF } from '../../../../utils/interfaces/exports';
 import styles from './RangeCurrencyQuantity.module.css';
 // import { GoCircleSlash } from 'react-icons/go';
 
-interface RangeCurrencyQuantityProps {
+interface propsIF {
     value: string;
     disable?: boolean;
     fieldId: string;
@@ -11,7 +11,7 @@ interface RangeCurrencyQuantityProps {
     isAdvancedMode: boolean;
     thisToken: TokenIF;
 }
-export default function RangeCurrencyQuantity(props: RangeCurrencyQuantityProps) {
+export default function RangeCurrencyQuantity(props: propsIF) {
     const { value, thisToken, disable, updateOtherQuantity, fieldId, isAdvancedMode } = props;
     // console.log({ disable });
 

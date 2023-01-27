@@ -1,5 +1,5 @@
 import { Dispatch, SetStateAction, useMemo, useState } from 'react';
-import { TransactionIF } from '../../../utils/state/graphDataSlice';
+import { TransactionIF } from '../../../utils/interfaces/exports';
 
 export const useSortedTransactions = (
     defaultSort: string,
