@@ -82,6 +82,12 @@ interface LimitCurrencyConverterProps {
     setInput: Dispatch<SetStateAction<string>>;
     searchType: string;
     acknowledgeToken: (tkn: TokenIF) => void;
+
+    openGlobalPopup: (
+        content: React.ReactNode,
+        popupTitle?: string,
+        popupPlacement?: string,
+    ) => void;
 }
 
 // central react functional component
@@ -137,6 +143,7 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
         searchType,
         acknowledgeToken,
         setResetLimitTick,
+        openGlobalPopup,
     } = props;
 
     // useEffect(() => {
@@ -545,6 +552,7 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
                 setInput={setInput}
                 searchType={searchType}
                 acknowledgeToken={acknowledgeToken}
+                openGlobalPopup={openGlobalPopup}
             />
 
             <div
@@ -603,6 +611,7 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
                 setInput={setInput}
                 searchType={searchType}
                 acknowledgeToken={acknowledgeToken}
+                openGlobalPopup={openGlobalPopup}
             />
             {/* <DividerDark addMarginTop /> */}
             <LimitRate

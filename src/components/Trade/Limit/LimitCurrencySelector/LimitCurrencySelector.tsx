@@ -19,7 +19,9 @@ import NoTokenIcon from '../../../Global/NoTokenIcon/NoTokenIcon';
 import { SoloTokenSelect } from '../../../Global/TokenSelectContainer/SoloTokenSelect';
 // import { useSoloSearch } from '../../../Global/TokenSelectContainer/hooks/useSoloSearch';
 import { getRecentTokensParamsIF } from '../../../../App/hooks/useRecentTokens';
-
+import ExchangeBalanceExplanation from '../../../Global/Informational/ExchangeBalanceExplanation';
+import { AiOutlineQuestionCircle } from 'react-icons/ai';
+import { DefaultTooltip } from '../../../Global/StyledTooltip/StyledTooltip';
 // interface for component props
 interface LimitCurrencySelectorProps {
     provider?: ethers.providers.Provider;
@@ -69,6 +71,12 @@ interface LimitCurrencySelectorProps {
     setInput: Dispatch<SetStateAction<string>>;
     searchType: string;
     acknowledgeToken: (tkn: TokenIF) => void;
+
+    openGlobalPopup: (
+        content: React.ReactNode,
+        popupTitle?: string,
+        popupPlacement?: string,
+    ) => void;
 }
 
 // central react functional component
@@ -115,6 +123,7 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
         setInput,
         searchType,
         acknowledgeToken,
+        openGlobalPopup,
     } = props;
 
     const thisToken = fieldId === 'sell' ? tokenPair.dataTokenA : tokenPair.dataTokenB;
@@ -343,18 +352,27 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
             </IconWithTooltip>
         </div>
     );
+    const exchangeBalanceTitle = (
+        <p
+            style={{ display: 'flex', alignItems: 'center', gap: '4px', cursor: 'pointer' }}
+            onClick={() =>
+                openGlobalPopup(<ExchangeBalanceExplanation />, 'Exchange Balance', 'right')
+            }
+        >
+            Exchange Balance <AiOutlineQuestionCircle size={14} />
+        </p>
+    );
 
     const surplusContent = (
         <div className={styles.main_exchange_container}>
-            <IconWithTooltip
-                title={
-                    'Exchange Balance'
-                    // userHasEnteredAmount
-                    //     ? 'Exchange Surplus Balance After Swap'
-                    //     : 'Current Exchange Surplus Balance'
-                }
-                placement='bottom'
-                style={{ display: 'flex', alignItems: 'center' }}
+            <DefaultTooltip
+                interactive
+                title={exchangeBalanceTitle}
+                // placement={'bottom'}
+                placement={'bottom'}
+                arrow
+                enterDelay={100}
+                leaveDelay={200}
             >
                 <div
                     className={`${styles.balance_with_pointer} ${
@@ -396,7 +414,7 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
                     </div>
                     {surplusMaxButton}
                 </div>
-            </IconWithTooltip>
+            </DefaultTooltip>
         </div>
     );
 
