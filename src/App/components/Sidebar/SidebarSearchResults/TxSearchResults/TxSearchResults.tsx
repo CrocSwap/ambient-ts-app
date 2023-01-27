@@ -1,20 +1,16 @@
 import ResultSkeleton from '../ResultSkeleton/ResultSkeleton';
 import styles from '../SidebarSearchResults.module.css';
+import { TransactionIF } from '../../../../../utils/interfaces/exports';
+import TxLI from './TxLI'
 
 interface propsIF {
     loading: boolean;
     searchInput: React.ReactNode;
+    txsByUser: TransactionIF[];
 }
+
 export default function TxSearchResults(props: propsIF) {
-    function TransactionSearchResult() {
-        return (
-            <div className={styles.card_container}>
-                <div>Pool</div>
-                <div>Price</div>
-                <div>Qty</div>
-            </div>
-        );
-    }
+    const { txsByUser } = props;
 
     const header = (
         <div className={styles.header}>
@@ -26,9 +22,14 @@ export default function TxSearchResults(props: propsIF) {
 
     const exampleContent = (
         <div className={styles.main_result_container}>
-            {new Array(0).fill(null).map((item, idx) => (
-                <TransactionSearchResult key={idx} />
-            ))}
+            {
+                txsByUser.map((tx: TransactionIF) => (
+                    <TxLI
+                        key={`tx-sidebar-search-result-${JSON.stringify(tx)}`}
+                        tx={tx}
+                    />
+                ))
+            }
         </div>
     );
     return (

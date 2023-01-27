@@ -130,11 +130,9 @@ export default function Sidebar(props: propsIF) {
     const graphData = useAppSelector((state) => state.graphData);
     const isUserLoggedIn = isConnected;
     // const isUserLoggedIn = useAppSelector((state) => state.userData).isLoggedIn;
-    const transactionsByUser = graphData.changesByUser.changes;
-    // const positionsByUser = graphData.positionsByUser.positions;
     const limitOrderByUser = graphData.limitOrdersByUser.limitOrders;
 
-    const mostRecentTransactions = transactionsByUser.slice(0, 4);
+    const mostRecentTxs = txsByUser.slice(0, 4);
     const mostRecentPositions = positionsByUser.slice(0, 4);
     const mostRecentLimitOrders = limitOrderByUser.slice(0, 4);
     // const mostRecentPositions = positionsByUser.slice(0, 4);
@@ -267,7 +265,7 @@ export default function Sidebar(props: propsIF) {
 
             data: (
                 <SidebarRecentTransactions
-                    mostRecentTransactions={mostRecentTransactions}
+                    mostRecentTransactions={mostRecentTxs}
                     coinGeckoTokenMap={tokenMap}
                     currentTxActiveInTransactions={currentTxActiveInTransactions}
                     setCurrentTxActiveInTransactions={setCurrentTxActiveInTransactions}
@@ -615,6 +613,7 @@ export default function Sidebar(props: propsIF) {
                             setSelectedOutsideTab={setSelectedOutsideTab}
                             setCurrentPositionActive={setCurrentPositionActive}
                             setIsShowAllEnabled={setIsShowAllEnabled}
+                            txsByUser={txsByUser}
                         />
                     ) : (
                         regularSidebarDisplay

@@ -1,5 +1,5 @@
 import { Dispatch, SetStateAction, ReactNode } from 'react';
-import { PositionIF, TokenIF, TokenPairIF, TempPoolIF } from '../../../../utils/interfaces/exports';
+import { PositionIF, TokenIF, TokenPairIF, TempPoolIF, TransactionIF } from '../../../../utils/interfaces/exports';
 import styles from './SidebarSearchResults.module.css';
 import PoolsSearchResults from './PoolsSearchResults/PoolsSearchResults';
 import PositionsSearchResults from './PositionsSearchResults/PositionsSearchResults';
@@ -22,6 +22,7 @@ interface propsIF {
     setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
     setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
+    txsByUser: TransactionIF[];
 }
 
 export default function SidebarSearchResults(props: propsIF) {
@@ -40,6 +41,7 @@ export default function SidebarSearchResults(props: propsIF) {
         setSelectedOutsideTab,
         setCurrentPositionActive,
         setIsShowAllEnabled,
+        txsByUser
     } = props;
 
     return (
@@ -63,7 +65,11 @@ export default function SidebarSearchResults(props: propsIF) {
                         setIsShowAllEnabled={setIsShowAllEnabled}
                     />
                     {false && <OrdersSearchResults loading={exampleLoading} searchInput={searchInput} />}
-                    <TxSearchResults loading={exampleLoading} searchInput={searchInput} />
+                    <TxSearchResults
+                        loading={exampleLoading}
+                        searchInput={searchInput}
+                        txsByUser={txsByUser}
+                    />
                 </>
             )}
         </div>
