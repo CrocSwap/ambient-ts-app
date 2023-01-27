@@ -10,8 +10,10 @@ interface propsIF {
 export default function TxLI(props: propsIF) {
     const { tx } = props;
 
+    // type of transaction in human-readable format
     const txType = getTxType(tx.entityType)
 
+    // value of transaction in human-readable format
     const txValue = getTxValue(
         tx.valueUSD,
         tx.totalValueUSD,
