@@ -5,18 +5,21 @@ import { useAccount } from 'wagmi';
 import { memoizeFetchTransactionGraphData } from '../../../../App/functions/fetchTransactionDetailsGraphData';
 import { useAppChain } from '../../../../App/hooks/useAppChain';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
+import { LimitOrderIF } from '../../../../utils/interfaces/LimitOrderIF';
 import { ITransaction } from '../../../../utils/state/graphDataSlice';
 
 import './TransactionDetailsGraph.css';
 
 interface TransactionDetailsGraphIF {
-    tx: ITransaction;
+    tx?: ITransaction;
+    limitOrder?: LimitOrderIF;
+    transactionType: string;
 }
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 export default function TransactionDetailsGraph(props: TransactionDetailsGraphIF) {
-    const { tx } = props;
+    const { tx, transactionType, limitOrder } = props;
 
     const isServerEnabled =
         process.env.REACT_APP_CACHE_SERVER_IS_ENABLED !== undefined
@@ -75,12 +78,19 @@ export default function TransactionDetailsGraph(props: TransactionDetailsGraphIF
                     mainnetQuoteTokenAddress
                 );
 
-                const diff =
-                    new Date().getTime() - tx.time * 1000 < 43200000
-                        ? 43200000
-                        : new Date().getTime() - tx.time * 1000;
+                const time =
+                    transactionType === 'Market'
+                        ? tx?.time !== undefined
+                            ? tx.time
+                            : new Date().getTime()
+                        : limitOrder?.time !== undefined
+                        ? limitOrder?.time
+                        : new Date().getTime();
 
-                console.log(new Date().getTime() - tx.time * 1000, diff);
+                const diff =
+                    new Date().getTime() - time * 1000 < 43200000
+                        ? 43200000
+                        : new Date().getTime() - time * 1000;
 
                 const period = decidePeriod(Math.floor(diff / 1000 / 200));
                 if (period !== undefined) {
@@ -169,7 +179,7 @@ export default function TransactionDetailsGraph(props: TransactionDetailsGraphIF
             const yExtent = d3fc
                 .extentLinear()
                 .accessors([(d: any) => d.invPriceCloseExclMEVDecimalCorrected])
-                .pad([0, 0.1]);
+                .pad([0.1, 0.1]);
 
             const xExtent = d3fc.extentDate().accessors([(d: any) => d.time * 1000]);
 
@@ -177,7 +187,36 @@ export default function TransactionDetailsGraph(props: TransactionDetailsGraphIF
             const yScale = d3.scaleLinear();
 
             xScale.domain(xExtent(graphData));
-            yScale.domain(yExtent(graphData));
+
+            if (transactionType === 'Market') {
+                yScale.domain(yExtent(graphData));
+            } else {
+                if (limitOrder !== undefined) {
+                    const lowBoundary = Math.min(
+                        limitOrder.askTickInvPriceDecimalCorrected,
+                        limitOrder.bidTickInvPriceDecimalCorrected,
+                    );
+                    const topBoundary = Math.max(
+                        limitOrder.askTickInvPriceDecimalCorrected,
+                        limitOrder.bidTickInvPriceDecimalCorrected,
+                    );
+
+                    const buffer =
+                        Math.abs(
+                            Math.min(yExtent(graphData)[0], lowBoundary) -
+                                Math.max(yExtent(graphData)[1], topBoundary),
+                        ) / 50;
+
+                    const boundaries = [
+                        Math.min(yExtent(graphData)[0], lowBoundary) - buffer,
+                        Math.max(yExtent(graphData)[1], topBoundary) + buffer,
+                    ];
+
+                    yScale.domain(boundaries);
+                } else {
+                    yScale.domain(yExtent(graphData));
+                }
+            }
 
             const xScaleOriginal = xScale.copy();
 
@@ -211,7 +250,7 @@ export default function TransactionDetailsGraph(props: TransactionDetailsGraphIF
         ) {
             drawChart(graphData, scaleData, lineSeries, priceLine, crossPoint);
         }
-    }, [scaleData, lineSeries, priceLine, graphData, crossPoint]);
+    }, [scaleData, lineSeries, priceLine, graphData, crossPoint, transactionType]);
 
     const drawChart = useCallback(
         (graphData: any, scaleData: any, lineSeries: any, priceLine: any, crossPoint: any) => {
@@ -219,6 +258,8 @@ export default function TransactionDetailsGraph(props: TransactionDetailsGraphIF
                 const xAxis = d3fc.axisBottom().scale(scaleData.xScale).ticks(5);
 
                 const priceJoin = d3fc.dataJoin('g', 'priceJoin');
+                const startPriceJoin = d3fc.dataJoin('g', 'startPriceJoin');
+                const finishPriceJoin = d3fc.dataJoin('g', 'finishPriceJoin');
                 const lineJoin = d3fc.dataJoin('g', 'lineJoin');
                 const crossPointJoin = d3fc.dataJoin('g', 'crossPoint');
 
@@ -265,11 +306,24 @@ export default function TransactionDetailsGraph(props: TransactionDetailsGraphIF
 
                 d3.select(d3PlotGraph.current).on('draw', function (event: any) {
                     const svg = d3.select(event.target).select('svg');
-                    priceJoin(svg, [[tx.invPriceDecimalCorrected]]).call(priceLine);
+
+                    if (transactionType === 'Market' && tx !== undefined) {
+                        priceJoin(svg, [[tx.invPriceDecimalCorrected]]).call(priceLine);
+                        crossPointJoin(svg, [
+                            [{ x: tx.time * 1000, y: tx.invPriceDecimalCorrected }],
+                        ]).call(crossPoint);
+                    }
+
+                    if (transactionType === 'Limit' && limitOrder !== undefined) {
+                        finishPriceJoin(svg, [[limitOrder.bidTickInvPriceDecimalCorrected]]).call(
+                            priceLine,
+                        );
+                        startPriceJoin(svg, [[limitOrder.askTickInvPriceDecimalCorrected]]).call(
+                            priceLine,
+                        );
+                    }
+
                     lineJoin(svg, [graphData]).call(lineSeries);
-                    crossPointJoin(svg, [
-                        [{ x: tx.time * 1000, y: tx.invPriceDecimalCorrected }],
-                    ]).call(crossPoint);
 
                     d3.select(d3Yaxis.current).select('svg').call(scaleData.yAxis);
                     d3.select(d3Xaxis.current).select('svg').call(xAxis);
