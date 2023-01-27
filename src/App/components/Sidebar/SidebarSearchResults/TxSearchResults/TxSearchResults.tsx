@@ -34,7 +34,7 @@ export default function TxSearchResults(props: propsIF) {
     );
     return (
         <div>
-            <div className={styles.card_title}>Recent Transactions</div>
+            <div className={styles.card_title}>My Recent Transactions</div>
             {header}
             {props.loading ? <ResultSkeleton /> : exampleContent}
         </div>
