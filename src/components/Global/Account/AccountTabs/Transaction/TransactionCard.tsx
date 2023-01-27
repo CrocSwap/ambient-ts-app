@@ -1,7 +1,7 @@
 // import { toDisplayQty } from '@crocswap-libs/sdk';
 import getUnicodeCharacter from '../../../../../utils/functions/getUnicodeCharacter';
 import { formatAmountOld } from '../../../../../utils/numbers';
-import { ITransaction } from '../../../../../utils/state/graphDataSlice';
+import { TransactionIF } from '../../../../../utils/state/graphDataSlice';
 import Price from '../../../../Global/Tabs/Price/Price';
 import TokenQty from '../../../../Global/Tabs/TokenQty/TokenQty';
 import TransactionTypeSide from '../../../../Global/Tabs/TypeAndSide/TransactionTypeSide/TransactionTypeSide';
@@ -16,7 +16,7 @@ import { useEffect, useState } from 'react';
 // import TransactionsMenu from '../../../Tabs/TableMenu/TableMenuComponents/TransactionsMenu';
 
 interface TransactionProps {
-    tx: ITransaction;
+    tx: TransactionIF;
     // account: string;
     // tokenMap: Map<string, TokenIF>;
     // chainId: string;

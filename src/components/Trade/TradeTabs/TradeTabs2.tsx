@@ -20,7 +20,7 @@ import recentTransactionsImage from '../../../assets/images/sidebarImages/recent
 import Ranges from './Ranges/Ranges';
 import TabComponent from '../../Global/TabComponent/TabComponent';
 import PositionsOnlyToggle from './PositionsOnlyToggle/PositionsOnlyToggle';
-import { CandleData, ITransaction, setChangesByUser } from '../../../utils/state/graphDataSlice';
+import { CandleData, TransactionIF, setChangesByUser } from '../../../utils/state/graphDataSlice';
 import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
 import { fetchPoolRecentChanges } from '../../../App/functions/fetchPoolRecentChanges';
 
@@ -323,7 +323,7 @@ export default function TradeTabs2(props: ITabsProps) {
         }
     }, [isServerEnabled, account, isShowAllEnabled]);
 
-    const [changesInSelectedCandle, setChangesInSelectedCandle] = useState<ITransaction[]>([]);
+    const [changesInSelectedCandle, setChangesInSelectedCandle] = useState<TransactionIF[]>([]);
 
     useEffect(() => {
         // console.log({ filter });

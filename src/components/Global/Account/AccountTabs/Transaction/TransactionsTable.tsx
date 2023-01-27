@@ -1,10 +1,10 @@
 import styles from './TransactionsTable.module.css';
 import TransactionCard from './TransactionCard';
 import TransactionCardHeader from './TransactionCardHeader';
-import { ITransaction } from '../../../../../utils/state/graphDataSlice';
+import { TransactionIF } from '../../../../../utils/state/graphDataSlice';
 
 interface TransactionTablePropsIF {
-    transactions: ITransaction[];
+    transactions: TransactionIF[];
 }
 
 export default function TransactionsTable(props: TransactionTablePropsIF) {

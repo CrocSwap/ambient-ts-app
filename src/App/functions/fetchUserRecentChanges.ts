@@ -1,5 +1,5 @@
 import { TokenIF } from '../../utils/interfaces/TokenIF';
-import { ITransaction } from '../../utils/state/graphDataSlice';
+import { TransactionIF } from '../../utils/state/graphDataSlice';
 import { getTransactionData } from './getTransactionData';
 
 interface IFetchUserRecentChangesProps {
@@ -53,7 +53,7 @@ export const fetchUserRecentChanges = (props: IFetchUserRecentChangesProps) => {
             const userTransactions = json?.data;
 
             const updatedTransactions = Promise.all(
-                userTransactions.map((tx: ITransaction) => {
+                userTransactions.map((tx: TransactionIF) => {
                     return getTransactionData(tx, tokensOnActiveLists);
                 }),
             ).then((updatedTransactions) => {

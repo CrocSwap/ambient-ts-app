@@ -227,7 +227,7 @@ export interface pool {
     quote: string;
 }
 
-export interface ITransaction {
+export interface TransactionIF {
     base: string;
     baseDecimals: number;
     baseFlow: string;
@@ -283,12 +283,12 @@ export interface ITransaction {
 
 export interface ChangesByUser {
     dataReceived: boolean;
-    changes: Array<ITransaction>;
+    changes: Array<TransactionIF>;
 }
 
 export interface ChangesByPool {
     dataReceived: boolean;
-    changes: Array<ITransaction>;
+    changes: Array<TransactionIF>;
 }
 
 const initialState: graphData = {
@@ -398,7 +398,7 @@ export const graphDataSlice = createSlice({
         setChangesByUser: (state, action: PayloadAction<ChangesByUser>) => {
             state.changesByUser = action.payload;
         },
-        addChangesByUser: (state, action: PayloadAction<Array<ITransaction>>) => {
+        addChangesByUser: (state, action: PayloadAction<Array<TransactionIF>>) => {
             for (let index = 0; index < action.payload.length; index++) {
                 const updatedTx = action.payload[index];
                 const txToFind = updatedTx.tx.toLowerCase();
@@ -452,7 +452,7 @@ export const graphDataSlice = createSlice({
         setChangesByPool: (state, action: PayloadAction<ChangesByPool>) => {
             state.changesByPool = action.payload;
         },
-        addChangesByPool: (state, action: PayloadAction<Array<ITransaction>>) => {
+        addChangesByPool: (state, action: PayloadAction<Array<TransactionIF>>) => {
             for (let index = 0; index < action.payload.length; index++) {
                 const updatedTx = action.payload[index];
                 const txToFind = updatedTx.tx.toLowerCase();

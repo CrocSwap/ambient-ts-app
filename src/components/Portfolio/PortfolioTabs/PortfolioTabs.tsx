@@ -22,7 +22,7 @@ import exchangeImage from '../../../assets/images/sidebarImages/exchange.svg';
 import { CrocEnv, ChainSpec } from '@crocswap-libs/sdk';
 import { ethers } from 'ethers';
 import {
-    ITransaction,
+    TransactionIF,
     resetLookupUserDataLoadingStatus,
     setDataLoadingStatus,
 } from '../../../utils/state/graphDataSlice';
@@ -117,7 +117,7 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
         [],
     );
     const [lookupAccountTransactionData, setLookupAccountTransactionData] = useState<
-        ITransaction[]
+    TransactionIF[]
     >([]);
 
     // useEffect(() => {

@@ -1,13 +1,13 @@
 import styles from './TransactionDetails.module.css';
 import { useState, useRef } from 'react';
-import { ITransaction } from '../../../utils/state/graphDataSlice';
+import { TransactionIF } from '../../../utils/state/graphDataSlice';
 import printDomToImage from '../../../utils/functions/printDomToImage';
 import RangeDetailsControl from '../../RangeDetails/RangeDetailsControl/RangeDetailsControl';
 import TransactionDetailsHeader from './TransactionDetailsHeader/TransactionDetailsHeader';
 import TransactionDetailsPriceInfo from './TransactionDetailsPriceInfo/TransactionDetailsPriceInfo';
 interface TransactionDetailsPropsIF {
     account: string;
-    tx: ITransaction;
+    tx: TransactionIF;
     closeGlobalModal: () => void;
 }
 

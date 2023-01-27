@@ -11,7 +11,7 @@ import { FiExternalLink, FiMoreHorizontal } from 'react-icons/fi';
 import styles from './TableMenus.module.css';
 // import { useModal } from '../../../../Global/Modal/useModal';
 // import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
-import { ITransaction } from '../../../../../utils/state/graphDataSlice';
+import { TransactionIF } from '../../../../../utils/state/graphDataSlice';
 import UseOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 import useMediaQuery from '../../../../../utils/hooks/useMediaQuery';
 import TransactionDetails from '../../../TransactionDetails/TransactionDetails';
@@ -37,7 +37,7 @@ interface TransactionMenuIF {
     tradeData: tradeData;
     userPosition: boolean | undefined; // position belongs to active user
     isTokenABase: boolean;
-    tx: ITransaction;
+    tx: TransactionIF;
     blockExplorer?: string;
     showSidebar: boolean;
     openGlobalModal: (content: React.ReactNode, title?: string) => void;

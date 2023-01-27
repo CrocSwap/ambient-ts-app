@@ -7,7 +7,7 @@ import {
     addChangesByPool,
     CandleData,
     graphData,
-    ITransaction,
+    TransactionIF,
     setChangesByPool,
     setDataLoadingStatus,
 } from '../../../../utils/state/graphDataSlice';
@@ -30,12 +30,12 @@ import NoTableData from '../NoTableData/NoTableData';
 interface TransactionsProps {
     importedTokens: TokenIF[];
     isTokenABase: boolean;
-    activeAccountTransactionData?: ITransaction[];
+    activeAccountTransactionData?: TransactionIF[];
     connectedAccountActive?: boolean;
     isShowAllEnabled: boolean;
     portfolio?: boolean;
     tokenMap: Map<string, TokenIF>;
-    changesInSelectedCandle: ITransaction[] | undefined;
+    changesInSelectedCandle: TransactionIF[] | undefined;
     graphData: graphData;
     chainData: ChainSpec;
     blockExplorer?: string;

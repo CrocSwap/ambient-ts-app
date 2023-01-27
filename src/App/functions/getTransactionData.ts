@@ -1,13 +1,13 @@
 import { TokenIF } from '../../utils/interfaces/TokenIF';
 
-import { ITransaction } from '../../utils/state/graphDataSlice';
+import { TransactionIF } from '../../utils/state/graphDataSlice';
 
 // import { fetchAddress } from './fetchAddress';
 
 export const getTransactionData = async (
-    tx: ITransaction,
+    tx: TransactionIF,
     tokensOnActiveLists: Map<string, TokenIF>,
-): Promise<ITransaction> => {
+): Promise<TransactionIF> => {
     const baseTokenAddress = tx.base;
     const quoteTokenAddress = tx.quote;
 

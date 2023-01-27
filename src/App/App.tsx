@@ -24,11 +24,10 @@ import {
     setLimitOrdersByPool,
     CandlesByPoolAndDuration,
     CandleData,
-    // ITransaction,
     addChangesByUser,
     setLastBlock,
     addLimitOrderChangesByUser,
-    ITransaction,
+    TransactionIF,
     setLeaderboardByPool,
     setDataLoadingStatus,
     resetConnectedUserDataLoadingStatus,
@@ -1637,7 +1636,7 @@ export default function App() {
 
             if (lastMessageData) {
                 Promise.all(
-                    lastMessageData.map((tx: ITransaction) => {
+                    lastMessageData.map((tx: TransactionIF) => {
                         return getTransactionData(tx, tokensOnActiveLists);
                     }),
                 )
@@ -2007,7 +2006,7 @@ export default function App() {
                         const result: TokenIF[] = [];
                         const tokenMap = new Map();
                         const ambientTokens = getAmbientTokens();
-                        for (const item of updatedTransactions as ITransaction[]) {
+                        for (const item of updatedTransactions as TransactionIF[]) {
                             if (!tokenMap.has(item.base)) {
                                 const isFoundInAmbientList = ambientTokens.some((ambientToken) => {
                                     if (
@@ -2555,6 +2554,7 @@ export default function App() {
         addPoolToFaves: addPoolToFaves,
         removePoolFromFaves: removePoolFromFaves,
         positionsByUser: graphData.positionsByUser.positions,
+        txsByUser: graphData.changesByUser.changes
     };
 
     const analyticsProps = {

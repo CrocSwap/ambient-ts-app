@@ -38,6 +38,7 @@ import { useSidebarSearch } from './useSidebarSearch';
 import { SmallerPoolIF } from '../../hooks/useRecentPools';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
+import { TransactionIF } from '../../../utils/state/graphDataSlice';
 
 const cachedPoolStatsFetch = memoizePoolStats();
 
@@ -83,6 +84,7 @@ interface SidebarPropsIF {
         poolId: number,
     ) => void;
     positionsByUser: PositionIF[];
+    txsByUser: TransactionIF[]
 }
 
 export default function Sidebar(props: SidebarPropsIF) {
@@ -119,8 +121,11 @@ export default function Sidebar(props: SidebarPropsIF) {
         removePoolFromFaves,
         positionsByUser,
         setOutsideControl,
-        setSelectedOutsideTab  
+        setSelectedOutsideTab,
+        txsByUser
     } = props;
+
+    false && txsByUser;
 
     const location = useLocation();
     const graphData = useAppSelector((state) => state.graphData);

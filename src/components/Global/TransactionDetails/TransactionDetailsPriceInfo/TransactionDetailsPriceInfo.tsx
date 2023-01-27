@@ -1,6 +1,6 @@
 import styles from './TransactionDetailsPriceInfo.module.css';
 import Row from '../../../Global/Row/Row';
-import { ITransaction } from '../../../../utils/state/graphDataSlice';
+import { TransactionIF } from '../../../../utils/state/graphDataSlice';
 import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
 import { toggleDidUserFlipDenom } from '../../../../utils/state/tradeDataSlice';
 import { motion } from 'framer-motion';
@@ -17,14 +17,14 @@ type ItemIF = {
     name: string;
     checked: boolean;
 };
-interface ITransactionDetailsPriceInfoProps {
-    account: string;
-    tx: ITransaction;
 
+interface propsIF {
+    account: string;
+    tx: TransactionIF;
     controlItems: ItemIF[];
 }
 
-export default function TransactionDetailsPriceInfo(props: ITransactionDetailsPriceInfoProps) {
+export default function TransactionDetailsPriceInfo(props: propsIF) {
     const { account, tx, controlItems } = props;
     const dispatch = useAppDispatch();
     const {

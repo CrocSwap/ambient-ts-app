@@ -1,5 +1,5 @@
 import styles from '../Transactions.module.css';
-import { ITransaction, setDataLoadingStatus } from '../../../../../utils/state/graphDataSlice';
+import { TransactionIF, setDataLoadingStatus } from '../../../../../utils/state/graphDataSlice';
 import { Dispatch, SetStateAction, useEffect, useRef } from 'react';
 import { useProcessTransaction } from '../../../../../utils/hooks/useProcessTransaction';
 import TransactionsMenu from '../../../../Global/Tabs/TableMenu/TableMenuComponents/TransactionsMenu';
@@ -19,7 +19,7 @@ import useOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 // import { light } from '@material-ui/core/styles/createPalette';
 interface TransactionRowPropsIF {
     account: string;
-    tx: ITransaction;
+    tx: TransactionIF;
     tradeData: tradeData;
     isTokenABase: boolean;
     currentTxActiveInTransactions: string;

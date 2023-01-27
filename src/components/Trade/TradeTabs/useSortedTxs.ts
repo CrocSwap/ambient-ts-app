@@ -1,37 +1,37 @@
 import { Dispatch, SetStateAction, useMemo, useState } from 'react';
-import { ITransaction } from '../../../utils/state/graphDataSlice';
+import { TransactionIF } from '../../../utils/state/graphDataSlice';
 
 export const useSortedTransactions = (
     defaultSort: string,
-    transactions: ITransaction[],
+    transactions: TransactionIF[],
 ): [
     string,
     Dispatch<SetStateAction<string>>,
     boolean,
     Dispatch<SetStateAction<boolean>>,
-    ITransaction[],
+    TransactionIF[],
 ] => {
     // default sort function
-    const sortByUpdateTime = (unsortedData: ITransaction[]) =>
+    const sortByUpdateTime = (unsortedData: TransactionIF[]) =>
         [...unsortedData].sort((a, b) => b.time - a.time);
     // sort by wallet or ens address
-    const sortByPool = (unsortedData: ITransaction[]) =>
+    const sortByPool = (unsortedData: TransactionIF[]) =>
         [...unsortedData].sort((a, b) => {
             const poolA = a.base + a.quote;
             const poolB = b.base + b.quote;
             return poolA.localeCompare(poolB);
         });
-    const sortByWallet = (unsortedData: ITransaction[]) =>
+    const sortByWallet = (unsortedData: TransactionIF[]) =>
         [...unsortedData].sort((a, b) => {
             const usernameA: string = a.ensResolution ?? a.user;
             const usernameB: string = b.ensResolution ?? b.user;
             return usernameA.localeCompare(usernameB);
         });
     // sort by limit price
-    const sortByPrice = (unsortedData: ITransaction[]) =>
+    const sortByPrice = (unsortedData: TransactionIF[]) =>
         [...unsortedData].sort((a, b) => b.limitPrice - a.limitPrice);
     // sort by value of limit order
-    const sortByValue = (unsortedData: ITransaction[]) =>
+    const sortByValue = (unsortedData: TransactionIF[]) =>
         [...unsortedData].sort((a, b) => {
             const valueA = a.totalFlowUSD
                 ? a.totalFlowUSD
@@ -56,9 +56,9 @@ export const useSortedTransactions = (
     const [reverseSort, setReverseSort] = useState(false);
 
     // router to pass data through the appropriate sort function
-    const sortData = (data: ITransaction[]) => {
+    const sortData = (data: TransactionIF[]) => {
         // variable to hold output
-        let sortedData: ITransaction[];
+        let sortedData: TransactionIF[];
         // router to apply a specific sort function
         switch (sortBy) {
             case 'wallet':

@@ -5,7 +5,7 @@ import TokenQty from '../../../Global/Tabs/TokenQty/TokenQty';
 import TransactionTypeSide from '../../../Global/Tabs/TypeAndSide/TransactionTypeSide/TransactionTypeSide';
 import WalletAndId from '../../../Global/Tabs/WalletAndID/WalletAndId';
 import styles from './TransactionCard.module.css';
-import { ITransaction } from '../../../../utils/state/graphDataSlice';
+import { TransactionIF } from '../../../../utils/state/graphDataSlice';
 import TransactionsMenu from '../../../Global/Tabs/TableMenu/TableMenuComponents/TransactionsMenu';
 import { TokenIF } from '../../../../utils/interfaces/TokenIF';
 // import {
@@ -18,7 +18,7 @@ import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter
 import Value from '../../../Global/Tabs/Value/Value';
 
 interface TransactionProps {
-    tx: ITransaction;
+    tx: TransactionIF;
     account: string;
     tokenMap: Map<string, TokenIF>;
     chainId: string;
