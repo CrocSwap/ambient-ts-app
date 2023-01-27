@@ -13,26 +13,36 @@ export const useClick = (
     const navigate = useNavigate();
 
     const handleClick = (tx: TransactionIF) => {
-        let linkPath: string;
+        let locationSlug: string;
+        let tabNumber: number;
 
         switch (tx.entityType) {
             case 'limitOrder':
-                linkPath = '/trade/limit';
+                locationSlug = '/trade/limit';
+                tabNumber = 1;
                 break;
             case 'liqchange':
-                linkPath = '/trade/range';
+                locationSlug = '/trade/range';
+                tabNumber = 2;
                 break;
             case 'swap':
             default:
-                linkPath = '/trade/market';
+                locationSlug = '/trade/market';
+                tabNumber = 0;
                 break;
         }
 
         setOutsideControl(true);
-        setSelectedOutsideTab(0);
+        setSelectedOutsideTab(tabNumber);
         setIsShowAllEnabled(false);
         setCurrentTxActiveInTransactions(tx.id);
-        navigate(linkPath);
+        navigate(
+            locationSlug +
+            '/chain=0x5&tokenA=' +
+            tx.base +
+            '&tokenB=' +
+            tx.quote
+        );
     }
 
     return handleClick;
