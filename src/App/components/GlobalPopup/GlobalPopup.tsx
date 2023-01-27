@@ -1,6 +1,5 @@
 import styles from './GlobalPopup.module.css';
 import { VscClose } from 'react-icons/vsc';
-
 interface GlobalPopupProps {
     isGlobalPopupOpen: boolean;
     openGlobalPopup: (page: string) => void;
@@ -33,6 +32,7 @@ export default function GlobalPopup(props: GlobalPopupProps) {
     //         <section>{props.popupContent}</section>
     //     </div>
     // ) : null;
+
     return (
         <div className={`${showGlobalPopupStyle} ${placementStyle} ${styles.container}`}>
             <header>
