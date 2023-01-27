@@ -1,7 +1,6 @@
 import styles from '../SidebarSearchResults.module.css';
 import { TransactionIF } from '../../../../../utils/interfaces/exports';
-import { getTxType } from './functions/getTxType';
-import { getTxValue } from './functions/getTxValue';
+import { getTxType, getTxValue } from './functions/exports';
 
 interface propsIF {
     tx: TransactionIF;
@@ -11,7 +10,7 @@ export default function TxLI(props: propsIF) {
     const { tx } = props;
 
     // type of transaction in human-readable format
-    const txType = getTxType(tx.entityType)
+    const txType = getTxType(tx.entityType);
 
     // value of transaction in human-readable format
     const txValue = getTxValue(
