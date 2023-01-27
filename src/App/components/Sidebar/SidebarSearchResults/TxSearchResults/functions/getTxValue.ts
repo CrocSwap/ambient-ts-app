@@ -57,11 +57,13 @@ export const getTxValue = (
                 maximumFractionDigits: 2,
             });
 
-    return (totalFlowUSDTruncated !== undefined
+    const output: string = totalFlowUSDTruncated !== undefined
         ? '$' + totalFlowUSDTruncated
         : totalValueUSDTruncated
         ? '$' + totalValueUSDTruncated
         : usdValueTruncated
         ? '$' + usdValueTruncated
-        : '…');
+        : '…'
+
+    return output;
 }
