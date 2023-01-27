@@ -78,6 +78,7 @@ export const useSidebarSearch = (
 
     const dispatch = useAppDispatch();
 
+    // PLEASE LEAVE COMMENTED-OUT CODE IN THE FOLLOWING useEffect() HOOK FOR FUTURE REF
     // hook to get acknowledged tokens list from local storage
     useEffect(() => {
         if (shouldRecheckLocalStorage) {
