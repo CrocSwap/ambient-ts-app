@@ -141,7 +141,6 @@ export default function TradeCandleStickChart(props: ChartData) {
         poolPriceNonDisplay === undefined ? 0 : Math.log(poolPriceNonDisplay) / Math.log(1.0001);
 
     useEffect(() => {
-        console.log('firing');
         setIsLoading(true);
         setParsedChartData(() => {
             return undefined;
@@ -277,7 +276,7 @@ export default function TradeCandleStickChart(props: ChartData) {
 
     // Parse liquidtiy data
     const liquidityData = useMemo(() => {
-        console.log('firing');
+        console.log('parsing liquidity data');
         const liqAskData: LiquidityData[] = [];
         const liqBidData: LiquidityData[] = [];
         const depthLiqBidData: LiquidityData[] = [];
@@ -552,7 +551,7 @@ export default function TradeCandleStickChart(props: ChartData) {
     }, [JSON.stringify(props.liquidityData), props.poolPriceDisplay]);
 
     useEffect(() => {
-        console.log('firing');
+        console.log('resetting scale for chart because timeframe changed');
         setScaleData(() => {
             return undefined;
         });

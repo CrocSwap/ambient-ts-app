@@ -11,7 +11,7 @@ import styles from './LimitCurrencySelector.module.css';
 import { TokenIF, TokenPairIF } from '../../../../utils/interfaces/exports';
 import Modal from '../../../../components/Global/Modal/Modal';
 import { useModal } from '../../../../components/Global/Modal/useModal';
-import Toggle2 from '../../../Global/Toggle/Toggle2';
+// import Toggle2 from '../../../Global/Toggle/Toggle2';
 import IconWithTooltip from '../../../Global/IconWithTooltip/IconWithTooltip';
 import { MdAccountBalanceWallet } from 'react-icons/md';
 import ambientLogo from '../../../../assets/images/logos/ambient_logo.svg';
@@ -167,19 +167,19 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
         </div>
     );
 
-    const WithdrawTokensContent = (
-        <span className={styles.surplus_toggle}>
-            <IconWithTooltip title='Use Exchange Balance' placement='bottom'>
-                <Toggle2
-                    isOn={isWithdrawFromDexChecked}
-                    handleToggle={() => setIsWithdrawFromDexChecked(!isWithdrawFromDexChecked)}
-                    id='sell_token_withdrawal'
-                    disabled={false}
-                    // disabled={parseFloat(tokenADexBalance) <= 0}
-                />
-            </IconWithTooltip>
-        </span>
-    );
+    // const WithdrawTokensContent = (
+    //     <span className={styles.surplus_toggle}>
+    //         <IconWithTooltip title='Use Exchange Balance' placement='bottom'>
+    //             <Toggle2
+    //                 isOn={isWithdrawFromDexChecked}
+    //                 handleToggle={() => setIsWithdrawFromDexChecked(!isWithdrawFromDexChecked)}
+    //                 id='sell_token_withdrawal'
+    //                 disabled={false}
+    //                 // disabled={parseFloat(tokenADexBalance) <= 0}
+    //             />
+    //         </IconWithTooltip>
+    //     </span>
+    // );
 
     const isWithdrawFromDexDisabled = parseFloat(tokenADexBalance || '0') <= 0;
     const isWithdrawFromWalletDisabled = parseFloat(tokenABalance || '0') <= 0;
@@ -247,16 +247,58 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
               ')'
             : '';
 
-    const surplusContent = (
+    const walletBalanceMaxButton =
+        isSellTokenSelector &&
+        !isWithdrawFromDexChecked &&
+        walletBalanceNonLocaleString !== '0.0' ? (
+            <button
+                className={`${styles.max_button} ${styles.max_button_enable}`}
+                onClick={() => {
+                    if (props.sellToken) {
+                        setIsWithdrawFromDexChecked(false);
+                    } else {
+                        setIsSaveAsDexSurplusChecked(false);
+                    }
+                    if (handleChangeClick && !isWithdrawFromWalletDisabled) {
+                        handleChangeClick(walletBalanceNonLocaleString);
+                    }
+                }}
+            >
+                Max
+            </button>
+        ) : (
+            <p className={styles.max_button} />
+        );
+
+    const surplusMaxButton =
+        isSellTokenSelector &&
+        isWithdrawFromDexChecked &&
+        surplusBalanceNonLocaleString !== '0.0' ? (
+            <button
+                className={`${styles.max_button} ${styles.max_button_enable}`}
+                onClick={() => {
+                    if (props.sellToken) {
+                        setIsWithdrawFromDexChecked(true);
+                    } else {
+                        setIsSaveAsDexSurplusChecked(true);
+                    }
+                    if (handleChangeClick && !isWithdrawFromDexDisabled) {
+                        handleChangeClick(surplusBalanceNonLocaleString);
+                    }
+                }}
+            >
+                Max
+            </button>
+        ) : (
+            <p className={styles.max_button} />
+        );
+
+    const walletContent = (
         <div className={styles.main_wallet_container}>
             <IconWithTooltip
-                title={
-                    'Wallet Balance'
-                    // userHasEnteredAmount
-                    //     ? 'Wallet Balance After Swap'
-                    //     : 'Current Wallet Balance'
-                }
+                title={'Wallet Balance'}
                 placement='bottom'
+                style={{ display: 'flex', alignItems: 'center' }}
             >
                 <div
                     className={styles.balance_with_pointer}
@@ -297,11 +339,12 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
                         </div>
                     </div>
                 </div>
+                {walletBalanceMaxButton}
             </IconWithTooltip>
         </div>
     );
 
-    const exchangeContent = (
+    const surplusContent = (
         <div className={styles.main_exchange_container}>
             <IconWithTooltip
                 title={
@@ -311,6 +354,7 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
                     //     : 'Current Exchange Surplus Balance'
                 }
                 placement='bottom'
+                style={{ display: 'flex', alignItems: 'center' }}
             >
                 <div
                     className={`${styles.balance_with_pointer} ${
@@ -350,6 +394,7 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
                             <p style={{ fontSize: '9px' }}> {sellTokenSurplusChange}</p>
                         </div>
                     </div>
+                    {surplusMaxButton}
                 </div>
             </IconWithTooltip>
         </div>
@@ -360,10 +405,10 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
             <div className={styles.swapbox_bottom} />
         ) : (
             <div className={styles.swapbox_bottom}>
+                {walletContent}
                 {surplusContent}
-                {exchangeContent}
 
-                {isSellTokenSelector ? WithdrawTokensContent : null}
+                {/* {isSellTokenSelector ? WithdrawTokensContent : null} */}
             </div>
         )
     ) : null;

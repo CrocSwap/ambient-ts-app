@@ -25,9 +25,17 @@
 
 .main_surplus_container, .main_wallet_container{
     display: flex;
-    justify-content: center;
     align-items: center;
 }
+.main_wallet_container{
+    justify-content: flex-start;
+}
+
+.main_surplus_container{
+    justify-content: flex-end;
+}
+
+
 
 /* .surplus_container {
     margin-right: 15px;
@@ -71,20 +79,25 @@
     display: flex;
     justify-content: space-between;
     flex-direction: row;
-    align-items: center;
+    /* align-items: center; */
     /* padding: 0.5rem 0; */
     min-height: 40px;
+
+    display: grid;
+    grid-template-columns: auto 120px;
     /* height: 40px; */
 }
 
-.swap_input {
+/* .swap_input {
     width: 65%;
-}
+} */
 .token_select {
+    /* background: var(--dark3); */
     display: flex;
     justify-content: space-between;
     align-items: center;
-    width: 35%;
+    /* gap: 4px; */
+    /* width: 35%; */
     cursor: pointer;
     transition: all var(--animation-speed) ease-in-out;
 }
@@ -120,17 +133,17 @@
 } */
 
 .swapbox_bottom {
-    /* display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center; */
-    min-height: 33px;
-    display: grid;
-    grid-template-columns:  repeat(3, 1fr);
-   margin: 6px 10px 0px 10px;
-
-    /* margin: 6px 10px 0px 10px; */
-}
+  
+    margin: 6px 10px;
+       height: 33px;
+    
+       
+       display: grid;
+       grid-template-columns: repeat(2, 1fr);
+       gap: 4px;
+    padding: 0 2rem;
+       
+    }
 
 
 .token_select_button {
@@ -161,6 +174,32 @@
     flex-direction: row;
     align-items: center;
     justify-content: flex-end;
+}
+
+.max_button {
+    cursor: pointer;
+    font-size: var(--body-size);
+    line-height: var(--body-lh);
+    color: var(--text-grey-light);
+    outline: none;
+    border: none;
+    /* background: var(--dark3); */
+    background: transparent;
+
+    width: 25px;
+    /* margin-right: 8px; */
+    max-height: 20px;
+    /* padding: 0 8px; */
+    transition: all var(--animation-speed) ease-in-out;
+}
+.max_button_enable{
+    border-radius: 4px;
+    background: var(--dark3);
+
+}
+
+.max_button:hover {
+    color: var(--text-grey-white);
 }
 
 /* modal */

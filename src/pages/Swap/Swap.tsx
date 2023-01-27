@@ -254,6 +254,7 @@ export default function Swap(props: SwapPropsIF) {
         const buyTokenQty = (document.getElementById('buy-quantity') as HTMLInputElement)?.value;
         const qty = isTokenAPrimary ? sellTokenQty : buyTokenQty;
         const isQtySell = isTokenAPrimary;
+        // const isQtySell = !isTokenAPrimary; // @ben todo: change back -- remove !
         let tx;
         try {
             const plan = isQtySell

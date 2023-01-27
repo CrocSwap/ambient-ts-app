@@ -13,7 +13,7 @@ import { useModal } from '../../components/Global/Modal/useModal';
 import { TokenIF } from '../../utils/interfaces/exports';
 import Button from '../../components/Global/Button/Button';
 import { Erc20TokenBalanceFn, nativeTokenBalanceFn } from '../../App/functions/fetchTokenBalances';
-import { useAppSelector } from '../../utils/hooks/reduxToolkit';
+import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { TokenPriceFn } from '../../App/functions/fetchTokenPrice';
 import NotFound from '../NotFound/NotFound';
 import ProfileSettings from '../../components/Portfolio/ProfileSettings/ProfileSettings';
@@ -21,6 +21,7 @@ import { SoloTokenSelect } from '../../components/Global/TokenSelectContainer/So
 // import { useSoloSearch } from '../../components/Global/TokenSelectContainer/hooks/useSoloSearch';
 import { useAccount, useEnsName } from 'wagmi';
 import useMediaQuery from '../../utils/hooks/useMediaQuery';
+import { setErc20Tokens, setNativeToken } from '../../utils/state/userDataSlice';
 
 const mainnetProvider = new ethers.providers.WebSocketProvider(
     // 'wss://mainnet.infura.io/ws/v3/4a162c75bd514925890174ca13cdb6a2', // benwolski@gmail.com
@@ -129,6 +130,8 @@ export default function Portfolio(props: PortfolioPropsIF) {
 
     const chainId = '0x5';
 
+    const dispatch = useAppDispatch();
+
     const connectedAccount = address;
 
     const isUserLoggedIn = isConnected;
@@ -145,6 +148,22 @@ export default function Portfolio(props: PortfolioPropsIF) {
     const selectedTokenAddress = selectedToken.address;
     const selectedTokenDecimals = selectedToken.decimals;
 
+    const addTokenInfo = (token: TokenIF): TokenIF => {
+        const newToken = { ...token };
+        const tokenAddress = token.address;
+        const key = tokenAddress.toLowerCase() + '_0x' + token.chainId.toString(16);
+
+        const tokenName = tokensOnActiveLists.get(key)?.name;
+
+        const tokenLogoURI = tokensOnActiveLists.get(key)?.logoURI;
+
+        newToken.name = tokenName ?? '';
+
+        newToken.logoURI = tokenLogoURI ?? '';
+
+        return newToken;
+    };
+
     useEffect(() => {
         if (crocEnv && selectedToken.address && connectedAccount) {
             crocEnv
@@ -160,6 +179,32 @@ export default function Portfolio(props: PortfolioPropsIF) {
                 })
                 .catch(console.log);
         }
+
+        if (recheckTokenBalances) {
+            (async () => {
+                if (connectedAccount) {
+                    const newNativeToken: TokenIF = await cachedFetchNativeTokenBalance(
+                        connectedAccount,
+                        chainId,
+                        lastBlockNumber,
+                        crocEnv,
+                    );
+
+                    dispatch(setNativeToken(newNativeToken));
+
+                    const erc20Results: TokenIF[] = await cachedFetchErc20TokenBalances(
+                        connectedAccount,
+                        chainId,
+                        lastBlockNumber,
+                        crocEnv,
+                    );
+                    const erc20TokensWithLogos = erc20Results.map((token) => addTokenInfo(token));
+
+                    dispatch(setErc20Tokens(erc20TokensWithLogos));
+                }
+            })();
+        }
+
         setRecheckTokenBalances(false);
     }, [crocEnv, selectedToken.address, connectedAccount, lastBlockNumber, recheckTokenBalances]);
 
