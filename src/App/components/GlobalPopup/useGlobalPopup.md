@@ -1,4 +1,4 @@
-`useGlobalPopup` is a custom React Hook that allows for the creation of a global modal popup. It takes in one optional parameter initialMode which defaults to false.
+`useGlobalPopup` is a custom React Hook that allows for the creation of a global  popup. It takes in one optional parameter initialMode which defaults to false.
 
 The hook returns an array of values and functions that can be destructured and used in a component.
 
