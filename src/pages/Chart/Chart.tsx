@@ -4071,9 +4071,6 @@ export default function Chart(props: ChartData) {
                             //     highlightedCurrentPriceLine,
                             // );
                             // indicatorLineJoin(svg, [indicatorLineData]).call(indicatorLine);
-
-                            // candleJoin(svg, [chartData]).call(candlestick);
-
                             if (JSON.stringify(liquidityScale.domain()) !== '[0,0]') {
                                 areaAskJoin(svg, [
                                     liqMode === 'Curve' ? liquidityData.liqAskData : [],
