@@ -19,6 +19,7 @@ import { PoolIF, TokenIF, TokenPairIF } from '../../utils/interfaces/exports';
 import { useUrlParams } from './useUrlParams';
 import NoTokenIcon from '../../components/Global/NoTokenIcon/NoTokenIcon';
 import TradeSettingsColor from './TradeCharts/TradeSettings/TradeSettingsColor/TradeSettingsColor';
+import { SpotPriceFn } from '../../App/functions/querySpotPrice';
 
 // interface for React functional component props
 interface TradePropsIF {
@@ -83,12 +84,14 @@ interface TradePropsIF {
 
     fullScreenChart: boolean;
     setFullScreenChart: Dispatch<SetStateAction<boolean>>;
+    cachedQuerySpotPrice: SpotPriceFn;
 }
 
 // React functional component
 export default function Trade(props: TradePropsIF) {
     const {
         pool,
+        cachedQuerySpotPrice,
         // poolPriceTick,
         isUserLoggedIn,
         crocEnv,
@@ -452,6 +455,7 @@ export default function Trade(props: TradePropsIF) {
                 >
                     <div className={!showChartAndNotTab ? styles.hide : ''}>
                         <TradeTabs2
+                            cachedQuerySpotPrice={cachedQuerySpotPrice}
                             isUserLoggedIn={isUserLoggedIn}
                             isTokenABase={isTokenABase}
                             crocEnv={crocEnv}

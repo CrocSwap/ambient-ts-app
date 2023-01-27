@@ -29,6 +29,7 @@ import Leaderboard from './Ranges/Leaderboard';
 // import PoolInfo from './PoolInfo/PoolInfo';
 import { DefaultTooltip } from '../../Global/StyledTooltip/StyledTooltip';
 import TradeChartsTokenInfo from '../../../pages/Trade/TradeCharts/TradeChartsComponents/TradeChartsTokenInfo';
+import { SpotPriceFn } from '../../../App/functions/querySpotPrice';
 
 interface ITabsProps {
     isUserLoggedIn: boolean | undefined;
@@ -95,12 +96,14 @@ interface ITabsProps {
     isPoolPriceChangePositive: boolean;
 
     setIsPoolPriceChangePositive: Dispatch<SetStateAction<boolean>>;
+    cachedQuerySpotPrice: SpotPriceFn;
 }
 
 // const httpGraphCacheServerDomain = 'https://809821320828123.de:5000';
 
 export default function TradeTabs2(props: ITabsProps) {
     const {
+        cachedQuerySpotPrice,
         isUserLoggedIn,
         isTokenABase,
         crocEnv,
@@ -372,6 +375,7 @@ export default function TradeTabs2(props: ITabsProps) {
 
     // Props for <Ranges/> React Element
     const rangesProps = {
+        cachedQuerySpotPrice: cachedQuerySpotPrice,
         isUserLoggedIn: isUserLoggedIn,
         crocEnv: crocEnv,
         chainData: chainData,
