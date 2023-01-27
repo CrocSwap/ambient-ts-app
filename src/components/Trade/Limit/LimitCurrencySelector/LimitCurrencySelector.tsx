@@ -305,9 +305,9 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
                     onClick={() => {
                         if (props.sellToken) {
                             setIsWithdrawFromDexChecked(false);
-                            if (handleChangeClick && !isWithdrawFromWalletDisabled) {
-                                handleChangeClick(walletBalanceNonLocaleString);
-                            }
+                            // if (handleChangeClick && !isWithdrawFromWalletDisabled) {
+                            //     handleChangeClick(walletBalanceNonLocaleString);
+                            // }
                         } else {
                             setIsSaveAsDexSurplusChecked(false);
                         }
@@ -369,9 +369,9 @@ export default function LimitCurrencySelector(props: LimitCurrencySelectorProps)
                     onClick={() => {
                         if (props.sellToken) {
                             setIsWithdrawFromDexChecked(true);
-                            if (handleChangeClick && !isWithdrawFromDexDisabled) {
-                                handleChangeClick(surplusBalanceNonLocaleString);
-                            }
+                            // if (handleChangeClick && !isWithdrawFromDexDisabled) {
+                            //     handleChangeClick(surplusBalanceNonLocaleString);
+                            // }
                         } else {
                             setIsSaveAsDexSurplusChecked(true);
                         }
