@@ -9,10 +9,6 @@ interface propsIF {
 export default function TxLI(props: propsIF) {
     const { tx } = props;
 
-    // TODO:   @Emily  replace Price and Qty in template below with live
-    // TODO:   @Emily  ... data, refer to SidebarRecentTransactionsCard.tsx
-    // TODO:   @Emily  ... component file as a model to replicate logic
-
     const usdValueNum = tx.valueUSD;
     const totalValueUSD = tx.totalValueUSD;
     const totalFlowUSD = tx.totalFlowUSD;
