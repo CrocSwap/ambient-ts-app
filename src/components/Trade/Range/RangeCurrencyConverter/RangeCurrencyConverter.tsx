@@ -78,6 +78,12 @@ interface propsIF {
     setInput: Dispatch<SetStateAction<string>>;
     searchType: string;
     acknowledgeToken: (tkn: TokenIF) => void;
+
+    openGlobalPopup: (
+        content: React.ReactNode,
+        popupTitle?: string,
+        popupPlacement?: string,
+    ) => void;
 }
 
 // central React functional component
@@ -133,6 +139,7 @@ export default function RangeCurrencyConverter(props: propsIF) {
         setInput,
         searchType,
         acknowledgeToken,
+        openGlobalPopup,
     } = props;
 
     const dispatch = useAppDispatch();
@@ -773,6 +780,7 @@ export default function RangeCurrencyConverter(props: propsIF) {
         setInput: setInput,
         searchType: searchType,
         acknowledgeToken: acknowledgeToken,
+        openGlobalPopup: openGlobalPopup,
     };
 
     return (

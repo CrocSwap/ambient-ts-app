@@ -108,6 +108,12 @@ interface propsIF {
     setInput: Dispatch<SetStateAction<string>>;
     searchType: string;
     acknowledgeToken: (tkn: TokenIF) => void;
+
+    openGlobalPopup: (
+        content: React.ReactNode,
+        popupTitle?: string,
+        popupPlacement?: string,
+    ) => void;
 }
 
 export default function Range(props: propsIF) {
@@ -158,6 +164,7 @@ export default function Range(props: propsIF) {
         setInput,
         searchType,
         acknowledgeToken,
+        openGlobalPopup,
     } = props;
 
     const [isModalOpen, openModal, closeModal] = useModal();
@@ -1046,6 +1053,7 @@ export default function Range(props: propsIF) {
         setInput: setInput,
         searchType: searchType,
         acknowledgeToken: acknowledgeToken,
+        openGlobalPopup: openGlobalPopup,
     };
 
     // props for <RangeWidth/> React element

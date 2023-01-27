@@ -148,6 +148,8 @@ import Moralis from 'moralis';
 import { usePoolList } from './hooks/usePoolList';
 import { useRecentPools } from './hooks/useRecentPools';
 import useMediaQuery from '../utils/hooks/useMediaQuery';
+import { useGlobalPopup } from './components/GlobalPopup/useGlobalPopup';
+import GlobalPopup from './components/GlobalPopup/GlobalPopup';
 
 // import { memoizeQuerySpotTick } from './functions/querySpotTick';
 // import PhishingWarning from '../components/Global/PhisingWarning/PhishingWarning';
@@ -2148,6 +2150,14 @@ export default function App() {
 
     const [isGlobalModalOpen, openGlobalModal, closeGlobalModal, currentContent, title] =
         useGlobalModal();
+    const [
+        isGlobalPopupOpen,
+        openGlobalPopup,
+        closeGlobalPopup,
+        popupContent,
+        popupTitle,
+        popupPlacement,
+    ] = useGlobalPopup();
 
     const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
@@ -2346,6 +2356,8 @@ export default function App() {
         setInput: setInput,
         searchType: searchType,
         acknowledgeToken: acknowledgeToken,
+
+        openGlobalPopup: openGlobalPopup,
     };
 
     // props for <Swap/> React element on trade route
@@ -2391,6 +2403,8 @@ export default function App() {
         setInput: setInput,
         searchType: searchType,
         acknowledgeToken: acknowledgeToken,
+
+        openGlobalPopup: openGlobalPopup,
     };
 
     // props for <Limit/> React element on trade route
@@ -2443,6 +2457,8 @@ export default function App() {
         setInput: setInput,
         searchType: searchType,
         acknowledgeToken: acknowledgeToken,
+
+        openGlobalPopup: openGlobalPopup,
     };
 
     // props for <Range/> React element
@@ -2499,6 +2515,8 @@ export default function App() {
         setInput: setInput,
         searchType: searchType,
         acknowledgeToken: acknowledgeToken,
+
+        openGlobalPopup: openGlobalPopup,
     };
 
     function toggleSidebar() {
@@ -3118,6 +3136,14 @@ export default function App() {
                 openGlobalModal={openGlobalModal}
                 currentContent={currentContent}
                 title={title}
+            />
+            <GlobalPopup
+                isGlobalPopupOpen={isGlobalPopupOpen}
+                openGlobalPopup={openGlobalPopup}
+                closeGlobalPopup={closeGlobalPopup}
+                popupContent={popupContent}
+                popupTitle={popupTitle}
+                placement={popupPlacement}
             />
 
             {isWagmiModalOpenWallet && (

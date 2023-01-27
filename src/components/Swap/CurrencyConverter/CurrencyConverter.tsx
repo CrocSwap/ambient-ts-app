@@ -65,6 +65,12 @@ interface propsIF {
     setInput: Dispatch<SetStateAction<string>>;
     searchType: string;
     acknowledgeToken: (tkn: TokenIF) => void;
+
+    openGlobalPopup: (
+        content: React.ReactNode,
+        popupTitle?: string,
+        popupPlacement?: string,
+    ) => void;
 }
 
 export default function CurrencyConverter(props: propsIF) {
@@ -111,6 +117,7 @@ export default function CurrencyConverter(props: propsIF) {
         setInput,
         searchType,
         acknowledgeToken,
+        openGlobalPopup,
     } = props;
 
     // TODO: update name of functions with 'handle' verbiage
@@ -658,6 +665,7 @@ export default function CurrencyConverter(props: propsIF) {
                 setInput={setInput}
                 searchType={searchType}
                 acknowledgeToken={acknowledgeToken}
+                openGlobalPopup={openGlobalPopup}
             />
             <div className={styles.arrow_container} onClick={reverseTokens}>
                 {isLiq ? null : (
@@ -711,6 +719,7 @@ export default function CurrencyConverter(props: propsIF) {
                 setInput={setInput}
                 searchType={searchType}
                 acknowledgeToken={acknowledgeToken}
+                openGlobalPopup={openGlobalPopup}
             />
         </section>
     );
