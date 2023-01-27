@@ -180,14 +180,14 @@ export default function Ranges(props: RangesPropsIF) {
     //     console.log({ sortedPositions });
     // }, [sortedPositions]);
 
-    const topThreePositions = sortedPositions.slice(0, 3);
-
     const dispatch = useAppDispatch();
 
     useEffect(() => {
         // console.log({ isShowAllEnabled });
         // console.log({ isOnPortfolioPage });
         // console.log({ topThreePositions });
+        const topThreePositions = sortedPositions.slice(0, 3);
+
         if (topThreePositions) {
             Promise.all(
                 topThreePositions.map((position: PositionIF) => {
@@ -206,18 +206,17 @@ export default function Ranges(props: RangesPropsIF) {
                                 dispatch(addPositionsByUser(updatedPositionsMatchingUser));
                         }
                     } else {
-                        setRangeData(
-                            updatedPositions.concat(positionsByUserMatchingSelectedTokens.slice(3)),
-                        );
+                        const newArray = updatedPositions.concat(sortedPositions.slice(3));
+                        setRangeData(newArray);
                     }
                 })
                 .catch(console.log);
         }
     }, [
         JSON.stringify({
-            id0: topThreePositions[0]?.positionId,
-            id1: topThreePositions[1]?.positionId,
-            id2: topThreePositions[2]?.positionId,
+            id0: sortedPositions[0]?.positionId,
+            id1: sortedPositions[1]?.positionId,
+            id2: sortedPositions[2]?.positionId,
         }),
         lastBlockNumber,
         isShowAllEnabled,
