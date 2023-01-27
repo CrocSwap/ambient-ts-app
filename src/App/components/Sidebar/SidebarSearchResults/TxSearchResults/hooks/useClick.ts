@@ -1,34 +1,33 @@
-import { Dispatch, SetStateAction, useMemo } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { Dispatch, SetStateAction } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { TransactionIF } from '../../../../../../utils/interfaces/exports';
 
 export const useClick = (
-    tx: TransactionIF,
     setOutsideControl: Dispatch<SetStateAction<boolean>>,
     setSelectedOutsideTab: Dispatch<SetStateAction<number>>,
     setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>,
     setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>
 ): (
-    () => void
+    (tx: TransactionIF) => void
 ) => {
-    const { pathname } = useLocation();
     const navigate = useNavigate();
 
-    const linkPath = useMemo(() => {
-        let locationSlug = '';
-        if (tx.entityType === 'swap') {
-            locationSlug = '/trade/market';
-        } else if (tx.entityType === 'limitOrder') {
-            locationSlug = '/trade/limit';
-        } else if (tx.entityType === 'liqchange') {
-            locationSlug = '/trade/range';
-        } else {
-            locationSlug = '/trade/market';
-        }
-        return locationSlug + '/chain=0x5&tokenA=' + tx.base + '&tokenB=' + tx.quote;
-    }, [pathname]);
+    const handleClick = (tx: TransactionIF) => {
+        let linkPath: string;
 
-    const handleClick = () => {
+        switch (tx.entityType) {
+            case 'limitOrder':
+                linkPath = '/trade/limit';
+                break;
+            case 'liqchange':
+                linkPath = '/trade/range';
+                break;
+            case 'swap':
+            default:
+                linkPath = '/trade/market';
+                break;
+        }
+
         setOutsideControl(true);
         setSelectedOutsideTab(0);
         setIsShowAllEnabled(false);
