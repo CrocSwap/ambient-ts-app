@@ -3,8 +3,6 @@ import { TransactionIF } from '../../../../../utils/interfaces/exports';
 import TxLI from './TxLI'
 
 interface propsIF {
-    loading: boolean;
-    searchInput: React.ReactNode;
     txsByUser: TransactionIF[];
 }
 

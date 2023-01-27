@@ -65,11 +65,7 @@ export default function SidebarSearchResults(props: propsIF) {
                         setIsShowAllEnabled={setIsShowAllEnabled}
                     />
                     {false && <OrdersSearchResults loading={exampleLoading} searchInput={searchInput} />}
-                    <TxSearchResults
-                        loading={exampleLoading}
-                        searchInput={searchInput}
-                        txsByUser={txsByUser}
-                    />
+                    <TxSearchResults txsByUser={txsByUser} />
                 </>
             )}
         </div>
