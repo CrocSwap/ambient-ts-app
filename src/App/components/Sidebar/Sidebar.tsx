@@ -612,6 +612,7 @@ export default function Sidebar(props: propsIF) {
                             setOutsideControl={setOutsideControl}
                             setSelectedOutsideTab={setSelectedOutsideTab}
                             setCurrentPositionActive={setCurrentPositionActive}
+                            setCurrentTxActiveInTransactions={setCurrentTxActiveInTransactions}
                             setIsShowAllEnabled={setIsShowAllEnabled}
                             txsByUser={txsByUser}
                         />

@@ -1,13 +1,25 @@
+import { Dispatch, SetStateAction } from 'react';
 import styles from '../SidebarSearchResults.module.css';
 import { TransactionIF } from '../../../../../utils/interfaces/exports';
 import TxLI from './TxLI'
 
 interface propsIF {
     txsByUser: TransactionIF[];
+    setOutsideControl: Dispatch<SetStateAction<boolean>>;
+    setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
+    setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
+    setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
+
 }
 
 export default function TxSearchResults(props: propsIF) {
-    const { txsByUser } = props;
+    const {
+        txsByUser,
+        setOutsideControl,
+        setSelectedOutsideTab,
+        setCurrentTxActiveInTransactions,
+        setIsShowAllEnabled
+    } = props;
 
     // TODO:   @Junior  please refactor the header <div> as a <header> element
     // TODO:   @Junior  also make the <div> elems inside it into <hX> elements
@@ -25,6 +37,10 @@ export default function TxSearchResults(props: propsIF) {
                     <TxLI
                         key={`tx-sidebar-search-result-${JSON.stringify(tx)}`}
                         tx={tx}
+                        setOutsideControl={setOutsideControl}
+                        setSelectedOutsideTab={setSelectedOutsideTab}
+                        setCurrentTxActiveInTransactions={setCurrentTxActiveInTransactions}
+                        setIsShowAllEnabled={setIsShowAllEnabled}
                     />
                 ))
             }

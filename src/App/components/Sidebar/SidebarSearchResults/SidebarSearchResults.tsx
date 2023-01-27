@@ -21,6 +21,7 @@ interface propsIF {
     setOutsideControl: Dispatch<SetStateAction<boolean>>;
     setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
+    setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
     setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
     txsByUser: TransactionIF[];
 }
@@ -40,6 +41,7 @@ export default function SidebarSearchResults(props: propsIF) {
         setOutsideControl,
         setSelectedOutsideTab,
         setCurrentPositionActive,
+        setCurrentTxActiveInTransactions,
         setIsShowAllEnabled,
         txsByUser
     } = props;
@@ -65,7 +67,13 @@ export default function SidebarSearchResults(props: propsIF) {
                         setIsShowAllEnabled={setIsShowAllEnabled}
                     />
                     {false && <OrdersSearchResults loading={exampleLoading} searchInput={searchInput} />}
-                    <TxSearchResults txsByUser={txsByUser} />
+                    <TxSearchResults
+                        txsByUser={txsByUser}
+                        setOutsideControl={setOutsideControl}
+                        setSelectedOutsideTab={setSelectedOutsideTab}
+                        setCurrentTxActiveInTransactions={setCurrentTxActiveInTransactions}
+                        setIsShowAllEnabled={setIsShowAllEnabled}
+                    />
                 </>
             )}
         </div>
