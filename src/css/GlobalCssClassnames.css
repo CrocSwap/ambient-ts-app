@@ -87,3 +87,7 @@ aside.emoji-picker-react {
     box-shadow: 0 5px 10px var(--dark1) !important;
     border: 1px solid var(--border) !important;
 }
+
+.emoji-picker-react .emoji-categories button {
+    filter: invert(100%);
+}

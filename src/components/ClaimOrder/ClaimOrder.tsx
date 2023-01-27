@@ -23,6 +23,7 @@ import {
     isTransactionReplacedError,
     TransactionError,
 } from '../../utils/TransactionError';
+import TransactionException from '../Global/TransactionException/TransactionException';
 
 interface IClaimOrderProps {
     account: string;
@@ -239,18 +240,22 @@ export default function ClaimOrder(props: IClaimOrderProps) {
 
     const transactionApproved = newClaimTransactionHash !== '';
 
-    const isRemovalDenied = txErrorCode === 'ACTION_REJECTED';
-    // const isRemovalDenied =
-    //     txErrorCode === 4001 &&
-    //     txErrorMessage === 'MetaMask Tx Signature: User denied transaction signature.';
+    const transactionException = <TransactionException resetConfirmation={resetConfirmation} />;
+
+    const isTransactionDenied = txErrorCode === 'ACTION_REJECTED';
+    const isTransactionException = txErrorCode === 'CALL_EXCEPTION';
+    const isGasLimitException = txErrorCode === 'UNPREDICTABLE_GAS_LIMIT';
+    const isInsufficientFundsException = txErrorCode === 'INSUFFICIENT_FUNDS';
 
     function handleConfirmationChange() {
         setCurrentConfirmationData(claimPending);
 
         if (transactionApproved) {
             setCurrentConfirmationData(claimSuccess);
-        } else if (isRemovalDenied) {
+        } else if (isTransactionDenied) {
             setCurrentConfirmationData(claimDenied);
+        } else if (isTransactionException || isGasLimitException || isInsufficientFundsException) {
+            setCurrentConfirmationData(transactionException);
         }
     }
 
@@ -262,7 +267,7 @@ export default function ClaimOrder(props: IClaimOrderProps) {
         newClaimTransactionHash,
         txErrorCode,
         showConfirmation,
-        isRemovalDenied,
+        isTransactionDenied,
     ]);
 
     const confirmationContent = (

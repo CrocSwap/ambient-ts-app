@@ -325,6 +325,12 @@ export default function Sidebar(props: SidebarPropsIF) {
     // ------------------------------------------
     // ---------------------------ANALYTICS SEARCH CONTAINER-----------------------
 
+    const focusInput = () => {
+        const inputField = document.getElementById('search_input') as HTMLInputElement;
+
+        inputField.focus();
+    };
+
     const handleInputClearAnalytics = () => {
         const currentInput = document.getElementById('search_input_analytics') as HTMLInputElement;
 
@@ -355,7 +361,7 @@ export default function Sidebar(props: SidebarPropsIF) {
     );
     const searchContainer = (
         <div className={styles.search_container}>
-            <div className={styles.search__icon} onClick={toggleSidebar}>
+            <div className={styles.search__icon} onClick={focusInput}>
                 <BiSearch size={18} color='#CDC1FF' />
             </div>
             <input
