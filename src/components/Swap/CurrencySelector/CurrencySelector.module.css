@@ -48,6 +48,7 @@ margin: 6px 10px;
    display: grid;
    grid-template-columns: repeat(2, 1fr);
    gap: 4px;
+padding: 0 2rem;
 
    
 }
@@ -69,11 +70,11 @@ margin: 6px 10px;
 }
 
 .wallet_container {
-    justify-content: center; 
+    justify-content: flex-start; 
 }
 .surplus_container {
     /* background: rgb(2, 2, 34); */
-    justify-content: center;
+    justify-content: flex-end;
 
     display: flex;
     text-align: end;
