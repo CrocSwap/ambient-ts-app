@@ -9,6 +9,8 @@ interface propsIF {
 export default function TxSearchResults(props: propsIF) {
     const { txsByUser } = props;
 
+    // TODO:   @Junior please refactor the header <div> as a <header> element
+
     return (
         <div>
             <div className={styles.card_title}>My Recent Transactions</div>
