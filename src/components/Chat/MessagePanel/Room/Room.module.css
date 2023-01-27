@@ -9,6 +9,82 @@
     height: 100vh;
 }
 
+.current_pool {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    padding: 1px 4px;
+    gap: 10px;
+
+    width: 95px;
+    height: 26px;
+
+    /* Dark/Tertiary */
+
+    background: #242f3f;
+    border-radius: 4px;
+
+    /* Inside auto layout */
+
+    flex: none;
+    flex-grow: 0;
+}
+
+.bgsalmon {
+    width: 58px;
+    height: 13px;
+
+    font-family: 'Lexend Deca';
+    font-style: normal;
+    font-weight: 200;
+    font-size: 15px;
+    line-height: 12px;
+    /* identical to box height */
+
+    display: flex;
+    align-items: center;
+    text-align: center;
+    letter-spacing: -0.02em;
+
+    /* text/grey light */
+
+    color: #7371fc;
+
+    /* Inside auto layout */
+
+    flex: none;
+    order: 0;
+    flex-grow: 1;
+}
+
+.current_pool_text {
+    width: 58px;
+    height: 13px;
+
+    font-family: 'Lexend Deca';
+    font-style: normal;
+    font-weight: 200;
+    font-size: 15px;
+    line-height: 12px;
+    /* identical to box height */
+
+    display: flex;
+    align-items: center;
+    text-align: center;
+    letter-spacing: -0.02em;
+
+    /* text/grey light */
+
+    color: rgba(235, 235, 255, 0.4);
+
+    /* Inside auto layout */
+
+    flex: none;
+    order: 0;
+    flex-grow: 1;
+}
+
 .dropdown {
     width: 92%;
     user-select: none;

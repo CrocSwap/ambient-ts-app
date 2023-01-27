@@ -1,12 +1,10 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+import { useAccount } from 'wagmi';
 import useSocket from '../../Service/useSocket';
-import { Message } from '../../Model/MessageModel';
-
 import { BsEmojiSmileFill } from 'react-icons/bs';
+import { Message } from '../../Model/MessageModel';
 
 // import { Message } from '../../Model/MessageModel';
 import Picker from 'emoji-picker-react';
-
 import styles from './MessageInput.module.css';
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import PositionBox from '../PositionBox/PositionBox';
@@ -14,7 +12,7 @@ import { PoolIF, TokenIF } from '../../../../utils/interfaces/exports';
 import { targetData } from '../../../../utils/state/tradeDataSlice';
 
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
-import { useAccount } from 'wagmi';
+import { RiCloseFill } from 'react-icons/ri';
 interface MessageInputProps {
     message?: Message;
     room: string;
@@ -42,42 +40,8 @@ interface currentPoolInfo {
     targetData: targetData[];
     pinnedMaxPriceDisplayTruncated: number;
     pinnedMinPriceDisplayTruncated: number;
-    message?: Message;
-    room: string;
-    currentUser: string;
-    ensName: string;
-}
-interface currentPoolInfo {
-    tokenA: TokenIF;
-    tokenB: TokenIF;
-    baseToken: TokenIF;
-    quoteToken: TokenIF;
-    didUserFlipDenom: boolean;
-    isDenomBase: boolean;
-    advancedMode: boolean;
-    isTokenAPrimary: boolean;
-    primaryQuantity: string;
-    isTokenAPrimaryRange: boolean;
-    primaryQuantityRange: string;
-    limitPrice: string;
-    advancedLowTick: number;
-    advancedHighTick: number;
-    simpleRangeWidth: number;
-    slippageTolerance: number;
-    activeChartPeriod: number;
-    targetData: targetData[];
-    pinnedMaxPriceDisplayTruncated: number;
-    pinnedMinPriceDisplayTruncated: number;
 }
 
-export interface ChatProps {
-    chatStatus: boolean;
-    onClose: () => void;
-    favePools: PoolIF[];
-    currentPool: currentPoolInfo;
-    isFullScreen?: boolean;
-    setChatStatus: Dispatch<SetStateAction<boolean>>;
-}
 export interface ChatProps {
     chatStatus: boolean;
     onClose: () => void;
@@ -104,7 +68,6 @@ export default function MessageInput(props: MessageInputProps, prop: ChatProps) 
             ? prop.currentPool.baseToken.symbol + prop.currentPool.quoteToken.symbol
             : props.room;
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleEmojiClick = (event: any, emoji: any) => {
         let msg = message;
@@ -137,21 +100,22 @@ export default function MessageInput(props: MessageInputProps, prop: ChatProps) 
     }, [isConnected, address]);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
+    const handleSendMessageButton = () => {
+        handleSendMsg(message, roomId);
+        setMessage('');
+        dontShowEmojiPanel();
+    };
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const _handleKeyDown = (e: any) => {
         if (e.key === 'Enter') {
             handleSendMsg(e.target.value, roomId);
             setMessage('');
             dontShowEmojiPanel();
         }
-        if (!isUserLoggedIn) {
-            setShowEmojiPicker(false);
-        } else {
-            setShowEmojiPicker(!showEmojiPicker);
-        }
     };
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-
     const handleSendMsg = async (msg: string, roomId: any) => {
         if (msg === '' || !address) {
             // do nothing
@@ -160,6 +124,7 @@ export default function MessageInput(props: MessageInputProps, prop: ChatProps) 
         }
     };
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const onChangeMessage = async (e: any) => {
         setMessage(e.target.value);
     };
@@ -183,23 +148,61 @@ export default function MessageInput(props: MessageInputProps, prop: ChatProps) 
                     onKeyDown={_handleKeyDown}
                     value={message}
                     onChange={onChangeMessage}
+                    autoComplete={'off'}
                 />
 
                 <BsEmojiSmileFill
+                    className={styles.svgButton}
                     style={{ pointerEvents: !isUserLoggedIn ? 'none' : 'auto' }}
                     onClick={handleEmojiPickerHideShow}
                 />
-
-                {/* <BsEmojiSmileFill
-                    style={{ pointerEvents: !isUserLoggedIn ? 'none' : 'auto' }}
-                    onClick={handleEmojiPickerHideShow}
-                /> */}
+                <div
+                    className={styles.send_message_button}
+                    onClick={() => handleSendMessageButton()}
+                >
+                    <svg
+                        width='16'
+                        height='16'
+                        viewBox='0 0 16 16'
+                        fill='none'
+                        xmlns='http://www.w3.org/2000/svg'
+                    >
+                        <path
+                            d='M14.6663 1.3335L7.33301 8.66683M14.6663 1.3335L9.99967 14.6668L7.33301 8.66683M14.6663 1.3335L1.33301 6.00016L7.33301 8.66683'
+                            stroke='#EBEBFF'
+                            strokeOpacity='0.25'
+                            strokeLinecap='round'
+                            strokeLinejoin='round'
+                            className={styles.svgButton}
+                        />
+                        <title>Send Message</title>
+                    </svg>
+                </div>
             </div>
             {showEmojiPicker && (
                 <div className={styles.emojiPicker}>
+                    <span className={styles.emoji_close_button}>
+                        <RiCloseFill
+                            size={20}
+                            title='Close Emoji Picker'
+                            onClick={() => setShowEmojiPicker(false)}
+                        />
+                    </span>
                     <Picker
-                        pickerStyle={{ width: '100%', height: '95%' }}
+                        pickerStyle={{
+                            width: '100%',
+                            // filter: 'invert(100%)',
+                            // height: '100%',
+                            // backgroundColor: '#2e4960',
+                            // indicatorColor: '#b04c2d',
+                            // fontColor: 'lightgrey',
+                            // searchBackgroundColor: '#263d51',
+                            // tabsFontColor: '#8cdce4',
+                            // searchFontColor: 'lightgrey',
+                            // skinTonePickerBackgroundColor: '#284155',
+                        }}
                         onEmojiClick={handleEmojiClick}
+                        disableSkinTonePicker={true}
                     />
                 </div>
             )}

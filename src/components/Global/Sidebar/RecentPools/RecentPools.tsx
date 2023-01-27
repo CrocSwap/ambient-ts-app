@@ -15,7 +15,14 @@ interface RecentPoolsProps {
 }
 
 export default function RecentPools(props: RecentPoolsProps) {
-    const { tradeData, chainId, lastBlockNumber, cachedPoolStatsFetch, getRecentPools, getTokenByAddress } = props;
+    const {
+        tradeData,
+        chainId,
+        lastBlockNumber,
+        cachedPoolStatsFetch,
+        getRecentPools,
+        getTokenByAddress,
+    } = props;
 
     // TODO:   @Junior please refactor the header <div> as a <header> element
 

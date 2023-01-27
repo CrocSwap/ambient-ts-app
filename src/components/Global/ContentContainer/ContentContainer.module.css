@@ -31,7 +31,7 @@
     border-radius: var(--border-radius);
 }
 
-.swap_bg{
+.swap_bg {
     background: var(--dark1);
 }
 .circle,
@@ -54,15 +54,13 @@
     transition: all var(--animation-speed) ease-in-out;
 }
 
-.swap_route{
+.swap_route {
     background: var(--swap-border);
     padding: 1px;
     border-radius: var(--border-radius);
     /* box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23); */
 
     box-shadow: var(--swap-box-shadow);
-
-    
 }
 
 /* media queries */
@@ -169,21 +167,19 @@
 }
 
 @media only screen and (max-width: 850px) {
-
     .main_content {
         background-color: var(--dark1);
 
         /* width: 90%;
         margin: 0 auto; */
-
     }
 
-    .swap_route, .no_background{
+    .swap_route,
+    .no_background {
         width: 90%;
         margin: 0 auto;
     }
 }
-
 
 /* @keyframes gradient {
     0% {

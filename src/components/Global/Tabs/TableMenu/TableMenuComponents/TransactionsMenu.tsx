@@ -1,5 +1,5 @@
 // START: Import React and Dongles
-import { useState, ReactNode, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 // import { Link } from 'react-router-dom';
 import { FiExternalLink, FiMoreHorizontal } from 'react-icons/fi';
 
@@ -248,10 +248,11 @@ export default function TransactionsMenu(props: propsIF) {
     //         break;
     // }
 
-    const openDetailsModal = () =>
+    const openDetailsModal = () => {
         openGlobalModal(
             <TransactionDetails account={account} tx={tx} closeGlobalModal={closeGlobalModal} />,
         );
+    };
 
     // const mainModal = (
     //     <Modal onClose={closeModal} title={modalTitle}>
@@ -390,7 +391,7 @@ export default function TransactionsMenu(props: propsIF) {
         </button>
     );
     const detailsButton = (
-        <button className={styles.option_button} onClick={openDetailsModal}>
+        <button className={styles.option_button} onClick={() => openDetailsModal()}>
             Details
         </button>
     );

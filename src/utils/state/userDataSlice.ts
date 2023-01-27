@@ -12,6 +12,9 @@ export interface userData {
     tokens: tokenData;
     recentTokens: TokenIF[] | undefined;
     shouldRecheckLocalStorage: boolean;
+    secondaryImageData: string[];
+    resolvedAddress: string | undefined;
+    shoulRecheckLocalStorage: boolean;
 }
 
 export interface tokenData {
@@ -33,6 +36,9 @@ const initialState: userData = {
     },
     recentTokens: undefined,
     shouldRecheckLocalStorage: true,
+    secondaryImageData: [],
+    resolvedAddress: undefined,
+    shoulRecheckLocalStorage: true,
 };
 
 export const userDataSlice = createSlice({
@@ -144,6 +150,12 @@ export const userDataSlice = createSlice({
             state.ensNameAtLogin = initialState.ensNameAtLogin;
             state.ensOrAddressTruncated = initialState.ensOrAddressTruncated;
         },
+        setSecondaryImageDataRedux: (state, action: PayloadAction<string[]>) => {
+            state.secondaryImageData = action.payload;
+        },
+        setResolvedAddressRedux: (state, action: PayloadAction<string>) => {
+            state.resolvedAddress = action.payload;
+        },
     },
 });
 
@@ -167,6 +179,8 @@ export const {
     updateErc20TokenDexBalance,
     resetTokenData,
     resetUserAddresses,
+    setSecondaryImageDataRedux,
+    setResolvedAddressRedux,
 } = userDataSlice.actions;
 
 export default userDataSlice.reducer;

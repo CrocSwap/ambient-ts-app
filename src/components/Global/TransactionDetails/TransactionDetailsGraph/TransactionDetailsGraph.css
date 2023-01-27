@@ -1,0 +1,6 @@
+.annotation-line > .priceLine {
+    stroke: rgba(97, 71, 247, 0.8);
+    stroke-width: 1.5;
+    stroke-dasharray: 4 3;
+    border: 2px dashed rgba(19, 19, 134, 0.8);
+}

@@ -143,10 +143,11 @@ export default function TransactionRow(props: propsIF) {
 
     // console.log(baseDisplay);
 
-    const openDetailsModal = () =>
+    const openDetailsModal = () => {
         openGlobalModal(
             <TransactionDetails account={account} tx={tx} closeGlobalModal={closeGlobalModal} />,
         );
+    };
 
     const activeTransactionStyle =
         tx.id === currentTxActiveInTransactions ? styles.active_transaction_style : '';

@@ -65,7 +65,13 @@ import './App.css';
 import { useAppDispatch, useAppSelector } from '../utils/hooks/reduxToolkit';
 import { defaultTokens } from '../utils/data/defaultTokens';
 import initializeUserLocalStorage from './functions/initializeUserLocalStorage';
-import { LimitOrderIF, TokenIF, TokenListIF, TransactionIF, PositionIF } from '../utils/interfaces/exports';
+import {
+    LimitOrderIF,
+    TokenIF,
+    TokenListIF,
+    TransactionIF,
+    PositionIF,
+} from '../utils/interfaces/exports';
 import { fetchTokenLists } from './functions/fetchTokenLists';
 import {
     resetTokens,
@@ -80,6 +86,8 @@ import {
     setPoolPriceNonDisplay,
     setPrimaryQuantityRange,
     setSimpleRangeWidth,
+    setMainnetBaseTokenReduxAddress,
+    setMainnetQuoteTokenReduxAddress,
 } from '../utils/state/tradeDataSlice';
 import {
     memoizeQuerySpotPrice,
@@ -317,6 +325,7 @@ export default function App() {
     );
 
     const [candleData, setCandleData] = useState<CandlesByPoolAndDuration | undefined>();
+
     const [isCandleSelected, setIsCandleSelected] = useState<boolean | undefined>();
 
     // custom hook to manage chain the app is using
@@ -354,6 +363,8 @@ export default function App() {
     const [currentPositionActive, setCurrentPositionActive] = useState('');
     const [expandTradeTable, setExpandTradeTable] = useState(false);
     const [userIsOnline, setUserIsOnline] = useState(navigator.onLine);
+
+    const [fetchingCandle, setFetchingCandle] = useState(false);
 
     const [ethMainnetUsdPrice, setEthMainnetUsdPrice] = useState<number | undefined>();
 
@@ -899,6 +910,9 @@ export default function App() {
 
                     setMainnetBaseTokenAddress(sortedMainnetTokens[0]);
                     setMainnetQuoteTokenAddress(sortedMainnetTokens[1]);
+
+                    dispatch(setMainnetBaseTokenReduxAddress(sortedMainnetTokens[0]));
+                    dispatch(setMainnetQuoteTokenReduxAddress(sortedMainnetTokens[1]));
                 } else {
                     setMainnetBaseTokenAddress('');
                     setMainnetQuoteTokenAddress('');
@@ -1267,7 +1281,7 @@ export default function App() {
                     // console.log('fetching candles');
                     const candleSeriesCacheEndpoint =
                         httpGraphCacheServerDomain + '/candle_series?';
-
+                    setFetchingCandle(true);
                     fetch(
                         candleSeriesCacheEndpoint +
                             new URLSearchParams({
@@ -2571,7 +2585,7 @@ export default function App() {
         addPoolToFaves: addPoolToFaves,
         removePoolFromFaves: removePoolFromFaves,
         positionsByUser: graphData.positionsByUser.positions,
-        txsByUser: graphData.changesByUser.changes
+        txsByUser: graphData.changesByUser.changes,
     };
 
     const analyticsProps = {
@@ -2768,6 +2782,8 @@ export default function App() {
 
                                     fullScreenChart={fullScreenChart}
                                     setFullScreenChart={setFullScreenChart}
+                                    fetchingCandle={fetchingCandle}
+                                    setFetchingCandle={setFetchingCandle}
                                 />
                             }
                         >
@@ -2875,6 +2891,8 @@ export default function App() {
                                     currentPool={currentPoolInfo}
                                     setChatStatus={setChatStatus}
                                     isFullScreen={true}
+                                    userImageData={imageData}
+                                    ensName={ensName}
                                 />
                             }
                         />
@@ -3130,6 +3148,8 @@ export default function App() {
                         currentPool={currentPoolInfo}
                         setChatStatus={setChatStatus}
                         isFullScreen={false}
+                        userImageData={imageData}
+                        ensName={ensName}
                     />
                 )}
             </div>
