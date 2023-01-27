@@ -22,6 +22,7 @@ import { SoloTokenSelect } from '../../components/Global/TokenSelectContainer/So
 import { useAccount, useEnsName } from 'wagmi';
 import useMediaQuery from '../../utils/hooks/useMediaQuery';
 import { setErc20Tokens, setNativeToken } from '../../utils/state/userDataSlice';
+import { SpotPriceFn } from '../../App/functions/querySpotPrice';
 
 const mainnetProvider = new ethers.providers.WebSocketProvider(
     // 'wss://mainnet.infura.io/ws/v3/4a162c75bd514925890174ca13cdb6a2', // benwolski@gmail.com
@@ -79,10 +80,12 @@ interface propsIF {
     validatedInput: string;
     setInput: Dispatch<SetStateAction<string>>;
     searchType: string;
+    cachedQuerySpotPrice: SpotPriceFn;
 }
 
 export default function Portfolio(props: propsIF) {
     const {
+        cachedQuerySpotPrice,
         crocEnv,
         addRecentToken,
         getRecentTokens,
@@ -572,6 +575,7 @@ export default function Portfolio(props: propsIF) {
             >
                 {!showLoggedInButton && !hideTabs ? (
                     <PortfolioTabs
+                        cachedQuerySpotPrice={cachedQuerySpotPrice}
                         crocEnv={crocEnv}
                         isTokenABase={isTokenABase}
                         provider={provider}

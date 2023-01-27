@@ -28,6 +28,7 @@ import RangesRow from './RangesTable/RangesRow';
 import TableSkeletons from '../TableSkeletons/TableSkeletons';
 import useDebounce from '../../../../App/hooks/useDebounce';
 import NoTableData from '../NoTableData/NoTableData';
+import { SpotPriceFn } from '../../../../App/functions/querySpotPrice';
 // import RangeAccordions from './RangeAccordions/RangeAccordions';
 
 // interface for props
@@ -62,6 +63,7 @@ interface propsIF {
     setLeader?: Dispatch<SetStateAction<string>>;
     setLeaderOwnerId?: Dispatch<SetStateAction<string>>;
     handlePulseAnimation?: (type: string) => void;
+    cachedQuerySpotPrice: SpotPriceFn;
 }
 
 // react functional component
@@ -90,6 +92,7 @@ export default function Ranges(props: propsIF) {
         handlePulseAnimation,
         setIsShowAllEnabled,
         showSidebar,
+        cachedQuerySpotPrice,
     } = props;
 
     const tradeData = useAppSelector((state) => state.tradeData);
@@ -454,6 +457,7 @@ export default function Ranges(props: propsIF) {
     );
     const rowItemContent = usePaginateDataOrNull?.map((position, idx) => (
         <RangesRow
+            cachedQuerySpotPrice={cachedQuerySpotPrice}
             account={account}
             key={idx}
             position={position}
