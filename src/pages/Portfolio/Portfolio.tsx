@@ -29,7 +29,8 @@ const mainnetProvider = new ethers.providers.WebSocketProvider(
     // 'wss://mainnet.infura.io/ws/v3/170b7b65781c422d82a94b8b289ca605',
     'wss://mainnet.infura.io/ws/v3/e0aa879e36fc4c9e91b826ad961a36fd',
 );
-interface PortfolioPropsIF {
+
+interface propsIF {
     crocEnv: CrocEnv | undefined;
     addRecentToken: (tkn: TokenIF) => void;
     getRecentTokens: (options?: { onCurrentChain?: boolean; count?: number | null }) => TokenIF[];
@@ -82,7 +83,7 @@ interface PortfolioPropsIF {
     cachedQuerySpotPrice: SpotPriceFn;
 }
 
-export default function Portfolio(props: PortfolioPropsIF) {
+export default function Portfolio(props: propsIF) {
     const {
         cachedQuerySpotPrice,
         crocEnv,

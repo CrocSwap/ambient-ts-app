@@ -29,7 +29,7 @@ import { CrocPoolView } from '@crocswap-libs/sdk';
 import { getRecentTokensParamsIF } from '../../../../App/hooks/useRecentTokens';
 
 // interface for component props
-interface LimitCurrencyConverterProps {
+interface propsIF {
     displayPrice: string;
     previousDisplayPrice: string;
     setPreviousDisplayPrice: Dispatch<SetStateAction<string>>;
@@ -91,7 +91,7 @@ interface LimitCurrencyConverterProps {
 }
 
 // central react functional component
-export default function LimitCurrencyConverter(props: LimitCurrencyConverterProps) {
+export default function LimitCurrencyConverter(props: propsIF) {
     const {
         displayPrice,
         previousDisplayPrice,

@@ -1,6 +1,5 @@
 import styles from './TransactionDetailsPriceInfo.module.css';
 import Row from '../../../Global/Row/Row';
-import { ITransaction } from '../../../../utils/state/graphDataSlice';
 import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
 import { toggleDidUserFlipDenom } from '../../../../utils/state/tradeDataSlice';
 import { motion } from 'framer-motion';
@@ -10,21 +9,21 @@ import NoTokenIcon from '../../NoTokenIcon/NoTokenIcon';
 import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
 import { useMemo } from 'react';
 import { DefaultTooltip } from '../../StyledTooltip/StyledTooltip';
-// import TooltipComponent from '../../TooltipComponent/TooltipComponent';
+import { TransactionIF } from '../../../../utils/interfaces/exports';
 
 type ItemIF = {
     slug: string;
     name: string;
     checked: boolean;
 };
-interface ITransactionDetailsPriceInfoProps {
-    account: string;
-    tx: ITransaction;
 
+interface propsIF {
+    account: string;
+    tx: TransactionIF;
     controlItems: ItemIF[];
 }
 
-export default function TransactionDetailsPriceInfo(props: ITransactionDetailsPriceInfoProps) {
+export default function TransactionDetailsPriceInfo(props: propsIF) {
     const { account, tx, controlItems } = props;
     const dispatch = useAppDispatch();
     const {

@@ -1,19 +1,19 @@
 import { testTokenMap } from '../../../../../utils/data/testTokenMap';
-import { TokenIF } from '../../../../../utils/interfaces/TokenIF';
+import { TokenIF } from '../../../../../utils/interfaces/exports';
 import styles from './WalletCard.module.css';
 import { useEffect, useState } from 'react';
 import { TokenPriceFn } from '../../../../../App/functions/fetchTokenPrice';
 import { ZERO_ADDRESS } from '../../../../../constants';
 import { DefaultTooltip } from '../../../StyledTooltip/StyledTooltip';
 
-interface WalletPropsIF {
+interface propsIF {
     cachedFetchTokenPrice: TokenPriceFn;
     token?: TokenIF;
     chainId: string;
     tokenMap: Map<string, TokenIF>;
 }
 
-export default function WalletCard(props: WalletPropsIF) {
+export default function WalletCard(props: propsIF) {
     const { token, chainId, tokenMap, cachedFetchTokenPrice } = props;
 
     const tokenAddress = token?.address?.toLowerCase() + '_' + chainId;

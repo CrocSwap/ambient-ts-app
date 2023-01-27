@@ -1,7 +1,6 @@
 import { CrocEnv, tickToPrice, toDisplayPrice } from '@crocswap-libs/sdk';
 // import truncateDecimals from '../../utils/data/truncateDecimals';
-import { TokenIF } from '../../utils/interfaces/TokenIF';
-import { PositionIF } from '../../utils/interfaces/PositionIF';
+import { PositionIF, TokenIF } from '../../utils/interfaces/exports';
 import { formatAmountOld } from '../../utils/numbers';
 // import { ethers } from 'ethers';
 import { memoizeQuerySpotPrice } from './querySpotPrice';

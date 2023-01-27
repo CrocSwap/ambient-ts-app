@@ -12,13 +12,14 @@ import depositImage from '../../../assets/images/sidebarImages/deposit.svg';
 import TabComponent from '../../Global/TabComponent/TabComponent';
 import { motion } from 'framer-motion';
 import { SetStateAction, Dispatch, useState, useEffect } from 'react';
-import { TokenIF } from '../../../utils/interfaces/TokenIF';
+import { TokenIF } from '../../../utils/interfaces/exports';
 import { CrocEnv } from '@crocswap-libs/sdk';
 import { ethers } from 'ethers';
 import { fetchAddress } from '../../../App/functions/fetchAddress';
 import IconWithTooltip from '../../Global/IconWithTooltip/IconWithTooltip';
 import useMediaQuery from '../../../utils/hooks/useMediaQuery';
-interface ExchangeBalanceProps {
+
+interface propsIF {
     crocEnv: CrocEnv | undefined;
     mainnetProvider: ethers.providers.WebSocketProvider;
     connectedAccount: string;
@@ -40,7 +41,7 @@ interface ExchangeBalanceProps {
     gasPriceInGwei: number | undefined;
 }
 
-export default function ExchangeBalance(props: ExchangeBalanceProps) {
+export default function ExchangeBalance(props: propsIF) {
     const {
         crocEnv,
         mainnetProvider,

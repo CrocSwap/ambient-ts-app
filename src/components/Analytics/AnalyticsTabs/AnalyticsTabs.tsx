@@ -7,8 +7,7 @@ import Pools from '../../Pools/Pools';
 import TopRanges from '../../TopRanges/TopRanges';
 import { notEmpty } from '../../../utils';
 import TabComponent from '../../Global/TabComponent/TabComponent';
-import { PoolIF } from '../../../utils/interfaces/PoolIF';
-import { TokenIF } from '../../../utils/interfaces/TokenIF';
+import { PoolIF, TokenIF } from '../../../utils/interfaces/exports';
 import { BiSearch } from 'react-icons/bi';
 // import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 

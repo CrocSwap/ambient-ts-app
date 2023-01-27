@@ -1,5 +1,5 @@
 import styles from '../Transactions.module.css';
-import { ITransaction, setDataLoadingStatus } from '../../../../../utils/state/graphDataSlice';
+import { setDataLoadingStatus } from '../../../../../utils/state/graphDataSlice';
 import { Dispatch, SetStateAction, useEffect, useRef } from 'react';
 import { useProcessTransaction } from '../../../../../utils/hooks/useProcessTransaction';
 import TransactionsMenu from '../../../../Global/Tabs/TableMenu/TableMenuComponents/TransactionsMenu';
@@ -16,10 +16,11 @@ import { useAppDispatch } from '../../../../../utils/hooks/reduxToolkit';
 import moment from 'moment';
 import { ZERO_ADDRESS } from '../../../../../constants';
 import useOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
-// import { light } from '@material-ui/core/styles/createPalette';
-interface TransactionRowPropsIF {
+import { TransactionIF } from '../../../../../utils/interfaces/exports';
+
+interface propsIF {
     account: string;
-    tx: ITransaction;
+    tx: TransactionIF;
     tradeData: tradeData;
     isTokenABase: boolean;
     currentTxActiveInTransactions: string;
@@ -37,7 +38,7 @@ interface TransactionRowPropsIF {
     openGlobalModal: (content: React.ReactNode) => void;
     isOnPortfolioPage: boolean;
 }
-export default function TransactionRow(props: TransactionRowPropsIF) {
+export default function TransactionRow(props: propsIF) {
     const {
         account,
         showColumns,

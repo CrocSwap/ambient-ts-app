@@ -14,7 +14,7 @@ import { CrocImpact } from '@crocswap-libs/sdk';
 import DenominationSwitch from '../DenominationSwitch/DenominationSwitch';
 
 // interface for props in this file
-interface ExtraInfoPropsIF {
+interface propsIF {
     tokenPair: TokenPairIF;
     priceImpact: CrocImpact | undefined;
     poolPriceDisplay: number;
@@ -30,7 +30,7 @@ interface ExtraInfoPropsIF {
 }
 
 // central react functional component
-export default function ExtraInfo(props: ExtraInfoPropsIF) {
+export default function ExtraInfo(props: propsIF) {
     const {
         // tokenPair,
         priceImpact,

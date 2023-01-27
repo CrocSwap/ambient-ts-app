@@ -6,7 +6,7 @@ import printDomToImage from '../../utils/functions/printDomToImage';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 // import { toDisplayQty } from '@crocswap-libs/sdk';
 import { formatAmountOld } from '../../utils/numbers';
-import { PositionIF } from '../../utils/interfaces/PositionIF';
+import { PositionIF } from '../../utils/interfaces/exports';
 import APYGraphDisplay from './APYGraphDisplay/APYGraphDisplay';
 import RangeDetailsControl from './RangeDetailsControl/RangeDetailsControl';
 import RangeDetailsHeader from './RangeDetailsHeader/RangeDetailsHeader';
@@ -16,7 +16,7 @@ import { SpotPriceFn } from '../../App/functions/querySpotPrice';
 import { CrocEnv, toDisplayPrice } from '@crocswap-libs/sdk';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 
-interface IRangeDetailsProps {
+interface propsIF {
     crocEnv: CrocEnv | undefined;
     cachedQuerySpotPrice: SpotPriceFn;
     provider: ethers.providers.Provider | undefined;
@@ -43,7 +43,7 @@ interface IRangeDetailsProps {
     closeGlobalModal: () => void;
 }
 
-export default function RangeDetails(props: IRangeDetailsProps) {
+export default function RangeDetails(props: propsIF) {
     const {
         crocEnv,
         baseTokenAddress,

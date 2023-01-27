@@ -1,12 +1,12 @@
 import styles from './WithdrawCurrencySelector.module.css';
 import { RiArrowDownSLine } from 'react-icons/ri';
 import { Dispatch, SetStateAction } from 'react';
-import { TokenIF } from '../../../../../utils/interfaces/TokenIF';
+import { TokenIF } from '../../../../../utils/interfaces/exports';
 import { fromDisplayQty } from '@crocswap-libs/sdk';
 import NoTokenIcon from '../../../../Global/NoTokenIcon/NoTokenIcon';
 import uriToHttp from '../../../../../utils/functions/uriToHttp';
 
-interface WithdrawCurrencySelectorProps {
+interface propsIF {
     fieldId: string;
     onClick: () => void;
     isSendToAddressChecked: boolean;
@@ -19,9 +19,8 @@ interface WithdrawCurrencySelectorProps {
     setInputValue: Dispatch<SetStateAction<string>>;
 }
 
-export default function WithdrawCurrencySelector(props: WithdrawCurrencySelectorProps) {
-    const { fieldId, disable, onClick, selectedToken, setWithdrawQty, inputValue, setInputValue } =
-        props;
+export default function WithdrawCurrencySelector(props: propsIF) {
+    const { fieldId, disable, onClick, selectedToken, setWithdrawQty, inputValue, setInputValue } = props;
 
     const rateInput = (
         <div className={styles.token_amount}>

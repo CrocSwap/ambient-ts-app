@@ -9,14 +9,14 @@ import { RiArrowUpSFill } from 'react-icons/ri';
 import OrderAccordionContent from './OrderAccordionContent';
 import { LimitOrderIF } from '../../../../../utils/interfaces/exports';
 
-interface OrderAccordionsPropsIF {
+interface propsIF {
     account: string;
     i: number;
     expanded: number | boolean;
     setExpanded: Dispatch<SetStateAction<number | false>>;
     limitOrder: LimitOrderIF;
 }
-export default function OrderAccordions(props: OrderAccordionsPropsIF) {
+export default function OrderAccordions(props: propsIF) {
     const { account, i, expanded, setExpanded, limitOrder } = props;
 
     const isOpen = i === expanded;

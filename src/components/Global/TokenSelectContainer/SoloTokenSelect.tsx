@@ -10,7 +10,7 @@ import { memoizeFetchContractDetails } from '../../../App/functions/fetchContrac
 import { ethers } from 'ethers';
 import SoloTokenImport from './SoloTokenImport';
 import { useLocationSlug } from './hooks/useLocationSlug';
-import { setShoulRecheckLocalStorage } from '../../../utils/state/userDataSlice';
+import { setShouldRecheckLocalStorage } from '../../../utils/state/userDataSlice';
 // import SimpleLoader from '../LoadingAnimations/SimpleLoader/SimpleLoader';
 // import { AiOutlineQuestionCircle } from 'react-icons/ai';
 
@@ -91,7 +91,7 @@ export const SoloTokenSelect = (props: propsIF) => {
     const chooseToken = (tkn: TokenIF, isCustom: boolean): void => {
         if (isCustom && acknowledgeToken) {
             acknowledgeToken(tkn);
-            dispatch(setShoulRecheckLocalStorage(true));
+            dispatch(setShouldRecheckLocalStorage(true));
         }
         // dispatch token data object to RTK
         if (isSingleToken) {

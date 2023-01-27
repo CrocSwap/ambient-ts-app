@@ -13,7 +13,8 @@ type ItemIF = {
     name: string;
     checked: boolean;
 };
-interface IPriceInfoProps {
+
+interface propsIF {
     // usdValue: number | undefined;
     account: string;
     limitOrder: LimitOrderIF;
@@ -33,7 +34,7 @@ interface IPriceInfoProps {
     controlItems: ItemIF[];
 }
 
-export default function PriceInfo(props: IPriceInfoProps) {
+export default function PriceInfo(props: propsIF) {
     const {
         account,
         limitOrder,

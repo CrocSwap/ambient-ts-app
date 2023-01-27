@@ -6,13 +6,13 @@ import { useLocation, Link } from 'react-router-dom';
 import { formatAmountOld } from '../../../../utils/numbers';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 
-interface FavoritePoolsCardIF {
+interface propsIF {
     pool: PoolIF;
     lastBlockNumber: number;
     cachedPoolStatsFetch: PoolStatsFn;
 }
 
-export default function FavoritePoolsCard(props: FavoritePoolsCardIF) {
+export default function FavoritePoolsCard(props: propsIF) {
     const { pool, cachedPoolStatsFetch, lastBlockNumber } = props;
 
     const [poolVolume, setPoolVolume] = useState<string | undefined>();

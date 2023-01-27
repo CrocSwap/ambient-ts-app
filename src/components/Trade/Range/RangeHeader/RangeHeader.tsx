@@ -17,7 +17,7 @@ import { AiOutlineShareAlt } from 'react-icons/ai';
 import ShareModal from '../../../Global/ShareModal/ShareModal';
 
 // interface for component props
-interface RangeHeaderPropsIF {
+interface propsIF {
     chainId: string;
     tokenPair: TokenPairIF;
     mintSlippage: SlippagePairIF;
@@ -30,7 +30,7 @@ interface RangeHeaderPropsIF {
 }
 
 // central react functional component
-export default function RangeHeader(props: RangeHeaderPropsIF) {
+export default function RangeHeader(props: propsIF) {
     const { tokenPair, mintSlippage, isPairStable, isDenomBase, isTokenABase, openGlobalModal } =
         props;
 

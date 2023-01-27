@@ -7,7 +7,7 @@ import { formatAmountOld } from '../../../../utils/numbers';
 import { tradeData } from '../../../../utils/state/tradeDataSlice';
 import { SmallerPoolIF } from '../../../../App/hooks/useRecentPools';
 
-interface RecentPoolsCardProps {
+interface propsIF {
     tradeData: tradeData;
     chainId: string;
     pool: SmallerPoolIF;
@@ -16,7 +16,7 @@ interface RecentPoolsCardProps {
     getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
 }
 
-export default function RecentPoolsCard(props: RecentPoolsCardProps) {
+export default function RecentPoolsCard(props: propsIF) {
     const { tradeData, chainId, pool, lastBlockNumber, cachedPoolStatsFetch, getTokenByAddress } = props;
 
     const { pathname } = useLocation();
@@ -56,6 +56,8 @@ export default function RecentPoolsCard(props: RecentPoolsCardProps) {
             setPoolTvl(tvlString);
         })();
     };
+
+    // TODO:   @Emily the two functions below need to check ackTokens as well
 
     const baseTokenData = getTokenByAddress(pool.base, chainId);
     const quoteTokenData = getTokenByAddress(pool.quote, chainId);

@@ -23,7 +23,7 @@ import ExchangeBalanceExplanation from '../../../Global/Informational/ExchangeBa
 import { AiOutlineQuestionCircle } from 'react-icons/ai';
 import { DefaultTooltip } from '../../../Global/StyledTooltip/StyledTooltip';
 // interface for component props
-interface LimitCurrencySelectorProps {
+interface propsIF {
     provider?: ethers.providers.Provider;
     isUserLoggedIn: boolean | undefined;
     tokenPair: TokenPairIF;
@@ -80,7 +80,7 @@ interface LimitCurrencySelectorProps {
 }
 
 // central react functional component
-export default function LimitCurrencySelector(props: LimitCurrencySelectorProps) {
+export default function LimitCurrencySelector(props: propsIF) {
     const {
         provider,
         isUserLoggedIn,

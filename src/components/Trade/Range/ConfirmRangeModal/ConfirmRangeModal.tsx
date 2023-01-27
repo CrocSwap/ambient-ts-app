@@ -22,7 +22,7 @@ import ConfirmationModalControl from '../../../Global/ConfirmationModalControl/C
 import NoTokenIcon from '../../../Global/NoTokenIcon/NoTokenIcon';
 import TransactionException from '../../../Global/TransactionException/TransactionException';
 
-interface ConfirmRangeModalPropsIF {
+interface propsIF {
     sendTransaction: () => void;
     closeModal: () => void;
     newRangeTransactionHash: string;
@@ -47,7 +47,7 @@ interface ConfirmRangeModalPropsIF {
     resetConfirmation: () => void;
 }
 
-export default function ConfirmRangeModal(props: ConfirmRangeModalPropsIF) {
+export default function ConfirmRangeModal(props: propsIF) {
     const {
         sendTransaction,
         newRangeTransactionHash,

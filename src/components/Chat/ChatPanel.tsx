@@ -9,8 +9,7 @@ import { RiCloseFill, RiArrowDownSLine } from 'react-icons/ri';
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
 import useSocket from './Service/useSocket';
 import { Message } from './Model/MessageModel';
-import { PoolIF } from '../../utils/interfaces/PoolIF';
-import { TokenIF } from '../../utils/interfaces/TokenIF';
+import { PoolIF, TokenIF } from '../../utils/interfaces/exports';
 import { targetData } from '../../utils/state/tradeDataSlice';
 import ChatButton from '../../App/components/Chat/ChatButton/ChatButton';
 import { MdOpenInFull } from 'react-icons/md';
@@ -19,6 +18,7 @@ import useChatApi from './Service/ChatApi';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { BsChatLeftFill } from 'react-icons/bs';
 import { useAccount } from 'wagmi';
+
 interface currentPoolInfo {
     tokenA: TokenIF;
     tokenB: TokenIF;

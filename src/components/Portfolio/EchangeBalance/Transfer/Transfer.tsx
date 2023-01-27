@@ -1,12 +1,12 @@
 import { CrocEnv, toDisplayQty } from '@crocswap-libs/sdk';
-import { TokenIF } from '../../../../utils/interfaces/TokenIF';
+import { TokenIF } from '../../../../utils/interfaces/exports';
 import styles from './Transfer.module.css';
 import TransferAddressInput from './TransferAddressInput/TransferAddressInput';
 import TransferButton from './TransferButton/TransferButton';
 import TransferCurrencySelector from './TransferCurrencySelector/TransferCurrencySelector';
 // import { defaultTokens } from '../../../../utils/data/defaultTokens';
 import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
-import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
+import { Dispatch, ReactNode, SetStateAction, useEffect, useMemo, useState } from 'react';
 // import { setToken } from '../../../../utils/state/temp';
 import {
     addPendingTx,
@@ -20,10 +20,10 @@ import {
 } from '../../../../utils/TransactionError';
 import { BigNumber } from 'ethers';
 
-interface PortfolioTransferProps {
+interface propsIF {
     crocEnv: CrocEnv | undefined;
     // connectedAccount: string;
-    openGlobalModal: (content: React.ReactNode, title?: string) => void;
+    openGlobalModal: (content: ReactNode, title?: string) => void;
     closeGlobalModal: () => void;
     selectedToken: TokenIF;
     tokenDexBalance: string;
@@ -36,7 +36,7 @@ interface PortfolioTransferProps {
     openTokenModal: () => void;
 }
 
-export default function Transfer(props: PortfolioTransferProps) {
+export default function Transfer(props: propsIF) {
     const {
         crocEnv,
         // openGlobalModal,

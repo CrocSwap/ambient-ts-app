@@ -20,7 +20,7 @@ import { AiOutlineQuestionCircle } from 'react-icons/ai';
 import { DefaultTooltip } from '../../Global/StyledTooltip/StyledTooltip';
 import ExchangeBalanceExplanation from '../../Global/Informational/ExchangeBalanceExplanation';
 
-interface CurrencySelectorProps {
+interface propsIF {
     provider: ethers.providers.Provider | undefined;
     isUserLoggedIn: boolean | undefined;
     tokenPair: TokenPairIF;
@@ -81,7 +81,7 @@ interface CurrencySelectorProps {
     ) => void;
 }
 
-export default function CurrencySelector(props: CurrencySelectorProps) {
+export default function CurrencySelector(props: propsIF) {
     const {
         provider,
         sellQtyString,

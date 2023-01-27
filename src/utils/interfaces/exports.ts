@@ -7,6 +7,7 @@ import { TempPoolIF } from './TempPoolIF';
 import { TokenIF } from './TokenIF';
 import { TokenListIF } from './TokenListIF';
 import { TokenPairIF } from './TokenPairIF';
+import { TransactionIF } from './TransactionIF';
 import { UserIF } from './UserIF';
 
 export type {
@@ -19,5 +20,6 @@ export type {
     TokenIF,
     TokenListIF,
     TokenPairIF,
+    TransactionIF,
     UserIF,
 };

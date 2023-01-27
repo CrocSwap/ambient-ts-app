@@ -7,7 +7,7 @@ import Transactions from './Transactions/Transactions';
 import styles from './TradeTabs2.module.css';
 import Orders from './Orders/Orders';
 import moment from 'moment';
-import { PoolIF, TokenIF } from '../../../utils/interfaces/exports';
+import { PoolIF, TokenIF, TransactionIF } from '../../../utils/interfaces/exports';
 
 // import DropdownMenu from '../../Global/DropdownMenu/DropdownMenu';
 // import DropdownMenuContainer from '../../Global/DropdownMenu/DropdownMenuContainer/DropdownMenuContainer';
@@ -20,7 +20,7 @@ import recentTransactionsImage from '../../../assets/images/sidebarImages/recent
 import Ranges from './Ranges/Ranges';
 import TabComponent from '../../Global/TabComponent/TabComponent';
 import PositionsOnlyToggle from './PositionsOnlyToggle/PositionsOnlyToggle';
-import { CandleData, ITransaction, setChangesByUser } from '../../../utils/state/graphDataSlice';
+import { CandleData, setChangesByUser } from '../../../utils/state/graphDataSlice';
 import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
 import { fetchPoolRecentChanges } from '../../../App/functions/fetchPoolRecentChanges';
 
@@ -31,7 +31,7 @@ import { DefaultTooltip } from '../../Global/StyledTooltip/StyledTooltip';
 import TradeChartsTokenInfo from '../../../pages/Trade/TradeCharts/TradeChartsComponents/TradeChartsTokenInfo';
 import { SpotPriceFn } from '../../../App/functions/querySpotPrice';
 
-interface ITabsProps {
+interface propsIF {
     isUserLoggedIn: boolean | undefined;
     isTokenABase: boolean;
     crocEnv: CrocEnv | undefined;
@@ -101,7 +101,7 @@ interface ITabsProps {
 
 // const httpGraphCacheServerDomain = 'https://809821320828123.de:5000';
 
-export default function TradeTabs2(props: ITabsProps) {
+export default function TradeTabs2(props: propsIF) {
     const {
         cachedQuerySpotPrice,
         isUserLoggedIn,
@@ -326,7 +326,7 @@ export default function TradeTabs2(props: ITabsProps) {
         }
     }, [isServerEnabled, account, isShowAllEnabled]);
 
-    const [changesInSelectedCandle, setChangesInSelectedCandle] = useState<ITransaction[]>([]);
+    const [changesInSelectedCandle, setChangesInSelectedCandle] = useState<TransactionIF[]>([]);
 
     useEffect(() => {
         // console.log({ filter });

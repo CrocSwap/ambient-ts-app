@@ -3,7 +3,6 @@ import { PoolStatsFn } from '../../../../App/functions/getPoolStats';
 import { tradeData } from '../../../../utils/state/tradeDataSlice';
 import styles from './RecentPools.module.css';
 import RecentPoolsCard from './RecentPoolsCard';
-// import { Link } from 'react-router-dom';
 import { SmallerPoolIF } from '../../../../App/hooks/useRecentPools';
 
 interface RecentPoolsProps {
@@ -17,6 +16,8 @@ interface RecentPoolsProps {
 
 export default function RecentPools(props: RecentPoolsProps) {
     const { tradeData, chainId, lastBlockNumber, cachedPoolStatsFetch, getRecentPools, getTokenByAddress } = props;
+
+    // TODO:   @Junior please refactor the header <div> as a <header> element
 
     return (
         <div className={styles.container}>
@@ -35,13 +36,9 @@ export default function RecentPools(props: RecentPoolsProps) {
                         cachedPoolStatsFetch={cachedPoolStatsFetch}
                         lastBlockNumber={lastBlockNumber}
                         getTokenByAddress={getTokenByAddress}
-                        // lastBlockNumber={lastBlockNumber}
                     />
                 ))}
             </div>
-            {/* <Link className={styles.view_more} to='/analytics'>
-                View More
-            </Link> */}
         </div>
     );
 }

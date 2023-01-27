@@ -19,7 +19,7 @@ import { AiOutlineQuestionCircle } from 'react-icons/ai';
 
 // import { useSoloSearch } from '../../../Global/TokenSelectContainer/hooks/useSoloSearch';
 
-interface RangeCurrencySelectorProps {
+interface propsIF {
     provider?: ethers.providers.Provider;
     isUserLoggedIn: boolean | undefined;
     gasPriceInGwei: number | undefined;
@@ -83,7 +83,7 @@ interface RangeCurrencySelectorProps {
     ) => void;
 }
 
-export default function RangeCurrencySelector(props: RangeCurrencySelectorProps) {
+export default function RangeCurrencySelector(props: propsIF) {
     const {
         provider,
         isUserLoggedIn,

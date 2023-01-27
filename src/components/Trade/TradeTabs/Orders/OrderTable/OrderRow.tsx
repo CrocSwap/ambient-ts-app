@@ -18,7 +18,7 @@ import { ZERO_ADDRESS } from '../../../../../constants';
 import { FiExternalLink } from 'react-icons/fi';
 import useOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 
-interface OrderRowPropsIF {
+interface propsIF {
     crocEnv: CrocEnv | undefined;
     chainData: ChainSpec;
     tradeData: tradeData;
@@ -40,7 +40,7 @@ interface OrderRowPropsIF {
     account: string;
     handlePulseAnimation?: (type: string) => void;
 }
-export default function OrderRow(props: OrderRowPropsIF) {
+export default function OrderRow(props: propsIF) {
     const {
         account,
         crocEnv,

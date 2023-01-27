@@ -60,7 +60,7 @@ import getUnicodeCharacter from '../../../utils/functions/getUnicodeCharacter';
 import RangeShareControl from '../../../components/Trade/Range/RangeShareControl/RangeShareControl';
 import { getRecentTokensParamsIF } from '../../../App/hooks/useRecentTokens';
 
-interface RangePropsIF {
+interface propsIF {
     account: string | undefined;
     crocEnv: CrocEnv | undefined;
     isUserLoggedIn: boolean | undefined;
@@ -116,7 +116,7 @@ interface RangePropsIF {
     ) => void;
 }
 
-export default function Range(props: RangePropsIF) {
+export default function Range(props: propsIF) {
     const {
         account,
         crocEnv,

@@ -6,8 +6,7 @@ import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter
 import trimString from '../../../../utils/functions/trimString';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { formatAmount } from '../../../../utils/numbers';
-import { ITransaction } from '../../../../utils/state/graphDataSlice';
-import { PositionIF } from '../../../../utils/interfaces/PositionIF';
+import { PositionIF, TransactionIF } from '../../../../utils/interfaces/exports';
 import styles from './PositionBox.module.css';
 import { motion } from 'framer-motion';
 import { useSortedPositions } from '../../../Trade/TradeTabs/useSortedPositions';
@@ -15,14 +14,14 @@ import { FiCopy } from 'react-icons/fi';
 import useCopyToClipboard from '../../../../utils/hooks/useCopyToClipboard';
 import SnackbarComponent from '../../../Global/SnackbarComponent/SnackbarComponent';
 
-interface PositionBoxProps {
+interface propsIF {
     message: string;
     isInput: boolean;
     isPosition: boolean;
     setIsPosition: Dispatch<SetStateAction<boolean>>;
 }
 
-export default function PositionBox(props: PositionBoxProps) {
+export default function PositionBox(props: propsIF) {
     const [openSnackbar, setOpenSnackbar] = useState<boolean>(false);
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [value, copy] = useCopyToClipboard();
@@ -30,7 +29,7 @@ export default function PositionBox(props: PositionBoxProps) {
     const message = props.message;
     const [hashMsg, setHashMsg] = useState('');
     const isInput = props.isInput;
-    const [position, setPosition] = useState<ITransaction | undefined>(undefined);
+    const [position, setPosition] = useState<TransactionIF | undefined>(undefined);
     const [sPositions, setSPosition] = useState<PositionIF | undefined>(undefined);
     const [truncatedDisplayPrice, setTruncatedDisplayPrice] = useState<string | undefined>();
     const tradeData = useAppSelector((state) => state.tradeData);

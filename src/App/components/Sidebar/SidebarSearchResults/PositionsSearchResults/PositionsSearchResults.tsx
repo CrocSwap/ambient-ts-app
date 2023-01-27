@@ -1,44 +1,48 @@
+import { Dispatch, SetStateAction } from 'react';
 import styles from '../SidebarSearchResults.module.css';
+import { PositionIF } from '../../../../../utils/interfaces/exports';
+import PositionLI from './PositionLI';
 
-import ResultSkeleton from '../ResultSkeleton/ResultSkeleton';
-
-interface PositionsSearchResultPropsIF {
-    loading: boolean;
-    searchInput: React.ReactNode;
+interface propsIF {
+    searchedPositions: PositionIF[];
+    isDenomBase: boolean;
+    setOutsideControl: Dispatch<SetStateAction<boolean>>;
+    setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
+    setCurrentPositionActive: Dispatch<SetStateAction<string>>;
+    setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
 }
-export default function PositionsSearchResults(props: PositionsSearchResultPropsIF) {
-    function PositionSearchResult() {
-        return (
-            <div className={styles.card_container}>
-                <div>Pool</div>
-                <div>Price</div>
-                <div>Qty</div>
-            </div>
-        );
-    }
 
-    const header = (
-        <div className={styles.header}>
-            <div>Pool</div>
-            <div>Price</div>
-            <div>Change</div>
-        </div>
-    );
-
-    const exampleContent = (
-        <div className={styles.main_result_container}>
-            {new Array(0).fill(null).map((item, idx) => (
-                <PositionSearchResult key={idx} />
-            ))}
-        </div>
-    );
+export default function PositionsSearchResults(props: propsIF) {
+    const {
+        searchedPositions,
+        isDenomBase,
+        setOutsideControl,
+        setSelectedOutsideTab,
+        setCurrentPositionActive,
+        setIsShowAllEnabled,
+    } = props;
 
     return (
         <div>
-            <div className={styles.card_title}>Range Positions</div>
-            {header}
-
-            {props.loading ? <ResultSkeleton /> : exampleContent}
+            <div className={styles.card_title}>My Range Positions</div>
+            <div className={styles.header}>
+                <div>Pool</div>
+                <div>Range</div>
+                <div>Value</div>
+            </div>
+            <div className={styles.main_result_container}>
+                {searchedPositions.slice(0,4).map((position: PositionIF) => (
+                    <PositionLI
+                        key={`PositionSearchResult_${JSON.stringify(position)}`}
+                        position={position}
+                        isDenomBase={isDenomBase}
+                        setOutsideControl={setOutsideControl}
+                        setSelectedOutsideTab={setSelectedOutsideTab}
+                        setCurrentPositionActive={setCurrentPositionActive}
+                        setIsShowAllEnabled={setIsShowAllEnabled}
+                    />
+                ))}
+            </div>
         </div>
     );
 }

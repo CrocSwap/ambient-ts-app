@@ -19,7 +19,7 @@ import IconWithTooltip from '../../Global/IconWithTooltip/IconWithTooltip';
 import { ZERO_ADDRESS } from '../../../constants';
 import { getRecentTokensParamsIF } from '../../../App/hooks/useRecentTokens';
 
-interface CurrencyConverterPropsIF {
+interface propsIF {
     crocEnv: CrocEnv | undefined;
     poolExists: boolean | undefined;
     isUserLoggedIn: boolean | undefined;
@@ -73,7 +73,7 @@ interface CurrencyConverterPropsIF {
     ) => void;
 }
 
-export default function CurrencyConverter(props: CurrencyConverterPropsIF) {
+export default function CurrencyConverter(props: propsIF) {
     const {
         crocEnv,
         poolExists,

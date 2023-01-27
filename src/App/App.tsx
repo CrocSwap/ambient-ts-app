@@ -24,11 +24,9 @@ import {
     setLimitOrdersByPool,
     CandlesByPoolAndDuration,
     CandleData,
-    // ITransaction,
     addChangesByUser,
     setLastBlock,
     addLimitOrderChangesByUser,
-    ITransaction,
     setLeaderboardByPool,
     setDataLoadingStatus,
     resetConnectedUserDataLoadingStatus,
@@ -67,7 +65,7 @@ import './App.css';
 import { useAppDispatch, useAppSelector } from '../utils/hooks/reduxToolkit';
 import { defaultTokens } from '../utils/data/defaultTokens';
 import initializeUserLocalStorage from './functions/initializeUserLocalStorage';
-import { LimitOrderIF, TokenIF, TokenListIF, PositionIF } from '../utils/interfaces/exports';
+import { LimitOrderIF, TokenIF, TokenListIF, TransactionIF, PositionIF } from '../utils/interfaces/exports';
 import { fetchTokenLists } from './functions/fetchTokenLists';
 import {
     resetTokens,
@@ -1639,7 +1637,7 @@ export default function App() {
 
             if (lastMessageData) {
                 Promise.all(
-                    lastMessageData.map((tx: ITransaction) => {
+                    lastMessageData.map((tx: TransactionIF) => {
                         return getTransactionData(tx, tokensOnActiveLists);
                     }),
                 )
@@ -2009,7 +2007,7 @@ export default function App() {
                         const result: TokenIF[] = [];
                         const tokenMap = new Map();
                         const ambientTokens = getAmbientTokens();
-                        for (const item of updatedTransactions as ITransaction[]) {
+                        for (const item of updatedTransactions as TransactionIF[]) {
                             if (!tokenMap.has(item.base)) {
                                 const isFoundInAmbientList = ambientTokens.some((ambientToken) => {
                                     if (
@@ -2572,6 +2570,8 @@ export default function App() {
         isConnected: isConnected,
         addPoolToFaves: addPoolToFaves,
         removePoolFromFaves: removePoolFromFaves,
+        positionsByUser: graphData.positionsByUser.positions,
+        txsByUser: graphData.changesByUser.changes
     };
 
     const analyticsProps = {

@@ -1,5 +1,5 @@
 import { useEffect, Dispatch, SetStateAction, useRef, useState } from 'react';
-import { PositionIF } from '../../../../../utils/interfaces/PositionIF';
+import { PositionIF } from '../../../../../utils/interfaces/exports';
 import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
 import { ethers } from 'ethers';
 import { useProcessRange } from '../../../../../utils/hooks/useProcessRange';
@@ -20,7 +20,7 @@ import { FiExternalLink } from 'react-icons/fi';
 import useOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 import { SpotPriceFn } from '../../../../../App/functions/querySpotPrice';
 
-interface RangesRowPropsIF {
+interface propsIF {
     isUserLoggedIn: boolean | undefined;
     crocEnv: CrocEnv | undefined;
     chainData: ChainSpec;
@@ -56,7 +56,7 @@ interface RangesRowPropsIF {
     cachedQuerySpotPrice: SpotPriceFn;
 }
 
-export default function RangesRow(props: RangesRowPropsIF) {
+export default function RangesRow(props: propsIF) {
     const {
         cachedQuerySpotPrice,
         showSidebar,

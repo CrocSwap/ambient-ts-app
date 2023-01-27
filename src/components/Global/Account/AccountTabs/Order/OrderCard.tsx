@@ -20,12 +20,12 @@ import { LimitOrderIF } from '../../../../../utils/interfaces/exports';
 
 import styles from './OrderCard.module.css';
 
-interface OrderCardProps {
+interface propsIF {
     limitOrder: LimitOrderIF;
     isDenomBase: boolean;
 }
 
-export default function OrderCard(props: OrderCardProps) {
+export default function OrderCard(props: propsIF) {
     const { limitOrder, isDenomBase } = props;
 
     const baseTokenLogoURI = limitOrder.baseTokenLogoURI;

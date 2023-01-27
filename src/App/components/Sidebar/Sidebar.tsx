@@ -24,7 +24,7 @@ import topPoolsImage from '../../../assets/images/sidebarImages/topPools.svg';
 import recentPoolsImage from '../../../assets/images/sidebarImages/recentTransactions.svg';
 // import topTokensImage from '../../../assets/images/sidebarImages/topTokens.svg';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
-import { PoolIF, TokenIF, TokenPairIF, TempPoolIF } from '../../../utils/interfaces/exports';
+import { PoolIF, PositionIF, TokenIF, TokenPairIF, TempPoolIF, TransactionIF } from '../../../utils/interfaces/exports';
 import SidebarSearchResults from './SidebarSearchResults/SidebarSearchResults';
 // import formatSearchText from './formatSeachText';
 import { MdClose } from 'react-icons/md';
@@ -42,7 +42,7 @@ import useOnClickOutside from '../../../utils/hooks/useOnClickOutside';
 const cachedPoolStatsFetch = memoizePoolStats();
 
 // interface for component props
-interface SidebarPropsIF {
+interface propsIF {
     tradeData: tradeData;
     isDenomBase: boolean;
     showSidebar: boolean;
@@ -82,9 +82,11 @@ interface SidebarPropsIF {
         chainId: string,
         poolId: number,
     ) => void;
+    positionsByUser: PositionIF[];
+    txsByUser: TransactionIF[]
 }
 
-export default function Sidebar(props: SidebarPropsIF) {
+export default function Sidebar(props: propsIF) {
     const {
         tradeData,
         isDenomBase,
@@ -116,17 +118,21 @@ export default function Sidebar(props: SidebarPropsIF) {
         isConnected,
         addPoolToFaves,
         removePoolFromFaves,
+        positionsByUser,
+        setOutsideControl,
+        setSelectedOutsideTab,
+        txsByUser
     } = props;
+
+    false && txsByUser;
 
     const location = useLocation();
     const graphData = useAppSelector((state) => state.graphData);
     const isUserLoggedIn = isConnected;
     // const isUserLoggedIn = useAppSelector((state) => state.userData).isLoggedIn;
-    const transactionsByUser = graphData.changesByUser.changes;
-    const positionsByUser = graphData.positionsByUser.positions;
     const limitOrderByUser = graphData.limitOrdersByUser.limitOrders;
 
-    const mostRecentTransactions = transactionsByUser.slice(0, 4);
+    const mostRecentTxs = txsByUser.slice(0, 4);
     const mostRecentPositions = positionsByUser.slice(0, 4);
     const mostRecentLimitOrders = limitOrderByUser.slice(0, 4);
     // const mostRecentPositions = positionsByUser.slice(0, 4);
@@ -177,9 +183,9 @@ export default function Sidebar(props: SidebarPropsIF) {
     ];
     const sidebarLimitOrderProps = {
         selectedOutsideTab: props.selectedOutsideTab,
-        setSelectedOutsideTab: props.setSelectedOutsideTab,
+        setSelectedOutsideTab: setSelectedOutsideTab,
         outsideControl: props.outsideControl,
-        setOutsideControl: props.setOutsideControl,
+        setOutsideControl: setOutsideControl,
         isShowAllEnabled: props.isShowAllEnabled,
         setCurrentPositionActive: setCurrentPositionActive,
         setIsShowAllEnabled: props.setIsShowAllEnabled,
@@ -191,9 +197,9 @@ export default function Sidebar(props: SidebarPropsIF) {
     };
     const sidebarRangePositionProps = {
         selectedOutsideTab: props.selectedOutsideTab,
-        setSelectedOutsideTab: props.setSelectedOutsideTab,
+        setSelectedOutsideTab: setSelectedOutsideTab,
         outsideControl: props.outsideControl,
-        setOutsideControl: props.setOutsideControl,
+        setOutsideControl: setOutsideControl,
         currentPositionActive: currentPositionActive,
         setCurrentPositionActive: setCurrentPositionActive,
         tokenMap: tokenMap,
@@ -259,7 +265,7 @@ export default function Sidebar(props: SidebarPropsIF) {
 
             data: (
                 <SidebarRecentTransactions
-                    mostRecentTransactions={mostRecentTransactions}
+                    mostRecentTransactions={mostRecentTxs}
                     coinGeckoTokenMap={tokenMap}
                     currentTxActiveInTransactions={currentTxActiveInTransactions}
                     setCurrentTxActiveInTransactions={setCurrentTxActiveInTransactions}
@@ -269,8 +275,8 @@ export default function Sidebar(props: SidebarPropsIF) {
                     expandTradeTable={expandTradeTable}
                     setExpandTradeTable={setExpandTradeTable}
                     selectedOutsideTab={props.selectedOutsideTab}
-                    setSelectedOutsideTab={props.setSelectedOutsideTab}
-                    setOutsideControl={props.setOutsideControl}
+                    setSelectedOutsideTab={setSelectedOutsideTab}
+                    setOutsideControl={setOutsideControl}
                     outsideControl={props.outsideControl}
                     isUserLoggedIn={isUserLoggedIn}
                     setShowSidebar={setShowSidebar}
@@ -280,14 +286,23 @@ export default function Sidebar(props: SidebarPropsIF) {
     ];
 
     const userData = useAppSelector((state) => state.userData);
+    const shouldRecheckLocalStorage = userData.shouldRecheckLocalStorage;
 
-    const shoulRecheckLocalStorage = userData.shoulRecheckLocalStorage;
-
-    const [setRawInput, isInputValid, searchedPools] = useSidebarSearch(
+    const [
+        setRawInput,
+        isInputValid,
+        searchedPools,
+        searchedPositions,
+        searchedTxs
+    ] = useSidebarSearch(
         poolList,
+        positionsByUser,
+        txsByUser,
         verifyToken,
-        shoulRecheckLocalStorage,
+        shouldRecheckLocalStorage
     );
+    false && searchedTxs;
+
     // useEffect(() => {console.log({searchedPools})}, [JSON.stringify(searchedPools)]);
     false && searchedPools;
 
@@ -597,9 +612,17 @@ export default function Sidebar(props: SidebarPropsIF) {
                             exampleLoading={exampleLoading}
                             getTokenByAddress={getTokenByAddress}
                             tokenPair={tokenPair}
+                            isDenomBase={isDenomBase}
                             chainId={chainId}
                             isConnected={isConnected}
                             cachedPoolStatsFetch={cachedPoolStatsFetch}
+                            searchedPositions={searchedPositions}
+                            setOutsideControl={setOutsideControl}
+                            setSelectedOutsideTab={setSelectedOutsideTab}
+                            setCurrentPositionActive={setCurrentPositionActive}
+                            setCurrentTxActiveInTransactions={setCurrentTxActiveInTransactions}
+                            setIsShowAllEnabled={setIsShowAllEnabled}
+                            searchedTxs={searchedTxs}
                         />
                     ) : (
                         regularSidebarDisplay

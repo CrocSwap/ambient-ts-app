@@ -19,9 +19,8 @@ import Pagination from '../../../Global/Pagination/Pagination';
 import { useAppDispatch, useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { useSortedPositions } from '../useSortedPositions';
 import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
-import { PositionIF } from '../../../../utils/interfaces/PositionIF';
+import { PositionIF, TokenIF } from '../../../../utils/interfaces/exports';
 import { updateApy } from '../../../../App/functions/getPositionData';
-import { TokenIF } from '../../../../utils/interfaces/TokenIF';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
 import RangeHeader from './RangesTable/RangeHeader';
@@ -33,7 +32,7 @@ import { SpotPriceFn } from '../../../../App/functions/querySpotPrice';
 // import RangeAccordions from './RangeAccordions/RangeAccordions';
 
 // interface for props
-interface RangesPropsIF {
+interface propsIF {
     activeAccountPositionData?: PositionIF[];
     connectedAccountActive?: boolean;
     isUserLoggedIn: boolean | undefined;
@@ -68,7 +67,7 @@ interface RangesPropsIF {
 }
 
 // react functional component
-export default function Ranges(props: RangesPropsIF) {
+export default function Ranges(props: propsIF) {
     const {
         activeAccountPositionData,
         connectedAccountActive,
