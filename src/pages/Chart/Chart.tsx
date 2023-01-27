@@ -315,31 +315,29 @@ export default function Chart(props: ChartData) {
 
     const [bandwidth, setBandwidth] = useState(5);
 
-    useEffect(() => {
-        if (scaleData !== undefined) {
-            d3.select(d3PlotArea.current).on('measure', function (event: any) {
-                scaleData.xScale.range([0, event.detail.width]);
-                scaleData.yScale.range([event.detail.height, 0]);
+    // useEffect(() => {
+    //     if (scaleData !== undefined) {
+    //         // d3.select(d3PlotArea.current).on('measure', function (event: any) {
+    //         //     scaleData.xScale.range([0, event.detail.width]);
+    //         //     scaleData.yScale.range([event.detail.height, 0]);
 
-                scaleData.xScaleIndicator.range([
-                    (event.detail.width / 10) * 8,
-                    event.detail.width,
-                ]);
+    //         //     scaleData.xScaleIndicator.range([
+    //         //         (event.detail.width / 10) * 8,
+    //         //         event.detail.width,
+    //         //     ]);
 
-                liquidityScale.range([event.detail.width, (event.detail.width / 10) * 9]);
+    //         //     scaleData.volumeScale.range([
+    //         //         event.detail.height,
+    //         //         event.detail.height - event.detail.height / 10,
+    //         //     ]);
+    //         // });
 
-                scaleData.volumeScale.range([
-                    event.detail.height,
-                    event.detail.height - event.detail.height / 10,
-                ]);
-            });
-
-            d3.select(d3PlotArea.current).on('measure.range', function (event: any) {
-                scaleData.xScaleCopy.range([0, event.detail.width]);
-                scaleData.yScaleCopy.range([event.detail.height, 0]);
-            });
-        }
-    }, [scaleData]);
+    //         d3.select(d3PlotArea.current).on('measure.range', function (event: any) {
+    //             scaleData.xScaleCopy.range([0, event.detail.width]);
+    //             scaleData.yScaleCopy.range([event.detail.height, 0]);
+    //         });
+    //     }
+    // }, [scaleData]);
 
     // const valueFormatter = d3.format('.5f');
     const currentPoolPriceTick =
@@ -4000,6 +3998,23 @@ export default function Chart(props: ChartData) {
 
                 // handle the plot area measure event in order to compute the scale ranges
 
+                d3.select(d3PlotArea.current).on('measure', function (event: any) {
+                    scaleData.xScale.range([0, event.detail.width]);
+                    scaleData.yScale.range([event.detail.height, 0]);
+
+                    scaleData.xScaleIndicator.range([
+                        (event.detail.width / 10) * 8,
+                        event.detail.width,
+                    ]);
+
+                    liquidityScale.range([event.detail.width, (event.detail.width / 10) * 9]);
+
+                    scaleData.volumeScale.range([
+                        event.detail.height,
+                        event.detail.height - event.detail.height / 10,
+                    ]);
+                });
+
                 d3.select(d3PlotArea.current).on('click', (event: any) => {
                     const { isHoverCandleOrVolumeData, _selectedDate } =
                         candleOrVolumeDataHoverStatus(event);
@@ -4442,7 +4457,8 @@ export default function Chart(props: ChartData) {
 
                 d3.select(d3PlotArea.current).on('measure.range', function (event: any) {
                     const svg = d3.select(event.target).select('svg');
-
+                    scaleData.xScaleCopy.range([0, event.detail.width]);
+                    scaleData.yScaleCopy.range([event.detail.height, 0]);
                     svg.call(zoomUtils.zoom).on('dblclick.zoom', null);
                 });
 
