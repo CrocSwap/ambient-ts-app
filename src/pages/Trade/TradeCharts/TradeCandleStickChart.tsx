@@ -722,7 +722,7 @@ export default function TradeCandleStickChart(props: ChartData) {
     return (
         <>
             <div style={{ height: '100%', width: '100%' }}>
-                {!fetchingCandle && !isLoading && parsedChartData !== undefined ? (
+                {!isLoading && parsedChartData !== undefined ? (
                     <Chart
                         isUserLoggedIn={isUserLoggedIn}
                         pool={pool}
