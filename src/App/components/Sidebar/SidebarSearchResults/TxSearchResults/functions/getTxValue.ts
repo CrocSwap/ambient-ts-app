@@ -1,5 +1,10 @@
 import { formatAmountOld } from '../../../../../../utils/numbers';
 
+/**
+ *      I do not know how this code works, consult Ben with questions
+ *      -Emily
+ */
+
 export const getTxValue = (
     valueUSD: number,
     totalValueUSD: number,
