@@ -5,7 +5,7 @@ import PositionLI from './PositionLI';
 
 interface propsIF {
     searchInput: React.ReactNode;
-    positionsByUser: PositionIF[];
+    searchedPositions: PositionIF[];
     isDenomBase: boolean;
     setOutsideControl: Dispatch<SetStateAction<boolean>>;
     setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
@@ -16,7 +16,7 @@ interface propsIF {
 export default function PositionsSearchResults(props: propsIF) {
     const {
         searchInput,
-        positionsByUser,
+        searchedPositions,
         isDenomBase,
         setOutsideControl,
         setSelectedOutsideTab,
@@ -34,7 +34,7 @@ export default function PositionsSearchResults(props: propsIF) {
                 <div>Value</div>
             </div>
             <div className={styles.main_result_container}>
-                {positionsByUser.slice(0,4).map((position: PositionIF) => (
+                {searchedPositions.slice(0,4).map((position: PositionIF) => (
                     <PositionLI
                         key={`PositionSearchResult_${JSON.stringify(position)}`}
                         position={position}

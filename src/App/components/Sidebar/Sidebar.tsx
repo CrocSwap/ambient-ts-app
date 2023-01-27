@@ -283,7 +283,11 @@ export default function Sidebar(props: SidebarPropsIF) {
         },
     ];
 
-    const [setRawInput, isInputValid, searchedPools] = useSidebarSearch(poolList, verifyToken);
+    const [setRawInput, isInputValid, searchedPools, searchedPositions] = useSidebarSearch(
+        poolList,
+        positionsByUser,
+        verifyToken
+    );
     // useEffect(() => {console.log({searchedPools})}, [JSON.stringify(searchedPools)]);
     false && searchedPools;
 
@@ -591,7 +595,7 @@ export default function Sidebar(props: SidebarPropsIF) {
                             chainId={chainId}
                             isConnected={isConnected}
                             cachedPoolStatsFetch={cachedPoolStatsFetch}
-                            positionsByUser={positionsByUser}
+                            searchedPositions={searchedPositions}
                             setOutsideControl={setOutsideControl}
                             setSelectedOutsideTab={setSelectedOutsideTab}
                             setCurrentPositionActive={setCurrentPositionActive}

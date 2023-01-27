@@ -16,7 +16,7 @@ interface SidebarSearchResultsPropsIF {
     chainId: string;
     isConnected: boolean;
     cachedPoolStatsFetch: PoolStatsFn;
-    positionsByUser: PositionIF[];
+    searchedPositions: PositionIF[];
     isDenomBase: boolean;
     setOutsideControl: Dispatch<SetStateAction<boolean>>;
     setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
@@ -34,7 +34,7 @@ export default function SidebarSearchResults(props: SidebarSearchResultsPropsIF)
         chainId,
         isConnected,
         cachedPoolStatsFetch,
-        positionsByUser,
+        searchedPositions,
         isDenomBase,
         setOutsideControl,
         setSelectedOutsideTab,
@@ -58,7 +58,7 @@ export default function SidebarSearchResults(props: SidebarSearchResultsPropsIF)
                 <>
                     <PositionsSearchResults
                         searchInput={searchInput}
-                        positionsByUser={positionsByUser}
+                        searchedPositions={searchedPositions}
                         isDenomBase={isDenomBase}
                         setOutsideControl={setOutsideControl}
                         setSelectedOutsideTab={setSelectedOutsideTab}
