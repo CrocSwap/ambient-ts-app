@@ -1,4 +1,4 @@
-.input_box{
+.input_box {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -7,7 +7,7 @@
     width: 100%;
     /* dark/tertiary */
 
-    background: #171d27;
+    /* background: #171d27; */
     border-radius: 4px;
 
     /* Inside auto layout */
@@ -20,7 +20,7 @@
     bottom: 0;
 }
 
-.input_box_not_allowed{
+.input_box_not_allowed {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -43,13 +43,11 @@
     cursor: not-allowed;
 }
 
-
-
 .modal_body {
     position: fixed;
     border: solid 1px transparent;
-    background-image: linear-gradient(rgba(255, 255, 255, 0), rgba(255, 255, 255, 0)),
-        linear-gradient(101deg, #7371fc, #cdc1ff, #7371fc);
+    /* background-image: linear-gradient(rgba(255, 255, 255, 0), rgba(255, 255, 255, 0)),
+        linear-gradient(101deg, #7371fc, #cdc1ff, #7371fc); */
     background-origin: border-box;
     background-clip: content-box, border-box;
     box-shadow: 2px 1000px 1px var(--dark1) inset;
@@ -59,19 +57,11 @@
     min-height: 350px;
     border-radius: var(--border-radius);
     position: relative;
-    color: white;
 
     /* min-height: 80vh; */
 }
 
-
-
-
-
-
-
-.input{
-
+.input {
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -80,18 +70,16 @@
     gap: 4px;
     width: 97%;
     height: 40px;
-    background: #242F3F;
+    background: #242f3f;
     border-radius: 4px;
     flex: none;
 
     flex-grow: 0;
     position: relative;
     margin-bottom: 2%;
-
 }
 
-.input_not_allowed{
-
+.input_not_allowed {
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -100,7 +88,7 @@
     gap: 4px;
     width: 97%;
     height: 40px;
-    background: #242F3F;
+    background: #242f3f;
     border-radius: 4px;
     flex: none;
 
@@ -108,26 +96,30 @@
     position: relative;
     margin-bottom: 2%;
     cursor: not-allowed;
-
 }
-
-
 
 .emojiPicker {
-    width:97%;
-    padding:0px 8px;
-    height: 250px;
-    
+    width: 97%;
+    padding: 0px 8px;
+    height: 230px;
+    text-emphasis-color: white;
 }
 
+.emoji-categories {
+    filter: invert(100%);
+}
 
+.emoji_close_button {
+    position: relative;
+    float: right;
+    left: -10px;
+}
 
 .input_text:focus {
     outline: none;
 }
 
 .input_text {
-
     width: 212px;
     height: 22px;
 
@@ -144,7 +136,44 @@
 
     /* text/grey dark */
     border-color: transparent;
-    color: rgba(235, 235, 255, 0.25);
+    color: rgba(255, 235, 251, 0.25);
+    background-color: transparent;
+
+    /* Inside auto layout */
+
+    flex: none;
+    order: 0;
+    flex-grow: 1;
+}
+.send_message_button {
+    margin-bottom: -3px;
+}
+
+.svgButton {
+    transition: fill 0.2s ease-in-out;
+}
+.svgButton:hover {
+    fill: #7371fc;
+}
+
+.input_text_mention {
+    width: 212px;
+    height: 22px;
+
+    /* small */
+
+    font-family: 'Lexend Deca';
+    font-style: normal;
+    font-weight: 300;
+    font-size: calc(1vw - 1px);
+    line-height: 15px;
+    display: flex;
+    align-items: center;
+    outline: none;
+
+    /* text/grey dark */
+    border-color: transparent;
+    color: #7371fc;
     background-color: transparent;
 
     /* Inside auto layout */
@@ -155,7 +184,6 @@
 }
 
 .input_text_not_allowed {
-
     width: 212px;
     height: 22px;
 
@@ -184,7 +212,6 @@
 }
 
 .input_text_position {
-
     width: 212px;
     height: 22px;
 
@@ -201,7 +228,7 @@
 
     /* text/grey dark */
     border-color: transparent;
-    color: #7371FC;
+    color: #7371fc;
     background-color: transparent;
 
     /* Inside auto layout */

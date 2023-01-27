@@ -39,6 +39,9 @@ export default function RoomDropdown(props: RoomProps) {
     const { currentPool, isFullScreen } = props;
     // eslint-disable-next-line @typescript-eslint/ban-types
     const [roomArray, setRoomArray] = useState<string[]>([]);
+    const [isCurrentPool, setIsCurrentPool] = useState(false);
+    const [showCurrentPoolButton, setShowCurrentPoolButton] = useState(false);
+    const [isHovering, setIsHovering] = useState(false);
 
     const defaultRooms = [
         {
@@ -68,6 +71,14 @@ export default function RoomDropdown(props: RoomProps) {
             name: 'Current Pool',
             value: currentPool.baseToken.symbol + currentPool.quoteToken.symbol,
         });
+    }, [currentPool.baseToken.symbol, currentPool.quoteToken.symbol]);
+
+    useEffect(() => {
+        if (isCurrentPool) {
+            setShowCurrentPoolButton(true);
+        } else {
+            setShowCurrentPoolButton(false);
+        }
     }, [currentPool.baseToken.symbol, currentPool.quoteToken.symbol]);
 
     useEffect(() => {
@@ -113,13 +124,37 @@ export default function RoomDropdown(props: RoomProps) {
 
     const rooms = props.favePools;
     const [isActive, setIsActive] = useState(false);
+
+    const handleMouseOver = () => {
+        setIsHovering(true);
+    };
+
+    const handleMouseOut = () => {
+        setIsHovering(false);
+    };
+
     function handleDropdownMenu() {
         setIsActive(!isActive);
     }
 
-    function handleRoomClick(event: any) {
+    function handleRoomClick(event: any, name: string) {
         props.setRoom(event.target.dataset.value);
+        if (name.toString() === 'Current Pool') {
+            setIsCurrentPool(true);
+            if (showCurrentPoolButton) {
+                setShowCurrentPoolButton(false);
+            }
+        } else {
+            setIsCurrentPool(false);
+        }
+
         handleDropdownMenu();
+    }
+
+    function handleRoomClickCurrentPool() {
+        props.setRoom(currentPool.baseToken.symbol + currentPool.quoteToken.symbol);
+        setShowCurrentPoolButton(false);
+        setIsActive(false);
     }
 
     function handleShowRooms(room: string) {
@@ -146,7 +181,7 @@ export default function RoomDropdown(props: RoomProps) {
                         className={styles.dropdown_item}
                         key={defaultRooms[1].id}
                         data-value={defaultRooms[1].value}
-                        onClick={(event: any) => handleRoomClick(event)}
+                        onClick={(event: any) => handleRoomClick(event, 'Global')}
                     ></div>
                 );
             } else {
@@ -156,7 +191,7 @@ export default function RoomDropdown(props: RoomProps) {
                             className={styles.dropdown_item}
                             key={tab.id}
                             data-value={tab.value}
-                            onClick={(event: any) => handleRoomClick(event)}
+                            onClick={(event: any) => handleRoomClick(event, tab.name)}
                         >
                             {handleShowRooms(tab.name)}
                             {tab.name}
@@ -171,7 +206,7 @@ export default function RoomDropdown(props: RoomProps) {
                         className={styles.dropdown_item}
                         key={defaultRooms[1].id}
                         data-value={defaultRooms[1].value}
-                        onClick={(event: any) => handleRoomClick(event)}
+                        onClick={(event: any) => handleRoomClick(event, defaultRooms[1].name)}
                     >
                         {handleShowRooms(defaultRooms[1].name)}
                         {defaultRooms[1].name}
@@ -184,7 +219,7 @@ export default function RoomDropdown(props: RoomProps) {
                             className={styles.dropdown_item}
                             key={tab.id}
                             data-value={tab.value}
-                            onClick={(event: any) => handleRoomClick(event)}
+                            onClick={(event: any) => handleRoomClick(event, tab.name)}
                         >
                             {handleShowRooms(tab.name)}
                             {tab.name}
@@ -197,13 +232,29 @@ export default function RoomDropdown(props: RoomProps) {
 
     return (
         <div className={styles.dropdown}>
-            <div
-                className={isActive ? styles.dropdown_btn_isActive : styles.dropdown_btn}
-                onClick={() => handleDropdownMenu()}
-            >
-                <div style={{ flexGrow: '1' }}>{props.selectedRoom}</div>
-                <div> {handleShowSelectedRoom(props.selectedRoom)}</div>
-                <div>
+            <div className={isActive ? styles.dropdown_btn_isActive : styles.dropdown_btn}>
+                <div onClick={() => handleDropdownMenu()} style={{ flexGrow: '1' }}>
+                    {props.selectedRoom}
+                </div>
+                {showCurrentPoolButton ? (
+                    <div
+                        className={styles.current_pool}
+                        onClick={() => handleRoomClickCurrentPool()}
+                        onMouseOver={handleMouseOver}
+                        onMouseOut={handleMouseOut}
+                    >
+                        <div className={isHovering ? styles.bgsalmon : styles.current_pool_text}>
+                            Current Pool
+                        </div>
+                    </div>
+                ) : (
+                    ''
+                )}
+                <div onClick={() => handleDropdownMenu()}>
+                    {' '}
+                    {handleShowSelectedRoom(props.selectedRoom)}
+                </div>
+                <div onClick={() => handleDropdownMenu()}>
                     <RiArrowDownSLine className={styles.star_icon} />
                 </div>
             </div>
@@ -216,7 +267,7 @@ export default function RoomDropdown(props: RoomProps) {
                                 key={i}
                                 data-value={pool}
                                 data-icon='glyphicon glyphicon-eye-open'
-                                onClick={(event: any) => handleRoomClick(event)}
+                                onClick={(event: any) => handleRoomClick(event, pool)}
                             >
                                 <BsSuitHeart className={styles.star_icon} />
 

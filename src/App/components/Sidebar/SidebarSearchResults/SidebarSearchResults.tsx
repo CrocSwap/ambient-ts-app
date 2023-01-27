@@ -1,5 +1,11 @@
 import { Dispatch, SetStateAction, ReactNode } from 'react';
-import { PositionIF, TokenIF, TokenPairIF, TempPoolIF, TransactionIF } from '../../../../utils/interfaces/exports';
+import {
+    PositionIF,
+    TokenIF,
+    TokenPairIF,
+    TempPoolIF,
+    TransactionIF,
+} from '../../../../utils/interfaces/exports';
 import styles from './SidebarSearchResults.module.css';
 import PoolsSearchResults from './PoolsSearchResults/PoolsSearchResults';
 import PositionsSearchResults from './PositionsSearchResults/PositionsSearchResults';
@@ -43,7 +49,7 @@ export default function SidebarSearchResults(props: propsIF) {
         setCurrentPositionActive,
         setCurrentTxActiveInTransactions,
         setIsShowAllEnabled,
-        searchedTxs
+        searchedTxs,
     } = props;
 
     return (
@@ -66,7 +72,9 @@ export default function SidebarSearchResults(props: propsIF) {
                         setCurrentPositionActive={setCurrentPositionActive}
                         setIsShowAllEnabled={setIsShowAllEnabled}
                     />
-                    {false && <OrdersSearchResults loading={exampleLoading} searchInput={searchInput} />}
+                    {false && (
+                        <OrdersSearchResults loading={exampleLoading} searchInput={searchInput} />
+                    )}
                     <TxSearchResults
                         searchedTxs={searchedTxs}
                         setOutsideControl={setOutsideControl}

@@ -72,26 +72,12 @@ export default function FeeRateSubChart(props: FreeRateData) {
 
                 const feeDataTemp: any[] = [];
 
-                (feeData[0].value = 0.01),
-                    (feeData[1].value = 0.01),
-                    (feeData[2].value = 0.01),
-                    (feeData[3].value = 0.01),
-                    (feeData[4].value = 0.01),
-                    (feeData[5].value = 0.01),
-                    (feeData[6].value = 0.003),
-                    (feeData[7].value = 0.003),
-                    (feeData[8].value = 0.003),
-                    (feeData[9].value = 0.003),
-                    (feeData[10].value = 0.003),
-                    (feeData[11].value = 0.003),
-                    feeData.map((data: any) => {
-                        feeDataTemp.push({
-                            time: data.time,
-                            value: feeRateLogScale(data.value),
-                        });
+                feeData.map((data: any) => {
+                    feeDataTemp.push({
+                        time: data.time,
+                        value: feeRateLogScale(data.value),
                     });
-
-                // console.log(feeDataTemp);
+                });
 
                 const yAxis = d3fc
                     .axisRight()

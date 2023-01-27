@@ -85,6 +85,8 @@ interface propsIF {
     fullScreenChart: boolean;
     setFullScreenChart: Dispatch<SetStateAction<boolean>>;
     cachedQuerySpotPrice: SpotPriceFn;
+    fetchingCandle: boolean;
+    setFetchingCandle: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 // React functional component
@@ -137,6 +139,8 @@ export default function Trade(props: propsIF) {
 
         fullScreenChart,
         setFullScreenChart,
+        fetchingCandle,
+        setFetchingCandle,
     } = props;
 
     const tokenPairFromParams = useUrlParams(chainId, isInitialized);
@@ -146,6 +150,8 @@ export default function Trade(props: propsIF) {
     const { params } = useParams();
 
     const [transactionFilter, setTransactionFilter] = useState<CandleData>();
+    const [isCandleDataNull] = useState(false);
+    const [isCandleArrived, setIsCandleDataArrived] = useState(false);
 
     const navigate = useNavigate();
 
@@ -163,6 +169,38 @@ export default function Trade(props: propsIF) {
             name: 'Range',
         },
     ];
+
+    // useEffect(() => {
+    //     if (props.candleData?.candles !== undefined) {
+    //         const candleDataNullArr: boolean[] = [];
+
+    //         props.candleData?.candles.map((obj) => {
+    //             const isNullish = Object.values(obj).every((value, index) => {
+    //                 if (index === 0 || value === null) {
+    //                     return true;
+    //                 }
+
+    //                 return false;
+    //             });
+
+    //             candleDataNullArr.push(isNullish);
+    //         });
+
+    //         const candleDataCheck = Object.values(candleDataNullArr).every((value) => {
+    //             if (value) {
+    //                 return true;
+    //             }
+    //             return false;
+    //         });
+
+    //         if (candleDataCheck) {
+    //             setExpandTradeTable(candleDataCheck);
+    //             setIsCandleDataNull(candleDataCheck);
+    //         } else if (isCandleDataNull) {
+    //             setIsCandleDataArrived(!candleDataCheck);
+    //         }
+    //     }
+    // }, [props.candleData]);
 
     const [selectedDate, setSelectedDate] = useState<Date | undefined>();
 
@@ -191,7 +229,9 @@ export default function Trade(props: propsIF) {
     );
 
     const activePoolLiquidityData = graphData?.liquidityForAllPools?.pools[indexOfPoolInLiqData];
-    const liquidityData = activePoolLiquidityData?.liquidityData;
+
+    const [liquidityData, setLiquidityData] = useState<any>(activePoolLiquidityData?.liquidityData);
+    //    const liquidityData = activePoolLiquidityData?.liquidityData;
 
     const poolPriceDisplayWithDenom = poolPriceDisplay
         ? isDenomBase
@@ -208,6 +248,14 @@ export default function Trade(props: propsIF) {
             ))}
         </div>
     );
+
+    useEffect(() => {
+        setLiquidityData(activePoolLiquidityData?.liquidityData);
+    }, [activePoolLiquidityData]);
+
+    useEffect(() => {
+        setLiquidityData(undefined);
+    }, [pool]);
 
     const mainContent = (
         <div className={styles.right_col}>
@@ -402,6 +450,7 @@ export default function Trade(props: propsIF) {
                     style={{ background: chartBg }}
                 >
                     <div className={styles.main__chart_container}>
+                        {/* {!isCandleDataNull && ( */}
                         <TradeCharts
                             // poolPriceTick={poolPriceTick}
                             isUserLoggedIn={isUserLoggedIn}
@@ -444,7 +493,10 @@ export default function Trade(props: propsIF) {
                             setPoolPriceChangePercent={setPoolPriceChangePercent}
                             isPoolPriceChangePositive={isPoolPriceChangePositive}
                             setIsPoolPriceChangePositive={setIsPoolPriceChangePositive}
+                            fetchingCandle={fetchingCandle}
+                            setFetchingCandle={setFetchingCandle}
                         />
+                        {/* )} */}
                     </div>
                 </div>
 
@@ -508,6 +560,9 @@ export default function Trade(props: propsIF) {
                             // handleTxCopiedClick={handleTxCopiedClick}
                             // handleOrderCopiedClick={handleOrderCopiedClick}
                             // handleRangeCopiedClick={handleRangeCopiedClick}
+                            isCandleDataNull={isCandleDataNull}
+                            isCandleArrived={isCandleArrived}
+                            setIsCandleDataArrived={setIsCandleDataArrived}
                         />
                     </div>
                 </motion.div>

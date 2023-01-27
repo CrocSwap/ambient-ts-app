@@ -17,7 +17,8 @@ interface propsIF {
 }
 
 export default function RecentPoolsCard(props: propsIF) {
-    const { tradeData, chainId, pool, lastBlockNumber, cachedPoolStatsFetch, getTokenByAddress } = props;
+    const { tradeData, chainId, pool, lastBlockNumber, cachedPoolStatsFetch, getTokenByAddress } =
+        props;
 
     const { pathname } = useLocation();
 
@@ -67,14 +68,10 @@ export default function RecentPoolsCard(props: propsIF) {
     }, [lastBlockNumber]);
 
     const tokenAString =
-        pool.base.toLowerCase() === tradeData.tokenA.address.toLowerCase()
-            ? pool.base
-            : pool.quote;
+        pool.base.toLowerCase() === tradeData.tokenA.address.toLowerCase() ? pool.base : pool.quote;
 
     const tokenBString =
-        pool.base.toLowerCase() === tradeData.tokenA.address.toLowerCase()
-            ? pool.quote
-            : pool.base;
+        pool.base.toLowerCase() === tradeData.tokenA.address.toLowerCase() ? pool.quote : pool.base;
 
     return (
         <Link

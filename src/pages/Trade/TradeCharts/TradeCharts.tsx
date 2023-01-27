@@ -107,6 +107,8 @@ interface propsIF {
 
     setIsPoolPriceChangePositive: Dispatch<SetStateAction<boolean>>;
     handlePulseAnimation: (type: string) => void;
+    fetchingCandle: boolean;
+    setFetchingCandle: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export interface CandleChartData {
@@ -187,6 +189,8 @@ export default function TradeCharts(props: propsIF) {
         isPoolPriceChangePositive,
         setIsPoolPriceChangePositive,
         handlePulseAnimation,
+        fetchingCandle,
+        setFetchingCandle,
     } = props;
 
     // console.log('rendering TradeCharts.tsx');
@@ -591,6 +595,8 @@ export default function TradeCharts(props: propsIF) {
                         activeTimeFrame={activeTimeFrame}
                         setShowTooltip={setShowTooltip}
                         handlePulseAnimation={handlePulseAnimation}
+                        fetchingCandle={fetchingCandle}
+                        setFetchingCandle={setFetchingCandle}
                     />
                 </div>
             )}

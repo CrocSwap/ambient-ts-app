@@ -19,9 +19,14 @@ import NotFound from '../NotFound/NotFound';
 import ProfileSettings from '../../components/Portfolio/ProfileSettings/ProfileSettings';
 import { SoloTokenSelect } from '../../components/Global/TokenSelectContainer/SoloTokenSelect';
 // import { useSoloSearch } from '../../components/Global/TokenSelectContainer/hooks/useSoloSearch';
+import {
+    setErc20Tokens,
+    setNativeToken,
+    setResolvedAddressRedux,
+    setSecondaryImageDataRedux,
+} from '../../utils/state/userDataSlice';
 import { useAccount, useEnsName } from 'wagmi';
 import useMediaQuery from '../../utils/hooks/useMediaQuery';
-import { setErc20Tokens, setNativeToken } from '../../utils/state/userDataSlice';
 import { SpotPriceFn } from '../../App/functions/querySpotPrice';
 
 const mainnetProvider = new ethers.providers.WebSocketProvider(
@@ -248,9 +253,11 @@ export default function Portfolio(props: propsIF) {
                 const newResolvedAddress = await mainnetProvider.resolveName(addressFromParams);
                 if (newResolvedAddress) {
                     setResolvedAddress(newResolvedAddress);
+                    dispatch(setResolvedAddressRedux(newResolvedAddress));
                 }
             } else if (addressFromParams && isAddressHex && !isAddressEns) {
                 setResolvedAddress(addressFromParams);
+                dispatch(setResolvedAddressRedux(addressFromParams));
             }
         })();
     }, [addressFromParams, isAddressHex, isAddressEns, mainnetProvider]);
@@ -261,7 +268,10 @@ export default function Portfolio(props: propsIF) {
         (async () => {
             if (resolvedAddress && !connectedAccountActive) {
                 const imageLocalURLs = await getNFTs(resolvedAddress);
-                if (imageLocalURLs) setSecondaryImageData(imageLocalURLs);
+                if (imageLocalURLs) {
+                    setSecondaryImageData(imageLocalURLs);
+                    dispatch(setSecondaryImageDataRedux(imageLocalURLs));
+                }
             }
         })();
     }, [resolvedAddress, connectedAccountActive]);

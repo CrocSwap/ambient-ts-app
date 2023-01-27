@@ -25,6 +25,9 @@ interface PositionsOnlyToggleProps {
     changeState: (isOpen: boolean | undefined, candleData: CandleData | undefined) => void;
     selectedDate: Date | undefined;
     setSelectedDate: React.Dispatch<Date | undefined>;
+    isCandleDataNull: boolean;
+    isCandleArrived: boolean;
+    setIsCandleDataArrived: Dispatch<SetStateAction<boolean>>;
 }
 
 export default function PositionsOnlyToggle(props: PositionsOnlyToggleProps) {
@@ -44,12 +47,22 @@ export default function PositionsOnlyToggle(props: PositionsOnlyToggleProps) {
         changeState,
 
         setSelectedDate,
+        isCandleDataNull,
+        isCandleArrived,
+        setIsCandleDataArrived,
         // setShowPositionsOnlyToggle
     } = props;
 
     const expandIcon = (
-        <div className={styles.icon} onClick={() => setExpandTradeTable(!expandTradeTable)}>
+        <div
+            className={styles.icon}
+            onClick={() => {
+                setExpandTradeTable(!expandTradeTable);
+                setIsCandleDataArrived(false);
+            }}
+        >
             {expandTradeTable ? <MdCloseFullscreen /> : <MdExpand />}
+            {isCandleArrived && <span className={styles.graph_indicaor}></span>}
         </div>
     );
     // <NavLink to={`/${ownerId}`}>View Account</NavLink>
@@ -118,7 +131,7 @@ export default function PositionsOnlyToggle(props: PositionsOnlyToggleProps) {
                 {/* {clearButtonOrNull} */}
                 {toggleOrNull}
             </div>
-            {expandIcon}
+            {(!isCandleDataNull || isCandleArrived) && expandIcon}
         </div>
     );
 }
