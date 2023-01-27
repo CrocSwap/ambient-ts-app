@@ -26,6 +26,7 @@ import {
     TransactionError,
 } from '../../utils/TransactionError';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
+import TransactionException from '../Global/TransactionException/TransactionException';
 
 interface IOrderRemovalProps {
     account: string;
@@ -278,6 +279,12 @@ export default function OrderRemoval(props: IOrderRemovalProps) {
     const transactionApproved = newRemovalTransactionHash !== '';
 
     const isRemovalDenied = txErrorCode === 'ACTION_REJECTED';
+    const isTransactionException = txErrorCode === 'CALL_EXCEPTION';
+    const isGasLimitException = txErrorCode === 'UNPREDICTABLE_GAS_LIMIT';
+    const isInsufficientFundsException = txErrorCode === 'INSUFFICIENT_FUNDS';
+
+    const transactionException = <TransactionException resetConfirmation={resetConfirmation} />;
+
     // const isRemovalDenied =
     //     txErrorCode === 4001 &&
     //     txErrorMessage === 'MetaMask Tx Signature: User denied transaction signature.';
@@ -289,6 +296,8 @@ export default function OrderRemoval(props: IOrderRemovalProps) {
             setCurrentConfirmationData(removalSuccess);
         } else if (isRemovalDenied) {
             setCurrentConfirmationData(removalDenied);
+        } else if (isTransactionException || isGasLimitException || isInsufficientFundsException) {
+            setCurrentConfirmationData(transactionException);
         }
     }
 
