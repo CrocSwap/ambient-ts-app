@@ -1,7 +1,7 @@
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
 import { PositionIF, TokenIF, TempPoolIF } from '../../../utils/interfaces/exports';
 import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
-import { setShoulRecheckLocalStorage } from '../../../utils/state/userDataSlice';
+import { setShouldRecheckLocalStorage } from '../../../utils/state/userDataSlice';
 
 export const useSidebarSearch = (
     poolList: TempPoolIF[],
@@ -96,7 +96,7 @@ export const useSidebarSearch = (
                 // }
             };
             getAckTokens();
-            dispatch(setShoulRecheckLocalStorage(false));
+            dispatch(setShouldRecheckLocalStorage(false));
         }
     }, [shouldRecheckLocalStorage]);
 

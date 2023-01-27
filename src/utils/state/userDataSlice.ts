@@ -11,7 +11,7 @@ export interface userData {
     isUserIdle: boolean;
     tokens: tokenData;
     recentTokens: TokenIF[] | undefined;
-    shoulRecheckLocalStorage: boolean;
+    shouldRecheckLocalStorage: boolean;
 }
 
 export interface tokenData {
@@ -32,7 +32,7 @@ const initialState: userData = {
         erc20Tokens: undefined,
     },
     recentTokens: undefined,
-    shoulRecheckLocalStorage: true,
+    shouldRecheckLocalStorage: true,
 };
 
 export const userDataSlice = createSlice({
@@ -124,8 +124,8 @@ export const userDataSlice = createSlice({
             state.tokens.erc20Tokens[index].dexBalanceDisplayTruncated =
                 action.payload.dexBalanceDisplayTruncated;
         },
-        setShoulRecheckLocalStorage: (state, action: PayloadAction<boolean>) => {
-            state.shoulRecheckLocalStorage = action.payload;
+        setShouldRecheckLocalStorage: (state, action: PayloadAction<boolean>) => {
+            state.shouldRecheckLocalStorage = action.payload;
         },
         setErc20Tokens: (state, action: PayloadAction<TokenIF[]>) => {
             state.tokens.erc20Tokens = action.payload;
@@ -159,7 +159,7 @@ export const {
     setNativeToken,
     setErc20Tokens,
     setRecentTokens,
-    setShoulRecheckLocalStorage,
+    setShouldRecheckLocalStorage,
     //  addNativeBalance,
     updateNativeTokenWalletBalance,
     updateNativeTokenDexBalance,

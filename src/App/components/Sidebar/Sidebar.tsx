@@ -284,13 +284,13 @@ export default function Sidebar(props: SidebarPropsIF) {
     ];
 
     const userData = useAppSelector((state) => state.userData);
-    const shoulRecheckLocalStorage = userData.shoulRecheckLocalStorage;
+    const shouldRecheckLocalStorage = userData.shouldRecheckLocalStorage;
 
     const [setRawInput, isInputValid, searchedPools, searchedPositions] = useSidebarSearch(
         poolList,
         positionsByUser,
         verifyToken,
-        shoulRecheckLocalStorage
+        shouldRecheckLocalStorage
     );
 
     // useEffect(() => {console.log({searchedPools})}, [JSON.stringify(searchedPools)]);
