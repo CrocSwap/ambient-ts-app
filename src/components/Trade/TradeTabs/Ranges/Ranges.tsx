@@ -157,13 +157,17 @@ export default function Ranges(props: RangesPropsIF) {
             activeAccountPositionData &&
             JSON.stringify(activeAccountPositionData) !== JSON.stringify(rangeData)
         ) {
+            // console.log({ activeAccountPositionData });
             setRangeData(activeAccountPositionData);
-        } else if (!isShowAllEnabled) {
+        } else if (!isShowAllEnabled && !isOnPortfolioPage) {
+            // console.log({ positionsByUserMatchingSelectedTokens });
             setRangeData(positionsByUserMatchingSelectedTokens);
-        } else if (positionsByPool) {
+        } else if (positionsByPool && !isOnPortfolioPage) {
+            // console.log({ positionsByPool });
             setRangeData(positionsByPool);
         }
     }, [
+        isOnPortfolioPage,
         isShowAllEnabled,
         connectedAccountActive,
         JSON.stringify(activeAccountPositionData),
@@ -183,6 +187,7 @@ export default function Ranges(props: RangesPropsIF) {
     const dispatch = useAppDispatch();
 
     useEffect(() => {
+        // console.log({ sortedPositions });
         // console.log({ isShowAllEnabled });
         // console.log({ isOnPortfolioPage });
         // console.log({ topThreePositions });
@@ -206,7 +211,10 @@ export default function Ranges(props: RangesPropsIF) {
                                 dispatch(addPositionsByUser(updatedPositionsMatchingUser));
                         }
                     } else {
+                        // console.log({ updatedPositions });
+                        // console.log({ sortedPositions });
                         const newArray = updatedPositions.concat(sortedPositions.slice(3));
+                        // console.log({ newArray });
                         setRangeData(newArray);
                     }
                 })
