@@ -2709,6 +2709,7 @@ export default function App() {
                             path='trade'
                             element={
                                 <Trade
+                                    cachedQuerySpotPrice={cachedQuerySpotPrice}
                                     pool={pool}
                                     // poolPriceTick={poolPriceTick}
                                     isUserLoggedIn={isUserLoggedIn}
@@ -2901,6 +2902,7 @@ export default function App() {
                             path='account'
                             element={
                                 <Portfolio
+                                    cachedQuerySpotPrice={cachedQuerySpotPrice}
                                     crocEnv={crocEnv}
                                     addRecentToken={addRecentToken}
                                     getRecentTokens={getRecentTokens}
@@ -2957,6 +2959,7 @@ export default function App() {
                             path='account/:address'
                             element={
                                 <Portfolio
+                                    cachedQuerySpotPrice={cachedQuerySpotPrice}
                                     crocEnv={crocEnv}
                                     addRecentToken={addRecentToken}
                                     getRecentTokens={getRecentTokens}
@@ -3031,6 +3034,7 @@ export default function App() {
                             path='/:address'
                             element={
                                 <Portfolio
+                                    cachedQuerySpotPrice={cachedQuerySpotPrice}
                                     crocEnv={crocEnv}
                                     addRecentToken={addRecentToken}
                                     getRecentTokens={getRecentTokens}

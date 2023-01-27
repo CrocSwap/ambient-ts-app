@@ -26,7 +26,7 @@ interface IPriceInfoProps {
     quoteTokenSymbol: string;
     isAmbient: boolean;
     isDenomBase: boolean;
-
+    poolPriceDisplay: number;
     controlItems: ItemIF[];
 }
 
@@ -46,7 +46,7 @@ export default function PriceInfo(props: IPriceInfoProps) {
         quoteTokenSymbol,
         isAmbient,
         isDenomBase,
-
+        poolPriceDisplay,
         controlItems,
     } = props;
     const collateralContent = (
@@ -176,6 +176,20 @@ export default function PriceInfo(props: IPriceInfoProps) {
         </div>
     );
 
+    const displayPriceWithDenom = isDenomBase ? 1 / poolPriceDisplay : poolPriceDisplay;
+    const displayPriceString =
+        displayPriceWithDenom === Infinity || displayPriceWithDenom === 0
+            ? '…'
+            : displayPriceWithDenom < 2
+            ? displayPriceWithDenom.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 6,
+              })
+            : displayPriceWithDenom.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+              });
+
     const minMaxPriceDisplay = (
         <div className={styles.min_max_price}>
             <div className={styles.min_max_content}>
@@ -184,7 +198,7 @@ export default function PriceInfo(props: IPriceInfoProps) {
             </div>
             <div className={styles.min_max_content}>
                 Current Price
-                <span className={styles.min_price}>{0.0}</span>
+                <span className={styles.min_price}>{displayPriceString}</span>
             </div>
             <div className={styles.min_max_content}>
                 Max Price

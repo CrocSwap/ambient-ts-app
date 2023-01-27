@@ -27,6 +27,7 @@ import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
 import RangeHeader from './RangesTable/RangeHeader';
 import RangesRow from './RangesTable/RangesRow';
+import { SpotPriceFn } from '../../../../App/functions/querySpotPrice';
 // import RangeAccordions from './RangeAccordions/RangeAccordions';
 
 // interface for props
@@ -57,6 +58,7 @@ interface LeaderboardPropsIF {
     setLeader?: Dispatch<SetStateAction<string>>;
     setLeaderOwnerId?: Dispatch<SetStateAction<string>>;
     handlePulseAnimation?: (type: string) => void;
+    cachedQuerySpotPrice: SpotPriceFn;
 }
 
 // react functional component
@@ -81,7 +83,7 @@ export default function Leaderboard(props: LeaderboardPropsIF) {
         handlePulseAnimation,
         // setLeader,
         // setLeaderOwnerId,
-
+        cachedQuerySpotPrice,
         showSidebar,
     } = props;
 
@@ -320,6 +322,7 @@ export default function Leaderboard(props: LeaderboardPropsIF) {
     );
     const rowItemContent = usePaginateDataOrNull?.map((position, idx) => (
         <RangesRow
+            cachedQuerySpotPrice={cachedQuerySpotPrice}
             account={account}
             key={idx}
             position={position}

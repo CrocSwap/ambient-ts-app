@@ -33,6 +33,7 @@ import { fetchUserRecentChanges } from '../../../App/functions/fetchUserRecentCh
 import Orders from '../../Trade/TradeTabs/Orders/Orders';
 import Ranges from '../../Trade/TradeTabs/Ranges/Ranges';
 import Transactions from '../../Trade/TradeTabs/Transactions/Transactions';
+import { SpotPriceFn } from '../../../App/functions/querySpotPrice';
 
 // interface for React functional component props
 interface PortfolioTabsPropsIF {
@@ -73,11 +74,13 @@ interface PortfolioTabsPropsIF {
     handlePulseAnimation: (type: string) => void;
 
     fullLayoutToggle: JSX.Element;
+    cachedQuerySpotPrice: SpotPriceFn;
 }
 
 // React functional component
 export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
     const {
+        cachedQuerySpotPrice,
         crocEnv,
         isTokenABase,
         cachedFetchTokenPrice,
@@ -340,6 +343,7 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
     };
     // props for <Range/> React Element
     const rangeProps = {
+        cachedQuerySpotPrice: cachedQuerySpotPrice,
         crocEnv: props.crocEnv,
         expandTradeTable: false,
         chainData: props.chainData,

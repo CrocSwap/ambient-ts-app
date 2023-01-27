@@ -18,6 +18,7 @@ import moment from 'moment';
 import { ZERO_ADDRESS } from '../../../../../constants';
 import { FiExternalLink } from 'react-icons/fi';
 import useOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
+import { SpotPriceFn } from '../../../../../App/functions/querySpotPrice';
 
 interface RangesRowPropsIF {
     isUserLoggedIn: boolean | undefined;
@@ -52,10 +53,12 @@ interface RangesRowPropsIF {
     isLeaderboard?: boolean;
     idx: number;
     handlePulseAnimation?: (type: string) => void;
+    cachedQuerySpotPrice: SpotPriceFn;
 }
 
 export default function RangesRow(props: RangesRowPropsIF) {
     const {
+        cachedQuerySpotPrice,
         showSidebar,
         account,
         ipadView,
@@ -109,6 +112,7 @@ export default function RangesRow(props: RangesRowPropsIF) {
     } = useProcessRange(position, account);
 
     const rangeDetailsProps = {
+        cachedQuerySpotPrice: cachedQuerySpotPrice,
         crocEnv: props.crocEnv,
         provider: props.provider,
         chainData: props.chainData,
