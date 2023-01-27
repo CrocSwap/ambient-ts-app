@@ -37,6 +37,7 @@ import {
     removePendingTx,
     removePositionPendingUpdate,
 } from '../../utils/state/receiptDataSlice';
+import TransactionException from '../Global/TransactionException/TransactionException';
 
 interface IHarvestPositionProps {
     crocEnv: CrocEnv | undefined;
@@ -347,6 +348,11 @@ export default function HarvestPosition(props: IHarvestPositionProps) {
     const transactionApproved = newHarvestTransactionHash !== '';
 
     const isRemovalDenied = txErrorCode === 'ACTION_REJECTED';
+    const isTransactionException = txErrorCode === 'CALL_EXCEPTION';
+    const isGasLimitException = txErrorCode === 'UNPREDICTABLE_GAS_LIMIT';
+    const isInsufficientFundsException = txErrorCode === 'INSUFFICIENT_FUNDS';
+
+    const transactionException = <TransactionException resetConfirmation={resetConfirmation} />;
 
     // const isRemovalDenied =
     //     txErrorCode === 4001 &&
@@ -359,6 +365,8 @@ export default function HarvestPosition(props: IHarvestPositionProps) {
             setCurrentConfirmationData(removalSuccess);
         } else if (isRemovalDenied) {
             setCurrentConfirmationData(removalDenied);
+        } else if (isTransactionException || isGasLimitException || isInsufficientFundsException) {
+            setCurrentConfirmationData(transactionException);
         }
     }
 
