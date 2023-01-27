@@ -1,6 +1,7 @@
 import styles from '../SidebarSearchResults.module.css';
 import { TransactionIF } from '../../../../../utils/interfaces/exports';
 import { formatAmountOld } from '../../../../../utils/numbers';
+import { getTxType } from './functions/getTxType';
 
 interface propsIF {
     tx: TransactionIF;
@@ -59,15 +60,10 @@ export default function TxLI(props: propsIF) {
                 maximumFractionDigits: 2,
             });
 
-    const transactionTypeSide = tx.entityType === 'swap'
-        ? 'Market' : tx.entityType === 'limitOrder'
-        ? 'Limit'
-        : 'Range';
-
     return (
         <div className={styles.card_container}>
             <div>{tx.baseSymbol} / {tx.quoteSymbol}</div>
-            <div>{transactionTypeSide}</div>
+            <div>{getTxType(tx.entityType)}</div>
             <div className={styles.status_display}>
                 {totalFlowUSDTruncated !== undefined
                     ? '$' + totalFlowUSDTruncated
