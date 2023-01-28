@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, ReactNode } from 'react';
+import { Dispatch, SetStateAction } from 'react';
 import {
     LimitOrderIF,
     PositionIF,
@@ -16,8 +16,6 @@ import { PoolStatsFn } from '../../../functions/getPoolStats';
 
 interface propsIF {
     searchedPools: TempPoolIF[];
-    searchInput: ReactNode;
-    exampleLoading: boolean;
     getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
     tokenPair: TokenPairIF;
     chainId: string;
@@ -37,8 +35,6 @@ interface propsIF {
 export default function SidebarSearchResults(props: propsIF) {
     const {
         searchedPools,
-        exampleLoading,
-        searchInput,
         getTokenByAddress,
         tokenPair,
         chainId,
@@ -77,8 +73,6 @@ export default function SidebarSearchResults(props: propsIF) {
                     />
                     <OrdersSearchResults
                         searchedLimitOrders={searchedLimitOrders}
-                        loading={exampleLoading}
-                        searchInput={searchInput}
                     />
                     <TxSearchResults
                         searchedTxs={searchedTxs}

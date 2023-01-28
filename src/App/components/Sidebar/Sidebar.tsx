@@ -311,7 +311,6 @@ export default function Sidebar(props: propsIF) {
     const [searchInput, setSearchInput] = useState<string[][]>();
     const [searchMode, setSearchMode] = useState(false);
     false && searchMode;
-    const [exampleLoading, setExampleLoading] = useState(true);
 
     // const searchInputChangeHandler = (event: string) => {
     //     setSearchMode(true);
@@ -327,18 +326,9 @@ export default function Sidebar(props: propsIF) {
         setSearchInput([]);
         setSearchMode(false);
         const currentInput = document.getElementById('search_input') as HTMLInputElement;
-
         currentInput.value = '';
     };
 
-    // we are not going to use this following loading functionality. It is just for demonstration purposes
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            setExampleLoading(false);
-        }, 1000);
-
-        return () => clearTimeout(timer);
-    }, [searchInput]);
     // ------------------------------------------
     // ---------------------------ANALYTICS SEARCH CONTAINER-----------------------
 
@@ -610,8 +600,6 @@ export default function Sidebar(props: propsIF) {
                     {isInputValid && showSidebar ? (
                         <SidebarSearchResults
                             searchedPools={searchedPools}
-                            searchInput={searchInput}
-                            exampleLoading={exampleLoading}
                             getTokenByAddress={getTokenByAddress}
                             tokenPair={tokenPair}
                             isDenomBase={isDenomBase}
