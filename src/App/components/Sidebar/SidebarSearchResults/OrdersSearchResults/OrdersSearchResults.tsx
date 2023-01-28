@@ -1,11 +1,16 @@
 import ResultSkeleton from '../ResultSkeleton/ResultSkeleton';
 import styles from '../SidebarSearchResults.module.css';
+import { LimitOrderIF } from '../../../../../utils/interfaces/exports';
 
 interface OrdersSearchResultPropsIF {
+    searchedLimitOrders: LimitOrderIF[];
     loading: boolean;
     searchInput: React.ReactNode;
 }
 export default function OrdersSearchResults(props: OrdersSearchResultPropsIF) {
+    const { searchedLimitOrders } = props;
+    console.log(searchedLimitOrders);
+
     function OrderSearchResult() {
         return (
             <div className={styles.card_container}>

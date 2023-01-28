@@ -2586,6 +2586,7 @@ export default function App() {
         removePoolFromFaves: removePoolFromFaves,
         positionsByUser: graphData.positionsByUser.positions,
         txsByUser: graphData.changesByUser.changes,
+        limitsByUser: graphData.limitOrdersByUser.limitOrders
     };
 
     const analyticsProps = {

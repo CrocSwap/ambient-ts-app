@@ -1,5 +1,6 @@
 import { Dispatch, SetStateAction, ReactNode } from 'react';
 import {
+    LimitOrderIF,
     PositionIF,
     TokenIF,
     TokenPairIF,
@@ -30,6 +31,7 @@ interface propsIF {
     setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
     setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
     searchedTxs: TransactionIF[];
+    searchedLimitOrders: LimitOrderIF[];
 }
 
 export default function SidebarSearchResults(props: propsIF) {
@@ -50,6 +52,7 @@ export default function SidebarSearchResults(props: propsIF) {
         setCurrentTxActiveInTransactions,
         setIsShowAllEnabled,
         searchedTxs,
+        searchedLimitOrders
     } = props;
 
     return (
@@ -72,9 +75,11 @@ export default function SidebarSearchResults(props: propsIF) {
                         setCurrentPositionActive={setCurrentPositionActive}
                         setIsShowAllEnabled={setIsShowAllEnabled}
                     />
-                    {false && (
-                        <OrdersSearchResults loading={exampleLoading} searchInput={searchInput} />
-                    )}
+                    <OrdersSearchResults
+                        searchedLimitOrders={searchedLimitOrders}
+                        loading={exampleLoading}
+                        searchInput={searchInput}
+                    />
                     <TxSearchResults
                         searchedTxs={searchedTxs}
                         setOutsideControl={setOutsideControl}
