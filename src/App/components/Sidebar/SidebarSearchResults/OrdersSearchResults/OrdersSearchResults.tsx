@@ -21,14 +21,6 @@ export default function OrdersSearchResults(props: OrdersSearchResultPropsIF) {
         );
     }
 
-    const header = (
-        <div className={styles.header}>
-            <div>Pool</div>
-            <div>Price</div>
-            <div>Qty</div>
-        </div>
-    );
-
     const exampleContent = (
         <div className={styles.main_result_container}>
             {new Array(0).fill(null).map((item, idx) => (
@@ -39,7 +31,11 @@ export default function OrdersSearchResults(props: OrdersSearchResultPropsIF) {
     return (
         <div>
             <div className={styles.card_title}>Limit Orders</div>
-            {header}
+            <div className={styles.header}>
+                <div>Pool</div>
+                <div>Price</div>
+                <div>Qty</div>
+            </div>
             {props.loading ? <ResultSkeleton /> : exampleContent}
         </div>
     );
