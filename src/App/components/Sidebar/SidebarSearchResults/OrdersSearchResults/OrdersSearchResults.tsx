@@ -14,12 +14,7 @@ export default function OrdersSearchResults(props: OrdersSearchResultPropsIF) {
 
     const exampleContent = (
         <div className={styles.main_result_container}>
-            {searchedLimitOrders.map((limitOrder: LimitOrderIF) => (
-                <LimitOrderLI
-                    key={`order-search-result-${JSON.stringify(limitOrder)}`}
-                    limitOrder={limitOrder}
-                />
-            ))}
+            
         </div>
     );
     return (
@@ -31,6 +26,14 @@ export default function OrdersSearchResults(props: OrdersSearchResultPropsIF) {
                 <div>Qty</div>
             </div>
             {props.loading ? <ResultSkeleton /> : exampleContent}
+            {
+                searchedLimitOrders.map((limitOrder: LimitOrderIF) => (
+                    <LimitOrderLI
+                        key={`order-search-result-${JSON.stringify(limitOrder)}`}
+                        limitOrder={limitOrder}
+                    />
+                ))
+            }
         </div>
     );
 }
