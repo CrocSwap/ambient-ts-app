@@ -1,9 +1,10 @@
-.repositionContainer {
+.container {
     display: flex;
     flex-direction: column;
     gap: 4px;
 }
-.reposition_content {
+
+.content {
     padding: 0 1rem;
 
     display: flex;

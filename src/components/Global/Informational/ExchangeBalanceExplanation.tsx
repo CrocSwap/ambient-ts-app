@@ -6,6 +6,7 @@ export default function ExchangeBalanceExplanation() {
             style={{
                 display: 'flex',
                 flexDirection: 'column',
+                gap: '4px',
             }}
         >
             <p>

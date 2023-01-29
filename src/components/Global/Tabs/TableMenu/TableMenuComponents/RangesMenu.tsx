@@ -146,12 +146,13 @@ export default function RangesMenu(props: RangesMenuIF) {
     );
     // -----------------END OF SNACKBAR----------------
 
-    const repositionButton =
-        !isAmbient && positionMatchesLoggedInUser && !isPositionInRange ? (
-            <Link className={styles.reposition_button} to={'/trade/reposition'}>
-                Reposition
-            </Link>
-        ) : null;
+    const repositionButton = (
+        // !isAmbient && positionMatchesLoggedInUser && !isPositionInRange ?
+        <Link className={styles.reposition_button} to={'/trade/reposition'}>
+            Reposition
+        </Link>
+    );
+    //  : null;
 
     const removeButton = positionMatchesLoggedInUser ? (
         <button className={styles.option_button} onClick={openRemoveModal}>

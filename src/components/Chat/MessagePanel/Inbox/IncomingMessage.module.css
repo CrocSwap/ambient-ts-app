@@ -136,7 +136,7 @@ flex-grow: 0;
 
 }
 
-p {
+.income_message p {
     word-break: break-all;
 }
 
