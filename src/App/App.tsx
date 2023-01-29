@@ -158,6 +158,7 @@ import { useRecentPools } from './hooks/useRecentPools';
 import useMediaQuery from '../utils/hooks/useMediaQuery';
 import { useGlobalPopup } from './components/GlobalPopup/useGlobalPopup';
 import GlobalPopup from './components/GlobalPopup/GlobalPopup';
+import RangeAdd from '../pages/Trade/RangeAdd/RangeAdd';
 
 // import { memoizeQuerySpotTick } from './functions/querySpotTick';
 // import PhishingWarning from '../components/Global/PhisingWarning/PhishingWarning';
@@ -2807,6 +2808,7 @@ export default function App() {
                             <Route path='range/:params' element={<Range {...rangeProps} />} />
                             <Route path='edit/:positionHash' element={<Edit />} />
                             <Route path='reposition' element={<Reposition />} />
+                            <Route path='add' element={<RangeAdd />} />
                             <Route path='edit/' element={<Navigate to='/trade/market' replace />} />
                         </Route>
                         <Route path='analytics' element={<Analytics {...analyticsProps} />} />
