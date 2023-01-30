@@ -135,7 +135,6 @@ export default function Sidebar(props: propsIF) {
     } = props;
 
     const location = useLocation();
-    const isUserLoggedIn = isConnected;
 
     const mostRecentTxs = txsByUser.slice(0, 4);
     const mostRecentPositions = positionsByUser.slice(0, 4);
@@ -184,7 +183,7 @@ export default function Sidebar(props: propsIF) {
         setIsShowAllEnabled: props.setIsShowAllEnabled,
         expandTradeTable: expandTradeTable,
         setExpandTradeTable: setExpandTradeTable,
-        isUserLoggedIn: isUserLoggedIn,
+        isUserLoggedIn: isConnected,
 
         setShowSidebar: setShowSidebar,
     };
@@ -200,7 +199,7 @@ export default function Sidebar(props: propsIF) {
         setIsShowAllEnabled: props.setIsShowAllEnabled,
         expandTradeTable: expandTradeTable,
         setExpandTradeTable: setExpandTradeTable,
-        isUserLoggedIn: isUserLoggedIn,
+        isUserLoggedIn: isConnected,
         setShowSidebar: setShowSidebar,
     };
 
@@ -271,7 +270,7 @@ export default function Sidebar(props: propsIF) {
                     setSelectedOutsideTab={setSelectedOutsideTab}
                     setOutsideControl={setOutsideControl}
                     outsideControl={props.outsideControl}
-                    isUserLoggedIn={isUserLoggedIn}
+                    isUserLoggedIn={isConnected}
                     setShowSidebar={setShowSidebar}
                 />
             ),
@@ -541,7 +540,6 @@ export default function Sidebar(props: propsIF) {
                     setShowSidebar={setShowSidebar}
                     openAllDefault={openAllDefault}
                     openModalWallet={openModalWallet}
-                    // mostRecent={positionsByUser}
                 />
             ))}
         </div>
