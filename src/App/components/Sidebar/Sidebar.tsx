@@ -135,13 +135,11 @@ export default function Sidebar(props: propsIF) {
     } = props;
 
     const location = useLocation();
-    const graphData = useAppSelector((state) => state.graphData);
     const isUserLoggedIn = isConnected;
-    const limitOrderByUser = graphData.limitOrdersByUser.limitOrders;
 
     const mostRecentTxs = txsByUser.slice(0, 4);
     const mostRecentPositions = positionsByUser.slice(0, 4);
-    const mostRecentLimitOrders = limitOrderByUser.slice(0, 4);
+    const mostRecentLimitOrders = limitsByUser.slice(0, 4);
 
     const recentPools = [
         {
