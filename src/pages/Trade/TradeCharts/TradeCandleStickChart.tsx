@@ -111,6 +111,7 @@ export default function TradeCandleStickChart(props: ChartData) {
         setSelectedDate,
         activeTimeFrame,
         handlePulseAnimation,
+        // fetchingCandle,
         setFetchingCandle,
     } = props;
 
