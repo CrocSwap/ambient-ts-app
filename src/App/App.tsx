@@ -115,6 +115,7 @@ import {
     setIsUserIdle,
     setNativeToken,
     setRecentTokens,
+    setShouldRecheckLocalStorage,
 } from '../utils/state/userDataSlice';
 import { checkIsStable } from '../utils/data/stablePairs';
 import { useTokenMap } from '../utils/hooks/useTokenMap';
@@ -296,7 +297,8 @@ export default function App() {
         console.log('setting login check delay');
         const timer = setTimeout(() => {
             setLoginCheckDelayElapsed(true);
-        }, 3000);
+            dispatch(setShouldRecheckLocalStorage(true));
+        }, 1000);
         return () => clearTimeout(timer);
     }, []);
 
