@@ -246,6 +246,10 @@ footer {
         margin: 0;
         overflow: scroll;
     }
+
+    .swap-body{
+        max-height: 86.5vh;
+    }
 }
 
 /* @media only screen and (min-width: 800px) {
