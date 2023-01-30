@@ -8,16 +8,15 @@ import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 
 import './TransactionDetailsGraph.css';
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
 interface TransactionDetailsGraphIF {
     tx: any;
     transactionType: string;
     useTx?: boolean;
 }
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 export default function TransactionDetailsGraph(props: TransactionDetailsGraphIF) {
-    const { tx, transactionType, useTx } = props;
+    const { tx, transactionType } = props;
 
     const isServerEnabled =
         process.env.REACT_APP_CACHE_SERVER_IS_ENABLED !== undefined
