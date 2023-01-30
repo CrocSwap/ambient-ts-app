@@ -2,6 +2,7 @@ import { Dispatch, SetStateAction } from 'react';
 import styles from '../SidebarSearchResults.module.css';
 import { PositionIF } from '../../../../../utils/interfaces/exports';
 import PositionLI from './PositionLI';
+import { useClick } from './hooks/useClick';
 
 interface propsIF {
     searchedPositions: PositionIF[];
@@ -22,6 +23,13 @@ export default function PositionsSearchResults(props: propsIF) {
         setIsShowAllEnabled,
     } = props;
 
+    const handleClick = useClick(
+        setOutsideControl,
+        setSelectedOutsideTab,
+        setCurrentPositionActive,
+        setIsShowAllEnabled
+    );
+
     return (
         <div>
             <div className={styles.card_title}>My Range Positions</div>
@@ -36,10 +44,7 @@ export default function PositionsSearchResults(props: propsIF) {
                         key={`PositionSearchResult_${JSON.stringify(position)}`}
                         position={position}
                         isDenomBase={isDenomBase}
-                        setOutsideControl={setOutsideControl}
-                        setSelectedOutsideTab={setSelectedOutsideTab}
-                        setCurrentPositionActive={setCurrentPositionActive}
-                        setIsShowAllEnabled={setIsShowAllEnabled}
+                        handleClick={handleClick}
                     />
                 ))}
             </div>
