@@ -3,7 +3,7 @@ import styles from './LimitCurrencyQuantity.module.css';
 import { ChangeEvent, useEffect, useState } from 'react';
 import { TokenIF } from '../../../../utils/interfaces/exports';
 
-interface LimitCurrencyQuantityProps {
+interface propsIF {
     disable?: boolean;
     fieldId: string;
     value: string;
@@ -11,7 +11,7 @@ interface LimitCurrencyQuantityProps {
     thisToken: TokenIF;
 }
 
-export default function LimitCurrencyQuantity(props: LimitCurrencyQuantityProps) {
+export default function LimitCurrencyQuantity(props: propsIF) {
     const { value, thisToken, disable, fieldId, handleChangeEvent } = props;
 
     const [displayValue, setDisplayValue] = useState<string>('');

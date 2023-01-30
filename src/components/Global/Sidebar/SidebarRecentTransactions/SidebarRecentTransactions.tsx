@@ -1,13 +1,12 @@
-import { TokenIF } from '../../../../utils/interfaces/TokenIF';
-import { ITransaction } from '../../../../utils/state/graphDataSlice';
+import { TokenIF, TransactionIF } from '../../../../utils/interfaces/exports';
 import styles from './SidebarRecentTransactions.module.css';
 import SidebarRecentTransactionsCard from './SidebarRecentTransactionsCard';
 import { Dispatch, SetStateAction } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
-interface SidebarRecentTransactionsPropsIF {
+interface propsIF {
     // showSidebar: boolean;
-    mostRecentTransactions: ITransaction[];
+    mostRecentTransactions: TransactionIF[];
     coinGeckoTokenMap: Map<string, TokenIF>;
     chainId: string;
     currentTxActiveInTransactions: string;
@@ -26,7 +25,7 @@ interface SidebarRecentTransactionsPropsIF {
     isUserLoggedIn: boolean | undefined;
 }
 
-export default function SidebarRecentTransactions(props: SidebarRecentTransactionsPropsIF) {
+export default function SidebarRecentTransactions(props: propsIF) {
     const location = useLocation();
     const navigate = useNavigate();
     const {
@@ -41,14 +40,6 @@ export default function SidebarRecentTransactions(props: SidebarRecentTransactio
         // expandTradeTable,
         setShowSidebar,
     } = props;
-
-    const header = (
-        <div className={styles.header}>
-            <div>Pool</div>
-            <div>Type</div>
-            <div>Value</div>
-        </div>
-    );
 
     const onTradeRoute = location.pathname.includes('trade');
     const onAccountRoute = location.pathname.includes('account');
@@ -74,10 +65,15 @@ export default function SidebarRecentTransactions(props: SidebarRecentTransactio
         // props.setExpandTradeTable(true);
     };
 
-    // // const mapItems = [1, 2, 3, 4, 5, 6, 7];
+    // TODO:   @Junior please refactor the header <div> as a <header> element
+
     return (
         <div className={styles.container}>
-            {header}
+            <div className={styles.header}>
+                <div>Pool</div>
+                <div>Type</div>
+                <div>Value</div>
+            </div>
             <div className={styles.content}>
                 {mostRecentTransactions.map((tx, idx) => (
                     <SidebarRecentTransactionsCard

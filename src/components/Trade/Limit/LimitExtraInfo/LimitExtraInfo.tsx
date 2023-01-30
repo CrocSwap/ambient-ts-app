@@ -13,7 +13,7 @@ import DenominationSwitch from '../../../Swap/DenominationSwitch/DenominationSwi
 // import makePriceDisplay from './makePriceDisplay';
 
 // interface for component props
-interface LimitExtraInfoPropsIF {
+interface propsIF {
     tokenPair: TokenPairIF;
     poolPriceDisplay: number;
     slippageTolerance: number;
@@ -31,7 +31,7 @@ interface LimitExtraInfoPropsIF {
 }
 
 // central react functional component
-export default function LimitExtraInfo(props: LimitExtraInfoPropsIF) {
+export default function LimitExtraInfo(props: propsIF) {
     const {
         // tokenPair,
         orderGasPriceInDollars,

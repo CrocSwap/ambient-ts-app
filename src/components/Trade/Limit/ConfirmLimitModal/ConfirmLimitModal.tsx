@@ -12,7 +12,7 @@ import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import ConfirmationModalControl from '../../../Global/ConfirmationModalControl/ConfirmationModalControl';
 import NoTokenIcon from '../../../Global/NoTokenIcon/NoTokenIcon';
 
-interface ConfirmLimitModalProps {
+interface propsIF {
     onClose: () => void;
     initiateLimitOrderMethod: () => void;
     tokenPair: TokenPairIF;
@@ -33,7 +33,7 @@ interface ConfirmLimitModalProps {
     endDisplayPrice: number;
 }
 
-export default function ConfirmLimitModal(props: ConfirmLimitModalProps) {
+export default function ConfirmLimitModal(props: propsIF) {
     const {
         // onClose,
         tokenPair,

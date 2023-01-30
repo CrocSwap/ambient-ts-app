@@ -2,7 +2,7 @@ import styles from './AdvancedPriceInfo.module.css';
 import { TokenPairIF } from '../../../../../utils/interfaces/exports';
 import truncateDecimals from '../../../../../utils/data/truncateDecimals';
 
-interface AdvancedPriceInfoIF {
+interface propsIF {
     tokenPair: TokenPairIF;
     poolPriceDisplay: string;
     isDenomBase: boolean;
@@ -11,7 +11,7 @@ interface AdvancedPriceInfoIF {
     isOutOfRange: boolean;
 }
 
-export default function AdvancedPriceInfo(props: AdvancedPriceInfoIF) {
+export default function AdvancedPriceInfo(props: propsIF) {
     // JSX frag to display the pool price for the current pair
     const { tokenPair, poolPriceDisplay, isDenomBase, isTokenABase, minimumSpan, isOutOfRange } =
         props;

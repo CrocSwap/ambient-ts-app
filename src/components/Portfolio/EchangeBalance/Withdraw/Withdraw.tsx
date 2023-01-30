@@ -1,5 +1,5 @@
 import { CrocEnv, toDisplayQty } from '@crocswap-libs/sdk';
-import { TokenIF } from '../../../../utils/interfaces/TokenIF';
+import { TokenIF } from '../../../../utils/interfaces/exports';
 import styles from './Withdraw.module.css';
 import WithdrawButton from './WithdrawButton/WithdrawButton';
 import WithdrawCurrencySelector from './WithdrawCurrencySelector/WithdrawCurrencySelector';
@@ -20,7 +20,8 @@ import {
     TransactionError,
 } from '../../../../utils/TransactionError';
 import { BigNumber } from 'ethers';
-interface PortfolioWithdrawProps {
+
+interface propsIF {
     crocEnv: CrocEnv | undefined;
     connectedAccount: string;
     openGlobalModal: (content: React.ReactNode, title?: string) => void;
@@ -38,7 +39,7 @@ interface PortfolioWithdrawProps {
     gasPriceInGwei: number | undefined;
 }
 
-export default function Withdraw(props: PortfolioWithdrawProps) {
+export default function Withdraw(props: propsIF) {
     const {
         crocEnv,
         connectedAccount,

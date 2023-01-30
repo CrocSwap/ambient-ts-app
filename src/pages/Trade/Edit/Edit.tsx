@@ -10,11 +10,8 @@ import Modal from '../../../components/Global/Modal/Modal';
 import ConfirmEditModal from '../../../components/Trade/Edit/ConfirmEditModal/ConfirmEditModal';
 import { useModal } from '../../../components/Global/Modal/useModal';
 import { useState, useEffect } from 'react';
-// import EditDenominationSwitch from '../../../components/Trade/Edit/EditDenominationSwitch/EditDenominationSwitch';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
-
-import { PositionIF } from '../../../utils/interfaces/PositionIF';
-
+import { PositionIF, TokenIF } from '../../../utils/interfaces/exports';
 import {
     getPinnedPriceValuesFromTicks,
     getPinnedPriceValuesFromDisplayPrices,
@@ -22,8 +19,6 @@ import {
 import truncateDecimals from '../../../utils/data/truncateDecimals';
 import { tickToPrice, toDisplayPrice } from '@crocswap-libs/sdk';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
-
-import { TokenIF } from '../../../utils/interfaces/exports';
 import DenominationSwitch from '../../../components/Swap/DenominationSwitch/DenominationSwitch';
 
 interface PositionState {

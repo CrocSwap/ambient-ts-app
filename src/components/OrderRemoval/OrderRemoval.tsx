@@ -28,7 +28,7 @@ import {
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import TransactionException from '../Global/TransactionException/TransactionException';
 
-interface IOrderRemovalProps {
+interface propsIF {
     account: string;
     crocEnv: CrocEnv | undefined;
     chainData: ChainSpec;
@@ -36,7 +36,7 @@ interface IOrderRemovalProps {
     closeGlobalModal: () => void;
 }
 
-export default function OrderRemoval(props: IOrderRemovalProps) {
+export default function OrderRemoval(props: propsIF) {
     const { account, chainData, crocEnv, limitOrder, closeGlobalModal } = props;
     const {
         posLiqBaseDecimalCorrected,

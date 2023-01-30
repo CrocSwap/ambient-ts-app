@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { feeTierPercent, isAddress } from '../../utils';
 import { useAppDispatch } from '../../utils/hooks/reduxToolkit';
-import { TokenIF } from '../../utils/interfaces/TokenIF';
+import { PoolIF, TokenIF } from '../../utils/interfaces/exports';
 import { formatDollarAmount } from '../../utils/numbers';
 import { setTokenA, setTokenB } from '../../utils/state/tradeDataSlice';
 import PoolDisplay from '../Global/Analytics/PoolDisplay';
@@ -9,10 +9,9 @@ import TokenDisplay from '../Global/Analytics/TokenDisplay';
 import Apy from '../Global/Tabs/Apy/Apy';
 import styles from './PoolRow.module.css';
 import { motion } from 'framer-motion';
-import { PoolIF } from '../../utils/interfaces/PoolIF';
 import { MouseEvent } from 'react';
 
-interface PoolProps {
+interface propsIF {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     pool: any;
     poolType: string;
@@ -26,7 +25,7 @@ interface PoolProps {
     ) => void;
 }
 
-export default function PoolRow(props: PoolProps) {
+export default function PoolRow(props: propsIF) {
     const poolData = props.pool;
 
     const dispatch = useAppDispatch();

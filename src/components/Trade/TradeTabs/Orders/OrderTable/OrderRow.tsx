@@ -18,7 +18,7 @@ import { ZERO_ADDRESS } from '../../../../../constants';
 import { FiExternalLink } from 'react-icons/fi';
 import useOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 
-interface OrderRowPropsIF {
+interface propsIF {
     crocEnv: CrocEnv | undefined;
     chainData: ChainSpec;
     tradeData: tradeData;
@@ -40,7 +40,7 @@ interface OrderRowPropsIF {
     account: string;
     handlePulseAnimation?: (type: string) => void;
 }
-export default function OrderRow(props: OrderRowPropsIF) {
+export default function OrderRow(props: propsIF) {
     const {
         account,
         crocEnv,
@@ -330,18 +330,18 @@ export default function OrderRow(props: OrderRowPropsIF) {
     const elapsedTimeString =
         elapsedTimeInSecondsNum !== undefined
             ? elapsedTimeInSecondsNum < 60
-                ? '< 1 min. ago'
+                ? '< 1 min. '
                 : elapsedTimeInSecondsNum < 120
-                ? '1 min. ago'
+                ? '1 min. '
                 : elapsedTimeInSecondsNum < 3600
-                ? `${Math.floor(elapsedTimeInSecondsNum / 60)} min. ago`
+                ? `${Math.floor(elapsedTimeInSecondsNum / 60)} min. `
                 : elapsedTimeInSecondsNum < 7200
-                ? '1 hour ago'
+                ? '1 hour '
                 : elapsedTimeInSecondsNum < 86400
-                ? `${Math.floor(elapsedTimeInSecondsNum / 3600)} hrs. ago`
+                ? `${Math.floor(elapsedTimeInSecondsNum / 3600)} hrs. `
                 : elapsedTimeInSecondsNum < 172800
-                ? '1 day ago'
-                : `${Math.floor(elapsedTimeInSecondsNum / 86400)} days ago`
+                ? '1 day '
+                : `${Math.floor(elapsedTimeInSecondsNum / 86400)} days `
             : 'Pending...';
 
     // const baseQtyToolTipStyle = <p className={styles.tooltip_style}>{baseTokenSymbol + ' Qty'}</p>;

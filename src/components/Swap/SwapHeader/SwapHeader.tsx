@@ -15,7 +15,7 @@ import { AiOutlineShareAlt } from 'react-icons/ai';
 import ShareModal from '../../Global/ShareModal/ShareModal';
 
 // interface for props
-interface SwapHeaderPropsIF {
+interface propsIF {
     // tokenPair: TokenPairIF;
     swapSlippage: SlippagePairIF;
     isPairStable: boolean;
@@ -28,7 +28,7 @@ interface SwapHeaderPropsIF {
 }
 
 // main react functional component
-export default function SwapHeader(props: SwapHeaderPropsIF) {
+export default function SwapHeader(props: propsIF) {
     const { swapSlippage, isPairStable, isOnTradeRoute, openGlobalModal } = props;
     const [isModalOpen, openModal, closeModal] = useModal();
 

@@ -46,7 +46,7 @@ import { getRecentTokensParamsIF } from '../../../App/hooks/useRecentTokens';
 
 import { useUrlParams } from '../../InitPool/useUrlParams';
 
-interface LimitPropsIF {
+interface propsIF {
     account: string | undefined;
     pool: CrocPoolView | undefined;
     crocEnv: CrocEnv | undefined;
@@ -92,11 +92,17 @@ interface LimitPropsIF {
     searchType: string;
     acknowledgeToken: (tkn: TokenIF) => void;
     setResetLimitTick: Dispatch<SetStateAction<boolean>>;
+
+    openGlobalPopup: (
+        content: React.ReactNode,
+        popupTitle?: string,
+        popupPlacement?: string,
+    ) => void;
 }
 
 const cachedQuerySpotPrice = memoizeQuerySpotPrice();
 
-export default function Limit(props: LimitPropsIF) {
+export default function Limit(props: propsIF) {
     const {
         account,
         provider,
@@ -139,6 +145,7 @@ export default function Limit(props: LimitPropsIF) {
         searchType,
         acknowledgeToken,
         setResetLimitTick,
+        openGlobalPopup,
     } = props;
 
     const { tradeData, navigationMenu } = useTradeData();
@@ -773,6 +780,7 @@ export default function Limit(props: LimitPropsIF) {
                         searchType={searchType}
                         acknowledgeToken={acknowledgeToken}
                         setResetLimitTick={setResetLimitTick}
+                        openGlobalPopup={openGlobalPopup}
                     />
                 </motion.div>
                 <div className={styles.header_container}>

@@ -1,13 +1,19 @@
-import { ReactNode } from 'react';
-import { TokenIF, TokenPairIF, TempPoolIF } from '../../../../utils/interfaces/exports';
+import { Dispatch, SetStateAction, ReactNode } from 'react';
+import {
+    PositionIF,
+    TokenIF,
+    TokenPairIF,
+    TempPoolIF,
+    TransactionIF,
+} from '../../../../utils/interfaces/exports';
 import styles from './SidebarSearchResults.module.css';
 import PoolsSearchResults from './PoolsSearchResults/PoolsSearchResults';
 import PositionsSearchResults from './PositionsSearchResults/PositionsSearchResults';
 import OrdersSearchResults from './OrdersSearchResults/OrdersSearchResults';
-import TransactionsSearchResults from './TransactionsResults/TransactionsResults';
+import TxSearchResults from './TxSearchResults/TxSearchResults';
 import { PoolStatsFn } from '../../../functions/getPoolStats';
 
-interface SidebarSearchResultsPropsIF {
+interface propsIF {
     searchedPools: TempPoolIF[];
     searchInput: ReactNode;
     exampleLoading: boolean;
@@ -16,9 +22,17 @@ interface SidebarSearchResultsPropsIF {
     chainId: string;
     isConnected: boolean;
     cachedPoolStatsFetch: PoolStatsFn;
+    searchedPositions: PositionIF[];
+    isDenomBase: boolean;
+    setOutsideControl: Dispatch<SetStateAction<boolean>>;
+    setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
+    setCurrentPositionActive: Dispatch<SetStateAction<string>>;
+    setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
+    setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
+    searchedTxs: TransactionIF[];
 }
 
-export default function SidebarSearchResults(props: SidebarSearchResultsPropsIF) {
+export default function SidebarSearchResults(props: propsIF) {
     const {
         searchedPools,
         exampleLoading,
@@ -28,9 +42,15 @@ export default function SidebarSearchResults(props: SidebarSearchResultsPropsIF)
         chainId,
         isConnected,
         cachedPoolStatsFetch,
+        searchedPositions,
+        isDenomBase,
+        setOutsideControl,
+        setSelectedOutsideTab,
+        setCurrentPositionActive,
+        setCurrentTxActiveInTransactions,
+        setIsShowAllEnabled,
+        searchedTxs,
     } = props;
-
-    // we are not going to use this following loading functionality. It is just for demonstration purposes
 
     return (
         <div className={styles.container}>
@@ -44,21 +64,24 @@ export default function SidebarSearchResults(props: SidebarSearchResultsPropsIF)
             />
             {isConnected && (
                 <>
-                    {false && (
-                        <PositionsSearchResults
-                            loading={exampleLoading}
-                            searchInput={searchInput}
-                        />
-                    )}
+                    <PositionsSearchResults
+                        searchedPositions={searchedPositions}
+                        isDenomBase={isDenomBase}
+                        setOutsideControl={setOutsideControl}
+                        setSelectedOutsideTab={setSelectedOutsideTab}
+                        setCurrentPositionActive={setCurrentPositionActive}
+                        setIsShowAllEnabled={setIsShowAllEnabled}
+                    />
                     {false && (
                         <OrdersSearchResults loading={exampleLoading} searchInput={searchInput} />
                     )}
-                    {false && (
-                        <TransactionsSearchResults
-                            loading={exampleLoading}
-                            searchInput={searchInput}
-                        />
-                    )}
+                    <TxSearchResults
+                        searchedTxs={searchedTxs}
+                        setOutsideControl={setOutsideControl}
+                        setSelectedOutsideTab={setSelectedOutsideTab}
+                        setCurrentTxActiveInTransactions={setCurrentTxActiveInTransactions}
+                        setIsShowAllEnabled={setIsShowAllEnabled}
+                    />
                 </>
             )}
         </div>

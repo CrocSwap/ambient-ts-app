@@ -2,7 +2,7 @@ import styles from './TransactionAccordions.module.css';
 import { motion, AnimatePresence } from 'framer-motion';
 import { IoMdArrowDropdown } from 'react-icons/io';
 import { RiArrowUpSFill } from 'react-icons/ri';
-import { ITransaction } from '../../../../../utils/state/graphDataSlice';
+import { TransactionIF } from '../../../../../utils/interfaces/exports';
 import { useProcessTransaction } from '../../../../../utils/hooks/useProcessTransaction';
 import { BiWallet } from 'react-icons/bi';
 import { Dispatch, SetStateAction } from 'react';
@@ -10,14 +10,14 @@ import Price from '../../../../Global/Tabs/Price/Price';
 // import TransactionTypeSide from '../../../../Global/Tabs/TypeAndSide/TransactionTypeSide/TransactionTypeSide';
 import TransactionAccordionContent from './TransactionAccordionContent';
 
-interface TransactionAccordionsPropsIF {
+interface propsIF {
     account: string;
     i: number;
     expanded: number | boolean;
     setExpanded: Dispatch<SetStateAction<number | false>>;
-    tx: ITransaction;
+    tx: TransactionIF;
 }
-export default function TransactionAccordions(props: TransactionAccordionsPropsIF) {
+export default function TransactionAccordions(props: propsIF) {
     const { account, i, expanded, setExpanded, tx } = props;
 
     const isOpen = i === expanded;

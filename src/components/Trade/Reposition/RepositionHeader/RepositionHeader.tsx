@@ -3,7 +3,6 @@ import { RiCloseFill } from 'react-icons/ri';
 import { useNavigate } from 'react-router-dom';
 import trimString from '../../../../utils/functions/trimString';
 import styles from './RepositionHeader.module.css';
-
 // interface RepositionHeaderPropsIF {
 //     positionHash?: string;
 // }

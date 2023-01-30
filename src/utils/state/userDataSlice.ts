@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { TokenIF } from '../interfaces/TokenIF';
+import { TokenIF } from '../interfaces/exports';
 
 export interface userData {
     isLoggedIn: boolean | undefined;
@@ -11,6 +11,7 @@ export interface userData {
     isUserIdle: boolean;
     tokens: tokenData;
     recentTokens: TokenIF[] | undefined;
+    shouldRecheckLocalStorage: boolean;
     secondaryImageData: string[];
     resolvedAddress: string | undefined;
     shoulRecheckLocalStorage: boolean;
@@ -34,6 +35,7 @@ const initialState: userData = {
         erc20Tokens: undefined,
     },
     recentTokens: undefined,
+    shouldRecheckLocalStorage: true,
     secondaryImageData: [],
     resolvedAddress: undefined,
     shoulRecheckLocalStorage: true,
@@ -128,8 +130,8 @@ export const userDataSlice = createSlice({
             state.tokens.erc20Tokens[index].dexBalanceDisplayTruncated =
                 action.payload.dexBalanceDisplayTruncated;
         },
-        setShoulRecheckLocalStorage: (state, action: PayloadAction<boolean>) => {
-            state.shoulRecheckLocalStorage = action.payload;
+        setShouldRecheckLocalStorage: (state, action: PayloadAction<boolean>) => {
+            state.shouldRecheckLocalStorage = action.payload;
         },
         setErc20Tokens: (state, action: PayloadAction<TokenIF[]>) => {
             state.tokens.erc20Tokens = action.payload;
@@ -169,7 +171,7 @@ export const {
     setNativeToken,
     setErc20Tokens,
     setRecentTokens,
-    setShoulRecheckLocalStorage,
+    setShouldRecheckLocalStorage,
     //  addNativeBalance,
     updateNativeTokenWalletBalance,
     updateNativeTokenDexBalance,

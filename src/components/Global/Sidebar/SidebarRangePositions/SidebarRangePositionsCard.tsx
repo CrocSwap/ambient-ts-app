@@ -5,7 +5,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
 import { formatAmountOld } from '../../../../utils/numbers';
 
-interface SidebarRangePositionsProps {
+interface propsIF {
     isDenomBase: boolean;
     position: PositionIF;
     tokenMap: Map<string, TokenIF>;
@@ -20,7 +20,7 @@ interface SidebarRangePositionsProps {
     tabToSwitchToBasedOnRoute: number;
 }
 
-export default function SidebarRangePositionsCard(props: SidebarRangePositionsProps) {
+export default function SidebarRangePositionsCard(props: propsIF) {
     const {
         // tokenMap,
         isDenomBase,

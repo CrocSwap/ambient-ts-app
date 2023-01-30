@@ -3,8 +3,7 @@ import { FaDiscord, FaGithub } from 'react-icons/fa';
 import { BsMedium } from 'react-icons/bs';
 import { AiFillTwitterCircle } from 'react-icons/ai';
 import { Dispatch, SetStateAction } from 'react';
-import { PoolIF } from '../../../utils/interfaces/PoolIF';
-import { TokenIF } from '../../../utils/interfaces/TokenIF';
+import { PoolIF, TokenIF } from '../../../utils/interfaces/exports';
 import { targetData } from '../../../utils/state/tradeDataSlice';
 // import { useLocation} from 'react-router-dom'
 

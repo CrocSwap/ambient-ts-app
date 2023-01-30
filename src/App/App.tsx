@@ -24,11 +24,9 @@ import {
     setLimitOrdersByPool,
     CandlesByPoolAndDuration,
     CandleData,
-    // ITransaction,
     addChangesByUser,
     setLastBlock,
     addLimitOrderChangesByUser,
-    ITransaction,
     setLeaderboardByPool,
     setDataLoadingStatus,
     resetConnectedUserDataLoadingStatus,
@@ -67,7 +65,13 @@ import './App.css';
 import { useAppDispatch, useAppSelector } from '../utils/hooks/reduxToolkit';
 import { defaultTokens } from '../utils/data/defaultTokens';
 import initializeUserLocalStorage from './functions/initializeUserLocalStorage';
-import { LimitOrderIF, TokenIF, TokenListIF, PositionIF } from '../utils/interfaces/exports';
+import {
+    LimitOrderIF,
+    TokenIF,
+    TokenListIF,
+    TransactionIF,
+    PositionIF,
+} from '../utils/interfaces/exports';
 import { fetchTokenLists } from './functions/fetchTokenLists';
 import {
     resetTokens,
@@ -152,6 +156,9 @@ import Moralis from 'moralis';
 import { usePoolList } from './hooks/usePoolList';
 import { useRecentPools } from './hooks/useRecentPools';
 import useMediaQuery from '../utils/hooks/useMediaQuery';
+import { useGlobalPopup } from './components/GlobalPopup/useGlobalPopup';
+import GlobalPopup from './components/GlobalPopup/GlobalPopup';
+import RangeAdd from '../pages/Trade/RangeAdd/RangeAdd';
 
 // import { memoizeQuerySpotTick } from './functions/querySpotTick';
 // import PhishingWarning from '../components/Global/PhisingWarning/PhishingWarning';
@@ -1645,7 +1652,7 @@ export default function App() {
 
             if (lastMessageData) {
                 Promise.all(
-                    lastMessageData.map((tx: ITransaction) => {
+                    lastMessageData.map((tx: TransactionIF) => {
                         return getTransactionData(tx, tokensOnActiveLists);
                     }),
                 )
@@ -2015,7 +2022,7 @@ export default function App() {
                         const result: TokenIF[] = [];
                         const tokenMap = new Map();
                         const ambientTokens = getAmbientTokens();
-                        for (const item of updatedTransactions as ITransaction[]) {
+                        for (const item of updatedTransactions as TransactionIF[]) {
                             if (!tokenMap.has(item.base)) {
                                 const isFoundInAmbientList = ambientTokens.some((ambientToken) => {
                                     if (
@@ -2158,6 +2165,14 @@ export default function App() {
 
     const [isGlobalModalOpen, openGlobalModal, closeGlobalModal, currentContent, title] =
         useGlobalModal();
+    const [
+        isGlobalPopupOpen,
+        openGlobalPopup,
+        closeGlobalPopup,
+        popupContent,
+        popupTitle,
+        popupPlacement,
+    ] = useGlobalPopup();
 
     const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
@@ -2356,6 +2371,8 @@ export default function App() {
         setInput: setInput,
         searchType: searchType,
         acknowledgeToken: acknowledgeToken,
+
+        openGlobalPopup: openGlobalPopup,
     };
 
     // props for <Swap/> React element on trade route
@@ -2401,6 +2418,8 @@ export default function App() {
         setInput: setInput,
         searchType: searchType,
         acknowledgeToken: acknowledgeToken,
+
+        openGlobalPopup: openGlobalPopup,
     };
 
     // props for <Limit/> React element on trade route
@@ -2453,6 +2472,8 @@ export default function App() {
         setInput: setInput,
         searchType: searchType,
         acknowledgeToken: acknowledgeToken,
+
+        openGlobalPopup: openGlobalPopup,
     };
 
     // props for <Range/> React element
@@ -2509,6 +2530,8 @@ export default function App() {
         setInput: setInput,
         searchType: searchType,
         acknowledgeToken: acknowledgeToken,
+
+        openGlobalPopup: openGlobalPopup,
     };
 
     function toggleSidebar() {
@@ -2562,6 +2585,8 @@ export default function App() {
         isConnected: isConnected,
         addPoolToFaves: addPoolToFaves,
         removePoolFromFaves: removePoolFromFaves,
+        positionsByUser: graphData.positionsByUser.positions,
+        txsByUser: graphData.changesByUser.changes,
     };
 
     const analyticsProps = {
@@ -2699,6 +2724,7 @@ export default function App() {
                             path='trade'
                             element={
                                 <Trade
+                                    cachedQuerySpotPrice={cachedQuerySpotPrice}
                                     pool={pool}
                                     // poolPriceTick={poolPriceTick}
                                     isUserLoggedIn={isUserLoggedIn}
@@ -2782,6 +2808,7 @@ export default function App() {
                             <Route path='range/:params' element={<Range {...rangeProps} />} />
                             <Route path='edit/:positionHash' element={<Edit />} />
                             <Route path='reposition' element={<Reposition />} />
+                            <Route path='add' element={<RangeAdd />} />
                             <Route path='edit/' element={<Navigate to='/trade/market' replace />} />
                         </Route>
                         <Route path='analytics' element={<Analytics {...analyticsProps} />} />
@@ -2895,6 +2922,7 @@ export default function App() {
                             path='account'
                             element={
                                 <Portfolio
+                                    cachedQuerySpotPrice={cachedQuerySpotPrice}
                                     crocEnv={crocEnv}
                                     addRecentToken={addRecentToken}
                                     getRecentTokens={getRecentTokens}
@@ -2951,6 +2979,7 @@ export default function App() {
                             path='account/:address'
                             element={
                                 <Portfolio
+                                    cachedQuerySpotPrice={cachedQuerySpotPrice}
                                     crocEnv={crocEnv}
                                     addRecentToken={addRecentToken}
                                     getRecentTokens={getRecentTokens}
@@ -3025,6 +3054,7 @@ export default function App() {
                             path='/:address'
                             element={
                                 <Portfolio
+                                    cachedQuerySpotPrice={cachedQuerySpotPrice}
                                     crocEnv={crocEnv}
                                     addRecentToken={addRecentToken}
                                     getRecentTokens={getRecentTokens}
@@ -3132,6 +3162,14 @@ export default function App() {
                 openGlobalModal={openGlobalModal}
                 currentContent={currentContent}
                 title={title}
+            />
+            <GlobalPopup
+                isGlobalPopupOpen={isGlobalPopupOpen}
+                openGlobalPopup={openGlobalPopup}
+                closeGlobalPopup={closeGlobalPopup}
+                popupContent={popupContent}
+                popupTitle={popupTitle}
+                placement={popupPlacement}
             />
 
             {isWagmiModalOpenWallet && (

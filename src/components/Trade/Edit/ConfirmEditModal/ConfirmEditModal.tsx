@@ -3,9 +3,9 @@ import Button from '../../../Global/Button/Button';
 import CurrencyDisplayContainer from '../CurrencyDisplayContainer/CurrencyDisplayContainer';
 import Divider from '../../../Global/Divider/Divider';
 import EditPriceInfo from '../EditPriceInfo/EditPriceInfo';
-import { PositionIF } from '../../../../utils/interfaces/PositionIF';
+import { PositionIF } from '../../../../utils/interfaces/exports';
 
-interface ConfirmEditModalPropsIF {
+interface propsIF {
     onClose: () => void;
     position: PositionIF;
     // position: PositionIF;
@@ -19,7 +19,7 @@ interface ConfirmEditModalPropsIF {
     highPriceDisplayTruncated: string;
 }
 
-export default function ConfirmEditModal(props: ConfirmEditModalPropsIF) {
+export default function ConfirmEditModal(props: propsIF) {
     const {
         onClose,
         position,

@@ -57,7 +57,7 @@ import CurveDepth from './TradeChartsComponents/CurveDepth';
 import CurrentDataInfo from './TradeChartsComponents/CurrentDataInfo';
 
 // interface for React functional component props
-interface TradeChartsPropsIF {
+interface propsIF {
     isUserLoggedIn: boolean | undefined;
     pool: CrocPoolView | undefined;
     // poolPriceTick: number | undefined;
@@ -162,7 +162,7 @@ export interface LiqSnap {
 }
 
 // React functional component
-export default function TradeCharts(props: TradeChartsPropsIF) {
+export default function TradeCharts(props: propsIF) {
     const {
         isUserLoggedIn,
         pool,

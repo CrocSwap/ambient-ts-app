@@ -2,7 +2,7 @@ import styles from './SelectedRange.module.css';
 import { useState } from 'react';
 import { TokenPairIF } from '../../../../../utils/interfaces/exports';
 
-interface SelectedRangeProps {
+interface propsIF {
     minPriceDisplay: number | string;
     maxPriceDisplay: number | string;
     spotPriceDisplay: string;
@@ -18,7 +18,7 @@ interface SelectedRangeProps {
     // poolPriceTruncatedInBase: string;
     // poolPriceTruncatedInQuote: string;
 }
-export default function SelectedRange(props: SelectedRangeProps) {
+export default function SelectedRange(props: propsIF) {
     const {
         // minPriceDisplay,
         // maxPriceDisplay,

@@ -13,9 +13,13 @@ import IconWithTooltip from '../../../Global/IconWithTooltip/IconWithTooltip';
 import NoTokenIcon from '../../../Global/NoTokenIcon/NoTokenIcon';
 import { SoloTokenSelect } from '../../../../components/Global/TokenSelectContainer/SoloTokenSelect';
 import { getRecentTokensParamsIF } from '../../../../App/hooks/useRecentTokens';
+import { DefaultTooltip } from '../../../Global/StyledTooltip/StyledTooltip';
+import ExchangeBalanceExplanation from '../../../Global/Informational/ExchangeBalanceExplanation';
+import { AiOutlineQuestionCircle } from 'react-icons/ai';
+
 // import { useSoloSearch } from '../../../Global/TokenSelectContainer/hooks/useSoloSearch';
 
-interface RangeCurrencySelectorProps {
+interface propsIF {
     provider?: ethers.providers.Provider;
     isUserLoggedIn: boolean | undefined;
     gasPriceInGwei: number | undefined;
@@ -71,9 +75,15 @@ interface RangeCurrencySelectorProps {
     setInput: Dispatch<SetStateAction<string>>;
     searchType: string;
     acknowledgeToken: (tkn: TokenIF) => void;
+
+    openGlobalPopup: (
+        content: React.ReactNode,
+        popupTitle?: string,
+        popupPlacement?: string,
+    ) => void;
 }
 
-export default function RangeCurrencySelector(props: RangeCurrencySelectorProps) {
+export default function RangeCurrencySelector(props: propsIF) {
     const {
         provider,
         isUserLoggedIn,
@@ -130,6 +140,7 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
         setInput,
         searchType,
         acknowledgeToken,
+        openGlobalPopup,
     } = props;
 
     const isTokenASelector = fieldId === 'A';
@@ -293,34 +304,36 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
         soloTokenSelectInput.value = '';
     };
 
-    // Not sure if this is the same logic as Market and Limit so I am using a static boolean for now.
-    const displayWalletMaxButton = true;
-    const walletBalanceMaxButton =
-        // isSellTokenSelector &&
-        // !isWithdrawFromDexChecked &&
-        //     walletBalanceNonLocaleString !== '0.0'
-        displayWalletMaxButton ? (
-            <button
-                className={`${styles.max_button} ${styles.max_button_enable}`}
-                onClick={() => {
-                    // if (props.sellToken) {
-                    //     setIsWithdrawFromDexChecked(false);
-                    // } else {
-                    //     setIsSaveAsDexSurplusChecked(false);
-                    // }
-                    // if (handleChangeClick && !isWithdrawFromWalletDisabled) {
-                    //     handleChangeClick(walletBalanceNonLocaleString);
-                    // }
-                    console.log('max button clicked');
-                }}
-            >
-                Max
-            </button>
-        ) : (
-            <p className={styles.max_button} />
-        );
+    const displayWalletMaxButton = isTokenASelector
+        ? !isWithdrawTokenAFromDexChecked && walletBalanceNonLocaleString !== '0.0'
+        : !isWithdrawTokenBFromDexChecked && walletBalanceNonLocaleString !== '0.0';
 
-    const displaySurplusMaxButton = true;
+    const walletBalanceMaxButton = displayWalletMaxButton ? (
+        <button
+            className={`${styles.max_button} ${styles.max_button_enable}`}
+            onClick={() => {
+                // if (props.sellToken) {
+                //     setIsWithdrawFromDexChecked(false);
+                // } else {
+                //     setIsSaveAsDexSurplusChecked(false);
+                // }
+                // if (handleChangeClick && !isWithdrawFromWalletDisabled) {
+                //     handleChangeClick(walletBalanceNonLocaleString);
+                // }
+                handleChangeClick(walletBalanceNonLocaleString);
+
+                console.log('max button clicked');
+            }}
+        >
+            Max
+        </button>
+    ) : (
+        <p className={styles.max_button} />
+    );
+
+    const displaySurplusMaxButton = isTokenASelector
+        ? isWithdrawTokenAFromDexChecked && surplusBalanceNonLocaleString !== '0.0'
+        : isWithdrawTokenBFromDexChecked && surplusBalanceNonLocaleString !== '0.0';
 
     const surplusMaxButton =
         // isSellTokenSelector &&
@@ -338,6 +351,8 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
                     // if (handleChangeClick && !isWithdrawFromDexDisabled) {
                     //     handleChangeClick(surplusBalanceNonLocaleStringOffset);
                     // }
+                    handleChangeClick(surplusBalanceNonLocaleString);
+
                     console.log('clicked');
                 }}
             >
@@ -346,13 +361,27 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
         ) : (
             <p className={styles.max_button} />
         );
+    const exchangeBalanceTitle = (
+        <p
+            style={{ display: 'flex', alignItems: 'center', gap: '4px', cursor: 'pointer' }}
+            onClick={() =>
+                openGlobalPopup(<ExchangeBalanceExplanation />, 'Exchange Balance', 'right')
+            }
+        >
+            Exchange Balance <AiOutlineQuestionCircle size={14} />
+        </p>
+    );
 
     const surplusContent = (
         <div className={styles.main_surplus_container}>
-            <IconWithTooltip
-                title='Exchange Balance'
-                placement='bottom'
-                style={{ display: 'flex', alignItems: 'center' }}
+            <DefaultTooltip
+                interactive
+                title={exchangeBalanceTitle}
+                // placement={'bottom'}
+                placement={'bottom'}
+                arrow
+                enterDelay={100}
+                leaveDelay={200}
             >
                 <div
                     className={`${styles.balance_with_pointer} ${
@@ -367,7 +396,7 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
                         } else {
                             setIsWithdrawTokenBFromDexChecked(true);
                         }
-                        handleChangeClick(surplusBalanceNonLocaleString);
+                        // handleChangeClick(surplusBalanceNonLocaleString);
                     }}
                     style={{
                         color:
@@ -402,7 +431,7 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
                     </div>
                     {surplusMaxButton}
                 </div>
-            </IconWithTooltip>
+            </DefaultTooltip>
         </div>
     );
 
@@ -421,7 +450,7 @@ export default function RangeCurrencySelector(props: RangeCurrencySelectorProps)
                         } else {
                             setIsWithdrawTokenBFromDexChecked(false);
                         }
-                        handleChangeClick(walletBalanceNonLocaleString);
+                        // handleChangeClick(walletBalanceNonLocaleString);
                     }}
                 >
                     <div className={styles.wallet_logo}>

@@ -1,7 +1,8 @@
 import styles from './ChooseTokens.module.css';
 import { motion } from 'framer-motion';
-import { TokenIF } from '../../../utils/interfaces/TokenIF';
+import { TokenIF } from '../../../utils/interfaces/exports';
 import { FiInfo } from 'react-icons/fi';
+
 interface chooseTokensPropsIF {
     animation: {
         initial: {
