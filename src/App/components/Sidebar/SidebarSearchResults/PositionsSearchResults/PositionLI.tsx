@@ -4,6 +4,7 @@ import styles from '../SidebarSearchResults.module.css';
 import { PositionIF } from '../../../../../utils/interfaces/exports';
 import getUnicodeCharacter from '../../../../../utils/functions/getUnicodeCharacter';
 import { formatAmountOld } from '../../../../../utils/numbers';
+import { getValueUSD } from './functions/getValueUSD';
 
 interface propsIF {
     position: PositionIF;
@@ -67,21 +68,7 @@ export default function PositionLI(props: propsIF) {
             ? `${quoteTokenCharacter}${position?.lowRangeShortDisplayInBase}-${quoteTokenCharacter}${position?.highRangeShortDisplayInBase}`
             : `${baseTokenCharacter}${position?.lowRangeShortDisplayInQuote}-${baseTokenCharacter}${position?.highRangeShortDisplayInQuote}`;
 
-    const usdValueNum = position.totalValueUSD;
-
-    const usdValueTruncated = !usdValueNum
-        ? '0.00'
-        : usdValueNum < 0.0001
-        ? usdValueNum.toExponential(2)
-        : usdValueNum < 2
-        ? usdValueNum.toPrecision(3)
-        : usdValueNum >= 10000
-        ? formatAmountOld(usdValueNum, 1)
-        : // ? baseLiqDisplayNum.toExponential(2)
-          usdValueNum.toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-          });
+    const positionValue = getValueUSD(position.totalValueUSD);
 
     return (
         <div className={styles.card_container} onClick={() => handleRangePositionClick(position)}>
@@ -91,7 +78,7 @@ export default function PositionLI(props: propsIF) {
                     : `${position?.quoteSymbol} / ${position?.baseSymbol}`}
             </div>
             <div>{rangeDisplay}</div>
-            <div>{'$' + usdValueTruncated}</div>
+            <div>{'$' + positionValue}</div>
         </div>
     );
 }
