@@ -951,7 +951,7 @@ export default function Chart(props: ChartData) {
         });
 
         if (result) {
-            if (yTickValueLenght > 4 && yTickValueLenght < 8) setYaxisWidth('5rem');
+            if (yTickValueLenght > 4 && yTickValueLenght < 8) setYaxisWidth('6rem');
             if (yTickValueLenght > 8) setYaxisWidth(yTickValueLenght / 1.5 + 'rem');
             if (yTickValueLenght >= 15) setYaxisWidth('9rem');
             if (yTickValueLenght >= 20) setYaxisWidth('10rem');
