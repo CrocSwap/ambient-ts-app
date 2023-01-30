@@ -6,10 +6,11 @@ import { getDisplayPrice, getValueUSD } from './functions/exports';
 interface propsIF {
     limitOrder: LimitOrderIF;
     isDenomBase: boolean;
+    handleClick: (limitOrder: LimitOrderIF) => void;
 }
 
 export default function OrderSearchResult(props: propsIF) {
-    const { limitOrder, isDenomBase } = props;
+    const { limitOrder, isDenomBase, handleClick } = props;
 
     const symbols = {
         base: limitOrder.baseSymbol ? getUnicodeCharacter(limitOrder.baseSymbol) : '',
@@ -23,7 +24,7 @@ export default function OrderSearchResult(props: propsIF) {
     const valueUSD = getValueUSD(limitOrder.totalValueUSD);
 
     return (
-        <div className={styles.card_container}>
+        <div className={styles.card_container} onClick={() => handleClick(limitOrder)}>
             <div>{limitOrder.baseSymbol} / {limitOrder.quoteSymbol}</div>
             <div>{displayPrice}</div>
             <div>{valueUSD}</div>

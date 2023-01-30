@@ -74,6 +74,10 @@ export default function SidebarSearchResults(props: propsIF) {
                     <OrdersSearchResults
                         searchedLimitOrders={searchedLimitOrders}
                         isDenomBase={isDenomBase}
+                        setOutsideControl={setOutsideControl}
+                        setSelectedOutsideTab={setSelectedOutsideTab}
+                        setCurrentPositionActive={setCurrentPositionActive}
+                        setIsShowAllEnabled={setIsShowAllEnabled}
                     />
                     <TxSearchResults
                         searchedTxs={searchedTxs}
