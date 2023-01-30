@@ -134,30 +134,15 @@ export default function Sidebar(props: propsIF) {
         limitsByUser
     } = props;
 
-    false && txsByUser;
-
     const location = useLocation();
     const graphData = useAppSelector((state) => state.graphData);
     const isUserLoggedIn = isConnected;
-    // const isUserLoggedIn = useAppSelector((state) => state.userData).isLoggedIn;
     const limitOrderByUser = graphData.limitOrdersByUser.limitOrders;
 
     const mostRecentTxs = txsByUser.slice(0, 4);
     const mostRecentPositions = positionsByUser.slice(0, 4);
     const mostRecentLimitOrders = limitOrderByUser.slice(0, 4);
-    // const mostRecentPositions = positionsByUser.slice(0, 4);
 
-    // TODO:  @Ben this is the map with all the coin gecko token data objects
-    // console.assert(coinGeckoTokenMap, 'no map present');
-
-    // const topTokens = [
-    //     {
-    //         name: 'Top Tokens',
-    //         icon: topTokensImage,
-
-    //         data: <TopTokens chainId={chainId} lastBlockNumber={lastBlockNumber} />,
-    //     },
-    // ];
     const recentPools = [
         {
             name: 'Recent Pools',
@@ -313,23 +298,11 @@ export default function Sidebar(props: propsIF) {
         verifyToken,
         shouldRecheckLocalStorage
     );
-    false && searchedTxs;
-
-    // useEffect(() => {console.log({searchedPools})}, [JSON.stringify(searchedPools)]);
-    false && searchedPools;
 
     const [searchInput, setSearchInput] = useState<string[][]>();
     const [searchMode, setSearchMode] = useState(false);
     false && searchMode;
 
-    // const searchInputChangeHandler = (event: string) => {
-    //     setSearchMode(true);
-    //     const formatText = formatSearchText(event);
-
-    //     setSearchInput(formatText);
-
-    //     setExampleLoading(true);
-    // };
     const searchInputRef = useRef(null);
 
     const handleInputClear = () => {
@@ -481,19 +454,7 @@ export default function Sidebar(props: propsIF) {
 
     useOnClickOutside(sidebarRef, handleSidebarClickOutside);
 
-    // useEffect(() => {
-    //     if (collapseSidebarMediaQuery) setShowSidebar(false);
-    //     console.log('collapsing');
-    // }, [collapseSidebarMediaQuery]);
-
     const sidebarStyle = showSidebar ? styles.sidebar_active : styles.sidebar;
-    // const sidebarStyle = showSidebar ? styles.sidebar_active : styles.sidebar_active;
-
-    // useEffect(() => {
-    //     if (showSidebar === false) {
-    //         setSearchMode(false);
-    //     }
-    // }, [showSidebar]);
 
     const topElementsDisplay = (
         <div style={{ width: '100%' }}>
@@ -594,18 +555,11 @@ export default function Sidebar(props: propsIF) {
             {bottomElementsDisplay}
         </>
     );
-    // console.log({ isInputValid });
+
     return (
         <div ref={sidebarRef}>
             <nav className={`${styles.sidebar} ${sidebarStyle}`}>
                 <ul className={styles.sidebar_nav}>
-                    {/* <SearchAccordion
-                        showSidebar={showSidebar}
-                        toggleSidebar={toggleSidebar}
-                        searchMode={searchMode}
-                        handleSearchModeToggle={handleSearchModeToggle}
-                        setSearchMode={setSearchMode}
-                    /> */}
                     {searchContainerDisplay}
                     {isInputValid && showSidebar ? (
                         <SidebarSearchResults
