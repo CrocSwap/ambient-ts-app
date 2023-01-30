@@ -395,13 +395,7 @@ export default function LimitCurrencySelector(props: propsIF) {
                         }
                     }}
                 >
-                    <div
-                        className={`${styles.wallet_logo} ${
-                            isSellTokenSelector ? styles.enabled_logo : null
-                        }`}
-                    >
-                        <img src={ambientLogo} width='20' alt='surplus' />
-                    </div>
+                    {surplusMaxButton}
                     <div className={styles.balance_column}>
                         <div> {isUserLoggedIn ? surplusBalanceLocaleString : ''}</div>
                         <div
@@ -412,7 +406,13 @@ export default function LimitCurrencySelector(props: propsIF) {
                             <p style={{ fontSize: '9px' }}> {sellTokenSurplusChange}</p>
                         </div>
                     </div>
-                    {surplusMaxButton}
+                    <div
+                        className={`${styles.wallet_logo} ${
+                            isSellTokenSelector ? styles.enabled_logo : null
+                        }`}
+                    >
+                        <img src={ambientLogo} width='20' alt='surplus' />
+                    </div>
                 </div>
             </DefaultTooltip>
         </div>
