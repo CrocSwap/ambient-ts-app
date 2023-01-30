@@ -203,7 +203,7 @@ export default function TransactionDetailsGraph(props: TransactionDetailsGraphIF
             const yExtent = d3fc
                 .extentLinear()
                 .accessors([(d: any) => d.invPriceCloseExclMEVDecimalCorrected])
-                .pad([0.1, 0.1]);
+                .pad([0.05, 0.1]);
 
             const xExtent = d3fc.extentDate().accessors([(d: any) => d.time * 1000]);
 
