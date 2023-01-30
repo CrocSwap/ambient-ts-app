@@ -83,8 +83,8 @@ export default function TransactionDetailsGraph(props: TransactionDetailsGraphIF
                         ? tx?.time !== undefined
                             ? tx.time
                             : new Date().getTime()
-                        : limitOrder?.time !== undefined
-                        ? limitOrder?.time
+                        : limitOrder?.latestCrossTime !== undefined
+                        ? limitOrder?.latestCrossTime
                         : new Date().getTime();
 
                 const diff =
