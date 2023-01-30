@@ -125,7 +125,7 @@ export const useSidebarSearch = (
         };
         console.log('verifying pools');
         verifyPools();
-    }, [ackTokens.length, poolList.length]);
+    }, [ackTokens.length, poolList.length, shouldRecheckLocalStorage]);
     // }, [ackTokens.length, poolList.length, validatedInput]);
 
     // array of pools to output from the hook
