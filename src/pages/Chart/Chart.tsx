@@ -3949,6 +3949,12 @@ export default function Chart(props: ChartData) {
                                 (item: any) => item.time.getTime() === nearest?.date.getTime(),
                             )?.volume,
                         );
+                    } else if (selectedDate) {
+                        props.setCurrentVolumeData(
+                            volumeData.find(
+                                (item: any) => item.time.getTime() === selectedDate.getTime(),
+                            )?.volume,
+                        );
                     }
 
                     setsubChartValues((prevState: any) => {
