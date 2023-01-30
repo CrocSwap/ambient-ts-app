@@ -73,6 +73,7 @@ export default function SidebarSearchResults(props: propsIF) {
                     />
                     <OrdersSearchResults
                         searchedLimitOrders={searchedLimitOrders}
+                        isDenomBase={isDenomBase}
                     />
                     <TxSearchResults
                         searchedTxs={searchedTxs}

@@ -4,10 +4,11 @@ import { LimitOrderIF } from '../../../../../utils/interfaces/exports';
 
 interface OrdersSearchResultPropsIF {
     searchedLimitOrders: LimitOrderIF[];
+    isDenomBase: boolean;
 }
 
 export default function OrdersSearchResults(props: OrdersSearchResultPropsIF) {
-    const { searchedLimitOrders } = props;
+    const { searchedLimitOrders, isDenomBase } = props;
 
     return (
         <div>
@@ -22,6 +23,7 @@ export default function OrdersSearchResults(props: OrdersSearchResultPropsIF) {
                     <LimitOrderLI
                         key={`order-search-result-${JSON.stringify(limitOrder)}`}
                         limitOrder={limitOrder}
+                        isDenomBase={isDenomBase}
                     />
                 ))
             }
