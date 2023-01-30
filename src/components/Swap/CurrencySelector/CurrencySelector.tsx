@@ -428,14 +428,7 @@ export default function CurrencySelector(props: propsIF) {
                     style={{ color: surplusColorStyle }}
                     onClick={() => handleSurplusClick()}
                 >
-                    <div className={`${styles.wallet_logo} ${sellTokenWalletClassname}`}>
-                        <img
-                            src={ambientLogo}
-                            width='20'
-                            alt='surplus'
-                            color='var(--text-highlight)'
-                        />
-                    </div>
+                    {surplusMaxButton}
                     <div className={styles.balance_column}>
                         {isUserLoggedIn && surplusBalanceLocaleString}
                         <div
@@ -448,7 +441,14 @@ export default function CurrencySelector(props: propsIF) {
                             {isSellTokenSelector ? sellTokenSurplusChange : buyTokenSurplusChange}
                         </div>
                     </div>
-                    {surplusMaxButton}
+                    <div className={`${styles.wallet_logo} ${sellTokenWalletClassname}`}>
+                        <img
+                            src={ambientLogo}
+                            width='20'
+                            alt='surplus'
+                            color='var(--text-highlight)'
+                        />
+                    </div>
                 </div>
             </DefaultTooltip>
 

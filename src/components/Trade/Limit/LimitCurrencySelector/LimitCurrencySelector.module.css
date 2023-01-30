@@ -148,6 +148,7 @@
 .main_exchange_container{
     display: flex;
     justify-content: flex-end;
+    
 }
 .surplus_toggle {
     display: flex;
