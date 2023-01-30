@@ -273,7 +273,11 @@ export default function OrderDetails(props: IOrderDetailsProps) {
                         />
                     </div>
                     <div className={styles.right_container}>
-                        <OrderGraphDisplay isOrderFilled={isClaimable} user={userNameToDisplay} />
+                        <OrderGraphDisplay
+                            isOrderFilled={isClaimable}
+                            user={userNameToDisplay}
+                            limitOrder={limitOrder}
+                        />
                     </div>
                     <OrderDetailsActions />
                 </div>

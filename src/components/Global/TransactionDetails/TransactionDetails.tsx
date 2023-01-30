@@ -72,7 +72,11 @@ export default function TransactionDetails(props: TransactionDetailsPropsIF) {
                         />
                     </div>
                     <div className={styles.right_container}>
-                        <TransactionDetailsGraph tx={tx} />
+                        <TransactionDetailsGraph
+                            tx={tx}
+                            transactionType={tx.entityType}
+                            useTx={true}
+                        />
 
                         {/* <OrderGraphDisplay isOrderFilled={isOrderFilled} user={userNameToDisplay} /> */}
                     </div>
