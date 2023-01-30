@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
+import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { TokenIF, TokenListIF } from '../../utils/interfaces/exports';
+import { setShouldRecheckLocalStorage } from '../../utils/state/userDataSlice';
 
 export const useToken = (
     chainId: string,
@@ -39,6 +41,12 @@ export const useToken = (
         }
     }
 
+    const shouldRecheckLocalStorage = useAppSelector(
+        (state) => state.userData,
+    )?.shoulRecheckLocalStorage;
+
+    const dispatch = useAppDispatch();
+
     // get allTokenLists from local storage after initial render
     useEffect(() => {
         // fn to check local storage for token lists with a recursion limiter
@@ -71,7 +79,9 @@ export const useToken = (
             }
         };
         checkForTokenLists();
-    }, []);
+
+        dispatch(setShouldRecheckLocalStorage(false));
+    }, [shouldRecheckLocalStorage]);
 
     // fn to determine if a token exists in a recognized token list
     // parameter for chain is optional, app uses the current chain by default
