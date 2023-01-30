@@ -1,7 +1,6 @@
 import styles from '../SidebarSearchResults.module.css';
 import { PositionIF } from '../../../../../utils/interfaces/exports';
-import { getRangeDisplay } from './functions/getRangeDisplay'
-import { getValueUSD } from './functions/getValueUSD';
+import { getRangeDisplay, getValueUSD } from './functions/exports';
 
 interface propsIF {
     position: PositionIF;
