@@ -1,8 +1,7 @@
 import styles from '../SidebarSearchResults.module.css';
 import { LimitOrderIF } from '../../../../../utils/interfaces/exports';
 import getUnicodeCharacter from '../../../../../utils/functions/getUnicodeCharacter';
-import { getDisplayPrice } from './functions/getDisplayPrice';
-import { getValueUSD } from './functions/getValueUSD';
+import { getDisplayPrice, getValueUSD } from './functions/exports';
 
 interface propsIF {
     limitOrder: LimitOrderIF;

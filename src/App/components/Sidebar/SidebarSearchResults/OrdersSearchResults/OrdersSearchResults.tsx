@@ -19,7 +19,7 @@ export default function OrdersSearchResults(props: OrdersSearchResultPropsIF) {
                 <div>Qty</div>
             </div>
             {
-                searchedLimitOrders.map((limitOrder: LimitOrderIF) => (
+                searchedLimitOrders.slice(0,4).map((limitOrder: LimitOrderIF) => (
                     <LimitOrderLI
                         key={`order-search-result-${JSON.stringify(limitOrder)}`}
                         limitOrder={limitOrder}

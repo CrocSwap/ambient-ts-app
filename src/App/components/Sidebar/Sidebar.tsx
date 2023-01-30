@@ -295,11 +295,13 @@ export default function Sidebar(props: propsIF) {
         isInputValid,
         searchedPools,
         searchedPositions,
-        searchedTxs
+        searchedTxs,
+        searchedLimitOrders
     ] = useSidebarSearch(
         poolList,
         positionsByUser,
         txsByUser,
+        limitsByUser,
         verifyToken,
         shouldRecheckLocalStorage
     );
@@ -613,7 +615,7 @@ export default function Sidebar(props: propsIF) {
                             setCurrentTxActiveInTransactions={setCurrentTxActiveInTransactions}
                             setIsShowAllEnabled={setIsShowAllEnabled}
                             searchedTxs={searchedTxs}
-                            searchedLimitOrders={limitsByUser}
+                            searchedLimitOrders={searchedLimitOrders}
                         />
                     ) : (
                         regularSidebarDisplay
