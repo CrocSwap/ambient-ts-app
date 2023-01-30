@@ -1254,6 +1254,7 @@ export default function App() {
         }
     }, [
         rtkMatchesParams,
+        tokensOnActiveLists,
         // isServerEnabled,
         tokenPairStringified,
         chainData.chainId,
@@ -2074,7 +2075,7 @@ export default function App() {
                 console.log;
             }
         }
-    }, [isServerEnabled, isUserLoggedIn, account, chainData.chainId, crocEnv]);
+    }, [isServerEnabled, tokensOnActiveLists, isUserLoggedIn, account, chainData.chainId, crocEnv]);
 
     // run function to initialize local storage
     // internal controls will only initialize values that don't exist
