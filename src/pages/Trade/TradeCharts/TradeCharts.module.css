@@ -325,10 +325,14 @@ max-height: 90%;
    transition: all var(--animation-speed) ease-in-out
     
 }
-@media only screen and (min-device-width: 200px) and (max-device-width: 568px) and (-webkit-min-device-pixel-ratio: 2) {
-    .graph_container {
+@media only screen and (min-device-width: 320px) and (max-device-width: 850px) and (-webkit-min-device-pixel-ratio: 2) {    .graph_container {
         /* display: none; */
         margin-bottom: 15px;
+    }
+
+    .main_container_chart{
+        height: 75vh;
+        overflow: hidden;
     }
 
     /* .chart_image,

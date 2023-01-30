@@ -352,10 +352,16 @@ export default function Leaderboard(props: propsIF) {
         />
     ));
 
+    const mobileView = useMediaQuery('(max-width: 850px)');
+
+    const mobileViewHeight = mobileView ? '70vh' : '250px';
+
+    const expandStyle = expandTradeTable ? 'calc(100vh - 10rem)' : mobileViewHeight;
+
     return (
         <section
             className={`${styles.main_list_container} ${styles.leaderboard}`}
-            style={{ height: expandTradeTable ? 'calc(100vh - 10rem)' : '250px' }}
+            style={{ height: expandStyle }}
         >
             {headerColumnsDisplay}
             {rowItemContent}

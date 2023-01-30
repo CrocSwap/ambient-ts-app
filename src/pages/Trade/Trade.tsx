@@ -256,9 +256,14 @@ export default function Trade(props: propsIF) {
     useEffect(() => {
         setLiquidityData(undefined);
     }, [pool]);
+    const [activeMobileComponent, setActiveMobileComponent] = useState('trade');
 
     const mainContent = (
-        <div className={styles.right_col}>
+        <div
+            className={`${styles.right_col} ${
+                activeMobileComponent !== 'trade' ? styles.hide : ''
+            }`}
+        >
             <Outlet context={{ tradeData: tradeData, navigationMenu: navigationMenu }} />
         </div>
     );
@@ -350,29 +355,39 @@ export default function Trade(props: propsIF) {
         handleChartBgColorPickerChange: handleChartBgColorPickerChange,
     };
 
-    const [showChartAndNotTab, setShowChartAndNotTab] = useState(false);
+    // const [showChartAndNotTab, setShowChartAndNotTab] = useState(false);
 
     const mobileDataToggle = (
         <div className={styles.mobile_toggle_container}>
             <button
-                onClick={() => setShowChartAndNotTab(!showChartAndNotTab)}
+                onClick={() => setActiveMobileComponent('chart')}
                 className={
-                    showChartAndNotTab
-                        ? styles.non_active_button_mobile_toggle
-                        : styles.active_button_mobile_toggle
+                    activeMobileComponent === 'chart'
+                        ? styles.active_button_mobile_toggle
+                        : styles.non_active_button_mobile_toggle
                 }
             >
                 Chart
             </button>
             <button
-                onClick={() => setShowChartAndNotTab(!showChartAndNotTab)}
+                onClick={() => setActiveMobileComponent('transactions')}
                 className={
-                    showChartAndNotTab
+                    activeMobileComponent === 'transactions'
                         ? styles.active_button_mobile_toggle
                         : styles.non_active_button_mobile_toggle
                 }
             >
-                Tabs
+                Transactions
+            </button>
+            <button
+                onClick={() => setActiveMobileComponent('trade')}
+                className={
+                    activeMobileComponent === 'trade'
+                        ? styles.active_button_mobile_toggle
+                        : styles.non_active_button_mobile_toggle
+                }
+            >
+                Trade
             </button>
         </div>
     );
@@ -445,9 +460,11 @@ export default function Trade(props: propsIF) {
                 {mobileDataToggle}
                 <div
                     className={` ${expandGraphStyle} ${
-                        showChartAndNotTab ? styles.hide_graph : fullScreenStyle
+                        activeMobileComponent !== 'chart' ? styles.hide : fullScreenStyle
                     }`}
-                    style={{ background: chartBg }}
+                    style={{
+                        background: chartBg,
+                    }}
                 >
                     <div className={styles.main__chart_container}>
                         {/* {!isCandleDataNull && ( */}
@@ -505,7 +522,7 @@ export default function Trade(props: propsIF) {
                         expandTradeTable ? styles.full_table_height : styles.min_table_height
                     }
                 >
-                    <div className={!showChartAndNotTab ? styles.hide : ''}>
+                    <div className={activeMobileComponent !== 'transactions' ? styles.hide : ''}>
                         <TradeTabs2
                             cachedQuerySpotPrice={cachedQuerySpotPrice}
                             isUserLoggedIn={isUserLoggedIn}
