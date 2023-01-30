@@ -57,6 +57,7 @@ interface propsIF {
     setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
     outsideControl: boolean;
     setOutsideControl: Dispatch<SetStateAction<boolean>>;
+    searchableTokens: TokenIF[];
 
     openTokenModal: () => void;
     chainData: ChainSpec;
@@ -83,6 +84,7 @@ interface propsIF {
 // React functional component
 export default function PortfolioTabs(props: propsIF) {
     const {
+        searchableTokens,
         cachedQuerySpotPrice,
         crocEnv,
         isTokenABase,
@@ -157,7 +159,7 @@ export default function PortfolioTabs(props: propsIF) {
                         userPositions.map((position: PositionIF) => {
                             return getPositionData(
                                 position,
-                                importedTokens,
+                                searchableTokens,
                                 crocEnv,
                                 chainId,
                                 lastBlockNumber,
@@ -200,7 +202,7 @@ export default function PortfolioTabs(props: propsIF) {
                 if (userLimitOrderStates) {
                     Promise.all(
                         userLimitOrderStates.map((limitOrder: LimitOrderIF) => {
-                            return getLimitOrderData(limitOrder, importedTokens);
+                            return getLimitOrderData(limitOrder, searchableTokens);
                         }),
                     ).then((updatedLimitOrderStates) => {
                         setLookupAccountLimitOrderData(updatedLimitOrderStates);

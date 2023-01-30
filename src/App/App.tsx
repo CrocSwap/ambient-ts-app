@@ -2924,6 +2924,7 @@ export default function App() {
                             path='account'
                             element={
                                 <Portfolio
+                                    searchableTokens={searchableTokens}
                                     cachedQuerySpotPrice={cachedQuerySpotPrice}
                                     crocEnv={crocEnv}
                                     addRecentToken={addRecentToken}
@@ -2981,6 +2982,7 @@ export default function App() {
                             path='account/:address'
                             element={
                                 <Portfolio
+                                    searchableTokens={searchableTokens}
                                     cachedQuerySpotPrice={cachedQuerySpotPrice}
                                     crocEnv={crocEnv}
                                     addRecentToken={addRecentToken}
@@ -3056,6 +3058,7 @@ export default function App() {
                             path='/:address'
                             element={
                                 <Portfolio
+                                    searchableTokens={searchableTokens}
                                     cachedQuerySpotPrice={cachedQuerySpotPrice}
                                     crocEnv={crocEnv}
                                     addRecentToken={addRecentToken}

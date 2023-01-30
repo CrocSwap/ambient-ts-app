@@ -64,7 +64,7 @@ interface propsIF {
     openModalWallet: () => void;
     importedTokens: TokenIF[];
     chainData: ChainSpec;
-
+    searchableTokens: TokenIF[];
     setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
     currentPositionActive: string;
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
@@ -90,6 +90,7 @@ interface propsIF {
 
 export default function Portfolio(props: propsIF) {
     const {
+        searchableTokens,
         cachedQuerySpotPrice,
         crocEnv,
         addRecentToken,
@@ -585,6 +586,7 @@ export default function Portfolio(props: propsIF) {
             >
                 {!showLoggedInButton && !hideTabs ? (
                     <PortfolioTabs
+                        searchableTokens={searchableTokens}
                         cachedQuerySpotPrice={cachedQuerySpotPrice}
                         crocEnv={crocEnv}
                         isTokenABase={isTokenABase}

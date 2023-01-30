@@ -240,7 +240,7 @@ export default function RangeDetails(props: propsIF) {
                         quoteTokenDecimals,
                     );
                     if (newDisplayPrice !== poolPriceDisplay) {
-                        console.log({ newDisplayPrice });
+                        // console.log({ newDisplayPrice });
                         setPoolPriceDisplay(newDisplayPrice);
                     }
                 }
