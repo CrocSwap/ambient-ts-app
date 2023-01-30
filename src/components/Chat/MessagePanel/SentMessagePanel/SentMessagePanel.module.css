@@ -216,7 +216,7 @@ align-self: stretch;
     flex-grow: 3;
 }
 
-p {
+.message_item p {
     word-break: break-all;
 }
 

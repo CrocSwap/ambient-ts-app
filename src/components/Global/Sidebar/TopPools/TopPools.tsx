@@ -4,9 +4,9 @@ import { tradeData } from '../../../../utils/state/tradeDataSlice';
 import styles from './TopPools.module.css';
 import TopPoolsCard from './TopPoolsCard';
 // import { Link } from 'react-router-dom';
-import { TempPoolIF } from '../../../../utils/interfaces/TempPoolIF';
+import { TempPoolIF } from '../../../../utils/interfaces/exports';
 
-interface TopPoolsProps {
+interface propsIF {
     tradeData: tradeData;
     chainId: string;
     cachedPoolStatsFetch: PoolStatsFn;
@@ -14,11 +14,11 @@ interface TopPoolsProps {
     poolList: TempPoolIF[];
 }
 
-export default function TopPools(props: TopPoolsProps) {
+export default function TopPools(props: propsIF) {
     const { tradeData, chainId, lastBlockNumber, cachedPoolStatsFetch, poolList } = props;
     false && poolList;
 
-    // TODO: @Junior refactor the header to be a `<header>` element
+    // TODO: @Junior refactor the header to be a <header> element
 
     return (
         <div className={styles.container}>

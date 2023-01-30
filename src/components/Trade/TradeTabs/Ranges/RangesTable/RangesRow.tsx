@@ -1,5 +1,5 @@
 import { useEffect, Dispatch, SetStateAction, useRef, useState } from 'react';
-import { PositionIF } from '../../../../../utils/interfaces/PositionIF';
+import { PositionIF } from '../../../../../utils/interfaces/exports';
 import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
 import { ethers } from 'ethers';
 import { useProcessRange } from '../../../../../utils/hooks/useProcessRange';
@@ -18,8 +18,9 @@ import moment from 'moment';
 import { ZERO_ADDRESS } from '../../../../../constants';
 import { FiExternalLink } from 'react-icons/fi';
 import useOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
+import { SpotPriceFn } from '../../../../../App/functions/querySpotPrice';
 
-interface RangesRowPropsIF {
+interface propsIF {
     isUserLoggedIn: boolean | undefined;
     crocEnv: CrocEnv | undefined;
     chainData: ChainSpec;
@@ -52,10 +53,12 @@ interface RangesRowPropsIF {
     isLeaderboard?: boolean;
     idx: number;
     handlePulseAnimation?: (type: string) => void;
+    cachedQuerySpotPrice: SpotPriceFn;
 }
 
-export default function RangesRow(props: RangesRowPropsIF) {
+export default function RangesRow(props: propsIF) {
     const {
+        cachedQuerySpotPrice,
         showSidebar,
         account,
         ipadView,
@@ -109,6 +112,7 @@ export default function RangesRow(props: RangesRowPropsIF) {
     } = useProcessRange(position, account);
 
     const rangeDetailsProps = {
+        cachedQuerySpotPrice: cachedQuerySpotPrice,
         crocEnv: props.crocEnv,
         provider: props.provider,
         chainData: props.chainData,
@@ -433,18 +437,18 @@ export default function RangesRow(props: RangesRowPropsIF) {
     const elapsedTimeString =
         elapsedTimeInSecondsNum !== undefined
             ? elapsedTimeInSecondsNum < 60
-                ? '< 1 min. ago'
+                ? '< 1 min. '
                 : elapsedTimeInSecondsNum < 120
-                ? '1 min. ago'
+                ? '1 min. '
                 : elapsedTimeInSecondsNum < 3600
-                ? `${Math.floor(elapsedTimeInSecondsNum / 60)} min. ago`
+                ? `${Math.floor(elapsedTimeInSecondsNum / 60)} min. `
                 : elapsedTimeInSecondsNum < 7200
-                ? '1 hour ago'
+                ? '1 hour '
                 : elapsedTimeInSecondsNum < 86400
-                ? `${Math.floor(elapsedTimeInSecondsNum / 3600)} hrs. ago`
+                ? `${Math.floor(elapsedTimeInSecondsNum / 3600)} hrs. `
                 : elapsedTimeInSecondsNum < 172800
-                ? '1 day ago'
-                : `${Math.floor(elapsedTimeInSecondsNum / 86400)} days ago`
+                ? '1 day '
+                : `${Math.floor(elapsedTimeInSecondsNum / 86400)} days `
             : 'Pending...';
 
     const RangeTimeWithTooltip = (

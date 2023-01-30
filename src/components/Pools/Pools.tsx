@@ -1,8 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useCallback, useMemo, useState } from 'react';
 import { TOKEN_HIDE } from '../../constants';
-import { PoolIF } from '../../utils/interfaces/PoolIF';
-import { TokenIF } from '../../utils/interfaces/TokenIF';
+import { PoolIF, TokenIF } from '../../utils/interfaces/exports';
 import PoolCardHeader from './PoolCardHeader';
 import PoolRow from './PoolRow';
 import styles from './Pools.module.css';
@@ -15,7 +14,7 @@ export const SORT_FIELD = {
     volumeUSDWeek: 'volumeUSDWeek',
 };
 
-interface PoolProps {
+interface propsIF {
     pools: any[];
     maxItems?: number;
     poolType: string;
@@ -29,7 +28,7 @@ interface PoolProps {
     ) => void;
 }
 
-export default function Pools(props: PoolProps) {
+export default function Pools(props: propsIF) {
     const [sortField, setSortField] = useState(SORT_FIELD.tvlUSD);
     const [sortDirection, setSortDirection] = useState<boolean>(true);
     const pools = props.pools;

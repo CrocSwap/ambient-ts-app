@@ -1,21 +1,20 @@
 import styles from './TransactionDetails.module.css';
 import { useState, useRef } from 'react';
-import { ITransaction } from '../../../utils/state/graphDataSlice';
 import printDomToImage from '../../../utils/functions/printDomToImage';
 import RangeDetailsControl from '../../RangeDetails/RangeDetailsControl/RangeDetailsControl';
 import TransactionDetailsHeader from './TransactionDetailsHeader/TransactionDetailsHeader';
 import TransactionDetailsPriceInfo from './TransactionDetailsPriceInfo/TransactionDetailsPriceInfo';
 import TransactionDetailsGraph from './TransactionDetailsGraph/TransactionDetailsGraph';
-interface TransactionDetailsPropsIF {
+import { TransactionIF } from '../../../utils/interfaces/exports';
+
+interface propsIF {
     account: string;
-    tx: ITransaction;
+    tx: TransactionIF;
     closeGlobalModal: () => void;
 }
 
-export default function TransactionDetails(props: TransactionDetailsPropsIF) {
+export default function TransactionDetails(props: propsIF) {
     const { account, tx } = props;
-
-    console.log({ tx });
 
     const [showSettings, setShowSettings] = useState(false);
 

@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { LimitOrderIF, PositionIF } from '../interfaces/exports';
+import { LimitOrderIF, PositionIF, TransactionIF } from '../interfaces/exports';
 
 export interface graphData {
     lastBlock: number;
@@ -227,68 +227,14 @@ export interface pool {
     quote: string;
 }
 
-export interface ITransaction {
-    base: string;
-    baseDecimals: number;
-    baseFlow: string;
-    baseSymbol: string;
-    baseName: string;
-    baseTokenLogoURI: string;
-    block: number;
-    chainId: string;
-    network: string;
-    dex: string;
-    id: string;
-    inBaseQty: boolean;
-    isBid: boolean;
-    isBuy: boolean;
-    minOut: string;
-    poolHash: string;
-    poolIdx: number;
-    qty: string;
-    quote: string;
-    quoteDecimals: number;
-    quoteFlow: string;
-    quoteSymbol: string;
-    quoteName: string;
-    quoteTokenLogoURI: string;
-    source: string;
-    entityType: string;
-    changeType: string;
-    positionType: string;
-    time: number;
-    tx: string;
-    user: string;
-    userEnsName: string;
-    limitPrice: number;
-    bidTick: number;
-    askTick: number;
-    price: number;
-    invPrice: number;
-    limitPriceDecimalCorrected: number;
-    invLimitPriceDecimalCorrected: number;
-    priceDecimalCorrected: number;
-    invPriceDecimalCorrected: number;
-    baseFlowDecimalCorrected: number;
-    quoteFlowDecimalCorrected: number;
-    valueUSD: number;
-    totalValueUSD: number;
-    totalFlowUSD: number;
-    ensResolution: string;
-    bidTickPriceDecimalCorrected: number;
-    bidTickInvPriceDecimalCorrected: number;
-    askTickPriceDecimalCorrected: number;
-    askTickInvPriceDecimalCorrected: number;
-}
-
 export interface ChangesByUser {
     dataReceived: boolean;
-    changes: Array<ITransaction>;
+    changes: Array<TransactionIF>;
 }
 
 export interface ChangesByPool {
     dataReceived: boolean;
-    changes: Array<ITransaction>;
+    changes: Array<TransactionIF>;
 }
 
 const initialState: graphData = {
@@ -398,7 +344,7 @@ export const graphDataSlice = createSlice({
         setChangesByUser: (state, action: PayloadAction<ChangesByUser>) => {
             state.changesByUser = action.payload;
         },
-        addChangesByUser: (state, action: PayloadAction<Array<ITransaction>>) => {
+        addChangesByUser: (state, action: PayloadAction<Array<TransactionIF>>) => {
             for (let index = 0; index < action.payload.length; index++) {
                 const updatedTx = action.payload[index];
                 const txToFind = updatedTx.tx.toLowerCase();
@@ -452,7 +398,7 @@ export const graphDataSlice = createSlice({
         setChangesByPool: (state, action: PayloadAction<ChangesByPool>) => {
             state.changesByPool = action.payload;
         },
-        addChangesByPool: (state, action: PayloadAction<Array<ITransaction>>) => {
+        addChangesByPool: (state, action: PayloadAction<Array<TransactionIF>>) => {
             for (let index = 0; index < action.payload.length; index++) {
                 const updatedTx = action.payload[index];
                 const txToFind = updatedTx.tx.toLowerCase();

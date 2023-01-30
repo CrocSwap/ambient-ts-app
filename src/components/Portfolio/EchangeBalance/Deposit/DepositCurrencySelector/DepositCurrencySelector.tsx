@@ -1,12 +1,12 @@
 import styles from './DepositCurrencySelector.module.css';
 import { RiArrowDownSLine } from 'react-icons/ri';
-import { TokenIF } from '../../../../../utils/interfaces/TokenIF';
+import { TokenIF } from '../../../../../utils/interfaces/exports';
 import { Dispatch, SetStateAction } from 'react';
 import { fromDisplayQty } from '@crocswap-libs/sdk';
 import uriToHttp from '../../../../../utils/functions/uriToHttp';
 import NoTokenIcon from '../../../../Global/NoTokenIcon/NoTokenIcon';
 
-interface DepositCurrencySelectorProps {
+interface propsIF {
     fieldId: string;
     onClick: () => void;
     sellToken?: boolean;
@@ -17,7 +17,7 @@ interface DepositCurrencySelectorProps {
     setInputValue: Dispatch<SetStateAction<string>>;
 }
 
-export default function DepositCurrencySelector(props: DepositCurrencySelectorProps) {
+export default function DepositCurrencySelector(props: propsIF) {
     const { fieldId, disable, onClick, selectedToken, setDepositQty, inputValue, setInputValue } =
         props;
 

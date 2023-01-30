@@ -3,7 +3,7 @@ import useDebounce from '../../../App/hooks/useDebounce';
 import { TokenIF } from '../../../utils/interfaces/exports';
 import styles from './CurrencyQuantity.module.css';
 
-interface CurrencyQuantityProps {
+interface propsIF {
     disable?: boolean;
     fieldId: string;
     value: string;
@@ -13,7 +13,7 @@ interface CurrencyQuantityProps {
     thisToken: TokenIF;
 }
 
-export default function CurrencyQuantity(props: CurrencyQuantityProps) {
+export default function CurrencyQuantity(props: propsIF) {
     const {
         value,
         thisToken,

@@ -1,14 +1,14 @@
 // import { TokenIF } from '../../../../utils/interfaces/TokenIF';
 import styles from './TokenQty.module.css';
 
-interface TokenQtyProps {
+interface propsIF {
     baseTokenCharacter?: string;
     quoteTokenCharacter?: string;
     baseQty?: string;
     quoteQty?: string;
 }
 
-export default function TokenQty(props: TokenQtyProps) {
+export default function TokenQty(props: propsIF) {
     const { baseTokenCharacter, quoteTokenCharacter, baseQty, quoteQty } = props;
 
     const quantitiesAvailable = baseQty !== undefined || quoteQty !== undefined;

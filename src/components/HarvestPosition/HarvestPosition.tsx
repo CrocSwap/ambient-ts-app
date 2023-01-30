@@ -11,7 +11,7 @@ import { FiExternalLink } from 'react-icons/fi';
 // import HarvestPositionSettings from './HarvestPositionSettings/HarvestPositionSettings';
 import { RiListSettingsLine } from 'react-icons/ri';
 import { BsArrowLeft } from 'react-icons/bs';
-import { PositionIF } from '../../utils/interfaces/PositionIF';
+import { PositionIF } from '../../utils/interfaces/exports';
 import { ethers } from 'ethers';
 // import { CrocEnv } from '@crocswap-libs/sdk';
 import Button from '../Global/Button/Button';
@@ -39,7 +39,7 @@ import {
 } from '../../utils/state/receiptDataSlice';
 import TransactionException from '../Global/TransactionException/TransactionException';
 
-interface IHarvestPositionProps {
+interface propsIF {
     crocEnv: CrocEnv | undefined;
     chainData: ChainSpec;
     provider: ethers.providers.Provider;
@@ -64,7 +64,8 @@ interface IHarvestPositionProps {
     position: PositionIF;
     closeGlobalModal: () => void;
 }
-export default function HarvestPosition(props: IHarvestPositionProps) {
+
+export default function HarvestPosition(props: propsIF) {
     const {
         crocEnv,
         chainData,

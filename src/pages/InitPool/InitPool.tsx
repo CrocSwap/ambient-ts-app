@@ -14,9 +14,8 @@ import Button from '../../components/Global/Button/Button';
 // START: Import Local Files
 import styles from './InitPool.module.css';
 import { useUrlParams } from './useUrlParams';
-import { TokenPairIF } from '../../utils/interfaces/TokenPairIF';
 import NoTokenIcon from '../../components/Global/NoTokenIcon/NoTokenIcon';
-import { TokenIF, TokenListIF } from '../../utils/interfaces/exports';
+import { TokenIF, TokenListIF, TokenPairIF } from '../../utils/interfaces/exports';
 import { useAppDispatch, useAppSelector } from '../../utils/hooks/reduxToolkit';
 import { setTokenA, setTokenB } from '../../utils/state/tradeDataSlice';
 import { addPendingTx, addReceipt, removePendingTx } from '../../utils/state/receiptDataSlice';
@@ -28,7 +27,7 @@ import {
 import InitPoolDenom from '../../components/InitPool/InitPoolDenom/InitPoolDenom';
 
 // interface for props
-interface InitPoolPropsIF {
+interface propsIF {
     isUserLoggedIn: boolean | undefined;
     crocEnv: CrocEnv | undefined;
     showSidebar: boolean;
@@ -43,7 +42,7 @@ interface InitPoolPropsIF {
 }
 
 // react functional component
-export default function InitPool(props: InitPoolPropsIF) {
+export default function InitPool(props: propsIF) {
     const {
         openModalWallet,
         isUserLoggedIn,

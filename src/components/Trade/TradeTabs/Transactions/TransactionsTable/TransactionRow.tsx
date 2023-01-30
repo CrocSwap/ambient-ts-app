@@ -1,5 +1,5 @@
 import styles from '../Transactions.module.css';
-import { ITransaction, setDataLoadingStatus } from '../../../../../utils/state/graphDataSlice';
+import { setDataLoadingStatus } from '../../../../../utils/state/graphDataSlice';
 import { Dispatch, SetStateAction, useEffect, useRef } from 'react';
 import { useProcessTransaction } from '../../../../../utils/hooks/useProcessTransaction';
 import TransactionsMenu from '../../../../Global/Tabs/TableMenu/TableMenuComponents/TransactionsMenu';
@@ -16,10 +16,11 @@ import { useAppDispatch } from '../../../../../utils/hooks/reduxToolkit';
 import moment from 'moment';
 import { ZERO_ADDRESS } from '../../../../../constants';
 import useOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
-// import { light } from '@material-ui/core/styles/createPalette';
-interface TransactionRowPropsIF {
+import { TransactionIF } from '../../../../../utils/interfaces/exports';
+
+interface propsIF {
     account: string;
-    tx: ITransaction;
+    tx: TransactionIF;
     tradeData: tradeData;
     isTokenABase: boolean;
     currentTxActiveInTransactions: string;
@@ -37,7 +38,7 @@ interface TransactionRowPropsIF {
     openGlobalModal: (content: React.ReactNode) => void;
     isOnPortfolioPage: boolean;
 }
-export default function TransactionRow(props: TransactionRowPropsIF) {
+export default function TransactionRow(props: propsIF) {
     const {
         account,
         showColumns,
@@ -386,24 +387,24 @@ export default function TransactionRow(props: TransactionRowPropsIF) {
     //     txTimeInDays === 0
     //         ? 'Today'
     //         : txTimeInDays === 1
-    //         ? '1 day ago'
-    //         : `${txTimeInDays} days ago`;
+    //         ? '1 day '
+    //         : `${txTimeInDays} days `;
 
     const elapsedTimeString =
         elapsedTimeInSecondsNum !== undefined
             ? elapsedTimeInSecondsNum < 60
-                ? '< 1 min. ago'
+                ? '< 1 min. '
                 : elapsedTimeInSecondsNum < 120
-                ? '1 min. ago'
+                ? '1 min. '
                 : elapsedTimeInSecondsNum < 3600
-                ? `${Math.floor(elapsedTimeInSecondsNum / 60)} min. ago`
+                ? `${Math.floor(elapsedTimeInSecondsNum / 60)} min. `
                 : elapsedTimeInSecondsNum < 7200
-                ? '1 hour ago'
+                ? '1 hour '
                 : elapsedTimeInSecondsNum < 86400
-                ? `${Math.floor(elapsedTimeInSecondsNum / 3600)} hrs. ago`
+                ? `${Math.floor(elapsedTimeInSecondsNum / 3600)} hrs. `
                 : elapsedTimeInSecondsNum < 172800
-                ? '1 day ago'
-                : `${Math.floor(elapsedTimeInSecondsNum / 86400)} days ago`
+                ? '1 day '
+                : `${Math.floor(elapsedTimeInSecondsNum / 86400)} days `
             : 'Pending...';
 
     const TxTimeWithTooltip = (

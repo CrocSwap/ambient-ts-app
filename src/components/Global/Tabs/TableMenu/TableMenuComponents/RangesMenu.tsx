@@ -11,7 +11,7 @@ import SnackbarComponent from '../../../../../components/Global/SnackbarComponen
 // START: Import Local Files
 import styles from './TableMenus.module.css';
 // import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
-import { PositionIF } from '../../../../../utils/interfaces/PositionIF';
+import { PositionIF } from '../../../../../utils/interfaces/exports';
 import HarvestPosition from '../../../../HarvestPosition/HarvestPosition';
 import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
 import UseOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
@@ -26,7 +26,7 @@ import {
 } from '../../../../../utils/state/tradeDataSlice';
 
 // interface for React functional component props
-interface RangesMenuIF {
+interface propsIF {
     crocEnv: CrocEnv | undefined;
     chainData: ChainSpec;
     baseTokenBalance: string;
@@ -47,7 +47,7 @@ interface RangesMenuIF {
 }
 
 // React functional component
-export default function RangesMenu(props: RangesMenuIF) {
+export default function RangesMenu(props: propsIF) {
     const menuItemRef = useRef<HTMLDivElement>(null);
 
     const {
@@ -146,12 +146,13 @@ export default function RangesMenu(props: RangesMenuIF) {
     );
     // -----------------END OF SNACKBAR----------------
 
-    const repositionButton =
-        !isAmbient && positionMatchesLoggedInUser && !isPositionInRange ? (
-            <Link className={styles.reposition_button} to={'/trade/reposition'}>
-                Reposition
-            </Link>
-        ) : null;
+    const repositionButton = (
+        // !isAmbient && positionMatchesLoggedInUser && !isPositionInRange ?
+        <Link className={styles.reposition_button} to={'/trade/reposition'}>
+            Reposition
+        </Link>
+    );
+    //  : null;
 
     const removeButton = positionMatchesLoggedInUser ? (
         <button className={styles.option_button} onClick={openRemoveModal}>

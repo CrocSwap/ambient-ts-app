@@ -6,13 +6,13 @@ import { useTranslation } from 'react-i18next';
 import { NavLink } from 'react-router-dom';
 
 import { topPools } from '../../../App/mockData';
-import { TokenIF } from '../../../utils/interfaces/TokenIF';
+import { TokenIF } from '../../../utils/interfaces/exports';
 import { CrocEnv } from '@crocswap-libs/sdk';
 import { SpotPriceFn } from '../../../App/functions/querySpotPrice';
 import { userData } from '../../../utils/state/userDataSlice';
 import { tradeData } from '../../../utils/state/tradeDataSlice';
 
-interface TopPoolsProps {
+interface propsIF {
     isServerEnabled: boolean;
     tradeData: tradeData;
     userData: userData;
@@ -23,7 +23,7 @@ interface TopPoolsProps {
     chainId: string;
 }
 
-export default function TopPools(props: TopPoolsProps) {
+export default function TopPools(props: propsIF) {
     const {
         isServerEnabled,
         tradeData,
@@ -37,8 +37,8 @@ export default function TopPools(props: TopPoolsProps) {
 
     const { t } = useTranslation();
 
-    // @Junior  please remove the NavLink wrapper or refactor PoolCard.tsx
-    // @Junior  ... so it returns a NavLink element
+    // TODO:   @Junior  please remove the NavLink wrapper or refactor PoolCard.tsx
+    // TODO:   ... so it returns a NavLink element
 
     const isUserIdle = userData.isUserIdle;
 
