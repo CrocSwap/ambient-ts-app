@@ -12,7 +12,7 @@ export default function OrdersSearchResults(props: OrdersSearchResultPropsIF) {
 
     return (
         <div>
-            <div className={styles.card_title}>Limit Orders</div>
+            <div className={styles.card_title}>My Limit Orders</div>
             <div className={styles.header}>
                 <div>Pool</div>
                 <div>Price</div>
