@@ -107,7 +107,7 @@ export default function RangesRow(props: propsIF) {
         isDenomBase,
         minRangeDenomByMoneyness,
         maxRangeDenomByMoneyness,
-        // isBaseTokenMoneynessGreaterOrEqual,
+        isBaseTokenMoneynessGreaterOrEqual,
         // orderMatchesSelectedTokens,
     } = useProcessRange(position, account);
 
@@ -177,6 +177,14 @@ export default function RangesRow(props: propsIF) {
     // console.log(rangeDetailsProps.lastBlockNumber);
 
     const activePositionRef = useRef(null);
+
+    const sideCharacter = isOnPortfolioPage
+        ? isBaseTokenMoneynessGreaterOrEqual
+            ? baseTokenCharacter
+            : quoteTokenCharacter
+        : !isDenomBase
+        ? baseTokenCharacter
+        : quoteTokenCharacter;
 
     const clickOutsideHandler = () => {
         setCurrentPositionActive('');
@@ -521,7 +529,8 @@ export default function RangesRow(props: propsIF) {
                         className='base_color'
                         style={{ textAlign: 'right' }}
                     >
-                        <span>{isDenomBase ? quoteTokenCharacter : baseTokenCharacter}</span>
+                        <span>{sideCharacter}</span>
+                        {/* <span>{isDenomBase ? quoteTokenCharacter : baseTokenCharacter}</span> */}
                         <span style={{ fontFamily: 'monospace' }}>
                             {isOnPortfolioPage
                                 ? minRangeDenomByMoneyness || '…'
@@ -555,7 +564,8 @@ export default function RangesRow(props: propsIF) {
                         // style={{ textAlign: 'right' }}
                         style={{ textAlign: 'right' }}
                     >
-                        <span>{isDenomBase ? quoteTokenCharacter : baseTokenCharacter}</span>
+                        <span>{sideCharacter}</span>
+                        {/* <span>{isDenomBase ? quoteTokenCharacter : baseTokenCharacter}</span> */}
                         <span style={{ fontFamily: 'monospace' }}>
                             {isOnPortfolioPage
                                 ? maxRangeDenomByMoneyness || '…'
@@ -572,11 +582,11 @@ export default function RangesRow(props: propsIF) {
                     onClick={openDetailsModal}
                 >
                     <p>
-                        <span>{isDenomBase ? quoteTokenCharacter : baseTokenCharacter}</span>
+                        <span>{sideCharacter}</span>
                         <span style={{ fontFamily: 'monospace' }}>{ambientOrMin}</span>
                     </p>
                     <p>
-                        <span>{isDenomBase ? quoteTokenCharacter : baseTokenCharacter}</span>
+                        <span>{sideCharacter}</span>
                         <span style={{ fontFamily: 'monospace' }}>{ambientOrMax}</span>
                     </p>
                 </li>
