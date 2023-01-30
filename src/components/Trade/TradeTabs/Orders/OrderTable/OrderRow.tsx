@@ -364,7 +364,7 @@ export default function OrderRow(props: propsIF) {
         //     leaveDelay={200}
         // >
         <li onClick={openDetailsModal} data-label={baseTokenSymbol} className='base_color'>
-            <p
+            <div
                 style={{
                     display: 'flex',
                     alignItems: 'center',
@@ -378,7 +378,7 @@ export default function OrderRow(props: propsIF) {
                 {baseTokenLogoComponent}
                 {/* {<img src={baseTokenLogo} width='15px' alt='' />} */}
                 {/* {isOnPortfolioPage && <img src={baseTokenLogo} width='15px' alt='' />} */}
-            </p>
+            </div>
         </li>
         /* </DefaultTooltip> */
     );
@@ -392,7 +392,7 @@ export default function OrderRow(props: propsIF) {
         //     leaveDelay={200}
         // >
         <li onClick={openDetailsModal} data-label={quoteTokenSymbol} className='base_color'>
-            <p
+            <div
                 style={{
                     display: 'flex',
                     alignItems: 'center',
@@ -406,7 +406,7 @@ export default function OrderRow(props: propsIF) {
                 {quoteTokenLogoComponent}
                 {/* {<img src={quoteTokenLogo} width='15px' alt='' />} */}
                 {/* {isOnPortfolioPage && <img src={quoteTokenLogo} width='15px' alt='' />} */}
-            </p>
+            </div>
         </li>
         /* </DefaultTooltip> */
     );
@@ -537,22 +537,22 @@ export default function OrderRow(props: propsIF) {
                     className='base_color'
                     onClick={openDetailsModal}
                 >
-                    <p
+                    <div
                         className={styles.token_qty}
                         style={{ fontFamily: 'monospace', whiteSpace: 'nowrap' }}
                     >
                         {' '}
                         {baseDisplay} {baseTokenLogoComponent}
-                    </p>
+                    </div>
 
-                    <p
+                    <div
                         className={styles.token_qty}
                         style={{ fontFamily: 'monospace', whiteSpace: 'nowrap' }}
                     >
                         {' '}
                         {quoteDisplay}
                         {quoteTokenLogoComponent}
-                    </p>
+                    </div>
                 </li>
             )}
             {!ipadView && (
