@@ -2,6 +2,7 @@ import styles from '../SidebarSearchResults.module.css';
 import { LimitOrderIF } from '../../../../../utils/interfaces/exports';
 import getUnicodeCharacter from '../../../../../utils/functions/getUnicodeCharacter';
 import { getDisplayPrice } from './functions/getDisplayPrice';
+import { getValueUSD } from './functions/getValueUSD';
 
 interface propsIF {
     limitOrder: LimitOrderIF;
@@ -18,13 +19,15 @@ export default function OrderSearchResult(props: propsIF) {
 
     const displayPrice = isDenomBase
         ? getDisplayPrice(symbols.quote, limitOrder.invLimitPriceDecimalCorrected)
-        : getDisplayPrice(symbols.base, limitOrder.limitPriceDecimalCorrected)
+        : getDisplayPrice(symbols.base, limitOrder.limitPriceDecimalCorrected);
+
+    const valueUSD = getValueUSD(limitOrder.totalValueUSD);
 
     return (
         <div className={styles.card_container}>
             <div>{limitOrder.baseSymbol} / {limitOrder.quoteSymbol}</div>
             <div>{displayPrice}</div>
-            <div>Change</div>
+            <div>{valueUSD}</div>
         </div>
     );
 }
