@@ -5,9 +5,6 @@ import { useAccount } from 'wagmi';
 import { memoizeFetchTransactionGraphData } from '../../../../App/functions/fetchTransactionDetailsGraphData';
 import { useAppChain } from '../../../../App/hooks/useAppChain';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
-import { LimitOrderIF } from '../../../../utils/interfaces/LimitOrderIF';
-import { PositionIF } from '../../../../utils/interfaces/PositionIF';
-import { ITransaction } from '../../../../utils/state/graphDataSlice';
 
 import './TransactionDetailsGraph.css';
 
