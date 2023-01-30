@@ -2,8 +2,7 @@ import { Dispatch, SetStateAction, useMemo } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import styles from '../SidebarSearchResults.module.css';
 import { PositionIF } from '../../../../../utils/interfaces/exports';
-import getUnicodeCharacter from '../../../../../utils/functions/getUnicodeCharacter';
-import { formatAmountOld } from '../../../../../utils/numbers';
+import { getRangeDisplay } from './functions/getRangeDisplay'
 import { getValueUSD } from './functions/getValueUSD';
 
 interface propsIF {
@@ -50,23 +49,7 @@ export default function PositionLI(props: propsIF) {
         navigate(linkPath);
     }
 
-    // TODO:   @Junior  please reference SidebarRangePositionsCard.tsx and port
-    // TODO:   ... the code for `rangeStatusDisplay` including styling to this
-    // TODO:   ... this component and a corresponding CSS module
-
-    const baseTokenCharacter = position?.baseSymbol
-        ? getUnicodeCharacter(position?.baseSymbol)
-        : '';
-    const quoteTokenCharacter = position?.quoteSymbol
-        ? getUnicodeCharacter(position?.quoteSymbol)
-        : '';
-
-    const rangeDisplay =
-        position?.positionType === 'ambient'
-            ? 'ambient'
-            : isDenomBase
-            ? `${quoteTokenCharacter}${position?.lowRangeShortDisplayInBase}-${quoteTokenCharacter}${position?.highRangeShortDisplayInBase}`
-            : `${baseTokenCharacter}${position?.lowRangeShortDisplayInQuote}-${baseTokenCharacter}${position?.highRangeShortDisplayInQuote}`;
+    const rangeDisplay = getRangeDisplay(position, isDenomBase);
 
     const positionValue = getValueUSD(position.totalValueUSD);
 
