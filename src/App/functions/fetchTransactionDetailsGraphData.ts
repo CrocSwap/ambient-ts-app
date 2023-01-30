@@ -15,6 +15,7 @@ export const fetchTransactionGraphData = async (
     candleNeeded: string,
 ) => {
     console.log('fetching transaction details graph data ');
+
     if (isFetchEnabled) {
         try {
             if (httpGraphCacheServerDomain) {
