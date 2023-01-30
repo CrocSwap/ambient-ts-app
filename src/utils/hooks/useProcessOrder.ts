@@ -406,5 +406,6 @@ export const useProcessOrder = (limitOrder: LimitOrderIF, account: string) => {
 
         // transaction matches selected token
         orderMatchesSelectedTokens,
+        isBaseTokenMoneynessGreaterOrEqual,
     };
 };

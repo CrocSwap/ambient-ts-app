@@ -83,7 +83,7 @@ export default function OrderRow(props: propsIF) {
         ensName,
         // orderMatchesSelectedTokens,
         truncatedDisplayPriceDenomByMoneyness,
-
+        isBaseTokenMoneynessGreaterOrEqual,
         baseTokenCharacter,
         quoteTokenCharacter,
         isDenomBase,
@@ -100,7 +100,13 @@ export default function OrderRow(props: propsIF) {
 
     const dispatch = useAppDispatch();
 
-    const sideCharacter = !isDenomBase ? baseTokenCharacter : quoteTokenCharacter;
+    const sideCharacter = isOnPortfolioPage
+        ? isBaseTokenMoneynessGreaterOrEqual
+            ? baseTokenCharacter
+            : quoteTokenCharacter
+        : !isDenomBase
+        ? baseTokenCharacter
+        : quoteTokenCharacter;
 
     const priceStyle = 'base_color';
 
