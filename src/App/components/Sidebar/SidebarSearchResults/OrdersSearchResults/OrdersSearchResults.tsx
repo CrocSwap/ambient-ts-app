@@ -16,7 +16,7 @@ export default function OrdersSearchResults(props: OrdersSearchResultPropsIF) {
             <div className={styles.header}>
                 <div>Pool</div>
                 <div>Price</div>
-                <div>Qty</div>
+                <div>Value</div>
             </div>
             {
                 searchedLimitOrders.slice(0,4).map((limitOrder: LimitOrderIF) => (
