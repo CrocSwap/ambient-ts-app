@@ -6,10 +6,8 @@ export const useClick = (
     setOutsideControl: Dispatch<SetStateAction<boolean>>,
     setSelectedOutsideTab: Dispatch<SetStateAction<number>>,
     setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>,
-    setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>
-): (
-    (tx: TransactionIF) => void
-) => {
+    setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>,
+): ((tx: TransactionIF) => void) => {
     const navigate = useNavigate();
 
     const handleClick = (tx: TransactionIF) => {
@@ -36,14 +34,8 @@ export const useClick = (
         setSelectedOutsideTab(tabNumber);
         setIsShowAllEnabled(false);
         setCurrentTxActiveInTransactions(tx.id);
-        navigate(
-            locationSlug +
-            '/chain=0x5&tokenA=' +
-            tx.base +
-            '&tokenB=' +
-            tx.quote
-        );
-    }
+        navigate(locationSlug + '/chain=0x5&tokenA=' + tx.base + '&tokenB=' + tx.quote);
+    };
 
     return handleClick;
-}
+};

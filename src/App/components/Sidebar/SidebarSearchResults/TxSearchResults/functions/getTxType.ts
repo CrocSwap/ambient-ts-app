@@ -24,4 +24,4 @@ export const getTxType = (entityType: string): string => {
 
     // return human-readable output value
     return output;
-}
+};

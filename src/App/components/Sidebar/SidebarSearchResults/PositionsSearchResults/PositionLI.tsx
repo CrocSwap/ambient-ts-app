@@ -78,21 +78,17 @@ export default function PositionLI(props: propsIF) {
         : usdValueNum >= 10000
         ? formatAmountOld(usdValueNum, 1)
         : // ? baseLiqDisplayNum.toExponential(2)
-            usdValueNum.toLocaleString(undefined, {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-            });
-
-            
+          usdValueNum.toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+          });
 
     return (
         <div className={styles.card_container} onClick={() => handleRangePositionClick(position)}>
             <div>
-                {
-                    isDenomBase
-                        ? `${position?.baseSymbol} / ${position?.quoteSymbol}`
-                        : `${position?.quoteSymbol} / ${position?.baseSymbol}`
-                }
+                {isDenomBase
+                    ? `${position?.baseSymbol} / ${position?.quoteSymbol}`
+                    : `${position?.quoteSymbol} / ${position?.baseSymbol}`}
             </div>
             <div>{rangeDisplay}</div>
             <div>{'$' + usdValueTruncated}</div>

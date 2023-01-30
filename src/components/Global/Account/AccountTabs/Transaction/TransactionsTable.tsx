@@ -19,7 +19,9 @@ export default function TransactionsTable(props: propsIF) {
         <div className={styles.container}>
             <TransactionCardHeader />
             <div className={styles.item_container}>
-                {txs.map((tx, idx) => <TransactionCard tx={tx} key={idx} />)}
+                {txs.map((tx, idx) => (
+                    <TransactionCard tx={tx} key={idx} />
+                ))}
             </div>
         </div>
     );
