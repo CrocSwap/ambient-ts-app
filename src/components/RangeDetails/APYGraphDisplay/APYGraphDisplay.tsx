@@ -16,7 +16,7 @@ export default function APYGraphDisplay(props: IApyGraphDisplayProps) {
                 <p className={`${styles.apr_text} ${styles.apr_green}`}>APR</p>
             </div>
             <div className={styles.chart_container}>
-                <TransactionDetailsGraph position={position} transactionType={'Range'} />
+                <TransactionDetailsGraph tx={position} transactionType={'liqchange'} />
             </div>
         </div>
     );

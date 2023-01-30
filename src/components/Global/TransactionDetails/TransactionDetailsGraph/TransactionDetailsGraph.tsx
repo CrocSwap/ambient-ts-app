@@ -12,16 +12,15 @@ import { ITransaction } from '../../../../utils/state/graphDataSlice';
 import './TransactionDetailsGraph.css';
 
 interface TransactionDetailsGraphIF {
-    tx?: ITransaction;
-    limitOrder?: LimitOrderIF;
-    position?: PositionIF;
+    tx: any;
     transactionType: string;
+    useTx?: boolean;
 }
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 export default function TransactionDetailsGraph(props: TransactionDetailsGraphIF) {
-    const { tx, transactionType, limitOrder, position } = props;
+    const { tx, transactionType, useTx } = props;
 
     const isServerEnabled =
         process.env.REACT_APP_CACHE_SERVER_IS_ENABLED !== undefined
@@ -83,15 +82,15 @@ export default function TransactionDetailsGraph(props: TransactionDetailsGraphIF
 
                 const time = () => {
                     switch (transactionType) {
-                        case 'Market':
+                        case 'swap':
                             return tx?.time !== undefined ? tx.time : new Date().getTime();
-                        case 'Limit':
-                            return limitOrder?.timeFirstMint !== undefined
-                                ? limitOrder?.timeFirstMint
+                        case 'limitOrder':
+                            return tx?.timeFirstMint !== undefined
+                                ? tx?.timeFirstMint
                                 : new Date().getTime();
-                        case 'Range':
-                            return position?.timeFirstMint !== undefined
-                                ? position?.timeFirstMint
+                        case 'liqchange':
+                            return tx?.timeFirstMint !== undefined
+                                ? tx?.timeFirstMint
                                 : new Date().getTime();
                         default:
                             return new Date().getTime();
@@ -213,17 +212,17 @@ export default function TransactionDetailsGraph(props: TransactionDetailsGraphIF
 
             xScale.domain(xExtent(graphData));
 
-            if (transactionType === 'Market') {
+            if (transactionType === 'swap') {
                 yScale.domain(yExtent(graphData));
-            } else if (transactionType === 'Limit') {
-                if (limitOrder !== undefined) {
+            } else if (transactionType === 'limitOrder') {
+                if (tx !== undefined) {
                     const lowBoundary = Math.min(
-                        limitOrder.askTickInvPriceDecimalCorrected,
-                        limitOrder.bidTickInvPriceDecimalCorrected,
+                        tx.askTickInvPriceDecimalCorrected,
+                        tx.bidTickInvPriceDecimalCorrected,
                     );
                     const topBoundary = Math.max(
-                        limitOrder.askTickInvPriceDecimalCorrected,
-                        limitOrder.bidTickInvPriceDecimalCorrected,
+                        tx.askTickInvPriceDecimalCorrected,
+                        tx.bidTickInvPriceDecimalCorrected,
                     );
 
                     const buffer =
@@ -241,15 +240,15 @@ export default function TransactionDetailsGraph(props: TransactionDetailsGraphIF
                 } else {
                     yScale.domain(yExtent(graphData));
                 }
-            } else if (transactionType === 'Range') {
-                if (position !== undefined && position.positionType !== 'ambient') {
+            } else if (transactionType === 'liqchange') {
+                if (tx !== undefined && tx.positionType !== 'ambient') {
                     const lowBoundary = Math.min(
-                        position.askTickInvPriceDecimalCorrected,
-                        position.bidTickInvPriceDecimalCorrected,
+                        tx.askTickInvPriceDecimalCorrected,
+                        tx.bidTickInvPriceDecimalCorrected,
                     );
                     const topBoundary = Math.max(
-                        position.askTickInvPriceDecimalCorrected,
-                        position.bidTickInvPriceDecimalCorrected,
+                        tx.askTickInvPriceDecimalCorrected,
+                        tx.bidTickInvPriceDecimalCorrected,
                     );
 
                     const buffer =
@@ -369,45 +368,41 @@ export default function TransactionDetailsGraph(props: TransactionDetailsGraphIF
                 d3.select(d3PlotGraph.current).on('draw', function (event: any) {
                     const svg = d3.select(event.target).select('svg');
 
-                    if (transactionType === 'Market' && tx !== undefined) {
+                    if (transactionType === 'swap' && tx !== undefined) {
                         priceJoin(svg, [[tx.invPriceDecimalCorrected]]).call(priceLine);
                         crossPointJoin(svg, [
                             [{ x: tx.time * 1000, y: tx.invPriceDecimalCorrected }],
                         ]).call(crossPoint);
                     }
 
-                    if (transactionType === 'Limit' && limitOrder !== undefined) {
+                    if (transactionType === 'limitOrder' && tx !== undefined) {
                         horizontalBandData[0] = [
-                            limitOrder.bidTickInvPriceDecimalCorrected,
-                            limitOrder.askTickInvPriceDecimalCorrected,
+                            tx.bidTickInvPriceDecimalCorrected,
+                            tx.askTickInvPriceDecimalCorrected,
                         ];
 
-                        finishPriceJoin(svg, [[limitOrder.bidTickInvPriceDecimalCorrected]]).call(
+                        finishPriceJoin(svg, [[tx.bidTickInvPriceDecimalCorrected]]).call(
                             priceLine,
                         );
-                        startPriceJoin(svg, [[limitOrder.askTickInvPriceDecimalCorrected]]).call(
-                            priceLine,
-                        );
+                        startPriceJoin(svg, [[tx.askTickInvPriceDecimalCorrected]]).call(priceLine);
                         horizontalBandJoin(svg, [horizontalBandData]).call(horizontalBand);
                     }
 
-                    if (
-                        transactionType === 'Range' &&
-                        position !== undefined &&
-                        position.positionType !== 'ambient'
-                    ) {
-                        horizontalBandData[0] = [
-                            position.bidTickInvPriceDecimalCorrected,
-                            position.askTickInvPriceDecimalCorrected,
-                        ];
+                    if (transactionType === 'liqchange' && tx !== undefined) {
+                        if (tx.positionType !== 'ambient') {
+                            horizontalBandData[0] = [
+                                tx.bidTickInvPriceDecimalCorrected,
+                                tx.askTickInvPriceDecimalCorrected,
+                            ];
 
-                        finishPriceJoin(svg, [[position.bidTickInvPriceDecimalCorrected]]).call(
-                            priceLine,
-                        );
-                        startPriceJoin(svg, [[position.askTickInvPriceDecimalCorrected]]).call(
-                            priceLine,
-                        );
-                        horizontalBandJoin(svg, [horizontalBandData]).call(horizontalBand);
+                            finishPriceJoin(svg, [[tx.bidTickInvPriceDecimalCorrected]]).call(
+                                priceLine,
+                            );
+                            startPriceJoin(svg, [[tx.askTickInvPriceDecimalCorrected]]).call(
+                                priceLine,
+                            );
+                            horizontalBandJoin(svg, [horizontalBandData]).call(horizontalBand);
+                        }
                     }
 
                     lineJoin(svg, [graphData]).call(lineSeries);

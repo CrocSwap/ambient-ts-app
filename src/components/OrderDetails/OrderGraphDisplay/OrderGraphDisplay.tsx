@@ -25,7 +25,7 @@ export default function OrderGraphDisplay(props: IOrderGraphDisplayProps) {
                 </div>
             </div>
             <div className={styles.chart_container}>
-                <TransactionDetailsGraph limitOrder={limitOrder} transactionType={'Limit'} />
+                <TransactionDetailsGraph tx={limitOrder} transactionType={'limitOrder'} />
             </div>
         </div>
     );
