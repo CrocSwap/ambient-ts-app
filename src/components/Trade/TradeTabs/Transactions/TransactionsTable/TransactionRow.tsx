@@ -101,7 +101,13 @@ export default function TransactionRow(props: propsIF) {
 
     const dispatch = useAppDispatch();
 
-    const sideCharacter = !isDenomBase ? baseTokenCharacter : quoteTokenCharacter;
+    const sideCharacter = isOnPortfolioPage
+        ? isBaseTokenMoneynessGreaterOrEqual
+            ? baseTokenCharacter
+            : quoteTokenCharacter
+        : !isDenomBase
+        ? baseTokenCharacter
+        : quoteTokenCharacter;
 
     const priceStyle = 'base_color';
     const sideTypeStyle = `${sideType}_style`;

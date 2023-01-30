@@ -4,7 +4,9 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { useAccount } from 'wagmi';
 import { memoizeFetchTransactionGraphData } from '../../../../App/functions/fetchTransactionDetailsGraphData';
 import { useAppChain } from '../../../../App/hooks/useAppChain';
-import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
+import { ZERO_ADDRESS } from '../../../../constants';
+import { testTokenMap } from '../../../../utils/data/testTokenMap';
+// import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 
 import './TransactionDetailsGraph.css';
 
@@ -23,13 +25,24 @@ export default function TransactionDetailsGraph(props: TransactionDetailsGraphIF
             ? process.env.REACT_APP_CACHE_SERVER_IS_ENABLED === 'true'
             : true;
 
-    const tradeData = useAppSelector((state) => state.tradeData);
+    // const tradeData = useAppSelector((state) => state.tradeData);
 
-    const baseTokenAddress = tradeData.baseToken.address;
-    const quoteTokenAddress = tradeData.quoteToken.address;
+    const baseTokenAddress = tx.base;
+    const quoteTokenAddress = tx.quote;
 
-    const mainnetBaseTokenAddress = tradeData.mainnetBaseTokenAddress;
-    const mainnetQuoteTokenAddress = tradeData.mainnetQuoteTokenAddress;
+    const chainId = tx.chainId;
+
+    // const mainnetBaseTokenAddress = tradeData.mainnetBaseTokenAddress;
+    // const mainnetQuoteTokenAddress = tradeData.mainnetQuoteTokenAddress;
+
+    const mainnetBaseTokenAddress =
+        baseTokenAddress === ZERO_ADDRESS
+            ? baseTokenAddress
+            : testTokenMap.get(baseTokenAddress.toLowerCase() + '_' + chainId)?.split('_')[0];
+    const mainnetQuoteTokenAddress =
+        quoteTokenAddress === ZERO_ADDRESS
+            ? quoteTokenAddress
+            : testTokenMap.get(quoteTokenAddress.toLowerCase() + '_' + chainId)?.split('_')[0];
 
     const { isConnected } = useAccount();
 
@@ -65,17 +78,17 @@ export default function TransactionDetailsGraph(props: TransactionDetailsGraphIF
             : 86400;
     };
 
+    const fetchEnabled = !!(
+        isServerEnabled &&
+        baseTokenAddress &&
+        quoteTokenAddress &&
+        mainnetBaseTokenAddress &&
+        mainnetQuoteTokenAddress
+    );
+
     useEffect(() => {
         (async () => {
             if (graphData === undefined) {
-                const fetchEnabled = !!(
-                    isServerEnabled &&
-                    baseTokenAddress &&
-                    quoteTokenAddress &&
-                    mainnetBaseTokenAddress &&
-                    mainnetQuoteTokenAddress
-                );
-
                 const time = () => {
                     switch (transactionType) {
                         case 'swap':
@@ -132,7 +145,7 @@ export default function TransactionDetailsGraph(props: TransactionDetailsGraphIF
                 }
             }
         })();
-    }, []);
+    }, [fetchEnabled]);
 
     useEffect(() => {
         if (scaleData !== undefined) {

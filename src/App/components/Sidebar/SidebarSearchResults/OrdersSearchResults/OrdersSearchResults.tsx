@@ -1,41 +1,53 @@
-import ResultSkeleton from '../ResultSkeleton/ResultSkeleton';
+import { Dispatch, SetStateAction } from 'react';
+import LimitOrderLI from './LimitOrderLI';
 import styles from '../SidebarSearchResults.module.css';
+import { useClick } from './hooks/useClick';
+import { LimitOrderIF } from '../../../../../utils/interfaces/exports';
 
 interface OrdersSearchResultPropsIF {
-    loading: boolean;
-    searchInput: React.ReactNode;
+    searchedLimitOrders: LimitOrderIF[];
+    isDenomBase: boolean;
+    setOutsideControl: Dispatch<SetStateAction<boolean>>,
+    setSelectedOutsideTab: Dispatch<SetStateAction<number>>,
+    setCurrentPositionActive: Dispatch<SetStateAction<string>>,
+    setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>
 }
+
 export default function OrdersSearchResults(props: OrdersSearchResultPropsIF) {
-    function OrderSearchResult() {
-        return (
-            <div className={styles.card_container}>
-                <div>Pool</div>
-                <div>Price</div>
-                <div>Change</div>
-            </div>
-        );
-    }
+    const {
+        searchedLimitOrders,
+        isDenomBase,
+        setOutsideControl,
+        setSelectedOutsideTab,
+        setCurrentPositionActive,
+        setIsShowAllEnabled
+    } = props;
 
-    const header = (
-        <div className={styles.header}>
-            <div>Pool</div>
-            <div>Price</div>
-            <div>Qty</div>
-        </div>
+    const handleClick = useClick(
+        setOutsideControl,
+        setSelectedOutsideTab,
+        setCurrentPositionActive,
+        setIsShowAllEnabled
     );
 
-    const exampleContent = (
-        <div className={styles.main_result_container}>
-            {new Array(0).fill(null).map((item, idx) => (
-                <OrderSearchResult key={idx} />
-            ))}
-        </div>
-    );
     return (
         <div>
-            <div className={styles.card_title}>Limit Orders</div>
-            {header}
-            {props.loading ? <ResultSkeleton /> : exampleContent}
+            <div className={styles.card_title}>My Limit Orders</div>
+            <div className={styles.header}>
+                <div>Pool</div>
+                <div>Price</div>
+                <div>Value</div>
+            </div>
+            {
+                searchedLimitOrders.slice(0,4).map((limitOrder: LimitOrderIF) => (
+                    <LimitOrderLI
+                        key={`order-search-result-${JSON.stringify(limitOrder)}`}
+                        limitOrder={limitOrder}
+                        isDenomBase={isDenomBase}
+                        handleClick={handleClick}
+                    />
+                ))
+            }
         </div>
     );
 }

@@ -44,7 +44,7 @@
 
 .extra_row {
     display: flex;
-    flex-direction: column;
+    /* flex-direction: column; */
     padding: 5px 0;
     justify-content: space-between;
     align-items: center;

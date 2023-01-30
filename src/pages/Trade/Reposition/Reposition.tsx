@@ -1,4 +1,4 @@
-import DividerDark from '../../../components/Global/DividerDark/DividerDark';
+// import DividerDark from '../../../components/Global/DividerDark/DividerDark';
 import RepositionButton from '../../../components/Trade/Reposition/Repositionbutton/RepositionButton';
 import RepositionDenominationSwitch from '../../../components/Trade/Reposition/RepositionDenominationSwitch/RepositionDenominationSwitch';
 import RepositionHeader from '../../../components/Trade/Reposition/RepositionHeader/RepositionHeader';
@@ -16,7 +16,11 @@ export default function Reposition() {
     const location = useLocation();
 
     const currentLocation = location.pathname;
-    const [isModalOpen, openModal, closeModal] = useModal();
+    const [
+        isModalOpen,
+        // openModal,
+        closeModal,
+    ] = useModal();
 
     const confirmRepositionModal = isModalOpen ? (
         <Modal onClose={closeModal} title=' Confirm Reposition'>
@@ -49,17 +53,22 @@ export default function Reposition() {
         </div>
     );
 
+    const sendRepositionTransaction = () => {
+        console.log('clicked');
+    };
+
     return (
         <div className={styles.repositionContainer}>
             <RepositionHeader />
 
             <div className={styles.reposition_content}>
                 {repositionAddToggle}
-                <RepositionDenominationSwitch />
-                <DividerDark />
+                {/* <DividerDark /> */}
                 <RepositionRangeWidth />
+                <RepositionDenominationSwitch />
                 <RepositionPriceInfo />
-                <RepositionButton onClickFn={openModal} />
+                <RepositionButton onClickFn={sendRepositionTransaction} />
+                {/* <RepositionButton onClickFn={openModal} /> */}
             </div>
             {confirmRepositionModal}
         </div>

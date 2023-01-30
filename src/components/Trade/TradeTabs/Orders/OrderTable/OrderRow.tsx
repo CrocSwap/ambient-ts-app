@@ -83,7 +83,7 @@ export default function OrderRow(props: propsIF) {
         ensName,
         // orderMatchesSelectedTokens,
         truncatedDisplayPriceDenomByMoneyness,
-
+        isBaseTokenMoneynessGreaterOrEqual,
         baseTokenCharacter,
         quoteTokenCharacter,
         isDenomBase,
@@ -100,7 +100,13 @@ export default function OrderRow(props: propsIF) {
 
     const dispatch = useAppDispatch();
 
-    const sideCharacter = !isDenomBase ? baseTokenCharacter : quoteTokenCharacter;
+    const sideCharacter = isOnPortfolioPage
+        ? isBaseTokenMoneynessGreaterOrEqual
+            ? baseTokenCharacter
+            : quoteTokenCharacter
+        : !isDenomBase
+        ? baseTokenCharacter
+        : quoteTokenCharacter;
 
     const priceStyle = 'base_color';
 
@@ -358,7 +364,7 @@ export default function OrderRow(props: propsIF) {
         //     leaveDelay={200}
         // >
         <li onClick={openDetailsModal} data-label={baseTokenSymbol} className='base_color'>
-            <p
+            <div
                 style={{
                     display: 'flex',
                     alignItems: 'center',
@@ -372,7 +378,7 @@ export default function OrderRow(props: propsIF) {
                 {baseTokenLogoComponent}
                 {/* {<img src={baseTokenLogo} width='15px' alt='' />} */}
                 {/* {isOnPortfolioPage && <img src={baseTokenLogo} width='15px' alt='' />} */}
-            </p>
+            </div>
         </li>
         /* </DefaultTooltip> */
     );
@@ -386,7 +392,7 @@ export default function OrderRow(props: propsIF) {
         //     leaveDelay={200}
         // >
         <li onClick={openDetailsModal} data-label={quoteTokenSymbol} className='base_color'>
-            <p
+            <div
                 style={{
                     display: 'flex',
                     alignItems: 'center',
@@ -400,7 +406,7 @@ export default function OrderRow(props: propsIF) {
                 {quoteTokenLogoComponent}
                 {/* {<img src={quoteTokenLogo} width='15px' alt='' />} */}
                 {/* {isOnPortfolioPage && <img src={quoteTokenLogo} width='15px' alt='' />} */}
-            </p>
+            </div>
         </li>
         /* </DefaultTooltip> */
     );
@@ -531,22 +537,22 @@ export default function OrderRow(props: propsIF) {
                     className='base_color'
                     onClick={openDetailsModal}
                 >
-                    <p
+                    <div
                         className={styles.token_qty}
                         style={{ fontFamily: 'monospace', whiteSpace: 'nowrap' }}
                     >
                         {' '}
                         {baseDisplay} {baseTokenLogoComponent}
-                    </p>
+                    </div>
 
-                    <p
+                    <div
                         className={styles.token_qty}
                         style={{ fontFamily: 'monospace', whiteSpace: 'nowrap' }}
                     >
                         {' '}
                         {quoteDisplay}
                         {quoteTokenLogoComponent}
-                    </p>
+                    </div>
                 </li>
             )}
             {!ipadView && (

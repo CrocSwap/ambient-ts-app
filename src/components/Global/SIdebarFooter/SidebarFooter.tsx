@@ -1,35 +1,52 @@
 import styles from './SidebarFooter.module.css';
 
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { FaHome } from 'react-icons/fa';
 import { MdAccountBox } from 'react-icons/md';
 // import { IoMdAnalytics } from 'react-icons/io';
 import { RiSwapBoxFill } from 'react-icons/ri';
 import { GiTrade } from 'react-icons/gi';
+import { useUrlParams } from '../../../App/components/PageHeader/useUrlParams';
 
 export default function SidebarFooter() {
+    const location = useLocation();
+
+    const currentLocation = location.pathname;
+
+    const { paramsSlug } = useUrlParams();
+
+    const tradeDestination = location.pathname.includes('trade/market')
+        ? '/trade/market'
+        : location.pathname.includes('trade/limit')
+        ? '/trade/limit'
+        : location.pathname.includes('trade/range')
+        ? '/trade/range'
+        : location.pathname.includes('trade/edit')
+        ? '/trade/edit'
+        : '/trade/market';
+
+    const linksData = [
+        { title: 'Home', destination: '/', icon: FaHome },
+        { title: 'Swap', destination: '/swap' + paramsSlug, icon: RiSwapBoxFill },
+        { title: 'Trade', destination: tradeDestination + paramsSlug, icon: GiTrade },
+        { title: 'Account', destination: '/account', icon: MdAccountBox },
+    ];
+
     return (
         <div className={styles.sidebar_footer}>
-            <Link to='/'>
-                <FaHome size={18} color='#cdc1ff' />
-                <p> Home</p>
-            </Link>
-            <Link to='/swap'>
-                <RiSwapBoxFill size={18} color='#cdc1ff' />
-                <p>Swap</p>
-            </Link>
-            <Link to='/trade/range'>
-                <GiTrade size={18} color='#cdc1ff' />
-                <p>Trade</p>
-            </Link>
-            {/* <Link to='/analytics'>
-                <IoMdAnalytics size={18} color='#cdc1ff' />
-                <p>Analytics</p>
-            </Link> */}
-            <Link to='/account'>
-                <MdAccountBox size={18} color='#cdc1ff' />
-                <p>Account</p>
-            </Link>
+            {linksData.map((link) => (
+                <Link to={link.destination} key={link.destination}>
+                    <link.icon
+                        size={18}
+                        color={
+                            currentLocation === link.destination
+                                ? 'var(--text-highlight-dark)'
+                                : 'var(--text-highlight)'
+                        }
+                    />
+                    <p> {link.title}</p>
+                </Link>
+            ))}
         </div>
     );
 }

@@ -1,5 +1,6 @@
-import { Dispatch, SetStateAction, ReactNode } from 'react';
+import { Dispatch, SetStateAction } from 'react';
 import {
+    LimitOrderIF,
     PositionIF,
     TokenIF,
     TokenPairIF,
@@ -15,8 +16,6 @@ import { PoolStatsFn } from '../../../functions/getPoolStats';
 
 interface propsIF {
     searchedPools: TempPoolIF[];
-    searchInput: ReactNode;
-    exampleLoading: boolean;
     getTokenByAddress: (addr: string, chn: string) => TokenIF | undefined;
     tokenPair: TokenPairIF;
     chainId: string;
@@ -30,13 +29,12 @@ interface propsIF {
     setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
     setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
     searchedTxs: TransactionIF[];
+    searchedLimitOrders: LimitOrderIF[];
 }
 
 export default function SidebarSearchResults(props: propsIF) {
     const {
         searchedPools,
-        exampleLoading,
-        searchInput,
         getTokenByAddress,
         tokenPair,
         chainId,
@@ -50,6 +48,7 @@ export default function SidebarSearchResults(props: propsIF) {
         setCurrentTxActiveInTransactions,
         setIsShowAllEnabled,
         searchedTxs,
+        searchedLimitOrders
     } = props;
 
     return (
@@ -72,9 +71,14 @@ export default function SidebarSearchResults(props: propsIF) {
                         setCurrentPositionActive={setCurrentPositionActive}
                         setIsShowAllEnabled={setIsShowAllEnabled}
                     />
-                    {false && (
-                        <OrdersSearchResults loading={exampleLoading} searchInput={searchInput} />
-                    )}
+                    <OrdersSearchResults
+                        searchedLimitOrders={searchedLimitOrders}
+                        isDenomBase={isDenomBase}
+                        setOutsideControl={setOutsideControl}
+                        setSelectedOutsideTab={setSelectedOutsideTab}
+                        setCurrentPositionActive={setCurrentPositionActive}
+                        setIsShowAllEnabled={setIsShowAllEnabled}
+                    />
                     <TxSearchResults
                         searchedTxs={searchedTxs}
                         setOutsideControl={setOutsideControl}

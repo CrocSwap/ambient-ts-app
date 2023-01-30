@@ -115,6 +115,7 @@ import {
     setIsUserIdle,
     setNativeToken,
     setRecentTokens,
+    setShouldRecheckLocalStorage,
 } from '../utils/state/userDataSlice';
 import { checkIsStable } from '../utils/data/stablePairs';
 import { useTokenMap } from '../utils/hooks/useTokenMap';
@@ -296,7 +297,8 @@ export default function App() {
         console.log('setting login check delay');
         const timer = setTimeout(() => {
             setLoginCheckDelayElapsed(true);
-        }, 3000);
+            dispatch(setShouldRecheckLocalStorage(true));
+        }, 1000);
         return () => clearTimeout(timer);
     }, []);
 
@@ -1254,6 +1256,7 @@ export default function App() {
         }
     }, [
         rtkMatchesParams,
+        tokensOnActiveLists,
         // isServerEnabled,
         tokenPairStringified,
         chainData.chainId,
@@ -2074,7 +2077,7 @@ export default function App() {
                 console.log;
             }
         }
-    }, [isServerEnabled, isUserLoggedIn, account, chainData.chainId, crocEnv]);
+    }, [isServerEnabled, tokensOnActiveLists, isUserLoggedIn, account, chainData.chainId, crocEnv]);
 
     // run function to initialize local storage
     // internal controls will only initialize values that don't exist
@@ -2113,7 +2116,11 @@ export default function App() {
             setSelectedOutsideTab(0);
         } else if (currentLocation.includes('/limit')) {
             setSelectedOutsideTab(1);
-        } else if (currentLocation.includes('/range')) {
+        } else if (
+            currentLocation.includes('/range') ||
+            currentLocation.includes('reposition') ||
+            currentLocation.includes('add')
+        ) {
             setSelectedOutsideTab(2);
         }
     }
@@ -2587,6 +2594,7 @@ export default function App() {
         removePoolFromFaves: removePoolFromFaves,
         positionsByUser: graphData.positionsByUser.positions,
         txsByUser: graphData.changesByUser.changes,
+        limitsByUser: graphData.limitOrdersByUser.limitOrders,
     };
 
     const analyticsProps = {
@@ -2922,6 +2930,7 @@ export default function App() {
                             path='account'
                             element={
                                 <Portfolio
+                                    searchableTokens={searchableTokens}
                                     cachedQuerySpotPrice={cachedQuerySpotPrice}
                                     crocEnv={crocEnv}
                                     addRecentToken={addRecentToken}
@@ -2979,6 +2988,7 @@ export default function App() {
                             path='account/:address'
                             element={
                                 <Portfolio
+                                    searchableTokens={searchableTokens}
                                     cachedQuerySpotPrice={cachedQuerySpotPrice}
                                     crocEnv={crocEnv}
                                     addRecentToken={addRecentToken}
@@ -3054,6 +3064,7 @@ export default function App() {
                             path='/:address'
                             element={
                                 <Portfolio
+                                    searchableTokens={searchableTokens}
                                     cachedQuerySpotPrice={cachedQuerySpotPrice}
                                     crocEnv={crocEnv}
                                     addRecentToken={addRecentToken}

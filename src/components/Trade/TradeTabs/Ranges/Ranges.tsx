@@ -277,7 +277,7 @@ export default function Ranges(props: propsIF) {
     // const sidebarOpen = false;
 
     const ipadView = useMediaQuery('(max-width: 480px)');
-    const desktopView = useMediaQuery('(max-width: 768px)');
+    // const desktopView = useMediaQuery('(max-width: 768px)');
     const showColumns = useMediaQuery('(max-width: 1776px)');
 
     // const showColumns = sidebarOpen || desktopView;
@@ -326,7 +326,7 @@ export default function Ranges(props: propsIF) {
         {
             name: 'Pair',
             className: '',
-            show: isOnPortfolioPage && !desktopView && !showSidebar,
+            show: isOnPortfolioPage && !showSidebar && !showColumns,
             slug: 'pool',
             sortable: true,
         },
@@ -487,8 +487,11 @@ export default function Ranges(props: propsIF) {
         />
     ));
 
-    const expandStyle = expandTradeTable ? 'calc(100vh - 10rem)' : '250px';
+    const mobileView = useMediaQuery('(max-width: 850px)');
 
+    const mobileViewHeight = mobileView ? '70vh' : '250px';
+
+    const expandStyle = expandTradeTable ? 'calc(100vh - 10rem)' : mobileViewHeight;
     const portfolioPageStyle = props.isOnPortfolioPage ? 'calc(100vh - 19.5rem)' : expandStyle;
     const rangeDataOrNull = rangeData.length ? (
         rowItemContent

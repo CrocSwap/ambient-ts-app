@@ -25,6 +25,7 @@ import recentPoolsImage from '../../../assets/images/sidebarImages/recentTransac
 // import topTokensImage from '../../../assets/images/sidebarImages/topTokens.svg';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import {
+    LimitOrderIF,
     PoolIF,
     PositionIF,
     TokenIF,
@@ -91,6 +92,7 @@ interface propsIF {
     ) => void;
     positionsByUser: PositionIF[];
     txsByUser: TransactionIF[];
+    limitsByUser: LimitOrderIF[];
 }
 
 export default function Sidebar(props: propsIF) {
@@ -129,32 +131,15 @@ export default function Sidebar(props: propsIF) {
         setOutsideControl,
         setSelectedOutsideTab,
         txsByUser,
+        limitsByUser
     } = props;
 
-    false && txsByUser;
-
     const location = useLocation();
-    const graphData = useAppSelector((state) => state.graphData);
-    const isUserLoggedIn = isConnected;
-    // const isUserLoggedIn = useAppSelector((state) => state.userData).isLoggedIn;
-    const limitOrderByUser = graphData.limitOrdersByUser.limitOrders;
 
     const mostRecentTxs = txsByUser.slice(0, 4);
     const mostRecentPositions = positionsByUser.slice(0, 4);
-    const mostRecentLimitOrders = limitOrderByUser.slice(0, 4);
-    // const mostRecentPositions = positionsByUser.slice(0, 4);
+    const mostRecentLimitOrders = limitsByUser.slice(0, 4);
 
-    // TODO:  @Ben this is the map with all the coin gecko token data objects
-    // console.assert(coinGeckoTokenMap, 'no map present');
-
-    // const topTokens = [
-    //     {
-    //         name: 'Top Tokens',
-    //         icon: topTokensImage,
-
-    //         data: <TopTokens chainId={chainId} lastBlockNumber={lastBlockNumber} />,
-    //     },
-    // ];
     const recentPools = [
         {
             name: 'Recent Pools',
@@ -198,7 +183,7 @@ export default function Sidebar(props: propsIF) {
         setIsShowAllEnabled: props.setIsShowAllEnabled,
         expandTradeTable: expandTradeTable,
         setExpandTradeTable: setExpandTradeTable,
-        isUserLoggedIn: isUserLoggedIn,
+        isUserLoggedIn: isConnected,
 
         setShowSidebar: setShowSidebar,
     };
@@ -214,7 +199,7 @@ export default function Sidebar(props: propsIF) {
         setIsShowAllEnabled: props.setIsShowAllEnabled,
         expandTradeTable: expandTradeTable,
         setExpandTradeTable: setExpandTradeTable,
-        isUserLoggedIn: isUserLoggedIn,
+        isUserLoggedIn: isConnected,
         setShowSidebar: setShowSidebar,
     };
 
@@ -285,7 +270,7 @@ export default function Sidebar(props: propsIF) {
                     setSelectedOutsideTab={setSelectedOutsideTab}
                     setOutsideControl={setOutsideControl}
                     outsideControl={props.outsideControl}
-                    isUserLoggedIn={isUserLoggedIn}
+                    isUserLoggedIn={isConnected}
                     setShowSidebar={setShowSidebar}
                 />
             ),
@@ -295,50 +280,35 @@ export default function Sidebar(props: propsIF) {
     const userData = useAppSelector((state) => state.userData);
     const shouldRecheckLocalStorage = userData.shouldRecheckLocalStorage;
 
-    const [setRawInput, isInputValid, searchedPools, searchedPositions, searchedTxs] =
-        useSidebarSearch(
-            poolList,
-            positionsByUser,
-            txsByUser,
-            verifyToken,
-            shouldRecheckLocalStorage,
-        );
-    false && searchedTxs;
-
-    // useEffect(() => {console.log({searchedPools})}, [JSON.stringify(searchedPools)]);
-    false && searchedPools;
+    const [
+        setRawInput,
+        isInputValid,
+        searchedPools,
+        searchedPositions,
+        searchedTxs,
+        searchedLimitOrders
+    ] = useSidebarSearch(
+        poolList,
+        positionsByUser,
+        txsByUser,
+        limitsByUser,
+        verifyToken,
+        shouldRecheckLocalStorage
+    );
 
     const [searchInput, setSearchInput] = useState<string[][]>();
     const [searchMode, setSearchMode] = useState(false);
     false && searchMode;
-    const [exampleLoading, setExampleLoading] = useState(true);
 
-    // const searchInputChangeHandler = (event: string) => {
-    //     setSearchMode(true);
-    //     const formatText = formatSearchText(event);
-
-    //     setSearchInput(formatText);
-
-    //     setExampleLoading(true);
-    // };
     const searchInputRef = useRef(null);
 
     const handleInputClear = () => {
         setSearchInput([]);
         setSearchMode(false);
         const currentInput = document.getElementById('search_input') as HTMLInputElement;
-
         currentInput.value = '';
     };
 
-    // we are not going to use this following loading functionality. It is just for demonstration purposes
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            setExampleLoading(false);
-        }, 1000);
-
-        return () => clearTimeout(timer);
-    }, [searchInput]);
     // ------------------------------------------
     // ---------------------------ANALYTICS SEARCH CONTAINER-----------------------
 
@@ -481,19 +451,7 @@ export default function Sidebar(props: propsIF) {
 
     useOnClickOutside(sidebarRef, handleSidebarClickOutside);
 
-    // useEffect(() => {
-    //     if (collapseSidebarMediaQuery) setShowSidebar(false);
-    //     console.log('collapsing');
-    // }, [collapseSidebarMediaQuery]);
-
     const sidebarStyle = showSidebar ? styles.sidebar_active : styles.sidebar;
-    // const sidebarStyle = showSidebar ? styles.sidebar_active : styles.sidebar_active;
-
-    // useEffect(() => {
-    //     if (showSidebar === false) {
-    //         setSearchMode(false);
-    //     }
-    // }, [showSidebar]);
 
     const topElementsDisplay = (
         <div style={{ width: '100%' }}>
@@ -582,7 +540,6 @@ export default function Sidebar(props: propsIF) {
                     setShowSidebar={setShowSidebar}
                     openAllDefault={openAllDefault}
                     openModalWallet={openModalWallet}
-                    // mostRecent={positionsByUser}
                 />
             ))}
         </div>
@@ -594,24 +551,15 @@ export default function Sidebar(props: propsIF) {
             {bottomElementsDisplay}
         </>
     );
-    // console.log({ isInputValid });
+
     return (
         <div ref={sidebarRef}>
             <nav className={`${styles.sidebar} ${sidebarStyle}`}>
                 <ul className={styles.sidebar_nav}>
-                    {/* <SearchAccordion
-                        showSidebar={showSidebar}
-                        toggleSidebar={toggleSidebar}
-                        searchMode={searchMode}
-                        handleSearchModeToggle={handleSearchModeToggle}
-                        setSearchMode={setSearchMode}
-                    /> */}
                     {searchContainerDisplay}
                     {isInputValid && showSidebar ? (
                         <SidebarSearchResults
                             searchedPools={searchedPools}
-                            searchInput={searchInput}
-                            exampleLoading={exampleLoading}
                             getTokenByAddress={getTokenByAddress}
                             tokenPair={tokenPair}
                             isDenomBase={isDenomBase}
@@ -625,6 +573,7 @@ export default function Sidebar(props: propsIF) {
                             setCurrentTxActiveInTransactions={setCurrentTxActiveInTransactions}
                             setIsShowAllEnabled={setIsShowAllEnabled}
                             searchedTxs={searchedTxs}
+                            searchedLimitOrders={searchedLimitOrders}
                         />
                     ) : (
                         regularSidebarDisplay

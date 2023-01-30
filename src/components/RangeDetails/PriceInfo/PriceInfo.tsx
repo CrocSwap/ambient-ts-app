@@ -1,8 +1,8 @@
 import styles from './PriceInfo.module.css';
 import Row from '../../Global/Row/Row';
 
-import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
-import { toggleDidUserFlipDenom } from '../../../utils/state/tradeDataSlice';
+// import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
+// import { toggleDidUserFlipDenom } from '../../../utils/state/tradeDataSlice';
 import Divider from '../../Global/Divider/Divider';
 import { motion } from 'framer-motion';
 import NoTokenIcon from '../../Global/NoTokenIcon/NoTokenIcon';
@@ -31,7 +31,7 @@ interface IPriceInfoProps {
 }
 
 export default function PriceInfo(props: IPriceInfoProps) {
-    const dispatch = useAppDispatch();
+    // const dispatch = useAppDispatch();
     const {
         usdValue,
         lowRangeDisplay,
@@ -152,7 +152,7 @@ export default function PriceInfo(props: IPriceInfoProps) {
         <div
             className={styles.token_pair_details_container}
             onClick={() => {
-                dispatch(toggleDidUserFlipDenom());
+                // dispatch(toggleDidUserFlipDenom());
             }}
         >
             <div className={styles.token_pair_images}>
