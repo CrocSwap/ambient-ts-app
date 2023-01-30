@@ -6,6 +6,7 @@ import { memoizeFetchTransactionGraphData } from '../../../../App/functions/fetc
 import { useAppChain } from '../../../../App/hooks/useAppChain';
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { LimitOrderIF } from '../../../../utils/interfaces/LimitOrderIF';
+import { PositionIF } from '../../../../utils/interfaces/PositionIF';
 import { ITransaction } from '../../../../utils/state/graphDataSlice';
 
 import './TransactionDetailsGraph.css';
@@ -13,13 +14,14 @@ import './TransactionDetailsGraph.css';
 interface TransactionDetailsGraphIF {
     tx?: ITransaction;
     limitOrder?: LimitOrderIF;
+    position?: PositionIF;
     transactionType: string;
 }
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 export default function TransactionDetailsGraph(props: TransactionDetailsGraphIF) {
-    const { tx, transactionType, limitOrder } = props;
+    const { tx, transactionType, limitOrder, position } = props;
 
     const isServerEnabled =
         process.env.REACT_APP_CACHE_SERVER_IS_ENABLED !== undefined
@@ -52,6 +54,7 @@ export default function TransactionDetailsGraph(props: TransactionDetailsGraphIF
     const [lineSeries, setLineSeries] = useState<any>();
     const [crossPoint, setCrossPoint] = useState<any>();
     const [priceLine, setPriceLine] = useState();
+    const [horizontalBand, setHorizontalBand] = useState();
 
     const decidePeriod = (diff: number) => {
         return diff <= 60
@@ -78,19 +81,27 @@ export default function TransactionDetailsGraph(props: TransactionDetailsGraphIF
                     mainnetQuoteTokenAddress
                 );
 
-                const time =
-                    transactionType === 'Market'
-                        ? tx?.time !== undefined
-                            ? tx.time
-                            : new Date().getTime()
-                        : limitOrder?.latestCrossTime !== undefined
-                        ? limitOrder?.latestCrossTime
-                        : new Date().getTime();
+                const time = () => {
+                    switch (transactionType) {
+                        case 'Market':
+                            return tx?.time !== undefined ? tx.time : new Date().getTime();
+                        case 'Limit':
+                            return limitOrder?.timeFirstMint !== undefined
+                                ? limitOrder?.timeFirstMint
+                                : new Date().getTime();
+                        case 'Range':
+                            return position?.timeFirstMint !== undefined
+                                ? position?.timeFirstMint
+                                : new Date().getTime();
+                        default:
+                            return new Date().getTime();
+                    }
+                };
 
                 const diff =
-                    new Date().getTime() - time * 1000 < 43200000
+                    new Date().getTime() - time() * 1000 < 43200000
                         ? 43200000
-                        : new Date().getTime() - time * 1000;
+                        : new Date().getTime() - time() * 1000;
 
                 const period = decidePeriod(Math.floor(diff / 1000 / 200));
                 if (period !== undefined) {
@@ -171,6 +182,20 @@ export default function TransactionDetailsGraph(props: TransactionDetailsGraphIF
             setCrossPoint(() => {
                 return crossPoint;
             });
+
+            const horizontalBand = d3fc
+                .annotationSvgBand()
+                .xScale(scaleData.xScale)
+                .yScale(scaleData.yScale)
+                .fromValue((d: any) => d[0])
+                .toValue((d: any) => d[1])
+                .decorate((selection: any) => {
+                    selection.select('path').attr('fill', '#7371FC1A');
+                });
+
+            setHorizontalBand(() => {
+                return horizontalBand;
+            });
         }
     }, [scaleData]);
 
@@ -190,7 +215,7 @@ export default function TransactionDetailsGraph(props: TransactionDetailsGraphIF
 
             if (transactionType === 'Market') {
                 yScale.domain(yExtent(graphData));
-            } else {
+            } else if (transactionType === 'Limit') {
                 if (limitOrder !== undefined) {
                     const lowBoundary = Math.min(
                         limitOrder.askTickInvPriceDecimalCorrected,
@@ -199,6 +224,32 @@ export default function TransactionDetailsGraph(props: TransactionDetailsGraphIF
                     const topBoundary = Math.max(
                         limitOrder.askTickInvPriceDecimalCorrected,
                         limitOrder.bidTickInvPriceDecimalCorrected,
+                    );
+
+                    const buffer =
+                        Math.abs(
+                            Math.min(yExtent(graphData)[0], lowBoundary) -
+                                Math.max(yExtent(graphData)[1], topBoundary),
+                        ) / 50;
+
+                    const boundaries = [
+                        Math.min(yExtent(graphData)[0], lowBoundary) - buffer,
+                        Math.max(yExtent(graphData)[1], topBoundary) + buffer,
+                    ];
+
+                    yScale.domain(boundaries);
+                } else {
+                    yScale.domain(yExtent(graphData));
+                }
+            } else if (transactionType === 'Range') {
+                if (position !== undefined && position.positionType !== 'ambient') {
+                    const lowBoundary = Math.min(
+                        position.askTickInvPriceDecimalCorrected,
+                        position.bidTickInvPriceDecimalCorrected,
+                    );
+                    const topBoundary = Math.max(
+                        position.askTickInvPriceDecimalCorrected,
+                        position.bidTickInvPriceDecimalCorrected,
                     );
 
                     const buffer =
@@ -246,14 +297,22 @@ export default function TransactionDetailsGraph(props: TransactionDetailsGraphIF
             scaleData !== undefined &&
             lineSeries !== undefined &&
             crossPoint !== undefined &&
+            horizontalBand !== undefined &&
             priceLine !== undefined
         ) {
-            drawChart(graphData, scaleData, lineSeries, priceLine, crossPoint);
+            drawChart(graphData, scaleData, lineSeries, priceLine, crossPoint, horizontalBand);
         }
-    }, [scaleData, lineSeries, priceLine, graphData, crossPoint, transactionType]);
+    }, [scaleData, lineSeries, priceLine, graphData, crossPoint, transactionType, horizontalBand]);
 
     const drawChart = useCallback(
-        (graphData: any, scaleData: any, lineSeries: any, priceLine: any, crossPoint: any) => {
+        (
+            graphData: any,
+            scaleData: any,
+            lineSeries: any,
+            priceLine: any,
+            crossPoint: any,
+            horizontalBand: any,
+        ) => {
             if (graphData.length > 0) {
                 const xAxis = d3fc.axisBottom().scale(scaleData.xScale).ticks(5);
 
@@ -262,6 +321,9 @@ export default function TransactionDetailsGraph(props: TransactionDetailsGraphIF
                 const finishPriceJoin = d3fc.dataJoin('g', 'finishPriceJoin');
                 const lineJoin = d3fc.dataJoin('g', 'lineJoin');
                 const crossPointJoin = d3fc.dataJoin('g', 'crossPoint');
+
+                const horizontalBandJoin = d3fc.dataJoin('g', 'horizontalBand');
+                const horizontalBandData: any[] = [];
 
                 d3.select(d3PlotGraph.current).on('measure', function (event: any) {
                     scaleData.xScale.range([0, event.detail.width]);
@@ -315,12 +377,37 @@ export default function TransactionDetailsGraph(props: TransactionDetailsGraphIF
                     }
 
                     if (transactionType === 'Limit' && limitOrder !== undefined) {
+                        horizontalBandData[0] = [
+                            limitOrder.bidTickInvPriceDecimalCorrected,
+                            limitOrder.askTickInvPriceDecimalCorrected,
+                        ];
+
                         finishPriceJoin(svg, [[limitOrder.bidTickInvPriceDecimalCorrected]]).call(
                             priceLine,
                         );
                         startPriceJoin(svg, [[limitOrder.askTickInvPriceDecimalCorrected]]).call(
                             priceLine,
                         );
+                        horizontalBandJoin(svg, [horizontalBandData]).call(horizontalBand);
+                    }
+
+                    if (
+                        transactionType === 'Range' &&
+                        position !== undefined &&
+                        position.positionType !== 'ambient'
+                    ) {
+                        horizontalBandData[0] = [
+                            position.bidTickInvPriceDecimalCorrected,
+                            position.askTickInvPriceDecimalCorrected,
+                        ];
+
+                        finishPriceJoin(svg, [[position.bidTickInvPriceDecimalCorrected]]).call(
+                            priceLine,
+                        );
+                        startPriceJoin(svg, [[position.askTickInvPriceDecimalCorrected]]).call(
+                            priceLine,
+                        );
+                        horizontalBandJoin(svg, [horizontalBandData]).call(horizontalBand);
                     }
 
                     lineJoin(svg, [graphData]).call(lineSeries);

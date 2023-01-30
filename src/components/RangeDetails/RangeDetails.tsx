@@ -267,7 +267,10 @@ export default function RangeDetails(props: IRangeDetailsProps) {
                         />
                     </div>
                     <div className={styles.right_container}>
-                        <APYGraphDisplay updatedPositionApy={updatedPositionApy} />
+                        <APYGraphDisplay
+                            updatedPositionApy={updatedPositionApy}
+                            position={position}
+                        />
                     </div>
                     <RangeStatus isInRange={isPositionInRange} isAmbient={isAmbient} fullText />
                     <RangeDetailsActions />
