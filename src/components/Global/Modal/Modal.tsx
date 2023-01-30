@@ -6,6 +6,7 @@ import { RiCloseFill } from 'react-icons/ri';
 
 // START: Import Local Files
 import styles from './Modal.module.css';
+import useMediaQuery from '../../../utils/hooks/useMediaQuery';
 
 // interface for React functional component
 interface ModalPropsIF {
@@ -79,8 +80,14 @@ export default function Modal(props: ModalPropsIF) {
     const headerOrNull = noHeader ? null : headerJSX;
     const footerOrNull = !footer ? null : footerJSX;
 
+    const desktopView = useMediaQuery('(min-width: 720px)');
+
     return (
-        <div id='Modal_Global' className={styles.outside_modal} onMouseDown={onClose}>
+        <div
+            id='Modal_Global'
+            className={styles.outside_modal}
+            onMouseDown={desktopView ? onClose : undefined}
+        >
             <motion.div
                 initial={{ opacity: 0, scale: 0.5 }}
                 animate={{ opacity: 1, scale: 1 }}
