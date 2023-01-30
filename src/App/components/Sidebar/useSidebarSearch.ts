@@ -159,9 +159,9 @@ export const useSidebarSearch = (
             verifiedPools.filter((pool: TempPoolIF) =>
                 symb.length === 2
                     ? pool.baseSymbol.toLowerCase() === symb.toLowerCase() ||
-                    pool.quoteSymbol.toLowerCase() === symb.toLowerCase()
+                      pool.quoteSymbol.toLowerCase() === symb.toLowerCase()
                     : pool.baseSymbol.toLowerCase().includes(symb.toLowerCase()) ||
-                    pool.quoteSymbol.toLowerCase().includes(symb.toLowerCase()),
+                      pool.quoteSymbol.toLowerCase().includes(symb.toLowerCase()),
             );
         // fn to return list of verified pools with no search filtering
         const noSearch = (): TempPoolIF[] => verifiedPools;
@@ -201,9 +201,9 @@ export const useSidebarSearch = (
             positionList.filter((position: PositionIF) =>
                 symb.length === 2
                     ? position.baseSymbol.toLowerCase() === symb.toLowerCase() ||
-                    position.quoteSymbol.toLowerCase() === symb.toLowerCase()
+                      position.quoteSymbol.toLowerCase() === symb.toLowerCase()
                     : position.baseSymbol.toLowerCase().includes(symb.toLowerCase()) ||
-                    position.quoteSymbol.toLowerCase().includes(symb.toLowerCase()),
+                      position.quoteSymbol.toLowerCase().includes(symb.toLowerCase()),
             );
         // fn to return list of range positions with no search filtering
         const noSearch = (): PositionIF[] => positionList;
@@ -244,9 +244,9 @@ export const useSidebarSearch = (
             txList.filter((tx: TransactionIF) =>
                 symb.length === 2
                     ? tx.baseSymbol.toLowerCase() === symb.toLowerCase() ||
-                    tx.quoteSymbol.toLowerCase() === symb.toLowerCase()
+                      tx.quoteSymbol.toLowerCase() === symb.toLowerCase()
                     : tx.baseSymbol.toLowerCase().includes(symb.toLowerCase()) ||
-                    tx.quoteSymbol.toLowerCase().includes(symb.toLowerCase()),
+                      tx.quoteSymbol.toLowerCase().includes(symb.toLowerCase()),
             );
         // fn to return array of txs with no search filtering
         const noSearch = (): TransactionIF[] => txList;

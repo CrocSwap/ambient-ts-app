@@ -28,9 +28,7 @@ export default function Wallet(props: propsIF) {
         tokenMap,
     } = props;
 
-    const tokens = connectedAccountActive
-        ? connectedUserTokens
-        : resolvedAddressTokens;
+    const tokens = connectedAccountActive ? connectedUserTokens : resolvedAddressTokens;
 
     // TODO:   @Junior  I don't think there's any reason for the header element in
     // TODO:   ... the return statement to be abstracted into its own file as it
@@ -41,17 +39,15 @@ export default function Wallet(props: propsIF) {
         <div className={styles.container} style={{ height: 'calc(100vh - 19.5rem' }}>
             <WalletHeader />
             <div className={styles.item_container}>
-                {
-                    tokens.map((token) => (
-                        <WalletCard
-                            key={JSON.stringify(token)}
-                            token={token}
-                            chainId={chainId}
-                            tokenMap={tokenMap}
-                            cachedFetchTokenPrice={cachedFetchTokenPrice}
-                        />
-                    ))
-                }
+                {tokens.map((token) => (
+                    <WalletCard
+                        key={JSON.stringify(token)}
+                        token={token}
+                        chainId={chainId}
+                        tokenMap={tokenMap}
+                        cachedFetchTokenPrice={cachedFetchTokenPrice}
+                    />
+                ))}
             </div>
         </div>
     );

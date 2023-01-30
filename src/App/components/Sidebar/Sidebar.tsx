@@ -24,7 +24,15 @@ import topPoolsImage from '../../../assets/images/sidebarImages/topPools.svg';
 import recentPoolsImage from '../../../assets/images/sidebarImages/recentTransactions.svg';
 // import topTokensImage from '../../../assets/images/sidebarImages/topTokens.svg';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
-import { LimitOrderIF, PoolIF, PositionIF, TokenIF, TokenPairIF, TempPoolIF, TransactionIF } from '../../../utils/interfaces/exports';
+import {
+    LimitOrderIF,
+    PoolIF,
+    PositionIF,
+    TokenIF,
+    TokenPairIF,
+    TempPoolIF,
+    TransactionIF,
+} from '../../../utils/interfaces/exports';
 import SidebarSearchResults from './SidebarSearchResults/SidebarSearchResults';
 // import formatSearchText from './formatSeachText';
 import { MdClose } from 'react-icons/md';

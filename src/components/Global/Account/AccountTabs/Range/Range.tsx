@@ -18,14 +18,9 @@ export default function Range(props: propsIF) {
     return (
         <div className={styles.container}>
             <RangeCardHeader />
-            {
-                positions.map((position) => (
-                    <RangeCard
-                        key={JSON.stringify(position)}
-                        position={position}
-                    />
-                ))
-            }
+            {positions.map((position) => (
+                <RangeCard key={JSON.stringify(position)} position={position} />
+            ))}
         </div>
     );
 }

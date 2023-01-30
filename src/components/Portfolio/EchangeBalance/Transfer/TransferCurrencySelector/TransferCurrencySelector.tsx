@@ -19,7 +19,8 @@ interface propsIF {
 }
 
 export default function TransferCurrencySelector(props: propsIF) {
-    const { fieldId, disable, onClick, selectedToken, setTransferQty, inputValue, setInputValue } = props;
+    const { fieldId, disable, onClick, selectedToken, setTransferQty, inputValue, setInputValue } =
+        props;
 
     const rateInput = (
         <div className={styles.token_amount}>

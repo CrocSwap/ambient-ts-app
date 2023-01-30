@@ -31,7 +31,7 @@ export default function PositionsSearchResults(props: propsIF) {
                 <div>Value</div>
             </div>
             <div className={styles.main_result_container}>
-                {searchedPositions.slice(0,4).map((position: PositionIF) => (
+                {searchedPositions.slice(0, 4).map((position: PositionIF) => (
                     <PositionLI
                         key={`PositionSearchResult_${JSON.stringify(position)}`}
                         position={position}

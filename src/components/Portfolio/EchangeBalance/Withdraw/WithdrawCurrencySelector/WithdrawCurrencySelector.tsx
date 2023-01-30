@@ -20,7 +20,8 @@ interface propsIF {
 }
 
 export default function WithdrawCurrencySelector(props: propsIF) {
-    const { fieldId, disable, onClick, selectedToken, setWithdrawQty, inputValue, setInputValue } = props;
+    const { fieldId, disable, onClick, selectedToken, setWithdrawQty, inputValue, setInputValue } =
+        props;
 
     const rateInput = (
         <div className={styles.token_amount}>

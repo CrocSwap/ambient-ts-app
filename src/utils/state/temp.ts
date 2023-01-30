@@ -3,7 +3,7 @@ import { goerliETH } from '../data/defaultTokens';
 import { TokenIF } from '../interfaces/exports';
 
 export interface stuff {
-    token: TokenIF
+    token: TokenIF;
 }
 
 const initialState: stuff = {
@@ -16,7 +16,7 @@ export const tempSlice = createSlice({
     reducers: {
         setToken: (state, action: PayloadAction<TokenIF>) => {
             state.token = action.payload;
-        }
+        },
     },
 });
 

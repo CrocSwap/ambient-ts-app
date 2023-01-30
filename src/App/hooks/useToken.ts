@@ -50,15 +50,15 @@ export const useToken = (
                 // get 'allTokenLists' from local storage
                 JSON.parse(localStorage.getItem('allTokenLists') as string)
                     // create an array of all token data objects
-                    .flatMap((tokenList: TokenListIF) => tokenList.tokens)
+                    ?.flatMap((tokenList: TokenListIF) => tokenList.tokens)
                     // add each token to the map
                     // this will by nature remove duplicate entries across lists
-                    .forEach((tkn: TokenIF) => addTokenToMap(tkn, newTokenMap));
+                    ?.forEach((tkn: TokenIF) => addTokenToMap(tkn, newTokenMap));
                 // get 'ackTokens' from user data object in local storage
                 JSON.parse(localStorage.getItem('user') as string)
                     ?.ackTokens // add each token to the map
                     // this will also remove duplicates intelligently
-                    .forEach((tkn: TokenIF) => addTokenToMap(tkn, newTokenMap));
+                    ?.forEach((tkn: TokenIF) => addTokenToMap(tkn, newTokenMap));
                 // send token map to be memoized in local state
                 setTokenMap(newTokenMap);
             } else if (limiter < 100) {

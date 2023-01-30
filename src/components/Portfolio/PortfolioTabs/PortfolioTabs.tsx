@@ -12,7 +12,12 @@ import TabComponent from '../../Global/TabComponent/TabComponent';
 import styles from './PortfolioTabs.module.css';
 import { useAppDispatch, useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { getPositionData } from '../../../App/functions/getPositionData';
-import { LimitOrderIF, PositionIF, TokenIF, TransactionIF } from '../../../utils/interfaces/exports';
+import {
+    LimitOrderIF,
+    PositionIF,
+    TokenIF,
+    TransactionIF,
+} from '../../../utils/interfaces/exports';
 import openOrdersImage from '../../../assets/images/sidebarImages/openOrders.svg';
 import rangePositionsImage from '../../../assets/images/sidebarImages/rangePositions.svg';
 import recentTransactionsImage from '../../../assets/images/sidebarImages/recentTransactions.svg';
@@ -118,7 +123,7 @@ export default function PortfolioTabs(props: propsIF) {
         [],
     );
     const [lookupAccountTransactionData, setLookupAccountTransactionData] = useState<
-    TransactionIF[]
+        TransactionIF[]
     >([]);
 
     // useEffect(() => {
