@@ -2201,6 +2201,20 @@ export default function Chart(props: ChartData) {
                         );
                     }
 
+                    const low = scaleData.yScale.domain()[0];
+                    const high = scaleData.yScale.domain()[1];
+
+                    const min = newRangeValue.filter((target: any) => target.name === 'Min')[0]
+                        .value;
+                    const max = newRangeValue.filter((target: any) => target.name === 'Max')[0]
+                        .value;
+
+                    if (low > min || high < max) {
+                        const buffer = poolPriceDisplay !== undefined ? poolPriceDisplay / 50 : 0;
+
+                        scaleData.yScale.domain([min - buffer, max + buffer]);
+                    }
+
                     onBlurRange(newRangeValue, highLineMoved, lowLineMoved, dragSwitched);
                     dragSwitched = false;
                 });
@@ -3610,12 +3624,17 @@ export default function Chart(props: ChartData) {
     useEffect(() => {
         if (isRangeScaleSet === 'reScale' && poolPriceDisplay && simpleRangeWidth !== 100) {
             if (location.pathname.includes('range')) {
-                const low = ranges.filter((target: any) => target.name === 'Min')[0].value;
-                const high = ranges.filter((target: any) => target.name === 'Max')[0].value;
-
                 const buffer = poolPriceDisplay / 50;
 
-                scaleData.yScale.domain([low - buffer, high + buffer]);
+                const min = ranges.filter((target: any) => target.name === 'Min')[0].value - buffer;
+                const max = ranges.filter((target: any) => target.name === 'Max')[0].value + buffer;
+
+                const low =
+                    scaleData.yScaleCopy.domain()[0] < min ? scaleData.yScaleCopy.domain()[0] : min;
+                const high =
+                    scaleData.yScaleCopy.domain()[1] > max ? scaleData.yScaleCopy.domain()[1] : max;
+
+                scaleData.yScale.domain([low, high]);
             } else if (location.pathname.includes('limit')) {
                 scaleData.yScale.domain(scaleData.yScaleCopy.domain());
             } else if (location.pathname.includes('market')) {
