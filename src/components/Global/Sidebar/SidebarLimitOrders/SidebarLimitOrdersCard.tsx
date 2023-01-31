@@ -2,8 +2,8 @@ import styles from './SidebarLimitOrdersCard.module.css';
 import { SetStateAction, Dispatch } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { LimitOrderIF, TokenIF } from '../../../../utils/interfaces/exports';
-import { formatAmountOld } from '../../../../utils/numbers';
 import { getLimitPrice } from './functions/getLimitPrice';
+import { getLimitValue } from './functions/getLimitValue';
 
 interface propsIF {
     isDenomBase: boolean;
@@ -29,21 +29,11 @@ export default function SidebarLimitOrdersCard(props: propsIF) {
         isDenomBase,
     } = props;
 
+    // human-readable limit price to display in the DOM
     const price = getLimitPrice(order, tokenMap, isDenomBase);
 
-    const usdValueNum = order.totalValueUSD;
-    const usdValueTruncated = !usdValueNum
-        ? undefined
-        : usdValueNum < 0.0001
-        ? usdValueNum.toExponential(2)
-        : usdValueNum < 2
-        ? usdValueNum.toPrecision(3)
-        : usdValueNum >= 10000
-        ? formatAmountOld(usdValueNum, 1)
-        : usdValueNum.toLocaleString(undefined, {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-        });
+    // human-readable limit order value to display in the DOM
+    const value = getLimitValue(order);
 
     const navigate = useNavigate();
 
@@ -70,9 +60,7 @@ export default function SidebarLimitOrdersCard(props: propsIF) {
                     : `${order?.quoteSymbol}/${order?.baseSymbol}`}
             </div>
             <div>{price}</div>
-            <div className={styles.status_display}>
-                {usdValueTruncated ? '$' + usdValueTruncated : '…'}
-            </div>
+            <div className={styles.status_display}>{value}</div>
         </div>
     );
 }
