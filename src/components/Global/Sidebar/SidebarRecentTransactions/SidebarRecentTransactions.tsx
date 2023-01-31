@@ -33,8 +33,9 @@ export default function SidebarRecentTransactions(props: propsIF) {
         chainId,
         setCurrentTxActiveInTransactions,
         setIsShowAllEnabled,
+        setOutsideControl,
+        setSelectedOutsideTab,
         isUserLoggedIn,
-        // expandTradeTable,
         setShowSidebar,
     } = props;
 
@@ -53,8 +54,8 @@ export default function SidebarRecentTransactions(props: propsIF) {
 
     const handleViewMoreClick = () => {
         redirectBasedOnRoute();
-        props.setOutsideControl(true);
-        props.setSelectedOutsideTab(tabToSwitchToBasedOnRoute);
+        setOutsideControl(true);
+        setSelectedOutsideTab(tabToSwitchToBasedOnRoute);
 
         setShowSidebar(false);
 
@@ -79,8 +80,8 @@ export default function SidebarRecentTransactions(props: propsIF) {
                         chainId={chainId}
                         setCurrentTxActiveInTransactions={setCurrentTxActiveInTransactions}
                         setIsShowAllEnabled={setIsShowAllEnabled}
-                        setSelectedOutsideTab={props.setSelectedOutsideTab}
-                        setOutsideControl={props.setOutsideControl}
+                        setSelectedOutsideTab={setSelectedOutsideTab}
+                        setOutsideControl={setOutsideControl}
                         tabToSwitchToBasedOnRoute={tabToSwitchToBasedOnRoute}
                     />
                 ))}
