@@ -3,11 +3,11 @@ import { TokenIF } from '../../../utils/interfaces/exports';
 import NoTokenIcon from '../NoTokenIcon/NoTokenIcon';
 import { AiOutlineQuestionCircle } from 'react-icons/ai';
 
-interface SoloTokenImportPropsIF {
+interface propsIF {
     customToken: TokenIF | null;
     chooseToken: (tkn: TokenIF, isCustom: boolean) => void;
 }
-export default function SoloTokenImport(props: SoloTokenImportPropsIF) {
+export default function SoloTokenImport(props: propsIF) {
     const { customToken, chooseToken } = props;
     console.log({ customToken });
     const tokenLogo = customToken?.logoURI ? (
@@ -43,9 +43,7 @@ export default function SoloTokenImport(props: SoloTokenImportPropsIF) {
                 blanditiis repellat magnam officiis, omnis impedit nostrum?
             </p>
             <div className={styles.import_button}>
-                <button onClick={() => chooseToken(customToken, true)}>
-                    Acknowledge
-                </button>
+                <button onClick={() => chooseToken(customToken, true)}>Acknowledge</button>
             </div>
         </div>
     );

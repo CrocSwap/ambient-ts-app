@@ -6,12 +6,12 @@ import HomeSlider from '../../components/Home/Landing/HomeSlider';
 import Links from '../../components/Home/Links/Links';
 import Stats from '../../components/Home/Stats/AmbientStats';
 import TopPools from '../../components/Home/TopPools/TopPools';
-import { TokenIF } from '../../utils/interfaces/TokenIF';
+import { TokenIF } from '../../utils/interfaces/exports';
 import styles from './Home.module.css';
 import { SpotPriceFn } from '../../App/functions/querySpotPrice';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 
-interface HomeProps {
+interface propsIF {
     isServerEnabled: boolean;
     crocEnv?: CrocEnv;
     cachedQuerySpotPrice: SpotPriceFn;
@@ -19,7 +19,7 @@ interface HomeProps {
     lastBlockNumber: number;
     chainId: string;
 }
-export default function Home(props: HomeProps) {
+export default function Home(props: propsIF) {
     const { isServerEnabled, tokenMap, lastBlockNumber, crocEnv, chainId, cachedQuerySpotPrice } =
         props;
 

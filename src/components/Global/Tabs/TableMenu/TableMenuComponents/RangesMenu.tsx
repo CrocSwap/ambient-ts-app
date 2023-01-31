@@ -11,7 +11,7 @@ import SnackbarComponent from '../../../../../components/Global/SnackbarComponen
 // START: Import Local Files
 import styles from './TableMenus.module.css';
 // import useCopyToClipboard from '../../../../../utils/hooks/useCopyToClipboard';
-import { PositionIF } from '../../../../../utils/interfaces/PositionIF';
+import { PositionIF } from '../../../../../utils/interfaces/exports';
 import HarvestPosition from '../../../../HarvestPosition/HarvestPosition';
 import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
 import UseOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
@@ -26,7 +26,7 @@ import {
 } from '../../../../../utils/state/tradeDataSlice';
 
 // interface for React functional component props
-interface RangesMenuIF {
+interface propsIF {
     crocEnv: CrocEnv | undefined;
     chainData: ChainSpec;
     baseTokenBalance: string;
@@ -47,7 +47,7 @@ interface RangesMenuIF {
 }
 
 // React functional component
-export default function RangesMenu(props: RangesMenuIF) {
+export default function RangesMenu(props: propsIF) {
     const menuItemRef = useRef<HTMLDivElement>(null);
 
     const {
@@ -146,12 +146,13 @@ export default function RangesMenu(props: RangesMenuIF) {
     );
     // -----------------END OF SNACKBAR----------------
 
-    const repositionButton =
-        !isAmbient && positionMatchesLoggedInUser && !isPositionInRange ? (
-            <Link className={styles.reposition_button} to={'/trade/reposition'}>
-                Reposition
-            </Link>
-        ) : null;
+    const repositionButton = (
+        // !isAmbient && positionMatchesLoggedInUser && !isPositionInRange ?
+        <Link className={styles.reposition_button} to={'/trade/reposition'}>
+            Reposition
+        </Link>
+    );
+    //  : null;
 
     const removeButton = positionMatchesLoggedInUser ? (
         <button className={styles.option_button} onClick={openRemoveModal}>
@@ -192,23 +193,23 @@ export default function RangesMenu(props: RangesMenuIF) {
             </button>
         ) : null;
 
-    const editButton = positionMatchesLoggedInUser ? (
-        <Link
-            style={{ opacity: showHighlightedButton ? '1' : '0.2' }}
-            className={styles.option_button}
-            to={`/trade/edit/${posHash}`}
-            state={{ position: positionData }}
-            replace={currentLocation.startsWith('/trade/edit')}
-        >
-            Edit
-        </Link>
-    ) : null;
+    // const editButton = positionMatchesLoggedInUser ? (
+    //     <Link
+    //         style={{ opacity: showHighlightedButton ? '1' : '0.2' }}
+    //         className={styles.option_button}
+    //         to={`/trade/edit/${posHash}`}
+    //         state={{ position: positionData }}
+    //         replace={currentLocation.startsWith('/trade/edit')}
+    //     >
+    //         Edit
+    //     </Link>
+    // ) : null;
 
     // ----------------------
 
-    const noRespositionButton = !isAmbient && positionMatchesLoggedInUser && !isPositionInRange;
+    // const noRespositionButton = !isAmbient && positionMatchesLoggedInUser && !isPositionInRange;
 
-    const view1 = useMediaQuery('(min-width: 1280px)');
+    // const view1 = useMediaQuery('(min-width: 1280px)');
     // const view2 = useMediaQuery('(min-width: 1680px)');
     const view3 = useMediaQuery('(min-width: 2300px)');
 
@@ -219,8 +220,8 @@ export default function RangesMenu(props: RangesMenuIF) {
 
     const rangesMenu = (
         <div className={styles.actions_menu}>
-            {view1 && repositionButton}
-            {view1 && !noRespositionButton && userMatchesConnectedAccount && editButton}
+            {!isPositionInRange && userMatchesConnectedAccount && repositionButton}
+            {/* {view1 && !noRespositionButton && userMatchesConnectedAccount && editButton} */}
             {/* {view1 && !noRespositionButton && !isOnPortfolioPage && editButton} */}
             {view3 && harvestButton}
             {/* {view2 && removeButton} */}
@@ -234,8 +235,8 @@ export default function RangesMenu(props: RangesMenuIF) {
 
     const menuContent = (
         <div className={styles.menu_column}>
-            {repositionButton}
-            {!view1 && !noRespositionButton && userMatchesConnectedAccount && editButton}
+            {/* {!view1 && !isPositionInRange && repositionButton} */}
+            {/* {!view1 && !noRespositionButton && userMatchesConnectedAccount && editButton} */}
             {harvestButton}
             {removeButton}
             {detailsButton}

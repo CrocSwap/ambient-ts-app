@@ -19,9 +19,8 @@ import Pagination from '../../../Global/Pagination/Pagination';
 import { useAppDispatch, useAppSelector } from '../../../../utils/hooks/reduxToolkit';
 import { useSortedPositions } from '../useSortedPositions';
 import { ChainSpec, CrocEnv } from '@crocswap-libs/sdk';
-import { PositionIF } from '../../../../utils/interfaces/PositionIF';
+import { PositionIF, TokenIF } from '../../../../utils/interfaces/exports';
 import { updateApy } from '../../../../App/functions/getPositionData';
-import { TokenIF } from '../../../../utils/interfaces/TokenIF';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
 import RangeHeader from './RangesTable/RangeHeader';
@@ -29,10 +28,11 @@ import RangesRow from './RangesTable/RangesRow';
 import TableSkeletons from '../TableSkeletons/TableSkeletons';
 import useDebounce from '../../../../App/hooks/useDebounce';
 import NoTableData from '../NoTableData/NoTableData';
+import { SpotPriceFn } from '../../../../App/functions/querySpotPrice';
 // import RangeAccordions from './RangeAccordions/RangeAccordions';
 
 // interface for props
-interface RangesPropsIF {
+interface propsIF {
     activeAccountPositionData?: PositionIF[];
     connectedAccountActive?: boolean;
     isUserLoggedIn: boolean | undefined;
@@ -63,10 +63,11 @@ interface RangesPropsIF {
     setLeader?: Dispatch<SetStateAction<string>>;
     setLeaderOwnerId?: Dispatch<SetStateAction<string>>;
     handlePulseAnimation?: (type: string) => void;
+    cachedQuerySpotPrice: SpotPriceFn;
 }
 
 // react functional component
-export default function Ranges(props: RangesPropsIF) {
+export default function Ranges(props: propsIF) {
     const {
         activeAccountPositionData,
         connectedAccountActive,
@@ -91,6 +92,7 @@ export default function Ranges(props: RangesPropsIF) {
         handlePulseAnimation,
         setIsShowAllEnabled,
         showSidebar,
+        cachedQuerySpotPrice,
     } = props;
 
     const tradeData = useAppSelector((state) => state.tradeData);
@@ -275,7 +277,7 @@ export default function Ranges(props: RangesPropsIF) {
     // const sidebarOpen = false;
 
     const ipadView = useMediaQuery('(max-width: 480px)');
-    const desktopView = useMediaQuery('(max-width: 768px)');
+    // const desktopView = useMediaQuery('(max-width: 768px)');
     const showColumns = useMediaQuery('(max-width: 1776px)');
 
     // const showColumns = sidebarOpen || desktopView;
@@ -324,7 +326,7 @@ export default function Ranges(props: RangesPropsIF) {
         {
             name: 'Pair',
             className: '',
-            show: isOnPortfolioPage && !desktopView && !showSidebar,
+            show: isOnPortfolioPage && !showSidebar && !showColumns,
             slug: 'pool',
             sortable: true,
         },
@@ -455,6 +457,7 @@ export default function Ranges(props: RangesPropsIF) {
     );
     const rowItemContent = usePaginateDataOrNull?.map((position, idx) => (
         <RangesRow
+            cachedQuerySpotPrice={cachedQuerySpotPrice}
             account={account}
             key={idx}
             position={position}
@@ -484,8 +487,11 @@ export default function Ranges(props: RangesPropsIF) {
         />
     ));
 
-    const expandStyle = expandTradeTable ? 'calc(100vh - 10rem)' : '250px';
+    const mobileView = useMediaQuery('(max-width: 850px)');
 
+    const mobileViewHeight = mobileView ? '70vh' : '250px';
+
+    const expandStyle = expandTradeTable ? 'calc(100vh - 10rem)' : mobileViewHeight;
     const portfolioPageStyle = props.isOnPortfolioPage ? 'calc(100vh - 19.5rem)' : expandStyle;
     const rangeDataOrNull = rangeData.length ? (
         rowItemContent

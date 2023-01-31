@@ -3,7 +3,7 @@ import { ambientPosSlot, concPosSlot } from '@crocswap-libs/sdk';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 import getUnicodeCharacter from '../../utils/functions/getUnicodeCharacter';
 import { formatAmountOld } from '../../utils/numbers';
-import { PositionIF } from '../../utils/interfaces/PositionIF';
+import { PositionIF } from '../../utils/interfaces/exports';
 import trimString from '../../utils/functions/trimString';
 import { useMemo } from 'react';
 import { getMoneynessRank } from '../functions/getMoneynessRank';

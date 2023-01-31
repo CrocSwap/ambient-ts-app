@@ -11,18 +11,16 @@ import OrderDetailsActions from '../RangeDetails/OrderDetailsActions/OrderDetail
 import { LimitOrderIF } from '../../utils/interfaces/exports';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 import { useAppSelector } from '../../utils/hooks/reduxToolkit';
-// import { formatAmountOld } from '../../utils/numbers';
 
-interface IOrderDetailsProps {
+interface propsIF {
     account: string;
     limitOrder: LimitOrderIF;
     lastBlockNumber: number;
     closeGlobalModal: () => void;
 }
 
-export default function OrderDetails(props: IOrderDetailsProps) {
+export default function OrderDetails(props: propsIF) {
     const { limitOrder, account } = props;
-    // console.log({ limitOrder });
     const { isOrderFilled, userNameToDisplay, baseDisplayFrontend, quoteDisplayFrontend } =
         useProcessOrder(limitOrder, account);
     const lastBlock = useAppSelector((state) => state.graphData).lastBlock;
@@ -273,7 +271,11 @@ export default function OrderDetails(props: IOrderDetailsProps) {
                         />
                     </div>
                     <div className={styles.right_container}>
-                        <OrderGraphDisplay isOrderFilled={isClaimable} user={userNameToDisplay} />
+                        <OrderGraphDisplay
+                            isOrderFilled={isClaimable}
+                            user={userNameToDisplay}
+                            limitOrder={limitOrder}
+                        />
                     </div>
                     <OrderDetailsActions />
                 </div>

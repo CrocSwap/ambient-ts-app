@@ -83,8 +83,8 @@ export default function PoolLI(props: propsIF) {
             <div>
                 {baseToken?.symbol ?? '--'} / {quoteToken?.symbol ?? '--'}
             </div>
-            <div>{poolVolume}</div>
-            <div>{poolTvl}</div>
+            <div>{poolVolume ?? '--'}</div>
+            <div>{poolTvl ?? '--'}</div>
         </div>
     );
 }

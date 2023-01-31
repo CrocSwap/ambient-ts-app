@@ -1,4 +1,4 @@
-import { TokenIF } from '../../../utils/interfaces/TokenIF';
+import { TokenIF } from '../../../utils/interfaces/exports';
 import styles from './PoolCard.module.css';
 // import { ethers } from 'ethers';
 import { useEffect, useState } from 'react';
@@ -14,7 +14,7 @@ import { tradeData } from '../../../utils/state/tradeDataSlice';
 
 const cachedPoolStatsFetch = memoizePoolStats();
 
-interface PoolCardProps {
+interface propsIF {
     isServerEnabled: boolean;
     isUserIdle: boolean;
     crocEnv?: CrocEnv;
@@ -28,7 +28,7 @@ interface PoolCardProps {
     chainId: string;
 }
 
-export default function PoolCard(props: PoolCardProps) {
+export default function PoolCard(props: propsIF) {
     const {
         isServerEnabled,
         isUserIdle,

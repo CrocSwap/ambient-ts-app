@@ -108,6 +108,7 @@
        display: grid;
        grid-template-columns: repeat(2, 1fr);
        gap: 4px;
+       padding: 0 2rem;
     
        
     }
@@ -135,14 +136,19 @@
 
 .main_exchange_container, .main_wallet_container{
     display: flex;
-    justify-content: center;
+   
  flex-direction: row;
  gap: 2rem;
 }
 
+.main_wallet_container{
+    justify-content: flex-start;
+}
+
 .main_exchange_container{
     display: flex;
-    justify-content: center;
+    justify-content: flex-end;
+    
 }
 .surplus_toggle {
     display: flex;

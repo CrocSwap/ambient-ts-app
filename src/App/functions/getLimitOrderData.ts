@@ -1,18 +1,16 @@
 import { LimitOrderIF, TokenIF } from '../../utils/interfaces/exports';
 
-// import { fetchAddress } from './fetchAddress';
-
 export const getLimitOrderData = async (
     order: LimitOrderIF,
-    importedTokens: TokenIF[],
+    searchableTokens: TokenIF[],
 ): Promise<LimitOrderIF> => {
     const baseTokenAddress = order.base;
     const quoteTokenAddress = order.quote;
 
-    const baseTokenLogoURI = importedTokens.find(
+    const baseTokenLogoURI = searchableTokens.find(
         (token) => token.address.toLowerCase() === baseTokenAddress.toLowerCase(),
     )?.logoURI;
-    const quoteTokenLogoURI = importedTokens.find(
+    const quoteTokenLogoURI = searchableTokens.find(
         (token) => token.address.toLowerCase() === quoteTokenAddress.toLowerCase(),
     )?.logoURI;
 

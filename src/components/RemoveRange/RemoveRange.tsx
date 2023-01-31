@@ -11,7 +11,7 @@ import { FiExternalLink } from 'react-icons/fi';
 // import RemoveRangeSettings from './RemoveRangeSettings/RemoveRangeSettings';
 import { RiListSettingsLine } from 'react-icons/ri';
 import { BsArrowLeft } from 'react-icons/bs';
-import { PositionIF } from '../../utils/interfaces/PositionIF';
+import { PositionIF } from '../../utils/interfaces/exports';
 import { ethers } from 'ethers';
 import { ambientPosSlot, ChainSpec, concPosSlot, CrocEnv } from '@crocswap-libs/sdk';
 import Button from '../Global/Button/Button';
@@ -41,7 +41,8 @@ import WithdrawTo from './WithdrawTo/WithdrawTo';
 import WaitingConfirmation from '../Global/WaitingConfirmation/WaitingConfirmation';
 import TransactionDenied from '../Global/TransactionDenied/TransactionDenied';
 import TransactionException from '../Global/TransactionException/TransactionException';
-interface IRemoveRangeProps {
+
+interface propsIF {
     crocEnv: CrocEnv | undefined;
     provider: ethers.providers.Provider;
     chainData: ChainSpec;
@@ -71,7 +72,7 @@ interface IRemoveRangeProps {
     closeGlobalModal: () => void;
 }
 
-export default function RemoveRange(props: IRemoveRangeProps) {
+export default function RemoveRange(props: propsIF) {
     // console.log(props);
     const {
         crocEnv,

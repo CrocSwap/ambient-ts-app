@@ -2,7 +2,7 @@
 import styles from './RangeCard.module.css';
 
 import RangeStatus from '../../../RangeStatus/RangeStatus';
-import { PositionIF } from '../../../../../utils/interfaces/PositionIF';
+import { PositionIF } from '../../../../../utils/interfaces/exports';
 // import WalletAndId from '../../../Tabs/WalletAndID/WalletAndId';
 import RangeMinMax from '../../../Tabs/RangeMinMax/RangeMinMax';
 import TokenQty from '../../../Tabs/TokenQty/TokenQty';
@@ -14,11 +14,11 @@ import getUnicodeCharacter from '../../../../../utils/functions/getUnicodeCharac
 import Value from '../../../Tabs/Value/Value';
 import { formatAmountOld } from '../../../../../utils/numbers';
 
-interface RangeCardPropsIF {
+interface propsIF {
     position: PositionIF;
 }
 
-export default function RangeCard(props: RangeCardPropsIF) {
+export default function RangeCard(props: propsIF) {
     const { position } = props;
 
     const baseTokenLogoURI = position.baseTokenLogoURI;

@@ -7,7 +7,7 @@ import { BigNumber } from 'ethers';
 import Moralis from 'moralis';
 import { Erc20Value } from '@moralisweb3/common-evm-utils';
 import { ZERO_ADDRESS } from '../../constants';
-import { TokenIF } from '../../utils/interfaces/TokenIF';
+import { TokenIF } from '../../utils/interfaces/exports';
 import { formatAmountOld } from '../../utils/numbers';
 import { fetchDepositBalances } from './fetchDepositBalances';
 import { memoizePromiseFn } from './memoizePromiseFn';

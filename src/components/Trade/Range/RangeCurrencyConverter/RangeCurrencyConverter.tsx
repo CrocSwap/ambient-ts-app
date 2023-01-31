@@ -23,7 +23,7 @@ import { getRecentTokensParamsIF } from '../../../../App/hooks/useRecentTokens';
 import { precisionOfInput } from '../../../../App/functions/getPrecisionOfInput';
 
 // interface for component props
-interface RangeCurrencyConverterPropsIF {
+interface propsIF {
     provider?: ethers.providers.Provider;
     isUserLoggedIn: boolean | undefined;
     tokensBank: Array<TokenIF>;
@@ -78,10 +78,16 @@ interface RangeCurrencyConverterPropsIF {
     setInput: Dispatch<SetStateAction<string>>;
     searchType: string;
     acknowledgeToken: (tkn: TokenIF) => void;
+
+    openGlobalPopup: (
+        content: React.ReactNode,
+        popupTitle?: string,
+        popupPlacement?: string,
+    ) => void;
 }
 
 // central React functional component
-export default function RangeCurrencyConverter(props: RangeCurrencyConverterPropsIF) {
+export default function RangeCurrencyConverter(props: propsIF) {
     const {
         isUserLoggedIn,
         gasPriceInGwei,
@@ -133,6 +139,7 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
         setInput,
         searchType,
         acknowledgeToken,
+        openGlobalPopup,
     } = props;
 
     const dispatch = useAppDispatch();
@@ -773,6 +780,7 @@ export default function RangeCurrencyConverter(props: RangeCurrencyConverterProp
         setInput: setInput,
         searchType: searchType,
         acknowledgeToken: acknowledgeToken,
+        openGlobalPopup: openGlobalPopup,
     };
 
     return (

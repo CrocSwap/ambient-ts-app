@@ -17,7 +17,7 @@ import {
 } from '../../../../utils/state/tradeDataSlice';
 import useMediaQuery from '../../../../utils/hooks/useMediaQuery';
 
-interface TradeChartsTokenInfoPropsIF {
+interface propsIF {
     isPoolPriceChangePositive: boolean;
 
     poolPriceDisplay: number;
@@ -39,7 +39,7 @@ interface TradeChartsTokenInfoPropsIF {
 
     simplifyVersion?: boolean;
 }
-export default function TradeChartsTokenInfo(props: TradeChartsTokenInfoPropsIF) {
+export default function TradeChartsTokenInfo(props: propsIF) {
     const {
         isPoolPriceChangePositive,
         poolPriceDisplay,

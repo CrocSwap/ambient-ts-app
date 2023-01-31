@@ -1,24 +1,26 @@
 import styles from './Range.module.css';
 import RangeCardHeader from './RangeCardHeader';
 import RangeCard from './RangeCard';
-import { PositionIF } from '../../../../../utils/interfaces/PositionIF';
+import { PositionIF } from '../../../../../utils/interfaces/exports';
 
-interface RangeTabPropsIF {
+interface propsIF {
     positions: PositionIF[];
 }
 
-export default function Range(props: RangeTabPropsIF) {
+export default function Range(props: propsIF) {
     const { positions } = props;
 
-    // const items = [1, 2, 3, 4, 5, 6];
+    // TODO:   @Junior  I don't think there's any reason for the header element in
+    // TODO:   ... the return statement to be abstracted into its own file as it
+    // TODO:   ... appears to be fully static, please code it locally in this file
+    // TODO:   ... and make sure that it is a <header> semantic element  --Emily
 
-    const ItemContent = positions.map((position, idx) => (
-        <RangeCard key={idx} position={position} />
-    ));
     return (
         <div className={styles.container}>
             <RangeCardHeader />
-            {ItemContent}
+            {positions.map((position) => (
+                <RangeCard key={JSON.stringify(position)} position={position} />
+            ))}
         </div>
     );
 }

@@ -10,7 +10,7 @@ import uriToHttp from '../../../utils/functions/uriToHttp';
 import { AiOutlineDelete } from 'react-icons/ai';
 import { FiExternalLink } from 'react-icons/fi';
 
-interface CustomTokensPropsIF {
+interface propsIF {
     chainId: string;
     tokenToUpdate: string;
     undeletableTokens: string[];
@@ -19,7 +19,7 @@ interface CustomTokensPropsIF {
     justTokensDisplay?: boolean;
 }
 
-export default function CustomTokens(props: CustomTokensPropsIF) {
+export default function CustomTokens(props: propsIF) {
     const { chainId, tokenToUpdate, undeletableTokens, closeModal, justTokensDisplay } = props;
 
     const dispatch = useAppDispatch();

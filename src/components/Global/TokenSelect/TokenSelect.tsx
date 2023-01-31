@@ -5,13 +5,13 @@ import uriToHttp from '../../../utils/functions/uriToHttp';
 import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import NoTokenIcon from '../NoTokenIcon/NoTokenIcon';
 
-interface TokenSelectPropsIF {
+interface propsIF {
     token: TokenIF;
     chooseToken: (tok: TokenIF, isCustom: boolean) => void;
     fromListsText: string;
 }
 
-export default function TokenSelect(props: TokenSelectPropsIF) {
+export default function TokenSelect(props: propsIF) {
     const { token, chooseToken, fromListsText } = props;
 
     const userData = useAppSelector((state) => state.userData);
@@ -38,10 +38,7 @@ export default function TokenSelect(props: TokenSelectPropsIF) {
 
     return (
         <>
-            <div
-                className={styles.main_container}
-                onClick={() => chooseToken(token, false)}
-            >
+            <div className={styles.main_container} onClick={() => chooseToken(token, false)}>
                 <section className={styles.left_side_container}>
                     <div className={styles.modal_content}>
                         <div className={styles.modal_tokens_info}>

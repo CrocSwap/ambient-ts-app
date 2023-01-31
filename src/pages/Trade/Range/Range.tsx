@@ -60,7 +60,7 @@ import getUnicodeCharacter from '../../../utils/functions/getUnicodeCharacter';
 import RangeShareControl from '../../../components/Trade/Range/RangeShareControl/RangeShareControl';
 import { getRecentTokensParamsIF } from '../../../App/hooks/useRecentTokens';
 
-interface RangePropsIF {
+interface propsIF {
     account: string | undefined;
     crocEnv: CrocEnv | undefined;
     isUserLoggedIn: boolean | undefined;
@@ -108,9 +108,15 @@ interface RangePropsIF {
     setInput: Dispatch<SetStateAction<string>>;
     searchType: string;
     acknowledgeToken: (tkn: TokenIF) => void;
+
+    openGlobalPopup: (
+        content: React.ReactNode,
+        popupTitle?: string,
+        popupPlacement?: string,
+    ) => void;
 }
 
-export default function Range(props: RangePropsIF) {
+export default function Range(props: propsIF) {
     const {
         account,
         crocEnv,
@@ -158,6 +164,7 @@ export default function Range(props: RangePropsIF) {
         setInput,
         searchType,
         acknowledgeToken,
+        openGlobalPopup,
     } = props;
 
     const [isModalOpen, openModal, closeModal] = useModal();
@@ -1046,6 +1053,7 @@ export default function Range(props: RangePropsIF) {
         setInput: setInput,
         searchType: searchType,
         acknowledgeToken: acknowledgeToken,
+        openGlobalPopup: openGlobalPopup,
     };
 
     // props for <RangeWidth/> React element

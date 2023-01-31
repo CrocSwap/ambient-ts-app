@@ -1,25 +1,33 @@
-
- 
- .main_content{
-
-    background: url(../../../assets/images/backgrounds/background.png) no-repeat ;
+.main_content {
+    background: url(../../../assets/images/backgrounds/background.png) no-repeat;
     -webkit-background-size: cover;
     -moz-background-size: cover;
     -o-background-size: cover;
     background-size: cover;
 
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     justify-content: center;
     border-radius: 4px;
-    padding: 0 3rem;
+    padding: 1rem 3rem;
+
+    width: 800px;
     /* align-items: center; */
 }
-.control_display_container{
+.control_display_container {
     display: flex;
     justify-content: center;
     flex-direction: row;
     align-items: center;
     gap: 1rem;
     padding: 0.4rem 0;
+}
+
+.left_container {
+    width: 350px;
+    padding-right: 2rem;
+}
+
+.right_container {
+    width: 450px;
 }

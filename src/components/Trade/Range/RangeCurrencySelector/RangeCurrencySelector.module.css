@@ -25,12 +25,16 @@
 
 .main_surplus_container, .main_wallet_container{
     display: flex;
-    justify-content: center;
     align-items: center;
+}
+.main_wallet_container{
+    justify-content: flex-start;
 }
 
 .main_surplus_container{
-    justify-content: center;
+    justify-content: flex-end;
+
+
 }
 
 
@@ -139,7 +143,7 @@
        display: grid;
        grid-template-columns: repeat(2, 1fr);
        gap: 4px;
-    
+    padding: 0 2rem;
        
     }
 

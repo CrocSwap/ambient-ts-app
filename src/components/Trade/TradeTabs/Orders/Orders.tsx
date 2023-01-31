@@ -554,7 +554,12 @@ export default function Orders(props: propsIF) {
             // setIsCandleSelected={setIsCandleSelected}
         />
     );
-    const expandStyle = expandTradeTable ? 'calc(100vh - 10rem)' : '250px';
+
+    const mobileView = useMediaQuery('(max-width: 850px)');
+
+    const mobileViewHeight = mobileView ? '70vh' : '250px';
+
+    const expandStyle = expandTradeTable ? 'calc(100vh - 10rem)' : mobileViewHeight;
 
     const portfolioPageStyle = props.isOnPortfolioPage ? 'calc(100vh - 19.5rem)' : expandStyle;
 

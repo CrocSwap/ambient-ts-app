@@ -1,6 +1,6 @@
 import styles from './RangeAccordions.module.css';
 import { Dispatch, SetStateAction } from 'react';
-import { PositionIF } from '../../../../../utils/interfaces/PositionIF';
+import { PositionIF } from '../../../../../utils/interfaces/exports';
 import { useProcessRange } from '../../../../../utils/hooks/useProcessRange';
 import { BiWallet } from 'react-icons/bi';
 import RangeStatus from '../../../../Global/RangeStatus/RangeStatus';
@@ -9,14 +9,14 @@ import { IoMdArrowDropdown } from 'react-icons/io';
 import { RiArrowUpSFill } from 'react-icons/ri';
 import RangeAccordionContent from './RangeAccordionContent';
 
-interface RangeAccordionsPropsIF {
+interface propsIF {
     account: string;
     i: number;
     expanded: number | boolean;
     setExpanded: Dispatch<SetStateAction<number | false>>;
     position: PositionIF;
 }
-export default function RangeAccordions(props: RangeAccordionsPropsIF) {
+export default function RangeAccordions(props: propsIF) {
     const { account, i, expanded, setExpanded, position } = props;
 
     const isOpen = i === expanded;

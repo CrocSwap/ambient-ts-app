@@ -25,7 +25,7 @@ import {
 } from '../../utils/TransactionError';
 import TransactionException from '../Global/TransactionException/TransactionException';
 
-interface IClaimOrderProps {
+interface propsIF {
     account: string;
     crocEnv: CrocEnv | undefined;
     chainData: ChainSpec;
@@ -33,7 +33,7 @@ interface IClaimOrderProps {
     closeGlobalModal: () => void;
 }
 
-export default function ClaimOrder(props: IClaimOrderProps) {
+export default function ClaimOrder(props: propsIF) {
     const { account, chainData, crocEnv, limitOrder, closeGlobalModal } = props;
     const {
         posLiqBaseDecimalCorrected,

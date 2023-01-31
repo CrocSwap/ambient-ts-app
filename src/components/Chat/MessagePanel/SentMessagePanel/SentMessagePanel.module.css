@@ -75,7 +75,7 @@
 }
 
 .mention_message {
-    color: #7371FC;
+    color: var(--accent-5);
     width: 80%;
     height: 80%;
 
@@ -216,7 +216,7 @@ align-self: stretch;
     flex-grow: 3;
 }
 
-p {
+.message_item p {
     word-break: break-all;
 }
 

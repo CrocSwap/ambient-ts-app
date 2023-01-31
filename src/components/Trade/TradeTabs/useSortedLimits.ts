@@ -1,5 +1,5 @@
 import { Dispatch, SetStateAction, useMemo, useState } from 'react';
-import { LimitOrderIF } from '../../../utils/interfaces/LimitOrderIF';
+import { LimitOrderIF } from '../../../utils/interfaces/exports';
 
 export const useSortedLimits = (
     defaultSort: string,

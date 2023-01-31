@@ -1,14 +1,16 @@
 import styles from './OrderGraphDisplay.module.css';
-import chartImage from '../../../assets/images/Temporary/chart2.svg';
 import OpenOrderStatus from '../../Global/OpenOrderStatus/OpenOrderStatus';
 import { RiUser4Line } from 'react-icons/ri';
+import TransactionDetailsGraph from '../../Global/TransactionDetails/TransactionDetailsGraph/TransactionDetailsGraph';
+import { LimitOrderIF } from '../../../utils/interfaces/LimitOrderIF';
 interface IOrderGraphDisplayProps {
     // updatedPositionApy: number | undefined;
     isOrderFilled: boolean;
     user: string;
+    limitOrder: LimitOrderIF;
 }
 export default function OrderGraphDisplay(props: IOrderGraphDisplayProps) {
-    const { isOrderFilled, user } = props;
+    const { isOrderFilled, user, limitOrder } = props;
 
     return (
         <div className={styles.main_container}>
@@ -23,7 +25,7 @@ export default function OrderGraphDisplay(props: IOrderGraphDisplayProps) {
                 </div>
             </div>
             <div className={styles.chart_container}>
-                <img src={chartImage} alt='chart' />
+                <TransactionDetailsGraph tx={limitOrder} transactionType={'limitOrder'} />
             </div>
         </div>
     );

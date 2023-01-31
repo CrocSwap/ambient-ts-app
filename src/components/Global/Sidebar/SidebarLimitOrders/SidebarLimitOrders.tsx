@@ -4,7 +4,7 @@ import { SetStateAction, Dispatch } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { LimitOrderIF, TokenIF } from '../../../../utils/interfaces/exports';
 
-interface SidebarLimitOrdersProps {
+interface propsIF {
     tokenMap: Map<string, TokenIF>;
     isDenomBase: boolean;
     selectedOutsideTab: number;
@@ -20,7 +20,7 @@ interface SidebarLimitOrdersProps {
     setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
     setShowSidebar: Dispatch<SetStateAction<boolean>>;
 }
-export default function SidebarLimitOrders(props: SidebarLimitOrdersProps) {
+export default function SidebarLimitOrders(props: propsIF) {
     const {
         limitOrderByUser,
         tokenMap,
@@ -32,13 +32,6 @@ export default function SidebarLimitOrders(props: SidebarLimitOrdersProps) {
     } = props;
     const location = useLocation();
     const navigate = useNavigate();
-    const header = (
-        <div className={styles.header}>
-            <div>Pool</div>
-            <div>Price</div>
-            <div>Value</div>
-        </div>
-    );
 
     const sidebarLimitOrderCardProps = {
         tokenMap: tokenMap,
@@ -73,9 +66,16 @@ export default function SidebarLimitOrders(props: SidebarLimitOrdersProps) {
         // props.setIsShowAllEnabled(false);
         // props.setExpandTradeTable(true);
     };
+
+    // TODO:   @Junior please refactor header <div> as a <header> element
+
     return (
         <div className={styles.container}>
-            {header}
+            <div className={styles.header}>
+                <div>Pool</div>
+                <div>Price</div>
+                <div>Value</div>
+            </div>
             <div className={styles.content}>
                 {limitOrderByUser &&
                     limitOrderByUser.map((order, idx) => (

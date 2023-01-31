@@ -8,12 +8,11 @@ import Picker from 'emoji-picker-react';
 import styles from './MessageInput.module.css';
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import PositionBox from '../PositionBox/PositionBox';
-import { PoolIF } from '../../../../utils/interfaces/PoolIF';
-import { TokenIF } from '../../../../utils/interfaces/TokenIF';
+import { PoolIF, TokenIF } from '../../../../utils/interfaces/exports';
 import { targetData } from '../../../../utils/state/tradeDataSlice';
 
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';
-import { RiCloseFill } from 'react-icons/ri';
+import { RiCloseFill, RiInformationLine } from 'react-icons/ri';
 interface MessageInputProps {
     message?: Message;
     room: string;
@@ -55,6 +54,7 @@ export interface ChatProps {
 export default function MessageInput(props: MessageInputProps, prop: ChatProps) {
     const [message, setMessage] = useState('');
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+    const [isInfoPressed, setIsInfoPressed] = useState(false);
     const { address, isConnected } = useAccount();
     const [isPosition, setIsPosition] = useState(false);
     // const { roomId } = props.match.params;
@@ -189,22 +189,39 @@ export default function MessageInput(props: MessageInputProps, prop: ChatProps) 
                             onClick={() => setShowEmojiPicker(false)}
                         />
                     </span>
-                    <Picker
-                        pickerStyle={{
-                            width: '100%',
-                            // filter: 'invert(100%)',
-                            // height: '100%',
-                            // backgroundColor: '#2e4960',
-                            // indicatorColor: '#b04c2d',
-                            // fontColor: 'lightgrey',
-                            // searchBackgroundColor: '#263d51',
-                            // tabsFontColor: '#8cdce4',
-                            // searchFontColor: 'lightgrey',
-                            // skinTonePickerBackgroundColor: '#284155',
-                        }}
-                        onEmojiClick={handleEmojiClick}
-                        disableSkinTonePicker={true}
-                    />
+                    <span
+                        className={styles.emoji_close_button}
+                        onClick={() => setIsInfoPressed(!isInfoPressed)}
+                    >
+                        <RiInformationLine />
+                    </span>
+                    {isInfoPressed ? (
+                        <ul>
+                            Keyboard Shortcuts
+                            <li>Escape will close all chat panel</li>
+                            <li>Escape will close all chat panel</li>
+                            <li>Escape will close all chat panel</li>
+                            <li>Escape will close all chat panel</li>
+                        </ul>
+                    ) : (
+                        <Picker
+                            pickerStyle={{
+                                width: '100%',
+                                height: '89%',
+                                // filter: 'invert(100%)',
+                                // height: '100%',
+                                // backgroundColor: '#2e4960',
+                                // indicatorColor: '#b04c2d',
+                                // fontColor: 'lightgrey',
+                                // searchBackgroundColor: '#263d51',
+                                // tabsFontColor: '#8cdce4',
+                                // searchFontColor: 'lightgrey',
+                                // skinTonePickerBackgroundColor: '#284155',
+                            }}
+                            onEmojiClick={handleEmojiClick}
+                            disableSkinTonePicker={true}
+                        />
+                    )}
                 </div>
             )}
         </div>

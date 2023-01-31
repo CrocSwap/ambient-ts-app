@@ -1,12 +1,11 @@
-import { TokenIF } from '../../../../utils/interfaces/TokenIF';
-import { ITransaction } from '../../../../utils/state/graphDataSlice';
+import { TokenIF, TransactionIF } from '../../../../utils/interfaces/exports';
 import { useLocation, useNavigate } from 'react-router-dom';
 import styles from './SidebarRecentTransactionsCard.module.css';
 import { Dispatch, SetStateAction, useMemo } from 'react';
 import { formatAmountOld } from '../../../../utils/numbers';
 
-interface TransactionProps {
-    tx: ITransaction;
+interface propsIF {
+    tx: TransactionIF;
     coinGeckoTokenMap: Map<string, TokenIF>;
     chainId: string;
     currentTxActiveInTransactions: string;
@@ -20,7 +19,7 @@ interface TransactionProps {
     tabToSwitchToBasedOnRoute: number;
 }
 
-export default function SidebarRecentTransactionsCard(props: TransactionProps) {
+export default function SidebarRecentTransactionsCard(props: propsIF) {
     const {
         tx,
         // coinGeckoTokenMap,
@@ -130,7 +129,7 @@ export default function SidebarRecentTransactionsCard(props: TransactionProps) {
 
     const navigate = useNavigate();
 
-    function handleRecentTransactionClick(tx: ITransaction) {
+    function handleRecentTransactionClick(tx: TransactionIF) {
         setOutsideControl(true);
         setSelectedOutsideTab(tabToSwitchToBasedOnRoute);
         setIsShowAllEnabled(false);

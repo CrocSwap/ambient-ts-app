@@ -163,3 +163,14 @@ gap: 8px;
     }
    
 }
+
+
+@media only screen and (max-width: 600px) {
+
+.portfolio_container{
+    overflow-y: hidden;
+
+    max-height: calc(100vh - 7.5rem)
+}
+
+}
