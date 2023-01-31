@@ -247,12 +247,12 @@ export default function Trade(props: TradePropsIF) {
     );
 
     useEffect(() => {
-        setLiquidityData(activePoolLiquidityData?.liquidityData);
-    }, [activePoolLiquidityData]);
+        setLiquidityData(undefined);
+    }, [pool?.baseToken, pool?.quoteToken]);
 
     useEffect(() => {
-        setLiquidityData(undefined);
-    }, [pool]);
+        setLiquidityData(activePoolLiquidityData?.liquidityData);
+    }, [activePoolLiquidityData]);
 
     const mainContent = (
         <div className={styles.right_col}>
