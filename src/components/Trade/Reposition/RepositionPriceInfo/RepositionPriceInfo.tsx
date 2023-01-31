@@ -118,7 +118,7 @@ export default function RepositionPriceInfo(props: IRepositionPriceInfoProps) {
         <div className={styles.price_display}>
             <h4 className={styles.price_title}>Min Price</h4>
             <span className={styles.min_price}>
-                {minPriceDisplay}
+                {rangeWidthPercentage === 100 ? '0' : minPriceDisplay}
                 {/* {truncateDecimals(parseFloat(minPriceDisplay), 4).toString()} */}
             </span>
         </div>
@@ -131,7 +131,9 @@ export default function RepositionPriceInfo(props: IRepositionPriceInfoProps) {
     const maximumPrice = (
         <div className={styles.price_display}>
             <h4 className={styles.price_title}>Max Price</h4>
-            <span className={styles.max_price}>{maxPriceDisplay}</span>
+            <span className={styles.max_price}>
+                {rangeWidthPercentage === 100 ? '∞' : maxPriceDisplay}
+            </span>
         </div>
     );
 
