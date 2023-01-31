@@ -348,7 +348,7 @@ export default function Sidebar(props: propsIF) {
     );
 
     const inputContent = document.getElementById('search_input') as HTMLInputElement;
-    console.log(searchInput);
+    // console.log(searchInput);
     const searchContainer = (
         <div className={styles.search_container}>
             <div className={styles.search__icon} onClick={focusInput}>
