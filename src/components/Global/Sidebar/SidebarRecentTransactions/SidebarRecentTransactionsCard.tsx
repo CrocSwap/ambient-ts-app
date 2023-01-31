@@ -1,4 +1,4 @@
-import { TokenIF, TransactionIF } from '../../../../utils/interfaces/exports';
+import { TransactionIF } from '../../../../utils/interfaces/exports';
 import { useNavigate } from 'react-router-dom';
 import styles from './SidebarRecentTransactionsCard.module.css';
 import { Dispatch, SetStateAction } from 'react';
@@ -6,15 +6,10 @@ import { getTxType, getTxValue } from './functions/exports';
 
 interface propsIF {
     tx: TransactionIF;
-    coinGeckoTokenMap: Map<string, TokenIF>;
     chainId: string;
-    currentTxActiveInTransactions: string;
     setCurrentTxActiveInTransactions: Dispatch<SetStateAction<string>>;
-    isShowAllEnabled: boolean;
     setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
-    selectedOutsideTab: number;
     setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
-    outsideControl: boolean;
     setOutsideControl: Dispatch<SetStateAction<boolean>>;
     tabToSwitchToBasedOnRoute: number;
 }
@@ -22,7 +17,6 @@ interface propsIF {
 export default function SidebarRecentTransactionsCard(props: propsIF) {
     const {
         tx,
-        // coinGeckoTokenMap,
         chainId,
         setCurrentTxActiveInTransactions,
         setIsShowAllEnabled,

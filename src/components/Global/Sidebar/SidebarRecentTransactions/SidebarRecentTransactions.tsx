@@ -30,11 +30,8 @@ export default function SidebarRecentTransactions(props: propsIF) {
     const navigate = useNavigate();
     const {
         mostRecentTransactions,
-        coinGeckoTokenMap,
         chainId,
-        currentTxActiveInTransactions,
         setCurrentTxActiveInTransactions,
-        isShowAllEnabled,
         setIsShowAllEnabled,
         isUserLoggedIn,
         // expandTradeTable,
@@ -79,15 +76,10 @@ export default function SidebarRecentTransactions(props: propsIF) {
                     <SidebarRecentTransactionsCard
                         tx={tx}
                         key={idx}
-                        coinGeckoTokenMap={coinGeckoTokenMap}
                         chainId={chainId}
-                        currentTxActiveInTransactions={currentTxActiveInTransactions}
                         setCurrentTxActiveInTransactions={setCurrentTxActiveInTransactions}
-                        isShowAllEnabled={isShowAllEnabled}
                         setIsShowAllEnabled={setIsShowAllEnabled}
-                        selectedOutsideTab={props.selectedOutsideTab}
                         setSelectedOutsideTab={props.setSelectedOutsideTab}
-                        outsideControl={props.outsideControl}
                         setOutsideControl={props.setOutsideControl}
                         tabToSwitchToBasedOnRoute={tabToSwitchToBasedOnRoute}
                     />
