@@ -52,6 +52,21 @@ export default function SidebarRecentTransactions(props: propsIF) {
         navigate('/account');
     }
 
+    const handleCardClick = (tx: TransactionIF): void => {
+        setOutsideControl(true);
+        setSelectedOutsideTab(tabToSwitchToBasedOnRoute);
+        setIsShowAllEnabled(false);
+        setCurrentTxActiveInTransactions(tx.id);
+        navigate(
+            '/trade/market/chain=' +
+            chainId +
+            '&tokenA=' +
+            tx.base +
+            '&tokenB=' +
+            tx.quote
+        );
+    }
+
     const handleViewMoreClick = () => {
         redirectBasedOnRoute();
         setOutsideControl(true);
@@ -71,14 +86,9 @@ export default function SidebarRecentTransactions(props: propsIF) {
             <div className={styles.content}>
                 {mostRecentTransactions.map((tx, idx) => (
                     <SidebarRecentTransactionsCard
-                        tx={tx}
                         key={idx}
-                        chainId={chainId}
-                        setCurrentTxActiveInTransactions={setCurrentTxActiveInTransactions}
-                        setIsShowAllEnabled={setIsShowAllEnabled}
-                        setSelectedOutsideTab={setSelectedOutsideTab}
-                        setOutsideControl={setOutsideControl}
-                        tabToSwitchToBasedOnRoute={tabToSwitchToBasedOnRoute}
+                        tx={tx}
+                        handleClick={handleCardClick}
                     />
                 ))}
             </div>
