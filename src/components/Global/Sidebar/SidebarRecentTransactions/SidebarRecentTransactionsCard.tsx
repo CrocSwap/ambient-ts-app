@@ -31,52 +31,6 @@ export default function SidebarRecentTransactionsCard(props: propsIF) {
         tabToSwitchToBasedOnRoute,
     } = props;
 
-    // const baseId = tx.base + '_' + chainId;
-    // const quoteId = tx.quote + '_' + chainId;
-
-    // const getToken = (addr: string) => coinGeckoTokenMap.get(addr.toLowerCase());
-    // const baseToken = getToken(baseId) as TokenIF;
-    // const quoteToken = getToken(quoteId) as TokenIF;
-
-    const { pathname } = useLocation();
-
-    const linkPath = useMemo(() => {
-        let locationSlug = '';
-        if (tx.entityType === 'swap') {
-            locationSlug = '/trade/market';
-        } else if (tx.entityType === 'limitOrder') {
-            locationSlug = '/trade/limit';
-        } else if (tx.entityType === 'liqchange') {
-            locationSlug = '/trade/range';
-        } else {
-            locationSlug = '/trade/market';
-        }
-        return locationSlug + '/chain=0x5&tokenA=' + tx.base + '&tokenB=' + tx.quote;
-    }, [pathname]);
-    // const linkPath = useMemo(() => {
-    //     let locationSlug = '';
-    //     if (pathname.startsWith('/trade/market') || pathname.startsWith('/account')) {
-    //         locationSlug = '/trade/market';
-    //     } else if (pathname.startsWith('/trade/limit')) {
-    //         locationSlug = '/trade/limit';
-    //     } else if (pathname.startsWith('/trade/range')) {
-    //         locationSlug = '/trade/range';
-    //     } else if (pathname.startsWith('/swap')) {
-    //         locationSlug = '/swap';
-    //     }
-    //     return locationSlug + '/chain=0x5&tokenA=' + tx.base + '&tokenB=' + tx.quote;
-    // }, [pathname]);
-
-    // const [valueUSD, setValueUSD] = useState<string | undefined>(undefined);
-
-    // useEffect(() => {
-    //     if (tx.valueUSD) {
-    //         setValueUSD(formatAmountOld(tx.valueUSD));
-    //     } else {
-    //         setValueUSD(undefined);
-    //     }
-    // }, [JSON.stringify(tx)]);
-
     const usdValueNum = tx.valueUSD;
     const totalValueUSD = tx.totalValueUSD;
     const totalFlowUSD = tx.totalFlowUSD;
@@ -146,17 +100,6 @@ export default function SidebarRecentTransactionsCard(props: propsIF) {
 
     const transactionTypeSide =
         tx.entityType === 'swap' ? 'Market' : tx.entityType === 'limitOrder' ? 'Limit' : 'Range';
-    // tx.entityType === 'swap'
-    //     ? tx.isBuy
-    //         ? 'Market (-)'
-    //         : 'Market (+)'
-    //     : tx.entityType === 'limitOrder'
-    //     ? tx.isBid
-    //         ? 'Limit (-)'
-    //         : 'Limit (+)'
-    //     : tx.changeType === 'burn'
-    //     ? 'Range (-)'
-    //     : 'Range (+)';
 
     return (
         <div className={styles.container} onClick={() => handleRecentTransactionClick(tx)}>
