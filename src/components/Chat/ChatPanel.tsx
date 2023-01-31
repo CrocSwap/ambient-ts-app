@@ -91,10 +91,7 @@ export default function ChatPanel(props: ChatProps) {
     useEffect(() => {
         if (scrollDirection === 'Scroll Up') {
             if (messageUser !== currentUser) {
-                if (
-                    lastMessage?.mentionedName.slice(1) === name ||
-                    lastMessage?.mentionedName.slice(1) === address
-                ) {
+                if (lastMessage?.mentionedName === name || lastMessage?.mentionedName === address) {
                     setNotification((notification) => notification + 1);
                 }
             } else if (messageUser === currentUser) {
@@ -139,29 +136,29 @@ export default function ChatPanel(props: ChatProps) {
         }
     }, [address, props.chatStatus, props.isFullScreen]);
 
-    useEffect(() => {
-        if (address) {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            getID().then((result: any) => {
-                setCurrentUser(result.userData._id);
-                if (props.ensName !== '') {
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    updateUser(currentUser as string, props.ensName).then((result: any) => {
-                        if (result.status === 'OK') {
-                            setName(props.ensName);
-                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                            updateMessageUser(currentUser as string, name).then((result: any) => {
-                                console.log('result is: ', result);
-                            });
-                        }
-                    });
-                } else {
-                    setName(props.ensName === '' ? result.userData.walletID : props.ensName);
-                }
-            });
-            getMsg();
-        }
-    }, [address]);
+    // useEffect(() => {
+    //     if (address) {
+    //         // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    //         getID().then((result: any) => {
+    //             setCurrentUser(result.userData._id);
+    //             if (props.ensName !== '') {
+    //                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    //                 updateUser(currentUser as string, props.ensName).then((result: any) => {
+    //                     if (result.status === 'OK') {
+    //                         setName(props.ensName);
+    //                         // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    //                         updateMessageUser(currentUser as string, name).then((result: any) => {
+    //                             console.log('result is: ', result);
+    //                         });
+    //                     }
+    //                 });
+    //             } else {
+    //                 setName(props.ensName === '' ? result.userData.walletID : props.ensName);
+    //             }
+    //         });
+    //         getMsg();
+    //     }
+    // }, [address]);
 
     useEffect(() => {
         isCurrentUser();
@@ -184,6 +181,10 @@ export default function ChatPanel(props: ChatProps) {
             messageEnd.current?.scrollHeight,
         );
     };
+
+    // useEffect(() => {
+    // scrollToBottomButton();
+    // }, [props.chatStatus]);
 
     const scrollToBottom = async () => {
         const timer = setTimeout(() => {
