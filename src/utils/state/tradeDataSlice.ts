@@ -1,7 +1,7 @@
 import { sortBaseQuoteTokens } from '@crocswap-libs/sdk';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { goerliETH, goerliUSDC } from '../data/defaultTokens';
-import { TokenIF } from '../interfaces/exports';
+import { PositionIF, TokenIF } from '../interfaces/exports';
 
 export interface targetData {
     name: string;
@@ -49,6 +49,7 @@ export interface tradeData {
     rescaleRangeBoundaries: boolean | undefined;
     mainnetBaseTokenAddress: string;
     mainnetQuoteTokenAddress: string;
+    positionToBeRepositioned: PositionIF | undefined;
 }
 
 const initialState: tradeData = {
@@ -90,6 +91,7 @@ const initialState: tradeData = {
     rescaleRangeBoundaries: undefined,
     mainnetBaseTokenAddress: '',
     mainnetQuoteTokenAddress: '',
+    positionToBeRepositioned: undefined,
 };
 
 export const tradeDataSlice = createSlice({
@@ -240,6 +242,9 @@ export const tradeDataSlice = createSlice({
         setCandleDomains: (state, action: PayloadAction<candleDomain>) => {
             state.candleDomains = action.payload;
         },
+        setPositionToBeRepositioned: (state, action: PayloadAction<PositionIF>) => {
+            state.positionToBeRepositioned = action.payload;
+        },
 
         resetTradeData: () => initialState,
     },
@@ -286,6 +291,7 @@ export const {
     setCandleDomains,
     setMainnetBaseTokenReduxAddress,
     setMainnetQuoteTokenReduxAddress,
+    setPositionToBeRepositioned,
 } = tradeDataSlice.actions;
 
 export default tradeDataSlice.reducer;
