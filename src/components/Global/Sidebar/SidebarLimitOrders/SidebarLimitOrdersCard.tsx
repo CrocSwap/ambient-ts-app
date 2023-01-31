@@ -1,5 +1,4 @@
 import styles from './SidebarLimitOrdersCard.module.css';
-import { SetStateAction, Dispatch } from 'react';
 import { LimitOrderIF, TokenIF } from '../../../../utils/interfaces/exports';
 import { getLimitPrice } from './functions/getLimitPrice';
 import { getLimitValue } from './functions/getLimitValue';
@@ -7,14 +6,7 @@ import { getLimitValue } from './functions/getLimitValue';
 interface propsIF {
     isDenomBase: boolean;
     tokenMap: Map<string, TokenIF>;
-    chainId: string;
     order: LimitOrderIF;
-    selectedOutsideTab: number;
-    setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
-    outsideControl: boolean;
-    setCurrentPositionActive: Dispatch<SetStateAction<string>>;
-    setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
-    setOutsideControl: Dispatch<SetStateAction<boolean>>;
     handleClick: (limitOrder: LimitOrderIF) => void
 }
 export default function SidebarLimitOrdersCard(props: propsIF) {

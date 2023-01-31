@@ -37,17 +37,6 @@ export default function SidebarLimitOrders(props: propsIF) {
     const location = useLocation();
     const navigate = useNavigate();
 
-    const sidebarLimitOrderCardProps = {
-        tokenMap: tokenMap,
-        chainId: chainId,
-        selectedOutsideTab: props.selectedOutsideTab,
-        setSelectedOutsideTab: props.setSelectedOutsideTab,
-        outsideControl: props.outsideControl,
-        setOutsideControl: props.setOutsideControl,
-        setCurrentPositionActive: setCurrentPositionActive,
-        setIsShowAllEnabled: setIsShowAllEnabled,
-    };
-
     const onTradeRoute = location.pathname.includes('trade');
     const onAccountRoute = location.pathname.includes('account');
 
@@ -104,7 +93,7 @@ export default function SidebarLimitOrders(props: propsIF) {
                             isDenomBase={isDenomBase}
                             order={order}
                             handleClick={handleLimitOrderClick}
-                            {...sidebarLimitOrderCardProps}
+                            tokenMap={tokenMap}
                         />
                     ))}
             </div>
