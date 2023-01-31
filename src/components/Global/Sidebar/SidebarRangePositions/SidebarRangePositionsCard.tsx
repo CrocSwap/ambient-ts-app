@@ -23,7 +23,6 @@ interface propsIF {
 
 export default function SidebarRangePositionsCard(props: propsIF) {
     const {
-        // tokenMap,
         isDenomBase,
         position,
         setOutsideControl,
@@ -32,10 +31,6 @@ export default function SidebarRangePositionsCard(props: propsIF) {
         setIsShowAllEnabled,
         tabToSwitchToBasedOnRoute,
     } = props;
-
-    // const getToken = (addr: string) => tokenMap.get(addr.toLowerCase()) as TokenIF;
-    // const baseToken = getToken(position.base + '_' + position.chainId);
-    // const quoteToken = getToken(position.quote + '_' + position.chainId);
 
     const { pathname } = useLocation();
 
@@ -62,13 +57,6 @@ export default function SidebarRangePositionsCard(props: propsIF) {
         setIsShowAllEnabled(false);
         navigate(linkPath);
     }
-
-    // const liqTotalUSD =
-    //     '$' +
-    //     position.positionLiqTotalUSD.toLocaleString(undefined, {
-    //         minimumFractionDigits: 2,
-    //         maximumFractionDigits: 2,
-    //     });
 
     // human-readable string showing the tokens in the pool
     const pair = getSymbols(isDenomBase, position.baseSymbol, position.quoteSymbol);
