@@ -187,21 +187,6 @@ export default function Sidebar(props: propsIF) {
 
         setShowSidebar: setShowSidebar,
     };
-    const sidebarRangePositionProps = {
-        selectedOutsideTab: props.selectedOutsideTab,
-        setSelectedOutsideTab: setSelectedOutsideTab,
-        outsideControl: props.outsideControl,
-        setOutsideControl: setOutsideControl,
-        currentPositionActive: currentPositionActive,
-        setCurrentPositionActive: setCurrentPositionActive,
-        tokenMap: tokenMap,
-        isShowAllEnabled: props.isShowAllEnabled,
-        setIsShowAllEnabled: props.setIsShowAllEnabled,
-        expandTradeTable: expandTradeTable,
-        setExpandTradeTable: setExpandTradeTable,
-        isUserLoggedIn: isConnected,
-        setShowSidebar: setShowSidebar,
-    };
 
     const rangePositions = [
         {
@@ -212,7 +197,12 @@ export default function Sidebar(props: propsIF) {
                     chainId={chainId}
                     userPositions={mostRecentPositions}
                     isDenomBase={isDenomBase}
-                    {...sidebarRangePositionProps}
+                    setSelectedOutsideTab={setSelectedOutsideTab}
+                    setOutsideControl={setOutsideControl}
+                    setCurrentPositionActive={setCurrentPositionActive}
+                    setIsShowAllEnabled={setIsShowAllEnabled}
+                    setShowSidebar={setShowSidebar}
+                    isUserLoggedIn={isConnected}
                 />
             ),
         },

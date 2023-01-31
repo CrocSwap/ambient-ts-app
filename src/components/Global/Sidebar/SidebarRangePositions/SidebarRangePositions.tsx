@@ -1,6 +1,6 @@
 import styles from './SidebarRangePositions.module.css';
 import SidebarRangePositionsCard from './SidebarRangePositionsCard';
-import { PositionIF, TokenIF } from '../../../../utils/interfaces/exports';
+import { PositionIF } from '../../../../utils/interfaces/exports';
 import { SetStateAction, Dispatch } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
@@ -8,20 +8,11 @@ interface propsIF {
     chainId: string;
     isDenomBase: boolean;
     userPositions?: PositionIF[];
-    selectedOutsideTab: number;
     setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
-    outsideControl: boolean;
     setOutsideControl: Dispatch<SetStateAction<boolean>>;
-    tokenMap: Map<string, TokenIF>;
-
-    currentPositionActive: string;
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
-
-    isShowAllEnabled: boolean;
     setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
     isUserLoggedIn: boolean | undefined;
-    expandTradeTable: boolean;
-    setExpandTradeTable: Dispatch<SetStateAction<boolean>>;
     setShowSidebar: Dispatch<SetStateAction<boolean>>;
 }
 
