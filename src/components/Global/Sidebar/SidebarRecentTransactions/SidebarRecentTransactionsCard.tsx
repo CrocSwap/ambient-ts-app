@@ -1,8 +1,9 @@
 import { TokenIF, TransactionIF } from '../../../../utils/interfaces/exports';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import styles from './SidebarRecentTransactionsCard.module.css';
-import { Dispatch, SetStateAction, useMemo } from 'react';
+import { Dispatch, SetStateAction } from 'react';
 import { formatAmountOld } from '../../../../utils/numbers';
+import { getTxType } from './functions/getTxType';
 
 interface propsIF {
     tx: TransactionIF;
@@ -98,15 +99,15 @@ export default function SidebarRecentTransactionsCard(props: propsIF) {
         );
     }
 
-    const transactionTypeSide =
-        tx.entityType === 'swap' ? 'Market' : tx.entityType === 'limitOrder' ? 'Limit' : 'Range';
+    // human-readable form of transaction type to display in DOM
+    const txType = getTxType(tx.entityType);
 
     return (
         <div className={styles.container} onClick={() => handleRecentTransactionClick(tx)}>
             <div>
                 {tx.baseSymbol} / {tx.quoteSymbol}
             </div>
-            <div>{transactionTypeSide}</div>
+            <div>{txType}</div>
             <div className={styles.status_display}>
                 {totalFlowUSDTruncated !== undefined
                     ? '$' + totalFlowUSDTruncated
