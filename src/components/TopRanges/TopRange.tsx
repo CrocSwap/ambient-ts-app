@@ -1,6 +1,6 @@
 import { isAddress } from '../../utils';
 import getUnicodeCharacter from '../../utils/functions/getUnicodeCharacter';
-import { TokenIF } from '../../utils/interfaces/TokenIF';
+import { TokenIF } from '../../utils/interfaces/exports';
 import PoolDisplay from '../Global/Analytics/PoolDisplay';
 import TokenDisplay from '../Global/Analytics/TokenDisplay';
 import RangeStatus from '../Global/RangeStatus/RangeStatus';

@@ -14,7 +14,7 @@ import TokensArrow from '../../Global/TokensArrow/TokensArrow';
 import InitPoolDenom from '../../InitPool/InitPoolDenom/InitPoolDenom';
 import NoTokenIcon from '../../Global/NoTokenIcon/NoTokenIcon';
 
-interface ConfirmSwapModalProps {
+interface propsIF {
     initiateSwapMethod: () => void;
     poolPriceDisplay: number | undefined;
     isDenomBase: boolean;
@@ -34,7 +34,7 @@ interface ConfirmSwapModalProps {
     isSellTokenBase: boolean;
 }
 
-export default function ConfirmSwapModal(props: ConfirmSwapModalProps) {
+export default function ConfirmSwapModal(props: propsIF) {
     const {
         initiateSwapMethod,
         // priceImpact,

@@ -10,14 +10,14 @@ import SlippageTolerance from '../SlippageTolerance/SlippageTolerance';
 import { SlippagePairIF } from '../../../utils/interfaces/exports';
 
 // interface for component props
-interface TransactionSettingsPropsIF {
+interface propsIF {
     module: 'Swap' | 'Market Order' | 'Limit Order' | 'Range Order';
     slippage: SlippagePairIF;
     isPairStable: boolean;
     onClose: () => void;
 }
 
-export default function TransactionSettings(props: TransactionSettingsPropsIF) {
+export default function TransactionSettings(props: propsIF) {
     const { module, slippage, isPairStable, onClose } = props;
 
     // const dispatch = useAppDispatch();

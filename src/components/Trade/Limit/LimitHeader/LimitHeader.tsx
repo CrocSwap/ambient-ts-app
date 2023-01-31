@@ -17,7 +17,7 @@ import { AiOutlineShareAlt } from 'react-icons/ai';
 import ShareModal from '../../../Global/ShareModal/ShareModal';
 
 // interface for component props
-interface LimitHeaderPropsIF {
+interface propsIF {
     chainId: string;
     // tokenPair: TokenPairIF;
     mintSlippage: SlippagePairIF;
@@ -31,7 +31,7 @@ interface LimitHeaderPropsIF {
 }
 
 // central react functional component
-export default function LimitHeader(props: LimitHeaderPropsIF) {
+export default function LimitHeader(props: propsIF) {
     const { mintSlippage, isPairStable, openGlobalModal } = props;
 
     const [isModalOpen, openModal, closeModal] = useModal();

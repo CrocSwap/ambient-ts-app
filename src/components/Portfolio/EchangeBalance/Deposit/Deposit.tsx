@@ -1,10 +1,8 @@
 import styles from './Deposit.module.css';
 import DepositButton from './DepositButton/DepositButton';
 import DepositCurrencySelector from './DepositCurrencySelector/DepositCurrencySelector';
-// import { defaultTokens } from '../../../../utils/data/defaultTokens';
-import { TokenIF } from '../../../../utils/interfaces/TokenIF';
+import { TokenIF } from '../../../../utils/interfaces/exports';
 import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
-// import { setToken } from '../../../../utils/state/temp';
 import { CrocEnv, toDisplayQty } from '@crocswap-libs/sdk';
 import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
 import {
@@ -19,8 +17,8 @@ import {
 } from '../../../../utils/TransactionError';
 import { BigNumber } from 'ethers';
 import { ZERO_ADDRESS } from '../../../../constants';
-// import { formatAmountOld } from '../../../../utils/numbers';
-interface PortfolioDepositProps {
+
+interface propsIF {
     crocEnv: CrocEnv | undefined;
     connectedAccount: string;
     openGlobalModal: (content: React.ReactNode, title?: string) => void;
@@ -36,7 +34,7 @@ interface PortfolioDepositProps {
     gasPriceInGwei: number | undefined;
 }
 
-export default function Deposit(props: PortfolioDepositProps) {
+export default function Deposit(props: propsIF) {
     const {
         crocEnv,
         tokenAllowance,

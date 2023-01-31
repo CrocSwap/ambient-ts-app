@@ -12,8 +12,12 @@ import TabComponent from '../../Global/TabComponent/TabComponent';
 import styles from './PortfolioTabs.module.css';
 import { useAppDispatch, useAppSelector } from '../../../utils/hooks/reduxToolkit';
 import { getPositionData } from '../../../App/functions/getPositionData';
-import { PositionIF } from '../../../utils/interfaces/PositionIF';
-import { LimitOrderIF, TokenIF } from '../../../utils/interfaces/exports';
+import {
+    LimitOrderIF,
+    PositionIF,
+    TokenIF,
+    TransactionIF,
+} from '../../../utils/interfaces/exports';
 import openOrdersImage from '../../../assets/images/sidebarImages/openOrders.svg';
 import rangePositionsImage from '../../../assets/images/sidebarImages/rangePositions.svg';
 import recentTransactionsImage from '../../../assets/images/sidebarImages/recentTransactions.svg';
@@ -22,7 +26,6 @@ import exchangeImage from '../../../assets/images/sidebarImages/exchange.svg';
 import { CrocEnv, ChainSpec } from '@crocswap-libs/sdk';
 import { ethers } from 'ethers';
 import {
-    ITransaction,
     resetLookupUserDataLoadingStatus,
     setDataLoadingStatus,
 } from '../../../utils/state/graphDataSlice';
@@ -33,9 +36,10 @@ import { fetchUserRecentChanges } from '../../../App/functions/fetchUserRecentCh
 import Orders from '../../Trade/TradeTabs/Orders/Orders';
 import Ranges from '../../Trade/TradeTabs/Ranges/Ranges';
 import Transactions from '../../Trade/TradeTabs/Transactions/Transactions';
+import { SpotPriceFn } from '../../../App/functions/querySpotPrice';
 
 // interface for React functional component props
-interface PortfolioTabsPropsIF {
+interface propsIF {
     crocEnv: CrocEnv | undefined;
     isTokenABase: boolean;
     provider: ethers.providers.Provider | undefined;
@@ -53,6 +57,7 @@ interface PortfolioTabsPropsIF {
     setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
     outsideControl: boolean;
     setOutsideControl: Dispatch<SetStateAction<boolean>>;
+    searchableTokens: TokenIF[];
 
     openTokenModal: () => void;
     chainData: ChainSpec;
@@ -73,11 +78,14 @@ interface PortfolioTabsPropsIF {
     handlePulseAnimation: (type: string) => void;
 
     fullLayoutToggle: JSX.Element;
+    cachedQuerySpotPrice: SpotPriceFn;
 }
 
 // React functional component
-export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
+export default function PortfolioTabs(props: propsIF) {
     const {
+        searchableTokens,
+        cachedQuerySpotPrice,
         crocEnv,
         isTokenABase,
         cachedFetchTokenPrice,
@@ -117,7 +125,7 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
         [],
     );
     const [lookupAccountTransactionData, setLookupAccountTransactionData] = useState<
-        ITransaction[]
+        TransactionIF[]
     >([]);
 
     // useEffect(() => {
@@ -151,7 +159,7 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
                         userPositions.map((position: PositionIF) => {
                             return getPositionData(
                                 position,
-                                importedTokens,
+                                searchableTokens,
                                 crocEnv,
                                 chainId,
                                 lastBlockNumber,
@@ -194,7 +202,7 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
                 if (userLimitOrderStates) {
                     Promise.all(
                         userLimitOrderStates.map((limitOrder: LimitOrderIF) => {
-                            return getLimitOrderData(limitOrder, importedTokens);
+                            return getLimitOrderData(limitOrder, searchableTokens);
                         }),
                     ).then((updatedLimitOrderStates) => {
                         setLookupAccountLimitOrderData(updatedLimitOrderStates);
@@ -340,6 +348,7 @@ export default function PortfolioTabs(props: PortfolioTabsPropsIF) {
     };
     // props for <Range/> React Element
     const rangeProps = {
+        cachedQuerySpotPrice: cachedQuerySpotPrice,
         crocEnv: props.crocEnv,
         expandTradeTable: false,
         chainData: props.chainData,

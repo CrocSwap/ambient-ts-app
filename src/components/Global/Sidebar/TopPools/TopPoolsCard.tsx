@@ -5,7 +5,8 @@ import { PoolStatsFn } from '../../../../App/functions/getPoolStats';
 import { useEffect, useState, useMemo } from 'react';
 import { formatAmountOld } from '../../../../utils/numbers';
 import { tradeData } from '../../../../utils/state/tradeDataSlice';
-interface TopPoolsCardProps {
+
+interface propsIF {
     tradeData: tradeData;
     pool: PoolIF;
     chainId: string;
@@ -13,7 +14,7 @@ interface TopPoolsCardProps {
     lastBlockNumber: number;
 }
 
-export default function TopPoolsCard(props: TopPoolsCardProps) {
+export default function TopPoolsCard(props: propsIF) {
     const { tradeData, pool, lastBlockNumber, cachedPoolStatsFetch } = props;
 
     const { pathname } = useLocation();

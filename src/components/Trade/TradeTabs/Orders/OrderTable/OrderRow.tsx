@@ -18,7 +18,7 @@ import { ZERO_ADDRESS } from '../../../../../constants';
 import { FiExternalLink } from 'react-icons/fi';
 import useOnClickOutside from '../../../../../utils/hooks/useOnClickOutside';
 
-interface OrderRowPropsIF {
+interface propsIF {
     crocEnv: CrocEnv | undefined;
     chainData: ChainSpec;
     tradeData: tradeData;
@@ -40,7 +40,7 @@ interface OrderRowPropsIF {
     account: string;
     handlePulseAnimation?: (type: string) => void;
 }
-export default function OrderRow(props: OrderRowPropsIF) {
+export default function OrderRow(props: propsIF) {
     const {
         account,
         crocEnv,
@@ -83,7 +83,7 @@ export default function OrderRow(props: OrderRowPropsIF) {
         ensName,
         // orderMatchesSelectedTokens,
         truncatedDisplayPriceDenomByMoneyness,
-
+        isBaseTokenMoneynessGreaterOrEqual,
         baseTokenCharacter,
         quoteTokenCharacter,
         isDenomBase,
@@ -100,7 +100,13 @@ export default function OrderRow(props: OrderRowPropsIF) {
 
     const dispatch = useAppDispatch();
 
-    const sideCharacter = !isDenomBase ? baseTokenCharacter : quoteTokenCharacter;
+    const sideCharacter = isOnPortfolioPage
+        ? isBaseTokenMoneynessGreaterOrEqual
+            ? baseTokenCharacter
+            : quoteTokenCharacter
+        : !isDenomBase
+        ? baseTokenCharacter
+        : quoteTokenCharacter;
 
     const priceStyle = 'base_color';
 
@@ -330,18 +336,18 @@ export default function OrderRow(props: OrderRowPropsIF) {
     const elapsedTimeString =
         elapsedTimeInSecondsNum !== undefined
             ? elapsedTimeInSecondsNum < 60
-                ? '< 1 min. ago'
+                ? '< 1 min. '
                 : elapsedTimeInSecondsNum < 120
-                ? '1 min. ago'
+                ? '1 min. '
                 : elapsedTimeInSecondsNum < 3600
-                ? `${Math.floor(elapsedTimeInSecondsNum / 60)} min. ago`
+                ? `${Math.floor(elapsedTimeInSecondsNum / 60)} min. `
                 : elapsedTimeInSecondsNum < 7200
-                ? '1 hour ago'
+                ? '1 hour '
                 : elapsedTimeInSecondsNum < 86400
-                ? `${Math.floor(elapsedTimeInSecondsNum / 3600)} hrs. ago`
+                ? `${Math.floor(elapsedTimeInSecondsNum / 3600)} hrs. `
                 : elapsedTimeInSecondsNum < 172800
-                ? '1 day ago'
-                : `${Math.floor(elapsedTimeInSecondsNum / 86400)} days ago`
+                ? '1 day '
+                : `${Math.floor(elapsedTimeInSecondsNum / 86400)} days `
             : 'Pending...';
 
     // const baseQtyToolTipStyle = <p className={styles.tooltip_style}>{baseTokenSymbol + ' Qty'}</p>;
@@ -358,7 +364,7 @@ export default function OrderRow(props: OrderRowPropsIF) {
         //     leaveDelay={200}
         // >
         <li onClick={openDetailsModal} data-label={baseTokenSymbol} className='base_color'>
-            <p
+            <div
                 style={{
                     display: 'flex',
                     alignItems: 'center',
@@ -372,7 +378,7 @@ export default function OrderRow(props: OrderRowPropsIF) {
                 {baseTokenLogoComponent}
                 {/* {<img src={baseTokenLogo} width='15px' alt='' />} */}
                 {/* {isOnPortfolioPage && <img src={baseTokenLogo} width='15px' alt='' />} */}
-            </p>
+            </div>
         </li>
         /* </DefaultTooltip> */
     );
@@ -386,7 +392,7 @@ export default function OrderRow(props: OrderRowPropsIF) {
         //     leaveDelay={200}
         // >
         <li onClick={openDetailsModal} data-label={quoteTokenSymbol} className='base_color'>
-            <p
+            <div
                 style={{
                     display: 'flex',
                     alignItems: 'center',
@@ -400,7 +406,7 @@ export default function OrderRow(props: OrderRowPropsIF) {
                 {quoteTokenLogoComponent}
                 {/* {<img src={quoteTokenLogo} width='15px' alt='' />} */}
                 {/* {isOnPortfolioPage && <img src={quoteTokenLogo} width='15px' alt='' />} */}
-            </p>
+            </div>
         </li>
         /* </DefaultTooltip> */
     );
@@ -531,22 +537,22 @@ export default function OrderRow(props: OrderRowPropsIF) {
                     className='base_color'
                     onClick={openDetailsModal}
                 >
-                    <p
+                    <div
                         className={styles.token_qty}
                         style={{ fontFamily: 'monospace', whiteSpace: 'nowrap' }}
                     >
                         {' '}
                         {baseDisplay} {baseTokenLogoComponent}
-                    </p>
+                    </div>
 
-                    <p
+                    <div
                         className={styles.token_qty}
                         style={{ fontFamily: 'monospace', whiteSpace: 'nowrap' }}
                     >
                         {' '}
                         {quoteDisplay}
                         {quoteTokenLogoComponent}
-                    </p>
+                    </div>
                 </li>
             )}
             {!ipadView && (

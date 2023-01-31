@@ -1,15 +1,15 @@
 import uriToHttp from '../../../../utils/functions/uriToHttp';
-import { TokenIF } from '../../../../utils/interfaces/TokenIF';
+import { TokenIF } from '../../../../utils/interfaces/exports';
 import NoTokenIcon from '../../NoTokenIcon/NoTokenIcon';
 import styles from './RecentToken.module.css';
 
-interface RecentTokenProps {
+interface propsIF {
     token: TokenIF;
     clickHandler: () => void;
 }
-export default function RecentToken(props: RecentTokenProps) {
+export default function RecentToken(props: propsIF) {
     const { token, clickHandler } = props;
-    // console.log({ token });
+
     return (
         <div className={styles.recent_token} onClick={clickHandler}>
             {token.logoURI ? (

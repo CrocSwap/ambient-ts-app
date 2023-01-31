@@ -29,7 +29,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 
 // interface for React functional component props
-interface OrdersMenuIF {
+interface propsIF {
     chainData: ChainSpec;
     tradeData: tradeData;
     crocEnv: CrocEnv | undefined;
@@ -49,7 +49,7 @@ interface OrdersMenuIF {
 }
 
 // React functional component
-export default function OrdersMenu(props: OrdersMenuIF) {
+export default function OrdersMenu(props: propsIF) {
     const menuItemRef = useRef<HTMLDivElement>(null);
 
     const {

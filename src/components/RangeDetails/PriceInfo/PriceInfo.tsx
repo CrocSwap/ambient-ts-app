@@ -1,8 +1,8 @@
 import styles from './PriceInfo.module.css';
 import Row from '../../Global/Row/Row';
 
-import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
-import { toggleDidUserFlipDenom } from '../../../utils/state/tradeDataSlice';
+// import { useAppDispatch } from '../../../utils/hooks/reduxToolkit';
+// import { toggleDidUserFlipDenom } from '../../../utils/state/tradeDataSlice';
 import Divider from '../../Global/Divider/Divider';
 import { motion } from 'framer-motion';
 import NoTokenIcon from '../../Global/NoTokenIcon/NoTokenIcon';
@@ -26,12 +26,12 @@ interface IPriceInfoProps {
     quoteTokenSymbol: string;
     isAmbient: boolean;
     isDenomBase: boolean;
-
+    poolPriceDisplay: number;
     controlItems: ItemIF[];
 }
 
 export default function PriceInfo(props: IPriceInfoProps) {
-    const dispatch = useAppDispatch();
+    // const dispatch = useAppDispatch();
     const {
         usdValue,
         lowRangeDisplay,
@@ -46,7 +46,7 @@ export default function PriceInfo(props: IPriceInfoProps) {
         quoteTokenSymbol,
         isAmbient,
         isDenomBase,
-
+        poolPriceDisplay,
         controlItems,
     } = props;
     const collateralContent = (
@@ -152,7 +152,7 @@ export default function PriceInfo(props: IPriceInfoProps) {
         <div
             className={styles.token_pair_details_container}
             onClick={() => {
-                dispatch(toggleDidUserFlipDenom());
+                // dispatch(toggleDidUserFlipDenom());
             }}
         >
             <div className={styles.token_pair_images}>
@@ -176,6 +176,20 @@ export default function PriceInfo(props: IPriceInfoProps) {
         </div>
     );
 
+    const displayPriceWithDenom = isDenomBase ? 1 / poolPriceDisplay : poolPriceDisplay;
+    const displayPriceString =
+        displayPriceWithDenom === Infinity || displayPriceWithDenom === 0
+            ? '…'
+            : displayPriceWithDenom < 2
+            ? displayPriceWithDenom.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 6,
+              })
+            : displayPriceWithDenom.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+              });
+
     const minMaxPriceDisplay = (
         <div className={styles.min_max_price}>
             <div className={styles.min_max_content}>
@@ -184,7 +198,7 @@ export default function PriceInfo(props: IPriceInfoProps) {
             </div>
             <div className={styles.min_max_content}>
                 Current Price
-                <span className={styles.min_price}>{0.0}</span>
+                <span className={styles.min_price}>{displayPriceString}</span>
             </div>
             <div className={styles.min_max_content}>
                 Max Price

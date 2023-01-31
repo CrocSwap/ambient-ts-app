@@ -1,6 +1,6 @@
 import styles from './SetInitialLiquidity.module.css';
 import { motion } from 'framer-motion';
-import { TokenIF } from '../../../utils/interfaces/TokenIF';
+import { TokenIF } from '../../../utils/interfaces/exports';
 import Toggle2 from '../../Global/Toggle/Toggle2';
 import { useState } from 'react';
 interface SetInitialLiquidityPropsIF {

@@ -1,7 +1,6 @@
 // import { toDisplayQty } from '@crocswap-libs/sdk';
 import getUnicodeCharacter from '../../../../../utils/functions/getUnicodeCharacter';
 import { formatAmountOld } from '../../../../../utils/numbers';
-import { ITransaction } from '../../../../../utils/state/graphDataSlice';
 import Price from '../../../../Global/Tabs/Price/Price';
 import TokenQty from '../../../../Global/Tabs/TokenQty/TokenQty';
 import TransactionTypeSide from '../../../../Global/Tabs/TypeAndSide/TransactionTypeSide/TransactionTypeSide';
@@ -14,9 +13,10 @@ import styles from './TransactionCard.module.css';
 import AccountTokensDisplay from '../../../Tabs/AccountTokensDisplay/AccountTokensDisplay';
 import { useEffect, useState } from 'react';
 // import TransactionsMenu from '../../../Tabs/TableMenu/TableMenuComponents/TransactionsMenu';
+import { TransactionIF } from '../../../../../utils/interfaces/exports';
 
-interface TransactionProps {
-    tx: ITransaction;
+interface propsIF {
+    tx: TransactionIF;
     // account: string;
     // tokenMap: Map<string, TokenIF>;
     // chainId: string;
@@ -30,7 +30,7 @@ interface TransactionProps {
     // openGlobalModal: (content: React.ReactNode) => void;
 }
 
-export default function TransactionCard(props: TransactionProps) {
+export default function TransactionCard(props: propsIF) {
     // const tempOwnerId = '0xa2b398145b7fc8fd9a01142698f15d329ebb5ff5090cfcc8caae440867ab9919';
     // const tempPosHash = '0xa2b398145b7fc8fd9a01142698f15d329ebb5ff5090cfcc8caae440867ab9919';
     const { tx } = props;

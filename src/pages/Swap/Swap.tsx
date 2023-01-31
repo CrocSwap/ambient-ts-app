@@ -37,7 +37,7 @@ import SwapShareControl from '../../components/Swap/SwapShareControl/SwapShareCo
 // import { calcImpact } from '../../App/functions/calcImpact';
 import { FiCopy } from 'react-icons/fi';
 
-interface SwapPropsIF {
+interface propsIF {
     crocEnv: CrocEnv | undefined;
     isUserLoggedIn: boolean | undefined;
     account: string | undefined;
@@ -69,6 +69,11 @@ interface SwapPropsIF {
     setTokenPairLocal?: Dispatch<SetStateAction<string[] | null>>;
 
     openGlobalModal: (content: React.ReactNode) => void;
+    openGlobalPopup: (
+        content: React.ReactNode,
+        popupTitle?: string,
+        popupPlacement?: string,
+    ) => void;
 
     isSwapCopied?: boolean;
     verifyToken: (addr: string, chn: string) => boolean;
@@ -84,7 +89,7 @@ interface SwapPropsIF {
     acknowledgeToken: (tkn: TokenIF) => void;
 }
 
-export default function Swap(props: SwapPropsIF) {
+export default function Swap(props: propsIF) {
     const {
         crocEnv,
         isUserLoggedIn,
@@ -125,6 +130,7 @@ export default function Swap(props: SwapPropsIF) {
         setInput,
         searchType,
         acknowledgeToken,
+        openGlobalPopup,
     } = props;
 
     const [isModalOpen, openModal, closeModal] = useModal();
@@ -597,6 +603,7 @@ export default function Swap(props: SwapPropsIF) {
                             setInput={setInput}
                             searchType={searchType}
                             acknowledgeToken={acknowledgeToken}
+                            openGlobalPopup={openGlobalPopup}
                         />
                     </motion.div>
                     {/* {denominationSwitchOrNull} */}

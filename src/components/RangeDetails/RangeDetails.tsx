@@ -6,14 +6,19 @@ import printDomToImage from '../../utils/functions/printDomToImage';
 import { lookupChain } from '@crocswap-libs/sdk/dist/context';
 // import { toDisplayQty } from '@crocswap-libs/sdk';
 import { formatAmountOld } from '../../utils/numbers';
-import { PositionIF } from '../../utils/interfaces/PositionIF';
+import { PositionIF } from '../../utils/interfaces/exports';
 import APYGraphDisplay from './APYGraphDisplay/APYGraphDisplay';
 import RangeDetailsControl from './RangeDetailsControl/RangeDetailsControl';
 import RangeDetailsHeader from './RangeDetailsHeader/RangeDetailsHeader';
 import RangeDetailsActions from './RangeDetailsActions/RangeDetailsActions';
 import RangeStatus from '../Global/RangeStatus/RangeStatus';
+import { SpotPriceFn } from '../../App/functions/querySpotPrice';
+import { CrocEnv, toDisplayPrice } from '@crocswap-libs/sdk';
+import { useAppSelector } from '../../utils/hooks/reduxToolkit';
 
-interface IRangeDetailsProps {
+interface propsIF {
+    crocEnv: CrocEnv | undefined;
+    cachedQuerySpotPrice: SpotPriceFn;
     provider: ethers.providers.Provider | undefined;
     position: PositionIF;
     chainId: string;
@@ -33,15 +38,17 @@ interface IRangeDetailsProps {
     quoteTokenLogoURI: string;
     baseTokenAddress: string;
     quoteTokenAddress: string;
-    lastBlockNumber: number;
     positionApy: number;
 
     closeGlobalModal: () => void;
 }
 
-export default function RangeDetails(props: IRangeDetailsProps) {
+export default function RangeDetails(props: propsIF) {
     const {
+        crocEnv,
         baseTokenAddress,
+        baseTokenDecimals,
+        quoteTokenDecimals,
         quoteTokenAddress,
         baseTokenLogoURI,
         quoteTokenLogoURI,
@@ -51,12 +58,12 @@ export default function RangeDetails(props: IRangeDetailsProps) {
         user,
         bidTick,
         askTick,
-        lastBlockNumber,
         position,
         positionApy,
         closeGlobalModal,
         isPositionInRange,
         isAmbient,
+        cachedQuerySpotPrice,
     } = props;
 
     const detailsRef = useRef(null);
@@ -65,6 +72,7 @@ export default function RangeDetails(props: IRangeDetailsProps) {
             printDomToImage(detailsRef.current);
         }
     };
+    const lastBlockNumber = useAppSelector((state) => state.graphData).lastBlock;
 
     const httpGraphCacheServerDomain = 'https://809821320828123.de:5000';
 
@@ -78,6 +86,8 @@ export default function RangeDetails(props: IRangeDetailsProps) {
 
     // eslint-disable-next-line
     const [updatedPositionApy, setUpdatedPositionApy] = useState<number | undefined>(positionApy);
+
+    const [poolPriceDisplay, setPoolPriceDisplay] = useState(0);
 
     useEffect(() => {
         const positionStatsCacheEndpoint = httpGraphCacheServerDomain + '/position_stats?';
@@ -206,6 +216,40 @@ export default function RangeDetails(props: IRangeDetailsProps) {
                 })
                 .catch(console.log);
         }
+        if (
+            crocEnv &&
+            baseTokenAddress &&
+            quoteTokenAddress &&
+            baseTokenDecimals &&
+            quoteTokenDecimals &&
+            lastBlockNumber !== 0
+        ) {
+            (async () => {
+                const spotPrice = await cachedQuerySpotPrice(
+                    crocEnv,
+                    baseTokenAddress,
+                    quoteTokenAddress,
+                    chainId,
+                    lastBlockNumber,
+                );
+
+                if (spotPrice) {
+                    const newDisplayPrice = toDisplayPrice(
+                        spotPrice,
+                        baseTokenDecimals,
+                        quoteTokenDecimals,
+                    );
+                    if (newDisplayPrice !== poolPriceDisplay) {
+                        // console.log({ newDisplayPrice });
+                        setPoolPriceDisplay(newDisplayPrice);
+                    }
+                }
+                //  if (spotPrice !== poolPriceNonDisplay) {
+                //      console.log('dispatching new non-display spot price');
+                //      dispatch(setPoolPriceNonDisplay(spotPrice));
+                //  }
+            })();
+        }
     }, [lastBlockNumber]);
 
     const [controlItems, setControlItems] = useState([
@@ -250,6 +294,7 @@ export default function RangeDetails(props: IRangeDetailsProps) {
                 <div className={styles.main_content}>
                     <div className={styles.left_container}>
                         <PriceInfo
+                            poolPriceDisplay={poolPriceDisplay}
                             usdValue={usdValue ?? '…'}
                             lowRangeDisplay={lowRangeDisplay}
                             highRangeDisplay={highRangeDisplay}
