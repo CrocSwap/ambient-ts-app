@@ -131,7 +131,7 @@ export default function Sidebar(props: propsIF) {
         setOutsideControl,
         setSelectedOutsideTab,
         txsByUser,
-        limitsByUser
+        limitsByUser,
     } = props;
 
     const location = useLocation();
@@ -286,14 +286,14 @@ export default function Sidebar(props: propsIF) {
         searchedPools,
         searchedPositions,
         searchedTxs,
-        searchedLimitOrders
+        searchedLimitOrders,
     ] = useSidebarSearch(
         poolList,
         positionsByUser,
         txsByUser,
         limitsByUser,
         verifyToken,
-        shouldRecheckLocalStorage
+        shouldRecheckLocalStorage,
     );
 
     const [searchInput, setSearchInput] = useState<string[][]>();
@@ -338,7 +338,7 @@ export default function Sidebar(props: propsIF) {
                 // onBlur={() => setSearchMode(false)}
                 onChange={(e) => setAnalyticsSearchInput(e.target.value)}
             />
-            {searchInput && searchInput.length > 0 && (
+            {searchInput !== undefined && (
                 <div onClick={handleInputClearAnalytics} className={styles.close_icon}>
                     <MdClose size={18} color='#ebebeb66' />{' '}
                 </div>
@@ -346,6 +346,9 @@ export default function Sidebar(props: propsIF) {
         </div>
         // ---------------------------END OF ANALYTICS SEARCH CONTAINER-----------------------
     );
+
+    const inputContent = document.getElementById('search_input') as HTMLInputElement;
+    console.log(searchInput);
     const searchContainer = (
         <div className={styles.search_container}>
             <div className={styles.search__icon} onClick={focusInput}>
@@ -362,9 +365,9 @@ export default function Sidebar(props: propsIF) {
                 onChange={(e) => setRawInput(e.target.value)}
                 spellCheck='false'
             />
-            {searchInput && searchInput.length > 0 && (
+            {inputContent?.value && (
                 <div onClick={handleInputClear} className={styles.close_icon}>
-                    <MdClose size={18} color='#ebebeb66' />{' '}
+                    <MdClose size={20} color='#ebebeb66' />{' '}
                 </div>
             )}
         </div>
@@ -412,7 +415,7 @@ export default function Sidebar(props: propsIF) {
                     enterDelay={100}
                     leaveDelay={200}
                 >
-                    <div style={!showSidebar ? { cursor: 'pointer' } : { cursor: 'pointer' }}>
+                    <div style={{ cursor: 'pointer', display: 'flex' }}>
                         <img src={closeSidebarImage} alt='close sidebar' onClick={toggleSidebar} />
                     </div>
                 </DefaultTooltip>
