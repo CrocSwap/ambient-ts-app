@@ -1,8 +1,10 @@
 import styles from './SidebarRangePositionsCard.module.css';
 import { PositionIF } from '../../../../utils/interfaces/exports';
-import { getPositionValue } from './functions/getPositionValue';
-import { getSymbols } from './functions/getSymbols';
-import { getRangeDisplay } from './functions/getRangeDisplay';
+import {
+    getPositionValue,
+    getRangeDisplay,
+    getSymbols
+} from './functions/exports';
 
 interface propsIF {
     isDenomBase: boolean;
