@@ -2,9 +2,9 @@ import styles from './SidebarRangePositionsCard.module.css';
 import { PositionIF, TokenIF } from '../../../../utils/interfaces/exports';
 import { useMemo, SetStateAction, Dispatch } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
 import { getPositionValue } from './functions/getPositionValue';
 import { getSymbols } from './functions/getSymbols';
+import { getRangeDisplay } from './functions/getRangeDisplay';
 
 interface propsIF {
     isDenomBase: boolean;
@@ -73,40 +73,22 @@ export default function SidebarRangePositionsCard(props: propsIF) {
     // human-readable string showing the tokens in the pool
     const pair = getSymbols(isDenomBase, position.baseSymbol, position.quoteSymbol);
 
+    // human-readable string indicating the range display
+    const [rangeDisplay, rangeStatusStyle] = getRangeDisplay(position, isDenomBase);
+
     // human-readable string showing total value of the position
     const value = getPositionValue(position.totalValueUSD);
-
-    const rangeStatusStyle =
-        position.positionType === 'ambient'
-            ? styles.inner_circle_ambient
-            : position.isPositionInRange
-            ? styles.inner_circle_positive
-            : styles.inner_circle_negative;
-
-    const baseTokenCharacter = position?.baseSymbol
-        ? getUnicodeCharacter(position?.baseSymbol)
-        : '';
-    const quoteTokenCharacter = position?.quoteSymbol
-        ? getUnicodeCharacter(position?.quoteSymbol)
-        : '';
-
-    const rangeDisplay =
-        position?.positionType === 'ambient'
-            ? 'ambient'
-            : isDenomBase
-            ? `${quoteTokenCharacter}${position?.lowRangeShortDisplayInBase}-${quoteTokenCharacter}${position?.highRangeShortDisplayInBase}`
-            : `${baseTokenCharacter}${position?.lowRangeShortDisplayInQuote}-${baseTokenCharacter}${position?.highRangeShortDisplayInQuote}`;
 
     return (
         <div className={styles.container} onClick={() => handleRangePositionClick(position)}>
             <div>{pair}</div>
             <div>
                 {rangeDisplay}
-            <div className={styles.range_status_container}>
-                <div className={rangeStatusStyle}>
-                    <div className={styles.inner_circle_2}></div>
+                <div className={styles.range_status_container}>
+                    <div className={rangeStatusStyle}>
+                        <div className={styles.inner_circle_2}></div>
+                    </div>
                 </div>
-            </div>
             </div>
             <div className={styles.status_display}>{value}</div>
         </div>
