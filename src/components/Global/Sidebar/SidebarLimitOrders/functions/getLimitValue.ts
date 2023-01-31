@@ -1,7 +1,7 @@
 import { LimitOrderIF } from '../../../../../utils/interfaces/exports';
 import { formatAmountOld } from '../../../../../utils/numbers';
 
-export const getLimitValue = (limitOrder: LimitOrderIF) => {
+export const getLimitValue = (limitOrder: LimitOrderIF): string => {
     const usdValueNum = limitOrder.totalValueUSD;
     const usdValueTruncated = !usdValueNum
         ? undefined
