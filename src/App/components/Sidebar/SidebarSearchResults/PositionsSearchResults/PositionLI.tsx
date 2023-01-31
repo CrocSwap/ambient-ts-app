@@ -9,11 +9,7 @@ interface propsIF {
 }
 
 export default function PositionLI(props: propsIF) {
-    const {
-        position,
-        isDenomBase,
-        handleClick
-    } = props;
+    const { position, isDenomBase, handleClick } = props;
 
     // fn to generate human-readable range output (from X to Y)
     const rangeDisplay = getRangeDisplay(position, isDenomBase);
@@ -23,13 +19,13 @@ export default function PositionLI(props: propsIF) {
 
     return (
         <div className={styles.card_container} onClick={() => handleClick(position)}>
-            <div>
+            <p>
                 {isDenomBase
                     ? `${position?.baseSymbol} / ${position?.quoteSymbol}`
                     : `${position?.quoteSymbol} / ${position?.baseSymbol}`}
-            </div>
-            <div>{rangeDisplay}</div>
-            <div>{'$' + positionValue}</div>
+            </p>
+            <p style={{ textAlign: 'center' }}>{rangeDisplay}</p>
+            <p style={{ textAlign: 'center' }}>{'$' + positionValue}</p>
         </div>
     );
 }
