@@ -26,22 +26,20 @@ interface propsIF {
 }
 
 export default function SidebarRangePositions(props: propsIF) {
-    const location = useLocation();
-    const navigate = useNavigate();
-
     const {
         chainId,
         isDenomBase,
         userPositions,
         setCurrentPositionActive,
-        // expandTradeTable,
         isUserLoggedIn,
-
         setShowSidebar,
         setOutsideControl,
         setSelectedOutsideTab,
         setIsShowAllEnabled
     } = props;
+
+    const location = useLocation();
+    const navigate = useNavigate();
 
     const onTradeRoute = location.pathname.includes('trade');
     const onAccountRoute = location.pathname.includes('account');
@@ -49,23 +47,9 @@ export default function SidebarRangePositions(props: propsIF) {
     const tabToSwitchToBasedOnRoute = onTradeRoute ? 2 : onAccountRoute ? 2 : 2;
 
     function redirectBasedOnRoute() {
-        // if (onTradeRoute || onAccountRoute) return;
-        // navigate('/trade');
-
         if (onAccountRoute) return;
         navigate('/account');
     }
-
-    const handleViewMoreClick = () => {
-        redirectBasedOnRoute();
-        props.setOutsideControl(true);
-        props.setSelectedOutsideTab(tabToSwitchToBasedOnRoute);
-
-        setShowSidebar(false);
-
-        // props.setIsShowAllEnabled(false);
-        // props.setExpandTradeTable(true);
-    };
 
     const handleRangePositionClick = (pos: PositionIF): void => {
         setOutsideControl(true);
@@ -81,6 +65,13 @@ export default function SidebarRangePositions(props: propsIF) {
             pos.quote
         );
     }
+
+    const handleViewMoreClick = () => {
+        redirectBasedOnRoute();
+        setOutsideControl(true);
+        setSelectedOutsideTab(tabToSwitchToBasedOnRoute);
+        setShowSidebar(false);
+    };
 
     // TODO:   @Junior please refactor the header <div> as a <header> element
 
