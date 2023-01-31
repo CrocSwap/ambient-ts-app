@@ -2,8 +2,7 @@ import { TokenIF, TransactionIF } from '../../../../utils/interfaces/exports';
 import { useNavigate } from 'react-router-dom';
 import styles from './SidebarRecentTransactionsCard.module.css';
 import { Dispatch, SetStateAction } from 'react';
-import { getTxType } from './functions/getTxType';
-import { getTxValue } from './functions/getTxValue'
+import { getTxType, getTxValue } from './functions/exports';
 
 interface propsIF {
     tx: TransactionIF;
