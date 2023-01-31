@@ -1,4 +1,5 @@
 // START: Import Local Files
+import { PositionIF } from '../../../../utils/interfaces/PositionIF';
 import styles from './RepositionPriceInfo.module.css';
 // import truncateDecimals from '../../../../utils/data/truncateDecimals';
 // import makeCurrentPrice from './makeCurrentPrice';
@@ -15,9 +16,13 @@ import styles from './RepositionPriceInfo.module.css';
 //     poolPriceCharacter: string;
 // }
 
+interface IRepositionPriceInfoProps {
+    position: PositionIF | undefined;
+}
+
 // todo : take a look at RangePriceInfo.tsx. Should follow a similar approach.
 // central react functional component
-export default function RepositionPriceInfo() {
+export default function RepositionPriceInfo(props: IRepositionPriceInfoProps) {
     // const {
     //     spotPriceDisplay,
     //     poolPriceCharacter,
@@ -25,6 +30,37 @@ export default function RepositionPriceInfo() {
     //     minPriceDisplay,
     //     aprPercentage,
     // } = props;
+
+    const { position } = props;
+
+    const baseSymbol = position?.baseSymbol;
+    const quoteSymbol = position?.quoteSymbol;
+    const currentBaseQtyDisplay = position?.positionLiqBaseDecimalCorrected;
+    const currentQuoteQtyDisplay = position?.positionLiqQuoteDecimalCorrected;
+
+    const currentBaseQtyDisplayTruncated = currentBaseQtyDisplay
+        ? currentBaseQtyDisplay < 2
+            ? currentBaseQtyDisplay.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 6,
+              })
+            : currentBaseQtyDisplay.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+              })
+        : '0.00';
+
+    const currentQuoteQtyDisplayTruncated = currentQuoteQtyDisplay
+        ? currentQuoteQtyDisplay < 2
+            ? currentQuoteQtyDisplay.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 6,
+              })
+            : currentQuoteQtyDisplay.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+              })
+        : '0.00';
 
     // -----------------------------TEMPORARY PLACE HOLDERS--------------
     const aprPercentage = 10;
@@ -63,14 +99,14 @@ export default function RepositionPriceInfo() {
     // jsx for  Collateral
     const baseTokenCollateral = (
         <div className={styles.collateral_display}>
-            <p className={styles.collateral_title}>ETH Collateral</p>
-            <p className={styles.collateral_amount}>1.69</p>
+            <p className={styles.collateral_title}>Current {baseSymbol} Collateral</p>
+            <p className={styles.collateral_amount}>{currentBaseQtyDisplayTruncated}</p>
         </div>
     );
     const quoteTokenCollateral = (
         <div className={styles.collateral_display}>
-            <p className={styles.collateral_title}>USDC Collateral</p>
-            <p className={styles.collateral_amount}>5,000.00</p>
+            <p className={styles.collateral_title}>Current {quoteSymbol} Collateral</p>
+            <p className={styles.collateral_amount}>{currentQuoteQtyDisplayTruncated}</p>
         </div>
     );
 

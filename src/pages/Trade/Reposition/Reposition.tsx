@@ -11,9 +11,13 @@ import { useModal } from '../../../components/Global/Modal/useModal';
 import Modal from '../../../components/Global/Modal/Modal';
 import ConfirmRepositionModal from '../../../components/Trade/Reposition/ConfirmRepositionModal/ConfirmRepositionModal';
 import { useLocation, Link } from 'react-router-dom';
+import { useAppSelector } from '../../../utils/hooks/reduxToolkit';
 
 export default function Reposition() {
     const location = useLocation();
+
+    const tradeData = useAppSelector((state) => state.tradeData);
+    const position = tradeData.positionToBeRepositioned;
 
     const currentLocation = location.pathname;
     const [
@@ -54,7 +58,7 @@ export default function Reposition() {
     );
 
     const sendRepositionTransaction = () => {
-        console.log('clicked');
+        console.log({ position });
     };
 
     return (
@@ -66,7 +70,7 @@ export default function Reposition() {
                 {/* <DividerDark /> */}
                 <RepositionRangeWidth />
                 <RepositionDenominationSwitch />
-                <RepositionPriceInfo />
+                <RepositionPriceInfo position={position} />
                 <RepositionButton onClickFn={sendRepositionTransaction} />
                 {/* <RepositionButton onClickFn={openModal} /> */}
             </div>
