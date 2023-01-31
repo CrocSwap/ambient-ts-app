@@ -82,6 +82,7 @@ export default function SidebarSearchResults(props: propsIF) {
                         setIsShowAllEnabled={setIsShowAllEnabled}
                     />
                     <TxSearchResults
+                        chainId={chainId}
                         searchedTxs={searchedTxs}
                         setOutsideControl={setOutsideControl}
                         setSelectedOutsideTab={setSelectedOutsideTab}
