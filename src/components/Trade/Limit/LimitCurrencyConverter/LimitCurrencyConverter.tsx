@@ -29,7 +29,7 @@ import { CrocPoolView } from '@crocswap-libs/sdk';
 import { getRecentTokensParamsIF } from '../../../../App/hooks/useRecentTokens';
 
 // interface for component props
-interface LimitCurrencyConverterProps {
+interface propsIF {
     displayPrice: string;
     previousDisplayPrice: string;
     setPreviousDisplayPrice: Dispatch<SetStateAction<string>>;
@@ -82,10 +82,16 @@ interface LimitCurrencyConverterProps {
     setInput: Dispatch<SetStateAction<string>>;
     searchType: string;
     acknowledgeToken: (tkn: TokenIF) => void;
+
+    openGlobalPopup: (
+        content: React.ReactNode,
+        popupTitle?: string,
+        popupPlacement?: string,
+    ) => void;
 }
 
 // central react functional component
-export default function LimitCurrencyConverter(props: LimitCurrencyConverterProps) {
+export default function LimitCurrencyConverter(props: propsIF) {
     const {
         displayPrice,
         previousDisplayPrice,
@@ -137,6 +143,7 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
         searchType,
         acknowledgeToken,
         setResetLimitTick,
+        openGlobalPopup,
     } = props;
 
     // useEffect(() => {
@@ -545,6 +552,7 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
                 setInput={setInput}
                 searchType={searchType}
                 acknowledgeToken={acknowledgeToken}
+                openGlobalPopup={openGlobalPopup}
             />
 
             <div
@@ -603,6 +611,7 @@ export default function LimitCurrencyConverter(props: LimitCurrencyConverterProp
                 setInput={setInput}
                 searchType={searchType}
                 acknowledgeToken={acknowledgeToken}
+                openGlobalPopup={openGlobalPopup}
             />
             {/* <DividerDark addMarginTop /> */}
             <LimitRate

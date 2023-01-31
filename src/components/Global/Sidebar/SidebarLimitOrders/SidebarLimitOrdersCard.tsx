@@ -7,7 +7,7 @@ import { LimitOrderIF, TokenIF } from '../../../../utils/interfaces/exports';
 import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
 import { formatAmountOld } from '../../../../utils/numbers';
 
-interface SidebarLimitOrdersCardProps {
+interface propsIF {
     isDenomBase: boolean;
     tokenMap: Map<string, TokenIF>;
     order: LimitOrderIF;
@@ -18,7 +18,7 @@ interface SidebarLimitOrdersCardProps {
     setIsShowAllEnabled: Dispatch<SetStateAction<boolean>>;
     setOutsideControl: Dispatch<SetStateAction<boolean>>;
 }
-export default function SidebarLimitOrdersCard(props: SidebarLimitOrdersCardProps) {
+export default function SidebarLimitOrdersCard(props: propsIF) {
     // const location = useLocation();
 
     const {

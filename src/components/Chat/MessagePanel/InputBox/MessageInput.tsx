@@ -8,8 +8,7 @@ import Picker from 'emoji-picker-react';
 import styles from './MessageInput.module.css';
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import PositionBox from '../PositionBox/PositionBox';
-import { PoolIF } from '../../../../utils/interfaces/PoolIF';
-import { TokenIF } from '../../../../utils/interfaces/TokenIF';
+import { PoolIF, TokenIF } from '../../../../utils/interfaces/exports';
 import { targetData } from '../../../../utils/state/tradeDataSlice';
 
 import { useAppSelector } from '../../../../utils/hooks/reduxToolkit';

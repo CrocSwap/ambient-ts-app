@@ -2,13 +2,7 @@ import styles from './Analytics.module.css';
 import AnalyticsTabs from '../../components/Analytics/AnalyticsTabs/AnalyticsTabs';
 import GraphContainer from '../../components/Analytics/GraphContainer/GraphContainer';
 import { SetStateAction, Dispatch } from 'react';
-import { PoolIF } from '../../utils/interfaces/PoolIF';
-import { TokenIF } from '../../utils/interfaces/TokenIF';
-// import TopTokens from '../../components/Analytics/TopTokens/TopTokens';
-// import TopPools from '../../components/Analytics/TopPools/TopPools';
-// import TrendingPools from '../../components/Analytics/TrendingPools/TrendingPools';
-// import TopRanges from '../../components/Analytics/TopRanges/TopRanges';
-// import AnalyticsTransactions from '../../components/Analytics/AnalyticsTransactions/AnalyticsTransactions';
+import { PoolIF, TokenIF } from '../../utils/interfaces/exports';
 
 interface AnalyticsProps {
     setSelectedOutsideTab: Dispatch<SetStateAction<number>>;

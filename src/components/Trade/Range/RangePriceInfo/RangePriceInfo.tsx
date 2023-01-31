@@ -5,7 +5,7 @@ import styles from './RangePriceInfo.module.css';
 import { TokenPairIF } from '../../../../utils/interfaces/exports';
 
 // interface for component props
-interface IRangePriceInfoPropsIF {
+interface propsIF {
     tokenPair: TokenPairIF;
     spotPriceDisplay: string;
     maxPriceDisplay: string;
@@ -16,7 +16,7 @@ interface IRangePriceInfoPropsIF {
 }
 
 // central react functional component
-export default function RangePriceInfo(props: IRangePriceInfoPropsIF) {
+export default function RangePriceInfo(props: propsIF) {
     const {
         spotPriceDisplay,
         poolPriceCharacter,

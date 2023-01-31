@@ -28,12 +28,14 @@
     box-shadow: 2px 1000px 1px var(--dark1) inset;
     transition: box-shadow var(--animation-speed) ease-in-out;
 
+min-width: 320px;
+max-width: 80vw;
 
-    min-width: 407px;
     min-height: 350px;
     border-radius: var(--border-radius);
     position: relative;
     color: var(--text-grey-white);
+
 
     /* min-height: 80vh; */
 }
@@ -86,5 +88,20 @@
 
 .modal_content {
     padding: 20px;
+
+}
+
+
+
+/* media queries */
+
+
+
+@media (min-width: 768px) {
+    .modal_body {
+        min-width: 407px;
+
+    }
+
 
 }

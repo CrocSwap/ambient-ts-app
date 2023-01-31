@@ -10,7 +10,7 @@ import TooltipComponent from '../../../Global/TooltipComponent/TooltipComponent'
 // import truncateDecimals from '../../../../utils/data/truncateDecimals';
 
 // interface for component props
-interface RangeExtraInfoPropsIF {
+interface propsIF {
     tokenPair: TokenPairIF;
     poolPriceDisplay: string;
     slippageTolerance: string;
@@ -26,7 +26,7 @@ interface RangeExtraInfoPropsIF {
 }
 
 // central react functional component
-export default function RangeExtraInfo(props: RangeExtraInfoPropsIF) {
+export default function RangeExtraInfo(props: propsIF) {
     const {
         tokenPair,
         rangeGasPriceinDollars,

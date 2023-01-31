@@ -16,8 +16,11 @@ import { SoloTokenSelect } from '../../Global/TokenSelectContainer/SoloTokenSele
 // import { useSoloSearch } from '../../Global/TokenSelectContainer/hooks/useSoloSearch';
 // import { useSoloSearch } from '../../Global/TokenSelectContainer/hooks/useSoloSearch';
 import { getRecentTokensParamsIF } from '../../../App/hooks/useRecentTokens';
+import { AiOutlineQuestionCircle } from 'react-icons/ai';
+import { DefaultTooltip } from '../../Global/StyledTooltip/StyledTooltip';
+import ExchangeBalanceExplanation from '../../Global/Informational/ExchangeBalanceExplanation';
 
-interface CurrencySelectorProps {
+interface propsIF {
     provider: ethers.providers.Provider | undefined;
     isUserLoggedIn: boolean | undefined;
     tokenPair: TokenPairIF;
@@ -71,9 +74,14 @@ interface CurrencySelectorProps {
     setInput: Dispatch<SetStateAction<string>>;
     searchType: string;
     acknowledgeToken: (tkn: TokenIF) => void;
+    openGlobalPopup: (
+        content: React.ReactNode,
+        popupTitle?: string,
+        popupPlacement?: string,
+    ) => void;
 }
 
-export default function CurrencySelector(props: CurrencySelectorProps) {
+export default function CurrencySelector(props: propsIF) {
     const {
         provider,
         sellQtyString,
@@ -122,6 +130,7 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
         setInput,
         searchType,
         acknowledgeToken,
+        openGlobalPopup,
     } = props;
 
     // const [showManageTokenListContent, setShowManageTokenListContent] = useState(false);
@@ -392,9 +401,58 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
             <p className={styles.max_button} />
         );
 
+    const exchangeBalanceTitle = (
+        <p
+            style={{ display: 'flex', alignItems: 'center', gap: '4px', cursor: 'pointer' }}
+            onClick={() =>
+                openGlobalPopup(<ExchangeBalanceExplanation />, 'Exchange Balance', 'right')
+            }
+        >
+            Exchange Balance <AiOutlineQuestionCircle size={14} />
+        </p>
+    );
+
     const surplusContent = (
         <div className={styles.surplus_container}>
-            <IconWithTooltip title={'Exchange Balance'} placement='bottom'>
+            <DefaultTooltip
+                interactive
+                title={exchangeBalanceTitle}
+                // placement={'bottom'}
+                placement={'bottom'}
+                arrow
+                enterDelay={100}
+                leaveDelay={200}
+            >
+                <div
+                    className={`${styles.balance_with_pointer} ${sellTokenLogoClassname}`}
+                    style={{ color: surplusColorStyle }}
+                    onClick={() => handleSurplusClick()}
+                >
+                    {surplusMaxButton}
+                    <div className={styles.balance_column}>
+                        {isUserLoggedIn && surplusBalanceLocaleString}
+                        <div
+                            style={{
+                                color: isSellTokenSelector ? '#f6385b' : '#15be67',
+                                fontSize: '9px',
+                                // width: '50px'
+                            }}
+                        >
+                            {isSellTokenSelector ? sellTokenSurplusChange : buyTokenSurplusChange}
+                        </div>
+                    </div>
+                    <div className={`${styles.wallet_logo} ${sellTokenWalletClassname}`}>
+                        <img
+                            src={ambientLogo}
+                            width='20'
+                            alt='surplus'
+                            color='var(--text-highlight)'
+                        />
+                    </div>
+                </div>
+            </DefaultTooltip>
+
+            {/* <IconWithTooltip title={'Exchange Balance'} placement='bottom' explanation>
                 <div
                     className={`${styles.balance_with_pointer} ${sellTokenLogoClassname}`}
                     style={{ color: surplusColorStyle }}
@@ -422,7 +480,7 @@ export default function CurrencySelector(props: CurrencySelectorProps) {
                     </div>
                     {surplusMaxButton}
                 </div>
-            </IconWithTooltip>
+            </IconWithTooltip> */}
         </div>
     );
 

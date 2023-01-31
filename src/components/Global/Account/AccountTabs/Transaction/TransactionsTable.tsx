@@ -1,22 +1,28 @@
 import styles from './TransactionsTable.module.css';
 import TransactionCard from './TransactionCard';
 import TransactionCardHeader from './TransactionCardHeader';
-import { ITransaction } from '../../../../../utils/state/graphDataSlice';
+import { TransactionIF } from '../../../../../utils/interfaces/exports';
 
-interface TransactionTablePropsIF {
-    transactions: ITransaction[];
+interface propsIF {
+    txs: TransactionIF[];
 }
 
-export default function TransactionsTable(props: TransactionTablePropsIF) {
-    const { transactions } = props;
-    // console.log({ transactions });
-    // const items = [1, 2, 3, 4, 5, 6];
+export default function TransactionsTable(props: propsIF) {
+    const { txs } = props;
 
-    const ItemContent = transactions.map((tx, idx) => <TransactionCard tx={tx} key={idx} />);
+    // TODO:   @Junior  I don't think there's any reason for the header element in
+    // TODO:   ... the return statement to be abstracted into its own file as it
+    // TODO:   ... appears to be fully static, please code it locally in this file
+    // TODO:   ... and make sure that it is a <header> semantic element  --Emily
+
     return (
         <div className={styles.container}>
             <TransactionCardHeader />
-            <div className={styles.item_container}>{ItemContent}</div>
+            <div className={styles.item_container}>
+                {txs.map((tx, idx) => (
+                    <TransactionCard tx={tx} key={idx} />
+                ))}
+            </div>
         </div>
     );
 }

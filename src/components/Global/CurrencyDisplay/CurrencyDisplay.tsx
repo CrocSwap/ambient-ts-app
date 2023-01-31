@@ -3,13 +3,13 @@ import { TokenIF } from '../../../utils/interfaces/exports';
 
 // we will eventually get the data passed down as props through token data.
 // For now, token data is hardcoded
-interface CurrencyDisplayProps {
+interface propsIF {
     tokenData: TokenIF;
     amount: string;
     isLimitBox?: boolean;
 }
 
-export default function CurrencyDisplay(props: CurrencyDisplayProps) {
+export default function CurrencyDisplay(props: propsIF) {
     const { amount, tokenData, isLimitBox } = props;
 
     const limitBox = (
@@ -44,5 +44,6 @@ export default function CurrencyDisplay(props: CurrencyDisplayProps) {
             </div>
         </div>
     );
+
     return <div>{isLimitBox ? limitBox : currencyBox}</div>;
 }

@@ -1,16 +1,16 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useLocation, Link } from 'react-router-dom';
 import { getPoolPriceChange } from '../../../../App/functions/getPoolStats';
-import { PoolIF } from '../../../../utils/interfaces/PoolIF';
+import { PoolIF } from '../../../../utils/interfaces/exports';
 import styles from './TopTokensCard.module.css';
 
-interface TopTokensCardProps {
+interface propsIF {
     chainId: string;
     pool: PoolIF;
     // lastBlockNumber: number;
 }
 
-export default function TopTokensCard(props: TopTokensCardProps) {
+export default function TopTokensCard(props: propsIF) {
     const { pool } = props;
 
     const location = useLocation();

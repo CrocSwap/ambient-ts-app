@@ -1,11 +1,10 @@
 import styles from './SidebarRangePositions.module.css';
 import SidebarRangePositionsCard from './SidebarRangePositionsCard';
-import { PositionIF } from '../../../../utils/interfaces/PositionIF';
+import { PositionIF, TokenIF } from '../../../../utils/interfaces/exports';
 import { SetStateAction, Dispatch } from 'react';
-import { TokenIF } from '../../../../utils/interfaces/TokenIF';
 import { useLocation, useNavigate } from 'react-router-dom';
 
-interface SidebarRangeProps {
+interface propsIF {
     isDenomBase: boolean;
     userPositions?: PositionIF[];
     selectedOutsideTab: number;
@@ -25,7 +24,7 @@ interface SidebarRangeProps {
     setShowSidebar: Dispatch<SetStateAction<boolean>>;
 }
 
-export default function SidebarRangePositions(props: SidebarRangeProps) {
+export default function SidebarRangePositions(props: propsIF) {
     const location = useLocation();
     const navigate = useNavigate();
 
@@ -40,16 +39,6 @@ export default function SidebarRangePositions(props: SidebarRangeProps) {
 
         setShowSidebar,
     } = props;
-
-    const header = (
-        <div className={styles.header}>
-            <div>Pool</div>
-            <div>Range</div>
-            <div>Value</div>
-        </div>
-    );
-
-    // const mapItems = [1, 2, 3, 4, 5, 6, 7];
 
     const onTradeRoute = location.pathname.includes('trade');
     const onAccountRoute = location.pathname.includes('account');
@@ -89,9 +78,15 @@ export default function SidebarRangePositions(props: SidebarRangeProps) {
         tabToSwitchToBasedOnRoute: tabToSwitchToBasedOnRoute,
     };
 
+    // TODO:   @Junior please refactor the header <div> as a <header> element
+
     return (
         <div className={styles.container}>
-            {header}
+            <div className={styles.header}>
+                <div>Pool</div>
+                <div>Range</div>
+                <div>Value</div>
+            </div>
             <div className={styles.content}>
                 {userPositions &&
                     userPositions.map((position, idx) => (

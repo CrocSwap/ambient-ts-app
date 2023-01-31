@@ -10,7 +10,7 @@ interface IRepostionButtonProps {
 
 export default function RepositionButton(props: IRepostionButtonProps) {
     // ----------------------------TEMPORARY DATA------------------------
-    const rangeAllowed = false;
+    const repositionAllowed = true;
     // const onClickFn = () => console.log('clicked');
     const rangeButtonErrorMessage = 'Enter an amount';
     // ----------------------------TEMPORARY DATA------------------------
@@ -18,10 +18,10 @@ export default function RepositionButton(props: IRepostionButtonProps) {
     const ButtonDisplay = (
         <div className={styles.button_container}>
             <Button
-                title={rangeAllowed ? 'Open Confirmation' : rangeButtonErrorMessage}
+                title={repositionAllowed ? 'Open Confirmation' : rangeButtonErrorMessage}
                 // action={() => console.log('clicked')}
                 action={props.onClickFn}
-                disabled={!rangeAllowed}
+                disabled={!repositionAllowed}
                 flat={true}
             />
         </div>

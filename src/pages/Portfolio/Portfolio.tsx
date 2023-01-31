@@ -27,13 +27,15 @@ import {
 } from '../../utils/state/userDataSlice';
 import { useAccount, useEnsName } from 'wagmi';
 import useMediaQuery from '../../utils/hooks/useMediaQuery';
+import { SpotPriceFn } from '../../App/functions/querySpotPrice';
 
 const mainnetProvider = new ethers.providers.WebSocketProvider(
     // 'wss://mainnet.infura.io/ws/v3/4a162c75bd514925890174ca13cdb6a2', // benwolski@gmail.com
     // 'wss://mainnet.infura.io/ws/v3/170b7b65781c422d82a94b8b289ca605',
     'wss://mainnet.infura.io/ws/v3/e0aa879e36fc4c9e91b826ad961a36fd',
 );
-interface PortfolioPropsIF {
+
+interface propsIF {
     crocEnv: CrocEnv | undefined;
     addRecentToken: (tkn: TokenIF) => void;
     getRecentTokens: (options?: { onCurrentChain?: boolean; count?: number | null }) => TokenIF[];
@@ -62,7 +64,7 @@ interface PortfolioPropsIF {
     openModalWallet: () => void;
     importedTokens: TokenIF[];
     chainData: ChainSpec;
-
+    searchableTokens: TokenIF[];
     setImportedTokens: Dispatch<SetStateAction<TokenIF[]>>;
     currentPositionActive: string;
     setCurrentPositionActive: Dispatch<SetStateAction<string>>;
@@ -83,10 +85,13 @@ interface PortfolioPropsIF {
     validatedInput: string;
     setInput: Dispatch<SetStateAction<string>>;
     searchType: string;
+    cachedQuerySpotPrice: SpotPriceFn;
 }
 
-export default function Portfolio(props: PortfolioPropsIF) {
+export default function Portfolio(props: propsIF) {
     const {
+        searchableTokens,
+        cachedQuerySpotPrice,
         crocEnv,
         addRecentToken,
         getRecentTokens,
@@ -581,6 +586,8 @@ export default function Portfolio(props: PortfolioPropsIF) {
             >
                 {!showLoggedInButton && !hideTabs ? (
                     <PortfolioTabs
+                        searchableTokens={searchableTokens}
+                        cachedQuerySpotPrice={cachedQuerySpotPrice}
                         crocEnv={crocEnv}
                         isTokenABase={isTokenABase}
                         provider={provider}

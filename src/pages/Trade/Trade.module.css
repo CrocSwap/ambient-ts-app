@@ -82,6 +82,8 @@
     -moz-background-size: cover;
     -o-background-size: cover;
     background-size: cover;
+
+    
 }
 
 .graph_container {
@@ -283,6 +285,16 @@
     .hide {
         display: none;
     }
+
+    .main_layout{
+    height: calc(100vh - 7.5rem)
+    }
+
+    .right_col {
+        padding-left: 30px;
+    }
+
+ 
     /* .chart_image,
     .time_frame_container,
     .token_info_container {
@@ -418,20 +430,25 @@
 
 @media only screen and (max-width: 850px) {
     .middle_col {
-        width: 90%;
+        width: 95%;
         margin: 0 auto;
     }
 
-    .main_layout {
+    .main_layout{
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* .main_layout {
         gap: 1rem;
-        /* height: 90%; */
         display: grid;
         grid-template-rows: 1fr 1fr;
-    }
+    } */
 }
 
 @media only screen and (max-width: 1180px) {
     .middle_col {
         padding-left: 30px;
+       
     }
 }

@@ -1,5 +1,5 @@
 import { Dispatch, SetStateAction, useMemo, useState } from 'react';
-import { PositionIF } from '../../../utils/interfaces/PositionIF';
+import { PositionIF } from '../../../utils/interfaces/exports';
 
 export const useSortedPositions = (
     defaultSort: string,

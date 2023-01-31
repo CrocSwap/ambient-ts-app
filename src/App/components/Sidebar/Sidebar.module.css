@@ -309,3 +309,10 @@
 }
 
 }
+
+@media only screen and (max-width: 600px) {
+.sidebar_nav{
+    height: auto;
+}
+
+}
