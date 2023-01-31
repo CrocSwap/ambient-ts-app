@@ -87,9 +87,9 @@ export default function SidebarLimitOrders(props: propsIF) {
             </div>
             <div className={styles.content}>
                 {limitOrderByUser &&
-                    limitOrderByUser.map((order, idx) => (
+                    limitOrderByUser.map((order: LimitOrderIF) => (
                         <SidebarLimitOrdersCard
-                            key={idx}
+                            key={'Sidebar-Limit-Orders-Card-' + JSON.stringify(order)}
                             isDenomBase={isDenomBase}
                             order={order}
                             handleClick={handleLimitOrderClick}
