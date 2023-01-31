@@ -6,6 +6,7 @@ import { LimitOrderIF, TokenIF } from '../../../../utils/interfaces/exports';
 
 interface propsIF {
     tokenMap: Map<string, TokenIF>;
+    chainId: string;
     isDenomBase: boolean;
     selectedOutsideTab: number;
     setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
@@ -24,6 +25,7 @@ export default function SidebarLimitOrders(props: propsIF) {
     const {
         limitOrderByUser,
         tokenMap,
+        chainId,
         isDenomBase,
         setCurrentPositionActive,
         setIsShowAllEnabled,
@@ -35,6 +37,7 @@ export default function SidebarLimitOrders(props: propsIF) {
 
     const sidebarLimitOrderCardProps = {
         tokenMap: tokenMap,
+        chainId: chainId,
         selectedOutsideTab: props.selectedOutsideTab,
         setSelectedOutsideTab: props.setSelectedOutsideTab,
         outsideControl: props.outsideControl,

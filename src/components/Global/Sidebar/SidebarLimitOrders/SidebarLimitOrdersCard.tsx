@@ -1,15 +1,14 @@
 import styles from './SidebarLimitOrdersCard.module.css';
-import { SetStateAction, Dispatch, useState, useEffect, useMemo } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { SetStateAction, Dispatch, useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { LimitOrderIF, TokenIF } from '../../../../utils/interfaces/exports';
-// import { useAppDispatch } from '../../../../utils/hooks/reduxToolkit';
-// import { setTokenA, setTokenB } from '../../../../utils/state/tradeDataSlice';
 import getUnicodeCharacter from '../../../../utils/functions/getUnicodeCharacter';
 import { formatAmountOld } from '../../../../utils/numbers';
 
 interface propsIF {
     isDenomBase: boolean;
     tokenMap: Map<string, TokenIF>;
+    chainId: string;
     order: LimitOrderIF;
     selectedOutsideTab: number;
     setSelectedOutsideTab: Dispatch<SetStateAction<number>>;
@@ -19,10 +18,9 @@ interface propsIF {
     setOutsideControl: Dispatch<SetStateAction<boolean>>;
 }
 export default function SidebarLimitOrdersCard(props: propsIF) {
-    // const location = useLocation();
-
     const {
         tokenMap,
+        chainId,
         order,
         setIsShowAllEnabled,
         setOutsideControl,
@@ -103,22 +101,6 @@ export default function SidebarLimitOrdersCard(props: propsIF) {
               maximumFractionDigits: 2,
           });
 
-    const { pathname } = useLocation();
-
-    const linkPath = useMemo(() => {
-        let locationSlug = '';
-        if (pathname.startsWith('/trade/market') || pathname.startsWith('/account')) {
-            locationSlug = '/trade/market';
-        } else if (pathname.startsWith('/trade/limit')) {
-            locationSlug = '/trade/limit';
-        } else if (pathname.startsWith('/trade/range')) {
-            locationSlug = '/trade/range';
-        } else if (pathname.startsWith('/swap')) {
-            locationSlug = '/swap';
-        }
-        return locationSlug + '/chain=0x5&tokenA=' + order.base + '&tokenB=' + order.quote;
-    }, [pathname]);
-
     const navigate = useNavigate();
 
     function handleLimitOrderClick() {
@@ -126,7 +108,14 @@ export default function SidebarLimitOrdersCard(props: propsIF) {
         setSelectedOutsideTab(1);
         setCurrentPositionActive(order.limitOrderIdentifier);
         setIsShowAllEnabled(false);
-        navigate(linkPath);
+        navigate(
+            '/trade/limit/chain=' +
+            chainId +
+            '&tokenA=' +
+            order.base +
+            '&tokenB=' +
+            order.quote
+        );
     }
 
     return (

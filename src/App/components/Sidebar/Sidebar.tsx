@@ -225,6 +225,7 @@ export default function Sidebar(props: propsIF) {
                 <SidebarLimitOrders
                     isDenomBase={isDenomBase}
                     tokenMap={tokenMap}
+                    chainId={chainId}
                     limitOrderByUser={mostRecentLimitOrders}
                     {...sidebarLimitOrderProps}
                 />
