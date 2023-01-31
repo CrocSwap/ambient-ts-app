@@ -85,3 +85,12 @@ line-height: 22px;
 letter-spacing: -0.02em;
 text-align: center;
 }
+
+.not_found_text{
+    height: 100px;
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    color: var(--text-grey-light);
+    padding: 0 2rem;
+}

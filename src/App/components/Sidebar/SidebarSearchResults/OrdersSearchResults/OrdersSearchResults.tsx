@@ -33,19 +33,27 @@ export default function OrdersSearchResults(props: OrdersSearchResultPropsIF) {
     return (
         <div>
             <div className={styles.card_title}>My Limit Orders</div>
-            <div className={styles.header}>
-                <div>Pool</div>
-                <div>Price</div>
-                <div>Value</div>
-            </div>
-            {searchedLimitOrders.slice(0, 4).map((limitOrder: LimitOrderIF) => (
-                <LimitOrderLI
-                    key={`order-search-result-${JSON.stringify(limitOrder)}`}
-                    limitOrder={limitOrder}
-                    isDenomBase={isDenomBase}
-                    handleClick={handleClick}
-                />
-            ))}
+            {searchedLimitOrders.length ? (
+                <>
+                    <div className={styles.header}>
+                        <div>Pool</div>
+                        <div>Price</div>
+                        <div>Value</div>
+                    </div>
+                    <div className={styles.main_result_container}>
+                        {searchedLimitOrders.slice(0, 4).map((limitOrder: LimitOrderIF) => (
+                            <LimitOrderLI
+                                key={`order-search-result-${JSON.stringify(limitOrder)}`}
+                                limitOrder={limitOrder}
+                                isDenomBase={isDenomBase}
+                                handleClick={handleClick}
+                            />
+                        ))}
+                    </div>
+                </>
+            ) : (
+                <h5 className={styles.not_found_text}>No Orders Found</h5>
+            )}
         </div>
     );
 }

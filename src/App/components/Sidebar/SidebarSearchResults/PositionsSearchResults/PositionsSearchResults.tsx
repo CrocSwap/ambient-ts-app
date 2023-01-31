@@ -33,21 +33,27 @@ export default function PositionsSearchResults(props: propsIF) {
     return (
         <div>
             <div className={styles.card_title}>My Range Positions</div>
-            <div className={styles.header}>
-                <div>Pool</div>
-                <div>Range</div>
-                <div>Value</div>
-            </div>
-            <div className={styles.main_result_container}>
-                {searchedPositions.slice(0, 4).map((position: PositionIF) => (
-                    <PositionLI
-                        key={`PositionSearchResult_${JSON.stringify(position)}`}
-                        position={position}
-                        isDenomBase={isDenomBase}
-                        handleClick={handleClick}
-                    />
-                ))}
-            </div>
+            {searchedPositions.length ? (
+                <>
+                    <div className={styles.header}>
+                        <div>Pool</div>
+                        <div>Range</div>
+                        <div>Value</div>
+                    </div>
+                    <div className={styles.main_result_container}>
+                        {searchedPositions.slice(0, 4).map((position: PositionIF) => (
+                            <PositionLI
+                                key={`PositionSearchResult_${JSON.stringify(position)}`}
+                                position={position}
+                                isDenomBase={isDenomBase}
+                                handleClick={handleClick}
+                            />
+                        ))}
+                    </div>
+                </>
+            ) : (
+                <h5 className={styles.not_found_text}>No Ranges Found</h5>
+            )}
         </div>
     );
 }

@@ -340,16 +340,18 @@ export default function Trade(props: propsIF) {
 
     const mobileDataToggle = (
         <div className={styles.mobile_toggle_container}>
-            <button
-                onClick={() => setActiveMobileComponent('chart')}
-                className={
-                    activeMobileComponent === 'chart'
-                        ? styles.active_button_mobile_toggle
-                        : styles.non_active_button_mobile_toggle
-                }
-            >
-                Chart
-            </button>
+            {!isCandleDataNull && (
+                <button
+                    onClick={() => setActiveMobileComponent('chart')}
+                    className={
+                        activeMobileComponent === 'chart'
+                            ? styles.active_button_mobile_toggle
+                            : styles.non_active_button_mobile_toggle
+                    }
+                >
+                    Chart
+                </button>
+            )}
             <button
                 onClick={() => setActiveMobileComponent('transactions')}
                 className={

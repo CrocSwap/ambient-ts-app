@@ -30,26 +30,28 @@ export default function PoolsSearchResults(props: propsIF) {
     return (
         <div>
             <div className={styles.card_title}>Initialized Pools</div>
-            <div className={styles.header}>
-                <div>Pool</div>
-                <div>Volume</div>
-                <div>TVL</div>
-            </div>
             {searchedPools.length ? (
-                <div className={styles.main_result_container}>
-                    {searchedPools.slice(0, 4).map((pool: TempPoolIF) => (
-                        <PoolLI
-                            key={`sidebar_searched_pool_${JSON.stringify(pool)}`}
-                            chainId={chainId}
-                            handleClick={handleClick}
-                            pool={pool}
-                            getTokenByAddress={getTokenByAddress}
-                            cachedPoolStatsFetch={cachedPoolStatsFetch}
-                        />
-                    ))}
-                </div>
+                <>
+                    <div className={styles.header}>
+                        <div>Pool</div>
+                        <div>Volume</div>
+                        <div>TVL</div>
+                    </div>
+                    <div className={styles.main_result_container}>
+                        {searchedPools.slice(0, 4).map((pool: TempPoolIF) => (
+                            <PoolLI
+                                key={`sidebar_searched_pool_${JSON.stringify(pool)}`}
+                                chainId={chainId}
+                                handleClick={handleClick}
+                                pool={pool}
+                                getTokenByAddress={getTokenByAddress}
+                                cachedPoolStatsFetch={cachedPoolStatsFetch}
+                            />
+                        ))}
+                    </div>
+                </>
             ) : (
-                <h5>No Pools Found</h5>
+                <h5 className={styles.not_found_text}>No Pools Found</h5>
             )}
         </div>
     );
