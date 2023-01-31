@@ -25,9 +25,11 @@ export default function OrderSearchResult(props: propsIF) {
 
     return (
         <div className={styles.card_container} onClick={() => handleClick(limitOrder)}>
-            <div>{limitOrder.baseSymbol} / {limitOrder.quoteSymbol}</div>
-            <div>{displayPrice}</div>
-            <div>{valueUSD}</div>
+            <p>
+                {limitOrder.baseSymbol} / {limitOrder.quoteSymbol}
+            </p>
+            <p style={{ textAlign: 'center' }}>{displayPrice}</p>
+            <p style={{ textAlign: 'center' }}>{valueUSD}</p>
         </div>
     );
 }
