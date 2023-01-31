@@ -443,8 +443,8 @@ export default function Trade(props: propsIF) {
                 {mobileDataToggle}
                 <div
                     className={` ${expandGraphStyle} ${
-                        activeMobileComponent !== 'chart' ? styles.hide : fullScreenStyle
-                    }`}
+                        activeMobileComponent !== 'chart' ? styles.hide : ''
+                    } ${fullScreenStyle}`}
                     style={{
                         background: chartBg,
                     }}
