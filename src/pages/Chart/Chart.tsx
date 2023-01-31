@@ -964,7 +964,10 @@ export default function Chart(props: ChartData) {
                 addTextMarket(scaleData.yScale);
             } else if (location.pathname.includes('limit')) {
                 addTextLimit(scaleData.yScale);
-            } else if (location.pathname.includes('range')) {
+            } else if (
+                location.pathname.includes('range') ||
+                location.pathname.includes('reposition')
+            ) {
                 addTextRange(scaleData.yScale);
             }
             changeyAxisWidth();
@@ -985,9 +988,8 @@ export default function Chart(props: ChartData) {
     ]);
 
     useEffect(() => {
-        if (location.pathname.includes('range')) {
+        if (location.pathname.includes('range') || location.pathname.includes('reposition')) {
             if (simpleRangeWidth !== 100 || isAdvancedModeActive) {
-                console.log('useEffect 1');
                 d3.select(d3PlotArea.current).select('.targets').style('visibility', 'visible');
                 d3.select(d3PlotArea.current)
                     .select('.targets')
@@ -1826,7 +1828,7 @@ export default function Chart(props: ChartData) {
 
     useEffect(() => {
         console.log('setting range lines');
-        if (location.pathname.includes('range')) {
+        if (location.pathname.includes('range') || location.pathname.includes('reposition')) {
             if (!isAdvancedModeActive) {
                 setBalancedLines();
             } else if (isAdvancedModeActive) {
@@ -2388,7 +2390,13 @@ export default function Chart(props: ChartData) {
                 selection
                     .enter()
                     .attr('id', (d: any) => d.name)
-                    .style('visibility', location.pathname.includes('range') ? 'visible' : 'hidden')
+                    .style(
+                        'visibility',
+                        location.pathname.includes('range') ||
+                            location.pathname.includes('reposition')
+                            ? 'visible'
+                            : 'hidden',
+                    )
                     .select('g.left-handle')
                     .append('text')
                     .attr('x', 5)
@@ -2506,7 +2514,10 @@ export default function Chart(props: ChartData) {
             .remove();
 
         if (!location.pathname.includes('market')) {
-            const selectClass = location.pathname.includes('range') ? '.targets' : '.limit';
+            const selectClass =
+                location.pathname.includes('range') || location.pathname.includes('reposition')
+                    ? '.targets'
+                    : '.limit';
             d3.select(d3PlotArea.current)
                 .select(selectClass)
                 .selectAll('.annotation-line')
@@ -2690,7 +2701,7 @@ export default function Chart(props: ChartData) {
     // Line Rules
     useEffect(() => {
         if (dragLimit !== undefined && dragRange !== undefined) {
-            if (location.pathname.includes('range')) {
+            if (location.pathname.includes('range') || location.pathname.includes('reposition')) {
                 d3.select(d3Container.current)
                     .select('.targets')
                     .select('.horizontal')
@@ -3109,7 +3120,7 @@ export default function Chart(props: ChartData) {
     }, [scaleData, selectedDate]);
 
     useEffect(() => {
-        if (!location.pathname.includes('range')) {
+        if (!location.pathname.includes('range') && !location.pathname.includes('reposition')) {
             liquidityData.lineAskSeries = [];
             liquidityData.lineBidSeries = [];
         }
@@ -3121,7 +3132,11 @@ export default function Chart(props: ChartData) {
 
     // line gradient
     const setLiqHighlightedLinesAndArea = (ranges: any) => {
-        if (ranges !== undefined && location.pathname.includes('range') && poolPriceDisplay) {
+        if (
+            ranges !== undefined &&
+            (location.pathname.includes('range') || location.pathname.includes('reposition')) &&
+            poolPriceDisplay
+        ) {
             setHorizontalBandData([
                 [
                     simpleRangeWidth === 100 && !isAdvancedModeActive
@@ -3387,7 +3402,10 @@ export default function Chart(props: ChartData) {
                     selection.attr('stroke-width', '2');
                     selection.style(
                         'visibility',
-                        location.pathname.includes('range') ? 'visible' : 'hidden',
+                        location.pathname.includes('range') ||
+                            location.pathname.includes('reposition')
+                            ? 'visible'
+                            : 'hidden',
                     );
                 });
 
@@ -3411,7 +3429,10 @@ export default function Chart(props: ChartData) {
                     selection.attr('stroke-width', '2');
                     selection.style(
                         'visibility',
-                        location.pathname.includes('range') ? 'visible' : 'hidden',
+                        location.pathname.includes('range') ||
+                            location.pathname.includes('reposition')
+                            ? 'visible'
+                            : 'hidden',
                     );
                 });
 
@@ -3435,7 +3456,10 @@ export default function Chart(props: ChartData) {
                     selection.attr('stroke-width', '2');
                     selection.style(
                         'visibility',
-                        location.pathname.includes('range') ? 'visible' : 'hidden',
+                        location.pathname.includes('range') ||
+                            location.pathname.includes('reposition')
+                            ? 'visible'
+                            : 'hidden',
                     );
                 });
 
@@ -3459,7 +3483,10 @@ export default function Chart(props: ChartData) {
                     selection.attr('stroke-width', '2');
                     selection.style(
                         'visibility',
-                        location.pathname.includes('range') ? 'visible' : 'hidden',
+                        location.pathname.includes('range') ||
+                            location.pathname.includes('reposition')
+                            ? 'visible'
+                            : 'hidden',
                     );
                 });
 
@@ -4027,7 +4054,8 @@ export default function Chart(props: ChartData) {
                     selectedDateEvent(isHoverCandleOrVolumeData, _selectedDate);
 
                     if (
-                        location.pathname.includes('range') &&
+                        (location.pathname.includes('range') ||
+                            location.pathname.includes('reposition')) &&
                         scaleData !== undefined &&
                         !isHoverCandleOrVolumeData
                     ) {
