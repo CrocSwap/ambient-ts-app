@@ -21,6 +21,7 @@ import {
     setAdvancedHighTick,
     setAdvancedLowTick,
     setAdvancedMode,
+    setPositionToBeRepositioned,
     setRangeModuleTriggered,
     setSimpleRangeWidth,
 } from '../../../../../utils/state/tradeDataSlice';
@@ -148,7 +149,14 @@ export default function RangesMenu(props: propsIF) {
 
     const repositionButton = (
         // !isAmbient && positionMatchesLoggedInUser && !isPositionInRange ?
-        <Link className={styles.reposition_button} to={'/trade/reposition'}>
+        <Link
+            className={styles.reposition_button}
+            to={'/trade/reposition'}
+            onClick={() => {
+                console.log({ positionData });
+                dispatch(setPositionToBeRepositioned(positionData));
+            }}
+        >
             Reposition
         </Link>
     );
